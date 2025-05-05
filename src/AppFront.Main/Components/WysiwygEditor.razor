@@ -1,0 +1,206 @@
+@using MarsEditors
+@using MarsCodeEditor2;
+@using Blazored.TextEditor
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="WysiwygEditor shadow-sm @Class" style="@Style">
+    @if (_isViewSource)
+    {
+        <FluentButton @onclick=HideSource Class="float-end">Показать редактор</FluentButton>
+        <br />
+
+        <br />
+
+        @* <MarsEditors.MarsCodeEditor @ref="@HtmlEditor" Lang="html" Value="@_content"></MarsEditors.MarsCodeEditor> *@
+
+        <MarsCodeEditor2.CodeEditor2 @ref=HtmlEditor
+                                      Lang=@MarsCodeEditor.Language.html
+                                      OnSave="OnSaveFromCodeEditor"
+                                      Value="@_content" />
+    }
+    else
+    {
+        <ErrorBoundary>
+            <ChildContent>
+                <BlazoredTextEditor @ref="@QuillHtml" Placeholder="Текст" DebugLevel="Error" ToolbarCSSClass="d-flex">
+                    <ToolbarContent>
+                        <select class="ql-header">
+                            <option selected=""></option>
+                            <option value="1"></option>
+                            <option value="2"></option>
+                            <option value="3"></option>
+                            <option value="4"></option>
+                            <option value="5"></option>
+                        </select>
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                            <button class="ql-strike"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <select class="ql-align">
+                                <option selected=""></option>
+                                <option value="center"></option>
+                                <option value="right"></option>
+                                <option value="justify"></option>
+                            </select>
+                            <select class="ql-color"></select>
+                            <select class="ql-background"></select>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="ordered"></button>
+                            <button class="ql-list" value="bullet"></button>
+                            <button class="ql-indent" value="-1"></button>
+                            <button class="ql-indent" value="+1"></button>
+                        </span>
+                        <span class="ql-formats d-flex">
+                            <button class="ql-link"></button>
+                            <button class="ql-insert-image" @onclick=InsertImage>
+                                <i class="bi bi-image"></i>
+                            </button>
+                            <div class="dropdown ql-html d-inline-block xcenter float-left">
+                                <button class="btn btn-light dropdown-toggle rounded-0 py-0"
+                                        style="width:unset;"
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Выравнивание картинки">
+                                    <i class="bi bi-bounding-box"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><h6 class="dropdown-header">Размер</h6></li>
+                                    <li><span role="button" class="dropdown-item" @onclick=@(e=>ModifyImages(ImageCollectionModify.ByFirst))>По первому</span></li>
+                                    <li><span role="button" class="dropdown-item" @onclick=@(e=>ModifyImages(ImageCollectionModify.ByMax))>По макс</span></li>
+                                    <li><span role="button" class="dropdown-item" @onclick=@(e=>ModifyImages(ImageCollectionModify.ByMin))>По мин</span></li>
+                                </ul>
+                            </div>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-html p-0" @onclick=ViewSource><i class="bi bi-filetype-html"></i></button>
+                        </span>
+                    </ToolbarContent>
+                    <EditorContent>
+                        @* blazor создает ошибки удаляя аттрибуты *@
+                        @* @((MarkupString)_content) *@
+                    </EditorContent>
+                </BlazoredTextEditor>
+            </ChildContent>
+            <ErrorContent>
+                <p class="alert alert-danger container">
+                    @context.Message
+                    <pre>@context.StackTrace</pre>
+                </p>
+            </ErrorContent>
+        </ErrorBoundary>
+    }
+</div>
+
+
+@code {
+    [Inject] IAppMediaService mediaService { get; set; } = default!;
+
+    BlazoredTextEditor? QuillHtml;
+    CodeEditor2? HtmlEditor;
+    //string edit_html { get; set; }
+
+    [Parameter] public string Content { get; set; } = default!;
+
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    string _content = default!;
+    bool _isViewSource = false;
+
+    protected override void OnInitialized()
+    {
+        _content = Content;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Task.Run(async () =>
+            {
+                await Task.Delay(10);
+                await this.QuillHtml!.LoadHTMLContent(_content);
+                StateHasChanged();
+            });
+        }
+    }
+
+    public async Task<string> GetHTML()
+    {
+        if (_isViewSource)
+            return await HtmlEditor!.GetValue();
+        else
+            return (await QuillHtml!.GetHTML())!;
+    }
+
+    public async void InsertImage()
+    {
+        var file = await mediaService.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            await this.QuillHtml!.InsertImage(file.UrlRelative);
+            StateHasChanged();
+        }
+    }
+
+    private async void ViewSource()
+    {
+        _content = await QuillHtml!.GetHTML();
+        //_content = _content.Replace("<p", "\n<p");
+        _isViewSource = true;
+        StateHasChanged();
+    }
+
+    private async void HideSource()
+    {
+        _content = await HtmlEditor!.GetValue();
+        _isViewSource = false;
+        StateHasChanged();
+
+        await Task.Delay(10);
+        await this.QuillHtml!.LoadHTMLContent(_content);
+        StateHasChanged();
+    }
+
+    private async void OnSaveFromCodeEditor()
+    {
+        _content = await HtmlEditor!.GetValue();
+    }
+
+    async void ModifyImages(ImageCollectionModify mode)
+    {
+        _content = await QuillHtml!.GetHTML();
+        var result = WysiwygEditorHelper.ModifyImages(_content, mode);
+        if (result is not null)
+        {
+            _content = result;
+            await this.QuillHtml.LoadHTMLContent(_content);
+            Console.WriteLine("ModifyImages:ok");
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("ModifyImages: fail");
+        }
+    }
+}
+
+
+<style>
+    .ql-editor {
+        min-height: 300px;
+        max-height: 85vh;
+    }
+
+    .WysiwygEditor {
+        background-color: white;
+    }
+
+    .ql-insert-image {
+        position: relative;
+        top: -3px;
+    }
+</style>

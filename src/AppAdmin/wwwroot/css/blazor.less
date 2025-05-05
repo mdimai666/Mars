@@ -1,0 +1,350 @@
+/*@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');*/
+
+/*html, body {*/
+/*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
+/*background:red;*/
+/*}*/
+
+/*a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}*/
+
+/*.content {
+    padding-top: 1.1rem;
+}*/
+/*
+.valid.modified:not([type=checkbox]):not(.hide-valid-style) {
+    // outline: 1px solid #26b050;
+    border-color: #28C76F;
+    padding-right: calc(1.45em + 0.876rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'8\' height=\'8\' viewBox=\'0 0 8 8\'%3e%3cpath fill=\'%2328c76f\' d=\'M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z\'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.3625em + 0.219rem) center;
+    background-size: calc(0.725em + 0.438rem) calc(0.725em + 0.438rem);
+}
+
+.invalid:not(.hide-invalid-style) {
+    // outline: 1px solid red;
+    border-color: #EA5455 !important;
+    padding-right: calc(1.45em + 0.876rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'none\' stroke=\'%23ea5455\' viewBox=\'0 0 12 12\'%3e%3ccircle cx=\'6\' cy=\'6\' r=\'4.5\'/%3e%3cpath stroke-linejoin=\'round\' d=\'M5.8 3.6h.4L6 6.5z\'/%3e%3ccircle cx=\'6\' cy=\'8.2\' r=\'.6\' fill=\'%23ea5455\' stroke=\'none\'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.3625em + 0.219rem) center;
+    background-size: calc(0.725em + 0.438rem) calc(0.725em + 0.438rem);
+}
+*/
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: #ffdfd7;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 4000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+
+
+#components-reconnect-modal {
+    background-color: rgb(107, 141, 171) !important;
+    display: flex !important;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#components-reconnect-modal > h5 {
+    color: white !important;
+}
+
+/*a {
+    cursor:pointer;
+}*/
+
+/*.pagination a {
+    user-select: none !important;
+}*/
+
+.spinner-border {
+    border-width: .15em;
+}
+
+.ant-avatar.img-fluid {
+    .xcenter();
+    /*font-size: 1em;*/
+
+    span.anticon {
+        width: 60%;
+        height: 60%;
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+//Doctor site components
+.box-list-icon {
+    font-size: 0.75rem;
+    line-height: 1.5rem;
+    float: left;
+    margin-right: 7px;
+    color: @color-accent;
+}
+
+.driver-info {
+    .item {
+        label {
+        }
+
+        .value {
+            font-weight: bold;
+            color: @color-accent;
+        }
+    }
+}
+
+//Dashboard items
+/*.bg-success {
+    background-color: #00c689 !important;
+}
+
+.bg-info {
+    background-color: #3da5f4 !important;
+}*/
+
+//Dashboard items
+.stretch-card {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: stretch;
+    align-items: stretch;
+    -webkit-justify-content: stretch;
+    justify-content: stretch;
+}
+
+.no-transition {
+    transition: none !important;
+}
+
+
+.form-compact {
+    .ant-form-item {
+        margin-bottom: 8px;
+    }
+
+    .ant-form-item-label {
+        padding: 0;
+    }
+}
+
+.text-line {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ant-upload-drag-container {
+    display: block !important;
+    width: 100%;
+}
+
+
+/////////////////////////////////////////////////////////
+///file uploader
+
+.d-document-uploader {
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    .d-file-list {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+
+        .d-file-item {
+            display: flex;
+            width: 104px;
+            height: 104px;
+            padding: 0px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            position: relative;
+
+            .d-file-preview-icon {
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .d-file-item-actions-top, .d-file-item-actions-bottom {
+                display: flex;
+                z-index: 1;
+                left: 0;
+                right: 0;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            &:hover .d-file-item-actions-top, &:hover .d-file-item-actions-bottom {
+                opacity: 1;
+            }
+
+            .d-file-item-actions-top {
+                position: absolute;
+                top: 0;
+                justify-content: space-between;
+            }
+
+            .d-file-item-actions-bottom {
+                position: absolute;
+                bottom: 0;
+            }
+
+            .ant-image-mask-info {
+                font-size:10px;
+            }
+        }
+    }
+
+    .d-input-file-area {
+        display: inline-block;
+        min-width: 400px;
+
+        .ant-upload {
+            display: block;
+            height: 100%;
+            width: 100%;
+        }
+
+        .ant-upload-list-text-container {
+            /*.ant-upload-list-item-info {
+                display:none!important;
+            }*/
+
+            .ant-upload-list-item.ant-upload-list-item-done.ant-upload-list-item-list-type-text {
+                display: none;
+            }
+        }
+    }
+}
+/* .flex-fill {
+    flex-grow: 1;
+    flex-shrink: 1;
+} */
+
+.ant-image-mask-info > span {
+    /*content: "просмотр" !important;*/
+    display: none !important;
+}
+
+@image-height:800px;
+
+.d-document-uploader.d-teeth-uploader {
+    /*flex-grow: 1;*/
+    /*flex-shrink: 1;*/
+    width: 100%;
+
+    .d-file-list {
+        margin-bottom: 0px;
+
+        .d-file-item {
+            width: 100%;
+            height: @image-height;
+
+            .ant-image {
+                width: 100% !important;
+                height: 100% !important;
+                .xcenter();
+                display: flex !important;
+
+                img {
+                    /*height: 100% !important;*/
+                    width: unset !important;
+                    height: unset !important;
+                }
+            }
+
+            .d-file-item-actions-bottom {
+                opacity: 1;
+
+                .d-comment {
+                    /*text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/
+                    text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
+                    font-size: 22px;
+                    color: black;
+                    -webkit-font-smoothing: antialiased;
+                }
+            }
+        }
+    }
+
+    .d-input-file-area {
+        width: 100%;
+        /*height: 100%;*/
+        height: @image-height;
+        display:flex;
+
+        .ant-upload {
+            height: 100%;
+            display:block;
+            input[type='file'] {
+                bottom:0;
+                right:0;
+                width: unset !important;
+                height: unset !important;
+            }
+
+            .ant-upload-drag-container {
+                display: flex !important;
+                .xcenter();
+                height: 100%;
+            }
+
+            &:hover {
+                .ant-upload-text {
+                    color: @color-accent;
+                }
+            }
+        }
+    }
+}
+
+
+.spl-my-control-rotate-right {
+    background-image: url('../img/rotate-right-solid.svg');
+    background-size: 22px;
+}
+
+.spl-my-control-rotate-left {
+    background-image: url('../img/rotate-left-solid.svg');
+    background-size: 22px;
+}

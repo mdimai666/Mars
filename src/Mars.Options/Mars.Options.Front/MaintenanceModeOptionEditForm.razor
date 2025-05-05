@@ -1,0 +1,87 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@using MarsCodeEditor2
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+@attribute [OptionEditFormForOptionAttribute(typeof(MaintenanceModeOption))]
+@attribute [Display(Name = "MaintenanceMode")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="MaintenanceModeOption" BeforeSave="BeforeSave">
+    <h3>Настройки MaintenanceMode</h3>
+
+    @* <FluentCard Style="padding: 1.5rem; width: 400px; height: 250px; ">
+    <h2>Hello World!</h2>
+    <FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
+    </FluentCard> *@
+
+    <FormItem2 For="()=>context.Enable" class="col">
+        <FluentSwitch @bind-Value="@context.Enable" />
+    </FormItem2>
+
+    <FluentDivider Class="my-4" />
+
+    <FormItem2 For="()=>context.MaintenancePageSource" class="col mt-3">
+        <FluentSelect TOption="EMaintenancePageSource"
+                      Items="Enum.GetValues<EMaintenancePageSource>()"
+                      Width="200px"
+                      @bind-SelectedOption="@context.MaintenancePageSource" />
+    </FormItem2>
+
+    @if (context.MaintenancePageSource == EMaintenancePageSource.StaticHtml)
+    {
+        <FluentCard Class="my-4">
+            <FormItem2 For="()=>context.MaintenanceStaticPageTitle">
+                <FluentTextField @bind-Value=@context.MaintenanceStaticPageTitle Class="w-100" />
+            </FormItem2>
+            <FormItem2 For="()=>context.MaintenanceStaticPageContent">
+                <MarsCodeEditor2.CodeEditor2 Lang="@CodeEditor2.Language.handlebars"
+                                              @ref=@codeEditor
+                                              OnSave="OnSave"
+                                              Value="@context.MaintenanceStaticPageContent" />
+            </FormItem2>
+        </FluentCard>
+    }
+    else if (context.MaintenancePageSource == EMaintenancePageSource.PostPage)
+    {
+        <FluentTextField @bind-Value=@context.RenderPageUrl Label="Render Url" Class="mt-4" Placeholder="/pageUrl">
+            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Slot="start" Color="Color.Accent" />
+        </FluentTextField>
+    }
+    else
+    {
+        <FluentMessageBar Title="Не реализовано" Intent="@MessageIntent.Warning">
+            <b>@context.MaintenancePageSource</b> не реализована
+        </FluentMessageBar>
+    }
+
+    @* <FluentButton Appearance="Appearance.Accent">Primary</FluentButton> *@
+
+</EditOptionForm>
+
+
+@code {
+    EditOptionForm<MaintenanceModeOption> form = default!;
+    CodeEditor2 codeEditor = default!;
+
+    async Task BeforeSave(MaintenanceModeOption option)
+    {
+        if (option.MaintenancePageSource == EMaintenancePageSource.StaticHtml)
+        {
+            option.MaintenanceStaticPageContent = await codeEditor.GetValue();
+        }
+    }
+
+    async Task OnSave()
+    {
+        await BeforeSave(form.Model);
+        _ = form.Save();
+    }
+
+}
+
+<style>
+    .EditOptionForm .CodeEditor2 {
+        height: 33vh !important;
+    }
+</style>

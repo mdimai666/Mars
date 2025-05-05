@@ -1,0 +1,43 @@
+@page "/builder/debug"
+@page "/builder/debug/{FILENAME}"
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IMarsWebApiClient client
+@inject NavigationManager navigationManager
+
+<ContentWrapper Title="Debug">
+
+    @if(logfiles is not null)
+    {
+        <FluentToolbar Class="flex-fill mb-1 w-100">
+
+            <FluentSelect TOption=string
+                          @bind-Value=FILENAME
+                          SelectedOptionChanged="OnChangeLogFile"
+                          Items="logfiles"
+                          Style="height:32px"/>
+            <FluentButton OnClick=Load>
+                <i class="bi bi-arrow-clockwise"></i>
+            </FluentButton>                          
+        </FluentToolbar>
+
+    }
+
+    @if (Busy)
+    {
+        <SharedLoader1 />
+    }
+    else if (error is not null)
+    {
+        <div>
+            <div class="alert alert-danger">
+                @error
+            </div>
+        </div>
+    }
+    else
+    {
+        <MarsCodeEditor Lang="log" Value="@text" @ref=editor1 OnIFrameLoad="IFrameLoaded" />
+    }
+</ContentWrapper>

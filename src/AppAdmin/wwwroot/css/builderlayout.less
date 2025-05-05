@@ -1,0 +1,92 @@
+.builder-layout {
+    height: 100vh;
+    overflow: hidden;
+
+    .main-area {
+        height: ~"calc(100vh - 22px)";
+        overflow: hidden;
+        display: flex;
+
+        aside.left-menu {
+            width: 48px;
+            display: flex;
+            background: #f2f2f2;
+            border-right: 1px solid #e5e1e1;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            width: calc(100vw - 38px);
+
+            .tabs-area {
+                height: 35px;
+                display: flex;
+                border: 1px solid blue;
+            }
+
+            main {
+                display: flex;
+                flex-direction: row;
+                height: calc(100vh - 22px);
+                overflow: auto;
+
+                .main-fill {
+                    width: calc(100vw - 48px);
+                    height: calc(100vh - 22px);
+                    overflow: hidden;
+                    position: relative;
+                }
+            }
+        }
+    }
+
+    .status-bar {
+        background: #8fafe8;
+        height: 22px;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .sbtn {
+        width: 48px;
+        height: 48px;
+        padding: 3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /*cursor: pointer;*/
+        user-select: none;
+        color: black;
+        font-size: 24px;
+
+        &:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        &.active {
+            color: var(--accent-fill-rest);
+            background: rgba(0,0,0,0.05);
+            border-left: var(--accent-fill-rest) solid 3px;
+        }
+
+        &:active {
+            box-shadow: inset 0 0 2px 3px rgba(0,0,0,0.05);
+        }
+
+        &[href=""], &:not([href]) {
+            opacity: 0.4;
+        }
+    }
+
+    .sbtn-rotate--90 {
+        transform: rotate(-90deg);
+    }
+}
+
+.pressed-in {
+    fluent-button:not([disabled]):active::part(control) {
+        box-shadow: inset 0 0 6px 0px #979696 !important;
+        /*transform: translate(0.5px,0.5px);*/
+    }
+}

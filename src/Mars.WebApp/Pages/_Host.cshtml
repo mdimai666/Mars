@@ -1,0 +1,137 @@
+@page "/"
+@namespace Mars.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+@using AppFront;
+@using AppFront.Shared
+@using Mars.Controllers
+@using Mars.Core.Features
+@using Mars.Core.Models;
+@using Mars.Data
+@using Mars.Host.Data
+@using Mars.Host.Data.Entities
+@using Mars.Host.Models
+@using Mars.Host.Services
+@using Mars.Host.Shared.Dto.Users
+@using Mars.Host.Shared.Interfaces
+@using Mars.Host.Shared.Models
+@using Mars.Host.Shared.Services
+@using Mars.Host.Shared.WebSite.Models
+@using Mars.Services
+@using Mars.UseStartup
+@using Mars.WebSiteProcessor.Endpoints;
+@using Mars.WebSiteProcessor.Handlebars
+@using Mars.WebSiteProcessor.Interfaces
+@using Mars.WebSiteProcessor.Services
+@using Mars.WebSiteProcessor.WebSite
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.DependencyInjection;
+@using Newtonsoft.Json.Linq
+
+@inject IRequestContext requestContext
+@inject IUserService userService;
+@inject IOptionService optionService;
+@inject IServiceProvider serviceProvider;
+@inject IConfiguration configuration
+
+
+@{
+    //AppFront.Program.IsPrerender = true;
+    Q.IsPrerender = true;
+    var appFront = HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
+    AppFrontMode StartupFront_Mode = appFront.Configuration.Mode;
+
+    string json = "";
+
+    if (StartupFront_Mode == AppFrontMode.BlazorPrerender || StartupFront_Mode == AppFrontMode.ServeStaticBlazor)
+    {
+        var vm = await ViewModelController.InitialSiteDataViewModel(serviceProvider, Request);
+        Q.UpdateInitialSiteData(vm);
+        json = System.Text.Json.JsonSerializer.Serialize(vm);        
+    }
+
+    // PrepareHostHtml html = await PrepareHostHtml.GetHostTemplate(HttpContext, serviceProvider, typeof(Mars.Host.MainMarsHost).Assembly, requestContext, default);
+    // var re = appFront.Features.Get<IWebRenderEngine>();
+    UserDetail? userDetail = null;
+    var cnToken = new CancellationTokenSource();
+
+    if(requestContext.IsAuthenticated){
+        userDetail = await userService.GetDetail(requestContext.User.Id, cnToken.Token);
+    }
+
+    var html = new PrepareHostHtml(appFront,optionService, new WebClientRequest(HttpContext.Request), userDetail, new RenderParam(), serviceProvider, default);
+}
+
+@Html.Raw(html.BeforeBodyHtml)
+@*<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />*@
+
+@if (StartupFront_Mode == AppFrontMode.None)
+{
+    <p>none</p>
+}
+else if (StartupFront_Mode == AppFrontMode.HandlebarsTemplate)
+{
+    throw new NotImplementedException("Deplrecated method. See MapWebSiteProcessor");
+}
+else
+{
+    /*@if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor or AppFrontMode.BlazorPrerender && html.isEmpty)
+    {
+
+    }
+    else*/ if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor or AppFrontMode.BlazorPrerender)
+    {
+        <script>
+            function InitialSiteDataViewModel() {
+                @*let vm = @Html.Raw(System.Web.HttpUtility.HtmlDecode(json));*@
+                let vm = "@Html.Raw(TextZip.ZipToBase64(json))";
+                return vm;
+            }
+        </script>
+
+
+        <app id="app">
+            @if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor)
+            {
+
+            }
+            else if (AppFrontInstance.AppType is not null)
+            {
+                @*<component type="typeof(App)" render-mode="Static" />*@
+                <component type="AppFrontInstance.AppType" render-mode="Static" />
+            }
+            else
+            {
+                <div class="alert alert-dange">AppFrontInstance.AppType is null</div>
+            }
+        </app>
+
+        <div id="blazor-error-ui">
+            <environment include="Staging,Production">
+                Произошла ошибка. Это приложение может больше не отвечать до перезагрузки.
+            </environment>
+            <environment include="Development">
+                Произошло необработанное исключение. Дополнительные сведения см. в инструментах разработки браузера.
+            </environment>
+            <a href="" class="reload">Перезагрузить</a>
+            <a class="dismiss">🗙</a>
+        </div>
+
+
+    }
+    else
+    {
+        <main>
+            <div class="container">
+                <h1>app not set</h1>
+            </div>
+        </main>
+    }
+}
+
+@Html.Raw(html.AfterBodyHtml)

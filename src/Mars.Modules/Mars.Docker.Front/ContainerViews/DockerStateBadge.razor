@@ -1,0 +1,56 @@
+@using System.Drawing
+
+<div class="docker-state-badge" data-container-state="@State" title="@GetStateText()">
+    <i class="@GetIconClass()"></i>
+</div>
+
+@code {
+    [Parameter] public string State { get; set; } = "";
+     
+    [Parameter] public string? CustomText { get; set; }
+
+    private string GetIconClass()
+    {
+        return State switch
+        {
+            "created" => "bi bi-plus-circle",
+            "restarting" => "bi bi-arrow-repeat",
+            "running" => "bi bi-play-circle",
+            "paused" => "bi bi-pause-circle",
+            "exited" => "bi bi-stop-circle",
+            "dead" => "bi bi-x-circle",
+            _ => "bi bi-question-circle"
+        };
+    }
+
+    private string GetStateText()
+    {
+        if (!string.IsNullOrWhiteSpace(CustomText))
+            return CustomText;
+
+        return State switch
+        {
+            "created" => "Created",
+            "restarting" => "Restarting",
+            "running" => "Running",
+            "paused" => "Paused",
+            "exited" => "Exited",
+            "dead" => "Dead",
+            _ => "Unknown"
+        };
+    }
+
+    private Color GetStateColor()
+    {
+        return State switch
+        {
+            "created" => Color.FromArgb(108, 117, 125),
+            "restarting" => Color.FromArgb(253, 126, 20),
+            "running" => Color.FromArgb(25, 135, 84),
+            "paused" => Color.FromArgb(13, 202, 240),
+            "exited" => Color.FromArgb(108, 117, 125),
+            "dead" => Color.FromArgb(220, 53, 69),
+            _ => Color.FromArgb(108, 117, 125)
+        };
+    }
+}

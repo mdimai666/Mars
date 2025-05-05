@@ -1,0 +1,13 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@typeparam TValue
+
+<d-formitem2 class=@($"form-item {Class}") @attributes=AdditionalAttributes>
+    <div class="form-item__content">
+        <AutoInputLabel For="For" Label="@Label" >
+            @ChildContent
+        </AutoInputLabel>
+    </div>
+    <div class="form-item__ValidationMessage ms-1">
+        <FluentValidationMessage For="For" />
+    </div>
+</d-formitem2>

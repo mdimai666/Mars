@@ -1,0 +1,31 @@
+@page "/Settings/FrontRoutingOption"
+@using Mars.Shared.Contracts.Posts
+@using Mars.Shared.Options
+@using MarsEditors
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Настройки FrontRoutingOption")]
+@inject IMarsWebApiClient client
+
+<ContentWrapper Title="Настройки FrontRoutingOption">
+
+    <EditOptionForm @ref=form TModel="FrontRoutingOption">
+
+        <FormItem2 For="()=>context.IndexPageId">
+            <SelectRelataionModel2 @bind-Value=context.IndexPageId
+                                   ModelName="Post.page" Class="d-block" Style="max-width:300px;" />
+
+        </FormItem2>
+
+        <FormItem2 For="()=>context.FallbackPageId">
+            <SelectRelataionModel2 @bind-Value=context.FallbackPageId
+                                   ModelName="Post.page" Class="d-block" Style="max-width:300px;" />
+        </FormItem2>
+
+    </EditOptionForm>
+
+</ContentWrapper>
+
+@code {
+    EditOptionForm<FrontRoutingOption>? form;
+}

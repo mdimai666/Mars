@@ -1,0 +1,161 @@
+@page "/Settings/html"
+@using Mars.Shared.Options
+@using MarsCodeEditor2
+@using MarsEditors
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Настройки Host html")]
+
+<SettingsPageWrapper>
+
+    <h3>Настройки Host html</h3>
+
+    <EditOptionForm @ref=form TModel="FrontOptions" BeforeSave="BeforeSave" OnLoadData="OnLoadData">
+
+        <div class="hstack gap-2">
+
+            <div class="btn-group" role="group">
+                @foreach (var _item in context.HostItems)
+                {
+                    var item = _item;
+                    string _class = item == selItem ? "active" : "";
+                    <button type="button" class="btn btn-outline-secondary rounded-0 @_class" @onclick=@(e=>SelItem(item))>
+                        @(string.IsNullOrEmpty(item.Url) ? "Index" : item.Url)
+                    </button>
+                }
+            </div>
+
+            <button class="btn btn-light" type="button" @onclick=AddClick>
+                <i class="bi bi-plus-square px-3"></i>
+            </button>
+        </div>
+
+        <div class="card mb-2 mt-4">
+            <div class="card-body">
+                <ul>
+                    <li>use <mark>@@Body</mark>  </li>
+                    <li>use <mark>{{bodyClass}}</mark>  </li>
+                    <li>use <mark>{{bodyAttrs}}</mark>  </li>
+                    <li>use <mark>{{{BlazorScripts}}}</mark>  </li>
+                    <li>SysOptions</li>
+                </ul>
+            </div>
+        </div>
+
+        @* <MarsCodeEditor @ref=editor1
+        Lang="@MarsCodeEditor.Language.handlebars"
+        OnSave="OnEditorSave"
+        Value="@context.IndexHtml" /> *@
+
+        @if (selItem is not null)
+        {
+            <div>
+
+                <label>url</label>
+                <InputText @bind-Value=@selItem.Url class="form-control" autocomplete="off" placeholder="/" />
+                <div class="spacer-1"></div>
+
+                <div class="my-2 hstack justify-content-end">
+                    <DFluentDeleteButton Disabled=!CanDelete() OnConfirm="OnDelete">Удалить</DFluentDeleteButton>
+                </div>
+
+                <CodeEditor2 @ref=editor1
+                Lang="@MarsCodeEditor.Language.handlebars"
+                OnSave="OnEditorSave"
+                Value="@selItem.HostHtml" />
+
+            </div>
+        }
+        else
+        {
+            <SharedContentNoRecords />
+        }
+
+    </EditOptionForm>
+</SettingsPageWrapper>
+
+@code {
+    // MarsCodeEditor? editor1;
+
+    CodeEditor2? editor1 = default!;
+
+    EditOptionForm<FrontOptions> form = default!;
+
+    FrontOptionHostItem? selItem;
+
+
+    void OnLoadData(FrontOptions model)
+    {
+        selItem = model.HostItems.FirstOrDefault();
+        // await editor1.SetValue(selItem.HostHtml);
+        StateHasChanged();
+        StartSetter();
+
+    }
+
+    async void StartSetter()
+    {
+        await Task.Delay(10);
+        await editor1?.SetValue(selItem.HostHtml);
+    }
+
+    async Task BeforeSave(FrontOptions opt)
+    {
+        if (selItem is not null)
+        {
+            selItem.HostHtml = await editor1?.GetValue();
+        }
+    }
+
+    void OnEditorSave(string val)
+    {
+        _ = form.Save();
+    }
+
+    async Task SelItem(FrontOptionHostItem item)
+    {
+        if (item != selItem)
+        {
+            selItem.HostHtml = await editor1?.GetValue();
+            selItem = item;
+            await editor1.SetValue(selItem.HostHtml);
+        }
+    }
+
+    void AddClick()
+    {
+        int num = 0;
+        string nextUrl = $"/url{num}";
+    try1:
+        num++;
+        nextUrl = $"/url{num}";
+        if (form.Model.HostItems.Any(s => s.Url == nextUrl))
+        {
+            goto try1;
+        }
+
+        FrontOptionHostItem newItem = new() { Url = nextUrl, HostHtml = "" };
+
+        form.Model.HostItems.Add(newItem);
+
+        Tools.SetTimeout(async () =>
+        {
+            await SelItem(newItem);
+            StateHasChanged();
+        }, 100);
+    }
+
+    async void OnDelete()
+    {
+        var toDeleteItem = selItem;
+        var last = form.Model.HostItems.Except(toDeleteItem).Last()!;
+        await SelItem(last);
+        form.Model.HostItems.Remove(toDeleteItem!);
+        StateHasChanged();
+    }
+
+    bool CanDelete()
+    {
+        return form.Model.HostItems.Count > 1;
+    }
+}

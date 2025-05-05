@@ -1,0 +1,72 @@
+@using AppFront.Shared.Services
+@using Mars.Core.Utils
+@using Microsoft.FluentUI.AspNetCore.Components
+@using MarsCodeEditor2
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+
+@attribute [OptionEditFormForOptionAttribute(typeof(OpenIDServerOption))]
+@attribute [Display(Name = "OpenID Server")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="OpenIDServerOption">
+
+    <h3>Настройки OpenID Server</h3>
+
+    <div class="vstack gap-3">
+        @foreach (var _sso in context.OpenIDClientConfigs)
+        {
+            var sso = _sso;
+            <FluentCard>
+
+                <FormItem2 For="()=>sso.Enable" Class="col mb-3">
+                    <FluentSwitch @bind-Value="@sso.Enable" />
+                </FormItem2>
+
+                <FluentDivider Class="my-4" />
+
+                <FormItem2 For="()=>sso.ClientId" Class="col mb-3">
+                    <FluentTextField @bind-Value="@sso.ClientId" Class="w-100" />
+                </FormItem2>
+
+                <FormItem2 For="()=>sso.ClientSecret" Class="col mb-3">
+                    <FluentTextField @bind-Value="@sso.ClientSecret" Class="w-100">
+                        <FluentButton Appearance="@Appearance.Stealth"
+                                      OnClick=@(e=>{ sso.ClientSecret = Password.Generate(16,6); })
+                                      slot="end">generate</FluentButton>
+                    </FluentTextField>
+                </FormItem2>
+
+                <FormItem2 For="()=>sso.CallbackUrl" Class="col mb-3">
+                    <FluentTextField @bind-Value="@sso.CallbackUrl" Class="w-100" />
+                </FormItem2>
+
+                <FluentButton Appearance="Appearance.Stealth" OnClick=@(e=>DeleteSSOClick(sso))>Delete</FluentButton>
+
+            </FluentCard>
+        }
+    </div>
+
+    <div class="py-3 d-flex justify-content-end">
+        <FluentButton OnClick="AddSSOClick">Add</FluentButton>
+
+    </div>
+
+</EditOptionForm>
+
+
+@code {
+    EditOptionForm<OpenIDServerOption> form = default!;
+    [Inject] IAppMediaService mediaService { get; set; } = default!;
+
+
+    void AddSSOClick()
+    {
+        form.Model.OpenIDClientConfigs.Add(new());
+    }
+
+    void DeleteSSOClick(OpenIDServerClientConfig sso)
+    {
+        form.Model.OpenIDClientConfigs.Remove(sso);
+    }
+
+}

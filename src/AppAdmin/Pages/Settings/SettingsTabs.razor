@@ -1,0 +1,42 @@
+<div class="SettingsTabs">
+    <ul class="nav nav-pills shadow-none bg-transparent px-0">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/dev/Settings/" Match="NavLinkMatch.All">
+                Общие
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/dev/Settings/ActionHistory">
+                Активность
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/dev/Settings/html">
+                HTML
+            </NavLink>
+        </li>
+        @* <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/dev/Users">
+                Пользователи
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/dev/Manage/AnketaManage">
+                Анкеты
+            </NavLink>
+        </li> *@
+    </ul>
+</div>
+
+<style>
+    .SettingsTabs .nav-link {
+        border-radius: 6px;
+        color: #5A5A5A;
+    }
+
+        .SettingsTabs .nav-link.active {
+            background: var(--bs-primary);
+            color: white;
+            font-weight: 700;
+        }
+</style>

@@ -1,0 +1,10 @@
+<div class="card text-center opacity-50 @Class" style="@Style">
+    <div class="card-body">
+        <h4 class="card-title my-2 fw-normal">@AppRes.NoRecords</h4>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Class { get; set; } = default!;
+    [Parameter] public string Style { get; set; } = default!;
+}

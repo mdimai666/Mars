@@ -1,0 +1,21 @@
+@if (string.IsNullOrEmpty(Value) || !Q.HostingInfo.UrlIsImage(Value))
+{
+    @*<Avatar Class="UserAvatar empty" Size="200" Icon="user"></Avatar>*@
+    <div class=@(Class == null?"d-inline-block bg-contain UserAvatar empty":$"empty {Class}")
+         style="background-image:url('@Q.ServerUrlJoin("/img/user_avatar_mini.png")');@_style"></div>
+}
+else
+{
+    <div class=@(Class == null?"d-inline-block bg-contain UserAvatar":$"{Class}")
+         style="background-image:url('@Q.ServerUrlJoin(Value)');@_style"></div>
+
+}
+
+@code {
+    [Parameter] public string Value { get; set; } = default!;
+    [Parameter] public string Size { get; set; } = "1em";
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string Style { get; set; } = "";
+
+    string _style => $"width:{Size};height:{Size};{Style};";
+}

@@ -1,0 +1,70 @@
+@using Mars.Shared.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IActAppService actService
+@inject ViewModelService vms
+
+<div class="XActionsDropDown d-flex" data-context-id="@App.PageType">
+
+    @if (_actions is not null && _actions.Any() || ChildContent is not null)
+    {
+        <FluentButton id="@buttonId" Appearance="Appearance.Stealth" @onclick="@(() => open = !open)">
+            Действия
+            <span slot="end">
+                <i class="bi bi-chevron-down"></i>
+            </span>
+        </FluentButton>
+
+        <FluentMenu Anchor="@buttonId"
+                    @bind-Open="open"
+                    @onmenuchange="HandleOnMenuChanged">
+            @if (_actions is not null && _actions.Any())
+            {
+                @foreach (var item in _actions)
+                {
+                    <FluentMenuItem Id="@item.Key">
+                        @item.Value
+                    </FluentMenuItem>
+                }
+                @if (_actions.Any() && ChildContent != null)
+                {
+                    <FluentDivider />
+                }
+            }
+            @ChildContent
+        </FluentMenu>
+    }
+</div>
+
+
+@code {
+    [Parameter] public string? ContextId { get; set; }
+    [Parameter] public string? ContextPart { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public bool AlsoShowRootContext { get; set; }
+
+    bool open = false;
+    string buttonId = "menubtn-" + Guid.NewGuid().ToString();
+
+    public string? _rootContextId => ContextId ?? App.PageType.FullName;
+    public string? _contextId => _rootContextId + (string.IsNullOrEmpty(ContextPart) ? "" : $"-{ContextPart}");
+
+    Dictionary<string, string>? _actions;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        //Console.WriteLine(">>DW: " + _contextId);
+        _actions = (await vms.DevAdminExtraViewModel()).XActions.Values
+                       .Where(s => (s.FrontContextId?.Contains(_contextId) ?? false)
+                                    || (AlsoShowRootContext && (s.FrontContextId?.Contains(_rootContextId) ?? false)))
+                       .OrderBy(s => s.ContextMenuOrder)
+                       .ToDictionary(x => x.Id, x => x.Label);
+    }
+
+    private void HandleOnMenuChanged(MenuChangeEventArgs args)
+    {
+        var id = args.Id!;
+        actService.Inject(id);
+    }
+}

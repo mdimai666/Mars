@@ -1,0 +1,233 @@
+@using AppAdmin.Pages.PostTypeViews
+@using AppFront.Shared.Tools
+@using Mars.Shared.Contracts.PostTypes
+@using MarsCodeEditor2
+@using MarsEditors
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
+
+
+@implements IDisposable
+
+<StandartEditContainer ID=@ID
+                       TModel=PostEditModel
+                       GetAction="@(()=>PostEditModel.GetAction(client,ID,PostTypeName))"
+                       SaveAction="@((s,create)=>PostEditModel.SaveAction(client,s,create))"
+                       DeleteAction="@(s=>PostEditModel.DeleteAction(client,s))"
+                       BeforeSave="BeforeSave"
+                       BlankModelFromGetAction
+                       HideDatesSection
+                       Class=@($"post-{PostTypeName}")
+                       @ref=f CanCreate=false>
+    <SectionActions>
+        <XActionsDropDown ContextPart="@PostTypeName" AlsoShowRootContext>
+            <FluentMenuItem Label="Тип записи" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
+            @if (PostTypeName == "page")
+            {
+                <FluentMenuItem Label="Просмотр" OnClick=@((e) => navigationManager.NavigateTo($"/{(context.Slug=="index"?"":f.Model.Slug)}")) />
+            }
+        </XActionsDropDown>
+    </SectionActions>
+    <ChildContent>
+
+        <div class="vstack gap-3">
+
+            <div class="vstack">
+                <FluentTextField @bind-Value=@context.Title
+                                 @bind-Value:after="OnChangeTitle"
+                                 Label="@AppRes.Title"
+                                 Appearance="@FluentInputAppearance.Filled"
+                                 Required
+                                 Style="zoom:1.4" />
+                <FluentValidationMessage For="@(() => context.Title)" />
+            </div>
+            <div class="">
+                <FluentTextField @bind-Value=@context.Slug Label="@AppRes.Slug" />
+                <FluentValidationMessage For="@(() => context.Slug)" />
+            </div>
+
+        </div>
+
+        <div class="spacer-1"></div>
+
+        @if (context.FeatureActivated(Features.Content))
+        {
+            <div class="my-2">
+                <div class="">
+                    @if (PostContentType == DefaultPostContentTypes.WYSIWYG)
+                    {
+                        <WysiwygEditor Content="@context.Content" @ref=editor1 />
+                    }
+                    else if (PostContentType == DefaultPostContentTypes.Code)
+                    {
+
+                        <div>
+                            <div class="text-end mb-1">
+                                <FluentSelect Value="@lang1"
+                                              TOption="string"
+                                              Style="width: 180px;"
+                                              Items="MarsCodeEditor.Language.Array"
+                                              ValueChanged="v=>{ lang1=v; codeEditor1?.SetModelLanguage(v); }">
+                                </FluentSelect>
+                            </div>
+
+                            <MarsCodeEditor2.CodeEditor2 @ref=codeEditor1
+                                                          Lang=@MarsCodeEditor.Language.handlebars
+                                                          OnSave="OnSaveFromCodeEditor"
+                                                          Value="@f.Model.Content" />
+                        </div>
+                    }
+                    else if (PostContentType == DefaultPostContentTypes.PlainText)
+                    {
+                        <FormItem2 For="@(()=>context.Content)">
+                            <FluentTextArea Rows="8" @bind-Value=@context.Content Class="w-100" />
+                        </FormItem2>
+                    }
+                    else
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <FluentLabel Color="@Color.Warning">
+                                    content type <strong>'@PostContentType'</strong> not implement
+                                </FluentLabel>
+                            </div>
+                        </div>
+
+                    }
+
+                </div>
+            </div>
+        }
+
+        @if (context.FeatureActivated(Features.Excerpt))
+        {
+            <div class="my-2">
+                <FormItem2 For="@(()=>context.Excerpt)">
+                    <FluentTextArea Rows="4" @bind-Value=@context.Excerpt Class="w-50" />
+                </FormItem2>
+            </div>
+        }
+
+        @*
+        @if (postType.EnabledFeatures.Contains(nameof(Post.FileList)))
+        {
+            <div>
+                <div class="">
+                    Файлы
+                </div>
+                <div class="">
+                    <ZayavkaFileUploadViewTmp ID="@context.Id"
+                                              @bind-Files="@context.FileList"
+                                              ActionUrl='@Q.ServerUrlJoin("api/Post/Upload?file_group=files")'
+                                              ViewFiltergroup=""
+                                              MinCount="0" MaxCount="10" ReadOnly=false />
+
+                </div>
+            </div>
+        }
+        *@
+
+        <div class="spacer-1"></div>
+
+        @* <h5>MetaValues = @context.MetaValues.Count</h5> *@
+
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@context.PostType.MetaFields">
+                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue />
+            </CascadingValue>
+        </CascadingValue>
+
+    </ChildContent>
+    <SectionSidePublish>
+        @if (context.FeatureActivated(Features.ModifyCreatedDate))
+        {
+            <FormItem2 For="@(()=>context.CreatedAt)">
+                <FluentDatePicker Value=@context.CreatedAt.Date ValueChanged=@(v=>context.CreatedAt = v??DateTimeOffset.Now) />
+            </FormItem2>
+            @if (context.ModifiedAt != null)
+            {
+                <h6 class="card-subtitle mt-2 mb-2 text-muted">Изменено: @context.ModifiedAt?.ToString("g")</h6>
+            }
+        }
+        else
+        {
+            @if (!f.IsAddNew)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Создана: @context.CreatedAt.ToString("g")</h6>
+            }
+            else
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Создание</h6>
+            }
+
+            @if (context.ModifiedAt != null)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Изменено: @context.ModifiedAt?.ToString("g")</h6>
+            }
+        }
+
+        @if (context.FeatureActivated(Features.Status))
+        {
+            <div class="mt-3">
+
+                <FormItem2 For="@(()=>context.Status)">
+                    <FluentSelect @bind-Value="@context.Status"
+                                  TOption="PostStatusEditModel"
+                                  OptionValue=@(s=>s.Slug)
+                                  OptionText=@(s=>s.Title ?? s.Slug)
+                                  Items=@context.PostType.PostStatusList
+                                  Style="width: 250px;" />
+                </FormItem2>
+            </div>
+        }
+
+        @if (context.FeatureActivated(Features.Language))
+        {
+            <div class="mt-3">
+                <FormItem2 For="@(()=>context.LangCode)">
+                    <FluentTextField @bind-Value=@context.LangCode />
+                </FormItem2>
+            </div>
+        }
+        <div class="mt-3">
+            <FormItem2 For="@(()=>context.PostType.EnabledFeatures)">
+                @context.PostType.EnabledFeatures.JoinStr(",")
+            </FormItem2>
+        </div>
+    </SectionSidePublish>
+
+    <SectionExtraSidebar>
+
+        @if (context.FeatureActivated(Features.Tags))
+        {
+            <section class="editpost-taxonomy mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        @if (context.FeatureActivated(Features.Tags))
+                        {
+                            <FormItem2 For="@(()=>context.Tags)">
+                                <InputTags2 @bind-Value=context.Tags />
+                            </FormItem2>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                @if (f.Model.Type == "page")
+                {
+                    <a target="_blank" href="@Q.ClientUrlJoin(f.Model.Slug)">Open new Tab</a>
+                }
+                else
+                {
+                    <a target="_blank" href=@Q.ClientUrlJoin($"{f?.Model?.Type}/{ID}")>Open new Tab</a>
+                }
+            </div>
+        </div>
+    </SectionExtraSidebar>
+</StandartEditContainer>
+

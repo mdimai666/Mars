@@ -1,0 +1,116 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (!DisableUpload)
+{
+    <div class="mb-4">
+        <GalleryFluentFileUploader1 GalleryId=GalleryId
+                                    MaximumFileCount="1500"
+                                    OnAfterUpload="OnAfterUpload"
+                                    @ref=galleryFluentFileUploader1 />
+    </div>
+}
+
+@if (photosIsLoad)
+{
+    <div class="text-center">
+        <SharedLoader1 />
+    </div>
+
+}
+else if (photos is null || photos.TotalCount == 0)
+{
+    <SharedContentNoRecords />
+}
+else
+{
+    <div class="row row-cols-2 row-cols-sm-6 row-col-md-6 g-3">
+        @foreach (var _photo in photos.Records)
+        {
+            var photo = _photo;
+
+            <div class="col">
+                <div class="gallery-photo d-file-item" data-post-id=@photo.Id>
+
+
+                    <div class="ratio ratio-1x1" style="background:lightgray;">
+                        <div class="h-100 d-file-item">
+                            @* <div class="ratio ratio-1x1">
+                    <img src="@ImageUrl(photo)" alt="@photo.image?.FileName"
+                    style="object-fit:contain" />
+                    </div> *@
+                            <div class="d-file-item-actions-top">
+                                <div>
+                                </div>
+
+                                <div>
+                                    @if (!ReadOnly)
+                                    {
+                                        @* <Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file))></Button> *@
+
+                                        <FluentButton IconEnd="@(new Icons.Regular.Size16.Delete())"
+                                                      Title="Удалить"
+                                                      OnClick=@(e=>ItemRemoveClick(photo)) />
+                                    }
+                                </div>
+                                @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                            </div>
+
+                            @if(photo.Image is null)
+                            {
+                                <div class="d-file-preview-icon"
+                                style="background-image:url('@(Q.ServerUrlJoin(FileEntity.ExtPreviewUrl("")))')"></div>
+                            }
+                            else if (photo.Image.IsImage)
+                            {
+                                var _image = ImageThumbUrl(photo);
+                                <Image PreviewSrc=@(photo.Image.FileUrl)
+                                       Src="@_image"
+                                       Class="cursor-pointer" />
+                            }
+                            else
+                            {
+                                <div class="d-file-preview-icon" style="background-image:url('@Q.ServerUrlJoin(FileEntity.ExtPreviewUrl(photo.Image.FileExt))')"></div>
+                            }
+
+                            <div class="d-file-item-actions-bottom">
+                                @if (ItemActionBottom is null)
+                                {
+                                    @if (photo.Image is not null)
+                                    {
+                                        <a href="@photo.Image.FileUrl" target="_blank">
+                                            @* <Button Icon="download" Size="small">открыть</Button> *@
+                                            <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())">
+                                                открыть
+                                            </FluentButton>
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    @ItemActionBottom(photo)
+                                }
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="lines-2" title="@photo.Title">
+                        @photo.Title.TextEllipsis(70)
+                    </div>
+                    <small class="text-secondary" title="@photo.Image?.FileName">
+                        @photo.Image?.FileSize.ToHumanizedSize()
+                    </small>
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <div class="mt-4 text-center">
+        <Pagination Current="_currentPage" PageSize="PageSize"
+                    Total="photos.TotalCount" OnChange="PaginatorChange" HideOnSinglePage />
+    </div>
+
+    <PagesTotal Page=_currentPage PageSize=PageSize TotalPages=photos.TotalCount Class="mt-3" />
+}
+

@@ -1,0 +1,27 @@
+{
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.hg/store/**": true,
+        "**/bin": true,
+        "**/obj": true,
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/bin": true,
+        "**/obj": true,
+    },
+    "less.compile": {
+        "main": ["${workspaceRoot}/AppFront/wwwroot/css/style.less"],
+        "out": "${workspaceRoot}/AppFront/wwwroot/css/app.css",
+        "autoprefixer": "> 5%, last 2 Chrome versions, not ie 6-9",
+        // "ieCompat": true,
+        "compress": false,
+        "sourceMap": true
+    }
+}

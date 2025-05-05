@@ -1,0 +1,92 @@
+using Mars.Host.Handlers;
+using Mars.Host.Managers;
+using Mars.Host.QueryLang;
+using Mars.Host.Services;
+using Mars.Host.Services.GallerySpace;
+using Mars.Host.Shared.Dto.Files;
+using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Interfaces;
+using Mars.Host.Shared.Managers;
+using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
+using Mars.Shared.Resources;
+using FluentValidation;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+
+namespace Mars.Host;
+
+public static class MainMarsHost
+{
+    public static IServiceCollection AddMarsHost(this IServiceCollection services)
+    {
+        services.AddSingleton<IActionManager, ActionManager>();
+        services.AddSingleton<IOptionService, OptionService>();
+        services.AddSingleton<IEventManager, EventManager>();
+        services.AddSingleton<INavMenuService, NavMenuService>();
+        services.AddSingleton<IMetaModelTypesLocator, MetaModelTypesLocator>();
+        services.AddSingleton<IFileStorage, FileStorage>();
+
+        services.AddSingleton<IActionHistoryService, ActionHistoryService>();
+        //services.AddSingleton<ModelInfoService>(); //C:\Users\D\Documents\VisualStudio\2025\Mars\Mars.Shared\Tools\ModelInfoService.cs
+
+        services.AddLocalization();
+        services.AddSingleton<IStringLocalizer<AppRes>, StringLocalizer<AppRes>>();
+        services.AddSingleton(sp => sp.GetRequiredService<StringLocalizer<AppRes>>());
+
+        services.AddTransient<IMarsEmailSender, EmailSender>();
+        services.AddTransient<IEmailSender, EmailSender>();
+        services.AddTransient<ISmsSender, SmsSender>();
+        services.AddTransient<INotifyService, NotifyService>();
+
+        services.AddScoped<IPostTypeService, PostTypeService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IMediaService, MediaService>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IPostJsonService, PostJsonService>();
+        services.AddScoped<IRequestContext, RequestContext>();
+        services.AddScoped<IFeedbackService, FeedbackService>();
+
+        services.AddScoped<IGalleryService, GalleryService>();
+        services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
+        services.AddScoped<ICentralSearchService, CentralSearchService>();
+
+        //temp
+        services.AddScoped<PostTypeExporter>();
+
+        services.AddSingleton<IOptions<FileHostingInfo>>(sp => Microsoft.Extensions.Options.Options.Create(sp.GetRequiredService<IOptionService>().FileHostingInfo()));
+
+        //read (may object viewer)
+        // Microsoft.AspNetCore.Identity.IEmailSender
+
+        services.AddValidatorsFromAssemblyContaining<UpdatePostQueryValidator>();
+        services.AddScoped<IValidatorFabric, ValidatorFabric>();
+
+        UseIMetaRelationModelProviderHandler(services);
+
+        return services;
+    }
+
+    public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
+    {
+        ValidatorFabric.Initialize(serviceCollection);
+
+        return app;
+    }
+
+    static void UseIMetaRelationModelProviderHandler(IServiceCollection services)
+    {
+        services
+            .AddKeyedScoped<IMetaRelationModelProviderHandler, UserRelationModelProviderHandler>("User")
+            .AddKeyedScoped<IMetaRelationModelProviderHandler, FileRelationModelProviderHandler>("File")
+            .AddKeyedScoped<IMetaRelationModelProviderHandler, PostRelationModelProviderHandler>("Post")
+            .AddKeyedScoped<IMetaRelationModelProviderHandler, FeedbackRelationModelProviderHandler>("Feedback")
+            .AddKeyedScoped<IMetaRelationModelProviderHandler, NavMenuRelationModelProviderHandler>("NavMenu")
+            ;
+    }
+}

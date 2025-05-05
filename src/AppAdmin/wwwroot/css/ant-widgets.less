@@ -1,0 +1,127 @@
+@import (reference) "_variables.less";
+
+
+//---------------------------------------
+//SEARCH
+//---------------------------------------
+.ant-input-group-wrapper.ant-input-search {
+    box-shadow: none;
+
+    .ant-input-wrapper {
+        .ant-input-affix-wrapper.ant-input-search {
+            /*border: 1px solid @color-accent;*/
+            border: 1px solid #cdcdcd;
+            border-start-start-radius: 8px;
+            border-end-start-radius: 8px;
+
+            .ant-input {
+                height: unset;
+                border-radius: 0;
+            }
+        }
+
+        > .ant-input {
+            border: 1px solid #cdcdcd;
+        }
+
+        .ant-input-group-addon {
+            /*border: 1px solid @color-accent;*/
+            border: 1px solid #cdcdcd;
+            border-start-end-radius: 8px;
+            border-end-end-radius: 8px;
+
+            .ant-input-search-button.ant-btn {
+                box-shadow: none;
+                background: none;
+                /*border:none;*/
+                /*height: unset;*/
+                /*height: 37px;*/
+                /*background: red !important;*/
+                border: none;
+            }
+        }
+    }
+}
+
+body.dark {
+    .ant-input-group-wrapper.ant-input-search .ant-input-wrapper > .ant-input {
+        border-color: #243f5f;
+    }
+
+    .ant-input-group-wrapper.ant-input-search .ant-input-wrapper .ant-input-group-addon {
+        border-color: #243f5f;
+    }
+}
+
+
+.ant-table-cell {
+    .small();
+}
+
+/*.ant-pagination-item {
+    border-radius: 16px;
+}
+.ant-pagination-item-active {
+    border: 1px solid @color-light-accent;
+    background-color: @color-light-accent;
+    
+}
+
+.ant-pagination-disabled .ant-pagination-item-link, .ant-pagination-disabled:focus-visible .ant-pagination-item-link, .ant-pagination-disabled:hover .ant-pagination-item-link {
+    border: 1px solid @color-light-accent;
+    border-radius: 16px;
+}
+
+.ant-pagination-next .ant-pagination-item-link, .ant-pagination-prev .ant-pagination-item-link {
+    border-radius: 16px;
+}
+
+.ant-pagination-item:focus-visible, .ant-pagination-item:hover {
+    border: 1px solid @color-accent;
+}
+.ant-pagination-item:focus-visible a, .ant-pagination-item:hover a {
+    color: @color-accent;
+}
+
+.ant-table-pagination .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    font-size: 14px;
+}
+
+.ant-table-pagination .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    height: 32px;
+    border: 1px solid @color-light-accent;
+}*/
+
+
+//---------------------------------------
+// FORM REQUIRED
+//---------------------------------------
+
+.ant-form-item-required {
+    /*flex-direction: row-reverse;*/
+    justify-content: flex-end;
+}
+
+.ant-form-item-label>label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+    margin-left: 4px;
+}
+
+
+.warapper-body-no-padding {
+    .ant-drawer-body {
+        padding:0;
+    }
+}
+
+//TABLE HOVE
+.hoverable table tbody tr:hover, .hoverable li:hover {
+    background: rgba(60, 90, 100, 0.04);
+}
+
+
+//////////////////////Wrapper
+body.dark {
+    .ant-input-group-addon {
+        background: @color-bg-dark;
+    }
+}

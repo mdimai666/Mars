@@ -1,0 +1,77 @@
+@using AppFront.Shared.Interfaces
+@using Mars.WebApiClient.Interfaces
+
+@if (Busy)
+{
+    <span class="@Class" style="@Style">
+        <span class="spinner-border spinner-border-sm text-secondary "></span>
+        <span>@Count</span>
+    </span>
+}
+else
+{
+    <span class=@($"cursor-pointer {Class}") style="@Style" @onclick=OnClick>
+        <i class="@Icon" style=@($"color:{(State?"red":"")};")></i>
+        <span>@Count</span>
+    </span>
+
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public bool State { get; set; }
+    [Parameter] public int Count { get; set; }
+
+    [Parameter] public string Class { get; set; } = default!;
+    [Parameter] public string Style { get; set; } = default!;
+
+    //[Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Icon { get; set; } = "fa fa-heart";
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] IMessageService messageService { get; set; } = default!;
+
+
+    bool Busy = false;
+
+    void OnClick()
+    {
+        if (Q.User.IsAuth == false)
+        {
+            _ = messageService.Warning("Вы не авторизованы");
+            return;
+        }
+
+        if (State) Unike();
+        else Like();
+    }
+
+    void Like()
+    {
+        // Busy = true;
+        // StateHasChanged();
+        // var res = await client.Post.LikePost(Id);
+        // if (res.Ok)
+        // {
+        //     this.State = res.LikedState;
+        //     this.Count = res.TotalLikes;
+        // }
+        // Busy = false;
+        // StateHasChanged();
+        throw new NotImplementedException();
+    }
+    void Unike()
+    {
+        // Busy = true;
+        // StateHasChanged();
+        // var res = await client.Post.UnlikePost(Id);
+        // if (res.Ok)
+        // {
+        //     this.State = res.LikedState;
+        //     this.Count = res.TotalLikes;
+        // }
+        // Busy = false;
+        // StateHasChanged();
+        throw new NotImplementedException();
+    }
+}

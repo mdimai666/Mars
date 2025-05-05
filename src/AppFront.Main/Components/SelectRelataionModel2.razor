@@ -1,0 +1,139 @@
+@using AppFront.Shared.Components.MetaFieldViews
+@using Flurl.Http
+@using Mars.Shared.Contracts.MetaFields
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+<d-select-relation-model class="@Class" style="@Style" id="@Id">
+    <div class="card d-card-glow" style="height:50px;min-width:200px;" id="metavalue-relation-item-@Value" @onclick=ShowDialog>
+        <div class="card-body px-2 py-1">
+            @if (Busy)
+            {
+                <FluentProgressRing Class="mx-5" />
+            }
+            else if (Value == Guid.Empty)
+            {
+                <FluentLabel Color="Color.Neutral" Class="">-⚪ Не выбрано-</FluentLabel>
+            }
+            else if (_model is null)
+            {
+                <FluentSkeleton Width="75px" Height="30px" />
+            }
+            else
+            {
+                <div class="hstack">
+                    <div class="flex-fill">
+                        <FluentLabel>@_model.Title</FluentLabel>
+                        <span class="text-truncate text-secondary" style="max-width:300px;">@_model.Description</span>
+                    </div>
+                    <div @onclick:stopPropagation>
+                        <FluentButton Appearance="Appearance.Stealth" OnClick=@(e=>Value=Guid.Empty)>
+                            <i class="bi bi-x-circle-fill"></i>
+                        </FluentButton>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <FluentTooltip Anchor="@($"metavalue-relation-item-{Value}")" Position="@TooltipPosition.Right" Delay=1000>
+        ModelName: @ModelName <br />
+        Id: @Value
+    </FluentTooltip>
+</d-select-relation-model>
+
+@code {
+    [Inject] IDialogService _dialogService { get; set; } = default!;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+
+    bool Busy = false;
+
+    Guid _value;
+    [Parameter, EditorRequired]
+    public Guid Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value).Wait();
+            OnValueChange.InvokeAsync(_value);
+        }
+    }
+    [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
+    [Parameter] public EventCallback<Guid> OnValueChange { get; set; }
+
+    [Parameter, EditorRequired] public string ModelName { get; set; } = default!;
+
+
+    MetaValueRelationModelSummaryResponse? _model;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Load();
+        }
+    }
+
+    async void Load()
+    {
+        Busy = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await client.PostType.GetMetaValueRelationModels(ModelName, [Value]);
+            _model = result.GetValueOrDefault(Value);
+            Console.WriteLine("_model=" + _model?.Title);
+
+        }
+        catch (FlurlHttpException ex)
+        {
+            _ = _messageService.Error(ex.Message);
+        }
+        finally
+        {
+
+            Busy = false;
+            StateHasChanged();
+        }
+    }
+
+
+    async void ShowDialog()
+    {
+
+
+        DialogParameters parameters = new()
+            {
+                Title = ModelName,
+                SecondaryAction = null,
+                Width = "500px",
+                Modal = true,
+                PreventScroll = true
+            };
+
+        var data = new MetaValueRelationSelectDialogData
+            {
+                ModelName = ModelName,
+                ValueId = Value
+            };
+
+        IDialogReference dialog = await _dialogService.ShowDialogAsync<MetaValueRelationSelectDialog>(data, parameters);
+        DialogResult? result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            if (result.Data is MetaValueRelationModelSummaryResponse value)
+            {
+                Value = value.Id;
+                _model = value;
+                StateHasChanged();
+            }
+        }
+    }
+}

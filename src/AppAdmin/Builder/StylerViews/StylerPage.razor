@@ -1,0 +1,152 @@
+@page "/builder/styler"
+@using Mars.Options.Models
+@using Mars.Shared.Contracts.Options
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text.Json
+
+<ContentWrapper Title="Styler">
+    <div class="row">
+        <div class="col-9">
+            <div class="me-4">
+                <h5>Components</h5>
+                <FluentCard>
+                    <FluentDesignSystemProvider AccentBaseColor="@ss.AccentBaseColor"
+                    NeutralBaseColor="@ss.NeutralBaseColor"
+                    FillColor="@ss.FillColor"
+                    NoPaint=@ss.NoPaint
+                    BaseHeightMultiplier="@ss.BaseHeightMultiplier"
+                    BaseHorizontalSpacingMultiplier="@ss.BaseHorizontalSpacingMultiplier"
+                    ControlCornerRadius="@ss.ControlCornerRadius"
+                    LayerCornerRadius="@ss.LayerCornerRadius"
+                    StrokeWidth="@ss.StrokeWidth"
+                    FocusStrokeWidth="@ss.FocusStrokeWidth"
+                    Density="@ss.Density"
+                    DesignUnit="@ss.DesignUnit"
+                    BaseLayerLuminance="@ss.BaseLayerLuminance">
+
+                        <FluentStack VerticalGap="20" Orientation="@Orientation.Vertical">
+
+                            <h4>Buttons</h4>
+
+                            <FluentStack HorizontalGap="10" Wrap>
+                                <FluentButton>Button</FluentButton>
+                                <FluentButton Appearance="Appearance.Accent">Accent</FluentButton>
+                                <FluentButton Appearance="Appearance.Lightweight">Lightweight</FluentButton>
+                                <FluentButton Appearance="Appearance.Outline">Outline</FluentButton>
+                                <FluentButton Appearance="Appearance.Stealth">Stealth</FluentButton>
+                                <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
+                                Appearance="Appearance.Accent">
+                                    Refresh
+                                </FluentButton>
+                                <FluentButton Loading="@true" Appearance="Appearance.Accent">Loading</FluentButton>
+                            </FluentStack>
+
+                            <StarshipFormSample />
+
+                            <h4>Card</h4>
+
+                            <FluentCard Width="400px">
+                                <p>Just some content in a card (with a button that does not do anything).</p>
+                                <FluentButton Appearance="Appearance.Accent">Hello</FluentButton>
+                            </FluentCard>
+
+                            <h4>Typography</h4>
+
+                            <div class="card card-body">
+                                <FluentLabel Typo="Typography.Body"> Example 'Body' label </FluentLabel>
+                                <FluentLabel Typo="Typography.Subject"> Example 'Subject' label </FluentLabel>
+                                <FluentLabel Typo="Typography.Header"> Example 'Header' label </FluentLabel>
+                                <FluentLabel Typo="Typography.PaneHeader"> Example 'PaneHeader' label </FluentLabel>
+                                <FluentLabel Typo="Typography.EmailHeader"> Example 'EmailHeader' label </FluentLabel>
+                                <FluentLabel Typo="Typography.PageTitle"> Example 'PageTitle' label </FluentLabel>
+                                <FluentLabel Typo="Typography.HeroTitle"> Example 'HeroTitle' label </FluentLabel>
+                                <FluentLabel Typo="Typography.H1"> Example 'H1' label </FluentLabel>
+                                <FluentLabel Typo="Typography.H2"> Example 'H2' label </FluentLabel>
+                                <FluentLabel Typo="Typography.H3"> Example 'H3' label </FluentLabel>
+                                <FluentLabel Typo="Typography.H4"> Example 'H4' label </FluentLabel>
+                                <FluentLabel Typo="Typography.H5"> Example 'H5' label </FluentLabel>
+                                <FluentLabel Typo="Typography.H6"> Example 'H6' label </FluentLabel>
+                            </div>
+
+                        </FluentStack>
+
+                    </FluentDesignSystemProvider>
+                </FluentCard>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="ms-4 sticky-top" style="top:100px">
+                <h5>Control</h5>
+                <EditOptionForm @ref=form TModel="DevAdminStyleOption" OnLoadData="OnLoadData" AfterSave="AfterSave">
+
+                    <FluentButton OnClick="ResetStyle">Reset</FluentButton>
+
+                    <div class="d-block" style="min-height:300px">
+
+                        <div>
+                            <label>AccentBaseColor</label>
+                            <input type="color" @bind-value=@context.StylerStyle.AccentBaseColor @bind-value:event="oninput" />
+                        </div>
+                        <div>
+                            <label>NeutralBaseColor</label>
+                            <input type="color" @bind-value=@context.StylerStyle.NeutralBaseColor @bind-value:event="oninput" />
+                        </div>
+                        <div>
+                            <label>FillColor</label>
+                            <input type="color" @bind-value=@context.StylerStyle.FillColor @bind-value:event="oninput" />
+                        </div>
+                        <div>
+                            <label>NoPaint</label>
+                            <FluentSwitch @bind-Value=@context.StylerStyle.NoPaint />
+                        </div>
+                        <div>
+                            <FluentSlider TValue="int" Label="BaseHeightMultiplier" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.BaseHeightMultiplier />
+                            <FluentSlider TValue="int" Label="BaseHorizontalSpacingMultiplier" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.BaseHorizontalSpacingMultiplier />
+                            <FluentSlider TValue="int" Label="ControlCornerRadius" Min="0" Max="30" Step="1" @bind-Value=@context.StylerStyle.ControlCornerRadius />
+                            <FluentSlider TValue="int" Label="LayerCornerRadius" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.LayerCornerRadius />
+                            <FluentSlider TValue="int" Label="StrokeWidth" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.StrokeWidth />
+                            <FluentSlider TValue="int" Label="FocusStrokeWidth" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.FocusStrokeWidth />
+                            <FluentSlider TValue="int" Label="Density" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.Density />
+                            <FluentSlider TValue="int" Label="DesignUnit" Min="0" Max="20" Step="1" @bind-Value=@context.StylerStyle.DesignUnit />
+                        </div>
+                        <div>
+                            <FluentDivider />
+                            <FluentSlider TValue="float" Label="BaseLayerLuminance" Min="0" Max="10" Step="0.5f" @bind-Value=@context.StylerStyle.BaseLayerLuminance />
+                        </div>
+
+                    </div>
+                </EditOptionForm>
+            </div>
+        </div>
+    </div>
+</ContentWrapper>
+
+@code {
+    StylerStyle ss => form.Model.StylerStyle;
+
+    EditOptionForm<DevAdminStyleOption>? form;
+
+    void ResetStyle()
+    {
+        form.Model.StylerStyle = new();
+    }
+
+    void OnLoadData()
+    {
+        StateHasChanged();
+    }
+
+    void AfterSave(DevAdminStyleOption value)
+    {
+        var key = value.GetType().Name;
+        var opt = new OptionSummaryResponse
+        {
+            Key = key,
+            Type = value.GetType().FullName!,
+            Value = JsonSerializer.Serialize(value)
+        };
+        Q.Site.Options = [.. Q.Site.Options.Where(s => s.Key != key), opt];
+
+        Q.Root.Emit("App.SetupTheme");
+    }
+}

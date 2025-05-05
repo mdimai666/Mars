@@ -1,0 +1,33 @@
+@page "/geo/GeoMunicType"
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@(L["GeoMunicType.many"])">
+
+    <GeoTabs />
+
+    <div class="spacer-2"></div>
+
+    <StandartManagementTable TModel=GeoMunicType TService=GeoMunicTypeService @ref=f>
+        <TableContent>
+            <Column @bind-Field=@context.Title Sortable>
+                <a @onclick=@(e=>f.EditClick(context)) class="text-primary">
+                    @context.Title
+                </a>
+            </Column>
+            @*<Column @bind-Field=@context.Created Format="yyyy-MM-dd" Sortable Title="Создан" />*@
+        </TableContent>
+
+        <FormContent>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.Title" />
+            </FormItem>
+        </FormContent>
+    </StandartManagementTable>
+</ContentWrapper>
+
+
+@code {
+    StandartManagementTable<GeoMunicType, GeoMunicTypeService> f = default!;
+
+}

@@ -1,0 +1,76 @@
+using Mars.Host.Shared.Models;
+using Mars.Host.Shared.WebSite;
+using Mars.UseStartup.MarsParts;
+using Mars.Core.Models;
+using Microsoft.Extensions.FileProviders;
+
+namespace Mars.UseStartup;
+
+public static class StartupStaticHandlebars
+{
+
+    //static string APP_path = "";
+    //public static string APP_wwwroot = "";
+    //static string APP_name = "";
+
+    //static AppFrontMode mode = AppFrontMode.None;
+    //public static AppFrontMode Mode => mode;
+
+    public static WebApplicationBuilder AddStaticHandlebarsFront(this WebApplicationBuilder builder, AppFrontSettingsCfg appFront)
+    {
+
+        //mode = appFront.Mode;
+
+        if (appFront.Mode == AppFrontMode.HandlebarsTemplate || string.IsNullOrEmpty(appFront.Path) == false)
+        {
+            //APP_wwwroot = Path.Combine(appFront.Path);
+            //APP_path = Path.Combine(af.Path, "_framework");
+
+        }
+        else
+        {
+            throw new ArgumentNullException("cfg: AppFront.Path");
+        }
+
+        return builder;
+    }
+
+    public static IApplicationBuilder UseStaticHandlebarsFront(this IApplicationBuilder app, MarsAppFront appFront)
+    {
+        IWebSiteProcessor webSiteProcessor = app.ApplicationServices.GetRequiredService<IWebSiteProcessor>();
+
+        app.Map(appFront.Configuration.Url, front =>
+        {
+            front.UseRouting();
+            front.UseAuthorization();
+            //front.UsePathBase("/app");
+            //front.UseBlazorFrameworkFiles("/app");
+            front.UseStaticFiles();
+
+
+            if (appFront.Configuration.Mode != AppFrontMode.HandlebarsTemplate)
+            {
+                front.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(appFront.Configuration.Path),
+                    //RequestPath = new PathString("/app"),
+                    ServeUnknownFileTypes = true
+                });
+            }
+
+            front.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MarsUseEndpointApiFallback();
+                //endpoints.MapFallbackToFile("/root.html");
+
+
+                endpoints.MapFallback(webSiteProcessor.Response);
+            });
+
+
+        });
+
+        return app;
+    }
+}

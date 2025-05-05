@@ -1,0 +1,19 @@
+﻿.my-monaco-container .a {
+  text-decoration: unset;
+}
+.NodeEditContainer1 .modal-backdrop {
+  z-index: 1040;
+  /*background-color: #fff;*/
+}
+.NodeEditContainer1 .offcanvas.offcanvas-bottom,
+.NodeEditContainer1 .offcanvas.offcanvas-bottom.acrylic {
+  transition: transform 0.1s ease-in-out, -webkit-transform 0.1s ease-in-out;
+  /*background: white !important;*/
+}
+.NodeEditContainer1 .offcanvas.offcanvas-bottom ~ .modal-backdrop {
+  /*background-color: #fff;*/
+}
+.textarea-code {
+  font-family: 'Cascadia Mono', monospace;
+}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0eWxlLmxlc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsb0JBQ0k7RUFDSSxzQkFBQTs7QUFJUixtQkFDSTtFQUNJLGFBQUE7OztBQUZSLG1CQU1JLFdBQVU7QUFOZCxtQkFNaUMsV0FBVSxpQkFBaUI7RUFDcEQsMEVBQUE7OztBQVBSLG1CQVdJLFdBQVUsaUJBQWtCOzs7QUFLaEM7RUFDSSxhQUFhLDBCQUFiIn0= */

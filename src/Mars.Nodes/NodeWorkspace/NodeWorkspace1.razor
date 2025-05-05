@@ -1,0 +1,115 @@
+﻿@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Nodes
+<div class="@Class" id="red-ui-workspace-chart" tabindex="1" style="@Style">
+    <svg width="5000"
+         height="5000"
+         version="1.1"
+         @onmousemove=onMouseMove
+         @onmousedown=onWorkspaceMouseDown
+         @onmouseup=onMouseUp
+         @onclick=WorkspaceClick
+         @ondblclick=WorkspaceDblClick
+         xmlns="http://www.w3.org/2000/svg">
+
+        <defs>
+            <pattern id="img1" patternUnits="userSpaceOnUse" width="20" height="20">
+                <image href="_content/NodeWorkspace/bg-red.svg"
+                       x="0"
+                       y="0"
+                       width="20"
+                       height="20" />
+            </pattern>
+        </defs>
+
+        <g class="red-ui-workspace-chart-event-layer" transform="scale(1)">
+            <!-- background -->
+            <!-- <rect class="red-ui-workspace-chart-background" width="5000" height="5000"></rect> -->
+            <rect class="1red-ui-workspace-chart-background"
+                  fill="url(#img1)"
+                  width="5000"
+                  height="5000"></rect>
+
+            @if (new_wire != null)
+            {
+                <WireComponent selected
+                           x1="new_wire.X1"
+                           y1="new_wire.Y1"
+                           x2="new_wire.X2"
+                           y2="new_wire.Y2"
+                           OnMouseUp="e=>onWireMouseUp(e,new_wire)" />
+            }
+
+            @foreach (var _wire in Wires)
+            {
+                var wire = _wire;
+                @*key="'wire-' + wire.Id"*@
+                <WireComponent selected="wire.Selected"
+                           disable="wire.Disable"
+                           x1="wire.X1"
+                           y1="wire.Y1"
+                           x2="wire.X2"
+                           y2="wire.Y2"
+                           OnMouseDown="e=>onWireMouseDown(e,wire)" />
+                @*@mousedown.native.stop="(e) => onWireMouseDown(e, wire)"*@
+            }
+
+            @foreach (var _node in Nodes)
+            {
+                Node node = _node;
+
+                if (node is MicroschemeNode)
+                {
+                    <MicroschemeComponent node="node"
+                                  x="node.X"
+                                  y="node.Y"
+                                  OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                                  OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                  wireStartNew="wire_StartNew"
+                                  wireStartNewEnd="wire_StartNewEnd"
+                                  OnInject="OnInject"
+                                  OnClick=@(e=>onClickNodeEvent(e,node))
+                                  OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                }
+                else 
+                {
+                    <NodeComponent node="node"
+                           x="node.X"
+                           y="node.Y"
+                           OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                           OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                           wireStartNew="wire_StartNew"
+                           wireStartNewEnd="wire_StartNewEnd"
+                           OnInject="OnInject"
+                           OnClick=@(e=>onClickNodeEvent(e,node))
+                           OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                } 
+                
+            }
+
+            @*@if (new_node != null)
+            {
+            <NodeComponent node="new_node" x="new_node.X" y="new_node.Y"
+            OnMouseDown="(e) => onNodeMouseDown(e, new_node)"
+            OnMouseUp="(e) => onNodeMouseUp(e, new_node)" />
+            }*@
+
+            
+
+            @*LASSO*@
+            @if (lasso.drag)
+            {
+                <rect ox="@lasso.drawX.ToString(CultureInfo.InvariantCulture)"
+                  oy="@lasso.drawY.ToString(CultureInfo.InvariantCulture)"
+                  rx="1" ry="1"
+                  x="@lasso.drawX.ToString(CultureInfo.InvariantCulture)"
+                  y="@lasso.drawY.ToString(CultureInfo.InvariantCulture)"
+                  width="@lasso.width"
+                  height="@lasso.height"
+                  class="nr-ui-view-lasso"></rect>
+            }
+
+
+            <!-- <Wire :x1="0" :y1="0" :x2="100" :y2="100" selected disable /> -->
+        </g>
+    </svg>
+</div>

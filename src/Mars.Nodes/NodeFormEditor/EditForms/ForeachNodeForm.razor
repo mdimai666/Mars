@@ -1,0 +1,33 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(ForeachNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>ForeachNode</label>
+    @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Template />*@
+
+    <FluentRadioGroup @bind-Value=Node.Kind Orientation="Orientation.Vertical">
+        @foreach (var item in Enum.GetValues<EForeachKind>())
+        {
+            <FluentRadio Value="@item" Label="@item.ToString()" />
+        }
+    </FluentRadioGroup>
+
+    @if (Node.Kind == EForeachKind.Repeat)
+    {
+        <FormItem2 For="()=>Node.RepeatCount">
+            <FluentNumberField @bind-Value=Node.RepeatCount Placeholder="payload" Min="0" />
+        </FormItem2>
+        
+    }
+
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    ForeachNode Node { get => (ForeachNode)Value; set => Value = value; }
+
+}
+

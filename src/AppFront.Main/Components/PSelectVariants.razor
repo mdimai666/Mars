@@ -1,0 +1,98 @@
+@using AntDesign
+@using Mars.Shared.Contracts.Common
+
+
+<div class="d-flex @Class" style=@Style>
+    <Cascader Options="@SelectNodes"
+              Placeholder="Выберите"
+              ShowSearch
+              @bind-Value=SetterValue
+              Class="w-100" AllowClear=false />
+    @if (Busy)
+    {
+        <Spin Indicator=antIcon />
+    }
+</div>
+
+@code {
+
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    bool Busy = false;
+    IEnumerable<TitleEntity>? list = null;
+    IEnumerable<CascaderNode> SelectNodes = new List<CascaderNode>();
+
+
+    Guid _value;
+    [Parameter]
+    public Guid Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value).Wait();
+            OnValueChange.InvokeAsync(_value);
+        }
+    }
+    [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
+    [Parameter] public EventCallback<Guid> OnValueChange { get; set; }
+
+    [Parameter, EditorRequired] public string ModelName { get; set; } = default!;
+
+    string SetterValue { get => Value.ToString(); set { Value = Guid.Parse(value); } }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Load();
+    }
+
+    async void Load()
+    {
+        Busy = true;
+        StateHasChanged();
+
+        throw new NotImplementedException();
+        try
+        {
+            // list = await formService.SelectVariants(ModelName);
+
+            SelectNodes = new List<CascaderNode>{
+                new CascaderNode {
+                    Value = Guid.Empty.ToString(),
+                    Label = "-не выбрано-"
+                }
+                        };
+            SelectNodes = SelectNodes.Concat(
+
+        list.Select(s =>
+            new CascaderNode
+                    {
+                        Value = s.Id.ToString(),
+                        Label = s.Title
+                    }
+        ));
+        }
+
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"FSelectVariants: modelName={ModelName}. " + ex.Message);
+            throw;
+        }
+        finally
+        {
+
+            Busy = false;
+            StateHasChanged();
+        }
+
+    }
+
+    RenderFragment antIcon = @<Icon Type="loading" Theme="outline" Style="font-size: 24px" Spin />;
+
+}

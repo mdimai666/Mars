@@ -1,0 +1,64 @@
+@using Mars.Options.Attributes
+@using Mars.Shared.Contracts.Sms;
+@using System.ComponentModel.DataAnnotations
+@using Mars.Shared.Options.Attributes
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [OptionEditFormForOptionAttribute(typeof(SMSSettingsEditForm))]
+@* @attribute [AutoShowFormOnSettingsPage] *@
+@attribute [Display(Name = "Настройки СМС")]
+
+
+
+<EditForm Model="@testSmsMessage"
+          class="col-12 col-xl-6 mx-lg-5 compact"
+          OnValidSubmit="SendTestSms">
+
+    <h3>Настройки СМС</h3>
+
+    <div class="vstack gap-3">
+        <FormItem2 For="()=>testSmsMessage.Phone">
+            <FluentTextField @bind-Value="@testSmsMessage.Phone" Placeholder="+79140000000" Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>testSmsMessage.Message">
+            <FluentTextArea @bind-Value="@testSmsMessage.Message" autocomplete="off" Class="w-100" />
+        </FormItem2>
+        <div class="mt-3" style="margin-left: 46%;">
+            <FluentButton Appearance="@Appearance.Accent" Type="@Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit" Loading=testSmsLoading>
+                Отправить
+            </FluentButton>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] public Interfaces.IMessageService messageService { get; set; } = default!;
+
+    SendSmsModelRequest testSmsMessage = new()
+        {
+            Phone = "+7",
+            Message = "Текст"
+        };
+
+    bool testSmsLoading = false;
+
+    async void SendTestSms()
+    {
+        testSmsLoading = true;
+        var result = await client.Option.SendTestSms(testSmsMessage);
+
+        testSmsLoading = false;
+        StateHasChanged();
+
+        if (result.Ok)
+        {
+            _ = messageService.Success(result.Message);
+        }
+        else
+        {
+            _ = messageService.Error(result.Message);
+        }
+    }
+}

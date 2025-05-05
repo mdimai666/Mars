@@ -1,0 +1,24 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+<div class="SchedulerMaskInput hstack">
+    @* <FluentLabel>Mask:</FluentLabel> *@
+    <FluentTextField @bind-Value=@Value />
+</div>
+
+@code {
+    string _value = default!;
+
+    [Parameter]
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+}

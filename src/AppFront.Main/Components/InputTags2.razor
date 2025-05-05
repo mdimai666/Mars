@@ -1,0 +1,81 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inherits FluentComponentBase
+
+<input-tag2 class="@Class" style="@Style" @attributes=AdditionalAttributes>
+    <div class="d-flex gap-2 flex-wrap">
+        @foreach(var tag in Value??[]){
+            <FluentBadge>
+                @tag
+                <span class="ms-2 cursor-pointer" @onclick=@(e=>RemoveTag(tag)) ><i class="bi bi-x-lg"></i></span>
+            </FluentBadge>
+        }
+    </div>
+
+    <EditForm Model="_holder" class="mt-2">
+        <FluentTextField @bind-Value=_current Immediate Appearance="FluentInputAppearance.Filled" @onkeydown=OnKeyPress />
+        @if(validationMessage != null)
+        {
+            <FluentLabel Color="@Color.Error" Style="font-size:12px;" >@validationMessage</FluentLabel>
+        }
+    </EditForm>
+
+</input-tag2>
+
+@code {
+    string[] _value = [];
+
+    [Parameter]
+    public string[] Value {
+        get => _value;
+        set {
+            if (_value == value) return;
+            _value = value;
+            _ = ValueChanged.InvokeAsync(_value);
+        }
+    } 
+
+    [Parameter]
+    public EventCallback<string[]> ValueChanged { get; set; }
+
+    string _current = "";
+    string _holder = "";
+
+    string? validationMessage;
+
+    void OnKeyPress(KeyboardEventArgs e)
+    {
+        var tag = _current.Trim();
+
+        if (e.Code == "Enter" || e.Code == "NumpadEnter" || e.Code == "Space")
+        {
+            validationMessage = null;
+
+            if (string.IsNullOrEmpty(tag)) return;
+
+            if(!Tools.IsValidSlug(tag))
+            {
+                validationMessage = "not valid tag";
+            }
+            else if(!Value.Contains(tag))
+            {
+                Value = [..Value, tag ];
+                _current = "";
+            }
+            else
+            {
+                validationMessage = "duplicate";
+            }
+        }
+        else if(e.Code == "Backspace")
+        {
+            if(Value.Count()>0) Value = Value[..^1];
+        }
+    }
+
+    void RemoveTag(string tag)
+    {
+
+        Value = Value.Where(s=>s!=tag).ToArray();
+    }
+}

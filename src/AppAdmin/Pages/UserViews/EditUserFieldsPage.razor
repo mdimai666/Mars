@@ -1,0 +1,115 @@
+@page "/EditUserFields"
+
+@using AppFront.Shared.Components.MetaFieldViews
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "Admin")]
+
+@inject UserService service
+@inject MessageService messageService
+
+<ContentWrapper Title="EditUserFields" Breadcrumb="">
+
+    @if (Busy)
+    {
+        <SharedLoader1 />
+    }
+    else if (MetaFields is null)
+    {
+        <h5>NULL</h5>
+    }
+    else
+    {
+        <AntDesign.Form Model="@MetaFields"
+                    Context="model"
+                    Layout="@FormLayout.Horizontal"
+                    LabelColSpan="6"
+                    WrapperColSpan="18"
+                    LabelAlign="@AntLabelAlignType.Right"
+                    OnFinish="OnSave"
+                    Class="form-compact">
+            <ValidationSummary />
+            <CascadingValue Value="@MetaFields">
+                @*<AppFront.Shared.Components.MetaFieldViews.FormMetaField @bind-Model=model />*@
+                <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
+            </CascadingValue>
+
+            <hr />
+
+            <div class="">
+                <AntDesign.Button Icon="plus" OnClick="AddNewField">Добавить</AntDesign.Button>
+            </div>
+
+            <div class="text-end">
+                <Button Type="@ButtonType.Primary" Loading=saveButtonLoading HtmlType="submit">Сохранить</Button>
+            </div>
+        </AntDesign.Form>
+
+        @*<Button OnClick="e=>StateHasChanged()">StateHasChanged</Button>*@
+    }
+
+
+</ContentWrapper>
+
+@code {
+    ICollection<MetaField>? MetaFields;
+
+    bool Busy = false;
+
+    bool saveButtonLoading = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Load();
+    }
+
+    async void Load()
+    {
+        Busy = true;
+        StateHasChanged();
+
+        var res = await service.UserMetaFields();
+
+        if (res is not null) MetaFields = res;
+
+        Busy = false;
+        StateHasChanged();
+    }
+
+
+    void AddNewField()
+    {
+        if (MetaFields is not null)
+        {
+            int order = MetaFields.Any() ? MetaFields.Max(s => s.Order) + 1 : 0;
+            Guid parentId = Guid.Empty;
+            MetaFields.Add(FormMetaField.NewField(order, parentId));
+        }
+    }
+
+    async void OnSave()
+    {
+        saveButtonLoading = true;
+        StateHasChanged();
+
+        if (MetaFields is null) throw new ArgumentNullException();
+
+        var res = await service.UserMetaFields(MetaFields.ToList());
+
+        if (res.Ok)
+        {
+            _ = messageService.Success(res.Message);
+            MetaFields = res.Data;
+        }
+        else
+        {
+
+            _ = messageService.Error(res.Message);
+        }
+
+        saveButtonLoading = false;
+        StateHasChanged();
+    }
+}

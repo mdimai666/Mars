@@ -1,0 +1,36 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DevAdminConnectionNode))]
+
+<div>
+
+    <FluentSelect @bind-Value="@Node.Action"
+                  OptionText=@(s=>s.ToString())
+                  Items="DevAdminConnectionNode.Actions"
+                  Style="width: 250px;" />
+
+    @if (Node.Action == DevAdminConnectionNode.ACTION_MESSAGE)
+    {
+        <FormItem2 For="()=>Node.Message" Class="col mb-3">
+            <FluentTextArea @bind-Value="@Node.Message" Class="w-100" Placeholder="leave it empty for msg.payload" />
+        </FormItem2>
+
+        <FormItem2 For=@(()=>Node.MessageIntent)>
+            <FluentSelect @bind-Value="@Node.MessageIntent"
+                          TOption="Mars.Core.Models.MessageIntent"
+                          OptionValue=@(s=>s.ToString())
+                          OptionText=@(s=>s.ToString())
+                          Items="Enum.GetValues<Mars.Core.Models.MessageIntent>()"
+                          Style="width: 250px;">
+            </FluentSelect>
+        </FormItem2>
+    }
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    DevAdminConnectionNode Node { get => (DevAdminConnectionNode)Value; set => Value = value; }
+
+}

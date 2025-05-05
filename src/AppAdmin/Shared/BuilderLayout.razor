@@ -1,0 +1,45 @@
+@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject DeveloperControlService pageService
+@inject IStringLocalizer<AppRes> L
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+
+<div class="builder-layout d-flex flex-column" style="min-height:100vh;">
+    <CascadingValue Value="this">
+        <div class="main-area">
+            <aside class="left-menu">
+                <div class="d-flex flex-column">
+                    <AppAdmin.Builder.BuilderASide />
+                </div>
+            </aside>
+            <div class="content-area">
+                @*<div class="tabs-area">
+                tabs
+                </div>*@
+                <main class="">
+
+                    @Body
+
+                </main>
+            </div>
+        </div>
+
+        <footer class="status-bar fz14px">
+            <div class="d-flex flex-fill">
+                <div class="_LEFT flex-fill hstack gap-2">
+                    <HubConnectStatusBadge />
+                    <AppUsageResBadge />
+                </div>
+                <div class="_RIGHT hstack pe-2 gap-2">
+                    @if (Program.Dev)
+                    {
+                        <span class="cursor-pointer" @onclick=@(e=>pageService.OpenPageSource(App.PageType)) title="open page in Visual Studio 2022">[code]</span>
+                    }
+                    <i class="bi bi-bell"></i>
+                </div>
+            </div>
+        </footer>
+    </CascadingValue>
+</div>

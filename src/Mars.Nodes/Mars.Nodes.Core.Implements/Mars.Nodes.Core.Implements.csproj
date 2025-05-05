@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
+		<PackageReference Include="Flurl.Http" Version="4.0.2" />
+		<PackageReference Include="Handlebars.Net" Version="2.1.6" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+	  <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+	</ItemGroup>
+
+</Project>

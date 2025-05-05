@@ -1,0 +1,35 @@
+@using AppFront.Shared.Services
+@using Mars.Shared.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(ExcelNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>TemplateFile</label>
+
+    <FluentTextField @bind-Value="Node.TemplateFile" Class="" >
+        <FluentButton slot="end" OnClick="ShowModalForSelect">file</FluentButton>
+    </FluentTextField>
+
+</div>
+
+
+@code {
+    [Inject] public IAppMediaService service { get; set; } = default!;
+
+    [CascadingParameter] Node? Value { get; set; }
+    ExcelNode Node { get => (ExcelNode)Value!; set => Value = value; }
+
+    async void ShowModalForSelect()
+    {
+
+        FileListItemResponse file = await service.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            Node.TemplateFile = file.FilePhysicalPath;
+            StateHasChanged();
+        }
+    }
+}

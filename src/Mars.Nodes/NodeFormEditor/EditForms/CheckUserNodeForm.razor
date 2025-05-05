@@ -1,0 +1,19 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(CheckUserNode))]
+
+<div class="form-group">
+    
+    <p>
+        if auth out first node
+        else out last node
+    </p>
+    <p>check in HttpContext</p>
+
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    CheckUserNode Node { get => (CheckUserNode)Value!; set => Value = value; }
+
+}

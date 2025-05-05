@@ -1,0 +1,123 @@
+@page "/builder/scheduler"
+@using AppFront.Main.Extensions
+@using Mars.Shared.Contracts.Schedulers
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<ContentWrapper Title="SchedulerPage" Class="pressed-in">
+    <div class="card border-0">
+        <div class="card-body">
+
+            <h1 class="fz24px">Scheduler</h1>
+
+            <div class="hstack gap-3">
+                <div class="hstack gap-3">
+                    <span>status: </span>
+                    <div class="text-success fw-bold">online</div>
+                </div>
+                <div class="hstack gap-2">
+                    <FluentButton aria-label="play all" Title="Play all" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="PlayAll" />
+                    <FluentButton aria-label="pause all" Title="Pause all" IconEnd="@(new Icons.Regular.Size16.Pause())" OnClick="PauseAll" />
+                    <FluentDivider Orientation="@Orientation.Vertical" />
+                    <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="RefreshClick" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="card mt-5">
+        <div class="card-header">@("job list")</div>
+        <div class="card-body">
+            <div class="grid" style="width: 100%; overflow-x:auto;">
+
+                <FluentDataGrid Items="@res?.Items.AsQueryable()"
+                                TGridItem="SchedulerJobResponse"
+                                GridTemplateColumns="2fr 0.5fr 2fr 1.5fr 1.2fr">
+                    <PropertyColumn Property="@(p => p.Name)" Sortable="true" Tooltip Class="1multiline-text" />
+                    <PropertyColumn Property="@(p => p.Group)" Sortable="true" />
+                    <TemplateColumn Title="Mask" Class="multiline-text">
+                        <div class="vstack gap-2">
+                            @foreach (var t in context.Triggers)
+                            {
+                                <div>
+                                    [@t.TriggerState]
+                                    <code title="@t.Description">@t.Mask</code> - @t.Description
+                                </div>
+                            }
+                        </div>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(p => p.NextExecutionTime)" Sortable="true" Tooltip />
+                    <TemplateColumn Title="Actions" Align="@Align.End">
+                        <FluentButton aria-label="trigger item" IconEnd="@(new Icons.Regular.Size16.ArrowCircleRight())" OnClick="@(e => InjectItem(context))" Class="me-2" />
+                        @* <FluentDivider Orientation="@Orientation.Vertical" /> *@
+                        <FluentButton aria-label="play item" IconEnd="@(new Icons.Regular.Size16.Play())" OnClick="@(e => PlayItem(context))" />
+                        <FluentButton aria-label="pause item" IconEnd="@(new Icons.Regular.Size16.Pause())" OnClick="@(e => PauseItem(context))" />
+                        @* <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@(e => EditItem(context))" /> *@
+                        @* <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(e => DeleteItem(context))" /> *@
+                    </TemplateColumn>
+                </FluentDataGrid>
+            </div>
+
+            <div class="page-buttons hstack gap-4 justify-content-between">
+
+                <PagesTotal Page=@(pagination.CurrentPageIndex+1) PageSize=pagination.ItemsPerPage TotalPages=@(pagination.TotalItemCount??0) />
+
+                <div class="">
+
+                    @if (pagination.TotalItemCount.HasValue)
+                    {
+                        for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
+                        {
+                            var capturedIndex = pageIndex;
+                            <FluentButton @onclick="@(() => GoToPageAsync(capturedIndex))"
+                            Appearance="@PageButtonAppearance(capturedIndex)"
+                            aria-current="@AriaCurrentValue(capturedIndex)"
+                            aria-label="@AriaLabel(capturedIndex + 1)">
+                                @(capturedIndex + 1)
+                            </FluentButton>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ContentWrapper>
+
+
+<style>
+    .grid {
+        overflow-y: auto;
+    }
+
+
+    /* Style the custom page links*/
+    .page-buttons {
+        margin: 1rem 0;
+        align-items: center;
+    }
+
+        .page-buttons button {
+            background: #d6d7d8;
+            color: black;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.4rem;
+            transition: transform 0.3s ease-out;
+            margin: 0.25rem;
+        }
+
+            .page-buttons button:active {
+                background: #a7c1ff !important;
+                color: white;
+                transform: scale(0.95) translateY(-0.15rem);
+                transition-duration: 0.05s;
+            }
+
+            .page-buttons button:hover:not(.current) {
+                background: #c0c9dc;
+            }
+
+            .page-buttons button.current {
+                background: #3771f4;
+                color: white;
+            }
+</style>

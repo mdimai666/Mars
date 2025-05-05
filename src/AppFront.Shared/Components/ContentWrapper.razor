@@ -1,0 +1,97 @@
+
+@if (this.SectionExtraHeader is not null)
+{
+    @SectionExtraHeader
+}
+
+@if (!Wrapper)
+{
+    @ChildContent
+}
+else
+{
+    <div class="@(FullWidth?"container-fluid content-wrapper-fluid":"container content-wrapper") @(Title is not null ? "py-4":"") d-flex flex-fill @Class"
+         style="@Style">
+        <div class="d-flex flex-column flex-fill">
+
+
+            @if (this.Breadcrumb is not null)
+            {
+                @*<Breadcrumb2 Path=@($"/:Главная|/Pages:Гражданам|/Profile:{CurrentPageTitle}") />*@
+                @*<Breadcrumb2 Path=@this.Breadcrumb />*@
+            }
+
+            @if (TitleTemplate is not null)
+            {
+                <div class="">
+                    @TitleTemplate
+                </div>
+            }
+            else if (Title is not null)
+            {
+                <div class="layout-standart-title">
+                    <div class="mb-5">
+                        <div class="d-flex">
+
+                            @if (BackButton)
+                            {
+                                @*<DBackButton class="layout-backbutton-pull-left" />*@
+                            }
+                            <h4 class="layout-title-text flex-fill text-start text-accent mb-1">
+                                @Title
+                            </h4>
+                            <div class="d-flex justify-content-end gap-3">
+                                @if (SectionActions is not null)
+                                {
+                                    @SectionActions
+                                }
+                                else if (GeneralSectionActions is not null)
+                                {
+                                    <DynamicComponent Type="GeneralSectionActions" />
+                                }
+                            </div>
+                        </div>
+                        <hr class="my-2" />
+                    </div>
+                </div>
+            }
+            <article class="flex-fill @WrapperClass" style="@WrapperStyle">
+
+                @ChildContent
+
+            </article>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public RenderFragment? TitleTemplate { get; set; } = null;
+    [Parameter] public string? Title { get; set; } = null;
+    [Parameter] public bool FullWidth { get; set; } = false;
+    [Parameter] public bool BackButton { get; set; } = false;
+    [Parameter] public string WrapperClass { get; set; } = "";
+    [Parameter] public string WrapperStyle { get; set; } = "";
+    [Parameter] public RenderFragment? SectionActions { get; set; } = null;
+    [Parameter] public RenderFragment? SectionExtraHeader { get; set; } = null;
+
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+    [Parameter] public bool Wrapper { get; set; } = true;
+
+    public static Type? GeneralSectionActions { get; set; }
+
+    //[CascadingParameter(Name = "RouteData")]
+    //public RouteData? RouteData { get; set; }
+
+    //RouteData? _routeData;
+
+    //[CascadingParameter(Name = "RouteData")]
+    //[Parameter]
+    //public RouteData? RouteData { get => _routeData; set { _routeData = value; Console.WriteLine("RRR"); } }
+
+    [Parameter] public string Breadcrumb { get; set; } = default!;
+}

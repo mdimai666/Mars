@@ -1,0 +1,146 @@
+@page "/Register"
+@using Microsoft.FluentUI.AspNetCore.Components
+@layout BlankLayout
+
+@*<Header1 />*@
+<ContentWrapper>
+    <div class="spacer-3"></div>
+
+    <div class="content-body">
+        <div class="auth-wrapper auth-v1 px-2 xcenter">
+            <div class="py-2" style="width:490px;">
+                <!-- Register v1 -->
+                <div class="card shadow rounded-15 border-0 1white mb-0 px-3">
+                    <div class="card-body">
+                        <a href="/" class="brand-logo d-none">
+
+                            <div class="text-center">
+                                <img src="/img/logo.png" height="100" />
+                            </div>
+
+                        </a>
+
+                        <div class="spacer-2"></div>
+
+                        <h2 class="1big-text fz20px fw-bold text-center">РЕГИСТРАЦИЯ</h2>
+
+                        <p class="card-text mb-2"></p>
+
+                        @if (Q.Site.SysOptions.AllowUsersSelfRegister == false)
+                        {
+                            <div class="alert alert-info"> <i class="bi bi-info-circle"></i> Самостоятельная регистрация недоступна</div>
+                        }
+                        else if (!regiterComplete)
+                        {
+
+                            <EditForm Model="_userForRegistration" OnSubmit=ExecuteRegister
+                                      class="auth-register-form mt-2">
+                                <DataAnnotationsValidator />
+                                @* <FluentValidationSummary /> *@
+
+                                <div class="vstack gap-3">
+
+
+                                    @if (ShowRegistrationErrors && Errors is not null)
+                                    {
+                                        <div class="alert alert-danger p-1" role="alert">
+                                            @foreach (var error in Errors)
+                                            {
+                                                <p>@error</p>
+                                            }
+                                        </div>
+                                    }
+
+                                    <FormItem2 For="()=>_userForRegistration.Email" Label="@AppRes.Email">
+                                        <FluentTextField @bind-Value=_userForRegistration.Email Class="w-100" />
+                                    </FormItem2>
+
+                                    <FormItem2 For="()=>_userForRegistration.FirstName" Label="@AppRes.FirstName">
+                                        <FluentTextField @bind-Value=_userForRegistration.FirstName Class="w-100" />
+                                    </FormItem2>
+
+                                    <FormItem2 For="()=>_userForRegistration.LastName" Label="@AppRes.LastName">
+                                        <FluentTextField @bind-Value=_userForRegistration.LastName Class="w-100" />
+                                    </FormItem2>
+
+                                    <FormItem2 For="()=>_userForRegistration.Password" Label="@AppRes.Password">
+                                        <FluentTextField @bind-Value=_userForRegistration.Password TextFieldType="@TextFieldType.Password" Class="w-100" />
+                                    </FormItem2>
+
+                                    <FormItem2 For="()=>_userForRegistration.ConfirmPassword" Label="Подтверждение пароля">
+                                        <FluentTextField @bind-Value=_userForRegistration.ConfirmPassword TextFieldType="@TextFieldType.Password" Class="w-100" />
+                                    </FormItem2>
+
+                                </div>
+
+                                <FluentCheckbox @bind-Value=_acceptPrivacy Class="my-3" >
+                                    Я согласен с <a href="privacy">
+                                        политикой и условиями
+                                        конфиденциальности
+                                    </a>
+                                </FluentCheckbox>
+
+                                <div class="spacer-2"></div>
+
+                                <FluentButton Disabled=@(!_acceptPrivacy) Appearance="Appearance.Accent"
+                                              Type="ButtonType.Submit" Class="w-100">
+                                    Зарегистрироваться
+                                </FluentButton>
+                                @* ---------------- *@
+
+                            </EditForm>
+
+                            <hr class="mx-auto my-4" style="width: 120px;" />
+
+                            <p class="text-center mt-2">
+                                <a href="/dev/Login">
+                                    Есть аккаунт? Вход
+                                </a>
+                            </p>
+                        }
+                        else
+                        {
+                            <div class="text-center">
+                                <div class="xcenter p-5">
+                                    <i class="bi bi-check-circle-fill" style="color:#6ac11d;font-size:72px;"></i>
+                                </div>
+                                <div class="fz24px mt-2">Вы успешно зарегестрированы</div>
+                                <div class="fz14px text-fade mt-2">Вы можете войти в свой аккаунт</div>
+                                <div class="mt-3">
+                                    <a href="login">
+                                        <FluentButton Appearance="Appearance.Accent" Class="w-100">Войти</FluentButton>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+                <!-- /Register v1 -->
+            </div>
+        </div>
+
+    </div>
+
+    <div class="spacer-2"></div>
+
+</ContentWrapper>
+
+<style>
+    body, .ant-layout {
+        /*background-color: #f9f9f9!important;*/
+    }
+
+    .big-text {
+        font-weight: 700;
+        font-size: 45px;
+        color: var(--bs-primary);
+    }
+
+    h1 {
+        font-weight: 600;
+        font-size: 36px;
+        color: var(--bs-primary);
+        /*font-family: 'Comfortaa';*/
+    }
+</style>

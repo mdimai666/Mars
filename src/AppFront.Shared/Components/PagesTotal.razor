@@ -1,0 +1,10 @@
+
+<div class="d-paginator text-secondary @Class" style=@Style>Страница: @Page | На странице: @PageSize | Всего: @TotalPages </div>
+
+@code {
+    [Parameter] public int Page { get; set; }
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public int PageSize { get; set; }
+    [Parameter] public string Class { get; set; } = default!;
+    [Parameter] public string Style { get; set; } = default!;
+}

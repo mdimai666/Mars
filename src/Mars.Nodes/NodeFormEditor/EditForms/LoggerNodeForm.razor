@@ -1,0 +1,22 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(LoggerNode))]
+
+<div>
+
+    <FormItem2 For=@(()=>Node.Level)>
+
+        <FluentSelect TOption="ELoggerNodeLogLevel"
+                      Items="Enum.GetValues<ELoggerNodeLogLevel>()"
+                      Width="200px"
+                      @bind-SelectedOption="@Node.Level" />
+    </FormItem2>
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    LoggerNode Node { get => (LoggerNode)Value; set => Value = value; }
+
+}

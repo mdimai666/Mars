@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!--Project-->
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        
+        <!--Author-->
+        <PackageId>mdimai666.Mars.Shared</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <!--<Version>0.2.0</Version>-->
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.Shared</Product>
+        <PackageTags>Mars</PackageTags>
+        <Description>
+            Mars Shared lib contain contracts and abstractions;
+        </Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Resources\AppRes.Designer.cs">
+            <DependentUpon>AppRes.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\AppRes.resx">
+            <SubType>Designer</SubType>
+            <LastGenOutput>AppRes.Designer.cs</LastGenOutput>
+            <Generator>PublicResXFileCodeGenerator</Generator>
+        </EmbeddedResource>
+    </ItemGroup>
+</Project>

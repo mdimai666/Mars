@@ -1,0 +1,20 @@
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(100);
+        if (!Q.User.IsAuth)
+        {
+            Redirect();            
+        }
+    }
+
+
+    void Redirect()
+    {
+        Navigation.NavigateTo(
+            $"/dev/Login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+
+}

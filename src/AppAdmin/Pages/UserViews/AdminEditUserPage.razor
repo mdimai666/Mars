@@ -1,0 +1,185 @@
+@page "/admin/EditUser"
+@page "/admin/EditUser/{ID:guid}"
+@using AppShared.Dto
+@inject IStringLocalizer<AppRes> L
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Редактирования профиля")]
+@attribute [DParentPage(typeof(UsersPage))]
+@*@layout AdminLayout*@
+
+<ContentWrapper Title="Редактирования профиля">
+
+    <CascadingValue Value="ID">
+        @*<TabsProfile />*@
+    </CascadingValue>
+
+    <BasicPage @bind-model="user" Context="user" TModel=UserEditProfileDto LoadFunc="()=>Get()" @ref=basicPage>
+
+        <Card Class="p-4">
+            <div class="row">
+                <div class="col-lg-7">
+                    <!-- users edit  -->
+                    <AntDesign.Form Model=@user
+                                    OnFinish="OnFinish"
+                                    Layout=@FormLayout.Vertical
+                                    @ref=form
+                                    Class="form-compact">
+                        <FormItem>
+                            <Input @bind-Value=@user.LastName />
+                        </FormItem>
+                        <FormItem>
+                            <Input @bind-Value=@user.FirstName />
+                        </FormItem>
+                        <FormItem>
+                            <Input @bind-Value=@user.MiddleName />
+                        </FormItem>
+                        <FormItem>
+                            <Input Type="email" @bind-Value=@user.Email />
+                        </FormItem>
+                        @*<FormItem>
+                        <Input Type="email" @bind-Value=@user.EmailForNotify Placeholder=@user.Email />
+                        </FormItem>*@
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <FormItem>
+                                    <AntDesign.DatePicker @bind-Value=@user.BirthDate AllowClear=false ShowTime="false" />
+                                </FormItem>
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+
+
+
+                        <FormItem>
+                            <Input @bind-Value=@user.Phone />
+                        </FormItem>
+
+                        <FormItem Class="">
+                            <RadioGroup @bind-Value=user.Gender Class="">
+                                <Radio Class="d-block" Value="@Gender.Male">@(L["Male"])</Radio>
+                                <Radio Class="d-block" Value="@Gender.Female">@(L["Female"])</Radio>
+                            </RadioGroup>
+                        </FormItem>
+
+                        <CascadingValue Value="@context.MetaValues">
+                            <CascadingValue Value="@context.MetaFields">
+                                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue />
+                            </CascadingValue>
+                        </CascadingValue>
+
+
+                    </AntDesign.Form>
+                    <!-- //users edit  -->
+                </div>
+                <div class="col-lg-5">
+                    <div class="nn-avatar-area">
+                        @*<Avatar class="img-fluid" Size="200" Icon="user"></Avatar>*@
+
+                        <UserAvatar Value="@user.AvatarUrl" Size="200px" />
+                        <div>
+                            <Button Size="small" OnClick="OnClickSelectAvatar">Изменить</Button>
+                            @if (!string.IsNullOrEmpty(user.AvatarUrl))
+                            {
+                                <Button Size="small" Danger OnClick="ClearAvatar">Удалить</Button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex flex-column flex-lg-row gap-3">
+                        <Button HtmlType="submit" OnClick=@(e=>form.Submit()) Type=@ButtonType.Primary Block>
+                            Сохранить
+                        </Button>
+
+                        <AuthorizeView Roles="Admin" Context="con2">
+                            <DDeleteButton OnConfirm=OnDeleteClick Block />
+                        </AuthorizeView>
+                    </div>
+                </div>
+            </div>
+        </Card>
+
+        <div class="">
+            <!-- users edit start -->
+            <section class="app-user-edit">
+
+                @if (Q.User.Role == "Admin")
+                {
+                    <div class="ant-card mt-3">
+                        <div class="card-header">
+                            Права и доступы
+                        </div>
+                        <div class="card-body m-4">
+
+
+                            <div class="row">
+                                <div class="col">
+                                    <Select Mode="multiple"
+                                            Placeholder="Роли"
+                                            @bind-Values="@UpdUserRoles"
+                                            TItemValue="Guid"
+                                            TItem="Guid"
+                                            @*OnSelectedItemsChanged="OnSelectedRoleItemsChangedHandler" *@
+                                            Style="width: 100%; margin-bottom: 8px;"
+                                            EnableSearch
+                                            AllowClear>
+                                        <SelectOptions>
+                                            @foreach (var item in vm!.Roles)
+                                            {
+                                                <SelectOption TItemValue="Guid"
+                                                              TItem="Guid"
+                                                              Value=@item.Id
+                                                              Label=@L[item.Name!] />
+                                            }
+                                        </SelectOptions>
+                                    </Select>
+                                </div>
+                                <div class="col d-none">
+                                    @if (vm!.User.LockoutEnabled == false)
+                                    {
+                                        <span>
+                                            Пользователь отключен
+                                        </span>
+                                        <Popconfirm Title="Вы уверены что хотите включить пользователя?"
+                                                    OnConfirm="()=> DisableUser(!false)"
+                                                    OkText="Да"
+                                                    CancelText="Нет">
+                                            <Button Size="small">Включить</Button>
+                                        </Popconfirm>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            Пользователь активен
+                                        </span>
+                                        <Popconfirm Title="Вы уверены что хотите отключить пользователя?"
+                                                    OnConfirm="()=> DisableUser(!true)"
+                                                    OkText="Да"
+                                                    CancelText="Нет">
+                                            <Button Danger Size="small">Отключить</Button>
+                                        </Popconfirm>
+                                    }
+                                </div>
+                            </div>
+                            <Button Type=@ButtonType.Primary OnClick=@(e=>UpdateUserRoles())>
+                                Сохранить
+                            </Button>
+                            <div class="spacer-5"></div>
+                        </div>
+                    </div>
+                    <div class="spacer-1"></div>
+
+                }
+
+            </section>
+            <!-- users edit ends -->
+
+        </div>
+
+    </BasicPage>
+</ContentWrapper>

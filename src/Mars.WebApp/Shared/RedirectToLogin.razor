@@ -1,0 +1,40 @@
+@using System.Diagnostics
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        string url = $"/Identity/Account/Login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+        Console.WriteLine(Navigation.Uri);
+
+        // _ = myJs.Navigate(url);
+        throw new NotImplementedException();
+
+    }
+
+
+    //protected override void OnAfterRender(bool firstRender)
+    //{
+    //    base.OnAfterRender(firstRender);
+
+    //    string url = $"/Identity/Account/Login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+
+    //    //Navigation.NavigateTo(url);
+        
+    //}
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+
+
+    //    string url = $"/Identity/Account/Login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+
+    //    await myJs.Navigate(url);
+
+    //    //return base.OnAfterRenderAsync(firstRender);
+    //}
+}

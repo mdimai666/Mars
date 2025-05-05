@@ -1,0 +1,17 @@
+# Auth
+GET http://localhost:10100/wp-my-auth.php
+
+###
+
+GET http://localhost:10100/wp-json/wp/v2/posts/
+
+###
+
+POST http://localhost:10100/wp-json/wp/v2/posts/
+Content-Type: application/json
+
+{
+    "Title": "Hi API",
+    "Content": "Content 123",
+    "Status": "published"
+}

@@ -1,0 +1,109 @@
+﻿@using MarsCodeEditor2
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(StringNode))]
+
+
+<div class="vstack">
+    <label>Operations</label>
+
+    @if (availOperations.Length > 0)
+    {
+        <div style="max-width:800px;">
+
+            <FluentSortableList Id="dragHandles" Handle="true" Items="Node.Operations" OnUpdate="@SortList" Context="item">
+                <ItemTemplate>
+                    <div class="sortable-grab">
+                        @* <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" /> *@
+                        <i class="bi bi-arrow-down-up p-1"></i>
+                    </div>
+                    <div class="sortable-item-content hstack" style="flex-grow: 1;">
+                        <div class="op-content hstack">
+                            <FluentSelect TOption="string"
+                                          Items="@availOperations"
+                                          Width="200px"
+                                          Placeholder="op"
+                                          OptionValue=@(s => s)
+                                          OptionText=@(s => s)
+                                          Position="SelectPosition.Below"
+                                          @bind-Value="@item.Name"
+                                          SelectedOption="@item.Name" 
+                                          SelectedOptionChanged="@item.NameChanged" />
+
+                            @for (var i = 0; i < item.Args.Length; i++)
+                            {
+                                var index = i;
+                                var f = item.Inputs().ElementAt(i);
+                                @if (f.Type == OperationInputType.Input)
+                                {
+                                    <FluentTextField Label=@f.Label Placeholder=@f.Label Value=@item.Args[i] ValueChanged=@(v=>item.Args[index]=v) />
+                                }
+                            }
+                        </div>
+                        <div class="ms-auto hstack">
+                            <FluentButton OnClick=@(e=>DelOp(item))>
+                                <i class="bi bi-x"></i>
+                            </FluentButton>
+                        </div>
+                    </div>
+                </ItemTemplate>
+            </FluentSortableList>
+
+            <div>
+                <FluentButton OnClick="AddOp">
+                    <i class="bi bi-plus"></i> add
+                </FluentButton>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    StringNode Node { get => (StringNode)Value!; set => Value = value; }
+
+    string[] availOperations = [];
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        availOperations = Enum.GetValues<BaseOperation>().Select(s => s.ToString()).ToArray();
+    }
+
+    protected void AddOp() => Node.Operations.Add(new() { Name = availOperations[0] });
+
+    protected void DelOp(StringNodeOperation op) => Node.Operations.Remove(op);
+
+    private void SortList(FluentSortableListEventArgs args)
+    {
+        if (args is null || args.OldIndex == args.NewIndex)
+        {
+            return;
+        }
+
+        var oldIndex = args.OldIndex;
+        var newIndex = args.NewIndex;
+
+        var items = this.Node.Operations;
+        var itemToMove = items[oldIndex];
+        items.RemoveAt(oldIndex);
+
+        if (newIndex < items.Count)
+        {
+            items.Insert(newIndex, itemToMove);
+        }
+        else
+        {
+            items.Add(itemToMove);
+        }
+    }
+
+    private async Task OnSearchAsync(OptionsSearchEventArgs<string> e)
+    {
+
+        e.Items = availOperations.Where(s => s.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase));
+    }
+}
+

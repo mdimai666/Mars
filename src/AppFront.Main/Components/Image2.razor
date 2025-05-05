@@ -1,0 +1,11 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+<mars-image2 class="@Class"
+              style="@Style"
+              id=@Id
+              @attributes="AdditionalAttributes">
+    <a href="@(PreviewSrc ?? Src)" class="spotlight">
+        <img src="@Src" title="@Title" alt="@(Alt ?? Title ?? Src)">
+    </a>
+</mars-image2>

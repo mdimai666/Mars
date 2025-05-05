@@ -1,0 +1,18 @@
+#myKanban {
+    .kanban-board {
+        background: #B6CCDF;
+        box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.07);
+        border-radius: 12px;
+
+        .kanban-drag {
+            min-height: 40px;
+            padding: 10px;
+        }
+
+        .kanban-item {
+            &[data-warn="true"] {
+                background: #FFE6C1;
+            }
+        }
+    }
+}

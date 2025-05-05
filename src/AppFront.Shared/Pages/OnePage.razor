@@ -1,0 +1,206 @@
+@page "/{SLUG}"
+@using Mars.Shared.Common
+@using Mars.Shared.Contracts.Renders
+@using Mars.WebApiClient.Interfaces
+@using BlazoredHtmlRender
+@using System.Text.RegularExpressions
+@attribute [Display(Name = "Страница")]
+@implements IDisposable
+
+<PageTitle>@(CurrentPageTitle ?? Q.Site?.SysOptions.SiteName)</PageTitle>
+
+    @*<HeadContent>
+    <meta name="description" content="@CurrentPageTitle">
+</HeadContent>*@
+
+    <ContentWrapper Wrapper=Wrapper>
+        @if (Busy)
+    {
+        <div class="xcenter" style="min-height:50vh">
+            <SharedLoader1 />
+        </div>
+    }
+    else if (res is null)
+    {
+
+    }
+    else if (res.NotFound)
+    {
+        <SharedError404 />
+    }
+    else if (res.Ok == false)
+    {
+        <div class="alert alert-danger container">
+            <pre>@res.Message</pre>
+        </div>
+    }
+    else
+    {
+        @*@((MarkupString)postRender.Html)*@
+        @*<div>
+    @foreach (var d in BlazoredHtml.ComponentsDict)
+    {
+    <div>@d.Key</div>
+    }
+    </div>*@
+        <BlazoredHtml Html=@postRender?.Html />
+        @*<Button OnClick="e=>{}">btn1</Button>*@
+
+    }
+
+    @if (Q.Dev || Q.User.IsDeveloper)
+    {
+        @*<Button Icon="redo" OnClick="e=>Load(true,true)" Class="DEV_btn_page__refresh" />*@
+        <button class="btn DEV_btn_page__refresh" @onclick="e=>Load(true,true)">
+            <i class="bi bi-arrow-clockwise"></i>
+        </button>
+        <HotCheckAni />
+    }
+
+</ContentWrapper>
+
+
+@code {
+
+    string _oldSlug = "";
+
+    string _slug = "";
+    [Parameter] public string SLUG { get => _slug; set { _oldSlug = _slug; _slug = value; Load(); } }
+
+    [Parameter] public bool Wrapper { get; set; } = true;
+
+    public static bool MauiReplaceUrl { get; set; }
+    //Костыль - потом удалить
+    public static bool IgnoreLoader { get; set; }
+
+
+    //[Parameter] public string SLUG { get; set; }
+    //public Post Post { get; set; } = null;
+    [Inject] NavigationManager _navigationManager { get; set; } = default!;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] ViewModelService vms { get; set; } = default!;
+
+    public string? CurrentPageTitle { get; set; }
+
+    RenderActionResult<PostRenderResponse>? res = null;
+
+    bool Busy = false;
+
+    PostRenderResponse? postRender => res?.Data;
+
+    [Inject] IJSRuntime JSRuntime { get; set; } = default!;
+
+    public static void UpdateComponentsDict()
+    {
+        //if (BlazoredHtml.ComponentsDict is null)
+        //{
+        //    BlazoredHtml.ComponentsDict = new();
+        //    var app = BlazoredHtml.GetAssemblyComponents(AppSharedSettings.Program, true);
+        //    var shared = BlazoredHtml.GetAssemblyComponents(typeof(AppFront.Shared.Components.LikeButton), true);
+        //    foreach (var a in app.Concat(shared)/*.Concat(ant)*/)
+        //    {
+        //        if (BlazoredHtml.ComponentsDict.ContainsKey(a.Key))
+        //        {
+        //            Console.WriteLine($"BlazoredHtml.ComponentsDict > key already exist = {a.Key}");
+        //        }
+        //        else
+        //        {
+        //            BlazoredHtml.ComponentsDict.Add(a.Key, a.Value);
+        //        }
+        //    }
+        //}
+
+        //if(BlazoredHtml.ComponentsDict.Count == 0)
+        //{
+
+        //}
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _navigationManager.LocationChanged += HandleLocationChanged;
+
+        //BlazoredHtml.ComponentsDict ??= BlazoredHtml.GetAssemblyComponents(typeof(Program));
+        UpdateComponentsDict();
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        var url = e.Location;
+        // Parse URL for query string here
+        if (!OnePage.IgnoreLoader)
+        {
+            Load(true);
+        }
+    }
+
+    async void Load(bool force = false, bool hot = false)
+    {
+        if (string.IsNullOrEmpty(SLUG) || Busy) return;
+
+        var inLocal = Q.Site?.LocalPages.FirstOrDefault(s => !s.NotFound && s.Data?.PostSlug == SLUG);
+
+        if (inLocal is not null && !force)
+        {
+            res = inLocal;
+            if (MauiReplaceUrl && res.Data is not null)
+            {
+                res.Data.Html = ReplaceRelativeUrls(res.Data.Html);
+            }
+            CurrentPageTitle = inLocal.Data.Title;
+            _oldSlug = inLocal.Data.PostSlug;
+            StateHasChanged();
+            return;
+        }
+
+
+        if (Q.IsPrerender)
+        {
+            Busy = true;
+            return;
+        }
+
+        if (!hot) Busy = true;
+        StateHasChanged();
+
+        if (postRender is null || _oldSlug != _slug || force)
+        {
+            if (SLUG.StartsWith('/'))
+            {
+                res = await client.PageRender.RenderUrl(SLUG);
+            }
+            else
+            {
+                res = await client.PageRender.Render(SLUG);
+            }
+            if (MauiReplaceUrl && res?.Data is not null)
+            {
+                res.Data.Html = ReplaceRelativeUrls(res.Data.Html);
+            }
+            CurrentPageTitle = postRender?.Title;
+        }
+
+        if (hot)
+        {
+            _ = JSRuntime.InvokeVoidAsync("triggerHotCheckAni");
+        }
+
+        Busy = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        //base.Dispose();
+        _navigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+    static Regex replRelUrl = new Regex("([\"\'])(/?)(upload|img)/", RegexOptions.IgnoreCase);
+
+    public static string ReplaceRelativeUrls(string html)
+    {
+
+        return replRelUrl.Replace(html, $"$1{Q.BackendUrl}/$3/");
+    }
+}

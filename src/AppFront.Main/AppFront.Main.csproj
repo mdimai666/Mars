@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<!--Project-->
+		<RootNamespace>AppFront.Shared</RootNamespace>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+
+		<!--Author-->
+		<PackageId>mdimai666.Mars.AppFront.Main</PackageId>
+		<PackageVersion>$(MarsAppVersion)</PackageVersion>
+		<!--<Version>0.2.0</Version>-->
+		<Authors>mdimai666</Authors>
+		<Company>mdimai666</Company>
+		<Product>Mars.AppFront.Main</Product>
+		<PackageTags>Mars;</PackageTags>
+		<Description>
+			Shared project using Mars client apps with UI framework
+		</Description>
+	</PropertyGroup>
+
+	<PropertyGroup>
+        <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Remove="Components\MetaFieldViews\ClientEditPost1.razor" />
+	  <Content Remove="Components\MetaFieldViews\DisplayMetaField.razor" />
+	  <Content Remove="Components\MetaFieldViews\RowMetaField.razor" />
+	  <Content Remove="Components\PSelectVariants.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Markdig" Version="0.40.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.11.5" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.11.5" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.5" />
+		<PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AppFront.Shared\AppFront.Shared.csproj" />
+		<ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+		<ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+		<ProjectReference Include="..\Mars.Shared\Mars.Shared.csproj" />
+		<ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+		<ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
+		<ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
+	</ItemGroup>
+
+</Project>

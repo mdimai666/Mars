@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CronExpressionDescriptor" Version="2.38.0" />
+		<PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mars.Host\Mars.Host.csproj" />
+	</ItemGroup>
+
+</Project>

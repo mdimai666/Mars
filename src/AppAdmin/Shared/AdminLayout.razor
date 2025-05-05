@@ -1,0 +1,55 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject IStringLocalizer<AppRes> L
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<AuthorizeView>
+    <Authorized>
+        <CascadingValue Value=this>
+            <div class="admin-layout d-flex flex-column" style="min-height:100vh;">
+                <header>
+                    <HeaderAdmin1 @ref=@headerAdmin />
+                </header>
+
+                <div class="flex-fill d-flex">
+                    <div class="l_side 1bg-dark-accent me-3">
+                        @* <Affix OffsetTop="24"> *@
+
+                        <div class="flex-shrink-0 d-none d-md-block" style="width: 265px;">
+                            @*<DisplayMenuTree menus="menu_items"/>*@
+                            <div class="menu-wrapper p-3">
+                                <Menu2 Class="menu-admin1" Items=menu_items Style="--neutral-fill-stealth-rest: transparent;" />
+                            </div>
+                        </div>
+
+                        @* </Affix> *@
+                    </div>
+
+                    <main id="Content" class="flex-fill d-flex">
+                        @Body
+                    </main>
+                </div>
+                @*<AppFront.Shared.Footer />*@
+            </div>
+            @* <MobileMenu Visible=@MenuDrawerVisible /> *@
+        </CascadingValue>
+
+    </Authorized>
+    <Authorizing>
+        <SharedLoader1 />
+    </Authorizing>
+    <NotAuthorized>
+        @if (!Q.IsPrerender)
+        {
+            <RedirectToLogin />
+        }
+        else
+        {
+            <div class="admin-layout d-flex flex-column xcenter" style="min-height:100vh;">
+                <SharedLoader1 />
+            </div>
+        }
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,12 @@
+@ChildContent(this)
+
+@code {
+    [Parameter] public RenderFragment<CascadeStateChanger> ChildContent { get; set; } = default!;
+
+    [Parameter] public EventCallback OnStateChange { get; set; }
+
+    public void StateChange()
+    {
+        OnStateChange.InvokeAsync();
+    }
+}

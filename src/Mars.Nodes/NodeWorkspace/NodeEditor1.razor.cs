@@ -1,0 +1,403 @@
+using System.Text.Json;
+using System.Web;
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
+using NodeFormEditor;
+using Toolbelt.Blazor.HotKeys2;
+
+namespace NodeWorkspace;
+
+public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
+{
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+    NodeWorkspaceJsInterop js = default!;
+
+    List<Node> _nodes = new();
+
+    [Parameter]
+    public List<Node> Nodes
+    {
+        get => _nodes;
+        set
+        {
+            if (value == _nodes) return;
+            _nodes = value;
+            CalcTabs();
+            CalcVarNodes();
+            CheckActiveTab();
+            NodesChanged.InvokeAsync(_nodes);
+        }
+    }
+
+    [Parameter] public EventCallback<List<Node>> NodesChanged { get; set; }
+
+    public List<Node> Palette { get; set; } = new List<Node>();
+
+    public List<Type> RegisteredNodes = new List<Type>();
+
+    EditorActions editorActions;
+    public NodeWorkspace1? NodeWorkspace1 = default!;
+
+    [Inject] HotKeys HotKeys { get; set; } = default!;
+
+    [Parameter] public EventCallback<string> OnInject { get; set; }
+    [Parameter] public EventCallback<IEnumerable<Node>> OnDeploy { get; set; }
+    [Parameter] public EventCallback<string> OnCmdClick { get; set; }
+    [Parameter] public RenderFragment? SectionActions { get; set; } = null;
+
+    Node? EditNode { get; set; }
+
+    //[Inject] NodeS
+
+    QuickNodeAddMenu? quickNodeAddMenu = default!;
+    NodeEditContainer1? nodeEditContainer1 = default!;
+
+
+    string activeMasterTab = "tabs";
+
+    class MasterTab
+    {
+        public string label;
+        public string key;
+
+        public MasterTab(string key, string label)
+        {
+            this.key = key;
+            this.label = label;
+        }
+
+    }
+
+    MasterTab[] masterTabs = new MasterTab[] { new MasterTab("tabs", "Tabs"), new MasterTab("nodes", "Nodes") };
+
+    public NodeEditor1()
+    {
+
+        RegisteredNodes = NodesLocator.RegisteredNodes();
+
+        editorActions = new EditorActions(this);
+
+        Type[] topNodes = { typeof(InjectNode), typeof(DebugNode), typeof(FunctionNode), typeof(TemplateNode) };
+
+        var nodesList = topNodes.Concat(
+            RegisteredNodes
+                .Where(s => Node.NonVisualNodes.Contains(s) == false)
+                .Where(s => !topNodes.Contains(s)));
+
+        foreach (var type in nodesList)
+        {
+            object handle = Activator.CreateInstance(type)!;
+            Node node = (Node)handle;
+            node.X = 10;
+            Palette.Add(node);
+
+
+            //ObjectHandle handle = Activator.CreateInstance(type);
+            //object instance = handle.Unwrap();
+            //Palette.Add((Node)instance);
+
+        }
+
+        //Palette = new List<Node>
+        //{
+        //    new Node { Type="inject", Color=("#a6bbcf"), Label="inject" }
+        //};
+
+        //Palette = RegisteredNodes.Select(t => (Node)Activator.CreateInstance(t)).ToList();
+        //Palette = RegisteredNodes.Select(t => Cre )
+
+        //Nodes = JsonSerializer.Deserialize<List<Node>>(exampleFlow, new JsonSerializerOptions
+        //{
+        //    PropertyNameCaseInsensitive = true
+        //});
+
+
+        //LoadFromJson();
+
+        //System.Text.Json.
+
+        //Nodes = new List<Node>
+        //{
+        //    new Node { Type="inject", X=112.5f, Y=163f, Color="#a6bbcf", Label="inject"}
+        //};
+    }
+
+    HotKeysContext HotKeysContext = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        js = new(JS);
+        _ = js.InitModule();
+        //_ = js.Prompt("aefaef");
+
+        this.HotKeysContext = this.HotKeys.CreateContext()
+         .Add(ModCode.Ctrl | ModCode.Shift, Code.A, SomeKeyTrigger, "do foo bar.")
+         .Add(ModCode.Ctrl, Code.D, DeployClick, "Deploy")
+         .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form")
+         .Add(ModCode.None, Code.Delete, editorActions.UserAction_DeleteSelected);
+        //.Add(...)...;
+
+        //Console.WriteLine(">>>NodeEditor>LoadFromJson");
+        //LoadFromJson();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.HotKeysContext.DisposeAsync();
+    }
+
+    async void OpenOffcanvasEditor()
+    {
+        await js.ShowOffcanvas("node-editor-offcanvas", true);
+    }
+
+    public void LoadFromJson()
+    {
+        string exampleFlow = ExampleFlow.GetJsonData();
+
+
+        var config = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+
+        List<JsonElement>? nodes = JsonSerializer.Deserialize<List<JsonElement>>(exampleFlow, config);
+
+        if (nodes is null) throw new ArgumentNullException(nameof(nodes));
+
+        foreach (var el in nodes)
+        {
+            string json = el.GetRawText();
+            INodeBasic basic = JsonSerializer.Deserialize<NodeBasicImplement>(json, config)!;
+
+            Type? find = RegisteredNodes.FirstOrDefault(s => s.FullName == basic.Type);
+
+            if (find != null)
+            {
+                Nodes.Add((Node)JsonSerializer.Deserialize(json, find, config)!);
+            }
+
+        }
+        NodesChanged.InvokeAsync(Nodes);
+    }
+
+    public void CallStateHasChanged()
+    {
+        StateHasChanged();
+    }
+
+    void SomeKeyTrigger()
+    {
+        Console.WriteLine("hotkey detect!");
+        AddDebugMessage(new DebugMessage
+        {
+            message = "CTRL+SHIFT+A hotkey detect!"
+        });
+    }
+
+    void CreateNewNodeFromPalette(MouseEventArgs e, Node paletteNode)
+    {
+        Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
+        instance.Container = activeFlow.Id;
+        Nodes.Add(instance);
+        CalcFlowNodes();
+        NodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
+    }
+
+    #region DEBUGGER
+    const string noderedDebugMessageList = "#nodered-debug-message-list";
+
+
+
+    List<DebugMessage> messages = new List<DebugMessage> { new DebugMessage() };
+
+    //string obj1 = JsonSerializer.Serialize(new Msg1());
+
+    public void AddDebugMessage(DebugMessage msg)
+    {
+        messages.Add(msg);
+        StateHasChanged();
+        _ = js.ScrollDownElement(noderedDebugMessageList);
+    }
+
+    void AddDebugMessageTest()
+    {
+        messages.Add(DebugMessage.Test());
+        messages.Add(DebugMessage.Test());
+        messages.Add(DebugMessage.Test());
+        messages.Add(DebugMessage.Test());
+        _ = js.ScrollDownElement(noderedDebugMessageList);
+    }
+
+    void ClearDebugMessages()
+    {
+        messages.Clear();
+    }
+    #endregion
+
+    public void SaveFormClick()
+    {
+        //Console.WriteLine("SaveFormClick");
+        //AddDebugMessage(new DebugMessage { message = "SaveFormClick" });
+        //await js.ShowOffcanvas("node-editor-offcanvas", false);
+        _ = nodeEditContainer1.FormSaveClick();
+    }
+
+    public void DeployClick()
+    {
+        //AddDebugMessage(new DebugMessage
+        //{
+        //    message = "deployClick..."
+        //});
+
+        OnDeploy.InvokeAsync(Nodes);
+    }
+
+    void OnDblClickNode(NodeClickEventArgs e)
+    {
+        StartEditNode(e.Node);
+    }
+
+
+    void StartEditNode(Node node)
+    {
+        EditNode = node;//.Copy();
+        nodeEditContainer1.StartEditNode(EditNode);
+    }
+
+    void SaveNode(Node node)
+    {
+        Console.WriteLine("void SaveNode(Node node)");
+        //var n = Nodes.First(s => s.Id == node.Id);
+        //n = EditNode = node;
+        EditNode = node;
+        int index = Nodes.FindIndex(item => item.Id == node.Id);
+        Nodes[index] = EditNode;
+        EditNode.changed = true;
+        Nodes = Nodes.ToList();
+        NodesChanged.InvokeAsync(Nodes);
+
+        if (node is FlowNode flow)
+        {
+            ChangeFlow(flow);
+        }
+        else
+        {
+            CalcFlowNodes();
+        }
+        StateHasChanged();
+    }
+
+    void DeleteNode(string nodeId)
+    {
+        //var findNode = Nodes.First(s => s.Id == nodeId);
+        //Nodes.Remove(findNode);
+        //NodesChanged.InvokeAsync(Nodes);
+        editorActions.UserAction_Delete([nodeId]);
+    }
+
+    void OnWorkspaceClick(MouseEventArgs e)
+    {
+        if (quickNodeAddMenu.Visible)
+        {
+            quickNodeAddMenu.Hide();
+        }
+    }
+    async void OnWorkspaceDblClick(MouseEventArgs e)
+    {
+        quickNodeAddMenu.Show(e);
+        await Task.Delay(100);
+        await quickNodeAddMenu.Focus();
+    }
+
+    void CalcTabs()
+    {
+        flows = Nodes.Where(node => node is FlowNode).Select(s => s as FlowNode).OrderBy(s => s.Order).ToList()!;
+        if (flows.Count == 0)
+        {
+            ClickAddFlow();
+        }
+    }
+
+    void CheckActiveTab()
+    {
+        if (Nodes is not null && activeFlow is null)
+        {
+            var querystring = HttpUtility.ParseQueryString(new Uri(NavigationManager.Uri).Query);
+
+            string? flow = querystring["flow"];
+
+            if (string.IsNullOrEmpty(flow) == false)//NOT WORK
+            {
+                activeFlow = flows.FirstOrDefault(s => s.Id == flow);
+            }
+
+            activeFlow ??= flows.OrderBy(s => s.Order).FirstOrDefault();
+
+            CalcFlowNodes();
+        }
+    }
+
+
+    List<FlowNode> flows = new();
+
+    FlowNode? activeFlow = null;
+
+    public List<Node> FlowNodes => Nodes.Where(s => s.IsVisual && s.Container == activeFlow.Id).ToList();
+
+    //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
+    //public string InitialFlowId { get; set; }
+
+    void ChangeFlow(FlowNode flowNode)
+    {
+        activeFlow = flowNode;
+        CalcFlowNodes();
+        CalcVarNodes();
+        var url = NavigationManager.GetUriWithQueryParameter("flow", flowNode.Id);
+        NavigationManager.NavigateTo(url);
+    }
+
+    void CalcFlowNodes()
+    {
+        //FlowNodes = Nodes.Where(s => s.IsVisual && s.Container == activeFlow.Id).ToList();
+    }
+
+    void ClickAddFlow()
+    {
+        var flow = new FlowNode() { Name = "flow " + flows.Count };
+        Nodes.Add(flow);
+        NodesChanged.InvokeAsync(Nodes);
+        CalcTabs();
+        ChangeFlow(flow);
+    }
+
+    IReadOnlyCollection<VarNode> varNodes = new List<VarNode>();
+
+    void CalcVarNodes()
+    {
+        varNodes = Nodes.Where(s=>s is VarNode).Select(s=>(VarNode)s).OrderBy(s=>s.Name).ToList();
+    }
+
+    void OnClickAddVarNode()
+    {
+        var vname = "var" + Random.Shared.Next(10, 99);
+        Nodes.Add(new VarNode() { Container = activeFlow.Id, Name = vname });
+        NodesChanged.InvokeAsync(Nodes);
+        CalcVarNodes();
+    }
+
+    public void RecalcNodes()
+    {
+        CalcTabs();
+        CalcVarNodes();
+        CheckActiveTab();
+    }
+}

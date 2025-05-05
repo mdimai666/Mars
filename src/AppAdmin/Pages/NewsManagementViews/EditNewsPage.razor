@@ -1,0 +1,98 @@
+@page "/EditNews"
+@page "/EditNews/{ID:guid}"
+@attribute [Display(Name = "Записи")]
+@attribute [DParentPage(typeof(NewsManagementPage))]
+
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "Admin")]
+
+@inject UserService userService
+
+<ContentWrapper Title="Редактирование Новости" Breadcrumb="">
+
+    @if (_model != null)
+    {
+
+        <AntDesign.Form Model="@_model"
+                    Context="model"
+                    Layout="@FormLayout.Vertical"
+                    OnFinish="OnFinish"
+                    Class="form-compact"
+                    @ref="@form">
+            <ValidationSummary />
+
+
+            <FormItem>
+                <AntDesign.Input @bind-Value="@model.Title" Size="@InputSize.Large" />
+            </FormItem>
+
+            <div>
+                <div>
+                    Изображение
+                </div>
+                @*@if(model.FileList != null)
+                    {
+                    foreach(var file in model.FileList)
+                    {
+                    <span>@file.FileName</span>
+                    }
+
+                    }*@
+                @*@if(model.)*@
+                @if (!_addNewItem)
+            {
+                <FileUpload1 ID=ID MaxCount=1 ActionUrl=@Q.ServerUrlJoin("/api/Post/Upload")
+                         Accept=".jpg,.png,.jpeg"
+                         @bind-Files=@model.FileList />
+            }
+        </div>
+
+
+        <FormItem>
+            @*<AntDesign.TextArea @bind-Value="@model.Description" />*@
+            <WysiwygEditor Content=@edit_html @ref=QuillHtml />
+        </FormItem>
+
+
+        <FormItem>
+            <div class="q-gutter-md">
+
+                @if (!_addNewItem)
+                {
+                    <DDeleteButton OnConfirm=OnDeleteClick />
+                }
+
+                <Button Type="@ButtonType.Primary" HtmlType="submit">
+                    Сохранить
+                </Button>
+            </div>
+        </FormItem>
+
+    </AntDesign.Form>
+
+    }
+    else
+    {
+        <SharedLoader1 />
+    }
+
+</ContentWrapper>
+
+<style>
+    /* you can make up upload button and sample style by using stylesheets */
+    .ant-upload-select-picture-card i {
+        color: #999;
+        font-size: 32px;
+    }
+
+    .ant-upload-select-picture-card .ant-upload-text {
+        margin-top: 8px;
+        color: #666;
+    }
+
+    .ql-editor {
+        min-height: 300px;
+    }
+</style>

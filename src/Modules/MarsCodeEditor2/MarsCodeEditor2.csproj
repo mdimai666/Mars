@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <!--Author-->
+        <PackageId>mdimai666.Mars.MarsCodeEditor2</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <!--<Version>0.2.0</Version>-->
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.MarsCodeEditor2</Product>
+        <PackageTags>Mars;MonacoEditor;</PackageTags>
+        <Description>
+            code editorfor Mars
+        </Description>
+    </PropertyGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+		<PackageReference Include="BlazorMonaco" Version="3.3.0" />
+	</ItemGroup>
+
+</Project>

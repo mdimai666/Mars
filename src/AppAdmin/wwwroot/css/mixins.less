@@ -1,0 +1,70 @@
+// Mixins
+.xcenter() {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.xcenter-stretch() {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.xcenter-row() {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.xcenter-row-stretch() {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.bg-flipY() {
+    -moz-transform: scaleY(-1);
+    -o-transform: scaleY(-1);
+    -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+    filter: FlipV;
+    -ms-filter: "FlipV";
+}
+
+.bg-flipX() {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
+.mobile-only(){
+    @media @desktop {
+        display: none !important;
+    }
+
+    @media @mobiles {
+        display: block !important;
+    }
+}
+
+.desktop-only(){
+    @media @desktop {
+        display: block !important;
+    }
+
+    @media @mobiles {
+        display: none !important;
+    }
+}
+
+.text-stroke(@color){
+    text-shadow: -1px -1px 0 @color, 1px -1px 0 @color, -1px 1px 0 @color, 1px 1px 0 @color;
+}

@@ -1,0 +1,156 @@
+@push-size: 18px;
+
+.ani-hover-onpush {
+    border: 1px solid transparent !important;
+
+    &:not(:active):hover {
+        transform: translate(@push-size, -@push-size);
+        position: relative;
+        border: 1px solid @color-accent !important;
+        z-index: 1;
+        .animate__onPushUp_0();
+        -webkit-animation-name: onPushUp;
+        animation-name: onPushUp;
+
+        &::before {
+            /*border-left: @push-size solid @color-dark-accent;
+            border-bottom: @push-size solid @color-dark-accent;*/
+            border-left: 0 solid @color-dark-accent;
+            border-bottom: 0 solid @color-dark-accent;
+            clip-path: polygon( @push-size 0%, calc(100% - @push-size) 0%, 100% 0px, 100% calc(100% - @push-size), calc(100% - @push-size) 100%, 0% calc(100% + @push-size), 0% @push-size);
+            content: '';
+            position: absolute;
+            top: 0;
+            /*left: -@push-size;
+            bottom: -@push-size;*/
+            left: 0;
+            bottom: 0;
+            right: -2px;
+            .animate__onPushUp_0();
+            -webkit-animation-name: onPushUp_border;
+            animation-name: onPushUp_border;
+        }
+    }
+
+    &:focus, &:active {
+        box-shadow: inset 4px 4px 12px rgba(0, 0, 0, 0.25);
+    }
+}
+
+body.dark {
+    .ani-hover-onpush {
+        &:not(:active):hover {
+            border: 1px solid black !important;
+
+            &::before {
+                -webkit-animation-name: onPushUp_border__black;
+                animation-name: onPushUp_border__black;
+            }
+        }
+    }
+}
+
+@keyframes onPushUp {
+
+    0% {
+        transform: translate(0, 0);
+    }
+
+    40% {
+        transform: translate(@push-size, -@push-size);
+    }
+
+    60% {
+        transform: translate(calc(@push-size / 1.5), calc(-@push-size / 1.5));
+    }
+
+    100% {
+        transform: translate(@push-size, -@push-size);
+    }
+}
+
+@keyframes onPushUp_border {
+
+    0% {
+        border-left: 0 solid transparent;
+        border-bottom: 0 solid transparent;
+        left: 0;
+        bottom: 0;
+    }
+
+    40% {
+        border-left: @push-size solid @color-dark-accent;
+        border-bottom: @push-size solid @color-dark-accent;
+        left: -@push-size;
+        bottom: -@push-size;
+    }
+
+    60% {
+        border-left: calc(@push-size / 1.5) solid @color-dark-accent;
+        border-bottom: calc(@push-size / 1.5) solid @color-dark-accent;
+        left: calc(-@push-size / 1.5);
+        bottom: calc(-@push-size / 1.5);
+    }
+
+    100% {
+        border-left: @push-size solid @color-dark-accent;
+        border-bottom: @push-size solid @color-dark-accent;
+        left: -@push-size;
+        bottom: -@push-size;
+    }
+}
+
+@keyframes onPushUp_border__black {
+
+    0% {
+        border-left: 0 solid transparent;
+        border-bottom: 0 solid transparent;
+        left: 0;
+        bottom: 0;
+    }
+
+    40% {
+        border-left: @push-size solid black;
+        border-bottom: @push-size solid black;
+        left: -@push-size;
+        bottom: -@push-size;
+    }
+
+    60% {
+        border-left: calc(@push-size / 1.5) solid black;
+        border-bottom: calc(@push-size / 1.5) solid black;
+        left: calc(-@push-size / 1.5);
+        bottom: calc(-@push-size / 1.5);
+    }
+
+    100% {
+        border-left: @push-size solid black;
+        border-bottom: @push-size solid black;
+        left: -@push-size;
+        bottom: -@push-size;
+    }
+}
+
+.animate__onPushUp_0 {
+    -webkit-animation-duration: 0.35s;
+    animation-duration: 0.35s;
+    -webkit-animation-duration: 0.35s;
+    animation-duration: 0.35s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    animation-timing-function: ease-out;
+}
+
+.bg-trangle-end {
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 195px 350px;
+    background-image: url('/img/bg-trangles-end.svg');
+}
+
+.bg-trangle-start {
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: 292px 599px;
+    background-image: url('/img/bg-trangles-start.svg');
+}

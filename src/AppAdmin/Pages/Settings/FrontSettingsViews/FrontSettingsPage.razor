@@ -1,0 +1,35 @@
+@page "/Settings/Front"
+@using Mars.Core.Models;
+@attribute [Authorize(Roles = "Admin")]
+@inject IMarsWebApiClient client
+
+<SettingsPageWrapper>
+
+    <h1>Front settings</h1>
+
+    <BasicPage TModel="IReadOnlyCollection<AppFrontSettingsCfg>" LoadFunc="client.Option.AppFrontSettings">
+
+        <div class="vstack gap-2">
+            @foreach (var a in context)
+            {
+                <div class="card d-card-glow fz14px">
+                    <div class="card-body">
+                        <div>
+                            Url: <b>@(string.IsNullOrEmpty(a.Url) ? "/" : a.Url)</b>
+                        </div>
+                        <div>
+                            Mode: <b>@a.Mode</b>
+                        </div>
+                        @if (a.Mode != AppFrontMode.HandlebarsTemplate && a.Mode != AppFrontMode.None)
+                        {
+                            <div class="text-truncate1 text-break mw-100 d-block">
+                                Path: <b title="@a.Path">@a.Path</b>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+    </BasicPage>
+</SettingsPageWrapper>

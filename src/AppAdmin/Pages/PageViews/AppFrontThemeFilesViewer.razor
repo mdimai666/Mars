@@ -1,0 +1,78 @@
+@using Mars.Shared.Contracts.WebSite.Dto
+@using Mars.Shared.Contracts.WebSite.Models
+@inject IMarsWebApiClient client
+
+<div class="AppFrontThemeFilesViewer">
+    <div>
+        @if (Busy)
+        {
+            <SkeletonContent />
+        }
+        else if (template is null)
+        {
+            <div>
+                <div class="p-2 bg-secondary">
+                    AppFront is null
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-2">
+                @foreach (var _f in template.Pages)
+                {
+                    var f = _f;
+                    <div class="card p-1" title=@($"{f.FileName}")>
+                        <div class="vstack">
+                            <div class="text-accent">@f.Title</div>
+                            <div class="text-secondary fz12px">@f.Url</div>
+                            @PageContent?.Invoke(f)
+                        </div>
+                    </div>
+                }
+
+                <div class="ms-3">
+                    @foreach (var _f in template.Parts.Where(s=>s.Type != WebSitePartType.Page))
+                    {
+                        var f = _f;
+                        <div class="card p-1" title=@($"{f.FileName}")>
+                            <div class="vstack">
+                                <div class="text-accent">@f.FileName</div>
+                                @PartContent(f)
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    bool Busy;
+
+    static FMarsAppFrontTemplateSummaryResponse? template;
+    [Parameter]
+    public RenderFragment<FWebPageSummaryResponse> PageContent { get; set; } = default!;
+    [Parameter]
+    public RenderFragment<FWebPartSummaryResponse> PartContent { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Load();
+    }
+
+    async void Load()
+    {
+        if (template is not null) return;
+
+        Busy = true;
+        StateHasChanged();
+
+        template = await client.Front.FrontFiles();
+
+        Busy = false;
+        StateHasChanged();
+    }
+}

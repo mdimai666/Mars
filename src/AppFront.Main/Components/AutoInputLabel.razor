@@ -1,0 +1,12 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@typeparam TValue
+
+<FluentInputLabel AdditionalAttributes="@AdditionalAttributes" Label="@_displayName" Required=_required />
+
+@ChildContent
+
+@if (_description is not null)
+{
+    <div class="d-fluent-input-description">@_description</div>
+}

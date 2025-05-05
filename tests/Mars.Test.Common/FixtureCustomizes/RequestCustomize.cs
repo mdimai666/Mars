@@ -1,0 +1,155 @@
+using AutoFixture;
+using Mars.Core.Extensions;
+using Mars.Core.Utils;
+using Mars.Host.Data.OwnedTypes.PostTypes;
+using Mars.Host.Shared.Dto.Feedbacks;
+using Mars.Host.Shared.Dto.Users;
+using Mars.Shared.Contracts.Feedbacks;
+using Mars.Shared.Contracts.NavMenus;
+using Mars.Shared.Contracts.Posts;
+using Mars.Shared.Contracts.PostTypes;
+using Mars.Shared.Contracts.Roles;
+using Mars.Shared.Contracts.Users;
+using Bogus;
+using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
+
+namespace Mars.Test.Common.FixtureCustomizes;
+
+public sealed class RequestCustomize : ICustomization
+{
+    public void Customize(IFixture fixture)
+    {
+        var faker = new Faker("en");
+
+        fixture.Customize<CreatePostRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title, fixture.Create("Title - "))
+                                    .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
+                                    .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
+                                    .With(s => s.Slug, Tools.TranslateToPostSlug(fixture.Create("slug")))
+                                    //.With(s => s.Image, "")
+                                    //.With(s => s.Lang, Random.Shared.GetItems(["", "ru"], 1)[0])
+                                    .With(s => s.Type, "post")
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.LangCode, Chance(["", "ru"]))
+                                    .With(s => s.MetaValues, [])
+                                    );
+        
+        fixture.Customize<UpdatePostRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title, fixture.Create("Title - "))
+                                    .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
+                                    .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
+                                    .With(s => s.Slug, Tools.TranslateToPostSlug(fixture.Create("slug")))
+                                    //.With(s => s.Image, "")
+                                    //.With(s => s.Lang, Random.Shared.GetItems(["", "ru"], 1)[0])
+                                    .With(s => s.Type, "post")
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.LangCode, Chance(["", "ru"]))
+                                    .With(s => s.MetaValues, [])
+                                    );
+
+        fixture.Customize<CreatePostTypeRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title)
+                                    .With(s => s.TypeName, Tools.TranslateToPostSlug(faker.Commerce.ProductName()).Left(Host.Data.Constants.PostTypeConstants.TypeNameMaxLength))
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 3)).ToList())
+                                    .With(s => s.EnabledFeatures)
+                                    .With(s => s.PostStatusList)
+                                    .With(s => s.PostContentSettings)
+                                    .With(s => s.MetaFields)
+                                    );
+
+        fixture.Customize<CreateFeedbackRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Title, faker.Lorem.Sentence())
+                                    .With(s => s.Phone, Chance([faker.Phone.PhoneNumber(), null]))
+                                    .With(s => s.Email, Chance([faker.Internet.Email(), null]))
+                                    .With(s => s.FilledUsername, faker.Person.FullName)
+                                    .With(s => s.Content, faker.Lorem.Paragraph(2))
+                                    .With(s => s.Type, Chance(Enum.GetValues<FeedbackType>()).ToString())
+                                    );
+
+        fixture.Customize<CreateRoleRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Name, Chance(["tester", "moderator", "viwer", "zoo", "killer", "rabbit"]) + "-" + Guid.NewGuid().ToString().Left(8))
+                                    );
+
+        var createUser = () => new Faker<CreateUserRequest>("ru")
+            .RuleFor(s => s.FirstName, f => f.Person.FirstName)
+            .RuleFor(s => s.LastName, f => f.Person.LastName)
+            .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))
+            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(UserDetail.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.Password, Password.Generate(6, 2))
+            .RuleFor(s => s.Roles, ["Viewer"])
+            .RuleFor(s => s.BirthDate, new DateTime(1991, 6, 10))
+            .RuleFor(s => s.Gender, UserGender.Male)
+            .Generate();
+
+        fixture.Customize<CreateUserRequest>(composer => composer
+                                    .FromSeed(s => createUser())
+                                    .OmitAutoProperties()
+                                );
+
+        fixture.Customize<UpdateUserRequest>(composer => composer
+                                    .FromSeed(s =>
+                                    {
+                                        var user = createUser();
+                                        return new UpdateUserRequest
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            Email = user.Email,
+                                            FirstName = user.FirstName,
+                                            LastName = user.LastName,
+                                            MiddleName = user.MiddleName,
+                                            Roles = user.Roles,
+                                            BirthDate = user.BirthDate,
+                                            Gender = user.Gender,
+                                            PhoneNumber = user.PhoneNumber,
+                                        };
+                                    })
+                                    .OmitAutoProperties()
+                                );
+
+        var feedback = () => new Faker<CreateFeedbackRequest>("ru")
+            .RuleFor(s => s.FilledUsername, f => f.Person.FullName)
+            .RuleFor(s => s.Title, f => f.Name.JobTitle())
+            .RuleFor(s => s.Content, f => f.Name.JobDescriptor())
+            .RuleFor(s => s.Email, (f, s) => f.PickRandom(null, faker.Internet.Email(s.FilledUsername)))
+            .RuleFor(s => s.Phone, f => f.PickRandom(UserDetail.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.Type, f => f.PickRandom(Enum.GetValues<FeedbackType>().Select(s => s.ToString())))
+            .Generate();
+
+        fixture.Customize<CreateFeedbackRequest>(composer => composer
+                                    .FromSeed(s => feedback())
+                                    .OmitAutoProperties()
+                                );
+
+        fixture.Customize<CreateNavMenuRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title)
+                                    .With(s => s.Slug)
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 3)).ToList())
+                                    .With(s => s.Class)
+                                    .With(s => s.Style)
+                                    .With(s => s.Roles, Array.Empty<string>())
+                                    .With(s => s.MenuItems)
+                                );
+
+        fixture.Customize<UpdateNavMenuRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title)
+                                    .With(s => s.Slug)
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 3)).ToList())
+                                    .With(s => s.Class)
+                                    .With(s => s.Style)
+                                    .With(s => s.Roles, Array.Empty<string>())
+                                    .With(s => s.MenuItems)
+                                );
+    }
+}

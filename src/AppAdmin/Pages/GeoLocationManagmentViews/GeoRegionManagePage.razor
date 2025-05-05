@@ -1,0 +1,74 @@
+@page "/geo/GeoRegion"
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@(L["GeoRegion.many"])">
+
+    <GeoTabs />
+
+    <div class="spacer-2"></div>
+
+    <StandartManagementTable TModel=GeoRegion TService=GeoRegionService @ref=f
+                             SearchExpression=@(model => model.Name.ToLower().Contains(f.SearchText.ToLower()))>
+        <TableContent>
+            <Column @bind-Field=@context.Name Sortable>
+                <a @onclick=@(e=>f.EditClick(context)) class="text-primary">
+                    @context.Name
+                </a>
+            </Column>
+            <Column @bind-Field=@context.ShortName Sortable />
+            <Column @bind-Field=@context.Population Sortable />
+            @*<Column @bind-Field=@context.GeoRegionTypeId>
+                @context.GeoRegionType?.Title
+                </Column>*@
+            <Column @bind-Field=@context.OKTMO />
+            @*<Column @bind-Field=@context.Created Format="yyyy-MM-dd" Sortable Title="Создан" />*@
+        </TableContent>
+
+        <FormContent>
+            <h5>Данные</h5>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.Name" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.ShortName" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.OKTMO" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.InputNumber @bind-Value="@context.Population" />
+            </FormItem>
+
+            <h5>Администрация</h5>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoRegionInfo.HeadName" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoRegionInfo.HeadPhone" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoRegionInfo.Email" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.TextArea Rows=3 @bind-Value="@context.GeoRegionInfo.PostAddress" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoRegionInfo.AssistantName" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoRegionInfo.AssistantPhone" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoRegionInfo.AssistantEmail" />
+            </FormItem>
+
+        </FormContent>
+    </StandartManagementTable>
+
+</ContentWrapper>
+
+@code {
+    StandartManagementTable<GeoRegion, GeoRegionService> f = default!;
+
+}

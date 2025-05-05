@@ -1,0 +1,72 @@
+@page "/geo/GeoLocation"
+@using System.Linq.Expressions
+@inject IStringLocalizer<AppRes> L
+@*@inherits StandartEditForm1<GeoLocation,GeoLocationService>*@
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@(L["GeoLocation.many"])">
+
+    <GeoTabs />
+
+    <div class="spacer-2"></div>
+
+    @*<DSelectGuidServ @bind-Value=@selGeoTypeId
+        LabelExpression=@(s=>s.Title)
+        TService=GeoLocationTypeService TModel=GeoLocationType />*@
+
+    <StandartManagementTable TModel=GeoLocation TService=GeoLocationService @ref=f SearchExpression=search>
+        <TableContent>
+            <Column @bind-Field=@context.Name Sortable>
+                <a @onclick=@(e=>f.EditClick(context)) class="text-primary">
+                    @context.Name
+                </a>
+            </Column>
+            <Column @bind-Field=@context.ShortName Sortable />
+            <Column @bind-Field=@context.LocPopulation Sortable />
+            <Column @bind-Field=@context.GeoLocationTypeId>
+                @context.GeoLocationType?.Title
+            </Column>
+            <Column @bind-Field=@context.OKTMO />
+            @*<Column @bind-Field=@context.Created Format="yyyy-MM-dd" Sortable Title="Создан" />*@
+        </TableContent>
+
+        <FormContent>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.Name" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.ShortName" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.OKTMO" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.InputNumber @bind-Value="@context.LocPopulation" />
+            </FormItem>
+            <FormItem Label="Тип населенного пункта">
+                <DSelectGuidServ @bind-Value=@context.GeoLocationTypeId
+                                 LabelExpression=@(s=>s.Title)
+                                 OnValueChange=@(s=>context.GeoLocationType = s)
+                                 TService=GeoLocationTypeService TModel=GeoLocationType />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.Latitude" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.Longitude" />
+            </FormItem>
+        </FormContent>
+    </StandartManagementTable>
+</ContentWrapper>
+
+
+@code {
+    StandartManagementTable<GeoLocation, GeoLocationService> f = default!;
+
+    // Guid selGeoTypeId;
+
+    Expression<Func<GeoLocation, bool>> search =>
+        model => model.OKTMO.Contains(f.SearchText.ToLower())
+        || model.Name.ToLower().Contains(f.SearchText.ToLower());
+    //|| model.ShortName.ToLower().Contains(f.SearchText.ToLower());
+}

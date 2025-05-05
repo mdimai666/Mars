@@ -1,0 +1,41 @@
+@using Mars.Core.Extensions
+<div class="ConstructorEditor1"
+     style="min-height:60vh;"
+     @onmousemove=WorkspaceMouseMove
+     @onmousemove:stopPropagation
+     @onmousedown=WorkspaceMouseDown
+     @onmousedown:stopPropagation
+     @onmouseup=WorkspaceMouseUp
+     @onmouseup:stopPropagation>
+
+     <ConstructorBackdropGrid />
+
+    <div class="workspace d-none">
+        @foreach (var _block in Blocks)
+        {
+            var block = _block;
+            <CTBlock Block="@block"
+                 OnMouseClick="e=>BlockClick(e,block)"
+                 OnMouseDown="e=>BlockMouseDown(e,block)"
+                 OnMouseUp="e=>BlockMouseUp(e,block)">
+                <div>order: @block.Order</div>
+            </CTBlock>
+        }
+        @if (doDrag)
+        {
+            @foreach (var _d in dragElements)
+            {
+                var block = _d.block;
+                <CTBlock Block="@block"
+                 OnMouseClick="e=>BlockClick(e,block)"
+                 OnMouseDown="e=>BlockMouseDown(e,block)"
+                 OnMouseUp="e=>BlockMouseUp(e,block)">
+                    <div>order: @block.Order</div>
+                </CTBlock>
+            }
+        }
+    </div>
+</div>
+
+
+

@@ -1,0 +1,93 @@
+@using Mars.Datasource.Front.Services;
+@using Mars.Shared.Common
+@using Mars.WebApiClient.Interfaces
+
+<div class="DataSourceInfoComponent">
+    @*https://habr.com/ru/articles/696274/*@
+    <div class="d-flex gap-3 flex-wrap">
+        @*<a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("test"))>test</a>*@
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_size_pretty")) title="Размер табличных пространств">pg_size_pretty</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_database_size")) title="Размер баз данных">pg_database_size</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_namespaces_sizes")) title="Размер схем в базе данных">pg_namespaces_sizes</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("pg_total_relation_size")) title="Размер таблиц">pg_total_relation_size</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("connections_count")) title="Показывает количество открытых подключений">connections_count</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("query_in_running")) title="Показывает выполняющиеся запросы">query_in_running</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("check_db_timezone")) title="Проверяет часовой пояс базы">check_db_timezone</a>
+        <a class="btn btn-outline-primary" @onclick=@(e=>SendTextAction("BackupAsSQLFile")) title="BackupAsSQLFile">BackupAsSQLFile</a>
+    </div>
+
+    <hr />
+
+    @if (Busy)
+    {
+        <AppFront.Shared.Components.SharedLoader2 />
+    }
+    else if (lastAction != null)
+    {
+        <div class="p-5">
+            @if (!lastAction.Ok)
+            {
+                <div class="alert alert-danger">
+                    <pre>@lastAction.Message</pre>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    @if (!string.IsNullOrEmpty(lastAction.Message))
+                    {
+                        @lastAction.Message
+                    }
+                    else
+                    {
+                        <text>Ok</text>
+                    }
+                </div>
+
+                if (lastAction.Data is not null)
+                {
+                    <div class="overflow-scroll 1custom-scroll1 h-100" style="width:calc(100vw - 270px - 20px)">
+                        <table class="table table-hover">
+                            <tbody>
+                                @foreach (var row in lastAction.Data)
+                                {
+                                    <tr>
+                                        @foreach (var col in row)
+                                        {
+                                            <td>
+                                                <span class="text-nowrap">
+                                                    @col
+                                                </span>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Inject] public IDatasourceServiceClient service { get; set; } = default!;
+    bool Busy;
+
+    UserActionResult<string[][]>? lastAction = null;
+
+    public async void SendTextAction(string actionName)
+    {
+        Busy = true;
+        StateHasChanged();
+
+        var res = await service.ExecuteAction("default", new ExecuteActionRequest { ActionId = actionName, Arguments = [] });
+
+        lastAction = res;
+
+        Busy = false;
+        StateHasChanged();
+    }
+
+}

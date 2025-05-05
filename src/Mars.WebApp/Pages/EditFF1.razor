@@ -1,0 +1,146 @@
+@using Mars.Host.Shared.Dto.MetaFields
+@using Mars.Host.Shared.Models
+@using Mars.Host.Shared.Templators
+@using Mars.Host.Templators
+@using Mars.Shared.Models.Interfaces
+@using Mars.Shared.Templators;
+@using Mars.Templators
+@using Microsoft.AspNetCore.Components.Rendering
+@implements IMyRenderHelper
+
+<div class="ff-display">
+    @foreach (var f in MetaValues.Where(s => s.ParentId == Guid.Empty && s.TypeParentable == false).OrderBy(s=>s.MetaField.Order))
+    {
+
+        <div class="d-block mb-3">
+            <div id=@($"field-{f.MetaField.Id}")
+             data-key=@($"{f.MetaField.Key}")
+             class="fw-bold">
+                @f.MetaField.Title
+            </div>
+            <div class="fz20px">
+                @if (f.TypeRelation == false)
+                {
+                    if (f.Type == EMetaFieldType.Bool)
+                    {
+                        @*@(f.Bool ? "Да" : "Нет")*@
+                        <input type="checkbox" value=@f.Bool class="form-check" checked=@f.Bool />
+                    }
+                    else if (f.Type == EMetaFieldType.DateTime)
+                    {
+                        @f.DateTime.ToShortDateString()
+                    }
+                    else if (f.Type == EMetaFieldType.SelectMany)
+                    {
+                        IEnumerable<MetaFieldVariant> v = f.Get() as IEnumerable<MetaFieldVariant>;
+
+                        @*<ul>
+                            @foreach (var a in v)
+                            {
+                                <li>@a.Title</li>
+                            }
+                        </ul>*@
+
+                        <div class="checkbox-group1">
+                            @foreach (var p in f.MetaField.Variants)
+                            {
+                                bool _checked = v.Contains(p);
+                                <div>
+                                    <input type="checkbox" class="form-check-input" value="@p.Id" checked=@_checked />
+                                    <label class="form-check-label">@p.Title</label>
+                                </div>
+                            }
+                        </div>
+
+                    }
+                    else if (f.Type == EMetaFieldType.Select)
+                    {
+                        MetaFieldVariant v = f.Get() as MetaFieldVariant;
+
+                        @*@v.Title*@
+
+                        <select name="@f.MetaField.Key" class="form-select" >
+                            @foreach(var p in f.MetaField.Variants){
+                                @if(p.Id == v.Id)
+                                {
+                                    <option selected value="@p.Id">@p.Title</option>
+                                } else {
+                                    <option value="@p.Id">@p.Title</option>
+                                }
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <input type="text" name="@f.MetaField.Key" value=@f.Get() class="form-control" />
+                    }
+                }
+                else
+                {
+                    var e = Entity(f);
+                    if (f.ModelId == Guid.Empty)
+                    {
+                        <span>--не выбрано--</span>
+                    }
+                    else if (e is null)
+                    {
+                        <span>NULL</span>
+                    }
+                    else
+                    {
+                        if (e is Post post)
+                        {
+                            <span>@post.Title</span>
+                        }
+                        else if (e is FileEntity file)
+                        {
+                            if (f.Type == EMetaFieldType.Image)
+                            {
+                                <img src="@Req.FullUrl(file.FileUrl)" data-key="@f.MetaField.Key" class="ff-image" />
+                            }
+                            else if (f.Type == EMetaFieldType.File)
+                            {
+                                @file.FileName
+                            }
+
+                        }
+                        else if (e is ITitleEntity titled)
+                        {
+                            <span>@titled.Title</span>
+                        }
+                        else
+                        {
+                            <span not-implement>@@</span>
+                        }
+                    }
+                }
+            </div>
+        </div>
+
+    }
+</div>
+
+@code {
+
+    [Parameter] public object Model { get; set; }
+
+    [Parameter] public IEnumerable<MetaValueDto> MetaValues { get; set; }
+    [Parameter] public Dictionary<Guid, MetaRelationObjectDict> DataDict { get; set; }
+    [Parameter] public WebClientRequest Req { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    IBasicEntity Entity(MetaValueDto metaValue)
+    {
+        if (DataDict is null) return null;
+        if (metaValue.ModelId == Guid.Empty) return null;
+        if (DataDict.ContainsKey(metaValue.ModelId))
+        {
+            return DataDict[metaValue.ModelId].Entity;
+        }
+        return null;
+    }
+}

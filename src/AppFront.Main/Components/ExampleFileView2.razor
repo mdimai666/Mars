@@ -1,0 +1,32 @@
+<div>
+    <div class="ExampleFileView">
+        <div class="inner">
+            @if (IsImage)
+            {
+                <Image2 Width="88px" Height="88px" Src=@(Url) >
+                </Image2>
+            }
+            else
+            {
+                <a href="@Url" target="_blank" >
+                    <div class="img" style="background-image: url('@ExtensionIconUrl')">
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+    <a href="@Url" target="_blank" title="@Title">
+        Пример
+    </a>
+</div>
+
+@code {
+    [Parameter] public string Url { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = default!;
+
+    public bool IsImage => Q.HostingInfo.ExtIsImage(Ext);
+
+    public string Ext => Path.GetExtension(Url).TrimStart('.');
+
+    public string ExtensionIconUrl => Q.HostingInfo.PreviewIconUrl(Ext);
+}

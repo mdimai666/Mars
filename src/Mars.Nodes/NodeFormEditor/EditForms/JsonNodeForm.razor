@@ -1,0 +1,31 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(JsonNode))]
+
+<div class="form-group">
+    <label>property</label>
+    <InputText class="form-control" @bind-Value=Node.Property />
+</div>
+
+<div class="form-group">
+    <label>Action</label>
+    <InputSelect @bind-Value=Node.Action>
+        @foreach (var m in Enum.GetValues(typeof(JsonNode.JsonNodeAction)))
+        {
+            <option value="@((JsonNode.JsonNodeAction)m)">@m</option>
+        }
+    </InputSelect>
+</div>
+
+
+<div class="form-group">
+    <label>FormatJsonString</label>
+    <InputCheckbox @bind-Value=Node.FormatJsonString />
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    JsonNode Node { get => (JsonNode)Value; set => Value = value; }
+
+
+}

@@ -1,0 +1,43 @@
+.docker-state-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-family: sans-serif;
+}
+
+    .docker-state-badge[data-container-state="created"] {
+        color: #6c757d;
+        background-color: #f8f9fa;
+    }
+
+    .docker-state-badge[data-container-state="restarting"] {
+        color: #fd7e14;
+        background-color: #fff3e8;
+    }
+
+    .docker-state-badge[data-container-state="running"] {
+        color: #198754;
+        background-color: #e6f7ee;
+    }
+
+    .docker-state-badge[data-container-state="paused"] {
+        color: #0dcaf0;
+        background-color: #e6f9ff;
+    }
+
+    .docker-state-badge[data-container-state="exited"] {
+        color: #6c757d;
+        background-color: #f8f9fa;
+    }
+
+    .docker-state-badge[data-container-state="dead"] {
+        color: #dc3545;
+        background-color: #fce8e8;
+    }
+
+    .docker-state-badge[data-container-state=""] {
+        color: #6c757d;
+        background-color: #f8f9fa;
+    }

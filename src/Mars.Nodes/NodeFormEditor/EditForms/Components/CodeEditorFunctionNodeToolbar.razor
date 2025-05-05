@@ -1,0 +1,78 @@
+@using AppFront.Shared.Services
+@using Flurl.Http
+@using Mars.Core.Features
+@using Microsoft.FluentUI.AspNetCore.Components
+@using BlazorMonaco.Editor
+@using System.Collections.Immutable;
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+<FluentToolbar>
+    <CodeEditorSuggestSearchInput SearchApiUrl="/api/Node/FunctionCodeSuggest/di:services?search=" OnSnippetSelect="OnSelectSnippet" />
+
+    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e=>open=!open) slot="end">
+        Tools
+        <FluentIcon Slot="end" Value="@(new Icons.Regular.Size16.ChevronDown())" />
+    </FluentButton>
+
+    <FluentMenu @bind-Open=open Anchor="editor2-actionmenu-button" @ref=actionMenu>
+        <FluentMenuItem OnClick="OnImageActionClick">Image</FluentMenuItem>
+        @* <FluentMenuItem OnClick="OnAddServiceClick">AddService</FluentMenuItem> *@
+        @* <FluentDivider></FluentDivider> *@
+        @* <FluentMenuItem>Menu item 3</FluentMenuItem> *@
+    </FluentMenu>
+</FluentToolbar>
+
+@code {
+    FluentButton actionMenuButton1 = default!;
+    FluentMenu actionMenu = default!;
+    bool open = false;
+
+    [CascadingParameter]
+    MarsCodeEditor2.CodeEditor2 editor2 { get; set; } = default!;
+
+    [Inject] IAppMediaService mediaService { get; set; } = default!;
+    [Inject] IFlurlClient client { get; set; } = default!;
+
+
+    private async Task OnImageActionClick()
+    {
+
+        var file = await mediaService.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            var imgSrc = file.UrlRelative;
+            var imgTag = $"<img src=\"{imgSrc}\" alt=\"{file.Name}\" />";
+            await InsertText(imgTag);
+            StateHasChanged();
+        }
+
+    }
+
+    async Task InsertText(string text)
+    {
+        var sel = await editor2.Monaco.GetSelection();
+        var operations = new List<IdentifiedSingleEditOperation>()
+        {
+            new() {
+                ForceMoveMarkers = true,
+                Range = sel,
+                Text = text
+            }
+        };
+        var sels = new List<BlazorMonaco.Selection> { sel };
+
+        await editor2.Monaco.ExecuteEdits("FluentToolbar", operations, sels);
+    }
+
+
+    public Task OnAddServiceClick()
+    {
+        return Task.CompletedTask;
+    }
+
+    private void OnSelectSnippet(KeyValuePair<string, string> val)
+    {
+        _ = InsertText(val.Value + "\n");
+    }
+}

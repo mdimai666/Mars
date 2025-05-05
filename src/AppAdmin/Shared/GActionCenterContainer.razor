@@ -1,0 +1,84 @@
+@using AppFront.Shared.Interfaces
+@using Mars.Shared.Contracts.Common
+@using Mars.Shared.Contracts.Posts
+@using Mars.Shared.Contracts.Search
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (Visible)
+{
+    <section id="global_search_container" class="card white">
+        <div class="d-search-content">
+
+            @if (Items.Count() == 0)
+            {
+                <SharedContentNoRecords />
+            }
+            else
+            {
+                <div class="d-search-list-container ">
+
+                    @foreach (var f in Items)
+                    {
+                        var item = f;
+
+                        <d-search-item href="@f.Url" @onclick=@(e=>OnResultItemClick(item))>
+                            <div class="d-search-item px-3 py-1">
+                                <div class="text-accent h5 m-0 fw-normal">
+                                    @f.Type: <FluentHighlighter HighlightedText="@Search" Delimiters=" ,;" Text=@f.Title />
+                                    @* @f.Title *@
+                                </div>
+                                <div class="text-black">
+                                    @* @((MarkupString)(f.Description ?? f.Key)) *@
+                                    <FluentHighlighter HighlightedText="@Search" Delimiters=" ,;" Text=@(f.Description??f.Key) />
+                                </div>
+                            </div>
+                        </d-search-item>
+                    }
+
+                    @*
+                    @foreach (var f in locals)
+                    {
+                        var item = f;
+
+                        <a href="@f.Url" @onclick=@(e=>OnResultItemClick(item,e))>
+                            <div class="d-search-item px-3 py-1">
+                                <div class="text-accent h5 m-0 fw-normal">
+                                    @((MarkupString)f.Title)
+                                </div>
+                                <div class="text-black">
+                                    @((MarkupString)f.Description)
+                                </div>
+                            </div>
+                        </a>
+                    }
+
+                    @if (IsBusy)
+                    {
+                        <SharedLoader2 />
+                    }
+                    else
+                    {
+                        @foreach (var f in remotes)
+                        {
+                            var item = f;
+
+                            <a href="@f.Url" @onclick=@(e=>OnResultItemClick(item,e))>
+                                <div class="d-search-item px-3 py-1">
+                                    <div class="text-accent h5 m-0 fw-normal">
+                                        @((MarkupString)f.Title)
+                                    </div>
+                                    <div class="text-black">
+                                        @((MarkupString)f.Description)
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    }
+                    *@
+                </div>
+            }
+        </div>
+        @*<JsonDump Model="list" />*@
+    </section>
+}
+

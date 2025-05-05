@@ -1,0 +1,97 @@
+﻿@attribute [OptionEditFormForOptionAttribute(typeof(MediaOption))]
+@attribute [Display(Name = "Media")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="MediaOption">
+    <h3>Настройки Media</h3>
+
+    <div class="d-flex flex-column gap-4">
+
+        <div class="card">
+            <div class="card-header">Расширения файлов</div>
+            <div class="card-body">
+                <div>
+                    <label>Maximum Input File Size</label>
+                    <Microsoft.AspNetCore.Components.Forms.InputNumber @bind-Value=@context.MaximumInputFileSizeSetter
+                                                                       class="form-control" />
+                </div>
+
+                <div class="spacer-2"></div>
+
+                <FormItem2 For=@(()=>context.IsAllowAllFileTypes)>
+                    <Microsoft.FluentUI.AspNetCore.Components.FluentSwitch @bind-Value=@context.IsAllowAllFileTypes />
+                </FormItem2>
+
+                <FormItem2 For="@(()=>context.AllowedFileExtensionsSetter)" class="col">
+                    <Microsoft.FluentUI.AspNetCore.Components.FluentTextField @bind-Value=@context.AllowedFileExtensionsSetter Disabled=@context.IsAllowAllFileTypes Class="w-100" />
+                </FormItem2>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Image auto resize upload image</div>
+            <div class="card-body">
+
+                <div class="form-check mb-3">
+                    <Microsoft.AspNetCore.Components.Forms.InputCheckbox @bind-Value=@context.IsAutoResizeUploadImage
+                                                                         id="IsAutoResizeUploadImage"
+                                                                         class="form-check-input" />
+                    <label class="form-check-label" for="IsAutoResizeUploadImage">@nameof(context.IsAutoResizeUploadImage)</label>
+                </div>
+
+                @if (context.IsAutoResizeUploadImage)
+                {
+                    <ImagePreviewSizeConfigEditForm @bind-Model="@context.AutoResizeUploadImageConfig" IgnoreName />
+                }
+
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Image resize</div>
+            <div class="card-body">
+                @foreach (var _variant in context.ImagePreviewSizeConfigs)
+                {
+                    var variant = _variant;
+                    <div class="d-flex">
+                        <ImagePreviewSizeConfigEditForm @bind-Model=@variant />
+                        <button class="btn btn-outline-danger btn-close align-self-center ms-3"
+                                type="button"
+                        @onclick=@(e=>RemovePrevireSizeCfg(variant))></button>
+                    </div>
+                }
+                <div class="__FOOTER">
+                    <button class="btn btn-light ms-3" type="button" @onclick=AddPreviewSizeCfg>
+                        <i class="bi bi-plus me-3"></i>
+                        Добавить
+                    </button>
+                    <button class="btn btn-light ms-3" type="button" @onclick=ResetPreviewSizes>
+                        <i class="bi bi bi-arrow-clockwise me-3"></i>
+                        Сбросить по умолчанию
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</EditOptionForm>
+
+@code {
+    EditOptionForm<MediaOption>? form;
+
+    void AddPreviewSizeCfg()
+    {
+        form!.Model.ImagePreviewSizeConfigs = form.Model.ImagePreviewSizeConfigs.Append(new ImagePreviewSizeConfig()).ToArray();
+    }
+
+    void RemovePrevireSizeCfg(ImagePreviewSizeConfig cfg)
+    {
+        form!.Model.ImagePreviewSizeConfigs = form.Model.ImagePreviewSizeConfigs.Where(s => s != cfg).ToArray();
+    }
+
+    void ResetPreviewSizes()
+    {
+        form!.Model.ImagePreviewSizeConfigs = MediaOption.DefaultImagePreviewSizeConfigs.ToArray();
+    }
+}

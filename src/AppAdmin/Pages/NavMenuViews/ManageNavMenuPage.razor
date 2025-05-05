@@ -1,0 +1,95 @@
+@page "/NavMenu"
+@using System.Linq.Expressions
+@using Mars.Shared.Contracts.NavMenus
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper Title="@AppRes.NavMenus">
+
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+        <div class="ms-auto">
+            <a href="@urlEditPage">
+                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="106"
+                            Virtualize
+                            ShowHover
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            OnRowClick="OnRowClick"
+                            GridTemplateColumns="3fr 1fr 1fr"
+                            TGridItem="NavMenuSummaryResponse">
+                <TemplateColumn SortBy="@(GridSort<NavMenuSummaryResponse>.ByDescending(f=>f.Title))"
+                                Title="@AppRes.Title"
+                                InitialSortDirection="SortDirection.Ascending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true">
+
+                    <div class="col">
+                        <div class="card h-100 list-group-item-action d-card-glow">
+                            <div class="card-body">
+                                <h5 class="card-title">@context.Title</h5>
+                                <div class="text-secondary small">Элементов: 0</div>
+                                <div class="_tags">
+                                    @foreach (var tag in context.Tags)
+                                    {
+                                        <span class="badge bg-light text-dark">@tag</span>
+                                    }
+                                </div>
+                            </div>
+                            <a href="@urlEditPage/@context.Id" class="text-primary stretched-link"></a>
+                        </div>
+                    </div>
+
+                </TemplateColumn>
+                <PropertyColumn Property=@(f=>f.CreatedAt)
+                                Title="@AppRes.CreatedAt"
+                                Format="d"
+                                Sortable="true" Align="Align.End" />
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+        </div>
+    </div>
+
+    @*
+            <div class="col">
+                <div class="card h-100 list-group-item-action d-card-glow">
+                    <div class="card-body">
+                        <h5 class="card-title">@context.Title</h5>
+                        <div class="text-secondary small">Элементов: @context.MenuItems.Count</div>
+                         <div class="_tags">
+                            @foreach (var tag in context.Tags)
+                            {
+                                <span class="badge bg-light text-dark">@tag</span>
+                            }
+                        </div> 
+                    </div>
+                    <a href="@urlEditPage/@context.Id" class="text-primary stretched-link"></a>
+                </div>
+            </div>
+    *@
+
+</ContentWrapper>
+
+

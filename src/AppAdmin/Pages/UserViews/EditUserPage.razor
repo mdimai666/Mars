@@ -1,0 +1,88 @@
+@page "/EditUser/{ID:guid}"
+@* @page "/EditUser" *@
+
+@using Mars.Shared.Contracts.Roles
+@using Mars.Shared.Contracts.Users
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IStringLocalizer<AppRes> L
+@attribute [Display(Name = "Редактирования профиля")]
+@attribute [DParentPage(typeof(AppAdmin.Pages.UserViews.UsersPage))]
+
+<ContentWrapper Title="Редактирования профиля">
+
+    <CascadingValue Value="ID">
+        @*<TabsProfile />*@
+    </CascadingValue>
+
+    <StandartEditForm1 TModel="EditUserModel"
+                       GetAction="@(()=>GetAction(ID))"
+                       Context="model"
+                       SaveAction="@((model,_)=>EditUserModel.SaveAction(client, model, isCreateNew, availRoles))"
+                       AfterDelete="AfterDelete"
+                       AfterSave="AfterSave"
+                       @ref=_editForm1>
+
+        <div class="vstack gap-2">
+            <FluentPersona Name="@model.FullName"
+                           Style="width:50px"
+                           ImageSize="50px" />
+            <div class="spacer-1"></div>
+            <FormItem2 For="@(()=>model.LastName)">
+                <FluentTextField @bind-Value=@model.LastName />
+            </FormItem2>
+            <FormItem2 For="@(()=>model.FirstName)">
+                <FluentTextField @bind-Value=@model.FirstName />
+            </FormItem2>
+            <FormItem2 For="@(()=>model.MiddleName)">
+                <FluentTextField @bind-Value=@model.MiddleName />
+            </FormItem2>
+            <FormItem2 For="@(()=>model.Email)">
+                <FluentTextField TextFieldType="TextFieldType.Email" @bind-Value=@model.Email />
+            </FormItem2>
+            <FormItem2 For="@(()=>model.PhoneNumber)">
+                <FluentTextField @bind-Value=@model.PhoneNumber Pattern="/^+91(7\d|8\d|9\d)\d{9}$/" />
+            </FormItem2>
+            <FormItem2 For="@(()=>model.Gender)">
+                <FluentRadioGroup @bind-Value=model.Gender>
+                    <FluentRadio TValue=UserGender Value="@UserGender.None">@(L[UserGender.None.ToString()])</FluentRadio>
+                    <FluentRadio TValue=UserGender Value="@UserGender.Male">@(L[UserGender.Male.ToString()])</FluentRadio>
+                    <FluentRadio TValue=UserGender Value="@UserGender.Female">@(L[UserGender.Female.ToString()])</FluentRadio>
+                </FluentRadioGroup>
+            </FormItem2>
+            <FormItem2 For="@(()=>model.Roles)">
+                <FluentAutocomplete TOption="RoleSummaryResponse"
+                                    AutoComplete="off"
+                                    Width="300px"
+                                    Items="@availRoles"
+                                    Placeholder="Select"
+                                    Multiple
+                                    OptionText="@(f=>f.Name)"
+                                    IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                    KeepOpen
+                                    @bind-SelectedOptions="@model.Roles" />
+            </FormItem2>
+            <FormItem2 For="@(()=>model.BirthDate)">
+                <FluentDatePicker @bind-Value="@model.BirthDate" />
+            </FormItem2>
+        </div>
+
+    </StandartEditForm1>
+    @*
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@context.MetaFields">
+                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue Vertical Client />
+            </CascadingValue>
+        </CascadingValue>
+
+        <Avatar class="img-fluid" Size="200" Icon="user"></Avatar>
+
+        <UserAvatar Value="@user.AvatarUrl" Size="200px" />
+        <div>
+            <Button Size="small" OnClick="OnClickSelectAvatar">Изменить</Button>
+            @if (!string.IsNullOrEmpty(user.AvatarUrl))
+            {
+                <Button Size="small" Danger OnClick="ClearAvatar">Удалить</Button>
+            }
+        </div>
+    *@
+</ContentWrapper>

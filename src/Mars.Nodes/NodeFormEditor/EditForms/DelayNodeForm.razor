@@ -1,0 +1,14 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DelayNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>DelayMillis</label>
+    <InputNumber class="form-control" @bind-Value=Node.DelayMillis />
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    DelayNode Node { get => (DelayNode)Value; set => Value = value; }
+
+}

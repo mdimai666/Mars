@@ -1,0 +1,56 @@
+@page "/Login"
+@layout BlankLayout
+
+@*<Header1 />*@
+<div>
+
+    <div class="spacer-3"></div>
+
+    <div class="card shadow rounded-15 border-0 mx-auto" style="max-width:490px;">
+        <div class="card-body">
+
+
+            <div class="d-flex flex-column" style="">
+                <header class="p-5 d-none">
+                    @*<h1 class="text-center">
+                    <img src="/img/logo.png" alt="" />
+                    </h1>*@
+
+                </header>
+                <main id="Content" class="flex-fill p-3 xcenter">
+                    <div class="d-block mx-auto w-100" style="1width: 349px">
+                        <h2 class="1big-text fz20px fw-bold text-center">ВХОД</h2>
+
+                        <LoginForm />
+                        
+                    </div>
+                </main>
+                <footer class="p-3 d-none">
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <div class="spacer-2"></div>
+
+</div>
+
+
+<style>
+    body, .ant-layout {
+        /*background-color: #f9f9f9 !important;*/
+    }
+
+    .big-text {
+        font-weight: 700;
+        font-size: 45px;
+        color: var(--bs-primary);
+    }
+
+    h1 {
+        font-weight: 600;
+        font-size: 36px;
+        color: var(--bs-primary);
+        /*font-family: 'Comfortaa';*/
+    }
+</style>

@@ -1,0 +1,130 @@
+﻿@using Mars.Nodes.Core
+@using Microsoft.AspNetCore.Components.Forms
+
+<div id="QuickNodeAddMenu" class="card user-select-none" 
+    style=@($"left:{X}px;top:{Y}px;display:{(Visible?"block":"none")}")>
+    <div class="card-body p-1 h-100 d-flex flex-column">
+
+        @* <EditForm Model="@SearchText" style="height:31px;"> *@
+            <div class="input-group input-group-sm">
+                <input type="text" class="form-control"
+                    value=@SearchText
+                    @oninput="OnInput"
+                    @ref=inputSearch
+                    autocomplete="off" placeholder="search..." />
+            </div>
+        @* </EditForm> *@
+
+        <div class="flex-fill flex-grow-0" style="height: calc(100% - 31px)">
+            <ul class="list-group nodes-list">
+                @foreach (var _f in Filtered())
+                {
+                    NodeFil f = _f;
+                    <li class="list-group-item px-1 py-0" :key="'pnode' + node.id">
+                        <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <NodeComponent Node="@f.Node" OnMouseDown=@(e=>SelectNode(e, f.Node)) />
+                        </svg>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public double X { get; set; } = 100;
+    [Parameter] public double Y { get; set; } = 100;
+    [Parameter] public IEnumerable<Node> Palette { get; set; } = default!;
+
+    [Parameter] public EventCallback<SelectNodeEvent> OnSelectNode { get; set; }
+
+
+    ElementReference inputSearch;
+
+    string SearchText = "";
+
+    void SelectNode(MouseEventArgs e, Node node)
+    {
+        SelectNodeEvent a = new(e, node);
+
+        OnSelectNode.InvokeAsync(a);
+    }
+
+    IEnumerable<NodeFil> Filtered()
+    {
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            return Palette.Select((node, i) => new NodeFil(node, i));
+        }
+
+        string text = SearchText.ToLower();
+        return Palette.Where(node => node.Label.ToLower().Contains(text)).Select((node, i) => new NodeFil(node, i));
+    }
+
+    public class SelectNodeEvent
+    {
+        public MouseEventArgs MouseEventArgs;
+        public Node Node;
+
+        public SelectNodeEvent(MouseEventArgs mouseEventArgs, Node node)
+        {
+            MouseEventArgs = mouseEventArgs;
+            Node = node;
+        }
+    }
+
+    class NodeFil
+    {
+        public Node Node;
+        public int index;
+        //public bool select;
+
+        public NodeFil(Node node, int index)
+        {
+            this.Node = node;
+            this.index = index;
+        }
+    }
+
+    private void OnInput(ChangeEventArgs args)
+    {
+        var newValue = args.Value?.ToString() ?? string.Empty;
+
+        SearchText = newValue;
+    }
+
+    public void Show(MouseEventArgs e)
+    {
+        Visible = true;
+        X = e.OffsetX;
+        Y = e.OffsetY;
+    }
+
+    public void Hide()
+    {
+        Visible = false;
+    }
+
+    public async Task Focus()
+    {
+        await inputSearch.FocusAsync();
+    }
+}
+
+<style>
+    #QuickNodeAddMenu {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        display: block;
+        top: 100px;
+        left: 100px;
+    }
+
+        #QuickNodeAddMenu .nodes-list {
+            overflow-y: scroll;
+            overflow-x: hidden;
+            max-height: 100%;
+        }
+</style>

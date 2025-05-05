@@ -1,0 +1,48 @@
+@page "/Settings/Option/{OptionTypeFullName}"
+@using Mars.Shared.Tools
+
+<SettingsPageWrapper>
+
+    @if (Busy)
+    {
+        <SharedLoader2 />
+    }
+    else if (optionFormType is null)
+    {
+        <p>Option type Form not found</p>
+    }
+    else
+    {
+        <DynamicComponent Type="optionFormType.PageType" />
+    }
+</SettingsPageWrapper>
+
+@code {
+    string _optionTypeFullName = default!;
+    bool Busy;
+
+    [Parameter]
+    public string OptionTypeFullName
+    {
+        get => _optionTypeFullName;
+        set { _optionTypeFullName = value; Load(); }
+    }
+
+    [Inject] ModelInfoService modelService { get; set; } = default!;
+
+    GPageInfo? optionFormType;
+
+    void Load()
+    {
+        Busy = true;
+        optionFormType = null;
+
+        string normalName = OptionTypeFullName.Replace("+", ".");
+
+        optionFormType = ASideOptions.OptionForms(modelService)
+           .FirstOrDefault(s => s.Kind == EComponentType.ComponentBase
+                && s.PageType.FullName == normalName);
+
+        Busy = false;
+    }
+}

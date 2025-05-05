@@ -1,0 +1,19 @@
+﻿<div class="input-group mb-3" style="max-width: 150px">
+    <button class="btn btn-outline-secondary" type="button"
+    @onclick=@(e=>Node.OutputCount--)
+            id="@($"Node-{Node.Id}-minus")">
+        <i class="bi bi-dash"></i>
+    </button>
+    <InputNumber type="text" @bind-Value=@Node.OutputCount
+                 min="0" max="20"
+                 class="form-control" placeholder="" aria-label="output count" />
+    <button class="btn btn-outline-secondary" type="button"
+    @onclick=@(e=>Node.OutputCount++)
+            id="@($"Node-{Node.Id}-plus")">
+        <i class="bi bi-plus"></i>
+    </button>
+</div>
+
+@code {
+    [CascadingParameter] Node Node { get; set; } = default!;
+}

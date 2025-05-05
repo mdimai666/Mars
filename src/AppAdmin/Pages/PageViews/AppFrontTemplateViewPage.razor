@@ -1,0 +1,78 @@
+@page "/template/view"
+@using Mars.Shared.Contracts.WebSite.Dto
+@inject IMarsWebApiClient client
+
+
+<ContentWrapper Title="Template">
+
+    <div class="d-block d-lg-flex gap-3">
+        <aside class="vstack custom-scroll1 flex-grow-0" style="width:250px;overflow:scroll;max-height:80vh;">
+            <AppFrontThemeFilesViewer>
+                <PageContent>
+                    <a href="template/view/?file=@context.FileRelPath" class="stretched-link"></a>
+                </PageContent>
+                <PartContent>
+                    <a href="template/view/?file=@context.FileRelPath" class="stretched-link"></a>
+                </PartContent>
+            </AppFrontThemeFilesViewer>
+        </aside>
+        <div class="flex-fill">
+            @if (file is null)
+            {
+                <SharedContentNoRecords />
+            }
+            else
+            {
+                <div>
+                    <div class="_head">
+                        <div class="fs-4">@file</div>
+                        <div class="text-accent">
+                            @webPart?.FileRelPath.Replace(".html", "").Replace('\\', '/')
+                        </div>
+                    </div>
+
+                    <div class="_page-content mt-3">
+                        @if (Busy)
+                        {
+                            <SharedLoader1 />
+                        }
+                        else
+                        {
+                            <div class="card rounded-0 p-3" style="max-width:50vw;">
+                                <pre style="overflow:scroll;">@webPart?.Content</pre>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+
+            }
+        </div>
+    </div>
+
+
+</ContentWrapper>
+
+@code {
+    [Parameter, SupplyParameterFromQuery(Name = "file")]
+    public string? File { get => file; set { file = value; _ = Load(); } }
+
+    string? file;
+
+    FWebPartResponse? webPart;
+    bool Busy;
+
+    async Task Load()
+    {
+        if (file is null) return;
+
+        Busy = true;
+        StateHasChanged();
+        webPart = null;
+
+        webPart = await client.Front.GetPart(file);
+
+        Busy = false;
+        StateHasChanged();
+    }
+}

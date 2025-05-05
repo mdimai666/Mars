@@ -1,0 +1,322 @@
+@using AppFront.Shared.Tools
+@using MarsCodeEditor2
+@using MarsEditors
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+
+@implements IDisposable
+
+<h1>Gallery</h1>
+
+<StandartEditContainer ID=@ID TModel=Post TService=PostService
+                       OnLoadData="OnLoadData"
+                       BeforeSave="BeforeSave"
+                       HideDatesSection=true
+                       Class=@($"post-{postType.TypeName} GalleryEditView")
+                       @ref=f CanCreate=false>
+    <ChildContent>
+        <FormItem Style="order:-11">
+            <AntDesign.Input @bind-Value=@context.Title Size="@InputSize.Large" TValue="string" OnChange="OnChangeTitle" />
+        </FormItem>
+
+        <FormItem Style="order:-10">
+            <AntDesign.Input @bind-Value=@context.Slug Size="@InputSize.Small" />
+        </FormItem>
+        @*<FormItem WrapperColSpan="10">
+        <AntDesign.Input @bind-Value=@context.TypeName />
+        </FormItem>*@
+
+        <div class="spacer-1"></div>
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Content)))
+        {
+            <div class="">
+                <div class="">
+                    Содержимое
+                </div>
+                <div class="">
+                    @if (postType.PostContentType == EPostContentType.WYSIWYG)
+                    {
+                        <WysiwygEditor Content="@context.Content" @ref=editor1 />
+                    }
+                    else if (postType.PostContentType == EPostContentType.Code)
+                    {
+                        @*<textarea class="form-control custom-scroll1" spellcheck="false" @bind=@context.Content
+                style="font-family:'Cascadia Code', monospace ;color:blue;height:80vh;overflow:scroll;" />*@
+
+                        <div>
+                            <div class="text-end mb-1">
+                                <Select Value="@lang1"
+                                        TItemValue="string"
+                                        TItem="string"
+                                        Size="small"
+                                        Style="width: 180px;"
+                                        DataSource="MarsCodeEditor.Language.Array"
+                                        ValueChanged="v=>{ lang1=v; codeEditor1?.SetModelLanguage(v); }"
+                                        EnableSearch>
+                                    @*<SelectOptions>
+                            @foreach (var item in MarsCodeEditor.Language.Array)
+                            {
+                            <SelectOption TItemValue="string" TItem="string" Value=@item Label=@item />
+                            }
+                            </SelectOptions>*@
+                                </Select>
+                            </div>
+                            @* <MarsCodeEditor @ref=codeEditor1
+                    Lang=@MarsCodeEditor.Language.handlebars
+                    OnSave="OnSaveFromCodeEditor"
+                    Value="@f.Model.Content" /> *@
+
+                            <MarsCodeEditor2.CodeEditor2 @ref=codeEditor1
+                                                          Lang=@MarsCodeEditor.Language.handlebars
+                                                          OnSave="OnSaveFromCodeEditor"
+                                                          Value="@f.Model.Content" />
+                        </div>
+                    }
+                    else
+                    {
+                        <AntDesign.TextArea MinRows="8" @bind-Value=@context.Content />
+                    }
+
+                </div>
+            </div>
+        }
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Excerpt)))
+        {
+            <div class="">
+                <div class="">
+                    Краткая выдержка
+                </div>
+                <AntDesign.TextArea MinRows="4" @bind-Value=@context.Excerpt />
+            </div>
+        }
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.FileList)))
+        {
+            <div>
+                <div class="">
+                    Файлы
+                </div>
+                <div class="">
+                    <ZayavkaFileUploadViewTmp ID="@context.Id"
+                                              @bind-Files="@context.FileList"
+                                              ActionUrl='@Q.ServerUrlJoin("api/Post/Upload?file_group=files")'
+                                              ViewFiltergroup=""
+                                              MinCount="0" MaxCount="10" ReadOnly=false />
+
+                </div>
+            </div>
+        }
+
+        <div class="spacer-1"></div>
+
+        @*<h5>MetaValues = @context.MetaValues?.Count</h5>*@
+
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@postType.MetaFields">
+                <CascadeStateChanger Context="h" OnStateChange="()=>StateHasChanged()">
+                    <CascadingValue Value="h">
+                        <AppFront.Shared.Components.MetaFieldViews.FormMetaValue />
+                    </CascadingValue>
+                </CascadeStateChanger>
+            </CascadingValue>
+        </CascadingValue>
+
+        <div>
+            @if (@context.MetaValues?.Count > 0)
+            {
+                <Button OnClick="e=>{ context.MetaValues.Clear(); }">Очистить</Button>
+            }
+        </div>
+
+        <div class="spacer-3"></div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h2>Фотографии</h2>
+                    <div class="spacer-1"></div>
+
+                    @if (f.IsAddNew)
+                    {
+                        <SharedContentNoRecords />
+                    }
+                    else
+                    {
+                        <div class="col">
+                            <GalleryPhotosList GalleryId="ID" @ref=galleryPhotosList />
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </ChildContent>
+
+    <SectionSidePublish>
+        @if (!true)
+        {
+            <div>
+                @*==*@
+                <label class="d-block">
+                    Тип записи
+                </label>
+                <Select @bind-Value="@context.Type"
+                        TItemValue="string"
+                        TItem="string"
+                        Style="min-width: 250px;"
+                        DefaultValue="postType.TypeName"
+                        EnableSearch>
+                    <SelectOptions>
+                        @foreach (var item in Q.Site.PostTypes)
+                        {
+                            <SelectOption TItemValue="string" TItem="string" Value=@item.TypeName Label=@item.Title />
+                        }
+                    </SelectOptions>
+                </Select>
+                @*==*@
+            </div>
+        }
+
+        @if (postType.EnabledFeatures.Contains(PostType.Feature_Modify_CreatedField))
+        {
+            <FormItem>
+                @* <DatePicker @bind-Value=context.Created DefaultValue="DateTime.Now" /> *@
+                <Microsoft.FluentUI.AspNetCore.Components.FluentDatePicker Value=@context.Created ValueChanged=@(v=>context.Created = v??DateTime.Now) />
+            </FormItem>
+            @if (context.Modified != DateTime.MinValue)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Изменено: @context.Modified.ToLocalTime()</h6>
+            }
+        }
+        else
+        {
+            @if (!f.IsAddNew)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Создана: @context.Created.ToLocalTime()</h6>
+            }
+            else
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Создание</h6>
+            }
+
+            @if (context.Modified != DateTime.MinValue)
+            {
+                <h6 class="card-subtitle mb-2 text-muted">Изменено: @context.Modified.ToLocalTime()</h6>
+            }
+        }
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Status)))
+        {
+            <div class="mt-3">
+                @*==*@
+                <label class="d-block">
+                    Статус
+                </label>
+                @* <Select @bind-Value="@context.Status"
+            TItemValue="string"
+            TItem="string"
+            Style="min-width: 250px;"
+            DefaultActiveFirstOption
+            EnableSearch>
+            <SelectOptions>
+            @foreach (var item in postType.PostStatusList)
+            {
+            <SelectOption TItemValue="string" TItem="string" Value=@item.Slug Label=@item.Title />
+            }
+            </SelectOptions>
+            </Select> *@
+                <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@context.Status"
+                                                                       TOption="PostStatus"
+                                                                       OptionValue=@(s=>s.Slug)
+                                                                       OptionText=@(s=>s.Title ?? s.Slug)
+                                                                       Items=@postType.PostStatusList
+                                                                       Style="width: 250px;" />
+                @*==*@
+            </div>
+        }
+        @if (f?.IsAddNew ?? false)
+        {
+            <div class="mt-3">
+                PostType: @QueryPostType
+            </div>
+        }
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Lang)))
+        {
+            <div class="mt-3">
+                @*==*@
+                <label class="d-block">
+                    Статус
+                </label>
+                <FormItem>
+                    <AntDesign.Input @bind-Value=@context.Lang />
+                </FormItem>
+                @*==*@
+            </div>
+        }
+        <div class="mt-3">
+            @postType?.EnabledFeatures.JoinStr(",")
+        </div>
+    </SectionSidePublish>
+
+    <SectionExtraSidebar>
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Tags))
+        || postType.EnabledFeatures.Contains(nameof(Post.CategoryId)))
+        {
+            <section class="editpost-taxonomy mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        @if (postType.EnabledFeatures.Contains(nameof(Post.CategoryId)))
+                        {
+
+                            <FormItem>
+                                <PSelectVariants @bind-Value=context.CategoryId ModelName=@nameof(PostCategory) />
+                            </FormItem>
+                        }
+
+                        @if (postType.EnabledFeatures.Contains(nameof(Post.Tags)))
+                        {
+
+                            <FormItem>
+                                <AntDesign.Select Mode="tags"
+                                                  Placeholder="tags"
+                                                  @bind-Values="@context.SetTags"
+                                                  TItemValue="string"
+                                                  TItem="string"
+                                                  MaxTagCount="20"
+                                                  HideSelected
+                                                  EnableSearch=false
+                                                  Size="small">
+                                    <SelectOptions>
+                                        @foreach (var _item in context.Tags)
+                                        {
+                                            <SelectOption TItemValue="string" TItem="string" Value=@_item Label=@_item />
+                                        }
+                                    </SelectOptions>
+                                </AntDesign.Select>
+                            </FormItem>
+                        }
+
+                    </div>
+                </div>
+            </section>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                @if (f.Model.Type == "page")
+                {
+                    <a target="_blank" href="@Q.ClientUrlJoin(f.Model.Slug)">Open new Tab</a>
+                }
+                else
+                {
+                    <a target="_blank" href=@Q.ClientUrlJoin($"{f?.Model?.Type}/{ID}")>Open new Tab</a>
+                }
+            </div>
+        </div>
+    </SectionExtraSidebar>
+</StandartEditContainer>
+

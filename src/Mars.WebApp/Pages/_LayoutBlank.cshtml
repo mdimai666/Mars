@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Monaco editor</title>
+    @*<link rel="stylesheet" href="~/libs/bootstrap5/css/bootstrap.min.css" />*@
+    @*<link rel="stylesheet" href="~/css/monaco-editor.css" />*@
+    
+    @*<link rel="stylesheet" data-name="vs/editor/editor.main"
+          href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/editor/editor.main.min.css" />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/basic-languages/handlebars/handlebars.min.js" integrity="sha512-urcvlv64na196NXXhK16BKOe+uOHy1Jnaey/MmozqQS6JSXfYjVLN6aHD+1A09mnb59utDc6GObqHsDz2TbqSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/basic-languages/less/less.min.js" integrity="sha512-YPp2jWfegSjBZ09ll731kCTScvy084s7Z1bK99lr2YTWp8iHEQTshyE/tbUTuVhj+zN4xfCunE/syFOhMxpe5w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/basic-languages/pgsql/pgsql.min.js" integrity="sha512-Yuw0DCNWxNwN2O47gpy4hVYOMqYezQe7cWe2C+FnvHFoubJDoKB9PpPehtEVBDEmc2JtLQ/nO99Z23zTtQo0lQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/loader.min.js"></script>
+*@
+    <script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs' } }</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/loader.min.js"></script>
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/basic-languages/pgsql/pgsql.min.js"></script>*@
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/basic-languages/handlebars/handlebars.min.js" integrity="sha512-urcvlv64na196NXXhK16BKOe+uOHy1Jnaey/MmozqQS6JSXfYjVLN6aHD+1A09mnb59utDc6GObqHsDz2TbqSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>*@
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/basic-languages/handlebars/handlebars.min.js" integrity="sha512-urcvlv64na196NXXhK16BKOe+uOHy1Jnaey/MmozqQS6JSXfYjVLN6aHD+1A09mnb59utDc6GObqHsDz2TbqSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>*@
+
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/editor/editor.main.js" ></script>*@
+
+    @* <script src="https://unpkg.com/emmet-monaco-es/dist/emmet-monaco.min.js"></script>*@
+    <script src="~/mars/js/emmet-monaco.min.js"></script>
+
+    <script src="~/js/language-log.js" asp-append-version="true"></script>
+    <script src="~/js/code.js" asp-append-version="true"></script>
+
+</head>
+<body>
+    @RenderBody()
+
+    <style>
+    html,body{ padding:0;margin:0;overflow:hidden;}
+    </style>
+
+</body>
+</html>

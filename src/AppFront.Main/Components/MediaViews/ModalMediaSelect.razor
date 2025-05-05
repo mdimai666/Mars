@@ -1,0 +1,66 @@
+@using Mars.Shared.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialog Hidden="@(!_visible)" aria-label="Select media file dialog"
+              Modal=true
+              @ref=Dialog
+              Class="ModalMediaSelect"
+              Style="--dialog-width: 80vw;z-index:998;"
+              @ondialogdismiss=@(()=>_visible=false)
+              PreventScroll=true>
+    <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+        <FluentLabel Typo="Typography.Header">Выбор файла</FluentLabel>
+    </FluentDialogHeader>
+    <FluentDialogBody>
+        @if (_visible)
+        {
+            <FluentMediaFilesList ReadOnly=ReadOnly @ref=refMediaFilesList>
+                <ItemActionBottom Context="file">
+                    <FluentButton Appearance="Appearance.Accent" Class="w-100" OnClick="e=>OnFileSelect(file)">выбрать</FluentButton>
+
+                </ItemActionBottom>
+            </FluentMediaFilesList>
+        }
+    </FluentDialogBody>
+</FluentDialog>
+
+
+@code {
+    [Inject] IAppMediaService service { get; set; } = default!;
+
+    FluentMediaFilesList? refMediaFilesList;
+    FluentDialog Dialog = default!;
+
+
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+
+    bool _visible = false;
+
+
+    public async Task<FileListItemResponse?> ShowModalForSelect()
+    {
+        _file = null;
+
+        if (Q.User.IsAuth == false) return null;
+        _visible = true;
+        StateHasChanged();
+
+        while (_visible == true)
+        {
+            await Task.Delay(25);
+        }
+
+        return _file;
+
+    }
+
+    FileListItemResponse? _file = null;
+
+    void OnFileSelect(FileListItemResponse file)
+    {
+        //Value = file.Id;
+        _file = file;
+        _visible = false;
+    }
+}

@@ -1,0 +1,162 @@
+@using System.Linq.Expressions
+@using Mars.Shared.Contracts.Files
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IStringLocalizer<AppRes> L
+
+
+@if (Value == Guid.Empty)
+{
+    @if (true)
+    {
+        <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
+            <span>
+                нет
+            </span>
+        </div>
+    }
+    else
+    {
+        <a>filename</a>
+    }
+}
+else
+{
+    @if (previewLoading)
+    {
+        <div class="xcenter" style="background:#ededed;width:102px;height:102px;">
+            <span>
+                <SharedLoader2 />
+            </span>
+        </div>
+    }
+    else if (filePreview is null)
+    {
+        <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
+            <span>
+                нет превью
+            </span>
+        </div>
+    }
+    else
+    {
+        <div class="d-document-uploader">
+            <div class="MediaTable">
+                <div class="items-container gap-2 d-file-list">
+                    @{
+                        FileSummaryResponse file = filePreview;
+                        <div class="d-file-item xcenter" title="@file.Name">
+                            <div class="d-file-item-actions-top">
+                                @if (Q.User.IsAuth)
+                                {
+                                    <div>
+                                        @*<a href="@file.FileUrl" class="btn btn-sm btn-primary xcenter" style="height:23px;">
+                        <Icon Type="link"/>
+                        </a>*@
+                                    </div>
+
+                                    <div>
+                                        @if (!ReadOnly)
+                                        {
+                                            <FluentButton OnClick=@(e=>Value = Guid.Empty)></FluentButton>
+                                        }
+                                    </div>
+                                    @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                                }
+                            </div>
+
+                            @if (file.IsImage)
+                            {
+                                <Image2 Width="102px" PreviewSrc=@(file.Url)
+                                        Src="@(file.PreviewIcon)"
+                                        Title="@file.Name"
+                                        Class="cursor-pointer" />
+                            }
+                            else
+                            {
+                                <div class="d-file-preview-icon" style="background-image:url('@(file.PreviewIcon)')"></div>
+                            }
+
+                            <div class="d-file-item-actions-bottom">
+                                @if (Q.User.IsAuth)
+                                {
+                                    <FluentButton Appearance="Appearance.Accent" OnClick="ShowModalForSelect">
+                                        выбрать
+                                    </FluentButton>
+                                }
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+
+    [Inject] public IAppMediaService service { get; set; } = default!;
+
+
+    Guid _value;
+    [Parameter]
+    public Guid Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value).Wait();
+            OnValueChange.InvokeAsync(_value);
+            if (!Q.IsPrerender)
+            {
+                _ = LoadPreview();
+            }
+        }
+    }
+    [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
+    [Parameter] public EventCallback<Guid> OnValueChange { get; set; }
+
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+
+    FileSummaryResponse? filePreview = null;
+    bool previewLoading = false;
+
+
+    async Task LoadPreview()
+    {
+        if (Value == Guid.Empty) return;
+
+        //var find = refMediaFilesList?.Files?.FirstOrDefault(s => s.Id == Value);
+
+        //if (find is not null)
+        //{
+        //    filePreview = find;
+        //    return;
+        //}
+
+        previewLoading = true;
+        StateHasChanged();
+
+        this.filePreview = await service.Get(Value);
+
+        previewLoading = false;
+        StateHasChanged();
+    }
+
+    async void ShowModalForSelect()
+    {
+
+        FileSummaryResponse file = await service.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            Value = file.Id;
+        }
+    }
+
+}

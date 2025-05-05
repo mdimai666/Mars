@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--Project-->
+
+		<!--Author-->
+		<PackageId>mdimai666.Mars.Nodes.Core</PackageId>
+		<PackageVersion>$(MarsAppVersion)</PackageVersion>
+		<!--<Version>0.2.0</Version>-->
+		<Authors>mdimai666</Authors>
+		<Company>mdimai666</Company>
+		<Product>Mars.Nodes.Core</Product>
+		<PackageTags>Mars;Nodes;</PackageTags>
+		<Description>
+			Mars Nodes core entities;
+		</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+	</ItemGroup>
+
+</Project>

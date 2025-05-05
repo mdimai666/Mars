@@ -1,0 +1,67 @@
+@using Mars.Host.Shared.Services
+@inherits LayoutComponentBase
+@inject IOptionService optionsService
+
+<div id="main-layout1" style="min-height:100vh;">
+    <div class="header">
+        <div class="logo" />
+        <div class="d-flex justify-content-between">
+        
+            @*<Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new []{"1"})  >
+
+                <MenuItem Key="1">Index</MenuItem>
+                <MenuItem Key="2">nav 2</MenuItem>
+            
+                <div class"d-flex justify-content-between">
+                    <div>
+                        <MenuItem Key="1">Index</MenuItem>
+                        <MenuItem Key="2">nav 2</MenuItem>
+                        <MenuItem Key="3">nav 3</MenuItem>
+                    </div>
+                    <div>
+
+                    <NavLink href="https://antblazor.com/en-US/components/table">AntBlazor</NavLink>
+                    </div>
+                </div>
+
+            
+            </Menu>*@
+
+            @*<DrawMenu Menu="TopMenu"></DrawMenu>*@
+
+            <div class="gx-2">
+                <NavLink class="text-white" href="https://antblazor.com/en-US/components/table" target="_blank">AntBlazor</NavLink>
+                <span class="text-secondary">|</span>
+                <NavLink class="text-white" href="https://www.w3schools.com/bootstrap4/bootstrap_flex.asp" target="_blank">BS4</NavLink>
+                <span class="ms-2">&nbsp;</span>
+
+                <LoginDisplay />
+            </div>
+        </div>
+    </div>
+    <div>
+        <aside width="200px" class="site-layout-background">
+            @* <Sidebar1/> *@
+        </aside>
+        <div style=" padding: 0 24px 24px;">
+            <d-breadcrumb Style="margin: 16px 0;">
+                <a>Home</a>
+                <a>List</a>
+                <a>App</a>
+            </d-breadcrumb>
+            <div class="site-layout-background" Style=" padding: 24px; margin: 0; min-height: 280px;">
+                @Body
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    //Mars.Services.MenuForDraw TopMenu { get; set; }
+
+    //protected override void OnInitialized()
+    //{
+    //    TopMenu = new MenuForDraw();
+
+    //}
+}

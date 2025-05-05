@@ -1,0 +1,12 @@
+<div class="TotalResultsFound text-secondary @Class" style=@Style>
+    @if (TotalCount != null)
+    {
+        @string.Format(AppRes.TotalResultsFound, TotalCount)
+    }
+</div>
+
+@code {
+    [Parameter] public int? TotalCount { get; set; }
+    [Parameter] public string Class { get; set; } = default!;
+    [Parameter] public string Style { get; set; } = default!;
+}

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
+        <ProjectReference Include="..\NodeFormEditor\NodeFormEditor.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj" />
+    </ItemGroup>
+
+</Project>

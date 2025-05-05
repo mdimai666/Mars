@@ -1,0 +1,94 @@
+@page "/RoleManagement"
+@using AppShared.Dto
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper>
+
+
+
+    <h3>Управление ролями</h3>
+    <hr />
+
+    @if (Busy)
+    {
+        <SharedLoader1 />
+    }
+    else
+    {
+
+        <div class="text-end">
+            @if (Program.Dev)
+            {
+                <Button Type=@ButtonType.Dashed OnClick=TestClaimAppFront>
+                    TestClaim AppFront.Post.Add 
+                </Button>
+                <Button Type=@ButtonType.Dashed OnClick=TestClaimHost>
+                    TestClaim Host.Post.Add 
+                </Button>
+            }
+            <Button Type=@ButtonType.Primary OnClick=SaveClick>
+                <Icon Type="save"></Icon>
+                Сохранить
+            </Button>
+        </div>
+
+        <div class="spacer-1"></div>
+
+
+        <div class="d-flex">
+            <div style="width: 200px;" class="border-right">
+
+                <div>
+                    Ролей (@model.RoleClaims.Count())
+                </div>
+
+                <RadioGroup @bind-Value="@selRoleClaim" TValue=RoleClaimsDto>
+                    @foreach (var role in model.RoleClaims)
+                    {
+                        <Radio TValue=RoleClaimsDto Value="@(role)" Class="d-block h3">
+                            @(L[role.Role.Name])
+                        </Radio>
+                    }
+                </RadioGroup>
+
+            </div>
+            <div class="pl-4">
+
+                @if (selRoleClaim is null)
+                {
+                    <div class="h-5">
+                        Выберите
+                    </div>
+                }
+                else
+                {
+                    <div class="h3">
+                        @(L[selRoleClaim.Role.Name])
+                    </div>
+                    <hr />
+                    @foreach (var group in selRoleClaim.Groups)
+                    {
+                        <div class="mb-4">
+                            <h4>@(L[group.Title])</h4>
+
+                            @foreach (var cap in group.RoleCapElements)
+                            {
+                                <div class="v-for">
+                                    <Checkbox @bind-Value=cap.Checked>
+                                        @(L[cap.Title])
+                                    </Checkbox>
+                                </div>
+
+                            }
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+    }
+</ContentWrapper>
+
+

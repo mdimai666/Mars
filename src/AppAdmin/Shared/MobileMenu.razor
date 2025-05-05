@@ -1,0 +1,12 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<List<MenuItem>>
+
+<FluentDialogBody>
+    <Menu2 Class="menu-admin1" Items=Content />
+</FluentDialogBody>
+<FluentDialogFooter Visible=false />
+
+@code {
+    [Parameter] public List<MenuItem> Content { get; set; } = default!;
+}

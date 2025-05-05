@@ -1,0 +1,26 @@
+@page "/dev"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager;
+
+<ContentWrapper Class="xcenter p-5">
+
+    <SharedLoader1 />
+
+</ContentWrapper>
+
+@code {
+    protected override void OnInitialized()
+    {
+        //#if DEBUG
+        //string devUrl = Q.ServerUrlJoin("/dev");
+        //navigationManager.NavigateTo(devUrl);
+        //#else
+        //JSRuntime.InvokeVoidAsync("location.reload");
+        //#endif
+
+        string devUrl = Q.ServerUrlJoin("/dev");
+        JSRuntime.InvokeVoidAsync("location.assign", devUrl);
+
+    }
+}
+

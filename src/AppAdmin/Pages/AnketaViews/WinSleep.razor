@@ -1,0 +1,181 @@
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Authorization
+@inject IStringLocalizer<AppRes> L
+@if (IsBusy)
+{
+    <div class="m-5">
+        <SharedLoader1 />
+    </div>
+}
+else if (LastAnswer == null)
+{
+    <section class="bg-lime p-5 rounded-15 mb-5">
+        <h5 class="text-center">Сколько раз в сутки вы спите?</h5>
+
+        <div class="spacer-3"></div>
+
+        <div class="d-flex justify-content-around">
+            <a href="/Anketa/Fill/1">
+                <Button>1 раз</Button>
+            </a>
+            <a href="/Anketa/Fill/2">
+                <Button>2 раза</Button>
+            </a>
+            <a href="/Anketa/Fill/3">
+                <Button>3 раза и более</Button>
+            </a>
+        </div>
+
+        <div class="spacer-3"></div>
+
+        <div class="text-center">
+            <img src="/img/marginalia-delete-confirmation 1.png" alt="" />
+
+        </div>
+
+    </section>
+}
+else
+{
+
+    @if (false)
+    {
+        
+    }
+    else if (LastAnswer.IsNarushenieRitma())
+    {
+        <section class="bg-lime p-4 rounded-15 mb-5">
+            <div class="text-center">
+                <img src="/img/marginalia-no-comments 1.png" alt="" />
+                <div class="spacer-4"></div>
+            </div>
+            <h5 class="text-center">У вас нарушение циркадного ритма. Советуем обратиться за консультацией к специалистам.</h5>
+        </section>
+    }
+    else if (LastAnswer.IsSova())
+    {
+        <section class="bg-lime p-5 rounded-15 mb-5">
+            <h3 class="">Сова</h3>
+            <p>
+                Совы самостоятельно пробуждаются поздно, не ранее чем за 2-3 часа до полудня, пики активности приходятся на вечернее-ночное время, ложатся спать поздно, нередко после полуночи.
+                Для активизации требуются тонизирующие средства, такие как крепкий кофе, чай, контрастный душ, двигательная активность, при этом сонливость всё равно может сохраняться. Иногда просыпаются рано утром, но через короткое время снова засыпают. Аппетита по утрам нет, он появляется к обеду. Поэтому, завтрак должен быть легким, не отнимающим силы на переваривание пищи. И без большой кружки кофе не обойтись.
+            </p>
+        </section>
+    }
+    else if (LastAnswer.IsJavoronok())
+    {
+        <section class="bg-lime p-5 rounded-15 mb-5">
+            <h3 class="">Жаворонок</h3>
+            <p>
+                Группы людей, имеющих сдвинутый вперед циркадный ритм. Самостоятельно и легко пробуждаются рано утром, активны в первой половине дня, после полудня наступает спад. Рано ложатся спать. «Жаворонки» лучше работают на «свежую» голову, испытывая пик физической активности. К вечеру требовать от них совершения ответственных поступков – нецелесообразное решение. Однако если «Жаворонкам» приходится ночью бодрствовать, то утро сопровождается состоянием анабиоза. Они крайне тяжело возвращаются к привычному режиму дня, испытывая дискомфорт и впадая в депрессию.
+                Жаворонкам можно порекомендовать есть на завтрак белковую пищу, которая надолго обеспечит чувство сытости, а вот кофе лучше заменить зеленым чаем, чтобы не вызвать перевозбуждения.
+
+            </p>
+        </section>
+    }
+    else if (LastAnswer.IsGolub())
+    {
+        <section class="bg-lime p-5 rounded-15 mb-5">
+            <h3 class="">Голубь</h3>
+            <p>
+                «Голуби» — это что-то среднее между «совами» и «жаворонками». Комфортное время подъема для них – около 9 часов утра. Также у них отличается период дневной активности – он равномерно распределен по всему дню, без пиковых моментов и сильных спадов. Люди с таким хронотипом ложатся спать примерно в 11 часов вечера.  Они способны трудиться на протяжении всего дня, а клонить в сон их начинает после 23 часов вечера. Этот хронотип можно считать самым удобным и применимым для современного мира. Голуби достаточно пластичны и небольшие перемены режима не вызывают у них особого дискомфорта.
+            </p>
+        </section>
+    }
+    else
+    {
+        <section class="bg-lime p-5 rounded-15 mb-5">
+            @*<ContentNoRecords />*@
+            <h3>Ждем результата... </h3>
+            <p>зайдите позже</p>
+        </section>
+    }
+
+    <section>
+        <div class="p-3">
+            <div class="text-center">
+                <Button Class="btn-pass" OnClick=@(e=>LastAnswer=null)>Пройти заново</Button>
+            </div>
+        </div>
+    </section>
+
+}
+
+@*====================*@
+
+
+<div class="spacer-3"></div>
+
+<h5>История запросов  </h5>
+
+<StandartManagementTable TModel=AnketaAnswer
+                         TService=AnketaAnswerService
+                         @ref=f
+                         SearchExpression=search
+                         GetQueryFilter=@(s=>s.AddQuery<AnketaAnswer>(x=>Q.User.Id == x.UserId))
+                         Class="my-border-table232sdsas"
+                         OnLoad=OnTableLoad
+                         CanCreate=false CanDelete=false>
+    <TableContent>
+
+        <Column @bind-Field=@context.Status Sortable>
+            <div class="d">
+                @if (context.Status == 0)
+                {
+                    <text>
+                        Ждет результата
+                    </text>
+                }
+                else
+                {
+                    @context.StatusAsText()
+                }
+            </div>
+        </Column>
+        @*<Column @bind-Field=@context.Status Sortable Width="100" Class="text-center">
+        <div class="badge1 text-black @context.StatusBgColor()">
+        <span>@context.StatusAsText()</span>
+        </div>
+        </Column>*@
+        <Column @bind-Field=@context.Created Format="yyyy-MM-dd" Sortable Title="Дата" Width="150" />
+        @*<ActionColumn Width="150">
+        <DDeleteButton OnConfirm=@(e=>f.Delete(context.Id)) />
+        </ActionColumn>*@
+    </TableContent>
+
+</StandartManagementTable>
+
+@code {
+    StandartManagementTable<AnketaAnswer, AnketaAnswerService> f = default!;
+
+    //Expression<Func<AnketaAnswer, bool>> search => model =>
+    //    model.Title.ToLower().Contains(f.SearchText.ToLower());
+
+    Expression<Func<AnketaAnswer, bool>>? search = null;
+
+    bool IsBusy { get; set; } = true;
+
+    AnketaAnswer? LastAnswer { get; set; } = null;
+
+    public void Refresh()
+    {
+        f.Refresh();
+    }
+
+    void OnTableLoad(TotalResponse<AnketaAnswer> data)
+    {
+        if (data.Ok)
+        {
+            //LastStatus = data.Records?.FirstOrDefault()?.Status ?? -2;
+            LastAnswer = data.Records.FirstOrDefault();
+            IsBusy = false;
+        }
+    }
+}
+
+
+<style>
+    .my-border-table232sdsas .ant-table-content table {
+        /*border: 1px solid #d5d5d5;*/
+    }
+</style>

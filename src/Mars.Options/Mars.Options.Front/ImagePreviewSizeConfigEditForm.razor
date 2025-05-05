@@ -1,0 +1,64 @@
+﻿<div class="d-flex gap-4">
+    @if (!IgnoreName)
+    {
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <Microsoft.AspNetCore.Components.Forms.InputText @bind-Value=@Model.Name class="form-control" />
+        </div>
+    }
+    <div class="mb-3">
+        <label class="form-label">Width</label>
+        <Microsoft.AspNetCore.Components.Forms.InputNumber @bind-Value=@Model.Width class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Height</label>
+        <Microsoft.AspNetCore.Components.Forms.InputNumber @bind-Value=@Model.Height class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ResizeMode</label>
+        <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@Model.ResizeMode class="form-select">
+            @foreach (var opt in Enum.GetValues<ImagePreviewSizeConfig.CropScaleMode>())
+            {
+                <option value="@opt">@opt</option>
+            }
+        </Microsoft.AspNetCore.Components.Forms.InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Compression</label>
+        <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@Model.Compression class="form-select">
+            @foreach (var opt in Enum.GetValues<ImagePreviewSizeConfig.EncoderCompression>())
+            {
+                <option value="@opt">@opt</option>
+            }
+        </Microsoft.AspNetCore.Components.Forms.InputSelect>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool IgnoreName { get; set; }
+
+    ImagePreviewSizeConfig _model = default!;
+    [Parameter]
+    public ImagePreviewSizeConfig Model
+    {
+        get => _model;
+        set
+        {
+            if (_model == value) return;
+            _model = value;
+            ModelChanged.InvokeAsync(_model).Wait();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<ImagePreviewSizeConfig> ModelChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (IgnoreName)
+        {
+            Model.Name = "_";
+        }
+    }
+
+}

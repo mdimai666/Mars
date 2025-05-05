@@ -1,0 +1,238 @@
+@page "/dev/monaco"
+@{
+    Layout = "~/Pages/_LayoutBlank.cshtml";
+}
+
+<div id="container" class="my-monaco-container" style="height:100vh;"></div>
+
+
+
+
+
+<script>
+    //require.config({
+    //    paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs', }
+    //})
+    //require.config({ paths: { vs: '../node_modules/monaco-editor/min/vs' } });
+
+    //window.MonacoEnvironment = {
+    //    baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/',
+    //    getWorkerUrl: function (workerId, label) {
+    //        return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+    //              self.MonacoEnvironment = {
+    //                baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/'
+    //              };
+    //              importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.25.2/min/vs/base/worker/workerMain.js');`
+    //        )}`
+    //    }
+    //}
+
+
+
+    //https://cdnjs.com/libraries/monaco-editor
+    //https://blog.checklyhq.com/customizing-monaco/
+
+    function init(data){
+        require([
+            //'vs/editor/editor.main.nls',
+            'vs/editor/editor.main',
+        ], function () {
+
+            let editor = monaco.editor.create(document.getElementById('container'), {
+                //value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+                //language: 'javascript'
+
+                //value: `SELECT * FROM users WHERE id > 90;`,
+                //language: 'pgsql',
+
+                value: `<p>hello</p>`,
+                language: 'html',
+                ...data
+            })
+
+            window.onresize = function () {
+                editor.layout();
+            };
+
+            //emmetHTML()
+            //emmetCSS()
+
+            //https://www.npmjs.com/package/emmet-monaco-es
+            emmetMonaco.emmetHTML(monaco, ['html', 'php', 'handlebars'])
+            emmetMonaco.emmetCSS(monaco)
+
+            window.editor = editor;
+
+
+            more_actions(editor)
+            more_hotkeys(editor);
+            //my_monaco_init__attrs();
+            //my_monaco_init__less();
+
+            add_messages(editor)
+
+            if (data.language && data.language == 'log') {
+                monaco_plugin_init_log_lang()
+                //data.theme = 'logview'
+                monaco.editor.setTheme('logview');
+
+            }
+        })
+    }
+
+    let query = Object.fromEntries(new URLSearchParams(location.search));
+
+    if (!query.noinit){
+        init({
+            value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+            language: 'javascript',
+            ...query
+        })
+    }
+
+
+
+
+
+    function more_hotkeys(editor) {
+        // get selected text - window.editor.getModel().getValueInRange(window.editor.getSelection())
+
+
+        let a_del = editor.getAction('editor.action.deleteLines')
+        editor.addAction({
+            id: 'dima.deleteLines',
+            // A label of the action that will be presented to the user.
+            label: 'Delete Line',
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.Shift | monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_D,
+            ],
+            // A precondition for this action.
+            precondition: null,
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            // @@param editor The editor instance is passed in as a convinience
+            run: (ed) => {
+                // this.$q.notify("test")
+                a_del.run();
+
+            }
+        });
+
+        let a_duplicate = editor.getAction('editor.action.duplicateSelection')
+        editor.addAction({
+            id: 'dima.duplicateSelection',
+            // A label of the action that will be presented to the user.
+            label: 'Duplicate Selection',
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_D,
+            ],
+            // A precondition for this action.
+            precondition: null,
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            // @@param editor The editor instance is passed in as a convinience
+            run: (ed) => {
+                // this.$q.notify("test")
+                a_duplicate.run();
+
+            }
+        });
+
+        // console.warn(editor.getSupportedActions());
+    }
+
+    function more_actions(editor) {
+        editor.addAction({
+            id: 'my-save',
+            // A label of the action that will be presented to the user.
+            label: 'Save page',
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+            ],
+            // A precondition for this action.
+            precondition: null,
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            // @@param editor The editor instance is passed in as a convinience
+            run: (ed) => {
+                // alert("i'm running => " + ed.getPosition());
+                // this.save()
+                //this.$emit('save')
+                //console.warn("SAVE!");
+                fire_message('save', editor.getValue() )
+                return null;
+            }
+        });
+
+        // editor.wordWrap = 'on';
+        editor.updateOptions({ wordWrap: "on" })
+        // editor.updateOptions({ automaticLayout: true })
+
+        editor.addAction({
+            id: 'wordWrap',
+            // A label of the action that will be presented to the user.
+            label: 'Word Wrap',
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.Alt | monaco.KeyCode.KEY_Z,
+            ],
+            // A precondition for this action.
+            precondition: null,
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            // @@param editor The editor instance is passed in as a convinience
+            run: (ed) => {
+                // alert("i'm running => " + ed.getPosition());
+                // return null;
+                //let wordWrap = editor.getOption(115)
+                let wordWrap = editor.getOption(monaco.editor.EditorOption.wordWrap)
+                let newVal = wordWrap == "on" ? "off" : "on"
+                 //console.warn('editor.wordWrap=', wordWrap);
+                editor.updateOptions({ wordWrap: newVal })
+
+            }
+        });
+
+        editor.addAction({
+            id: 'resizeLayout',
+            // A label of the action that will be presented to the user.
+            label: 'Resize Layout',
+            // An optional array of keybindings for the action.
+            // keybindings: [],
+            // A precondition for this action.
+            precondition: null,
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            // @@param editor The editor instance is passed in as a convinience
+            run: (ed) => {
+                // alert("i'm running => " + ed.getPosition());
+                // return null;
+                this.e_resize();
+
+            }
+        });
+    }
+</script>

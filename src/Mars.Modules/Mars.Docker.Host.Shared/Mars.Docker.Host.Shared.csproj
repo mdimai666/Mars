@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+    <ProjectReference Include="..\Mars.Docker\Mars.Docker.csproj" />
+  </ItemGroup>
+</Project>

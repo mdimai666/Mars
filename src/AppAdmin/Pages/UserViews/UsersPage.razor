@@ -1,0 +1,106 @@
+@page "/Users"
+@using AppAdmin.Pages.Settings
+@inject IStringLocalizer<AppRes> L
+@using Mars.Shared.Contracts.Users
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Пользователи")]
+@attribute [DParentPage(typeof(SettingsPage))]
+@layout AdminLayout
+
+<ContentWrapper Title="@AppRes.Users">
+
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+        <div class="ms-auto">
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="OnClickCreateUser"
+                          IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+            @* <a href="@urlEditPage">
+                <FluentButton IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+            </a> *@
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="46"
+                            Virtualize
+                            ShowHover="false"
+                            AutoFit
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            OnRowClick="OnRowClick"
+                            GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
+                            TGridItem="UserDetailResponse">
+                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f=>f.LastName))"
+                                Title="FullName"
+                                InitialSortDirection="SortDirection.Ascending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true">
+
+                    <div class="vstack">
+                        <a href="@urlEditPage/@context.Id" class="text-primary">
+                            <div>@context.FullName</div>
+                        </a>
+                    </div>
+
+                </TemplateColumn>
+                <PropertyColumn Property="@(f=>f.Email)" Title="@AppRes.Email" Sortable="true" />
+                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f=>f.Roles))"
+                                Sortable="false"
+                                Title="@AppRes.Roles"
+                                Filtered="_roleFilter.Any()">
+                    <ChildContent>
+                        @foreach (var role in context.Roles)
+                        {
+                            <FluentBadge Appearance="Appearance.Neutral">
+                                @role
+                            </FluentBadge>
+                        }
+                    </ChildContent>
+                    <ColumnOptions>
+                        <div class="search-box">
+                            <FluentAutocomplete TOption="string"
+                                                AutoComplete="off"
+                                                Label="@AppRes.Roles"
+                                                Items="@Q.Roles"
+                                                Placeholder="Select"
+                                                IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                                KeepOpen
+                                                ValueChanged="HandleSearchInput"
+                                                @bind-SelectedOptions="@_roleFilter" />
+                        </div>
+                    </ColumnOptions>
+                </TemplateColumn>
+                <PropertyColumn Property="@(f=>f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Sortable="true" />
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <div class="hstack">
+                        <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                        <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
+                            <FluentMenuItem OnClick="@(e=>OnClickChangePassword(context))">@AppRes.ChangePassword</FluentMenuItem>
+                            <FluentMenuItem OnClick="@(e=>SendInvation(context.Id))">send invation</FluentMenuItem>
+                        </FluentMenuButton>
+                    </div>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+        </div>
+    </div>
+
+    <CreateUserModal @bind-Visible="visibleCreateUserModal" Content="createFormData" AfterCreate="HandleSearchInput" />
+    <ChangePasswordModal @bind-Visible="visibleChangeUserPasswordModal" Content="changeUserPasswordFormData" />
+
+</ContentWrapper>

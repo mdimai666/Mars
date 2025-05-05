@@ -1,0 +1,22 @@
+﻿@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(CallNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>Timeout</label>
+
+    <InputNumber @bind-Value="timeoutMillis" TValue="int" class="form-control 1flex-fill" />
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    CallNode Node { get => (CallNode)Value!; set => Value = value; }
+
+    int timeoutMillis { get => Node.Timeout.Milliseconds; set => OnValueChanged(value); }
+
+    void OnValueChanged(int millis)
+    {
+        Node.Timeout = TimeSpan.FromMilliseconds(millis);
+    }
+}

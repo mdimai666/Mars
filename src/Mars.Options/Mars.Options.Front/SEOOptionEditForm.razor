@@ -1,0 +1,55 @@
+@using AppFront.Shared.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+@using MarsCodeEditor2
+
+@attribute [OptionEditFormForOptionAttribute(typeof(SEOOption))]
+@attribute [Display(Name = "SEO")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="SEOOption">
+
+    <h3>Настройки SEO</h3>
+
+    <a target="_blank" href="/robots.txt">
+        <FluentButton Appearance="Appearance.Stealth" Color="var(--bs-info)">Открыть robots.txt</FluentButton>
+    </a>
+
+    <div class="spacer-2"></div>
+
+    <FormItem2 For="()=>context.RobotsTxt" Class="col mb-3">
+        <FluentTextArea @bind-Value=@context.RobotsTxt Rows="10" Class="w-100" Style="font-family:'Courier New', Courier, monospace" />
+    </FormItem2>
+
+    <div class="spacer-2"></div>
+
+    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss=false>
+        <p>
+            Использование кириллицы запрещено в файле robots.txt и HTTP-заголовках сервера.
+        </p>
+    </FluentMessageBar>
+    <p>Для указания имен доменов используйте <a href="https://www.google.com/search?q=Punycode" target="_blank">Punycode</a>. Адреса страниц указывайте в кодировке, соответствующей кодировке текущей структуры сайта.</p>
+    <p>Пример файла robots.txt:</p>
+
+    <div class="card p-3">
+        <code>
+            <pre>
+#Неверно:
+User-agent: Yandex
+Disallow: /корзина
+Sitemap: сайт.рф/sitemap.xml
+
+#Верно:
+User-agent: Yandex
+Disallow: /%D0%BA%D0%BE%D1%80%D0%B7%D0%B8%D0%BD%D0%B0
+Sitemap: http://xn--80aswg.xn--p1ai/sitemap.xml
+            </pre>
+        </code>
+    </div>
+
+</EditOptionForm>
+
+
+@code {
+    EditOptionForm<SEOOption> form = default!;
+
+}

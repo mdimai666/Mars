@@ -1,0 +1,33 @@
+@using System.Globalization
+
+<div class="ct-block @_class"
+     @onclick=OnMouseClick
+     @onclick:stopPropagation
+     @onmousedown=OnMouseDown
+     @onmousedown:stopPropagation
+     @onmouseup=OnMouseUp
+     @onmouseup:stopPropagation
+     style="width:200px;height:100px;background-color:@Block.Color;@_style">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public TBlock Block { get; set; } = default!;
+
+    [Parameter] public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnMouseClick { get; set; }
+
+    string _class => $"{(Block.isDrag ? "ondrag" : "")}";
+    string _style {
+        get {
+            if (Block.isDrag)
+            {
+                return $"left:{Block.x.ToString(CultureInfo.InvariantCulture)}px;top:{Block.y.ToString(CultureInfo.InvariantCulture)}px;";
+            }
+            return "";
+        }
+    }
+
+}

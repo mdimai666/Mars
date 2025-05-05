@@ -1,0 +1,16 @@
+﻿@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(RenderPageNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>PageIdOrSlug</label>
+
+    <InputText @bind-Value="Node.PageIdOrSlug" class="form-control " />
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    RenderPageNode Node { get => (RenderPageNode)Value!; set => Value = value; }
+    
+}

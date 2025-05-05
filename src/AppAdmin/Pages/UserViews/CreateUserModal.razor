@@ -1,0 +1,57 @@
+@using Mars.Shared.Contracts.Roles
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IMarsWebApiClient client
+
+<FluentDialog Hidden="@(!Visible)" aria-label="Create user dialog"
+              Modal=true
+              @ref=Dialog
+              OnDialogResult="OnDialogResult"
+              Class="CreateUserModal"
+              @ondialogdismiss=@(()=>Visible=false)
+              PreventScroll=true>
+    <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+        <div class="hstack">
+            <FluentLabel Typo="Typography.Header">@AppRes.Create</FluentLabel>
+        </div>
+    </FluentDialogHeader>
+    <FluentDialogBody>
+        <StandartEditForm1 TModel="CreateUserModel"
+                           @ref=_editForm1
+                           GetAction="@(()=>Task.FromResult(model))"
+                           AfterSave="AfterSave"
+                           SaveAction="@((model, isCreate)=>CreateUserModel.SaveAction(client, model, isCreate))">
+
+            <FormItem2 For="()=>model.FirstName">
+                <FluentTextField @bind-Value="model.FirstName" AutoComplete="off" />
+            </FormItem2>
+
+            <FormItem2 For="()=>model.LastName">
+                <FluentTextField @bind-Value="model.LastName" AutoComplete="off" />
+            </FormItem2>
+
+            <FormItem2 For="()=>model.Email">
+                <FluentTextField @bind-Value="model.Email" TextFieldType="@TextFieldType.Email" AutoComplete="no" />
+            </FormItem2>
+
+            <FormItem2 For="()=>model.Password">
+                <div class="hstack gap-2">
+                    <FluentTextField @bind-Value="model.Password" TextFieldType="@passwordFieldType" AutoComplete="new-password" />
+                    <FluentButton OnClick="TogglePassword" IconStart="@passwordShowButtonIcon" Title="show password" />
+                    <FluentButton OnClick="GeneratePassword" IconStart="@(new Icons.Regular.Size16.Password())" Title="generate password" />
+                </div>
+            </FormItem2>
+
+            <FormItem2 For="()=>model.Roles">
+                <FluentAutocomplete TOption="RoleSummaryResponse"
+                                    AutoComplete="off"
+                                    Items="@Content.Roles"
+                                    OptionText="@(s=>s.Name)"
+                                    Placeholder="Select"
+                                    IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                    KeepOpen
+                                    @bind-SelectedOptions="@SelRoles" />
+            </FormItem2>
+
+        </StandartEditForm1>
+    </FluentDialogBody>
+</FluentDialog>

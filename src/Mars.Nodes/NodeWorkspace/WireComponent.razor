@@ -1,0 +1,14 @@
+﻿
+<g class="red-ui-flow-link @(selected?"red-ui-flow-link-selected":"")"
+   @onmousedown=OnMouseDownMethod
+   @onmousedown:stopPropagation=true
+   @onmouseup=OnMouseUpMethod
+   @onmouseup:stopPropagation=true>
+    <path class="red-ui-flow-link-background red-ui-flow-link-path"
+          d="@Path"></path>
+    <path class="red-ui-flow-link-outline red-ui-flow-link-path"
+          d="@Path"></path>
+    <path class="red-ui-flow-link-line red-ui-flow-link-path red-ui-flow-subflow-link
+        @(disable?"red-ui-flow-node-disabled":"")"
+          d="@Path"></path>
+</g>

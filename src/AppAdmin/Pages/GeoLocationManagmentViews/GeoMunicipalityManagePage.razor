@@ -1,0 +1,81 @@
+@page "/geo/GeoMunicipality"
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@(L["GeoMunicipality.many"])">
+
+    <GeoTabs />
+
+    <div class="spacer-2"></div>
+
+    <StandartManagementTable TModel=GeoMunicipality TService=GeoMunicipalityService @ref=f
+                             SearchExpression=@(model => model.Name.ToLower().Contains(f.SearchText.ToLower()))>
+        <TableContent>
+            <Column @bind-Field=@context.Name Sortable>
+                <a @onclick=@(e=>f.EditClick(context)) class="text-primary">
+                    @context.Name
+                </a>
+            </Column>
+            <Column @bind-Field=@context.ShortName Sortable />
+            <Column @bind-Field=@context.Population Sortable />
+            <Column @bind-Field=@context.MunicType>
+                @context.MunicType?.Title
+            </Column>
+            <Column @bind-Field=@context.OKTMO />
+            @*<Column @bind-Field=@context.Created Format="yyyy-MM-dd" Sortable Title="Создан" />*@
+        </TableContent>
+
+        <FormContent>
+            <h5>Данные</h5>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.Name" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.ShortName" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.OKTMO" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.InputNumber @bind-Value="@context.Population" />
+            </FormItem>
+            <FormItem Label="Тип ">
+                <DSelectGuidServ @bind-Value=@context.MunicTypeId
+                                 LabelExpression=@(s=>s.Title)
+                                 OnValueChange=@(s=>context.MunicType= s)
+                                 TService=GeoMunicTypeService TModel=GeoMunicType />
+            </FormItem>
+            <FormItem Label="Муниципальный район">
+                <DSelectGuidServ @bind-Value=@context.GeoRegionId
+                                 LabelExpression=@(s=>s.ShortName)
+                                 OnValueChange=@(s=>context.Reg = s)
+                                 TService=GeoRegionService TModel=GeoRegion />
+            </FormItem>
+
+            <h5>Администрация</h5>
+
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoMunicInfo.AdminHeadName" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoMunicInfo.AdminHeadFixedPhone" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoMunicInfo.AdminHeadMobilePhone" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.Input @bind-Value="@context.GeoMunicInfo.AdminHeadEmail" />
+            </FormItem>
+            <FormItem>
+                <AntDesign.TextArea Rows=3 @bind-Value="@context.GeoMunicInfo.AdminPostAddress" />
+            </FormItem>
+
+        </FormContent>
+    </StandartManagementTable>
+</ContentWrapper>
+
+
+@code {
+    StandartManagementTable<GeoMunicipality, GeoMunicipalityService> f = default!;
+
+}

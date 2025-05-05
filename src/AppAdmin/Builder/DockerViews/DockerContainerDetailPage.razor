@@ -1,0 +1,11 @@
+@page "/builder/docker/ID/{ID}"
+@using Mars.Docker.Front.ContainerViews
+
+<ContentWrapper Title="Container" Class="pressed-in">
+    <DockerContainerDetail ID="@ID" />
+</ContentWrapper>
+
+@code {
+    [Parameter] public string ID { get; set; } = default!;
+
+}

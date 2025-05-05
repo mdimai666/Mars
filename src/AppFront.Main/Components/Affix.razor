@@ -1,0 +1,20 @@
+<div id="@Id" style="position: relative;" @ref="_elementRef">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = Guid.NewGuid().ToString("N"); // Уникальный ID
+    [Parameter] public int OffsetTop { get; set; } = 0; // Смещение сверху
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Inject] public IJSRuntime JSRuntime { get; set; } = default!;
+
+    private ElementReference _elementRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("affix", _elementRef, Id, OffsetTop);
+        }
+    }
+}

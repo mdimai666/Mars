@@ -1,0 +1,49 @@
+@using Mars.Shared.Tools
+
+<span class="badge 1bg-secondary dmodel-badge"
+      @attributes=attr2
+      data-var-type="@HtmlClass()">
+
+    @if (Value.IsGenericType && Nullable.GetUnderlyingType(Value) != null)
+    {
+        @(ModelInfo.ShortName(Value.GetGenericArguments()[0].Name))
+        <span>?</span>
+    }
+    else if (Value.IsGenericType)
+    {
+        @(ModelInfo.ShortName(Value.Name))
+        <span>
+        &lt;@(ModelInfo.ShortName(Value.GetGenericArguments()[0].Name))&gt;
+        </span>
+    }
+    else
+    {
+        @(ModelInfo.ShortName(Value.Name))
+    }
+</span>
+
+@code {
+    [Parameter]
+    public Type Value { get; set; } = default!;
+
+    Dictionary<string, object> attr2 = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        attr2 = ModelInfo.BadgeHtmlAttributes(Value);
+    }
+
+    string HtmlClass()
+    {
+        if (Value.IsGenericType && Nullable.GetUnderlyingType(Value) != null)
+        {
+            return Value.GetGenericArguments()[0].Name;
+        }
+        else
+        {
+            return Value.Name;
+        }
+    }
+}

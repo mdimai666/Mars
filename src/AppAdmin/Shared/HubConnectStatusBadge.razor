@@ -1,0 +1,58 @@
+@using AppFront.Shared.Hub;
+@using Microsoft.AspNetCore.SignalR.Client;
+<div class="HubConnectStatusBadge hub-conntect-status d-flex justify-content-center"
+     style="min-width:30px;"
+     data-state="@state"
+    title="@state">
+    <i class="bi bi-arrow-left-right"></i>
+</div>
+
+@code {
+    string color = "#4789d8";
+
+    HubConnectionState state;
+
+    [Inject] ClientHub hub { get; set; } = default!;
+    [CascadingParameter] BuilderLayout builderLayout { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Q.Root.On(nameof(HubConnectionState), payload => OnChangeHubState((HubConnectionState)payload));
+        state = hub.ws.State;
+
+        Mars.Core.Extensions.Tools.SetTimeout(() =>
+        {
+            OnChangeHubState(hub.ws.State);
+        }, 100);
+    }
+
+    void OnChangeHubState(HubConnectionState state)
+    {
+        this.state = state;
+        StateHasChanged();
+    }
+}
+
+<style>
+    .HubConnectStatusBadge {
+        background-color: #c3c5c7;
+    }
+
+        .HubConnectStatusBadge[data-state="Disconnected"] {
+            background-color: #f0433e;
+        }
+
+        .HubConnectStatusBadge[data-state="Connected"] {
+            background-color: #4789d8;
+        }
+
+        .HubConnectStatusBadge[data-state="Connecting"] {
+            background-color: #f8e641;
+        }
+
+        .HubConnectStatusBadge[data-state="Reconnecting"] {
+            background-color: #f8e641;
+        }
+</style>

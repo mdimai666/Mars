@@ -1,0 +1,85 @@
+@page "/Plugins"
+@attribute [Authorize(Roles = "Admin")]
+
+@using Mars.Shared.Contracts.Feedbacks
+@using Mars.Shared.Contracts.Plugins
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<ContentWrapper Title="@AppRes.Plugins">
+
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="100"
+                            Virtualize
+                            ShowHover
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            OnRowClick="OnRowClick"
+                            GridTemplateColumns="* 0.1fr 0.1fr"
+                            TGridItem="PluginInfoResponse">
+                <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f=>f.Title))"
+                                Title="@AppRes.Title"
+                                Sortable="true">
+                    <div class="hstack">
+                        <div class="plugin_icon " style="flex: 0 0 50px; height:50px;">
+                            <i class="bi bi-plugin text-secondary" style="font-size:30px;"></i>
+                        </div>
+                        <div class="vstack">
+                            <FluentLabel Typo="Typography.Header">@context.Title</FluentLabel>
+                            <div class="hstack gap-2">
+                                <label class="text-secondary">@context.PackageId</label>
+                                <div class="vr"></div>
+                                <FluentRating Max="5" Value="0" ReadOnly="true"
+                                    Style="zoom:0.5"
+                                    IconColor="@Color.Neutral" />
+                            </div>
+                            <FluentLabel Color="@Color.Neutral">@context.Version</FluentLabel>
+                            <div class="mt-1">
+                                @context.Description?.TextEllipsis(100)
+                            </div>
+                        </div>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f=>f.InstalledAt))"
+                                Title="Installed at"
+                                InitialSortDirection="SortDirection.Descending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true"
+                                Tooltip
+                                TooltipText="@(f=>f.InstalledAt.LocalDateTime.ToString())"
+                                Align="@Align.End">
+                    @context.InstalledAt.ToString("d")
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context)) />
+                </TemplateColumn>
+                @*
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3 class="fw-bold fz20px" title="@plugin.AssemblyName">@plugin.Title</h3>
+                        <div>@plugin.Version</div>
+                        <div class="text-secondary">@plugin.Description</div>
+                    </div>
+                </div>
+                *@
+
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+        </div>
+    </div>
+
+</ContentWrapper>

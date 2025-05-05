@@ -1,0 +1,75 @@
+@using Mars.Options.Attributes;
+@using System.Reflection
+@using Mars.Shared.Options.Attributes
+@using Mars.Shared.Tools
+
+<div class="ASideOptions d-flex flex-column g-2">
+
+    <NavLink class="mb-2" href="/dev/Settings" Match="@NavLinkMatch.All">
+        Общие
+    </NavLink>
+    @* <NavLink class="mb-2" href="/dev/Settings/ActionHistory">
+        Активность
+    </NavLink> *@
+    <NavLink class="mb-2" href="/dev/Settings/html">
+        Host html
+    </NavLink>
+    <NavLink class="mb-2" href="/dev/Settings/Front">
+        Front settings
+    </NavLink>
+    @foreach (var form in OptionFormList)
+    {
+        <NavLink class="mb-2"
+                 href=@($"/dev/Settings/Option/{form.PageType.FullName!.Replace(".","+")}")>
+            @form.DisplayAttributeName
+        </NavLink>
+    }
+    <NavLink class="mb-2" href="/dev/Settings/HostCache">
+        Кеширование
+    </NavLink>
+    <NavLink class="mb-2" href="/dev/Settings/About">
+        О системе
+    </NavLink>
+</div>
+
+<style>
+    .ASideOptions a {
+        border-bottom: 1px solid #c9c9c9;
+        color: black;
+        padding: 2px 8px;
+    }
+
+        .ASideOptions a.active {
+            font-weight: bold;
+            color: unset;
+            border-left: 4px solid var(--bs-primary);
+        }
+</style>
+
+@code {
+    static List<GPageInfo> OptionFormList = new();
+
+    [Inject] ModelInfoService modelService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+
+        OptionFormList = OptionForms(modelService);
+    }
+
+    public static List<GPageInfo> OptionForms(ModelInfoService modelService)
+    {
+        if (OptionFormList.Any()) return OptionFormList;
+
+        List<Assembly> assemblies = [typeof(Mars.Options.Front.ApiOptionEditForm).Assembly,
+                                    typeof(AppFront.Shared.OptionEditForms.SmtpSettingsEditForm).Assembly];
+        OptionFormList = assemblies.SelectMany(assembly => modelService.GetPages(assembly)
+                            .Where(s => s.Kind == EComponentType.ComponentBase
+                                && s.Attributes.Any(at => at.GetType() == typeof(OptionEditFormForOptionAttribute))
+                                && s.Attributes.Any(at => at.GetType() == typeof(AutoShowFormOnSettingsPageAttribute))
+                            )).ToList();
+        return OptionFormList;
+    }
+}

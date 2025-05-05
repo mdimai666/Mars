@@ -1,0 +1,44 @@
+@using Flurl.Http
+@using Mars.Core.Features
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentAutocomplete TOption="KeyValuePair<string,string>"
+                    AutoComplete="off"
+                    Class="CodeEditorSuggestSearchInput"
+                    Width="250px"
+                    Placeholder="search snippet..."
+                    OnOptionsSearch="@OnSearchSnippetAsync"
+                    MaximumSelectedOptions="1"
+                    @bind-SelectedOptions=selectedSnippets
+                    OptionText="@(item => item.Key)" />
+
+@code {
+    [Inject] IFlurlClient client { get; set; } = default!;
+
+    /// <summary>
+    /// must return KeyValuePair<string, string>
+    /// </summary>
+    [Parameter, EditorRequired] public string SearchApiUrl { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<KeyValuePair<string, string>> OnSnippetSelect { get; set; }
+
+    IEnumerable<KeyValuePair<string, string>> selectedSnippets
+    {
+        get => Array.Empty<KeyValuePair<string, string>>();
+        set => SelectSnippet(value.First());
+    }
+
+    private async Task OnSearchSnippetAsync(OptionsSearchEventArgs<KeyValuePair<string, string>> e)
+    {
+        // var allSnippets = await qserver.GET<List<KeyValuePair<string, string>>>($"/api/Node/FunctionCodeSuggest/di:services?search={e.Text}");
+        var allSnippets = await client.Request($"{SearchApiUrl}{e.Text}").GetJsonAsync<List<KeyValuePair<string, string>>>();
+        e.Items = allSnippets;
+    }
+
+    private void SelectSnippet(KeyValuePair<string, string> val)
+    {
+        // _ = InsertText(val.Value + "\n");
+        OnSnippetSelect.InvokeAsync(val);
+    }
+}

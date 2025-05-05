@@ -1,0 +1,42 @@
+@using AppFront.Shared.Components
+@using Microsoft.Extensions.Localization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using NodeFormEditor.EditForms.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(InjectNode))]
+@inject IStringLocalizer<AppRes> L
+
+<div class="form-group">
+    <label>payload</label>
+    <InputText class="form-control" @bind-Value=Node.Payload />
+
+    <div class="hstack gap-3 mt-4">
+        <div class="hstack gap-2">
+            <i class="bi bi-clock"></i>
+            <FluentLabel>@(L[nameof(Node.RunAtStartup)])</FluentLabel>
+        </div>
+        <FluentCheckbox @bind-Value=Node.RunAtStartup />
+        <FluentLabel>@(L["delay millis"])</FluentLabel>
+        <FluentNumberField @bind-Value=Node.StartupDelayMillis Min="10" Disabled=!Node.RunAtStartup />
+    </div>
+
+    <div class="hstack gap-3 mt-4" style="min-height:32px;">
+        <div class="hstack gap-2">
+            <i class="bi bi-repeat"></i>
+            <FluentLabel>@(L[nameof(Node.IsSchedule)])</FluentLabel>
+        </div>
+        <FluentCheckbox @bind-Value=Node.IsSchedule />
+        @if (Node.IsSchedule)
+        {
+            <FluentLabel>@(L["cron mask"])</FluentLabel>
+            <SchedulerMaskInput @bind-Value=Node.ScheduleCronMask />
+        }
+    </div>
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    InjectNode Node { get => (InjectNode)Value; set => Value = value; }
+
+}

@@ -1,0 +1,73 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (IsLoginLoading)
+{
+    <div class="flex-fill xcenter">
+        <FluentProgressRing />
+    </div>
+}
+else if (!IsAlreadyAuth)
+{
+    @if (authVariantConstOption.Variants.HasFlag(Mars.Options.Models.AuthVariantConstOption.AuthVariants.LoginPass))
+    {
+        <EditForm Model=@auth OnValidSubmit=ExecuteLogin>
+            <FormItem2 For="()=>auth.Login" Label="@AppRes.LoginOrEmail">
+                <FluentTextField @bind-Value=@auth.Login name="login-email" AutoFocus Class="w-100" />
+            </FormItem2>
+            <FormItem2 For="()=>auth.Password" Label="@AppRes.Password">
+                <FluentTextField TextFieldType="TextFieldType.Password" @bind-Value=@auth.Password name="password" Class="w-100" />
+            </FormItem2>
+            <div class="spacer-1"></div>
+
+            <div>
+                @*<a href="#">Забыли пароль?</a>*@
+            </div>
+            <div class="spacer-1"></div>
+            <FluentButton Appearance=@Appearance.Accent Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
+
+
+            @if (Q.Site.SysOptions.AllowUsersSelfRegister)
+            {
+                <hr class="mx-auto my-4" style="width: 120px;" />
+                <div class="text-center">
+                    <a href="Register">
+                        <FluentButton Class="w-100">
+                            РЕГИСТРАЦИЯ
+                        </FluentButton>
+                    </a>
+                </div>
+            }
+
+        </EditForm>
+    }
+
+    @if (authVariantConstOption.Variants.HasFlag(Mars.Options.Models.AuthVariantConstOption.AuthVariants.SSO))
+    {
+        <hr />
+
+        <div class="xcenter vstack gap-3">
+            @foreach (var sso in authVariantConstOption.SSOConfigs)
+            {
+                <FluentButton OnClick=@(()=>ThirdLogin(sso.Slug))>
+                    @if (!string.IsNullOrEmpty(sso.IconUrl))
+                    {
+                        <FluentIcon Slot="start" Value="@(Icon.FromImageUrl(sso.IconUrl??""))" />
+                    }
+                    @(sso.Label ?? "Авторизация")
+                </FluentButton>
+            }
+        </div>
+    }
+}
+
+@if (ShowAuthError && Error is not null)
+{
+    <div class="spacer-1"></div>
+    <div class="alert alert-danger mt-1 alert-validation-msg" role="alert">
+        <div class="alert-body text-black">
+            <i class="bi bi-x-circle-fill"></i>
+            @Error
+        </div>
+    </div>
+
+}

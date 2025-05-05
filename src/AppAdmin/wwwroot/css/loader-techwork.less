@@ -1,0 +1,230 @@
+.loader-techwork {
+    height: 300px;
+    position: relative;
+    margin: auto;
+    width: 300px;
+}
+
+.loader-techwork_overlay {
+    width: 150px;
+    height: 150px;
+    background: transparent;
+    box-shadow: 0px 0px 0px 1000px rgba(255, 255, 255, 0.67), 0px 0px 19px 0px rgba(0, 0, 0, 0.16) inset;
+    border-radius: 100%;
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.loader-techwork_cogs {
+    display:block;
+    z-index: 0;
+    width: 100px;
+    height: 100px;
+    top: -120px !important;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.loader-techwork_cogs__top {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    transform-origin: 50px 50px;
+    -webkit-animation: loader_techwork_rotate 10s infinite linear;
+    animation: loader_techwork_rotate 10s infinite linear;
+}
+
+.loader-techwork_cogs__top div:nth-of-type(1) {
+    transform: rotate(30deg);
+}
+
+.loader-techwork_cogs__top div:nth-of-type(2) {
+    transform: rotate(60deg);
+}
+
+.loader-techwork_cogs__top div:nth-of-type(3) {
+    transform: rotate(90deg);
+}
+
+.loader-techwork_cogs__top div.top_part {
+    width: 100px;
+    border-radius: 10px;
+    position: absolute;
+    height: 100px;
+    background: @color-accent;
+}
+
+.loader-techwork_cogs__top div.top_hole {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    background: white;
+    position: absolute;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.loader-techwork_cogs__left {
+    position: relative;
+    width: 80px;
+    transform: rotate(16deg);
+    top: 28px;
+    transform-origin: 40px 40px;
+    animation: loader_techwork_rotate_left 10s 0.1s infinite reverse linear;
+    left: -24px;
+    height: 80px;
+}
+
+.loader-techwork_cogs__left div:nth-of-type(1) {
+    transform: rotate(30deg);
+}
+
+.loader-techwork_cogs__left div:nth-of-type(2) {
+    transform: rotate(60deg);
+}
+
+.loader-techwork_cogs__left div:nth-of-type(3) {
+    transform: rotate(90deg);
+}
+
+.loader-techwork_cogs__left div.left_part {
+    width: 80px;
+    border-radius: 6px;
+    position: absolute;
+    height: 80px;
+    background: #bc4f2a;
+}
+
+.loader-techwork_cogs__left div.left_hole {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background: white;
+    position: absolute;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.loader-techwork_cogs__bottom {
+    position: relative;
+    width: 60px;
+    top: -65px;
+    transform-origin: 30px 30px;
+    -webkit-animation: loader_techwork_rotate_left 10.2s 0.4s infinite linear;
+    animation: loader_techwork_rotate_left 10.2s 0.4s infinite linear;
+    transform: rotate(4deg);
+    left: 79px;
+    height: 60px;
+}
+
+.loader-techwork_cogs__bottom div:nth-of-type(1) {
+    transform: rotate(30deg);
+}
+
+.loader-techwork_cogs__bottom div:nth-of-type(2) {
+    transform: rotate(60deg);
+}
+
+.loader-techwork_cogs__bottom div:nth-of-type(3) {
+    transform: rotate(90deg);
+}
+
+.loader-techwork_cogs__bottom div.bottom_part {
+    width: 60px;
+    border-radius: 5px;
+    position: absolute;
+    height: 60px;
+    background: #ffcd66;
+}
+
+.loader-techwork_cogs__bottom div.bottom_hole {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background: white;
+    position: absolute;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+/* Animations */
+@-webkit-keyframes loader_techwork_rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loader_techwork_rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes loader_techwork_rotate_left {
+    from {
+        transform: rotate(16deg);
+    }
+
+    to {
+        transform: rotate(376deg);
+    }
+}
+
+@keyframes loader_techwork_rotate_left {
+    from {
+        transform: rotate(16deg);
+    }
+
+    to {
+        transform: rotate(376deg);
+    }
+}
+
+@-webkit-keyframes loader_techwork_rotate_right {
+    from {
+        transform: rotate(4deg);
+    }
+
+    to {
+        transform: rotate(364deg);
+    }
+}
+
+@keyframes loader_techwork_rotate_right {
+    from {
+        transform: rotate(4deg);
+    }
+
+    to {
+        transform: rotate(364deg);
+    }
+}

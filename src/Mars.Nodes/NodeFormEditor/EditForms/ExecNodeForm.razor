@@ -1,0 +1,19 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(ExecNode))]
+
+<div class="form-group">
+    <label>Command</label>
+    <InputText class="form-control" @bind-Value=Node.Command />
+</div>
+<div class="form-group">
+    <label>append</label>
+    <InputCheckbox class="form-control" @bind-Value=Node.Append />
+    <b>payload</b>
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    ExecNode Node { get => (ExecNode)Value; set => Value = value; }
+
+}

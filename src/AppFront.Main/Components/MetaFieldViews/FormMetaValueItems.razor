@@ -1,0 +1,208 @@
+@using Mars.Shared.Contracts.MetaFields
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (MetaValues is not null && MetaFields is not null)
+{
+    @*var valDict = MetaValues.ToDictionary(s => s.MetaFieldId);*@
+
+    @foreach (var f in MetaFields.Where(s => s.ParentId == ParentId && !s.Disabled).Where(s => !Client || !s.Hidden).OrderBy(s => s.Order))
+    {
+        var meta = f;
+        <div class=@($"card1rounded-0 mb-3 1p-3 {(Vertical?"FormMetaField_Vertical":"FormMetaField_Row")} {(Client?"":"FormMetaField_Client")}")
+             data-tags="@meta.Tags?.JoinStr(",")" data-key="@meta.Key" title="@meta.Key" @key="meta" >
+            <div class="1card-body 1p-2">
+                @if (meta.IsTypeParentable == false)
+                {
+                    @*var field = valDict.ContainsKey(meta.Id) ? valDict[meta.Id] : null;*@
+                    var field = MetaValues.FirstOrDefault(s => s.MetaField.Id == meta.Id && s.Index == Index);
+                    if (field is not null)
+                    {
+                        @if (f.IsTypeRelation == false)
+                        {
+                            <RowMetaValue @bind-Value=@field Client=@Client />
+                        }
+                        else
+                        {
+                            <div class="d-flex">
+                                <div class="me-2 d-row-meta-value__left">
+                                    @field.MetaField.Title
+                                    @if (!Client)
+                                    {
+                                        <div class="text-secondary fz10px">@field.MetaField.Type</div>
+                                    }
+                                </div>
+                                <div class="d-metafield-metavalue-body">
+                                    @if (field.MetaField.Type == MetaFieldType.Relation)
+                                    {
+                                        <MetaValueRelationSelect @bind-Value=field.ModelId ModelName=@meta.ModelName />
+
+                                    }
+                                    else if (field.MetaField.Type == MetaFieldType.File)
+                                    {
+                                        <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId />
+                                    }
+                                    else if (field.MetaField.Type == MetaFieldType.Image)
+                                    {
+                                        <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId />
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <i>relation type not implement</i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            @* <FormItem Help="@field.MetaField.Description">
+                                    <LabelTemplate>
+                                        <div class="me-2">
+                                            @field.MetaField.Title
+                                            @if (!Client)
+                                            {
+                                                <div class="text-secondary fz10px">@field.MetaField.Type</div>
+                                            }
+                                        </div>
+                                    </LabelTemplate>
+                                    <ChildContent>
+
+                                    </ChildContent>
+                                </FormItem> *@
+                        }
+                    }
+                    else
+                    {
+                        <div>
+                            field is null : @meta.Title
+                        </div>
+                    }
+                }
+                else
+                {
+
+                    <div class="row">
+                        <div class="w-25 text-end">
+                            @meta.Title
+                            @if (!Client)
+                            {
+                                <div class="text-secondary fz10px">@meta.Type</div>
+                            }
+                        </div>
+                        <div class="w-75">
+                            <div class="card p-2 bg-transparent">
+
+                                @if (meta.Type == MetaFieldType.Group && meta.Id != Guid.Empty)
+                                {
+                                    @*<span>GG</span>*@
+                                    @* <CascadingValue Value="@MetaValues"> *@
+                                    @* <CascadingValue Value="@MetaFields"> *@
+                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaValueItems ParentId="meta.Id" />
+                                    @* </CascadingValue> *@
+                                    @* </CascadingValue> *@
+                                }
+                                else if (meta.Type == MetaFieldType.List && meta.Id != Guid.Empty)
+                                {
+                                    var groups = MetaValues.Where(s => s.ParentId == meta.Id).GroupBy(s => s.Index).OrderBy(s => s.Key);
+                                    int maxIndex = groups.Any() ? groups.Max(s => s.Key) : -1;
+                                    @if (debug)
+                                    {
+
+                                        <div>
+                                            LIST:G |
+                                            @meta.Title
+                                        </div>
+                                    }
+                                    @foreach (var g in groups)
+                                    {
+                                        var group = g.ToList();
+                                        @*
+                                            @if (true)
+                                            {
+                                            <span> [@CountChilds(group.Id)] @group.MetaField.Title | @group.Type | @group.Id </span>
+                                            }
+                                            *@
+
+                                        @if (true || debug)
+                                        {
+                                            <b>index @g.Key</b>
+                                        }
+
+                                        @*<AppFront.Shared.Components.MetaFieldViews.FormMetaValueItems ParentId="group.Id" />*@
+                                        <AppFront.Shared.Components.MetaFieldViews.FormMetaValueItems ParentId="meta.Id" Index="g.Key" />
+
+                                        <div class="text-end">
+                                            <FluentButton Appearance="Appearance.Stealth" OnClick="e=>form.ListMoveUp(meta,g.Key)"
+                                                          IconStart="@(new Icons.Regular.Size16.ArrowUp())">
+                                                up
+                                            </FluentButton>
+                                            <FluentButton Appearance="Appearance.Stealth" OnClick="e=>form.ListMoveDown(meta,g.Key)" Icon="down"
+                                                          IconStart="@(new Icons.Regular.Size16.ArrowDown())">
+                                                down
+                                            </FluentButton>
+
+                                            <FluentButton Appearance="Appearance.Stealth" Color="var(--bs-danger)" OnClick="e=>form.RemoveIteratorItem(meta,g.Key)"
+                                                          IconStart="@(new Icons.Regular.Size16.Delete())">
+                                                del
+                                            </FluentButton>
+                                            @* <DFluentDeleteButton OnConfirm="e=>form.RemoveIteratorItem(meta,g.Key)" /> *@
+                                        </div>
+
+                                        <hr />
+                                    }
+                                    <div class="metaFielsListFooter">
+                                        @*<div>FOOTER</div>*@
+                                        <div class="" style="background-color:#eee">
+                                            @if (form.CountChilds(meta.Id) == 0)
+                                            {
+                                                <div class="text-center text-secondary">
+                                                    <i>
+                                                        &lt; нет полей &gt;
+                                                    </i>
+                                                </div>
+                                            }
+                                            <div class="text-end">
+                                                <FluentButton OnClick="e=>form.AddNewFieldGroupToIterator(meta, maxIndex+1)"
+                                                              IconStart="@(new Icons.Regular.Size16.Add())">
+                                                    Добавить
+                                                </FluentButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-secondary">not implement</div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+
+    }
+}
+
+@code {
+    [CascadingParameter] List<MetaValueEditModel> MetaValues { get; set; } = default!;
+    [CascadingParameter] List<MetaFieldEditModel> MetaFields { get; set; } = default!;
+
+    // [CascadingParameter] CascadeStateChanger cascadeStateChanger { get; set; } = default!;
+
+    [Parameter] public Guid ParentId { get; set; } = Guid.Empty;
+    [Parameter] public int Index { get; set; } = 0;
+
+    [Parameter] public bool Vertical { get; set; }
+    [Parameter] public bool Client { get; set; }
+
+    //[Inject] ILogger<FormMetaValueItems> _logger { get; set; }
+
+    [CascadingParameter] FormMetaValue form { get; set; } = default!;
+
+
+    bool debug = !true;
+
+
+}

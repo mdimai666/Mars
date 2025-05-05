@@ -1,0 +1,266 @@
+@page "/EditNavMenu"
+@page "/EditNavMenu/{ID:guid}"
+
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using NavMenu=Mars.Shared.Contracts.NavMenus.NavMenuDetailResponse
+
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+
+<ContentWrapper>
+    <StandartEditContainer ID=@ID
+                           TModel=NavMenu
+                           GetAction="@(()=>NavMenu.GetAction(client,ID))"
+                           SaveAction="@((s,create)=>NavMenu.SaveAction(client,s,create))"
+                           DeleteAction="@(s=>NavMenu.DeleteAction(client,s))"
+                           @ref=f CanCreate=false>
+        <ChildContent>
+            <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
+            </FluentStack>
+
+            <div class="vstack gap-3">
+
+                <div class="vstack">
+                    <FluentTextField @bind-Value=@context.Title Label="@AppRes.Title"
+                                     @bind-Value:after=OnChangeTitle
+                                     Appearance="@FluentInputAppearance.Filled"
+                                     Required
+                                     Style="zoom:1.4" />
+                    <FluentValidationMessage For="@(() => context.Title)" />
+                </div>
+                <div class="">
+                    <FluentTextField @bind-Value=@context.Slug Label="@AppRes.Slug" />
+                    <FluentValidationMessage For="@(() => context.Slug)" />
+                </div>
+                <div class="vstack gap-3">
+                    <FormItem2 For="()=>context.Class" Label="@AppRes.CssClass">
+                        <FluentTextField @bind-Value=@context.Class />
+                    </FormItem2>
+                    <FormItem2 For="()=>context.Style" Label="@AppRes.CssStyle">
+                        <FluentTextField @bind-Value=@context.Style />
+                    </FormItem2>
+                </div>
+
+
+                <div class="d-roles">
+                    <FluentAutocomplete TOption="string"
+                                        AutoComplete="off"
+                                        Label="@AppRes.Roles"
+                                        Width="300px"
+                                        Items="@Q.Roles"
+                                        Placeholder="Select"
+                                        IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                        KeepOpen
+                                        @bind-SelectedOptions="@context.SetRoles" />
+
+                    <div>
+                        <FluentSwitch @bind-Value=@context.RolesInverse Label="Инвертировать роли" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="spacer-2"></div>
+
+            <div class="d-menuitems">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label class="d-block fw-bold mb-3">
+                            Структура
+                        </label>
+
+                        <DTreeView Items="context.MenuItems" KeyExp="s=>s.Id" ParentExp="s=>s.ParentId"
+                                   TModel="NavMenuItem"
+                                   TKey="Guid"
+                                   SelectedItem="@_selNode"
+                                   ItemHeight="50px"
+                                   Context="item">
+                            <div class="d-nav-menu d-flex 1border px-2 pt-1 @(item.Node.Disabled?"disabled":"")" @onclick="@(()=>OnClickItem(item))">
+                                <div class="d-navmenu-title flex-fill">
+                                    @item.Node.Title
+                                    <div class="text-secondary">
+                                        @item.Node.Url
+                                    </div>
+                                    <div class="">
+                                        @(item.Node.RolesInverse ? "!= " : "")
+                                        @foreach (var r in item.Node.Roles)
+                                        {
+                                            <FluentBadge>@r</FluentBadge>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="d-navmenu-tools d-flex flex-column align-items-end">
+                                    <a class="text-danger" @onclick=@(e=>OnDeleteMenuItem(item.Node))>удалить</a>
+
+                                    <div class="dropdown">
+                                        <a id="@($"navmenu-{item.Node.Id}")" class="menu-dropdown-link fz14px ms-2 dropdown-toggle"
+                                           data-bs-toggle="dropdown" aria-expanded="false" @onclick:stopPropagation @onclick:preventDefault>
+                                            действия
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                @onclick:stopPropagation
+                                                @onclick:preventDefault
+                                                   @onclick=@(e=>DropdownMenu_Copy(item.Node))>копировать</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </DTreeView>
+
+                        <div class="tree-footer-action fz14px p-2 text-end">
+                            <a class="text-accent" @onclick=@(e=>AddNewMenuItem())>+новый</a>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <Affix OffsetTop="24">
+                            <div class="card navmenu-properties">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <h6 class="flex-fill">Свойства</h6>
+                                        <a class="fz14px text-accent" @onclick=@(e=>_selNode=null)>отмена</a>
+                                    </div>
+                                    @if (_selMenu is null)
+                                    {
+                                        <div class="text-secondary p-2">
+                                            &lt;Выберите для редактирования&gt;
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="navmenu-edit-form">
+
+                                            <FluentTextField @bind-Value=@_selMenu.Title Label="@AppRes.Title" Class="w-100" />
+
+                                            @if (!_selMenu.IsHeader && !_selMenu.IsDivider)
+                                            {
+                                                <FluentTextField @bind-Value=@_selMenu.Url Label="Url" Class="w-100" />
+
+                                                <FluentCheckbox @bind-Value=@_selMenu.OpenInNewTab Label="Открывать в новой вкладке" />
+                                            }
+
+                                            <FluentStack>
+                                                <FluentTextField @bind-Value=@_selMenu.Icon Label="Icon" />
+                                                <FluentButton OnClick=OnClickIconSelectMedia>
+                                                    <FluentIcon Value="@(new Icons.Regular.Size16.Folder())" />
+                                                </FluentButton>
+                                            </FluentStack>
+
+                                            <FluentTextField @bind-Value=@_selMenu.Class Label="@AppRes.CssClass" />
+                                            <FluentTextField @bind-Value=@_selMenu.Style Label="@AppRes.CssStyle" />
+
+                                            <FluentStack Orientation="@Orientation.Vertical">
+                                                <FluentCheckbox @bind-Value=@_selMenu.IsHeader Label="IsHeader" />
+                                                <FluentCheckbox @bind-Value=@_selMenu.IsDivider Label="IsDivider" />
+                                                <FluentCheckbox @bind-Value=@_selMenu.Disabled Label="Disabled" />
+                                            </FluentStack>
+
+                                            @*==*@
+                                            <div class="spacer-1"></div>
+
+                                            <FluentAutocomplete TOption="string"
+                                                                AutoComplete="off"
+                                                                Label="@AppRes.Roles"
+                                                                Width="300px"
+                                                                Items="@Q.Roles"
+                                                                Placeholder="Select"
+                                                                IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                                                KeepOpen
+                                                                @bind-SelectedOptions="@_selMenu.SetRoles" />
+
+                                            <div class="d-block">
+                                                <FluentCheckbox @bind-Value=@_selMenu.RolesInverse Label="RolesInverse" />
+                                            </div>
+
+                                            @*==*@
+
+                                            <hr />
+
+                                            <div class="actions">
+                                                <DFluentDeleteButton OnConfirm="e=>OnDeleteMenuItem(_selMenu)" />
+
+                                                <span class="ms-2">
+                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("left"))>
+                                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowLeft())" />
+                                                    </FluentButton>
+                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("right"))>
+                                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowRight())" />
+                                                    </FluentButton>
+                                                </span>
+                                                <span class="ms-2">
+                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("up"))>
+                                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" />
+                                                    </FluentButton>
+                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("down"))>
+                                                        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
+                                                    </FluentButton>
+                                                </span>
+                                            </div>
+
+                                        </div>
+
+                                    }
+                                </div>
+                            </div>
+                        </Affix>
+                    </div>
+                </div>
+            </div>
+
+        </ChildContent>
+        <SectionExtraSidebar>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <FluentSwitch @bind-Checked="context.Disabled" Label="@AppRes.Disable" />
+                    <div class="spacer-1"></div>
+                    <FormItem2 For="@(()=>context.Tags)">
+                        <InputTags2 @bind-Value=context.Tags />
+                    </FormItem2>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <a href=@url target="_blank">
+                        <FluentButton Appearance="Appearance.Neutral">Export</FluentButton>
+                    </a>
+                    <FluentButton Appearance="Appearance.Neutral" OnClick="ShowImportModal">Import</FluentButton>
+                </div>
+            </div>
+        </SectionExtraSidebar>
+    </StandartEditContainer>
+    <div class="spacer-5"></div>
+</ContentWrapper>
+
+<FluentDialog Hidden="@(!visibleImportModal)"
+              aria-label="Import dialog"
+              Modal=true
+              @ondialogdismiss=@(()=>visibleImportModal=false)
+              PreventScroll=true>
+    <FluentDialogHeader Visible="false" />
+    <h2>Import</h2>
+    <div>
+        @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
+        <div class="my-2">
+            <InputFile OnChange="LoadFiles" />
+        </div>
+        <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
+        <div class="spacer-2"></div>
+        <FluentButton Appearance="Appearance.Accent" Disabled=importButtonDisabled OnClick=OnImportClick>
+            <i class="bi bi-upload me-2"></i>
+            Импорт
+        </FluentButton>
+    </div>
+</FluentDialog>
+
+
+<style>
+    .d-nav-menu.disabled {
+        opacity: 0.5;
+        color: gray;
+    }
+</style>

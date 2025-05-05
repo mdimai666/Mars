@@ -1,0 +1,376 @@
+﻿//Charts
+
+@text-color: black;
+@text-color-secondary: rgba(0,0,0,.45);
+@tag-default-bg: black;
+@primary-color: black;
+@heading-color: black;
+
+.iconGroup {
+    span.anticon {
+        margin-left: 16px;
+        color: @text-color-secondary;
+        cursor: pointer;
+        transition: color 0.32s;
+
+        &:hover {
+            color: @text-color;
+        }
+    }
+}
+
+.rankingList {
+    margin: 25px 0 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        align-items: center;
+        margin-top: 16px;
+        zoom: 1;
+
+        &::before,
+        &::after {
+            display: table;
+            content: ' ';
+        }
+
+        &::after {
+            clear: both;
+            height: 0;
+            font-size: 0;
+            visibility: hidden;
+        }
+
+        span {
+            color: @text-color;
+            font-size: 14px;
+            line-height: 22px;
+        }
+
+        .rankingItemNumber {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-top: 1.5px;
+            margin-right: 16px;
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+            background-color: @tag-default-bg;
+            border-radius: 20px;
+
+            &.active {
+                color: #fff;
+                background-color: #314659;
+            }
+        }
+
+        .rankingItemTitle {
+            flex: 1;
+            margin-right: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+.salesExtra {
+    display: inline-block;
+    margin-right: 24px;
+
+    a {
+        margin-left: 24px;
+        color: @text-color;
+
+        &:hover {
+            color: @primary-color;
+        }
+
+        &.currentDate {
+            color: @primary-color;
+        }
+    }
+}
+
+.salesCard {
+    .salesBar {
+        padding: 0 0 32px 32px;
+    }
+
+    .salesRank {
+        padding: 0 32px 32px 72px;
+    }
+
+    :global {
+        .ant-tabs-bar,
+        .ant-tabs-nav-wrap {
+            padding-left: 16px;
+
+            .ant-tabs-nav .ant-tabs-tab {
+                padding-top: 16px;
+                padding-bottom: 14px;
+                line-height: 24px;
+            }
+        }
+
+        .ant-tabs-extra-content {
+            padding-right: 24px;
+            line-height: 55px;
+        }
+
+        .ant-card-head {
+            position: relative;
+        }
+
+        .ant-card-head-title {
+            align-items: normal;
+        }
+    }
+}
+
+.salesCardExtra {
+    height: inherit;
+}
+
+.salesTypeRadio {
+    position: absolute;
+    right: 54px;
+    bottom: 12px;
+}
+
+.offlineCard {
+    :global {
+        .ant-tabs-ink-bar {
+            bottom: auto;
+        }
+
+        .ant-tabs-bar {
+            border-bottom: none;
+        }
+
+        .ant-tabs-nav-container-scrolling {
+            padding-right: 40px;
+            padding-left: 40px;
+        }
+
+        .ant-tabs-tab-prev-icon::before {
+            position: relative;
+            left: 6px;
+        }
+
+        .ant-tabs-tab-next-icon::before {
+            position: relative;
+            right: 6px;
+        }
+
+        .ant-tabs-tab-active h4 {
+            color: @primary-color;
+        }
+    }
+}
+
+.trendText {
+    margin-left: 8px;
+    color: @heading-color;
+}
+
+//Components chartCard
+@font-size-base: 12px;
+@border-color-split: #f0f0f0;
+
+.chartCard {
+    position: relative;
+
+    .chartTop {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .chartTopMargin {
+        margin-bottom: 12px;
+    }
+
+    .chartTopHasMargin {
+        margin-bottom: 20px;
+    }
+
+    .metaWrap {
+        float: left;
+    }
+
+    .avatar {
+        position: relative;
+        top: 4px;
+        float: left;
+        margin-right: 20px;
+
+        img {
+            border-radius: 100%;
+        }
+    }
+
+    .meta {
+        height: 22px;
+        color: @text-color-secondary;
+        font-size: @font-size-base;
+        line-height: 22px;
+    }
+
+    .action {
+        position: absolute;
+        top: 4px;
+        right: 0;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .total {
+        height: 38px;
+        margin-top: 4px;
+        margin-bottom: 0;
+        overflow: hidden;
+        color: @heading-color;
+        font-size: 30px;
+        line-height: 38px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        word-break: break-all;
+    }
+
+    .content {
+        position: relative;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .contentFixed {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .footer {
+        margin-top: 8px;
+        padding-top: 9px;
+        border-top: 1px solid @border-color-split;
+
+        & > * {
+            position: relative;
+        }
+    }
+
+    .footerMargin {
+        margin-top: 20px;
+    }
+}
+
+
+//trens component
+.trendItem {
+    display: inline-block;
+    font-size: @font-size-base;
+    line-height: 22px;
+
+    .up,
+    .down {
+        position: relative;
+        top: 1px;
+        margin-left: 4px;
+
+        span {
+            font-size: 12px;
+            transform: scale(0.83);
+        }
+    }
+
+    .up {
+        color: red;
+    }
+
+    .down {
+        top: -1px;
+        color: green;
+    }
+
+    &.trendItemGrey .up,
+    &.trendItemGrey .down {
+        color: @text-color;
+    }
+
+    &.reverseColor .up {
+        color: green;
+    }
+
+    &.reverseColor .down {
+        color: red;
+    }
+}
+
+//chart field
+.field {
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    .label,
+    .number {
+        font-size: @font-size-base;
+        line-height: 22px;
+    }
+
+    .number {
+        margin-left: 8px;
+        color: @heading-color;
+    }
+}
+
+@background-color-base: #F1F1F1;
+
+//chart miniprogress
+.miniProgress {
+    position: relative;
+    width: 100%;
+    padding: 5px 0;
+
+    .progressWrap {
+        position: relative;
+        background-color: @background-color-base;
+    }
+
+    .progress {
+        width: 0;
+        height: 100%;
+        background-color: @primary-color;
+        border-radius: 1px 0 0 1px;
+        transition: all 0.4s cubic-bezier(0.08, 0.82, 0.17, 1) 0s;
+    }
+
+    .target {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: 9;
+        width: 20px;
+
+        span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 4px;
+            border-radius: 100px;
+        }
+
+        span:last-child {
+            top: auto;
+            bottom: 0;
+        }
+    }
+}

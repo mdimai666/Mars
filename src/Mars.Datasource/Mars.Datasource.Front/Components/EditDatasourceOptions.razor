@@ -1,0 +1,126 @@
+@using AppFront.Shared.Components
+@using Mars.Datasource.Core
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+<div class="vstack gap-4">
+    @foreach (var _config in opt.Configs)
+    {
+        var config = _config;
+
+        <div class="DatasourceOption-Config">
+
+            <div class="card">
+                <div class="card-header">@(string.IsNullOrEmpty(config.Label) ? "<connection>" : config.Label)</div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-2">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-12">
+
+                                    <FormItem2 For="()=>config.Title">
+                                        <FluentTextField @bind-Value=@config.Title />
+                                    </FormItem2>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <FormItem2 For="()=>config.Slug">
+                                        <FluentTextField @bind-Value=@config.Slug />
+                                    </FormItem2>
+                                </div>
+                                <div class="col col-lg-6">
+                                    <div class="">
+                                        <label>Driver</label>
+                                        @* <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@config.Driver
+                                                                                           class="form-select form-xs"
+                                                                                           TValue="string"
+                                                                                           @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))>
+                                            @foreach (var m in DatasourceConfig.DriverList)
+                                            {
+                                                <option value="@m">@m</option>
+                                            }
+                                        </Microsoft.AspNetCore.Components.Forms.InputSelect> *@
+
+                                        <Microsoft.FluentUI.AspNetCore.Components.FluentSelect @bind-Value="@config.Driver"
+                                                                                               OptionText=@(s=>s.ToString())
+                                                                                               Items="DatasourceConfig.DriverList"
+                                                                                               @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))
+                                                                                               Style="width: 250px;">
+
+
+                                        </Microsoft.FluentUI.AspNetCore.Components.FluentSelect>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <div class="d-flex gap-5 fz14px">
+                                        <label>ConnectionString</label>
+                                        @if (string.IsNullOrEmpty(config.HelpLinkConnectionString) == false)
+                                        {
+                                            <a href="@config.HelpLinkConnectionString" target="_blank">help page <i class="bi bi-box-arrow-up-right"></i></a>
+                                        }
+                                    </div>
+                                    <div class="mt-2">
+                                        <FluentTextArea @bind-Value=@config.ConnectionString Rows="2" Class="w-100" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="col">
+                            <PartDataSourceActions Config="config" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="text-end">
+                                <AppFront.Shared.Components.DFluentDeleteButton OnConfirm="e=>Delete(config)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="spacer-1"></div>
+    <div>
+        <FluentButton OnClick="AddNew" IconStart=@(new Icons.Regular.Size16.Add())>Добавить</FluentButton>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public DatasourceOption opt { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        if (opt.Configs.Count == 0)
+        {
+            opt.Configs.Add(new DatasourceConfig());
+        }
+    }
+
+    void AddNew()
+    {
+        opt.Configs.Add(new DatasourceConfig());
+        opt = opt;
+    }
+
+    void Delete(DatasourceConfig cfg)
+    {
+        opt.Configs.Remove(cfg);
+    }
+
+    void DriverChanged(DatasourceConfig config, string value)
+    {
+        config.Driver = value;
+        AfterChangeDriverSuggestConnectionString(config);
+    }
+
+    void AfterChangeDriverSuggestConnectionString(DatasourceConfig cfg)
+    {
+        Console.WriteLine("Zee");
+        if (string.IsNullOrEmpty(cfg.ConnectionString) || cfg.IsDefaultString())
+        {
+            cfg.ConnectionString = cfg.GetDefaultConnectionString();
+        }
+    }
+}

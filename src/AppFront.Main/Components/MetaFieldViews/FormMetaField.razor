@@ -1,0 +1,206 @@
+@using Mars.Shared.Contracts.MetaFields
+@using Mars.WebApiClient.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+
+
+<d-meta-field class="FormMetaField">
+
+    <CascadingValue Value="this">
+
+        <FluentAccordion>
+            @if (Model is not null)
+            {
+                @foreach (var f in Model.Where(s => s.ParentId == ParentId).OrderBy(s => s.Order))
+                {
+                    var field = f;
+
+                    <FluentAccordionItem @key=@($"accortion-item-{field.Id}")>
+                        <HeadingTemplate>
+                            <div class="hstack">
+                                <div class="flex-fill fz18px">
+                                    @(MetaFieldEditModel.TypeIcons[field.Type])
+
+                                    <span class="@(field.Disabled?"text-secondary text-strike":"") @(field.Hidden?"text-italic":"")">
+                                        @(string.IsNullOrEmpty(field.Title) ? "<nameless>" : field.Title)
+                                    </span>
+                                    @*<span class="text-primary fz14px">{@field.Id}</span>*@
+                                    <span class="text-primary fz14px">(@field.Type.ToString())</span>
+                                    @if (field.Hidden)
+                                    {
+                                        <i class="text-secondary ms-2">hidden</i>
+
+                                    }
+                                </div>
+                                <div class="hstack gap-3">
+                                    <span class="text-secondary fz12px">
+                                        @field.Key
+                                    </span>
+                                    <DFluentDeleteButton OnConfirm="()=>OnDelete(field)">
+                                        <span class="text-danger">удалить</span>
+                                    </DFluentDeleteButton>
+                                </div>
+
+                            </div>
+
+                        </HeadingTemplate>
+                        <ChildContent>
+                            <div class="1card rounded-0 mb-1">
+                                <div class="card-body1p-2">
+                                    @*<CascadingValue Value=@field>
+                                    <FormRowMetaFieldTemplate @bind-Field=@field />
+                                    </CascadingValue>*@
+
+                                    <div class="FormMetaField_Row vstack gap-3">
+                                        <div class="row row-cols-3 g-4">
+                                            <div class="col">
+                                                <FormItem2 For="()=>field.Title">
+                                                    <FluentTextField @bind-Value=@field.Title Style="min-width:200px" Appearance="FluentInputAppearance.Filled" Required />
+                                                </FormItem2>
+                                            </div>
+                                            <div class="col">
+                                                <FormItem2 For="()=>field.Key">
+                                                    <FluentTextField @bind-Value=@field.Key Required />
+                                                </FormItem2>
+                                            </div>
+                                        </div>
+                                        <div class="row row-cols-2 g-4">
+                                            <div class="col">
+                                                <FormItem2 For="()=>field.Description">
+                                                    <FluentTextArea Rows="2" @bind-Value=@field.Description Class="w-100" />
+                                                </FormItem2>
+                                            </div>
+                                            <div class="col">
+                                                <FormItem2 For="()=>field.Tags">
+                                                    <InputTags2 @bind-Value=field.Tags />
+                                                </FormItem2>
+                                            </div>
+                                        </div>
+
+                                        @if (false)
+                                        {
+                                            <FormItem2 For="()=>field.IsNullable">
+                                                <FluentCheckbox @bind-Value=@field.IsNullable />
+                                            </FormItem2>
+                                        }
+
+                                        <div class="d-flex gap-3">
+                                            <div>
+                                                <FormItem2 For="()=>field.Type">
+
+                                                    <FluentSelect TOption="MetaFieldType"
+                                                                  Items="Enum.GetValues<MetaFieldType>()"
+                                                                  OptionText="@(f=>MetaFieldEditModel.TypeIcons[f] + " " + MetaFieldEditModel.TypeList[f])"
+                                                                  Width="250px"
+                                                                  @bind-SelectedOption="@field.Type" />
+                                                </FormItem2>
+                                            </div>
+                                            <div>
+                                                @if (field.Type == MetaFieldType.Relation)
+                                                {
+                                                    <FormItem2 For="()=>field.ModelName">
+
+                                                        <FluentSelect TOption="string"
+                                                                      Width="250px"
+                                                                      @bind-Value="@field.ModelName">
+
+                                                            @foreach (var relModel in MetaRelationModels)
+                                                            {
+                                                                <FluentOption Value="@relModel.Key">@relModel.Title</FluentOption>
+
+                                                                @foreach (var subModel in relModel.SubTypes)
+                                                                {
+                                                                    <FluentOption Value="@subModel.Key"> <span class="ms-3">-</span> @subModel.Title</FluentOption>
+                                                                }
+                                                            }
+
+                                                        </FluentSelect>
+                                                    </FormItem2>
+                                                }
+                                            </div>
+
+                                        </div>
+
+                                        @if (field.IsTypeHasMinMax)
+                                        {
+                                            <div class="vstack">
+                                                <FluentLabel>Ограничитель</FluentLabel>
+                                                <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Оставьте пустым чтобы не ограничивать</FluentLabel>
+
+                                                <div class="mt-2 hstack gap-3">
+                                                    <label>min</label>
+                                                    <FluentNumberField @bind-Value="@field.MinValue" Style="width:100px;" />
+                                                    <span class="" style="text-align:center;">-</span>
+                                                    <label>max</label>
+                                                    <FluentNumberField @bind-Value="@field.MaxValue" Style="width:100px;" />
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (field.IsTypeSelectable)
+                                        {
+                                            <label>Варианты</label>
+                                            <div class="card ms-3">
+                                                <div class="card-body p-2">
+                                                    <EditMetaFieldVariants @bind-Model=field />
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (field.IsTypeParentable)
+                                        {
+                                            <div class="row">
+                                                <div class="w-25 text-end">
+                                                    group
+                                                </div>
+                                                <div class="w-75">
+                                                    @if (field.Id == Guid.Empty)
+                                                    {
+                                                        <div class="text-danger">00-00 recurse error</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <CascadingValue Value="Model">
+                                                            <FormMetaField ParentId="@field.Id" />
+                                                        </CascadingValue>
+                                                    }
+
+                                                    <div class="" style="background-color:#eee">
+                                                        @if (CountChilds(field.Id) == 0)
+                                                        {
+                                                            <div class="text-center text-secondary">
+                                                                <i>
+                                                                    &lt; нет полей &gt;
+                                                                </i>
+                                                            </div>
+                                                        }
+                                                        <div class="text-end">
+                                                            <FluentButton OnClick="e=>AddNewField(field.Id)">Добавить</FluentButton>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
+
+
+
+                                        <div class="hstack gap-3">
+                                            <FluentSwitch @bind-Value=field.Hidden Label="@AppRes.Hidden" />
+                                            <FluentSwitch @bind-Value=field.Disabled Label="@AppRes.Disabled" />
+
+                                            <FluentNumberField @bind-Value=field.Order Label="@AppRes.SortingOrder" Style="width:100px" />
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </ChildContent>
+                    </FluentAccordionItem>
+                }
+            }
+        </FluentAccordion>
+
+    </CascadingValue>
+</d-meta-field>
+
+@*<JsonDump Model="Model" />*@

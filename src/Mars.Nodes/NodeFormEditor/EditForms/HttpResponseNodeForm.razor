@@ -1,0 +1,16 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(HttpResponseNode))]
+
+<div class="form-group">
+    @*<label>payload</label>*@
+    @*<InputText class="form-control" @bind-Value=Node.Payload />*@
+    <label>status code</label>
+    <label>headers</label>
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    HttpResponseNode Node { get => (HttpResponseNode)Value; set => Value = value; }
+
+}

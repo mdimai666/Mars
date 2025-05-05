@@ -1,0 +1,42 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FileWriteNode))]
+
+<div class="form-group">
+    <label>Filename</label>
+    <InputText class="form-control" @bind-Value=Node.Filename />
+</div>
+
+<div class="form-group">
+    <label>Write mode</label>
+    <InputSelect @bind-Value=Node.WriteMode>
+        @foreach (var m in Enum.GetValues(typeof(FileWriteNode.FileWriteMode)))
+        {
+            <option value="@((FileWriteNode.FileWriteMode)m)">@m</option>
+        }
+    </InputSelect>
+</div>
+
+@if (Node.WriteMode != FileWriteNode.FileWriteMode.Delete)
+{
+    
+    <div class="form-group">
+        <label>Add As New Line</label>
+        <InputCheckbox @bind-Value=Node.AddAsNewLine />
+    </div>
+    <div class="form-group">
+        <label>CreateDirectoryIfItDoesntExist</label>
+        <InputCheckbox @bind-Value=Node.CreateDirectoryIfItDoesntExist />
+    </div>
+}
+
+<div class="alert alert-warning">
+    Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the Node-RED process.
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FileWriteNode Node { get => (FileWriteNode)Value; set => Value = value; }
+
+
+}

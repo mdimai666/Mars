@@ -1,0 +1,29 @@
+@using System.Text.RegularExpressions
+@inject NavigationManager _navigationManager
+@inject IJSRuntime JS
+
+<div class="btn-backbutton cursor-pointer d-inline-block @Class" style="@Style"
+     @onclick=Click>
+    <div class="icon-wrapper">
+        <div class="icon"></div>
+    </div>
+    @*<span>
+    &lt;
+    </span>*@
+</div>
+
+@code {
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+
+
+    void Click(MouseEventArgs e)
+    {
+        if (OnClick.HasDelegate)
+            OnClick.InvokeAsync(e);
+        else
+            _navigationManager.GoBack();
+    }
+}

@@ -1,0 +1,44 @@
+﻿@using MarsEditors
+@using BlazorMonaco;
+@using BlazorMonaco.Editor;
+@using NodeFormEditor.EditForms.Components
+@using NodeFormEditor.EditForms.Part;
+@using NodeFormEditor;
+
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FunctionNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>Code</label>
+    @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Code />*@
+
+
+    <div class="d-flex" style="height:50vh">
+
+        @* <BlazorMonaco.Editor.StandaloneCodeEditor @ref="editor1"
+        CssClass="flex-fill"
+        OnDidInit="EditorOnDidInit"
+        ConstructionOptions="EditorConstructionOptions" /> *@
+
+        <MarsCodeEditor2.CodeEditor2 @ref=editor1
+                                      HideToolbarComponents=true
+                                      Lang="csharp" Value="@Node.Code" OnSave="OnSave" ContainerCssStyle="">
+            <HeaderArea>
+                <CodeEditorFunctionNodeToolbar />
+            </HeaderArea>
+        </MarsCodeEditor2.CodeEditor2>
+
+    </div>
+
+
+    @* <MarsCodeEditor @ref=editor1
+    Lang="@MarsCodeEditor.Language.csharp"
+    OnSave="OnEditorSave"
+    Value="@Node.Code" /> *@
+
+    <div class="my-2">
+        <CascadingValue Value="this">
+            <NodePartOutputSet />
+        </CascadingValue>
+    </div>
+</div>

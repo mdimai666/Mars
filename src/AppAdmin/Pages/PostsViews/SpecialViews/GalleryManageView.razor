@@ -1,0 +1,175 @@
+@using System.Linq.Expressions
+@using AppAdmin.Pages.PageViews
+@using AppFront.Shared.Services.GallerySpace
+@using AppShared.Dto.Gallery
+@using Microsoft.AspNetCore.Authorization
+
+@inject IStringLocalizer<AppRes> L
+@* @implements IDisposable *@
+
+<h1>Gallery</h1>
+
+<StandartManagementTable TModel=Gallery TService=GalleryService @ref=f
+                         SearchExpression=search
+                         ViewMode="TableViewMode.Cards"
+                         TableClass="row row-cols-1 row-cols-md-3 g-3"
+                         OnLoad=AfterLoadData
+                         CanCreate=false>
+
+    <TableContent>
+        <div class="col">
+            <div class="card h-100 list-group-item-action position-relative"
+                 data-typename="@context.Type">
+                <div class="ratio ratio-16x9">
+                    <div class="bg-secondary"></div>
+                    @{
+                        string? _imageUrl = ImageUrlThumb(context);
+                    }
+                    @if (_imageUrl is not null)
+                    {
+                        <img src=@_imageUrl class="card-img-top" style="object-fit:cover" />
+                    }
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fz18px lines-2">@context.Title.TextEllipsis(70)</h5>
+                    <div class="text-secondary fz14px lines-1" title="@context.Slug">
+                        @context.Slug.TextEllipsis(70)
+                    </div>
+                    <div class="text-secondary fz14px lines-1">
+                        @context.GalleryPhotosCount фото
+                    </div>
+                    @if (postType.EnabledFeatures.Contains(nameof(Post.Tags)))
+                    {
+                        <div class="_tags">
+                            @foreach (var tag in context.Tags)
+                            {
+                                <span class="badge bg-light text-dark">@tag</span>
+                            }
+                        </div>
+                    }
+                    @if (postType.EnabledFeatures.Contains(nameof(Post.Status)))
+                    {
+                        <div title="@context.Status">
+                            @StatusTitle(context.Status)
+                        </div>
+                    }
+                </div>
+                <a href=@($"{urlEditPage}/{context.Id}{query}") class="stretched-link"></a>
+            </div>
+        </div>
+    </TableContent>
+
+    <FormContent>
+
+        <FormItem>
+            <AntDesign.Input @bind-Value="@context.Title" />
+        </FormItem>
+
+    </FormContent>
+</StandartManagementTable>
+
+@code {
+    StandartManagementTable<Gallery, GalleryService> f = default!;
+
+    Expression<Func<Gallery, bool>> search =>
+        model => //model.Type == POSTTYPE &&
+        (model.Title.ToLower().Contains(f.SearchText.ToLower())
+        || model.Slug.ToLower().Contains(f.SearchText.ToLower()));
+
+    string urlEditPage => "/dev/EditPost";
+    string query => $"?posttype={POSTTYPE}";
+
+    string _postType = "";
+    PostType postType = Q.Site.PostTypes.First(s => s.TypeName == "post");
+
+    [Parameter]
+    public string POSTTYPE
+    {
+        get => _postType;
+        set
+        {
+            if (_postType == value) return;
+            _postType = value;
+            if (string.IsNullOrEmpty(value) == false)
+            {
+                postType = Q.Site.PostTypes.FirstOrDefault(s => s.TypeName == _postType) ?? Q.Site.PostTypes.First(s => s.TypeName == "post");
+            }
+            f?.Refresh();
+
+        }
+    }
+
+    string StatusTitle(string statusSlug)
+    {
+        var status = postType.PostStatusList.FirstOrDefault(s => s.Slug == statusSlug);
+        return status?.Title ?? statusSlug;
+    }
+
+    [Inject] MediaService mediaService { get; set; } = default!;
+    [Inject] PostService postService { get; set; } = default!;
+
+    Dictionary<Guid, FileEntity?> dictImage = new();
+
+    async void AfterLoadData(TotalResponse<Gallery> res)
+    {
+        // await LoadImagesToDict(dictImage, res.Records, postService, mediaService);
+        StateHasChanged();
+    }
+
+    string? ImageUrlThumb(Gallery post)
+    {
+        // var imageMeta = ImageMetaField(post);
+
+        // if (dictImage.TryGetValue(post.Id, out var file) && file is not null)
+        // {
+        //     var url = file.Meta.Thumbnails["md"]?.FileUrlFull;
+        //     if (string.IsNullOrEmpty(url)) return null;
+        //     return url;
+        // }
+
+        var url = post.GalleryImage?.Meta.Thumbnails["md"]?.FileUrlFull ?? post.GalleryImage?.FileUrl;
+
+        return url;
+    }
+    /*
+    public static async Task LoadImagesToDict(Dictionary<Guid, FileEntity?> dict, IEnumerable<Post> posts, PostService postService, MediaService mediaService)
+        {
+        if (!posts.Any()) return;
+
+        var tasks = posts.Where(s => dict.ContainsKey(s.Id) == false)
+        .Select(post => Task.Run(async () =>
+            {
+            var imageMeta = ImageMetaField(post);
+            if(imageMeta is null)
+                {
+                var postDetail = await postService.Get(post.Id);
+                imageMeta = ImageMetaField(postDetail);
+            }
+
+            if (imageMeta.ModelId != Guid.Empty)
+                {
+                var imageId = imageMeta.ModelId;
+                var imageFile = await mediaService.Get(imageId);
+
+                dict.TryAdd(post.Id, imageFile);
+        }
+        }));
+
+        await Task.WhenAll(tasks);
+    }
+
+    public static MetaValue? ImageMetaField(Post post)
+        {
+        if (post.MetaValues is null) return null;
+
+        var imageMeta = post.MetaValues.FirstOrDefault(s => s.MetaField.ParentId == Guid.Empty && s.MetaField.Key == "image" && s.MetaField.Type == EMetaFieldType.Image);
+
+        return imageMeta;
+    }
+
+    public void Dispose()
+        {
+        dictImage.Clear();
+    }*/
+
+}

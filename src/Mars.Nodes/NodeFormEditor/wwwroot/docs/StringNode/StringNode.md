@@ -1,0 +1,3 @@
+# StringNode
+
+String manipulation

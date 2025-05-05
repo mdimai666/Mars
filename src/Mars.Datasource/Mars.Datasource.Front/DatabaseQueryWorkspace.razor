@@ -1,0 +1,225 @@
+@using AppFront.Shared.Components
+@using AppFront.Shared.Services
+@using Mars.Datasource.Core
+@using Mars.Datasource.Core.Dto
+@using Mars.Datasource.Front.Services
+@using Mars.Shared.Common
+@using Mars.WebApiClient.Interfaces
+@using MarsEditors
+@inject NavigationManager nav
+
+@if (Busy)
+{
+    <div class="p-5 main-fill xcenter">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+    </div>
+}
+else
+{
+    <div class="d-flex no-gutters g-0 flex-fill flex-column">
+        <section class="TOPMENU flex-shrink-0 hstack" style="height:42px;">
+
+            <div class="dropdown">
+                <a class="btn btn-light btn-sm rounded-0 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-database-check"></i>
+                    @DataSourceConfigSlug
+                </a>
+                <ul class="dropdown-menu rounded-0 shadow fz14px">
+                    @foreach (var a in listDatasources)
+                    {
+                        if (a.Slug == DataSourceConfigSlug) continue;
+                        <li><a class="dropdown-item" href="@thisurl?slug=@a.Slug">@a.Title</a></li>
+                    }
+                    @if (listDatasources.Count > 1)
+                    {
+                        <li><hr class="dropdown-divider"></li>
+                    }
+                    <li><a class="dropdown-item" href="datasource/config"><i class="bi bi-gear"></i> Настроить</a></li>
+                </ul>
+            </div>
+
+            @* datasource &lt;select&gt; | asd | <a href="/dev/datasource/actions">info</a> *@
+        </section>
+        <section class="d-flex flex-fill" style="height:calc(100% - 42px)">
+            <aside class="flex-shrink-0" style="width:200px;">
+                <div class="1card h-100 bg-white custom-scroll1 overflow-scroll">
+                    <div class="card-body p-2 ">
+                        <p class="card-text text-secondary">Tables (@database.Tables.Count)</p>
+                    </div>
+                    <ul class="list-group ac">
+                        @foreach (var t in database.Tables)
+                        {
+                            var table = t;
+                            string _class = table == selTable ? "active" : "";
+                            <li class="list-group-item list-group-item-action tablelist-table @_class px-2 py-1 hstack"
+                                @onclick=@(e=>OnClickTable(table))>
+                                <a role="button" class="cursor-default text-black">@t.TableName</a>
+                                <span class="ms-auto tablelist-table__tool">
+                                    <a class="" role="button" @onclick=@(()=>ShowRecords(table))>[data]</a>
+                                </span>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+            </aside>
+            <div class="flex-fill d-flex flex-column h-100">
+                <div class="h-50  d-flex flex-column" style="position:relative">
+                    <section class="p-3 h-100">
+                        @if (selTable is not null)
+                        {
+                            <div class="h-100 d-flex flex-column ">
+                                <div class="__TOP flex-shrink-0">
+                                    <h2>@selTable.TableName</h2>
+                                    <div class="__ACTIONS">
+                                        <div class="text-end">
+                                            <button class="btn btn-primary" @onclick=ClickQuery>QUERY</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card mt-2 flex-fill flex-shrink-0 custom-scroll1 overflow-scroll h-75">
+                                    <div class="card-body p-2">
+
+                                        @*=======================================*@
+                                        <!-- Nav pills -->
+                                        <ul class="nav nav-pills">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" data-bs-toggle="pill" href="#home">Structure</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="pill" href="#menu1">Query</a>
+                                            </li>
+                                        </ul>
+
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane container active" id="home">
+                                                <div class="p-3">
+                                                    <table class="table table-hover table-striped mb-0" style="width:unset;">
+
+                                                        @foreach (var col in selTable.Columns.Values)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="py-0 px-2">
+                                                                        <b>@col.ColumnName</b>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="py-0 px-2">
+                                                                        @col.DataTypeName
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+
+                                                        }
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane container fade" id="menu1">
+                                                <div class="p-3 d-flex flex-column" style="height:350px;">
+                                                    <MarsCodeEditor @ref=_editor
+                                                                     Lang=@MarsCodeEditor.Language.sql
+                                                                     Value="" />
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        @*=======================================*@
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 class="text-secondary">sel table</h3>
+                        }
+                    </section>
+                </div>
+                <div class="h-50 card shadow-lg">
+                    <div class="card-body p-3" style="max-height:calc(50vh - 50px);">
+                        <section class="h-100">
+                            @if (loadingQuery)
+                            {
+                                <div>
+                                    <div class="p-5 text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            }
+                            else if (res is null)
+                            {
+                                <div>
+                                    <div class="text-secondary">
+                                        NULL
+                                    </div>
+                                </div>
+                            }
+                            else if (res.Ok == false)
+                            {
+                                <div>
+                                    <div class="alert alert-danger">
+                                        @res.Message
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="overflow-scroll 1custom-scroll1 h-100" style="width:calc(100vw - 270px - 20px)">
+                                    <table class="table">
+                                        <tbody>
+                                            @foreach (var row in raw!)
+                                            {
+                                                <tr>
+                                                    @foreach (var col in row)
+                                                    {
+                                                        <td>
+                                                            <span class="text-nowrap">
+                                                                @col
+                                                            </span>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @*============*@
+        <div class="offcanvas offcanvas-bottom 1acrylic" data-bs-scroll="false" data-bs-backdrop="true" style="height:70vh" id="node-editor-offcanvas">
+            <div class="offcanvas-header">
+                <h3 class="offcanvas-title">Heading</h3>
+
+                <div class="__right">
+
+                    <button class="btn btn-primary">
+                        Deploay and Inject last
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+
+                </div>
+
+            </div>
+            <div class="offcanvas-body">
+                <p>Some text lorem ipsum.</p>
+                <button class="btn btn-secondary" type="button">A Button</button>
+            </div>
+        </div>
+        @*============*@
+    </div>
+}

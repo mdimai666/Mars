@@ -1,0 +1,35 @@
+<div class="TabsProfile">
+    <ul class="nav nav-pills nav-justified shadow-none bg-transparent px-0">
+        <li class="nav-item 1px-3">
+            <NavLink class="nav-link" href=@($"/EditUser{q}")>
+                Персональные данные
+            </NavLink>
+        </li>
+        @*<li class="nav-item 1px-3">
+            <NavLink class="nav-link" href=@($"/EditUser_Diagnoz{q}")>
+                Мед карта
+            </NavLink>
+        </li>*@
+    </ul>
+</div>
+
+<div class="spacer-1"></div>
+
+@code {
+    [CascadingParameter] public Guid ID { get; set; }
+
+    string q => ID == Guid.Empty ? "" : $"/{ID}";
+}
+
+<style>
+    .TabsProfile .nav-link {
+        border-radius: 6px;
+        color: black;
+    }
+
+        .TabsProfile .nav-link.active {
+            /*background: #f6f2fa;*/
+            /*color: #7f84df;*/
+            font-weight: 700;
+        }
+</style>

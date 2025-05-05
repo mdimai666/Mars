@@ -1,0 +1,14 @@
+﻿@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(CallResponseNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>CallResponseNode</label>
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    CallResponseNode Node { get => (CallResponseNode)Value!; set => Value = value; }
+
+}

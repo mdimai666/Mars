@@ -1,0 +1,43 @@
+@using Mars.Shared.Options
+@using Mars.Shared.Options.Attributes
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [OptionEditFormForOptionAttribute(typeof(SysOptions))]
+@attribute [Display(Name = "Основные")]
+
+
+<EditOptionForm @ref=form TModel="SysOptions"
+                FormClass="col-12 col-lg-8 mx-lg-5 compact"
+                AfterSave="AfterSave">
+
+    <h3>Основные</h3>
+
+    <div class="vstack gap-3">
+        <FormItem2 For="()=>context.SiteUrl">
+            <FluentTextField @bind-Value=@context.SiteUrl Appearance="FluentInputAppearance.Filled" Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>context.SiteName">
+            <FluentTextField @bind-Value=@context.SiteName Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>context.SiteDescription">
+            <FluentTextArea Rows="3" @bind-Value=@context.SiteDescription Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>context.AdminEmail">
+            <FluentTextField TextFieldType="@TextFieldType.Email" @bind-Value=@context.AdminEmail Class="w-100" AutoComplete="off" />
+        </FormItem2>
+        <div style="margin-left: 46%;">
+            <FluentCheckbox @bind-Value=@context.AllowUsersSelfRegister>
+                <AutoInputLabel For="()=>context.AllowUsersSelfRegister" />
+            </FluentCheckbox>
+        </div>
+    </div>
+
+</EditOptionForm>
+
+@code {
+    EditOptionForm<SysOptions>? form;
+
+    void AfterSave(SysOptions value)
+    {
+        Q.Site.SysOptions = value;
+    }
+}

@@ -1,0 +1,17 @@
+<div class="misc-inner p-2 p-sm-5">
+    <div class="w-100">
+        <h3 class="display-3 mb-2">Oops! 😖 </h3>
+        <h2 class="text-danger">@Exception.Message</h2>
+        <h3 class="text-primary">@Exception.Source</h3>
+
+        <code>@Exception.StackTrace</code>
+        @*<a class="btn btn-primary mb-2 btn-sm-block waves-effect waves-float waves-light" href="/">На Главную</a>*@
+
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Exception Exception { get; set; } = default!;
+
+}

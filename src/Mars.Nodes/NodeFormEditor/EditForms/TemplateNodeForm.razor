@@ -1,0 +1,55 @@
+@using MarsCodeEditor2
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(TemplateNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>Template</label>
+    @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Template />*@
+
+    @* <MarsCodeEditor @ref=editor1
+                     Lang="@MarsCodeEditor.Language.handlebars"
+                     OnSave="OnEditorSave"
+                     Value="@Node.Template" /> *@
+
+    <div class="text-end mb-1">
+        <FluentSelect Items="MarsCodeEditor.Language.Array"
+                      Appearance="Appearance.Stealth"
+                      Position="SelectPosition.Below"
+                      Value="@(Node.Language ?? TemplateNode.DefaultLanguage)"
+                      ValueChanged="@(v=>{ Node.Language=v; editor1?.SetModelLanguage(v); })" />
+
+    </div>
+
+    <MarsCodeEditor2.CodeEditor2 @ref=editor1
+                                 Lang="@MarsCodeEditor.Language.handlebars"
+                                 OnSave="OnEditorSave"
+                                 Value="@Node.Template" />
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    TemplateNode Node { get => (TemplateNode)Value!; set => Value = value; }
+
+    CodeEditor2? editor1;
+
+
+    public override async Task OnEditSave()
+    {
+        //Console.WriteLine("X>1111");
+        Node.Template = await editor1!.GetValue();
+        //Console.WriteLine("X>2222");
+        //await Task.Delay(100);
+    }
+
+
+    void OnEditorSave(string val)
+    {
+        //_ = form.OnFinish();
+        _ = NodeEditContainer.FormSaveClick();
+    }
+}
+

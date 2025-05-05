@@ -1,0 +1,39 @@
+@page "/NewsManagement"
+@attribute [Display(Name = "Записи")]
+
+@inject IJSRuntime JS
+
+<ContentWrapper Title="Записи" Breadcrumb="">
+
+    <div class="text-end mb-3">
+        <a href="/dev/EditNews">
+            <Button>Добавить</Button>
+        </a>
+    </div>
+
+
+    <Table @ref="table"
+            TItem="Post"
+            DataSource="@Items"
+            Total="_total"
+            @bind-PageIndex="_pageIndex"
+            @bind-PageSize="_pageSize"
+            OnChange="OnChange">
+        @{
+            var city = context;
+        }
+
+        @*<Column @bind-Field="@context.Id" Sortable />*@
+        <Column Field="@context.Title" Sortable Title="Название">
+            <div>
+                <a href="/dev/EditNews/@context.Id" class="text-accent">@context.Title</a>
+                @*<span class="car-number ms-2">@context.CarNumber</span>*@
+            </div>
+        </Column>
+        <Column @bind-Field="@context.Created" Format="yyyy-MM-dd" Sortable Title="Создан" />
+
+    </Table>
+
+    <br />
+    <PagesTotal Page=_pageIndex PageSize=_pageSize TotalPages=_total />
+</ContentWrapper>

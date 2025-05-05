@@ -1,0 +1,41 @@
+.EditOptionForm {
+    .form-item {
+        small {
+            font-size: 80%;
+            line-height: 1.2em;
+            display: inline-block;
+            color: grey;
+        }
+    }
+}
+
+.d-fluent-input-description {
+    margin-left: .5rem !important;
+    color: var(--neutral-base-color);
+}
+
+form.compact {
+    d-formitem2 {
+        display: flex;
+
+        .form-item__content {
+            display: flex;
+            flex: 1 1 auto;
+            /*background: blue !important;*/
+            gap: 1em;
+
+            .fluent-input-label {
+                flex-basis: 80%;
+                display: flex;
+                justify-content: end;
+                text-align: end;
+            }
+
+            .d-fluent-input-description {
+            }
+        }
+
+        .form-item__ValidationMessage {
+        }
+    }
+}

@@ -1,0 +1,39 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<MarkupString>
+
+<FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+    <div class="hstack">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Info" Class="me-2" />
+        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title??AppRes.ActionConfirmationPrompt)</FluentLabel>
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="my-2">
+        <FluentLabel Typo="Typography.PaneHeader">@Content</FluentLabel>
+    </div>
+    
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <div class="hstack gap-2 justify-content-end">
+        <FluentButton Appearance="Appearance.Accent" BackgroundColor="var(--bs-danger)" Color="white" Style="min-width:100px" OnClick="OkAsync">
+            @AppRes.Ok
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">
+            @AppRes.Cancel
+        </FluentButton>
+    </div>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public MarkupString Content { get; set; } = default!;
+
+    private  Task OkAsync() => Dialog.CloseAsync();
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+}

@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.11.5" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.11.5" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="compilerconfig.json" />
+        <Content Remove="wwwroot\compilerconfig.json" />
+        <Content Remove="wwwroot\compilerconfig.json.defaults" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Content Remove="wwwroot\css\**\*.less" />
+        <Content Remove="wwwroot\css\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="compilerconfig.json" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <None Include="wwwroot\css\**\*.less" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Watch Remove="wwwroot\**\*.less" />
+        <Watch Remove="wwwroot\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Mars.Shared\Mars.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

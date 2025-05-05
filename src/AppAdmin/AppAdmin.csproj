@@ -1,0 +1,134 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<StaticWebAssetBasePath>dev</StaticWebAssetBasePath>
+
+        <BlazorEnableCompression>true</BlazorEnableCompression>
+        <PublishTrimmed>true</PublishTrimmed>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Remove="compilerconfig.json" />
+        <Content Remove="Pages\PostTypeViews\EditPostTypePage.razor" />
+        <Content Remove="Pages\Settings\SettingsImportPage.razor" />
+        <Content Remove="Pages\UserViews\AdminEditUserPage.razor" />
+        <Content Remove="Pages\UserViews\EditUserFieldsPage.razor" />
+        <Content Remove="Pages\UserViews\ViewUserPage.razor" />
+        <Content Remove="Builder\StoEntityViews\**" />
+        <Content Remove="Pages\ActionHistoryViews\**" />
+        <Content Remove="Pages\AnketaViews\**" />
+        <Content Remove="Pages\CommentsViews\**" />
+        <Content Remove="Pages\ContactsManagementViews\**" />
+        <Content Remove="Pages\GeoLocationManagmentViews\**" />
+        <Content Remove="Pages\NewsManagementViews\**" />
+        <Content Remove="Pages\PostCatViews\**" />
+        <Content Remove="Pages\PostsViews\SpecialViews\**" />
+        <Content Remove="Pages\RoleManagementViews\**" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Content Remove="wwwroot\css\**\*.less" />
+        <Content Remove="wwwroot\css\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="compilerconfig.json" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <None Include="wwwroot\css\**\*.less" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Compile Remove="Builder\StoEntityViews\**" />
+        <Compile Remove="Pages\ActionHistoryViews\**" />
+        <Compile Remove="Pages\AnketaViews\**" />
+        <Compile Remove="Pages\CommentsViews\**" />
+        <Compile Remove="Pages\ContactsManagementViews\**" />
+        <Compile Remove="Pages\GeoLocationManagmentViews\**" />
+        <Compile Remove="Pages\NewsManagementViews\**" />
+        <Compile Remove="Pages\PostCatViews\**" />
+        <Compile Remove="Pages\PostsViews\SpecialViews\**" />
+        <Compile Remove="Pages\RoleManagementViews\**" />
+        <EmbeddedResource Remove="Builder\StoEntityViews\**" />
+        <EmbeddedResource Remove="Pages\ActionHistoryViews\**" />
+        <EmbeddedResource Remove="Pages\AnketaViews\**" />
+        <EmbeddedResource Remove="Pages\CommentsViews\**" />
+        <EmbeddedResource Remove="Pages\ContactsManagementViews\**" />
+        <EmbeddedResource Remove="Pages\GeoLocationManagmentViews\**" />
+        <EmbeddedResource Remove="Pages\NewsManagementViews\**" />
+        <EmbeddedResource Remove="Pages\PostCatViews\**" />
+        <EmbeddedResource Remove="Pages\PostsViews\SpecialViews\**" />
+        <EmbeddedResource Remove="Pages\RoleManagementViews\**" />
+        <None Remove="Builder\StoEntityViews\**" />
+        <None Remove="Pages\ActionHistoryViews\**" />
+        <None Remove="Pages\AnketaViews\**" />
+        <None Remove="Pages\CommentsViews\**" />
+        <None Remove="Pages\ContactsManagementViews\**" />
+        <None Remove="Pages\GeoLocationManagmentViews\**" />
+        <None Remove="Pages\NewsManagementViews\**" />
+        <None Remove="Pages\PostCatViews\**" />
+        <None Remove="Pages\PostsViews\SpecialViews\**" />
+        <None Remove="Pages\RoleManagementViews\**" />
+        <Watch Remove="wwwroot\**\*.less" />
+        <Watch Remove="wwwroot\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+
+    <PropertyGroup>
+        <NoWarn>BL0007</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Pages\UserViews\AdminEditUserPage.razor.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+        <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
+        <PackageReference Include="Remote.Linq" Version="7.2.2" />
+        <PackageReference Include="Remote.Linq.Newtonsoft.Json" Version="7.2.2" />
+        <PackageReference Include="Remote.Linq.Text.Json" Version="7.2.2" />
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.0" />
+        <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
+        <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Docker.Front\Mars.Docker.Front.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\NodeWorkspace\NodeWorkspace.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.WebApp.Front\Mars.Nodes.WebApp.Front.csproj" />
+        <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
+        <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+        <ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
+        <ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
+        <DebugSymbols>False</DebugSymbols>
+        <DebugType>None</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'DevRelease' ">
+        <BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
+        <InvariantGlobalization>true</InvariantGlobalization>
+
+        <BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
+        <!--<PublishTrimmed>true</PublishTrimmed>-->
+        <BlazorEnableCompression>true</BlazorEnableCompression>
+    </PropertyGroup>
+
+
+</Project>

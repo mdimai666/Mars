@@ -1,0 +1,175 @@
+.my-file-uploader1 {
+    .upload-area {
+        /* border: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-rest); */
+        border-radius: calc(var(--control-corner-radius) * 1px);
+        padding: 1rem 1rem;
+        min-height: 100px;
+        border: 1px dashed var(--accent-fill-rest);
+        padding: 15px;
+
+        .progress {
+            display: block;
+            background: unset;
+        }
+    }
+
+    .d-file-list {
+        margin-bottom: 0px;
+        display: flex;
+        flex-wrap: wrap;
+
+        .d-file-item {
+            /*width: 100%;*/
+            width: 202px;
+            //height: @image-height;
+            height: 202px;
+            position: relative;
+
+            .d-file-preview-icon {
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .d-file-item-actions-top, .d-file-item-actions-bottom {
+                display: flex;
+                z-index: 1;
+                left: 0;
+                right: 0;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            &:hover .d-file-item-actions-top, &:hover .d-file-item-actions-bottom {
+                opacity: 1;
+            }
+
+            .d-file-item-actions-top {
+                position: absolute;
+                top: 0;
+                justify-content: space-between;
+            }
+
+            .d-file-item-actions-bottom {
+                position: absolute;
+                bottom: 0;
+            }
+
+            .ant-image-mask-info {
+                font-size: 10px;
+            }
+
+            .preview-image {
+                width: 100% !important;
+                height: 100% !important;
+                //.xcenter();
+                display: flex !important;
+                object-fit: contain;
+
+                img {
+                    /*height: 100% !important;*/
+                    width: unset !important;
+                    height: unset !important;
+                }
+            }
+            /*.d-file-item-actions-bottom {
+                opacity: 1;
+
+                .d-comment {*/
+            /*text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/
+            /*text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
+                    font-size: 22px;
+                    color: black;
+                    -webkit-font-smoothing: antialiased;
+                }
+            }*/
+        }
+    }
+}
+
+.GalleryEditView {
+    .ant-image {
+        display: flex;
+        height: 100%;
+
+        img {
+            object-fit: contain;
+        }
+    }
+
+    .d-file-item {
+        /*position: relative;*/
+
+        .d-file-preview-icon {
+            display: block;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .d-file-item-actions-top, .d-file-item-actions-bottom {
+            display: flex;
+            z-index: 1;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        &:hover .d-file-item-actions-top, &:hover .d-file-item-actions-bottom {
+            opacity: 1;
+        }
+
+        .d-file-item-actions-top {
+            position: absolute;
+            top: 0;
+            justify-content: space-between;
+        }
+
+        .d-file-item-actions-bottom {
+            position: absolute;
+            bottom: 0;
+        }
+
+        .ant-image-mask-info {
+            font-size: 10px;
+        }
+
+        .preview-image {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            object-fit: contain;
+
+            img {
+                width: unset !important;
+                height: unset !important;
+            }
+        }
+    }
+
+    .upload-area {
+        /* border: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-rest); */
+        border-radius: calc(var(--control-corner-radius) * 1px);
+        padding: 1rem 1rem;
+        min-height: 100px;
+        border: 1px dashed var(--accent-fill-rest);
+        padding: 15px;
+
+        .progress {
+            display: block;
+            background: unset;
+        }
+    }
+}

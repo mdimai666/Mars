@@ -1,0 +1,58 @@
+@page "/builder/com/list"
+@using Mars.Shared.Tools
+@using BlazoredHtmlRender
+@inject ModelInfoService modelService
+
+<ContentWrapper Title="ModelListPage">
+
+    <h2>components = @typesCount</h2>
+
+    <div class="my-4">
+        <div class="hstack gap-3">
+            @foreach (var group in grouped)
+            {
+                <a scroll-to="#_@(group.Key.FullName.Split(',')[0].Replace('.','_'))" scroll-target="main" class="btn btn-light">
+                    @group.Key.FullName.Split(',')[0]
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="vstack gap-4">
+        @foreach (var group in grouped)
+        {
+            <div class="card card-body" id="_@(group.Key.FullName.Split(',')[0].Replace('.','_'))">
+                <div class="text-accent">
+                    Assembly: <b>@group.Key.FullName</b>
+                    <hr />
+                </div>
+
+                <div>
+                    @foreach (var d in group)
+                    {
+                        <div>
+                            <b>@d.Key</b> - @(d.Value.Name)
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+</ContentWrapper>
+
+@code {
+
+    List<IGrouping<System.Reflection.Assembly, KeyValuePair<string, Type>>> grouped = new();
+    int typesCount = 0;
+    string baseUrl = "/dev/builder/com/list";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var list = BlazoredHtml.ComponentsDict.DistinctBy(s => s.Value);
+        typesCount = list.Count();
+        grouped = list.GroupBy(s => s.Value.Assembly).ToList();
+
+    }
+}

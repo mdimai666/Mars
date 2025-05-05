@@ -1,0 +1,207 @@
+@using Microsoft.JSInterop
+@implements IDisposable
+
+
+
+<iframe id="editor1" frameborder="1" src="@monacoEditorUrl" class="w-100"
+        @onload="IFrameLoaded"
+        style="height:80vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;" />
+
+@if (Lang == Language.handlebars)
+{
+    <div class="mt-1 mb-2">
+
+        <div>
+            <b>common</b> =
+            .count
+            .first
+            .hasValue
+            .last
+            .next
+            .parent
+            .path
+            .previous
+            .root
+            .type
+
+            <b>#each</b> - context =
+            @@root
+            @@parent
+            @@value
+            @@first
+            @@last
+            @@index
+            @@key
+
+            <br />
+
+            <b>helpers</b> #eq #neq
+
+            <b>blocks</b> {{>blockSlug}}
+
+            <b>app</b> $user _user
+        </div>
+
+        <a class="badge rounded-pill bg-secondary fz12px" href="https://github.com/Handlebars-Net/Handlebars.Net" target="_blank">
+            handlebars.net
+        </a>
+        <a class="badge rounded-pill bg-secondary fz12px" href="https://handlebarsjs.com/guide/#simple-expressions" target="_blank">
+            handlebarsjs
+        </a>
+        <a class="badge rounded-pill bg-secondary fz12px" href="https://www.w3schools.com/bootstrap5/bootstrap_buttons.php" target="_blank">
+            bootstrap5
+        </a>
+    </div>
+}
+
+@code {
+
+    [Inject] IJSRuntime jsRuntime { get; set; } = default!;
+    //MarsEditorsJsInterop js;
+    //MyJS js;
+
+    [Parameter] public EventCallback<string> OnSave { get; set; }
+
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Lang { get; set; } = "";
+
+    [Parameter] public EventCallback OnIFrameLoad { get; set; }
+
+    public class Language
+    {
+        public static string handlebars = "handlebars";
+        public static string html = "html";
+        public static string js = "js";
+        public static string json = "json";
+        public static string less = "less";
+        public static string css = "css";
+        public static string csharp = "csharp";
+        public static string sql = "sql";
+
+        public static string[] Array = { handlebars, html, js, json, less, css, csharp, sql };
+    }
+
+
+    //string monacoEditorUrl = Q.ServerUrlJoin("/dev/monaco/?noinit=true");
+    [Parameter] public string monacoEditorUrl { get; set; } = HostDomain + "/dev/monaco/?noinit=true";
+
+    public static string HostDomain = "";
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //js = new(jsRuntime);
+    }
+
+    async void IFrameLoaded()
+    {
+        await DotnetKeepMe();
+        _ = SendEditorCode(Value, Lang);
+
+        _ = OnIFrameLoad.InvokeAsync();
+    }
+
+    async Task SendEditorCode(string value, string language)
+    {
+        Console.WriteLine(">_codeSended");
+
+        //await js.PostMessage("#editor1", "hello");
+
+        var _value = new
+        {
+            //language = "html",
+            //language = "handlebars",
+            //value = post.Content
+
+            value = value,
+            language = language,
+        };
+
+        await SendToMonaco("init", _value);
+    }
+
+    public async Task SetModelLanguage(string language)
+    {
+        Console.WriteLine(">_codeSended");
+
+        //await js.PostMessage("#editor1", "hello");
+
+        var _value = language;
+
+        await SendToMonaco("setModelLanguage", _value);
+    }
+
+    //bool waitGetMonaco = false;
+
+    public async Task SendToMonaco(string name, object? value)
+    {
+
+        var data = new
+        {
+            name = name,
+            value = value
+        };
+
+        //await js.PostMessage("#editor1", data);
+        await jsRuntime.InvokeVoidAsync("BlazorPostMessage", "#editor1", data);
+
+        //return Task.FromResult;
+    }
+
+    public async Task SetValue(string value)
+    {
+        //await SendEditorCode(value, Lang);
+        await SendToMonaco("setValue", value);
+    }
+
+    public async Task<string> GetValue()
+    {
+        await SendToMonaco("getValue", null);
+        //waitGetMonaco = true;
+
+        //while (//waitGetMonaco){
+        //    await Task.Delay(10);
+        //}
+        await Task.Delay(100);
+
+        return lastGetValue;
+    }
+
+    private DotNetObjectReference<MarsCodeEditor> objRef = default!;
+
+    public async Task DotnetKeepMe()
+    {
+        objRef = DotNetObjectReference.Create(this);
+        var result = await jsRuntime.InvokeAsync<string>("DotnetKeepMe", objRef);
+    }
+
+    string lastGetValue = "";
+
+    [JSInvokable]
+    public async Task GetMonacoMessage(string name, object data)
+    {
+        Console.WriteLine(">" + name + "[=]" + data);
+
+        if (name == "save")
+        {
+            //f.Model.Content = data.ToString();
+            //await f.OnFinish();
+            await OnSave.InvokeAsync(data.ToString());
+        }
+
+        if (name == "getValue")
+        {
+            string value = data.ToString() ?? "";
+            lastGetValue = value;
+            //waitGetMonaco = true;
+        }
+        //setValue
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
+    }
+}

@@ -1,0 +1,42 @@
+.dmodel-badge {
+    background-color: grey;
+
+    &[data-var-type='String' i] {
+        background-color: #f49319;
+    }
+
+    &[data-var-type='int' i],
+    &[data-var-type='Int32' i],
+    &[data-var-type='Int64' i],
+    &[data-var-type='Long' i],
+    &[data-var-type='Short' i] {
+        background-color: #3b61ff;
+    }
+
+    &[data-var-type='Decimal' i],
+    &[data-var-type='Double' i],
+    &[data-var-type='Float' i],
+    &[data-var-type='Single' i] {
+        background-color: #3b9dff;
+    }
+
+    &[data-var-type='Boolean' i] {
+        background-color: #db4b35;
+    }
+
+    &:not([data-var-type='String' i])[isclass] {
+        background-color: #4ec9b0;
+    }
+
+    &[isenum] {
+        background-color: #91cc9c;
+    }
+
+    &[data-var-type='Guid' i] {
+        background-color: #75c68a;
+    }
+
+    &[data-var-type='DateTime' i] {
+        background-color: #285e94;
+    }
+}

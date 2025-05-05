@@ -1,0 +1,103 @@
+@using AppFront.Main.Extensions
+@using AppFront.Shared.Components
+@using AppFront.Shared.Interfaces
+@using Mars.Options.Attributes;
+@using Mars.Shared.Options
+@using Mars.Shared.Options.Attributes
+@using Mars.WebApiClient.Interfaces
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [OptionEditFormForOptionAttribute(typeof(SmtpSettingsModel))]
+@attribute [AutoShowFormOnSettingsPage]
+@attribute [Display(Name = "Настройки почты")]
+
+<EditOptionForm @ref=form TModel="SmtpSettingsModel"
+                FormClass="col-12 col-xl-6 mx-lg-5 compact">
+
+    <h3>Настройки почты</h3>
+
+    <div class="vstack gap-3">
+        <FormItem2 For="()=>context.FromName">
+            <FluentTextField @bind-Value=@context.FromName Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>context.Host">
+            <FluentTextField @bind-Value=@context.Host Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>context.Port">
+            <FluentNumberField @bind-Value=@context.Port Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>context.SmtpUser">
+            <FluentTextField TextFieldType="@TextFieldType.Email" @bind-Value=@context.SmtpUser Class="w-100" AutoComplete="off" />
+        </FormItem2>
+        <FormItem2 For="()=>context.SmtpPassword">
+            <FluentTextField TextFieldType="@TextFieldType.Password" @bind-Value=@context.SmtpPassword Class="w-100" AutoComplete="new-password" />
+        </FormItem2>
+        <div style="margin-left: 46%;">
+            <FluentCheckbox @bind-Value=@context.Secured>
+                <AutoInputLabel For="()=>context.Secured" />
+            </FluentCheckbox>
+        </div>
+        <div style="margin-left: 46%;">
+            <FluentCheckbox @bind-Value=@context.IsTestServer>
+                <AutoInputLabel For="()=>context.IsTestServer" />
+            </FluentCheckbox>
+        </div>
+    </div>
+
+</EditOptionForm>
+
+<Microsoft.FluentUI.AspNetCore.Components.FluentDivider Class="my-5" />
+
+<EditForm Model="@testMailMessage"
+          class="col-12 col-xl-6 mx-lg-5 compact"
+          OnValidSubmit="SendTestMail">
+    <DataAnnotationsValidator />
+
+    <div class="vstack gap-3">
+        <FormItem2 For="()=>testMailMessage.Email">
+            <FluentTextField TextFieldType="@TextFieldType.Email" @bind-Value=@testMailMessage.Email Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>testMailMessage.Subject">
+            <FluentTextField @bind-Value=@testMailMessage.Subject Class="w-100" />
+        </FormItem2>
+        <FormItem2 For="()=>testMailMessage.Message">
+            <FluentTextArea @bind-Value=@testMailMessage.Message Class="w-100" />
+        </FormItem2>
+
+        <div class="q-gutter-md mt-3 d-flex flex-nowrap justify-content-center">
+            <FluentButton Appearance="@Appearance.Accent" Type="ButtonType.Submit" Loading=testMailLoading>
+                Сохранить
+            </FluentButton>
+        </div>
+    </div>
+
+</EditForm>
+
+
+@code {
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] Interfaces.IMessageService messageService { get; set; } = default!;
+
+    EditOptionForm<SmtpSettingsModel>? form;
+
+    #region TEST_MAIL
+    TestMailMessage testMailMessage = new()
+        {
+            Subject = "Test mail",
+            Message = "Test message"
+        };
+
+    bool testMailLoading = false;
+
+    async void SendTestMail()
+    {
+        testMailLoading = true;
+        await client.Option.SendTestEmail(testMailMessage).SmartActionResult();
+
+        testMailLoading = false;
+        StateHasChanged();
+    }
+
+    #endregion
+}

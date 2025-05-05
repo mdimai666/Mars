@@ -1,0 +1,78 @@
+@using System
+@using System.Collections.Generic
+@using System.Linq
+@using System.Web
+@using AppFront.Shared.Features
+
+
+
+@if (Q.User is null || !Q.User.IsAuth)
+{
+    <ul class="navbar-nav navbar-nav-right flex-row">
+
+
+        <li class="nav-item d-flex">
+            <a class="nav-link btn btn-outline-light px-4 cursor-pointer" href="/dev/login">Вход</a>
+        </li>
+
+
+        @if (Q.Site.SysOptions.AllowUsersSelfRegister)
+        {
+            <li class="nav-item d-flex ms-2">
+                <a class="nav-link btn btn-outline-light px-4 cursor-pointer" href="/Register">Регистрация</a>
+            </li>
+        }
+
+    </ul>
+}
+else
+{
+    <div class="dropdown">
+        <a type="button" class="1dropdown-toggle " data-bs-toggle="dropdown">
+            <div class="d-flex align-items-center">
+                @* <div class="user-avatar user-select-none"> *@
+                @* <div class="icon-user"></div> *@
+
+                <Microsoft.FluentUI.AspNetCore.Components.FluentPersona Initials=@Q.User.Initials()
+                                                                        Style="width:50px"
+                                                                        ImageSize="50px" />
+
+                @* </div> *@
+                <div class="user-name text-black2 d-none d-lg-block ms-3">
+                    <div class="_email fz16px fw-600">@Q.User.FirstName</div>
+                    <div class="text-secondary fz12px fw-400">@Q.User.Email</div>
+                </div>
+            </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end Montserrat rounded-0 shadow">
+            @*<li><a class="dropdown-item" href="/Personal">Личный кабинет</a></li>*@
+            <li><a class="dropdown-item" href="EditUser/@Q.User.Id">Профиль</a></li>
+            @*<li><a class="dropdown-item" href="/EditUser">Профиль</a></li>*@
+
+            @if (Q.User.IsAdmin)
+            {
+                @* <li><a class="dropdown-item" href="@Q.ClientUrlJoin("/Admin")">Админка</a></li> *@
+                <li class=""><a class="dropdown-item" href="/dev/builder">builder</a></li>
+            }
+
+            @* <li class="ondark-block"><a class="dropdown-item f-dark-theme-toggle">Светлая тема</a></li> *@
+            @* <li class="onlight-block"><a class="dropdown-item f-dark-theme-toggle">Темная тема</a></li> *@
+
+            <li><hr size="1" class="dropdown-divider" /></li>
+            <li><a class="dropdown-item text-danger1" href="/dev/logout">Выйти</a></li>
+        </ul>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Q.Root.On(Q.User.GetType(), EmitTypeMode.All, OnUpdateProfile);
+    }
+
+    void OnUpdateProfile()
+    {
+        StateHasChanged();
+    }
+}

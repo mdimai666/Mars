@@ -1,0 +1,157 @@
+@page "/nodered"
+@implements IDisposable
+@using AppFront.Shared.Hub
+@using Mars.Nodes.Core
+@using Microsoft.AspNetCore.SignalR.Client
+@using NodeWorkspace
+@using NodeWorkspace.Services
+
+
+@if (Busy)
+{
+    <div class="p-5 main-fill xcenter">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+    </div>
+}
+else
+{
+    if (nodes is null)
+    {
+        <h1>is null</h1>
+    }
+    else
+    {
+        <NodeEditor1 OnDeploy="OnDeploy"
+                     OnInject="OnInjectClick"
+                     OnCmdClick="OnCmdClick"
+                     @ref=editor1 @bind-Nodes=@nodes>
+            <SectionActions>
+                <XActionsDropDown />
+            </SectionActions>
+        </NodeEditor1>
+    }
+}
+
+
+@code {
+    [Inject] INodeServiceClient service { get; set; } = default!;
+
+    [Inject] ClientHub hub { get; set; } = default!;
+
+    NodeEditor1? editor1 = default!;
+
+    bool Busy = false;
+
+    List<Node> nodes = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        hub.OnNodeStatus += OnNodeStatus;
+        hub.OnDebugMsg += OnDebugMsg;
+
+        Load();
+    }
+
+    public void Dispose()
+    {
+        hub.OnNodeStatus -= OnNodeStatus;
+    }
+
+    void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
+    {
+        var node = nodes.FirstOrDefault(s => s.Id == nodeId);
+        if (node is not null)
+        {
+            node.enable_status = string.IsNullOrEmpty(nodeStatus.Text) == false;
+            node.status = nodeStatus.Text;
+        }
+        StateHasChanged();
+    }
+
+    void OnDebugMsg(string nodeId, DebugMessage msg)
+    {
+        editor1!.AddDebugMessage(msg);
+    }
+
+    async void Load()
+    {
+        Busy = true;
+        StateHasChanged();
+
+        try
+        {
+            nodes = await service.Load();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
+
+        Busy = false;
+        StateHasChanged();
+
+    }
+
+    async void OnDeploy(IEnumerable<Node> Nodes)
+    {
+        var res = await service.Deploy(Nodes);
+
+        if (res.Ok) nodes.ForEach(s => s.changed = false);
+
+        editor1!.AddDebugMessage(new DebugMessage
+            {
+                topic = (res.Ok ? "OK" : "FAIL"),
+                message = res.Message
+            });
+    }
+
+    async void OnInjectClick(string nodeId)
+    {
+
+        bool useWs = false;
+
+        //must be notify
+        //editor1.AddDebugMessage(new DebugMessage
+        //    {
+        //        topic = nodeId,
+        //        message = "Inject",
+        //        id = nodeId
+        //    });
+
+        //hub.SendMessage("mok");
+        Console.WriteLine($">Inject:{nodeId}");
+
+        if (useWs)
+        {
+
+            hub.Inject(nodeId);
+
+            return;
+        }
+        else
+        {
+            var res = await service.Inject(nodeId);
+
+            string ok = (res.Ok ? "OK" : "FAIL");
+        }
+
+        //editor1.AddDebugMessage(new DebugMessage
+        //    {
+        //        topic = "OnInjectClick",
+        //        message = $"{ok}: {res.Message}",
+        //        id = nodeId
+        //    });
+    }
+
+    void OnCmdClick(string cmd)
+    {
+        hub.SendMessage("other");
+    }
+
+}
+

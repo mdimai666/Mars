@@ -1,0 +1,357 @@
+///////////////////////////////////////////////////
+// TEXT
+///////////////////////////////////////////////////
+.text-bold,
+.text-strong {
+    font-weight: bold !important;
+}
+
+.text-normal {
+    font-weight: normal !important;
+}
+
+.text-italic {
+    font-style: italic !important;
+}
+
+.text-underline {
+    text-decoration: underline !important;
+}
+
+.text-semibold {
+    font-weight: 500;
+}
+
+.text-strike {
+    text-decoration: line-through !important;
+}
+
+.fx(10);
+
+.fx(@n, @i: 1) when (@i =< @n) {
+    .fx-@{i} {
+        //width: (@i * 100% / @n);
+        font-size: (@i * 100%);
+    }
+
+    .fx(@n, (@i + 1));
+}
+
+// .fx-s(10);
+// .fx-s(@n, @i: 1) when (@i =< @n) {
+//   .fx-@{i} {
+//     //width: (@i * 100% / @n);
+//     font-size: (@i * 100%) ;
+//   }
+//   .fx-s(@n, (@i + 1));
+// }
+@P: ~"-";
+@maxi: 5;
+
+.i-loop (@i) when (@i > 0) {
+    @maxj: 10;
+
+    .j-loop (@j) when (@j > 0) {
+        .fx-@{i}@{P}@{j} {
+            //   width: (100% / @i);
+            //   height: (100% / @j);
+            font-size: (100% * @i) + (10% * @j);
+        }
+
+        .j-loop(@j - 1);
+    }
+
+    .j-loop (0) {
+    }
+
+    .j-loop(@maxj);
+    .i-loop(@i - 1);
+}
+
+.i-loop (0) {
+}
+
+.text-center-sm {
+    @media (max-width: @screen-sm-min) {
+        text-align: center !important;
+    }
+}
+
+.text-center-md {
+    @media (max-width: @screen-md-min) {
+        text-align: center !important;
+    }
+}
+
+.text-center-lg {
+    @media (max-width: @screen-lg-min) {
+        text-align: center !important;
+    }
+}
+
+.text-left-sm {
+    @media (max-width: @screen-sm-min) {
+        text-align: left !important;
+    }
+}
+
+.text-left-md {
+    @media (max-width: @screen-md-min) {
+        text-align: left !important;
+    }
+}
+
+.text-left-lg {
+    @media (max-width: @screen-lg-min) {
+        text-align: left !important;
+    }
+}
+
+.text-right-sm {
+    @media (max-width: @screen-sm-min) {
+        text-align: right !important;
+    }
+}
+
+.text-right-md {
+    @media (max-width: @screen-md-min) {
+        text-align: right !important;
+    }
+}
+
+.text-right-lg {
+    @media (max-width: @screen-lg-min) {
+        text-align: right !important;
+    }
+}
+
+.d-text-xs-center {
+    @media @mobiles {
+        text-align: center;
+    }
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.fz10px {
+    font-size: 10px;
+}
+
+.fz12px {
+    font-size: 12px;
+}
+
+.fz14px {
+    font-size: 14px;
+}
+
+.fz16px {
+    font-size: 16px;
+}
+
+.fz18px {
+    font-size: 18px;
+}
+
+.fz20px {
+    font-size: 20px;
+}
+
+.fz22px {
+    font-size: 22px;
+}
+
+.fz24px {
+    font-size: 24px;
+}
+
+.fz26px {
+    font-size: 26px;
+}
+
+.fz28px {
+    font-size: 28px;
+}
+
+.fz30px {
+    font-size: 30px;
+}
+
+.fz32px {
+    font-size: 32px;
+}
+
+.fz34px {
+    font-size: 34px;
+}
+
+.fz36px {
+    font-size: 36px;
+}
+
+.fz38px {
+    font-size: 38px;
+}
+
+h1, h2, h3, h4 {
+    &.title, &.title-left {
+        margin: 2rem 1rem;
+        text-align: center;
+        color: black;
+    }
+
+    &.title-left {
+        text-align: left;
+        margin: 2rem 0rem;
+    }
+
+    color: unset;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat';
+    /*color: #282828;*/
+}
+
+h1, h2, h3 {
+    /*font-weight: 700;*/
+}
+
+body.dark {
+    h1, h2, h3, h4, h5, h6 {
+        color: white;
+    }
+}
+
+.title-2 {
+    font-size: 22px;
+    margin-bottom: 1rem;
+}
+
+.text-black {
+    color: black !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.text-red {
+    color: red !important;
+}
+
+.text-black2 {
+    color: black !important;
+}
+
+.text-white2 {
+    color: white !important;
+}
+
+body.dark {
+    .text-black2 {
+        color: white !important;
+    }
+
+    .text-white2 {
+        color: black !important;
+    }
+}
+
+.text-accent {
+    /*color: @color-accent !important;*/
+    color: var(--accent-fill-rest) !important;
+}
+
+.text-fade {
+    opacity: 0.8 !important;
+}
+
+.text-light {
+    color: @color-light !important;
+}
+
+
+.text-light-accent {
+    color: @color-light-accent !important;
+}
+
+.text-dark-accent {
+    color: @color-dark-accent !important;
+}
+
+body.dark {
+    .text-accent {
+        color: white !important;
+    }
+
+    .ondark_text-accent {
+        color: @color-accent !important;
+    }
+}
+
+.fw-400 {
+    font-weight: 400;
+}
+.fw-500 {
+    font-weight: 500;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+.fw-700 {
+    font-weight: 700;
+}
+
+.Montserrat {
+    font-family: 'Montserrat';
+}
+.Exo2 {
+    font-family: 'Exo 2', sans-serif;
+}
+.Roboto {
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+}
+
+.lines-1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* number of lines to show */
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.lines-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.lines-3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.lines-4 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* number of lines to show */
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+
+.text-orange {
+    color: @color-orange !important;
+}

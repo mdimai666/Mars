@@ -1,0 +1,36 @@
+@inject IStringLocalizer<AppRes> L
+
+
+<div class=mt-3"">
+    <ul class="nav nav-tabs nav-justified">
+
+        <li class="nav-item">
+            <NavLink class="nav-link" href="/dev/geo/GeoRegion">
+                @(L["GeoRegion.many"])
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link" href="/dev/geo/GeoMunicipality">
+                @(L["GeoMunicipality.many"])
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link" href="/dev/geo/GeoLocation">
+                @(L["GeoLocation.many"])
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link" href="/dev/geo/GeoMunicType">
+                @(L["GeoMunicType.many"])
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link" href="/dev/geo/GeoLocationType">
+                @*@(L["GeoLocationType.many"])*@
+                Типы нас. пунктов
+            </NavLink>
+        </li>
+        
+        
+    </ul>
+</div>

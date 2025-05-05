@@ -1,0 +1,25 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(HttpRequestNode))]
+
+<div class="form-group">
+    <label>Method</label>
+    <InputSelect @bind-Value=Node.Method>
+        @foreach (var m in Node.MethodVariants)
+        {
+                <option value="@m" >@m</option>
+        }
+    </InputSelect>
+    @*<InputText class="form-control" @bind-Value=Node.Method />*@
+</div>
+
+<div class="form-group">
+    <label>Url</label>
+    <InputText class="form-control" @bind-Value=Node.Url placeholder="http://localhost/..." />
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    HttpRequestNode Node { get => (HttpRequestNode)Value; set => Value = value; }
+
+}

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+        <!--Author-->
+        <PackageId>mdimai666.BlazoredHtmlRender</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <!--<Version>0.2.0</Version>-->
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>BlazoredHtmlRender</Product>
+        <PackageTags>Mars;Blazor;Render Blazor html string</PackageTags>
+        <Description>
+            Render blazor component from string
+        </Description>
+	</PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>BL0007</NoWarn>
+    </PropertyGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+		<PackageReference Include="OneOf" Version="3.0.271" />
+        <!--<PackageReference Include="DynamicExpresso.Core" Version="2.13.0" />-->
+    </ItemGroup>
+
+</Project>

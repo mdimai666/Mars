@@ -1,0 +1,19 @@
+@page "/Media"
+@using System.Linq.Expressions
+@using AppFront.Shared.Components.MediaViews
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager navigationManager 
+
+<ContentWrapper Title="@AppRes.Media">
+    <SectionActions>
+        <XActionsDropDown>
+            <FluentMenuItem Label="Настройки медиа" OnClick=@((e) => navigationManager.NavigateTo($"/dev/Settings/Option/Mars+Options+Front+MediaOptionEditForm")) />
+        </XActionsDropDown>
+    </SectionActions>
+    <ChildContent>
+        <FluentMediaFilesList />
+    </ChildContent>
+</ContentWrapper>

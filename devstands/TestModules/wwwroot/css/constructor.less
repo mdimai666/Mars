@@ -1,0 +1,53 @@
+.ConstructorEditor1 {
+    background: #eee;
+    position: relative;
+
+    .fit() {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .workspace {
+        display: flex;
+        flex-wrap: wrap;
+        .fit();
+        z-index: 1;
+        opacity: 0.2;
+    }
+
+    .ct-block {
+        display: block;
+        border: 1px solid black;
+        user-select: none;
+
+        &.ondrag {
+            /*position: absolute;*/
+            /*z-index: 10;*/
+            opacity: 0.5;
+        }
+    }
+
+    .ConstructorBackdropGrid {
+        .fit();
+        z-index: 0;
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+
+            .grid-item {
+                display: block;
+                width: 100px;
+                height: 100px;
+                border: 1px solid #8080802b;
+
+                &.onhover {
+                    background: #acd3c3;
+                }
+            }
+        }
+    }
+}

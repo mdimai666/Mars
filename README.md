@@ -1,0 +1,117 @@
+<p align="center">
+  <a href="https://Mars-dotnet.org/#gh-light-mode-only">
+    <img src="assets/mars-logo.svg" width="318px" alt="Mars logo" />
+  </a>
+  <!-- <a href="https://Mars-dotnet.org/#gh-dark-mode-only">
+    <img src="assets/mars-logo.svg" width="318px" alt="Mars logo" />
+  </a> -->
+</p>
+
+<h3 align="center">CMS с открытым исходным кодом, self-hosted или облако — все под вашим контролем.</h3>
+
+<p align="center">The dotnet C# open-source CMS, asp net core based and Blazor.</p>
+<p align="center"><a href="https://cloud.Mars-dotnet.org/signups?source=github1">Cloud</a> · <a href="https://Mars-dotnet.org/demo">Try live demo</a></p>
+
+<p align="center">
+  <span href="">RU</span> · 
+  <a href="https://cloud.Mars-dotnet.org/signups?source=github1">EN</a>
+</p>
+
+<p align="center">
+  <a href="https://www.nuget.org/packages/mdimai666.Mars.AppFront.Shared/0.3.2-alpha.1">
+    <img src="https://img.shields.io/nuget/v/mdimai666.Mars.AppFront.Shared" alt="nuget Version" />
+  </a>  
+</p>
+
+<br>
+
+<p align="center">
+  <a href="https://Mars-dotnet.org">
+    <img src="assets/Mars_gif.gif" alt="Administration panel" />
+  </a>
+</p>
+
+<br>
+
+Mars Community Edition — это бесплатная CMS с открытым исходным кодом, позволяющая вам управлять любым контентом как угодно.
+
+- **Self-hosted или Cloud**: Вы можете размещать и масштабировать проекты Mars по своему усмотрению. Вы можете сэкономить время, выполнив развертывание в [Mars Cloud](https://cloud.Mars-dotnet.org/signups?source=github1) или на желаемой хостинговой платформе\*\*: AWS, Azure, Google Cloud, DigitalOcean.
+- **Современная панель администратора**: элегантная, полностью настраиваемая и полностью расширяемая панель администратора. Так же есть готовые компоненты для построения своей.
+- **Поддержка нескольких баз данных**: вы можете выбрать предпочитаемую базу данных: PostgreSQL, MSSQL, MySQL, MariaDB и SQLite.
+- **Расширяемость**: вы можете быстро построить свою модель данных; логику в визуальном редакторе; маршруты или установить плагины.
+- **Быстрый и надежный**: Созданный на основе кроссплатформенного asp net core и С#. 
+- **Мультифронт**: приложение может запускать несколько фронт-интерфейсов: SPA, статический HTML, шаблон, Blazor.
+- **Любой внеший интерфейс**: используйте любую интерфейсную среду SPA (React, Next.js, Vue, Angular и т. д.), мобильные приложения или даже IoT.
+
+## 😀 Начало
+
+<a href="https://docs.Mars-dotnet.org/developer-docs/latest/getting-started/quick-start.html" target="_blank">Read the Getting Started tutorial</a> or follow the steps below:
+
+### Требования
+ - OS: Windows, Linux, MacOS
+ - Database: postgres 
+
+
+## Installation
+
+Скачайте и запустите [последнюю версию](https://github.com/mdimai666/Mars/releases) тут
+
+> Mars.exe
+
+
+### 🚀 Dev Installation
+
+Install [NET9 SDK](https://dotnet.microsoft.com/en-us/download) or [Visual Studio 2022](https://visualstudio.microsoft.com/ru/vs/community/)
+
+```bash
+git clone https://github.com/mdimai666/Mars.git
+cd Mars/Mars
+cp appsettings.json appsettings.Local.json
+code appsettings.json #edit config
+dotnet watch run
+```
+
+**or**
+
+```bash
+#winget install mdimai666.Mars
+#docker Mars
+```
+
+This command generates a brand new project with the default features.
+
+> DOTNET: Currently **NET 9**
+
+**[Смотрите больше на нашем сайте](https://Mars-dotnet.org/overview)**.
+
+## Совместная разработка
+
+Пожалуйста, прочтите наше [Руководство для участников](./CONTRIBUTING.md), прежде чем отправлять pull-request в проект.
+
+## Community support
+
+Общую справку по использованию Mars можно найти в [официальной документации Mars](https://docs.Mars-dotnet.org). Для получения дополнительной помощи вы можете использовать один из этих каналов, чтобы задать вопрос:
+
+- [GitHub](https://github.com/Mars/Mars) (Bug reports, Contributions)
+<!-- - [Community Forum](https://forum.Mars-dotnet.org) (Questions and Discussions) -->
+<!-- - [Feedback section](https://feedback.Mars-dotnet.org) (Roadmap, Feature requests) -->
+<!-- - [YouTube Channel](https://www.youtube.com/Mars) (Learn from Video Tutorials) -->
+
+## Roadmap
+
+Ознакомьтесь с нашей [дорожной картой](https://Mars-dotnet.org/roadmap), чтобы быть в курсе последних выпущенных и предстоящих функций. Вы также можете поделиться с нами своим мнением и проголосовать за конкретную функцию.
+
+## Documentation
+
+Документацию по взрыву можно найти в нашем специальном [репозитории](https://github.com/Mars/documentation) или просмотреть нашу документацию в реальном времени:
+
+- [Документация для разработчиков](https://docs.Mars-dotnet.org/developer-docs/latest/getting-started/introduction.html)
+- [Руководство пользователя](https://docs.Mars-dotnet.org/user-docs/latest/getting-started/introduction.html)
+
+## Попробуйте живую демо-версию
+
+Посмотрите сами, что скрывается под капотом, получив доступ к [размещенному проекту Mars](https://Mars-dotnet.orgnn/demo) с примерами данных.
+
+## License
+
+Информацию о лицензировании см. в файле [LICENSE](./LICENSE).

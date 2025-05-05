@@ -1,0 +1,339 @@
+
+@if (Busy)
+{
+    <Skeleton />
+    <SharedLoader1 />
+}
+else if (ErrorMessage is not null)
+{
+    <div class="p-3">
+        <div class="alert alert-danger">
+            @ErrorMessage
+        </div>
+    </div>
+}
+else
+{
+    <AntDesign.Form Model="@model"
+                Layout="@FormLayout.Vertical"
+                OnFinish="OnFinish"
+                Class="form-compact">
+        <ValidationSummary />
+
+        <FormItem Class="field-title">
+            <AntDesign.Input @bind-Value=@context.Title Size="@InputSize.Large" TValue="string" />
+        </FormItem>
+
+        <FormItem Class="field-slug">
+            <AntDesign.Input @bind-Value=@context.Slug Size="@InputSize.Small" />
+        </FormItem>
+        @*<FormItem WrapperColSpan="10">
+    <AntDesign.Input @bind-Value=@context.TypeName />
+    </FormItem>*@
+
+        <div class="spacer-1"></div>
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Content)))
+        {
+            <div class="field-content">
+                <div class="">
+                    Содержимое
+                </div>
+                <div class="">
+                    @if (postType.PostContentType == EPostContentType.WYSIWYG)
+                    {
+                        <WysiwygEditor Content="@context.Content" @ref=editor1 />
+                    }
+                    else
+                    {
+                        <AntDesign.TextArea MinRows="8" @bind-Value=@context.Content />
+                    }
+
+                </div>
+            </div>
+        }
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Excerpt)))
+        {
+            <div class="field-excerpt">
+                <div class="">
+                    Краткая выдержка
+                </div>
+                <AntDesign.TextArea MinRows="4" @bind-Value=@context.Excerpt />
+            </div>
+        }
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.FileList)))
+        {
+            <div class="field-files">
+                <div class="">
+                    Файлы
+                </div>
+                <div class="">
+                    ZayavkaFileUploadViewTmp
+                    @* <ZayavkaFileUploadViewTmp ID="@context.Id" *@
+                    @*                @bind-Files="@context.FileList" *@
+                    @*                ActionUrl='@Q.ServerUrlJoin("api/Post/Upload?file_group=files")' *@
+                    @*                ViewFiltergroup="files" *@
+                    @*                MinCount="0" MaxCount="10" ReadOnly=false /> *@
+
+                </div>
+            </div>
+        }
+
+        <div class="spacer-1"></div>
+
+        @*<h5>MetaValues = @context.MetaValues?.Count</h5>*@
+
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@postType.MetaFields">
+                <CascadeStateChanger Context="h" OnStateChange="()=>StateHasChanged()">
+                    <CascadingValue Value="h">
+                        <AppFront.Shared.Components.MetaFieldViews.FormMetaValue Vertical Client />
+                    </CascadingValue>
+                </CascadeStateChanger>
+            </CascadingValue>
+        </CascadingValue>
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Status)))
+        {
+            <div class="field-status mt-3">
+                @*==*@
+                <label class="d-block">
+                    Статус
+                </label>
+                <Select @bind-Value="@context.Status"
+                TItemValue="string"
+                TItem="string"
+                Style="min-width: 250px;"
+                DefaultActiveFirstOption
+                EnableSearch>
+                    <SelectOptions>
+                        @foreach (var item in postType.PostStatusList)
+                        {
+                            <SelectOption TItemValue="string" TItem="string" Value=@item.Slug Label=@item.Title />
+                        }
+                    </SelectOptions>
+                </Select>
+                @*==*@
+            </div>
+        }
+
+        @if (postType.EnabledFeatures.Contains(nameof(Post.Tags))
+    || postType.EnabledFeatures.Contains(nameof(Post.CategoryId)))
+        {
+            <section class="editpost-taxonomy mb-3">
+                <div class="1card">
+                    <div class="1card-body">
+                        @if (postType.EnabledFeatures.Contains(nameof(Post.CategoryId)))
+                        {
+
+                            <FormItem Class="field-category">
+                                <PSelectVariants @bind-Value=context.CategoryId ModelName=@nameof(PostCategory) />
+                            </FormItem>
+                        }
+
+                        @if (postType.EnabledFeatures.Contains(nameof(Post.Tags)))
+                        {
+
+                            <FormItem Class="field-title">
+                                <AntDesign.Select Mode="tags"
+                                      Placeholder="tags"
+                                      @bind-Values="@context.SetTags"
+                                      TItemValue="string"
+                                      TItem="string"
+                                      MaxTagCount="20"
+                                      HideSelected
+                                      EnableSearch=false
+                                      Size="small">
+                                    <SelectOptions>
+                                        @foreach (var _item in context.Tags)
+                                        {
+                                            <SelectOption TItemValue="string" TItem="string" Value=@_item Label=@_item />
+                                        }
+                                    </SelectOptions>
+                                </AntDesign.Select>
+                            </FormItem>
+                        }
+
+                    </div>
+                </div>
+            </section>
+        }
+
+        <div class="q-gutter-md mt-3 d-flex flex-nowrap justify-content-end field-save">
+
+            @if (CanDelete)
+            {
+                <DDeleteButton OnConfirm=OnDeleteClick Type="text" Disabled=saveButtonBusy />                
+            }
+
+            <Button Type="@ButtonType.Primary" HtmlType="submit" Loading=saveButtonBusy>
+                Сохранить
+            </Button>
+
+        </div>
+
+    </AntDesign.Form>
+}
+
+
+@code {
+    [Inject] IJSRuntime jsRuntime { get; set; } = default!;
+    MyJS js = default!;
+
+    [Parameter] public Guid ID { get; set; }
+    [Parameter] public string PostTypeName { get; set; } = default!;
+    [Parameter] public string AfterSaveNavigateUrl { get; set; } = default!;
+    [Parameter] public bool CanDelete { get; set; }
+
+    bool _addNewItem = true;
+    bool Busy { get; set; }
+    bool saveButtonBusy = false;
+
+    Post model = new();
+    PostType postType = new();
+
+    [Inject] public PostService service { get; set; } = default!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] public MessageService _message { get; set; } = default!;
+    [Inject] public ConfirmService _confirmService { get; set; } = default!;
+
+    WysiwygEditor? editor1;
+
+
+    string? ErrorMessage = null;
+
+    string monacoEditorUrl = Q.ServerUrlJoin("code/?noinit=true");
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        js = new(jsRuntime);
+
+        if (string.IsNullOrEmpty(PostTypeName))
+        {
+            ErrorMessage = "Parameter: \"PostTypeName\" is empty";
+        }
+
+        _addNewItem = ID == Guid.Empty;
+
+        if (!Q.IsPrerender)
+        {
+            Load();
+        }
+
+    }
+
+    async void Load()
+    {
+        Busy = true;
+        StateHasChanged();
+
+        try
+        {
+            if (_addNewItem)
+            {
+                model = await service.GetBlank(PostTypeName);
+            }
+            else
+            {
+                model = await service.Get(ID);
+            }
+            OnLoadData(model);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+
+        Busy = false;
+        StateHasChanged();
+    }
+
+    void OnLoadData(Post post)
+    {
+        if (_addNewItem)
+        {
+            postType = Q.Site.PostTypes.First(s => s.TypeName == PostTypeName);
+        }
+        else
+        {
+            postType = Q.Site.PostTypes.First(s => s.TypeName == post.Type);
+        }
+
+    }
+
+    async Task BeforeSave(Post post)
+    {
+        if (postType.EnabledFeatures.Contains(nameof(Post.Content)))
+        {
+            if (postType.PostContentType == EPostContentType.WYSIWYG)
+            {
+
+                if (editor1 is not null)
+                {
+                    post.Content = await editor1.GetHTML();
+                }
+            }
+        }
+    }
+
+    public virtual async Task OnFinish()
+    {
+        saveButtonBusy = true;
+        StateHasChanged();
+
+        Post a;
+
+        await BeforeSave(model);
+
+        a = await service.SmartSave(_addNewItem, model);
+
+        if (a is not null)
+        {
+            //if (_addNewItem)
+            //{
+            //    string ss = NavigationManager.Uri.Replace(NavigationManager.BaseUri, "").Trim('/');
+            //    var sp = ss.Split('?', 2);
+            //    string newUrl = sp[0];
+            //    string query = sp.Length > 1 ? $"?{sp[1]}" : "";
+
+            //    NavigationManager.NavigateTo($"{newUrl}/{a.Id}{query}");
+            //}
+            //NavigationManager.GoBack();
+            //_ = _message.Success("Сохранено");
+
+            if (string.IsNullOrWhiteSpace(AfterSaveNavigateUrl) == false)
+            {
+                NavigationManager.NavigateTo(AfterSaveNavigateUrl);
+            }
+
+        }
+
+        saveButtonBusy = false;
+        StateHasChanged();
+    }
+
+    public virtual async void OnDeleteClick()
+    {
+        var result = await service.Delete(model.Id);
+
+        if (result.Ok == true)
+        {
+            _ = _message.Success(result.Message);
+            //NavigationManager.NavigateTo("/Pills");
+            //NavigationManager.GoBack();
+
+            if (string.IsNullOrWhiteSpace(AfterSaveNavigateUrl) == false)
+            {
+                NavigationManager.NavigateTo(AfterSaveNavigateUrl);
+            }
+        }
+        else
+        {
+            _ = _message.Error(result.Message);
+        }
+    }
+}

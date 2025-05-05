@@ -1,0 +1,53 @@
+@using System.Text.Json
+
+@inject IJSRuntime JS
+
+<div class="card shadow-none bg-transparent border-secondary" id="@id">
+    <div class="card-body p-1">
+        <h4 class="card-title mb-1">Object Dump: @_model</h4>
+        <pre class="json mb-0">@jsonString</pre>
+    </div>
+</div>
+
+@code {
+    private MyJS myJS = default!;
+    private string id = "json_dump-" + Guid.NewGuid().ToString();
+
+    [Parameter]
+    public object Model { get; set; } = default!;
+    private object _model = default!;
+    private string jsonString { get; set; } = "null";
+
+    protected override void OnInitialized()
+    {
+        myJS = new(JS);
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _ = UpdateModel();
+    }
+
+    protected async Task UpdateModel()
+    {
+
+        if(_model == Model) return;
+
+        _model = Model;
+
+        try
+        {
+            jsonString = JsonSerializer.Serialize(_model);
+            await myJS.BeauityJsonInSelector($"#{id} .json", jsonString);
+        }
+        catch (System.Exception ex)
+        {
+            jsonString = ex.Message;
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

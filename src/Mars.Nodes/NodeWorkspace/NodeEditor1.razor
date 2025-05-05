@@ -1,0 +1,241 @@
+@using System.Text.Json;
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Nodes
+@using NodeFormEditor
+@using NodeWorkspace
+
+<div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill">
+    <div class="row bg-white border-bottom shadow-sm" style="height:40px;">
+        <div class="col-12">
+            <div class="d-flex justify-content-between p-1 align-items-center">
+                <div class="d-flex fs-5">
+
+                    <div class="mastet-menu">
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                            @foreach (var _tab in masterTabs)
+                            {
+                                var tab = _tab;
+                                <input type="radio" class="btn-check" name="btnradio" id=@($"mtab-{tab.key}")
+                                autocomplete="off" checked="@(tab.key == activeMasterTab)">
+                                <label class="btn btn-outline-secondary rounded-0" for=@($"mtab-{tab.key}")
+                                @onclick=@(e=>{ activeMasterTab = tab.key; })>@tab.label</label>
+
+                            }
+
+                        </div>
+                    </div>
+                    <div class="vr mx-3"></div>
+
+                    Some project name
+                </div>
+
+                <div class="gap-2">
+                    @*<span>wires - @NodeWorkspace1?.Wires?.Count()</span> |
+                    <span>nodes - @Nodes?.Count()</span> |*@
+                    <span>[@editorActions.SelectContextString]</span>
+                </div>
+
+                <div class="d-flex gap-2 me-2">
+
+                    @if (SectionActions is not null)
+                    {
+                        @SectionActions
+                    }
+
+                    @* <button type="button" class="btn btn-outline-primary btn-sm px-3 " @onclick=@(e=>OnCmdClick.InvokeAsync("other"))>other</button> *@
+                    <button type="button" class="btn btn-primary btn-sm px-3 " @onclick=DeployClick>Deploy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex no-gutters g-0 flex-fill w-100" style="height:calc(100% - 40px)">
+        <div class="flex-shrink-0" style="">
+            <div class="1card h-100 bg-white custom-scroll1"
+            style="overflow-y:scroll;scroll-behavior: auto;width:190px;">
+                @if (activeMasterTab == "nodes")
+                {
+                    <div class="p-2 border-1 d-flex">
+                        <label>
+                            global Varibles
+                        </label>
+                        <div class="ms-auto">
+                            <span @onclick=OnClickAddVarNode class="badge text-black cursor-pointer" style="background:#eee">
+                                <i class="bi bi-plus"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="px-2 py-1 d-flex gap-1 flex-wrap">
+                        @* <span class="badge bg-info cursor-pointer" data-var-type="">
+                            val1
+                        </span>
+                        <span class="badge bg-secondary cursor-pointer">
+                            val2
+                        </span>
+                        <span class="badge bg-success cursor-pointer">
+                            val3
+                        </span> *@
+
+                        @foreach (var _varNode in varNodes)
+                        {
+                            var varNode = _varNode;
+                            <span class="badge dmodel-badge cursor-pointer"
+                                  @ondblclick="e=>StartEditNode(varNode)"
+                                  title="@($"{varNode.Name}:{varNode.VarType}")"
+                                  data-var-type="@varNode.VarType"
+                                  data-array="@varNode.ArrayValue.ToString().ToLower()">
+                                @varNode.Name
+                            </span>
+                        }
+                        
+                    </div>
+                    <div class="mb-2"></div>
+                    <div class="card-body p-2 ">
+                        <p class="card-text">Palette (@Palette.Count)</p>
+                    </div>
+                    <ul class="list-group">
+                        @foreach (var node in Palette)
+                        {
+                            Node _node = node;
+                            <li class="list-group-item px-2 py-0 border-0">
+                                <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    @if (node is MicroschemeNode)
+                                    {
+                                        <MicroschemeComponent Node="@_node" OnMouseDown=@(e=>CreateNewNodeFromPalette(e, _node)) />
+                                    }
+                                    else
+                                    {
+                                        <NodeComponent Node="@_node" OnMouseDown=@(e=>CreateNewNodeFromPalette(e, _node)) />
+                                    }
+                                </svg>
+                            </li>
+                        }
+
+                    </ul>
+                }
+                else if (activeMasterTab == "tabs")
+                {
+                    <ul class="list-group fz12px">
+                        @foreach (FlowNode _flow in flows)
+                        {
+                            var flow = _flow;
+                            bool isactive = activeFlow == flow;
+                            @*<li class="p-2 list-group-item active" aria-current="true">An active item</li>*@
+                            <li class=@($"p-2 list-group-item rounded-0 {(isactive?"active":"")}")
+                                @onclick=@(e=>ChangeFlow(flow))
+                                @ondblclick="e=>StartEditNode(flow)">@flow.DisplayName</li>
+                        }
+                        <li class="px-2 py-0 list-group-item text-center fw-bold rounded-0" @onclick=ClickAddFlow>
+                            <i class="bi bi-plus fz22px"></i>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+        <div class="w-100">
+            <div class="h-100" style="position:relative">
+                <NodeWorkspace1 @ref=NodeWorkspace1
+                                Style=""
+                                Class="h-100"
+                                OnInject="OnInject"
+                                Nodes=FlowNodes
+                                OnDblClickNode="OnDblClickNode"
+                                OnWorkspaceClick="OnWorkspaceClick"
+                                OnWorkspaceDblClick="OnWorkspaceDblClick"
+                                EditorActions="editorActions" />
+                @*<NodeWorkspace1 :nodes.sync="nodes" style="height: 700px" />*@
+
+                <QuickNodeAddMenu Palette="Palette"
+                                  @ref=quickNodeAddMenu
+                                  OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />
+            </div>
+        </div>
+        <div class="flex-shrink-0 bg-white d-flex flex-column" style="width:250px;height:100%">
+            <div class="bg-light border-bottom p-1 d-flex align-items-center" style="height: 40px;">
+                Debug
+                <div class="ms-auto d-flex gap-1">
+                    <button class="btn btn-sm bg-light" @onclick=AddDebugMessageTest
+                            title="Add test messages">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                    <button class="btn btn-sm bg-light xcenter" @onclick=ClearDebugMessages
+                            title="Clear debug window">
+                        <i class="bg-contain bicon" style="background-image:url('_content/NodeWorkspace/ban-solid.svg')"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="debug-text flex-fill d-flex" style="height:calc(100% - 40px)">
+                <div id="nodered-debug-message-list"
+                     class="text-wrap text-break custom-scroll1 w-100 p-1"
+                     style="overflow-y:scroll;scroll-behavior: auto;">
+                    <div class="debug-message-cnt border-bottom">
+
+                        <ul class="list-group list-group-flush">
+                            @foreach (var m in messages)
+                            {
+                                <li class="list-group-item p-1 nodered-debug-message-list__item" data-id=@m.id data-level=@m.Level>
+                                    <div class="debug-msg-id text-nowrap">@m.id</div>
+                                    <div>
+                                        @m.message
+                                    </div>
+                                    @if (m.json is not null)
+                                    {
+                                        <pre class="debug-json-pre">@m.json</pre>
+                                    }
+                                    <div class="debug-msg-footer justify-content-between d-flex text-muted">
+                                        <span>0</span>
+                                        <span>@m.date</span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                @*end #nodered-debug-message-list*@
+            </div>
+        </div>
+        <NodeEditContainer1 @ref=nodeEditContainer1 OnSave="SaveNode" OnDelete="DeleteNode" />
+    </div>
+</div>
+
+<style>
+
+    .debug-text {
+        font-size: 14px;
+    }
+
+    .debug-msg-id {
+        font-size: 10px;
+        color: #AC4D4D;
+    }
+
+    .debug-msg-footer {
+        font-size: 10px;
+    }
+
+    .debug-json-pre {
+        display: block;
+        padding: 5px;
+        word-break: break-all;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        background-color: #f7f7f7;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        /*pre*/
+        font-family: Menlo,Consolas,"DejaVu Sans Mono",Courier,monospace;
+        font-size: 13px;
+        line-height: 1.2em;
+        color: #b72828;
+    }
+
+    .bicon {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+    }
+
+</style>
+
+@code {
+
+}

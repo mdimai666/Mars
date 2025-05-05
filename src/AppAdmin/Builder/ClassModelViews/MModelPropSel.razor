@@ -1,0 +1,56 @@
+@using Mars.Shared.Tools
+
+@if (Value is null)
+{
+    <div>empty</div>
+
+}
+else
+{
+    <button type="button" class="btn btn-primary position-relative btn-sm d-flex">
+        @Value.Model.Name
+
+        |
+        @if (Value.Property is null)
+        {
+            <div>
+                <select class="text-black ">
+                    @foreach (var f in Value.Model.Properties)
+                    {
+                        <option>@f.Name</option>
+                    }
+                </select>
+            </div>
+        }
+        else
+        {
+            <div>
+                >
+                @Value.Property.Name
+            </div>
+        }
+
+        <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+            <span class="visually-hidden">New alerts</span>
+        </span>
+    </button>
+
+}
+
+@code {
+    ModelProperySel _value = default!;
+    [Parameter]
+    public ModelProperySel Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<ModelProperySel> ValueChanged { get; set; }
+}

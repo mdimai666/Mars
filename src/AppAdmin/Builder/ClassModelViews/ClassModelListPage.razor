@@ -1,0 +1,157 @@
+@page "/builder/models/classmodels"
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@using System.Reflection
+@using Mars.Shared.Tools
+
+<ContentWrapper Title="ModelListPage">
+
+    <MModelPropSel @bind-Value="propSel1" />
+
+    <h2>models = @Models.Count()</h2>
+
+    <div class="row1g-2 mansory">
+        @foreach (var model in Models)
+        {
+            var m = model;
+
+            <div class="col-121col-md-4 man-item">
+                <div class="card shadow-sm">
+                    <div class="card-body p-1">
+                        <b>@model.Name</b>
+                        @if (model.ModelType.BaseType is not null)
+                        {
+                            <text>
+                                : <span>@model.ModelType.BaseType?.Name</span>
+                            </text>
+                        }
+                        <div>
+                            [actions]
+                            <a href="@m.SourceFilePath" class="text-primary cursor-pointer"
+                            @onclick:preventDefault
+                               @onclick=@(e=>OpenModelFile(m))>[file]</a>
+                        </div>
+                        <hr class="m-0">
+                        <div>
+                            @foreach (var field in model!.Properties.Where(s => s.DeclaringType!.Name == model.ModelType.Name))
+                            {
+                                @drawField(field, model)
+                            }
+
+                            <div class="accordion" id="@model.Name-accordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button p-1 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@model.Name-nested" aria-expanded="false" aria-controls="@model.Name-nested">
+                                            Nested props
+                                        </button>
+                                    </h2>
+                                    <div id="@model.Name-nested" class="accordion-collapse collapse 1show" data-bs-parent="#@model.Name-accordion" style="">
+                                        <div class="accordion-body p-1">
+
+                                            @foreach (var field in model.Properties.Where(s => s.DeclaringType!.Name != model.ModelType.Name))
+                                            {
+                                                @drawField(field, model)
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>@*accordion*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+</ContentWrapper>
+
+@code {
+    [Inject] ModelInfoService modelService { get; set; } = default!;
+    [Inject] ILogger<ClassModelListPage> _logger { get; set; } = default!;
+    [Inject] NavigationManager navigationManager { get; set; } = default!;
+
+    IEnumerable<ModelInfo> Models = new List<ModelInfo>();
+
+    ModelProperySel propSel1 = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Load();
+    }
+
+    void Load()
+    {
+        Models = modelService.ModelList();
+
+        var option = Models.FirstOrDefault(s => s.Name == "Option");
+
+        propSel1 = new ModelProperySel
+                {
+                    Model = option,
+                    Property = option.Properties.FirstOrDefault()
+                };
+    }
+
+    void OpenModelFile(ModelInfo model)
+    {
+
+
+        string path = Q.WorkDir;
+
+        string ff = Path.GetFullPath(Path.Combine(path, model.SourceFilePath));
+
+        ff = Regex.Replace(ff, "/+", "\\");
+        ff = Regex.Replace(ff, @"\\{1,}", "\\");
+        ff = Regex.Replace(ff, @"\\+", "/");
+        ff = ff.Trim('/');
+
+        _logger.LogWarning("ff=" + ff);
+
+        navigationManager.NavigateTo($"vs2022://{ff}");
+
+        //_ = js.OpenNewTab($"vs2022://{path}{filename}");
+
+    }
+
+    RenderFragment drawField(PropertyInfo field, ModelInfo model) => @<div>
+        <span class="font-monospace fw-bold">
+            @field.Name
+        </span>
+        :
+        <MTypeBadge Value=@field.PropertyType />
+        @if (@field.GetCustomAttributes(true).Count(s => s is RequiredAttribute) > 0)
+    {
+        <span class="text-danger d-inline-block position-relative" style="width:0.7em;height:1em;" title="required">
+            <span class="fs-4 position-absolute" style="top:-0.2em">*</span>
+        </span>
+    }
+        @if(field.CanWrite == false)
+    {
+        <span class="text-dark" title="read only">(r)</span>
+    }
+        @if (field.DeclaringType!.Name != model.ModelType.Name)
+    {
+        <span class="text-dark">:@field.DeclaringType.Name</span>
+    }
+    </div>;
+}
+
+<style>
+    .mansory {
+        /*display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: masonry;*/
+        column-count: 3;
+        column-gap: 20px;
+    }
+
+    .man-item {
+        display: grid;
+        /*grid-template-rows: 1fr auto;*/
+        margin-bottom: 20px;
+        break-inside: avoid;
+    }
+</style>

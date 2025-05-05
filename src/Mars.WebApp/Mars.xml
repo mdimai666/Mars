@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mars</name>
+    </assembly>
+    <members>
+        <member name="M:Mars.Controllers.FileReaderExtensions.Tail(System.IO.TextReader,System.Int32)">
+            <summary>Returns the end of a text reader.</summary>
+            <param name="reader">The reader to read from.</param>
+            <param name="lineCount">The number of lines to return.</param>
+            <returns>The last lneCount lines from the reader.</returns>
+        </member>
+        <member name="M:Mars.Controllers.OAuthController.Login(Mars.Host.Services.MarsSSOClient.OpenIDAuthFormLoginPass)">
+            <summary>
+            OpenIDLogin
+            <see cref="T:AppAdmin.Pages.Public.LoginForm"/>
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Mars.Controllers.OAuthController.AuthToken(Mars.Host.Services.MarsOpenID.MarsSSOAuthTokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            </summary>
+            <see cref="M:Mars.Host.Services.MarsSSOClient.MarsSSOClientService.RequestUserJwtByCode(System.String,System.String,System.String,System.Threading.CancellationToken)"/>
+            <param name="form"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Mars.Services.ImageProcessor">
+            <summary>
+            Singletone.
+            </summary>
+        </member>
+    </members>
+</doc>

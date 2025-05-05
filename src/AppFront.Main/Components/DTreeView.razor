@@ -1,0 +1,41 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+@typeparam TModel
+@typeparam TKey
+
+@* Экспериментальный компонент. Он еще сырой. *@
+<d-tree-view>
+    <style>
+        fluent-tree-item {
+            contain: none;
+        }
+        fluent-tree-item::part(positioning-region) {
+            height: var(--item-height);
+        }
+
+        fluent-tree-item:not(.selected):not(:hover)::part(positioning-region) {
+            background: unset;
+        }
+
+        fluent-tree-item::part(content-region) {
+            height: var(--item-height);
+            /*background:red;*/
+        }
+
+        fluent-tree-item::after {
+            height: calc(var(--item-height) - ((var(--base-height-multiplier) + var(--density)) * var(--design-unit) / 4) * 2 * 1px)
+        }
+    </style>
+    <FluentTreeView Items="_tree"
+                    @ref=_fluentTreeView
+                    SelectedItem="SelectedItem"
+                    SelectedItemChanged=@(e=>SelectedItem = ((DTreeNode<TModel>?)e))
+                    AdditionalAttributes=@AdditionalAttributes
+                    Id="@Id"
+                    Class="@Class"
+                    Style=@($"--item-height:{ItemHeight};{Style}")>
+        <ItemTemplate>
+            @ChildContent((DTreeNode<TModel>)context)
+        </ItemTemplate>
+    </FluentTreeView>
+</d-tree-view>

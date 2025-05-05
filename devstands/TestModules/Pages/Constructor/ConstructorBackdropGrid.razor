@@ -1,0 +1,31 @@
+<div class="ConstructorBackdropGrid" @onmouseover=BackdropMouseOver>
+    <div class="grid">
+        @for (int _i = 0; _i < SizeW; _i++)
+        {
+            int i = _i;
+            string _class = (i == hoverIndex) ? "onhover" : "";
+
+            <div class="grid-item @_class" data-grid-item-ondex="@i"
+             @onmouseover=@(e=>GridItemMouseOver(e,i))
+             @onmouseover:stopPropagation>
+                @i
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int SizeW { get; set; } = 16;
+
+    int hoverIndex = -1;
+
+    void BackdropMouseOver()
+    {
+        hoverIndex = -1;
+    }
+
+    void GridItemMouseOver(MouseEventArgs e, int index)
+    {
+        hoverIndex = index;
+    }
+}

@@ -1,0 +1,67 @@
+@page "/FeedbackList"
+@using Mars.Shared.Contracts.Feedbacks
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper Title="@AppRes.Feedbacks">
+
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+
+        <a class="btn btn-outline-primary ms-auto" @onclick=DownloadExcel>
+            <i class="bi bi-table"></i>
+            @AppRes.DownloadExcel
+        </a>
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="46"
+                            Virtualize
+                            ShowHover
+                            AutoFit
+                            ResizableColumns
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            OnRowClick="OnRowClick"
+                            TGridItem="FeedbackSummaryResponse">
+                            @* GridTemplateColumns="* 2fr 2fr 1fr 1fr" *@
+                <PropertyColumn Property=@(f=>f.Title) Title="@AppRes.Title" Sortable="true" />
+                <PropertyColumn Property=@(f=>f.Phone) Title="@AppRes.Phone" Sortable="true" />
+                <PropertyColumn Property=@(f=>f.Email) Title="@AppRes.Email" Sortable="true" />
+                <TemplateColumn SortBy="@(GridSort<FeedbackSummaryResponse>.ByDescending(f=>f.CreatedAt))"
+                                Title="@AppRes.CreatedAt"
+                                InitialSortDirection="SortDirection.Descending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true"
+                                Align="@Align.End">
+                    @context.CreatedAt.LocalDateTime
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => Console.WriteLine("Edit clicked"))" />
+                    @* <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DemoLogger.WriteLine("Delete clicked"))" /> *@
+                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+            @* <p>Total: <strong>@data.TotalCount results found</strong></p> *@
+            @* <PagesTotal Page=data.Page PageSize=data.PageSize TotalPages=data.TotalCount??data.ItemsCount /> *@
+            <div class="ms-auto">
+                @* <FluentPaginator State="pagination" /> *@
+            </div>
+        </div>
+    </div>
+
+</ContentWrapper>

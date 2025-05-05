@@ -1,0 +1,40 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DebugNode))]
+
+
+<div class="vstack gap-4">
+
+    <FluentCheckbox @bind-Value=Node.CompleteInputMessage Label="CompleteInputMessage" />
+
+    <FluentCheckbox @bind-Value=Node.ShowPayloadTypeInStatus Label="ShowPayloadTypeInStatus" />
+
+    <FormItem2 For=@(()=>Node.Level)>
+        <FluentSelect @bind-Value="@_selLevel"
+                      @bind-SelectedOption=SetLevel
+                      Multiple="false"
+                      OptionValue=@(s=>s.ToString())
+                      OptionText=@(s=>s?.ToString()??"-payload")
+                      Items="MessageIntentItems()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    DebugNode Node { get => (DebugNode)Value; set => Value = value; }
+
+    string? _selLevel;
+
+    IEnumerable<string> MessageIntentItems() =>
+    ["payload", .. Enum.GetValues<Mars.Core.Models.MessageIntent>().Select(s => s.ToString())];
+
+    string? SetLevel
+    {
+        get => Node.Level?.ToString() ?? "payload";
+        set => Node.Level = Enum.TryParse<Mars.Core.Models.MessageIntent>(value, out var p) ? p : null;
+    }
+}

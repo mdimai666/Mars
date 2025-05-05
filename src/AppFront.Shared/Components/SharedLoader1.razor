@@ -1,0 +1,31 @@
+@if (OverrideComponent is not null)
+{
+    <DynamicComponent Type="OverrideComponent" />
+}
+else
+{
+    <div class="text-center">
+        @*<h4 class="card-title my-2">
+    <div class="spinner-border text-primary me-1"></div>
+    Загрузка...
+    </h4>*@
+        @* <p class="card-text">This card has supporting text below as a natural lead-in to
+    additional content.</p> *@
+        @* <p class="card-text">
+    <small class="text-muted">Last updated 3 mins ago</small>
+    </p> *@
+        <div class="loader rspin mx-auto ondark_invert">
+            <span class="c"></span>
+            <span class="d spin"><span class="e"></span></span>
+            <span class="r r1"></span>
+            <span class="r r2"></span>
+            <span class="r r3"></span>
+            <span class="r r4"></span>
+        </div>
+        <p>Загрузка...</p>
+        @*https://freefrontend.com/css-spinners/*@
+    </div>
+}
+@code {
+    public static Type? OverrideComponent { get; set; }
+}

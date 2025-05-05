@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+		<PackageReference Include="BlazorMonaco" Version="3.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+		<ProjectReference Include="..\..\Mars.Nodes\NodeFormEditor\NodeFormEditor.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
+	</ItemGroup>
+
+</Project>

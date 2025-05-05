@@ -1,0 +1,45 @@
+@*@inherits MainLayout*@
+@*@layout MainLayout*@
+@typeparam TModel
+
+@if (LoadFunc == null)
+{
+    <h1>Нет функции загрузки</h1>
+}
+else
+if (Busy || Q.IsPrerender)
+{
+    if (WhenLoading == null)
+    {
+        <div class="xcenter" style="min-height:50vh">
+            <SharedLoader1 />
+        </div>
+    }
+    else
+    {
+        @WhenLoading
+    }
+}
+else if (Errored)
+{
+    @if (ErrorMessageTemplate != null)
+    {
+        @ErrorMessageTemplate(Error)
+    }
+    else
+    {
+        <ExceptionMessage Exception="Error" />
+    }
+}
+else if(model is not null)
+{
+
+    @ChildContent(model)
+    @*
+        if(model == null){
+        <p>NULL</p>
+        }*@
+}
+else {
+    <div data-None></div>
+}

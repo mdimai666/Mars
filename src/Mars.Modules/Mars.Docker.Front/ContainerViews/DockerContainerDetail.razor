@@ -1,0 +1,61 @@
+@using AppFront.Shared.Components
+@using Mars.Core.Extensions
+@using Mars.Docker.Contracts
+@using Mars.Docker.Front.Services
+@using Mars.WebApiClient.Interfaces
+@using System.Text.Json
+
+<div>
+    @if (IsBusy)
+    {
+        <SharedLoader1 />
+    }
+    else if (container is not null)
+    {
+        <div>
+            <h2>@container.Names.JoinStr("; ")</h2>
+            <label>@container.ID</label>
+            <hr />
+            <div class="spacer-2"></div>
+            <MarsCodeEditor2.CodeEditor2 Value="@json" Lang="json" />
+        </div>
+    }
+    else
+    {
+        <SharedContentNoRecords />
+    }
+</div>
+
+@code {
+
+    [Parameter, EditorRequired] public string ID { get; set; } = default!;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    ContainerListResponse1? container;
+    string? json;
+
+    string? _prevId;
+    bool IsBusy { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_prevId != ID)
+        {
+            Load();
+        }
+    }
+
+    public async void Load()
+    {
+        IsBusy = true;
+        StateHasChanged();
+
+        container = await client.Docker().GetContainer(ID);
+        json = JsonSerializer.Serialize(container, new JsonSerializerOptions { WriteIndented = true });
+
+        IsBusy = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.2" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+		<ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Host.Core\Mars.Datasource.Host.Core.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Host.MsSQL\Mars.Datasource.Host.MsSQL.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Host.MySQL\Mars.Datasource.Host.MySQL.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Host.PostgreSQL\Mars.Datasource.Host.PostgreSQL.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>$(MSBuildProjectName).Test</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Test.Mars.Datasource.Host</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Mars.Datasource.Integration.Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+</Project>

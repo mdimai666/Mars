@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+      <ProjectReference Include="..\Mars.Docker.Host.Shared\Mars.Docker.Host.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

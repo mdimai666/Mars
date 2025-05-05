@@ -1,0 +1,13 @@
+@page "/datasource/config"
+@using Mars.Datasource.Core
+
+
+<ContentWrapper Title="Datasource config">
+
+    <EditOptionForm TModel="DatasourceOption">
+        <CascadingValue Value="context">
+            <Mars.Datasource.Front.Components.EditDatasourceOptions />
+        </CascadingValue>
+    </EditOptionForm>
+
+</ContentWrapper>

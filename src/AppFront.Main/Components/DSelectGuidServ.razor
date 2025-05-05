@@ -1,0 +1,33 @@
+@typeparam TModel
+@typeparam TListQueryRequest
+
+<div class="d-flex @Class" style=@Style>
+    @* <Cascader Options="@SelectNodes"
+              Placeholder="Выберите"
+              ShowSearch
+              @bind-Value=SetterStringId
+              Class="w-100" AllowClear=false />
+    @if (Busy)
+    {
+        <Spin Indicator=antIcon />
+    } *@
+    DEPRECATED
+</div>
+
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger mt-1 alert-validation-msg" role="alert">
+        <div class="alert-body text-black">
+            <i class="bi bi-x-circle-fill"></i>
+            @errorMessage
+        </div>
+    </div>
+}
+
+@code {
+    RenderFragment antIcon = @<div>loading...</div>;
+
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+}

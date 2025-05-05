@@ -1,0 +1,295 @@
+@using Mars.Shared.Contracts.Files
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="d-document-uploader">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex">
+                <div class="flex-fill d-flex gap-2">
+                    <FluentSearch @bind-Value=_searchText
+                                  @bind-Value:after=HandleSearchInput
+                                  Immediate
+                                  ImmediateDelay="300"
+                                  Appearance="FluentInputAppearance.Filled"
+                                  AriaLabel="Search" />
+
+                    <FluentSelect TOption=@(KeyValuePair<string, string>)
+                                  @bind-Value=_sortValue
+                                  SelectedOptionChanged="SelectSortOption"
+                                  Width="unset"
+                                  Items="SortOptions"
+                                  Style="height:32px"
+                                  OptionText="@(f=>f.Value)"
+                                  OptionValue="@(f=>f.Key)" />
+
+                    <FluentButton IconStart="sortButtonIcon" OnClick="OnClickSortDirectionChange" />
+                </div>
+                <div class="d-flex gap-3">
+                    <div class="dropdown">
+                        <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Действия
+                        </a>
+
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            @*<li><a class="dropdown-item" @onclick=@(e=>ExecuteAction("test"))>Test</a></li>*@
+                            <li><a class="dropdown-item" @onclick=@(e=>ExecuteAction("ScanFiles"))>Сканировать файлы</a></li>
+                            <li><a class="dropdown-item" @onclick=@(e=>ExecuteAction("GenerateThumbnails"))>Пересоздать миниатюры</a></li>
+                            @*<li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="spacer-1"></div>
+
+    <div class="my-4" style="min-height:100px;">
+        <FluentInputFile Mode="InputFileMode.Stream"
+                         Multiple="true"
+                         MaximumFileCount="4"
+                         MaximumFileSize="@(1000*1024*1024)"
+                         Accept="*"
+                         @bind-ProgressPercent="@ProgressPercent"
+                         OnCompleted="@OnCompletedAsync"
+                         OnFileUploaded="OnFileUploaded"
+                         Style="min-height: 100px; max-width: 300px;">
+            <ChildContent>
+                <div class="p-3">
+                    <label for="my-file-uploader">
+                        <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                    </label>
+
+                    <div>
+                        Загрузка файла
+                    </div>
+                </div>
+
+            </ChildContent>
+        </FluentInputFile>
+
+        @if (fileUploadResults.Any())
+        {
+            <div>
+                <strong>Список загруженного: </strong>
+                <a @onclick=@(()=>fileUploadResults.Clear())>@AppRes.Clear.ToLower()</a>
+            </div>
+            <ul>
+                @foreach (var file in fileUploadResults)
+                {
+                    var _class = file.ErrorMessage != null ? "text-danger" : "";
+
+                    <li class="@_class">
+                        <span>@file.Name</span> 🔹
+                        @(file.Size.ToHumanizedSize()) 🔹
+
+                        @if (file.ErrorMessage != null)
+                        {
+                            <span class="text-danger"> @file.ErrorMessage </span>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+
+    </div>
+
+    <div class="MediaTable">
+
+        @* ///////////////////////////////////////////////////////////////////////////////// *@
+        @* ///////////////////////////////////////////////////////////////////////////////// *@
+        @* ///////////////////////////////////////////////////////////////////////////////// *@
+
+        @if (false)
+        {
+            <div style="height: 534px; overflow:auto;">
+                <FluentDataGrid ItemsProvider="dataProvider"
+                                @ref=table
+                                ShowHover="false"
+                                ItemSize="46"
+                                Virtualize
+                                AutoFit
+                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                OnRowClick="OnRowClick"
+                                GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
+                                TGridItem="FileListItemResponse">
+                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f=>f.Name))"
+                                    Title="Name"
+                                    Sortable="true">
+
+                        @* <div class="vstack">
+                        <a href="@urlEditPage/@context.Id" class="text-primary">
+                            <div>@context.FullName</div>
+                        </a>
+                    </div> *@
+
+                        @context.Name
+
+                    </TemplateColumn>
+                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f=>f.Size))"
+                                    Title="Size"
+                                    Sortable="true">
+                        <span title="@context.Size">@context.Size.ToHumanizedSize()</span>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(f=>f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d"
+                                    InitialSortDirection="SortDirection.Ascending"
+                                    IsDefaultSortColumn="true"
+                                    Sortable="true" />
+                    <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                        <div class="hstack">
+                            <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id))>
+                                <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                            </DFluentDeleteButton>
+                            <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
+                                @* <FluentMenuItem OnClick="@(e=>OnClickChangePassword(context))">@AppRes.ChangePassword</FluentMenuItem> *@
+                            </FluentMenuButton>
+                        </div>
+                    </TemplateColumn>
+                </FluentDataGrid>
+            </div>
+        }
+        else
+        {
+            <div style="11height: 534px; overflow:auto;">
+                <FluentDataGrid ItemsProvider="dataProvider"
+                                @ref=table
+                                Pagination="pagination"
+                                ShowHover="false"
+                                AutoFit
+                                GenerateHeader="GenerateHeaderOption.None"
+                                OnRowClick="OnRowClick"
+                                GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
+                                Class="MarsMediaList_Grid items-container gap-2 d-file-list"
+                                TGridItem="FileListItemResponse">
+                    <TemplateColumn Title="Name" Context="file" Style="height:unset;">
+
+                        <div class="d-file-item xcenter" title=@FileHintTitle(file)>
+                            <div class="d-file-item-actions-top">
+                                <div>
+                                    @*<a href="@file.FileUrl" class="btn btn-sm btn-primary xcenter" style="height:23px;">
+                        <Icon Type="link"/>
+                        </a>*@
+                                </div>
+
+                                <div>
+                                    @if (!ReadOnly)
+                                    {
+                                        <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())"
+                                                      Appearance="Appearance.Accent"
+                                                      Color="white" BackgroundColor="var(--bs-danger)"
+                                                      OnClick=@(e=>ItemRemoveClick(file)) />
+                                    }
+                                </div>
+                                @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                            </div>
+
+                            @if (file.IsImage)
+                            {
+                                <Image2 Width="102px" PreviewSrc=@(file.Url)
+                                        Src="@(file.PreviewIcon)"
+                                        Title="@file.Name"
+                                        Class="cursor-pointer" />
+                            }
+                            else
+                            {
+                                <div class="d-file-preview-icon" style="background-image:url('@(file.PreviewIcon)')"></div>
+                            }
+
+                            <div class="d-file-item-actions-bottom">
+                                @if (ItemActionBottom is null)
+                                {
+                                    <a href="@file.Url" target="_blank">
+                                        <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())" Size="small">открыть</FluentButton>
+                                    </a>
+                                }
+                                else
+                                {
+                                    @ItemActionBottom(file)
+                                }
+                            </div>
+
+                        </div>
+
+                    </TemplateColumn>
+                </FluentDataGrid>
+            </div>
+        }
+        @* ///////////////////////////////////////////////////////////////////////////////// *@
+        @* ///////////////////////////////////////////////////////////////////////////////// *@
+
+
+        <div class="hstack">
+            @* <TotalResultsFound TotalCount="@data.TotalCount" /> *@
+            <div class="ms-auto">
+                <FluentPaginator State="pagination" />
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<FluentDialog Hidden="@(!_visibleActionModal)" aria-label="Media action dialog"
+              Modal=true
+              Class="ActionResultDialog DeletionConfirmationDialog"
+              @ondialogdismiss=@(()=>_visibleActionModal=false)
+              PreventScroll=true>
+    <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
+        <div class="hstack">
+            @* <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Info" Class="me-2" /> *@
+            <FluentLabel Typo="Typography.Header">@AppRes.Action</FluentLabel>
+        </div>
+    </FluentDialogHeader>
+    <FluentDialogBody Class="text-start">
+        @if (_loadingActionExecuting)
+        {
+            <SharedLoader2 />
+        }
+        else if (actionResult is null)
+        {
+            <div>NULL</div>
+        }
+        else
+        {
+            @if (!actionResult.Ok)
+            {
+                <div class="alert alert-danger">
+                    @actionResult.Message
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    @actionResult.Message
+                </div>
+            }
+        }
+    </FluentDialogBody>
+    <FluentFooter>
+        <div class="hstack gap-2 justify-content-end flex-fill">
+            <FluentButton Appearance="Appearance.Accent" Style="min-width:100px" OnClick="@(e=>_visibleActionModal=false)">
+                @AppRes.Ok
+            </FluentButton>
+            @* <FluentButton Appearance="Appearance.Neutral" OnClick="@(e=>_visibleActionModal=false)">
+                @AppRes.Cancel
+            </FluentButton> *@
+        </div>
+    </FluentFooter>
+</FluentDialog>
+
+
+@code {
+
+    // StandartManagementTable<FileEntity, MediaService> f;
+    // RenderFragment placeholder =@<img src=@(Q.FileEntity.ExtPreviewUrl("img"))) />;
+
+    string FileHintTitle(FileSummaryResponse file)
+    {
+        // return $"{file.FileName}\nsize: {file.FileSize.ToHumanizedSize()}\n{file.Meta?.ImageInfo?.Width ?? 0}x{file.Meta?.ImageInfo?.Height ?? 0}";
+        return $"{file.Name}\nsize: {file.Size.ToHumanizedSize()}";
+    }
+}
+

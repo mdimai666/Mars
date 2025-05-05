@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+	  <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Host.Core\Mars.Datasource.Host.Core.csproj" />
+	</ItemGroup>
+</Project>

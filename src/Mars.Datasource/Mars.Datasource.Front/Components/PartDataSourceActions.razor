@@ -1,0 +1,50 @@
+@using Mars.Datasource.Core
+@using Mars.Datasource.Core.Dto
+@using Mars.Datasource.Front.Services
+@using Mars.WebApiClient.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IDatasourceServiceClient datasourceService;
+@inject AppFront.Shared.Interfaces.IMessageService messageService
+
+<div class="vstack gap-3">
+    <div class="hstack">
+        <FluentButton Loading=isTestLoading Disabled=isTestLoading
+                      OnClick="ClickTestConnection">Test connection</FluentButton>
+    </div>
+    <div class="hstack">
+        <a href="/dev/datasource/query?slug=mssql" class="">
+            <FluentButton>
+                Query tool
+            </FluentButton>
+        </a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public DatasourceConfig Config { get; set; } = default!;
+
+    bool isTestLoading;
+
+    async void ClickTestConnection()
+    {
+        isTestLoading = true;
+        StateHasChanged();
+
+        var conn = new ConnectionStringTestDto { Driver = Config.Driver, ConnectionString = Config.ConnectionString };
+        var res = await datasourceService.TestConnection(conn);
+
+        if (res.Ok)
+        {
+            _ = messageService.Success(res.Message);
+        }
+        else
+        {
+            _ = messageService.Error(res.Message);
+        }
+
+        isTestLoading = false;
+        StateHasChanged();
+    }
+}

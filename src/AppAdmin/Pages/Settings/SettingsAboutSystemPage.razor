@@ -1,0 +1,59 @@
+@page "/Settings/About"
+@using MarsEditors
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Настройки Host html")]
+
+<SettingsPageWrapper>
+
+    <h3>О системе</h3>
+
+    <div class="card">
+        <div class="card-body text-break">
+
+            @if (info is null)
+            {
+                <SharedLoader1 />
+            }
+            else
+            {
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <td>Имя</td>
+                            <td>Информация</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in info)
+                        {
+                            <tr>
+                                <td style="min-width:200px">@d.Key</td>
+                                <td>@d.Value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+
+</SettingsPageWrapper>
+
+@code {
+    IReadOnlyCollection<KeyValuePair<string, string>>? info;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Task.Run(async () =>
+        {
+            info = await client.System.AboutSystem();
+            StateHasChanged();
+        });
+    }
+}

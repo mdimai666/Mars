@@ -1,0 +1,91 @@
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IStringLocalizer<AppRes> L
+@typeparam TModel
+
+
+<section class=@("EditOptionForm " + Class) style=@(Style)>
+    <ErrorBoundary>
+        <ChildContent>
+            <EditForm Model="@_model"
+                      FormName="optionForm"
+                      Enhance
+                      class="@FormClass"
+                      style="@FormStyle"
+                      id=@($"optionForm:{typeof(TModel)}")
+                      OnValidSubmit="Save">
+                <ObjectGraphDataAnnotationsValidator />
+                @* <FluentValidationSummary /> *@
+                <CascadingValue Value="this">
+
+                    <div class="EditOptionForm-main ">
+
+                        @if (IsBusy)
+                        {
+                            <SkeletonContent />
+                            @*<SharedLoader1 />*@
+                        }
+                        else if (exError is not null)
+                        {
+                            <div class="alert alert-danger">
+                                @exError.Message
+                            </div>
+                        }
+                        else if (errorOptionNotFound)
+                        {
+                            <div class="alert alert-info">
+                                option not found
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="float-end">
+                                @if (isEditJsonMode)
+                                {
+                                    <FluentButton Appearance="Appearance.Stealth" OnClick="CancelJsonEditMode">
+                                        Отмена
+                                    </FluentButton>
+                                }
+                                <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleEditMode">
+                                    <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Neutral" />
+                                </FluentButton>
+                            </div>
+
+                            @if (isEditJsonMode)
+                            {
+                                <h6>Edit: @typeof(TModel).Name</h6>
+                                <div class="clearfix"></div>
+
+                                @* TODO: тут он странно переинициалищируется при сохранении; если убрать Value то значение пустое и пишет в консоли *@
+                                <MarsCodeEditor2.CodeEditor2 @ref=codeEditor
+                                                              Lang=@MarsCodeEditor.Language.json
+                                                              OnSave="OnSaveFromCodeEditor"
+                                                              Value=@GetModelAsJson() />
+                            }
+                            else
+                            {
+                                @*<div>*@
+                                @ChildContent?.Invoke(_model)
+
+                                @*</div>*@
+                            }
+                            <div class="EditOptionForm_footer q-gutter-md mt-3 d-flex flex-nowrap justify-content-center">
+                                <FluentButton Appearance="@Appearance.Accent" Loading=saveButtonBusy Type="Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit">
+                                    Сохранить
+                                </FluentButton>
+                            </div>
+                        }
+
+                    </div>
+
+                </CascadingValue>
+            </EditForm>
+        </ChildContent>
+        <ErrorContent>
+            <p class="alert alert-danger container">
+                @context.Message
+                <pre>@context.StackTrace</pre>
+            </p>
+        </ErrorContent>
+    </ErrorBoundary>
+</section>

@@ -1,0 +1,59 @@
+@page "/Post"
+@page "/Post/{POSTTYPE}"
+@using AppAdmin.Pages.PageViews
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+
+<ContentWrapper Title="@(postType?.Title)">
+    <SectionActions>
+        <XActionsDropDown ContextPart="@POSTTYPE" />
+    </SectionActions>
+    <ChildContent>
+
+        @if (POSTTYPE == "page")
+        {
+            <div class="p-2 d-flex position-relative">
+                <AppFrontInfoBadge />
+                <a href="template/view" class="stretched-link"></a>
+            </div>
+        }
+
+        @*<h3>@(L[postType.Title])</h3>*@
+
+        <div class="d-flex mb-3" style="max-width:90vw;">
+            <div class="flex-fill d-flex gap-3">
+                @*<div class="PostTypeTabs">
+                <ul class="nav nav-pills shadow-none bg-transparent px-0">
+                @foreach (var type in Q.Site.PostTypes.OrderBy(s => s.Created))
+                {
+                <li class="nav-item px-3">
+                <NavLink class="nav-link" href=@($"/dev/Post/{type.TypeName}")>
+                @type.Title
+                </NavLink>
+                </li>
+                }
+                </ul>
+                </div>*@
+            </div>
+            <div class="text-end d-flex gap-2">
+                @* <a href="@($"{urlEditPage}{query}")">
+                    <Button Icon="plus">Создать</Button>
+                </a> *@
+            </div>
+        </div>
+
+        @if (POSTTYPE == "gallery")
+        {
+            @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
+            <div>
+                gallery
+            </div>
+        }
+        else
+        {
+            <ManagePostView @ref=_managePostView PostType=@postType />
+        }
+
+    </ChildContent>
+</ContentWrapper>

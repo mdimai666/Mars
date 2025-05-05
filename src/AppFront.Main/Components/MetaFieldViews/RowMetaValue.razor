@@ -1,0 +1,197 @@
+@using Mars.Shared.Contracts.MetaFields
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<d-row-meta-value class="FormRowMetaField @("Value.MarkForDelete?bg-red:")">
+
+
+    <div class="d-flex">
+        @* <div class="me-2 d-row-meta-value__left">
+            <label for="@($"metavalue-{Value.Id}-{Value.Index}")">
+                @Value.MetaField.Title
+            </label>
+            <div class="text-secondary">
+                @Value.MetaField.Description
+            </div>
+            @if (!Client)
+            {
+                <div class="text-secondary fz10px">@Value.MetaField.Type</div>
+            }
+        </div> *@
+        <div class="d-metafield-metavalue-body">
+            @if (Value.MetaField.Type == MetaFieldType.Bool)
+            {
+                <FluentSwitch @bind-Value=@Value.Bool
+                                Label="@Value.MetaField.Title"
+                                Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.String)
+            {
+                <FluentTextField @bind-Value=@Value.StringShort
+                                Label="@Value.MetaField.Title"
+                                Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.Text)
+            {
+                <FluentTextArea Rows="3" @bind-Value=@Value.StringText
+                                Label="@Value.MetaField.Title"
+                                Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+
+            else if (Value.MetaField.Type == MetaFieldType.Int)
+            {
+                <FluentNumberField @bind-Value=@Value.Int
+                            Style="min-width:200px;"
+                            Min=@(((int)(Value.MetaField.MinValue??int.MinValue)).ToString())
+                            Max=@(((int)(Value.MetaField.MaxValue??int.MaxValue)).ToString())
+                            Label="@Value.MetaField.Title"
+                            Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.Long)
+            {
+                <FluentNumberField @bind-Value=@Value.Long
+                            Style="min-width:200px;"
+                            Min=@(((long)(Value.MetaField.MinValue??long.MinValue)).ToString())
+                            Max=@(((long)(Value.MetaField.MaxValue??long.MaxValue)).ToString())
+                            Label="@Value.MetaField.Title"
+                            Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.Float)
+            {
+                <FluentNumberField @bind-Value=@Value.Float
+                            Style="min-width:200px;"
+                            Min=@(((Value.MetaField.MinValue is null)?float.MinValue:((float)Value.MetaField.MinValue)).ToString())
+                            Max=@(((Value.MetaField.MaxValue is null)?float.MaxValue:((float)Value.MetaField.MaxValue)).ToString())
+                            Label="@Value.MetaField.Title"
+                            Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.Decimal)
+            {
+                <FluentNumberField @bind-Value=@Value.Decimal
+                            Style="min-width:200px;"
+                            Min=@(((decimal)(Value.MetaField.MinValue??decimal.MinValue)).ToString())
+                            Max=@(((decimal)(Value.MetaField.MaxValue??decimal.MaxValue)).ToString())
+                            Label="@Value.MetaField.Title"
+                            Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+
+            else if (Value.MetaField.Type == MetaFieldType.DateTime)
+            {
+                <FluentDatePicker @bind-Value=@Value.DateTime
+                            Label="@Value.MetaField.Title"
+                            Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
+            }
+
+            else if (Value.MetaField.Type == MetaFieldType.Select)
+            {
+                <FluentSelect TOption="MetaFieldVariantEditModel"
+                            @bind-Value=_variantId
+                            Style="width: 250px;"
+                            OptionText="s=>s.Title"
+                            OptionValue="s=>s.Id.ToString()"
+                            SelectedOptionChanged="@(x=>Value.VariantId = x.Id)"
+                            Label="@Value.MetaField.Title"
+                            Items="Value.MetaField.Variants" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.SelectMany)
+            {
+                @if (variantsCheckbox.Any())
+                {
+                    <div>
+                        <FluentLabel>@Value.MetaField.Title</FluentLabel>
+                        @foreach (var _variant in Value.MetaField.Variants)
+                        {
+                            var variant = _variant;
+                            <FluentCheckbox Value=@(variantsCheckbox[variant.Id])
+                                            ValueChanged="@(v=>SetVariants(variant, v))"
+                                            title="@variant.Id"
+                                            Label="@variant.Title" />
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div>
+                    not implement
+                </div>
+            }
+            <div class="text-secondary">
+                @Value.MetaField.Description
+            </div>
+            @if (!Client)
+            {
+                <div class="text-secondary fz10px">@Value.MetaField.Type</div>
+            }
+        </div>
+    </div>
+
+
+    @* <FormItem Help="@Value.MetaField.Description" Class="d-flex">
+        <LabelTemplate>
+            <div class="me-2">
+                @Value.MetaField.Title
+                @if (!Client)
+                {
+                    <div class="text-secondary fz10px">@Value.MetaField.Type</div>
+                }
+            </div>
+        </LabelTemplate>
+        <ChildContent>
+
+        </ChildContent>
+    </FormItem> *@
+</d-row-meta-value>
+
+@code {
+    MetaValueEditModel _value = default!;
+
+    [Parameter] public bool Client { get; set; }
+
+
+    [Parameter]
+    public MetaValueEditModel Value
+    {
+        get => _value;
+        set
+        {
+            //Console.WriteLine("FormRowValue::");
+            if (_value == value) return;
+            //Console.WriteLine("FormRowValue::22");
+            _value = value;
+            ValueChanged.InvokeAsync(_value);
+        }
+    }
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    Dictionary<Guid, bool> variantsCheckbox = new();
+
+    void Init()
+    {
+        variantsCheckbox = Value.MetaField.Variants.ToDictionary(s => s.Id, s => Value.VariantsIds.Contains(s.Id));
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Init();
+    }
+
+
+    void SetVariants(MetaFieldVariantEditModel variant, bool state)
+    {
+        variantsCheckbox[variant.Id] = state;
+        _value.VariantsIds = variantsCheckbox.Where(s => s.Value).Select(s => s.Key).ToArray();
+        ValueChanged.InvokeAsync(_value);
+    }
+
+    // Guid[] SetVariantsIdsCheckbox(bool state) = new string[] { };
+    // public IEnumerable<CheckboxOption> SetVariantsIdsCheckboxGroup
+    // {
+    //    get => VariantsIds.Select(s=>s.ToString());
+    //    set => VariantsIds = value.Select(s=>Guid.Parse(s)).ToList();
+    // }
+
+
+    string _variantId = "";
+
+}

@@ -1,0 +1,60 @@
+{
+    "$schema": "https://json.schemastore.org/launchsettings.json",
+    "profiles": {
+        "Mars": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+                //"MARS_CFG": "./appsettings.myproject-local.json"
+            },
+            "dotnetRunMessages": false,
+            "applicationUrl": "http://localhost:5003;http://0.0.0.0:5003"
+        },
+        "Mars.DebugWasm": {
+            "commandName": "Project",
+            "launchBrowser": true,
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "dotnetRunMessages": false,
+            "applicationUrl": "http://localhost:5003",
+            "launchUrl": "http://localhost:5003/dev",
+            "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
+        },
+        "IIS Express": {
+            "commandName": "IISExpress",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        "Container (Dockerfile)": {
+            "commandName": "Docker",
+            "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+            "environmentVariables": {
+                "ASPNETCORE_URLS": "https://+:443;http://+:80",
+                "ConnectionStrings__DefaultConnection": "Host=host.docker.internal:5432;Database=mars_v09;Username=postgres;Password=ggxxrr",
+                "Urls": "http://0.0.0.0:80"
+            },
+            "publishAllPorts": true,
+            "useSSL": false
+            //"DockerfileRunArguments": ""
+        },
+        "Container (.Net Sdk)": {
+            "commandName": "SdkContainer",
+            "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+            "environmentVariables": {
+                "ASPNETCORE_URLS": "https://+:443;http://+:80"
+            },
+            "publishAllPorts": true,
+            "useSSL": true
+        }
+    },
+    "iisSettings": {
+        "windowsAuthentication": false,
+        "anonymousAuthentication": true,
+        "iisExpress": {
+            "applicationUrl": "http://localhost:5003",
+            "sslPort": 44330
+        }
+    }
+}

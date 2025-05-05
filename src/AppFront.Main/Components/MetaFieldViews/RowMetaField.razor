@@ -1,0 +1,104 @@
+@using AntDesign
+@using Mars.Shared.Contracts.MetaFields
+
+<div class="FormRowMetaFieldTemplate">
+    <FormItem>
+        <AntDesign.Input @bind-Value=@Field.Title TValue="string" OnChange="e=>PropertyChanged()" />
+    </FormItem>
+    <FormItem>
+        <AntDesign.Input @bind-Value=@Field.Key />
+    </FormItem>
+    <FormItem>
+        <AntDesign.TextArea MinRows="2" @bind-Value=@Field.Description />
+    </FormItem>
+    <FormItem>
+        <AntDesign.Checkbox @bind-Value=@Field.IsNullable />
+    </FormItem>
+
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+    @*NOT USERD*@
+
+    <FormItem>
+        @*<div class="spacer-2"></div>
+    <label class="d-block">
+    Результат
+    </label>*@
+        <Select @bind-Value="@Field.Type"
+            TItemValue="MetaFieldType"
+            TItem="string"
+            Style="width: 250px;"
+            EnableSearch>
+            <SelectOptions>
+                @foreach (var item in MetaFieldEditModel.TypeList)
+                {
+                    <SelectOption TItemValue="MetaFieldType" TItem="string" Value=@item.Key Label=@item.Value />
+                }
+            </SelectOptions>
+        </Select>
+    </FormItem>
+
+    @if (Field.IsTypeHasMinMax)
+    {
+        <FormItem Label="Ограничитель" Help="Оставьте пустым чтобы не ограничивать" WrapperColSpan="10">
+            <ChildContent>
+                <div style="display:grid;grid-template-columns:45% 1fr 45%;">
+                    <FormItem Label="мин.">
+                        <AntDesign.InputNumber @bind-Value="@Field.MinValue" Style="width:100%;" />
+                    </FormItem>
+                    <span style="text-align:center;">-</span>
+                    <FormItem Label="макс.">
+                        <AntDesign.InputNumber @bind-Value="@Field.MaxValue" Style="width:100%;" />
+                    </FormItem>
+                </div>
+            </ChildContent>
+        </FormItem>
+    }
+
+    @if (Field.IsTypeSelectable)
+    {
+        <FormItem Label="Варианты">
+            <EditMetaFieldVariants @bind-Model=Field />
+        </FormItem>
+    }
+
+</div>
+
+@code {
+    //MetaFieldTemplate _field;
+    //[CascadingParameter] public MetaFieldTemplate Field { get => _field; set { _field = value; Form.UpdateState(); } }
+    //[CascadingParameter] public MetaFieldTemplate Field { get; set; }
+    //[CascadingParameter] public FormMetaFieldTemplate Form { get; set; }
+    //[CascadingParameter] public Pages.Admin.AdminIndex aa { get; set; }
+
+    //string Field_Title { get => Field.Title; set { Field.Title = value; aa.UpdateState(); } }
+
+    MetaFieldEditModel _model = default!;
+    [Parameter]
+    public MetaFieldEditModel Field
+    {
+        get => _model;
+        set
+        {
+            Console.WriteLine("ZZZ");
+            if (_model == value) return;
+            _model = value;
+            FieldChanged.InvokeAsync(_model);
+        }
+    }
+
+    [Parameter] public EventCallback<MetaFieldEditModel> FieldChanged { get; set; }
+
+    void PropertyChanged(){
+        FieldChanged.InvokeAsync(Field);
+    }
+}

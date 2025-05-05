@@ -1,0 +1,24 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [OptionEditFormForOptionAttribute(typeof(ApiOption))]
+@attribute [Display(Name = "OpenApi")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="ApiOption">
+    <h3>Настройки OpenApi</h3>
+    <FormItem2 For=@(()=>context.ViewMode)>
+
+        <FluentSelect TOption="ApiOption.EViewMode"
+                      Items="Enum.GetValues<ApiOption.EViewMode>()"
+                      Width="250px"
+                      @bind-SelectedOption="@context.ViewMode" />
+
+    </FormItem2>
+    <div class="my-2 mx-2">
+        доступно по ссылке <a href="/api/index.html" target="_blank">open api</a>
+    </div>
+</EditOptionForm>
+
+@code {
+    EditOptionForm<ApiOption>? form;
+
+}

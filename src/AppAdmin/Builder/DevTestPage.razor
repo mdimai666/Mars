@@ -1,0 +1,45 @@
+@page "/builder/DevTestPage"
+@using Mars.Shared.Tools
+@inject ModelInfoService modelService
+
+<ContentWrapper Title="DevTestPage">
+
+    <div class="card">
+        <div class="card-body">
+
+
+            <div>
+                @if (pages is not null)
+                {
+                    foreach (var p in pages)
+                    {
+                        <div>
+                            <b>@p.Name</b> |
+                            @foreach (var url in p.Urls)
+                            {
+                                <a href=@($"/dev{url}")>@url</a>
+                                ;
+
+                            }
+                            | <span style="color:red;"> @p.Roles?.JoinStr(";") </span>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+
+</ContentWrapper>
+
+
+@code {
+    List<GPageInfo> pages = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        this.pages = modelService.GetPagesPageNonId(typeof(Program).Assembly).ToList();
+    }
+}

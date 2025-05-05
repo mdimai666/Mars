@@ -1,0 +1,220 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <UserSecretsId>aspnet-Mars-56F29B15-4FE5-4248-9243-0A24943CC689</UserSecretsId>
+
+        <!--Author-->
+        <!--<PackageId>mdimai666.Mars</PackageId>-->
+        <!--<PackageVersion>$(MarsAppVersion)</PackageVersion>-->
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars</Product>
+        <PackageTags>Mars;CMS;eCMS;aspnetcore</PackageTags>
+        <Description>
+            Mars future eCMS
+        </Description>
+
+        <DockerfileFile>..\..\Dockerfile</DockerfileFile>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <!--<RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>-->
+        <!--<EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>-->
+
+        <RootNamespace>Mars</RootNamespace>
+        <AssemblyName>Mars</AssemblyName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>Mars.xml</DocumentationFile>
+        <!--<NoWarn>1701;1702;1591;0162;0414;1998;8618;CS8981</NoWarn>-->
+        <!--<DefineConstants>$(DefineConstants);NOADMIN</DefineConstants>-->
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DocumentationFile>Mars.xml</DocumentationFile>
+        <!--<NoWarn>1701;1702;1591;0162;0414;1998;8618</NoWarn>-->
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="Areas\Identity\**" />
+        <Compile Remove="wwwroot\upload\**" />
+        <Content Remove="Areas\Identity\**" />
+        <Content Remove="wwwroot\upload\**" />
+        <EmbeddedResource Remove="Areas\Identity\**" />
+        <EmbeddedResource Remove="wwwroot\upload\**" />
+        <None Remove="Areas\Identity\**" />
+        <None Remove="wwwroot\upload\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="compilerconfig.json" />
+        <Content Remove="Pages\DisplayFF1.razor" />
+        <Content Remove="Pages\EditFF1.razor" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="compilerconfig.json" />
+        <None Include="wwwroot\js\code.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.20" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
+        <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.2" />-->
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="NReco.Logging.File" Version="1.2.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
+        <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Giflib" Version="5.2.2-preview2" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="1.17.6-preview2" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjpeg" Version="3.0.2-preview2" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="0.10.2-preview1" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libpng" Version="1.6.43-preview2" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="1.3.2-preview3" />
+        <PackageReference Include="ResXResourceReader.NetStandard" Version="1.3.0" />
+        <PackageReference Include="Humanizer" Version="2.14.1" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
+
+    </ItemGroup>
+
+    <ItemGroup Condition="!$(DefineConstants.Contains('NOADMIN'))">
+        <ProjectReference Include="..\AppAdmin\AppAdmin.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\Mars.Host.Infrastructure\Mars.Host.Infrastructure.csproj" />
+        <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Blazor\Mars.WebSiteProcessor.Blazor.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor\Mars.WebSiteProcessor.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\NodeWorkspace\NodeWorkspace.csproj" />
+        <ProjectReference Include="..\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
+        <ProjectReference Include="..\Plugin\Mars.Plugin\Mars.Plugin.csproj" />
+
+        <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
+        <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
+        <!--<ProjectReference Include="..\Mars.Modules\Mars.GenSourceCode\Mars.GenSourceCode.csproj" />-->
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Areas\" />
+        <Folder Include="logs\" />
+        <Folder Include="Res\Excel\Feedback\" />
+        <Folder Include="wwwroot\mars\js\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Res\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="*.local.json" />
+        <None Include="*.local.json" CopyToPublishDirectory="Never" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="*-local.json" />
+        <None Include="*-local.json" CopyToPublishDirectory="Never" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Controllers\ActionHistoryController.cs" />
+        <Compile Remove="Controllers\AnketaAnswerController.cs" />
+        <Compile Remove="Controllers\AnketaQuestionController.cs" />
+        <Compile Remove="Controllers\CommentController.cs" />
+        <Compile Remove="Controllers\ContactPersonController.cs" />
+        <Compile Remove="Controllers\FormController.cs" />
+        <Compile Remove="Controllers\GeoLocationController.cs" />
+        <Compile Remove="Controllers\GeoLocationTypeController.cs" />
+        <Compile Remove="Controllers\GeoMunicipalityController.cs" />
+        <Compile Remove="Controllers\GeoMunicTypeController.cs" />
+        <Compile Remove="Controllers\GeoRegionCenterController.cs" />
+        <Compile Remove="Controllers\GeoRegionController.cs" />
+        <Compile Remove="Controllers\PostCategoryController.cs" />
+        <Compile Remove="Controllers\StatisticController.cs" />
+        <Compile Remove="Controllers\StoEntityTypeController.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ContainerEnvironmentVariable Include="ASPNETCORE_HTTPS_PORTS">
+            <Value>443</Value>
+        </ContainerEnvironmentVariable>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
+        <DebugSymbols>False</DebugSymbols>
+        <DebugType>None</DebugType>
+        <!--<PublishSingleFile>true</PublishSingleFile>-->
+        <!--<RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>-->
+        <!--<SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>-->
+        <!--some props in ./Directory.Build.props-->
+        <PublishTrimmed>false</PublishTrimmed>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'DevRelease' ">
+        <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
+        <!--<RuntimeIdentifier>win-x64;linux-x64;linux-arm64;linux-arm;osx-x64</RuntimeIdentifier>-->
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+        <BlazorEnableCompression>true</BlazorEnableCompression>
+        <BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
+        <!--<PublishSingleFile>true</PublishSingleFile>-->
+        <PublishTrimmed>false</PublishTrimmed>
+    </PropertyGroup>
+
+    <Target Name="RemoveUncompressedFiles_FromHost" AfterTargets="Publish">
+        <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)\wwwroot\_content\**\*.js.map" />
+            <FilesToDelete Include="$(PublishDir)\wwwroot\_content\**\*.js.map.gz" />
+            <FilesToDelete Include="$(PublishDir)\wwwroot\_content\**\*.js.map.br" />
+            <FilesToDelete Include="$(PublishDir)\wwwroot\_content\**\*.css.map" />
+            <FilesToDelete Include="$(PublishDir)\wwwroot\_content\**\*.css.map.gz" />
+            <FilesToDelete Include="$(PublishDir)\wwwroot\_content\**\*.css.map.br" />
+        </ItemGroup>
+
+        <Delete Files="@(FilesToDelete)" />
+    </Target>
+
+    <Target Name="RemoveUncompressedFiles_FromDevAdmin" AfterTargets="Publish">
+        <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)\wwwroot\dev\_framework\**\*.less" />
+        </ItemGroup>
+
+        <Delete Files="@(FilesToDelete)" />
+    </Target>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>$(MSBuildProjectName).Test</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Test.Mars.Host</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.WebApiClient.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+</Project>

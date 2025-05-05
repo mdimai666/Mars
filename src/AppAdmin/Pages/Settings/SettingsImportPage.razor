@@ -1,0 +1,134 @@
+@page "/Settings/import"
+
+@using AppShared.Dto
+@using Microsoft.AspNetCore.Authorization
+@using Newtonsoft.Json
+@attribute [Authorize(Roles = "Admin")]
+@inject ViewModelService viewModelService
+@inject MessageService messageService
+
+<ContentWrapper>
+
+    <h1>Настройки</h1>
+
+    <SettingsTabs />
+    <hr>
+    <Collapse DefaultActiveKey="@(new[] { "import", "export" })">
+
+        <Panel Key="import">
+            <HeaderTemplate>
+                Экспорт
+            </HeaderTemplate>
+            <ChildContent>
+
+                <div>
+                    <p>
+                        Когда вы нажмёте кнопку, система создаст файл, который можно будет сохранить на компьютере.
+                    </p>
+                    <p>
+                        Когда вы сохраните файл, можно использовать функцию импорта на другом сайте, чтобы импортировать содержимое этого сайта.
+                    </p>
+
+                </div>
+
+                <a href=@url target="_blank">
+                    <Button Type="@ButtonType.Primary" Icon="download">
+                        Экспорт
+                    </Button>
+                </a>
+
+               
+
+            </ChildContent>
+        </Panel>
+        <Panel Key="export">
+            <HeaderTemplate>
+                Импорт/Экспорт
+            </HeaderTemplate>
+            <ChildContent>
+
+                <div>
+                    <p>
+                        Если у вас есть файл настроек, система может импортировать их на этот сайт.
+                    </p>
+                </div>
+
+                <div class="spacer-1"></div>
+                <div>
+                    <p>Будут затронуты</p>
+                    <Form Model=@sel>
+                        <ul>
+                            <li>Системные настройки</li>
+                            <li>Настройки почты</li>
+                            <li>Роли</li>
+                            <li>Вопросы и ответы</li>
+                            <li>Критерии</li>
+                            <li>Контакты</li>
+                            <li>Типологии проектов</li>
+                        </ul>
+                    </Form>
+                </div>
+                <div class="spacer-1"></div>
+
+                <div>
+                    <InputFile OnChange="@LoadFiles" class="" />
+                    <TextArea @bind-Value=import_json />
+                </div>
+                <Button Type="@ButtonType.Primary" Icon="upload" Disabled=importButtonDisabled OnClick=OnImportClick>
+                    Импорт
+                </Button>
+
+            </ChildContent>
+        </Panel>
+
+
+    </Collapse>
+
+
+</ContentWrapper>
+
+@code {
+    string url = "";
+
+    string import_json = "";
+    SystemImportSettingsFile_v1? importVal;
+
+    bool importButtonDisabled = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        url = viewModelService.SystemExportSettingsUrl();
+    }
+
+    async void OnImportClick()
+    {
+        importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json)!;
+        var result = await viewModelService.SystemImportSettings(importVal);
+
+        if (result.Ok)
+        {
+            _ = messageService.Success(result.Message);
+        }
+        else
+        {
+            _ = messageService.Error(result.Message);
+        }
+    }
+
+    SystemImportSettingsFile_v1_select sel = new();
+
+    private async void LoadFiles(InputFileChangeEventArgs e)
+    {
+        importButtonDisabled = true;
+        using MemoryStream ms = new MemoryStream();
+        await e.File.OpenReadStream().CopyToAsync(ms);
+        var bytes = ms.ToArray();
+        string json = System.Text.Encoding.UTF8.GetString(bytes);
+        import_json = json;
+        importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json)!;
+
+        importButtonDisabled = false;
+        StateHasChanged();
+    }
+}

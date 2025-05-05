@@ -1,0 +1,15 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(EvalNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>Input</label>
+    <InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Input />
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    EvalNode Node { get => (EvalNode)Value!; set => Value = value; }
+
+}
+

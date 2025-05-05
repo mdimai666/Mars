@@ -1,0 +1,24 @@
+<ContentWrapper Title="@Title" Breadcrumb="">
+
+    <div class="d-flex flex-column flex-md-row flex-fill gap-4">
+        <aside style="flex: 0 0 200px">
+            <ASideOptions />
+        </aside>
+        <div class="flex-fill">
+
+            <div class="float-end position-relative z-1">
+                <XActionsDropDown ContextPart="wrapper" />
+            </div>
+
+            @ChildContent
+
+        </div>
+    </div>
+
+
+</ContentWrapper>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Title { get; set; } = "Настройки";
+}

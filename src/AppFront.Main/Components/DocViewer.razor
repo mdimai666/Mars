@@ -1,0 +1,27 @@
+@using System.Linq.Expressions
+@using Mars.Core.Attributes
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Reflection
+
+@inherits FluentComponentBase
+@typeparam TValue
+
+<mars-doc-viewer id="@Id" class="@Class" style="@Style"
+    data-doc-url="@_docUrl"
+    @attributes=AdditionalAttributes
+    @ref=Element >
+    @if (_error is not null)
+    {
+        <div class="alert alert-danger">
+            @_error.Message
+        </div>
+    }
+    else if (_docUrl is not null)
+    {
+        <FluentMarkdownSection @ref=markdownEl FromAsset="@_docUrl" />
+    }
+    else
+    {
+        <SkeletonContent />
+    }
+</mars-doc-viewer>

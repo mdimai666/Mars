@@ -1,0 +1,45 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(VariableSetNode))]
+
+<div class="form-group">
+    <label>Setters</label>
+    @*<InputText class="form-control" @bind-Value=Node.Payload />*@
+
+    @{
+        int index = -1;
+    }
+
+    @foreach (var _setter in Node.Setters)
+    {
+        var setter = _setter;
+        index++;
+        <div class="mb-3">
+            @* <label>setter - @(index + 1)</label> *@
+            <div class="input-group">
+                <span class="input-group-text">[ @(index + 1) ]</span>
+                <InputText @bind-Value=@setter.ValuePath class="form-control" placeholder="ValuePath" aria-label="ValuePath" />
+                <span class="input-group-text">=</span>
+                <InputText @bind-Value=@setter.Expression class="form-control" placeholder="Expression" aria-label="Expression" />
+            </div>
+            <FluentValidationMessage For=@(()=>setter.ValuePath) />
+            <FluentValidationMessage For=@(()=>setter.Expression) />
+        </div>
+
+    }
+    <div class="mt-4">
+        <FluentButton OnClick="AppendSetter">AppendSetter</FluentButton>
+    </div>
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    VariableSetNode Node { get => (VariableSetNode)Value!; set => Value = value; }
+
+    void AppendSetter()
+    {
+        var v = new VariableSetExpression { ValuePath = "msg.Payload", Expression = "1+1", Operation = VariableSetOperation.Set };
+        Node.Setters.Add(v);
+    }
+}

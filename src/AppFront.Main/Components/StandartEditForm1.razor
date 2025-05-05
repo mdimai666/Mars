@@ -1,0 +1,59 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@typeparam TModel
+@inject IStringLocalizer<AppRes> L
+
+<section class="@("StandartEditForm1 " + Class)" style="@(Style)">
+    <ErrorBoundary>
+        <ChildContent>
+
+            <EditForm EditContext="@_editContext"
+                      @ref=_editForm
+                      OnSubmit="@OnSubmit"
+                      novalidate>
+                <ObjectGraphDataAnnotationsValidator />
+
+                <div class="StandartEditForm1-main d-flex flex-row">
+
+                    @if (OperationError is not null)
+                    {
+                        <ExceptionMessage Exception="OperationError" />
+                    }
+                    else
+                    {
+                        <div class="edit-form flex-fill">
+                            @if (IsBusy)
+                            {
+                                <div class="my-5">
+                                    <SharedLoader1 />
+                                </div>
+                            }
+                            else
+                            {
+                                <section class="StandartEditForm1-main__fields d-flex flex-column">
+                                    <FluentMessageBar Title="@AppRes.ValidationErrorsOccurredTitle" Intent="@MessageIntent.Warning" Visible="_isInvalidState" Class="mb-3">
+                                        <FluentValidationSummary />
+                                    </FluentMessageBar>
+                                    @ChildContent?.Invoke(model)
+
+                                    <div class="mt-3 d-flex flex-nowrap justify-content-end gap-2">
+                                        @if(!IsAddNew){
+                                            <DFluentDeleteButton OnConfirm=OnDeleteClick Disabled=saveButtonBusy />
+                                        }
+
+                                        <FluentButton Appearance="Appearance.Accent" Loading="saveButtonBusy" Type="@ButtonType.Submit">
+                                            @AppRes.Save
+                                        </FluentButton>
+
+                                    </div>
+                                </section>
+                            }
+                        </div>
+                    }
+                </div>
+            </EditForm>
+        </ChildContent>
+        <ErrorContent>
+            <ExceptionMessage Exception="context" />
+        </ErrorContent>
+    </ErrorBoundary>
+</section>

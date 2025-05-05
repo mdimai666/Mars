@@ -1,0 +1,115 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<section class="dyn-edit-variants" style="max-width:750px;">
+
+    <div class="if-hind">
+        <div class="d-flex align-items-center">
+            <div class="flex-fill">
+                <div class="d-flex gap-2">
+                    <FluentTextField @bind-Value="@value" Placeholder="название" />
+                    <FluentButton OnClick=OnAddClick >Добавить</FluentButton>
+                </div>
+            </div>
+            <div class="">
+                @if (Model.Variants?.Count > 0)
+                {
+                    <div class="text-end">
+                        <DFluentDeleteButton OnConfirm=OnClickClear>
+                            Удалить все
+                        </DFluentDeleteButton>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Variants?.Count == 0)
+    {
+        <div class="text-secondary">
+            @("<нет вариантов>")
+        </div>
+    }
+
+    <div class="mt-2 hoverable boder-1">
+        @foreach(var _item in Model.Variants??[])
+        {
+            var item = _item;
+            <div class="vstack">
+                <div class="text-secondary fz10px">ID: @item.Id</div>
+                <div class="d-flex flex-fill gap-3">
+                    <div class="">
+                        <FormItem2 For="@(()=>item.Title)">
+                            <FluentTextField @bind-Value=@item.Title MaxLength="255" />
+                        </FormItem2>
+                    </div>
+                    <div>
+                        <FluentNumberField @bind-Value=@item.Value Size="2" Label="Value" />
+                    </div>
+                    <div>
+                        <div class="spacer-2"></div>
+                        <FluentCheckbox @bind-Value=@item.Disable Label="@AppRes.Disable" />
+                    </div>
+                    <div class="flex-fill">
+                        <label>@AppRes.Tags</label>
+                        <InputTags2 @bind-Value=item.Tags />
+                    </div>
+                    <div class="actions">
+                        <DFluentDeleteButton OnConfirm=@(e=>OnClickDeleteFromList(item)) />
+                        @*<Icon Type="close" Theme="outline"/>*@
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        }
+    </div>
+
+</section>
+
+@code {
+    //[CascadingParameter] MetaFieldTemplate Model { get; set; }
+
+    MetaFieldEditModel _model = default!;
+    [Parameter]
+    public MetaFieldEditModel Model
+    {
+        get => _model;
+        set
+        {
+            if (_model == value) return;
+            _model = value;
+            ModelChanged.InvokeAsync(_model);
+        }
+    }
+
+    [Parameter] public EventCallback<MetaFieldEditModel> ModelChanged { get; set; }
+
+    private string value = default!;
+
+
+    void OnClickDeleteFromList(MetaFieldVariantEditModel x)
+    {
+        Model.Variants?.Remove(x);
+    }
+
+    void OnAddClick()
+    {
+        value = value?.Trim()!;
+        if (string.IsNullOrEmpty(value)) return;
+        Model.Variants ??= new();
+        //if (Model.Contains(value)) return;
+
+        MetaFieldVariantEditModel variant = new()
+            {
+                Id = Guid.NewGuid(),
+                Title = value
+            };
+
+        Model.Variants.Add(variant);
+        value = "";
+    }
+
+    void OnClickClear()
+    {
+        Model.Variants?.Clear();
+    }
+}

@@ -1,0 +1,104 @@
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Logging
+@using System.Text.Json
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="my-file-uploader1">
+    <FluentInputFile Id="my-file-uploader"
+                     @ref=fileinput
+                     Multiple=@(MaximumFileCount>1)
+                     MaximumFileCount=@MaximumFileCount
+                     MaximumFileSize=@MaximumFileSize
+                     Accept="image/*"
+                     OnCompleted="@OnCompleted"
+                     OnFileError="@OnError"
+                     OnInputFileChange="OnInputFileChange"
+                     Class="upload-area">
+
+        <label for="my-file-uploader">
+            <FluentIcon Icon="@Icons.Regular.Size24.ArrowUpload" />
+        </label>
+
+        <div style="">
+            Перетащите сюда файлы, которые хотите загрузить,
+            или <label for="my-file-uploader">откройте</label>
+            @* for them<span style="color: red;">*</span>. *@
+            <br />
+            @if (MaximumFileCount > 1)
+            {
+                <em>Maximum of @MaximumFileCount files allowed.</em>
+            }
+        </div>
+
+    </FluentInputFile>
+
+
+    @* <FluentProgress Min="0" Max="100" Value="50" /> *@
+
+    @if (false && Files.Any())
+    {
+        <h4>File(s) uploaded:</h4>
+        <div class="items-container gap-2 d-file-list spotlight-group">
+            @foreach (var _file in Files)
+            {
+                FileEntity file = _file;
+
+                <div class="d-file-item xcenter" title=@FileHintTitle(file)>
+                    <div class="d-file-item-actions-top">
+                        <div>
+                        </div>
+
+                        <div>
+                            @if (!ReadOnly)
+                            {
+                                @* <Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file))></Button> *@
+
+                                <FluentButton IconEnd="@(new Icons.Regular.Size16.Delete())"
+                                              Title="Удалить"
+                                              OnClick=@(e=>ItemRemoveClick(file)) />
+                            }
+                        </div>
+                        @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                    </div>
+
+                    @if (file.IsImage)
+                    {
+                        string previewUrl = Q.ServerUrlJoin(file.Meta?.Thumbnails?.Values.First().FileUrl ?? file.FileUrl);
+                        string imgUrl = file.FileUrl;
+
+                        @* <Image Width="102px" PreviewSrc=@(file.FileUrl)
+            Src="@(Q.ServerUrlJoin(file.Meta?.Thumbnails?.Values.First().FileUrl??file.FileUrl))"
+            Class="cursor-pointer" /> *@
+                        <a class="spotlight" href="@imgUrl">
+                            <img src="@previewUrl" class="preview-image" />
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="d-file-preview-icon" style="background-image:url('@Q.ServerUrlJoin(FileEntity.ExtPreviewUrl(file.FileExt))')"></div>
+                    }
+
+                    <div class="d-file-item-actions-bottom">
+                        @if (ItemActionBottom is null)
+                        {
+                            <a href="@file.FileUrl" target="_blank">
+                                @* <Button Icon="download" Size="small">открыть</Button> *@
+                                <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowDownload())">
+                                    открыть
+                                </FluentButton>
+                            </a>
+                        }
+                        else
+                        {
+                            @ItemActionBottom(file)
+                        }
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+

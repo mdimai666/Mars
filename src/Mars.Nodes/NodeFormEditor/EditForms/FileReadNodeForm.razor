@@ -1,0 +1,28 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FileReadNode))]
+
+<div class="form-group">
+    <label>Filename</label>
+    <InputText class="form-control" @bind-Value=Node.Filename />
+</div>
+
+<div class="form-group">
+    <label>OutputMode</label>
+    <InputSelect @bind-Value=Node.OutputMode>
+        @foreach (var m in Enum.GetValues(typeof(FileReadNode.FileOutputMode)))
+        {
+            <option value="@((FileReadNode.FileOutputMode)m)">@m</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="alert alert-warning">
+    Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the Node-RED process.
+</div>
+
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FileReadNode Node { get => (FileReadNode)Value; set => Value = value; }
+
+}

@@ -1,0 +1,40 @@
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(SwitchNode))]
+
+<div class="form-group">
+    <label>conditions</label>
+    @*<InputText class="form-control" @bind-Value=Node.Payload />*@
+
+    <div class="form-check">
+        <InputCheckbox class="form-check-input" @bind-Value=Node.BreakAfterFirst id=@($"Node-{Node.Id}-BreakAfterFirst") />
+        <label class="form-check-label" for=@($"Node-{Node.Id}-BreakAfterFirst")>
+            BreakAfterFirst
+        </label>
+    </div>
+
+    <div>
+        <b>varible is "Payload"</b>
+    </div>
+
+    @{
+        int index = -1;
+    }
+
+    @foreach (var _a in Node.Conditions)
+    {
+        var a = _a;
+        index++;
+        <div>
+            <label>condition - @(index + 1)</label>
+            <InputText class="form-control" @bind-Value=a.Value />
+        </div>
+
+    }
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    SwitchNode Node { get => (SwitchNode)Value!; set => Value = value; }
+
+}

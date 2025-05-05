@@ -1,0 +1,89 @@
+@using Mars.Shared.Contracts.MetaFields
+<div class="DisplayMetaField">
+    @foreach (var f in MetaValues)
+    {
+        var Value = f;
+
+        <div class="DisplayMetaField_Row" data-tags="@f.MetaField.Tags?.JoinStr(",")" data-key="@f.MetaField.Key">
+            <div class="DisplayMetaField_Name d-inline">
+                <span class="d-inline text-secondary">
+                    @Value.MetaField.Title
+                </span>
+            </div>
+            <div class="DisplayMetaField_Value d-inline">
+
+                @if (Value.Type == MetaFieldType.Bool)
+                {
+                    @(Value.Bool ? "Да" : "Нет")
+                }
+                else if (Value.Type == MetaFieldType.String)
+                {
+                    @Value.StringShort
+                }
+                else if (Value.Type == MetaFieldType.Text)
+                {
+                    @Value.StringShort
+                }
+
+                else if (Value.Type == MetaFieldType.Int)
+                {
+                    @Value.Int
+                }
+                else if (Value.Type == MetaFieldType.Long)
+                {
+                    @Value.Long
+                }
+                else if (Value.Type == MetaFieldType.Float)
+                {
+                    @Value.Float.ToString("0.00")
+                }
+                else if (Value.Type == MetaFieldType.Decimal)
+                {
+                    @Value.Decimal.ToString("0.00")
+                }
+
+                else if (Value.Type == MetaFieldType.DateTime)
+                {
+                    @Value.DateTime.ToString("dd:MM:yyyy HH:mm")
+                }
+
+                else if (Value.Type == MetaFieldType.Select)
+                {
+                    var val = Value.MetaField.Variants.FirstOrDefault(s => s.Id == Value.VariantId);
+
+                    if (val is not null)
+                    {
+                        @val.Title
+                    }
+                    else
+                    {
+                        <span>undefined</span>
+                    }
+
+                }
+                else if (Value.Type == MetaFieldType.SelectMany)
+                {
+                    var vals = Value.MetaField.Variants.Where(s => Value.SetVariantsIds.Contains(s.Id));
+
+                    <ul>
+                        @foreach (var v in vals)
+                        {
+                            <li>@v.Title</li>
+                        }
+                    </ul>
+                }
+
+                else
+                {
+                    <span>
+                        not implement
+                    </span>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public ICollection<MetaValueResponse> MetaValues { get; set; } = default!;
+}

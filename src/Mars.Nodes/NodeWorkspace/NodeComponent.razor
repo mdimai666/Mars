@@ -1,0 +1,226 @@
+@using Mars.Core.Extensions
+<g class="red-ui-flow-node red-ui-flow-node-group @(node.selected?"red-ui-flow-node-selected":"") @(node.Disabled?"red-ui-flow-node-disabled":"")"
+   transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))" 
+   node-id="@node.Id"
+   @onclick:stopPropagation=true
+   @ondblclick:stopPropagation=true
+   >
+    @*transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))">*@
+    <!-- push btn -->
+    @if (node.isInjectable)
+    {
+        <g transform="translate(-25,2)" class="red-ui-flow-node-button"
+        @onclick=OnInjectClick @onclick:stopPropagation=true>
+            <rect class="red-ui-flow-node-button-background" rx="5" ry="5" width="32" height="26"></rect>
+            <rect class="red-ui-flow-node-button-button" x="5" y="4" rx="4" ry="4" width="16" height="18"
+              fill="#a6bbcf" fill-opacity="1"></rect>
+        </g>
+    }
+    <!-- tail -->
+    @if (node.hasTailButton)
+    {
+        <g transform="translate(113,2)" class="red-ui-flow-node-button" style="display: inherit;">
+            <rect class="red-ui-flow-node-button-background" rx="5" ry="5" width="32" height="26"
+              fill-opacity="1"></rect>
+            <rect class="red-ui-flow-node-button-button" x="11" y="4" rx="4" ry="4" width="16" height="18"
+              fill="#87a980" fill-opacity="1"></rect>
+        </g>
+    }
+    <!-- body -->
+    <g>
+        <filter id="dropshadow" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" /> <!-- stdDeviation is how much to blur -->
+            <feOffset dx="2" dy="2" result="offsetblur" /> <!-- how much to offset -->
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2" /> <!-- slope is the opacity of the shadow -->
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode /> <!-- this contains the offset blurred image -->
+                <feMergeNode in="SourceGraphic" /> <!-- this contains the element that the filter is applied to -->
+            </feMerge>
+        </filter>
+
+        <filter id="dropshadow-select" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" /> <!-- stdDeviation is how much to blur -->
+            <feOffset dx="-1" dy="2" result="offsetblur" /> <!-- how much to offset -->
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.9" /> <!-- slope is the opacity of the shadow -->
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode /> <!-- this contains the offset blurred image -->
+                <feMergeNode in="SourceGraphic" /> <!-- this contains the element that the filter is applied to -->
+            </feMerge>
+        </filter>
+
+        <filter id="dropshadow-select-backdrop" height="140%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+
+        <rect class="red-ui-flow-node--select-backdrop"
+              y="-3"
+              x="-4"
+              width="129"
+              rx="12px"
+              ry="12px"
+              fill="#64b1d9"
+              filter="url(#dropshadow-select-backdrop)"
+              fill-opacity="0.5"
+              height="@(bodyRectHeight+11)"></rect>
+
+        <rect class="red-ui-flow-node-backdrop"
+              y="4"
+              x="1"
+              fill="@node.Color"
+              width="119"
+              height="@bodyRectHeight"></rect>
+
+        <rect class="red-ui-flow-node"
+              @onmousedown=OnMouseDownMethod
+              @onmousedown:stopPropagation=true
+              @onmouseup=OnMouseUpMethod
+              @onmouseup:stopPropagation=true
+
+              @onclick=OnClickEvent
+              @onclick:stopPropagation=true
+              @ondblclick=OnDblClickEvent
+              @ondblclick:stopPropagation=true
+
+              fill="@node.Color"
+              style="filter:url(#fePointLight1)"
+              width="120"
+              height="@bodyRectHeight"></rect>
+
+    </g>
+    
+
+    <!-- left icon -->
+    <g class="red-ui-flow-node-icon-group"
+       x="0"
+       y="0"
+       transform=""
+       style="pointer-events: none">
+        <rect x="0"
+              y="0"
+              class="red-ui-flow-node-icon-shade"
+              width="30"
+              height="@bodyRectHeight"></rect>
+        <image href="@IconUrl"
+               class="red-ui-flow-node-icon"
+               x="2"
+               width="26"
+               height="26"
+               style=""
+               y="@(((bodyRectHeight - 30) / 2)+2)">
+        </image>
+
+        <path d="M 30 1 l 0 @(bodyRectHeight - 2)"
+              class="red-ui-flow-node-icon-shade-border"></path>
+    </g>
+    <!-- right icon -->
+    <!-- <g class="red-ui-flow-node-icon-group red-ui-flow-node-icon-group-right" x="0" y="0"
+                    transform="translate(110,0)" style="pointer-events: none;">
+                    <rect x="0" y="0" class="red-ui-flow-node-icon-shade" width="30" height="30"></rect>
+                    <image xlink:href="/img/function.svg" class="red-ui-flow-node-icon" x="0" width="30" height="30"
+                        y="0" style=""></image>
+                    <path d="M 0 1 l 0 28" class="red-ui-flow-node-icon-shade-border"></path>
+                </g> -->
+    <!--  -->
+    <g class="red-ui-flow-node-label 1node_label_italic"
+       transform="translate(38,16)">
+        <text class="red-ui-flow-node-label-text"
+              x="0"
+              y="@(((bodyRectHeight - 30) / 2))">
+            @node.DisplayName
+        </text>
+    </g>
+    @if (node.enable_status && node.status is not null)
+    {
+        <g class="red-ui-flow-node-status-group"
+           transform="translate(3,@((bodyRectHeight + 3)))">
+            <rect class="red-ui-flow-node-status red-ui-flow-node-status-dot-grey"
+              x="6"
+              y="1"
+              width="9"
+              height="9"
+              rx="2"
+              ry="2"
+              stroke-width="3">
+            </rect>
+            <text class="red-ui-flow-node-status-label" x="20" y="10">
+                @node.status.TextEllipsis(30)
+            </text>
+        </g>
+
+        @*<g class="red-ui-flow-node-status-group" style="display: inline;" transform="translate(3,33)">
+            <rect class="red-ui-flow-node-status red-ui-flow-node-status-ring-red" 
+            x="6" 
+            y="1" 
+            width="9" 
+            height="9" 
+            rx="2" 
+            ry="2" 
+            stroke-width="3" 
+            style="display: inline;">
+        </rect>
+        <text class="red-ui-flow-node-status-label" x="20" y="10">text</text></g>*@
+    }
+    @if (node.changed)
+    {
+        <g class="red-ui-flow-node-changed 1hide"
+       transform="translate(110, -2)">
+            <circle r="5"></circle>
+        </g>
+    }
+    @if (node.error)
+    {
+        <g class="red-ui-flow-node-error 1hide"
+       transform="translate(110, -2)">
+            <path d="M -5,4 l 10,0 -5,-8 z"></path>
+        </g>
+    }
+    @if (node.haveInput)
+    {
+        <g class="red-ui-flow-port-input" transform="translate(-5,10)">
+            <rect rx="3"
+              ry="3"
+              width="10"
+              height="10"
+              class="red-ui-flow-port"
+              v-add-class-hover="red-ui-flow-port-hovered"
+              @onmousedown=OnInputWirePointDown
+              @onmousedown:stopPropagation=true
+              @onmouseup=OnInputWirePointUp
+              @onmouseup:stopPropagation=true>
+            </rect>
+            @*@mousedown.stop="(e) => wireStartNew(e, 0, false)"
+        @mouseup.stop="(e) => wireStartNewEnd(e, 0, false)"*@
+        </g>
+    }
+
+    <g class="red-ui-flow-port-output"
+       transform="translate(115,@(node.Outputs.Count < 2 ? 10 : 2))">
+        @for (int i = 0; i < node.Outputs.Count; i++)
+        {
+            int index = i;
+
+            <rect :key="'node_outputs-' + @node.Id + '.' + @i"
+              rx="3"
+              ry="3"
+              x="0"
+              y="@(i * 16)"
+              width="10"
+              height="10"
+              class="red-ui-flow-port"
+              v-add-class-hover="red-ui-flow-port-hovered"
+              @onmousedown="(e=>OnOutputWirePointDown(e,index))"
+              @onmousedown:stopPropagation=true
+              @onmouseup="(e=>OnOutputWirePointUp(e,index))"
+              @onmouseup:stopPropagation=true>
+                @*@mousedown.stop="(e) => wireStartNew(e, i, true)"
+            @mouseup.stop="(e) => wireStartNewEnd(e, i, true)"*@
+                <title>@(node.Outputs[i].Label)</title>
+            </rect>
+        }
+
+    </g>
+</g>

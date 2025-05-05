@@ -1,0 +1,104 @@
+@using System.Linq.Expressions
+@using AppAdmin.Pages.PageViews
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Shared.Contracts.Posts;
+@using Mars.Shared.Contracts.PostTypes;
+
+@inject IStringLocalizer<AppRes> L
+
+@* if (PostType.ViewSettings?.ListViewTemplateSourceUri.HasValue ?? false)
+{
+    <AppFront.Shared.Pages.OnePage SLUG="@PostType.ViewSettings.ListViewTemplateSourceUri" Wrapper="false" />
+}
+else *@
+@if (true)
+{
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+        <div class="ms-auto">
+            <a href="@urlEditPage/@PostType.TypeName">
+                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="76"
+                            Virtualize
+                            ResizableColumns
+                            GridTemplateColumns="3fr 2fr 1fr 1fr"
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            TGridItem="PostListItemResponse">
+                <TemplateColumn SortBy="@(GridSort<PostListItemResponse>.ByDescending(f=>f.Title))"
+                                Title="@AppRes.Title"
+                                Sortable="true">
+
+                    <div class="card1 h-100 list-group-item-action d-card-glow position-relative">
+                        <div class="card-body py-1 px-3">
+                            <h5 class="card-title">@context.Title</h5>
+                            <div class="text-secondary small">@context.Type</div>
+                        </div>
+                        <a href="@urlEditPage/@PostType.TypeName/@context.Id" class="stretched-link"></a>
+                    </div>
+
+                </TemplateColumn>
+                @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                {
+                    <TemplateColumn Title="@AppRes.Tags">
+                        <FluentOverflow Style="width: 100%;">
+                            @foreach (var tag in context.Tags)
+                            {
+                                <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                            }
+                        </FluentOverflow>
+                    </TemplateColumn>
+                }
+                @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
+                {
+                    <TemplateColumn Title="@AppRes.Status"
+                                    SortBy="@(GridSort<PostListItemResponse>.ByDescending(f=>f.Status))"
+                                    Sortable="true">
+                        @context.Status?.Value
+                    </TemplateColumn>
+                }
+                <TemplateColumn Title="@AppRes.Author"
+                                SortBy="@(GridSort<PostListItemResponse>.ByDescending(f=>f.Author))"
+                                Sortable="true">
+                    @context.Author.UserName
+                </TemplateColumn>
+                <PropertyColumn Property=@(f=>f.CreatedAt)
+                                Title="@AppRes.CreatedAt"
+                                Format="d"
+                                InitialSortDirection="SortDirection.Descending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true" Align="Align.End" />
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <div class="hstack">
+                        <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                        <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
+                            <FluentMenuItem>action1</FluentMenuItem>
+                            <FluentMenuItem>action2</FluentMenuItem>
+                        </FluentMenuButton>
+                    </div>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+            <div class="ms-auto">
+            </div>
+        </div>
+    </div>
+}

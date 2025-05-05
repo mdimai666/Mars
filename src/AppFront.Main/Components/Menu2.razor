@@ -1,0 +1,31 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+@using MenuItem = AppFront.Shared.Models.MenuItem;
+
+<FluentNavMenu Class="@Class" Style="@Style" Id="@Id"
+               AdditionalAttributes="@AdditionalAttributes">
+    @foreach (var item in Items)
+    {
+        @if (item.IsDivider)
+        {
+            <FluentDivider Orientation="@Orientation.Horizontal" />
+        }
+        else if (item.SubItemFlag)
+        {
+            <FluentNavGroup Title=@item.Title>
+                @foreach (var subitem in item.SubItems)
+                {
+                    <FluentNavLink Href=@subitem.Url Match="@subitem.navLinkMatch">@subitem.Title</FluentNavLink>
+                }
+            </FluentNavGroup>
+        }
+        else
+        {
+            <FluentNavLink Href=@item.Url Match="@item.navLinkMatch">@item.Title</FluentNavLink>
+        }
+    }
+</FluentNavMenu>
+
+@code {
+    [Parameter] public List<MenuItem> Items { get; set; } = default!;
+}

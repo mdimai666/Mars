@@ -1,0 +1,25 @@
+.table {
+    border-collapse: collapse;
+}
+
+.table, th, td {
+    border: 1px solid;
+}
+
+.tablelist-table__tool {
+    visibility: hidden;
+}
+
+.tablelist-table.active:hover .tablelist-table__tool a {
+    visibility: visible;
+    color: var(--bs-white);
+    font-weight: bold;
+}
+
+.tablelist-table:not(.active):hover .tablelist-table__tool a {
+    visibility: visible;
+    color: var(--bs-primary);
+    font-weight: bold;
+}
+
+

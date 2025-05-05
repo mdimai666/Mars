@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <!--Author-->
+        <PackageId>mdimai666.MarsEditors</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <!--<Version>0.2.0</Version>-->
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>MarsEditors</Product>
+        <PackageTags>Mars;Blazor;Html editor;monaco; code editor</PackageTags>
+        <Description>
+            Shared project. Monaco Code editor depend from Mars backend
+        </Description>
+        <!--<PackageProjectUrl>https://github.com/mdimai666/ee</PackageProjectUrl>-->
+        <!--<RepositoryUrl>https://github.com/mdimai666/ee</RepositoryUrl>-->
+        <!--<RepositoryType>git</RepositoryType>-->
+
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+    </ItemGroup>
+
+</Project>

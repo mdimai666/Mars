@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="dotless.Core" Version="1.6.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+	  <ProjectReference Include="..\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -15,8 +15,8 @@ public class FileStorageTests
         _fileHostingInfo = new FileHostingInfo
         {
             Backend = new Uri("http://localhost"),
-            UploadSubPath = "upload",
-            wwwRoot = new Uri("C:\\www\\mars\\wwwRoot"),
+            RequestPath = "upload",
+            PhysicalPath = new Uri("C:\\www\\mars\\wwwRoot\\upload"),
         };
 
         _fileStorage = new FileStorage(Options.Create(_fileHostingInfo));

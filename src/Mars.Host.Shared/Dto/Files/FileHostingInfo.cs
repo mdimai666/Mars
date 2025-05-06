@@ -5,16 +5,16 @@ namespace Mars.Host.Shared.Dto.Files;
 public record FileHostingInfo
 {
     public required Uri Backend { get; init; }
-    public required Uri wwwRoot { get; init; }
-    private string _uploadSubPath = default!;
-    public required string UploadSubPath { get => _uploadSubPath; init => _uploadSubPath = NormalizePathSlash(value) ?? ""; }
+    public required Uri PhysicalPath { get; init; }
+    private string _requestPath = default!;
+    public required string RequestPath { get => _requestPath; init => _requestPath = NormalizePathSlash(value) ?? ""; }
 
 
-    string __normalizedAbsoluteUpload = default!;
-    string NormalizedAbsoluteUploadAndSlash => __normalizedAbsoluteUpload ??=
+    string __normalizedAbsoluteRequestPath = default!;
+    string NormalizedAbsoluteRequestPathAndSlash => __normalizedAbsoluteRequestPath ??=
         RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-        ? NormalizePathSlash(wwwRoot.AbsolutePath) + '/' + _uploadSubPath + '/'
-        : wwwRoot.AbsolutePath + '/' + _uploadSubPath + '/';
+        ? NormalizePathSlash(PhysicalPath.AbsolutePath) + '/'
+        : PhysicalPath.AbsolutePath + '/';
 
     const string ic_pdf = "/img/docs/pdf.png";
     const string ic_doc = "/img/docs/doc.png";
@@ -75,15 +75,15 @@ public record FileHostingInfo
 
     public string FileAbsoluteUrlFromPath(string filePath)
     {
-        return Backend.AbsoluteUri + UploadSubPath + '/' + NormalizePathSlash(filePath);
+        return Backend.AbsoluteUri + RequestPath + '/' + NormalizePathSlash(filePath);
     }
 
     public string FileRelativeUrlFromPath(string filePath)
     {
         if (Backend.LocalPath == "/")
-            return '/' + UploadSubPath + '/' + NormalizePathSlash(filePath);
+            return '/' + RequestPath + '/' + NormalizePathSlash(filePath);
         else
-            return Backend.LocalPath + '/' + UploadSubPath + '/' + NormalizePathSlash(filePath);
+            return Backend.LocalPath + '/' + RequestPath + '/' + NormalizePathSlash(filePath);
     }
 
     public static string? NormalizePathSlash(string? fileUrl)
@@ -106,7 +106,7 @@ public record FileHostingInfo
 
         if (path.Contains("../") || path.Contains("..\\")) throw new ArgumentException("path cannot contain relative part");
 
-        return NormalizedAbsoluteUploadAndSlash + NormalizePathSlash(path)!.TrimStart('/');
+        return NormalizedAbsoluteRequestPathAndSlash + NormalizePathSlash(path)!.TrimStart('/');
     }
 
     /// <summary>
@@ -115,5 +115,5 @@ public record FileHostingInfo
     /// <example>C:/www/mars/wwwRoot/upload/</example>
     /// </summary>
     /// <returns></returns>
-    public string AbsoluteUploadPath() => NormalizedAbsoluteUploadAndSlash;
+    public string AbsoluteUploadPath() => NormalizedAbsoluteRequestPathAndSlash;
 }

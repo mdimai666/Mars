@@ -348,8 +348,8 @@ internal class OptionService : IOptionService
         => _fileHostingInfo ??= new()
         {
             Backend = new Uri(SysOption.SiteUrl),
-            wwwRoot = new Uri(Path.Join(_environment.ContentRootPath, "wwwroot"), UriKind.Absolute),
-            UploadSubPath = "upload"
+            PhysicalPath = new Uri(Path.Join(_environment.ContentRootPath, "wwwroot", "upload"), UriKind.Absolute),
+            RequestPath = "upload"
         };
 
     static BlazorSpaWasmHtmlScripts? _blazorSpaWasmHtmlScripts;

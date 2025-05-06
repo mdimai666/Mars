@@ -31,8 +31,8 @@ public static class FileFixtureCustomizeExtension
         = new()
         {
             Backend = new Uri("http://localhost"),
-            wwwRoot = new Uri("C:\\www\\mars\\wwwRoot"),
-            UploadSubPath = "upload"
+            PhysicalPath = new Uri("C:\\www\\mars\\wwwRoot\\upload"),
+            RequestPath = "upload"
         };
 
     private static FileHostingInfo _hostingInfo => FileHostingInfo;

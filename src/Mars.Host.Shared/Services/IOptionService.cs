@@ -43,6 +43,10 @@ public interface IOptionService
     string RobotsTxt();
     SmtpSettingsModel MailSettings { get; }
 
+    /// <summary>
+    /// Настройки пути к /upload
+    /// </summary>
+    /// <returns></returns>
     FileHostingInfo FileHostingInfo();
     
 }

@@ -30,8 +30,8 @@ public class FileServiceTests
         _fileHostingInfo = new FileHostingInfo
         {
             Backend = new Uri("http://localhost"),
-            UploadSubPath = "upload",
-            wwwRoot = new Uri("C:\\www\\mars\\wwwRoot"),
+            RequestPath = "upload",
+            PhysicalPath = new Uri("C:\\www\\mars\\wwwRoot\\upload"),
         };
 
         _optionService.FileHostingInfo().Returns(_fileHostingInfo);

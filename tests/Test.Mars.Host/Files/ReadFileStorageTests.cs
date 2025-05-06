@@ -16,13 +16,12 @@ public class ReadFileStorageTests
         // C:\Users\D\Documents\VisualStudio\2025\Mars\Tests\Test.Mars.Host\bin\Debug\net8.0\Files\ExampleFiles
         //var filesPath = Path.Join(Directory.GetCurrentDirectory(), "Files", "ExampleFiles");
         _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "Files", "ExampleFiles");
-        var filesPath = Path.Join(Directory.GetCurrentDirectory(), "Files");
 
         _fileHostingInfo = new FileHostingInfo
         {
             Backend = new Uri("http://localhost"),
-            UploadSubPath = "ExampleFiles",
-            wwwRoot = new Uri(filesPath),
+            RequestPath = "ExampleFiles",
+            PhysicalPath = new Uri(_exampleFilesPath),
         };
 
         _fileStorage = new FileStorage(Options.Create(_fileHostingInfo));

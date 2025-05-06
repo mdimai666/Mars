@@ -9,8 +9,8 @@ public class FileHostingInfoTests
         => new()
         {
             Backend = new Uri("http://localhost"),
-            wwwRoot = new Uri("C:\\www\\mars\\wwwRoot"),
-            UploadSubPath = "upload"
+            PhysicalPath = new Uri("C:\\www\\mars\\wwwRoot\\upload"),
+            RequestPath = "upload"
         };
 
     [Theory]
@@ -98,8 +98,8 @@ public class FileHostingInfoTests
         var hostingInfo = new FileHostingInfo
         {
             Backend = new Uri("http://localhost/sub"),
-            wwwRoot = new Uri("C:\\www\\mars\\wwwRoot"),
-            UploadSubPath = "upload"
+            PhysicalPath = new Uri("C:\\www\\mars\\wwwRoot\\upload"),
+            RequestPath = "upload"
         };
 
         // Act

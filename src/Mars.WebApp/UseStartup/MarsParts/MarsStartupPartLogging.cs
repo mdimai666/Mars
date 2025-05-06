@@ -13,7 +13,7 @@ internal static class MarsStartupPartLogging
             loggingBuilder.AddConfiguration(builder.Configuration);
             loggingBuilder.SetMinimumLevel(LogLevel.Warning);
 
-            loggingBuilder.AddFile("logs/app_{0:yyyy}-{0:MM}-{0:dd}.log", fileLoggerOpts =>
+            loggingBuilder.AddFile("data/logs/app_{0:yyyy}-{0:MM}-{0:dd}.log", fileLoggerOpts =>
             {
                 fileLoggerOpts.FormatLogFileName = fName =>
                 {

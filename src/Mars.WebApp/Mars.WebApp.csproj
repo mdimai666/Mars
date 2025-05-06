@@ -117,7 +117,7 @@
 
     <ItemGroup>
         <Folder Include="Areas\" />
-        <Folder Include="logs\" />
+        <Folder Include="data\logs\" />
         <Folder Include="Res\Excel\Feedback\" />
         <Folder Include="wwwroot\mars\js\" />
     </ItemGroup>

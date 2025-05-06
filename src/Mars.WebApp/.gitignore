@@ -438,6 +438,7 @@ $RECYCLE.BIN/
 /app.db
 /logs
 /wwwroot/upload
+/src/Mars.WebApp/data
 
 /appsettings.local.json
 /*.local.ps1

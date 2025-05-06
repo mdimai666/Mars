@@ -1177,6 +1177,24 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The user did not provide an email.
+        /// </summary>
+        public static string The_user_did_not_provide_an_email {
+            get {
+                return ResourceManager.GetString("The user did not provide an email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user does not have email.
+        /// </summary>
+        public static string The_user_does_not_have_email {
+            get {
+                return ResourceManager.GetString("The user does not have email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Title.
         /// </summary>
         public static string Title {

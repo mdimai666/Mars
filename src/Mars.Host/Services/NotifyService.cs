@@ -9,19 +9,15 @@ using Mars.Shared.Contracts.ActionHistorys;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 
 namespace Mars.Host.Services;
 
 internal class NotifyService : INotifyService
 {
     private readonly IMarsEmailSender _emailSender;
-    private readonly ISmsSender _smsSender;
     private readonly IUserRepository _userRepository;
     private readonly IOptionService _optionService;
 
-    private readonly IStringLocalizer<AppRes> L;
     private readonly IActionHistoryService _actionHistoryService;
 
     public NotifyService(IConfiguration configuration,
@@ -29,29 +25,24 @@ internal class NotifyService : INotifyService
         IFileStorage fileStorage,
         IOptionService optionService,
         IEmailSender emailSender,
-        ISmsSender smsSender,
         IUserRepository userRepository,
-        IStringLocalizer<AppRes> stringLocalizer,
-        IActionHistoryService actionHistoryService) 
+        IActionHistoryService actionHistoryService)
     {
         _optionService = optionService;
         _emailSender = (emailSender as EmailSender)!;
-        _smsSender = smsSender;
         _userRepository = userRepository;
-        L = stringLocalizer;
         _actionHistoryService = actionHistoryService;
     }
 
-    private string GetHtml(string Title, string Text, string Logo = null)
+    private string GetHtml(string title, string text, string? logo = null)
     {
-        var wwwRoot = _optionService.FileHostingInfo().wwwRoot.LocalPath;
-        string template = Path.Join(wwwRoot, @"mail_templates/template2.html");
+        string templateFile = Path.Join("Res", "mail_templates", "template2.html");
 
-        string html = File.ReadAllText(template);
+        string html = File.ReadAllText(templateFile);
 
-        html = html.Replace("{{Title}}", Title);
-        html = html.Replace("{{Logo}}", Logo ?? GetLogo());
-        html = html.Replace("{{Text}}", Text);
+        html = html.Replace("{{Title}}", title);
+        html = html.Replace("{{Logo}}", logo ?? GetLogo());
+        html = html.Replace("{{Text}}", text);
 
         return html;
     }
@@ -64,6 +55,7 @@ internal class NotifyService : INotifyService
     public async Task<UserActionResult> SendNotifyTest(Guid userId, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetDetail(userId, cancellationToken) ?? throw new NotFoundException("user not found");
+        if (string.IsNullOrEmpty(user.Email)) return new UserActionResult { Message = AppRes.The_user_did_not_provide_an_email };
 
         string html = GetHtml("Test", "<div><b>Html</b>Text</div>");
 
@@ -98,6 +90,7 @@ internal class NotifyService : INotifyService
     async Task<UserActionResult> SendNotify(string title, string body, UserDetail user, CancellationToken cancellationToken)
     {
 
+        if (string.IsNullOrEmpty(user.Email)) return new UserActionResult { Message = AppRes.The_user_did_not_provide_an_email };
         string html = GetHtml(title, body);
 
         string email = user.Email;
@@ -153,19 +146,10 @@ internal class NotifyService : INotifyService
     public async Task<UserActionResult> SendNotify_Invation(Guid userId, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetDetail(userId, cancellationToken) ?? throw new NotFoundException("user not found");
+        if (string.IsNullOrEmpty(user.Email)) throw new UserActionException(AppRes.The_user_does_not_have_email);
+        //TODO: Сделать сброс и отправку пароля
 
         string title = $"Для вас создан Аккаунт на сайте.";
-
-        var dict = OpenPasswords();
-
-        bool foundPass = dict.ContainsKey(user.Email);
-
-        if (!foundPass) return new UserActionResult
-        {
-            Message = "Для пользователя не найден пароль, уведомите его в частном порядке."
-        };
-
-        string getPass = dict[user.Email];
 
         var body = new Dictionary<string, string>()
         {
@@ -174,7 +158,6 @@ internal class NotifyService : INotifyService
             //["Комментарий"] = comment,
             ["Url"] = $"{_optionService.SysOption.SiteUrl}",
             ["Логин"] = $"{user.Email}",
-            ["Пароль"] = getPass
         };
 
         //var recipients = new List<User> { user };
@@ -205,15 +188,6 @@ internal class NotifyService : INotifyService
             </div>
             ").JoinStr("\n");
         return html;
-    }
-
-    public static Dictionary<string, string> OpenPasswords()
-    {
-        return new Dictionary<string, string>
-        {
-            ["email"] = "pass",
-
-        };
     }
 
 }

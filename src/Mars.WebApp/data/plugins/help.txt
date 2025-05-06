@@ -1,0 +1,2 @@
+- recommended folder for placing the plugins
+- the application will place downloaded plugins here

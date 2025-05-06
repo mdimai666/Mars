@@ -1,0 +1,2 @@
+- place here application frontends
+- the application will place downloaded themes here

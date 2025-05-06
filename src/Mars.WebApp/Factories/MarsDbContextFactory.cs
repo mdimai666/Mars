@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Npgsql;
 
-namespace Mars.Data;
+namespace Mars.Factories;
 
 public class MarsDbContextFactory : IDesignTimeDbContextFactory<MarsDbContext>
 {

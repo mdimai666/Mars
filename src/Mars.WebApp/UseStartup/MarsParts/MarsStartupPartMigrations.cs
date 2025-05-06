@@ -1,5 +1,5 @@
 using Mars.Core.Extensions;
-using Mars.Data.Seeds;
+using Mars.Factories.Seeds;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Microsoft.AspNetCore.Identity;

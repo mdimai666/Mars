@@ -2,7 +2,7 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Options;
 
-namespace Mars.Data.Seeds;
+namespace Mars.Factories.Seeds;
 
 public class AppDbContextSeedData
 {

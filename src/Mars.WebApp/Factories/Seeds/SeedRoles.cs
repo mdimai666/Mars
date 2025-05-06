@@ -1,7 +1,7 @@
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 
-namespace Mars.Data.Seeds;
+namespace Mars.Factories.Seeds;
 
 public static class SeedRoles
 {

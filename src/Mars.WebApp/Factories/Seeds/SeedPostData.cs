@@ -7,7 +7,7 @@ using Mars.Shared.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
 using Feature = Mars.Shared.Contracts.PostTypes.PostTypeConstants.Features;
 
-namespace Mars.Data.Seeds;
+namespace Mars.Factories.Seeds;
 
 public static class SeedPostData
 {

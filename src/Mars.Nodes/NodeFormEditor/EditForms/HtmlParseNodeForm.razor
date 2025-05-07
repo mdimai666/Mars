@@ -1,0 +1,94 @@
+@using AppFront.Shared.Components
+@using MarsCodeEditor2
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(HtmlParseNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+
+    <div class="vstack gap-2">
+        <FormItem2 For="()=>Node.Selector">
+            <FluentTextField @bind-Value=Node.Selector />
+        </FormItem2>
+        <FormItem2 For="()=>Node.Output">
+            <FluentSelect TOption="HtmlParseNodeOutput"
+                          Items="Enum.GetValues<HtmlParseNodeOutput>()"
+                          @bind-SelectedOption=@Node.Output />
+        </FormItem2>
+
+        <FluentCheckbox @bind-Value=Node.ReturnEachObjectAsMessage>Return each object as message</FluentCheckbox>
+        <FluentCheckbox @bind-Value=Node.DontReturnMessageIfNothingFound>Dont return message if nothing found</FluentCheckbox>
+
+        <div class="spacer-2"></div>
+
+        @if (Node.Output == HtmlParseNodeOutput.MapToObjects)
+        {
+            <FluentSortableList Id="dragHandles" Handle="true" Items="Node.InputMappings" OnUpdate="@SortList" Context="item">
+                <ItemTemplate>
+                    <div class="sortable-grab">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                    </div>
+                    <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                        <div class="hstack">
+                            <FluentTextField @bind-Value=item.Selector Placeholder="Selector" />
+                            <FluentSelect TOption="InputMappingReturnValue"
+                                          Items="Enum.GetValues<InputMappingReturnValue>()"
+                                          @bind-SelectedOption=@item.ReturnValue />
+                            <FluentTextField @bind-Value=item.Attribute Placeholder="Attribute"
+                                             Style=@( item.ReturnValue == InputMappingReturnValue.Attribute ? "visibility:visible":"visibility:hidden") />
+                            <i class="bi bi-arrow-right-short"></i>
+                            <FluentTextField @bind-Value=item.OutputField Placeholder="Field" />
+                            <FluentButton OnClick=@(()=>DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                        </div>
+                    </div>
+                </ItemTemplate>
+            </FluentSortableList>
+            <div class="mt-1">
+                <FluentButton OnClick="AddNew" IconStart="@(new Icons.Regular.Size16.Add())">Add</FluentButton>
+            </div>
+        }
+    </div>
+
+
+
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    HtmlParseNode Node { get => (HtmlParseNode)Value!; set => Value = value; }
+
+    private void SortList(FluentSortableListEventArgs args)
+    {
+        if (args is null || args.OldIndex == args.NewIndex)
+        {
+            return;
+        }
+
+        var items = Node.InputMappings.ToList();
+
+        var oldIndex = args.OldIndex;
+        var newIndex = args.NewIndex;
+        var itemToMove = items[oldIndex];
+
+        var oldEl = items[oldIndex];
+        items.RemoveAt(oldIndex);
+        items.Insert(newIndex, oldEl);
+
+        Node.InputMappings = items.ToArray();
+    }
+
+    void AddNew()
+    {
+        Node.InputMappings = [.. Node.InputMappings, new()];
+    }
+
+    void DeleteItem(HtmlParseInputMapping item)
+    {
+        Node.InputMappings = Node.InputMappings.Where(s => s != item).ToArray();
+    }
+}
+

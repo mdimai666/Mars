@@ -1,13 +1,12 @@
-﻿using Mars.Host.Shared.Services;
-using Mars.Nodes.Core.Nodes;
 using Mars.Core.Models;
+using Mars.Host.Shared.Services;
+using Mars.Nodes.Core.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>, INodeImplement
 {
-
     public DevAdminConnectionNode Node { get; }
     Node INodeImplement<Node>.Node => Node;
     public IRED RED { get; set; }

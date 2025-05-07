@@ -1,6 +1,7 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
-using Mars.Nodes.Core.Nodes;
 using Mars.Core.Extensions;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -30,6 +31,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 WriteIndented = true,
                 //Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
                 ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
 
@@ -44,7 +46,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 {
                     id = Node.Id,
                     message = "DebugNode:",
-                    json = json.Left(jsonSymbolsLimit),
+                    json = json.TextEllipsis(jsonSymbolsLimit),
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };
             }
@@ -58,7 +60,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 {
                     id = Node.Id,
                     message = "DebugNode:",
-                    json = json.Left(jsonSymbolsLimit),
+                    json = json.TextEllipsis(jsonSymbolsLimit),
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };
             }

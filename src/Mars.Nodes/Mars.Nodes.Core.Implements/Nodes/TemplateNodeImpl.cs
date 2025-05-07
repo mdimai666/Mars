@@ -1,5 +1,5 @@
-using Mars.Nodes.Core.Nodes;
 using HandlebarsDotNet;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -15,7 +15,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    HandlebarsTemplate<object, object> template;
+    HandlebarsTemplate<object, object>? template;
     string? compiled_template;
 
     public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)

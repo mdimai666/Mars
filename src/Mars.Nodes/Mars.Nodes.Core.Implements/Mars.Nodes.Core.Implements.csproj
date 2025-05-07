@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
+		<PackageReference Include="AngleSharp" Version="1.2.0" />
 		<PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
 		<PackageReference Include="Flurl.Http" Version="4.0.2" />
 		<PackageReference Include="Handlebars.Net" Version="2.1.6" />

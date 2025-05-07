@@ -6,18 +6,20 @@ using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.Systems;
 using Mars.UseStartup;
 using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
 
 namespace Mars.Services;
 
 internal class MarsSystemService : IMarsSystemService
 {
     private readonly IMemoryCache _memoryCache;
-
+    private readonly IOptionService _optionService;
     static List<KeyValuePair<string, string>>? cachedAboutSystem;
 
-    public MarsSystemService(IMemoryCache memoryCache)
+    public MarsSystemService(IMemoryCache memoryCache, IOptionService optionService)
     {
         _memoryCache = memoryCache;
+        _optionService = optionService;
     }
 
     public IEnumerable<KeyValuePair<string, string>> AboutSystem()
@@ -49,6 +51,11 @@ internal class MarsSystemService : IMarsSystemService
             add("Environment", MarsStartupInfo.ASPNETCORE_ENVIRONMENT);
             add("IsPM2", IsPM2().ToString());
             add("IsRunningInDocker", MarsStartupInfo.IsRunningInDocker.ToString());
+
+            var timezone = GetTimeZone().ConfigureAwait(false).GetAwaiter().GetResult();
+
+            add("ServerTimeZone", timezone.ServerTimeZone.DisplayName);
+            add("DatabaseTimeZone", timezone.DatabaseTimeZone.DisplayName);
 
 
         }
@@ -174,4 +181,62 @@ internal class MarsSystemService : IMarsSystemService
 
     public string MemoryUsage()
         => GetMemoryUsage();
+
+    async Task<AppTimeZones> GetTimeZone()
+    {
+        var connectionString = _optionService.GetDefaultDatabaseConnectionString();
+        var databaseTimeZone = await _memoryCache.GetOrCreateAsync<TimeZoneInfo?>(
+                                    nameof(AppTimeZones.DatabaseTimeZone),
+                                    entry => entry.Value == null ?
+                                        GetPostgresTimeZoneAsync(connectionString) :
+                                        Task.FromResult((TimeZoneInfo?)entry.Value),
+                                    new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(1) });
+
+        return new()
+        {
+            ServerTimeZone = TimeZoneInfo.Local,
+            DatabaseTimeZone = databaseTimeZone
+        };
+    }
+
+    async Task<string> GetPostgresTimeZoneStringAsync(string connectionString)
+    {
+        await using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        // Вариант 1: через SHOW timezone
+        await using (var cmd = new NpgsqlCommand("SHOW timezone", connection))
+        {
+            var timeZone = (string)(await cmd.ExecuteScalarAsync())!;
+            Console.WriteLine($"PostgreSQL TimeZone: {timeZone}");
+            return timeZone;
+        }
+
+        // Вариант 2: через current_setting
+        // await using (var cmd = new NpgsqlCommand("SELECT current_setting('TimeZone')", connection))
+        // {
+        //     return (string)await cmd.ExecuteScalarAsync();
+        // }
+    }
+
+    async Task<TimeZoneInfo?> GetPostgresTimeZoneAsync(string connectionString)
+    {
+        try
+        {
+            var pgTimeZone = await GetPostgresTimeZoneStringAsync(connectionString);
+            return TimeZoneInfo.FindSystemTimeZoneById(pgTimeZone);
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            MarsLogger.GetStaticLogger<MarsSystemService>().LogError("TimeZone not found, falling back to UTC");
+            return null;
+        }
+    }
+
+}
+
+internal record AppTimeZones
+{
+    public required TimeZoneInfo ServerTimeZone { get; set; }
+    public required TimeZoneInfo? DatabaseTimeZone { get; set; }
 }

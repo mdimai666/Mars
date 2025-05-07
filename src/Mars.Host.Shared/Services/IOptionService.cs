@@ -48,5 +48,7 @@ public interface IOptionService
     /// </summary>
     /// <returns></returns>
     FileHostingInfo FileHostingInfo();
-    
+    string GetDefaultDatabaseConnectionString();
+
+
 }

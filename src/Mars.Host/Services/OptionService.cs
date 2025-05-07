@@ -14,6 +14,7 @@ using Mars.Shared.Common;
 using Mars.Shared.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -355,4 +356,6 @@ internal class OptionService : IOptionService
     static BlazorSpaWasmHtmlScripts? _blazorSpaWasmHtmlScripts;
 
     public BlazorSpaWasmHtmlScripts BlazorSpaWasmHtmlScripts() => _blazorSpaWasmHtmlScripts ??= new BlazorSpaWasmHtmlScripts(this.GetType().Assembly);
+
+    public string GetDefaultDatabaseConnectionString() => IOptionService.Configuration.GetConnectionString("DefaultConnection")!;
 }

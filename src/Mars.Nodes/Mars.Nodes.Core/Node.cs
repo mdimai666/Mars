@@ -32,8 +32,8 @@ public class Node : INodeBasic
 
     public string DisplayName => string.IsNullOrEmpty(Name) ? Label : Name;
 
-    public string Color { get; set; } = "#A8A8A8";
-    public string Icon { get; set; } = "";
+    public virtual string Color { get; set; } = "#A8A8A8";
+    public virtual string Icon { get; set; } = "";
 
     List<List<string>> _wires = null!;
 
@@ -92,9 +92,14 @@ public class Node : INodeBasic
 
     public static Type[] NonVisualNodes = { typeof(FlowNode), typeof(ConfigNode), typeof(VarNode) };
 
+    public static bool IsVisualNode(Type nodeType) => !NonVisualNodes.Any(t => t == nodeType || t.IsAssignableFrom(nodeType));
+
 
     [JsonIgnore, Newtonsoft.Json.JsonIgnore]
-    public virtual bool IsVisual => !NonVisualNodes.Contains(GetType());
+    public virtual bool IsVisual => IsVisualNode(GetType());
+
+    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    public bool IsConfigNode => typeof(ConfigNode).IsAssignableFrom(GetType());
 
     [JsonIgnore, Newtonsoft.Json.JsonIgnore]
     public int OutputCount

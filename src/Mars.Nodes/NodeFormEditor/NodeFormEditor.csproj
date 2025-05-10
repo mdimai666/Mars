@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+    <PropertyGroup>
+        <NoWarn>BL0007</NoWarn>
+    </PropertyGroup>
+
 	<ItemGroup>
 		<Content Remove="compilerconfig.json" />
 	</ItemGroup>
@@ -43,6 +47,7 @@
 	  <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
 	  <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
 	  <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+	  <ProjectReference Include="..\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
 	</ItemGroup>
 
 </Project>

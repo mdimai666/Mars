@@ -47,6 +47,11 @@ public interface IRED
 
     public IReadOnlyDictionary<string, VarNode> VarNodesDict { get; }
 
+    public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict { get; }
+
+    public InputConfig<TConfigNode> GetConfig<TConfigNode>(string id) where TConfigNode : ConfigNode;
+    public InputConfig<TConfigNode> GetConfig<TConfigNode>(InputConfig<TConfigNode> config) where TConfigNode : ConfigNode;
+
     public static string ToJsonString(object input, bool formatted = false)
     {
         return JsonNodeImpl.ToJsonString(input, formatted);

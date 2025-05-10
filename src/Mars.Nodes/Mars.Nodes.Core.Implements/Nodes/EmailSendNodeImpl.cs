@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Nodes;
-using Mars.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Mars.Shared.Options;
 using Mars.Host.Shared.Dto.Emails;
@@ -19,6 +18,8 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
     {
         this.Node = node;
         this.RED = RED;
+
+        Node.Config = RED.GetConfig(node.Config);
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
@@ -29,7 +30,9 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
             var mailSender = RED.ServiceProvider.GetRequiredService<IMarsEmailSender>();
             var opt = RED.ServiceProvider.GetRequiredService<IOptionService>();
 
-            var smtp = opt.GetOption<SmtpSettingsModel>();
+            //var smtp = opt.GetOption<SmtpSettingsModel>();
+
+            var smtp = Node.Config.Value;
 
             EmailSendMessageDto? info = null;
             if (input.Payload is null)
@@ -42,13 +45,19 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
             }
             else
             {
-                info = ((EmailSendMessageDto)input.Payload).CopyViaJsonConversion<EmailSendMessageDto>();
+                //info = new EmailSendMessageDto
+                //{
+                //    ToEmail = Node.ToEmail,
+                //    Subject = Node.Subject,
+                //    Message = input.Payload?.ToString() ?? "",
+                //};
+                //info = ((EmailSendMessageDto)input.Payload).CopyViaJsonConversion<EmailSendMessageDto>();
             }
 
             info ??= new();
 
             if (!string.IsNullOrWhiteSpace(Node.ToEmail)) { info.ToEmail = Node.ToEmail; }
-            if (!string.IsNullOrWhiteSpace(Node.Message)) { info.Message = Node.Message; }
+            //if (!string.IsNullOrWhiteSpace(Node.Message)) { info.Message = Node.Message; }
             if (!string.IsNullOrWhiteSpace(Node.Subject)) { info.Subject = Node.Subject; }
 
             var valid = info.Validate(new ValidationContext(info));
@@ -67,7 +76,7 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
 
             //var info = input.Get<EmailSendInfo>();
 
-            mailSender.SendEmailForce(info.ToEmail, smtp.FromName, info.Subject, info.Message, html: true);
+            mailSender.SendEmailForce(info.ToEmail, smtp.Username, info.Subject, info.Message, html: true, Convert(smtp));
 
             RED.Status(new NodeStatus { Text = "complete", Color = "blue" });
 
@@ -84,4 +93,15 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
         return Task.CompletedTask;
     }
 
+    SmtpSettingsModel Convert(SmtpConfigNode config)
+        => new()
+        {
+            FromName = config.Username,
+            Host = config.ServerName,
+            IsTestServer = false,
+            Port = config.Port,
+            Secured = config.SSLRequired,
+            SmtpUser = config.SMTPAuthenticationRequired ? config.Username : "",
+            SmtpPassword = config.SMTPAuthenticationRequired ? config.Password : "",
+        };
 }

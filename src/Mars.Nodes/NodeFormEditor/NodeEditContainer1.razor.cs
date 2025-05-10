@@ -1,4 +1,5 @@
 using Mars.Nodes.Core;
+using Mars.Nodes.EditorApi.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -11,9 +12,7 @@ public partial class NodeEditContainer1
 
     Node? _node = default!;
     [Parameter]
-#pragma warning disable BL0007 // Component parameters should be auto properties
     public Node? Node
-#pragma warning restore BL0007 // Component parameters should be auto properties
     {
         get => _node;
         set
@@ -28,8 +27,13 @@ public partial class NodeEditContainer1
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback OnBackdropCancel { get; set; }
     [Parameter] public EventCallback<string> OnDelete { get; set; }
+    [Parameter] public EventCallback<string> OnClickEditConfigNode { get; set; } //TODO: Убрать это и все делать через _nodeEditorApi
+    [Parameter] public EventCallback<Type> OnClickNewConfigNode { get; set; } // и это
 
     [Parameter] public bool DisableSaveOnBackdropClick { get; set; } = false;
+
+    [CascadingParameter]
+    INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
 
     NodeFormEditor1 nodeFormEditor1 = default!;

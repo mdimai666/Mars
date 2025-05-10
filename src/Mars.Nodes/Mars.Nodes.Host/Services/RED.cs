@@ -1,4 +1,3 @@
-using System;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Models;
@@ -31,6 +30,9 @@ internal class RED
 
     private Dictionary<string, VarNode> _varNodesDict = new();
     public IReadOnlyDictionary<string, VarNode> VarNodesDict => _varNodesDict;
+
+    private Dictionary<string, ConfigNode> _configNodesDict = new();
+    public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict => _configNodesDict;
 
     private int _assignedCount = 0;
 
@@ -66,6 +68,8 @@ internal class RED
             flow.RED = CreateContextForNode(flow.Node, flow);
             Nodes.Add(key, flow);
         }
+
+        _configNodesDict = nodes.Where(s => s.IsConfigNode).ToDictionary(s => s.Id, s => (s as ConfigNode)!);
 
         foreach (var node in nodes.Except(flowNodes))
         {
@@ -217,6 +221,13 @@ internal class RED_Context : IRED
         => RED.SetVarNodeVarible(varName, value);
 
     public IReadOnlyDictionary<string, VarNode> VarNodesDict => RED.VarNodesDict;
+    public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict => RED.ConfigNodesDict;
+
+    public InputConfig<TConfigNode> GetConfig<TConfigNode>(string id) where TConfigNode : ConfigNode
+        => new() { Id = id, Value = RED.ConfigNodesDict.GetValueOrDefault(id) as TConfigNode };
+
+    public InputConfig<TConfigNode> GetConfig<TConfigNode>(InputConfig<TConfigNode> config) where TConfigNode : ConfigNode
+        => new() { Id = config.Id, Value = RED.ConfigNodesDict.GetValueOrDefault(config.Id) as TConfigNode };
 }
 
 

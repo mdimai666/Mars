@@ -7,42 +7,18 @@ using MimeKit;
 
 namespace Mars.Host.Services;
 
-public class AuthMessageSenderOptions
-{
-    public string SendGridUser { get; set; }
-    public string SendGridKey { get; set; }
-}
-
-//public class SmtpSettings
-//{
-//    public string Server { get; set; }
-//    public int Port { get; set; }
-//    public string FromAddress { get; set; }
-//    public string Password { get; set; }
-
-//}
-
 internal class EmailSender : IEmailSender, IMarsEmailSender
 {
     private readonly IActionHistoryService _actionHistoryService;
     private readonly IOptionService _optionService;
     private SmtpSettingsModel _smtpSettings;
 
-    //public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
-    //public EmailSender(IOptions<SmtpSettings> optionsAccessor)
-    //{
-    //    //Options = optionsAccessor.Value;
-    //    _smtpSettings = optionsAccessor.Value;
-    //}
-
     public EmailSender(IActionHistoryService actionHistoryService, IOptionService optionService)
     {
-        this._actionHistoryService = actionHistoryService;
-        this._optionService = optionService;
+        _actionHistoryService = actionHistoryService;
+        _optionService = optionService;
         _smtpSettings = _optionService.MailSettings;
     }
-
-    public AuthMessageSenderOptions Options { get; } //set only via Secret Manager
 
     public async Task SendEmailAsync(string email, string subject, string message)
     {
@@ -54,14 +30,16 @@ internal class EmailSender : IEmailSender, IMarsEmailSender
         await SendEmailForce(email, _smtpSettings.FromName, subject, message);
     }
 
-    public async Task SendEmailForce(string to_email, string from_name, string subject, string message, bool html = false)
+    public async Task SendEmailForce(string to_email, string from_name, string subject, string message, bool html = false, SmtpSettingsModel? smtpSettings = null)
     {
+        smtpSettings ??= _smtpSettings;
+
         //try
         //{
-        string from = _smtpSettings.SmtpUser;
-        string host = _smtpSettings.Host;
-        int port = _smtpSettings.Port;
-        bool ssl = _smtpSettings.Secured;
+        string from = smtpSettings.SmtpUser;
+        string host = smtpSettings.Host;
+        int port = smtpSettings.Port;
+        bool ssl = smtpSettings.Secured;
 
         {
             var source = new MailboxAddress(from_name, from);
@@ -92,7 +70,7 @@ internal class EmailSender : IEmailSender, IMarsEmailSender
 
                 if (true)
                 {
-                    smtp.Authenticate(from, _smtpSettings.SmtpPassword);
+                    smtp.Authenticate(from, smtpSettings.SmtpPassword);
                 }
 
                 try

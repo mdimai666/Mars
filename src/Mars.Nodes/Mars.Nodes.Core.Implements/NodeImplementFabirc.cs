@@ -1,4 +1,6 @@
 using System.Reflection;
+using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements;
 
@@ -68,13 +70,17 @@ public static class NodeImplementFabirc
 
     public static INodeImplement Create(INodeBasic node, IRED _RED)
     {
-        var a = dict[node.GetType()];
-        var ctor = a.GetConstructors().First();
+        Type instantiateType;
+
+        if (node is ConfigNode) instantiateType = typeof(ConfigNodeImpl);
+        else instantiateType = dict[node.GetType()];
+
+        var ctor = instantiateType.GetConstructors().First();
         object instance;
         if (ctor.GetParameters().Length == 1)
-            instance = Activator.CreateInstance(a, node)!;
+            instance = Activator.CreateInstance(instantiateType, node)!;
         else
-            instance = Activator.CreateInstance(a, node, _RED)!;
+            instance = Activator.CreateInstance(instantiateType, node, _RED)!;
         INodeImplement nodeImpl = (INodeImplement)instance;
 
         //nodeImpl.Node = node;

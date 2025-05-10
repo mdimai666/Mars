@@ -14,28 +14,31 @@
     color: var(--neutral-base-color);
 }
 
-form.compact {
-    d-formitem2 {
+:root {
+    --fluent-input-label-basis: 30%;
+}
+
+form.compact d-formitem2, d-formitem2.compact, .form-group.compact d-formitem2 {
+
+    .form-item__content {
         display: flex;
+        flex: 1 1 auto;
+        gap: 1em;
 
-        .form-item__content {
+        .fluent-input-label {
+            /*flex-basis: 80%;*/
+            flex-basis: var(--fluent-input-label-basis);
             display: flex;
-            flex: 1 1 auto;
-            /*background: blue !important;*/
-            gap: 1em;
-
-            .fluent-input-label {
-                flex-basis: 80%;
-                display: flex;
-                justify-content: end;
-                text-align: end;
-            }
-
-            .d-fluent-input-description {
-            }
+            justify-content: end;
+            text-align: end;
         }
 
-        .form-item__ValidationMessage {
+        .d-fluent-input-description {
         }
+    }
+
+    .form-item__ValidationMessage {
+        display: block;
+        margin-left: calc(var(--fluent-input-label-basis) + 1em);
     }
 }

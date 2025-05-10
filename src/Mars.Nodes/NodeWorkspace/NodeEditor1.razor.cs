@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Web;
+using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.EditorApi.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -10,11 +12,12 @@ using Toolbelt.Blazor.HotKeys2;
 
 namespace NodeWorkspace;
 
-public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
+public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
 
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] IMessageService _messageService { get; set; } = default!;
 
     NodeWorkspaceJsInterop js = default!;
 
@@ -37,9 +40,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
 
     [Parameter] public EventCallback<List<Node>> NodesChanged { get; set; }
 
-    public List<Node> Palette { get; set; } = new List<Node>();
+    public List<Node> Palette { get; private set; } = new();
 
-    public List<Type> RegisteredNodes = new List<Type>();
+    public List<Type> RegisteredNodes { get; private set; } = new();
 
     EditorActions editorActions;
     public NodeWorkspace1? NodeWorkspace1 = default!;
@@ -74,7 +77,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
 
     }
 
-    MasterTab[] masterTabs = new MasterTab[] { new MasterTab("tabs", "Tabs"), new MasterTab("nodes", "Nodes") };
+    MasterTab[] masterTabs = [new("tabs", "Tabs"), new("nodes", "Nodes")];
 
     public NodeEditor1()
     {
@@ -85,12 +88,12 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
 
         Type[] topNodes = { typeof(InjectNode), typeof(DebugNode), typeof(FunctionNode), typeof(TemplateNode) };
 
-        var nodesList = topNodes.Concat(
+        var paletteNodesList = topNodes.Concat(
             RegisteredNodes
-                .Where(s => Node.NonVisualNodes.Contains(s) == false)
+                .Where(s => Node.IsVisualNode(s))
                 .Where(s => !topNodes.Contains(s)));
 
-        foreach (var type in nodesList)
+        foreach (var type in paletteNodesList)
         {
             object handle = Activator.CreateInstance(type)!;
             Node node = (Node)handle;
@@ -212,6 +215,16 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
         NodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
     }
 
+    Node CreateConfigNodeFromType(Type nodeType)
+    {
+        Node instance = (Node)Activator.CreateInstance(nodeType)!;
+        var thisTypeCount = Nodes.Count(s=>s.Type == instance.Type);
+        instance.Container = activeFlow.Id;
+        instance.Name = instance.Label + (thisTypeCount + 1);
+        Nodes.Add(instance);
+        return instance;
+    }
+
     #region DEBUGGER
     const string noderedDebugMessageList = "#nodered-debug-message-list";
 
@@ -267,10 +280,34 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
     }
 
 
-    void StartEditNode(Node node)
+    public void StartEditNode(Node node)
     {
         EditNode = node;//.Copy();
         nodeEditContainer1.StartEditNode(EditNode);
+    }
+
+    public void OnClickEditConfigNode(string id)
+    {
+        var node = Nodes.FirstOrDefault(n => n.Id == id);
+        if (node == null)
+        {
+            _ = _messageService.Error($"Error editConfigNode command: id:{id} not found");
+            return;
+        }
+        nodeEditContainer1.StartEditNode(node);
+    }
+
+    public void OnClickNewConfigNode(Type nodeType)
+    {
+        var found = RegisteredNodes.FirstOrDefault(s => s == nodeType);
+        if (found == null)
+        {
+            _ = _messageService.Error($"Error newConfigNode command: type:{nodeType.Name} not found");
+            return;
+        }
+        var instance = CreateConfigNodeFromType(found);
+        nodeEditContainer1.StartEditNode(instance);
+
     }
 
     void SaveNode(Node node)
@@ -383,7 +420,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable
 
     void CalcVarNodes()
     {
-        varNodes = Nodes.Where(s=>s is VarNode).Select(s=>(VarNode)s).OrderBy(s=>s.Name).ToList();
+        varNodes = Nodes.Where(s => s is VarNode).Select(s => (VarNode)s).OrderBy(s => s.Name).ToList();
     }
 
     void OnClickAddVarNode()

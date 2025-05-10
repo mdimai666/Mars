@@ -1,3 +1,5 @@
+using Mars.Core.Extensions;
+
 namespace Mars.Nodes.Core;
 
 //class additionsNodeProps
@@ -13,7 +15,8 @@ public class NodeStatus
     /// </summary>
     public string Color { get; set; } = "#d3d3d3";
     public EShape Shape { get; set; }
-    public string Text { get; set; } = "";
+    string _text = "";
+    public string Text { get => _text; set => _text = value.TextEllipsis(30); }
 
     public NodeStatus()
     {

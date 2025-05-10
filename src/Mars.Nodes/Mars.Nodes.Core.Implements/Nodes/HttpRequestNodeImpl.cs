@@ -5,14 +5,11 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImplement
 {
-
     public HttpRequestNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
     //-----------------------------
-
-
     public HttpRequestNodeImpl(HttpRequestNode node, IRED RED)
     {
         this.Node = node;
@@ -21,11 +18,13 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
     {
-        //HttpClient client = new HttpClient();
-        //client.BaseAddress = new Uri(Url);
-
         using var client = RED.GetHttpClient();
         var q = new FlurlClient(client);
+
+        foreach (var head in Node.Headers)
+        {
+            q.WithHeader(head.Name, head.Value);
+        }
 
         //q.EnsureSuccessStatusCode = true;
 
@@ -52,6 +51,12 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
             input.Payload = response;
             callback(input);
 
+        }
+        catch (FlurlHttpException ex)
+        {
+            string statusText = $" {((int)ex.StatusCode!)} {ex.Message}";
+            RED.Status(new NodeStatus { Text = statusText, Color = "red" });
+            RED.DebugMsg(new DebugMessage { message = ex.Message, Level = Mars.Core.Models.MessageIntent.Warning });
         }
         catch (HttpRequestException ex)
         {

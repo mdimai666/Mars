@@ -5,14 +5,14 @@ namespace Mars.Nodes.Core.Nodes;
 [FunctionApiDocument("./_content/NodeFormEditor/Docs/StringNode/StringNode{.lang}.md")]
 public class StringNode : Node
 {
-    public List<StringNodeOperation> Operations { get; set; } = [new() { Name = BaseOperation.ToUpper.ToString() }];
+    public StringNodeOperation[] Operations { get; set; } = [new() { Name = BaseOperation.ToUpper.ToString() }];
 
     public StringNode()
     {
         haveInput = true;
         Color = "#b2b2b2";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/csproj-48.png";
+        Icon = "_content/NodeWorkspace/nodes/function.svg";
     }
 }
 

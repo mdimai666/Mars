@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
@@ -18,6 +18,7 @@
 		<ProjectReference Include="..\..\AppFront.Shared\AppFront.Shared.csproj" />
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+		<ProjectReference Include="..\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj" />
 		<ProjectReference Include="..\NodeFormEditor\NodeFormEditor.csproj" />
 	</ItemGroup>

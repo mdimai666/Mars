@@ -66,11 +66,6 @@ enum InputType
 
 }
 
-public class ConfigNode
-{
-
-}
-
 public class DrawNode
 {
 

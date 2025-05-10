@@ -11,6 +11,7 @@ public class HttpRequestNode : Node
 
     public string[] MethodVariants = { "GET", "POST", "PUT", "DELETE", "HEAD" };
 
+    public HeaderItem[] Headers { get; set; } = [];
 
     public HttpRequestNode()
     {
@@ -19,4 +20,10 @@ public class HttpRequestNode : Node
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/NodeWorkspace/nodes/web2-48.png";
     }
+}
+
+public class HeaderItem
+{
+    public string Name { get; set; } = "";
+    public string Value { get; set; } = "";
 }

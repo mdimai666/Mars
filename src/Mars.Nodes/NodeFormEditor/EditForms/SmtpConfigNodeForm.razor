@@ -1,0 +1,40 @@
+@using AppFront.Shared.Components
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+@using NodeFormEditor.EditForms.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(SmtpConfigNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="()=>Node.ServerName">
+            <FluentTextField @bind-Value=@Node.ServerName Class="flex-fill" />
+        </FormItem2>
+        <FormItem2 For="()=>Node.Port">
+            <FluentNumberField @bind-Value=@Node.Port Class="" />
+        </FormItem2>
+        <FluentCheckbox @bind-Value=@Node.SSLRequired Class="">
+            <AutoInputLabel For="()=>Node.SSLRequired" />
+        </FluentCheckbox>
+        <FluentCheckbox @bind-Value=@Node.SMTPAuthenticationRequired Class="">
+            <AutoInputLabel For="()=>Node.SMTPAuthenticationRequired" />
+        </FluentCheckbox>
+        @if (Node.SMTPAuthenticationRequired)
+        {
+            <FormItem2 For="()=>Node.Username">
+                <FluentTextField @bind-Value=@Node.Username Class="flex-fill" />
+            </FormItem2>
+            <FormItem2 For="()=>Node.Password">
+                <FluentTextField @bind-Value=@Node.Password TextFieldType=TextFieldType.Password Class="flex-fill" />
+            </FormItem2>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    SmtpConfigNode Node { get => (SmtpConfigNode)Value!; set => Value = value; }
+
+}
+

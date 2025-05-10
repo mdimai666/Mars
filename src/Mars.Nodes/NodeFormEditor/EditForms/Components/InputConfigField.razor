@@ -1,0 +1,16 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@typeparam TConfig
+
+<input-config-field class="hstack gap-1 flex-fill">
+
+    <FluentSelect TOption="KeyValuePair<string, string>"
+                  Items="_items.Values"
+                  OptionText="@(f=>f.Value)"
+                  @bind-SelectedOption=_valueSetter />
+
+    <FluentButton OnClick="ClickEdit" IconStart="@(new Icons.Regular.Size16.Edit())" />
+    <FluentButton OnClick="ClickNew" IconStart="@(new Icons.Regular.Size16.Add())" />
+
+</input-config-field>
+

@@ -1,4 +1,5 @@
 @using AppFront.Shared.Components
+@using Mars.Core.Utils
 @using MarsCodeEditor2
 @using MarsEditors
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -61,25 +62,7 @@
     [CascadingParameter] Node? Value { get; set; }
     HtmlParseNode Node { get => (HtmlParseNode)Value!; set => Value = value; }
 
-    private void SortList(FluentSortableListEventArgs args)
-    {
-        if (args is null || args.OldIndex == args.NewIndex)
-        {
-            return;
-        }
-
-        var items = Node.InputMappings.ToList();
-
-        var oldIndex = args.OldIndex;
-        var newIndex = args.NewIndex;
-        var itemToMove = items[oldIndex];
-
-        var oldEl = items[oldIndex];
-        items.RemoveAt(oldIndex);
-        items.Insert(newIndex, oldEl);
-
-        Node.InputMappings = items.ToArray();
-    }
+    void SortList(FluentSortableListEventArgs args) => Node.InputMappings = Node.InputMappings.MoveItem(args.OldIndex, args.NewIndex);
 
     void AddNew()
     {

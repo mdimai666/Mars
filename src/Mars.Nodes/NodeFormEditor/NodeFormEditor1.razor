@@ -13,18 +13,18 @@
                 @onkeydown="KeyDown"
                 OnValidSubmit="ValidSubmit">
         <div class="text-secondary">
-            <span>
-                etype: @(NodeEditFormType?.FullName ?? "null")
+            <div>
+                <span>id: </span>
+                <span>@Node.Id</span>
+                @* etype: @(NodeEditFormType?.FullName ?? "null") *@
                 @if (AppFront.Shared.Q.Dev)
                 {
-                    <button role="button" class="btn btn-link" @onclick="OpenFormSourceCode">
+                    <div class="vr mx-3"></div>
+                    <a role="button" class="" @onclick="OpenFormSourceCode">
                         code
                         <i class="bi bi-box-arrow-up-right"></i>
-                    </button>
+                    </a>
                 }
-            </span>
-            <div class="text-primary">
-                @Node.Id
             </div>
         </div>
 
@@ -34,7 +34,8 @@
         </div>
 
         <p>
-            <label>name: (@Node.GetType().FullName)</label>
+            @* <label>name: (@Node.GetType().FullName)</label> *@
+            <label>name</label>
             <InputText class="form-control" @bind-Value=Node.Name placeholder="@Node.Label" />
         </p>
 
@@ -166,7 +167,7 @@
 
     void OpenFormSourceCode()
     {
-        developerControlService.OpenPageSource(NodeEditFormType!, "Mars.Nodes\\Front");
+        developerControlService.OpenPageSource(NodeEditFormType!, "Mars.Nodes");
     }
 }
 

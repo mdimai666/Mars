@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/ShadowNode/ShadowNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ShadowNode/ShadowNode{.lang}.md")]
 public class ShadowNode
 {
     public string CopyNodeId { get; set; } = "";
@@ -10,6 +10,6 @@ public class ShadowNode
 
     public ShadowNode()
     {
-        //Icon = "_content/NodeWorkspace/nodes/chunk-48.png";
+        //Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }
 }

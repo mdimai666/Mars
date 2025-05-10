@@ -104,7 +104,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor\Mars.WebSiteProcessor.csproj" />
-        <ProjectReference Include="..\Mars.Nodes\NodeWorkspace\NodeWorkspace.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin\Mars.Plugin.csproj" />
 

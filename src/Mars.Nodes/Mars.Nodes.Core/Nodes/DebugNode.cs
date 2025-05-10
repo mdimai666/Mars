@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/DebugNode/DebugNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DebugNode/DebugNode{.lang}.md")]
 public class DebugNode : Node
 {
 

@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/LoggerNode/LoggerNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/LoggerNode/LoggerNode{.lang}.md")]
 public class LoggerNode : Node
 {
     public ELoggerNodeLogLevel Level { get; set; } = ELoggerNodeLogLevel.Warning;

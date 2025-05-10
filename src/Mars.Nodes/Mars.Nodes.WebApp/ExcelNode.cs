@@ -11,6 +11,6 @@ public class ExcelNode : Node
         haveInput = true;
         Color = "#21a366";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/excel-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/excel-48.png";
     }
 }

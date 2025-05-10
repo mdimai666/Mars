@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/CallNode/CallNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CallNode/CallNode{.lang}.md")]
 public class CallNode : Node
 {
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(2);
@@ -12,7 +12,7 @@ public class CallNode : Node
         haveInput = false;
         Color = "#7a78fe";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/chunk-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }
 
     public class CallNodeCallbackAction
@@ -28,7 +28,7 @@ public class CallNode : Node
     }
 }
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/CallResponseNode/CallResponseNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CallResponseNode/CallResponseNode{.lang}.md")]
 public class CallResponseNode : Node
 {
     public CallResponseNode()
@@ -36,6 +36,6 @@ public class CallResponseNode : Node
         isInjectable = false;
         Color = "#7a78fe";
         this.haveInput = true;
-        Icon = "_content/NodeWorkspace/nodes/chunk-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }
 }

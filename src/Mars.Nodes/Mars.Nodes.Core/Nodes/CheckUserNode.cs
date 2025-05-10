@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/CheckUserNode/CheckUserNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CheckUserNode/CheckUserNode{.lang}.md")]
 public class CheckUserNode : Node
 {
     public CheckUserNode()

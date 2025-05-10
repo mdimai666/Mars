@@ -8,7 +8,7 @@ public class MarsHostRootLayoutRenderNode: Node
 	{
 		haveInput = true;
 		Color = "#603dd7";
-        Icon = "_content/NodeWorkspace/nodes/razor-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/razor-48.png";
 		Outputs = new List<NodeOutput> { new NodeOutput { Label = "html" } };
     }
 }
@@ -22,7 +22,7 @@ public class RenderPageNode: Node
 	{
         haveInput = true;
         Color = "#603dd7";
-        Icon = "_content/NodeWorkspace/nodes/razor-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/razor-48.png";
         Outputs = new List<NodeOutput> { new NodeOutput { Label = "html" } };
     }
 }

@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/SmtpConfigNode/SmtpConfigNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/SmtpConfigNode/SmtpConfigNode{.lang}.md")]
 public class SmtpConfigNode : ConfigNode
 {
     [Required]

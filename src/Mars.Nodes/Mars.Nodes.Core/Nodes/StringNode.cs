@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/StringNode/StringNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/StringNode/StringNode{.lang}.md")]
 public class StringNode : Node
 {
     public StringNodeOperation[] Operations { get; set; } = [new() { Name = BaseOperation.ToUpper.ToString() }];
@@ -12,7 +12,7 @@ public class StringNode : Node
         haveInput = true;
         Color = "#b2b2b2";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/function.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/function.svg";
     }
 }
 

@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/HtmlParseNode/HtmlParseNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HtmlParseNode/HtmlParseNode{.lang}.md")]
 public class HtmlParseNode : Node
 {
     [Required]
@@ -18,7 +18,7 @@ public class HtmlParseNode : Node
         haveInput = true;
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
     }
 }
 

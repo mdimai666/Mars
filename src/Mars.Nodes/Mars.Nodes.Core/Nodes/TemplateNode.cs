@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/TemplateNode/TemplateNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/TemplateNode/TemplateNode{.lang}.md")]
 public class TemplateNode : Node
 {
     public const string DefaultLanguage = "handlebars";
@@ -15,7 +15,7 @@ public class TemplateNode : Node
         haveInput = true;
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/scenario-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
     }
 
 }

@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/HttpRequestNode/HttpRequestNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HttpRequestNode/HttpRequestNode{.lang}.md")]
 public class HttpRequestNode : Node
 {
 
@@ -18,7 +18,7 @@ public class HttpRequestNode : Node
         haveInput = true;
         Color = "#e7e6af";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/web2-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";
     }
 }
 

@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/ForeachNode/ForeachNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ForeachNode/ForeachNode{.lang}.md")]
 public class ForeachNode : Node
 {
     public EForeachKind Kind { get; set; }
@@ -18,7 +18,7 @@ public class ForeachNode : Node
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },
         };
-        Icon = "_content/NodeWorkspace/nodes/chunk-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }
 
     public class ForeachCycle
@@ -29,7 +29,7 @@ public class ForeachNode : Node
     }
 }
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/ForeachIterateNode/ForeachIterateNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ForeachIterateNode/ForeachIterateNode{.lang}.md")]
 public class ForeachIterateNode : Node
 {
     public ForeachIterateNode()
@@ -40,7 +40,7 @@ public class ForeachIterateNode : Node
             new NodeOutput(){ Label = "iterate" },
             new NodeOutput() { Label = "finish" },
         };
-        Icon = "_content/NodeWorkspace/nodes/chunk-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }
 }
 

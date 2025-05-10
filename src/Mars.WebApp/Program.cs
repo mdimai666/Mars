@@ -29,7 +29,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
-using NodeWorkspace;
+using Mars.Nodes.Workspace;
 using static Mars.UseStartup.MarsStartupInfo;
 
 Console.OutputEncoding = Encoding.UTF8;

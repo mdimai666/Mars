@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/SwitchNode/SwitchNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/SwitchNode/SwitchNode{.lang}.md")]
 public class SwitchNode : Node
 {
     public List<Condition> Conditions { get; set; } = [
@@ -21,7 +21,7 @@ public class SwitchNode : Node
             new NodeOutput(),
             new NodeOutput(),
         };
-        Icon = "_content/NodeWorkspace/nodes/logic2-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/logic2-48.png";
     }
 
     public class Condition

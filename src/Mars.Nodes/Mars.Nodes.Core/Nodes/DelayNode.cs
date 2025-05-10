@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/DelayNode/DelayNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DelayNode/DelayNode{.lang}.md")]
 public class DelayNode : Node
 {
     public int DelayMillis { get; set; } = 1000;

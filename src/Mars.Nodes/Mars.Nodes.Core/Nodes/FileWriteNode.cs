@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/FileWriteNode/FileWriteNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/FileWriteNode/FileWriteNode{.lang}.md")]
 public class FileWriteNode : Node
 {
     public string Filename { get; set; } = "";
@@ -17,7 +17,7 @@ public class FileWriteNode : Node
         haveInput = true;
         Color = "#deb887";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/file-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
     }
 
     public enum FileWriteMode

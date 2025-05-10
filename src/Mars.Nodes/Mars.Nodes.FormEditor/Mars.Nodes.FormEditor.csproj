@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <!--Project-->
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+
+        <!--Author-->
+        <PackageId>mdimai666.Mars.Nodes.FormEditor</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <!--<Version>0.2.0</Version>-->
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.Nodes.FormEditor</Product>
+        <PackageTags>Mars</PackageTags>
+        <Description>
+            Mars Nodes FormEditor;
+        </Description>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>BL0007</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Remove="compilerconfig.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="compilerconfig.json" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="compilerconfig.json" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Content Remove="wwwroot\css\**\*.less" />
+        <Content Remove="wwwroot\css\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="compilerconfig.json" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <None Include="wwwroot\css\**\*.less" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Watch Remove="wwwroot\**\*.less" />
+        <Watch Remove="wwwroot\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+        <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
+    </ItemGroup>
+
+</Project>

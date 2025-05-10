@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using NodeWorkspace;
+using Mars.Nodes.Workspace;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace AppAdmin;

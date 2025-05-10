@@ -7,7 +7,7 @@
 @using MarsEditors
 @using BlazorMonaco.Editor
 @using Microsoft.JSInterop
-@using NodeFormEditor
+@using Mars.Nodes.FormEditor
 
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SqlNode))]
@@ -131,7 +131,7 @@
 
     private async Task EditorOnDidInit()
     {
-        await NodeFormEditor.EditForms.FunctionNodeForm.EditorOnDidInit(editor1!, js, NodeEditContainer);
+        await Mars.Nodes.FormEditor.EditForms.FunctionNodeForm.EditorOnDidInit(editor1!, js, NodeEditContainer);
     }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)

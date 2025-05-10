@@ -2,7 +2,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/MicroschemeNode/MicroschemeNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MicroschemeNode/MicroschemeNode{.lang}.md")]
 public class MicroschemeNode : Node
 {
     public override string Label => "Micr";

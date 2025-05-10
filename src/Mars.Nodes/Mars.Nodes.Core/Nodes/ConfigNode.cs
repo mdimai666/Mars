@@ -5,7 +5,7 @@ namespace Mars.Nodes.Core.Nodes;
 public abstract class ConfigNode : Node
 {
     public override string Color { get; set; } = "#dddddd";
-    public override string Icon { get; set; } = "_content/NodeWorkspace/nodes/configfile-48.png";
+    public override string Icon { get; set; } = "_content/Mars.Nodes.Workspace/nodes/configfile-48.png";
 }
 
 public struct InputConfig<T>

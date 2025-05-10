@@ -5,7 +5,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/VarNode/VarNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VarNode/VarNode{.lang}.md")]
 public class VarNode : Node, IValidatableObject
 {
     public string VarType { get; set; } = "int";

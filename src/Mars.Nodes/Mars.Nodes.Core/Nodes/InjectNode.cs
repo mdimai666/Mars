@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/InjectNode/InjectNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/InjectNode/InjectNode{.lang}.md")]
 public class InjectNode : Node
 {
     public string Payload { get; set; } = "";

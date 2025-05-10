@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
-        <ProjectReference Include="..\NodeFormEditor\NodeFormEditor.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
         <ProjectReference Include="..\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj" />
     </ItemGroup>
 

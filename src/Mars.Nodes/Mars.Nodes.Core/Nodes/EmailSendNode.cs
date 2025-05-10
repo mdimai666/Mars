@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
-[FunctionApiDocument("./_content/NodeFormEditor/Docs/EmailSendNode/EmailSendNode{.lang}.md")]
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/EmailSendNode/EmailSendNode{.lang}.md")]
 public class EmailSendNode : Node
 {
     public InputConfig<SmtpConfigNode> Config { get; set; }
@@ -20,7 +20,7 @@ public class EmailSendNode : Node
         haveInput = true;
         Color = "#cce8c0";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/NodeWorkspace/nodes/envelope-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/envelope-48.png";
     }
 
 }

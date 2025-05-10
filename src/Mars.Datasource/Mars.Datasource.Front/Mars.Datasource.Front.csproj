@@ -11,7 +11,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
-		<ProjectReference Include="..\..\Mars.Nodes\NodeFormEditor\NodeFormEditor.csproj" />
+		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
 	</ItemGroup>
 

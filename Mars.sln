@@ -27,10 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Nodes.Core.Implements"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Nodes.Host", "src\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj", "{EA134E33-0847-E9A5-DA42-DCC14A77E2D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeFormEditor", "src\Mars.Nodes\NodeFormEditor\NodeFormEditor.csproj", "{3C0423B9-0D67-31A9-A12F-C4E2E12F1118}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeWorkspace", "src\Mars.Nodes\NodeWorkspace\NodeWorkspace.csproj", "{DCCBDC30-5D97-612F-2EDE-12C62AEFC49B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Nodes.WebApp", "src\Mars.Nodes\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj", "{2D59DF5A-79C8-6983-F8D8-89D1176802A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Nodes.WebApp.Front", "src\Mars.Nodes\Mars.Nodes.WebApp.Front\Mars.Nodes.WebApp.Front.csproj", "{A16E9779-9886-8D9F-EEFA-E1F5309B0810}"

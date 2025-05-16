@@ -20,7 +20,8 @@ namespace Mars.Nodes.Host.Services;
 
 internal class NodeService : INodeService, IMarsAppLifetimeService
 {
-    public static string flowFileName = "flows.json";
+    public static readonly string flowFileName = "flows.json";
+    public readonly string flowFilePath = Path.Combine("nodes", flowFileName);
     private readonly IFileStorage _fileStorage;
     protected readonly RED _RED;
     protected readonly IServiceProvider _serviceProvider;
@@ -36,7 +37,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public IReadOnlyDictionary<string, INodeImplement> Nodes => _RED.Nodes;
     public IEnumerable<Node> BaseNodes => Nodes.Values.Select(s => s.Node);
 
-    public NodeService(IFileStorage fileStorage, RED RED, IServiceProvider serviceProvider, IHubContext<ChatHub> hub, IEventManager eventManager)
+    public NodeService([FromKeyedServices("data")] IFileStorage fileStorage, RED RED, IServiceProvider serviceProvider, IHubContext<ChatHub> hub, IEventManager eventManager)
     {
         _fileStorage = fileStorage;
         _RED = RED;
@@ -88,8 +89,8 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         try
         {
 
-            if (!_fileStorage.FileExists(flowFileName)) return;
-            string json = _fileStorage.ReadAllText(flowFileName);
+            if (!_fileStorage.FileExists(flowFilePath)) return;
+            string json = _fileStorage.ReadAllText(flowFilePath);
             var nodes = JsonSerializer.Deserialize<List<Node>>(json)!;
 
             _RED.AssignNodes(nodes);
@@ -112,7 +113,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         });
 
-        _fileStorage.Write(flowFileName, json);
+        _fileStorage.Write(flowFilePath, json);
 
         OnDeploy?.Invoke();
 

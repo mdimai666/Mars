@@ -13,7 +13,7 @@ namespace Mars.UseStartup.MarsParts;
 
 internal static class MarsStartupPartServices
 {
-    public static IServiceCollection MarsAddServices(this IServiceCollection services)
+    public static IServiceCollection MarsAddServices(this IServiceCollection services, IWebHostEnvironment wenv)
     {
         //services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<UserEntity>>();
 
@@ -33,7 +33,7 @@ internal static class MarsStartupPartServices
         services.AddScoped<FeedbackService>();
         services.AddScoped<ViewModelService>();
 
-        services.AddMarsHost();
+        services.AddMarsHost(wenv);
         services.AddScoped<EsiaService>();
 
         //services.AddSingleton<DebugService>();

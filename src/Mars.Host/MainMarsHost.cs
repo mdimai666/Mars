@@ -1,3 +1,4 @@
+using FluentValidation;
 using Mars.Host.Handlers;
 using Mars.Host.Managers;
 using Mars.Host.QueryLang;
@@ -10,18 +11,19 @@ using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
 using Mars.Shared.Resources;
-using FluentValidation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using MOptions = Microsoft.Extensions.Options.Options;
 
 namespace Mars.Host;
 
 public static class MainMarsHost
 {
-    public static IServiceCollection AddMarsHost(this IServiceCollection services)
+    public static IServiceCollection AddMarsHost(this IServiceCollection services, IWebHostEnvironment wenv)
     {
         services.AddSingleton<IActionManager, ActionManager>();
         services.AddSingleton<IOptionService, OptionService>();
@@ -59,7 +61,7 @@ public static class MainMarsHost
         //temp
         services.AddScoped<PostTypeExporter>();
 
-        services.AddSingleton<IOptions<FileHostingInfo>>(sp => Microsoft.Extensions.Options.Options.Create(sp.GetRequiredService<IOptionService>().FileHostingInfo()));
+        UseFileStorages(services, wenv);
 
         //read (may object viewer)
         // Microsoft.AspNetCore.Identity.IEmailSender
@@ -88,5 +90,23 @@ public static class MainMarsHost
             .AddKeyedScoped<IMetaRelationModelProviderHandler, FeedbackRelationModelProviderHandler>("Feedback")
             .AddKeyedScoped<IMetaRelationModelProviderHandler, NavMenuRelationModelProviderHandler>("NavMenu")
             ;
+    }
+
+    static void UseFileStorages(IServiceCollection services, IWebHostEnvironment wenv)
+    {
+        services.AddSingleton<IOptions<FileHostingInfo>>(sp => MOptions.Create(sp.GetRequiredService<IOptionService>().FileHostingInfo()));
+
+
+        var dataDirHostingInfo = MOptions.Create(new FileHostingInfo()
+        {
+            Backend = null,
+            PhysicalPath = new Uri(Path.Combine(wenv.ContentRootPath, "data"), UriKind.Absolute),
+            RequestPath = ""
+        });
+
+        var dataFs = new FileStorage(dataDirHostingInfo);
+
+        services.AddKeyedSingleton<IOptions<FileHostingInfo>>("data", dataDirHostingInfo);
+        services.AddKeyedSingleton<IFileStorage>("data", dataFs);
     }
 }

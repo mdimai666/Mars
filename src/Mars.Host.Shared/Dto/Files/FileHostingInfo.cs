@@ -4,7 +4,7 @@ namespace Mars.Host.Shared.Dto.Files;
 
 public record FileHostingInfo
 {
-    public required Uri Backend { get; init; }
+    public required Uri? Backend { get; init; }
     public required Uri PhysicalPath { get; init; }
     private string _requestPath = default!;
     public required string RequestPath { get => _requestPath; init => _requestPath = NormalizePathSlash(value) ?? ""; }
@@ -75,11 +75,13 @@ public record FileHostingInfo
 
     public string FileAbsoluteUrlFromPath(string filePath)
     {
+        if (Backend == null) return "";
         return Backend.AbsoluteUri + RequestPath + '/' + NormalizePathSlash(filePath);
     }
 
     public string FileRelativeUrlFromPath(string filePath)
     {
+        if (Backend == null) return "";
         if (Backend.LocalPath == "/")
             return '/' + RequestPath + '/' + NormalizePathSlash(filePath);
         else

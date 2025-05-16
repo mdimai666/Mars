@@ -143,7 +143,7 @@ if (!disableLogs)
 // Mars
 builder.Services.MarsAddSwagger()
                 .AddMarsOptions()
-                .MarsAddServices()
+                .MarsAddServices(builder.Environment)
                 .MarsAddTemplator()
                 .AddDevAdmin()
                 .AddMarsNodes()

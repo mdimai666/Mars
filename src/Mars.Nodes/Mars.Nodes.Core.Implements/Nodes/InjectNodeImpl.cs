@@ -4,7 +4,6 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class InjectNodeImpl : INodeImplement<InjectNode>, INodeImplement
 {
-
     public InjectNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
@@ -19,7 +18,7 @@ public class InjectNodeImpl : INodeImplement<InjectNode>, INodeImplement
     {
         NodeMsg input = new NodeMsg();
 
-        input.Payload = Node.Payload ?? DateTime.Now.ToString();
+        input.Payload = string.IsNullOrEmpty(Node.Payload) ? DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() : Node.Payload;
 
         callback(input);
 

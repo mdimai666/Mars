@@ -107,14 +107,14 @@ public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeI
             cycle.index++;
             _input.Add(cycle);
             RED.Status(new NodeStatus($"{cycle.index}/{cycle.count}"));
-            callback(_input);
+            callback(_input, 1);
         }
         else
         {
             RED.Status(new NodeStatus($"{cycle.index}/{cycle.count} complete"));
 
-            NodeMsg _input = new (){ Payload = cycle.count };
-            callback(_input, 1);
+            NodeMsg _input = new() { Payload = cycle.count };
+            callback(_input, 0);
         }
 
         return Task.CompletedTask;

@@ -7,8 +7,9 @@
 @inject IStringLocalizer<AppRes> L
 
 <div class="form-group">
-    <label>payload</label>
-    <InputText class="form-control" @bind-Value=Node.Payload />
+    <FormItem2 For="()=>Node.Payload">
+        <FluentTextField @bind-Value=Node.Payload Class="w-100" Placeholder="DateTimeOffset.Now.ToUnixTimeMilliseconds" />
+    </FormItem2>
 
     <div class="hstack gap-3 mt-4">
         <div class="hstack gap-2">

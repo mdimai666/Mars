@@ -37,8 +37,8 @@ public class ForeachIterateNode : Node
         HaveInput = true;
         Color = "#cfcfcf";
         Outputs = new List<NodeOutput> {
-            new NodeOutput(){ Label = "iterate" },
             new NodeOutput() { Label = "finish" },
+            new NodeOutput(){ Label = "iterate" },
         };
         Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }

@@ -53,13 +53,10 @@ public static class NodesLocator
         assemblies.Add(assembly);
     }
 
-    public static Type GetTypeByFullName(string typeFullname)
+    public static Type? GetTypeByFullName(string typeFullname)
     {
-        if (dict.ContainsKey(typeFullname))
-        {
-            return dict[typeFullname];
-        }
-        throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
+        return dict.GetValueOrDefault(typeFullname);
+        //throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
     }
     public static List<Type> RegisteredNodes()
     {

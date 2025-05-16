@@ -9,7 +9,6 @@ namespace Mars.Nodes.Core;
 /// all property field will save in json
 /// </summary>
 [JsonConverter(typeof(NodeJsonConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(NodeNewtonJsonConverter))]
 public class Node : INodeBasic
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -24,19 +23,29 @@ public class Node : INodeBasic
             return string.IsNullOrWhiteSpace(Name) ? n.Substring(0, n.Length - 4) : Name;
         }
     }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public float X { get; set; } = 0;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public float Y { get; set; } = 0;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public float Z { get; set; } = 0;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string Container { get; set; } = "";
 
+    [JsonIgnore]
     public string DisplayName => string.IsNullOrEmpty(Name) ? Label : Name;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public virtual string Color { get; set; } = "#A8A8A8";
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public virtual string Icon { get; set; } = "";
 
     List<List<string>> _wires = null!;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Disabled { get; set; }
 
 
@@ -69,7 +78,7 @@ public class Node : INodeBasic
 
     public bool isInjectable;
     public bool hasTailButton;
-    public bool haveInput { get; set; }
+    public bool HaveInput { get; set; }
 
     //public virtual string GetJson()
     //{
@@ -99,7 +108,7 @@ public class Node : INodeBasic
     public virtual bool IsVisual => IsVisualNode(GetType());
 
     [JsonIgnore, Newtonsoft.Json.JsonIgnore]
-    public bool IsConfigNode => typeof(ConfigNode).IsAssignableFrom(GetType());
+    public virtual bool IsConfigNode => typeof(ConfigNode).IsAssignableFrom(GetType());
 
     [JsonIgnore, Newtonsoft.Json.JsonIgnore]
     public int OutputCount

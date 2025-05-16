@@ -9,7 +9,7 @@ public class EventNode : Node
 
     public EventNode()
     {
-        haveInput = false;
+        HaveInput = false;
         Color = "#e6e0f8";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         //Icon = "";

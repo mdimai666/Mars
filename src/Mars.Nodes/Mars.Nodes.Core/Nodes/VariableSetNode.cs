@@ -13,7 +13,7 @@ public class VariableSetNode : Node
 
     public VariableSetNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/ext-48.png";

@@ -13,7 +13,7 @@ public class ForeachNode : Node
 
     public ForeachNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#cfcfcf";
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },
@@ -34,7 +34,7 @@ public class ForeachIterateNode : Node
 {
     public ForeachIterateNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#cfcfcf";
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },

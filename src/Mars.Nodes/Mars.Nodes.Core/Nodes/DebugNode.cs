@@ -16,7 +16,7 @@ public class DebugNode : Node
 
     public DebugNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#7AB073";
         hasTailButton = true;
     }

@@ -9,7 +9,7 @@ public class DelayNode : Node
 
     public DelayNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#e6e0f8";
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },

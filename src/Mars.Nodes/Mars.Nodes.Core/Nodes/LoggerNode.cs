@@ -9,7 +9,7 @@ public class LoggerNode : Node
 
     public LoggerNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#e9d585";
         hasTailButton = false;
     }

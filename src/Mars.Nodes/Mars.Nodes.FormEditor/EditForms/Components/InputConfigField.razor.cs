@@ -35,7 +35,7 @@ public partial class InputConfigField<TConfig>
 
     KeyValuePair<string, string> _valueSetter
     {
-        get => _items[Value.Id];
+        get => _items.GetValueOrDefault(Value.Id ?? "");
         set => Value = new InputConfig<TConfig> { Id = value.Key, Value = GetById(value.Key) };
     }
 

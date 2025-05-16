@@ -1,4 +1,4 @@
-﻿using Mars.Host.Shared.Scheduler;
+using Mars.Host.Shared.Scheduler;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
@@ -17,9 +17,9 @@ internal class NodeSchedulerService : INodeSchedulerService, IMarsAppLifetimeSer
 
     public NodeSchedulerService(IServiceProvider serviceProvider, INodeService nodeService)
     {
-        this._serviceProvider = serviceProvider;
-        this._logger = MarsLogger.GetStaticLogger<NodeSchedulerService>();
-        this._nodeService = nodeService;
+        _serviceProvider = serviceProvider;
+        _logger = MarsLogger.GetStaticLogger<NodeSchedulerService>();
+        _nodeService = nodeService;
 
         _nodeService.OnDeploy += _nodeService_OnDeploy;
     }

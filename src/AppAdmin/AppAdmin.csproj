@@ -113,6 +113,7 @@
         <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
+        <ProjectReference Include="..\Plugin\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

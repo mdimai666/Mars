@@ -45,10 +45,22 @@ internal class RED
     void ValidateNodes(IEnumerable<Node> nodes)
     {
         var dict = nodes.ToDictionary(s => s.Id);
-        bool allNodesHasContainer = nodes.All(node => node.Type == typeof(FlowNode).FullName || !string.IsNullOrEmpty(node.Container) && dict.ContainsKey(node.Container));
-        if (!allNodesHasContainer)
+        var errors = new Dictionary<string, string[]>();
+
+        foreach (var node in nodes)
         {
-            throw new MarsValidationException(new Dictionary<string, string[]>() { ["nodes"] = ["some node has not valid 'Container'"] });
+            var hasContainer = node.Type == typeof(FlowNode).FullName
+                                || node.Type == typeof(UnknownNode).FullName
+                                || !string.IsNullOrEmpty(node.Container) && dict.ContainsKey(node.Container);
+            if (!hasContainer)
+            {
+                errors.Add(node.Id, [$"node(id='{node.Id}', name='{node.Label}') has no container"]);
+            }
+        }
+
+        if (errors.Any())
+        {
+            throw new MarsValidationException(errors);
         }
     }
 
@@ -224,10 +236,10 @@ internal class RED_Context : IRED
     public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict => RED.ConfigNodesDict;
 
     public InputConfig<TConfigNode> GetConfig<TConfigNode>(string id) where TConfigNode : ConfigNode
-        => new() { Id = id, Value = RED.ConfigNodesDict.GetValueOrDefault(id) as TConfigNode };
+        => new() { Id = id, Value = RED.ConfigNodesDict.GetValueOrDefault(id ?? "") as TConfigNode };
 
     public InputConfig<TConfigNode> GetConfig<TConfigNode>(InputConfig<TConfigNode> config) where TConfigNode : ConfigNode
-        => new() { Id = config.Id, Value = RED.ConfigNodesDict.GetValueOrDefault(config.Id) as TConfigNode };
+        => new() { Id = config.Id, Value = RED.ConfigNodesDict.GetValueOrDefault(config.Id ?? "") as TConfigNode };
 }
 
 

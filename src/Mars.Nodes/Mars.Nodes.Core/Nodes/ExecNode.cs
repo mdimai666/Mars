@@ -11,7 +11,7 @@ public class ExecNode : Node
 
     public ExecNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Outputs = new List<NodeOutput> { new NodeOutput() };
     }
 

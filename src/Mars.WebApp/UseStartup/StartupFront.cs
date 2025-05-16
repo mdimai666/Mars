@@ -22,7 +22,7 @@ public static class StartupFront
 
     public static MarsAppFront FirstAppFront => AppProvider.FirstApp;
 
-    public static MarsAppProvider AppProvider;
+    public static MarsAppProvider AppProvider = default!;
 
     static IOptionService optionService = default!;
 
@@ -122,7 +122,7 @@ public static class StartupFront
                     //https://stackoverflow.com/a/1373295/6723966
                     AppDomain.CurrentDomain.AssemblyResolve += (object? sender, ResolveEventArgs args) =>
                     {
-                        string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                        string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
                         string assemblyPath = Path.Combine(folderPath, new AssemblyName(args.Name).Name + ".dll");
                         //if (!File.Exists(assemblyPath)) return null;
                         if (!File.Exists(assemblyPath))

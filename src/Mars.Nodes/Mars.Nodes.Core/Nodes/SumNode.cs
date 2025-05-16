@@ -15,7 +15,7 @@ public class SumNode : Node
 
     public SumNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Outputs = new List<NodeOutput> { new NodeOutput() };
     }
 

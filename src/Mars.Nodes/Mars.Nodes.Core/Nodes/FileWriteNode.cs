@@ -14,7 +14,7 @@ public class FileWriteNode : Node
 
     public FileWriteNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#deb887";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";

@@ -17,7 +17,7 @@ public class DevAdminConnectionNode : Node
 
     public DevAdminConnectionNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#3b9c9c";
         hasTailButton = false;
     }

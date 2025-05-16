@@ -15,7 +15,7 @@ internal static class MarsStartupPartLocalization
             var supportedCultures = new[]
              {
                 new CultureInfo("ru"),
-                //new CultureInfo("en"),
+                new CultureInfo("en"),
             };
             options.DefaultRequestCulture = new RequestCulture("ru-RU");
             options.SupportedCultures = supportedCultures;

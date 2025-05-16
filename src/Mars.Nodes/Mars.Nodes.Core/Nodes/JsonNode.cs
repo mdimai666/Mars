@@ -11,7 +11,7 @@ public class JsonNode : Node
 
     public JsonNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#debd5c";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";

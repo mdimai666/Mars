@@ -9,7 +9,7 @@ public class CallNode : Node
 
     public CallNode()
     {
-        haveInput = false;
+        HaveInput = false;
         Color = "#7a78fe";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
@@ -35,7 +35,7 @@ public class CallResponseNode : Node
     {
         isInjectable = false;
         Color = "#7a78fe";
-        this.haveInput = true;
+        this.HaveInput = true;
         Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
     }
 }

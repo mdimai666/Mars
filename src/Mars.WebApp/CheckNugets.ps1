@@ -4,21 +4,32 @@ $log_filename = "logs/nuget-deploy-$dateStamp.local.log"
 Start-Transcript -path $log_filename -append
 
 $dirs =  @(
+    # shared
     "Mars.Core",
     "Mars.Shared",
+    "Mars.Options/Mars.Options",
+    "AppFront.Shared",
+    "AppFront.Main",
+    # host
+    "Mars.Host.Shared",
+    "Mars.Host.Data",
+    "Mars.Shared",
+    # nodes
+    "Mars.Nodes/Mars.Nodes.Core",
+    "Mars.Nodes/Mars.Nodes.Core.Implements",
+    "Mars.Nodes/Mars.Nodes.EditorApi",
+    "Mars.Nodes/Mars.Nodes.FormEditor",
+    # modules
     "Modules/MarsEditors",
     "Modules/MarsCodeEditor2",
     "Mars.WebApiClient",
     "Modules/BlazoredHtmlRender",
-    "Mars.Nodes/Mars.Nodes.Core",
-    "AppFront.Shared",
-    "AppFront.Main",
-    #"Mars.Host",
-    "Mars.Host.Shared",
-    "Mars.Host.Data",
-    "Mars.Shared",
-    "Mars.Options/Mars.Options",
-    "Plugin/Mars.Plugin.Abstractions")
+    # plugin
+    "Plugin/Mars.Plugin.Abstractions",
+    "Plugin/Mars.Plugin.Front",
+    "Plugin/Mars.Plugin.Kit.Host",
+    "Plugin/Mars.Plugin.Kit.Front"
+)
 
 $MarsAppVersion = (Select-String -Path ..\..\Directory.Packages.props  -Pattern "<MarsAppVersion>(.+?)</MarsAppVersion>").Matches.Groups[1].Value
 

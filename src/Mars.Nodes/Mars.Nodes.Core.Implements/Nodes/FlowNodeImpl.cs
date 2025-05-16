@@ -5,7 +5,6 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class FlowNodeImpl : INodeImplement<FlowNode>, INodeImplement
 {
-
     public FlowNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;

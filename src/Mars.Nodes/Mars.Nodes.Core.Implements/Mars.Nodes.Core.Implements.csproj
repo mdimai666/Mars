@@ -1,5 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <!--Project-->
+
+        <!--Author-->
+        <PackageId>mdimai666.Mars.Nodes.Core.Implements</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <!--<Version>0.2.0</Version>-->
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.Nodes.Core.Implements</Product>
+        <PackageTags>Mars;Nodes;</PackageTags>
+        <Description>
+            Mars Nodes core Implements;
+        </Description>
+    </PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="AngleSharp" Version="1.2.0" />
 		<PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />

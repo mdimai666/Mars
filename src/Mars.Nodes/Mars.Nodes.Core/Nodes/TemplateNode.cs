@@ -12,7 +12,7 @@ public class TemplateNode : Node
 
     public TemplateNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";

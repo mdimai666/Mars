@@ -218,7 +218,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     Node CreateConfigNodeFromType(Type nodeType)
     {
         Node instance = (Node)Activator.CreateInstance(nodeType)!;
-        var thisTypeCount = Nodes.Count(s=>s.Type == instance.Type);
+        var thisTypeCount = Nodes.Count(s => s.Type == instance.Type);
         instance.Container = activeFlow.Id;
         instance.Name = instance.Label + (thisTypeCount + 1);
         Nodes.Add(instance);
@@ -388,7 +388,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     FlowNode? activeFlow = null;
 
-    public List<Node> FlowNodes => Nodes.Where(s => s.IsVisual && s.Container == activeFlow.Id).ToList();
+    public List<Node> FlowNodes => Nodes.Where(s => s.IsVisual
+                                                    && s.Container == activeFlow.Id
+                                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToList();
 
     //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
     //public string InitialFlowId { get; set; }

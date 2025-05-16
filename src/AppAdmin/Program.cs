@@ -7,12 +7,14 @@ using AppFront.Shared.Interfaces;
 using Mars.Datasource.Front;
 using Mars.Nodes.Core;
 using Mars.Nodes.WebApp.Front.Forms;
+using Mars.Nodes.Workspace;
+using Mars.Plugin.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Components.WebAssembly.Services;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using Mars.Nodes.Workspace;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace AppAdmin;
@@ -58,6 +60,7 @@ public class Program
         Thread.CurrentThread.CurrentUICulture = cultureInfo;
         //END LANG
 
+        builder.Services.AddScoped<LazyAssemblyLoader>();
         builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
 
         Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
@@ -116,6 +119,8 @@ public class Program
         }
 
         var app = builder.Build();
+
+        //await app.LoadPluginRemoteAssemblies(builder); not complete
 
         SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
 

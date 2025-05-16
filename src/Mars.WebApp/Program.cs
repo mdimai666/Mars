@@ -265,6 +265,9 @@ app.UseMarsHost(builder.Services);
 app.UseConfigureActions();
 app.MarsUseTemplator();
 app.UsePlugins();
+NodesLocator.RefreshDict();
+NodeFormsLocator.RefreshDict();
+NodeImplementFabirc.RefreshDict();
 app.UseDevAdmin();
 app.UseMarsNodes(); //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
 NodeServiceTemplaryHelper._serviceCollection = builder.Services;

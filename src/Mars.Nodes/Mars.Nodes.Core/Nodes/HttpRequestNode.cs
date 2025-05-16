@@ -15,7 +15,7 @@ public class HttpRequestNode : Node
 
     public HttpRequestNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#e7e6af";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";

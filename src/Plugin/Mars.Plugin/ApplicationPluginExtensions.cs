@@ -1,15 +1,10 @@
+using System.Reflection;
 using Mars.Plugin.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 
 namespace Mars.Plugin;
 
@@ -30,15 +25,6 @@ public static class ApplicationPluginExtensions
             string folderName = dir.Split(Path.DirectorySeparatorChar).Last();
             if (!folderName.StartsWith('.') && !folderName.StartsWith('_'))
             {
-                //    var rootFiles = Directory.EnumerateDirectories(dir, "*.dll");
-
-                //    foreach (var file in rootFiles)
-                //    {
-                //        string fileNameWext = Path.GetFileNameWithoutExtension(file);
-
-                //        if(filenam)
-
-                //    }
 
                 string expectDllName = folderName + ".dll";
 
@@ -119,6 +105,23 @@ public static class ApplicationPluginExtensions
             if (p.ConfigureWebApplication)
             {
                 p.Plugin.ConfigureWebApplication(app, p.Settings);
+            }
+
+            var pluginAssemblyName = Path.GetFileNameWithoutExtension(p.Info.AssemblyPath);
+            var pluginWwwRoot = Path.Combine(p.Settings.ContentRootPath, "wwwroot");
+
+            if (Directory.Exists(pluginWwwRoot))
+            {
+                app.Map($"/_plugin/{pluginAssemblyName}", pluginAppBuilder =>
+                {
+                    pluginAppBuilder.UseStaticFiles(new StaticFileOptions
+                    {
+                        //RequestPath = $"/_plugin/{pluginAssemblyName}",
+                        ServeUnknownFileTypes = true,
+                        FileProvider = new PhysicalFileProvider(pluginWwwRoot),
+                    });
+
+                });
             }
         }
 

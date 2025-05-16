@@ -8,7 +8,7 @@ public class ExcelNode : Node
 
     public ExcelNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#21a366";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/excel-48.png";

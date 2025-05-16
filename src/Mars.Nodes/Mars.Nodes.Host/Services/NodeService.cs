@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Managers;
@@ -25,20 +26,23 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     protected readonly IServiceProvider _serviceProvider;
 
     //private readonly ChatHub callerHub;// => ChatHub.instance;
-    private readonly IHubContext<ChatHub> hub;
+    private readonly IHubContext<ChatHub> _hub;
     readonly ILogger _logger;
 
     public event NodeServiceDeployHandler OnDeploy = default!;
+    public event NodeServiceVoidHandler OnAssignNodes = default!;
+    public event NodeServiceVoidHandler OnStart = default!;
+
     public IReadOnlyDictionary<string, INodeImplement> Nodes => _RED.Nodes;
     public IEnumerable<Node> BaseNodes => Nodes.Values.Select(s => s.Node);
 
-    public NodeService(IFileStorage fileStorage, RED _RED, IServiceProvider serviceProvider, IHubContext<ChatHub> hub, IEventManager eventManager)
+    public NodeService(IFileStorage fileStorage, RED RED, IServiceProvider serviceProvider, IHubContext<ChatHub> hub, IEventManager eventManager)
     {
         _fileStorage = fileStorage;
-        this._RED = _RED;
-        this._serviceProvider = serviceProvider;
-        this.hub = hub;
-        this._logger = MarsLogger.GetStaticLogger<INodeService>();
+        _RED = RED;
+        _serviceProvider = serviceProvider;
+        _hub = hub;
+        _logger = MarsLogger.GetStaticLogger<INodeService>();
 
         //Console.WriteLine(">>NodeService.Load()");
         //called in NodeWorkspaceExtensions.AddNodeWorkspace
@@ -56,7 +60,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         }
         catch (Exception)
         {
-            Console.WriteLine("error on load flow file");
+            _logger.LogError("error on load flow file");
         }
 
         //IEventManager eventManager = serviceProvider.GetRequiredService<IEventManager>();
@@ -89,17 +93,24 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             var nodes = JsonSerializer.Deserialize<List<Node>>(json)!;
 
             _RED.AssignNodes(nodes);
+            OnAssignNodes?.Invoke();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             _RED.Nodes = new();
+            _logger.LogError(ex, "LoadFlowFile");
         }
     }
 
     public UserActionResult Deploy(List<Node> nodes)
     {
         _RED.AssignNodes(nodes);
-        string json = JsonSerializer.Serialize(nodes);
+        OnAssignNodes?.Invoke();
+        string json = JsonSerializer.Serialize(nodes, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
 
         _fileStorage.Write(flowFileName, json);
 
@@ -115,14 +126,12 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public UserActionResult<IEnumerable<Node>> Load()
     {
-
         return new UserActionResult<IEnumerable<Node>>
         {
             Ok = true,
             Message = "loaded",
             Data = Nodes.Values.Select(s => s.Node)
         };
-
     }
 
     public Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null)
@@ -140,7 +149,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         //fs.StartAsync(new CancellationToken());
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskManager>>();
 
-        NodeTaskManager manager = new NodeTaskManager(serviceProvider, hub, Nodes, _RED, logger);
+        NodeTaskManager manager = new NodeTaskManager(serviceProvider, _hub, Nodes, _RED, logger);
 
         manager.Run(nodeId, msg);//TODO: wait complete
 
@@ -317,6 +326,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         VarNodesSetDefaultValues();
         _ = InjectStartupNodes();
+        OnStart?.Invoke();
         return Task.CompletedTask;
     }
 

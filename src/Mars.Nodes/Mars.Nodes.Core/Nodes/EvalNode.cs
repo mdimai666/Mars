@@ -9,7 +9,7 @@ public class EvalNode : Node
 
     public EvalNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#d4eba1";
         Outputs = new List<NodeOutput> { new NodeOutput() };
     }

@@ -1,4 +1,4 @@
-﻿using Mars.Nodes.Core;
+using Mars.Nodes.Core;
 using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,8 +10,11 @@ public interface INodeService
     public IEnumerable<Node> BaseNodes { get; }
 
     public delegate void NodeServiceDeployHandler();
+    public delegate void NodeServiceVoidHandler();
 
     public event NodeServiceDeployHandler OnDeploy;
+    public event NodeServiceVoidHandler OnAssignNodes;
+    public event NodeServiceVoidHandler OnStart;
 
     public UserActionResult Deploy(List<Node> nodes);
     public UserActionResult<IEnumerable<Node>> Load();

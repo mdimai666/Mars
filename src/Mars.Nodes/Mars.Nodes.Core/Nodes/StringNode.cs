@@ -9,7 +9,7 @@ public class StringNode : Node
 
     public StringNode()
     {
-        haveInput = true;
+        HaveInput = true;
         Color = "#b2b2b2";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/function.svg";

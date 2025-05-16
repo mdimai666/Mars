@@ -436,7 +436,6 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 /app.db
-/logs
 /wwwroot/upload
 /src/Mars.WebApp/data
 

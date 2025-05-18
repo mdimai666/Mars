@@ -28,7 +28,8 @@ $dirs =  @(
     "Plugin/Mars.Plugin.Abstractions",
     "Plugin/Mars.Plugin.Front",
     "Plugin/Mars.Plugin.Kit.Host",
-    "Plugin/Mars.Plugin.Kit.Front"
+    "Plugin/Mars.Plugin.Kit.Front",
+    "Plugin/Mars.Plugin.PluginPublishScript"
 )
 
 $MarsAppVersion = (Select-String -Path ..\..\Directory.Packages.props  -Pattern "<MarsAppVersion>(.+?)</MarsAppVersion>").Matches.Groups[1].Value

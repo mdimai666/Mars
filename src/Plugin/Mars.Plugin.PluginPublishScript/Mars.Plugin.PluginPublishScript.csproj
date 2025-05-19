@@ -6,15 +6,26 @@
         <!--Author-->
         <PackageId>mdimai666.Mars.Plugin.PluginPublishScript</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <!--<Version>0.2.0</Version>-->
+        <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>Mars.Plugin.PluginPublishScript</Product>
-        <PackageTags>Mars</PackageTags>
+        <PackageTags>Mars;Plugin;</PackageTags>
         <Description>
-            Mars publish plugin script;
+            Tool for developing and publishing plugins;
         </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
     <Target Name="RunPostCompileDebugScript" AfterTargets="CoreBuild" Condition="'$(Configuration)' == 'Debug'">
         <Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net9.0\Mars.deps.json $(ProjectDir)Mars.deps.json" />

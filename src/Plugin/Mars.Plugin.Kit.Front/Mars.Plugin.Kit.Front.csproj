@@ -7,21 +7,32 @@
         <!--Author-->
         <PackageId>mdimai666.Mars.Plugin.Kit.Front</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <!--<Version>0.2.0</Version>-->
+        <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>Mars.Plugin.Kit.Front</Product>
-        <PackageTags>Mars</PackageTags>
+        <PackageTags>Mars;Plugin;</PackageTags>
         <Description>
-            Mars Plugin kit for frontend;
+            Packages kits for plugin frontend development
         </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
-    <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
-    <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
-    <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
+    </ItemGroup>
 
 </Project>

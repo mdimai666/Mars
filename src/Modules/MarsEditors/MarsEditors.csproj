@@ -4,7 +4,7 @@
         <!--Author-->
         <PackageId>mdimai666.MarsEditors</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <!--<Version>0.2.0</Version>-->
+        <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>MarsEditors</Product>
@@ -12,12 +12,18 @@
         <Description>
             Shared project. Monaco Code editor depend from Mars backend
         </Description>
-        <!--<PackageProjectUrl>https://github.com/mdimai666/ee</PackageProjectUrl>-->
-        <!--<RepositoryUrl>https://github.com/mdimai666/ee</RepositoryUrl>-->
-        <!--<RepositoryType>git</RepositoryType>-->
-
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
     <ItemGroup>
         <SupportedPlatform Include="browser" />

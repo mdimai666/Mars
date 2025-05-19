@@ -7,15 +7,26 @@
         <!--Author-->
         <PackageId>mdimai666.Mars.Plugin.PluginHost</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <!--<Version>0.2.0</Version>-->
+        <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>Mars.Plugin.PluginHost</Product>
-        <PackageTags>Mars</PackageTags>
+        <PackageTags>Mars;Plugin;</PackageTags>
         <Description>
-            Mars Plugin hosting extensions;
+            Mars PluginHost - backend develpment extensions;
         </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />

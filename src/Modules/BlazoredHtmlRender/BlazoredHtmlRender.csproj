@@ -4,15 +4,26 @@
         <!--Author-->
         <PackageId>mdimai666.BlazoredHtmlRender</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <!--<Version>0.2.0</Version>-->
+        <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>BlazoredHtmlRender</Product>
         <PackageTags>Mars;Blazor;Render Blazor html string</PackageTags>
         <Description>
-            Render blazor component from string
+            A Blazor component for rendering a plain HTML string in Blazor page;
         </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
 	</PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
     <PropertyGroup>
         <NoWarn>BL0007</NoWarn>

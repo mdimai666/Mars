@@ -8,15 +8,26 @@
 		<!--Author-->
 		<PackageId>mdimai666.Mars.AppFront.Main</PackageId>
 		<PackageVersion>$(MarsAppVersion)</PackageVersion>
-		<!--<Version>0.2.0</Version>-->
+        <Version>$(MarsAppVersion)</Version>
 		<Authors>mdimai666</Authors>
 		<Company>mdimai666</Company>
 		<Product>Mars.AppFront.Main</Product>
 		<PackageTags>Mars;</PackageTags>
 		<Description>
-			Shared project using Mars client apps with UI framework
-		</Description>
-	</PropertyGroup>
+            Common models and services for the front and themes. With UI framework and shared visual components.
+        </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
 	<PropertyGroup>
         <NoWarn>BL0007;CSS102;CSS104;</NoWarn>

@@ -4,16 +4,15 @@
         <UserSecretsId>aspnet-Mars-56F29B15-4FE5-4248-9243-0A24943CC689</UserSecretsId>
 
         <!--Author-->
-        <!--<PackageId>mdimai666.Mars</PackageId>-->
-        <!--<PackageVersion>$(MarsAppVersion)</PackageVersion>-->
         <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
         <Product>Mars</Product>
         <PackageTags>Mars;CMS;eCMS;aspnetcore</PackageTags>
         <Description>
-            Mars future eCMS
+            Mars - open-source CMS of the future, webpages, visual programming, no-code, plugin extensible;
         </Description>
+        <IsPackable>false</IsPackable>
 
         <DockerfileFile>..\..\Dockerfile</DockerfileFile>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

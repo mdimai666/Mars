@@ -124,7 +124,8 @@ public static class ApplicationPluginExtensions
                 });
 
                 var pluginManifestFilePath = Path.Combine(pluginWwwRoot, MarsFrontPluginManifest.DefaultManifestFileName);
-                if (File.Exists(pluginManifestFilePath))
+                var pluginManifestBinFilePath = Path.Combine(Path.GetDirectoryName(p.Info.AssemblyPath)!, "wwwroot", MarsFrontPluginManifest.DefaultManifestFileName);
+                if (File.Exists(pluginManifestFilePath) || File.Exists(pluginManifestBinFilePath))
                 {
                     p.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
                 }

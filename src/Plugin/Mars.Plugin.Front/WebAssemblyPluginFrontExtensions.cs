@@ -51,7 +51,9 @@ public static class WebAssemblyPluginFrontExtensions
     private static async Task LoadManifest(List<Assembly> loadAssemblies, ILogger logger, HttpClient http)
     {
 
-        var runtimeManifests = await http.GetFromJsonAsync<PluginManifestInfoResponse[]>("/api/Plugin/RuntimePluginManifests");
+        var runtimeManifests = (await http.GetFromJsonAsync<PluginManifestInfoResponse[]>("/api/Plugin/RuntimePluginManifests"))!;
+
+        Console.WriteLine($"LoadPluginRemoteAssemblies: [{string.Join(',', runtimeManifests.Select(s => s.Name))}]" );
 
         // манифест файлы
         foreach (var manifestInfo in runtimeManifests)

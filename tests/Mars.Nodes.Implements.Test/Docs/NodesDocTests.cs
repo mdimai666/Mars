@@ -48,24 +48,29 @@ public class NodesDocTests
 
         var expectDocCount = nodes.Count() * Langs.Length;
         var existFilesList = new List<string>(expectDocCount);
+        var nonExistDocuments = new List<string>();
+
+        var nodesWithoutAttributes = nodes.Where(s => s.Attribute == null).ToList();
 
         foreach (var nodeInfo in nodes.Where(s => s.Attribute != null))
         {
             foreach (var lang in Langs)
             {
                 var preparedPath = FunctionApiDocumentAttribute.ReplaceLang(nodeInfo.Attribute.Url, lang);
-                preparedPath = preparedPath.Replace("_content/NodeFormEditor", "Mars.Nodes\\NodeFormEditor\\wwwroot");
+                preparedPath = preparedPath.Replace("_content/mdimai666.Mars.Nodes.FormEditor", "Mars.Nodes/Mars.Nodes.FormEditor/wwwroot");
 
                 var dir = Path.GetFullPath(preparedPath, cd);
 
                 if (File.Exists(dir)) existFilesList.Add(dir);
+                else nonExistDocuments.Add(dir);
             }
         }
 
         //Uncomment fo create blank
         //CreateDocsForNodesIfNotExist();
 
-        existFilesList.Count().Should().Be(expectDocCount, "Some doc files missing");
+        existFilesList.Count().Should().Be(expectDocCount, "\nSome doc files missing: \n" + string.Join(",", nonExistDocuments.Select(f => Path.GetFileName(f))));
+        nodesWithoutAttributes.Should().BeEmpty();
     }
 
     private void CreateDocsForNodesIfNotExist()

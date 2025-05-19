@@ -1,8 +1,11 @@
+using Mars.Core.Attributes;
+
 namespace Mars.Nodes.Core.Nodes;
 
 /// <summary>
 /// Special type for not found types
 /// </summary>
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/UnknownNode/UnknownNode{.lang}.md")]
 public class UnknownNode : Node
 {
     public string JsonBody { get; set; } = "";

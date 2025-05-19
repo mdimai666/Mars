@@ -195,6 +195,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Plugin.Front", "src\Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Plugin.PluginPublishScript", "src\Plugin\Mars.Plugin.PluginPublishScript\Mars.Plugin.PluginPublishScript.csproj", "{0D79F300-7E35-4F87-A5DC-1048C7870965}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Plugin.PluginHost", "src\Plugin\Mars.Plugin.PluginHost\Mars.Plugin.PluginHost.csproj", "{4E4E5EF1-E9E8-4A45-B026-13B373043D30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Plugin.Front.Abstractions", "src\Plugin\Mars.Plugin.Front.Abstractions\Mars.Plugin.Front.Abstractions.csproj", "{5CC8DA21-E4FE-4E2D-A2F7-11EE13C32D55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -509,6 +513,14 @@ Global
 		{0D79F300-7E35-4F87-A5DC-1048C7870965}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D79F300-7E35-4F87-A5DC-1048C7870965}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D79F300-7E35-4F87-A5DC-1048C7870965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E4E5EF1-E9E8-4A45-B026-13B373043D30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E4E5EF1-E9E8-4A45-B026-13B373043D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E4E5EF1-E9E8-4A45-B026-13B373043D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E4E5EF1-E9E8-4A45-B026-13B373043D30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC8DA21-E4FE-4E2D-A2F7-11EE13C32D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC8DA21-E4FE-4E2D-A2F7-11EE13C32D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC8DA21-E4FE-4E2D-A2F7-11EE13C32D55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC8DA21-E4FE-4E2D-A2F7-11EE13C32D55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -589,6 +601,8 @@ Global
 		{7055E2A8-8C62-AEB4-FAD8-8F0586C5FBE0} = {7044F725-E691-4C66-814C-C4ED23871946}
 		{BE48B2BC-BD50-4377-BBCD-2D6C6F729B68} = {016141CF-BEA9-4DCC-94CB-F8CD8AC6F172}
 		{0D79F300-7E35-4F87-A5DC-1048C7870965} = {016141CF-BEA9-4DCC-94CB-F8CD8AC6F172}
+		{4E4E5EF1-E9E8-4A45-B026-13B373043D30} = {016141CF-BEA9-4DCC-94CB-F8CD8AC6F172}
+		{5CC8DA21-E4FE-4E2D-A2F7-11EE13C32D55} = {016141CF-BEA9-4DCC-94CB-F8CD8AC6F172}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8D4F7A-BC38-43EA-9F4B-6BDB92828DCC}

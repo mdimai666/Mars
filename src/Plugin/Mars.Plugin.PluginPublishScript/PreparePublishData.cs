@@ -113,7 +113,10 @@ internal class PreparePublishData
         "Plugin/Mars.Plugin.Abstractions",
         "Plugin/Mars.Plugin.Front",
         "Plugin/Mars.Plugin.Kit.Host",
-        "Plugin/Mars.Plugin.Kit.Front"
+        "Plugin/Mars.Plugin.Kit.Front",
+        "Plugin/Mars.Plugin.PluginHost",
+        "Plugin/Mars.Plugin.Front.Abstractions",
+        "Plugin/Mars.Plugin.PluginPublishScript"
         ];
 
     //private static readonly string[] MarsReferenceProjects = ["AppAdmin"];

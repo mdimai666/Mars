@@ -1,4 +1,4 @@
-using Mars.Plugin.Front.Models;
+using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginPublishScript;
 using Mars.Plugin.PluginPublishScript.Models;
 
@@ -9,7 +9,7 @@ var marsReleaseDepsJsonFile = Path.Combine("Mars.deps.json");
 var marsDepsExist = File.Exists(marsReleaseDepsJsonFile);
 
 // Debug files
-//args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net9.0\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net9.0\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 
 //args = "--run-postpublish --ProjectName=Mars.TelegramPlugin --out=bin\\Release\\net9.0\\publish  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 

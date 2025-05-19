@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
-using Mars.Plugin.Front;
-using Mars.Plugin.Front.Models;
+using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginPublishScript.Dto;
 using Mars.Plugin.PluginPublishScript.Models;
 
@@ -134,7 +133,10 @@ internal class ManifestProcessing
 
         foreach (var dependency in rootDepends)
         {
-            var assemblyPath = Path.Combine(settings.ProjectDir, settings.OutDir, dependency.Name + ".dll");
+            var runtimeAssemlyName = projectDependencies.Packages[dependency.Name].Runtime.ElementAt(0);
+            var assemblyFileName = runtimeAssemlyName.Key;
+
+            var assemblyPath = Path.Combine(settings.ProjectDir, settings.OutDir, assemblyFileName);
             var assembly = Assembly.LoadFrom(assemblyPath);
 
             var assemblyTypes = assembly.GetTypes();

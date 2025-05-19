@@ -98,7 +98,7 @@ public static class ApplicationPluginExtensions
         return builder;
     }
 
-    public static void UsePlugins(this WebApplication app) //+
+    public static void UsePlugins(this WebApplication app)
     {
         foreach (var p in app.Services.GetServices<PluginData>())
         {
@@ -122,7 +122,7 @@ public static class ApplicationPluginExtensions
                     });
 
                 });
-            }
+            } 
         }
 
         if (_plugins.Count > 0)

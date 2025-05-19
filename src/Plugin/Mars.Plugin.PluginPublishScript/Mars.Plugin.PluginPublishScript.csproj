@@ -22,7 +22,7 @@
     </Target>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
+      <ProjectReference Include="..\Mars.Plugin.Front.Abstractions\Mars.Plugin.Front.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

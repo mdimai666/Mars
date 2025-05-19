@@ -1,9 +1,9 @@
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
+using Mars.Plugin.Front.Abstractions;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.WebAssembly.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +21,9 @@ public static class WebAssemblyPluginFrontExtensions
         var http = new HttpClient() { BaseAddress = baseHttp.BaseAddress };
         var logger = app.Services.GetRequiredService<ILogger<IWebAssemblyPluginFront>>();
 
-        var pluginEndpointsFile = "/_plugin/Mars.TelegramPlugin/plugin.endpoints.json";
-        var enpoints = await http.GetFromJsonAsync<EndpointJsonDtoSimplified[]>(pluginEndpointsFile);
+        var pluginEndpointsFile = $"/_plugin/Mars.TelegramPlugin/{MarsFrontPluginManifest.DefaultManifestFileName}";
+        var manifest = await http.GetFromJsonAsync<MarsFrontPluginManifest>(pluginEndpointsFile);
+        var enpoints = manifest.Plugins["Mars.TelegramPlugin.Nodes"].StaticWebassets.Endpoints;
 
         var pluginDlls = enpoints!.Where(s => s.AssetFile.EndsWith(".wasm")).DistinctBy(s => s.AssetFile).OrderByDescending(s => s.AssetFile.Length).ToList();
 
@@ -74,13 +75,4 @@ public static class WebAssemblyPluginFrontExtensions
         NodesLocator.RefreshDict();
         NodeFormsLocator.RefreshDict();
     }
-}
-
-public class EndpointJsonDtoSimplified
-{
-    [JsonPropertyName("Route")]
-    public string Route { get; set; } = default!;
-
-    [JsonPropertyName("AssetFile")]
-    public string AssetFile { get; set; } = default!;
 }

@@ -21,6 +21,7 @@
         <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
         <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.PluginHost\Mars.Plugin.PluginHost.csproj" />
     </ItemGroup>
 
 </Project>

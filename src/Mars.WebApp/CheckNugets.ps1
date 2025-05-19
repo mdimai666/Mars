@@ -61,6 +61,21 @@ foreach ($d in $dirs) {
 
 }
 
+echo '---------'
+
+$apikey = [System.Environment]::GetEnvironmentVariable('NUGET_MARS');
+function CheckNugetKey() {
+    $_apikey = [System.Environment]::GetEnvironmentVariable('NUGET_MARS')
+    if([string]::IsNullOrEmpty($_apikey)){
+        echo "EnvironmentVariable NUGET_MARS not configured"
+        exit;
+    }    
+}
+
+$isDeployRelease = If($args) { $args[0].Contains("deploy-release") } else { $false };
+echo "DeployRelease: $isDeployRelease"
+CheckNugetKey
+
 $ans = Read-Host "Do you publish all? [y]"
 
 if($ans -ne "y") {
@@ -93,8 +108,21 @@ foreach ($d in $dirs) {
     Write-Host "==============================" -ForegroundColor Blue
     # Invoke-Expression $ps1 | Out-Host - call Deploy.Nuget.ps1 script
 
-    
-    dotnet pack --configuration Release -o "C:\Users\D\Documents\VisualStudio\_LocalNugets" --include-source
+    if($isDeployRelease)
+    {
+        dotnet pack --configuration Release
+        #$file = $(gci .\bin\Release\*.nupkg | sort CreationTime -Descending | Select-Object -First 1).Name
+        #echo $file
+        #echo $(ls ".\bin\Release\*.$version.nupkg")
+
+        dotnet nuget push ".\bin\Release\*.$version.nupkg" --api-key $apikey --source https://api.nuget.org/v3/index.json
+        #cd $__DIR__
+        #exit
+    }
+    else
+    {
+        dotnet pack --configuration Release -o "C:\Users\D\Documents\VisualStudio\_LocalNugets" --include-source
+    }
 
 
     cd $__DIR__

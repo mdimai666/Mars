@@ -5,7 +5,6 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Templators;
 using Mars.QueryLang.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 
 namespace Mars.Host.QueryLang;
 
@@ -99,7 +98,7 @@ public static class EfDynQueryDict
     {
         public XInterpreter ppt;
         public Type entityType;
-        public JObject context;
+        public Dictionary<string, object?> context;
         public MarsDbContext ef;
         public List<PostTypeEntity> postTypes;
         public IMetaModelTypesLocator mlocator;
@@ -110,7 +109,7 @@ public static class EfDynQueryDict
         public Dictionary<string, PostTypeEntity> postTypesDict;
 
         public DQC_Context(IServiceProvider sp, string postTypeName, Type entityType,
-            MarsDbContext ef, XInterpreter ppt, JObject pageContext, List<PostTypeEntity> postTypes,
+            MarsDbContext ef, XInterpreter ppt, Dictionary<string, object?> pageContext, List<PostTypeEntity> postTypes,
             UserEntity? user)
         {
             this.serviceProvider = sp;

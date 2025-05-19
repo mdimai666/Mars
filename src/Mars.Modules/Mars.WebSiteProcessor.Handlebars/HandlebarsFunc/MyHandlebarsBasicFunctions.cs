@@ -1,10 +1,9 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
-using Mars.Host.Shared.Templators;
-using Mars.Core.Extensions;
 using HandlebarsDotNet;
+using Mars.Core.Extensions;
 //using Humanizer;
-using Newtonsoft.Json;
 
 namespace Mars.Host.Templators.HandlebarsFunc;
 
@@ -353,7 +352,7 @@ public static class MyHandlebarsBasicFunctions
 
         var obj = args[0];
 
-        var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+        var json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
 
         output.WriteSafeString(json);
         //return jobj;

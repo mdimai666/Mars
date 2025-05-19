@@ -33,7 +33,7 @@
 		<PackageReference Include="Flurl.Http" Version="4.0.2" />
 		<PackageReference Include="Handlebars.Net" Version="2.1.6" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -46,7 +45,6 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                     typeof(UserDetail).Assembly,
                     typeof(IPostService).Assembly,
                     typeof(EntityFrameworkQueryableExtensions).Assembly,
-                    typeof(JObject).Assembly,
                     typeof(ServiceProviderServiceExtensions).Assembly
             };
 
@@ -78,8 +76,6 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 //"Mars.Shared.Services",
                 //"AppShared.Models",
                 //"Microsoft.EntityFrameworkCore",
-                //"Newtonsoft.Json",
-                //"Newtonsoft.Json.Linq"
                 )
                 .WithReferences(
                     comparedAssemblies

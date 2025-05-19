@@ -149,23 +149,23 @@ public class EsiaService
 public class EsiaUserInfo
 {
 
-    [JsonPropertyName("firstName"), Newtonsoft.Json.JsonProperty("firstName")]
+    [JsonPropertyName("firstName")]
     public string firstName { get; set; } = default!;
-    [JsonPropertyName("lastName"), Newtonsoft.Json.JsonProperty("lastName")]
+    [JsonPropertyName("lastName")]
     public string lastName { get; set; } = default!;
-    [JsonPropertyName("middleName"), Newtonsoft.Json.JsonProperty("middleName")]
+    [JsonPropertyName("middleName")]
     public string middleName { get; set; } = default!;
-    [JsonPropertyName("birthDate"), Newtonsoft.Json.JsonProperty("birthDate")]
+    [JsonPropertyName("birthDate")]
     public string birthDate { get; set; } = default!;
-    [JsonPropertyName("mobile"), Newtonsoft.Json.JsonProperty("mobile")]
+    [JsonPropertyName("mobile")]
     public string mobile { get; set; } = default!;
-    [JsonPropertyName("email"), Newtonsoft.Json.JsonProperty("email")]
+    [JsonPropertyName("email")]
     public string email { get; set; } = default!;
-    [JsonPropertyName("trusted"), Newtonsoft.Json.JsonProperty("trusted")]
+    [JsonPropertyName("trusted")]
     public bool trusted { get; set; } = default!;
-    [JsonPropertyName("verifying"), Newtonsoft.Json.JsonProperty("verifying")]
+    [JsonPropertyName("verifying")]
     public bool verifying { get; set; } = default!;
 
-    //[JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    //[JsonIgnore]
     //public string Username => new string(mobile?.Where(s => char.IsDigit(s) || s == '+').ToArray()) {get;set;}
 }

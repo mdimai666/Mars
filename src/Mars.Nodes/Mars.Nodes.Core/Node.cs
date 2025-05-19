@@ -104,13 +104,13 @@ public class Node : INodeBasic
     public static bool IsVisualNode(Type nodeType) => !NonVisualNodes.Any(t => t == nodeType || t.IsAssignableFrom(nodeType));
 
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public virtual bool IsVisual => IsVisualNode(GetType());
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public virtual bool IsConfigNode => typeof(ConfigNode).IsAssignableFrom(GetType());
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public int OutputCount
     {
 

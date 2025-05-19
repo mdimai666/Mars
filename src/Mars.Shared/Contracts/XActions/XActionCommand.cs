@@ -17,7 +17,7 @@ public class XActionCommand
     public float ContextMenuOrder { get; init; }
     public string[]? FrontContextId { get; init; }
 
-    //[JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    //[JsonIgnore]
     //public Func<object> Run { get; init; }
 
     public override bool Equals(object? obj)

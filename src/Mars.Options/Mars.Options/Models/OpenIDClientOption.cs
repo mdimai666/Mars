@@ -11,7 +11,7 @@ public class OpenIDClientOption
 
     public List<OpenIDClientConfig> OpenIDClientConfigs { get; set; } = new();
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public static Dictionary<string,string> DriverList { get; set; } = new()
     {
         ["mars"] = "Mars",

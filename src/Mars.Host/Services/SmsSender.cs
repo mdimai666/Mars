@@ -1,7 +1,7 @@
-﻿using Mars.Host.Shared.Services;
+using System.Text.Json;
+using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Sms;
-using Newtonsoft.Json;
 
 namespace Mars.Host.Services;
 
@@ -58,7 +58,7 @@ internal class SmsSender : ISmsSender
             text = form.Message
         };
 
-        string json = JsonConvert.SerializeObject(msg);
+        string json = JsonSerializer.Serialize(msg);
 
         //StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
         //var response = await client.PostAsync($"/sms/send?json=1&translit=0&test=1&api_id={SMSRU_API_ID}", content);
@@ -72,7 +72,7 @@ internal class SmsSender : ISmsSender
 
         string body = await response.Content.ReadAsStringAsync();
 
-        ResponseResult result = JsonConvert.DeserializeObject<ResponseResult>(body);
+        ResponseResult result = JsonSerializer.Deserialize<ResponseResult>(body)!;
 
         return result;
     }

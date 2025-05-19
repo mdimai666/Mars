@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using AppFront.Shared.AuthProviders;
-using Aqua.EnumerableExtensions;
+using Mars.Core.Extensions;
 using Mars.Shared.Contracts.Auth;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Components;

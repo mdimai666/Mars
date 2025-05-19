@@ -45,7 +45,7 @@ public partial class EditNavMenuPage
         public List<string> Roles { get; set; } = new();
 
         //[NotMapped]
-        //[JsonIgnore, Newtonsoft.Json.JsonIgnore]
+        //[JsonIgnore]
         //[Comment("Роли")]
         //public IEnumerable<string> SetRoles { get => Roles; set => Roles = value.ToList(); }
 

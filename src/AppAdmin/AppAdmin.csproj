@@ -92,13 +92,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.2" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
-        <PackageReference Include="Remote.Linq" Version="7.2.2" />
-        <PackageReference Include="Remote.Linq.Newtonsoft.Json" Version="7.2.2" />
-        <PackageReference Include="Remote.Linq.Text.Json" Version="7.2.2" />
         <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.0" />
         <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-
     </ItemGroup>
 
     <ItemGroup>

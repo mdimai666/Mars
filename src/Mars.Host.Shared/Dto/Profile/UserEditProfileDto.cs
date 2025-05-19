@@ -30,7 +30,6 @@ namespace Mars.Host.Shared.Dto.Profile;
 //    public string Email { get; set; }
 
 //    [JsonIgnore]
-//    [Newtonsoft.Json.JsonIgnore]
 //    [Display(Name = "ФИО")]
 //    public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls()); 
 

@@ -21,7 +21,7 @@ public interface IUserBasicInfo : IBasicEntity
     [Display(Name = "Отчество")]
     public string? MiddleName { get; set; }
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     [PersonalData]
     [NotMapped]
     [Display(Name = "ФИО")]

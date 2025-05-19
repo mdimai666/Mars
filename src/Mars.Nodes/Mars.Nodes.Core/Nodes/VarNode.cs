@@ -15,7 +15,7 @@ public class VarNode : Node, IValidatableObject
     bool? _arrayValue;
     public bool ArrayValue { get => _arrayValue ??= ParseVarTypeString(VarType).isArray; }
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public object? Value { get; set; } = 0;
 
     public override string Label => $"{VarType}: {Name}";

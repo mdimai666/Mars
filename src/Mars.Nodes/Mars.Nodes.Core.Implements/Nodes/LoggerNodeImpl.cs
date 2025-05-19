@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Mars.Nodes.Core.Nodes;
 using Mars.Core.Extensions;
 using Microsoft.Extensions.Logging;
@@ -7,7 +7,6 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
 {
-
     public LoggerNode Node { get; }
     Node INodeImplement<Node>.Node => Node;
     public IRED RED { get; set; }
@@ -38,7 +37,6 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
 
             if (input.Payload is not string && input.Payload is object)
             {
-                //string json = Newtonsoft.Json.JsonConvert.SerializeObject(input.Payload, Newtonsoft.Json.Formatting.Indented);
                 string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
 
                 loggerContent = json.Left(jsonSymbolsLimit);

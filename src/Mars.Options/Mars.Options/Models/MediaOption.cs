@@ -11,7 +11,7 @@ public class MediaOption
     [Display(Name = "Maximum InputFile Size")]
     public ulong MaximumInputFileSize { get; set; } = 100 * 1024 * 1024;
     [Display(Name = "Maximum InputFile Size")]
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
 
     public long MaximumInputFileSizeSetter { get => (long)MaximumInputFileSize; set => MaximumInputFileSize = (ulong)value; }
 
@@ -30,7 +30,7 @@ public class MediaOption
         set { _allowedFileExtensions = value; UpdAllowDict(); }
     }
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     [Display(Name = "Allowed File Extensions")]
     public string AllowedFileExtensionsSetter
     {

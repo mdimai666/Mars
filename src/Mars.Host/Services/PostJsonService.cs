@@ -13,7 +13,6 @@ using Mars.Host.Shared.Validators;
 using Mars.Host.Templators;
 using Mars.Shared.Common;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 
 namespace Mars.Host.Services;
 
@@ -357,7 +356,5 @@ internal class PostJsonService : IPostJsonService
 
         //return JsonMergeExtensions.Merge(postDtoJson, meta);
     }
-
-    public JObject AsJson22(object pctx) => throw new NotImplementedException();
 
 }

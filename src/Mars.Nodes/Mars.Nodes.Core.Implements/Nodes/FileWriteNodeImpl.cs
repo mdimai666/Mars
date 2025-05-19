@@ -1,7 +1,5 @@
-﻿using Mars.Nodes.Core.Nodes;
-using System.IO;
-using System.Text;
 using System.Text.Json;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -51,7 +49,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
                 }
                 else
                 {
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(input, Newtonsoft.Json.Formatting.Indented);
+                    string? json = JsonNodeImpl.ToJsonString(input.Payload!);
                     payload = json;
                 }
 

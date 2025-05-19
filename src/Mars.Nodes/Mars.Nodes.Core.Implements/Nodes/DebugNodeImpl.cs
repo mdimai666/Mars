@@ -34,12 +34,10 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
-
             DebugMessage msg;
 
             if (Node.CompleteInputMessage)
             {
-                //string json = Newtonsoft.Json.JsonConvert.SerializeObject(input.AsFullDict(), Newtonsoft.Json.Formatting.Indented, stt);
                 string json = System.Text.Json.JsonSerializer.Serialize(input.AsFullDict(), opt);
 
                 msg = new DebugMessage
@@ -52,8 +50,6 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
             }
             else if (input.Payload is not string && input.Payload is object)
             {
-
-                //string json = Newtonsoft.Json.JsonConvert.SerializeObject(input.Payload, Newtonsoft.Json.Formatting.Indented);
                 string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
 
                 msg = new DebugMessage

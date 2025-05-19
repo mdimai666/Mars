@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Aqua.EnumerableExtensions;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
 using Mars.Shared.Contracts.Roles;

@@ -1,10 +1,10 @@
+using System.Text.Json.Nodes;
 using Flurl.Http;
 using Mars.Host.Shared.Exceptions;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Templators;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 
 namespace Mars.Host.Templators;
 
@@ -114,13 +114,13 @@ public class TemplatorRegisterFunctions
         }
 
         string method = args[0].ToString().ToUpper();
-        string url = args[1].ToString();
-        string body = method != "GET" ? args[2].ToString() : null;
+        string url = args[1].ToString()!;
+        string? body = method != "GET" ? args[2].ToString() : null;
 
         using var http = ctx.ServiceProvider.GetRequiredService<IFlurlClient>();
 
         string res;
-        JToken res_json = null;
+        JsonNode? res_json = null;
         if (method == "GET") res = await http.Request(url).GetStringAsync(); //TODO: CancellationToken
         else res = await http.Request(url).PostStringAsync(body).ReceiveString();
 
@@ -129,7 +129,7 @@ public class TemplatorRegisterFunctions
         bool isArr = res.Length > 1 && res[0] == '[';
 
         if (isObject || isArr)
-            res_json = JToken.Parse(res);
+            res_json = JsonNode.Parse(res);
 
         object total = res_json is not null ? res_json : res;
 

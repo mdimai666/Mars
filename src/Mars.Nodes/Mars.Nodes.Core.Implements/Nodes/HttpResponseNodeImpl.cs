@@ -1,13 +1,8 @@
-﻿using Mars.Host.Shared.Models;
-using Mars.Nodes.Core.Nodes;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using Mars.Host.Shared.Models;
+using Mars.Nodes.Core.Nodes;
+using Microsoft.AspNetCore.Http;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -46,7 +41,7 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
         else if (input.Payload is object)
         {
             http.HttpContext.Response.ContentType = "application/json";
-            response = JsonConvert.SerializeObject(input.Payload);
+            response = JsonSerializer.Serialize(input.Payload);
             //response = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
         }
         else response = input.Payload?.ToString();

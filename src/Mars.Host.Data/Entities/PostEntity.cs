@@ -47,7 +47,7 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
     public string? Excerpt { get; set; } = "";
 
     //[Comment("Изображение")]
-    //[JsonPropertyName("postImage"), Newtonsoft.Json.JsonProperty("postImage")]
+    //[JsonPropertyName("postImage")]
     //public string Image { get; set; } = ""; //TODO: May be relation PostAttachments?
 
     [Required]

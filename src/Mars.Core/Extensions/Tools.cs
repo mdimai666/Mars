@@ -1,5 +1,6 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
+using Mars.Core.Features.JsonConverter;
 
 namespace Mars.Core.Extensions;
 
@@ -190,16 +191,10 @@ public static class Tools
         });
     }
 
-    static JsonSerializerSettings _defaultConvertSetting = new JsonSerializerSettings
-    {
-        Formatting = Formatting.None,
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-    };
-
     public static T CopyViaJsonConversion<T>(this object source)
     {
-        string json = Newtonsoft.Json.JsonConvert.SerializeObject(source, _defaultConvertSetting);
-        T? b = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json, _defaultConvertSetting);
+        string json = JsonSerializer.Serialize(source, SystemJsonConverter.DefaultJsonSerializerOptions());
+        T? b = JsonSerializer.Deserialize<T>(json, SystemJsonConverter.DefaultJsonSerializerOptions());
         return b!;
     }
 

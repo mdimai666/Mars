@@ -19,7 +19,7 @@ public class WebClientRequest
     public string Scheme { get; }
     public string Method { get; }
 
-    [JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public IHeaderDictionary Headers;
 
     public DictionaryWithDefault<string, string?> Cookies;

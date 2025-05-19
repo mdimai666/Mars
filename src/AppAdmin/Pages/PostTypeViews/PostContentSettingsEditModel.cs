@@ -1,4 +1,4 @@
-using Aqua.EnumerableExtensions;
+using Mars.Core.Extensions;
 using Mars.Shared.Contracts.PostTypes;
 
 namespace AppAdmin.Pages.PostTypeViews;
@@ -24,7 +24,7 @@ public record PostContentSettingsEditModel
             PostContentType = PostContentType,
             CodeLang = CodeLang.AsNullIfEmpty(),
         };
-    
+
     public static PostContentSettingsEditModel ToModel(PostContentSettingsResponse response)
         => new()
         {

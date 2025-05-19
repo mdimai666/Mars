@@ -72,7 +72,7 @@ public class MetaFieldEntity : IBasicEntity
 
     ////SETTERS===============
     //[Comment("Теги")]
-    ////[JsonIgnore, Newtonsoft.Json.JsonIgnore]
+    ////[JsonIgnore]
     //[NotMapped]
     //public virtual IEnumerable<string> SetTags { get => Tags ?? new(); set => Tags = value.ToList(); }
     //SETTERS===============

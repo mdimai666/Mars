@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Shared.Contracts.Users;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
-using Newtonsoft.Json;
 
 namespace AppAdmin.Pages.UserViews;
 

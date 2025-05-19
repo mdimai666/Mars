@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Aqua.EnumerableExtensions;
+using Mars.Core.Extensions;
 using Mars.Shared.Contracts.Users;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;

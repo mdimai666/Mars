@@ -1,5 +1,4 @@
 using Mars.Shared.Options;
-using Newtonsoft.Json;
 
 namespace Test.Mars.Host.Models;
 

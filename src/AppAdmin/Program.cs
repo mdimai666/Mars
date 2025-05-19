@@ -120,7 +120,7 @@ public class Program
 
         var app = builder.Build();
 
-        //await app.LoadPluginRemoteAssemblies(builder); not complete
+        await app.LoadPluginRemoteAssemblies(builder);
 
         SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
 

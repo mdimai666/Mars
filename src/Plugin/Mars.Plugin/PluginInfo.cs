@@ -10,9 +10,12 @@ public class PluginInfo
     
     public string Version { get; set; } = default!;
     public string Title { get; set; } = default!;
+    public string KeyName { get; set; } = default!;
     public string Description { get; set; } = default!;
 
     internal Assembly Assembly { get; set; } = default!;
+
+    public string? ManifestFile { get; set; }
 
     public PluginInfo()
     {
@@ -35,6 +38,8 @@ public class PluginInfo
 
         this.AssemblyFullName = assembly.FullName!;
         this.AssemblyPath = assembly.Location;
+
+        this.KeyName = Path.GetFileNameWithoutExtension(AssemblyPath);
 
         var _assembly = assembly.GetName();
 

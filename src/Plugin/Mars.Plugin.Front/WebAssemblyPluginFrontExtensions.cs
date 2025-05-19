@@ -4,6 +4,7 @@ using System.Runtime.Loader;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Plugin.Front.Abstractions;
+using Mars.Shared.Contracts.Plugins;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.WebAssembly.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,38 +22,9 @@ public static class WebAssemblyPluginFrontExtensions
         var http = new HttpClient() { BaseAddress = baseHttp.BaseAddress };
         var logger = app.Services.GetRequiredService<ILogger<IWebAssemblyPluginFront>>();
 
-        var pluginEndpointsFile = $"/_plugin/Mars.TelegramPlugin/{MarsFrontPluginManifest.DefaultManifestFileName}";
-        var manifest = await http.GetFromJsonAsync<MarsFrontPluginManifest>(pluginEndpointsFile);
-        var enpoints = manifest.Plugins["Mars.TelegramPlugin.Nodes"].StaticWebassets.Endpoints;
-
-        var pluginDlls = enpoints!.Where(s => s.AssetFile.EndsWith(".wasm")).DistinctBy(s => s.AssetFile).OrderByDescending(s => s.AssetFile.Length).ToList();
-
-        var pluginDllFullUrls = pluginDlls.Select(s => $"/_plugin/Mars.TelegramPlugin/{s.AssetFile}").ToList();
-
         var loadAssemblies = new List<Assembly>();
 
-        foreach (var pluginDll in pluginDlls)
-        {
-            var pluginDllFull = "/_plugin/Mars.TelegramPlugin/" + pluginDll.AssetFile;
-
-            try
-            {
-                logger.LogInformation($"start load: {pluginDll.AssetFile}");
-
-                var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
-                Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
-                var assembly = Assembly.Load(dllBytes);
-
-                loadAssemblies.Add(assembly);
-                using Stream stream = new MemoryStream(dllBytes);
-                AssemblyLoadContext.Default.LoadFromStream(stream);
-
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"({pluginDll.AssetFile}) Ошибка загрузки: {ex.Message}");
-            }
-        }
+        await LoadManifest(loadAssemblies, logger, http);
 
         foreach (var assembly in loadAssemblies)
         {
@@ -74,5 +46,52 @@ public static class WebAssemblyPluginFrontExtensions
 
         NodesLocator.RefreshDict();
         NodeFormsLocator.RefreshDict();
+    }
+
+    private static async Task LoadManifest(List<Assembly> loadAssemblies, ILogger logger, HttpClient http)
+    {
+
+        var runtimeManifests = await http.GetFromJsonAsync<PluginManifestInfoResponse[]>("/api/Plugin/RuntimePluginManifests");
+
+        // манифест файлы
+        foreach (var manifestInfo in runtimeManifests)
+        {
+            //var pluginEndpointsFile = $"/_plugin/Mars.TelegramPlugin/{MarsFrontPluginManifest.DefaultManifestFileName}";
+            var pluginEndpointsFile = manifestInfo.Uri;
+            var manifest = await http.GetFromJsonAsync<MarsFrontPluginManifest>(pluginEndpointsFile);
+
+            // каждый плагин объявляет какие компоненты загружать
+            foreach (var pluginDefinition in manifest.Plugins.Values)
+            {
+                //var enpoints = manifest.Plugins["Mars.TelegramPlugin.Nodes"].StaticWebassets.Endpoints;
+                var enpoints = pluginDefinition.StaticWebassets.Endpoints;
+                var pluginDlls = enpoints!.Where(s => s.AssetFile.EndsWith(".wasm")).DistinctBy(s => s.AssetFile).OrderByDescending(s => s.AssetFile.Length).ToList();
+
+                //var pluginDllFullUrls = pluginDlls.Select(s => $"/_plugin/Mars.TelegramPlugin/{s.AssetFile}").ToList();
+
+                foreach (var pluginDll in pluginDlls)
+                {
+                    var pluginDllFull = $"/_plugin/{manifestInfo.Name}/" + pluginDll.AssetFile;
+
+                    try
+                    {
+                        logger.LogInformation($"start load: {pluginDll.AssetFile}");
+
+                        var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
+                        Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
+                        var assembly = Assembly.Load(dllBytes);
+
+                        loadAssemblies.Add(assembly);
+                        using Stream stream = new MemoryStream(dllBytes);
+                        AssemblyLoadContext.Default.LoadFromStream(stream);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError($"({pluginDll.AssetFile}) Ошибка загрузки: {ex.Message}");
+                    }
+                }
+            }
+        }
     }
 }

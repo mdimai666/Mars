@@ -9,4 +9,5 @@ public record PluginInfoDto
     public required string AssemblyName { get; set; }
     public required bool Enabled { get; set; }
     public required DateTimeOffset InstalledAt { get; set; }
+    public required string? FrontManifest { get; set; }
 }

@@ -17,6 +17,14 @@ public static class PluginMapping
             Description = entity.Description,
             Enabled = entity.Enabled,
             InstalledAt= entity.InstalledAt,
+            FrontManifest = entity.FrontManifest,
+        };
+
+    public static PluginManifestInfoResponse ToResponse(this PluginManifestInfoDto entity)
+        => new()
+        {
+            Name = entity.Name,
+            Uri = entity.Uri,
         };
 
     public static IReadOnlyCollection<PluginInfoResponse> ToResponse(this IReadOnlyCollection<PluginInfoDto> list)
@@ -27,4 +35,7 @@ public static class PluginMapping
 
     public static PagingResult<PluginInfoResponse> ToResponse(this PagingResult<PluginInfoDto> list)
         => list.ToMap(ToResponse);
+
+    public static IReadOnlyCollection<PluginManifestInfoResponse> ToResponse(this IEnumerable<PluginManifestInfoDto> list)
+        => list.Select(ToResponse).ToList();
 }

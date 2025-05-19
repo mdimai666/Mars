@@ -9,7 +9,6 @@ using Mars.Shared.Common;
 
 namespace Mars.Services;
 
-
 internal class PluginService : IPluginService
 {
     public PluginService()
@@ -39,6 +38,13 @@ internal class PluginService : IPluginService
             .AsPagingResult(query);
     }
 
+    public IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests()
+    {
+        return ApplicationPluginExtensions.Plugins.Where(s => s.Info.ManifestFile != null)
+                                                    .Select(s => new PluginManifestInfoDto { Name = s.Info.KeyName, Uri = s.Info.ManifestFile! })
+                                                    .ToDictionary(s => s.Name);
+    }
+
     public static PluginInfoDto GetPluginInfoDto(PluginInfo pluginInfo)
     {
         return new PluginInfoDto()
@@ -50,9 +56,11 @@ internal class PluginService : IPluginService
             AssemblyName = pluginInfo.AssemblyFullName,
             Enabled = true,
             InstalledAt = DateTimeOffset.MinValue,
+            FrontManifest = pluginInfo.ManifestFile,
         };
     }
 
+    #region EXAMPLE ROWS
     public static List<PluginInfoDto> GetExamplePluginList(ListPluginQuery query)
     {
         List<PluginInfoDto> pluginsExample = [
@@ -64,6 +72,7 @@ internal class PluginService : IPluginService
                 Description = "Плагин магазина ",
                 Enabled = true,
                 InstalledAt = DateTimeOffset.MinValue,
+                FrontManifest = "_plugin/Mars.EShop/_front_plugins.json"
             },
             new(){
                 PackageId = "google.zsn.bu",
@@ -73,6 +82,7 @@ internal class PluginService : IPluginService
                 Description = "Плагин магазина  sajdlkjkldfja;ldjf;kadf k;da",
                 Enabled = true,
                 InstalledAt = DateTimeOffset.Now,
+                FrontManifest = null
             },
             new(){
                 PackageId = "askdasdsd.sdasdfd.dafadf",
@@ -82,6 +92,7 @@ internal class PluginService : IPluginService
                 Description = "Плагин магазина as dfkda;l fk;ldka fl;kdaf d765b36b-ead3-44d2-af1a-5b2ecb75e567",
                 Enabled = true,
                 InstalledAt = DateTimeOffset.Now + TimeSpan.FromDays(-5),
+                FrontManifest = null
             },
         ];
         return pluginsExample.Where(s => (query.Search == null || (
@@ -93,4 +104,6 @@ internal class PluginService : IPluginService
             .OrderBySortStringParam(query.Sort ?? "Title")
             .ToList();
     }
+    #endregion
+
 }

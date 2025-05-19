@@ -33,9 +33,17 @@ public class PluginController : ControllerBase
     {
         return _pluginService.List(request.ToQuery()).ToResponse();
     }
+
     [HttpGet("ListTable")]
     public PagingResult<PluginInfoResponse> ListTable([FromQuery] TablePluginQueryRequest request)
     {
         return _pluginService.ListTable(request.ToQuery()).ToResponse();
+    }
+
+    [AllowAnonymous]
+    [HttpGet("RuntimePluginManifests")]
+    public IReadOnlyCollection<PluginManifestInfoResponse> RuntimePluginManifests()
+    {
+        return _pluginService.RuntimePluginManifests().Values.ToResponse();
     }
 }

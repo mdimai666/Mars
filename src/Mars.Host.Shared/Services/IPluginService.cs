@@ -7,4 +7,5 @@ public interface IPluginService
 {
     ListDataResult<PluginInfoDto> List(ListPluginQuery query);
     PagingResult<PluginInfoDto> ListTable(ListPluginQuery query);
+    IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests();
 }

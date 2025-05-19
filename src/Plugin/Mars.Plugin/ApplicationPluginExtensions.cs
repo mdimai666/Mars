@@ -1,5 +1,6 @@
 using System.Reflection;
 using Mars.Plugin.Abstractions;
+using Mars.Plugin.Front.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
@@ -90,7 +91,7 @@ public static class ApplicationPluginExtensions
                 p.Plugin.ConfigureWebApplicationBuilder(builder, p.Settings);
 
                 // Use the same instance when mapping plugins
-                builder.Services.AddSingleton(typeof(PluginData), p);
+                //builder.Services.AddSingleton(typeof(PluginData), p);
             }
         }
 
@@ -100,29 +101,34 @@ public static class ApplicationPluginExtensions
 
     public static void UsePlugins(this WebApplication app)
     {
-        foreach (var p in app.Services.GetServices<PluginData>())
+        //foreach (var p in app.Services.GetServices<PluginData>())
+        foreach (var p in _plugins)
         {
             if (p.ConfigureWebApplication)
             {
                 p.Plugin.ConfigureWebApplication(app, p.Settings);
             }
 
-            var pluginAssemblyName = Path.GetFileNameWithoutExtension(p.Info.AssemblyPath);
             var pluginWwwRoot = Path.Combine(p.Settings.ContentRootPath, "wwwroot");
 
             if (Directory.Exists(pluginWwwRoot))
             {
-                app.Map($"/_plugin/{pluginAssemblyName}", pluginAppBuilder =>
+                var pluginUrl = $"/_plugin/{p.Info.KeyName}";
+                app.Map(pluginUrl, pluginAppBuilder =>
                 {
                     pluginAppBuilder.UseStaticFiles(new StaticFileOptions
                     {
-                        //RequestPath = $"/_plugin/{pluginAssemblyName}",
                         ServeUnknownFileTypes = true,
                         FileProvider = new PhysicalFileProvider(pluginWwwRoot),
                     });
-
                 });
-            } 
+
+                var pluginManifestFilePath = Path.Combine(pluginWwwRoot, MarsFrontPluginManifest.DefaultManifestFileName);
+                if (File.Exists(pluginManifestFilePath))
+                {
+                    p.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
+                }
+            }
         }
 
         if (_plugins.Count > 0)

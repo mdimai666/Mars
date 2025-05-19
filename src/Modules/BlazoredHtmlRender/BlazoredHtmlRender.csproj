@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
-	<PropertyGroup>
+    <PropertyGroup>
         <!--Author-->
         <PackageId>mdimai666.BlazoredHtmlRender</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
@@ -15,28 +15,34 @@
         <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
-	</PropertyGroup>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
     <PropertyGroup>
         <NoWarn>BL0007</NoWarn>
     </PropertyGroup>
 
-	<ItemGroup>
-		<SupportedPlatform Include="browser" />
-	</ItemGroup>
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
-		<PackageReference Include="OneOf" Version="3.0.271" />
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+        <PackageReference Include="OneOf" Version="3.0.271" />
         <!--<PackageReference Include="DynamicExpresso.Core" Version="2.13.0" />-->
     </ItemGroup>
 

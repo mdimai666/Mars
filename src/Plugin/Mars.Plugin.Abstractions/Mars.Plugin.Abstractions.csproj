@@ -1,35 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<!--Project-->
-		<EnableDynamicLoading>true</EnableDynamicLoading>
+    <PropertyGroup>
+        <!--Project-->
+        <EnableDynamicLoading>true</EnableDynamicLoading>
 
-		<!--Author-->
-		<PackageId>mdimai666.Mars.Plugin.Abstractions</PackageId>
-		<PackageVersion>$(MarsAppVersion)</PackageVersion>
-		<Version>$(MarsAppVersion)</Version>
-		<Authors>mdimai666</Authors>
-		<Company>mdimai666</Company>
-		<Product>Mars.Plugin.Abstractions</Product>
-		<PackageTags>Mars;Plugin;</PackageTags>
-		<Description>
-			Mars Plugin Abstractions;
-		</Description>
+        <!--Author-->
+        <PackageId>mdimai666.Mars.Plugin.Abstractions</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.Plugin.Abstractions</Product>
+        <PackageTags>Mars;Plugin;</PackageTags>
+        <Description>
+            Mars Plugin Abstractions;
+        </Description>
         <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
-	</PropertyGroup>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
 
 </Project>

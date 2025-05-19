@@ -1,49 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<!--Project-->
-		<EnableDynamicLoading>true</EnableDynamicLoading>
+    <PropertyGroup>
+        <!--Project-->
+        <EnableDynamicLoading>true</EnableDynamicLoading>
 
-		<!--Author-->
-		<PackageId>mdimai666.Mars.Host.Shared</PackageId>
-		<PackageVersion>$(MarsAppVersion)</PackageVersion>
-		<Version>$(MarsAppVersion)</Version>
-		<Authors>mdimai666</Authors>
-		<Company>mdimai666</Company>
-		<Product>Mars.Host.Shared</Product>
-		<PackageTags>Mars;</PackageTags>
-		<Description>
+        <!--Author-->
+        <PackageId>mdimai666.Mars.Host.Shared</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.Host.Shared</Product>
+        <PackageTags>Mars;</PackageTags>
+        <Description>
             Mars Host common models and services abstractions.
         </Description>
         <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
-	</PropertyGroup>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
     <ItemGroup>
         <None Include="..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="FluentValidation" Version="11.11.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
-		<PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
-		<PackageReference Include="Quartz" Version="3.13.1" />
+    <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
+        <PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
+        <PackageReference Include="Quartz" Version="3.13.1" />
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="4.0.0" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-	</ItemGroup>
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
-		<ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-		<ProjectReference Include="..\Mars.Options\Mars.Options\Mars.Options.csproj" />
-		<ProjectReference Include="..\Mars.Shared\Mars.Shared.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+        <ProjectReference Include="..\Mars.Options\Mars.Options\Mars.Options.csproj" />
+        <ProjectReference Include="..\Mars.Shared\Mars.Shared.csproj" />
+    </ItemGroup>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

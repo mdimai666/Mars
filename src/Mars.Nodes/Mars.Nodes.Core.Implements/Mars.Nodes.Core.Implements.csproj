@@ -17,28 +17,34 @@
         <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="AngleSharp" Version="1.2.0" />
-		<PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
-		<PackageReference Include="Flurl.Http" Version="4.0.2" />
-		<PackageReference Include="Handlebars.Net" Version="2.1.6" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AngleSharp" Version="1.2.0" />
+        <PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
+        <PackageReference Include="Flurl.Http" Version="4.0.2" />
+        <PackageReference Include="Handlebars.Net" Version="2.1.6" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-	  <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+    </ItemGroup>
 
 </Project>

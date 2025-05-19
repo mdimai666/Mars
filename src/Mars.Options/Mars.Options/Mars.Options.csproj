@@ -1,32 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<!--Author-->
-		<PackageId>mdimai666.Mars.Options</PackageId>
-		<PackageVersion>$(MarsAppVersion)</PackageVersion>
-		<Version>$(MarsAppVersion)</Version>
-		<Authors>mdimai666</Authors>
-		<Company>mdimai666</Company>
-		<Product>Mars.Options</Product>
-		<PackageTags>Mars</PackageTags>
-		<Description>
-			Mars options models.
-		</Description>
+    <PropertyGroup>
+        <!--Author-->
+        <PackageId>mdimai666.Mars.Options</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.Options</Product>
+        <PackageTags>Mars</PackageTags>
+        <Description>
+            Mars options models.
+        </Description>
         <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <IncludeSymbols>true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
-	</PropertyGroup>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+    </ItemGroup>
 
 </Project>

@@ -221,6 +221,7 @@ internal class FileService : IFileService
 
             if (isImage && mediaOption.IsAutoResizeUploadImage && _imageProcessor.IsSupportImageExt(ext))
             {
+                //TODO: заменить на _fileStorage
                 using (FileStream fs = new FileStream(fileAbsolutePath, FileMode.CreateNew, FileAccess.Write))
                 {
                     var result = _imageProcessor.ProcessImage(fileStream, fs, mediaOption.AutoResizeUploadImageConfig);
@@ -357,6 +358,7 @@ internal class FileService : IFileService
             {
                 string thumbFilepath = GenerateImageThumbPath(cfg, filePathFromUpload);
                 string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
+                //TODO: заменить на _fileStorage
                 var result = _imageProcessor.ProcessImage(fullFilePath, thumbFilepathAbsolutePath, cfg);
                 var thumb = GetImageThumbnail(cfg, thumbFilepath);
                 thumbnails.Add(cfg.Name, thumb);

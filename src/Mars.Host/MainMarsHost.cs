@@ -30,7 +30,6 @@ public static class MainMarsHost
         services.AddSingleton<IEventManager, EventManager>();
         services.AddSingleton<INavMenuService, NavMenuService>();
         services.AddSingleton<IMetaModelTypesLocator, MetaModelTypesLocator>();
-        services.AddSingleton<IFileStorage, FileStorage>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
         //services.AddSingleton<ModelInfoService>(); //C:\Users\D\Documents\VisualStudio\2025\Mars\Mars.Shared\Tools\ModelInfoService.cs
@@ -94,8 +93,8 @@ public static class MainMarsHost
 
     static void UseFileStorages(IServiceCollection services, IWebHostEnvironment wenv)
     {
+        services.AddSingleton<IFileStorage, FileStorage>();
         services.AddSingleton<IOptions<FileHostingInfo>>(sp => MOptions.Create(sp.GetRequiredService<IOptionService>().FileHostingInfo()));
-
 
         var dataDirHostingInfo = MOptions.Create(new FileHostingInfo()
         {

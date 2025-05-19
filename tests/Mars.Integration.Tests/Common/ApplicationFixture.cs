@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mars.Host.Shared.Services;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Mars.Integration.Tests.Common;
 
@@ -103,7 +104,9 @@ public class ApplicationFixture : IAsyncLifetime
 
                         //services.AddScoped<IMarsDbContext>(sp => DbFixture.DbContext);
 
-                        //services.Replace(ServiceDescriptor.Singleton<IApiClient>(x => ExternalServiceMock));
+                        //services.Replace(ServiceDescriptor.Singleton<IFileStorage>(x => ExternalServiceMock));
+                        //services.Replace(ServiceDescriptor.Singleton<IFileStorage, InMemoryFileStorage>()); нельзя заменить из-за ImageProcessor для Media он записывает картинки и тесты ломаются, а IFileStorage плохо поддерживает StreamWritter
+                        services.Replace(ServiceDescriptor.KeyedSingleton<IFileStorage, InMemoryFileStorage>("data"));
 
                         services.AddSingleton(NSubstitute.Substitute.For<ITestDummyTriggerService>());
                     });

@@ -331,4 +331,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return Task.CompletedTask;
     }
 
+    public void DebugMsg(string nodeId, DebugMessage msg) => _RED.DebugMsg(nodeId, msg);
+    public void DebugMsg(string nodeId, Exception ex) => _RED.DebugMsg(nodeId, ex);
+    public void BroadcastStatus(string nodeId, NodeStatus nodeStatus)
+    {
+        var node = Nodes.GetValueOrDefault(nodeId)?.Node;
+        if(node == null) return;
+        node.status = nodeStatus.Text;
+        _RED.BroadcastStatus(nodeId, nodeStatus);
+    }
 }

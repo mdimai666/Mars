@@ -19,11 +19,11 @@ public class ClientHub
             Console.WriteLine($"<<= ReceiveMessage: {user}; {message}");
         });
 
-        ws.On("DebugMsg", (string nodeId, DebugMessage msg) =>
+        ws.On("DebugMsg", (Action<string, DebugMessage>)((string nodeId, DebugMessage msg) =>
         {
-            Console.WriteLine($"<<= DebugMsg:{nodeId}; {msg?.message}");
+            Console.WriteLine($"<<= DebugMsg:{nodeId}; {msg?.Message}");
             OnDebugMsg?.Invoke(nodeId, msg!);
-        });
+        }));
 
         ws.On("NodeStatus", (string nodeId, NodeStatus nodeStatus) =>
         {

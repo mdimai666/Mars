@@ -1,32 +1,44 @@
 using System.Text.Json;
+using Mars.Core.Models;
 
 namespace Mars.Nodes.Core;
 
 public class DebugMessage
 {
-    public string id { get; set; } = "";
-    public string topic { get; set; } = "";
-    public DateTime date { get; set; } = DateTime.Now;
-    public string message { get; set; } = default!;
-    public string json { get; set; } = default!;
+    public string? NodeId { get; init; }
+    //public string Id { get; init; } = "";
+    //public string Topic { get; init; } = "";
+    public DateTime CreatedAt { get; init; } = DateTime.Now;
+    public string Message { get; init; } = default!;
+    public string? Json { get; init; }
 
-    public Mars.Core.Models.MessageIntent Level { get; set; }
+    public Mars.Core.Models.MessageIntent Level { get; init; }
 
     public static DebugMessage Test()
-    {
-        return new DebugMessage
+        => new()
         {
-            id = Guid.NewGuid().ToString(),
-            topic = "topic",
-            json = JsonSerializer.Serialize(new DebugMessage())
+            //Id = Guid.NewGuid().ToString(),
+            //Topic = "topic",
+            Json = JsonSerializer.Serialize(new DebugMessage())
         };
 
-    }
+    public static DebugMessage ConsoleMessage(string text, MessageIntent Level = MessageIntent.Info)
+        => new() { Message = text, Level = Level };
+
+    public static DebugMessage NodeMessage(string nodeId, string text, MessageIntent Level = MessageIntent.Info)
+        => new() { Message = text, Level = Level, NodeId = nodeId };
+
+    public static DebugMessage NodeErrorMessage(string nodeId, string text)
+        => new() { Message = text, Level = MessageIntent.Error, NodeId = nodeId };
+
+    public static DebugMessage NodeException(string nodeId, Exception ex)
+        => new() { Message = ex.Message, Level = MessageIntent.Error, NodeId = nodeId };
+
 }
 
 class DebugMessagePayload
 {
-    public string message { get; set; } = "message";
-    public int counter { get; set; } = 555;
+    public string message { get; init; } = "message";
+    public int counter { get; init; } = 555;
 
 }

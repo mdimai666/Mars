@@ -202,7 +202,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         Console.WriteLine("hotkey detect!");
         AddDebugMessage(new DebugMessage
         {
-            message = "CTRL+SHIFT+A hotkey detect!"
+            Message = "CTRL+SHIFT+A hotkey detect!"
         });
     }
 
@@ -230,7 +230,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
 
 
-    List<DebugMessage> messages = new List<DebugMessage> { new DebugMessage() };
+    List<DebugMessage> messages = new() { new() };
 
     //string obj1 = JsonSerializer.Serialize(new Msg1());
 
@@ -438,5 +438,12 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         CalcTabs();
         CalcVarNodes();
         CheckActiveTab();
+    }
+
+    void OnClickConsoleDebugMessage(DebugMessage msg)
+    {
+        if (string.IsNullOrEmpty(msg.NodeId)) return;
+
+        NodeWorkspace1.SelectNode(msg.NodeId);
     }
 }

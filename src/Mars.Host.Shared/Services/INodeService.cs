@@ -6,21 +6,25 @@ namespace Mars.Host.Shared.Services;
 
 public interface INodeService
 {
-    public IReadOnlyDictionary<string, Node> BaseNodes { get; }
+    IReadOnlyDictionary<string, Node> BaseNodes { get; }
 
-    public delegate void NodeServiceDeployHandler();
-    public delegate void NodeServiceVoidHandler();
+    delegate void NodeServiceDeployHandler();
+    delegate void NodeServiceVoidHandler();
 
-    public event NodeServiceDeployHandler OnDeploy;
-    public event NodeServiceVoidHandler OnAssignNodes;
-    public event NodeServiceVoidHandler OnStart;
+    event NodeServiceDeployHandler OnDeploy;
+    event NodeServiceVoidHandler OnAssignNodes;
+    event NodeServiceVoidHandler OnStart;
 
-    public UserActionResult Deploy(List<Node> nodes);
-    public UserActionResult<IEnumerable<Node>> Load();
+    UserActionResult Deploy(List<Node> nodes);
+    UserActionResult<IEnumerable<Node>> Load();
 
-    public Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
-    public Task<UserActionResult> Inject(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);
-    public Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null);
+    Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
+    Task<UserActionResult> Inject(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);
+    Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null);
+
+    void DebugMsg(string nodeId, DebugMessage msg);
+    void DebugMsg(string nodeId, Exception ex);
+    void BroadcastStatus(string nodeId, NodeStatus nodeStatus);
 
 }
 

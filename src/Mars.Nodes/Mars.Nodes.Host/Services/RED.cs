@@ -149,23 +149,24 @@ internal class RED
         }
     }
 
-    public virtual void DebugMsg(DebugMessage msg)
+    public virtual void DebugMsg(string nodeId, DebugMessage msg)
     {
-        Hub.Clients.All.SendAsync("DebugMsg", "", msg);
+        Hub.Clients.All.SendAsync("DebugMsg", nodeId, msg);
     }
 
-    public virtual void DebugMsg(Exception ex)
+    public virtual void DebugMsg(string nodeId, Exception ex)
     {
-        Hub.Clients.All.SendAsync("DebugMsg", "", new DebugMessage
+        Hub.Clients.All.SendAsync("DebugMsg", nodeId, new DebugMessage
         {
-            message = ex.Message,
+            NodeId = nodeId,
+            Message = ex.Message,
             Level = Mars.Core.Models.MessageIntent.Error,
         });
     }
 
-    public virtual void Status(NodeStatus nodeStatus)
+    public virtual void BroadcastStatus(string nodeId, NodeStatus nodeStatus)
     {
-        Hub.Clients.All.SendAsync("NodeStatus", "", nodeStatus);
+        Hub.Clients.All.SendAsync("NodeStatus", nodeId, nodeStatus);
     }
 
     public void RegisterHttpMiddleware(HttpCatchRegister mw)
@@ -206,20 +207,12 @@ internal class RED_Context : IRED
         if (!RED.FlowContexts.ContainsKey(Flow.Node.Id)) RED.FlowContexts.Add(Flow.Node.Id, new());
     }
 
-    public void DebugMsg(DebugMessage msg)
-        => RED.Hub.Clients.All.SendAsync("DebugMsg", NodeId, msg);
+    public void DebugMsg(DebugMessage msg) => RED.DebugMsg(NodeId, msg);
 
-    public void DebugMsg(Exception ex)
-    {
-        RED.Hub.Clients.All.SendAsync("DebugMsg", NodeId, new DebugMessage
-        {
-            message = ex.Message,
-            Level = Mars.Core.Models.MessageIntent.Error,
-        });
-    }
+    public void DebugMsg(Exception ex) => RED.DebugMsg(NodeId, ex);
 
     public void Status(NodeStatus nodeStatus)
-        => RED.Hub.Clients.All.SendAsync("NodeStatus", NodeId, nodeStatus);
+        => RED.BroadcastStatus(NodeId, nodeStatus);
 
     public void RegisterHttpMiddleware(HttpCatchRegister mw)
         => RED.RegisterHttpMiddleware(mw);

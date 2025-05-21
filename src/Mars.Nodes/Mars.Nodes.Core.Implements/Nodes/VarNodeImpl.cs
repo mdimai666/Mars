@@ -4,7 +4,6 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class VarNodeImpl : INodeImplement<VarNode>, INodeImplement
 {
-
     public VarNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;

@@ -173,18 +173,18 @@
                             <ul class="list-group list-group-flush">
                                 @foreach (var m in messages)
                                 {
-                                    <li class="list-group-item p-1 nodered-debug-message-list__item" data-id=@m.id data-level=@m.Level>
-                                        <div class="debug-msg-id text-nowrap">@m.id</div>
+                                    <li class="list-group-item p-1 nodered-debug-message-list__item" data-id=@m.NodeId data-level=@m.Level @onclick=@(()=>OnClickConsoleDebugMessage(m))>
+                                        <div class="debug-msg-id text-nowrap">@m.NodeId</div>
                                         <div>
-                                            @m.message
+                                            @m.Message
                                         </div>
-                                        @if (m.json is not null)
+                                        @if (m.Json is not null)
                                         {
-                                            <pre class="debug-json-pre">@m.json</pre>
+                                            <pre class="debug-json-pre">@m.Json</pre>
                                         }
                                         <div class="debug-msg-footer justify-content-between d-flex text-muted">
                                             <span>0</span>
-                                            <span>@m.date</span>
+                                            <span>@m.CreatedAt</span>
                                         </div>
                                     </li>
                                 }

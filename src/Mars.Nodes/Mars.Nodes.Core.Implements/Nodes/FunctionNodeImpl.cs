@@ -108,15 +108,15 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
         catch (CompilationErrorException ex)
         {
-            Error(ex);
-            RED.Status(new NodeStatus { Text = "compile error" });
-            RED.DebugMsg(new DebugMessage { topic = "compile error", message = ex.Message, Level = Mars.Core.Models.MessageIntent.Error });
+            //Error(ex);
+            RED.Status(NodeStatus.Error("compile error"));
+            RED.DebugMsg(ex);
         }
         catch (Exception ex)
         {
-            Error(ex);
-            RED.Status(new NodeStatus { Text = "error" });
-            RED.DebugMsg(new DebugMessage { message = ex.Message, Level = Mars.Core.Models.MessageIntent.Error });
+            //Error(ex);
+            RED.Status(NodeStatus.Error("error"));
+            RED.DebugMsg(ex);
         }
 
         return Task.CompletedTask;

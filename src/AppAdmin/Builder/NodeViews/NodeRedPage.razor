@@ -1,6 +1,7 @@
 @page "/nodered"
 @implements IDisposable
 @using AppFront.Shared.Hub
+@using Mars.Core.Models
 @using Mars.Nodes.Core
 @using Microsoft.AspNetCore.SignalR.Client
 @using Mars.Nodes.Workspace
@@ -25,9 +26,9 @@ else
     else
     {
         <NodeEditor1 OnDeploy="OnDeploy"
-        OnInject="OnInjectClick"
-        OnCmdClick="OnCmdClick"
-        @ref=editor1 @bind-Nodes=@nodes>
+                     OnInject="OnInjectClick"
+                     OnCmdClick="OnCmdClick"
+                     @ref=editor1 @bind-Nodes=@nodes>
             <SectionActions>
                 <XActionsDropDown />
             </SectionActions>
@@ -113,8 +114,9 @@ else
 
         editor1!.AddDebugMessage(new DebugMessage
             {
-                topic = (res.Ok ? "OK" : "FAIL"),
-                message = res.Message
+                // Topic = (res.Ok ? "OK" : "FAIL"),
+                Message = res.Message,
+                Level = res.Ok? MessageIntent.Info: MessageIntent.Error
             });
     }
 

@@ -5,13 +5,9 @@ namespace Mars.Nodes.Core.Nodes;
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DebugNode/DebugNode{.lang}.md")]
 public class DebugNode : Node
 {
-
     public bool CompleteInputMessage { get; set; } = false;
-
     public bool ShowPayloadTypeInStatus { get; set; } = false;
-
     public override string Label => CompleteInputMessage ? "Msg" : base.Label;
-
     public Mars.Core.Models.MessageIntent? Level { get; set; }
 
     public DebugNode()

@@ -1,5 +1,6 @@
 using Mars.Host.Shared.Hubs;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Microsoft.AspNetCore.SignalR;
@@ -56,18 +57,20 @@ internal class NodeTaskManager : IDisposable
 
         var nextNodes = GetNextWires(completedNodeId, output).Where(nodeImpl => !nodeImpl.Node.Disabled);
 
-        foreach (var node in nextNodes)
+        foreach (var _node in nextNodes)
         {
+            var node = _node;
             node.RED = CreateContextForNode(node.Id);
-            //using var scope = serviceProvider.CreateScope();
-            //var _red = scope.ServiceProvider.GetService<RED_withNode>()!;
-            //_red.NodeId = node.Id;
-            //node.RED = _red;
+            ExecuteNode(result, node);
+        }
 
-            try
-            {
-                _ = node.Execute(
-                result,
+    }
+
+    private async void ExecuteNode(NodeMsg input, INodeImplement node)
+    {
+        try
+        {
+            await node.Execute(input,
                 (e, _output) =>
                 {
                     _logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
@@ -76,16 +79,17 @@ internal class NodeTaskManager : IDisposable
 #endif
                     CallbackNext(node.Id, e, _output);
                 }, null!);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex);
-                _RED.DebugMsg(new DebugMessage { id = node.Id, message = ex.Message, Level = Mars.Core.Models.MessageIntent.Error });
-                //throw;
-            }
-
         }
-
+        catch (NodeExecuteException ex)
+        {
+            _logger.LogError(ex, "node execute exception");
+            _RED.DebugMsg(node.Id, ex);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "node execute exception");
+            _RED.DebugMsg(node.Id, ex);
+        }
     }
 
     public RED_Context CreateContextForNode(string nodeId)

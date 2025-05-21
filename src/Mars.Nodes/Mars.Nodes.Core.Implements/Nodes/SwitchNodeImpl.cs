@@ -1,5 +1,5 @@
-using Mars.Nodes.Core.Nodes;
 using DynamicExpresso;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -20,35 +20,26 @@ public class SwitchNodeImpl : INodeImplement<SwitchNode>, INodeImplement
     {
         var interpreter = new Interpreter();//https://github.com/dynamicexpresso/DynamicExpresso
 
-        try
+        for (int i = 0; i < Node.Conditions.Count; i++)
         {
-            for (int i = 0; i < Node.Conditions.Count; i++)
+            var a = Node.Conditions[i];
+
+            if (string.IsNullOrEmpty(a.Value)) continue;
+
+            var result = interpreter.Eval<bool>(a.Value,
+                new Parameter("Payload", input.Payload)
+            );
+
+            //input.Payload = result;
+
+            if (result == true)
             {
-                var a = Node.Conditions[i];
-
-                if (string.IsNullOrEmpty(a.Value)) continue;
-
-                var result = interpreter.Eval<bool>(a.Value,
-                    new Parameter("Payload", input.Payload)
-                );
-
-                //input.Payload = result;
-
-                if (result == true)
+                callback(input, i);
+                if (Node.BreakAfterFirst)
                 {
-                    callback(input, i);
-                    if (Node.BreakAfterFirst)
-                    {
-                        break;
-                    }
+                    break;
                 }
-
             }
-        }
-        catch (Exception ex)
-        {
-            RED.Status(new NodeStatus { Text = "error" });
-            RED.DebugMsg(ex);
         }
 
         return Task.CompletedTask;

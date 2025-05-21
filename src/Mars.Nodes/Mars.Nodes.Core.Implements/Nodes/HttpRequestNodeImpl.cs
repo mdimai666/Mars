@@ -1,4 +1,5 @@
 using Flurl.Http;
+using Mars.Core.Models;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -55,19 +56,14 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
         catch (FlurlHttpException ex)
         {
             string statusText = $" {((int)ex.StatusCode!)} {ex.Message}";
-            RED.Status(new NodeStatus { Text = statusText, Color = "red" });
-            RED.DebugMsg(new DebugMessage { message = ex.Message, Level = Mars.Core.Models.MessageIntent.Warning });
+            RED.Status(NodeStatus.Error(statusText));
+            RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, ex.Message, MessageIntent.Warning));
         }
         catch (HttpRequestException ex)
         {
             string statusText = $" {((int)ex.StatusCode!)} {ex.StatusCode.ToString()}";
-            RED.Status(new NodeStatus { Text = statusText, Color = "red" });
-            RED.DebugMsg(new DebugMessage { message = ex.Message, Level = Mars.Core.Models.MessageIntent.Warning });
-        }
-        catch (Exception ex)
-        {
-            RED.Status(new NodeStatus { Text = "err", Color = "red" });
-            RED.DebugMsg(ex);
+            RED.Status(NodeStatus.Error(statusText));
+            RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, ex.Message, MessageIntent.Warning));
         }
     }
 }

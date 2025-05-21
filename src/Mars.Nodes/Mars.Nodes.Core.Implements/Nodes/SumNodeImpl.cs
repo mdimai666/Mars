@@ -1,9 +1,4 @@
-﻿using Mars.Nodes.Core.Nodes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -21,19 +16,10 @@ public class SumNodeImpl : INodeImplement<SumNode>, INodeImplement
 
     public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
     {
-        try
-        {
-            int result = Node.a + Node.b;
+        int result = Node.a + Node.b;
 
-
-            input.Payload = result;
-            callback(input);
-
-        }
-        catch (Exception)
-        {
-
-        }
+        input.Payload = result;
+        callback(input);
 
         return Task.CompletedTask;
     }

@@ -20,48 +20,37 @@ public class SqlNodeImpl : INodeImplement<SqlNode>, INodeImplement
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
     {
-        try
+        IDatasourceService ds = RED.ServiceProvider.GetRequiredService<IDatasourceService>();
+
+        string query = "";
+
+        if (Node.Source == SqlNode.ESqlNodeInputSource.Static)
         {
-            IDatasourceService ds = RED.ServiceProvider.GetRequiredService<IDatasourceService>();
-
-            string query = "";
-
-            if (Node.Source == SqlNode.ESqlNodeInputSource.Static)
-            {
-                query = Node.SqlQuery;
-            }
-            else if (Node.Source == SqlNode.ESqlNodeInputSource.Payload)
-            {
-                ArgumentNullException.ThrowIfNull(input.Payload, nameof(input.Payload));
-                query = input.Payload.ToString()!;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
-            var result = await ds.SqlQuery(Node.DatasourceSlug, query);
-
-            if (result.Ok)
-            {
-                input.Payload = result.Data;
-            }
-            else
-            {
-                input.Payload = null;
-                RED.Status(new NodeStatus { Text = "error: " + result.Message });
-                RED.DebugMsg(new DebugMessage { message = result.Message, Level = Mars.Core.Models.MessageIntent.Error });
-            }
-
-
-            callback(input);
-
+            query = Node.SqlQuery;
         }
-        catch (Exception ex)
+        else if (Node.Source == SqlNode.ESqlNodeInputSource.Payload)
         {
-            RED.Status(new NodeStatus { Text = "Exception" });
-            RED.DebugMsg(ex);
+            ArgumentNullException.ThrowIfNull(input.Payload, nameof(input.Payload));
+            query = input.Payload.ToString()!;
+        }
+        else
+        {
+            throw new NotImplementedException();
         }
 
+        var result = await ds.SqlQuery(Node.DatasourceSlug, query);
+
+        if (result.Ok)
+        {
+            input.Payload = result.Data;
+        }
+        else
+        {
+            input.Payload = null;
+            RED.Status(NodeStatus.Error("error: " + result.Message));
+            RED.DebugMsg(DebugMessage.NodeErrorMessage(Node.Id, result.Message));
+        }
+
+        callback(input);
     }
 }

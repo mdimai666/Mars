@@ -14,6 +14,7 @@ public class NodeStatus
     /// css color
     /// </summary>
     public string Color { get; set; } = "#d3d3d3";
+    public static readonly string ErrorColor = "#b42e29";
     public EShape Shape { get; set; }
     string _text = "";
     public string Text { get => _text; set => _text = value.TextEllipsis(30); }
@@ -37,4 +38,7 @@ public class NodeStatus
         Circle,
         Ring
     }
+
+    public static NodeStatus Error(string text)
+        => new(text, ErrorColor, EShape.Trangle);
 }

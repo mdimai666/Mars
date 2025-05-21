@@ -42,9 +42,9 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
 
                 msg = new DebugMessage
                 {
-                    id = Node.Id,
-                    message = "DebugNode:",
-                    json = json.TextEllipsis(jsonSymbolsLimit),
+                    NodeId = Node.Id,
+                    Message = "DebugNode:",
+                    Json = json.TextEllipsis(jsonSymbolsLimit),
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };
             }
@@ -54,9 +54,9 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
 
                 msg = new DebugMessage
                 {
-                    id = Node.Id,
-                    message = "DebugNode:",
-                    json = json.TextEllipsis(jsonSymbolsLimit),
+                    NodeId = Node.Id,
+                    Message = "DebugNode:",
+                    Json = json.TextEllipsis(jsonSymbolsLimit),
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };
             }
@@ -64,8 +64,8 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
             {
                 msg = new DebugMessage
                 {
-                    id = Node.Id,
-                    message = input.Payload?.ToString()?.TextEllipsis(500) ?? "null",
+                    NodeId = Node.Id,
+                    Message = input.Payload?.ToString()?.TextEllipsis(500) ?? "null",
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };
             }
@@ -94,8 +94,8 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         {
             RED.DebugMsg(new DebugMessage
             {
-                id = Node.Id,
-                message = "DebugNode:ERROR = " + ex.Message,
+                NodeId = Node.Id,
+                Message = "DebugNode:ERROR = " + ex.Message,
                 Level = Mars.Core.Models.MessageIntent.Error,
             });
 #if DEBUG

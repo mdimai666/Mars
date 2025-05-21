@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Mars.Host.Shared.Dto.Emails;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Nodes;
-using Microsoft.Extensions.DependencyInjection;
 using Mars.Shared.Options;
-using Mars.Host.Shared.Dto.Emails;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -24,72 +24,60 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
 
     public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
     {
+        var mailSender = RED.ServiceProvider.GetRequiredService<IMarsEmailSender>();
+        var opt = RED.ServiceProvider.GetRequiredService<IOptionService>();
 
-        try
+        //var smtp = opt.GetOption<SmtpSettingsModel>();
+
+        var smtp = Node.Config.Value;
+
+        EmailSendMessageDto? info = null;
+        if (input.Payload is null)
         {
-            var mailSender = RED.ServiceProvider.GetRequiredService<IMarsEmailSender>();
-            var opt = RED.ServiceProvider.GetRequiredService<IOptionService>();
-
-            //var smtp = opt.GetOption<SmtpSettingsModel>();
-
-            var smtp = Node.Config.Value;
-
-            EmailSendMessageDto? info = null;
-            if (input.Payload is null)
-            {
-
-            }
-            else if (input.Payload is EmailSendMessageDto dto)
-            {
-                info = dto;
-            }
-            else
-            {
-                //info = new EmailSendMessageDto
-                //{
-                //    ToEmail = Node.ToEmail,
-                //    Subject = Node.Subject,
-                //    Message = input.Payload?.ToString() ?? "",
-                //};
-                //info = ((EmailSendMessageDto)input.Payload).CopyViaJsonConversion<EmailSendMessageDto>();
-            }
-
-            info ??= new();
-
-            if (!string.IsNullOrWhiteSpace(Node.ToEmail)) { info.ToEmail = Node.ToEmail; }
-            //if (!string.IsNullOrWhiteSpace(Node.Message)) { info.Message = Node.Message; }
-            if (!string.IsNullOrWhiteSpace(Node.Subject)) { info.Subject = Node.Subject; }
-
-            var valid = info.Validate(new ValidationContext(info));
-
-            if (valid.Any())
-            {
-                //RED.DebugMsg(new DebugMessage
-                //{
-                //    message = valid
-                //});
-                throw new Exception(string.Join("; ", valid));
-            }
-
-            RED.Status(new NodeStatus { Text = "request...", Color = "blue" });
-
-
-            //var info = input.Get<EmailSendInfo>();
-
-            mailSender.SendEmailForce(info.ToEmail, smtp.Username, info.Subject, info.Message, html: true, Convert(smtp));
-
-            RED.Status(new NodeStatus { Text = "complete", Color = "blue" });
-
-
-            callback(input);
 
         }
-        catch (Exception ex)
+        else if (input.Payload is EmailSendMessageDto dto)
         {
-            RED.Status(new NodeStatus { Text = "error" });
-            RED.DebugMsg(ex);
+            info = dto;
+        }
+        else
+        {
+            //info = new EmailSendMessageDto
+            //{
+            //    ToEmail = Node.ToEmail,
+            //    Subject = Node.Subject,
+            //    Message = input.Payload?.ToString() ?? "",
+            //};
+            //info = ((EmailSendMessageDto)input.Payload).CopyViaJsonConversion<EmailSendMessageDto>();
         }
 
+        info ??= new();
+
+        if (!string.IsNullOrWhiteSpace(Node.ToEmail)) { info.ToEmail = Node.ToEmail; }
+        //if (!string.IsNullOrWhiteSpace(Node.Message)) { info.Message = Node.Message; }
+        if (!string.IsNullOrWhiteSpace(Node.Subject)) { info.Subject = Node.Subject; }
+
+        var valid = info.Validate(new ValidationContext(info));
+
+        if (valid.Any())
+        {
+            //RED.DebugMsg(new DebugMessage
+            //{
+            //    message = valid
+            //});
+            throw new Exception(string.Join("; ", valid));
+        }
+
+        RED.Status(new NodeStatus { Text = "request...", Color = "blue" });
+
+
+        //var info = input.Get<EmailSendInfo>();
+
+        mailSender.SendEmailForce(info.ToEmail, smtp.Username, info.Subject, info.Message, html: true, Convert(smtp));
+
+        RED.Status(new NodeStatus { Text = "complete", Color = "blue" });
+
+        callback(input);
         return Task.CompletedTask;
     }
 

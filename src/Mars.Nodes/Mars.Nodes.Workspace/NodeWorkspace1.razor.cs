@@ -428,13 +428,28 @@ public partial class NodeWorkspace1
         DeselectAll();
     }
 
-    void DeselectAll()
+    public void DeselectAll()
     {
         wire_deselect();
         nodes_deselectAll();
         new_wire = null;
         sel_node = null;
         EditorActions?.SetSelectContext(null);
+    }
+
+    public void SelectNode(string nodeId)
+    {
+        var node = Nodes.FirstOrDefault(node => node.Id == nodeId);
+        if (node == null) return;
+        SelectNode(node);
+    }
+
+    public void SelectNode(Node node)
+    {
+        DeselectAll();
+        sel_node = node;
+        node.selected = true;
+        EditorActions?.SetSelectContext(node.GetType());
     }
 
     /// <summary>

@@ -1,5 +1,5 @@
-﻿using Mars.Nodes.Core.Nodes;
 using DynamicExpresso;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -20,20 +20,11 @@ public class EvalNodeImpl : INodeImplement<EvalNode>, INodeImplement
 
         var interpreter = new Interpreter();//https://github.com/dynamicexpresso/DynamicExpresso
 
-        try
-        {
+        var result = interpreter.Eval(Node.Input, new Parameter("msg", input));
 
-            var result = interpreter.Eval(Node.Input, new Parameter("msg", input));
+        input.Payload = result;
 
-            input.Payload = result;
-
-            callback(input);
-        }
-        catch (Exception ex)
-        {
-            RED.Status(new NodeStatus("error"));
-            RED.DebugMsg(ex);
-        }
+        callback(input);
 
         return Task.CompletedTask;
     }

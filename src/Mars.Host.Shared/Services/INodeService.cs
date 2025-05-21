@@ -6,8 +6,7 @@ namespace Mars.Host.Shared.Services;
 
 public interface INodeService
 {
-    //public List<INodeImplement> Nodes { get; } 
-    public IEnumerable<Node> BaseNodes { get; }
+    public IReadOnlyDictionary<string, Node> BaseNodes { get; }
 
     public delegate void NodeServiceDeployHandler();
     public delegate void NodeServiceVoidHandler();

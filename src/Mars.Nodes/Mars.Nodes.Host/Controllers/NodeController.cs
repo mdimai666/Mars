@@ -3,6 +3,8 @@ using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Dto;
+using Mars.Nodes.Host.Mappings;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,9 +40,9 @@ public class NodeController : ControllerBase
     }
 
     [HttpGet(nameof(Load))]
-    public IEnumerable<Node> Load()
+    public NodesDataDto Load()
     {
-        return _nodeService.Load().Data;
+        return _nodeService.Load().Data.ToNodeDataDto();
     }
 
     [HttpGet(nameof(Inject) + "/{nodeId}")]

@@ -1,6 +1,7 @@
-using Mars.Nodes.Core;
-using Mars.Shared.Common;
 using Flurl.Http;
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Dto;
+using Mars.Shared.Common;
 
 namespace Mars.Nodes.Workspace.Services;
 
@@ -25,8 +26,8 @@ internal class NodeServiceClient : INodeServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Inject", nodeId)
                     .GetJsonAsync<UserActionResult>();
 
-    public Task<List<Node>> Load()
+    public Task<NodesDataDto> Load()
         => _client.Request($"{_basePath}{_controllerName}", "Load")
-                    .GetJsonAsync<List<Node>>();
+                    .GetJsonAsync<NodesDataDto>();
 
 }

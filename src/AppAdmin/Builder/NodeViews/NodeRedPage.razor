@@ -25,9 +25,9 @@ else
     else
     {
         <NodeEditor1 OnDeploy="OnDeploy"
-                     OnInject="OnInjectClick"
-                     OnCmdClick="OnCmdClick"
-                     @ref=editor1 @bind-Nodes=@nodes>
+        OnInject="OnInjectClick"
+        OnCmdClick="OnCmdClick"
+        @ref=editor1 @bind-Nodes=@nodes>
             <SectionActions>
                 <XActionsDropDown />
             </SectionActions>
@@ -85,7 +85,15 @@ else
 
         try
         {
-            nodes = await service.Load();
+            var data = await service.Load();
+            var recivedNodes = data.Nodes.ToDictionary(s => s.Id);
+            foreach (var state in data.NodesState)
+            {
+                var node = recivedNodes[state.Key];
+                node.status = state.Value.Status;
+                node.enable_status = true;
+            }
+            nodes = recivedNodes.Values.ToList();
         }
         catch (Exception ex)
         {

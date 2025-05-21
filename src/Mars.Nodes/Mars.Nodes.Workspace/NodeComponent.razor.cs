@@ -15,6 +15,8 @@ public partial class NodeComponent
     float Y => node.Y + 8;
 
     public float bodyRectHeight => node.Outputs.Count < 2 ? 30 : node.Outputs.Count * 16f;
+    //public float bodyRectWidth => 120;
+    public float bodyRectWidth => Math.Min(360, Math.Max(120, node.DisplayName.Length * 9 + 40));
 
     [Parameter] public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnMouseUp { get; set; }

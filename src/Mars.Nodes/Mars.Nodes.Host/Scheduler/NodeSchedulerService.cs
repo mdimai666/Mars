@@ -30,7 +30,9 @@ internal class NodeSchedulerService : INodeSchedulerService, IMarsAppLifetimeSer
     }
 
     //public List<InjectNodeImpl> GetScheduledNodes() => _nodeService.Nodes.Where(node => node is InjectNodeImpl injectNodeImpl && !injectNodeImpl.Node.Disabled && injectNodeImpl.Node.IsSchedule).Select(node => (InjectNodeImpl)node).ToList();
-    public List<InjectNode> GetScheduledNodes() => _nodeService.BaseNodes.Where(node => node is InjectNode injectNode && !injectNode.Disabled && injectNode.IsSchedule).Select(node => (InjectNode)node).ToList();
+    public List<InjectNode> GetScheduledNodes() => _nodeService.BaseNodes.Values
+                        .Where(node => node is InjectNode injectNode && !injectNode.Disabled && injectNode.IsSchedule)
+                        .Select(node => (InjectNode)node).ToList();
 
     [StartupOrder(11)]
     public Task OnStartupAsync()

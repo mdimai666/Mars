@@ -34,6 +34,9 @@ internal class RED
     private Dictionary<string, ConfigNode> _configNodesDict = new();
     public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict => _configNodesDict;
 
+    private Dictionary<string, Node> _basicNodesDict = new();
+    public IReadOnlyDictionary<string, Node> BasicNodesDict => _basicNodesDict;
+
     private int _assignedCount = 0;
 
     public RED(IHubContext<ChatHub> hub, IServiceProvider serviceProvider)
@@ -92,6 +95,7 @@ internal class RED
         _varNodesDict = Nodes.Values.Where(s => s.Node is VarNode).ToDictionary(s => s.Node.Name, s => (s.Node as VarNode)!);
         if (_assignedCount > 0) RestoreVarNodeValues();
         _assignedCount++;
+        _basicNodesDict = Nodes.ToDictionary(s => s.Key, s => s.Value.Node);
     }
 
     public RED_Context CreateContextForNode(Node node, FlowNodeImpl flow)

@@ -19,7 +19,7 @@
     <!-- tail -->
     @if (node.hasTailButton)
     {
-        <g transform="translate(113,2)" class="red-ui-flow-node-button" style="display: inherit;">
+        <g transform="translate(@(bodyRectWidth-7),2)" class="red-ui-flow-node-button" style="display: inherit;">
             <rect class="red-ui-flow-node-button-background" rx="5" ry="5" width="32" height="26"
               fill-opacity="1"></rect>
             <rect class="red-ui-flow-node-button-button" x="11" y="4" rx="4" ry="4" width="16" height="18"
@@ -59,7 +59,7 @@
         <rect class="red-ui-flow-node--select-backdrop"
               y="-3"
               x="-4"
-              width="129"
+              width="@(bodyRectWidth+9f)"
               rx="12px"
               ry="12px"
               fill="#64b1d9"
@@ -71,7 +71,7 @@
               y="4"
               x="1"
               fill="@node.Color"
-              width="119"
+              width="@(bodyRectWidth-1f)"
               height="@bodyRectHeight"></rect>
 
         <rect class="red-ui-flow-node"
@@ -87,7 +87,7 @@
 
               fill="@node.Color"
               style="filter:url(#fePointLight1)"
-              width="120"
+              width="@bodyRectWidth"
               height="@bodyRectHeight"></rect>
 
     </g>
@@ -130,7 +130,7 @@
         <text class="red-ui-flow-node-label-text"
               x="0"
               y="@(((bodyRectHeight - 30) / 2))">
-            @node.DisplayName
+            @node.DisplayName.TextEllipsis((int)bodyRectWidth/9)
         </text>
     </g>
     @if (node.enable_status && node.status is not null)
@@ -198,7 +198,7 @@
     }
 
     <g class="red-ui-flow-port-output"
-       transform="translate(115,@(node.Outputs.Count < 2 ? 10 : 2))">
+       transform="translate(@(bodyRectWidth-5),@(node.Outputs.Count < 2 ? 10 : 2))">
         @for (int i = 0; i < node.Outputs.Count; i++)
         {
             int index = i;

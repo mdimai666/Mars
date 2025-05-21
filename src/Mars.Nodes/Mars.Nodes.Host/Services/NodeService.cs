@@ -35,7 +35,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public event NodeServiceVoidHandler OnStart = default!;
 
     public IReadOnlyDictionary<string, INodeImplement> Nodes => _RED.Nodes;
-    public IEnumerable<Node> BaseNodes => Nodes.Values.Select(s => s.Node);
+    public IReadOnlyDictionary<string, Node> BaseNodes => _RED.BasicNodesDict;
 
     public NodeService([FromKeyedServices("data")] IFileStorage fileStorage, RED RED, IServiceProvider serviceProvider, IHubContext<ChatHub> hub, IEventManager eventManager)
     {

@@ -1,7 +1,7 @@
-using Mars.Core.Extensions;
+using FluentValidation;
+using Mars.Core.Features;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.PostTypes;
-using FluentValidation;
 
 namespace Mars.Host.Shared.Dto.Posts;
 
@@ -10,11 +10,11 @@ public class GeneralPostQueryValidator : AbstractValidator<IGeneralPostQuery>
 
     public GeneralPostQueryValidator(IMetaModelTypesLocator metaModelTypesLocator)
     {
-        
+
 
         RuleFor(x => x.Slug)
             .NotEmpty()
-            .Must(Tools.IsValidSlugWithUpperCase)
+            .Must(TextTool.IsValidSlugWithUpperCase)
             .WithMessage(v => $"'{v.Slug}' is Invalid slug");
 
         RuleFor(x => x)

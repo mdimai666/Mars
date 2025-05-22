@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Core.Extensions;
+using Mars.Core.Features;
 
 namespace Mars.Core.Attributes;
 
@@ -18,13 +18,13 @@ public class SlugString : ValidationAttribute
     {
         if (value is not string st) return false;
         if (string.IsNullOrEmpty(st)) return false;
-        return Tools.IsValidSlug(st);
+        return TextTool.IsValidSlug(st);
     }
 
     public bool IsValidSlug(string value)
     {
         return AllowUpperLetters
-            ? Tools.IsValidSlugWithUpperCase(value)
-            : Tools.IsValidSlug(value);
+            ? TextTool.IsValidSlugWithUpperCase(value)
+            : TextTool.IsValidSlug(value);
     }
 }

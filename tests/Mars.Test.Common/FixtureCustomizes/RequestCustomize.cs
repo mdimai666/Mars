@@ -1,5 +1,7 @@
 using AutoFixture;
+using Bogus;
 using Mars.Core.Extensions;
+using Mars.Core.Features;
 using Mars.Core.Utils;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Feedbacks;
@@ -10,7 +12,6 @@ using Mars.Shared.Contracts.Posts;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Contracts.Roles;
 using Mars.Shared.Contracts.Users;
-using Bogus;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 
 namespace Mars.Test.Common.FixtureCustomizes;
@@ -27,7 +28,7 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Title, fixture.Create("Title - "))
                                     .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
                                     .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
-                                    .With(s => s.Slug, Tools.TranslateToPostSlug(fixture.Create("slug")))
+                                    .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
                                     //.With(s => s.Image, "")
                                     //.With(s => s.Lang, Random.Shared.GetItems(["", "ru"], 1)[0])
                                     .With(s => s.Type, "post")
@@ -35,14 +36,14 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.LangCode, Chance(["", "ru"]))
                                     .With(s => s.MetaValues, [])
                                     );
-        
+
         fixture.Customize<UpdatePostRequest>(composer => composer
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.Title, fixture.Create("Title - "))
                                     .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
                                     .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
-                                    .With(s => s.Slug, Tools.TranslateToPostSlug(fixture.Create("slug")))
+                                    .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
                                     //.With(s => s.Image, "")
                                     //.With(s => s.Lang, Random.Shared.GetItems(["", "ru"], 1)[0])
                                     .With(s => s.Type, "post")
@@ -55,7 +56,7 @@ public sealed class RequestCustomize : ICustomization
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.Title)
-                                    .With(s => s.TypeName, Tools.TranslateToPostSlug(faker.Commerce.ProductName()).Left(Host.Data.Constants.PostTypeConstants.TypeNameMaxLength))
+                                    .With(s => s.TypeName, TextTool.TranslateToPostSlug(faker.Commerce.ProductName()).Left(Host.Data.Constants.PostTypeConstants.TypeNameMaxLength))
                                     .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 3)).ToList())
                                     .With(s => s.EnabledFeatures)
                                     .With(s => s.PostStatusList)

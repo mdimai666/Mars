@@ -1,4 +1,4 @@
-using Mars.Core.Extensions;
+using Mars.Core.Features;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
@@ -86,7 +86,7 @@ internal class FileService : IFileService
 
     public Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
         => _fileRepository.Update(query, hostingInfo, cancellationToken);
-    
+
     public Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
         => _fileRepository.UpdateBulk(query, hostingInfo, cancellationToken);
 
@@ -288,7 +288,7 @@ internal class FileService : IFileService
 
     internal string RetriveNewFileName(string fileNameWithoutExtension, string ext, string filedir)
     {
-        string newfilenameAsSlug = Tools.TranslateToPostSlug(fileNameWithoutExtension);
+        string newfilenameAsSlug = TextTool.TranslateToPostSlug(fileNameWithoutExtension);
         string newfilename;
 
         int tryCount = 1;

@@ -1,5 +1,6 @@
 using System.Reflection.Metadata;
 using Mars.Core.Extensions;
+using Mars.Core.Features;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -167,7 +168,7 @@ public partial class EditNavMenuPage
     {
         if (string.IsNullOrWhiteSpace(f.Model.Slug) || Guid.TryParse(f.Model.Slug, out Guid _))
         {
-            f.Model.Slug = Tools.TranslateToPostSlug(f.Model.Title);
+            f.Model.Slug = TextTool.TranslateToPostSlug(f.Model.Title);
         }
     }
 

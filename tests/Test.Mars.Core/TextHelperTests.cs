@@ -1,4 +1,3 @@
-using Mars.Core.Extensions;
 using Mars.Core.Features;
 
 namespace Test.Mars.Core;
@@ -126,11 +125,11 @@ public class TextHelperTests
 
         foreach (string val in valid)
         {
-            Assert.True(Tools.IsValidSlug(val));
+            Assert.True(TextTool.IsValidSlug(val));
         }
         foreach (string val in notValis)
         {
-            Assert.False(Tools.IsValidSlug(val));
+            Assert.False(TextTool.IsValidSlug(val));
         }
     }
 }

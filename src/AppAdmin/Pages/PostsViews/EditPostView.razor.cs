@@ -1,4 +1,4 @@
-using Mars.Core.Extensions;
+using Mars.Core.Features;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
@@ -33,7 +33,7 @@ public partial class EditPostView
     {
         if (string.IsNullOrWhiteSpace(f.Model.Slug) || Guid.TryParse(f.Model.Slug, out Guid _))
         {
-            f.Model.Slug = Tools.TranslateToPostSlug(f.Model.Title);
+            f.Model.Slug = TextTool.TranslateToPostSlug(f.Model.Title);
         }
     }
 
@@ -72,5 +72,5 @@ public partial class EditPostView
         codeEditor1?.Dispose();
     }
 
-    string PostContentType => f?.Model.PostType.PostContentSettings.PostContentType??"";
+    string PostContentType => f?.Model.PostType.PostContentSettings.PostContentType ?? "";
 }

@@ -53,7 +53,7 @@
 
             if (string.IsNullOrEmpty(tag)) return;
 
-            if(!Tools.IsValidSlug(tag))
+            if(!TextTool.IsValidSlug(tag))
             {
                 validationMessage = "not valid tag";
             }

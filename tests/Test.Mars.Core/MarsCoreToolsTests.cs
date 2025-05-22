@@ -1,4 +1,4 @@
-using Mars.Core.Extensions;
+using Mars.Core.Features;
 
 namespace Test.Mars.Core;
 
@@ -18,9 +18,9 @@ public class MarsCoreToolsTests
             ["абв123-=_!?abc!@#$%^&*()[]{};.,"] = "abv123-_abc.",
         };
 
-        foreach(var item in values)
+        foreach (var item in values)
         {
-            string result = Tools.TranslateToPostSlug(item.Key);
+            string result = TextTool.TranslateToPostSlug(item.Key);
             Assert.Equal(item.Value, result);
         }
 

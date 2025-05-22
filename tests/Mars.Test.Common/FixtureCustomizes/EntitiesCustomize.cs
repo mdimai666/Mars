@@ -1,12 +1,13 @@
 using AutoFixture;
+using Bogus;
 using Mars.Core.Extensions;
+using Mars.Core.Features;
 using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.NavMenus;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Data.OwnedTypes.Users;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.Constants;
-using Bogus;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 
 namespace Mars.Test.Common.FixtureCustomizes;
@@ -79,7 +80,7 @@ public sealed class EntitiesCustomize : ICustomization
                                    .With(s => s.Title, fixture.Create("Title - "))
                                    .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
                                    .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
-                                   .With(s => s.Slug, Tools.TranslateToPostSlug(fixture.Create("slug")))
+                                   .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
                                    //.With(s => s.Image, "")
                                    .With(s => s.LangCode, Random.Shared.GetItems(["", "ru"], 1)[0])
                                    //.With(s => s.Type, "post")

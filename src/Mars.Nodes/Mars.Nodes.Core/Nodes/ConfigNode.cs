@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Mars.Core.Features;
 
 namespace Mars.Nodes.Core.Nodes;
 
@@ -9,6 +10,19 @@ public abstract class ConfigNode : Node
 
     [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public override bool IsConfigNode => true;
+
+
+    /// <summary>
+    /// compare values as string, not include inherited properties and name
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool IsEqualPropertyValues(ConfigNode other)
+    {
+        var thisValues = TextTool.GetPropertiesValueAsString(this);
+        var otherValues = TextTool.GetPropertiesValueAsString(other);
+        return thisValues.Equals(otherValues);
+    }
 }
 
 public struct InputConfig<T>

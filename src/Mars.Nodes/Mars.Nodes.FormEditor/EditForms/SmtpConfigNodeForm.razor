@@ -14,12 +14,16 @@
         <FormItem2 For="()=>Node.Port">
             <FluentNumberField @bind-Value=@Node.Port Class="" />
         </FormItem2>
-        <FluentCheckbox @bind-Value=@Node.SSLRequired Class="">
-            <AutoInputLabel For="()=>Node.SSLRequired" />
-        </FluentCheckbox>
-        <FluentCheckbox @bind-Value=@Node.SMTPAuthenticationRequired Class="">
-            <AutoInputLabel For="()=>Node.SMTPAuthenticationRequired" />
-        </FluentCheckbox>
+        <FormItem2 For="()=>Node.SSLRequired" Label="&nbsp;">
+            <FluentCheckbox @bind-Value=@Node.SSLRequired Class="">
+                <AutoInputLabel For="()=>Node.SSLRequired" />
+            </FluentCheckbox>
+        </FormItem2>
+        <FormItem2 For="()=>Node.SMTPAuthenticationRequired" Label="&nbsp;">
+            <FluentCheckbox @bind-Value=@Node.SMTPAuthenticationRequired Class="">
+                <AutoInputLabel For="()=>Node.SMTPAuthenticationRequired" />
+            </FluentCheckbox>
+        </FormItem2>
         @if (Node.SMTPAuthenticationRequired)
         {
             <FormItem2 For="()=>Node.Username">

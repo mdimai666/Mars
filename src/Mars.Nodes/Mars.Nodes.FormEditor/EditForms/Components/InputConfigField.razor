@@ -9,7 +9,7 @@
                   OptionText="@(f=>f.Value)"
                   @bind-SelectedOption=_valueSetter />
 
-    <FluentButton OnClick="ClickEdit" IconStart="@(new Icons.Regular.Size16.Edit())" />
+    <FluentButton OnClick="ClickEdit" IconStart="@(new Icons.Regular.Size16.Edit())" Disabled=@(string.IsNullOrEmpty(_value.Id)) />
     <FluentButton OnClick="ClickNew" IconStart="@(new Icons.Regular.Size16.Add())" />
 
 </input-config-field>

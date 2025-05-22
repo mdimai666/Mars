@@ -16,7 +16,7 @@ public partial class NodeComponent
 
     public float bodyRectHeight => node.Outputs.Count < 2 ? 30 : node.Outputs.Count * 16f;
     //public float bodyRectWidth => 120;
-    public float bodyRectWidth => Math.Min(360, Math.Max(120, node.DisplayName.Length * 9 + 40));
+    public float bodyRectWidth => CalcBodyWidth(node);
 
     [Parameter] public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
@@ -91,4 +91,5 @@ public partial class NodeComponent
         wireStartNewEnd.InvokeAsync(new NodeWirePointEventArgs(e, index, false, node));
     }
 
+    public static float CalcBodyWidth(Node node) => Math.Min(360, Math.Max(120, node.DisplayName.Length * 9 + 40));
 }

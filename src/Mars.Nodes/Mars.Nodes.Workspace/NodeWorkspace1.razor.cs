@@ -300,7 +300,8 @@ public partial class NodeWorkspace1
                 foreach (var wnode_id in wire_one)
                 { // putputs is may be multiple
 
-                    float x1 = node.X + 135;
+                    //float x1 = node.X + 135;
+                    float x1 = node.X + NodeComponent.CalcBodyWidth(node) + 15f;
                     float y1 = 0;
 
                     if (node.Wires.Count <= 1)

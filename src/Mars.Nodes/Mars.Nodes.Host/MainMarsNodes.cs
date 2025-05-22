@@ -1,6 +1,7 @@
 using System.Text;
 using Mars.Host.Shared.Services;
 using Mars.Middlewares;
+using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Host.Scheduler;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Templator;
@@ -16,6 +17,7 @@ public static class MainMarsNodes
         services.AddSingleton<INodeService, NodeService>();
         services.AddSingleton<INodeSchedulerService, NodeSchedulerService>();
         services.AddSingleton<RED>();
+        services.AddSingleton<MqttManager>();
         //services.AddHostedService<FlowExecutionBackgroundService>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Models;
@@ -10,6 +11,8 @@ using Mars.Nodes.Core.Nodes;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //for NSubstitute
 
 namespace Mars.Nodes.Host.Services;
 

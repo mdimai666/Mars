@@ -1,4 +1,5 @@
 using AutoFixture;
+using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
@@ -7,7 +8,7 @@ using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
-using Mars.Test.Common.Mocks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -18,16 +19,14 @@ public class NodeServiceUnitTestBase
 {
     internal IFixture _fixture = new Fixture();
     internal readonly IServiceProvider _serviceProvider;
-    internal readonly ChatHubMock _hub;
+    internal readonly IHubContext<ChatHub> _hub;
     internal readonly IFileStorage _fileStorage;
     internal readonly IEventManager _eventManager;
     private readonly ILogger<NodeTaskManager> _logger;
     internal NodeService? _nodeService;
-
-    internal RED RED { get; }
+    internal RED RED;
 
     static object _lock = new { };
-
 
     public NodeServiceUnitTestBase()
     {
@@ -35,8 +34,8 @@ public class NodeServiceUnitTestBase
         {
             _serviceProvider = Substitute.For<IServiceProvider>();
             MarsLogger.Initialize(Substitute.For<ILoggerFactory>());
-            _hub = new ChatHubMock();
-            RED = new RED(_hub, _serviceProvider);
+            _hub = Substitute.For<IHubContext<ChatHub>>();
+            RED = Substitute.ForPartsOf<RED>(_hub, _serviceProvider);
             _serviceProvider.GetService(typeof(RED)).Returns(RED);
             NodeServiceTemplaryHelper._serviceCollection = new ServiceCollection();
 

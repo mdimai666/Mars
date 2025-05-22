@@ -1,6 +1,8 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
+using Mars.Nodes.Core.Implements.JsonConverters;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -29,9 +31,9 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 IncludeFields = false,
                 MaxDepth = 0,
                 WriteIndented = true,
-                //Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                TypeInfoResolver = new IgnoreReadOnlySpanPropertiesResolver(),
             };
 
             DebugMessage msg;

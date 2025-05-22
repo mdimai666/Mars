@@ -1,0 +1,61 @@
+@using AppFront.Shared.Components
+@using MarsEditors
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(MqttBrokerConfigNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="()=>Node.Host">
+            <FluentTextField @bind-Value=@Node.Host Class="flex-fill" />
+        </FormItem2>
+        <FormItem2 For="()=>Node.Port">
+            <FluentNumberField @bind-Value=@Node.Port Class="" />
+        </FormItem2>
+        <FormItem2 For="()=>Node.ConnectAutomatically" Label="&nbsp;">
+            <FluentCheckbox @bind-Value=@Node.ConnectAutomatically Class="">
+                <AutoInputLabel For="()=>Node.ConnectAutomatically" />
+            </FluentCheckbox>
+        </FormItem2>
+        @* <FormItem2 For="()=>Node.UseTLS" Label="&nbsp;">
+            <FluentCheckbox @bind-Value=@Node.UseTLS Class="">
+                <AutoInputLabel For="()=>Node.UseTLS" />
+            </FluentCheckbox>
+        </FormItem2> *@
+        <FormItem2 For="()=>Node.UseCleanStart" Label="&nbsp;">
+            <FluentCheckbox @bind-Value=@Node.UseCleanStart Class="">
+                <AutoInputLabel For="()=>Node.UseCleanStart" />
+            </FluentCheckbox>
+        </FormItem2>
+
+        <FormItem2 For="()=>Node.ProtocolVersion">
+            <FluentSelect TOption="MqttBrokerConfigNode.NodeMqttProtocolVersion"
+                          Items="Enum.GetValues<MqttBrokerConfigNode.NodeMqttProtocolVersion>()"
+                          @bind-SelectedOption=@Node.ProtocolVersion />
+        </FormItem2>
+
+        <FormItem2 For="()=>Node.KeepAlivePeriodInSeconds">
+            <FluentNumberField @bind-Value=@Node.KeepAlivePeriodInSeconds Class="" Min="0" />
+        </FormItem2>
+
+
+        <div class="spacer-1"></div>
+
+        <FluentLabel Typo="Typography.Subject">Auth</FluentLabel>
+        <FormItem2 For="()=>Node.Username">
+            <FluentTextField @bind-Value=@Node.Username Class="" AutoComplete="new-password" />
+        </FormItem2>
+        <FormItem2 For="()=>Node.Password">
+            <FluentTextField @bind-Value=@Node.Password TextFieldType=TextFieldType.Password Class="" AutoComplete="new-password" />
+        </FormItem2>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    MqttBrokerConfigNode Node { get => (MqttBrokerConfigNode)Value!; set => Value = value; }
+
+}
+

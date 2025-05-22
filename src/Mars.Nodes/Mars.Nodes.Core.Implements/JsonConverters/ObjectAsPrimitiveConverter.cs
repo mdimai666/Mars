@@ -79,7 +79,7 @@ public class ObjectAsPrimitiveConverter : JsonConverter<object>
                         switch (reader.TokenType)
                         {
                             default:
-                                list.Add(Read(ref reader, typeof(object), options));
+                                list.Add(Read(ref reader, typeof(object), options)!);
                                 break;
                             case JsonTokenType.EndArray:
                                 return list;
@@ -96,9 +96,9 @@ public class ObjectAsPrimitiveConverter : JsonConverter<object>
                         case JsonTokenType.EndObject:
                             return dict;
                         case JsonTokenType.PropertyName:
-                            var key = reader.GetString();
+                            var key = reader.GetString()!;
                             reader.Read();
-                            dict.Add(key, Read(ref reader, typeof(object), options));
+                            dict.Add(key, Read(ref reader, typeof(object), options)!);
                             break;
                         default:
                             throw new JsonException();
@@ -111,7 +111,7 @@ public class ObjectAsPrimitiveConverter : JsonConverter<object>
     }
 
     protected virtual IDictionary<string, object> CreateDictionary() =>
-        ObjectFormat == ObjectFormat.Expando ? new ExpandoObject() : new Dictionary<string, object>();
+        ObjectFormat == ObjectFormat.Expando ? new ExpandoObject()! : new Dictionary<string, object>();
 }
 
 public enum FloatFormat
@@ -131,4 +131,3 @@ public enum ObjectFormat
     Expando,
     Dictionary,
 }
-

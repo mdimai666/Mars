@@ -44,9 +44,10 @@ public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
             bool isString = payload is string;
             if (isString)
             {
+                //var v = JsonNodeImpl.ParseString(payload.ToString()!);
+                //var obj = v.Deserialize<ExpandoObject>()!;
                 var v = JsonNodeImpl.ParseString(payload.ToString()!);
-                var obj = v.Deserialize<ExpandoObject>()!;
-                input.Payload = obj;
+                input.Payload = v;
             }
             else
             {
@@ -81,13 +82,15 @@ public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
         }
         else if (input is System.Text.Json.Nodes.JsonNode jsonNode)
         {
-            return jsonNode.ToJsonString(
-                formatted ? SystemJsonConverter.DefaultJsonSerializerOptions() : SystemJsonConverter.DefaultJsonSerializerOptionsNotFormatted());
+            return jsonNode.ToJsonString(formatted
+                                            ? SystemJsonConverter.DefaultJsonSerializerOptions()
+                                            : SystemJsonConverter.DefaultJsonSerializerOptionsNotFormatted());
         }
         else
         {
-            return System.Text.Json.JsonSerializer.Serialize(input,
-                formatted ? SystemJsonConverter.DefaultJsonSerializerOptions() : SystemJsonConverter.DefaultJsonSerializerOptionsNotFormatted());
+            return System.Text.Json.JsonSerializer.Serialize(input, formatted
+                                            ? SystemJsonConverter.DefaultJsonSerializerOptions()
+                                            : SystemJsonConverter.DefaultJsonSerializerOptionsNotFormatted());
         }
     }
 

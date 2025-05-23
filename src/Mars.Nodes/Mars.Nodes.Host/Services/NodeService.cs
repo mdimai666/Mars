@@ -7,6 +7,7 @@ using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.WebApp.Implements;
 using Mars.Shared.Common;
@@ -57,7 +58,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         try
         {
-            LoadFlowFile();
+            TryLoadFlowFile();
         }
         catch (Exception)
         {
@@ -84,22 +85,23 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         ];
     }
 
-    void LoadFlowFile()
+    bool TryLoadFlowFile()
     {
         try
         {
-
-            if (!_fileStorage.FileExists(flowFilePath)) return;
+            if (!_fileStorage.FileExists(flowFilePath)) return false;
             string json = _fileStorage.ReadAllText(flowFilePath);
-            var nodes = JsonSerializer.Deserialize<List<Node>>(json)!;
+            var flowsFile = JsonSerializer.Deserialize<NodesFlowSaveFile>(json)!;
 
-            _RED.AssignNodes(nodes);
+            _RED.AssignNodes(flowsFile.Nodes.ToList());
             OnAssignNodes?.Invoke();
+            return false;
         }
         catch (Exception ex)
         {
             _RED.Nodes = new();
             _logger.LogError(ex, "LoadFlowFile");
+            return false;
         }
     }
 
@@ -107,14 +109,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         _RED.AssignNodes(nodes);
         OnAssignNodes?.Invoke();
-        string json = JsonSerializer.Serialize(nodes, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        });
-
-        _fileStorage.Write(flowFilePath, json);
-
+        SaveToFile();
         OnDeploy?.Invoke();
 
         return new UserActionResult
@@ -122,17 +117,26 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             Ok = true,
             Message = "saved: nodes " + nodes.Count
         };
-
     }
 
-    public UserActionResult<IEnumerable<Node>> Load()
+    public void SaveToFile()
     {
-        return new UserActionResult<IEnumerable<Node>>
+        var saveFile = new NodesFlowSaveFile
         {
-            Ok = true,
-            Message = "loaded",
-            Data = Nodes.Values.Select(s => s.Node)
+            Nodes = _RED.BasicNodesDict.Values.ToArray(),
         };
+        string json = JsonSerializer.Serialize(saveFile, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+
+        _fileStorage.Write(flowFilePath, json);
+    }
+
+    public IEnumerable<Node> GetNodesForResponse()
+    {
+        return Nodes.Values.Select(s => s.Node);
     }
 
     public Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null)
@@ -336,7 +340,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public void BroadcastStatus(string nodeId, NodeStatus nodeStatus)
     {
         var node = Nodes.GetValueOrDefault(nodeId)?.Node;
-        if(node == null) return;
+        if (node == null) return;
         node.status = nodeStatus.Text;
         _RED.BroadcastStatus(nodeId, nodeStatus);
     }

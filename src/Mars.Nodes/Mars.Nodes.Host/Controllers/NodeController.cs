@@ -42,7 +42,7 @@ public class NodeController : ControllerBase
     [HttpGet(nameof(Load))]
     public NodesDataDto Load()
     {
-        return _nodeService.Load().Data.ToNodeDataDto();
+        return _nodeService.GetNodesForResponse().ToNodeDataDto();
     }
 
     [HttpGet(nameof(Inject) + "/{nodeId}")]

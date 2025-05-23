@@ -26,7 +26,7 @@ public class GetNodesTests : ApplicationTests
     {
         //Arrange
         _ = nameof(NodeController.Load);
-        _ = nameof(INodeService.Load);
+        _ = nameof(INodeService.GetNodesForResponse);
         _ = nameof(NodeJsonConverter);
 
         var client = AppFixture.GetClient();

@@ -16,7 +16,7 @@ public interface INodeService
     event NodeServiceVoidHandler OnStart;
 
     UserActionResult Deploy(List<Node> nodes);
-    UserActionResult<IEnumerable<Node>> Load();
+    IEnumerable<Node> GetNodesForResponse();
 
     Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
     Task<UserActionResult> Inject(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);

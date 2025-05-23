@@ -14,7 +14,6 @@ namespace Mars.Nodes.Workspace;
 
 public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
-
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
@@ -48,6 +47,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     public NodeWorkspace1? NodeWorkspace1 = default!;
 
     [Inject] HotKeys HotKeys { get; set; } = default!;
+    HotKeysContext HotKeysContext = default!;
 
     [Parameter] public EventCallback<string> OnInject { get; set; }
     [Parameter] public EventCallback<IEnumerable<Node>> OnDeploy { get; set; }
@@ -56,11 +56,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     Node? EditNode { get; set; }
 
-    //[Inject] NodeS
-
     QuickNodeAddMenu? quickNodeAddMenu = default!;
     NodeEditContainer1? nodeEditContainer1 = default!;
-
 
     string activeMasterTab = "tabs";
 
@@ -107,31 +104,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         }
 
-        //Palette = new List<Node>
-        //{
-        //    new Node { Type="inject", Color=("#a6bbcf"), Label="inject" }
-        //};
-
-        //Palette = RegisteredNodes.Select(t => (Node)Activator.CreateInstance(t)).ToList();
-        //Palette = RegisteredNodes.Select(t => Cre )
-
-        //Nodes = JsonSerializer.Deserialize<List<Node>>(exampleFlow, new JsonSerializerOptions
-        //{
-        //    PropertyNameCaseInsensitive = true
-        //});
-
-
-        //LoadFromJson();
-
-        //System.Text.Json.
-
-        //Nodes = new List<Node>
-        //{
-        //    new Node { Type="inject", X=112.5f, Y=163f, Color="#a6bbcf", Label="inject"}
-        //};
     }
-
-    HotKeysContext HotKeysContext = default!;
 
     protected override void OnInitialized()
     {
@@ -159,37 +132,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     async void OpenOffcanvasEditor()
     {
         await js.ShowOffcanvas("node-editor-offcanvas", true);
-    }
-
-    public void LoadFromJson()
-    {
-        string exampleFlow = ExampleFlow.GetJsonData();
-
-
-        var config = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-
-        List<JsonElement>? nodes = JsonSerializer.Deserialize<List<JsonElement>>(exampleFlow, config);
-
-        if (nodes is null) throw new ArgumentNullException(nameof(nodes));
-
-        foreach (var el in nodes)
-        {
-            string json = el.GetRawText();
-            INodeBasic basic = JsonSerializer.Deserialize<NodeBasicImplement>(json, config)!;
-
-            Type? find = RegisteredNodes.FirstOrDefault(s => s.FullName == basic.Type);
-
-            if (find != null)
-            {
-                Nodes.Add((Node)JsonSerializer.Deserialize(json, find, config)!);
-            }
-
-        }
-        NodesChanged.InvokeAsync(Nodes);
     }
 
     public void CallStateHasChanged()
@@ -266,11 +208,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void DeployClick()
     {
-        //AddDebugMessage(new DebugMessage
-        //{
-        //    message = "deployClick..."
-        //});
-
         OnDeploy.InvokeAsync(Nodes);
     }
 
@@ -278,7 +215,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         StartEditNode(e.Node);
     }
-
 
     public void StartEditNode(Node node)
     {
@@ -335,9 +271,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void DeleteNode(string nodeId)
     {
-        //var findNode = Nodes.First(s => s.Id == nodeId);
-        //Nodes.Remove(findNode);
-        //NodesChanged.InvokeAsync(Nodes);
         editorActions.UserAction_Delete([nodeId]);
     }
 
@@ -348,6 +281,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             quickNodeAddMenu.Hide();
         }
     }
+
     async void OnWorkspaceDblClick(MouseEventArgs e)
     {
         quickNodeAddMenu.Show(e);

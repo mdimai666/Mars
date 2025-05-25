@@ -1,14 +1,14 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.EditorApi.Interfaces;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Nodes.FormEditor;
 
 public partial class NodeEditContainer1
 {
-    [Inject] IJSRuntime JS { get; set; } = default!;
-    NodeFormEditorJsInterop js = default!;
+    FluentDialog _dialog = default!;
+    bool _visible = false;
 
     Node? _node = default!;
     [Parameter]
@@ -37,27 +37,12 @@ public partial class NodeEditContainer1
 
 
     NodeFormEditor1 nodeFormEditor1 = default!;
-
     bool saveLoading = false;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        js = new(JS);
 
-    }
-
-    protected override void OnAfterRender(bool firstRender)
+    void OpenOffcanvasEditor(bool show)
     {
-        if (firstRender)
-        {
-            SubscribeOffcanvasHide();
-        }
-    }
-
-    async void OpenOffcanvasEditor(bool show)
-    {
-        await js.ShowOffcanvas("node-editor-offcanvas", show);
+        _visible = show;
     }
 
     public void StartEditNode(Node node)
@@ -116,21 +101,9 @@ public partial class NodeEditContainer1
         return FormSaveClick();
     }
 
-    //when close by shodow problem
-    private DotNetObjectReference<NodeEditContainer1>? objRef;
-
-    async void SubscribeOffcanvasHide()
+    async void OnDialogDismiss(DialogEventArgs e)
     {
-        objRef = DotNetObjectReference.Create(this);
-        await js.SubscribeOffcanvasHide("#node-editor-offcanvas", objRef, "OnOffcanvasHide");
-    }
-
-    [JSInvokable]
-    public async Task OnOffcanvasHide()
-    {
-        //Console.WriteLine("CW");
-        //await FormSaveClick();
-
+        _visible = false;
         if (DisableSaveOnBackdropClick)
         {
             await FormCloseClick();
@@ -142,9 +115,9 @@ public partial class NodeEditContainer1
 
         await OnBackdropCancel.InvokeAsync();
     }
+}
 
-    public void Dispose()
-    {
-        objRef?.Dispose();
-    }
+public class NodeEditDialogNodeEditData
+{
+    public Node? Node;
 }

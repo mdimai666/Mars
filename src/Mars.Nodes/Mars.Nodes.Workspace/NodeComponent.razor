@@ -167,14 +167,14 @@
     @if (node.changed)
     {
         <g class="red-ui-flow-node-changed 1hide"
-       transform="translate(110, -2)">
+       transform="translate(@(bodyRectWidth - 10f), -2)">
             <circle r="5"></circle>
         </g>
     }
     @if (node.error)
     {
         <g class="red-ui-flow-node-error 1hide"
-       transform="translate(110, -2)">
+           transform="translate(@(bodyRectWidth - 10f), -2)">
             <path d="M -5,4 l 10,0 -5,-8 z"></path>
         </g>
     }

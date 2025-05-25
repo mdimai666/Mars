@@ -1,53 +1,38 @@
-@implements IDisposable
-
 @using AppFront.Shared.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Microsoft.JSInterop
 
-@*============*@
-<div class="NodeEditContainer1">
-    <div class="offcanvas offcanvas-bottom 1acrylic" data-bs-scroll="false" data-bs-backdrop="true"
-         style="height:70vh;max-width: 1600px;margin: auto;"
-         id="node-editor-offcanvas">
-        <div class="offcanvas-header pb-1">
-            <h3 class="offcanvas-title">@Node?.Type</h3>
+<d-node-edit-container class="NodeEditContainer1">
 
-            <div class="__right d-flex gap-3">
+    <FluentDialog Hidden="@(!_visible)" aria-label="Edit node dialog"
+                  @ref=_dialog
+                  Modal=true
+                  Class="NodeEditDialog"
+                  Style="--dialog-width: 1600px; --dialog-height: 70vh;"
+                  @ondialogdismiss=OnDialogDismiss
+                  PreventScroll=true>
+            <div class="hstack justify-content-between">
+                <div class="__left-title">
+                    <h3 class="">@Node?.Type</h3>
+                </div>
 
-                <DFluentDeleteButton OnConfirm="FormDeleteClick" />
+                <div class="__right d-flex gap-3">
 
-                <FluentButton OnClick="FormCloseClick"
-                              Appearance="Appearance.Neutral">
-                    @AppRes.Cancel
-                </FluentButton>
+                    <DFluentDeleteButton OnConfirm="FormDeleteClick" />
 
-                <FluentButton OnClick="FormSaveClick"
-                              Loading=@saveLoading
-                              Appearance="Appearance.Accent">
-                    @AppRes.Save
-                </FluentButton>
+                    <FluentButton OnClick="FormCloseClick"
+                                  Appearance="Appearance.Neutral">
+                        @AppRes.Cancel
+                    </FluentButton>
 
-                @* <button type="button" class="btn btn-outline" @onclick=FormCloseClick>Cancel</button> *@
+                    <FluentButton OnClick="FormSaveClick"
+                                  Loading=@saveLoading
+                                  Appearance="Appearance.Accent">
+                        @AppRes.Save
+                    </FluentButton>
 
-                @* <button class="btn btn-primary" id="node-editor-btn-save" @onclick=FormSaveClick>
-                    @if (saveLoading)
-                    {
-                        <span class="spinner-border spinner-border-sm text-light me-2" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </span>
-                    }
-                    <span>Save</span>
-                </button> *@
-
-                @* <button type="button" class="btn-close p-3" @onclick=FormCloseClick></button> *@
-
+                </div>
             </div>
-
-        </div>
-        <div class="offcanvas-body d-flex pt-0">
-            @*<p>Some text lorem ipsum.</p>*@
-            @*<button class="btn btn-secondary" type="button">A Button</button>*@
-
             @if (Node != null)
             {
                 <CascadingValue Value="this">
@@ -57,20 +42,22 @@
                         </div>
                         <div class="col-md-6" style="height:calc(70vh - 80px); overflow:auto;">
                             @* <FluentMarkdownSection FromAsset="./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VariableSetNode/VariableSetNode.ru.md" /> *@
-                            <DocViewer For="()=>Node.GetType()" />
+                            <DocViewer For="() => Node.GetType()" />
                         </div>
                     </div>
                 </CascadingValue>
             }
-
-        </div>
-    </div>
-</div>
-@*============*@
+    </FluentDialog>
+</d-node-edit-container>
 
 <style>
     .fluent-dialog-main {
         /*bootstrap offcanvas overlow*/
         z-index: 1050 !important;
+    }
+
+    fluent-dialog.NodeEditDialog::part(control) {
+        margin-bottom: 0 !important;
+        border-radius: 0;
     }
 </style>

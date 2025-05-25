@@ -33,24 +33,25 @@
             @if (new_wire != null)
             {
                 <WireComponent selected
-                           x1="new_wire.X1"
-                           y1="new_wire.Y1"
-                           x2="new_wire.X2"
-                           y2="new_wire.Y2"
-                           OnMouseUp="e=>onWireMouseUp(e,new_wire)" />
+                               x1="new_wire.X1"
+                               y1="new_wire.Y1"
+                               x2="new_wire.X2"
+                               y2="new_wire.Y2"
+                               OnMouseUp="e=>onWireMouseUp(e,new_wire)" />
             }
 
             @foreach (var _wire in Wires)
             {
                 var wire = _wire;
                 @*key="'wire-' + wire.Id"*@
-                <WireComponent selected="wire.Selected"
-                           disable="wire.Disable"
-                           x1="wire.X1"
-                           y1="wire.Y1"
-                           x2="wire.X2"
-                           y2="wire.Y2"
-                           OnMouseDown="e=>onWireMouseDown(e,wire)" />
+                <WireComponent @key=wire
+                               selected="wire.Selected"
+                               disable="wire.Disable"
+                               x1="wire.X1"
+                               y1="wire.Y1"
+                               x2="wire.X2"
+                               y2="wire.Y2"
+                               OnMouseDown="e=>onWireMouseDown(e,wire)" />
                 @*@mousedown.native.stop="(e) => onWireMouseDown(e, wire)"*@
             }
 
@@ -61,30 +62,32 @@
                 if (node is MicroschemeNode)
                 {
                     <MicroschemeComponent node="node"
-                                  x="node.X"
-                                  y="node.Y"
-                                  OnMouseDown="(e) => onNodeMouseDown(e, node)"
-                                  OnMouseUp="(e) => onNodeMouseUp(e, node)"
-                                  wireStartNew="wire_StartNew"
-                                  wireStartNewEnd="wire_StartNewEnd"
-                                  OnInject="OnInject"
-                                  OnClick=@(e=>onClickNodeEvent(e,node))
-                                  OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                                          @key=node
+                                          x="node.X"
+                                          y="node.Y"
+                                          OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                                          OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                          wireStartNew="wire_StartNew"
+                                          wireStartNewEnd="wire_StartNewEnd"
+                                          OnInject="OnInject"
+                                          OnClick=@(e=>onClickNodeEvent(e,node))
+                                          OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
                 }
-                else 
+                else
                 {
                     <NodeComponent node="node"
-                           x="node.X"
-                           y="node.Y"
-                           OnMouseDown="(e) => onNodeMouseDown(e, node)"
-                           OnMouseUp="(e) => onNodeMouseUp(e, node)"
-                           wireStartNew="wire_StartNew"
-                           wireStartNewEnd="wire_StartNewEnd"
-                           OnInject="OnInject"
-                           OnClick=@(e=>onClickNodeEvent(e,node))
-                           OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
-                } 
-                
+                                   @key=node
+                                   x="node.X"
+                                   y="node.Y"
+                                   OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                                   OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                   wireStartNew="wire_StartNew"
+                                   wireStartNewEnd="wire_StartNewEnd"
+                                   OnInject="OnInject"
+                                   OnClick=@(e=>onClickNodeEvent(e,node))
+                                   OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                }
+
             }
 
             @*@if (new_node != null)
@@ -94,19 +97,19 @@
             OnMouseUp="(e) => onNodeMouseUp(e, new_node)" />
             }*@
 
-            
+
 
             @*LASSO*@
             @if (lasso.drag)
             {
                 <rect ox="@lasso.drawX.ToString(CultureInfo.InvariantCulture)"
-                  oy="@lasso.drawY.ToString(CultureInfo.InvariantCulture)"
-                  rx="1" ry="1"
-                  x="@lasso.drawX.ToString(CultureInfo.InvariantCulture)"
-                  y="@lasso.drawY.ToString(CultureInfo.InvariantCulture)"
-                  width="@lasso.width"
-                  height="@lasso.height"
-                  class="nr-ui-view-lasso"></rect>
+                      oy="@lasso.drawY.ToString(CultureInfo.InvariantCulture)"
+                      rx="1" ry="1"
+                      x="@lasso.drawX.ToString(CultureInfo.InvariantCulture)"
+                      y="@lasso.drawY.ToString(CultureInfo.InvariantCulture)"
+                      width="@lasso.width"
+                      height="@lasso.height"
+                      class="nr-ui-view-lasso"></rect>
             }
 
 

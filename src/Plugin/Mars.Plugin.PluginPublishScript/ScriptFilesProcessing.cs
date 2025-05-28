@@ -31,13 +31,12 @@ internal class ScriptFilesProcessing
 
     internal static void SomeChecks(HashSet<string> marsDlls, PreparePublishData data)
     {
-        var has_Mars_TelegramPlugin = data.ProjectSelfDepends.ContainsKey("Mars.TelegramPlugin");
+        var containProcessingProject = data.ProjectSelfDepends.ContainsKey(data.Settings.ProjectName);
         var kit1 = marsDlls.Contains("Mars.Plugin.Kit.Host.dll");
         var kit2 = marsDlls.Contains("Mars.Plugin.Kit.Front.dll");
-        var kits = marsDlls.Where(s => s.Contains(".Kit")).ToList();
 
-        if (kits.Count != 2) throw new Exception("Kits must be present");
-        if (!has_Mars_TelegramPlugin) throw new Exception("Target project not present");
+        if (!(kit1 && kit2)) throw new Exception("Kits must be present");
+        if (!containProcessingProject) throw new Exception("Target project not present");
 
         //var m1 = data.ProjectDependencies.Packages["System.CommandLine"];
         //var m2 = data._marsWebAppDependencies.Packages["System.CommandLine"];

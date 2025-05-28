@@ -21,19 +21,28 @@ public record FileHostingInfo
     const string ic_xls = "/img/docs/xls.png";
     const string ic_img = "/img/docs/img.png";
     const string ic_video = "/img/docs/video.png";
+    const string ic_audio = "/img/docs/audio.png";
     const string ic_unknown = "/img/docs/unknown.png";
 
     HashSet<string> imgExtList = "jpg,png,jpeg,ico,gif,jfif,svg,webp".Split(',').ToHashSet(StringComparer.OrdinalIgnoreCase);
     HashSet<string> videoExtList = "mp4,avi,wmv,mov,flv,mkv,webm,mpeg".Split(',').ToHashSet(StringComparer.OrdinalIgnoreCase);
+    HashSet<string> audioExtList = "mp3,wav,aac,ogg,flac,alac,wma,aif,aiff".Split(',').ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-    public string PreviewIconUrl(string ext)
+    public string PreviewIconUrl(string extWithoutStartDot)
     {
-        if (string.IsNullOrWhiteSpace(ext)) return ic_unknown;
+        if (string.IsNullOrWhiteSpace(extWithoutStartDot)) return ic_unknown;
 
-        if (ext.StartsWith('.')) throw new ArgumentException("file extension cannot start with a dot");
+        if (extWithoutStartDot.StartsWith('.')) throw new ArgumentException("file extension cannot start with a dot", nameof(extWithoutStartDot));
 
-        if (ExtIsImage(ext)) return ic_img;
-        else if (ExtIsVideo(ext)) return ic_video;
+        var ext = extWithoutStartDot.ToLower();
+
+        if (imgExtList.Contains(ext)) return ic_img;
+        else if (videoExtList.Contains(ext)) return ic_video;
+        else if (audioExtList.Contains(ext)) return ic_audio;
+
+        //if (ExtIsImage(ext)) return ic_img;
+        //else if (ExtIsVideo(ext)) return ic_video;
+        //else if (ExtIsAudio(ext)) return ic_audio;
 
         switch (ext)
         {
@@ -71,6 +80,14 @@ public record FileHostingInfo
         if (ext.StartsWith('.')) throw new ArgumentException("file extension cannot start with a dot");
 
         return videoExtList.Contains(ext.ToLower());
+    }
+
+    public bool ExtIsAudio(string ext)
+    {
+        if (string.IsNullOrEmpty(ext)) return false;
+        if (ext.StartsWith('.')) throw new ArgumentException("file extension cannot start with a dot");
+
+        return audioExtList.Contains(ext.ToLower());
     }
 
     public string FileAbsoluteUrlFromPath(string filePath)

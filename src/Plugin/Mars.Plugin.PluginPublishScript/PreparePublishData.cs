@@ -46,12 +46,6 @@ internal class PreparePublishData
 
         MarsLibraries = webApp.marsDepends.Concat(projectDepends.marsDepends).DistinctBy(s => s.Key).ToDictionary();
 
-        //ВРЕМЕННО - потому как этот проект в этом солюшене
-        MarsLibraries.Add(ToolAssemblyName, ProjectDependencies.Libraries[ToolAssemblyName]);
-        _marsWebAppDependencies.Libraries.Add(ToolAssemblyName, ProjectDependencies.Libraries[ToolAssemblyName]);
-        _marsWebAppDependencies.Packages.Add(ToolAssemblyName, ProjectDependencies.Packages[ToolAssemblyName]);
-        //end ВРЕМЕННО
-
         // Это мы добавляем элементы, которые Mars.WebApp не ссылается, но они есть в виде nuget для плагинов
         // к примеру Mars.Plugin.Kit.Host, Mars.Plugin.Kit.Front
         foreach (var package in projectDepends.marsDepends)

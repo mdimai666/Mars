@@ -1,4 +1,5 @@
 using System.Reflection;
+using Mars.Plugin.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
@@ -20,11 +21,14 @@ public static class PluginHostExtensions
 
         var frontBinWwwRoot = Path.Combine(pluginAssemblyPath, "wwwroot");
 
-        pluginAppBuilder.UseStaticFiles(new StaticFileOptions
+        if (Directory.Exists(frontBinWwwRoot))
         {
-            ServeUnknownFileTypes = true,
-            FileProvider = new PhysicalFileProvider(frontBinWwwRoot),
-        });
+            pluginAppBuilder.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true,
+                FileProvider = new PhysicalFileProvider(frontBinWwwRoot),
+            });
+        }
     }
 
     /// <summary>
@@ -33,7 +37,7 @@ public static class PluginHostExtensions
     /// <param name="app"></param>
     /// <param name="mainAssembly"></param>
     /// <param name="frontAssemblies"></param>
-    public static void UseDevelopingServePluginFilesDefinition(this WebApplication app, Assembly mainAssembly, Assembly[] frontAssemblies)
+    public static void UseDevelopingServePluginFilesDefinition(this WebApplication app, Assembly mainAssembly, PluginSettings pluginSettings, Assembly[] frontAssemblies)
     {
         var pluginAssemblyName = mainAssembly.GetName().Name!;
 
@@ -52,6 +56,19 @@ public static class PluginHostExtensions
 
             ServePluginManifest(pluginAppBuilder, mainAssembly);
 
+            // Serve /wwwroot 
+            // truble : this method override Mars Plugin Serve functions
+            var pluginWwwRoot = Path.Combine(pluginSettings.ContentRootPath, "wwwroot");
+            if (Directory.Exists(pluginWwwRoot))
+            {
+                pluginAppBuilder.UseStaticFiles(new StaticFileOptions
+                {
+                    ServeUnknownFileTypes = true,
+                    FileProvider = new PhysicalFileProvider(pluginWwwRoot),
+                });
+            }
+
+            // Serve each Front Assemblies /wwwroot
             foreach (var assembly in frontAssemblies)
             {
                 var frontAssemblyName = assembly.GetName().Name!;

@@ -8,10 +8,19 @@ Console.WriteLine($" -> Mars plugin prepare script! \n{string.Join(',', args)}")
 var marsReleaseDepsJsonFile = Path.Combine("Mars.deps.json");
 var marsDepsExist = File.Exists(marsReleaseDepsJsonFile);
 
+//TODO: публикация сломалась
+
+#if DEBUG
 // Debug files
-args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net9.0\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+//args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net9.0\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 
 //args = "--run-postpublish --ProjectName=Mars.TelegramPlugin --out=bin\\Release\\net9.0\\publish  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+
+//args = "--run-postdebugcompile --ProjectName=Mars.PlayAudioNodePlugin --out=bin\\Debug\\net9.0\\ --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.PlayAudioNodePlugin\\src\\Mars.PlayAudioNodePlugin\\".Split(' ');
+
+//args = "--run-postpublish --ProjectName=Mars.PlayAudioNodePlugin --out=bin\\Release\\net9.0\\publish\\ --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.PlayAudioNodePlugin\\src\\Mars.PlayAudioNodePlugin\\".Split(' ');
+
+#endif
 
 var mode = ProcessMode.Undefinded;
 if (args[0] == "--run-postdebugcompile") mode = ProcessMode.PostDebugCompile;
@@ -23,6 +32,9 @@ else
     return;
 }
 
+//////////////////////////////////////////////////
+//// Preapare
+//////////////////////////////////////////////////
 Console.WriteLine("PublicFilesScript Start!");
 Console.WriteLine("[1/4] Preapare...");
 
@@ -121,6 +133,9 @@ if (unknownDlls.Count > 0)
 
 //allowDllsPath.AddRange()
 
+//////////////////////////////////////////////////
+//// Calculate files
+//////////////////////////////////////////////////
 Console.WriteLine("[2/4] Calculate complete!");
 Console.WriteLine($"""
     files in publish dir: {allFilesCount};
@@ -136,27 +151,38 @@ foreach (var file in otherFiles)
 Console.ResetColor();
 
 
-//BEGIN 
-//if (isCopy)
-//{
-//    Console.WriteLine("[3/4] Copy...");
-//    string plugin_publishDirName = "plugin_publish";
-//    var plugin_publish = new DirectoryInfo(Path.Combine(data.Settings.ProjectDir, data.Settings.OutDir, plugin_publishDirName));
-//    plugin_publish.Create();
+//////////////////////////////////////////////////
+//// Prepare Manifest file
+//////////////////////////////////////////////////
+Console.WriteLine("[3/4] Create new manifest file ");
 
-//    foreach (var f in otherFiles)
-//    {
-//        var rel = Path.GetRelativePath(plugin_publish.FullName, f.FullName);
-//        f.CopyTo(Path.Combine(plugin_publish.FullName, rel), true);
-//    }
-//}
 if (mode == ProcessMode.PostDebugCompile)
 {
-    Console.WriteLine("[3/4] Remove shared Mars files : not required");
+    ManifestProcessing.ProcessDebugManifest(data.Settings, data._marsWebAppDependencies, data.ProjectDependencies, marsDlls);
+
 }
 else if (mode == ProcessMode.PostPublish)
 {
-    Console.WriteLine("[3/4] Remove shared Mars files...");
+    ManifestProcessing.ProcessPublishManifest(data.Settings, data._marsWebAppDependencies, data.ProjectDependencies, otherFiles, outDir, wwwroot, marsDlls);
+    var manifest = new FileInfo(Path.Combine(wwwroot.FullName, MarsFrontPluginManifest.DefaultManifestFileName));
+    otherFiles.Add(manifest);
+}
+else
+{
+    throw new NotImplementedException($"mode = '{mode}' not implement");
+}
+
+
+//////////////////////////////////////////////////
+//// Prepare Manifest file
+//////////////////////////////////////////////////
+if (mode == ProcessMode.PostDebugCompile)
+{
+    Console.WriteLine("[4/4] Remove shared Mars files : not required");
+}
+else if (mode == ProcessMode.PostPublish)
+{
+    Console.WriteLine("[4/4] Remove shared Mars files...");
 
     _contentDirsRemove.ForEach(d => d.Delete(true));
 
@@ -183,21 +209,5 @@ else if (mode == ProcessMode.PostPublish)
 
 }
 
-//Prepare Manifest file
-Console.WriteLine("[4/4] Create new manifest file ");
-
-if (mode == ProcessMode.PostDebugCompile)
-{
-    ManifestProcessing.ProcessDebugManifest(data.Settings, data._marsWebAppDependencies, data.ProjectDependencies, marsDlls);
-
-}
-else if (mode == ProcessMode.PostPublish)
-{
-    ManifestProcessing.ProcessPublishManifest(data.Settings, data._marsWebAppDependencies, data.ProjectDependencies, otherFiles, outDir, wwwroot, marsDlls);
-}
-else
-{
-    throw new NotImplementedException($"mode = '{mode}' not implement");
-}
 
 Console.WriteLine("FINISH");

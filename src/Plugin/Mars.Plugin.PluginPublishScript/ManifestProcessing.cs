@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Text.Json;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginPublishScript.Dto;
@@ -131,13 +132,31 @@ internal class ManifestProcessing
                                             .Where(s => s.Type == LibraryType.Project && s.Name != settings.CurrentScriptProjectNugetName)
                                             .ToList();
 
+        var loadContext = new AssemblyLoadContext("TempContext", true);
+        loadContext.Resolving += (AssemblyLoadContext context, AssemblyName assemblyName) =>
+        {
+            // Пытаемся найти зависимую сборку в той же папке, что и основная
+            string assemblyPath = Path.Combine(settings.ProjectDir, settings.OutDir, $"{assemblyName.Name}.dll");
+
+            if (File.Exists(assemblyPath))
+            {
+                using (var fs = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read))
+                {
+                    return context.LoadFromStream(fs);
+                }
+            }
+            return null; // Если сборка не найдена, будет использовано стандартное разрешение
+        };
+
         foreach (var dependency in rootDepends)
         {
             var runtimeAssemlyName = projectDependencies.Packages[dependency.Name].Runtime.ElementAt(0);
             var assemblyFileName = runtimeAssemlyName.Key;
 
             var assemblyPath = Path.Combine(settings.ProjectDir, settings.OutDir, assemblyFileName);
-            var assembly = Assembly.LoadFrom(assemblyPath);
+            //var assembly = Assembly.LoadFrom(assemblyPath);
+            var fs = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read);
+            var assembly = loadContext.LoadFromStream(fs);
 
             var assemblyTypes = assembly.GetTypes();
             var startups = assemblyTypes.Where(s => typeof(IWebAssemblyPluginFront).IsAssignableFrom(s));

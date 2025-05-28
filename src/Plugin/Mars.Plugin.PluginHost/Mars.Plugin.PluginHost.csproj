@@ -38,4 +38,8 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

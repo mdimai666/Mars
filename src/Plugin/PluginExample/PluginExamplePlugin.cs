@@ -72,8 +72,3 @@ public class PluginExamplePlugin : WebApplicationPlugin
     }
 
 }
-/*
-// TODO:
-[ ] - при сборке добавить игнорирование Mars файлов
-*/
-

@@ -23,7 +23,7 @@ public class ExcelNodeImplement : INodeImplement<ExcelNode>, INodeImplement
         RED = _RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         if (input.Payload is null)
         {

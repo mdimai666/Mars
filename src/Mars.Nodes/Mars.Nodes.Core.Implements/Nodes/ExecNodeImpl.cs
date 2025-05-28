@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -16,7 +16,7 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
 
         Process cmd = new Process();

@@ -1,4 +1,4 @@
-﻿using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes;
 using HandlebarsDotNet;
 using System.IO;
 using System.IO.Pipes;
@@ -18,7 +18,7 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
 
         if (Node.OutputMode == FileReadNode.FileOutputMode.SingleBuffer)

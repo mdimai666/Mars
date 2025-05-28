@@ -18,7 +18,7 @@ public class SqlNodeImpl : INodeImplement<SqlNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public async Task Execute(NodeMsg input, ExecuteAction callback)
     {
         IDatasourceService ds = RED.ServiceProvider.GetRequiredService<IDatasourceService>();
 

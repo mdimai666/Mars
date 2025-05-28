@@ -20,7 +20,7 @@ public class TestCallBackNodeImpl : INodeImplement<TestCallBackNode>, INodeImple
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         Node.Callback?.Invoke();
 

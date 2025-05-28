@@ -75,9 +75,7 @@ public class NodeServiceUnitTestBase
             outputPort = output;
         };
 
-        var exception = (Exception ex) => { throw ex; };
-
-        await node.Execute(input, exa, exception);
+        await node.Execute(input, exa);
 
         return new NodeExecutionResult(resultCatcher!, outputPort);
     }

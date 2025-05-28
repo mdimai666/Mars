@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Mars.Nodes.Core.Implements;
 
 public interface INodeImplement : INodeImplement<Node>
@@ -19,7 +13,7 @@ public interface INodeImplement<TNode> where TNode : Node
     public IRED RED { get; set; }
 
     //public INodeImplement<TNode> Create(TNode node);
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error);
+    public Task Execute(NodeMsg input, ExecuteAction callback);
 
 
 }
@@ -46,7 +40,7 @@ public delegate void ExecuteAction(NodeMsg msg, int output = 0);
 //        this.node = Node;
 //    }
 
-//  public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+//  public Task Execute(NodeMsg input, ExecuteAction callback)
 
 //#if asas
 

@@ -20,7 +20,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         try
         {

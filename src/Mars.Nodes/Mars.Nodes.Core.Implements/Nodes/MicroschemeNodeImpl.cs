@@ -15,7 +15,7 @@ public class MicroschemeNodeImpl : INodeImplement<MicroschemeNode>, INodeImpleme
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
 
         return Task.CompletedTask;

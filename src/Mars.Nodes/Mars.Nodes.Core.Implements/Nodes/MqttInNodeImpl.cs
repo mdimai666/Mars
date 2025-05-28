@@ -33,7 +33,7 @@ public class MqttInNodeImpl : INodeImplement<MqttInNode>, INodeImplement
     /// <param name="callback"></param>
     /// <param name="Error"></param>
     /// <returns></returns>
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         _logger.LogTrace("Execute");
 

@@ -14,7 +14,7 @@ public class UnknownNodeImpl : INodeImplement<UnknownNode>, INodeImplement
         RED = red;
     }
 
-    public Task Execute(NodeMsg _, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg _, ExecuteAction callback)
     {
         throw new NotImplementedException();
     }

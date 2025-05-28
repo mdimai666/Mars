@@ -22,7 +22,7 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
         Node.Config = RED.GetConfig(node.Config);
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         var mailSender = RED.ServiceProvider.GetRequiredService<IMarsEmailSender>();
         var opt = RED.ServiceProvider.GetRequiredService<IOptionService>();

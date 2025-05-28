@@ -1,4 +1,4 @@
-﻿using Mars.Nodes.Core;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 
 namespace Mars.Nodes.WebApp.Implements;
@@ -15,7 +15,7 @@ public class CssCompilerNodeImplement : INodeImplement<CssCompilerNode>, INodeIm
         RED = _RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         if (input.Payload is not string)
         {

@@ -16,7 +16,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
     Node INodeImplement<Node>.Node => Node;
 
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         if (Node.Kind == EForeachKind.PayloadArray)
         {
@@ -88,7 +88,7 @@ public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeI
     Node INodeImplement<Node>.Node => Node;
 
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
 
         ForeachNode.ForeachCycle? cycle = input.Get<ForeachNode.ForeachCycle>();

@@ -18,7 +18,7 @@ public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         if (input.Payload is null)
         {

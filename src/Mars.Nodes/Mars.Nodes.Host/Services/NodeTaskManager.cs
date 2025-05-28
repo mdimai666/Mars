@@ -43,7 +43,7 @@ internal class NodeTaskManager : IDisposable
         //node.RED = _red;
 
 
-        _ = node.Execute(msg ?? new NodeMsg(), (e, output) => { CallbackNext(node.Id, e, output); }, null!);
+        _ = node.Execute(msg ?? new NodeMsg(), (e, output) => { CallbackNext(node.Id, e, output); });
     }
 
     void CallbackNext(string completedNodeId, NodeMsg result, int output)
@@ -78,7 +78,7 @@ internal class NodeTaskManager : IDisposable
                     Console.WriteLine($"==>{node.Node.DisplayName} ({node.Node.Type}) + {e.Payload}");
 #endif
                     CallbackNext(node.Id, e, _output);
-                }, null!);
+                });
         }
         catch (NodeExecuteException ex)
         {

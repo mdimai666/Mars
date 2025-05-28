@@ -21,7 +21,7 @@ public class HttpInNodeImpl : INodeImplement<HttpInNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public async Task Execute(NodeMsg input, ExecuteAction callback)
     {
         var http = input.Get<HttpInNodeHttpRequestContext>();
         //string? body = http.HttpContext.Request.Body.req

@@ -14,7 +14,7 @@ public class DelayNodeImpl : INodeImplement<DelayNode>, INodeImplement
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public async Task Execute(NodeMsg input, ExecuteAction callback)
     {
         await Task.Delay(Node.DelayMillis);
 

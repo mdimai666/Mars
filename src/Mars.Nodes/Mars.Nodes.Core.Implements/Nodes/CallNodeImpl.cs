@@ -15,7 +15,7 @@ public class CallNodeImpl : INodeImplement<CallNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
 
         callback(input);
@@ -36,7 +36,7 @@ public class CallResponseNodeImpl : INodeImplement<CallResponseNode>, INodeImple
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         CallNodeCallbackAction action = input.Get<CallNodeCallbackAction>()!;
 

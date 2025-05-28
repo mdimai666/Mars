@@ -17,7 +17,7 @@ public class CheckUserNodeImpl : INodeImplement<CheckUserNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
 
         var requestContext = RED.ServiceProvider.GetRequiredService<IRequestContext>();

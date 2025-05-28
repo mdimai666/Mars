@@ -24,13 +24,13 @@ public class MarsHostRootLayoutRenderNodeImpl : INodeImplement<MarsHostRootLayou
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public async Task Execute(NodeMsg input, ExecuteAction callback)
     {
         HttpInNodeHttpRequestContext? http = input.Get<HttpInNodeHttpRequestContext>();
 
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
 
-        string pageHtml = input.Payload.ToString();
+        string pageHtml = input.Payload?.ToString()??"";
 
         ////var app = await Microsoft.AspNetCore.Html.RenderComponentAsync<App>(RenderMode.Static);
         //IHtmlHelper htmlHelper = RED.ServiceProvider.GetRequiredService<IHtmlHelper>();

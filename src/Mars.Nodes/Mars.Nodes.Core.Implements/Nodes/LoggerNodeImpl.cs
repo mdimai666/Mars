@@ -17,7 +17,7 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         try
         {

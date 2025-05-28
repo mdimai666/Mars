@@ -14,7 +14,7 @@ public class InjectNodeImpl : INodeImplement<InjectNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg _, ExecuteAction callback, Action<Exception> Error)
+    public Task Execute(NodeMsg _, ExecuteAction callback)
     {
         NodeMsg input = new NodeMsg();
 

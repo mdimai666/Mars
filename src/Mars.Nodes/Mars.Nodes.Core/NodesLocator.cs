@@ -8,7 +8,7 @@ public static class NodesLocator
 
     static bool invalide = true;
 
-    public static List<Assembly> assemblies = new();
+    public static HashSet<Assembly> assemblies = new();
 
     static object _lock = new { };
 
@@ -50,6 +50,7 @@ public static class NodesLocator
 
     public static void RegisterAssembly(Assembly assembly)
     {
+        if (assemblies.Contains(assembly)) return;
         assemblies.Add(assembly);
     }
 

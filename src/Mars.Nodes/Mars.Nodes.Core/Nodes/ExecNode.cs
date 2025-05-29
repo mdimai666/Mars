@@ -13,6 +13,7 @@ public class ExecNode : Node
     {
         HaveInput = true;
         Outputs = new List<NodeOutput> { new NodeOutput() };
+        Icon = "_content/Mars.Nodes.Workspace/nodes/terminal-fill.svg";
     }
 
 }

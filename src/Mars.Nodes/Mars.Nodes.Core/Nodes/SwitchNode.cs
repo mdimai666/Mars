@@ -21,7 +21,7 @@ public class SwitchNode : Node
             new NodeOutput(),
             new NodeOutput(),
         };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/logic2-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/option.svg";
     }
 
     public class Condition

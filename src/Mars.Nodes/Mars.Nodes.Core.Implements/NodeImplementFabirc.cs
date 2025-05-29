@@ -10,7 +10,7 @@ public static class NodeImplementFabirc
 
     static bool invalide = true;
 
-    static List<Assembly> assemblies = new();
+    static HashSet<Assembly> assemblies = new();
 
     static object _lock = new { };
 
@@ -91,6 +91,7 @@ public static class NodeImplementFabirc
 
     public static void RegisterAssembly(Assembly assembly)
     {
+        if (assemblies.Contains(assembly)) return;
         assemblies.Add(assembly);
     }
 

@@ -79,4 +79,21 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
     {
         public string ImportantData { get; set; } = "";
     }
+
+    [Fact]
+    public void ReplaceDefaultFieldsToEmptyString_DefaultValuesMustEmpty_ShouldReturnEmptyFields()
+    {
+        var nodes = new List<Node>
+        {
+            new InjectNode(){ },
+            new InjectNode(){ Color = "red", Icon = "/new/icon/icon-48.png" },
+        };
+        var newNodes = _nodeService.ReplaceDefaultFieldsToEmptyString(nodes).ToArray();
+
+        newNodes[0].Color.Should().BeEmpty();
+        newNodes[0].Icon.Should().BeEmpty();
+
+        newNodes[1].Color.Should().Be("red");
+        newNodes[1].Icon.Should().Be("/new/icon/icon-48.png");
+    }
 }

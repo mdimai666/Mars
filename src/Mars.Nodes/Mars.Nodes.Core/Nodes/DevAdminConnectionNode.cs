@@ -20,6 +20,7 @@ public class DevAdminConnectionNode : Node
         HaveInput = true;
         Color = "#3b9c9c";
         hasTailButton = false;
+        Icon = "_content/Mars.Nodes.Workspace/nodes/info-circle.svg";
     }
 
     public static string[] Actions = [ACTION_MESSAGE];

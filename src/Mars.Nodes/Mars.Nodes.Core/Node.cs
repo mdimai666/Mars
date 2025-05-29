@@ -95,6 +95,13 @@ public class Node : INodeBasic
     {
         string json = JsonSerializer.Serialize(this);
         Node node = (JsonSerializer.Deserialize(json, typeof(Node)) as Node)!;
+        return node;
+    }
+
+    public virtual Node CopyWithNewId()
+    {
+        string json = JsonSerializer.Serialize(this);
+        Node node = (JsonSerializer.Deserialize(json, typeof(Node)) as Node)!;
         node.Id = Guid.NewGuid().ToString();
         return node;
     }

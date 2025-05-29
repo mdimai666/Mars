@@ -48,7 +48,6 @@ public partial class NodeEditContainer1
     public void StartEditNode(Node node)
     {
         Node = node.Copy();
-        Node.Id = node.Id;
         OpenOffcanvasEditor(true);
     }
 

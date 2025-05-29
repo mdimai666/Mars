@@ -15,6 +15,7 @@ public class DebugNode : Node
         HaveInput = true;
         Color = "#7AB073";
         hasTailButton = true;
+        Icon = "_content/Mars.Nodes.Workspace/nodes/chat-left.svg";
     }
 
     //public async override Task Execute(object input, Action<object> callback, Action<object> Error)

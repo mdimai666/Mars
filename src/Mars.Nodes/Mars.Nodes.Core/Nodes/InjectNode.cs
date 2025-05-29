@@ -23,6 +23,7 @@ public class InjectNode : Node
         isInjectable = true;
         Color = "#A9BBCF";
         Outputs = new List<NodeOutput> { new NodeOutput() };
+        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
     }
 
 }

@@ -18,7 +18,7 @@ public class ForeachNode : Node
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },
         };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/loop-start.svg";
     }
 
     public class ForeachCycle
@@ -40,7 +40,7 @@ public class ForeachIterateNode : Node
             new NodeOutput() { Label = "finish" },
             new NodeOutput(){ Label = "iterate" },
         };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/chunk-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
     }
 }
 

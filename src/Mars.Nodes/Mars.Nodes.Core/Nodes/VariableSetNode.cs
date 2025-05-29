@@ -16,7 +16,7 @@ public class VariableSetNode : Node
         HaveInput = true;
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/ext-48.png";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/function-x.svg";
     }
 
 }

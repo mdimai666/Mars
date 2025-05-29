@@ -92,8 +92,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             if (!_fileStorage.FileExists(flowFilePath)) return false;
             string json = _fileStorage.ReadAllText(flowFilePath);
             var flowsFile = JsonSerializer.Deserialize<NodesFlowSaveFile>(json)!;
-
-            _RED.AssignNodes(flowsFile.Nodes.ToList());
+            _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(flowsFile.Nodes).ToList());
             OnAssignNodes?.Invoke();
             return false;
         }
@@ -121,10 +120,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public void SaveToFile()
     {
+        var nodes = ReplaceDefaultFieldsToEmptyString(_RED.BasicNodesDict.Values.ToArray()).ToArray();
+
         var saveFile = new NodesFlowSaveFile
         {
-            Nodes = _RED.BasicNodesDict.Values.ToArray(),
+            Nodes = nodes,
         };
+
         string json = JsonSerializer.Serialize(saveFile, new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -132,6 +134,46 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         });
 
         _fileStorage.Write(flowFilePath, json);
+    }
+
+    internal IEnumerable<Node> ReplaceDefaultFieldsToEmptyString(IEnumerable<Node> nodes)
+    {
+        var defaultDict = NodeDefaultInstanceDict();
+
+        return nodes.Where(node => node is not UnknownNode).Select(node =>
+        {
+            var copy = node.Copy();
+            if (defaultDict.TryGetValue(node.GetType(), out var de))
+            {
+                if (copy.Color == de.Color) copy.Color = "";
+                if (copy.Icon == de.Icon) copy.Icon = "";
+            }
+            return copy;
+        });
+    }
+
+    internal IEnumerable<Node> ReplaceEmptyStringToDefaultFields(IEnumerable<Node> nodes)
+    {
+        var defaultDict = NodeDefaultInstanceDict();
+
+        return nodes.Where(node => node is not UnknownNode).Select(node =>
+        {
+            if (defaultDict.TryGetValue(node.GetType(), out var de))
+            {
+                if (string.IsNullOrEmpty(node.Color)) node.Color = de.Color;
+                if (string.IsNullOrEmpty(node.Icon)) node.Icon = de.Icon;
+            }
+            return node;
+        });
+    }
+
+    private IDictionary<Type, Node> NodeDefaultInstanceDict()
+    {
+        return NodesLocator.RegisteredNodes().Select(type =>
+        {
+            Node instance = (Node)Activator.CreateInstance(type)!;
+            return new KeyValuePair<Type, Node>(type, instance);
+        }).ToDictionary();
     }
 
     public IEnumerable<Node> GetNodesForResponse()

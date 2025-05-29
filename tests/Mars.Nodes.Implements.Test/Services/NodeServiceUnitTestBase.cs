@@ -51,10 +51,18 @@ public class NodeServiceUnitTestBase
             _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_logger);
             //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
-            NodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
+            NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
+            //NodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+
+            //NodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
             NodeImplementFabirc.RegisterAssembly(typeof(TestCallBackNode).Assembly);
 
             _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _hub, _eventManager);
+
+            NodesLocator.RefreshDict();
+            NodeImplementFabirc.RefreshDict();
+
+            NodesLocator.dict.Add(typeof(TestCallBackNode).FullName!, typeof(TestCallBackNode));
         }
     }
 

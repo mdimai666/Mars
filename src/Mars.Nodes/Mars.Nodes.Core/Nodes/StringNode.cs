@@ -12,7 +12,7 @@ public class StringNode : Node
         HaveInput = true;
         Color = "#b2b2b2";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/function.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/string.svg";
     }
 }
 

@@ -12,6 +12,6 @@ public class EventNode : Node
         HaveInput = false;
         Color = "#e6e0f8";
         Outputs = new List<NodeOutput> { new NodeOutput() };
-        //Icon = "";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/activity.svg";
     }
 }

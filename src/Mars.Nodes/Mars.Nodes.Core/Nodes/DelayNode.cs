@@ -14,5 +14,6 @@ public class DelayNode : Node
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },
         };
+        Icon = "_content/Mars.Nodes.Workspace/nodes/hourglass-split.svg";
     }
 }

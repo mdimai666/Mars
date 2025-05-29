@@ -9,5 +9,6 @@ public class CssCompilerNode : Node
         Color = "#4f9ad5";
         HaveInput = true;
         Outputs = new List<NodeOutput> { new NodeOutput() { Label = "compiled css" } };
+        Icon = "_content/Mars.Nodes.Workspace/nodes/css.svg";
     }
 }

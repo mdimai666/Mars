@@ -87,7 +87,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         var paletteNodesList = topNodes.Concat(
             RegisteredNodes
-                .Where(s => Node.IsVisualNode(s))
+                .Where(s => Node.IsVisualNode(s) && s != typeof(UnknownNode))
                 .Where(s => !topNodes.Contains(s)));
 
         foreach (var type in paletteNodesList)

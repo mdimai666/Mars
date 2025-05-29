@@ -13,5 +13,6 @@ public class CheckUserNode : Node
             new NodeOutput(){ Label = "Auth" },
             new NodeOutput(){ Label = "Non auth" },
         };
+        Icon = "_content/Mars.Nodes.Workspace/nodes/person-bounding-box.svg";
     }
 }

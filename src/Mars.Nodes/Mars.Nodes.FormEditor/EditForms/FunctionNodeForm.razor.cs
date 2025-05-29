@@ -1,8 +1,8 @@
+using BlazorMonaco;
+using BlazorMonaco.Editor;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
 using MarsCodeEditor2;
-using BlazorMonaco;
-using BlazorMonaco.Editor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -12,9 +12,6 @@ public partial class FunctionNodeForm
 {
     [CascadingParameter] Node Value { get; set; } = default!;
     FunctionNode Node { get => (FunctionNode)Value; set => Value = value; }
-
-    // MarsCodeEditor? editor1;
-    //BlazorMonaco.Editor.StandaloneCodeEditor? editor1 = default!;
 
     CodeEditor2 editor1 = default!;
 

@@ -22,6 +22,8 @@ public class AppDebugController : ControllerBase
         _env = env;
     }
 
+    private string _logPath => Path.Combine(_env.ContentRootPath, "data", "logs");
+
     [HttpGet("GetLogs")]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
@@ -40,7 +42,7 @@ public class AppDebugController : ControllerBase
                 logFileName = Path.GetFileName(filename) + ".log";
             }
 
-            string logspath = Path.Combine(_env.ContentRootPath, "logs", logFileName);
+            string logspath = Path.Combine(_logPath, logFileName);
 
             //using TextReader reader = new StreamReader(System.IO.File.OpenRead(logspath));
 
@@ -69,9 +71,7 @@ public class AppDebugController : ControllerBase
     [HttpGet("LogFiles")]
     public IEnumerable<string> LogFiles()
     {
-        string logspath = Path.Combine(_env.ContentRootPath, "logs");
-
-        var files = Directory.EnumerateFiles(logspath, "*.log")
+        var files = Directory.EnumerateFiles(_logPath, "*.log")
                         .Select(file => Path.GetFileNameWithoutExtension(file))
                         .Where(file => file.StartsWith("app"));
 

@@ -1,12 +1,12 @@
 @page "/builder/debug"
 @page "/builder/debug/{FILENAME}"
-@using MarsEditors
+@using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inject IMarsWebApiClient client
 @inject NavigationManager navigationManager
 
-<ContentWrapper Title="Debug">
+<ContentWrapper Title="Debug" FullWidth>
 
     @if(logfiles is not null)
     {
@@ -38,6 +38,6 @@
     }
     else
     {
-        <MarsCodeEditor Lang="log" Value="@text" @ref=editor1 OnIFrameLoad="IFrameLoaded" />
+        <MarsCodeEditor2.CodeEditor2 Lang="@CodeEditor2.Language.log" Value="@text" @ref=editor1 OnInit="OnInit" />
     }
 </ContentWrapper>

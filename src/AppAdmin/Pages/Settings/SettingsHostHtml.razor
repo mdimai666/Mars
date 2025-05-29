@@ -1,7 +1,6 @@
 @page "/Settings/html"
 @using Mars.Shared.Options
 @using MarsCodeEditor2
-@using MarsEditors
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Настройки Host html")]
@@ -19,7 +18,7 @@
                 {
                     var item = _item;
                     string _class = item == selItem ? "active" : "";
-                    <button type="button" class="btn btn-outline-secondary rounded-0 @_class" @onclick=@(e=>SelItem(item))>
+                    <button type="button" class="btn btn-outline-secondary rounded-0 @_class" @onclick=@(e => SelItem(item))>
                         @(string.IsNullOrEmpty(item.Url) ? "Index" : item.Url)
                     </button>
                 }
@@ -42,11 +41,6 @@
             </div>
         </div>
 
-        @* <MarsCodeEditor @ref=editor1
-        Lang="@MarsCodeEditor.Language.handlebars"
-        OnSave="OnEditorSave"
-        Value="@context.IndexHtml" /> *@
-
         @if (selItem is not null)
         {
             <div>
@@ -60,9 +54,9 @@
                 </div>
 
                 <CodeEditor2 @ref=editor1
-                Lang="@MarsCodeEditor.Language.handlebars"
-                OnSave="OnEditorSave"
-                Value="@selItem.HostHtml" />
+                             Lang="@CodeEditor2.Language.handlebars"
+                             OnSave="OnEditorSave"
+                             Value="@selItem.HostHtml" />
 
             </div>
         }
@@ -75,8 +69,6 @@
 </SettingsPageWrapper>
 
 @code {
-    // MarsCodeEditor? editor1;
-
     CodeEditor2? editor1 = default!;
 
     EditOptionForm<FrontOptions> form = default!;

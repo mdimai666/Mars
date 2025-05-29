@@ -4,7 +4,6 @@ using Mars.Shared.Interfaces;
 using Mars.Shared.Resources;
 using Mars.Shared.Tools;
 using Mars.WebApiClient;
-using MarsEditors;
 using Blazored.LocalStorage;
 using BlazoredHtmlRender;
 using Flurl.Http;
@@ -38,7 +37,7 @@ public static class AppFrontSharedExtensions
         }
 
         Q.Program = program;
-        MarsCodeEditor.HostDomain = Q.BackendUrl;
+        //MarsCodeEditor.HostDomain = Q.BackendUrl;
 
 
         services.AddBlazoredLocalStorage();

@@ -14,8 +14,8 @@ function monaco_plugin_init_log_lang() {
     }
 
     const typeCustomTokenizer = [
-        { name: 'orange-alert', regex: '橙色告警', style: { foreground: '#FFA500', fontStyle: 'bold' } },
-        { name: 'red-alert', regex: '红色告警', style: { foreground: '#FF0000', fontStyle: 'bold' } }
+        { name: 'orange-alert', regex: 'Orange warning', style: { foreground: '#FFA500', fontStyle: 'bold' } },
+        { name: 'red-alert', regex: 'Red Alert', style: { foreground: '#FF0000', fontStyle: 'bold' } }
     ];
 
     monaco.languages.register({ id: 'log' });

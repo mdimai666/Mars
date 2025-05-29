@@ -3,7 +3,7 @@ using Mars.Core.Extensions;
 using Mars.Datasource.Core.Dto;
 using Mars.Shared.Common;
 using Mars.WebApiClient.Interfaces;
-using MarsEditors;
+using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Datasource.Front;
@@ -42,7 +42,7 @@ public partial class DatabaseQueryWorkspace
 
     bool loadingQuery = false;
 
-    MarsCodeEditor? _editor = default!;
+    CodeEditor2? _editor = default!;
 
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = new List<SelectDatasourceDto>();
 

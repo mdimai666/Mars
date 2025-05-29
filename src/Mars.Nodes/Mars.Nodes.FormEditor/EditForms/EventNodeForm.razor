@@ -1,4 +1,3 @@
-﻿@using MarsEditors
 @using Mars.Nodes.FormEditor.EditForms.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(EventNode))]
@@ -29,34 +28,12 @@
     <InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" 
         @bind-Value=Node.Topics />
 
-    @*<MarsCodeEditor @ref=editor1
-    Lang="@MarsCodeEditor.Language.handlebars"
-    OnSave="OnEditorSave"
-    Value="@Node.Template" />*@
 </div>
 
 
 @code {
     [CascadingParameter] Node? Value { get; set; }
     EventNode Node { get => (EventNode)Value!; set => Value = value; }
-
-
-    //MarsCodeEditor? editor1;
-
-
-    //public override async Task OnEditSave()
-    //{
-    //    //Console.WriteLine("X>1111");
-    //    Node.Topics = await editor1.GetValue();
-    //    //Console.WriteLine("X>2222");
-    //    //await Task.Delay(100);
-    //}
-
-
-    //void OnEditorSave(string val)
-    //{
-    //    //_ = form.OnFinish();
-    //}
 
     void OnChangeExampleType(string val)
     {

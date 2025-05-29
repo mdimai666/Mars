@@ -58,7 +58,7 @@ public class AppAdminSpaHtmlScripts
             new(new Uri(@"_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"), order: defaultOrder),
             new(new Uri(@"_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"), order: defaultOrder),
             new(new Uri(@"~/mars/js/emmet-monaco.min.js"), order: defaultOrder),
-            new(new Uri(@"~/js/language-log.js"), order: defaultOrder),
+            new(new Uri(@"~/mars/js/language-log.js"), order: defaultOrder),
             new(new Uri(@"vendor/spotlight/spotlight.bundle.js"), order: defaultOrder),
 
             new(new Uri(@"js/scripts.js"), version:appVersion, order: interactScriptsOrder),

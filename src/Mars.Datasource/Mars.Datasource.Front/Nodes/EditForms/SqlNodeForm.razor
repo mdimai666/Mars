@@ -4,7 +4,6 @@
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Attributes
 @using Mars.WebApiClient.Interfaces
-@using MarsEditors
 @using BlazorMonaco.Editor
 @using Microsoft.JSInterop
 @using Mars.Nodes.FormEditor
@@ -16,13 +15,6 @@
 <div class="form-group d-flex flex-column flex-fill">
     <label>SqlNode</label>
     @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Template />*@
-
-    @* <MarsCodeEditor @ref=editor1
-    Lang="@MarsCodeEditor.Language.handlebars"
-    OnSave="OnEditorSave"
-    Value="@Node.Template" /> *@
-
-
 
     <div class="row mt-3">
         <div class="col">
@@ -91,7 +83,6 @@
     [Inject]
     IDatasourceServiceClient service { get; set; } = default!;
 
-    // MarsCodeEditor? editor1;
     BlazorMonaco.Editor.StandaloneCodeEditor? editor1 = default!;
 
     [Inject]

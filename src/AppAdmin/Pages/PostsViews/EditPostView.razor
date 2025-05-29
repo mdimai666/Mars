@@ -2,7 +2,6 @@
 @using AppFront.Shared.Tools
 @using Mars.Shared.Contracts.PostTypes
 @using MarsCodeEditor2
-@using MarsEditors
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -26,7 +25,7 @@
             <FluentMenuItem Label="Тип записи" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
             @if (PostTypeName == "page")
             {
-                <FluentMenuItem Label="Просмотр" OnClick=@((e) => navigationManager.NavigateTo($"/{(context.Slug=="index"?"":f.Model.Slug)}")) />
+                <FluentMenuItem Label="Просмотр" OnClick=@((e) => navigationManager.NavigateTo($"/{(context.Slug == "index" ? "" : f.Model.Slug)}")) />
             }
         </XActionsDropDown>
     </SectionActions>
@@ -68,20 +67,20 @@
                                 <FluentSelect Value="@lang1"
                                               TOption="string"
                                               Style="width: 180px;"
-                                              Items="MarsCodeEditor.Language.Array"
+                                              Items="CodeEditor2.Language.Array"
                                               ValueChanged="v=>{ lang1=v; codeEditor1?.SetModelLanguage(v); }">
                                 </FluentSelect>
                             </div>
 
                             <MarsCodeEditor2.CodeEditor2 @ref=codeEditor1
-                                                          Lang=@MarsCodeEditor.Language.handlebars
-                                                          OnSave="OnSaveFromCodeEditor"
-                                                          Value="@f.Model.Content" />
+                                                         Lang=@CodeEditor2.Language.handlebars
+                                                         OnSave="OnSaveFromCodeEditor"
+                                                         Value="@f.Model.Content" />
                         </div>
                     }
                     else if (PostContentType == DefaultPostContentTypes.PlainText)
                     {
-                        <FormItem2 For="@(()=>context.Content)">
+                        <FormItem2 For="@(() => context.Content)">
                             <FluentTextArea Rows="8" @bind-Value=@context.Content Class="w-100" />
                         </FormItem2>
                     }
@@ -104,7 +103,7 @@
         @if (context.FeatureActivated(Features.Excerpt))
         {
             <div class="my-2">
-                <FormItem2 For="@(()=>context.Excerpt)">
+                <FormItem2 For="@(() => context.Excerpt)">
                     <FluentTextArea Rows="4" @bind-Value=@context.Excerpt Class="w-50" />
                 </FormItem2>
             </div>
@@ -143,8 +142,8 @@
     <SectionSidePublish>
         @if (context.FeatureActivated(Features.ModifyCreatedDate))
         {
-            <FormItem2 For="@(()=>context.CreatedAt)">
-                <FluentDatePicker Value=@context.CreatedAt.Date ValueChanged=@(v=>context.CreatedAt = v??DateTimeOffset.Now) />
+            <FormItem2 For="@(() => context.CreatedAt)">
+                <FluentDatePicker Value=@context.CreatedAt.Date ValueChanged=@(v => context.CreatedAt = v ?? DateTimeOffset.Now) />
             </FormItem2>
             @if (context.ModifiedAt != null)
             {
@@ -172,7 +171,7 @@
         {
             <div class="mt-3">
 
-                <FormItem2 For="@(()=>context.Status)">
+                <FormItem2 For="@(() => context.Status)">
                     <FluentSelect @bind-Value="@context.Status"
                                   TOption="PostStatusEditModel"
                                   OptionValue=@(s=>s.Slug)
@@ -186,13 +185,13 @@
         @if (context.FeatureActivated(Features.Language))
         {
             <div class="mt-3">
-                <FormItem2 For="@(()=>context.LangCode)">
+                <FormItem2 For="@(() => context.LangCode)">
                     <FluentTextField @bind-Value=@context.LangCode />
                 </FormItem2>
             </div>
         }
         <div class="mt-3">
-            <FormItem2 For="@(()=>context.PostType.EnabledFeatures)">
+            <FormItem2 For="@(() => context.PostType.EnabledFeatures)">
                 @context.PostType.EnabledFeatures.JoinStr(",")
             </FormItem2>
         </div>
@@ -207,7 +206,7 @@
                     <div class="card-body">
                         @if (context.FeatureActivated(Features.Tags))
                         {
-                            <FormItem2 For="@(()=>context.Tags)">
+                            <FormItem2 For="@(() => context.Tags)">
                                 <InputTags2 @bind-Value=context.Tags />
                             </FormItem2>
                         }

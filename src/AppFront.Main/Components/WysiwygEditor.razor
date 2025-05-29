@@ -1,4 +1,3 @@
-@using MarsEditors
 @using MarsCodeEditor2;
 @using Blazored.TextEditor
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -11,10 +10,8 @@
 
         <br />
 
-        @* <MarsEditors.MarsCodeEditor @ref="@HtmlEditor" Lang="html" Value="@_content"></MarsEditors.MarsCodeEditor> *@
-
         <MarsCodeEditor2.CodeEditor2 @ref=HtmlEditor
-                                      Lang=@MarsCodeEditor.Language.html
+                                      Lang=@CodeEditor2.Language.html
                                       OnSave="OnSaveFromCodeEditor"
                                       Value="@_content" />
     }

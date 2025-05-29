@@ -1,4 +1,5 @@
-using MarsEditors;
+using Mars.Core.Extensions;
+using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 
 namespace AppAdmin.Builder.DebugViews;
@@ -11,7 +12,7 @@ public partial class DebugPage
     string text = "";
     string? error;
 
-    MarsCodeEditor? editor1;
+    CodeEditor2? editor1;
     string? prevFileName;
 
     protected override void OnParametersSet()
@@ -34,22 +35,33 @@ public partial class DebugPage
 
         logfiles ??= await client.AppDebug.LogFiles();
 
-        var fileName = string.IsNullOrEmpty(FILENAME) ? logfiles.First() : FILENAME;
+        var fileName = string.IsNullOrEmpty(FILENAME) ? logfiles.FirstOrDefault() : FILENAME;
 
-        var res = await client.AppDebug.GetLogs(fileName, 300);
+        if (fileName is not null)
+        {
+            var res = await client.AppDebug.GetLogs(fileName, 1000);
 
-        if (res.Ok)
-        {
-            error = null;
-            text = res.Data;
+            if (res.Ok)
+            {
+                error = null;
+                text = res.Data;
+            }
+            else
+            {
+                error = res.Message;
+            }
         }
-        else
-        {
-            error = res.Message;
-        }
+
+
 
         Busy = false;
         StateHasChanged();
+
+    }
+
+    void OnInit()
+    {
+        ScrollDown();
     }
 
     async void LoadLogFiles()
@@ -59,10 +71,12 @@ public partial class DebugPage
         StateHasChanged();
     }
 
-    async void IFrameLoaded()
+    async void ScrollDown()
     {
-        await Task.Delay(500);
-        _ = editor1?.SendToMonaco("d_scrollDown", "0");
+        WaitHelper.WaitForNotNull(() => editor1, 1000);
+
+        var sh = await editor1.Monaco.GetScrollHeight();
+        await editor1.Monaco.SetScrollTop((int)(sh - 1500));
     }
 
     void OnChangeLogFile(string file)

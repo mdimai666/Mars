@@ -5,7 +5,7 @@
 @using Mars.Datasource.Front.Services
 @using Mars.Shared.Common
 @using Mars.WebApiClient.Interfaces
-@using MarsEditors
+@using MarsCodeEditor2
 @inject NavigationManager nav
 
 @if (Busy)
@@ -55,10 +55,10 @@ else
                             var table = t;
                             string _class = table == selTable ? "active" : "";
                             <li class="list-group-item list-group-item-action tablelist-table @_class px-2 py-1 hstack"
-                                @onclick=@(e=>OnClickTable(table))>
+                                @onclick=@(e => OnClickTable(table))>
                                 <a role="button" class="cursor-default text-black">@t.TableName</a>
                                 <span class="ms-auto tablelist-table__tool">
-                                    <a class="" role="button" @onclick=@(()=>ShowRecords(table))>[data]</a>
+                                    <a class="" role="button" @onclick=@(() => ShowRecords(table))>[data]</a>
                                 </span>
                             </li>
                         }
@@ -121,9 +121,9 @@ else
                                             </div>
                                             <div class="tab-pane container fade" id="menu1">
                                                 <div class="p-3 d-flex flex-column" style="height:350px;">
-                                                    <MarsCodeEditor @ref=_editor
-                                                                     Lang=@MarsCodeEditor.Language.sql
-                                                                     Value="" />
+                                                    <CodeEditor2 @ref=_editor
+                                                                 Lang=@CodeEditor2.Language.sql
+                                                                 Value="" />
                                                 </div>
 
                                             </div>

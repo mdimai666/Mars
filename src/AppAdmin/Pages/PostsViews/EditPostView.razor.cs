@@ -2,7 +2,6 @@ using Mars.Core.Features;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
-using MarsEditors;
 using Microsoft.AspNetCore.Components;
 
 namespace AppAdmin.Pages.PostsViews;
@@ -23,10 +22,9 @@ public partial class EditPostView
     //OLD
     WysiwygEditor? editor1;
 
-    // MarsCodeEditor? codeEditor1;
     CodeEditor2? codeEditor1;
 
-    string lang1 = MarsCodeEditor.Language.handlebars;
+    string lang1 = CodeEditor2.Language.handlebars;
 
 
     void OnChangeTitle()

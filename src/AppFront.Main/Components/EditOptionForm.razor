@@ -1,4 +1,4 @@
-@using MarsEditors
+@using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IStringLocalizer<AppRes> L
 @typeparam TModel
@@ -58,9 +58,9 @@
 
                                 @* TODO: тут он странно переинициалищируется при сохранении; если убрать Value то значение пустое и пишет в консоли *@
                                 <MarsCodeEditor2.CodeEditor2 @ref=codeEditor
-                                                              Lang=@MarsCodeEditor.Language.json
-                                                              OnSave="OnSaveFromCodeEditor"
-                                                              Value=@GetModelAsJson() />
+                                                             Lang=@CodeEditor2.Language.json
+                                                             OnSave="OnSaveFromCodeEditor"
+                                                             Value=@GetModelAsJson() />
                             }
                             else
                             {

@@ -1,5 +1,3 @@
-// This is a JavaScript module that is loaded on demand. It can export any number of
-// functions, and may import other JavaScript modules if required.
 
 export function showPrompt(message) {
     return prompt(message, 'Type anything here');
@@ -15,8 +13,6 @@ export function f_editor_doaction(blazorMonacoId, action_id) {
     action.run();
 }
 
-
-
 export function activateJSextensions(blazorMonacoId) {
     let editor = getEditorByBlazorMonacoId(blazorMonacoId)
 
@@ -24,6 +20,8 @@ export function activateJSextensions(blazorMonacoId) {
         blazorMonaco.Mars_extensions_activated = true;
         emmetMonaco.emmetHTML(monaco, ['html', 'php', 'handlebars'])
         emmetMonaco.emmetCSS(monaco)
+        if (monaco_plugin_init_log_lang) monaco_plugin_init_log_lang()
+        else "'monaco_plugin_init_log_lang' not found";
     }
 
     editor.updateOptions({ wordWrap: "on" })

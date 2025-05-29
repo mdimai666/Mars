@@ -1,7 +1,7 @@
-using BlazorMonaco.Editor;
 using BlazorMonaco;
-using Microsoft.JSInterop;
+using BlazorMonaco.Editor;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace MarsCodeEditor2;
 
@@ -21,24 +21,20 @@ public partial class CodeEditor2 : IDisposable
         public static readonly string css = "css";
         public static readonly string csharp = "csharp";
         public static readonly string sql = "sql";
+        public static readonly string log = "log";
 
-        public static readonly string[] Array = { handlebars, html, js, json, less, css, csharp, sql };
+        public static readonly string[] Array = { handlebars, html, js, json, less, css, csharp, sql, log };
     }
 
-    [Parameter]
-    public string Value { get; set; } = "";
-
-    [Parameter]
-    public string Lang { get; set; } = CodeEditor2.Language.handlebars;
-
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Lang { get; set; } = CodeEditor2.Language.handlebars;
     [Parameter] public string MonacoCssClass { get; set; } = "flex-fill";
     [Parameter] public string ContainerCssStyle { get; set; } = "height:80vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;";
-
     [Parameter] public bool HideToolbarComponents { get; set; } = false;
 
 
-    [Parameter]
-    public EventCallback<string> OnSave { get; set; }
+    [Parameter] public EventCallback<string> OnSave { get; set; }
+    [Parameter] public EventCallback OnInit { get; set; }
 
     public static List<Type> ToolbarComponents { get; set; } = new();
 
@@ -46,7 +42,7 @@ public partial class CodeEditor2 : IDisposable
     IJSRuntime JSRuntime { get; set; } = default!;
     MarsCodeEditor2JsInterop js = default!;
 
-    [Parameter] 
+    [Parameter]
     public RenderFragment HeaderArea { get; set; } = default!;
 
     protected override void OnInitialized()
@@ -55,11 +51,6 @@ public partial class CodeEditor2 : IDisposable
         base.OnInitialized();
         js = new MarsCodeEditor2JsInterop(JSRuntime);
     }
-
-    //private async Task EditorOnDidInit()
-    //{
-    //    await EditorOnDidInit(editor1!, js);
-    //}
 
     async Task EditorOnDidInit()
     {
@@ -102,6 +93,13 @@ public partial class CodeEditor2 : IDisposable
         });
 
         await js.Editor_activateJSextensions(editor1.Id);
+
+        if (Lang == Language.log)
+        {
+            _ = JSRuntime.InvokeVoidAsync("monaco.editor.setTheme", "logview");
+        }
+
+        _ = OnInit.InvokeAsync();
     }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)

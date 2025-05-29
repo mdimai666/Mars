@@ -5,7 +5,7 @@
 Varible
 ```html
 //input (Payload = 123)
-{{Pyload}}
+{{Payload}}
 
 //output
 123
@@ -17,7 +17,7 @@ Each
 {{#each Payload}}
     <div>{{.}}</div>
 {{/each}}
-{{Pyload}}
+{{Payload}}
 
 //output
 <div>1</div>

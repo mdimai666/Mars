@@ -27,6 +27,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="MarsEditorsJsInterop.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="MarsCodeEditor.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>

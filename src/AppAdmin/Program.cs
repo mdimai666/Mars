@@ -4,11 +4,14 @@ using AppFront.Main.Extensions;
 using AppFront.Shared.Features;
 using AppFront.Shared.Hub;
 using AppFront.Shared.Interfaces;
+using AppFront.Shared.OptionEditForms;
 using Mars.Datasource.Front;
 using Mars.Nodes.Core;
 using Mars.Nodes.WebApp.Front.Forms;
 using Mars.Nodes.Workspace;
+using Mars.Options.Front;
 using Mars.Plugin.Front;
+using Mars.SemanticKernel.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -71,11 +74,15 @@ public class Program
         NodeFormsLocator.RegisterAssembly(typeof(RenderPageNodeForm).Assembly);
         builder.Services.AddNodeWorkspace();
         builder.Services.DatasourceWorspace();
+        builder.Services.AddSemanticKernelFront();
 
         NodesLocator.RefreshDict();
         NodeFormsLocator.RefreshDict();
         CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
         ContentWrapper.GeneralSectionActions = typeof(Shared.GeneralSectionActions);
+        OptionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
+        OptionsFormsLocator.RegisterAssembly(typeof(SmtpSettingsEditForm).Assembly);
+        OptionsFormsLocator.RefreshDict();
 
         //string? version = Assembly.GetExecutingAssembly().
         //    GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.

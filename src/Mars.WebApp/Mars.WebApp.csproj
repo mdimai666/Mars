@@ -97,6 +97,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Blazor\Mars.WebSiteProcessor.Blazor.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />
@@ -196,6 +197,11 @@
         </ItemGroup>
 
         <Delete Files="@(FilesToDelete)" />
+    </Target>
+
+    <!--Clean publish folder from old files-->
+    <Target Name="DeletePreviousPublish" BeforeTargets="_CheckForUnsupportedTargetFramework" Condition=" '$(Configuration)' == 'Release' ">
+        <RemoveDir Directories="$(PublishUrl.Remove($(PublishDir.LastIndexOf('\'))))"></RemoveDir>
     </Target>
 
     <ItemGroup>

@@ -74,7 +74,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     }
 
-    MasterTab[] masterTabs = [new("tabs", "Tabs"), new("nodes", "Nodes")];
+    MasterTab[] masterTabs = [new("tabs", "Tabs"), new("nodes", "Nodes"), new("configs", "Configs")];
 
     public NodeEditor1()
     {

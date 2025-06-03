@@ -15,10 +15,12 @@ using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Host;
+using Mars.Nodes.Workspace;
 using Mars.Options.Host;
 using Mars.Plugin;
 using Mars.QueryLang.Host;
 using Mars.Scheduler.Host;
+using Mars.SemanticKernel.Host;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor;
@@ -29,7 +31,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
-using Mars.Nodes.Workspace;
 using static Mars.UseStartup.MarsStartupInfo;
 
 Console.OutputEncoding = Encoding.UTF8;
@@ -76,8 +77,7 @@ builder.Services.MarsAddLocalization()
                 .MarsAddMetrics()
                 .AddConfigureActions()
                 .AddMarsWebSiteProcessor()
-                .AddMarsQueryLang()
-                .AddMarsDocker();
+                .AddMarsQueryLang();
 builder.AddFront();
 
 builder.Services.AddDateOnlyTimeOnlyStringConverters()
@@ -149,7 +149,9 @@ builder.Services.MarsAddSwagger()
                 .AddMarsNodes()
                 .AddDatasourceHost()
                 .AddMarsExcel()
-                .AddMarsScheduler();
+                .AddMarsScheduler()
+                .AddMarsDocker()
+                .AddMarsSemanticKernel();
 
 //------------------------------------------
 // CLIENT
@@ -274,8 +276,9 @@ NodeServiceTemplaryHelper._serviceCollection = builder.Services;
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
 app.UseMarsQueryLang();
-app.UseForFeature(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
 app.UseMarsExcel();
+app.UseForFeature(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
+app.UseForFeature(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
 
 await commandsApi.InvokeCommands(IsTesting ? [] : args);
 if (!commandsApi.IsContinueRun) return 0;

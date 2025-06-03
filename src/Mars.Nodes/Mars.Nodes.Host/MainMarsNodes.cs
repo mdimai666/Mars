@@ -17,6 +17,7 @@ public static class MainMarsNodes
         services.AddSingleton<INodeService, NodeService>();
         services.AddSingleton<INodeSchedulerService, NodeSchedulerService>();
         services.AddSingleton<RED>();
+        services.AddSingleton<INodesReader, NodesReader>();
         services.AddSingleton<MqttManager>();
         //services.AddHostedService<FlowExecutionBackgroundService>();
 

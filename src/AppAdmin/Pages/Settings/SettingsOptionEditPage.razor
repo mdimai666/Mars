@@ -1,5 +1,5 @@
 @page "/Settings/Option/{OptionTypeFullName}"
-@using Mars.Shared.Tools
+@using Mars.Options.Front
 
 <SettingsPageWrapper>
 
@@ -13,7 +13,7 @@
     }
     else
     {
-        <DynamicComponent Type="optionFormType.PageType" />
+        <DynamicComponent Type="optionFormType.FormType" />
     }
 </SettingsPageWrapper>
 
@@ -28,9 +28,7 @@
         set { _optionTypeFullName = value; Load(); }
     }
 
-    [Inject] ModelInfoService modelService { get; set; } = default!;
-
-    GPageInfo? optionFormType;
+    OptionsFormsLocatorItem? optionFormType;
 
     void Load()
     {
@@ -39,9 +37,8 @@
 
         string normalName = OptionTypeFullName.Replace("+", ".");
 
-        optionFormType = ASideOptions.OptionForms(modelService)
-           .FirstOrDefault(s => s.Kind == EComponentType.ComponentBase
-                && s.PageType.FullName == normalName);
+        optionFormType = ASideOptions.OptionForms()
+           .FirstOrDefault(s => s.OptionType.FullName == normalName);
 
         Busy = false;
     }

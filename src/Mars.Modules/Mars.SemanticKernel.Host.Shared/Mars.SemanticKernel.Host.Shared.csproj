@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SemanticKernel" Version="1.50.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.SemanticKernel.Shared\Mars.SemanticKernel.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

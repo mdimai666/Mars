@@ -1,0 +1,86 @@
+@using AppFront.Shared.Components
+<div>
+    <div class="hstack gap-3 text-accent" style="margin-left: var(--fluent-input-label-basis)">
+        <a role="button" @onclick=SetAsTool>SetAsTool</a>
+        <div class="vr"></div>
+        <a role="button" @onclick=Clear>clear</a>
+    </div>
+</div>
+<div>
+    <FormItem2 For="() => Temperature">
+        <FluentNumberField TValue="float?" @bind-Value=@Temperature Placeholder="0.8" Min="0" Max="1" Step="0.1" />
+        <FluentLabel>0..1</FluentLabel>
+    </FormItem2>
+    <FluentLabel Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
+        Температура модели. Повышение температуры заставит модель
+        отвечать более креативно. (По умолчанию: 0,8)
+    </FluentLabel>
+</div>
+<div>
+
+    <FormItem2 For="() => TopK">
+        <FluentNumberField TValue="int?" @bind-Value=@TopK Placeholder="40" Min="0" Max="100" Step="10" />
+        <FluentLabel>0..100</FluentLabel>
+    </FormItem2>
+    <FluentLabel Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
+        Снижает вероятность генерации бессмыслицы.Более высокое значение(например, 100)
+        даст более разнообразные ответы, тогда как более низкое значение (например, 10) будет более консервативным.
+        (По умолчанию: 40)
+    </FluentLabel>
+</div>
+<div>
+
+    <FormItem2 For="() => TopP">
+        <FluentNumberField TValue="float?" @bind-Value=@TopP Placeholder="0.9" Min="0" Max="1" Step="0.1" />
+        <FluentLabel>0..1</FluentLabel>
+    </FormItem2>
+    <FluentLabel Class="text-fade ps-3 d-none" Style="margin-left: var(--fluent-input-label-basis)">
+        Работает вместе с top-k. Более высокое значение (например, 0,95) приведет к более разнообразному
+        тексту, тогда как более низкое значение (например, 0,5) сгенерирует более сфокусированный и консервативный
+        текст. (По умолчанию: 0,9)
+    </FluentLabel>
+</div>
+
+@code {
+    float? _temperature;
+
+    [Parameter]
+    public float? Temperature { get => _temperature; set { if (_temperature == value) return; _temperature = value; TemperatureChanged.InvokeAsync(_temperature); } }
+
+    [Parameter]
+    public EventCallback<float?> TemperatureChanged { get; set; }
+
+    //---------
+    int? _topK;
+
+    [Parameter]
+    public int? TopK { get => _topK; set { if (_topK == value) return; _topK = value; TopKChanged.InvokeAsync(_topK); } }
+
+    [Parameter]
+    public EventCallback<int?> TopKChanged { get; set; }
+
+    //---------
+    float? _topP;
+
+    [Parameter]
+    public float? TopP { get => _topP; set { if (_topP == value) return; _topP = value; TopPChanged.InvokeAsync(_topP); } }
+
+    [Parameter]
+    public EventCallback<float?> TopPChanged { get; set; }
+
+    //---------
+
+    void Clear()
+    {
+        Temperature = null;
+        TopK = null;
+        TopP = null;
+    }
+
+    void SetAsTool()
+    {
+        Temperature = 0.1f;
+        TopK = 10;
+        TopP = 20;
+    }
+}

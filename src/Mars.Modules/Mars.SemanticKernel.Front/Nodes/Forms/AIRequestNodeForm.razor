@@ -1,0 +1,34 @@
+@using AppFront.Shared.Components
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Mars.SemanticKernel.Front.Nodes.Forms.Parts
+@using Mars.SemanticKernel.Shared.Nodes
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(AIRequestNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+
+        <FormItem2 For="()=>Node.Config">
+            <InputConfigField @bind-Value=@Node.Config TConfig="SemanticKernelModelConfigNode" />
+        </FormItem2>
+
+        <FormItem2 For="() => Node.Prompt">
+            <FluentTextArea @bind-Value=Node.Prompt Rows="5" Class="w-100" />
+        </FormItem2>
+
+        <hr />
+
+        <ModelBasicParamsBlock @bind-Temperature=@Node.Temperature @bind-TopK=@Node.TopK @bind-TopP=@Node.TopP />
+
+    </div>
+
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    AIRequestNode Node { get => (AIRequestNode)Value!; set => Value = value; }
+
+}

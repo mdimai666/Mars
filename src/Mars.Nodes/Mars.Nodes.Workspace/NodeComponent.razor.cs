@@ -16,7 +16,7 @@ public partial class NodeComponent
 
     public float bodyRectHeight => node.Outputs.Count < 2 ? 30 : node.Outputs.Count * 16f;
     //public float bodyRectWidth => 120;
-    public float bodyRectWidth => CalcBodyWidth(node);
+    public float bodyRectWidth => FixedWidth ?? CalcBodyWidth(node);
 
     [Parameter] public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
@@ -27,6 +27,8 @@ public partial class NodeComponent
     [Parameter] public EventCallback<string> OnInject { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnDblClick { get; set; }
+
+    [Parameter] public float? FixedWidth { get; set; }
 
     string IconUrl
     {

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+      <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
+    <ProjectReference Include="..\..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
+    <ProjectReference Include="..\Mars.SemanticKernel.Shared\Mars.SemanticKernel.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
+
+</Project>

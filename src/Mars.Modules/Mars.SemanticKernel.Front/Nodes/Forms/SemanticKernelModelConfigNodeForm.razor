@@ -1,0 +1,77 @@
+@using AppFront.Shared.Components
+@using Mars.Core.Features
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Attributes
+@using Mars.Nodes.FormEditor
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Mars.SemanticKernel.Front.Nodes.Forms.Parts
+@using Mars.SemanticKernel.Shared.Nodes
+@using Mars.SemanticKernel.Shared.Options
+@using System.Text.Json
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(SemanticKernelModelConfigNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+
+        <FormItem2 For="() => Node.ModelType">
+            <FluentSelect @bind-Value=Node.ModelType TOption="string" Items="SemanticKernelModelConfigNode.AvailModelTypes" />
+        </FormItem2>
+
+        @if (Node.ModelType == OllamaOptions.SectionName)
+        {
+            <OllamaOptionsForm Value="(OllamaOptions)_config" ValueChanged="@(v => Config = v)" />
+        }
+
+        <hr />
+
+        <FormItem2 For="() => Node.SystemPrompt">
+            <FluentTextArea @bind-Value=Node.SystemPrompt Rows="5" Class="w-100" />
+        </FormItem2>
+
+        <hr />
+
+        <ModelBasicParamsBlock @bind-Temperature=@Node.Temperature @bind-TopK=@Node.TopK @bind-TopP=@Node.TopP />
+
+    </div>
+
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    SemanticKernelModelConfigNode Node { get => (SemanticKernelModelConfigNode)Value!; set => Value = value; }
+
+    object _config = new OllamaOptions();
+
+    object Config
+    {
+        get => _config;
+        set
+        {
+            if (_config == value) return;
+            _config = value;
+            //Console.WriteLine("set Config=" + TextTool.GetPropertiesValueAsString(_config));
+            Node.ModelConfig = JsonSerializer.SerializeToNode(_config)!;
+            //Console.WriteLine("Node.ModelConfig=" + Node.ModelConfig.ToJsonString() );
+        }
+    }
+
+    bool _init;
+
+    protected override void OnParametersSet()
+    {
+        if (!_init)
+        {
+            _config = JsonSerializer.Deserialize<OllamaOptions>(Node.ModelConfig)!;
+            _init = true;
+        }
+    }
+
+    public override Task OnEditSave()
+    {
+        //Console.WriteLine("OnEditSave=" + TextTool.GetPropertiesValueAsString(_config));
+        //Console.WriteLine("Node.ModelConfig=" + Node.ModelConfig.ToJsonString());
+        Node.ModelConfig = JsonSerializer.SerializeToNode(_config)!;
+        return base.OnEditSave();
+    }
+}

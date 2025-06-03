@@ -1,0 +1,65 @@
+@using AppFront.Shared.Components
+@using Mars.Options.Attributes
+@using Mars.SemanticKernel.Front.Services
+@using Mars.SemanticKernel.Shared.Contracts
+@using Mars.SemanticKernel.Shared.Options
+@using Mars.Shared.Options.Attributes
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+@attribute [OptionEditFormForOptionAttribute(typeof(AIToolOption))]
+@attribute [Display(Name = "AI Tool")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="AIToolOption">
+    <h3>Настройки AIToolOption</h3>
+    <FormItem2 For=@(() => context.DefaultAIToolConfig)>
+
+        <FluentSelect TOption="AIConfigNodeResponse"
+                      Items="_configs"
+                      Width="250px"
+                      OptionValue="f=>f.NodeId"
+                      OptionText="f=>f.Title"
+                      Context="opt"
+                      Style="--base-height-multiplier:10"
+                      @bind-Value="@context.DefaultAIToolConfig">
+            <OptionTemplate>
+                <FluentLabel>@opt.Title</FluentLabel>
+                <label class="text-fade fz12px">@opt.Description</label>
+            </OptionTemplate>
+        </FluentSelect>
+
+    </FormItem2>
+</EditOptionForm>
+
+@code {
+    EditOptionForm<AIToolOption>? form;
+
+    [Inject] IAIServiceClient _client { get; set; } = default!;
+    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+
+    static readonly AIConfigNodeResponse empty = new() { NodeId = "", Title = "--", Description = "" };
+
+    AIConfigNodeResponse[] _configs = [];
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_configs.Length == 0) Load();
+    }
+
+    async void Load()
+    {
+        try
+        {
+            var list = await _client.ConfigList();
+            _configs = [empty, .. list];
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+        }
+    }
+}

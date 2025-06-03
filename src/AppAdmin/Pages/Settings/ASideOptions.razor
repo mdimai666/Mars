@@ -1,6 +1,4 @@
-@using Mars.Options.Attributes;
-@using System.Reflection
-@using Mars.Shared.Options.Attributes
+@using Mars.Options.Front
 @using Mars.Shared.Tools
 
 <div class="ASideOptions d-flex flex-column g-2">
@@ -20,8 +18,8 @@
     @foreach (var form in OptionFormList)
     {
         <NavLink class="mb-2"
-                 href=@($"/dev/Settings/Option/{form.PageType.FullName!.Replace(".","+")}")>
-            @form.DisplayAttributeName
+                 href=@($"/dev/Settings/Option/{form.OptionType.FullName!.Replace(".", "+")}")>
+            @form.DisplayName
         </NavLink>
     }
     <NavLink class="mb-2" href="/dev/Settings/HostCache">
@@ -47,29 +45,20 @@
 </style>
 
 @code {
-    static List<GPageInfo> OptionFormList = new();
-
-    [Inject] ModelInfoService modelService { get; set; } = default!;
+    static List<OptionsFormsLocatorItem> OptionFormList = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
-
-        OptionFormList = OptionForms(modelService);
+        OptionFormList = OptionForms();
     }
 
-    public static List<GPageInfo> OptionForms(ModelInfoService modelService)
+    public static List<OptionsFormsLocatorItem> OptionForms()
     {
         if (OptionFormList.Any()) return OptionFormList;
 
-        List<Assembly> assemblies = [typeof(Mars.Options.Front.ApiOptionEditForm).Assembly,
-                                    typeof(AppFront.Shared.OptionEditForms.SmtpSettingsEditForm).Assembly];
-        OptionFormList = assemblies.SelectMany(assembly => modelService.GetPages(assembly)
-                            .Where(s => s.Kind == EComponentType.ComponentBase
-                                && s.Attributes.Any(at => at.GetType() == typeof(OptionEditFormForOptionAttribute))
-                                && s.Attributes.Any(at => at.GetType() == typeof(AutoShowFormOnSettingsPageAttribute))
-                            )).ToList();
+        OptionFormList = OptionsFormsLocator.RegisteredFormsAutoShow().OrderBy(s => s.OptionType.Name).ToList();
+
         return OptionFormList;
     }
 }

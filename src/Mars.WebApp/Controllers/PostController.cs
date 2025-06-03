@@ -187,7 +187,7 @@ public class PostController : ControllerBase
         //FileEntity fileEntity = _fileService.WriteUpload(file, EFileType.PostAttachment, file_group);
         Guid userId = Guid.Empty;
         var createdFileId = await _fileService.WriteUpload(file, "Posts", userId, cancellationToken);
-        var fileDetail = await _fileService.GetDetail(createdFileId, cancellationToken);
+        var fileDetail = await _fileService.GetDetail(createdFileId, cancellationToken) ?? throw new InvalidOperationException("file not written");
         var action = UserActionResult<FileDetailResponse>.Success(fileDetail.ToResponse(), "ok");
 
         //return new ResponseUploadFile(fileEntity);

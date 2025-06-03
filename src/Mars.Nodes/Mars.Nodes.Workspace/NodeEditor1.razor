@@ -19,8 +19,7 @@
                                     <input type="radio" class="btn-check" name="btnradio" id=@($"mtab-{tab.key}")
                                            autocomplete="off" checked="@(tab.key == activeMasterTab)">
                                     <label class="btn btn-outline-secondary rounded-0" for=@($"mtab-{tab.key}")
-                                           @onclick=@(e=>{ activeMasterTab = tab.key; })>@tab.label</label>
-
+                                           @onclick=@(e => activeMasterTab = tab.key)>@tab.label</label>
                                 }
 
                             </div>
@@ -80,7 +79,7 @@
                             {
                                 var varNode = _varNode;
                                 <span class="badge dmodel-badge cursor-pointer"
-                                      @ondblclick="e=>StartEditNode(varNode)"
+                                      @ondblclick="e => StartEditNode(varNode)"
                                       title="@($"{varNode.Name}:{varNode.VarType}")"
                                       data-var-type="@varNode.VarType"
                                       data-array="@varNode.ArrayValue.ToString().ToLower()">
@@ -101,11 +100,11 @@
                                     <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                         @if (node is MicroschemeNode)
                                         {
-                                            <MicroschemeComponent Node="@_node" OnMouseDown=@(e=>CreateNewNodeFromPalette(e, _node)) />
+                                            <MicroschemeComponent Node="@_node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, _node)) />
                                         }
                                         else
                                         {
-                                            <NodeComponent Node="@_node" OnMouseDown=@(e=>CreateNewNodeFromPalette(e, _node)) />
+                                            <NodeComponent Node="@_node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, _node)) FixedWidth="120" />
                                         }
                                     </svg>
                                 </li>
@@ -121,13 +120,31 @@
                                 var flow = _flow;
                                 bool isactive = activeFlow == flow;
                                 @*<li class="p-2 list-group-item active" aria-current="true">An active item</li>*@
-                                <li class=@($"p-2 list-group-item rounded-0 {(isactive?"active":"")}")
-                                    @onclick=@(e=>ChangeFlow(flow))
-                                    @ondblclick="e=>StartEditNode(flow)">@flow.DisplayName</li>
+                                <li class=@($"p-2 list-group-item rounded-0 {(isactive ? "active" : "")}")
+                                    @onclick=@(e => ChangeFlow(flow))
+                                    @ondblclick="@(e => StartEditNode(flow))">@flow.DisplayName</li>
                             }
                             <li class="px-2 py-0 list-group-item text-center fw-bold rounded-0" @onclick=ClickAddFlow>
                                 <i class="bi bi-plus fz22px"></i>
                             </li>
+                        </ul>
+                    }
+                    else if (activeMasterTab == "configs")
+                    {
+                        <div class="card-body p-2 ">
+                            <p class="card-text">Configs (@Palette.Count)</p>
+                        </div>
+                        <ul class="list-group">
+                            @foreach (var node in Nodes.Where(node => node is ConfigNode))
+                            {
+                                Node _node = node;
+                                <li class="list-group-item px-2 py-0 border-0">
+                                    <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                        <NodeComponent Node="@_node" OnDblClick=@(e => StartEditNode(_node)) FixedWidth="120" />
+                                    </svg>
+                                </li>
+                            }
+
                         </ul>
                     }
                 </div>
@@ -173,7 +190,7 @@
                             <ul class="list-group list-group-flush">
                                 @foreach (var m in messages)
                                 {
-                                    <li class="list-group-item p-1 nodered-debug-message-list__item" data-id=@m.NodeId data-level=@m.Level @onclick=@(()=>OnClickConsoleDebugMessage(m))>
+                                    <li class="list-group-item p-1 nodered-debug-message-list__item" data-id=@m.NodeId data-level=@m.Level @onclick=@(() => OnClickConsoleDebugMessage(m))>
                                         <div class="debug-msg-id text-nowrap">@m.NodeId</div>
                                         <div>
                                             @m.Message

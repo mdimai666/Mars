@@ -14,7 +14,6 @@ public static class AppFrontSharedMainExtensions
     {
         services.AddAppFront(configuration, program);
         services.AddFluentUIComponents();
-        services.AddDataGridEntityFrameworkAdapter();
 
         services.InstallHandlers();
 

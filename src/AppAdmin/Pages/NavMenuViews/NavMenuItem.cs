@@ -1,6 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Mars.Shared.Contracts.NavMenus;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppAdmin.Pages.NavMenuViews;
 
@@ -8,45 +8,45 @@ public partial class EditNavMenuPage
 {
     internal class NavMenuItem
     {
-        [Comment("#")]
+        [Display(Name = "#")]
         public Guid Id { get; set; } = Guid.NewGuid();
-        [Comment("Родитель")]
+        [Display(Name = "Родитель")]
         public Guid ParentId { get; set; }
 
-        [Comment("Название")]
+        [Display(Name = "Название")]
         public string Title { get; set; } = "";
 
-        [Comment("Ссылка")]
+        [Display(Name = "Ссылка")]
         public string Url { get; set; } = "";
 
-        [Comment("Иконка")]
+        [Display(Name = "Иконка")]
         public string? Icon { get; set; }
 
-        [Comment("Роли")]
+        [Display(Name = "Роли")]
         public List<string> Roles { get; set; } = new();
 
         /// <summary>
         /// Не для ролей
         /// </summary>
-        [Comment("Не для ролей")]
+        [Display(Name = "Не для ролей")]
         public bool RolesInverse { get; set; }
 
-        [Comment("Class")]
+        [Display(Name = "Class")]
         public string Class { get; set; } = "";
 
-        [Comment("Style")]
+        [Display(Name = "Style")]
         public string Style { get; set; } = "";
 
-        [Comment("Открывать в новой вкладке")]
+        [Display(Name = "Открывать в новой вкладке")]
         public bool OpenInNewTab { get; set; }
 
-        [Comment("Отключен")]
+        [Display(Name = "Отключен")]
         public bool Disabled { get; set; }
 
-        [Comment("Заголовок")]
+        [Display(Name = "Заголовок")]
         public bool IsHeader { get; set; }
 
-        [Comment("Разделитель")]
+        [Display(Name = "Разделитель")]
         public bool IsDivider { get; set; }
 
         //extra
@@ -97,7 +97,7 @@ public partial class EditNavMenuPage
                 IsHeader = IsHeader,
                 OpenInNewTab = OpenInNewTab
             };
-        
+
         public UpdateNavMenuItemRequest ToUpdateRequest()
             => new()
             {

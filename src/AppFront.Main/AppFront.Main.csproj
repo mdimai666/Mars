@@ -61,7 +61,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.11.5" />
-		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.11.5" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.5" />
 		<PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
 	</ItemGroup>

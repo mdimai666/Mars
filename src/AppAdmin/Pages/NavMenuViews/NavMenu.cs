@@ -5,7 +5,6 @@ using Mars.Shared.Contracts.NavMenus;
 using Mars.Shared.Models.Interfaces;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppAdmin.Pages.NavMenuViews;
 
@@ -32,7 +31,7 @@ public partial class EditNavMenuPage
         public virtual string Slug { get; set; } = Guid.NewGuid().ToString();
 
 
-        [Comment("Элементы")]
+        [Display(Name = "Элементы")]
         public IEnumerable<NavMenuItem> MenuItems { get; set; } = new ObservableCollection<NavMenuItem>();
 
         [Display(Name = nameof(AppRes.CssClass), ResourceType = typeof(AppRes), Description = "например: px-1 mt-2 text-accent")]
@@ -46,7 +45,7 @@ public partial class EditNavMenuPage
 
         //[NotMapped]
         //[JsonIgnore]
-        //[Comment("Роли")]
+        //[Display(Name = "Роли")]
         //public IEnumerable<string> SetRoles { get => Roles; set => Roles = value.ToList(); }
 
         /// <summary>

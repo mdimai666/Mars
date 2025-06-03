@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Mars.Core.Attributes;
 using Mars.Shared.Contracts.MetaFields;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppFront.Shared.Components.MetaFieldViews;
 
@@ -146,7 +145,7 @@ public class MetaFieldEditModel
     #region TYPE_LIST
     static Dictionary<MetaFieldType, string>? _typeList = null;
 
-    [Comment("Тип поля")]
+    [Display(Name = "Тип поля")]
     [NotMapped]
     public static Dictionary<MetaFieldType, string> TypeList
     {
@@ -187,7 +186,7 @@ public class MetaFieldEditModel
     #region TYPE_ICONS
     static Dictionary<MetaFieldType, string>? _typeIcons = null;
 
-    [Comment("Тип icon")]
+    [Display(Name = "Тип icon")]
     [NotMapped]
     public static Dictionary<MetaFieldType, string> TypeIcons
     {

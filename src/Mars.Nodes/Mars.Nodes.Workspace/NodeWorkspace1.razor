@@ -72,7 +72,18 @@
                                           wireStartNewEnd="wire_StartNewEnd"
                                           OnInject="OnInject"
                                           OnClick=@(e=>onClickNodeEvent(e,node))
-                                          OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                    OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                }
+                else if(node is CommentNode commentNode)
+                {
+                    <CommentNodeComponent node="commentNode"
+                                   @key=node
+                                   x="node.X"
+                                   y="node.Y"
+                                   OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                                   OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                   OnClick=@(e=>onClickNodeEvent(e,node))
+                                   OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
                 }
                 else
                 {

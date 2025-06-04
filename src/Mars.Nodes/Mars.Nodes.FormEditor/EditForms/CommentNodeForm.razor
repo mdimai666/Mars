@@ -1,0 +1,20 @@
+@using AppFront.Shared.Components
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(CommentNode))]
+
+
+<div class="form-group d-flex flex-column flex-fill">
+    <FormItem2 For="() => Node.Text">
+        <FluentTextArea @bind-Value=Node.Text Rows="10" Class="w-100" Placeholder="comment text..." />
+    </FormItem2>
+</div>
+
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    CommentNode Node { get => (CommentNode)Value!; set => Value = value; }
+
+}
+

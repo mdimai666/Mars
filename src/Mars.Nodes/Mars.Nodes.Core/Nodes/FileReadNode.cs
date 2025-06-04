@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/FileReadNode/FileReadNode{.lang}.md")]
+[Display(GroupName = "storage")]
 public class FileReadNode : Node
 {
     public string Filename { get; set; } = "";

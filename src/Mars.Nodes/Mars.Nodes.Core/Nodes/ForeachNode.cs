@@ -4,6 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ForeachNode/ForeachNode{.lang}.md")]
+[Display(GroupName = "sequence")]
 public class ForeachNode : Node
 {
     public EForeachKind Kind { get; set; }
@@ -30,6 +31,7 @@ public class ForeachNode : Node
 }
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ForeachIterateNode/ForeachIterateNode{.lang}.md")]
+[Display(GroupName = "sequence")]
 public class ForeachIterateNode : Node
 {
     public ForeachIterateNode()

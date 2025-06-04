@@ -1,10 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace Mars.Nodes.Core;
 
 public static class NodesLocator
 {
-    public static Dictionary<string, Type> dict = new();
+    public static Dictionary<string, NodeDictItem> dict = new();
 
     static bool invalide = true;
 
@@ -27,7 +28,12 @@ public static class NodesLocator
 
                 foreach (Type type in types)
                 {
-                    dict.Add(type.FullName!, type);
+                    var item = new NodeDictItem
+                    {
+                        NodeType = type,
+                        DisplayAttribute = type.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute()
+                    };
+                    dict.Add(type.FullName!, item);
                 }
             }
         }
@@ -56,11 +62,24 @@ public static class NodesLocator
 
     public static Type? GetTypeByFullName(string typeFullname)
     {
-        return dict.GetValueOrDefault(typeFullname);
+        return dict.GetValueOrDefault(typeFullname)?.NodeType;
         //throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
     }
+
     public static List<Type> RegisteredNodes()
+    {
+        return dict.Select(s => s.Value.NodeType).ToList();
+    }
+
+    public static List<NodeDictItem> RegisteredNodesEx()
     {
         return dict.Select(s => s.Value).ToList();
     }
+
+}
+
+public record NodeDictItem
+{
+    public required Type NodeType;
+    public required DisplayAttribute DisplayAttribute;
 }

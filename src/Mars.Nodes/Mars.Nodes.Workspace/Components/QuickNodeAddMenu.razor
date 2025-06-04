@@ -1,18 +1,19 @@
 @using Mars.Nodes.Core
+@using Mars.Nodes.Workspace.Models
 @using Microsoft.AspNetCore.Components.Forms
 
-<div id="QuickNodeAddMenu" class="card user-select-none" 
-    style=@($"left:{X}px;top:{Y}px;display:{(Visible?"block":"none")}")>
+<div id="QuickNodeAddMenu" class="card user-select-none"
+     style=@($"left:{X}px;top:{Y}px;display:{(Visible ? "block" : "none")}")>
     <div class="card-body p-1 h-100 d-flex flex-column">
 
         @* <EditForm Model="@SearchText" style="height:31px;"> *@
-            <div class="input-group input-group-sm">
-                <input type="text" class="form-control"
-                    value=@SearchText
-                    @oninput="OnInput"
-                    @ref=inputSearch
-                    autocomplete="off" placeholder="search..." />
-            </div>
+        <div class="input-group input-group-sm">
+            <input type="text" class="form-control"
+                   value=@SearchText
+                   @oninput="OnInput"
+                   @ref=inputSearch
+                   autocomplete="off" placeholder="search..." />
+        </div>
         @* </EditForm> *@
 
         <div class="flex-fill flex-grow-0" style="height: calc(100% - 31px)">
@@ -22,7 +23,7 @@
                     NodeFil f = _f;
                     <li class="list-group-item px-1 py-0" :key="'pnode' + node.id">
                         <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <NodeComponent Node="@f.Node" OnMouseDown=@(e=>SelectNode(e, f.Node)) FixedWidth="120" />
+                            <NodeComponent Node="@f.Node" OnMouseDown=@(e => SelectNode(e, f.Node)) FixedWidth="120" />
                         </svg>
                     </li>
                 }
@@ -35,7 +36,7 @@
     [Parameter] public bool Visible { get; set; }
     [Parameter] public double X { get; set; } = 100;
     [Parameter] public double Y { get; set; } = 100;
-    [Parameter] public IEnumerable<Node> Palette { get; set; } = default!;
+    [Parameter] public IEnumerable<PaletteNode> Palette { get; set; } = default!;
 
     [Parameter] public EventCallback<SelectNodeEvent> OnSelectNode { get; set; }
 
@@ -55,11 +56,13 @@
     {
         if (string.IsNullOrEmpty(SearchText))
         {
-            return Palette.Select((node, i) => new NodeFil(node, i));
+            return Palette.Select((node, i) => new NodeFil(node.Instance, i));
         }
 
         string text = SearchText.ToLower();
-        return Palette.Where(node => node.Label.ToLower().Contains(text)).Select((node, i) => new NodeFil(node, i));
+        return Palette.Where(node => node.DisplayName.Contains(text, StringComparison.OrdinalIgnoreCase)
+                                    || node.GroupName.Contains(text, StringComparison.OrdinalIgnoreCase))
+                        .Select((node, i) => new NodeFil(node.Instance, i));
     }
 
     public class SelectNodeEvent

@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
 
 namespace Mars.Nodes.WebApp;
 
+[Display(GroupName = "compiler")]
 public class CssCompilerNode : Node
 {
     public CssCompilerNode()

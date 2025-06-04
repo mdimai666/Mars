@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CheckUserNode/CheckUserNode{.lang}.md")]
+[Display(GroupName = "user")]
 public class CheckUserNode : Node
 {
     public CheckUserNode()

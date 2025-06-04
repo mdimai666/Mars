@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DebugNode/DebugNode{.lang}.md")]
+[Display(GroupName = "common")]
 public class DebugNode : Node
 {
     public bool CompleteInputMessage { get; set; } = false;

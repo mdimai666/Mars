@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MqttInNode/MqttInNode{.lang}.md")]
+[Display(GroupName = "network")]
 public class MqttInNode : Node
 {
     public InputConfig<MqttBrokerConfigNode> Config { get; set; }

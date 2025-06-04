@@ -4,6 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VariableSetNode/VariableSetNode{.lang}.md")]
+[Display(GroupName = "function")]
 public class VariableSetNode : Node
 {
     [ValidateComplexType]

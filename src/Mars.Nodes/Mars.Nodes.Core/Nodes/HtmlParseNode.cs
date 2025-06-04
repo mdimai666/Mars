@@ -4,6 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/HtmlParseNode/HtmlParseNode{.lang}.md")]
+[Display(GroupName = "parser")]
 public class HtmlParseNode : Node
 {
     [Required]

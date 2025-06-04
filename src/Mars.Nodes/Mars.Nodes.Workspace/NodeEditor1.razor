@@ -18,7 +18,7 @@
                                 var tab = _tab;
                                 <input type="radio" class="btn-check" name="btnradio" id=@($"mtab-{tab.key}")
                                        autocomplete="off" checked="@(tab.key == activeMasterTab)">
-                                <label class="btn btn-outline-secondary rounded-0" for=@($"mtab-{tab.key}")
+                                <label class="btn btn-light rounded-5" for=@($"mtab-{tab.key}")
                                        @onclick=@(e => activeMasterTab = tab.key)>@tab.label</label>
                             }
 
@@ -78,21 +78,27 @@
                             <p class="card-text">Palette (@Palette.Count)</p>
                         </div>
                         <div class="">
-                            @foreach (var node in Palette)
+                            @foreach (var group in Palette.GroupBy(s=>s.GroupName))
                             {
-                                Node _node = node;
-                                <div class="list-group-item px-2 py-0 border-0">
-                                    <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                        @if (node is MicroschemeNode)
-                                        {
-                                            <MicroschemeComponent Node="@_node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, _node)) />
-                                        }
-                                        else
-                                        {
-                                            <NodeComponent Node="@_node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, _node)) FixedWidth="120" />
-                                        }
-                                    </svg>
+                                <div class="px-4">
+                                    <label class="text-strong">@group.Key</label>
                                 </div>
+                                @foreach (var _palette in group)
+                                {
+                                    Node node = _palette.Instance;
+                                    <div class="list-group-item px-2 py-0 border-0">
+                                        <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                            @if (node is MicroschemeNode)
+                                            {
+                                                <MicroschemeComponent Node="@node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, node)) />
+                                            }
+                                            else
+                                            {
+                                                <NodeComponent Node="@node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, node)) FixedWidth="120" />
+                                            }
+                                        </svg>
+                                    </div>
+                                }
                             }
 
                         </div>

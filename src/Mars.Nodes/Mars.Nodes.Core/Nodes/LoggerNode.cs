@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/LoggerNode/LoggerNode{.lang}.md")]
+[Display(GroupName = "system")]
 public class LoggerNode : Node
 {
     public ELoggerNodeLogLevel Level { get; set; } = ELoggerNodeLogLevel.Warning;

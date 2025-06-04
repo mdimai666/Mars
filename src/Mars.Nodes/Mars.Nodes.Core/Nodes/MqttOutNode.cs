@@ -4,6 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/MqttOutNode/MqttOutNode{.lang}.md")]
+[Display(GroupName = "network")]
 public class MqttOutNode : Node
 {
     public InputConfig<MqttBrokerConfigNode> Config { get; set; }

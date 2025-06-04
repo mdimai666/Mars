@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/SwitchNode/SwitchNode{.lang}.md")]
+[Display(GroupName = "function")]
 public class SwitchNode : Node
 {
     public List<Condition> Conditions { get; set; } = [

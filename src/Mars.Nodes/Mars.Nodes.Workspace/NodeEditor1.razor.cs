@@ -1,15 +1,17 @@
-using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Web;
 using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.EditorApi.Interfaces;
+using Mars.Nodes.FormEditor;
+using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using Mars.Nodes.FormEditor;
 using Toolbelt.Blazor.HotKeys2;
-using Mars.Nodes.Workspace.Components;
 
 namespace Mars.Nodes.Workspace;
 
@@ -40,7 +42,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     [Parameter] public EventCallback<List<Node>> NodesChanged { get; set; }
 
-    public List<Node> Palette { get; private set; } = new();
+    public List<PaletteNode> Palette { get; private set; } = new();
+    List<Node> INodeEditorApi.Palette => Palette.Select(s => s.Instance).ToList();
+
 
     public List<Type> RegisteredNodes { get; private set; } = new();
 
@@ -96,12 +100,14 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             object handle = Activator.CreateInstance(type)!;
             Node node = (Node)handle;
             node.X = 10;
-            Palette.Add(node);
-
-
-            //ObjectHandle handle = Activator.CreateInstance(type);
-            //object instance = handle.Unwrap();
-            //Palette.Add((Node)instance);
+            var displayAttr = type.GetCustomAttribute<DisplayAttribute>();
+            var item = new PaletteNode
+            {
+                Instance = node,
+                DisplayName = node.Label,
+                GroupName = displayAttr?.GroupName ?? "other"
+            };
+            Palette.Add(item);
 
         }
 

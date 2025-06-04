@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CallNode/CallNode{.lang}.md")]
+[Display(GroupName = "common")]
 public class CallNode : Node
 {
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(2);
@@ -29,6 +31,7 @@ public class CallNode : Node
 }
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/CallResponseNode/CallResponseNode{.lang}.md")]
+[Display(GroupName = "common")]
 public class CallResponseNode : Node
 {
     public CallResponseNode()

@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DevAdminConnectionNode/DevAdminConnectionNode{.lang}.md")]
+[Display(GroupName = "user")]
 public class DevAdminConnectionNode : Node
 {
     public string Action { get; set; } = ACTION_MESSAGE;

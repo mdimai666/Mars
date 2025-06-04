@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
 
 namespace Mars.Nodes.WebApp;
 
+[Display(GroupName = "excel")]
 public class ExcelNode : Node
 {
     public string TemplateFile { get; set; } = "";

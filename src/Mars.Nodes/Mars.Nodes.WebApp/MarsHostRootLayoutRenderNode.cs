@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
 
 namespace Mars.Nodes.WebApp;
 
+[Display(GroupName = "render")]
 public class MarsHostRootLayoutRenderNode: Node
 {
 	public MarsHostRootLayoutRenderNode()
@@ -13,6 +15,7 @@ public class MarsHostRootLayoutRenderNode: Node
     }
 }
 
+[Display(GroupName = "render")]
 public class RenderPageNode: Node
 {
 

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Core;
 
 namespace Mars.Datasource.Core.Nodes;
 
+[Display(GroupName = "database")]
 public class SqlNode : Node
 {
     public string SqlQuery { get; set; } = "SELECT * \nFROM posts\nLIMIT 10;";

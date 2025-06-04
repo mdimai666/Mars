@@ -49,7 +49,7 @@ internal class PluginService : IPluginService
     {
         return new PluginInfoDto()
         {
-            PackageId = pluginInfo.AssemblyFullName,
+            PackageId = pluginInfo.PackageId,
             Title = pluginInfo.Title,
             Version = pluginInfo.Version,
             Description = pluginInfo.Description,
@@ -57,6 +57,7 @@ internal class PluginService : IPluginService
             Enabled = true,
             InstalledAt = DateTimeOffset.MinValue,
             FrontManifest = pluginInfo.ManifestFile,
+            PackageTags = pluginInfo.PackageTags,
         };
     }
 
@@ -65,14 +66,15 @@ internal class PluginService : IPluginService
     {
         List<PluginInfoDto> pluginsExample = [
             new(){
-                PackageId = "pligin.25122404-8a2b-46e9-93dc-ff2949a8fe0e",
+                PackageId = "plugin.25122404-8a2b-46e9-93dc-ff2949a8fe0e",
                 Title = "Plugin 1",
                 Version = "1.0.0",
                 AssemblyName = "Mars.EShop",
                 Description = "Плагин магазина ",
                 Enabled = true,
                 InstalledAt = DateTimeOffset.MinValue,
-                FrontManifest = "_plugin/Mars.EShop/_front_plugins.json"
+                FrontManifest = "_plugin/Mars.EShop/_front_plugins.json",
+                PackageTags = ["eshop"]
             },
             new(){
                 PackageId = "google.zsn.bu",
@@ -82,7 +84,8 @@ internal class PluginService : IPluginService
                 Description = "Плагин магазина  sajdlkjkldfja;ldjf;kadf k;da",
                 Enabled = true,
                 InstalledAt = DateTimeOffset.Now,
-                FrontManifest = null
+                FrontManifest = null,
+                PackageTags = []
             },
             new(){
                 PackageId = "askdasdsd.sdasdfd.dafadf",
@@ -92,7 +95,8 @@ internal class PluginService : IPluginService
                 Description = "Плагин магазина as dfkda;l fk;ldka fl;kdaf d765b36b-ead3-44d2-af1a-5b2ecb75e567",
                 Enabled = true,
                 InstalledAt = DateTimeOffset.Now + TimeSpan.FromDays(-5),
-                FrontManifest = null
+                FrontManifest = null,
+                PackageTags = ["nodes", "eshop"]
             },
         ];
         return pluginsExample.Where(s => (query.Search == null || (

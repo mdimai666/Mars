@@ -3,55 +3,51 @@
 @using Mars.Nodes.Core.Nodes
 @using Mars.Nodes.FormEditor
 @using Mars.Nodes.Workspace
+@using Mars.Nodes.Workspace.Components
 
 <div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill">
     <CascadingValue Value="this">
-        <div class="row bg-white border-bottom shadow-sm" style="height:40px;">
-            <div class="col-12">
-                <div class="d-flex justify-content-between p-1 align-items-center">
-                    <div class="d-flex fs-5">
+        <div class="border-bottom shadow-sm 1position-fixed" style="height:40px;">
+            <div class="d-flex justify-content-between p-1 align-items-center">
+                <div class="d-flex fs-5">
 
-                        <div class="mastet-menu">
-                            <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
-                                @foreach (var _tab in masterTabs)
-                                {
-                                    var tab = _tab;
-                                    <input type="radio" class="btn-check" name="btnradio" id=@($"mtab-{tab.key}")
-                                           autocomplete="off" checked="@(tab.key == activeMasterTab)">
-                                    <label class="btn btn-outline-secondary rounded-0" for=@($"mtab-{tab.key}")
-                                           @onclick=@(e => activeMasterTab = tab.key)>@tab.label</label>
-                                }
+                    <div class="mastet-menu">
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                            @foreach (var _tab in masterTabs)
+                            {
+                                var tab = _tab;
+                                <input type="radio" class="btn-check" name="btnradio" id=@($"mtab-{tab.key}")
+                                       autocomplete="off" checked="@(tab.key == activeMasterTab)">
+                                <label class="btn btn-outline-secondary rounded-0" for=@($"mtab-{tab.key}")
+                                       @onclick=@(e => activeMasterTab = tab.key)>@tab.label</label>
+                            }
 
-                            </div>
                         </div>
-                        <div class="vr mx-3"></div>
-
-                        Some project name
                     </div>
+                    <div class="vr mx-3"></div>
+                </div>
 
-                    <div class="gap-2">
-                        @*<span>wires - @NodeWorkspace1?.Wires?.Count()</span> |
-                    <span>nodes - @Nodes?.Count()</span> |*@
-                        <span>[@editorActions.SelectContextString]</span>
-                    </div>
+                <div class="gap-2">
+                    @*<span>wires - @NodeWorkspace1?.Wires?.Count()</span> |
+                <span>nodes - @Nodes?.Count()</span> |*@
+                    <span>[@editorActions.SelectContextString]</span>
+                </div>
 
-                    <div class="d-flex gap-2 me-2">
+                <div class="d-flex gap-2 me-2">
 
-                        @if (SectionActions is not null)
-                        {
-                            @SectionActions
-                        }
+                    @if (SectionActions is not null)
+                    {
+                        @SectionActions
+                    }
 
-                        @* <button type="button" class="btn btn-outline-primary btn-sm px-3 " @onclick=@(e=>OnCmdClick.InvokeAsync("other"))>other</button> *@
-                        <button type="button" class="btn btn-primary btn-sm px-3 " @onclick=DeployClick>Deploy</button>
-                    </div>
+                    @* <button type="button" class="btn btn-outline-primary btn-sm px-3 " @onclick=@(e=>OnCmdClick.InvokeAsync("other"))>other</button> *@
+                    <button type="button" class="btn btn-primary btn-sm px-3 " @onclick=DeployClick>Deploy</button>
                 </div>
             </div>
         </div>
         <div class="d-flex no-gutters g-0 flex-fill w-100" style="height:calc(100% - 40px)">
-            <div class="flex-shrink-0" style="">
-                <div class="1card h-100 bg-white custom-scroll1"
-                     style="overflow-y:scroll;scroll-behavior: auto;width:190px;">
+            <div class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;">
+                <div class="bg-white custom-scroll1" style="overflow-y:scroll;overflow-x:hidden;scroll-behavior: auto;width:190px;max-height:500px">
                     @if (activeMasterTab == "nodes")
                     {
                         <div class="p-2 border-1 d-flex">
@@ -65,16 +61,6 @@
                             </div>
                         </div>
                         <div class="px-2 py-1 d-flex gap-1 flex-wrap">
-                            @* <span class="badge bg-info cursor-pointer" data-var-type="">
-                            val1
-                        </span>
-                        <span class="badge bg-secondary cursor-pointer">
-                            val2
-                        </span>
-                        <span class="badge bg-success cursor-pointer">
-                            val3
-                        </span> *@
-
                             @foreach (var _varNode in varNodes)
                             {
                                 var varNode = _varNode;
@@ -86,17 +72,16 @@
                                     @varNode.Name
                                 </span>
                             }
-
                         </div>
                         <div class="mb-2"></div>
-                        <div class="card-body p-2 ">
+                        <div class="p-2 ">
                             <p class="card-text">Palette (@Palette.Count)</p>
                         </div>
-                        <ul class="list-group">
+                        <div class="">
                             @foreach (var node in Palette)
                             {
                                 Node _node = node;
-                                <li class="list-group-item px-2 py-0 border-0">
+                                <div class="list-group-item px-2 py-0 border-0">
                                     <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                         @if (node is MicroschemeNode)
                                         {
@@ -107,10 +92,10 @@
                                             <NodeComponent Node="@_node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, _node)) FixedWidth="120" />
                                         }
                                     </svg>
-                                </li>
+                                </div>
                             }
 
-                        </ul>
+                        </div>
                     }
                     else if (activeMasterTab == "tabs")
                     {
@@ -159,12 +144,12 @@
                                     OnDblClickNode="OnDblClickNode"
                                     OnWorkspaceClick="OnWorkspaceClick"
                                     OnWorkspaceDblClick="OnWorkspaceDblClick"
-                                    EditorActions="editorActions" />
-                    @*<NodeWorkspace1 :nodes.sync="nodes" style="height: 700px" />*@
+                                    EditorActions="editorActions">
+                        <QuickNodeAddMenu Palette="Palette"
+                                          @ref=quickNodeAddMenu
+                                          OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />
+                    </NodeWorkspace1>
 
-                    <QuickNodeAddMenu Palette="Palette"
-                                      @ref=quickNodeAddMenu
-                                      OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />
                 </div>
             </div>
             <div class="flex-shrink-0 bg-white d-flex flex-column" style="width:250px;height:100%">

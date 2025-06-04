@@ -6,7 +6,6 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <ContentWrapper Title="@AppRes.Plugins">
-
     <div class="hstack">
         <FluentSearch @bind-Value=_searchText
                       @bind-Value:after=HandleSearchInput
@@ -28,7 +27,7 @@
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="* 0.1fr 0.1fr"
                             TGridItem="PluginInfoResponse">
-                <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f=>f.Title))"
+                <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
                                 Sortable="true">
                     <div class="hstack">
@@ -41,28 +40,38 @@
                                 <label class="text-secondary">@context.PackageId</label>
                                 <div class="vr"></div>
                                 <FluentRating Max="5" Value="0" ReadOnly="true"
-                                    Style="zoom:0.5"
-                                    IconColor="@Color.Neutral" />
+                                              Style="zoom:0.5"
+                                              IconColor="@Color.Neutral" />
                             </div>
-                            <FluentLabel Color="@Color.Neutral">@context.Version</FluentLabel>
-                            <div class="mt-1">
+                            <div class="d-flex gap-3">
+                                <FluentLabel Color="@Color.Neutral">@context.Version</FluentLabel>
+                                <div class="__tags d-flex gap-1">
+                                    @foreach (var tag in context.PackageTags)
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral">
+                                            @tag
+                                        </FluentBadge>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mt-1" title="@context.Description">
                                 @context.Description?.TextEllipsis(100)
                             </div>
                         </div>
                     </div>
                 </TemplateColumn>
-                <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f=>f.InstalledAt))"
+                <TemplateColumn SortBy="@(GridSort<PluginInfoResponse>.ByDescending(f => f.InstalledAt))"
                                 Title="Installed at"
                                 InitialSortDirection="SortDirection.Descending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true"
                                 Tooltip
-                                TooltipText="@(f=>f.InstalledAt.LocalDateTime.ToString())"
+                                TooltipText="@(f => f.InstalledAt.LocalDateTime.ToString())"
                                 Align="@Align.End">
                     @context.InstalledAt.ToString("d")
                 </TemplateColumn>
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context)) />
+                    <DFluentDeleteButton OnConfirm=@(e => Delete(context)) />
                 </TemplateColumn>
                 @*
                 <div class="card shadow">

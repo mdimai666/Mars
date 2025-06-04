@@ -1,6 +1,7 @@
 using System.Drawing;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
+using Mars.Nodes.Workspace.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -63,6 +64,8 @@ public partial class NodeWorkspace1
 
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceDblClick { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     Lasso lasso = new();
 
@@ -482,7 +485,7 @@ public partial class NodeWorkspace1
 
         Console.WriteLine($"SCR={scr.X},{scr.Y}");
 
-        instance.X = (float)(-w + node.X + e.ClientX - 80) + scr.X;
+        instance.X = (float)(-w + node.X + e.ClientX + 120) + scr.X;
         instance.Y = (float)(node.Y + e.ClientY - h - 30) + scr.Y;
 
 

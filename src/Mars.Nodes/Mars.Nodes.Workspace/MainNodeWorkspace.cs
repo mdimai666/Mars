@@ -7,12 +7,7 @@ using Mars.Nodes.Workspace.Services;
 
 namespace Mars.Nodes.Workspace;
 
-public class Main
-{
-
-}
-
-public static class NodeWorkspaceExtensions
+public static class MainNodeWorkspace
 {
     public static IServiceCollection AddNodeWorkspace(this IServiceCollection services)
     {

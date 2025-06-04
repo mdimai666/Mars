@@ -18,6 +18,7 @@ public static class PluginMapping
             Enabled = entity.Enabled,
             InstalledAt= entity.InstalledAt,
             FrontManifest = entity.FrontManifest,
+            PackageTags = entity.PackageTags,
         };
 
     public static PluginManifestInfoResponse ToResponse(this PluginManifestInfoDto entity)

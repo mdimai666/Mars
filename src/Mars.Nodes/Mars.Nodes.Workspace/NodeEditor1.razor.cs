@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Mars.Nodes.FormEditor;
 using Toolbelt.Blazor.HotKeys2;
+using Mars.Nodes.Workspace.Components;
 
 namespace Mars.Nodes.Workspace;
 

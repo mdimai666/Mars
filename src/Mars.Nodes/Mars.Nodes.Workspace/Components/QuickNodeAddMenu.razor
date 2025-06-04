@@ -1,4 +1,4 @@
-﻿@using Mars.Nodes.Core
+@using Mars.Nodes.Core
 @using Microsoft.AspNetCore.Components.Forms
 
 <div id="QuickNodeAddMenu" class="card user-select-none" 
@@ -22,7 +22,7 @@
                     NodeFil f = _f;
                     <li class="list-group-item px-1 py-0" :key="'pnode' + node.id">
                         <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <NodeComponent Node="@f.Node" OnMouseDown=@(e=>SelectNode(e, f.Node)) />
+                            <NodeComponent Node="@f.Node" OnMouseDown=@(e=>SelectNode(e, f.Node)) FixedWidth="120" />
                         </svg>
                     </li>
                 }

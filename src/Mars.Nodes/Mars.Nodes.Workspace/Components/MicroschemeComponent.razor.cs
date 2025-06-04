@@ -2,9 +2,9 @@ using Mars.Nodes.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace Mars.Nodes.Workspace;
+namespace Mars.Nodes.Workspace.Components;
 
-public partial class NodeComponent
+public partial class MicroschemeComponent
 {
     [Parameter] public Node node { get; set; } = default!;
 
@@ -15,8 +15,6 @@ public partial class NodeComponent
     float Y => node.Y + 8;
 
     public float bodyRectHeight => node.Outputs.Count < 2 ? 30 : node.Outputs.Count * 16f;
-    //public float bodyRectWidth => 120;
-    public float bodyRectWidth => FixedWidth ?? CalcBodyWidth(node);
 
     [Parameter] public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
@@ -28,20 +26,6 @@ public partial class NodeComponent
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnDblClick { get; set; }
 
-    [Parameter] public float? FixedWidth { get; set; }
-
-    string IconUrl
-    {
-        get
-        {
-            string iconUrl = "_content/Mars.Nodes.Workspace/nodes/function.svg";
-            if (!string.IsNullOrEmpty(node.Icon))
-            {
-                iconUrl = node.Icon;
-            }
-            return iconUrl;
-        }
-    }
 
 
     void OnMouseDownMethod(MouseEventArgs e)
@@ -92,6 +76,4 @@ public partial class NodeComponent
     {
         wireStartNewEnd.InvokeAsync(new NodeWirePointEventArgs(e, index, false, node));
     }
-
-    public static float CalcBodyWidth(Node node) => Math.Min(360, Math.Max(120, node.DisplayName.Length * 9 + 40));
 }

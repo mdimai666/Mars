@@ -1,5 +1,6 @@
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Nodes
+@using Mars.Nodes.Workspace.Components
 
 <div class="@Class" id="red-ui-workspace-chart" tabindex="1" style="@Style">
     <svg width="5000"
@@ -116,4 +117,5 @@
             <!-- <Wire :x1="0" :y1="0" :x2="100" :y2="100" selected disable /> -->
         </g>
     </svg>
+    @ChildContent
 </div>

@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Mars.Nodes.Core;
 using Mars.Nodes.EditorApi.Interfaces;
+using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -7,6 +9,8 @@ namespace Mars.Nodes.FormEditor;
 
 public partial class NodeEditContainer1
 {
+    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+
     FluentDialog _dialog = default!;
     bool _visible = false;
 
@@ -35,6 +39,8 @@ public partial class NodeEditContainer1
     [CascadingParameter]
     INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
+    CodeEditor2 codeEditor = default!;
+    bool isEditJsonMode = false;
 
     NodeFormEditor1 nodeFormEditor1 = default!;
     bool saveLoading = false;
@@ -57,6 +63,8 @@ public partial class NodeEditContainer1
         {
             saveLoading = true;
             StateHasChanged();
+
+            if (isEditJsonMode) await CodeEditorJsonToModel();
 
             await nodeFormEditor1.Form.OnEditSave();
 
@@ -114,9 +122,54 @@ public partial class NodeEditContainer1
 
         await OnBackdropCancel.InvokeAsync();
     }
-}
 
-public class NodeEditDialogNodeEditData
-{
-    public Node? Node;
+    //json editor
+    async void ToggleEditMode()
+    {
+        if (!isEditJsonMode)
+        {
+            isEditJsonMode = true;
+            StateHasChanged();
+            await Task.Delay(10);
+
+            var json = JsonSerializer.Serialize(_node, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
+            await codeEditor.SetValue(json);
+        }
+        else
+        {
+            try
+            {
+                await CodeEditorJsonToModel();
+                isEditJsonMode = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                _ = _messageService.Error("Проблема json: " + ex.Message);
+            }
+        }
+    }
+
+    async Task CodeEditorJsonToModel()
+    {
+        var json = await codeEditor.GetValue();
+        var obj = JsonSerializer.Deserialize(json, _node.GetType(), CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly) ?? throw new ArgumentNullException();
+        _node = (Node)obj;
+    }
+
+    void OnSaveFromCodeEditor(string value)
+    {
+        _ = FormSaveClick();
+    }
+
+    string GetModelAsJson()
+    {
+        var json = JsonSerializer.Serialize(_node, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
+        return json;
+    }
+
+    void CancelJsonEditMode()
+    {
+        isEditJsonMode = false;
+    }
 }

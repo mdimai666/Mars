@@ -1,4 +1,5 @@
 @using AppFront.Shared.Components
+@using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Microsoft.JSInterop
 
@@ -11,42 +12,67 @@
                   Style="--dialog-width: 1600px; --dialog-height: 70vh;"
                   @ondialogdismiss=OnDialogDismiss
                   PreventScroll=true>
-            <div class="hstack justify-content-between">
-                <div class="__left-title">
-                    <h3 class="">@Node?.Type</h3>
-                </div>
-
-                <div class="__right d-flex gap-3">
-
-                    <DFluentDeleteButton OnConfirm="FormDeleteClick" />
-
-                    <FluentButton OnClick="FormCloseClick"
-                                  Appearance="Appearance.Neutral">
-                        @AppRes.Cancel
-                    </FluentButton>
-
-                    <FluentButton OnClick="FormSaveClick"
-                                  Loading=@saveLoading
-                                  Appearance="Appearance.Accent">
-                        @AppRes.Save
-                    </FluentButton>
-
-                </div>
+        <div class="hstack justify-content-between">
+            <div class="__left-title">
+                <h3 class="">@Node?.Type</h3>
             </div>
-            @if (Node != null)
-            {
-                <CascadingValue Value="this">
-                    <div class="row flex-fill">
-                        <div class="col-md-6">
+
+            <div class="__right d-flex gap-3">
+
+                <DFluentDeleteButton OnConfirm="FormDeleteClick" />
+
+                <FluentButton OnClick="FormCloseClick"
+                              Appearance="Appearance.Neutral">
+                    @AppRes.Cancel
+                </FluentButton>
+
+                <FluentButton OnClick="FormSaveClick"
+                              Loading=@saveLoading
+                              Appearance="Appearance.Accent">
+                    @AppRes.Save
+                </FluentButton>
+
+            </div>
+        </div>
+        @if (Node != null)
+        {
+            <CascadingValue Value="this">
+                <div class="row flex-fill">
+                    <div class="col-md-6">
+                        <div class="float-end">
+                            @if (isEditJsonMode)
+                            {
+                                <FluentButton Appearance="Appearance.Stealth" OnClick="CancelJsonEditMode">
+                                    Отмена
+                                </FluentButton>
+                            }
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleEditMode">
+                                <FluentIcon Value=@(new Icons.Regular.Size24.CodeBlock()) Color="Microsoft.FluentUI.AspNetCore.Components.Color.Neutral" />
+                            </FluentButton>
+                        </div>
+                        @if (isEditJsonMode)
+                        {
+                            @* <h6>Edit: @typeof(TModel).Name</h6> *@
+                            <div class="clearfix"></div>
+
+                            <MarsCodeEditor2.CodeEditor2 @ref=codeEditor
+                                                         Lang=@CodeEditor2.Language.json
+                                                         OnSave="OnSaveFromCodeEditor"
+                                                         Value=@GetModelAsJson() />
+                        }
+                        else
+                        {
                             <NodeFormEditor1 @ref=nodeFormEditor1 @bind-Node=Node OnValidSubmit=OnValidSubmit />
-                        </div>
-                        <div class="col-md-6" style="height:calc(70vh - 80px); overflow:auto;">
-                            @* <FluentMarkdownSection FromAsset="./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VariableSetNode/VariableSetNode.ru.md" /> *@
-                            <DocViewer For="() => Node.GetType()" />
-                        </div>
+
+                        }
                     </div>
-                </CascadingValue>
-            }
+                    <div class="col-md-6" style="height:calc(70vh - 80px); overflow:auto;">
+                        @* <FluentMarkdownSection FromAsset="./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VariableSetNode/VariableSetNode.ru.md" /> *@
+                        <DocViewer For="() => Node.GetType()" />
+                    </div>
+                </div>
+            </CascadingValue>
+        }
     </FluentDialog>
 </d-node-edit-container>
 

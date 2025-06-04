@@ -9,9 +9,11 @@
 
 <div class="NodeFormEditor1 h-100">
 
-    <EditForm @ref=EditForm Model="@Node" Context="model" class="h-100 d-flex flex-column"
-                @onkeydown="KeyDown"
-                OnValidSubmit="ValidSubmit">
+    <EditForm @ref=EditForm Model="@Node"
+              Context="model"
+              class="h-100 d-flex flex-column"
+              @onkeydown="KeyDown"
+              OnValidSubmit="ValidSubmit">
         <div class="text-secondary">
             <div>
                 <span>id: </span>
@@ -76,16 +78,11 @@
 </div>
 
 @code {
-    [Inject] IJSRuntime JS { get; set; } = default!;
-    NodeFormEditorJsInterop js = default!;
-
     [Inject] DeveloperControlService developerControlService { get; set; } = default!;
 
     public EditForm? EditForm = default!;
 
     Node _node = new();
-
-#pragma warning disable BL0007
 
     [Parameter]
     public Node Node
@@ -103,8 +100,6 @@
             NodeChanged.InvokeAsync(_node);
         }
     }
-#pragma warning restore CS0162
-
 
     [Parameter] public EventCallback<Node> NodeChanged { get; set; }
 
@@ -113,18 +108,6 @@
     //[Parameter] public RenderFragment<Node>? ChildContent { get; set; }
 
     Type? NodeEditFormType { get; set; }
-
-    //private MonacoEditor? _editor { get; set; }
-
-    //bool node_enabled = true;
-
-
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        js = new(JS);
-    }
 
     void UpdateEditFormType()
     {
@@ -154,11 +137,6 @@
 
     void KeyDown(KeyboardEventArgs e)
     {
-        //Console.WriteLine("e="+e.Code);
-        //e = KeyS
-        //    blazor.webassembly.js:1 e = ShiftLeft
-        //    blazor.webassembly.js:1 e = AltLeft
-        //    blazor.webassembly.js:1 e = Enter
         if (e.CtrlKey && e.Code == "KeyS")
         {
             EditForm!.OnValidSubmit.InvokeAsync();
@@ -174,9 +152,5 @@
 <style>
     .NodeFormEditor1 label {
         font-weight: bold;
-    }
-
-    .ant-modal-mask, .ant-modal-wrap {
-        z-index: 1070;
     }
 </style>

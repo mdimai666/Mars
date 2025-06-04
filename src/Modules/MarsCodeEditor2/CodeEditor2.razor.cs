@@ -1,3 +1,6 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using BlazorMonaco;
 using BlazorMonaco.Editor;
 using Microsoft.AspNetCore.Components;
@@ -133,4 +136,24 @@ public partial class CodeEditor2 : IDisposable
     {
         editor1?.Dispose();
     }
+
+    public static readonly JsonSerializerOptions SimpleJsonSerializerOptions = new()
+    {
+        IncludeFields = false,
+        MaxDepth = 0,
+        WriteIndented = true,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
+    public static readonly JsonSerializerOptions SimpleJsonSerializerOptionsIgnoreReadonly = new()
+    {
+        IncludeFields = false,
+        MaxDepth = 0,
+        WriteIndented = true,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        IgnoreReadOnlyFields = true,
+        IgnoreReadOnlyProperties = true,
+    };
 }

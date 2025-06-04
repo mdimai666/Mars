@@ -89,7 +89,7 @@ public partial class EditOptionForm<TModel> where TModel : class, new()
             {
                 if (isEditJsonMode)
                 {
-                    var json = JsonSerializer.Serialize(_model, new JsonSerializerOptions { WriteIndented = true });
+                    var json = JsonSerializer.Serialize(_model, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
                     await codeEditor.SetValue(json);
                 }
 
@@ -114,7 +114,7 @@ public partial class EditOptionForm<TModel> where TModel : class, new()
             StateHasChanged();
             await Task.Delay(10);
 
-            var json = JsonSerializer.Serialize(_model, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(_model, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
             await codeEditor.SetValue(json);
         }
         else
@@ -135,7 +135,7 @@ public partial class EditOptionForm<TModel> where TModel : class, new()
     async Task CodeEditorJsonToModel()
     {
         var json = await codeEditor.GetValue();
-        var obj = JsonSerializer.Deserialize<TModel>(json) ?? throw new ArgumentNullException();
+        var obj = JsonSerializer.Deserialize<TModel>(json, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly) ?? throw new ArgumentNullException();
         _model = obj;
     }
 
@@ -146,7 +146,7 @@ public partial class EditOptionForm<TModel> where TModel : class, new()
 
     string GetModelAsJson()
     {
-        var json = JsonSerializer.Serialize(_model, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(_model, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
         return json;
     }
 

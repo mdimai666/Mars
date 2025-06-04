@@ -8,6 +8,7 @@ public abstract class ConfigNode : Node
     public override string Color { get; set; } = "#dddddd";
     public override string Icon { get; set; } = "_content/Mars.Nodes.Workspace/nodes/configfile-48.png";
 
+    //Нужен чтобы UnknownNode(когда выгрузили плагины) он определялся правильно. В будущем сделать тип
     [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public override bool IsConfigNode => true;
 

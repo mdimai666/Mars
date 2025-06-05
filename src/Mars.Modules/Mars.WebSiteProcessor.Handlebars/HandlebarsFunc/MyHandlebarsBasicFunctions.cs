@@ -1,9 +1,9 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
 using HandlebarsDotNet;
 using Mars.Core.Extensions;
-//using Humanizer;
 
 namespace Mars.Host.Templators.HandlebarsFunc;
 
@@ -124,8 +124,6 @@ public static class MyHandlebarsBasicFunctions
             options.Inverse(output, context);
         }
     }
-
-
 
     public static void DateFormatHelper(EncodedTextWriter output, Context context, Arguments args)
     {
@@ -277,7 +275,6 @@ public static class MyHandlebarsBasicFunctions
         output.WriteSafeString(text?.ReplaceLineEndings("<br>"));
     }
 
-
     public static void youtubeId_Helper(EncodedTextWriter output, Context context, Arguments args)
     {
         if (args.Length != 1)
@@ -303,7 +300,6 @@ public static class MyHandlebarsBasicFunctions
             output.WriteSafeString(url);
         }
     }
-
 
     public static void StripHtmlHelper(EncodedTextWriter output, Context context, Arguments args)
     {
@@ -343,16 +339,22 @@ public static class MyHandlebarsBasicFunctions
         output.WriteSafeString(formatString);
     }
 
+    static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
     public static void ToJsonHelper(EncodedTextWriter output, Context context, Arguments args)
     {
         if (args.Length != 1)
         {
-            throw new HandlebarsException("{{#asjson \"object\"}} helper must have exactly 1 arguments");
+            throw new HandlebarsException("{{#tojson \"object\"}} helper must have exactly 1 arguments");
         }
 
         var obj = args[0];
 
-        var json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(obj, _jsonSerializerOptions);
 
         output.WriteSafeString(json);
         //return jobj;

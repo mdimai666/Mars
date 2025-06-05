@@ -1,5 +1,5 @@
-using Mars.Host.Shared.WebSite.Models;
 using FluentAssertions;
+using Mars.Host.Shared.WebSite.Models;
 
 namespace Test.Mars.WebSiteProcessor.WebSiteParts;
 
@@ -9,13 +9,14 @@ public class WebSitePart_ParseContentTests
     public void ParseContent_ValidContent_ShouldSuccess()
     {
         // Arrange
-        var fileContent = @"
-@page ""/""
-@title ""Title 1""
-{{!-- commented; must ignored --}}
-<h1>Title</h1>
+        var fileContent = """
+            @page ""/""
+            @title ""Title 1""
+            {{!-- commented; must ignored --}}
+            <h1>Title</h1>
 
-<p>content</p>";
+            <p>content</p>
+            """;
 
         // Act
         var (attrs, content) = WebSitePart.ParseContent(fileContent);
@@ -31,14 +32,15 @@ public class WebSitePart_ParseContentTests
     public void ParseContent_NonHeaderAttributeIgnore_MustIgnored()
     {
         // Arrange
-        var fileContent = @"
-@page ""/""
-@title ""Title 1""
-{{!-- commented; must ignored --}}
-<h1>Title</h1>
+        var fileContent = """
+            @page ""/""
+            @title ""Title 1""
+            {{!-- commented; must ignored --}}
+            <h1>Title</h1>
 
-@nonHeader to Be ignored 
-<p>content</p>";
+            @nonHeader to Be ignored 
+            <p>content</p>
+            """;
 
         // Act
         var (attrs, content) = WebSitePart.ParseContent(fileContent);
@@ -52,9 +54,10 @@ public class WebSitePart_ParseContentTests
     public void ParseContent_ParseSpacedTextAttributeWithQuote_ShouldSuccess()
     {
         // Arrange
-        var fileContent = @"
-@title ""Title 1 text""
-<p>content</p>";
+        var fileContent = """
+            @title ""Title 1 text""
+            <p>content</p>
+            """;
 
         // Act
         var (attrs, content) = WebSitePart.ParseContent(fileContent);
@@ -67,9 +70,10 @@ public class WebSitePart_ParseContentTests
     public void ParseContent_ParseSpacedTextAttributeWithoutQuote_ShouldSuccess()
     {
         // Arrange
-        var fileContent = @"
-@title Title 1 text
-<p>content</p>";
+        var fileContent = """
+            @title Title 1 text
+            <p>content</p>
+            """;
 
         // Act
         var (attrs, content) = WebSitePart.ParseContent(fileContent);

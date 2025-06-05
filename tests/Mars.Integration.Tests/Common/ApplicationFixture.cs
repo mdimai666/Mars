@@ -77,7 +77,7 @@ public class ApplicationFixture : IAsyncLifetime
     private async Task SetupAppFactory()
     {
         await Task.WhenAll([DbFixture.InitializeAsync()]);
-        
+
         ApplicationFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(
             builder =>
             {
@@ -109,6 +109,8 @@ public class ApplicationFixture : IAsyncLifetime
                         services.Replace(ServiceDescriptor.KeyedSingleton<IFileStorage, InMemoryFileStorage>("data"));
 
                         services.AddSingleton(NSubstitute.Substitute.For<ITestDummyTriggerService>());
+
+                        ModifyConfigureTestServices(services);
                     });
 
                 //builder.Configure(app => если использовать то все проподает и 404
@@ -117,13 +119,9 @@ public class ApplicationFixture : IAsyncLifetime
             });
     }
 
-    protected virtual void ModifyConfigurationBuilder(IConfigurationBuilder builder)
-    {
-    }
-
-    protected virtual void ModifyConfiguration(IConfigurationRoot configuration)
-    {
-    }
+    protected virtual void ModifyConfigurationBuilder(IConfigurationBuilder builder) { }
+    protected virtual void ModifyConfiguration(IConfigurationRoot configuration) { }
+    protected virtual void ModifyConfigureTestServices(IServiceCollection services) { }
 
     private void AddHttpClients()
     {

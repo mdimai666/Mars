@@ -8,7 +8,7 @@ public class RenderContextUser
     public Guid Id { get; init; }
 
     [PersonalData]
-    public string FirstName => Detail.UserName;
+    public string FirstName => Detail.FirstName;
 
     [PersonalData]
     public string LastName => Detail.LastName;

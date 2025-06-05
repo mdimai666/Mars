@@ -1,9 +1,9 @@
+using HandlebarsDotNet;
 using Mars.Core.Extensions;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.WebSiteProcessor.Handlebars.Parsers;
-using HandlebarsDotNet;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -81,7 +81,7 @@ public static class MyHandlebarsContextFunctions
             //var queryRows = renderContext.PageContext.AddDataQueriesRows(body, key);
             var queryRows = HandlebarsContextHelperFunctionBodyParser.FunctionBodyParse(body, key);
 
-            var currentFrameCtx = context.Value as Dictionary<string, object>;
+            var currentFrameCtx = (context.Value as Dictionary<string, object>)!;
 
             Dictionary<string, object>? dCopy = null;
             if (isCache)
@@ -97,7 +97,7 @@ public static class MyHandlebarsContextFunctions
 
             hlp.Process(renderContext).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            if (isCache)
+            if (isCache && dCopy is not null)
             {
                 var dResult = currentFrameCtx.ToDictionary(entry => entry.Key,
                                            entry => entry.Value);
@@ -117,7 +117,7 @@ public static class MyHandlebarsContextFunctions
         }
     }
 
-    public static void L_Helper(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments args)
+    public static void Localizer_Helper(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments args)
     {
         if (args.Length < 1)
         {
@@ -136,7 +136,7 @@ public static class MyHandlebarsContextFunctions
             throw new HandlebarsException(" LocalizerNot found: (af.Path, \"Resources\", \"AppRes.resx\")");
         }
 
-        string stringKey = args[0]?.ToString();
+        string stringKey = args[0]?.ToString()!;
 
         string localized;
 
@@ -187,11 +187,16 @@ public static class MyHandlebarsContextFunctions
     public static void IffBlock(EncodedTextWriter output, BlockHelperOptions options, Context context, Arguments args)
     {
         var renderContext = options.Data.RenderContext();
+        if (args.Length != 1) new HandlebarsException("{{#iff 'x>y'}} helper must have exactly 1 arguments. Заверните выражение в кавычки");
+        if (args[0] is HandlebarsDotNet.Compiler.HashParameterDictionary)
+        {
+            throw new HandlebarsException("#iff - argument is HashParameterDictionary. Заверните выражение в кавычки");
+        }
         try
         {
             XInterpreter ppt = new XInterpreter(renderContext.PageContext);
 
-            string expression = string.Join(' ', args);
+            var expression = args[0].ToString();
             var par = ppt.GetParameters();
             bool cond = ppt.Get.Eval<bool>(expression, par);
 

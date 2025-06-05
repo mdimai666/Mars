@@ -17,27 +17,26 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
         this.RED = RED;
     }
 
+    static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        IncludeFields = false,
+        MaxDepth = 0,
+        WriteIndented = true,
+        //Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+    };
+
     public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         try
         {
             int jsonSymbolsLimit = 10_000;
 
-            var opt = new JsonSerializerOptions
-            {
-                IncludeFields = false,
-                MaxDepth = 0,
-                WriteIndented = true,
-                //Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
-            };
-
-
             string loggerContent;
 
             if (input.Payload is not string && input.Payload is object)
             {
-                string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
+                string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, _jsonSerializerOptions);
 
                 loggerContent = json.Left(jsonSymbolsLimit);
             }

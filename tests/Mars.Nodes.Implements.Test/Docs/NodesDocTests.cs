@@ -1,8 +1,8 @@
 using System.Reflection;
+using FluentAssertions;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
-using FluentAssertions;
 
 namespace Mars.Nodes.Implements.Test.Docs;
 
@@ -27,7 +27,7 @@ public class NodesDocTests
             NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
             NodesLocator.RefreshDict();
             var nodes = NodesLocator.dict.Values.ToList();
-            return nodes.Select(t => new NodeInfo(t, t.GetCustomAttribute<FunctionApiDocumentAttribute>())).ToList();
+            return nodes.Select(t => new NodeInfo(t.NodeType, t.NodeType.GetCustomAttribute<FunctionApiDocumentAttribute>())).ToList();
         }
     }
 
@@ -83,7 +83,7 @@ public class NodesDocTests
 
         //NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
         //NodesLocator.RefreshDict();
-        var nodes = NodesLocator.dict.Values.Where(s => s.Assembly == typeof(InjectNode).Assembly).ToList();
+        var nodes = NodesLocator.dict.Values.Where(s => s.NodeType.Assembly == typeof(InjectNode).Assembly).Select(s => s.NodeType).ToList();
 
         foreach (var nodeType in nodes)
         {

@@ -1,4 +1,5 @@
 using AutoFixture;
+using FluentAssertions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.QueryLang.Services;
@@ -9,7 +10,6 @@ using Mars.QueryLang.Host.Services;
 using Mars.Shared.Options;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Handlers;
@@ -58,7 +58,7 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
 
         // Assert
         result.Should().NotBeNull();
-        var pgResult = result as IEnumerable<PostEntity>;
+        var pgResult = (result as IEnumerable<PostEntity>)!;
         pgResult.Count().Should().Be(2);
     }
 }

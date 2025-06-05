@@ -18,18 +18,18 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
+    static readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        MaxDepth = 0,
+        //IgnoreReadOnlyProperties = true,
+        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+    };
+
     public async Task Execute(NodeMsg input, ExecuteAction callback)
     {
         HttpInNodeHttpRequestContext? http = input.Get<HttpInNodeHttpRequestContext>();
 
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
-
-        JsonSerializerOptions opt = new JsonSerializerOptions(JsonSerializerDefaults.Web)
-        {
-            MaxDepth = 0,
-            //IgnoreReadOnlyProperties = true,
-            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
-        };
 
         string? response;
 
@@ -41,7 +41,7 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
         else if (input.Payload is object)
         {
             http.HttpContext.Response.ContentType = "application/json";
-            response = JsonSerializer.Serialize(input.Payload);
+            response = JsonSerializer.Serialize(input.Payload, _jsonSerializerOptions);
             //response = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
         }
         else response = input.Payload?.ToString();

@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace Test.Mars.Datasource.Host;
 
-public class SoutrceBuilderTests
+public class SourceBuilderTests
 {
     [Fact]
     public void SelectDatasourceDto_HelperLinkExist_ShouldExist()

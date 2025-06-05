@@ -56,6 +56,7 @@ public class XInterpreter
                 if (!v.Key.StartsWith('$'))
                 {
                     e.SetVariable(v.Key, v.Value);
+                    parameters.TryAdd(v.Key, new Parameter(v.Key, v.Value));
                 }
             }
         }
@@ -65,6 +66,7 @@ public class XInterpreter
 
     public Parameter[] GetParameters()
     {
+        _interpreter ??= initInterprer();
         return parameters.Select(s => s.Value).ToArray();
     }
 }

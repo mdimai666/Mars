@@ -118,6 +118,12 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         };
     }
 
+    static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
     public void SaveToFile()
     {
         var nodes = ReplaceDefaultFieldsToEmptyString(_RED.BasicNodesDict.Values.ToArray()).ToArray();
@@ -127,11 +133,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             Nodes = nodes,
         };
 
-        string json = JsonSerializer.Serialize(saveFile, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        });
+        string json = JsonSerializer.Serialize(saveFile, _jsonSerializerOptions);
 
         _fileStorage.Write(flowFilePath, json);
     }

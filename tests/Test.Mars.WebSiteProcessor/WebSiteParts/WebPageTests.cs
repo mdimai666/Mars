@@ -1,6 +1,5 @@
-using System.Security.Policy;
-using Mars.Host.Shared.WebSite.Models;
 using FluentAssertions;
+using Mars.Host.Shared.WebSite.Models;
 
 namespace Test.Mars.WebSiteProcessor.WebSiteParts;
 
@@ -21,11 +20,11 @@ public class WebPageTests
     public void WebPage_CorrectParse_ShuldSuccess()
     {
         // Arrange
-        var content = @"
-@page /
+        var content = """
+            @page /
 
-content text
-";
+            content text
+            """;
         // Act
         var page = GetWebPageFromContent(content, "title - 1");
 
@@ -39,11 +38,11 @@ content text
     public void WebPage_InvalidPareAttribute_ShouldException()
     {
         // Arrange
-        var content = @"
-@page url1
+        var content = """
+            @page url1
 
-content text
-";
+            content text
+            """;
         // Act
         var action = () => GetWebPageFromContent(content);
 
@@ -56,11 +55,11 @@ content text
     public void Url_UrlisEqualSlash_ShouldTrue()
     {
         // Arrange
-        var content = @"
-@page /
+        var content = """
+            @page /
 
-content text
-";
+            content text
+            """;
         // Act
         var page = GetWebPageFromContent(content);
 

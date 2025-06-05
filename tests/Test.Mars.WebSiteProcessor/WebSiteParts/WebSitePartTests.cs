@@ -1,6 +1,6 @@
+using FluentAssertions;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Shared.Contracts.WebSite.Models;
-using FluentAssertions;
 
 namespace Test.Mars.WebSiteProcessor.WebSiteParts;
 

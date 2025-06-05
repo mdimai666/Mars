@@ -20,27 +20,27 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         this.RED = RED;
     }
 
+    static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        IncludeFields = false,
+        MaxDepth = 0,
+        WriteIndented = true,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        TypeInfoResolver = new IgnoreReadOnlySpanPropertiesResolver(),
+    };
+
     public Task Execute(NodeMsg input, ExecuteAction callback)
     {
         try
         {
             int jsonSymbolsLimit = 1000;
 
-            var opt = new JsonSerializerOptions
-            {
-                IncludeFields = false,
-                MaxDepth = 0,
-                WriteIndented = true,
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                TypeInfoResolver = new IgnoreReadOnlySpanPropertiesResolver(),
-            };
-
             DebugMessage msg;
 
             if (Node.CompleteInputMessage)
             {
-                string json = System.Text.Json.JsonSerializer.Serialize(input.AsFullDict(), opt);
+                string json = System.Text.Json.JsonSerializer.Serialize(input.AsFullDict(), _jsonSerializerOptions);
 
                 msg = new DebugMessage
                 {
@@ -52,7 +52,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
             }
             else if (input.Payload is not string && input.Payload is object)
             {
-                string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
+                string json = System.Text.Json.JsonSerializer.Serialize(input.Payload, _jsonSerializerOptions);
 
                 msg = new DebugMessage
                 {

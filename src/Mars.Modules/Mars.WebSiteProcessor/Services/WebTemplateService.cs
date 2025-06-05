@@ -136,11 +136,10 @@ public class WebTemplateService : IWebTemplateService
 
     public void ScanSite()
     {
-        WebFilesReadFilesystemService wfs = new WebFilesReadFilesystemService();
-        WebTemplateFilesystemSource templateSource = new WebTemplateFilesystemSource(Path, wfs);
-        using var scope = rootServiceProvider.CreateScope();
-        var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
-        var eff = scope.ServiceProvider.GetService<IMarsDbContextFactory>();
+        var wfs = new WebFilesReadFilesystemService();
+        var templateSource = new WebTemplateFilesystemSource(Path, wfs);
+        var optionService = rootServiceProvider.GetRequiredService<IOptionService>();
+        var eff = rootServiceProvider.GetRequiredService<IMarsDbContextFactory>();
 
         if (eff is not null)
         {

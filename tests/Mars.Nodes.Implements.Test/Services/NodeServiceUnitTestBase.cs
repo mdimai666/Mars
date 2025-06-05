@@ -62,7 +62,7 @@ public class NodeServiceUnitTestBase
             NodesLocator.RefreshDict();
             NodeImplementFabirc.RefreshDict();
 
-            NodesLocator.dict.Add(typeof(TestCallBackNode).FullName!, typeof(TestCallBackNode));
+            NodesLocator.dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
         }
     }
 

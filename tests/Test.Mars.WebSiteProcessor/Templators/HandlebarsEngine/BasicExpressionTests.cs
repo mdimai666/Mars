@@ -1,14 +1,15 @@
 using System.Dynamic;
-using Mars.Host.Templators.HandlebarsFunc;
+using FluentAssertions;
 using HandlebarsDotNet;
+using Mars.Host.Templators.HandlebarsFunc;
 
-namespace Test.Mars.Host.TestHandlebars1;
+namespace Test.Mars.WebSiteProcessor.Templators.HandlebarsEngine;
 
 public class BasicExpressionTests
 {
     [Fact]
 
-    public void TestBasicExpressions()
+    public void IfBlock_Renders_WorksCorrectly()
     {
         string htmlTemplateOk = """
             {{#if ok}}
@@ -33,15 +34,14 @@ public class BasicExpressionTests
         };
 
         var templateOk = Handlebars.Compile(htmlTemplateOk);
-        Assert.Equal("ok", templateOk(data).Trim());
+        templateOk(data).Trim().Should().Be("ok");
 
         var templateNo = Handlebars.Compile(htmlTemplateNo);
-        Assert.Equal("ok", templateNo(data).Trim());
-
+        templateNo(data).Trim().Should().Be("ok");
     }
 
     [Fact]
-    public void TestArrays()
+    public void EachBlock_Renders_WorksCorrectly()
     {
         var data = new
         {
@@ -52,17 +52,17 @@ public class BasicExpressionTests
 
         var templateArrLength = Handlebars.Compile(htmlArrLength);
 
-        Assert.Equal("4", templateArrLength(data).Trim());
+        templateArrLength(data).Trim().Should().Be("4");
 
         string htmlArrEach = @"{{#each arr}} {{.}} {{/each}}";
 
         var templateArrEach = Handlebars.Compile(htmlArrEach);
 
-        Assert.Equal("1234", templateArrEach(data).Replace(" ", "").Trim());
+        templateArrEach(data).Trim().Should().Be("1  2  3  4");
     }
 
     [Fact]
-    public void TestExpandoObject()
+    public void ExpandoObject_BoolField_ShouldRecognizeCorrect()
     {
         var data = new ExpandoObject();
         data.TryAdd("false", false);
@@ -71,11 +71,11 @@ public class BasicExpressionTests
 
         var template = Handlebars.Compile(html);
 
-        Assert.Equal("1", template(data).Trim());
+        template(data).Trim().Should().Be("1");
     }
 
     [Fact]
-    public void TestDictionaryObject()
+    public void DictionaryObject_BoolField_ShouldRecognizeCorrect()
     {
         var data = new Dictionary<string, object>();
         data.TryAdd("false", false);
@@ -84,11 +84,11 @@ public class BasicExpressionTests
 
         var template = Handlebars.Compile(html);
 
-        Assert.Equal("1", template(data).Trim());
+        template(data).Trim().Should().Be("1");
     }
 
     [Fact]
-    public void TestCaseSensevityObject()
+    public void EqBlock_ExpandoObjectCaseInsensevity_ShouldWorkExpect()
     {
         var data = new ExpandoObject();
         data.TryAdd("dima", new { False = false, Count = 123 });
@@ -105,7 +105,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void TestCaseSensevityDictionaryObject()
+    public void EqBlock_DictionaryCaseInsensevity_ShouldWorkExpect()
     {
         var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         data.Add("False", false);
@@ -124,7 +124,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void TestCaseSensevityDictionaryOutput()
+    public void OutputVariable_CaseInsensetive_ShouldWorkExpect()
     {
         var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         data.Add("Title", "dima");

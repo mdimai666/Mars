@@ -56,7 +56,7 @@ public class WebSitePart
 
         var type = WebSitePartType.Block;
 
-        if (source.Name.Equals("_root", StringComparison.OrdinalIgnoreCase))
+        if (Path.GetFileNameWithoutExtension(source.Name).Equals("_root", StringComparison.OrdinalIgnoreCase))
         {
             type = WebSitePartType.Root;
         }

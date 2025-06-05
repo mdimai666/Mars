@@ -17,7 +17,7 @@ public class QueryLangProcessingTests
 {
     private readonly TemplatorFeaturesLocator tfLocator;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IQueryLangLinqDatabaseQueryHandler linqDatabaseQueryHandler;
+    private readonly IQueryLangLinqDatabaseQueryHandler _linqDatabaseQueryHandler;
 
     private readonly QueryLangProcessing _handler;
     private readonly PageRenderContext _pageContext;
@@ -38,9 +38,9 @@ public class QueryLangProcessingTests
 
         tfLocator = new TemplatorFeaturesLocator();
         _serviceProvider = Substitute.For<IServiceProvider>();
-        linqDatabaseQueryHandler = Substitute.For<IQueryLangLinqDatabaseQueryHandler>();
+        _linqDatabaseQueryHandler = Substitute.For<IQueryLangLinqDatabaseQueryHandler>();
 
-        _handler = new QueryLangProcessing(tfLocator, _serviceProvider, linqDatabaseQueryHandler);
+        _handler = new QueryLangProcessing(tfLocator, _serviceProvider, _linqDatabaseQueryHandler);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class QueryLangProcessingTests
             ["x"] = "ef.Post.Count()",
             //["x"] = "post.Where(x=>x.Title==\"1\").List()",
         };
-        linqDatabaseQueryHandler
+        _linqDatabaseQueryHandler
             .Handle(queries["x"].Substring(3), _pageContext, null, default)
             .Returns(2);
 

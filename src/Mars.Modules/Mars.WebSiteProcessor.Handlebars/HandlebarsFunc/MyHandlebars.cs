@@ -128,7 +128,7 @@ public class MyHandlebars : IMarsHtmlTemplator
 
         handlebars.RegisterHelper("context", ContextBlock);
 
-        handlebars.RegisterHelper("L", L_Helper);
+        handlebars.RegisterHelper("L", Localizer_Helper);
         handlebars.RegisterHelper("raw_block", RawBlock);
         handlebars.RegisterHelper("iff", IffBlock);
     }

@@ -67,6 +67,8 @@ public class MarsSSOClientService
 
     }
 
+    static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+
     public async Task<OpenIDAuthTokenResponse> RequestUserJwtByCode(string ssoSlug, string code, string redirect_uri, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(ssoSlug, nameof(ssoSlug));
@@ -98,7 +100,7 @@ public class MarsSSOClientService
         var req = await client.SendAsync(request, cancellationToken);
         if (req.IsSuccessStatusCode)
         {
-            return JsonSerializer.Deserialize<OpenIDAuthTokenResponse>(await req.Content.ReadAsStringAsync(cancellationToken), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<OpenIDAuthTokenResponse>(await req.Content.ReadAsStringAsync(cancellationToken), _jsonSerializerOptions)!;
         }
         else
         {
@@ -180,7 +182,7 @@ public class MarsSSOClientService
         var ssoOption = optionService.GetOption<OpenIDClientOption>().OpenIDClientConfigs.FirstOrDefault(s => s.Slug == ssoSlug && s.Enable)
            ?? throw new ArgumentNullException("sso config not found");
 
-        OpenIDUserInfoRequest request = new() { UserId = userId, ClientId = ssoOption.ClientId, ClientSecret = ssoOption.ClientSecret };
+        var request = new OpenIDUserInfoRequest() { UserId = userId, ClientId = ssoOption.ClientId, ClientSecret = ssoOption.ClientSecret };
 
         try
         {
@@ -203,7 +205,7 @@ public class MarsSSOClientService
     //public async Task<AuthResponseDto> RemoteMarsLogin(string ssoSlug, string data, string redirectUrl, CancellationToken cancellationToken)
     public async Task<AuthResultDto> RemoteMarsLogin(OpenIDAuthTokenResponse tokenResponse, string ssoName, CancellationToken cancellationToken)
     {
-        MarsJwtTokenUserUnfo userInfo = tokenService.JwtDecode<MarsJwtTokenUserUnfo>(tokenResponse.AccessToken, "", verify: false);
+        var userInfo = tokenService.JwtDecode<MarsJwtTokenUserUnfo>(tokenResponse.AccessToken, "", verify: false)!;
 
         if (userInfo is null)
         {

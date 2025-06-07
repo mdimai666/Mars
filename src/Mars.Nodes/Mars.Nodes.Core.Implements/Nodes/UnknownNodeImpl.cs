@@ -1,3 +1,4 @@
+using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -16,6 +17,6 @@ public class UnknownNodeImpl : INodeImplement<UnknownNode>, INodeImplement
 
     public Task Execute(NodeMsg _, ExecuteAction callback)
     {
-        throw new NotImplementedException();
+        throw new NodeExecuteException(Node, $"UnknownNode: '{Node.UnrecognizedType}' not found");
     }
 }

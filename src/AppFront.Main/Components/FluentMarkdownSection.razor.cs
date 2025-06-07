@@ -2,6 +2,10 @@ using System.Net;
 using AppFront.Shared.Components.FluentMarkdownSectionViews;
 using Flurl.Http;
 using Markdig;
+using Markdig.Extensions.AutoLinks;
+using Markdig.Renderers.Html;
+using Markdig.Syntax;
+using Markdig.Syntax.Inlines;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -132,12 +136,26 @@ public partial class FluentMarkdownSection : FluentComponentBase
         {
             var builder = new MarkdownPipelineBuilder()
                     .UseAdvancedExtensions()
+                    .UseAutoLinks(new AutoLinkOptions { OpenInNewWindow = true })
                     .Use<MarkdownSectionPreCodeExtension>();
 
             var pipeline = builder.Build();
 
             // Convert markdown string to HTML
-            var html = Markdown.ToHtml(value, pipeline);
+            //var html = Markdown.ToHtml(value, pipeline);
+            MarkdownDocument document = Markdown.Parse(value, pipeline);
+
+            foreach (LinkInline link in document.Descendants<LinkInline>())
+            {
+                link.GetAttributes().AddPropertyIfNotExist("target", "_blank");
+            }
+
+            foreach (AutolinkInline link in document.Descendants<AutolinkInline>())
+            {
+                link.GetAttributes().AddPropertyIfNotExist("target", "_blank");
+            }
+
+            string html = document.ToHtml(pipeline);
 
             // Return sanitized HTML as a MarkupString that Blazor can render
             return new MarkupString(html);

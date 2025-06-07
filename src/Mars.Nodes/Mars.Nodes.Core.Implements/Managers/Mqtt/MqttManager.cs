@@ -39,7 +39,7 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
         _logger.LogInformation("RefreshConfigs");
 
         var toRemoveIds = _clientInstances.Values.Select(s => s.ConfigNode.Id).Except(configs.Select(s => s.Id)).ToList();
-        toRemoveIds.ForEach(token => _ = _clientInstances[token].DisposeAsync());
+        toRemoveIds.ForEach(configId => _ = _clientInstances[configId].DisposeAsync());
 
         foreach (var config in configs)
         {

@@ -22,7 +22,6 @@
                             @ref=table
                             ItemSize="100"
                             Virtualize
-                            ShowHover
                             GenerateHeader="GenerateHeaderOption.Sticky"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="* 0.1fr 0.1fr"
@@ -31,13 +30,27 @@
                                 Title="@AppRes.Title"
                                 Sortable="true">
                     <div class="hstack">
-                        <div class="plugin_icon " style="flex: 0 0 50px; height:50px;">
-                            <i class="bi bi-plugin text-secondary" style="font-size:30px;"></i>
+                        <div class="plugin_icon " style="flex: 0 0 80px; height:80px;">
+                            @if (context.PackageIconUrl != null)
+                            {
+                                <img src="@context.PackageIconUrl" alt="icon" style="object-fit:contain;width:64px;height:64px;" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-plugin text-secondary p-2 d-inline-block" style="font-size:48px;"></i>
+                            }
                         </div>
                         <div class="vstack">
                             <FluentLabel Typo="Typography.Header">@context.Title</FluentLabel>
                             <div class="hstack gap-2">
                                 <label class="text-secondary">@context.PackageId</label>
+                                @if (!string.IsNullOrEmpty(context.RepositoryUrl))
+                                {
+                                    <div class="vr"></div>
+                                    <a class="text-black" href="@context.RepositoryUrl" target="_blank">
+                                        <i class="bi bi-github"></i>
+                                    </a>
+                                }
                                 <div class="vr"></div>
                                 <FluentRating Max="5" Value="0" ReadOnly="true"
                                               Style="zoom:0.5"

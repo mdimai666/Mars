@@ -17,6 +17,8 @@ public class PluginInfo
     public string[] PackageTags { get; set; } = [];
 
     public string? ManifestFile { get; set; }
+    public string? RepositoryUrl { get; set; }
+    public string? PackageIcon { get; set; }
 
     public PluginInfo()
     {
@@ -52,6 +54,9 @@ public class PluginInfo
         var meta = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
         this.PackageId = meta.FirstOrDefault(s => s.Key == "PackageId")?.Value ?? KeyName;
         this.PackageTags = meta.FirstOrDefault(s => s.Key == "PackageTags")?.Value?.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) ?? [];
+
+        this.RepositoryUrl = meta.FirstOrDefault(s => s.Key == "RepositoryUrl")?.Value;
+        this.PackageIcon = meta.FirstOrDefault(s => s.Key == "PackageIcon")?.Value;
 
         this.Assembly = assembly;
     }

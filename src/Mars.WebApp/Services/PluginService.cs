@@ -58,6 +58,8 @@ internal class PluginService : IPluginService
             InstalledAt = DateTimeOffset.MinValue,
             FrontManifest = pluginInfo.ManifestFile,
             PackageTags = pluginInfo.PackageTags,
+            RepositoryUrl = pluginInfo.RepositoryUrl,
+            PackageIconUrl = string.IsNullOrEmpty(pluginInfo.PackageIcon) ? null : $"/_plugin/{pluginInfo.KeyName}/{pluginInfo.PackageIcon}",
         };
     }
 
@@ -74,7 +76,9 @@ internal class PluginService : IPluginService
                 Enabled = true,
                 InstalledAt = DateTimeOffset.MinValue,
                 FrontManifest = "_plugin/Mars.EShop/_front_plugins.json",
-                PackageTags = ["eshop"]
+                PackageTags = ["eshop"],
+                RepositoryUrl = null,
+                PackageIconUrl = null,
             },
             new(){
                 PackageId = "google.zsn.bu",
@@ -85,7 +89,9 @@ internal class PluginService : IPluginService
                 Enabled = true,
                 InstalledAt = DateTimeOffset.Now,
                 FrontManifest = null,
-                PackageTags = []
+                PackageTags = [],
+                RepositoryUrl = null,
+                PackageIconUrl = null,
             },
             new(){
                 PackageId = "askdasdsd.sdasdfd.dafadf",
@@ -96,7 +102,9 @@ internal class PluginService : IPluginService
                 Enabled = true,
                 InstalledAt = DateTimeOffset.Now + TimeSpan.FromDays(-5),
                 FrontManifest = null,
-                PackageTags = ["nodes", "eshop"]
+                PackageTags = ["nodes", "eshop"],
+                RepositoryUrl = null,
+                PackageIconUrl = null,
             },
         ];
         return pluginsExample.Where(s => (query.Search == null || (

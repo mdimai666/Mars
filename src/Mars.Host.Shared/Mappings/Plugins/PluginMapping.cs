@@ -16,9 +16,11 @@ public static class PluginMapping
             Version = entity.Version,
             Description = entity.Description,
             Enabled = entity.Enabled,
-            InstalledAt= entity.InstalledAt,
+            InstalledAt = entity.InstalledAt,
             FrontManifest = entity.FrontManifest,
             PackageTags = entity.PackageTags,
+            RepositoryUrl = entity.RepositoryUrl,
+            PackageIconUrl = entity.PackageIconUrl,
         };
 
     public static PluginManifestInfoResponse ToResponse(this PluginManifestInfoDto entity)

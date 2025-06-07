@@ -142,8 +142,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         var defaultDict = NodeDefaultInstanceDict();
 
-        return nodes.Where(node => node is not UnknownNode).Select(node =>
+        return nodes.Select(node =>
         {
+            if (node is UnknownNode) return node;
             var copy = node.Copy();
             if (defaultDict.TryGetValue(node.GetType(), out var de))
             {
@@ -158,8 +159,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         var defaultDict = NodeDefaultInstanceDict();
 
-        return nodes.Where(node => node is not UnknownNode).Select(node =>
+        return nodes.Select(node =>
         {
+            if (node is UnknownNode) return node;
             if (defaultDict.TryGetValue(node.GetType(), out var de))
             {
                 if (string.IsNullOrEmpty(node.Color)) node.Color = de.Color;

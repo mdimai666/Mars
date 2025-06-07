@@ -1,8 +1,8 @@
+using Flurl.Http;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
 using Mars.Shared.Common;
 using Mars.WebApiClient.Models;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -22,6 +22,12 @@ internal class BasicServiceClient
 
     public static Action<FlurlCall> OnError = call =>
     {
+        if (call.Response == null && !call.Completed)
+        {
+            call.ExceptionHandled = true;
+            throw new HttpRequestException("ServerNotRespondingException");
+        }
+
         if (call.Response.StatusCode == (int)System.Net.HttpStatusCode.BadRequest)
         {
             var problemDetails = call.Response.GetJsonAsync<AspNetValidationProblemDetails>().ConfigureAwait(false).GetAwaiter().GetResult();

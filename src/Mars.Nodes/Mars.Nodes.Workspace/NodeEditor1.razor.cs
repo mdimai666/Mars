@@ -329,9 +329,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     FlowNode? activeFlow = null;
 
-    public List<Node> FlowNodes => Nodes.Where(s => s.IsVisual
+    public IReadOnlyDictionary<string, Node> FlowNodes => Nodes.Where(s => s.IsVisual
                                                     && s.Container == activeFlow.Id
-                                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToList();
+                                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s=>s.Id);
 
     //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
     //public string InitialFlowId { get; set; }

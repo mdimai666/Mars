@@ -1,6 +1,7 @@
 using System.Globalization;
 using AppAdmin.Components;
 using AppFront.Main.Extensions;
+using AppFront.Main.OptionEditForms;
 using AppFront.Shared.Features;
 using AppFront.Shared.Hub;
 using AppFront.Shared.Interfaces;
@@ -31,9 +32,9 @@ public class Program
 #if DEBUG
     public static readonly bool Dev = true;
 #else
-    public static readonly bool Dev = false; 
+    public static readonly bool Dev = false;
 #endif
-    public static bool IsPrerender = false; //set on the server "_Host.cshtml" 
+    public static bool IsPrerender = false; //set on the server "_Host.cshtml"
 
     public static async Task Main(string[] args)
     {
@@ -137,5 +138,5 @@ public class Program
 
 /*
 * AUTH - https://docs.microsoft.com/ru-ru/aspnet/core/blazor/security/?view=aspnetcore-5.0
-* 
+*
 */

@@ -116,7 +116,7 @@ builder.Services
 
 
 //------------------------------------------
-// Razor page 
+// Razor page
 
 builder.Services.AddRazorPages();
 //builder.Services.AddServerSideBlazor();
@@ -239,7 +239,7 @@ app.MarsUseSwagger();
 
 //app.UseEndpoints(endpoints => //11-22
 //{
-//    endpoints.MapControllers(); 
+//    endpoints.MapControllers();
 //});
 
 app.MapControllers();

@@ -18,9 +18,9 @@
 </p>
 
 <p align="center">
-  <a href="https://www.nuget.org/packages/mdimai666.Mars.AppFront.Shared/0.3.2-alpha.1">
-    <img src="https://img.shields.io/nuget/v/mdimai666.Mars.AppFront.Shared" alt="nuget Version" />
-  </a>  
+  <a href="https://www.nuget.org/packages/mdimai666.Mars.Core">
+    <img src="https://img.shields.io/nuget/v/mdimai666.Mars.Core" alt="nuget Version" />
+  </a>
 </p>
 
 <br>
@@ -47,17 +47,19 @@ Mars Community Edition — это бесплатная CMS с открытым �
 
 <a href="https://docs.Mars-dotnet.org/developer-docs/latest/getting-started/quick-start.html" target="_blank">Read the Getting Started tutorial</a> or follow the steps below:
 
+### Начните с разработки собственного плагина
+> Вы работаете с Mars 'из коробки', не меняя его код, а настраивая и расширяя его через node-code и плагины.
+[Разработка плагина](https://github.com/mdimai666/MyMarsPlugin)
+
 ### Требования
  - OS: Windows, Linux, MacOS
  - Database: postgres 
-
 
 ## Installation
 
 Скачайте и запустите [последнюю версию](https://github.com/mdimai666/Mars/releases) тут
 
 > Mars.exe
-
 
 ### 🚀 Dev Installation
 
@@ -103,7 +105,7 @@ This command generates a brand new project with the default features.
 
 ## Documentation
 
-Документацию по взрыву можно найти в нашем специальном [репозитории](https://github.com/Mars/documentation) или просмотреть нашу документацию в реальном времени:
+Документацию по Марс можно найти в нашем специальном [репозитории](https://github.com/mdimai666/Mars/documentation) или просмотреть нашу документацию в реальном времени:
 
 - [Документация для разработчиков](https://docs.Mars-dotnet.org/developer-docs/latest/getting-started/introduction.html)
 - [Руководство пользователя](https://docs.Mars-dotnet.org/user-docs/latest/getting-started/introduction.html)

@@ -18,22 +18,22 @@ public partial class NodeWorkspace1
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
     NodeWorkspaceJsInterop js = default!;
 
-    List<Node> _nodes { get; set; } = new List<Node>();
+    IReadOnlyDictionary<string, Node> _nodes { get; set; } = new Dictionary<string, Node>();
 
     Node? sel_node;
     List<DragElement> dragElements { get; set; } = new List<DragElement>();
     bool drag = false;
 
     [Parameter]
-    public List<Node> Nodes
+    public IReadOnlyDictionary<string, Node> Nodes
     {
         get => _nodes;
         set
         {
             if (_nodes == value) return;
 
-            string? oldFlowId = _nodes.FirstOrDefault()?.Container;
-            string? newFlowId = value.FirstOrDefault()?.Container;
+            string? oldFlowId = _nodes.Values.FirstOrDefault()?.Container;
+            string? newFlowId = value.Values.FirstOrDefault()?.Container;
 
             _nodes = value;
 
@@ -52,8 +52,7 @@ public partial class NodeWorkspace1
 
     public List<Wire> Wires { get; set; } = new List<Wire>();
 
-    [Parameter] public EventCallback<List<Node>> NodesChanged { get; set; }
-
+    [Parameter] public EventCallback<IReadOnlyDictionary<string, Node>> NodesChanged { get; set; }
 
     [Parameter] public EditorActions? EditorActions { get; set; }
 
@@ -78,7 +77,6 @@ public partial class NodeWorkspace1
 
         //wire_drawWires();
     }
-
 
     void onMouseMove(MouseEventArgs e)
     {
@@ -163,7 +161,7 @@ public partial class NodeWorkspace1
         sel_node = node;
         node.selected = true;
 
-        foreach (var _node in Nodes.Where(s => s.selected))
+        foreach (var _node in Nodes.Values.Where(s => s.selected))
         {
             //Console.WriteLine("onNodeMouseDown");
             var drag = new DragElement
@@ -262,7 +260,7 @@ public partial class NodeWorkspace1
     {
         if (Nodes != null)
         {
-            Nodes.ForEach(s => s.selected = false);
+            foreach (var node in Nodes.Values) node.selected = false;
         }
     }
     void wire_deselect()
@@ -276,15 +274,15 @@ public partial class NodeWorkspace1
 
     void wire_drawWires(string? nodeId = null)
     {
-        var nodes_all = Nodes;
+        var nodes_all = Nodes.Values;
         IEnumerable<Node> nodes = nodes_all;
 
         if (nodeId != null)
         {
-            Node snode = nodes.First(s => s.Id == nodeId);
+            Node snode = Nodes[nodeId];
             var to_update_wires = Wires.Where(s => s.Node2 == nodeId);
             var input_nodes_ids = to_update_wires.Select(s => s.Node1);
-            var input_nodes = nodes_all.Where(s => input_nodes_ids.Contains(s.Id));
+            var input_nodes = input_nodes_ids.Select(id => Nodes[id]);
 
             nodes = input_nodes.Append(snode);
 
@@ -298,7 +296,6 @@ public partial class NodeWorkspace1
             var out_index = 0;
             foreach (var wire_one in node.Wires)
             { //outputs
-
 
                 foreach (var wnode_id in wire_one)
                 { // putputs is may be multiple
@@ -316,7 +313,7 @@ public partial class NodeWorkspace1
                         y1 = node.Y + 16 + out_index * 16;
                     }
 
-                    var node2 = nodes_all.Find(s => s.Id == wnode_id);
+                    var node2 = Nodes.GetValueOrDefault(wnode_id);
 
                     if (node2 != null)
                     {
@@ -386,7 +383,7 @@ public partial class NodeWorkspace1
 
         if (!is_exist)
         {
-            Node node = Nodes.First(s => s.Id == wire.Node1);
+            Node node = Nodes[wire.Node1];
 
             Wires.Add(wire);
             if (node.Wires == null) node.Wires = new List<List<string>>();
@@ -443,9 +440,10 @@ public partial class NodeWorkspace1
 
     public void SelectNode(string nodeId)
     {
-        var node = Nodes.FirstOrDefault(node => node.Id == nodeId);
-        if (node == null) return;
-        SelectNode(node);
+        if (Nodes.TryGetValue(nodeId, out var node))
+        {
+            SelectNode(node);
+        }
     }
 
     public void SelectNode(Node node)
@@ -457,7 +455,7 @@ public partial class NodeWorkspace1
     }
 
     /// <summary>
-    /// 
+    /// on click palette new node
     /// </summary>
     /// <param name="e"></param>
     /// <param name="node">palette clicked node</param>
@@ -488,7 +486,6 @@ public partial class NodeWorkspace1
         instance.X = (float)(-w + node.X + e.ClientX + 120) + scr.X;
         instance.Y = (float)(node.Y + e.ClientY - h - 30) + scr.Y;
 
-
         //Console.WriteLine($"x={e.ClientX}, y={e.ClientY}, offx={e.OffsetX}, offy={e.OffsetY}");
 
         MouseEventArgs m2 = new MouseEventArgs()
@@ -511,8 +508,6 @@ public partial class NodeWorkspace1
         //dragElements.First().nodeY = 0;
         //var d = dragElements.First();
 
-
-
     }
 
     void onClickNodeEvent(MouseEventArgs e, Node node)
@@ -530,27 +525,24 @@ public partial class NodeWorkspace1
     void SelectAllNodesInFlow(Node node)
     {
         var nodes_ids = GetWiredNodes(node, SelectWiresMode.Both);
-        var nodes = Nodes.Where(_node => nodes_ids.Contains(_node.Id));
+        var nodes = nodes_ids.Select(id => Nodes[id]);
         foreach (var _node in nodes)
         {
             _node.selected = true;
         }
     }
 
-
     IEnumerable<string> GetWiredNodes(Node node, SelectWiresMode mode)
     {
-        List<string> sel_nodes_ids = new List<string>() { node.Id };
+        var sel_nodes_ids = new List<string>() { node.Id };
 
         //Console.WriteLine(getWiredNodes(node).JoinStr(","));
-
 
         _logger.LogDebug("node=" + node.Id);
 
         IEnumerable<string> w = _getWiredNodes(node, mode);
 
         _logger.LogDebug("W0= " + w.JoinStr(","));
-
 
         while (w.Any())
         {
@@ -560,8 +552,7 @@ public partial class NodeWorkspace1
 
             _logger.LogDebug("W1= " + w.JoinStr(","));
 
-
-            var next = Nodes.Where(_node => w.Contains(_node.Id));
+            var next = w.Select(id => Nodes[id]);
 
             if (next.Any())
             {
@@ -591,7 +582,7 @@ public partial class NodeWorkspace1
 
     IEnumerable<string> _getWiredNodesInput(Node node)
     {
-        var input_nodes_ids = Nodes.Where(_node => _node.Wires.SelectMany(s => s).Contains(node.Id)).Select(s => s.Id);
+        var input_nodes_ids = Nodes.Values.Where(_node => _node.Wires.SelectMany(s => s).Contains(node.Id)).Select(s => s.Id);
         return input_nodes_ids;
     }
 
@@ -632,7 +623,7 @@ public partial class NodeWorkspace1
     {
         Rectangle _lasso = new Rectangle((int)lasso.drawX, (int)lasso.drawY, (int)lasso.width, (int)lasso.height);
 
-        foreach (var node in Nodes)
+        foreach (var node in Nodes.Values)
         {
             Rectangle rect = new Rectangle((int)node.X, (int)node.Y, 120,/*(int)node.bodyRectHeight*/30);
 
@@ -668,4 +659,3 @@ class DragElement
     public float nodeX;
     public float nodeY;
 }
-

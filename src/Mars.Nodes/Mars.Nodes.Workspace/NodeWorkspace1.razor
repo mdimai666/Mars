@@ -56,7 +56,7 @@
                 @*@mousedown.native.stop="(e) => onWireMouseDown(e, wire)"*@
             }
 
-            @foreach (var _node in Nodes)
+            @foreach (var _node in Nodes.Values)
             {
                 Node node = _node;
 

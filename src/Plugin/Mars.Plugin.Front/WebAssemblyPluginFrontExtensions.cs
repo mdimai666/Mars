@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Runtime.Loader;
+using AppFront.Main.OptionEditForms;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Plugin.Front.Abstractions;
@@ -46,6 +47,7 @@ public static class WebAssemblyPluginFrontExtensions
 
         NodesLocator.RefreshDict();
         NodeFormsLocator.RefreshDict();
+        OptionsFormsLocator.RefreshDict();
     }
 
     private static async Task LoadManifest(List<Assembly> loadAssemblies, ILogger logger, HttpClient http)

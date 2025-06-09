@@ -4,7 +4,7 @@ using Mars.Options.Attributes;
 using Mars.Shared.Options.Attributes;
 using Microsoft.AspNetCore.Components;
 
-namespace Mars.Options.Front;
+namespace AppFront.Main.OptionEditForms;
 
 public static class OptionsFormsLocator
 {
@@ -60,7 +60,7 @@ public static class OptionsFormsLocator
     }
 
     /// <summary>
-    /// 
+    /// GetOptionsEditForms
     /// </summary>
     /// <param name="assembly"></param>
     /// <returns>Key NodeType; Valye FormType</returns>
@@ -79,7 +79,7 @@ public static class OptionsFormsLocator
                 && p.IsPublic
                 && p.IsClass
                 && !p.IsAbstract
-            //&& p.Assembly == 
+            //&& p.Assembly ==
             );
 
         var dict = new Dictionary<Type, OptionsFormsLocatorItem>();

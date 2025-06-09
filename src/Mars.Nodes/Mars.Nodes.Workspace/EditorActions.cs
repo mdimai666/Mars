@@ -37,10 +37,10 @@ public class EditorActions
     public void UserAction_DeleteSelected()
     {
         Console.WriteLine("UserAction_DeleteSelected");
-        var selNodes = editor.NodeWorkspace1.Nodes.Where(s => s.selected);
+        var selNodes = editor.NodeWorkspace1.Nodes.Values.Where(s => s.selected);
         var selNodesIds = selNodes.Select(node => node.Id);
 
-        // this method also delete already selected 
+        // this method also delete already selected
         var nestedWires = editor.NodeWorkspace1.Wires.Where(wire => selNodesIds.Contains(wire.Node1) || selNodesIds.Contains(wire.Node2));
         nestedWires.ToList().ForEach(s => s.Selected = true);
         var wires = editor.NodeWorkspace1.Wires.Where(s => s.Selected);
@@ -58,14 +58,11 @@ public class EditorActions
             var i1 = w.Node1;
             var i2 = w.Node2;
 
-            foreach (var node in editor.NodeWorkspace1.Nodes)
+            if (editor.NodeWorkspace1.Nodes.TryGetValue(i1, out var node))
             {
-                if (node.Id == i1)
+                foreach (var wireOutput in node.Wires)
                 {
-                    foreach (var wireOutput in node.Wires)
-                    {
-                        wireOutput.Remove(i2);
-                    }
+                    wireOutput.Remove(i2);
                 }
             }
         }

@@ -35,10 +35,12 @@ public class AppAdminSpaHtmlScripts
         HeadStyles = [
             new(@"<link rel=""preconnect"" href=""https://cdnjs.cloudflare.net"">", placeInHead: true, order: helperLinksOrder),
             new(@"<link rel=""dns-prefetch"" href=""https://cdnjs.cloudflare.net"">", placeInHead: true, order: helperLinksOrder),
-            new(new Uri(@"css/bootstrap/bootstrap.min.css"), placeInHead: true, order: defaultOrder),
-            new(@"<link rel=""stylesheet"" href=""https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"" integrity=""sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer"" />", placeInHead: true, order: defaultOrder),
+            new(new Uri(@"/mars/vendor/bootstrap/bootstrap5.min.css"), placeInHead: true, order: defaultOrder),
+            //new(@"<link rel=""stylesheet"" href=""https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"" integrity=""sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer"" />", placeInHead: true, order: defaultOrder),
+            new(new Uri(@"/mars/vendor/bootstrap-icons/bootstrap-icons.min.css"), placeInHead: true, order: defaultOrder),
 
-            new(new Uri(@"//cdn.quilljs.com/1.3.6/quill.snow.css"), placeInHead: true, order: defaultOrder),
+            //new(new Uri(@"//cdn.quilljs.com/1.3.6/quill.snow.css"), placeInHead: true, order: defaultOrder),
+            new(new Uri(@"/mars/vendor/quilljs/quill.snow.css"), placeInHead: true, order: defaultOrder),
             new(new Uri(@"_content/mdimai666.Mars.Nodes.FormEditor/css/style.css"), placeInHead: true ,version:appVersion , order: defaultOrder),
 
             new(new Uri(@"css/style.css"), placeInHead: true, version:appVersion, order: defaultOrder),
@@ -46,14 +48,16 @@ public class AppAdminSpaHtmlScripts
         ];
 
         Scripts = [
-            new(new Uri(@"mars/js/jquery-3.5.1.min.js"), order: defaultOrder),
+            new(new Uri(@"/mars/vendor/jquery-3.6.3.min.js"), order: defaultOrder),
             new(new Uri(@"vendor/bootstrap5.bundle.min.js"), order: defaultOrder),
             new(@"<script src=""_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js"" type=""module"" async></script>", order: defaultOrder),
-            new(new Uri(@"https://cdn.quilljs.com/1.3.6/quill.js"), order: defaultOrder),
+            //new(new Uri(@"https://cdn.quilljs.com/1.3.6/quill.js"), order: defaultOrder),
+            new(new Uri(@"/mars/vendor/quilljs/quill.js"), order: defaultOrder),
             new(new Uri(@"_content/Blazored.TextEditor/quill-blot-formatter.min.js"), order: defaultOrder),
             new(new Uri(@"_content/Blazored.TextEditor/Blazored-BlazorQuill.js"), order: defaultOrder),
 
-            new(@"<script src=""https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"" integrity=""sha512-TelkP3PCMJv+viMWynjKcvLsQzx6dJHvIGhfqzFtZKgAjKM1YPqcwzzDEoTc/BHjf43PcPzTQOjuTr4YdE8lNQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer""></script>", order: defaultOrder),
+            //new(@"<script src=""https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"" integrity=""sha512-TelkP3PCMJv+viMWynjKcvLsQzx6dJHvIGhfqzFtZKgAjKM1YPqcwzzDEoTc/BHjf43PcPzTQOjuTr4YdE8lNQ=="" crossorigin=""anonymous"" referrerpolicy=""no-referrer""></script>", order: defaultOrder),
+            new(new Uri(@"/mars/vendor/Sortable-1.15.6.min.js"), order: defaultOrder),
             new(new Uri(@"_content/BlazorMonaco/jsInterop.js"), order: defaultOrder),
             new(new Uri(@"_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"), order: defaultOrder),
             new(new Uri(@"_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"), order: defaultOrder),

@@ -1,12 +1,13 @@
 using Mars.Core.Utils;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
+using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.MetaFields;
 
 namespace Mars.Host.Repositories;
 
-public class MetaFieldsTools
+public static class MetaFieldsTools
 {
     public static void ModifyMetaFields(MarsDbContext _marsDbContext, List<MetaFieldEntity> existMetaFields, IReadOnlyCollection<MetaFieldDto> modifyMetaFields, DateTimeOffset modifiedAt)
     {
@@ -40,7 +41,7 @@ public class MetaFieldsTools
                 qe.Title,
                 qe.Key,
                 qe.Type,
-                qe.Variants,
+                //qe.Variants,
                 qe.MaxValue,
                 qe.MinValue,
                 qe.Description,
@@ -54,7 +55,30 @@ public class MetaFieldsTools
             });
             item.ModifiedAt = modifiedAt;
 
+            ModifyVariants(item.Variants, qe.Variants);
         }
 
+    }
+
+    static void ModifyVariants(List<MetaFieldVariant> entityVariants, List<MetaFieldVariant> newVariants)
+    {
+        var statusDiff = DiffList.FindDifferencesBy(entityVariants, newVariants, s => s.Id);
+        if (statusDiff.HasChanges)
+        {
+            foreach (var item in statusDiff.ToRemove) entityVariants.Remove(item);
+            foreach (var item in statusDiff.ToAdd)
+            {
+                entityVariants.Add(item);
+            }
+        }
+        foreach (var item in entityVariants.Except(statusDiff.ToRemove).Except(statusDiff.ToAdd))
+        {
+            var q = newVariants.First(s => s.Id == item.Id);
+            item.Title = q.Title;
+            item.Tags = q.Tags.ToList();
+            item.Value = q.Value;
+            item.Disable = q.Disable;
+
+        }
     }
 }

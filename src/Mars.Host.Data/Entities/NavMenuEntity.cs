@@ -20,7 +20,6 @@ public class NavMenuEntity : IBasicEntity
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
 
-
     [Required]
     [Comment("Название")]
     public string Title { get; set; } = default!;
@@ -29,9 +28,8 @@ public class NavMenuEntity : IBasicEntity
     [Comment("slug")]
     public virtual string Slug { get; set; } = Guid.NewGuid().ToString();
 
-
     [Comment("Элементы")]
-    [Column(TypeName = "jsonb")]
+    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     public List<NavMenuItem> MenuItems { get; set; } = new();
 
     [Comment("Class")]

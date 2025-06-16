@@ -23,5 +23,7 @@ public class NavMenuEntityConfiguration : IEntityTypeConfiguration<NavMenuEntity
         entity.Property(x => x.Tags).HasColumnType($"varchar({TagMaxLength})[]");
         entity.Property(x => x.Roles).HasColumnType($"varchar({TagMaxLength})[]");
 
+        entity.OwnsMany(x => x.MenuItems, f => { f.ToJson(); });
+
     }
 }

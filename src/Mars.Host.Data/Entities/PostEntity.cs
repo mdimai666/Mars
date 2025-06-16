@@ -66,7 +66,6 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
     [MaxLength(LangCodeMaxLength)]
     public string LangCode { get; set; } = "";
 
-
     // Relations
 
     [Comment("ИД пользователя")]
@@ -84,15 +83,13 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
     [NotMapped]
     public virtual List<FileEntity>? Files { get; set; }
 
-
-
     public virtual ICollection<PostMetaValueEntity>? PostMetaValues { get; set; }
     [NotMapped]
     public virtual List<MetaValueEntity>? MetaValues { get; set; }
 
     ////=====================================
     ////Comments
-    //public int LikesCount { get; set; } // todo 
+    //public int LikesCount { get; set; } // todo
     //public virtual ICollection<PostLikeEntity>? Likes { get; set; }
 
     ////=====================================

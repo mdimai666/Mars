@@ -4,6 +4,8 @@ using Mars.Host.Managers;
 using Mars.Host.QueryLang;
 using Mars.Host.Services;
 using Mars.Host.Services.GallerySpace;
+using Mars.Host.Services.Keycloak;
+using Mars.Host.Services.MarsSSOClient;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Interfaces;
@@ -52,6 +54,13 @@ public static class MainMarsHost
         services.AddScoped<IPostJsonService, PostJsonService>();
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IFeedbackService, FeedbackService>();
+
+        services.AddScoped<ViewModelService>();
+        services.AddScoped<EsiaService>();
+
+        services.AddScoped<KeycloakService>();
+        services.AddScoped<MarsSSOClientService>();
+        services.AddScoped<MarsSSOOpenIDServerService>();
 
         services.AddScoped<IGalleryService, GalleryService>();
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();

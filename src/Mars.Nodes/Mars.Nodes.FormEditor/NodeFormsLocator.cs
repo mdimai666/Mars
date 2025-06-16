@@ -10,27 +10,33 @@ public static class NodeFormsLocator
 
     static bool invalide = true;
 
-    static List<Assembly> assemblies = new();
+    static HashSet<Assembly> assemblies = new();
+
+    static object _lock = new { };
 
     public static void RefreshDict(bool force = false)
     {
         if (!invalide && !force) return;
-        dict.Clear();
 
-        foreach (var assembly in assemblies)
+        lock (_lock)
         {
+            dict.Clear();
 
-            var _dict = GetNodeEditForms(assembly);
-
-            foreach (var a in _dict)
+            foreach (var assembly in assemblies)
             {
-                dict.Add(a.Key, a.Value);
+                var _dict = GetNodeEditForms(assembly);
+
+                foreach (var a in _dict)
+                {
+                    dict.Add(a.Key, a.Value);
+                }
             }
         }
     }
 
     public static void RegisterAssembly(Assembly assembly)
     {
+        if (assemblies.Contains(assembly)) return;
         assemblies.Add(assembly);
     }
 
@@ -67,7 +73,7 @@ public static class NodeFormsLocator
     }
 
     /// <summary>
-    /// 
+    /// find NodeEditFormForNodeAttribute in assembly
     /// </summary>
     /// <param name="assembly"></param>
     /// <returns>Key NodeType; Valye FormType</returns>
@@ -86,7 +92,7 @@ public static class NodeFormsLocator
                 && p.IsPublic
                 && p.IsClass
                 && !p.IsAbstract
-            //&& p.Assembly == 
+            //&& p.Assembly ==
             );
 
         Dictionary<Type, Type> dict = new();
@@ -95,7 +101,7 @@ public static class NodeFormsLocator
         {
             NodeEditFormForNodeAttribute? attribute = formType.GetCustomAttribute<NodeEditFormForNodeAttribute>();
 
-            if (attribute != null)
+            if (attribute is not null)
             {
                 Type nodeType = attribute.ForNodeType;
 

@@ -18,7 +18,6 @@ using Mars.Nodes.Host;
 using Mars.Nodes.Workspace;
 using Mars.Options.Host;
 using Mars.Plugin;
-using Mars.QueryLang.Host;
 using Mars.Scheduler.Host;
 using Mars.SemanticKernel.Host;
 using Mars.UseStartup;
@@ -45,7 +44,6 @@ _ = nameof(MarsStartupInfo);
 //var wd = Path.GetDirectoryName(MarsAssemblyPath);
 //Directory.SetCurrentDirectory(wd);
 
-
 #if DEBUG
 //FIX for NET7 AppAdmin serve WebAssembly files
 if (Environment.GetEnvironmentVariable("DOTNET_WATCH") == "1")
@@ -63,7 +61,6 @@ if (!IsRunUnderVisualStudio)
 
 #endif
 
-
 var commandsApi = new CommandLineApi();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,8 +73,7 @@ builder.Services.MarsAddLocalization()
                 .MarsAddCore(builder.Configuration)
                 .MarsAddMetrics()
                 .AddConfigureActions()
-                .AddMarsWebSiteProcessor()
-                .AddMarsQueryLang();
+                .AddMarsWebSiteProcessor();
 builder.AddFront();
 
 builder.Services.AddDateOnlyTimeOnlyStringConverters()
@@ -114,7 +110,6 @@ builder.Services
         options.PayloadSerializerOptions.PropertyNamingPolicy = null;
     });
 
-
 //------------------------------------------
 // Razor page
 
@@ -134,7 +129,7 @@ builder.Services.Configure<IHttpMaxRequestBodySizeFeature>(x =>
 //------------------------------------------
 // Logger
 bool disableLogs = commandsApi.CheckGlobalOption<bool>("--disable-logs", args);
-if (!disableLogs)
+if (!disableLogs && !IsTesting)
 {
     builder.MarsAddLogging();
 }
@@ -161,18 +156,15 @@ builder.Services.AddAppFrontMain(builder.Configuration, typeof(AppAdmin.Program)
 builder.Services.AddNodeWorkspace();
 builder.Services.DatasourceWorspace();
 
-
 NodesLocator.RefreshDict();
 NodeFormsLocator.RefreshDict();
 NodeImplementFabirc.RefreshDict();
 // end CLIENT
 
-
 //------------------------------------------
 // PLUGINS
 builder.AddPlugins()
         .Services.AddControllers().AddPluginsAsPartOfMvc();//warn: need for AddPlugins
-
 
 // ===========================================================================================
 // APP
@@ -261,7 +253,6 @@ app.Map("/_ws", ws =>
     });
 });
 
-
 //app.MarsUseMetrics();
 app.UseMarsHost(builder.Services);
 app.UseConfigureActions();
@@ -275,7 +266,6 @@ app.UseMarsNodes(); //TODO: запросы на ресурсы тоже лови
 NodeServiceTemplaryHelper._serviceCollection = builder.Services;
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
-app.UseMarsQueryLang();
 app.UseMarsExcel();
 app.UseForFeature(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
 app.UseForFeature(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());

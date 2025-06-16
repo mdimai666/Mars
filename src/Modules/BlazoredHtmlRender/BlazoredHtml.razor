@@ -6,7 +6,6 @@
 @using System.Reflection
 @using OneOf
 
-
 <ErrorBoundary @ref="@eb">
     <ChildContent>
         @renderHtml
@@ -19,13 +18,11 @@
     </ErrorContent>
 </ErrorBoundary>
 
-
 @code {
     public static Dictionary<string, Type> ComponentsDict = new();
 
     string _html = "";
     [Parameter] public string Html { get => _html; set { _html = value; eb?.Recover(); } }
-
 
     protected override void OnInitialized()
     {
@@ -37,7 +34,6 @@
 
     ErrorBoundary? eb;
 
-
     RenderFragment renderHtml => (builder) =>
     {
         var doc = new HtmlDocument();
@@ -46,7 +42,6 @@
         RenderList(builder, doc.DocumentNode.ChildNodes);
 
     };
-
 
     static object SetValue(PropertyInfo info, object value)
     {
@@ -97,7 +92,6 @@
                 foreach (var a in d.Attributes)
                 {
                     bool isComHasProp = props.ContainsKey(a.OriginalName);
-
 
                     if (isComHasProp)
                     {
@@ -259,22 +253,27 @@
         return dict;
     }
 
+    static object _lock = new { };
+
     public static void AddComponentsFromAssembly(Assembly assembly, bool tryAddShortName)
     {
-        var components = GetAssemblyComponents(assembly, tryAddShortName);
-
-        foreach (var a in components)
+        lock (_lock)
         {
-            if (BlazoredHtml.ComponentsDict.ContainsKey(a.Key))
+            var components = GetAssemblyComponents(assembly, tryAddShortName);
+
+            foreach (var a in components)
             {
-                if (BlazoredHtml.ComponentsDict.TryAdd(a.Value.FullName!, a.Value) == false)
+                if (BlazoredHtml.ComponentsDict.ContainsKey(a.Key))
                 {
-                    Console.WriteLine($"BlazoredHtml.ComponentsDict > key already exist = {a.Key}");
+                    if (BlazoredHtml.ComponentsDict.TryAdd(a.Value.FullName!, a.Value) == false)
+                    {
+                        Console.WriteLine($"BlazoredHtml.ComponentsDict > key already exist = {a.Key}");
+                    }
                 }
-            }
-            else
-            {
-                BlazoredHtml.ComponentsDict.Add(a.Key, a.Value);
+                else
+                {
+                    BlazoredHtml.ComponentsDict.Add(a.Key, a.Value);
+                }
             }
         }
     }

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Mars.Controllers;
 
 [ApiController]
-[Route("api/[controller]/[action]")] //TODO: Префикс добавить что ли (/api/s/). Обсудить с алексеем
+[Route("api/[controller]/[action]")]
 [Authorize]
 [Produces(MediaTypeNames.Application.Json)]
 [AllExceptionCatchToUserActionResultFilter]
@@ -51,8 +51,6 @@ public class SystemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public string MemoryUsage()
         => _marsSystemService.MemoryUsage();
-
-
 
     [HttpGet]
     [Produces(MediaTypeNames.Text.Plain)]
@@ -100,7 +98,6 @@ public class SystemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public IEnumerable<KeyValuePair<string, string>> AboutSystem()
         => _marsSystemService.AboutSystem();
-
 
     [HttpGet]
     [Authorize(Roles = "Admin")]

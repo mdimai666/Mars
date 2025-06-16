@@ -13,7 +13,7 @@ public interface IMetaModelTypesLocator
 
     void InvalidateCompiledMetaMtoModels();
     Dictionary<string, Type> MetaMtoModelsCompiledTypeDict { get; }
-    void UpdateMetaModelMtoRuntimeCompiledTypes(IServiceProvider serviceProvider);
-    void TryUpdateMetaModelMtoRuntimeCompiledTypes(IServiceProvider serviceProvider);
-
+    void UpdateMetaModelMtoRuntimeCompiledTypes();
+    void TryUpdateMetaModelMtoRuntimeCompiledTypes();
+    Task<string> MetaTypesSourceCode(string lang = "csharp");
 }

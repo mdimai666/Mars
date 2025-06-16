@@ -88,6 +88,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableDetailedErrors();
 #pragma warning disable CS0618 // Type or member is obsolete
+        NpgsqlConnection.GlobalTypeMapper.UseJsonNet();
         NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
 #pragma warning restore CS0618 // Type or member is obsolete
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
 using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
@@ -23,7 +23,6 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
 
-
     [Comment("Родительское мета поле")]
     public Guid ParentId { get; set; }
 
@@ -37,9 +36,9 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("Тип")]
     public EMetaFieldType Type { get; set; } = EMetaFieldType.String;
 
-    [Column(TypeName = "jsonb")]
+    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     [Comment("Варианты")]
-    public List<MetaFieldVariant> Variants { get; set; } = new();
+    public virtual List<MetaFieldVariant> Variants { get; set; } = new();
 
     [Comment("Максимальное")]
     public decimal? MaxValue { get; set; } = null;
@@ -69,7 +68,6 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("Отключен")]
     public bool Disabled { get; set; }
 
-
     ////SETTERS===============
     //[Comment("Теги")]
     ////[JsonIgnore]
@@ -90,17 +88,13 @@ public class MetaFieldEntity : IBasicEntity
 
     public virtual ICollection<MetaValueEntity>? MetaValues { get; set; }
 
-
-
     public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; }
     [NotMapped]
     public virtual List<PostTypeEntity>? PostTypes { get; set; }
 
-
     public virtual ICollection<UserMetaFieldEntity>? UserMetaFields { get; set; }
     [NotMapped]
     public virtual List<UserEntity>? Users { get; set; }
-
 
     #region ENUMS
     public static readonly EMetaFieldType[] ENumbers = MetaValueEntity.ENumbers;
@@ -120,10 +114,8 @@ public class MetaFieldEntity : IBasicEntity
 
     #endregion
 
-
     #region TYPE_LIST
-    static Dictionary<EMetaFieldType, string> _typeList = null;
-
+    static Dictionary<EMetaFieldType, string>? _typeList = null;
 
     [Comment("Тип поля")]
     [NotMapped]
@@ -162,7 +154,6 @@ public class MetaFieldEntity : IBasicEntity
         }
     }
 
-
     public string TypeAsText()
     {
         return TypeAsText(Type);
@@ -185,7 +176,6 @@ public class MetaFieldEntity : IBasicEntity
     #endregion
 
     //Validators
-
 
     public static ICollection<MetaValueEntity> GetValuesBlank(ICollection<MetaValueEntity> metaValues, ICollection<MetaFieldEntity> metaFields)
     {
@@ -267,7 +257,6 @@ public class MetaFieldEntity : IBasicEntity
                         //values.Where(s => s.ParentId == f.Id).ToList().ForEach(s => s.ParentId = group.Id);
                         list.AddRange(values);
 
-
                         //var metaList = f;
                         //var iteratorMetaFields = metaFields.Where(s => s.ParentId == metaList.Id).ToList();
                         //var items = MetaField.MetaListGetNewGroupChild(metaList, metaFields);
@@ -287,7 +276,6 @@ public class MetaFieldEntity : IBasicEntity
                     }
                 }
             }
-
 
         }
         list = list.Where(s => s.MetaField is not null).OrderBy(s => s.MetaField.Order).ToList();
@@ -357,7 +345,6 @@ public class MetaFieldEntity : IBasicEntity
     }
 }
 
-
 public enum EMetaFieldType : int
 {
     /// <summary>
@@ -383,7 +370,6 @@ public enum EMetaFieldType : int
     Image = 102,
 }
 
-
 public class FieldScheme//not use
 {
     public enum Type
@@ -396,7 +382,6 @@ public class FieldScheme//not use
     }
 }
 
-
 //Repeater
 //Groups
 //select from other models
@@ -405,7 +390,6 @@ public class FieldScheme//not use
 //{
 
 //}
-
 
 //public class ManyToMany_Post_MetaForm : BasicEntityNonUser
 //{
@@ -439,5 +423,3 @@ public class FieldScheme//not use
 
 //    public virtual ICollection<MetaFieldTemplate> MetaFieldTemplates { get; set; }
 //}
-
-

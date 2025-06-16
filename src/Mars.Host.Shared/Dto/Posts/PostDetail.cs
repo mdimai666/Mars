@@ -9,7 +9,7 @@ public record PostDetail : PostSummary
     public required IReadOnlyCollection<MetaValueDto> MetaValues { get; init; }
 }
 
-public record PostEditDetail 
+public record PostEditDetail
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

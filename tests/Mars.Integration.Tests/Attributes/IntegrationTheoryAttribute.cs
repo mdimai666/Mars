@@ -1,8 +1,8 @@
 namespace Mars.Integration.Tests.Attributes;
 
-public class IntegrationFactAttribute : FactAttribute
+public class IntegrationTheoryAttribute : TheoryAttribute
 {
-    public IntegrationFactAttribute()
+    public IntegrationTheoryAttribute()
     {
         if (bool.TryParse(Environment.GetEnvironmentVariable("SKIP_INTEGRATION_TESTS"), out bool skip) && skip)
         {

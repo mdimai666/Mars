@@ -9,7 +9,7 @@ using Mars.Shared.Common;
 
 namespace Mars.Host.Services;
 
-public class FeedbackService : IFeedbackService
+internal class FeedbackService : IFeedbackService
 {
     private readonly IFeedbackRepository _feedbackRepository;
     private readonly IEventManager _eventManager;
@@ -111,4 +111,3 @@ public class FeedbackService : IFeedbackService
         }
     }
 }
-

@@ -1,7 +1,11 @@
 using System.Reflection;
+using AppAdmin.Builder.DebugViews;
+using AppAdmin.Builder.NodeViews;
+
 #if !NOADMIN
 using AppAdmin.Pages.FeedbackViews;
 using AppAdmin.Pages.PostsViews;
+using AppAdmin.Pages.PostTypeViews;
 using AppAdmin.Pages.Settings;
 #endif
 using Mars.Controllers;
@@ -70,23 +74,21 @@ internal static class ConfigureActions
 #endif
 #endif
 
-#if false
         actionManager.AddXLink(new XActionCommand
         {
-            Id = typeof(IRuntimeTypeCompiler).FullName + "+csharp",
-            FrontContextId = [typeof(ManagePostTypePage).FullName],
+            Id = nameof(GenSourceCodeController.MetaTypesSourceCode) + "+csharp",
+            FrontContextId = [typeof(ListPostTypePage).FullName!],
             Label = "Просмотр кода C#",
-            LinkValue = "/api/GenSourceCode/MetaModelsMto?lang=csharp"
+            LinkValue = $"/api/GenSourceCode/{nameof(GenSourceCodeController.MetaTypesSourceCode)}?lang=csharp"
         });
 
         actionManager.AddXLink(new XActionCommand
         {
-            Id = typeof(DebugPage).FullName,
-            FrontContextId = [typeof(SettingsPage).FullName, typeof(NodeRedPage).FullName],
+            Id = typeof(DebugPage).FullName!,
+            FrontContextId = [typeof(SettingsPage).FullName!, typeof(NodeRedPage).FullName!],
             Label = "Логи",
             LinkValue = "builder/debug"
-        }); 
-#endif
+        });
 
 #if !NOADMIN
         actionManager.AddXLink(new XActionCommand
@@ -100,7 +102,6 @@ internal static class ConfigureActions
 
         return app;
     }
-
 
 }
 
@@ -122,7 +123,6 @@ public class ClearCacheAct : IAct
         this.memoryCache = memoryCache;
     }
 
-
     public Task<XActResult> Execute(IActContext context)
     {
         if (memoryCache is MemoryCache mc)
@@ -142,7 +142,7 @@ public class DummyAct(MarsDbContext ef) : IAct
         Id = typeof(DummyAct).FullName!,
         Label = "DummyAct",
 #if false
-        FrontContextId = [typeof(EditPostPage).FullName], 
+        FrontContextId = [typeof(EditPostPage).FullName],
 #endif
         Type = XActionType.HostAction
     };

@@ -23,6 +23,9 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
         entity.Property(x => x.Tags).HasColumnType($"character varying({EntityDefaultConstants.TagMaxLength})[]");
         entity.Property(x => x.ModelName).HasColumnType($"varchar({TypeNameMaxLength})").HasMaxLength(TypeNameMaxLength);
 
+        // https://www.npgsql.org/efcore/mapping/json.html?tabs=data-annotations%2Cjsondocument#tojson-owned-entity-mapping
+        entity.OwnsMany(x => x.Variants, f => { f.ToJson(); });
+
         entity.HasMany(x => x.MetaValues)
             .WithOne(x => x.MetaField);
 

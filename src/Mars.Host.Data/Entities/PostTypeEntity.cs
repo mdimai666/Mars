@@ -22,7 +22,6 @@ public class PostTypeEntity : IBasicEntity
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
 
-
     [Comment("Название")]
     [Required]
     public string Title { get; set; } = default!;
@@ -36,7 +35,7 @@ public class PostTypeEntity : IBasicEntity
     /// <b>[jsonb]</b>
     /// </summary>
     [Comment("Статусы")]
-    [Column(TypeName = "jsonb")]
+    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     public List<PostStatusEntity> PostStatusList { get; set; } = new();
 
     /// <summary>
@@ -58,23 +57,20 @@ public class PostTypeEntity : IBasicEntity
     /// <b>[jsonb]</b>
     /// </summary>
     [Comment("Настройки контента")]
-    [Column(TypeName = "jsonb")]
+    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     public PostContentSettings PostContentType { get; set; } = new();
-
 
     [Comment("Теги")]
     public List<string> Tags { get; set; } = [];
 
-
     // Relations
 
-    public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; } 
+    public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; }
     [NotMapped]
     public virtual List<MetaFieldEntity>? MetaFields { get; set; }
 
     [NotMapped] //вспомогательный, для получения
     public virtual List<PostEntity>? Posts { get; set; }
-
 
     //[Comment("Форма списка")]
     //[Column(TypeName = "jsonb")]

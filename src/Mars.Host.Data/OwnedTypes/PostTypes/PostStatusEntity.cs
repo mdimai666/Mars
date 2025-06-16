@@ -9,7 +9,7 @@ namespace Mars.Host.Data.OwnedTypes.PostTypes;
 /// </summary>
 public class PostStatusEntity : IBasicEntity
 {
-    [Key]
+    //[Key] is jsonb
     [Comment("ИД")]
     public Guid Id { get; set; }
 
@@ -18,7 +18,6 @@ public class PostStatusEntity : IBasicEntity
 
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
-
 
     [Required]
     [Comment("Название")]

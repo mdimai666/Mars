@@ -1,14 +1,18 @@
 using System.Net.Mime;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[Authorize]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
+[NotFoundExceptionFilter]
+[FluentValidationExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]
 public class GenSourceCodeController : ControllerBase
 {
@@ -20,22 +24,8 @@ public class GenSourceCodeController : ControllerBase
     }
 
     [HttpGet]
-    public string MetaModelsMto(string lang = "csharp")
-    {
-        throw new NotImplementedException();
-        //using var ef = serviceProvider.GetService<MarsDbContextLegacy>();
-
-        //var postTypeList = ef.PostTypes
-        //                        .Include(s => s.MetaFields)
-        //                        //.First(s => s.TypeName == postTypeName);
-        //                        .ToList();
-
-        //var userService = serviceProvider.GetService<UserService>();
-
-        //var userMetaFields = userService.UserMetaFields(ef);
-
-        //string code = GenClassMto.GenPostTypesAsMtoString(postTypeList, userMetaFields, _mlocator);
-
-        //return code;
-    }
+    [Produces(MediaTypeNames.Text.Plain)]
+    [ProducesErrorResponseType(typeof(void))]
+    public Task<string> MetaTypesSourceCode(string lang = "csharp")
+        => _mlocator.MetaTypesSourceCode(lang);
 }

@@ -1,11 +1,12 @@
 //using Mars.Areas.Identity;
-//using Mars.GenSourceCode;
 using Mars.Host;
 using Mars.Host.Services;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite;
+using Mars.MetaModelGenerator;
 using Mars.Nodes;
 using Mars.Nodes.Core.Implements;
+using Mars.QueryLang.Host;
 using Mars.Services;
 using Mars.WebSiteProcessor.Endpoints;
 
@@ -18,37 +19,28 @@ internal static class MarsStartupPartServices
         //services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<UserEntity>>();
 
         //services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.JwtSectionKey));
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ITokenService, TokenService>()
+                .AddScoped<AccountsService>();
 
         services.AddDatabaseDeveloperPageExceptionFilter();//from clear template
 
-        services.AddScoped<AccountsService>();
-        services.AddSingleton<IImageProcessor, ImageProcessor>();
+        services.AddMarsQueryLang()
+                .AddMetaModelGenerator();
 
-        // TODO: uncomment
-        //services.AddSingleton<IRuntimeTypeCompiler, RuntimeTypeCompiler>();
-        services.AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>();
-
-        services.AddScoped<IPageRenderService, PageRenderService>();
-        services.AddScoped<FeedbackService>();
-        services.AddScoped<ViewModelService>();
+        services.AddSingleton<IMarsSystemService, MarsSystemService>()
+                .AddSingleton<IImageProcessor, ImageProcessor>()
+                .AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
+                .AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>()
+                .AddScoped<IPageRenderService, PageRenderService>();
 
         services.AddMarsHost(wenv);
-        services.AddScoped<EsiaService>();
 
         //services.AddSingleton<DebugService>();
         services.AddSingleton<IPluginService, PluginService>();
 
         NodeImplementFabirc.RegisterAssembly(typeof(MarsHostRootLayoutRenderNodeImpl).Assembly);
 
-        //services.AddSingleton<IWebFilesService, WebFilesReadFilesystemService>();
-
-        //services.AddScoped<KeycloakService>();
-        //services.AddScoped<MarsSSOClientService>();
-        //services.AddScoped<MarsSSOOpenIDServerService>();
-        services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
         services.AddSingleton<IServiceCollection>(services);
-        services.AddSingleton<IMarsSystemService, MarsSystemService>();
 
         return services;
     }

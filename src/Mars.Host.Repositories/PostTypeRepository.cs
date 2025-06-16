@@ -55,13 +55,14 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var entity = await _marsDbContext.PostTypes.Include(s => s.MetaFields)
+        var entity = await _marsDbContext.PostTypes.Include(s => s.MetaFields!)
+                                                        .ThenInclude(s => s.Variants)
+                                                    .Include(s => s.PostStatusList)
                                                     .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                     ?? throw new NotFoundException();
 
         var modifiedAt = DateTimeOffset.Now;
         var oldTypeName = entity.TypeName;
-
 
         entity.Title = query.Title;
         entity.TypeName = query.TypeName;
@@ -103,7 +104,9 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
             item.ModifiedAt = modifiedAt;
 
         }
-        _marsDbContext.Entry(entity).Property(e => e.PostStatusList).IsModified = true;
+
+        // отключено после перевода [jsonb] аттрибута в .ToJson()
+        //_marsDbContext.Entry(entity).Property(e => e.PostStatusList).IsModified = true;
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken)
@@ -134,7 +137,6 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
     {
         _disposed = true;
     }
-
 
     public async Task<IReadOnlyCollection<PostTypeSummary>> ListAll(CancellationToken cancellationToken)
     {

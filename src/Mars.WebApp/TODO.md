@@ -66,6 +66,7 @@
 # Nodes
 [x] - Excel node
 [ ] - add Env support to variables get
+[ ] - add commands like Inject for "Power Toys: Commant Palette Util"
 
 ## Entity upgrade plan
 [x] - Setup 'Modified' -> DateTimeOffset? ModifiedAt

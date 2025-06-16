@@ -1,13 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+      <Compile Remove="EmitVariantExample.cs" />
+    </ItemGroup>
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
       <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-      <ProjectReference Include="..\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
     </ItemGroup>
 
 </Project>

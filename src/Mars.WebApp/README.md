@@ -1,12 +1,15 @@
-# BlazorJob
+# Mars.WebApp
 
-Begin work with Blazor
+low-code CRM
 
 # EF
 
+## Migrations
 use it for init db
-> ```dotnet ef migrations add Initial --context MarsDbContext -o "Data/Migrations"```
-
+```
+cd Mars.Host.Data
+src\Mars.Host.Data> dotnet ef migrations add '<someName>' --startup-project ..\Mars.WebApp\Mars.WebApp.csproj
+```
 
 dotnet tool install --global dotnet-ef
 
@@ -27,10 +30,8 @@ ef database drop -f
 # for local dev
 create appsettings.Local.json
 
-
 # For inspiration
 https://github.com/thangchung/awesome-dotnet-core#sample-projects
-
 
 ## Publish
 
@@ -59,7 +60,6 @@ https://stackoverflow.com/a/37259655/6723966
 .\psql.exe -U postgres -f C:\Users\d\Downloads\someDB.sql Mars
 ```
 
-
 ##raw sql for filter by metafield
 ```sql
 SELECT *
@@ -70,7 +70,6 @@ INNER JOIN "MetaValues" on "MetaValues"."Id" = "PostMetaValues"."MetaValueId"
 INNER JOIN "MetaFields" on "MetaFields"."Id" = "MetaValues"."MetaFieldId"
 WHERE "posts"."Type" = 'vacancy' AND "MetaFields"."Key" = 'salary' AND "MetaValues"."Decimal">=200
 ```
-
 
 entity framework query
 ```csharp

@@ -31,14 +31,14 @@ public class FileEntity : IBasicUserEntity
     public string FileName { get; set; } = default!;
 
     /// <summary>
-    /// path to file without /Upload and 
+    /// path to file without /Upload and
     /// </summary>
     [Comment("Физический путь файла от upload")]
     [Required]
     public string FilePhysicalPath { get; set; } = default!;
 
     /// <summary>
-    /// File virtual path /Upload 
+    /// File virtual path /Upload
     /// </summary>
     [Comment("Виртуальный путь файла")]
     [Required]
@@ -56,16 +56,14 @@ public class FileEntity : IBasicUserEntity
     public string FileExt { get; set; } = default!;
     //public EFileType FileType { get; set; }
 
-
     /// <summary>
     /// ????????? что бы придумать? -> Virtual path
     /// </summary>
     //public string FileGroup { get; set; } = default!;
 
     [Comment("Мета поля")]
-    [Column(TypeName = "jsonb")]
+    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     public virtual FileEntityMeta Meta { get; set; } = new();
-
 
     //////////////// Relations
 

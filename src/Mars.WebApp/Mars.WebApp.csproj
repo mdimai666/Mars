@@ -94,6 +94,7 @@
         <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />
@@ -109,7 +110,6 @@
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
-        <!--<ProjectReference Include="..\Mars.Modules\Mars.GenSourceCode\Mars.GenSourceCode.csproj" />-->
 
     </ItemGroup>
 

@@ -1,13 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
-using System.Dynamic;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
+using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
 using Mars.Host.Data.Configurations;
 using Mars.Host.Data.Constants;
-using Mars.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
@@ -29,7 +26,6 @@ public class MetaValueEntity : IBasicEntity
     public Guid ParentId { get; set; }
     public EMetaFieldType Type { get; set; }
     public int Index { get; set; }
-
 
     public bool Bool { get; set; }
     public int Int { get; set; }
@@ -57,18 +53,15 @@ public class MetaValueEntity : IBasicEntity
     public Guid MetaFieldId { get; set; }
     public virtual MetaFieldEntity? MetaField { get; set; }
 
-
     public virtual ICollection<PostMetaValueEntity>? PostMetaValues { get; set; }
 
     [NotMapped]
     public virtual List<PostEntity>? Posts { get; set; }
 
-
     public virtual ICollection<UserMetaValueEntity>? UserMetaValues { get; set; }
 
     [NotMapped]
     public virtual List<UserEntity>? Users { get; set; }
-
 
     #region SETTER
 
@@ -126,7 +119,7 @@ public class MetaValueEntity : IBasicEntity
             EMetaFieldType.DateTime => DateTime,
 
             EMetaFieldType.Select => MetaField.Variants.FirstOrDefault(s => s.Id == VariantId),
-            EMetaFieldType.SelectMany => MetaField.Variants.Where(s => VariantsIds.Contains(s.Id)),
+            EMetaFieldType.SelectMany => MetaField.Variants.Where(s => VariantsIds.Contains(s.Id)).ToArray(),
 
             EMetaFieldType.Group => null,//???
 
@@ -145,7 +138,7 @@ public class MetaValueEntity : IBasicEntity
         {
             if (t.IsNullable)
             {
-                this.NULL = true;
+                NULL = true;
             }
             else
             {
@@ -154,48 +147,48 @@ public class MetaValueEntity : IBasicEntity
         }
         else if (Type == EMetaFieldType.String && value is string _st)
         {
-            this.StringShort = _st.Left(255);
+            StringShort = _st.Left(255);
         }
         else if (Type == EMetaFieldType.Text && value is string _text)
         {
-            this.StringText = _text;
+            StringText = _text;
         }
         else if (Type == EMetaFieldType.Bool && value is bool _bool)
         {
-            this.Bool = _bool;
+            Bool = _bool;
         }
         else if (Type == EMetaFieldType.Int && value is int _int)
         {
-            this.Int = _int;
+            Int = _int;
         }
         else if (Type == EMetaFieldType.Long && value is long _long)
         {
-            this.Long = _long;
+            Long = _long;
         }
         else if (Type == EMetaFieldType.Float && value is float _float)
         {
-            this.Float = _float;
+            Float = _float;
         }
         else if (Type == EMetaFieldType.Decimal && value is decimal _decimal)
         {
-            this.Decimal = _decimal;
+            Decimal = _decimal;
         }
         //extra
         else if (Type == EMetaFieldType.DateTime && value is DateTime _date)
         {
-            this.DateTime = _date;
+            DateTime = _date;
         }
         else if (Type == EMetaFieldType.Select && value is Guid _variantId)
         {
-            this.VariantId = _variantId;
+            VariantId = _variantId;
         }
         else if (Type == EMetaFieldType.SelectMany && value is IEnumerable<Guid> _variantsIds)
         {
-            this.VariantsIds = _variantsIds.ToArray();
+            VariantsIds = _variantsIds.ToArray();
         }
         else if (TypeRelation && value is Guid modelId)
         {
-            this.ModelId = modelId;
+            ModelId = modelId;
         }
         else
         {
@@ -337,7 +330,6 @@ public class MetaValueEntity : IBasicEntity
             }
         }
 
-
         return err;
     }
 
@@ -434,7 +426,6 @@ public class MetaValueEntity : IBasicEntity
     //            var x = new MetaValueTree(meta);
     //            var childs = metaFields.Where(s => s.ParentId == meta.Id);
 
-
     //            var xChilds = new List<MetaValueTree>();
 
     //            if (true)
@@ -456,8 +447,7 @@ public class MetaValueEntity : IBasicEntity
     //                            var mKey = meta.Key;
     //                            var fKeyName = f.Key;
 
-
-    //                            //TODO: NOT tested 
+    //                            //TODO: NOT tested
     //                            if (f.TypeParentable)
     //                            {
     //                                var mChilds = AsTree(values.Except(group.ToList()), metaFields.Except(root), f.Id, group.Key);
@@ -528,17 +518,17 @@ public class MetaValueTree
 
     public MetaValueTree(MetaValueEntity value)
     {
-        this.Key = value.MetaField.Key;
-        this.Type = value.Type;
-        this.Value = value.Type == EMetaFieldType.List ? null : value.Get();
-        this.IsList = value.Type == EMetaFieldType.List;
+        Key = value.MetaField.Key;
+        Type = value.Type;
+        Value = value.Type == EMetaFieldType.List ? null : value.Get();
+        IsList = value.Type == EMetaFieldType.List;
     }
 
     public MetaValueTree(MetaFieldEntity value)
     {
-        this.Key = value.Key;
-        this.Type = value.Type;
-        this.IsList = value.Type == EMetaFieldType.List;
+        Key = value.Key;
+        Type = value.Type;
+        IsList = value.Type == EMetaFieldType.List;
     }
 
 }

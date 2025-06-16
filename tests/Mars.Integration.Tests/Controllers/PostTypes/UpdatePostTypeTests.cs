@@ -60,7 +60,10 @@ public class UpdatePostTypeTests : ApplicationTests
         result.Should().NotBeNull();
         result.Title.Should().Be(request.Title);
 
-        var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.Id == updatingId);
+        var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields!)
+                                                .ThenInclude(s => s.Variants)
+                                            .Include(s => s.PostStatusList)
+                                            .FirstOrDefault(s => s.Id == updatingId);
         postTypeEntity.Should().NotBeNull();
         postTypeEntity.Should().BeEquivalentTo(request, options => options
             .ComparingRecordsByValue()

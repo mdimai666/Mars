@@ -1,10 +1,10 @@
 using System.Collections.Frozen;
+using FluentValidation;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
-using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.QueryLang;
@@ -16,13 +16,15 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
     private readonly IServiceScope _scope;
     private readonly IPostTypeRepository _postTypeRepository;
     private readonly IServiceCollection _serviceCollection;
+    private readonly IMetaEntityTypeProvider _metaEntityTypeProvider;
     public SemaphoreSlim _lockPostTypes = new(1, 1);
 
-    public MetaModelTypesLocator(IServiceScopeFactory serviceScopeFactory, IServiceCollection serviceCollection)
+    public MetaModelTypesLocator(IServiceScopeFactory serviceScopeFactory, IServiceCollection serviceCollection, IMetaEntityTypeProvider metaEntityTypeProvider)
     {
         _scope = serviceScopeFactory.CreateScope();
         _postTypeRepository = _scope.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         _serviceCollection = serviceCollection;
+        _metaEntityTypeProvider = metaEntityTypeProvider;
     }
 
     private async Task<FrozenDictionary<string, PostTypeInfo>> GetPostTypes()
@@ -95,43 +97,51 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
     public void InvalidateCompiledMetaMtoModels()
     {
         _postTypes = null;
-        metaMtoModelsCompiledTypeDict = null;
+        _metaMtoModelsCompiledTypeDict = null;
+        _metaMtoModelsCompiledSourceCode = null;
 
         //TODO: для PostType добавить VersionToken. B повесить хук, который инвалидирует при изменении
     }
 
-    static Dictionary<string, Type>? metaMtoModelsCompiledTypeDict = null;
+    Dictionary<string, Type>? _metaMtoModelsCompiledTypeDict = null;
+    string? _metaMtoModelsCompiledSourceCode = null;
 
-    public Dictionary<string, Type> MetaMtoModelsCompiledTypeDict => metaMtoModelsCompiledTypeDict ?? new();
+    public Dictionary<string, Type> MetaMtoModelsCompiledTypeDict => _metaMtoModelsCompiledTypeDict ?? new();
 
-    public void UpdateMetaModelMtoRuntimeCompiledTypes(IServiceProvider serviceProvider)
+    private object _metaMtoModelsCompiledTypeDictLock = new();
+
+    public void UpdateMetaModelMtoRuntimeCompiledTypes()
     {
-        throw new NotImplementedException();
-        //using var ef = serviceProvider.GetService<MarsDbContextLegacy>();
+        Dictionary<string, Type> result = _metaEntityTypeProvider.GenerateMetaTypes().ConfigureAwait(false).GetAwaiter().GetResult();
 
-        //var postTypeList = ef.PostTypes
-        //                        .Include(s => s.MetaFields)
-        //                        //.First(s => s.TypeName == postTypeName);
-        //                        .AsNoTracking()
-        //                        .ToList();
+        _metaMtoModelsCompiledTypeDict = result;
+    }
 
-        //var userService = serviceProvider.GetRequiredService<IUserService>();
-        //var userMetaFields = userService.UserMetaFields(ef);
+    public async Task<string> MetaTypesSourceCode(string lang = "csharp")
+    {
+        if (lang != "csharp") throw new NotImplementedException("support only 'csharp' is now");
 
-        //IRuntimeTypeCompiler compiler = serviceProvider.GetService<IRuntimeTypeCompiler>();
-        //Dictionary<string, Type> result = compiler.Compile(postTypeList, userMetaFields, this);
+        if (_metaMtoModelsCompiledSourceCode == null)
+        {
+            _metaMtoModelsCompiledSourceCode = await _metaEntityTypeProvider.GenerateMetaTypesSourceCode();
+        }
 
-        //metaMtoModelsCompiledTypeDict = result;
+        return _metaMtoModelsCompiledSourceCode;
     }
 
     /// <summary>
     /// Update only if doct is NULL
     /// </summary>
-    public void TryUpdateMetaModelMtoRuntimeCompiledTypes(IServiceProvider serviceProvider)
+    public void TryUpdateMetaModelMtoRuntimeCompiledTypes()
     {
-        if (metaMtoModelsCompiledTypeDict is null)
+        if (_metaMtoModelsCompiledTypeDict is not null) return;
+
+        lock (_metaMtoModelsCompiledTypeDictLock)
         {
-            UpdateMetaModelMtoRuntimeCompiledTypes(serviceProvider);
+            if (_metaMtoModelsCompiledTypeDict is null)
+            {
+                UpdateMetaModelMtoRuntimeCompiledTypes();
+            }
         }
     }
 
@@ -142,7 +152,6 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         return Task.CompletedTask;
     }
 }
-
 
 public record PostTypeInfo
 {

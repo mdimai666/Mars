@@ -26,9 +26,7 @@ public static class EfQueryCaller //https://stackoverflow.com/a/32061921/6723966
         return expr;
     }
 
-
     //ORDER
-
     public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> query, string name)
     {
         var propInfo = GetPropertyInfo(typeof(T), name);
@@ -77,54 +75,7 @@ public static class EfQueryCaller //https://stackoverflow.com/a/32061921/6723966
         return (IQueryable<T>)genericMethod.Invoke(null, new object[] { query, expr })!;
     }
 
-    //JTABLE ORDER "Title desc"
-    /// <summary>
-    /// </summary>
-    /// <example>
-    /// "Title desc"
-    /// </example>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="orderQuery"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OrderByJtableSortParam<T>(this IEnumerable<T> query, string orderQuery)
-    {
-        (string field, bool asc) q = ParseJTableQuery(orderQuery);
-        return q.asc ? query.OrderBy(q.field) : query.OrderByDescending(q.field);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>
-    /// "Title desc"
-    /// </example>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="orderQuery"></param>
-    /// <returns></returns>
-    public static IQueryable<T> OrderByJtableSortParam<T>(this IQueryable<T> query, string orderQuery)
-    {
-        (string field, bool asc) q = ParseJTableQuery(orderQuery);
-        return q.asc ? query.OrderBy(q.field) : query.OrderByDescending(q.field);
-    }
-
-    //
-    static (string field, bool asc) ParseJTableQuery(string orderQuery) //LocNameE ASC
-    {
-        if (string.IsNullOrEmpty(orderQuery) || orderQuery == "undefined")
-        {
-            return ("", true);
-        }
-        else
-        {
-            var q = orderQuery.Split(' ');
-            bool desc = q.Length > 1 && q[1].ToLower().Contains("desc");
-            return (q[0], !desc);
-        }
-    }
-
-    //My Solutions 
+    //My Solutions
 
     static (string field, bool asc) ParseMinusNameQuery(string orderQuery) //LocNameE ASC
     {
@@ -151,22 +102,6 @@ public static class EfQueryCaller //https://stackoverflow.com/a/32061921/6723966
     {
         (string field, bool asc) q = ParseMinusNameQuery(orderQuery);
         return q.asc ? query.OrderBy(q.field) : query.OrderByDescending(q.field);
-    }
-
-    //Попытка создать класс, который сам вызывает метод
-    public static IQueryable CallQuerableMethod(Type type, string method, string exp)
-    {
-        throw new NotImplementedException();
-        //var propInfo = GetPropertyInfo(type, name);
-        //var expr = GetOrderExpression(type, propInfo);
-
-        //if (expr is null) throw new ArgumentException($"order expression by \"{name}\" is null");
-
-        //var method = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == "OrderBy" && m.GetParameters().Length == 2);
-        //if (method == null) return query;
-
-        //var genericMethod = method.MakeGenericMethod(typeof(T), propInfo.PropertyType);
-        //return (IQueryable<T>)genericMethod.Invoke(null, new object[] { query, expr })!;
     }
 
 }

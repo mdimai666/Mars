@@ -1,10 +1,10 @@
 using System.Text.RegularExpressions;
+using DynamicExpresso;
 using Mars.Core.Features;
 using Mars.Host.Shared.QueryLang.Services;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Models;
-using DynamicExpresso;
 
 namespace Mars.QueryLang.Host.Services;
 
@@ -13,13 +13,8 @@ public class QueryLangProcessing(
     IServiceProvider serviceProvider,
     IQueryLangLinqDatabaseQueryHandler queryLangLinqDatabaseQueryHandler) : IQueryLangProcessing
 {
-    private readonly static Regex regexLinqFunctionDetect = new Regex(@"^\w+\.\w+");
-    private readonly static Regex regexFunctionDetect = new Regex(@"^\w+\(");
-
-    //public async Task Process(IReadOnlyDictionary<string, DataQueryRequest> dataQueries, Dictionary<string, object>? localVaribles = null)
-    //{
-
-    //}
+    private static readonly Regex regexLinqFunctionDetect = new Regex(@"^\w+\.\w+");
+    private static readonly Regex regexFunctionDetect = new Regex(@"^\w+\(");
 
     public async Task<Dictionary<string, object?>> Process(
         PageRenderContext pageContext,
@@ -29,19 +24,10 @@ public class QueryLangProcessing(
     {
         XInterpreter ppt = new(pageContext, localVaribles);
 
-        //foreach (var v in context) должо быть в самом интерпретаторе
-        //{
-        //    ppt.parameters.Add(v.Key, new Parameter(v.Key, v.Value));
-        //}
-
-        //ITemplatorFeaturesLocator tflocator = renderContext.ServiceProvider.GetRequiredService<ITemplatorFeaturesLocator>();
-
         var functions = tflocator.Functions;
 
         int index = 0;
         string processKey = null!;
-
-        //var jss = new JsonSerializer() { MaxDepth = 1, ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Formatting = Formatting.None };
 
         //Action<string> addErr = err => renderContext.PageContext.Errors.Add(err);
         Action<string> addErr = err => { };
@@ -59,54 +45,6 @@ public class QueryLangProcessing(
                 resultDict.Add(key, value);
             }
         };
-
-#if false
-        Action<string, object?> addToContext = (string key, object? value) =>
-        {
-            //C:\Users\D\Documents\VisualStudio\2025\Mars\Mars.Host\QueryLang\EfDynamicQuery2.cs:177
-            //var _context = JArray.FromObject(result, jss);
-            //var _context = JObject.FromObject(result, jss);
-            if (key != "_" && value != null)
-            {
-                if (ppt.parameters.ContainsKey(key)) ppt.parameters.Remove(key);
-                ppt.parameters.Add(key, new Parameter(key, value));
-                ppt.Get.SetVariable(key, value);
-
-
-                if (value is string || value is int || value is Guid || value.GetType().IsPrimitive)
-                {
-
-                    if (!renderContext.PageContext.templateContext.TryAdd(key, value))
-                        renderContext.PageContext.templateContext[key] = value;
-                }
-                else if (value is JToken)
-                {
-                    if (!renderContext.PageContext.templateContext.TryAdd(key, value))
-                        renderContext.PageContext.templateContext[key] = value;
-                }
-                else if (value is JsonNode)
-                {
-                    if (!renderContext.PageContext.templateContext.TryAdd(key, value))
-                        renderContext.PageContext.templateContext[key] = value;
-                }
-                //else if (value is IEnumerable<object>)
-                //{
-                //    JToken _jtoken = JArray.FromObject(value, jss);
-                //    renderContext.PageContext.templateContext.Add(key, _jtoken);
-                //}
-                else
-                {
-                    //Если так не делать - до при {{value}} он выводит toString() а не в json
-                    JToken _jtoken = JToken.FromObject(value, jss);
-                    //renderContext.PageContext.templateContext.Add(key, _jtoken);
-                    if (!renderContext.PageContext.templateContext.TryAdd(key, _jtoken))
-                        renderContext.PageContext.templateContext[key] = _jtoken;
-                    //renderContext.PageContext.templateContext.Add(key, value);
-                }
-
-            }
-        }; 
-#endif
 
         try
         {
@@ -173,7 +111,7 @@ public class QueryLangProcessing(
                     var providerObject = val.Split('.', 2)[0];
                     if (providerObject == "ef")
                     {
-                        var result = await queryLangLinqDatabaseQueryHandler.Handle(val.Substring(3), pageContext, localVaribles, cancellationToken);
+                        var result = await queryLangLinqDatabaseQueryHandler.Handle(val.Substring(3), ppt, cancellationToken);
                         addToContext(key, result);
                     }
                     else

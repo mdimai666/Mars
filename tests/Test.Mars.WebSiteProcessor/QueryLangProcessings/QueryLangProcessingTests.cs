@@ -1,6 +1,8 @@
 using System.Reflection;
+using FluentAssertions;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.QueryLang.Services;
+using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Host.Templators;
 using Mars.QueryLang.Host.Services;
@@ -8,7 +10,6 @@ using Mars.Shared.Options;
 using Mars.Shared.Templators;
 using Mars.Test.Common.Constants;
 using Mars.WebSiteProcessor.Handlebars.TemplateData;
-using FluentAssertions;
 using NSubstitute;
 
 namespace Test.Mars.WebSiteProcessor.QueryLangProcessings;
@@ -117,7 +118,6 @@ public class QueryLangProcessingTests
 
     }
 
-
     [Fact]
     public async Task Process_LinqDatabaseQuery_Success()
     {
@@ -129,7 +129,7 @@ public class QueryLangProcessingTests
             //["x"] = "post.Where(x=>x.Title==\"1\").List()",
         };
         _linqDatabaseQueryHandler
-            .Handle(queries["x"].Substring(3), _pageContext, null, default)
+            .Handle(queries["x"].Substring(3), Arg.Any<XInterpreter>(), default)
             .Returns(2);
 
         // Act
@@ -184,7 +184,7 @@ public class QueryLangProcessingTests
 
         object? result = method1.MethodInfo.Invoke(query, new object[] { query, exp });
 
-    } 
+    }
 #endif
 }
 

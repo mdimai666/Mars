@@ -3,6 +3,7 @@ using FluentAssertions;
 using Mars.Core.Extensions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Shared.QueryLang.Services;
+using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Host.Templators;
 using Mars.Host.Templators.HandlebarsFunc;
@@ -65,7 +66,7 @@ public class DataQueryScenariosTests
 
         var posts = _fixture.CreateMany<PostEntity>(3).ToList();
 
-        _queryLangLinqDatabaseQueryHandler.Handle("posts.Take(3)", Arg.Any<PageRenderContext>(), Arg.Any<Dictionary<string, object>?>(), default)
+        _queryLangLinqDatabaseQueryHandler.Handle("posts.Take(3)", Arg.Any<XInterpreter>(), default)
                                             .Returns(posts);
 
         var html = Render(template);

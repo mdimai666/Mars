@@ -1,4 +1,5 @@
 using Mars.Host.Shared.Models;
+using Mars.Host.Shared.Templators;
 using Mars.Shared.Options;
 
 namespace Mars.Host.Shared.WebSite.Models;
@@ -16,4 +17,6 @@ public class PageRenderContext
     public Dictionary<string, DataQueryRequest>? DataQueries { get; init; } = new();
 
     public required RenderParam RenderParam { get; init; }
+
+    public XInterpreter CreateInterpreter(Dictionary<string, object>? localVaribles = null) => new XInterpreter(this, localVaribles);
 }

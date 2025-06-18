@@ -1,11 +1,11 @@
 using System.Reflection;
 using Mars.Core.Features;
+using Mars.Host.Data.Common;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Shared.QueryLang.Services;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
 using Mars.MetaModelGenerator;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,18 +22,30 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         _metaModelTypesLocator = metaModelTypesLocator;
     }
 
-    public Task<object?> Handle(string linqExpression, PageRenderContext pageContext, Dictionary<string, object>? localVaribles, CancellationToken cancellationToken)
+    public async Task<object?> Handle(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
     {
-        var efPropertyName = linqExpression.Split('.', 2)[0];
+        if (linqExpression.StartsWith("Union(")) return await ExecuteUnionExpressions(linqExpression, ppt, cancellationToken);
 
-        var ppt = new XInterpreter(pageContext, localVaribles);
+        var efPropertyName = linqExpression.Trim().Split('.', 2)[0];
+
+        //var ppt = new XInterpreter(pageContext, localVaribles);
         var chains = TextHelper.ParseChainPairKeyValue(linqExpression);
 
         var xEntityType = FindEntityDbSetByPropertyName(efPropertyName);
         IQueryable? query;
 
+        xEntityType ??= FindEntityDbSetByTypeName(efPropertyName);
+
+        xEntityType ??= FindEntityDbSetByTypeName(efPropertyName + "Entity");
+
+        var isMetaType = false;
+
         if (xEntityType is not null) query = GetEntitySbSet(xEntityType);
-        else (xEntityType, query) = GetMetaTypeQuerySet(efPropertyName);
+        else
+        {
+            (xEntityType, query) = GetMetaTypeQuerySet(efPropertyName);
+            isMetaType = true;
+        }
 
         if (query is null)
         {
@@ -52,10 +64,27 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         foreach (var (methodName, args) in chains)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            result = instance.InvokeMethod(methodName, args);
+            if (methodName == nameof(Queryable.Union))
+            {
+                if (isMetaType)
+                {
+                    throw new NotImplementedException("Union for metaTypes not work yet. Please use 'ef.Union(arr1,arr2) method. \nLike: 'posts = ef.Union(myType.Take(1),posts.Where(post.Slug=123))'");
+                }
+
+                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator).Handle(args, ppt, cancellationToken);
+                var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
+
+                result = instance.InvokeMethodArgs(methodName, [internalQuery]);
+
+                //return result.ToList;
+            }
+            else
+            {
+                result = instance.InvokeMethod(methodName, args);
+            }
         }
 
-        return Task.FromResult(result);
+        return result;
     }
 
     IQueryable GetEntitySbSet(Type entityType)
@@ -79,7 +108,9 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
                 var query = _marsDbContext.Posts.Include(s => s.MetaValues!)
                                                     .ThenInclude(s => s.MetaField)
                                                 .Include(s => s.User)
-                                                .AsNoTracking();
+                                                .Include(s => s.PostType)
+                                                .AsNoTracking()
+                                                .Where(s => s.PostType.TypeName == typeName);
                 return (metaModelType, ApplySelectExpression(query, metaModelType));
             }
             else
@@ -109,10 +140,53 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
     {
         var dbContext = _marsDbContext;
 
-        var prop = dbContext.GetType().GetProperty(entityName);//?? throw new ArgumentException($"Не найдено свойство с именем '{entityName}' в контексте.");
+        _memberDbSetsByName ??= typeof(MarsDbContext).GetProperties()
+                .Where(p => p.PropertyType.IsGenericType
+                            && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)))
+                .ToDictionary(s => s.Name);
 
-        var entityType = prop?.PropertyType.GenericTypeArguments[0];
+        return _memberDbSetsByName.GetValueOrDefault(entityName)?.PropertyType;
+    }
 
-        return entityType;
+    static Dictionary<string, PropertyInfo>? _memberDbSetsByName;
+    static Dictionary<string, PropertyInfo>? _memberDbSetsByTypeName;
+
+    Type? FindEntityDbSetByTypeName(string typeName)
+    {
+        var dbContext = _marsDbContext;
+
+        _memberDbSetsByTypeName ??= typeof(MarsDbContext).GetProperties()
+                .Where(p => p.PropertyType.IsGenericType
+                            && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)))
+                .ToDictionary(s => s.PropertyType.GenericTypeArguments[0].Name);
+
+        return _memberDbSetsByTypeName.GetValueOrDefault(typeName)?.PropertyType.GenericTypeArguments[0];
+    }
+
+    async Task<IEnumerable<object>> ExecuteUnionExpressions(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
+    {
+        var chains = TextHelper.ParseArguments(linqExpression);
+
+        var items = new Dictionary<TypedIdKey, object>();
+
+        foreach (var args in chains)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator).Handle(args, ppt, cancellationToken);
+            var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
+
+            //list.Add(internalQuery);
+            foreach (var item in internalQuery)
+            {
+                var key = new TypedIdKey(item.GetType(), item is IBasicEntity be ? be.Id : throw new NotImplementedException($"Not found Id for type '{item.GetType()}'"));
+                if (!items.ContainsKey(key))
+                    items.Add(key, item);
+            }
+        }
+
+        return items.Values;
     }
 }
+
+internal record TypedIdKey(Type Type, Guid Id);

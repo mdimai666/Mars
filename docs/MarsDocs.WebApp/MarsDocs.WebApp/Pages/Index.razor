@@ -1,0 +1,120 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="hero bg-cover" style="background-image:url('img/home/home-hero.png')">
+    <div class="__inside p-5 d-flex flex-column justify-content-center ms-5" style="min-height:450px;max-width:500px">
+        <h1>Марс</h1>
+        <h2 class="fw-normal fs-4">
+            Это бесплатная CMS с открытым исходным кодом, позволяющая вам управлять любым контентом как угодно.
+        </h2>
+        <FluentNavLink Href="/voo" Class="mt-4">
+            <FluentButton Appearance="Appearance.Accent">See what's new</FluentButton>
+        </FluentNavLink>
+    </div>
+</div>
+
+<div class="home-gradient-bg1" style="min-height:1000px;">
+    <div class="__inner p-5">
+
+        <div class="my-4 d-flex gap-5 flex-column flex-md-row">
+            <action-card-big>
+                <img src="img/home/app1.png" alt="" />
+                <label>App frontend</label>
+                <p>Разработка морды сайта.</p>
+                <a href="/start" class="stretched-link"></a>
+            </action-card-big>
+            <action-card-big>
+                <img src="img/home/app2.png" alt="" />
+                <label>Плагины</label>
+                <p>Создание плагина.</p>
+                <a href="/start" class="stretched-link"></a>
+            </action-card-big>
+            <action-card-big>
+                <img src="img/home/app4.png" alt="" />
+                <label>Nodes</label>
+                <p>Визуальное программирование.</p>
+                <a href="/start" class="stretched-link"></a>
+            </action-card-big>
+        </div>
+        <div class="mt-5"></div>
+        <h3>Resources</h3>
+        <p>
+            Here are some useful resources to help you design and build your cards.
+        </p>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            <div class="col">
+                <action-card-small>
+                    <img src="img/home/resources-solutions-light.png" alt="" />
+                    <div>
+                        <label>Solutions and scenarios best practices</label>
+                        <p>Gain inspiration from industry samples and teamwork solutions.</p>
+                    </div>
+                    <a href="/start" class="stretched-link"></a>
+            </action-card-small>
+            </div>
+            <div class="col">
+                <action-card-small>
+                    <img src="img/home/resources-solutions-light.png" alt="" />
+                    <div>
+                        <label>UI Kit</label>
+                        <p>Explore components and patterns designed specifically for building Adaptive Cards.</p>
+                    </div>
+                    <a href="/start" class="stretched-link"></a>
+            </action-card-small>
+            </div>
+            <div class="col">
+                <action-card-small>
+                    <img src="img/home/resources-solutions-light.png" alt="" />
+                    <div>
+                        <label>Icon catalog</label>
+                        <p>Browse a large catalog of consistent, scalable, and automatically themed icons for your card designs.</p>
+                    </div>
+                    <a href="/start" class="stretched-link"></a>
+                </action-card-small>
+            </div>
+            <div class="col">
+                <action-card-small>
+                    <img src="img/home/resources-solutions-light.png" alt="" />
+                    <div>
+                        <label>Developer Portal</label>
+                        <p>Access tools to configure, validate, and publish your apps and agents.</p>
+                    </div>
+                    <a href="/start" class="stretched-link"></a>
+                </action-card-small>
+            </div>
+            <div class="col">
+                <action-card-small>
+                    <img src="img/home/resources-solutions-light.png" alt="" />
+                    <div>
+                        <label>Platform Documentation</label>
+                        <p>Find documentation, sample code, tutorials, and more to help you build custom apps.</p>
+                    </div>
+                    <a href="/start" class="stretched-link"></a>
+                </action-card-small>
+            </div>
+            <div class="col">
+                <action-card-small>
+                    <img src="img/home/resources-solutions-light.png" alt="" />
+                    <div>
+                        <label>Starter card collection</label>
+                        <p>Use pre-built card templates as a starting point to build upon or modify.</p>
+                    </div>
+                    <a href="/start" class="stretched-link"></a>
+                </action-card-small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .home-gradient-bg1 {
+        background-image: radial-gradient(500px at 500px 500px, rgb(193, 202, 255), transparent), radial-gradient(250px at 400px 250px, rgb(255, 248, 206), transparent), radial-gradient(300px at 750px 600px, rgb(255, 209, 225), transparent), radial-gradient(500px at 1000px 300px, rgb(255, 234, 255), transparent);
+        backdrop-filter: blur(10px);
+        background-blend-mode: soft-light;
+    }
+
+    main {
+        background-color: #f0f0f0;
+    }
+</style>

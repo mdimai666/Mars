@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarsDocs.WebApp", "MarsDocs.WebApp\MarsDocs.WebApp.csproj", "{A525B5D1-58D7-48DF-B106-1A5C66B34504}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarsDocs.DevServer", "MarsDocs.DevServer\MarsDocs.DevServer.csproj", "{D12319CE-F814-44CF-877F-43D670D0BCC3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A525B5D1-58D7-48DF-B106-1A5C66B34504}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A525B5D1-58D7-48DF-B106-1A5C66B34504}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A525B5D1-58D7-48DF-B106-1A5C66B34504}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A525B5D1-58D7-48DF-B106-1A5C66B34504}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12319CE-F814-44CF-877F-43D670D0BCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12319CE-F814-44CF-877F-43D670D0BCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12319CE-F814-44CF-877F-43D670D0BCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12319CE-F814-44CF-877F-43D670D0BCC3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF1EA555-FDEA-46B2-914B-37F9072435D5}
+	EndGlobalSection
+EndGlobal

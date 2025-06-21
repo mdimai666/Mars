@@ -1,0 +1,30 @@
+@using MarsDocs.WebApp.Models
+@inherits FluentComponentBase
+
+<FluentNavMenu Class="@Class" Style="@Style" Id="@Id"
+               AdditionalAttributes="@AdditionalAttributes">
+    @foreach (var item in Items)
+    {
+        @if (item.IsDivider)
+        {
+            <FluentDivider Orientation="@Orientation.Horizontal" />
+        }
+        else if (item.SubItemFlag)
+        {
+            <FluentNavGroup Title=@item.Title>
+                @foreach (var subitem in item.SubItems)
+                {
+                    <FluentNavLink Href=@subitem.Url>@subitem.Title</FluentNavLink>
+                }
+            </FluentNavGroup>
+        }
+        else
+        {
+            <FluentNavLink Href=@item.Url>@item.Title</FluentNavLink>
+        }
+    }
+</FluentNavMenu>
+
+@code {
+    [Parameter] public List<MenuItem> Items { get; set; } = default!;
+}

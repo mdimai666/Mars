@@ -1,0 +1,10 @@
+<div class="content p-3 px-md-5 py-md-3">
+    <div class="container">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

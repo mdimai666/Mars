@@ -1,0 +1,47 @@
+@page "/md/{*DocPath}"
+@using MarsDocs.WebApp.Models
+
+<ContentWrapper>
+    @if(menuItem is null)
+    {
+        <Block404 />
+    }
+    else
+    {
+        <PageTitle>@menuItem.Title</PageTitle>
+
+        <article>
+            <FluentMarkdownSection Content="@Content" />
+        </article>
+
+    }
+</ContentWrapper>
+
+@code {
+    [Parameter]
+    public string DocPath { get; set; } = default!;
+
+    MenuItem? menuItem;
+    string Content { get; set; } = "";
+
+    FileNotFoundException? fileNotFound;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Load();
+    }
+
+    void Load()
+    {
+        try
+        {
+            menuItem = App.MenuDict.GetValueOrDefault(DocPath);
+            Content = App.ReadEmbedFile(DocPath);
+        }
+        catch (FileNotFoundException ex)
+        {
+            fileNotFound = ex;
+        }
+    }
+}

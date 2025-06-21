@@ -1,0 +1,10 @@
+@page "/{**CatchAll}"
+
+<h1>catch-all</h1>
+
+@* <Block404 /> *@
+
+@code {
+    [Parameter]
+    public string CatchAll { get; set; } = default!;
+}

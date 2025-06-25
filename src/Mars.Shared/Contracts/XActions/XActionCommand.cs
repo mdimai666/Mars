@@ -65,7 +65,7 @@ public interface IActContext
 
 public interface IAct
 {
-    public Task<XActResult> Execute(IActContext context);
+    public Task<XActResult> Execute(IActContext context, CancellationToken cancellationToken);
 }
 
 public enum XActionType : int

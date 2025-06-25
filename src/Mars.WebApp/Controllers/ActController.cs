@@ -32,8 +32,8 @@ public class ActController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public Task<XActResult> Inject(string actionId, [FromBody][DefaultValue("[]")] string[] args)
+    public Task<XActResult> Inject(string actionId, [FromBody][DefaultValue("[]")] string[] args, CancellationToken cancellationToken)
     {
-        return _actionManager.Inject(actionId, args);
+        return _actionManager.Inject(actionId, args, cancellationToken);
     }
 }

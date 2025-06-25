@@ -56,14 +56,13 @@ public static class StartupFront
             {
                 if (File.Exists(localizeFile))
                 {
-                    LocalizerXmlResLoaderFactory resLoaderFactory = new LocalizerXmlResLoaderFactory(localizeFile);
+                    var resLoaderFactory = new LocalizerXmlResLoaderFactory(localizeFile);
                     builder.Services.AddSingleton<IAppFrontLocalizer>(resLoaderFactory);
                 }
             }
 
             if (false)
             {
-
 
                 //if (mode == AppFrontMode.HandlebarsTemplateStatic || mode == AppFrontMode.HandlebarsTemplate)
                 //{
@@ -76,7 +75,6 @@ public static class StartupFront
                 //        LocalizerXmlResLoaderFactory resLoaderFactory = new LocalizerXmlResLoaderFactory(localizeFile);
                 //        builder.Services.AddSingleton<IAppFrontLocalizer>(resLoaderFactory);
                 //    }
-
 
                 //    return builder;
                 //}
@@ -98,10 +96,8 @@ public static class StartupFront
                     }
                 }
 
-
                 if (mode == AppFrontMode.ServeStaticBlazor)
                 {
-
 
                 }
                 else if (mode == AppFrontMode.BlazorPrerender)
@@ -160,7 +156,6 @@ public static class StartupFront
                     //AppDomain.CurrentDomain.Load(asm.GetName());
                     //Assembly.LoadFile(Path.Combine(APP_path, "ChatBotFrame" + ".dll"));
 
-
                     var appType = asm.GetType(APP_name + ".App");
                     var programType = asm.GetType(APP_name + ".Program");
                     //System.Runtime.Loader.AssemblyLoadContext.GetLoadContext()
@@ -168,7 +163,6 @@ public static class StartupFront
                     //IsPrerender
                     FieldInfo piShared = programType.GetField("IsPrerender");
                     piShared.SetValue(null, true);
-
 
                     //AppFrontInstance.AppType = typeof(AppFront.App);
                     //AppSharedSettings.Program = typeof(AppFront.Program);
@@ -215,7 +209,6 @@ public static class StartupFront
 
             var renderEngine = appFront.Features.Get<IWebRenderEngine>();
 
-
             app.Map(appFront.Configuration.Url, front =>
             {
                 front.UseRouting();
@@ -230,7 +223,6 @@ public static class StartupFront
                 {
                     endpoints.MapControllers();
                     endpoints.MarsUseEndpointApiFallback();
-                    //endpoints.MapFallbackToFile("/root.html");
                 });
 
             });

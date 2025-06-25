@@ -104,7 +104,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         this.appFront = appFront;
 
         var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();
-        WebTemplateService wts = new WebTemplateService(rootServices, hub, appFront);
+        var wts = new WebTemplateService(rootServices, hub, appFront);
         appFront.Features.Set<IWebTemplateService>(wts);
 
         wts.OnFileUpdated += (s, e) =>
@@ -120,7 +120,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         string key = $"{appFront.Configuration.Url}::{template.Hash}::{page.FileRelPath}_{(renderParam.AllowLayout ? "1" : "0")}-{(renderParam.OnlyBody ? "1" : "0")}";
         return key;
     }
-
 
     public virtual string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
@@ -141,7 +140,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
         //IHandlebars handlebars = MyHandlebars.GetMyHandlebars();
         //IMemoryCache memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-
 
         //var af = renderContext.HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         //string cacheKey = GetRenderKey(af, renderContext.RenderParam, page, renderContext.WebSiteTemplate);
@@ -169,38 +167,34 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
                 combined_html.AppendLine(beforeHtml);
             }
 
-            //if (page.Layout is not null && (renderContext.RenderParam.Layout || !renderContext.RenderParam.OnlyBody))
-            //{
-            //    var layoutName = page.Layout ?? template.RootPage.DefaultLayout;
-            //    //var layout = template.Layouts.FirstOrDefault(s => s.Name == layoutName);
+            string? layoutBlockName = null;
 
-            //    combined_html.AppendLine($"{{{{#>{layoutName}}}}}");
-            //    combined_html.AppendLine(page.Content);
-            //    combined_html.AppendLine($"{{{{/{layoutName}}}}}");
-            //}
-            //else
-            //{
-            //    combined_html.AppendLine(page.Content);
-            //}
+            if (page.Layout is not null && (ctx.RenderParam.AllowLayout || !ctx.RenderParam.OnlyBody))
+            {
+                layoutBlockName = page.Layout ?? root.DefaultLayout;
+            }
+
+            if (layoutBlockName is not null)
+                combined_html.AppendLine($"{{{{#>{layoutBlockName}}}}}");
 
             if (page is not null)
             {
                 combined_html.AppendLine(page.Content);
             }
 
+            if (layoutBlockName is not null)
+                combined_html.AppendLine($"{{{{/{layoutBlockName}}}}}");
+
             if (!onlyBody)
             {
                 combined_html.AppendLine(afterHtml);
             }
-
 
 #if DEBUG
             var z1 = GC.GetTotalMemory(false);
             Stopwatch stopwatch = Stopwatch.StartNew();
 #endif
 
-            //IMarsHtmlTemplator handlebars = serviceProvider.GetRequiredService<IMarsHtmlTemplator>();
-            //IMarsHtmlTemplator handlebars = mygab;
             using IMarsHtmlTemplator handlebars = new MyHandlebars();
             handlebars.RegisterContextFunctions();
 
@@ -221,13 +215,11 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 #endif
         }
 
-        //ctx.jctx.Add("$errors", JArray.FromObject(errors)); then this error not compile in template, need add in 'addErr'
-        //ctx._jctx = JObject.FromObject(ctx.templateContext);
-
         var tmpFillers = (ITemplateContextVariblesFiller[])[
             new HandlebarsTmpCtxBasicDataContext(),
             new HandlebarsTmpCtxLanguageDataFiller(),
             new HandlebarsTmpCtxAppThemeFiller(),
+            new HandlebarsTmpCtxErrorsListFiller(),
         ];
 
         foreach (var filler in tmpFillers)
@@ -240,7 +232,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         var hctx = new HandlebarsHelperFunctionContext(ctx, serviceProvider, cancellationToken);
 
         var result = template_compiled(ctx.TemplateContextVaribles, new { rctx = hctx } /*это необходимо для зарегестированных функций*/);
-
 
         //var z3 = GC.GetTotalMemory(false);
 

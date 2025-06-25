@@ -2,7 +2,7 @@ using Mars.Host.Shared.WebSite.Models;
 
 namespace Mars.WebSiteProcessor.Handlebars.Parsers;
 
-public class HandlebarsContextHelperFunctionBodyParser
+public static class HandlebarsContextHelperFunctionBodyParser
 {
     public static DataQueryRequest FunctionBodyParse(string rows, string? key = null)
     {
@@ -12,7 +12,6 @@ public class HandlebarsContextHelperFunctionBodyParser
         DataQueryRequest dataQuery = new()
         {
             Key = key,
-            //Dict = 
             Queries = arr
         };
 
@@ -23,9 +22,6 @@ public class HandlebarsContextHelperFunctionBodyParser
             dict[item.Key] = item.Value;
         }
 
-        //dataQuery.Dict = new ReadOnlyDictionary<string, string>(dict);
-        //DataQueries.Add(key, dataQuery);
-
         return dataQuery;
     }
 
@@ -34,7 +30,7 @@ public class HandlebarsContextHelperFunctionBodyParser
     {
         var lines = body.Split('\n').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s) && !s.StartsWith("//") && s.Contains('='));
 
-        List<KeyValuePair<string, string>> list = new();
+        List<KeyValuePair<string, string>> list = [];
 
         foreach (var line in lines)
         {

@@ -1,4 +1,4 @@
-﻿using Mars.Host.Shared.Models;
+using Mars.Host.Shared.Models;
 
 namespace Mars.Host.Shared.WebSite.Models;
 
@@ -27,9 +27,4 @@ public class RenderEngineRenderRequestContext
         RenderParam = renderParam;
     }
 
-    public void AddError(string message)
-    {
-        //=> PageContext.Errors.Add(message);
-    }
 }
-

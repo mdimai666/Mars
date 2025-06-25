@@ -1,18 +1,19 @@
-using System.Collections.Immutable;
 using System.Reflection;
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Host.Shared.Managers;
 using Mars.Shared.Contracts.XActions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Host.Managers;
 
 /// <summary>
 /// Singletone service
 /// </summary>
-internal class ActionManager(IServiceProvider rootServiceProvider) : IActionManager
+internal class ActionManager(IServiceProvider rootServiceProvider, ILogger<ActionManager> logger) : IActionManager
 {
-    Dictionary<string, XActionCommand> acts = new();
+    Dictionary<string, XActionCommand> acts = [];
 
     public void AddAction<TAct>(XActionCommand? xAction = null) where TAct : IAct => AddAction(typeof(TAct));
     public void AddAction(Type actType, XActionCommand? xAction = null)
@@ -23,13 +24,13 @@ internal class ActionManager(IServiceProvider rootServiceProvider) : IActionMana
             var actionProp = actType.GetProperty("XAction", BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty);
             if (actionProp is not null)
             {
-                actionPropValue = (XActionCommand)actionProp.GetValue(null, null);
+                actionPropValue = (XActionCommand)actionProp.GetValue(null, null)!;
             }
         }
 
         XActionCommand cmd = xAction ?? actionPropValue ?? new XActionCommand()
         {
-            Id = actType.FullName,
+            Id = actType.FullName!,
             Label = actType.Name,
             Type = XActionType.HostAction,
         };
@@ -48,7 +49,7 @@ internal class ActionManager(IServiceProvider rootServiceProvider) : IActionMana
 
     public IReadOnlyDictionary<string, XActionCommand> XActions => acts;
 
-    public async Task<XActResult> Inject(string id, string[] args)
+    public async Task<XActResult> Inject(string id, string[] args, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
 
@@ -62,10 +63,12 @@ internal class ActionManager(IServiceProvider rootServiceProvider) : IActionMana
             try
             {
                 var context = new ActContext { args = args };
-                return await act.Execute(context);
+                logger.LogInformation($"Inject: '{act.GetType().FullName}'. args='{args.JoinStr(",")}'");
+                return await act.Execute(context, cancellationToken);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, ex.Message);
                 return XActResult.ToastError("ActionManager: " + ex.Message);
             }
         }
@@ -78,7 +81,7 @@ internal class ActionManager(IServiceProvider rootServiceProvider) : IActionMana
 
 internal record ActContext : IActContext
 {
-    public string[] args { get; init; }
+    public string[] args { get; init; } = [];
 }
 
 public class XActionCommandImpl : XActionCommand
@@ -87,15 +90,15 @@ public class XActionCommandImpl : XActionCommand
 
     public XActionCommandImpl(XActionCommand xAction, Type tAct)
     {
-        this.Id = xAction.Id;
-        this.Label = xAction.Label;
-        this.Type = xAction.Type;
-        this.KeybindingContext = xAction.KeybindingContext;
-        this.Keybindings = xAction.Keybindings;
-        this.ContextMenuGroupId = xAction.ContextMenuGroupId;
-        this.ContextMenuOrder = xAction.ContextMenuOrder;
-        this.FrontContextId = xAction.FrontContextId;
+        Id = xAction.Id;
+        Label = xAction.Label;
+        Type = xAction.Type;
+        KeybindingContext = xAction.KeybindingContext;
+        Keybindings = xAction.Keybindings;
+        ContextMenuGroupId = xAction.ContextMenuGroupId;
+        ContextMenuOrder = xAction.ContextMenuOrder;
+        FrontContextId = xAction.FrontContextId;
 
-        this.TAct = tAct;
+        TAct = tAct;
     }
 }

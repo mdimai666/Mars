@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using Flurl.Http;
@@ -9,7 +10,9 @@ using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -44,12 +47,10 @@ internal static class MarsStartupPartCore
 
         services.AddMarsHostInfrastructure(configuration);
 
-
         // https://source.dot.net/#Microsoft.AspNetCore.Identity.EntityFrameworkCore/IdentityEntityFrameworkBuilderExtensions.cs,90
         // services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
 
         services.AddScoped<IUserClaimsPrincipalFactory<UserEntity>, AppClaimsPrincipalFactory>();
-
 
         var jwtSettings = configuration.GetSection(JwtSettings.JwtSectionKey);
         TokenService.ThrowIfJwtProblem(jwtSettings["securityKey"]!);
@@ -133,10 +134,53 @@ internal static class MarsStartupPartCore
         return services;
     }
 
-    //public static WebApplication MarsUseCore(this WebApplication app)
-    //{
+    public static IServiceCollection AddAspNetTools(this IServiceCollection services)
+    {
+        services.AddDateOnlyTimeOnlyStringConverters()
+                .AddResponseCaching()
+                .AddMemoryCache(options =>
+                {
+                    options.TrackStatistics = true;
+                })
+                .AddLogging();
 
-    //    return app;
-    //}
+        services.AddResponseCompression(opts =>
+        {
+            opts.Providers.Add<BrotliCompressionProvider>();
+            opts.Providers.Add<GzipCompressionProvider>();
+            opts.EnableForHttps = true;
+            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]);
+        })
+            .Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal)
+            .Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
+
+        //TODO: только для определенных эндпоинтов
+        services.Configure<FormOptions>(x =>
+        {
+            x.MultipartBodyLengthLimit = 200 * 1024 * 1024;
+        });
+        services.Configure<IHttpMaxRequestBodySizeFeature>(x =>
+        {
+            x.MaxRequestBodySize = 200 * 1024 * 1024;
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddMarsSignalRConfiguration(this IServiceCollection services)
+    {
+        services
+            .AddSignalR(hubOptions =>
+            {
+                hubOptions.EnableDetailedErrors = true;
+                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+            })
+            .AddJsonProtocol(options =>
+            {
+                options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+            });
+
+        return services;
+    }
 
 }

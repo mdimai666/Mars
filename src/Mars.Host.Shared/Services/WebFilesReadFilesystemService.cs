@@ -1,4 +1,4 @@
-﻿using Mars.Host.Shared.WebSite.Interfaces;
+using Mars.Host.Shared.WebSite.Interfaces;
 
 namespace Mars.Host.Shared.Services;
 
@@ -11,7 +11,7 @@ public class WebFilesReadFilesystemService : IWebFilesService
 
         //Directory.GetFileSystemEntries(path, "*.html", SearchOption.AllDirectories);
 
-        var files = FindAllFiles(path, "*.html", ignoreList);
+        var files = FindAllFiles(path, "*.hbs", ignoreList);
 
         return files;
     }

@@ -26,7 +26,6 @@ public class WebTemplateDatabaseSource : IWebTemplateSource
 
     public static string[] activeTypeNames = { "page", "template", "layout", "block" };
 
-
     public IEnumerable<WebPartSource> ReadParts()
     {
 
@@ -42,19 +41,17 @@ public class WebTemplateDatabaseSource : IWebTemplateSource
             .Where(s => activeTypeNames.Contains(s.PostType!.TypeName))
             .ToList();
 
-
         if (appFront.Configuration.Mode is AppFrontMode.HandlebarsTemplate or AppFrontMode.None)
         {
             var frontOpt = optionService.GetOption<FrontOptions>();
             var frontHost = frontOpt.HostItems.FirstOrDefault(s => s.Url == appFront.Configuration.Url);
 
-            yield return new WebPartSource(frontHost?.HostHtml ?? "@Body", "_root", "RootHtml", "_root.html", "_root.html");
+            yield return new WebPartSource(frontHost?.HostHtml ?? "@Body", "_root", "RootHtml", "_root.hbs", "_root.hbs");
         }
 
         foreach (var post in posts)
         {
-            string content = post.Content;
-
+            string content = post.Content!;
 
             if (post.PostType.TypeName == "page")
             {

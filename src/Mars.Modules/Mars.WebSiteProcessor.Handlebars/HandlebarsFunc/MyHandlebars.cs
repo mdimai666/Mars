@@ -1,12 +1,9 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Shared.Models.Interfaces;
 using HandlebarsDotNet;
 using HandlebarsDotNet.Extension.Json;
 using HandlebarsDotNet.Extension.NewtonsoftJson;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Templators;
 using static Mars.Host.Shared.Templators.IMarsHtmlTemplator;
 using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsBasicFunctions;
 using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsContextFunctions;
@@ -19,7 +16,7 @@ public class MyHandlebars : IMarsHtmlTemplator
 
     public MyHandlebars()
     {
-        this.handlebars = Handlebars.Create();
+        handlebars = Handlebars.Create();
         handlebars.Configuration.UseJson();
         handlebars.Configuration.UseNewtonsoftJson();
 
@@ -40,7 +37,7 @@ public class MyHandlebars : IMarsHtmlTemplator
         var formatter = new CustomDateTimeFormatter(format);
         handlebars.Configuration.FormatterProviders.Add(formatter);
 
-        //date format 
+        //date format
         handlebars.RegisterHelper("dateFormat", DateFormatHelper);
         handlebars.RegisterHelper("date", DateHelper);
         //handlebars.RegisterHelper("date_relative", DateRelativeHelper);
@@ -91,10 +88,11 @@ public class MyHandlebars : IMarsHtmlTemplator
         //}
         //return dict;
         throw new NotImplementedException();
-        /*see*/_ = nameof(IMetaModelTypesLocator.AllMetaRelationsStructure); 
+        /*see*/
+        _ = nameof(IMetaModelTypesLocator.AllMetaRelationsStructure);
     }
 
-    public static List<Action<IHandlebars, Dictionary<Guid, MetaRelationObjectDict>, Func<ICollection<MetaValueDto>, IServiceProvider, Dictionary<Guid, MetaRelationObjectDict>>>> extraRegisteredActions = new();
+    public static List<Action<IHandlebars, Dictionary<Guid, MetaRelationObjectDict>, Func<ICollection<MetaValueDto>, IServiceProvider, Dictionary<Guid, MetaRelationObjectDict>>>> extraRegisteredActions = [];
 
     public void RegisterContextFunctions()
     {
@@ -121,7 +119,6 @@ public class MyHandlebars : IMarsHtmlTemplator
         //    string html = TemplatorFormOutput.RenderMetaFields(q.post.MetaValues, data, q.req, edit: true);
         //    output.WriteSafeString(html);
         //});
-
 
         handlebars.RegisterHelper("mobile", MobileBlock);
         handlebars.RegisterHelper("!mobile", NotMobileBlock);

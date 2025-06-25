@@ -48,8 +48,8 @@ public class RenderEngineRenderTests
     {
         var pageAttr = new Dictionary<string, string>();
         var rootAttr = new Dictionary<string, string>();
-        WebPage index = new(new WebSitePart(WebSitePartType.Page, "index", "index.html", "", content, pageAttr, title), "/", title);
-        WebRoot root = new WebRoot(new WebSitePart(WebSitePartType.Root, "_root", "_root.html", "", "@Body", rootAttr, "Root"));
+        WebPage index = new(new WebSitePart(WebSitePartType.Page, "index", "index.hbs", "", content, pageAttr, title), "/", title);
+        WebRoot root = new WebRoot(new WebSitePart(WebSitePartType.Root, "_root", "_root.hbs", "", "@Body", rootAttr, "Root"));
 
         return new WebSiteTemplate(new Dictionary<string, WebRoot>() { ["/"] = root }, [index], index);
     }

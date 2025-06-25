@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.RegularExpressions;
 using DynamicExpresso;
 using Mars.Core.Features;
@@ -30,7 +31,7 @@ public class QueryLangProcessing(
         string processKey = null!;
 
         //Action<string> addErr = err => renderContext.PageContext.Errors.Add(err);
-        Action<string> addErr = err => { };
+        Action<string> addErr = err => { pageContext.Errors.Add(new(err)); };
 
         Dictionary<string, object?> resultDict = new();
 
@@ -132,9 +133,19 @@ public class QueryLangProcessing(
         catch (Exception ex)
         {
 #if DEBUG
-            addErr($"on add $context error <b>\"{processKey}\"</b>: {ex.Message}<br><pre>trace:\n{ex.StackTrace.ReplaceLineEndings("<br/>")}</pre>");
+
+            if(ex.GetType() == typeof(TargetInvocationException))
+            {
+                // Это чтобы при ошибке рефлексии показало ошибку нормально.
+                pageContext.Errors.Add(new($"error on add #context. {ex.InnerException.Message}\n\nReflection error: {ex.Message}", ex.StackTrace));
+            }
+            else
+            {
+                pageContext.Errors.Add(new($"error on add #context. {ex.Message}", ex.StackTrace));
+            }
 #else
-            addErr($"on add $context error <b>\"{processKey}\"</b>: {ex.Message}");
+            pageContext.Errors.Add(new($"error on add #context. {ex.Message}"));
+            //addErr($"on add $context error <b>\"{processKey}\"</b>: {ex.Message}");
 #endif
         }
 

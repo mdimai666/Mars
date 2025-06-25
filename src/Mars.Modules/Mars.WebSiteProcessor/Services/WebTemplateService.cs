@@ -66,8 +66,6 @@ public class WebTemplateService : IWebTemplateService
         this.env = rootServiceProvider.GetRequiredService<IHostEnvironment>();
         this.IsDevelopment = env.IsDevelopment();
 
-
-
         if (enableWatcher)
         {
             watcher = new FileSystemWatcher(Path);
@@ -84,7 +82,7 @@ public class WebTemplateService : IWebTemplateService
 
             watcher.Disposed += Watcher_Disposed;
 
-            watcher.Filters.Add("*.html");
+            watcher.Filters.Add("*.hbs");
             watcher.Filters.Add("*.css");
             watcher.Filters.Add("*.js");
             watcher.Filters.Add("*.resx");
@@ -128,7 +126,6 @@ public class WebTemplateService : IWebTemplateService
             });
         }
 
-
         this.debouncer = new Debouncer(200);
 
         TryScanSite();
@@ -147,7 +144,7 @@ public class WebTemplateService : IWebTemplateService
             WebTemplateDatabaseSource dbTemplateSource = new WebTemplateDatabaseSource(optionService, appFront, () => eff?.CreateInstance() ?? null!);
 
             var dbParts = dbTemplateSource.ReadParts();
-            dbParts = dbParts.Where(x => x.Name != "_root.html");
+            dbParts = dbParts.Where(x => x.Name != "_root.hbs");
 
             _template = new WebSiteTemplate(templateSource.ReadParts().Concat(dbParts));
         }
@@ -156,7 +153,6 @@ public class WebTemplateService : IWebTemplateService
             _template = new WebSiteTemplate(templateSource.ReadParts());
         }
     }
-
 
     void TryScanSite()
     {
@@ -237,7 +233,6 @@ public class WebTemplateService : IWebTemplateService
             hub.Clients.All.SendAsync("reload");
         }
 
-
         string ext = System.IO.Path.GetExtension(path);
 
         if (ext == ".css")
@@ -251,7 +246,7 @@ public class WebTemplateService : IWebTemplateService
             hub.Clients.All.SendAsync("reload");
             return;
         }
-        else if (ext == ".html")
+        else if (ext == ".hbs")
         {
             if (changeType == WatcherChangeTypes.Deleted)
             {
@@ -300,6 +295,5 @@ public class WebTemplateService : IWebTemplateService
             }
         }
     }
-
 
 }

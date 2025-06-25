@@ -8,19 +8,8 @@ namespace Mars.UseStartup;
 
 public static class StartupStaticHandlebars
 {
-
-    //static string APP_path = "";
-    //public static string APP_wwwroot = "";
-    //static string APP_name = "";
-
-    //static AppFrontMode mode = AppFrontMode.None;
-    //public static AppFrontMode Mode => mode;
-
     public static WebApplicationBuilder AddStaticHandlebarsFront(this WebApplicationBuilder builder, AppFrontSettingsCfg appFront)
     {
-
-        //mode = appFront.Mode;
-
         if (appFront.Mode == AppFrontMode.HandlebarsTemplate || string.IsNullOrEmpty(appFront.Path) == false)
         {
             //APP_wwwroot = Path.Combine(appFront.Path);
@@ -47,7 +36,6 @@ public static class StartupStaticHandlebars
             //front.UseBlazorFrameworkFiles("/app");
             front.UseStaticFiles();
 
-
             if (appFront.Configuration.Mode != AppFrontMode.HandlebarsTemplate)
             {
                 front.UseStaticFiles(new StaticFileOptions
@@ -62,12 +50,9 @@ public static class StartupStaticHandlebars
             {
                 endpoints.MapControllers();
                 endpoints.MarsUseEndpointApiFallback();
-                //endpoints.MapFallbackToFile("/root.html");
-
 
                 endpoints.MapFallback(webSiteProcessor.Response);
             });
-
 
         });
 

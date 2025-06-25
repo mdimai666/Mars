@@ -7,7 +7,6 @@ public class HandlebarsTmpCtxLanguageDataFiller : ITemplateContextVariblesFiller
 {
     public const string LanguageParamKey = "_lang";
 
-
     public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVaribles)
     {
         var headers = pageContext.Request.Headers;

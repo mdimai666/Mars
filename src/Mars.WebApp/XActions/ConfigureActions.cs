@@ -9,13 +9,9 @@ using AppAdmin.Pages.PostTypeViews;
 using AppAdmin.Pages.Settings;
 #endif
 using Mars.Controllers;
-using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.XActions;
 using Mars.Shared.Resources;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.XActions;
 
@@ -104,60 +100,3 @@ internal static class ConfigureActions
     }
 
 }
-
-public class ClearCacheAct : IAct
-{
-    private readonly IMemoryCache memoryCache;
-    public static XActionCommand XAction { get; } = new XActionCommand()
-    {
-        Id = typeof(ClearCacheAct).FullName!,
-        Label = "Очистить кеш",
-#if !NOADMIN
-        FrontContextId = [typeof(SettingsHostCachePage).FullName + "-wrapper"],
-#endif
-        Type = XActionType.HostAction
-    };
-
-    public ClearCacheAct(IMemoryCache memoryCache)
-    {
-        this.memoryCache = memoryCache;
-    }
-
-    public Task<XActResult> Execute(IActContext context)
-    {
-        if (memoryCache is MemoryCache mc)
-        {
-            mc.Clear();
-            return Task.FromResult(XActResult.ToastSuccess("cache clear"));
-        }
-        return Task.FromResult(XActResult.ToastError("clear cache error"));
-    }
-}
-
-#if DEBUG
-public class DummyAct(MarsDbContext ef) : IAct
-{
-    public static XActionCommand XAction { get; } = new XActionCommand()
-    {
-        Id = typeof(DummyAct).FullName!,
-        Label = "DummyAct",
-#if false
-        FrontContextId = [typeof(EditPostPage).FullName],
-#endif
-        Type = XActionType.HostAction
-    };
-
-    public async Task<XActResult> Execute(IActContext context)
-    {
-        var logger = MarsLogger.GetStaticLogger<DummyAct>();
-
-        int count = await ef.Posts.CountAsync();
-
-        var message = $"act executed. Post count = {count}";
-
-        logger.LogWarning(message);
-
-        return XActResult.ToastSuccess(message);
-    }
-}
-#endif

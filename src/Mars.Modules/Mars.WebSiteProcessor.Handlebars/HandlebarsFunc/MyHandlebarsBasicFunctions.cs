@@ -140,15 +140,15 @@ public static class MyHandlebarsBasicFunctions
         }
         var right = args[1] as string;
 
-        if (left is not DateTime && left.ToString() == "now")
+        if (left is not DateTime or DateTimeOffset && left.ToString() == "now")
             left = DateTime.Now;
-
-        if (left is not DateTime dateTime) return;
-        //throw new HandlebarsException("supposed to be DateTime");
 
         var formatString = right;
 
-        output.WriteSafeString(dateTime.ToString(formatString));
+        if (left is DateTime dateTime)
+            output.WriteSafeString(dateTime.ToString(formatString));
+        else if (left is DateTimeOffset dateTimeOffset)
+            output.WriteSafeString(dateTimeOffset.ToString(formatString));
     }
 
     public static void DateHelper(EncodedTextWriter output, Context context, Arguments args)
@@ -160,11 +160,17 @@ public static class MyHandlebarsBasicFunctions
 
         var left = args[0];
 
-        if (left is not DateTime dateTime)
+        if (left is DateTime dateTime)
+        {
+            output.WriteSafeString(dateTime.ToShortDateString());
+        }
+        else if (left is DateTimeOffset dateTimeOffset)
+        {
+            output.WriteSafeString(dateTimeOffset.LocalDateTime);
+        }
+        else
             throw new ArgumentException("supposed to be DateTime");
 
-
-        output.WriteSafeString(dateTime.ToShortDateString());
     }
 
     //TODO: uncomment
@@ -177,9 +183,8 @@ public static class MyHandlebarsBasicFunctions
 
     //    var left = args[0];
 
-    //    if (left is not DateTime dateTime)
+    //    if (left is not DateTime dateTime) add support datetime offset
     //        throw new ArgumentException("supposed to be DateTime");
-
 
     //    output.WriteSafeString((dateTime).Humanize(utcDate: false));
     //}
@@ -202,7 +207,6 @@ public static class MyHandlebarsBasicFunctions
 
         DateTime date = DateTime.ParseExact(left, parseformat, null);
 
-
         output.WriteSafeString(date.ToString(format));
     }
 
@@ -223,7 +227,6 @@ public static class MyHandlebarsBasicFunctions
         var formatString = left?.StripHTML();
 
         int _default = 100;
-
 
         int count = _default;
         if (args.Length == 2)
@@ -252,7 +255,6 @@ public static class MyHandlebarsBasicFunctions
         var formatString = left;
 
         int _default = 100;
-
 
         int count = _default;
         if (args.Length == 2)
@@ -378,7 +380,7 @@ public static class MyHandlebarsBasicFunctions
 
         HandlebarsDotNet.Iterators.ArrayIterator<int> arrayIterator = new();
 
-        List<int> list = new List<int>();
+        List<int> list = [];
         for (int i = start; i <= end; i += step)
         {
             list.Add(i);

@@ -7,16 +7,18 @@ namespace Mars.Host.Shared.WebSite.Models;
 public class PageRenderContext
 {
     public required RenderContextUser? User { get; init; }
-    public List<string> BodyClass { get; init; } = new();
-    public List<string> BodyAttrs { get; init; } = new();
+    public List<string> BodyClass { get; init; } = [];
+    public List<string> BodyAttrs { get; init; } = [];
     public required SysOptions SysOptions { get; init; }
     public required WebClientRequest Request { get; init; } = default!;
-    public Dictionary<string, object?> TemplateContextVaribles { get; init; } = new();
+    public Dictionary<string, object?> TemplateContextVaribles { get; init; } = [];
     public required bool IsDevelopment { get; init; }
 
-    public Dictionary<string, DataQueryRequest>? DataQueries { get; init; } = new();
+    public Dictionary<string, DataQueryRequest>? DataQueries { get; init; } = [];
 
     public required RenderParam RenderParam { get; init; }
 
-    public XInterpreter CreateInterpreter(Dictionary<string, object>? localVaribles = null) => new XInterpreter(this, localVaribles);
+    public List<PageRenderError> Errors { get; init; } = [];
+
+    public XInterpreter CreateInterpreter(Dictionary<string, object>? localVaribles = null) => new(this, localVaribles);
 }

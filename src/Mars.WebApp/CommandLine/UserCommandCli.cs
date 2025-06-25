@@ -95,8 +95,8 @@ public class UserCommandCli : CommandCli
                 Email = email,
                 Password = setPassword,
                 UserName = username,
-                FirstName = firstName,
-                LastName = lastName,
+                FirstName = firstName ?? username,
+                LastName = lastName ?? "",
                 Roles = setRole,
             }, CancellationToken.None);
 

@@ -11,7 +11,6 @@ public class WebSiteTemplate
     public IReadOnlyCollection<WebPageLayout> Layouts { get; private init; }
     public IDictionary<string, WebRoot> Roots { get; private init; }
 
-
     public WebPage? Page404 { get; init; }
     public WebPage? Page500 { get; init; }
     public WebPage IndexPage { get; init; }
@@ -74,7 +73,7 @@ public class WebSiteTemplate
 
         if (undefLayouts.Count() > 0)
         {
-            throw new FileNotFoundException(string.Join("; ", undefLayouts.Select(s => s + ".html")));
+            throw new FileNotFoundException(string.Join("; ", undefLayouts.Select(s => s + ".hbs")));
         }
     }
 }

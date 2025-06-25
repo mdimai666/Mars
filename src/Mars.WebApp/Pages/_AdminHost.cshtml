@@ -50,7 +50,7 @@
     try
     {
 
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity.IsAuthenticated && requsetContext.Roles is not null)
         {
             var isAdmin = requsetContext.Roles.Contains("Admin");
 
@@ -134,7 +134,7 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="vendor/bootstrap/bootstrap5.bundle.min.js"></script>
+    <script src="/mars/vendor/bootstrap/bootstrap5.bundle.min.js"></script>
     <script src="_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js" type="module" async></script>
     <script src="/mars/vendor/quilljs/quill.js"></script>
     <script src="_content/Blazored.TextEditor/quill-blot-formatter.min.js"></script>

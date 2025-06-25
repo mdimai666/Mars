@@ -47,7 +47,8 @@ public class MapWebSiteProcessor : IWebSiteProcessor
 
             if (tsv.Template.Page500 is not null)
             {
-                httpContext.Items.Add(nameof(RenderPageHtmlException), ex);
+                //httpContext.Items.Add(nameof(RenderPageHtmlException), ex);
+                request.Items.Add(typeof(RenderPageHtmlException), ex);
                 var render = await processor.RenderPage(af, request, tsv.Template.Page500, new RenderParam(), cancellationToken);
                 msg = render.html;
             }
@@ -63,7 +64,6 @@ public class MapWebSiteProcessor : IWebSiteProcessor
                     </pre>
                 """;
             }
-
 
             httpContext.Response.StatusCode = 500;
             await httpContext.Response.WriteAsync(msg);

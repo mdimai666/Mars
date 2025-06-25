@@ -26,8 +26,8 @@ public class WebSiteRequestProcessor
     {
         this.serviceProvider = serviceProvider;
         this.template = template;
-        this.optionService = serviceProvider.GetRequiredService<IOptionService>();
-        this.requestContext = serviceProvider.GetRequiredService<IRequestContext>();
+        optionService = serviceProvider.GetRequiredService<IOptionService>();
+        requestContext = serviceProvider.GetRequiredService<IRequestContext>();
     }
 
     public async Task<RenderInfo> RenderRequest(HttpContext httpContext, RenderParam param, CancellationToken cancellationToken)
@@ -120,14 +120,14 @@ public class WebSiteRequestProcessor
         return page;
     }
 
-    //TODO: repalce to HttpRequest
-
     /// <summary>
-    /// 
+    /// RenderPageHtml
     /// </summary>
+    /// <param name="appFront"></param>
+    /// <param name="request"></param>
     /// <param name="page"></param>
-    /// <param name="httpContext"></param>
     /// <param name="param"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="RenderPageHtmlException"></exception>
     async Task<string> RenderPageHtml(MarsAppFront appFront, WebClientRequest request, WebPage page, RenderParam param, CancellationToken cancellationToken)
@@ -170,7 +170,8 @@ public class WebSiteRequestProcessor
             //PREPARE context
 
             UserDetail? userDetail = null;
-            if (requestContext.IsAuthenticated)
+            //тут может быть так что jwt есть, но не от этой базы
+            if (requestContext.IsAuthenticated && requestContext.User is not null)
             {
                 userDetail = await userService.GetDetail(requestContext.User.Id, cancellationToken);
             }
@@ -243,7 +244,7 @@ public class WebSiteRequestProcessor
                 //var v = httpContext.Request.RouteValues;
                 //var node = new UrlMatchingNode(0);
                 //node.
-                //var matcher = new TemplateMatcher(entry.RouteTemplate, entry.Defaults); 
+                //var matcher = new TemplateMatcher(entry.RouteTemplate, entry.Defaults);
                 #endregion
 
             }
@@ -254,11 +255,15 @@ public class WebSiteRequestProcessor
 
             //var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
 
-
             IWebRenderEngine renderEngine = appFront.Features.Get<IWebRenderEngine>()!;
             ArgumentNullException.ThrowIfNull(renderEngine, nameof(renderEngine));
 
             //renderContext = new(httpContext, template, page, ctx, param);
+
+            if(request.Items.TryGetValue(typeof(RenderPageHtmlException), out var ex))
+            {
+                renderContext.PageContext.TemplateContextVaribles.Add("ex", ex);
+            }
 
             var result = renderEngine.RenderPage(renderContext, serviceProvider, cancellationToken);
 
@@ -274,12 +279,11 @@ public class WebSiteRequestProcessor
         {
             throw new RenderPageHtmlException(
                 page,
-                ["TODO:pageContext.Errors"],
+                [],
                 ex.Message,
                 ex);
         }
     }
-
 
     string GetPageCacheKey(WebPage page, WebClientRequest request) => $"{page.Name}+{request.Path}";
 
@@ -315,15 +319,12 @@ public class TemplatePipline
     }
 }
 
-
 public interface IWebSiteRenderPipline//ProcessingPipline
 {
     public PageRenderContext CreateContext(HttpContext httpContext);
     public WebPage FindPage();
     public IWebRenderEngine RenderEngine { get; }
 }
-
-
 
 public interface IContentRender
 {
@@ -343,5 +344,5 @@ public class StaticWebsiteProcessing : IWebSiteRenderPipline
     {
         throw new NotImplementedException();
     }
-} 
+}
 #endif

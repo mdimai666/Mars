@@ -9,7 +9,6 @@ public class HandlebarsTmpCtxAppThemeFiller : ITemplateContextVariblesFiller
     public const string BodyAttrAppThemeTagName = "app-theme";
     public const string BodyClassDarkThemeValue = "dark-theme";
 
-
     public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVaribles)
     {
         var Request = pageContext.Request;

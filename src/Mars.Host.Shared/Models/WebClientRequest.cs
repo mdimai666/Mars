@@ -28,6 +28,9 @@ public class WebClientRequest
 
     public bool IsMobile { get; }
 
+    [JsonIgnore]
+    public IDictionary<object, object?> Items = new Dictionary<object, object?>();
+
     public WebClientRequest(HttpRequest req)
     {
         Query = DictionaryWithDefaultExtension.ToDictionary(req.Query
@@ -79,7 +82,7 @@ public class WebClientRequest
             Form = DictionaryWithDefaultExtension.ToDictionary(formCollection, s => s.Key, s => s.Value.ToString(), StringComparer.OrdinalIgnoreCase);
         }
         Headers = headers ?? new HeaderDictionary();
-        Cookies = new();
+        Cookies = [];
 
         if (Headers.ContainsKey("User-Agent"))
         {
@@ -135,7 +138,7 @@ static class DictionaryWithDefaultExtension // Если сделать экст�
             }
         }
 
-        DictionaryWithDefault<TKey, TElement> d = new DictionaryWithDefault<TKey, TElement>(capacity, comparer);
+        var d = new DictionaryWithDefault<TKey, TElement>(capacity, comparer);
         foreach (TSource element in source)
         {
             d.Add(keySelector(element), elementSelector(element));

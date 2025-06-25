@@ -17,8 +17,8 @@ public class WebSitePartTests
         var part = new WebSitePart(
             type: WebSitePartType.Page,
             name: "index",
-            fileRelPath: "index.html",
-            fileFullPath: "C:\\www\\site1\\index.html",
+            fileRelPath: "index.hbs",
+            fileFullPath: "C:\\www\\site1\\index.hbs",
             content: pageContent,
             attributes: attrs,
             title: pageTitle);

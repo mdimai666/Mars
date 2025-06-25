@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Text;
 using AppFront.Shared;
 using Mars.CommandLine;
@@ -25,10 +24,7 @@ using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor;
 using Mars.XActions;
 using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
 
@@ -71,60 +67,17 @@ if (!IsTesting && !IsRunningInDocker)
 builder.Services.AddFeatureManagement();
 builder.Services.MarsAddLocalization()
                 .MarsAddCore(builder.Configuration)
+                .AddAspNetTools()
                 .MarsAddMetrics()
                 .AddConfigureActions()
                 .AddMarsWebSiteProcessor();
 builder.AddFront();
 
-builder.Services.AddDateOnlyTimeOnlyStringConverters()
-                .AddResponseCaching()
-                .AddMemoryCache(options =>
-                {
-                    options.TrackStatistics = true;
-                })
-                .AddLogging();
-
-builder.Services.AddResponseCompression(opts =>
-{
-    opts.Providers.Add<BrotliCompressionProvider>();
-    opts.Providers.Add<GzipCompressionProvider>();
-    opts.EnableForHttps = true;
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]);
-})
-    .Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal)
-    .Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
-
 builder.Services.AddControllers();
 
-//------------------------------------------
-// SignalR
-
-builder.Services
-    .AddSignalR(hubOptions =>
-    {
-        hubOptions.EnableDetailedErrors = true;
-        hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
-    })
-    .AddJsonProtocol(options =>
-    {
-        options.PayloadSerializerOptions.PropertyNamingPolicy = null;
-    });
-
-//------------------------------------------
-// Razor page
-
-builder.Services.AddRazorPages();
+builder.Services.AddMarsSignalRConfiguration()
+                .AddRazorPages();
 //builder.Services.AddServerSideBlazor();
-
-//TODO: только для определенных эндпоинтов
-builder.Services.Configure<FormOptions>(x =>
-{
-    x.MultipartBodyLengthLimit = 200 * 1024 * 1024;
-});
-builder.Services.Configure<IHttpMaxRequestBodySizeFeature>(x =>
-{
-    x.MaxRequestBodySize = 200 * 1024 * 1024;
-});
 
 //------------------------------------------
 // Logger

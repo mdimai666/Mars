@@ -7,12 +7,12 @@ public class WebPageTests
 {
     private WebPage GetWebPageFromContent(string sourceContent, string? title = null)
     {
-        var partSource = new WebPartSource(sourceContent, "index", title ?? "Page Title", "index.html", "index.html");
+        var partSource = new WebPartSource(sourceContent, "index", title ?? "Page Title", "index.hbs", "index.hbs");
         return new WebPage(WebSitePart.FromHandlebarsSource(partSource));
     }
     private WebPage GetWebPageWithUrl(string url)
     {
-        var partSource = new WebPartSource($"@page {url}\n content", "index", "Page Title", "index.html", "index.html");
+        var partSource = new WebPartSource($"@page {url}\n content", "index", "Page Title", "index.hbs", "index.hbs");
         return new WebPage(WebSitePart.FromHandlebarsSource(partSource));
     }
 

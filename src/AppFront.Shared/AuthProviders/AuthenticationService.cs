@@ -30,6 +30,8 @@ public class AuthenticationService : IAuthenticationService
     {
         var result = await _client.Account.Login(userForAuthentication);
 
+        if (!result.IsAuthSuccessful) return result;
+
         await LoginStage(result);
 
         return new AuthResultResponse { ErrorMessage = null };
@@ -48,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
         _client.Client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
     }
 
-    public async virtual Task Logout()
+    public virtual async Task Logout()
     {
         await _js.CookieRemove(".AspNetCore.Identity.Application");
         await _localStorage.RemoveItemAsync("authToken");
@@ -57,14 +59,14 @@ public class AuthenticationService : IAuthenticationService
         Q.LogoutUser();
     }
 
-    public async virtual Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userForRegistration)
+    public virtual async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userForRegistration)
     {
         var registrationResult = await _client.Account.RegisterUser(userForRegistration);
 
         return registrationResult!;
     }
 
-    public async virtual Task<UserActionResult> ThirdLogin(string serviceName, string token)
+    public virtual async Task<UserActionResult> ThirdLogin(string serviceName, string token)
     {
         try
         {

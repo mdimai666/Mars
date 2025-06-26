@@ -1,4 +1,4 @@
-@page "/md/{*DocPath}"
+@page "/md/{**DocPath}"
 @using MarsDocs.WebApp.Models
 
 <ContentWrapper>
@@ -28,6 +28,7 @@
 
     protected override void OnParametersSet()
     {
+        Console.WriteLine("MarkdownPage.OnParametersSet");
         base.OnParametersSet();
         Load();
     }

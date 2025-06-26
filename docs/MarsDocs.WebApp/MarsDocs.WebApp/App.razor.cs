@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using MarsDocs.WebApp.Features;
 using MarsDocs.WebApp.Models;
 
@@ -29,15 +30,14 @@ public partial class App
         var namespaceLength = typeof(App).Namespace!.Length + 1;
 
         return resources.Where(r => r.EndsWith(".md"))
-                        .Select(s => s.Substring(namespaceLength)
-                                        .Replace(Path.DirectorySeparatorChar, '/'))
+                        .Select(s => s.Substring(namespaceLength))
                         .ToList();
     }
 
     public static string ReadEmbedFile(string resourcePath)
     {
         var _namespace = typeof(App).Namespace!;
-        var embedPath = _namespace + '.' + resourcePath.Replace('/', Path.DirectorySeparatorChar);
+        var embedPath = _namespace + '.' + resourcePath;
 
         var assembly = Assembly.GetExecutingAssembly();
         using Stream stream = assembly.GetManifestResourceStream(embedPath)!

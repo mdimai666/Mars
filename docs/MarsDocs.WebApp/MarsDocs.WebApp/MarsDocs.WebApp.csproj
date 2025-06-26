@@ -17,7 +17,7 @@
         <EmbeddedResource Include="..\..\**\*.md"
                           Link="docs/%(RecursiveDir)%(Filename)%(Extension)"
                           Exclude="..\..\MarsDocs.WebApp\**\*.md">
-            <LogicalName>$(MSBuildProjectName).%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+            <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(RecursiveDir)').Replace('\','/'))%(FileName)%(Extension)</LogicalName>
         </EmbeddedResource>
     </ItemGroup>
 

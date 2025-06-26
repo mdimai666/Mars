@@ -45,7 +45,7 @@ Mars Community Edition — это бесплатная CMS с открытым �
 
 ## 😀 Начало
 
-<a href="https://docs.Mars-dotnet.org/developer-docs/latest/getting-started/quick-start.html" target="_blank">Read the Getting Started tutorial</a> or follow the steps below:
+Прочитайте <a href="https://mdimai666.github.io/Mars/quick-start.html" target="_blank"> руководство по началу работы</a> или следуйте инструкциям ниже:
 
 ### Начните с разработки собственного плагина
 > Вы работаете с Mars 'из коробки', не меняя его код, а настраивая и расширяя его через node-code и плагины.
@@ -94,7 +94,7 @@ This command generates a brand new project with the default features.
 
 Общую справку по использованию Mars можно найти в [официальной документации Mars](https://docs.Mars-dotnet.org). Для получения дополнительной помощи вы можете использовать один из этих каналов, чтобы задать вопрос:
 
-- [GitHub](https://github.com/Mars/Mars) (Bug reports, Contributions)
+- [GitHub](https://github.com/mdimai666/Mars) (Bug reports, Contributions)
 <!-- - [Community Forum](https://forum.Mars-dotnet.org) (Questions and Discussions) -->
 <!-- - [Feedback section](https://feedback.Mars-dotnet.org) (Roadmap, Feature requests) -->
 <!-- - [YouTube Channel](https://www.youtube.com/Mars) (Learn from Video Tutorials) -->
@@ -107,8 +107,8 @@ This command generates a brand new project with the default features.
 
 Документацию по Марс можно найти в нашем специальном [репозитории](https://github.com/mdimai666/Mars/documentation) или просмотреть нашу документацию в реальном времени:
 
-- [Документация для разработчиков](https://docs.Mars-dotnet.org/developer-docs/latest/getting-started/introduction.html)
-- [Руководство пользователя](https://docs.Mars-dotnet.org/user-docs/latest/getting-started/introduction.html)
+- [Документация для разработчиков](https://mdimai666.github.io/Mars/)
+- [Руководство пользователя](https://mdimai666.github.io/Mars/)
 
 ## Попробуйте живую демо-версию
 

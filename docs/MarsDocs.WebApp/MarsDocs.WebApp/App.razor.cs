@@ -13,7 +13,7 @@ public partial class App
     {
         var mdFiles = GetAllMdFilesInFolder();
         //var index = ReadEmbedFile("Startup.md");
-        Console.WriteLine($"Found {mdFiles.Count} markdown files.");
+        Console.WriteLine($"Found {mdFiles.Where(f => f.EndsWith(".md", StringComparison.OrdinalIgnoreCase)).Count()} markdown files.");
 
         var tree = TreeBuilder.BuildTree(mdFiles, ToMenu).ToArray();
 
@@ -40,16 +40,20 @@ public partial class App
 
         var namespaceLength = typeof(App).Namespace!.Length + 1;
 
-        return resources.Where(r => r.EndsWith(".md")).Select(s => s.Substring(namespaceLength).Replace(Path.PathSeparator, '/')).ToList();
+        return resources.Where(r => r.EndsWith(".md"))
+                        .Select(s => s.Substring(namespaceLength)
+                                        .Replace(Path.DirectorySeparatorChar, '/'))
+                        .ToList();
     }
 
     public static string ReadEmbedFile(string resourcePath)
     {
         var _namespace = typeof(App).Namespace!;
-        var embedPath = _namespace + '.' + resourcePath.Replace('/', Path.PathSeparator);
+        var embedPath = _namespace + '.' + resourcePath.Replace('/', Path.DirectorySeparatorChar);
 
         var assembly = Assembly.GetExecutingAssembly();
-        using Stream stream = assembly.GetManifestResourceStream(embedPath)! ?? throw new FileNotFoundException($"resource not found '{resourcePath}'({embedPath})");
+        using Stream stream = assembly.GetManifestResourceStream(embedPath)!
+                                    ?? throw new FileNotFoundException($"resource not found '{resourcePath}'({embedPath})");
         using StreamReader reader = new(stream);
         return reader.ReadToEnd();
     }

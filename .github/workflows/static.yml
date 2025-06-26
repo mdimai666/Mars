@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy static Docs BlazorWasm to Pages
 env:
   PUBLISH_DIR: docs/MarsDocs.WebApp/MarsDocs.WebApp/bin/Release/net9.0/publish/wwwroot
 

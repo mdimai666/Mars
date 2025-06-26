@@ -1,8 +1,8 @@
-﻿using Mars.Host.Shared.Interfaces;
+using Mars.Host.Shared.Interfaces;
 
 namespace Mars.Host.Shared.Services;
 
 public interface ITemplatorFeaturesLocator
 {
-    public Dictionary<string, Func<IXTFunctionContext, Task<object>>> Functions { get; set; }
+    public Dictionary<string, TemplatorRegisterFunction> Functions { get; set; }
 }

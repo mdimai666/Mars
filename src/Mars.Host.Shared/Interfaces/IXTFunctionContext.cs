@@ -1,10 +1,11 @@
-﻿using Mars.Host.Shared.Exceptions;
+using Mars.Host.Shared.Exceptions;
 using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Models;
 
 namespace Mars.Host.Shared.Interfaces;
 
 /// <summary>
+/// IXTFunctionContext
 /// </summary>
 /// <exception cref="XTFunctionException"/>
 public interface IXTFunctionContext
@@ -18,3 +19,4 @@ public interface IXTFunctionContext
     public XInterpreter Ppt { get; }
 }
 
+public delegate Task<object?> TemplatorRegisterFunction(IXTFunctionContext ctx);

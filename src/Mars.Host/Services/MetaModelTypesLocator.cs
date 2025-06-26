@@ -106,7 +106,7 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
     Dictionary<string, Type>? _metaMtoModelsCompiledTypeDict = null;
     string? _metaMtoModelsCompiledSourceCode = null;
 
-    public Dictionary<string, Type> MetaMtoModelsCompiledTypeDict => _metaMtoModelsCompiledTypeDict ?? new();
+    public Dictionary<string, Type> MetaMtoModelsCompiledTypeDict => _metaMtoModelsCompiledTypeDict ?? [];
 
     private object _metaMtoModelsCompiledTypeDictLock = new();
 

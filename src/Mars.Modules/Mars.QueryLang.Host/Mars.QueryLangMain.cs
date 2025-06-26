@@ -1,4 +1,5 @@
 using Mars.Host.Shared.QueryLang.Services;
+using Mars.QueryLang.Host.Helpers;
 using Mars.QueryLang.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class MarsQueryLangMain
 
         services.AddScoped<IQueryLangProcessing, QueryLangProcessing>();
         services.AddScoped<IQueryLangLinqDatabaseQueryHandler, QueryLangLinqDatabaseQueryHandler>();
+        services.AddSingleton<IQueryLangHelperAvailableMethodsProvider, QueryLangHelperAvailableMethodsProvider>();
 
         return services;
     }

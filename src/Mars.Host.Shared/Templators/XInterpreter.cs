@@ -1,5 +1,5 @@
-using Mars.Host.Shared.WebSite.Models;
 using DynamicExpresso;
+using Mars.Host.Shared.WebSite.Models;
 
 namespace Mars.Host.Shared.Templators;
 
@@ -9,7 +9,7 @@ public class XInterpreter
 
     protected readonly PageRenderContext? pageContext;
     protected readonly Dictionary<string, object>? contextForIterator;
-    public Dictionary<string, Parameter> parameters { get; set; } = new();
+    public Dictionary<string, Parameter> parameters { get; set; } = [];
 
     public Interpreter Get
     {
@@ -53,7 +53,7 @@ public class XInterpreter
 
             foreach (var v in pageContext.TemplateContextVaribles)
             {
-                if (!v.Key.StartsWith('$'))
+                if (!v.Key.StartsWith('$') && v.Value is not null)
                 {
                     e.SetVariable(v.Key, v.Value);
                     parameters.TryAdd(v.Key, new Parameter(v.Key, v.Value));
@@ -70,4 +70,3 @@ public class XInterpreter
         return parameters.Select(s => s.Value).ToArray();
     }
 }
-

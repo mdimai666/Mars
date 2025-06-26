@@ -2,16 +2,16 @@ using System.Text.Json.Nodes;
 using Flurl.Http;
 using Mars.Host.Shared.Exceptions;
 using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Templators;
 using Mars.Shared.Templators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.Templators;
 
-public class TemplatorRegisterFunctions
+public static class TemplatorRegisterFunctions
 {
-
-    public static Task<object> Paginator(IXTFunctionContext ctx)
+    [TemplatorHelperInfo("Paginator", """x = Paginator(@page?, total, pageSize)""", "Создает объект пагинатора для управления постраничным выводом данных. Если @page? не передат, то пытается прочитать _req.Query[\"page\"]??1")]
+    public static Task<object?> Paginator(IXTFunctionContext ctx)
     {
         var arguments = ctx.Arguments;
         var key = ctx.Key;
@@ -23,7 +23,6 @@ public class TemplatorRegisterFunctions
         PaginatorHelper paginator;
         //string argsStr = val.Substring("Paginator(".Length, val.Length - "Paginator(".Length - 1);
 
-
         string[] argsEl = arguments;
 
         //if (argsEl.Length is not 2 or 3)
@@ -31,10 +30,10 @@ public class TemplatorRegisterFunctions
         {
             //ctx.PageContext.AddError($"Paginator arguments wrong argument count [2,3] (page?,total,pageSize) given {argsEl.Length}: key=\"{key}\" val=\"{val}\"");
             throw new XTFunctionException($"Paginator arguments wrong argument count [2,3] (page?,total,pageSize) given {argsEl.Length}: key=\"{key}\" val=\"{val}\"");
-            return null;
+            return Task.FromResult<object?>(null);
         }
 
-        List<int> args = new();
+        List<int> args = [];
 
         int aIndex = 0;
         bool isBreaked = false;
@@ -58,7 +57,7 @@ public class TemplatorRegisterFunctions
             int page = 1;
             if (req.QueryDict.ContainsKey("page"))
             {
-                page = int.Parse(req.QueryDict["page"]);
+                page = int.Parse(req.QueryDict["page"]!);
             }
             paginator = new PaginatorHelper(page, args[0], args[1]);
             //pctx.context.Add(key, paginator);
@@ -73,24 +72,24 @@ public class TemplatorRegisterFunctions
         {
             //ctx.PageContext.AddError($"Paginator arguments wrong: key=\"{key}\" val=\"{val}\"");
             throw new XTFunctionException($"Paginator arguments wrong: key=\"{key}\" val=\"{val}\"");
-            return null;
+            return Task.FromResult<object?>(null);
         }
 
         //if (ctx.ppt.parameters.ContainsKey(key)) ctx.ppt.parameters.Remove(key);
         //ctx.ppt.parameters.Add(key, new Parameter(key, paginator));
 
-        return Task.FromResult<object>(paginator);
+        return Task.FromResult<object?>(paginator);
 
     }
 
-    public async static Task<object> Req(IXTFunctionContext ctx)
+    [TemplatorHelperInfo("Req", """x = Req("GET", "https://example.com/api/data", @postData?)""", "Выполняет HTTP запрос.")]
+    public static async Task<object?> Req(IXTFunctionContext ctx)
     {
         //string argsStr = val.Substring("Req(".Length, val.Length - "Req(".Length - 1);
 
         var arguments = ctx.Arguments;
         var key = ctx.Key;
         var val = ctx.Val;
-
 
         //string[] argsEl = argsStr.Split(',');
         string[] argsEl = arguments;
@@ -103,7 +102,7 @@ public class TemplatorRegisterFunctions
             return null;
         }
 
-        List<object> args = new();
+        List<object> args = [];
 
         int aIndex = 0;
         foreach (var a in argsEl)
@@ -146,8 +145,7 @@ public class TemplatorRegisterFunctions
         return total;
     }
 
-
-    public static Task<object> CalendarRow(IXTFunctionContext ctx)
+    public static Task<object?> CalendarRow(IXTFunctionContext ctx)
     {
         var startDate = DateTime.Now;
         int monthNum = startDate.Month;
@@ -163,14 +161,7 @@ public class TemplatorRegisterFunctions
             rowCalendar.Months.Add(new CalendarMonthInfo(date));
         }
 
-        return Task.FromResult<object>(rowCalendar);
-    }
-
-    //TODO: add help description and #context function help text
-    public static Task<object> Help(IXTFunctionContext ctx)
-    {
-        var locator = ctx.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>();
-        return Task.FromResult<object>(locator.AllMetaRelationsStructure());
+        return Task.FromResult<object?>(rowCalendar);
     }
 
 }

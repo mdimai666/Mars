@@ -41,6 +41,33 @@ public class MyFunctionsTests
     }
 
     [Fact]
+    public void GreaterThanOrEqualBlock_Tests()
+    {
+        _ = nameof(GreaterThanOrEqualBlock);
+        Render("{{#gte 1 1}}+{{else}}-{{/gte}}").Should().Be("+");
+        Render("{{#gte 1 2}}+{{else}}-{{/gte}}").Should().Be("-");
+        Render("{{#gte 2 1}}+{{else}}-{{/gte}}").Should().Be("+");
+    }
+
+    [Fact]
+    public void LessThanBlock_Tests()
+    {
+        _ = nameof(LessThanBlock);
+        Render("{{#lt 1 1}}+{{else}}-{{/lt}}").Should().Be("-");
+        Render("{{#lt 1 2}}+{{else}}-{{/lt}}").Should().Be("+");
+        Render("{{#lt 2 1}}+{{else}}-{{/lt}}").Should().Be("-");
+    }
+
+    [Fact]
+    public void LessThanOrEqualBlock_Tests()
+    {
+        _ = nameof(LessThanOrEqualBlock);
+        Render("{{#lte 1 1}}+{{else}}-{{/lte}}").Should().Be("+");
+        Render("{{#lte 1 2}}+{{else}}-{{/lte}}").Should().Be("+");
+        Render("{{#lte 2 1}}+{{else}}-{{/lte}}").Should().Be("-");
+    }
+
+    [Fact]
     public void TextEllipsisHelper_Tests()
     {
         _ = nameof(TextEllipsisHelper);
@@ -71,5 +98,41 @@ public class MyFunctionsTests
         var objCyrillicExpectJson = JsonSerializer.Serialize(objCyrillic, opt);
         Render("{{#tojson x}}", new { x = obj }).Should().Be(objExpectJson);
         Render("{{#tojson x}}", new { x = objCyrillic }).Should().Be(objCyrillicExpectJson);
+    }
+
+    [Fact]
+    public void AndBlock_Test()
+    {
+        _ = nameof(AndBlock);
+        Render("{{#and true true}}yes{{else}}no{{/and}}").Should().Be("yes");
+        Render("{{#and true false}}yes{{else}}no{{/and}}").Should().Be("no");
+    }
+
+    [Fact]
+    public void OrBlock_Test()
+    {
+        _ = nameof(OrBlock);
+        Render("{{#or false true}}yes{{else}}no{{/or}}").Should().Be("yes");
+        Render("{{#or false false}}yes{{else}}no{{/or}}").Should().Be("no");
+    }
+
+    [Fact]
+    public void IsEmptyBlock_Test()
+    {
+        _ = nameof(IsEmptyBlock);
+        Render("{{#isEmpty ''}}empty{{else}}not empty{{/isEmpty}}").Should().Be("empty");
+        Render("{{#isEmpty 'hello'}}empty{{else}}not empty{{/isEmpty}}").Should().Be("not empty");
+    }
+
+    [Fact]
+    public void ContainsBlock_Test()
+    {
+        _ = nameof(ContainsBlock);
+        Render("{{#contains 'hello world' 'world'}}yes{{else}}no{{/contains}}").Should().Be("yes");
+        Render("{{#contains 'hello' 'xyz'}}yes{{else}}no{{/contains}}").Should().Be("no");
+
+        var context = new { list = new[] { "a", "b", "c" } };
+        Render("{{#contains list 'b'}}yes{{else}}no{{/contains}}", context).Should().Be("yes");
+        Render("{{#contains list 'x'}}yes{{else}}no{{/contains}}", context).Should().Be("no");
     }
 }

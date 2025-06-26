@@ -5,6 +5,6 @@ namespace Mars.Host.Templators;
 
 public class TemplatorFeaturesLocator : ITemplatorFeaturesLocator
 {
-    public Dictionary<string, Func<IXTFunctionContext, Task<object>>> Functions { get; set; } = new();
+    public Dictionary<string, TemplatorRegisterFunction> Functions { get; set; } = [];
 
 }

@@ -1,30 +1,29 @@
 using Mars.Host.Shared.Exceptions;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Host.Shared.Templators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Host.Templator;
 
-public class RegisterNodeTemplatorFunction
+public static class RegisterNodeTemplatorFunction
 {
-    public async static Task<object?> Node(IXTFunctionContext ctx)
+    [TemplatorHelperInfo("Node", """x = Node(callNodeName, payload? = null)""", "Вызов ноды CallNode с именем nodeName и передача ей необязательного параметра payload. Возвращает результат выполнения ноды.")]
+    public static async Task<object?> Node(IXTFunctionContext ctx)
     {
-
         string[] argsEl = ctx.Arguments;
         var key = ctx.Key;
         var val = ctx.Val;
 
         if (argsEl.Length != 1 && argsEl.Length != 2)
         {
-            //ctx.PageContext.AddError($"Req arguments wrong argument count [2,3] given {argsEl.Length}: key=\"{key}\" val=\"{val}\"");
             throw new XTFunctionException($"Req arguments wrong argument count [2,3] given {argsEl.Length}: key=\"{key}\" val=\"{val}\"");
             return null;
         }
 
-        INodeService nodeService = ctx.ServiceProvider.GetRequiredService<INodeService>();
+        var nodeService = ctx.ServiceProvider.GetRequiredService<INodeService>();
 
-        List<object> args = new();
+        var args = new List<object>();
 
         foreach (var a in argsEl)
         {
@@ -40,10 +39,7 @@ public class RegisterNodeTemplatorFunction
             payload = args[1];
         }
 
-        UserActionResult<object?> result = await nodeService.CallNode(ctx.ServiceProvider, nodeName, payload);
-
-        //pctx.context.Add(key, result.Data);
-        //ctx.ppt.parameters.Add(key, new Parameter(key, result.Data));
+        var result = await nodeService.CallNode(ctx.ServiceProvider, nodeName, payload);
 
         return result?.Data;
     }

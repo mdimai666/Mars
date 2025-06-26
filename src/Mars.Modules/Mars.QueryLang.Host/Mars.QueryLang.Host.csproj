@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -8,6 +8,7 @@
       <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
       <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
       <ProjectReference Include="..\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
+      <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
     </ItemGroup>
 
 </Project>

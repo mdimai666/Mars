@@ -1,3 +1,4 @@
+using Mars.Core.Extensions;
 using Mars.Host.Shared.WebSite.Models;
 
 namespace Mars.WebSiteProcessor.Handlebars.TemplateData;
@@ -20,7 +21,6 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
     public const string MauiPlatformParamKey = "$maui_platform";
     public const string MauiIdiomParamKey = "$maui_idiom";
 
-
     public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVaribles)
     {
         templateContextVaribles.Add(UserParamKey, pageContext.User);
@@ -38,8 +38,8 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
             }
         }
 
-        templateContextVaribles.Add(BodyClassParamKey, pageContext.BodyClass);
-        templateContextVaribles.Add(BodyAttrsParamKey, pageContext.BodyAttrs);
+        templateContextVaribles.Add(BodyClassParamKey, pageContext.BodyClass.JoinStr(" "));
+        templateContextVaribles.Add(BodyAttrsParamKey, pageContext.BodyAttrs.JoinStr(" "));
 
         if (pageContext.Request.Headers.TryGetValue(MarsAppHeaderKey, out var bapp))
         {

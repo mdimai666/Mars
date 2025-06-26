@@ -12,6 +12,7 @@ namespace Mars.Host.Templators.HandlebarsFunc;
 
 public static class MyHandlebarsContextFunctions
 {
+    [TemplatorHelperInfo("mobile", "{{#mobile}}...{{/mobile}}", "Печатает содержимое в блоке если запрос с мобильного устройства")]
     public static void MobileBlock(EncodedTextWriter output, BlockHelperOptions options, Context context, Arguments arguments)
     {
         if (arguments.Length != 0)
@@ -25,6 +26,7 @@ public static class MyHandlebarsContextFunctions
         else options.Inverse(output, context);
     }
 
+    [TemplatorHelperInfo("!mobile", "{{#!mobile}}...{{/!mobile}}", "Печатает содержимое в блоке если запрос НЕ с мобильного устройства")]
     public static void NotMobileBlock(EncodedTextWriter output, BlockHelperOptions options, Context context, Arguments arguments)
     {
         if (arguments.Length != 0)
@@ -38,6 +40,7 @@ public static class MyHandlebarsContextFunctions
         else options.Inverse(output, context);
     }
 
+    [TemplatorHelperInfo("context", "{{#context @key? @cache?=\"10m\"}}...{{/context}}", "Контекстный блок. Позволяет использовать контекстные данные в шаблоне. Если указан ключ, то данные будут кэшироваться в памяти на указанный период времени")]
     public static void ContextBlock(EncodedTextWriter output, BlockHelperOptions options, Context context, Arguments arguments)
     {
         var renderContext = options.Data.RenderContext();
@@ -61,7 +64,6 @@ public static class MyHandlebarsContextFunctions
             //IMemoryCache? memoryCache = null;
             //string? cachevalue = null;
             memoryCache = sp.GetRequiredService<IMemoryCache>();
-
 
             if (memoryCache.TryGetValue(cacheKey, out IEnumerable<KeyValuePair<string, object>>? vv))
             {
@@ -117,6 +119,7 @@ public static class MyHandlebarsContextFunctions
         }
     }
 
+    [TemplatorHelperInfo("L", "{{#L @string_key values[]?}}", "Localization helper. Returns localized string by key. If values are provided, they will be used for formatting the string.")]
     public static void Localizer_Helper(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments args)
     {
         if (args.Length < 1)
@@ -152,6 +155,7 @@ public static class MyHandlebarsContextFunctions
         output.WriteSafeString(localized);
     }
 
+    [TemplatorHelperInfo("raw_block", "{{#raw_block @block_name}}", "Выводит содержимое блока с именем block_name. Блоки регистрируются в WebSiteTemplate.Parts")]
     public static void RawBlock(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments args)
     {
         if (args.Length != 1)
@@ -169,7 +173,6 @@ public static class MyHandlebarsContextFunctions
 
         if (template is null) throw new HandlebarsException("renderContext.Features didnt found 'WebSiteTemplate'");
 
-
         var block = template.Parts.FirstOrDefault(s => s.Name == block_name);
 
         if (block != null)
@@ -184,6 +187,7 @@ public static class MyHandlebarsContextFunctions
         //}
     }
 
+    [TemplatorHelperInfo("iff", "{{#iff 'x>y'}}...{{/iff}}", "Условный блок. Выполняет содержимое, если условие истинно. Условие должно быть в кавычках")]
     public static void IffBlock(EncodedTextWriter output, BlockHelperOptions options, Context context, Arguments args)
     {
         var renderContext = options.Data.RenderContext();
@@ -194,7 +198,7 @@ public static class MyHandlebarsContextFunctions
         }
         try
         {
-            XInterpreter ppt = new XInterpreter(renderContext.PageContext);
+            var ppt = new XInterpreter(renderContext.PageContext);
 
             var expression = args[0].ToString();
             var par = ppt.GetParameters();

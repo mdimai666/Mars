@@ -25,11 +25,18 @@ public class MyHandlebars : IMarsHtmlTemplator
         handlebars.RegisterHelper("eq", EqualBlock);
         handlebars.RegisterHelper("neq", NotEqualBlock);
         handlebars.RegisterHelper("gt", GreaterThanBlock);
+        handlebars.RegisterHelper("gte", GreaterThanOrEqualBlock);
+        handlebars.RegisterHelper("lt", LessThanBlock);
+        handlebars.RegisterHelper("lte", LessThanOrEqualBlock);
 
         //=========================================================
         handlebars.RegisterHelper("eqstr", EqualStringBlock);
         handlebars.RegisterHelper("neqstr", NotEqualStringBlock);
         handlebars.RegisterHelper("if_divided_by", if_divided_by_Block); // Печатает содержимое в блоке если делится на count
+        handlebars.RegisterHelper("and", AndBlock); // Печатает содержимое в блоке если делится на count
+        handlebars.RegisterHelper("or", OrBlock); // Печатает содержимое в блоке если делится на count
+        handlebars.RegisterHelper("IsEmpty", IsEmptyBlock); // Печатает содержимое в блоке если делится на count
+        handlebars.RegisterHelper("Contains", ContainsBlock); // Печатает содержимое в блоке если делится на count
         //=========================================================
 
         //format all DateTime type in template
@@ -58,7 +65,8 @@ public class MyHandlebars : IMarsHtmlTemplator
         //loops
         handlebars.RegisterHelper("for", ForLoopBlock); //{{#for @start @end @step? }}
 
-        //handlebars.RegisterHelper("asjson", (output, options, context, arguments) =>
+        //helper
+        handlebars.RegisterHelper("help", HelpHelper);
     }
 
     [Obsolete]

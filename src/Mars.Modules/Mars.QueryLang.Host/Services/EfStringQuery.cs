@@ -127,6 +127,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return methods.ToDictionary(s => s.Name)!;
     }
 
+    [TemplatorHelperInfo("Count", """.Count(@expr?)""", "Возвращает количество элементов в запросе. Если @expr не указано, то возвращает общее количество элементов в запросе")]
     public int Count(string expr = "")
     {
         if (string.IsNullOrEmpty(expr))
@@ -138,6 +139,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
 
     }
 
+    [TemplatorHelperInfo("First", """.First(@expr?)""", "Возвращает первый элемент. Если @expr указано, то возвращает применяет выборку.")]
     public T? First(string expr = "")
     {
         CurrentQueriGetSingle = true;
@@ -157,6 +159,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return (T?)result;
     }
 
+    [TemplatorHelperInfo("Last", """.Last(@expr?)""", "Возвращает последний элемент. Если @expr указано, то возвращает применяет выборку.")]
     public T? Last(string expr = "")
     {
         CurrentQueriGetSingle = true;
@@ -196,6 +199,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return result;
     }
 
+    [TemplatorHelperInfo("OrderBy", """.OrderBy(@fieldName)""", "Сортирует элементы по указанному полю. @fieldName - имя поля для сортировки")]
     public IDefaultEfQueries<T> OrderBy(string fieldName)
     {
         var result = CallQueryableKeySelMethod(nameof(Queryable.OrderBy), fieldName, "keySelector");
@@ -205,6 +209,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("OrderByDescending", """.OrderByDescending(@fieldName)""", "Сортирует элементы по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
     public IDefaultEfQueries<T> OrderByDescending(string fieldName)
     {
         var result = CallQueryableKeySelMethod(nameof(Queryable.OrderByDescending), fieldName, "keySelector");
@@ -214,6 +219,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("ThenBy", """.ThenBy(@fieldName)""", "Продолжает сортировку элементов по указанному полю. @fieldName - имя поля для сортировки")]
     public IDefaultEfQueries<T> ThenBy(string fieldName)
     {
         var result = CallQueryableKeySelMethod(nameof(Queryable.ThenBy), fieldName, "keySelector");
@@ -223,6 +229,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("ThenByDescending", """.ThenByDescending(@fieldName)""", "Продолжает сортировку элементов по указанному полю в порядке убывания. @fieldName - имя поля для сортировки")]
     public IDefaultEfQueries<T> ThenByDescending(string fieldName)
     {
         var result = CallQueryableKeySelMethod(nameof(Queryable.ThenByDescending), fieldName, "keySelector");
@@ -232,12 +239,14 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("Skip", """.Skip(@count)""", "Пропускает указанное количество элементов. @count - количество элементов для пропуска")]
     public IDefaultEfQueries<T> Skip(int count)
     {
         query = query.Skip(count);
         return this;
     }
 
+    [TemplatorHelperInfo("Skip", """.Skip(@expr)""", "Пропускает указанное количество элементов. @expr - выражение для вычисления количества элементов для пропуска")]
     public IDefaultEfQueries<T> Skip(string expr)
     {
         int count = ppt.Get.Eval<int>(expr);
@@ -245,12 +254,14 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("Take", """.Take(@count)""", "Ограничивает количество элементов в запросе. @count - количество элементов для ограничения")]
     public IDefaultEfQueries<T> Take(int count)
     {
         query = query.Take(count);
         return this;
     }
 
+    [TemplatorHelperInfo("Take", """.Take(@expr)""", "Ограничивает количество элементов в запросе. @expr - выражение для вычисления количества элементов для ограничения")]
     public IDefaultEfQueries<T> Take(string expr)
     {
         int count = ppt.Get.Eval<int>(expr);
@@ -258,6 +269,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("Where", """.Where(@expr)""", "Фильтрует элементы по указанному выражению. @expr - выражение для фильтрации")]
     public IDefaultEfQueries<T> Where(string expr)
     {
         //var exp = ParseExp<IBasicEntity>(expr);
@@ -278,11 +290,13 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("ToList", """.ToList()""", "Преобразует запрос в список.")]
     public IEnumerable ToList(string expr)
     {
         return query.ToList();
     }
 
+    [TemplatorHelperInfo("Select", """.Select(@expr)""", "Выбирает элементы из запроса по указанному выражению. @expr - выражение для выбора элементов")]
     public object Select(string expr)
     {
         //var exp = ParseExpA(expr);
@@ -296,6 +310,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return result!;
     }
 
+    [TemplatorHelperInfo("Include", """.Include(@expr)""", "Включает связанные данные в запрос. @expr - имя навигационного свойства или список свойств через запятую")]
     public IDefaultEfQueries<T> Include(string expr)
     {
         //var exp = ParseExpA(expr);
@@ -322,6 +337,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("Table", """.Table(@page, @size)""", "Пагинация. Возвращает элементы в виде таблицы с пагинацией. @page - номер страницы, @size - количество элементов на странице")]
     public TotalResponse2<T> Table(string expr)
     {
         var args = TextHelper.SplitArguments(expr);
@@ -344,6 +360,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return _tableResponse = new TotalResponse2<T>(items, page, size, totalCount > items.Count, totalCount);
     }
 
+    [TemplatorHelperInfo("Search", """.Search(@searchText)""", "Поиск по тексту. @searchText - текст для поиска")]
     public IDefaultEfQueries<T> Search(string searchText)
     {
         //var exp = ParseExp<IBasicEntity>(expr);
@@ -372,6 +389,7 @@ public class EfStringQuery<T> : IDefaultEfQueries<T>, IDynamicQueryableObject
         return this;
     }
 
+    [TemplatorHelperInfo("Union", """.Union(@secondQueryable)""", "Объединяет текущий запрос с другим запросом. @secondQueryable - второй запрос для объединения")]
     public IDefaultEfQueries<T> Union(IQueryable<T> secondQueryable)
     {
         query = query.Union(secondQueryable);

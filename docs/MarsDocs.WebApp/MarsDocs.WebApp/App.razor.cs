@@ -13,6 +13,7 @@ public partial class App
     {
         var mdFiles = GetAllMdFilesInFolder();
         //var index = ReadEmbedFile("Startup.md");
+        Console.WriteLine($"Found {mdFiles.Count} markdown files.");
 
         var tree = TreeBuilder.BuildTree(mdFiles, ToMenu).ToArray();
 

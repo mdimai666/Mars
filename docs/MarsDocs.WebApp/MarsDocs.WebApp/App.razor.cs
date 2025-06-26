@@ -19,6 +19,11 @@ public partial class App
 
         Menu = tree;
         MenuDict = TreeBuilder.FlattenMenu(Menu).ToDictionary(s => s.Path);
+
+        var f = MenuDict.Values.First();
+        Console.WriteLine($"{f.Path}, {f.Url}");
+
+        Console.WriteLine(ReadEmbedFile(f.Path));
     }
 
     public List<string> GetAllMdFilesInFolder()
@@ -28,22 +33,22 @@ public partial class App
 
         var namespaceLength = typeof(App).Namespace!.Length + 1;
 
-        return resources.Where(r => r.EndsWith(".md")).Select(s => s.Substring(namespaceLength).Replace('\\', '/')).ToList();
+        return resources.Where(r => r.EndsWith(".md")).Select(s => s.Substring(namespaceLength).Replace(Path.PathSeparator, '/')).ToList();
     }
 
     public static string ReadEmbedFile(string resourcePath)
     {
         var _namespace = typeof(App).Namespace!;
-        var embedPath = _namespace + '.' + resourcePath.Replace('/', '\\');
+        var embedPath = _namespace + '.' + resourcePath.Replace('/', Path.PathSeparator);
 
         var assembly = Assembly.GetExecutingAssembly();
         using Stream stream = assembly.GetManifestResourceStream(embedPath)! ?? throw new FileNotFoundException($"resource not found '{resourcePath}'({embedPath})");
-        using StreamReader reader = new StreamReader(stream);
+        using StreamReader reader = new(stream);
         return reader.ReadToEnd();
     }
 
     static MenuItem ToMenu(TreeDirectoryItem item)
-        => new MenuItem(
+        => new(
             item.FullPath,
             $"md/{item.FullPath}",
             item.Name,

@@ -11,12 +11,13 @@
         }
         else if (item.SubItemFlag)
         {
-            <FluentNavGroup Title=@item.Title>
+            @* <FluentNavGroup Title=@item.Title>
                 @foreach (var subitem in item.SubItems)
                 {
                     <FluentNavLink Href=@subitem.Url>@subitem.Title</FluentNavLink>
                 }
-            </FluentNavGroup>
+            </FluentNavGroup> *@
+            <DocsTreeMenuGroup MenuItem="item" />
         }
         else
         {
@@ -26,5 +27,5 @@
 </FluentNavMenu>
 
 @code {
-    [Parameter] public List<MenuItem> Items { get; set; } = default!;
+    [Parameter] public MenuItem[] Items { get; set; } = default!;
 }

@@ -29,7 +29,7 @@ public partial class FluentMarkdownSection : FluentComponentBase
     protected IFlurlClient client { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the Markdown content 
+    /// Gets or sets the Markdown content
     /// </summary>
     [Parameter]
     public string? Content
@@ -91,8 +91,9 @@ public partial class FluentMarkdownSection : FluentComponentBase
             // create markup from markdown source
             HtmlContent = await MarkdownToMarkupStringAsync();
             StateHasChanged();
+            await Task.Delay(10);
 
-            // notify that content converted from markdown 
+            // notify that content converted from markdown
             if (OnContentConverted.HasDelegate)
             {
                 await OnContentConverted.InvokeAsync();

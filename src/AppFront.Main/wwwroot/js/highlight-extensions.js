@@ -13,7 +13,11 @@ const highlight = hljs_addJavaScript('https://cdn.jsdelivr.net/npm/@highlightjs/
 
 // Add custom code
 highlight.onload = () => {
+    hljs.configure({ ignoreUnescapedHTML: true })
+
     const hljsRazor = hljs_addJavaScript('https://cdn.jsdelivr.net/npm/highlightjs-cshtml-razor@2.1.1/dist/cshtml-razor.min.js');
+
+    const hbs = hljs_addJavaScript('https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.6.0/languages/handlebars.min.js');
 
     // Switch highlight Dark/Light theme
     const theme = document.querySelector('loading-theme > fluent-design-theme');

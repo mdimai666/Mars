@@ -6,7 +6,7 @@ namespace MarsDocs.WebApp;
 
 public partial class App
 {
-    public static List<MenuItem> Menu { get; private set; } = default!;
+    public static MenuItem[] Menu { get; private set; } = default!;
     public static Dictionary<string, MenuItem> MenuDict { get; private set; } = default!;
 
     public App()
@@ -14,7 +14,7 @@ public partial class App
         var mdFiles = GetAllMdFilesInFolder();
         //var index = ReadEmbedFile("Startup.md");
 
-        var tree = TreeBuilder.BuildTree(mdFiles, ToMenu).ToList();
+        var tree = TreeBuilder.BuildTree(mdFiles, ToMenu).ToArray();
 
         Menu = tree;
         MenuDict = TreeBuilder.FlattenMenu(Menu).ToDictionary(s => s.Path);

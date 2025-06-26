@@ -1,3 +1,0 @@
-# Startup
-
-Startup text

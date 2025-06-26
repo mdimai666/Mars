@@ -97,7 +97,8 @@ body {
 .content {
     grid-area: content;
     --elevation: 2;
-    background-color: var(--fill-color);
+    /* background-color: var(--fill-color); */
+    background-color: var(--neutral-fill-rest);
     color: var(--neutral-foreground-rest);
     padding-inline-start: calc(var(--design-unit) * 6px);
     padding-inline-end: calc(var(--design-unit) * 6px);
@@ -196,6 +197,21 @@ fluent-tree-item:not(.selected):not(:hover)::part(positioning-region) {
     background-size: cover;
 }
 
+html *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+html *::-webkit-scrollbar-thumb {
+    /*background-color: transparent;*/
+    background-color: #cdcdcd;
+    border-radius: 2.5px;
+}
+
+/*html *:hover::-webkit-scrollbar-thumb {
+    background-color: #cdcdcd;
+}*/
+
 /*
     ====================================
     ELELENTS
@@ -282,3 +298,43 @@ action-card-small {
     .social-icons a:hover {
         text-shadow: 0 0 10px var(--bs-secondary);
     }
+
+/*
+    ====================================
+    Markdown
+    ====================================
+*/
+:root {
+    --bgColor-default: #ffffff;
+    --borderColor-muted: #d1d9e0b3;
+    --borderColor-default: #d1d9e0;
+    --base-text-weight-semibold: 600;
+    --bgColor-muted: #f6f8fa;
+}
+
+.FluentMarkdown table {
+    display: block;
+    width: 100%;
+    width: max-content;
+    max-width: 100%;
+    overflow: auto;
+    font-variant: tabular-nums;
+}
+
+.FluentMarkdown table tr {
+    background-color: var(--bgColor-default, var(--color-canvas-default));
+    border-top: 1px solid var(--borderColor-muted, var(--color-border-muted));
+}
+
+.FluentMarkdown table th, .FluentMarkdown table td {
+    padding: 6px 13px;
+    border: 1px solid var(--borderColor-default, var(--color-border-default));
+}
+
+.FluentMarkdown table th {
+    font-weight: var(--base-text-weight-semibold, 600);
+}
+
+.FluentMarkdown table tr:nth-child(2n) {
+    background-color: var(--bgColor-muted, var(--color-canvas-subtle));
+}

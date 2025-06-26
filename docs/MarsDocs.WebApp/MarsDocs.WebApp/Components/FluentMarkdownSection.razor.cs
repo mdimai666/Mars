@@ -90,6 +90,7 @@ public partial class FluentMarkdownSection : FluentComponentBase
             // create markup from markdown source
             HtmlContent = await MarkdownToMarkupStringAsync();
             StateHasChanged();
+            await Task.Delay(10);
 
             // notify that content converted from markdown
             if (OnContentConverted.HasDelegate)

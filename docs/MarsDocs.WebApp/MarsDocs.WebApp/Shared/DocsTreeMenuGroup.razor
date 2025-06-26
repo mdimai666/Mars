@@ -1,0 +1,19 @@
+@using MarsDocs.WebApp.Models
+
+<FluentNavGroup Title=@MenuItem.Title>
+    @foreach (var subitem in MenuItem.SubItems)
+    {
+        @if (!subitem.SubItemFlag)
+        {
+            <FluentNavLink Href=@subitem.Url>@subitem.Title</FluentNavLink>
+        }
+        else
+        {
+            <DocsTreeMenuGroup MenuItem="subitem" />
+        }
+    }
+</FluentNavGroup>
+
+@code {
+    [Parameter] public MenuItem MenuItem { get; set; } = default!;
+}

@@ -20,10 +20,17 @@ public partial class App
         Menu = tree;
         MenuDict = TreeBuilder.FlattenMenu(Menu).ToDictionary(s => s.Path);
 
-        var f = MenuDict.Values.First();
-        Console.WriteLine($"{f.Path}, {f.Url}");
+        try
+        {
+            var f = MenuDict.Values.First(s => s.Path.Contains("PluginGettingStart.md"));
+            Console.WriteLine($"{f.Path}, {f.Url}");
 
-        Console.WriteLine(ReadEmbedFile(f.Path));
+            Console.WriteLine(ReadEmbedFile(f.Path));
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
     }
 
     public List<string> GetAllMdFilesInFolder()

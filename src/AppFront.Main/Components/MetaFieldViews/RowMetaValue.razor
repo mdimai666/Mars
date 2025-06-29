@@ -3,7 +3,6 @@
 
 <d-row-meta-value class="FormRowMetaField @("Value.MarkForDelete?bg-red:")">
 
-
     <div class="d-flex">
         @* <div class="me-2 d-row-meta-value__left">
             <label for="@($"metavalue-{Value.Id}-{Value.Index}")">
@@ -84,24 +83,23 @@
             else if (Value.MetaField.Type == MetaFieldType.Select)
             {
                 <FluentSelect TOption="MetaFieldVariantEditModel"
-                            @bind-Value=_variantId
                             Style="width: 250px;"
                             OptionText="s=>s.Title"
                             OptionValue="s=>s.Id.ToString()"
-                            SelectedOptionChanged="@(x=>Value.VariantId = x.Id)"
+                            @bind-SelectedOption="SetVariant"
                             Label="@Value.MetaField.Title"
                             Items="Value.MetaField.Variants" />
             }
             else if (Value.MetaField.Type == MetaFieldType.SelectMany)
             {
-                @if (variantsCheckbox.Any())
+                @if (_variantsCheckbox.Any())
                 {
                     <div>
                         <FluentLabel>@Value.MetaField.Title</FluentLabel>
                         @foreach (var _variant in Value.MetaField.Variants)
                         {
                             var variant = _variant;
-                            <FluentCheckbox Value=@(variantsCheckbox[variant.Id])
+                            <FluentCheckbox Value=@(_variantsCheckbox[variant.Id])
                                             ValueChanged="@(v=>SetVariants(variant, v))"
                                             title="@variant.Id"
                                             Label="@variant.Title" />
@@ -125,7 +123,6 @@
         </div>
     </div>
 
-
     @* <FormItem Help="@Value.MetaField.Description" Class="d-flex">
         <LabelTemplate>
             <div class="me-2">
@@ -147,7 +144,6 @@
 
     [Parameter] public bool Client { get; set; }
 
-
     [Parameter]
     public MetaValueEditModel Value
     {
@@ -163,11 +159,13 @@
     }
     [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
 
-    Dictionary<Guid, bool> variantsCheckbox = new();
+    Dictionary<Guid, bool> _variantsCheckbox = new();
+    Dictionary<Guid, MetaFieldVariantEditModel> _variants = new();
 
     void Init()
     {
-        variantsCheckbox = Value.MetaField.Variants.ToDictionary(s => s.Id, s => Value.VariantsIds.Contains(s.Id));
+        _variantsCheckbox = Value.MetaField.Variants.ToDictionary(s => s.Id, s => Value.VariantsIds.Contains(s.Id));
+        _variants = Value.MetaField.Variants.ToDictionary(s => s.Id);
     }
 
     protected override void OnParametersSet()
@@ -176,22 +174,20 @@
         Init();
     }
 
+    MetaFieldVariantEditModel? SetVariant
+    {
+        get => _variants.GetValueOrDefault(_value.VariantId);
+        set {
+            _value.VariantId = value?.Id ?? Guid.Empty;
+            ValueChanged.InvokeAsync(_value);
+        }
+    }
 
     void SetVariants(MetaFieldVariantEditModel variant, bool state)
     {
-        variantsCheckbox[variant.Id] = state;
-        _value.VariantsIds = variantsCheckbox.Where(s => s.Value).Select(s => s.Key).ToArray();
+        _variantsCheckbox[variant.Id] = state;
+        _value.VariantsIds = _variantsCheckbox.Where(s => s.Value).Select(s => s.Key).ToArray();
         ValueChanged.InvokeAsync(_value);
     }
-
-    // Guid[] SetVariantsIdsCheckbox(bool state) = new string[] { };
-    // public IEnumerable<CheckboxOption> SetVariantsIdsCheckboxGroup
-    // {
-    //    get => VariantsIds.Select(s=>s.ToString());
-    //    set => VariantsIds = value.Select(s=>Guid.Parse(s)).ToList();
-    // }
-
-
-    string _variantId = "";
 
 }

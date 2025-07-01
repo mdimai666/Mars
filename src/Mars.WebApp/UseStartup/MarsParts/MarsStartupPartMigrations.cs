@@ -73,8 +73,9 @@ public static class MarsStartupPartMigrations
         using var marsDbContext = MarsDbContext.CreateInstance(conn);
         if (migrated)
         {
-            SeedDataAsync(marsDbContext, serviceScope.ServiceProvider, configuration, logger).ConfigureAwait(false).GetAwaiter().GetResult();
+            //
         }
+        SeedDataAsync(marsDbContext, serviceScope.ServiceProvider, configuration, logger).ConfigureAwait(false).GetAwaiter().GetResult();
         return services;
     }
 

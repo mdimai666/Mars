@@ -1,4 +1,5 @@
 using Mars.Host.Shared.Dto.Users;
+using Mars.Host.Shared.Mappings.MetaFields;
 using Mars.Shared.Contracts.Users;
 
 namespace Mars.Host.Shared.Mappings.Users;
@@ -18,6 +19,8 @@ public static class UserEditProfileMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
             Phone = entity.Phone,
+            Type = entity.Type,
+            MetaValues = entity.MetaValues.ToDetailResponse(),
         };
 
     public static UserProfileInfoResponse ToResponse(this UserProfileInfoDto entity)
@@ -36,5 +39,7 @@ public static class UserEditProfileMapping
 
             CommentCount = entity.CommentCount,
             Roles = entity.Roles.ToArray(),
+            Type = entity.Type,
+            MetaValues = entity.MetaValues.ToDetailResponse(),
         };
 }

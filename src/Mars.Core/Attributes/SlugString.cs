@@ -6,19 +6,20 @@ namespace Mars.Core.Attributes;
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 public class SlugString : ValidationAttribute
 {
-    public const string DefaultErrorMessage = "{0} must be a valid slug name [A-z0-9-_.]";
-    public bool AllowUpperLetters { get; set; }
+    public const string DefaultSlugErrorMessage = "{0} must be a valid slug name [a-z0-9-_.]";
+    public const string DefaultSlugWithUpperCaseErrorMessage = "{0} must be a valid slug name [A-Za-z0-9-_.])?";
+    public bool AllowUpperLetters { get; }
 
-    public SlugString() : base(DefaultErrorMessage)
+    public SlugString(bool allowUppercase = false) : base(allowUppercase ? DefaultSlugWithUpperCaseErrorMessage : DefaultSlugErrorMessage)
     {
-
+        AllowUpperLetters = allowUppercase;
     }
 
     public override bool IsValid(object? value)
     {
         if (value is not string st) return false;
         if (string.IsNullOrEmpty(st)) return false;
-        return TextTool.IsValidSlug(st);
+        return IsValidSlug(st);
     }
 
     public bool IsValidSlug(string value)

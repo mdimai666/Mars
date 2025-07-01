@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Net.Mime;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
@@ -8,7 +9,6 @@ using Mars.Host.Shared.Mappings.MetaFields;
 using Mars.Host.Shared.Mappings.Users;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +42,30 @@ public class UserController : ControllerBase
                     ?? throw new NotFoundException();
     }
 
+    [HttpGet("edit/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task<UserEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken)
+    {
+        return _userService.GetEditModel(id, cancellationToken);
+    }
+
+    [HttpGet("edit/blank/{type}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task<UserEditViewModel> GetEditModelBlank([DefaultValue("default")] string type, CancellationToken cancellationToken)
+    {
+        return _userService.GetEditModelBlank(type, cancellationToken);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDetailResponse))]
@@ -53,7 +77,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
     public async Task<ActionResult<UserDetailResponse>> Create(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var created = await _userService.Create(request.ToQuery(), cancellationToken);
+        var query = await _userService.EnrichQuery(request, cancellationToken);
+        var created = await _userService.Create(query, cancellationToken);
         return Created("{id}", created.ToResponse());
     }
 
@@ -67,7 +92,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
     public async Task<UserDetailResponse> Update([FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        return (await _userService.Update(request.ToQuery(), cancellationToken)).ToResponse();
+        var query = await _userService.EnrichQuery(request, cancellationToken);
+        return (await _userService.Update(query, cancellationToken)).ToResponse();
     }
 
     [HttpDelete("{id:guid}")]
@@ -156,7 +182,6 @@ public class UserController : ControllerBase
     //    //return modelService.SetUserState(id, state.ElementAt(0));
     //}
 
-
     [Authorize(Roles = "Admin")]
     [HttpPut("SetPassword")]
     public async Task<UserActionResult> SetPassword(SetUserPasswordByIdRequest request, CancellationToken cancellationToken)
@@ -171,20 +196,4 @@ public class UserController : ControllerBase
         return await _userService.SendInvation(id, cancellationToken);
     }
 
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet("UserMetaFields")]
-    public Task<List<MetaFieldResponse>> UserMetaFields()
-    {
-        throw new NotImplementedException();
-        //return _userService.UserMetaFields(ef);
-    }
-
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost("UserMetaFields")]
-    public async Task<IReadOnlyCollection<MetaFieldResponse>> UserMetaFields(IReadOnlyCollection<MetaFieldDto> metaFields)
-    {
-        return (await _userService.UserMetaFields(metaFields)).ToResponse();
-    }
 }

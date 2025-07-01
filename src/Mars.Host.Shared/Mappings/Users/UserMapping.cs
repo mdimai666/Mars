@@ -1,5 +1,6 @@
 using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.Users;
+using Mars.Host.Shared.Mappings.MetaFields;
 using Mars.Host.Shared.Mappings.Roles;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Users;
@@ -28,13 +29,15 @@ public static class UserMapping
             Email = entity.Email,
             PhoneNumber = entity.PhoneNumber,
             Roles = entity.Roles,
-            CreatedAt   = entity.CreatedAt,
+            CreatedAt = entity.CreatedAt,
             ModifiedAt = entity.ModifiedAt,
 
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
+            Type = entity.Type,
+            MetaValues = entity.MetaValues.ToDetailResponse(),
         };
-    
+
     public static UserListItemResponse ToResponse(this UserSummary entity)
         => new()
         {
@@ -46,13 +49,13 @@ public static class UserMapping
 
     public static ListDataResult<UserListItemResponse> ToResponse(this ListDataResult<UserSummary> items)
         => items.ToMap(ToResponse);
-    
+
     public static PagingResult<UserListItemResponse> ToResponse(this PagingResult<UserSummary> items)
         => items.ToMap(ToResponse);
-    
+
     public static ListDataResult<UserDetailResponse> ToResponse(this ListDataResult<UserDetail> items)
         => items.ToMap(ToResponse);
-    
+
     public static PagingResult<UserDetailResponse> ToResponse(this PagingResult<UserDetail> items)
         => items.ToMap(ToResponse);
 
@@ -81,5 +84,30 @@ public static class UserMapping
 
             CommentCount = commentCount,
             Roles = userDetail.Roles,
+            Type = userDetail.Type,
+            MetaValues = userDetail.MetaValues,
         };
+
+    public static UserEditResponse ToResponse(this UserEditDetail entity)
+        => new()
+        {
+            Id = entity.Id,
+            CreatedAt = entity.CreatedAt,
+            ModifiedAt = entity.ModifiedAt,
+            UserName = entity.UserName,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            MiddleName = entity.MiddleName,
+            Email = entity.Email,
+            Phone = entity.PhoneNumber,
+
+            BirthDate = entity.BirthDate,
+            Gender = entity.Gender,
+            AvatarUrl = "entity.AvatarUrl",
+
+            Roles = entity.Roles,
+            Type = entity.Type,
+            MetaValues = entity.MetaValues.ToDetailResponse(),
+        };
+
 }

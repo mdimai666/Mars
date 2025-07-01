@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Shared.Contracts.Users;
 
 namespace Mars.Host.Shared.Dto.Users;
@@ -18,4 +19,7 @@ public record UpdateUserQuery
     public DateTime? BirthDate { get; init; }
     public UserGender Gender { get; init; }
     public string? PhoneNumber { get; init; }
+
+    public required string Type { get; init; }
+    public required IReadOnlyCollection<ModifyMetaValueDetailQuery> MetaValues { get; init; }
 }

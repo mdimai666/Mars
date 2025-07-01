@@ -8,6 +8,7 @@ using Mars.Host.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
@@ -52,13 +53,27 @@ public sealed class UpdateUserTests : ApplicationTests
 
         var createdUser = _fixture.Create<UserEntity>();
         using var ef = AppFixture.MarsDbContext();
+        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
+        var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
+        userType.MetaFields = new(metaFields);
+        var metaValues = metaFields.Select(mf =>
+        {
+            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            mv.MetaField = mf;
+            return mv;
+        }).ToList();
+        createdUser.MetaValues = metaValues;
         ef.Users.Add(createdUser);
         var createdUserSecurityStamp = createdUser.SecurityStamp;
         ef.SaveChanges();
 
+        var metaValueUpdates = metaValues.Select((mv, i) => _fixture.UpdateSimpleCreateMetaValueRequest(i != 0 ? mv.Id : Guid.NewGuid(), mv.MetaField.Id, mv.MetaField.Type)).ToArray();
+
         var request = _fixture.Create<UpdateUserRequest>() with
         {
             Id = createdUser.Id,
+            Type = userType.TypeName,
+            MetaValues = metaValueUpdates
         };
 
         //Act
@@ -68,16 +83,31 @@ public sealed class UpdateUserTests : ApplicationTests
         result.Should().NotBeNull();
 
         ef.ChangeTracker.Clear();
-        var dbUser = ef.Users.Include(s => s.Roles).FirstOrDefault(s => s.Id == request.Id);
+        var dbUser = ef.Users.Include(s => s.Roles)
+                                .Include(s => s.MetaValues)
+                                .FirstOrDefault(s => s.Id == request.Id);
         dbUser.Should().NotBeNull();
 
         dbUser.Should().BeEquivalentTo(request, options => options
             .ComparingRecordsByValue()
             .ComparingByMembers<UpdateUserRequest>()
             .Excluding(f => f.Roles)
+            .Excluding(s => s.MetaValues)
             .ExcludingMissingMembers());
         dbUser.Roles!.Select(s => s.Name).Should().BeEquivalentTo(request.Roles);
         dbUser.SecurityStamp.Should().NotBe(createdUserSecurityStamp);
+
+        dbUser.MetaValues.Should().AllSatisfy(e =>
+        {
+            var req = request.MetaValues.First(s => s.Id == e.Id);
+            e.Should().BeEquivalentTo(req, options => options
+                .ComparingRecordsByValue()
+                .ComparingByMembers<UpdateMetaValueRequest>()
+                //.Excluding(s => s.DateTime)
+                .ExcludingMissingMembers());
+            //e.DateTime.Date.ToString("g").Should().Be(req.DateTime.Date.ToString("g"));
+
+        });
     }
 
     [IntegrationFact]

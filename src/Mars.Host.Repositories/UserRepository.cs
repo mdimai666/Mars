@@ -3,7 +3,6 @@ using Mars.Core.Extensions;
 using Mars.Core.Utils;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.Users;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.Users;
@@ -35,15 +34,29 @@ internal class UserRepository : IUserRepository, IDisposable
         => (await _marsDbContext.Users.AsNoTracking()
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToSummary();
 
-    public async Task<UserDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
-        => (await _marsDbContext.Users.AsNoTracking()
+    IQueryable<UserEntity> InternalDetail => _marsDbContext.Users.AsNoTracking()
                                         .Include(s => s.Roles)
-                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToDetail();
+                                        .Include(s => s.UserType)
+                                        .Include(s => s.MetaValues!)
+                                            .ThenInclude(s => s.MetaField);
+
+    public async Task<UserDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
+                                => (await InternalDetail
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToDetail();
 
     public async Task<UserDetail?> GetDetailByUserName(string username, CancellationToken cancellationToken)
-        => (await _marsDbContext.Users.AsNoTracking()
-                                        .Include(s => s.Roles)
-                                        .FirstOrDefaultAsync(s => s.UserName == username, cancellationToken))?.ToDetail();
+                                => (await InternalDetail
+                                        .FirstOrDefaultAsync(s => s.UserName == username, cancellationToken))
+                                        ?.ToDetail();
+
+    public async Task<UserEditDetail?> GetUserEditDetail(Guid id, CancellationToken cancellationToken)
+                                => (await InternalDetail
+                                        .Include(s => s.UserType)
+                                            .ThenInclude(s => s.MetaFields!)
+                                                .ThenInclude(s => s.MetaValues)
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToEditDetail();
 
     public async Task<Guid> Create(CreateUserQuery query, CancellationToken cancellationToken)
     {
@@ -53,26 +66,9 @@ internal class UserRepository : IUserRepository, IDisposable
 
         //var roles = await _marsDbContext.Roles.ToListAsync(cancellationToken);
 
-        var user = new UserEntity
-        {
-            Id = query.Id ?? Guid.Empty,
-            UserName = query.UserName ?? query.Email,
-            NormalizedUserName = _lookupNormalizer.NormalizeName(query.UserName ?? query.Email),
+        var userTypesId = (await _marsDbContext.UserTypes.FirstAsync(s => s.TypeName == query.Type)).Id;
 
-            Email = query.Email,
-            NormalizedEmail = _lookupNormalizer.NormalizeEmail(query.Email),
-
-            FirstName = query.FirstName,
-            LastName = query.LastName,
-
-            EmailConfirmed = true,
-            LockoutEnabled = true,
-
-            PhoneNumber = query.PhoneNumber,
-            BirthDate = query.BirthDate,
-            Gender = ParseGender(query.Gender),
-
-        };
+        var user = query.ToEntity(userTypesId, _lookupNormalizer);
 
         IdentityResult result = await _userManager.CreateAsync(user, query.Password);
 
@@ -100,18 +96,21 @@ internal class UserRepository : IUserRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var entity = await _marsDbContext.Users.Include(s => s.Roles)
+        var entity = await _marsDbContext.Users.Include(s => s.UserType)
+                                                .Include(s => s.Roles)
+                                                .Include(s => s.MetaValues!)
+                                                    .ThenInclude(s => s.MetaField)
                                                 .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                 ?? throw new NotFoundException();
 
         entity.FirstName = query.FirstName;
-        entity.LastName = query.LastName;
+        entity.LastName = query.LastName ?? "";
         entity.MiddleName = query.MiddleName;
         entity.Email = query.Email;
 
         entity.PhoneNumber = query.PhoneNumber;
         entity.BirthDate = query.BirthDate;
-        entity.Gender = ParseGender(query.Gender);
+        entity.Gender = UserMapping.ParseGender(query.Gender);
 
         var oldRoles = entity.Roles!.Select(s => s.NormalizedName!).Order().ToList();
         var newRoles = query.Roles.Select(s => _lookupNormalizer.NormalizeName(s)).Order().ToList();
@@ -128,6 +127,13 @@ internal class UserRepository : IUserRepository, IDisposable
         }
 
         entity.ModifiedAt = DateTimeOffset.Now;
+        MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt.Value);
+
+        if (entity.UserType.TypeName != query.Type)
+        {
+            var newUserType = await _marsDbContext.UserTypes.FirstAsync(s => s.TypeName == query.Type);
+            entity.UserTypeId = newUserType.Id;
+        }
 
         await _marsDbContext.SaveChangesAsync(cancellationToken);
         await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
@@ -162,15 +168,6 @@ internal class UserRepository : IUserRepository, IDisposable
         _disposed = true;
     }
 
-    UserGender ParseGender(Mars.Shared.Contracts.Users.UserGender gender)
-        => gender switch
-        {
-            Mars.Shared.Contracts.Users.UserGender.None => UserGender.None,
-            Mars.Shared.Contracts.Users.UserGender.Male => UserGender.Male,
-            Mars.Shared.Contracts.Users.UserGender.Female => UserGender.Female,
-            _ => throw new NotImplementedException(),
-        };
-
     private Task<List<UserEntity>> ListAllInternal(ListAllUserQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -189,6 +186,9 @@ internal class UserRepository : IUserRepository, IDisposable
         return _listAllQuery.AsNoTracking()
             .Where(s => query.Ids == null || query.Ids.Contains(s.Id))
             .Include(s => s.Roles)
+            .Include(s => s.UserType)
+            .Include(s => s.MetaValues!)
+                .ThenInclude(s => s.MetaField)
             .ToListAsync(cancellationToken);
     }
 
@@ -201,6 +201,9 @@ internal class UserRepository : IUserRepository, IDisposable
     private IQueryable<UserEntity> ListAllInternal(ListUserQuery query)
     {
         var queryable = _listAllQuery.AsNoTracking()
+                            .Include(s => s.UserType)
+                            .Include(s => s.MetaValues!)
+                                .ThenInclude(s => s.MetaField)
                             .Where(s => query.Search == null
                                     || (s.Id.ToString() == query.Search
                                         || EF.Functions.ILike(s.UserName, $"%{query.Search}%")
@@ -227,7 +230,8 @@ internal class UserRepository : IUserRepository, IDisposable
     }
 
     private IQueryable<UserEntity> ListAllDetailInternal(ListUserQuery query)
-        => ListAllInternal(query).Include(s => s.Roles);
+        => ListAllInternal(query).Include(s => s.Roles)
+                                    .Include(s => s.UserType);
 
     public async Task<ListDataResult<UserSummary>> List(ListUserQuery query, CancellationToken cancellationToken)
     {

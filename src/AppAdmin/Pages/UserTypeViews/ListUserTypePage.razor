@@ -1,0 +1,71 @@
+@page "/UserType"
+@using System.Linq.Expressions
+@using Mars.Shared.Contracts.UserTypes
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@AppRes.UserTypes">
+
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+        <div class="ms-auto">
+            <a href="@urlEditPage">
+                <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="76"
+                            Virtualize
+                            ResizableColumns
+                            GridTemplateColumns="3fr 2fr 1fr 1fr"
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            TGridItem="UserTypeListItemResponse">
+                <TemplateColumn SortBy="@(GridSort<UserTypeListItemResponse>.ByDescending(f=>f.Title))"
+                                Title="@AppRes.Title"
+                                InitialSortDirection="SortDirection.Ascending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true">
+
+                    <div class="card1 h-100 list-group-item-action d-card-glow position-relative">
+                        <div class="card-body py-1 px-3">
+                            <h5 class="card-title">@context.Title</h5>
+                            <div class="text-secondary small">@context.TypeName</div>
+                        </div>
+                        <a href="@urlEditPage/@context.Id" class="stretched-link"></a>
+                    </div>
+
+                </TemplateColumn>
+                @* <TemplateColumn Title="@AppRes.MetaFields">
+                    <FluentOverflow Style="width: 100%;" >
+                        @foreach(var tag in context.EnabledFeatures){
+                            <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                        }
+                    </FluentOverflow>
+                </TemplateColumn> *@
+                <PropertyColumn Property=@(f=>f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+            <div class="ms-auto">
+            </div>
+        </div>
+    </div>
+
+</ContentWrapper>

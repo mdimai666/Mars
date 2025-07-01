@@ -1,7 +1,5 @@
 using Mars.Core.Exceptions;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.Auth;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Users;
 
 namespace Mars.WebApiClient.Interfaces;
@@ -28,7 +26,6 @@ public interface IUserServiceClient
     Task<UserActionResult> UpdateUserRoles(Guid id, IEnumerable<Guid> roles);
     Task<UserActionResult> SetPassword(SetUserPasswordByIdRequest auth);
     Task<UserActionResult> SendInvation(Guid id);
-    Task<List<MetaFieldResponse>> UserMetaFields();
-    Task<UserActionResult<List<MetaFieldResponse>>> UserMetaFields(List<MetaFieldResponse> metaFields);
-
+    Task<UserEditViewModel> GetEditModel(Guid id);
+    Task<UserEditViewModel> GetUserBlank(string type);
 }

@@ -2,10 +2,12 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
+using Mars.Host.Data.Entities;
 using Mars.Host.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
@@ -47,23 +49,48 @@ public sealed class CreateUserTests : ApplicationTests
         _ = nameof(UserController.Create);
         var client = AppFixture.GetClient();
 
-        var user = _fixture.Create<CreateUserRequest>();
+        using var ef = AppFixture.MarsDbContext();
+        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray().ToList();
+        var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
+        userType.MetaFields = metaFields;
+        ef.MetaFields.AddRange(metaFields);
+        ef.SaveChanges();
+        ef.ChangeTracker.Clear();
+
+        var userRequest = _fixture.Create<CreateUserRequest>() with
+        {
+            MetaValues = metaFields.Select(mf => _fixture.CreateSimpleCreateMetaValueRequest(mf.Id, mf.Type)).ToArray(),
+        };
 
         //Act
-        var res = await client.Request(_apiUrl).PostJsonAsync(user).CatchUserActionError();
+        var res = await client.Request(_apiUrl).PostJsonAsync(userRequest).CatchUserActionError();
         var result = await res.GetJsonAsync<UserDetailResponse>();
 
         //Assert
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
-        var dbUser = ef.Users.Include(s => s.Roles).FirstOrDefault(s => s.Email == user.Email);
+        var dbUser = ef.Users.Include(s => s.Roles)
+                                .Include(s=>s.MetaValues)
+                                .FirstOrDefault(s => s.Email == userRequest.Email);
         dbUser.Should().NotBeNull();
-        dbUser.Should().BeEquivalentTo(user, options => options
+        dbUser.Should().BeEquivalentTo(userRequest, options => options
             .ComparingRecordsByValue()
             .ComparingByMembers<CreateUserRequest>()
             .Excluding(f => f.Roles)
+            .Excluding(s => s.MetaValues)
             .ExcludingMissingMembers());
-        dbUser.Roles!.Select(s => s.Name).Should().BeEquivalentTo(user.Roles);
+        dbUser.Roles!.Select(s => s.Name).Should().BeEquivalentTo(userRequest.Roles);
+
+        dbUser.MetaValues.Should().AllSatisfy(e =>
+        {
+            var req = userRequest.MetaValues.First(s => s.Id == e.Id);
+            e.Should().BeEquivalentTo(req, options => options
+                .ComparingRecordsByValue()
+                .ComparingByMembers<CreateMetaValueRequest>()
+                //.Excluding(s => s.DateTime)
+                .ExcludingMissingMembers());
+            //e.DateTime.Date.ToString("g").Should().Be(req.DateTime.Date.ToString("g"));
+
+        });
     }
 }

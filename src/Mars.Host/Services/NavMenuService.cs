@@ -7,6 +7,7 @@ using Mars.Host.Shared.Managers.Extensions;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
+using Mars.Shared.Resources;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -146,7 +147,7 @@ public class NavMenuService : INavMenuService
             Title = "Dev admin menu",
             MenuItems = ((MenuItemInternal[])[
                 new(){ Title = "Главная" , Url = d, },
-                new(){ Title = "Медиа" , Url = d+"Media"  },
+                new(){ Title = AppRes.Media , Url = d+"Media"  },
                 new(){ IsDivider = true },
                 new(){ Title = "Записи", Url = d+"Post/post", },
                 ..postTypes.Where(s=>s.TypeName!="post").OrderBy(s=>s.Title).Select(postType=>new MenuItemInternal(){
@@ -161,15 +162,15 @@ public class NavMenuService : INavMenuService
                     //new(){ Title = "Geo", Url = d+"geo/GeoRegion", ParentId=razdels },
                 new(){ Title = "Управление", Url = d+"Manage", Id=manage },
                     //new() { Title = "Анкета", Url = d+"Manage/AnketaManage", ParentId=manage },
-                    new() { Title = "Пользователи", Url = d+"Users", },
-                    new() { Title = "Поля пользователя", Url = d+"EditUserFields", ParentId=manage},
+                    new() { Title = AppRes.Users, Url = d+"Users", ParentId=manage},
+                    new() { Title = AppRes.UserTypes, Url = d+"UserType", ParentId=manage},
                     //new() { Title = "Контакты", Url = d+"ContactsManagement", ParentId=manage},
     #if DEBUG
-		            //new() { Title = "Роли", Url = d+"RoleManagement", ParentId=manage},  
+		            //new() { Title = "Роли", Url = d+"RoleManagement", ParentId=manage},
 	#endif
                     //new() { Title = "Комментарии", Url = d+"Comments", ParentId=manage},
                 new(){ IsDivider = true },
-                new (){ Title = "Плагины", Url = d+"Plugins", Roles=adminRoles },
+                new (){ Title = AppRes.Plugins, Url = d+"Plugins", Roles=adminRoles },
                 new (){ Title = "Настройки", Url = d+"Settings", Roles=adminRoles },
 
             ]).Select(NewMenuItem).ToList(),

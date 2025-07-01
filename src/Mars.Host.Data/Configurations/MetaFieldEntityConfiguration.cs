@@ -29,6 +29,8 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
         entity.HasMany(x => x.MetaValues)
             .WithOne(x => x.MetaField);
 
+        // Relations
+
         entity.HasMany(x => x.PostTypes)
             .WithMany(x => x.MetaFields)
             .UsingEntity<PostTypeMetaFieldEntity>(
@@ -37,12 +39,12 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
                 k => k.HasKey(x => new { x.PostTypeId, x.MetaFieldId })
             );
 
-        entity.HasMany(x => x.Users)
+        entity.HasMany(x => x.UserTypes)
             .WithMany(x => x.MetaFields)
-            .UsingEntity<UserMetaFieldEntity>(
-                l => l.HasOne(x => x.User).WithMany(x => x.UserMetaFields),
-                r => r.HasOne(x => x.MetaField).WithMany(x => x.UserMetaFields),
-                k => k.HasKey(x => new { x.UserId, x.MetaFieldId })
+            .UsingEntity<UserTypeMetaFieldEntity>(
+                l => l.HasOne(x => x.UserType).WithMany(x => x.UserTypeMetaFields),
+                r => r.HasOne(x => x.MetaField).WithMany(x => x.UserTypeMetaFields),
+                k => k.HasKey(x => new { x.UserTypeId, x.MetaFieldId })
             );
 
     }

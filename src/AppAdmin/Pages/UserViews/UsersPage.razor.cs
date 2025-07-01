@@ -3,6 +3,7 @@ using AppAdmin.Pages.FeedbackViews;
 using AppFront.Main.Extensions;
 using Mars.Shared.Contracts.Roles;
 using Mars.Shared.Contracts.Users;
+using Mars.Shared.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -18,7 +19,6 @@ public partial class UsersPage
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
-
 
     FluentDataGrid<UserDetailResponse> table = default!;
     string _searchText = "";
@@ -106,17 +106,23 @@ public partial class UsersPage
     bool visibleCreateUserModal;
     CreateUserEditFormData createFormData = new();
     IReadOnlyCollection<RoleSummaryResponse>? rolesForCreate;
+    IReadOnlyCollection<UserTypeListItemResponse>? userTypesForCreate;
 
     public async Task OnClickCreateUser()
     {
         rolesForCreate ??= (await client.Role.List(new() { Take = 20 })).Items;
+        userTypesForCreate ??= (await client.UserType.List(new() { Take = 20 })).Items;
 
         createFormData = new()
         {
             Model = new(),
             Roles = rolesForCreate,
             DefaultCreateRole = null,
+            UserTypes = userTypesForCreate,
         };
+        createFormData.Model.Type = userTypesForCreate.FirstOrDefault(s => s.TypeName == "default")?.TypeName
+                                    ?? userTypesForCreate.FirstOrDefault()?.TypeName
+                                    ?? "";
 
         visibleCreateUserModal = true;
 

@@ -35,6 +35,9 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
     public async Task<PostTypeDetail?> GetDetailByName(string name, CancellationToken cancellationToken)
         => (await _marsDbContext.PostTypes.AsNoTracking().Include(s => s.MetaFields).FirstOrDefaultAsync(s => s.TypeName == name, cancellationToken))?.ToDetail();
 
+    public Task<bool> TypeNameExist(string name, CancellationToken cancellationToken)
+        => _marsDbContext.PostTypes.AsNoTracking().AnyAsync(s => s.TypeName == name, cancellationToken);
+
     public async Task<Guid> Create(CreatePostTypeQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

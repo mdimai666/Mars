@@ -45,12 +45,13 @@ public static class MainMarsHost
         services.AddTransient<ISmsSender, SmsSender>();
         services.AddTransient<INotifyService, NotifyService>();
 
-        services.AddScoped<IPostTypeService, PostTypeService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserTypeService, UserTypeService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IMediaService, MediaService>();
         services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IPostTypeService, PostTypeService>();
         services.AddScoped<IPostJsonService, PostJsonService>();
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IFeedbackService, FeedbackService>();

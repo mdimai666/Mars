@@ -15,6 +15,7 @@ namespace Mars.Test.Common.FixtureCustomizes;
 public sealed class EntitiesCustomize : ICustomization
 {
     public static Dictionary<string, PostTypeEntity> PostTypeDict = default!;
+    public static Dictionary<string, UserTypeEntity> UserTypeDict = default!;
 
     public void Customize(IFixture fixture)
     {
@@ -33,6 +34,8 @@ public sealed class EntitiesCustomize : ICustomization
             .RuleFor(s => s.SecurityStamp, Guid.NewGuid().ToString())
             .RuleFor(s => s.Status, EUserStatus.Activated)
             .RuleFor(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
+            .RuleFor(s => s.UserTypeId, UserTypeDict[UserTypeEntity.DefaultTypeName].Id)
+            .RuleFor(s => s.MetaValues, [])
             .Generate();
 
         fixture.Customize<UserEntity>(composer => composer
@@ -42,6 +45,13 @@ public sealed class EntitiesCustomize : ICustomization
 
         //fixture.Customizations.Add(new ElementsBuilder<User>(new Faker<User>()));
 
+        fixture.Customize<UserTypeEntity>(composer => composer
+                                   .OmitAutoProperties()
+                                   .With(s => s.Id)
+                                   .With(s => s.Title)
+                                   .With(s => s.TypeName)
+                                   .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
+                                   );
 
         fixture.Customize<PostContentSettings>(composer => composer
                                     .OmitAutoProperties()

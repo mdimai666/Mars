@@ -1258,6 +1258,24 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UserType.
+        /// </summary>
+        public static string UserType {
+            get {
+                return ResourceManager.GetString("UserType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UserTypes.
+        /// </summary>
+        public static string UserTypes {
+            get {
+                return ResourceManager.GetString("UserTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field {0} is not a valid email address..
         /// </summary>
         public static string v_email {

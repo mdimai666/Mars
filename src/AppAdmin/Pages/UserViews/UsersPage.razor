@@ -40,7 +40,7 @@
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
                             TGridItem="UserDetailResponse">
-                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f=>f.LastName))"
+                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.LastName))"
                                 Title="FullName"
                                 InitialSortDirection="SortDirection.Ascending"
                                 IsDefaultSortColumn="true"
@@ -53,18 +53,18 @@
                     </div>
 
                 </TemplateColumn>
-                <PropertyColumn Property="@(f=>f.Email)" Title="@AppRes.Email" Sortable="true" />
-                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f=>f.Roles))"
+                <PropertyColumn Property="@(f => f.Email)" Title="@AppRes.Email" Sortable="true" />
+                <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.Roles))"
                                 Sortable="false"
                                 Title="@AppRes.Roles"
                                 Filtered="_roleFilter.Any()">
                     <ChildContent>
-                        @foreach (var role in context.Roles)
-                        {
-                            <FluentBadge Appearance="Appearance.Neutral">
-                                @role
-                            </FluentBadge>
-                        }
+                        <FluentOverflow Style="width: 100%;">
+                            @foreach (var role in context.Roles)
+                            {
+                                <FluentOverflowItem><FluentBadge>@role</FluentBadge></FluentOverflowItem>
+                            }
+                        </FluentOverflow>
                     </ChildContent>
                     <ColumnOptions>
                         <div class="search-box">
@@ -80,15 +80,15 @@
                         </div>
                     </ColumnOptions>
                 </TemplateColumn>
-                <PropertyColumn Property="@(f=>f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Sortable="true" />
+                <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Sortable="true" />
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
                     <div class="hstack">
-                        <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id))>
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
                             <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                         </DFluentDeleteButton>
                         <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
-                            <FluentMenuItem OnClick="@(e=>OnClickChangePassword(context))">@AppRes.ChangePassword</FluentMenuItem>
-                            <FluentMenuItem OnClick="@(e=>SendInvation(context.Id))">send invation</FluentMenuItem>
+                            <FluentMenuItem OnClick="@(e => OnClickChangePassword(context))">@AppRes.ChangePassword</FluentMenuItem>
+                            <FluentMenuItem OnClick="@(e => SendInvation(context.Id))">send invation</FluentMenuItem>
                         </FluentMenuButton>
                     </div>
                 </TemplateColumn>

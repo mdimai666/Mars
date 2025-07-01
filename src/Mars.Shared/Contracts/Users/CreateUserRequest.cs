@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Extensions;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Resources;
 
 namespace Mars.Shared.Contracts.Users;
@@ -32,6 +33,9 @@ public record CreateUserRequest
     public required string? PhoneNumber { get; init; }
     public required DateTime? BirthDate { get; init; }
     public required UserGender Gender { get; init; }
+
+    public required string Type { get; init; }
+    public required IReadOnlyCollection<CreateMetaValueRequest> MetaValues { get; init; }
 }
 
 public record UpdateUserRequest
@@ -60,6 +64,10 @@ public record UpdateUserRequest
     public required DateTime? BirthDate { get; init; }
     public required UserGender Gender { get; init; }
 
+    [StringLength(1000, MinimumLength = 3)]
+    [Required]
+    public required string Type { get; init; }
+    public required IReadOnlyCollection<UpdateMetaValueRequest> MetaValues { get; init; }
 }
 
 public record UserListItemResponse
@@ -69,11 +77,6 @@ public record UserListItemResponse
     public required string LastName { get; init; }
     public required string? MiddleName { get; init; }
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
-}
-
-public class UserEditModel
-{
-
 }
 
 public record ListUserQueryRequest : BasicListQueryRequest

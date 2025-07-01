@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Mars.Core.Utils;
+using Mars.Host.Data.Entities;
 using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Dto.Roles;
 using Mars.Host.Shared.Dto.Users;
@@ -25,6 +26,7 @@ public class UserCommandCli : CommandCli
 
         var optionFirstName = new Option<string>(["--firstName"], "First name");
         var optionLastName = new Option<string>(["--lastName"], "Last name");
+        var optionUserTypeName = new Option<string>(["--userTypeName"], "User type name");
 
         var showIdArgument = new Option<bool>(["-id"], "Show Id Column");
 
@@ -35,7 +37,7 @@ public class UserCommandCli : CommandCli
         {
             optionName,optionEmail,optionPassword,optionRole,optionFirstName,optionLastName
         };
-        userAddCommand.SetHandler(UserAddCommand, optionName, optionEmail, optionPassword, optionRole, optionFirstName, optionLastName);
+        userAddCommand.SetHandler(UserAddCommand, optionName, optionEmail, optionPassword, optionRole, optionFirstName, optionLastName, optionUserTypeName);
         userCommand.AddCommand(userAddCommand);
 
         //list
@@ -60,7 +62,7 @@ public class UserCommandCli : CommandCli
         cli.AddCommand(userCommand);
     }
 
-    public async Task UserAddCommand(string username, string? email, string? password, string? role, string? firstName, string? lastName)
+    public async Task UserAddCommand(string username, string? email, string? password, string? role, string? firstName, string? lastName, string? userType)
     {
         using var scope = app.Services.CreateScope();
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
@@ -98,6 +100,8 @@ public class UserCommandCli : CommandCli
                 FirstName = firstName ?? username,
                 LastName = lastName ?? "",
                 Roles = setRole,
+                Type = userType ?? UserTypeEntity.DefaultTypeName,
+                MetaValues = [],
             }, CancellationToken.None);
 
             Console.ForegroundColor = ConsoleColor.Green;

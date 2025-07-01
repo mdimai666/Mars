@@ -1,0 +1,87 @@
+@page "/EditUserType"
+@page "/EditUserType/{ID:guid}"
+
+@using Mars.Shared.Contracts.UserTypes
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
+
+<ContentWrapper>
+    <StandartEditContainer ID=@ID
+                           TModel=UserTypeEditModel
+                           GetAction="@(()=>UserTypeEditModel.GetAction(client,ID))"
+                           SaveAction="@((s,create)=>UserTypeEditModel.SaveAction(client,s,create))"
+                           DeleteAction="@(s=>UserTypeEditModel.DeleteAction(client,s))"
+                           @ref=f CanCreate=false>
+        <ChildContent>
+            <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
+            </FluentStack>
+
+            <div class="vstack gap-3">
+
+                <div class="vstack">
+                    <FluentTextField @bind-Value=@context.Title Label="@AppRes.Title"
+                                     Appearance="@FluentInputAppearance.Filled"
+                                     Required
+                                     Style="zoom:1.4" />
+                    <FluentValidationMessage For="@(() => context.Title)" />
+                </div>
+                <div class="">
+                    <FluentTextField @bind-Value=@context.TypeName Label="TypeName" />
+                    <FluentValidationMessage For="@(() => context.TypeName)" />
+                </div>
+
+            </div>
+
+            <div class="spacer-2"></div>
+
+            <div class="vstack gap-4">
+
+                @* <div class="card">
+                    <div class="card-header">
+
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap">
+
+                        </div>
+                    </div>
+                </div> *@
+
+                <div class="card">
+                    <div class="card-header">
+                        Meta fields
+                    </div>
+                    <div class="card-body">
+                        <div class="card-section">
+
+                            @if (!context.MetaFields.Any())
+                            {
+                                <SharedContentNoRecords />
+                            }
+
+                            <CascadingValue Value="@context.MetaFields">
+                                <CascadingValue Value="@context.MetaRelationModels">
+                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
+                                </CascadingValue>
+                            </CascadingValue>
+
+                            <div class="mt-2">
+                                <FluentButton IconStart="@(new Icons.Regular.Size16.Add())" OnClick="AddNewField">Добавить</FluentButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="d-block" style="height:50vh"></div>
+
+        </ChildContent>
+        <SectionExtraSidebar>
+        </SectionExtraSidebar>
+    </StandartEditContainer>
+
+</ContentWrapper>

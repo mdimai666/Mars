@@ -9,6 +9,7 @@ public interface IUserRepository : IDisposable
     Task<UserSummary?> Get(Guid id, CancellationToken cancellationToken);
     Task<UserDetail?> GetDetail(Guid id, CancellationToken cancellationToken);
     Task<UserDetail?> GetDetailByUserName(string username, CancellationToken cancellationToken);
+    Task<UserEditDetail?> GetUserEditDetail(Guid id, CancellationToken cancellationToken);
     Task<Guid> Create(CreateUserQuery query, CancellationToken cancellationToken);
     Task Update(UpdateUserQuery query, CancellationToken cancellationToken);
     Task Delete(Guid id, CancellationToken cancellationToken);

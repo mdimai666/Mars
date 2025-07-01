@@ -45,11 +45,7 @@ public class GetUserTests : ApplicationTests
         _ = nameof(UserService.Get);
         var client = AppFixture.GetClient();
 
-        var createdUser = _fixture.Create<UserEntity>();
-
-        using var ef = AppFixture.MarsDbContext();
-        await ef.Users.AddAsync(createdUser);
-        await ef.SaveChangesAsync();
+        var createdUser = await _fixture.AppendUserTypeMetaFieldsAndCreateUserWithMetaValues(AppFixture.DbFixture.DbContext);
 
         //Act
         var result = await client.Request(_apiUrl).AppendPathSegment(createdUser.Id).GetJsonAsync<UserDetailResponse>();
@@ -147,4 +143,37 @@ public class GetUserTests : ApplicationTests
         result.Items.ElementAt(0).Id.Should().Be(expectUserId);
     }
 
+    [IntegrationFact]
+    public async Task GetEditModel_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(UserController.GetEditModel);
+        _ = nameof(UserService.GetEditModel);
+        var client = AppFixture.GetClient();
+
+        var createdUser = await _fixture.AppendUserTypeMetaFieldsAndCreateUserWithMetaValues(AppFixture.DbFixture.DbContext);
+
+        //Act
+        var result = await client.Request(_apiUrl, "edit").AppendPathSegment(createdUser.Id).GetJsonAsync<UserEditViewModel>();
+
+        //Assert
+        result.Should().NotBeNull();
+    }
+
+    [IntegrationFact]
+    public async Task GetEditModelBlank_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(UserController.GetEditModelBlank);
+        _ = nameof(UserService.GetEditModelBlank);
+        var client = AppFixture.GetClient();
+
+        var createdUser = await _fixture.AppendUserTypeMetaFieldsAndCreateUserWithMetaValues(AppFixture.DbFixture.DbContext);
+
+        //Act
+        var result = await client.Request(_apiUrl, "edit", "blank").AppendPathSegment("default").GetJsonAsync<UserEditViewModel>();
+
+        //Assert
+        result.Should().NotBeNull();
+    }
 }

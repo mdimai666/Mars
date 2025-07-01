@@ -12,7 +12,7 @@ internal static class RoleMapping
             CreatedAt = entity.CreatedAt,
             Name = entity.Name!,
         };
-    
+
     public static RoleDetail ToDetail(this RoleEntity entity)
         => new()
         {

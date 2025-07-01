@@ -1,3 +1,4 @@
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Users.Passwords;
 using Mars.Host.Shared.Extensions;
 using Mars.Shared.Contracts.Users;
@@ -6,7 +7,7 @@ namespace Mars.Host.Shared.Dto.Users;
 
 public static class UserRequestExtensions
 {
-    public static CreateUserQuery ToQuery(this CreateUserRequest request)
+    public static CreateUserQuery ToQuery(this CreateUserRequest request, IDictionary<Guid, MetaFieldDto> metaFields)
         => new()
         {
             FirstName = request.FirstName,
@@ -18,10 +19,12 @@ public static class UserRequestExtensions
 
             BirthDate = request.BirthDate,
             Gender = request.Gender,
-            PhoneNumber = request.PhoneNumber
+            PhoneNumber = request.PhoneNumber,
+            Type = request.Type,
+            MetaValues = request.MetaValues.ToQuery(metaFields)
         };
 
-    public static UpdateUserQuery ToQuery(this UpdateUserRequest request)
+    public static UpdateUserQuery ToQuery(this UpdateUserRequest request, IDictionary<Guid, MetaFieldDto> metaFields)
         => new()
         {
             Id = request.Id,
@@ -33,7 +36,9 @@ public static class UserRequestExtensions
 
             BirthDate = request.BirthDate,
             Gender = request.Gender,
-            PhoneNumber = request.PhoneNumber
+            PhoneNumber = request.PhoneNumber,
+            Type = request.Type,
+            MetaValues = request.MetaValues.ToQuery(metaFields)
         };
 
     public static ListUserQuery ToQuery(this ListUserQueryRequest request)

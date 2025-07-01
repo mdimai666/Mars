@@ -89,7 +89,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="6.0.0-preview.4.21253.5" />
+        <!--<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="6.0.0-preview.4.21253.5" />-->
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.2" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
         <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />

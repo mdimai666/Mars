@@ -1,3 +1,5 @@
+using Mars.Shared.Contracts.MetaFields;
+
 namespace Mars.Shared.Contracts.Users;
 
 public class UserDetailResponse : UserSummaryResponse
@@ -11,5 +13,6 @@ public class UserDetailResponse : UserSummaryResponse
 
     public required DateTime? BirthDate { get; init; }
     public required UserGender Gender { get; init; }
-
+    public required string Type { get; init; }
+    public required IReadOnlyCollection<MetaValueDetailResponse> MetaValues { get; init; }
 }

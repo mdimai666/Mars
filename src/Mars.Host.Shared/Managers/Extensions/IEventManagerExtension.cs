@@ -52,6 +52,30 @@ public static class EventManagerExtension
     /// </summary>
     public static string PostTypeAnyOperation(this EventManagerDefaults defaults) => $"entity.PostType/**";
 
+    /// <summary>
+    /// <code>entity.UserType/{typeName}/add</code>
+    /// </summary>
+    public static string UserTypeAdd(this EventManagerDefaults defaults, string typeName) => $"entity.UserType/{typeName}/add";
+
+    /// <summary>
+    /// <code>entity.UserType/{typeName}/update</code>
+    /// </summary>
+    public static string UserTypeUpdate(this EventManagerDefaults defaults, string typeName) => $"entity.UserType/{typeName}/update";
+
+    /// <summary>
+    /// <code>entity.UserType/{typeName}/delete</code>
+    /// </summary>
+    public static string UserTypeDelete(this EventManagerDefaults defaults, string typeName) => $"entity.UserType/{typeName}/delete";
+
+    /// <summary>
+    /// <code>entity.UserType/{typeName}/*</code>
+    /// </summary>
+    public static string UserTypeAnyOperation(this EventManagerDefaults defaults, string typeName) => $"entity.UserType/{typeName}/*";
+
+    /// <summary>
+    /// <code>entity.UserType/**</code>
+    /// </summary>
+    public static string UserTypeAnyOperation(this EventManagerDefaults defaults) => $"entity.UserType/**";
 
     public static string RoleAdd(this EventManagerDefaults defaults) => $"entity/role/add";
     public static string RoleUpdate(this EventManagerDefaults defaults) => $"entity/role/update";

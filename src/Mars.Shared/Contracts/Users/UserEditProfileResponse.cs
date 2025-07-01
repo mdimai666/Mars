@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Resources;
 
 namespace Mars.Shared.Contracts.Users;
@@ -33,7 +34,6 @@ public class UserEditProfileResponse
     [Display(Name = "ФИО")]
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
 
-
     [Display(Name = "Телефон")]
     public required string? Phone { get; set; }
 
@@ -63,5 +63,6 @@ public class UserEditProfileResponse
     //public Guid? GeoLocationId { get; set; }
     //-------------end GEO-----------
 
-
+    public required string Type { get; init; }
+    public required IReadOnlyCollection<MetaValueDetailResponse> MetaValues { get; init; }
 }

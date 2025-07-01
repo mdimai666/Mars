@@ -1,6 +1,4 @@
 using AppFront.Shared.Interfaces;
-using Mars.Core.Exceptions;
-using Mars.Shared.Contracts.Roles;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -11,27 +9,16 @@ public partial class EditUserPage
 {
     [Parameter] public Guid ID { get; set; }
 
+    [SupplyParameterFromQuery] public string UserTypeName { get; set; } = "default";
+
     [Inject] IMessageService messageService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
 
-
-    StandartEditForm1<EditUserModel> _editForm1 = default!;
+    StandartEditForm1<UserEditModel> _editForm1 = default!;
     bool isCreateNew => ID == Guid.Empty;
 
-    IEnumerable<RoleSummaryResponse> availRoles = [];
-
-    public async Task<EditUserModel> GetAction(Guid id)
-    {
-        availRoles = (await client.Role.List(new() { Take = 20 })).Items;
-
-        if (isCreateNew) return new();
-
-        var user = await client.User.Get(id) ?? throw new NotFoundException();
-        return EditUserModel.ToModel(user, availRoles);
-    }
-
-    void AfterSave(EditUserModel model)
+    void AfterSave(UserEditModel model)
     {
         if (isCreateNew)
         {

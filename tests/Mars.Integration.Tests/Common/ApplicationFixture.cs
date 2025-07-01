@@ -1,13 +1,14 @@
 using System.Net.Http.Headers;
+using Flurl.Http;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
+using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Controllers.Schedulers;
 using Mars.Integration.Tests.TestControllers;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.UseStartup.MarsParts;
-using Flurl.Http;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,10 +16,9 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Mars.Host.Shared.Services;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Mars.Integration.Tests.Common;
 
@@ -37,7 +37,7 @@ public class ApplicationFixture : IAsyncLifetime
 
     public IConfigurationRoot Configuration = default!;
 
-    private static TokenGenerator _tokenGenerator = new TokenGenerator();
+    private static TokenGenerator _tokenGenerator = new();
 
     private static string? s_bearerToken;
     public static string BearerToken => s_bearerToken ??= $"{JwtBearerDefaults.AuthenticationScheme} {_tokenGenerator.GenerateTokenWithClaims()}";
@@ -164,10 +164,13 @@ public class ApplicationFixture : IAsyncLifetime
             Roles = ["Admin"],
             Password = UserConstants.TestUserPassword,
             UserName = user.UserName,
-            Id = user.Id
+            Id = user.Id,
+            Type = user.Type,
+            MetaValues = [],
         }, CancellationToken.None);
 
         EntitiesCustomize.PostTypeDict = await DbFixture.DbContext.PostTypes.ToDictionaryAsync(s => s.TypeName);
+        EntitiesCustomize.UserTypeDict = await DbFixture.DbContext.UserTypes.ToDictionaryAsync(s => s.TypeName);
 
         ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 

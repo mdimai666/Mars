@@ -15,6 +15,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IFeedbackServiceClient Feedback { get; }
     public IPostServiceClient Post { get; }
     public IUserServiceClient User { get; }
+    public IUserTypeServiceClient UserType { get; }
     public IRoleServiceClient Role { get; }
     public INavMenuServiceClient NavMenu { get; }
     public IOptionServiceClient Option { get; }
@@ -38,6 +39,7 @@ public class MarsWebApiClient : IMarsWebApiClient
         Feedback = new FeedbackServiceClient(serviceProvider, targetClient);
         Post = new PostServiceClient(serviceProvider, targetClient);
         User = new UserServiceClient(serviceProvider, targetClient);
+        UserType = new UserTypeServiceClient(serviceProvider, targetClient);
         Role = new RoleServiceClient(serviceProvider, targetClient);
         NavMenu = new NavMenuServiceClient(serviceProvider, targetClient);
         Option = new OptionServiceClient(serviceProvider, targetClient);

@@ -516,6 +516,12 @@
   <data name="Users" xml:space="preserve">
     <value>Пользователи</value>
   </data>
+  <data name="UserType" xml:space="preserve">
+    <value>Тип пользователя</value>
+  </data>
+  <data name="UserTypes" xml:space="preserve">
+    <value>Типы пользователя</value>
+  </data>
   <data name="ValidationErrorsOccurredTitle" xml:space="preserve">
     <value>Произошла одна или несколько ошибок проверки.</value>
   </data>

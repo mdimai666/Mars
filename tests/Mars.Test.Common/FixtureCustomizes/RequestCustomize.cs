@@ -2,7 +2,7 @@ using AutoFixture;
 using Bogus;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Core.Utils;
+using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Feedbacks;
 using Mars.Host.Shared.Dto.Users;
@@ -79,26 +79,15 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Name, Chance(["tester", "moderator", "viwer", "zoo", "killer", "rabbit"]) + "-" + Guid.NewGuid().ToString().Left(8))
                                     );
 
-        var createUser = () => new Faker<CreateUserRequest>("ru")
-            .RuleFor(s => s.FirstName, f => f.Person.FirstName)
-            .RuleFor(s => s.LastName, f => f.Person.LastName)
-            .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))
-            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(UserDetail.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
-            .RuleFor(s => s.Password, Password.Generate(6, 2))
-            .RuleFor(s => s.Roles, ["Viewer"])
-            .RuleFor(s => s.BirthDate, new DateTime(1991, 6, 10))
-            .RuleFor(s => s.Gender, UserGender.Male)
-            .Generate();
-
         fixture.Customize<CreateUserRequest>(composer => composer
-                                    .FromSeed(s => createUser())
+                                    .FromSeed(s => UserFixtureCustomizeExtension.User())
                                     .OmitAutoProperties()
                                 );
 
         fixture.Customize<UpdateUserRequest>(composer => composer
                                     .FromSeed(s =>
                                     {
-                                        var user = createUser();
+                                        var user = UserFixtureCustomizeExtension.User();
                                         return new UpdateUserRequest
                                         {
                                             Id = Guid.NewGuid(),
@@ -110,6 +99,8 @@ public sealed class RequestCustomize : ICustomization
                                             BirthDate = user.BirthDate,
                                             Gender = user.Gender,
                                             PhoneNumber = user.PhoneNumber,
+                                            MetaValues = [],
+                                            Type = UserTypeEntity.DefaultTypeName,
                                         };
                                     })
                                     .OmitAutoProperties()

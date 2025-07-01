@@ -516,6 +516,12 @@
   <data name="Users" xml:space="preserve">
     <value>Users</value>
   </data>
+  <data name="UserType" xml:space="preserve">
+    <value>UserType</value>
+  </data>
+  <data name="UserTypes" xml:space="preserve">
+    <value>UserTypes</value>
+  </data>
   <data name="ValidationErrorsOccurredTitle" xml:space="preserve">
     <value>One or more validation errors occurred.</value>
   </data>

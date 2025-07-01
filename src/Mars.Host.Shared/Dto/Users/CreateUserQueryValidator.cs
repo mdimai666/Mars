@@ -7,7 +7,7 @@ namespace Mars.Host.Shared.Dto.Users;
 
 public class CreateUserQueryValidator : AbstractValidator<CreateUserQuery>
 {
-    public CreateUserQueryValidator(IRoleRepository roleRepository)
+    public CreateUserQueryValidator(IRoleRepository roleRepository, IUserTypeRepository userTypeRepository)
     {
         RuleFor(x => x.Roles)
             .NotEmpty()
@@ -23,6 +23,10 @@ public class CreateUserQueryValidator : AbstractValidator<CreateUserQuery>
         RuleFor(x => x.PhoneNumber)
             .SetValidator(new UserPhoneValidator())
             .When(x => x.PhoneNumber != null);
+
+        RuleFor(x => x.Type)
+            .MustAsync(userTypeRepository.TypeNameExist)
+            .WithMessage(v => $"user type '{v.Type}' does not exist");
 
         //var roles = (await _roleRepository.ListAll(cancellationToken)).ToDictionary(s => s.Name);
 

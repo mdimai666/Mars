@@ -47,7 +47,6 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
 
     public EUserStatus Status { get; set; }
 
-
     //-------------GEO-----------
 
     //[Comment("Регион")]
@@ -66,21 +65,18 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
     //public GeoLocation GeoLocation { get; set; }
     //-------------end GEO-----------
 
-
     //-------------Relations-----------
 
     public virtual ICollection<PostEntity>? Posts { get; set; }
     public virtual ICollection<FileEntity>? Files { get; set; }
 
-    [NotMapped]
-    public virtual List<MetaFieldEntity>? MetaFields { get; set; } = default!; // для каких юхеров типы???
-    public virtual ICollection<UserMetaFieldEntity>? UserMetaFields { get; set; } = default!;
+    [ForeignKey(nameof(UserType))]
+    public Guid UserTypeId { get; set; }
+    public virtual UserTypeEntity? UserType { get; set; }
 
     [NotMapped]
     public virtual List<MetaValueEntity>? MetaValues { get; set; } = default!;
     public virtual ICollection<UserMetaValueEntity>? UserMetaValues { get; set; } = default!;
-
-
 
     [NotMapped]
     public virtual List<RoleEntity>? Roles { get; set; }
@@ -89,8 +85,6 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
     public virtual ICollection<UserClaimEntity>? Claims { get; set; }
     public virtual ICollection<UserLoginEntity>? Logins { get; set; }
     public virtual ICollection<UserTokenEntity>? Tokens { get; set; }
-
-
 
     // Helpers
     public static string StringDigitOnly(string st)

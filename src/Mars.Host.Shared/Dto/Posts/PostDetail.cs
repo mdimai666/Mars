@@ -1,7 +1,11 @@
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Shared.Contracts.Posts;
 
 namespace Mars.Host.Shared.Dto.Posts;
 
+/// <summary>
+/// <see cref="PostDetailResponse"/>
+/// </summary>
 public record PostDetail : PostSummary
 {
     public required string? Content { get; init; }

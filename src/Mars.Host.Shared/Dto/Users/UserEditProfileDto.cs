@@ -1,4 +1,5 @@
 using Mars.Core.Extensions;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Shared.Contracts.Users;
 
 namespace Mars.Host.Shared.Dto.Users;
@@ -15,7 +16,6 @@ public class UserEditProfileDto
 
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
 
-
     public required string? Phone { get; init; }
 
     public required UserGender Gender { get; init; }
@@ -24,8 +24,8 @@ public class UserEditProfileDto
 
     public required string? AvatarUrl { get; init; }
 
-    //public virtual ICollection<MetaValue> MetaValues { get; init; }
-    //public virtual ICollection<MetaField> MetaFields { get; init; }
+    public required string Type { get; init; }
+    public required IReadOnlyCollection<MetaValueDetailDto> MetaValues { get; init; }
 
     //-------------GEO-----------
 

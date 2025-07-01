@@ -34,4 +34,5 @@ public interface IPostTypeRepository : IDisposable
     Task<IReadOnlyCollection<PostTypeDetail>>  ListAllDetail(CancellationToken cancellationToken);
     Task<ListDataResult<PostTypeSummary>> List(ListPostTypeQuery query, CancellationToken cancellationToken);
     Task<PagingResult<PostTypeSummary>> ListTable(ListPostTypeQuery query, CancellationToken cancellationToken);
+    Task<bool> TypeNameExist(string name, CancellationToken cancellationToken);
 }

@@ -32,6 +32,9 @@ public class CreateUserModel
     [Display(Name = nameof(AppRes.Roles), ResourceType = typeof(AppRes))]
     public IReadOnlyCollection<string> Roles { get; set; } = [];
 
+    [Display(Name = nameof(AppRes.UserType), ResourceType = typeof(AppRes))]
+    public string Type { get; set; } = "";
+
     public CreateUserRequest ToCreateRequest()
         => new()
         {
@@ -45,6 +48,9 @@ public class CreateUserModel
             PhoneNumber = null,
             BirthDate = null,
             Gender = UserGender.None,
+            Type = Type,
+
+            MetaValues = []
         };
 
     public static async Task<CreateUserModel> SaveAction(IMarsWebApiClient client, CreateUserModel data, bool isNew)
@@ -68,20 +74,4 @@ public class CreateUserModel
     //    return client.NavMenu.Delete(user.Id);
     //}
 
-    //public static CreateUserModel ToModel(CreateUserRequest response)
-    //        => new()
-    //        {
-    //            Id = response.Id,
-    //            Title = response.Title,
-    //            Slug = response.Slug,
-    //            Class = response.Class,
-    //            Style = response.Style,
-    //            Disabled = response.Disabled,
-    //            CreatedAt = response.CreatedAt,
-    //            ModifiedAt = response.ModifiedAt,
-    //            Roles = response.Roles.ToList(),
-    //            RolesInverse = response.RolesInverse,
-    //            Tags = response.Tags.ToList(),
-    //            MenuItems = response.MenuItems.Select(NavMenuItem.ToModel).ToList(),
-    //        };
 }

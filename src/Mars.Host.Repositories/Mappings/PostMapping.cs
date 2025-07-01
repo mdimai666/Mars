@@ -105,7 +105,6 @@ internal static class PostMapping
             Excerpt = query.Excerpt,
             LangCode = query.LangCode,
             MetaValues = query.MetaValues.ToEntity(),
-            
         };
 
 }

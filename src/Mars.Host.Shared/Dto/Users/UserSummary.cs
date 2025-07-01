@@ -17,5 +17,6 @@ public record UserSummary
     public required string? MiddleName { get; init; }
 
     [PersonalData]
-    public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls()); 
+    public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
+
 }

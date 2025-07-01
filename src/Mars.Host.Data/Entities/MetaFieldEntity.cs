@@ -38,7 +38,7 @@ public class MetaFieldEntity : IBasicEntity
 
     [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     [Comment("Варианты")]
-    public virtual List<MetaFieldVariant> Variants { get; set; } = new();
+    public virtual List<MetaFieldVariant> Variants { get; set; } = [];
 
     [Comment("Максимальное")]
     public decimal? MaxValue { get; set; } = null;
@@ -89,12 +89,14 @@ public class MetaFieldEntity : IBasicEntity
     public virtual ICollection<MetaValueEntity>? MetaValues { get; set; }
 
     public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; }
+
     [NotMapped]
     public virtual List<PostTypeEntity>? PostTypes { get; set; }
 
-    public virtual ICollection<UserMetaFieldEntity>? UserMetaFields { get; set; }
+    public virtual ICollection<UserTypeMetaFieldEntity>? UserTypeMetaFields { get; set; }
+
     [NotMapped]
-    public virtual List<UserEntity>? Users { get; set; }
+    public virtual List<UserTypeEntity>? UserTypes { get; set; }
 
     #region ENUMS
     public static readonly EMetaFieldType[] ENumbers = MetaValueEntity.ENumbers;
@@ -193,7 +195,7 @@ public class MetaFieldEntity : IBasicEntity
 
     public static ICollection<MetaValueEntity> FieldsBlank(ICollection<MetaValueEntity> metaValues, ICollection<MetaFieldEntity> metaFields, Guid parentId, int index = 0)
     {
-        List<MetaValueEntity> list = new();
+        List<MetaValueEntity> list = [];
 
         foreach (var f in metaFields.Where(s => s.ParentId == parentId && !s.Disabled))
         {
@@ -309,7 +311,7 @@ public class MetaFieldEntity : IBasicEntity
 
         //return values;
 
-        var values = FieldsBlank(new List<MetaValueEntity>(), metaFields, list.Id);
+        var values = FieldsBlank([], metaFields, list.Id);
         foreach (var v in values.Where(s => s.ParentId == list.Id))
         {
             v.Index = index;

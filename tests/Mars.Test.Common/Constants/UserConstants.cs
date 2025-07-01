@@ -18,7 +18,6 @@ public static class UserConstants
 
     public static readonly DateTime TestUserBirthDate = new(1991, 6, 10);
 
-
     public static readonly UserDetailTestModel TestUser = new()
     {
         Id = TestUserId,
@@ -34,6 +33,8 @@ public static class UserConstants
         Roles = ["Admin"],
         CreatedAt = DateTime.Now,
         ModifiedAt = null,
+        Type = UserTypeEntity.DefaultTypeName,
+        MetaValues = []
     };
 
     public static readonly UserEntity TestUserEnt = new()

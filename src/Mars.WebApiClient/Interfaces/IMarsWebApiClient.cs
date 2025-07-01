@@ -12,6 +12,7 @@ public interface IMarsWebApiClient
     IFeedbackServiceClient Feedback { get; }
     IPostServiceClient Post { get; }
     IUserServiceClient User { get; }
+    IUserTypeServiceClient UserType { get; }
     IRoleServiceClient Role { get; }
     INavMenuServiceClient NavMenu { get; }
     IOptionServiceClient Option { get; }

@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mars.Host.Data.Entities;
 
-public class UserMetaFieldEntity
+public class UserTypeMetaFieldEntity
 {
-    [ForeignKey(nameof(User))]
-    public Guid UserId { get; set; }
-    public virtual UserEntity? User { get; set; }
+    [ForeignKey(nameof(UserType))]
+    public Guid UserTypeId { get; set; }
+    public virtual UserTypeEntity? UserType { get; set; }
 
     [ForeignKey(nameof(MetaField))]
     public Guid MetaFieldId { get; set; }

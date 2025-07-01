@@ -1,14 +1,18 @@
 using System.ComponentModel.DataAnnotations;
+using AppAdmin.Pages.UserTypeViews;
+using AppFront.Shared.Components.MetaFieldViews;
 using Mars.Core.Attributes;
+using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Shared.Contracts.Roles;
 using Mars.Shared.Contracts.Users;
+using Mars.Shared.Contracts.UserTypes;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
 
 namespace AppAdmin.Pages.UserViews;
 
-public class EditUserModel
+public class UserEditModel
 {
     public Guid Id { get; set; }
 
@@ -25,14 +29,12 @@ public class EditUserModel
 
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
 
-
     [EmailAddressThatAllowsBlanks(ErrorMessageResourceName = nameof(AppRes.v_email), ErrorMessageResourceType = typeof(AppRes))]
     [Display(Name = nameof(AppRes.Email), ResourceType = typeof(AppRes))]
     public string Email { get; set; } = "";
 
     [Display(Name = nameof(AppRes.Roles), ResourceType = typeof(AppRes))]
     public IEnumerable<RoleSummaryResponse> Roles { get; set; } = [];
-
 
     [Display(Name = nameof(AppRes.Phone), ResourceType = typeof(AppRes))]
     [RegularExpression(@"^\+?\d{3,12}$", ErrorMessageResourceName = nameof(AppRes.InvalidPhoneNumberError), ErrorMessageResourceType = typeof(AppRes))]
@@ -43,9 +45,30 @@ public class EditUserModel
 
     [Display(Name = nameof(AppRes.Gender), ResourceType = typeof(AppRes))]
     public UserGender Gender { get; set; }
+    public string Type { get; set; } = "";
 
+    public List<MetaValueEditModel> MetaValues { get; set; } = [];
+    public UserTypeEditModel UserType { get; init; } = new();
 
-    public static async Task<EditUserModel> SaveAction(IMarsWebApiClient client, EditUserModel user, bool isNew, IEnumerable<RoleSummaryResponse> roles)
+    public IReadOnlyCollection<RoleSummaryResponse> AvailRoles { get; init; } = [];
+
+    public static async Task<UserEditModel> GetAction(IMarsWebApiClient client, Guid id, string userTypeName)
+    {
+        if (id == Guid.Empty)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(userTypeName, nameof(userTypeName));
+            var vm = await client.User.GetUserBlank(userTypeName);
+            return FromViewModel(vm);
+        }
+        else
+        {
+            var vm = await client.User.GetEditModel(id) ?? throw new NotFoundException();
+            return FromViewModel(vm);
+        }
+
+    }
+
+    public static async Task<UserEditModel> SaveAction(IMarsWebApiClient client, UserEditModel user, bool isNew)
     {
         if (isNew)
         {
@@ -56,11 +79,12 @@ public class EditUserModel
         else
         {
             var updated = await client.User.Update(user.ToUpdateRequest());
-            return ToModel(updated, roles);
+            //return ToModel(updated, user.AvailRoles, roles);
         }
+        return user;
     }
 
-    public static Task DeleteAction(IMarsWebApiClient client, EditUserModel model)
+    public static Task DeleteAction(IMarsWebApiClient client, UserEditModel model)
     {
         return client.User.Delete(model.Id);
     }
@@ -79,6 +103,8 @@ public class EditUserModel
             PhoneNumber = PhoneNumber.AsNullIfEmpty(),
 
             Password = password,
+            Type = Type,
+            MetaValues = MetaValues.Select(s => s.ToCreateRequest()).ToList(),
         };
 
     public UpdateUserRequest ToUpdateRequest()
@@ -94,9 +120,14 @@ public class EditUserModel
             BirthDate = ConvertValid(BirthDate),
             Gender = Gender,
             PhoneNumber = PhoneNumber.AsNullIfEmpty(),
+            Type = Type,
+            MetaValues = MetaValues.Select(s => s.ToUpdateRequest()).ToList(),
         };
 
-    public static EditUserModel ToModel(UserDetailResponse response, IEnumerable<RoleSummaryResponse> roles)
+    public static UserEditModel FromViewModel(UserEditViewModel vm)
+        => ToModel(vm.User, vm.AvailRoles, vm.UserType);
+
+    public static UserEditModel ToModel(UserEditResponse response, IEnumerable<RoleSummaryResponse> roles, UserTypeDetailResponse userType)
             => new()
             {
                 Id = response.Id,
@@ -108,7 +139,13 @@ public class EditUserModel
 
                 BirthDate = response.BirthDate,
                 Gender = response.Gender,
-                PhoneNumber = response.PhoneNumber ?? "",
+                PhoneNumber = response.Phone ?? "",
+                Type = response.Type ?? "",
+                MetaValues = response.MetaValues.Select(MetaValueEditModel.ToModel).ToList(),
+
+                //extra
+                UserType = UserTypeEditModel.ToModel(userType, []),
+                AvailRoles = roles.ToList(),
             };
 
     public static DateTime? ConvertValid(DateTime? dateTime)

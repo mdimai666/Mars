@@ -906,6 +906,10 @@ namespace Mars.Host.Data.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
 
+                    b.Property<Guid>("UserTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_type_id");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -915,6 +919,9 @@ namespace Mars.Host.Data.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("UserTypeId")
+                        .HasDatabaseName("ix_users_user_type_id");
 
                     b.ToTable("users", (string)null);
                 });
@@ -944,25 +951,6 @@ namespace Mars.Host.Data.Migrations
                         .HasDatabaseName("ix_user_logins_user_id");
 
                     b.ToTable("user_logins", (string)null);
-                });
-
-            modelBuilder.Entity("Mars.Host.Data.Entities.UserMetaFieldEntity", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<Guid>("MetaFieldId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("meta_field_id");
-
-                    b.HasKey("UserId", "MetaFieldId")
-                        .HasName("pk_user_meta_fields");
-
-                    b.HasIndex("MetaFieldId")
-                        .HasDatabaseName("ix_user_meta_fields_meta_field_id");
-
-                    b.ToTable("user_meta_fields", (string)null);
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.UserMetaValueEntity", b =>
@@ -1032,6 +1020,71 @@ namespace Mars.Host.Data.Migrations
                         .HasName("pk_user_tokens");
 
                     b.ToTable("user_tokens", (string)null);
+                });
+
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("ИД");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()")
+                        .HasComment("Создан");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("modified_at")
+                        .HasComment("Изменен");
+
+                    b.PrimitiveCollection<List<string>>("Tags")
+                        .IsRequired()
+                        .HasColumnType("character varying(128)[]")
+                        .HasColumnName("tags")
+                        .HasComment("Теги");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("text")
+                        .HasColumnName("title")
+                        .HasComment("Название");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("type_name")
+                        .HasComment("Тип");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_types");
+
+                    b.ToTable("user_types", (string)null);
+                });
+
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeMetaFieldEntity", b =>
+                {
+                    b.Property<Guid>("UserTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_type_id");
+
+                    b.Property<Guid>("MetaFieldId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("meta_field_id");
+
+                    b.HasKey("UserTypeId", "MetaFieldId")
+                        .HasName("pk_user_type_meta_fields");
+
+                    b.HasIndex("MetaFieldId")
+                        .HasDatabaseName("ix_user_type_meta_fields_meta_field_id");
+
+                    b.ToTable("user_type_meta_fields", (string)null);
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.FeedbackEntity", b =>
@@ -1379,6 +1432,18 @@ namespace Mars.Host.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserEntity", b =>
+                {
+                    b.HasOne("Mars.Host.Data.Entities.UserTypeEntity", "UserType")
+                        .WithMany()
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_user_types_user_type_id");
+
+                    b.Navigation("UserType");
+                });
+
             modelBuilder.Entity("Mars.Host.Data.Entities.UserLoginEntity", b =>
                 {
                     b.HasOne("Mars.Host.Data.Entities.UserEntity", "User")
@@ -1387,27 +1452,6 @@ namespace Mars.Host.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_logins_users_user_id");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Mars.Host.Data.Entities.UserMetaFieldEntity", b =>
-                {
-                    b.HasOne("Mars.Host.Data.Entities.MetaFieldEntity", "MetaField")
-                        .WithMany("UserMetaFields")
-                        .HasForeignKey("MetaFieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_meta_fields_meta_fields_meta_field_id");
-
-                    b.HasOne("Mars.Host.Data.Entities.UserEntity", "User")
-                        .WithMany("UserMetaFields")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_meta_fields_users_user_id");
-
-                    b.Navigation("MetaField");
 
                     b.Navigation("User");
                 });
@@ -1466,6 +1510,27 @@ namespace Mars.Host.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeMetaFieldEntity", b =>
+                {
+                    b.HasOne("Mars.Host.Data.Entities.MetaFieldEntity", "MetaField")
+                        .WithMany("UserTypeMetaFields")
+                        .HasForeignKey("MetaFieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_type_meta_fields_meta_fields_meta_field_id");
+
+                    b.HasOne("Mars.Host.Data.Entities.UserTypeEntity", "UserType")
+                        .WithMany("UserTypeMetaFields")
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_type_meta_fields_user_types_user_type_id");
+
+                    b.Navigation("MetaField");
+
+                    b.Navigation("UserType");
+                });
+
             modelBuilder.Entity("Mars.Host.Data.Entities.FileEntity", b =>
                 {
                     b.Navigation("PostFiles");
@@ -1477,7 +1542,7 @@ namespace Mars.Host.Data.Migrations
 
                     b.Navigation("PostTypeMetaFields");
 
-                    b.Navigation("UserMetaFields");
+                    b.Navigation("UserTypeMetaFields");
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.MetaValueEntity", b =>
@@ -1518,11 +1583,14 @@ namespace Mars.Host.Data.Migrations
 
                     b.Navigation("Tokens");
 
-                    b.Navigation("UserMetaFields");
-
                     b.Navigation("UserMetaValues");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeEntity", b =>
+                {
+                    b.Navigation("UserTypeMetaFields");
                 });
 #pragma warning restore 612, 618
         }

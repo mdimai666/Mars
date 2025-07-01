@@ -28,4 +28,7 @@ public static class RoleMapping
 
     public static PagingResult<RoleSummaryResponse> ToResponse(this PagingResult<RoleSummary> items)
         => items.ToMap(ToResponse);
+
+    public static IReadOnlyCollection<RoleSummaryResponse> ToResponse(this IReadOnlyCollection<RoleSummary> items)
+        => items.Select(ToResponse).ToArray();
 }

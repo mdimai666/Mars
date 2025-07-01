@@ -1,9 +1,7 @@
+using Flurl.Http;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.Auth;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Users;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -38,7 +36,7 @@ internal class UserServiceClient : BasicServiceClient, IUserServiceClient
         => _client.Request($"{_basePath}{_controllerName}")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<UserListItemResponse>>();
-    
+
     public Task<ListDataResult<UserDetailResponse>> ListDetail(ListUserQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}", "ListDetail")
                     .AppendQueryParam(filter)
@@ -48,7 +46,7 @@ internal class UserServiceClient : BasicServiceClient, IUserServiceClient
         => _client.Request($"{_basePath}{_controllerName}/ListTable")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<UserListItemResponse>>();
-    
+
     public Task<PagingResult<UserDetailResponse>> ListTableDetail(TableUserQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/ListTableDetail")
                     .AppendQueryParam(filter)
@@ -67,13 +65,13 @@ internal class UserServiceClient : BasicServiceClient, IUserServiceClient
                     .PostJsonAsync(new { })
                     .ReceiveJson<UserActionResult>();
 
-    public Task<List<MetaFieldResponse>> UserMetaFields()
-    {
-        throw new NotImplementedException();
-    }
+    public Task<UserEditViewModel> GetEditModel(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}/edit", id)
+                    .OnError(OnStatus404ReturnNull)
+                    .GetJsonAsync<UserEditViewModel>();
 
-    public Task<UserActionResult<List<MetaFieldResponse>>> UserMetaFields(List<MetaFieldResponse> metaFields)
-    {
-        throw new NotImplementedException();
-    }
+    public Task<UserEditViewModel> GetUserBlank(string type)
+        => _client.Request($"{_basePath}{_controllerName}/edit/blank", type)
+                    .OnError(OnStatus404ReturnNull)
+                    .GetJsonAsync<UserEditViewModel>();
 }

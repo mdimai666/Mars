@@ -1,5 +1,6 @@
 using Mars.Core.Utils;
 using Mars.Shared.Contracts.Roles;
+using Mars.Shared.Contracts.UserTypes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
@@ -33,7 +34,6 @@ public partial class CreateUserModal
 
     CreateUserModel model => Content.Model;
 
-
     IEnumerable<RoleSummaryResponse> _selRoles = [];
     IEnumerable<RoleSummaryResponse> SelRoles
     {
@@ -42,6 +42,15 @@ public partial class CreateUserModal
         {
             _selRoles = value;
             Content.Model.Roles = _selRoles.Select(s => s.Name).ToList();
+        }
+    }
+
+    UserTypeListItemResponse SelUserType
+    {
+        get => Content.UserTypes.FirstOrDefault(s => s.TypeName == Content.Model.Type) ?? default!;
+        set
+        {
+            Content.Model.Type = value.TypeName ?? "";
         }
     }
 

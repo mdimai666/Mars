@@ -14,6 +14,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
     //--------Asp.Net defaults----------
 
     public override DbSet<UserEntity> Users { get; set; } = default!;
+    public virtual DbSet<UserTypeEntity> UserTypes { get; set; } = default!;
     public override DbSet<RoleEntity> Roles { get; set; } = default!;
     public override DbSet<UserClaimEntity> UserClaims { get; set; } = default!;
     public override DbSet<UserRoleEntity> UserRoles { get; set; } = default!;
@@ -34,9 +35,10 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
     public virtual DbSet<PostMetaValueEntity> PostMetaValues { get; set; } = default!;
 
     //--------USER----------
-    public virtual DbSet<UserMetaFieldEntity> UserMetaFields { get; set; } = default!;
+    public virtual DbSet<UserTypeMetaFieldEntity> UserTypeMetaFields { get; set; } = default!;
     public virtual DbSet<UserMetaValueEntity> UserMetaValues { get; set; } = default!;
 
+    //--------X----------
     public virtual DbSet<NavMenuEntity> NavMenus { get; set; } = default!;
     public virtual DbSet<FeedbackEntity> Feedbacks { get; set; } = default!;
 
@@ -71,7 +73,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
         if (isPluginInherit)
         {
 #if DEBUG
-            Console.WriteLine($"PLUGIN>>EF+init>{this.GetType().Name}"); 
+            Console.WriteLine($"PLUGIN>>EF+init>{this.GetType().Name}");
 #endif
         }
 

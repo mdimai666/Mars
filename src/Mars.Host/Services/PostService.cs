@@ -1,21 +1,20 @@
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Managers.Extensions;
 using Mars.Host.Shared.Mappings.Posts;
+using Mars.Host.Shared.Mappings.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Posts;
-using Microsoft.Extensions.Hosting;
-using Mars.Host.Shared.Mappings.PostTypes;
-using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Shared.Contracts.PostTypes;
-using Mars.Core.Extensions;
 
 namespace Mars.Host.Services;
 
@@ -71,7 +70,7 @@ internal class PostService : IPostService
 
         //if (created != null)
         {
-            ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.PostAdd(created.Type), created);//TODO: сделать явный тип.
+            var payload = new ManagerEventPayload(_eventManager.Defaults.PostAdd(created.Type), created);//TODO: сделать явный тип.
             _eventManager.TriggerEvent(payload);
         }
 
@@ -86,7 +85,7 @@ internal class PostService : IPostService
         await _postRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.PostUpdate(updated.Type), updated);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostUpdate(updated.Type), updated);
         _eventManager.TriggerEvent(payload);
 
         return updated;
@@ -102,7 +101,7 @@ internal class PostService : IPostService
 
             //if (result.Ok)
             {
-                ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
+                var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
                 _eventManager.TriggerEvent(payload);
             }
             return UserActionResult.Success();
@@ -113,6 +112,7 @@ internal class PostService : IPostService
         }
     }
 
+    #region EDIT_MODEL
     public async Task<PostEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetPostEditDetail(id, cancellationToken) ?? throw new NotFoundException();
@@ -154,7 +154,9 @@ internal class PostService : IPostService
     /// <param name="metaValues"></param>
     /// <param name="metaFields"></param>
     /// <returns></returns>
-    internal IReadOnlyCollection<MetaValueDetailDto> EnrichWithBlankMetaValuesFromMetaValues(IEnumerable<MetaValueDetailDto> metaValues, IReadOnlyCollection<MetaFieldDto> metaFields)
+    public static IReadOnlyCollection<MetaValueDetailDto> EnrichWithBlankMetaValuesFromMetaValues(
+                                                            IEnumerable<MetaValueDetailDto> metaValues,
+                                                            IReadOnlyCollection<MetaFieldDto> metaFields)
     {
 
         var valuesDictByMfId = metaValues.DistinctBy(s => s.MetaField.Id)
@@ -179,7 +181,7 @@ internal class PostService : IPostService
         return enrichMetaValues;
     }
 
-    public MetaValueDetailDto GetBlankMetaValue(MetaFieldDto metaField)
+    public static MetaValueDetailDto GetBlankMetaValue(MetaFieldDto metaField)
     {
         return new()
         {
@@ -235,6 +237,7 @@ internal class PostService : IPostService
             MetaValues = []
         };
     }
+    #endregion
 
     public CreatePostQuery EnrichQuery(CreatePostRequest request)
     {
@@ -257,90 +260,6 @@ internal class PostService : IPostService
     }
 
     // ----------- OLD
-
-
-    //public async Task<Post> GetBlank(string postTypeName)
-    //{
-    //    MarsDbContextLegacy ef = _serviceProvider.GetRequiredService<MarsDbContextLegacy>();
-
-    //    var user = await GetCurrentUser();
-
-    //    Post post = new();
-    //    post.Id = Guid.NewGuid();
-    //    post.Type = postTypeName;
-
-    //    post.PostFiles = new List<PostFiles>();
-    //    if (user is not null)
-    //    {
-    //        post.UserId = user.Id;
-    //        //post.User = user;
-    //    }
-
-    //    MetaFieldService metaFieldService = _serviceProvider.GetRequiredService<MetaFieldService>();
-    //    PostType postType = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.TypeName == postTypeName);
-
-    //    post.MetaValues = metaFieldService.GetValuesBlank(new List<MetaValue>(), postType.MetaFields);
-
-    //    return post;
-    //}
-
-    //public async Task UpdatePostMetaValues(MarsDbContextLegacy ef, Guid postId, ICollection<MetaValue> fromDbMetaValues, ICollection<MetaValue> entity_MetaValues, ICollection<MetaField> metaFields)
-    //{
-    //    if (entity_MetaValues is null) return;
-
-    //    foreach (var e in entity_MetaValues)
-    //    {
-    //        if (e.Id == Guid.Empty) e.Id = Guid.NewGuid();
-    //        //e.MetaField = null;
-    //    }
-
-    //    //var existList = ef.MetaValues.Where(s => s.PostId == _item.Id).ToList();
-    //    var existList = fromDbMetaValues;
-    //    var existListIds = existList.Select(s => s.Id);
-    //    var entityPutMetaValuesIds = entity_MetaValues.Select(s => s.Id);
-
-    //    var requireAddListIds = entityPutMetaValuesIds.Where(s => existListIds.Contains(s) == false);
-    //    //var requireRemoveListIds = existListIds.Where(s => entityPutMetaValuesIds.Contains(s) == false);
-    //    var requireRemoveListIds = entity_MetaValues.Where(s => s.MarkForDelete).Select(s => s.Id);
-
-
-    //    var requireAddList = entity_MetaValues.Where(s => requireAddListIds.Contains(s.Id));
-    //    var requireRemoveList = existList.Where(s => requireRemoveListIds.Contains(s.Id));
-
-
-    //    foreach (var e in entity_MetaValues) e.MetaField = null;
-    //    foreach (var e in requireAddList) e.MetaField = null;
-    //    foreach (var e in requireRemoveList) e.MetaField = null;
-
-
-    //    foreach (var z in entity_MetaValues)
-    //    {
-    //        //z.PostId = id;
-    //        foreach (var f in existList)
-    //        {
-    //            if (f.Id == z.Id)
-    //            {
-    //                ef.Entry(f).CurrentValues.SetValues(z);
-    //            }
-    //        }
-    //    }
-    //    foreach (var z in requireRemoveList)
-    //    {
-    //        ef.MetaValues.Remove(z);
-    //        //_item.MetaValues.Remove(z);
-    //    }
-    //    foreach (var z in requireAddList)
-    //    {
-    //        ef.MetaValues.Add(z);
-    //        //_item.MetaValues.Add(z);
-    //    }
-
-    //    IEnumerable<Guid> newMMList = fromDbMetaValues.Select(s => s.Id).Except(requireRemoveListIds).Concat(requireAddListIds);
-
-    //    await UpdateManyToMany(ef.PostMetaValues, s => s.PostId == postId,
-    //        s => s.PostId, s => s.MetaValueId,
-    //        postId, newMMList);
-    //}
 
     //public UserActionResult ImportData(string postTypeName, JArray json)
     //{
@@ -369,7 +288,6 @@ internal class PostService : IPostService
 
     //        ef.Posts.AddRange(posts);
 
-
     //        throw new NotImplementedException();
     //        //compare option field
 
@@ -389,7 +307,6 @@ internal class PostService : IPostService
     //            Message = ex.Message,
     //        };
     //    }
-
 
     //}
 

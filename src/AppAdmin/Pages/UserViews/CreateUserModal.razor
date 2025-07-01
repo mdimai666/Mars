@@ -1,4 +1,5 @@
 @using Mars.Shared.Contracts.Roles
+@using Mars.Shared.Contracts.UserTypes
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IMarsWebApiClient client
 
@@ -41,6 +42,15 @@
                 </div>
             </FormItem2>
 
+            <FormItem2 For="()=>model.Type">
+                <FluentSelect TOption="UserTypeListItemResponse"
+                                    Items="@Content.UserTypes"
+                                    OptionText="@(s=>s.Title)"
+                                    Placeholder="user type"
+                                    @bind-SelectedOption="@SelUserType"
+                                    />
+            </FormItem2>
+
             <FormItem2 For="()=>model.Roles">
                 <FluentAutocomplete TOption="RoleSummaryResponse"
                                     AutoComplete="off"
@@ -51,7 +61,6 @@
                                     KeepOpen
                                     @bind-SelectedOptions="@SelRoles" />
             </FormItem2>
-
         </StandartEditForm1>
     </FluentDialogBody>
 </FluentDialog>

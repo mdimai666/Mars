@@ -13,4 +13,6 @@ public record MetaFieldResponse
     [Display(Name = "Тип")]
     public required MetaFieldType Type { get; init; }
 
+    [Display(Name = "Ключ")]
+    public required string Key { get; init; }
 }

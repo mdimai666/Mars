@@ -54,7 +54,32 @@ public abstract record MetaValueDetailBase
 
     public required Guid ModelId { get; set; }
 
+    public object? GetValueSimple(MetaFieldType type)
+    {
+        return type switch
+        {
+            MetaFieldType.String => StringShort,
+            MetaFieldType.Text => StringText,
 
+            MetaFieldType.Bool => Bool,
+            MetaFieldType.Int => Int,
+            MetaFieldType.Long => Long,
+            MetaFieldType.Float => Float,
+            MetaFieldType.Decimal => Decimal,
+            MetaFieldType.DateTime => DateTime,
+
+            MetaFieldType.Select => VariantId,
+            MetaFieldType.SelectMany => VariantsIds,
+
+            MetaFieldType.Group => null,//???
+
+            MetaFieldType.Relation => ModelId,
+            MetaFieldType.File => ModelId,
+            MetaFieldType.Image => ModelId,
+
+            _ => throw new NotImplementedException()
+        };
+    }
 }
 
 [DebuggerDisplay("{MetaField.Type}/id={Id}")]

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Net.Mime;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Dto.Posts;
@@ -45,13 +46,13 @@ public class PostJsonController : ControllerBase
     }
 
     [HttpGet("{type}")]
-    public async Task<ListDataResult<PostJsonResponse>> List([FromQuery] ListPostQueryRequest request, string type, CancellationToken cancellationToken)
+    public async Task<ListDataResult<PostJsonResponse>> List([FromQuery] ListPostQueryRequest request, [DefaultValue("post")] string type, CancellationToken cancellationToken)
     {
         return (await _postJsonService.List(request.ToQuery(type), cancellationToken)).ToResponse();
     }
 
     [HttpGet("ListTable/{type}")]
-    public async Task<PagingResult<PostJsonResponse>> ListTable([FromQuery] TablePostQueryRequest request, string type, CancellationToken cancellationToken)
+    public async Task<PagingResult<PostJsonResponse>> ListTable([FromQuery] TablePostQueryRequest request, [DefaultValue("post")] string type, CancellationToken cancellationToken)
     {
         return (await _postJsonService.ListTable(request.ToQuery(type), cancellationToken)).ToResponse();
     }

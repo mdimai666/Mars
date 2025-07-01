@@ -35,7 +35,7 @@ public static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
             Type = entity.Type,
-            MetaValues = entity.MetaValues.ToDetailResponse(),
+            MetaValues = entity.MetaValues.ToResponse(),
         };
 
     public static UserListItemResponse ToResponse(this UserSummary entity)

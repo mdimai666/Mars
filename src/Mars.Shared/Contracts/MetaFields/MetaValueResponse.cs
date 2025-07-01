@@ -1,4 +1,4 @@
-﻿namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Shared.Contracts.MetaFields;
 
 public record MetaValueResponse
 {
@@ -20,4 +20,6 @@ public record MetaValueResponse
     /// </summary>
     public required object? Value { get; init; }
     //public required MetaFieldResponse? MetaField { get; init; }
+
+    public required MetaFieldResponse MetaField { get; init; }
 }

@@ -11,12 +11,14 @@ public static class MetaFieldMapping
             Id = entity.Id,
             Title = entity.Title,
             Type = entity.Type,
+            Key = entity.Key,
         };
 
     public static MetaValueResponse ToResponse(this MetaValueDto entity)
         => new()
         {
             Id = entity.Id,
+            MetaField = entity.MetaField.ToResponse(),
             Value = entity.Value,
         };
 
@@ -48,6 +50,14 @@ public static class MetaFieldMapping
             Value = entity.Value,
         };
 
+    public static MetaValueResponse ToResponse(this MetaValueDetailDto entity)
+        => new()
+        {
+            Id = entity.Id,
+            MetaField = entity.MetaField.ToResponse(),
+            Value = entity.GetValueSimple(entity.MetaField.Type),
+        };
+
     public static IReadOnlyCollection<MetaFieldResponse> ToResponse(this IReadOnlyCollection<MetaFieldDto> list)
         => list.Select(ToResponse).ToList();
 
@@ -58,6 +68,9 @@ public static class MetaFieldMapping
         => list.Select(ToResponse).ToList();
 
     public static IReadOnlyCollection<MetaFieldVariantValueResponse> ToResponse(this IReadOnlyCollection<MetaFieldVariantValueDto> list)
+        => list.Select(ToResponse).ToList();
+
+    public static IReadOnlyCollection<MetaValueResponse> ToResponse(this IReadOnlyCollection<MetaValueDetailDto> list)
         => list.Select(ToResponse).ToList();
 
 }

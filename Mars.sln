@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35828.75
@@ -211,6 +210,22 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.MetaModelGenerator", "src\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj", "{47EFC022-B1A3-486F-8F2B-07ADD5D2EA03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Mars.MetaModelGenerator", "tests\Test.Mars.MetaModelGenerator\Test.Mars.MetaModelGenerator.csproj", "{E0C6DEEB-BCA5-4B35-BAA7-3D1715483A9D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EShop.Plugin", "EShop.Plugin", "{7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Core", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Core\Mars.EShopPlugin.Core.csproj", "{CF37EC9D-77B7-2E62-7247-3549AA7F851C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Abstractions", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Abstractions\Mars.EShopPlugin.Abstractions.csproj", "{795F7783-B63E-63DD-A283-EEC2D65B8860}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Host", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Host\Mars.EShopPlugin.Host.csproj", "{AE23A30C-AA72-9E22-7903-5F04554CE81C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Host.Data", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Host.Data\Mars.EShopPlugin.Host.Data.csproj", "{F1C01313-CEB9-67FF-8157-13A06B1CA212}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Host.Infrastructure", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Host.Infrastructure\Mars.EShopPlugin.Host.Infrastructure.csproj", "{F737943A-CAA3-88C8-11C1-F129ADD011EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Host.Repositories", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Host.Repositories\Mars.EShopPlugin.Host.Repositories.csproj", "{53289E1F-0239-7C0A-3499-FBAB8C1D0140}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Shared", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Shared\Mars.EShopPlugin.Shared.csproj", "{59175BA7-4200-220B-EFEF-3824EF21A788}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -546,6 +561,34 @@ Global
 		{E0C6DEEB-BCA5-4B35-BAA7-3D1715483A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0C6DEEB-BCA5-4B35-BAA7-3D1715483A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0C6DEEB-BCA5-4B35-BAA7-3D1715483A9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF37EC9D-77B7-2E62-7247-3549AA7F851C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF37EC9D-77B7-2E62-7247-3549AA7F851C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF37EC9D-77B7-2E62-7247-3549AA7F851C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF37EC9D-77B7-2E62-7247-3549AA7F851C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{795F7783-B63E-63DD-A283-EEC2D65B8860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{795F7783-B63E-63DD-A283-EEC2D65B8860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{795F7783-B63E-63DD-A283-EEC2D65B8860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{795F7783-B63E-63DD-A283-EEC2D65B8860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE23A30C-AA72-9E22-7903-5F04554CE81C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE23A30C-AA72-9E22-7903-5F04554CE81C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE23A30C-AA72-9E22-7903-5F04554CE81C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE23A30C-AA72-9E22-7903-5F04554CE81C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1C01313-CEB9-67FF-8157-13A06B1CA212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1C01313-CEB9-67FF-8157-13A06B1CA212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1C01313-CEB9-67FF-8157-13A06B1CA212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1C01313-CEB9-67FF-8157-13A06B1CA212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F737943A-CAA3-88C8-11C1-F129ADD011EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F737943A-CAA3-88C8-11C1-F129ADD011EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F737943A-CAA3-88C8-11C1-F129ADD011EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F737943A-CAA3-88C8-11C1-F129ADD011EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53289E1F-0239-7C0A-3499-FBAB8C1D0140}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53289E1F-0239-7C0A-3499-FBAB8C1D0140}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53289E1F-0239-7C0A-3499-FBAB8C1D0140}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53289E1F-0239-7C0A-3499-FBAB8C1D0140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59175BA7-4200-220B-EFEF-3824EF21A788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59175BA7-4200-220B-EFEF-3824EF21A788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59175BA7-4200-220B-EFEF-3824EF21A788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59175BA7-4200-220B-EFEF-3824EF21A788}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -634,6 +677,13 @@ Global
 		{E06FDDC3-8256-4A50-966E-747D19D4DAB8} = {E49F71CA-3458-4760-818D-8496255D0FDF}
 		{47EFC022-B1A3-486F-8F2B-07ADD5D2EA03} = {E49F71CA-3458-4760-818D-8496255D0FDF}
 		{E0C6DEEB-BCA5-4B35-BAA7-3D1715483A9D} = {07D2B207-6B97-4A25-BDD0-8BDD447263E9}
+		{CF37EC9D-77B7-2E62-7247-3549AA7F851C} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{795F7783-B63E-63DD-A283-EEC2D65B8860} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{AE23A30C-AA72-9E22-7903-5F04554CE81C} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{F1C01313-CEB9-67FF-8157-13A06B1CA212} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{F737943A-CAA3-88C8-11C1-F129ADD011EB} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{53289E1F-0239-7C0A-3499-FBAB8C1D0140} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{59175BA7-4200-220B-EFEF-3824EF21A788} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8D4F7A-BC38-43EA-9F4B-6BDB92828DCC}

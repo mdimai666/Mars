@@ -4,7 +4,8 @@
 		<StaticWebAssetBasePath>dev</StaticWebAssetBasePath>
 
         <BlazorEnableCompression>true</BlazorEnableCompression>
-        <PublishTrimmed>true</PublishTrimmed>
+        <!--for plugins support-->
+        <PublishTrimmed>false</PublishTrimmed>
         <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
 
@@ -126,6 +127,5 @@
         <!--<PublishTrimmed>true</PublishTrimmed>-->
         <BlazorEnableCompression>true</BlazorEnableCompression>
     </PropertyGroup>
-
 
 </Project>

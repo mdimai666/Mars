@@ -35,12 +35,12 @@ public partial class EditUserPage
 
     }
 
-    async void UpdateUserRoles()
+    void UpdateUserRoles()
     {
         //await client.User.UpdateUserRoles(model.Id, UpdUserRoles).SmartActionResult();
     }
 
-    async void OnClickSelectAvatar()
+    void OnClickSelectAvatar()
     {
         //var file = await mediaService.OpenSelectMedia();
 

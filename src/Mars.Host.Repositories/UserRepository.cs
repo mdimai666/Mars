@@ -206,7 +206,7 @@ internal class UserRepository : IUserRepository, IDisposable
                                 .ThenInclude(s => s.MetaField)
                             .Where(s => query.Search == null
                                     || (s.Id.ToString() == query.Search
-                                        || EF.Functions.ILike(s.UserName, $"%{query.Search}%")
+                                        || (s.UserName != null && EF.Functions.ILike(s.UserName, $"%{query.Search}%"))
                                         || EF.Functions.ILike(s.FirstName, $"%{query.Search}%")
                                         || EF.Functions.ILike(s.LastName, $"%{query.Search}%")
                                        ));
@@ -346,7 +346,7 @@ internal class UserRepository : IUserRepository, IDisposable
 
         if (user.Roles is null) throw new UserActionException("не удалось получить роли");
 
-        var existRoles = user.Roles!.Select(s => s.Name).ToList();
+        var existRoles = user.Roles!.Select(s => s.Name!).ToList();
 
         var diff = DiffList.FindDifferences(existRoles!, roles);
 

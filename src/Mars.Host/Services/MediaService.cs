@@ -182,10 +182,10 @@ internal class MediaService : FileService, IMediaService
                         var fullFilePath = _hostingInfo.FileAbsolutePath(file.FilePhysicalPath);
                         var filePathFromUpload = file.FilePhysicalPath;
                         string thumbFilepath = GenerateImageThumbPath(cfg, filePathFromUpload);
-                        string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
-
                         var thumFileDir = _hostingInfo.NormalizePathSlashes(Path.GetDirectoryName(thumbFilepath))!;
-                        _fileStorage.CreateDirectory(thumFileDir);
+                        if(!_fileStorage.DirectoryExists(thumFileDir)) _fileStorage.CreateDirectory(thumFileDir);
+
+                        string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
 
                         _imageProcessor.ProcessImage(fullFilePath, thumbFilepathAbsolutePath, cfg);
                         var thumb = GetImageThumbnail(cfg, thumbFilepath);
@@ -224,7 +224,6 @@ internal class MediaService : FileService, IMediaService
             };
         }
     }
-
 
     #region TOOLS
     public List<string> ScanFiles(string path, string pattern, FileHostingInfo hostingInfo)

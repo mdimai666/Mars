@@ -145,7 +145,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
                             && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)))
                 .ToDictionary(s => s.Name);
 
-        return _memberDbSetsByName.GetValueOrDefault(entityName)?.PropertyType;
+        return _memberDbSetsByName.GetValueOrDefault(entityName)?.PropertyType.GenericTypeArguments[0];
     }
 
     static Dictionary<string, PropertyInfo>? _memberDbSetsByName;

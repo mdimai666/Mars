@@ -54,23 +54,23 @@
           "mdimai666.Mars.Host": "0.6.4-alpha.1",
           "AppFront.Main": "0.6.4.0",
           "AppFront.Shared": "0.6.4.0",
-          "BlazoredHtmlRender": "0.6.3.0",
-          "Mars.Core": "0.6.3.0",
-          "Mars.Host.Data": "0.6.3.0",
+          "BlazoredHtmlRender": "0.6.4.0",
+          "Mars.Core": "0.6.4.0",
+          "Mars.Host.Data": "0.6.4.0",
           "Mars.Host": "0.6.4.0",
           "Mars.Host.Shared": "0.6.4.0",
-          "Mars.Nodes.Core": "0.6.3.0",
+          "Mars.Nodes.Core": "0.6.4.0",
           "Mars.Nodes.Core.Implements": "0.6.4.0",
-          "Mars.Nodes.EditorApi": "0.6.3.0",
+          "Mars.Nodes.EditorApi": "0.6.4.0",
           "Mars.Nodes.FormEditor": "0.6.4.0",
-          "Mars.Options": "0.6.3.0",
-          "Mars.Plugin.Abstractions": "0.6.3.0",
-          "Mars.Plugin.Front.Abstractions": "0.6.3.0",
+          "Mars.Options": "0.6.4.0",
+          "Mars.Plugin.Abstractions": "0.6.4.0",
+          "Mars.Plugin.Front.Abstractions": "0.6.4.0",
           "Mars.Plugin.Front": "0.6.4.0",
           "Mars.Shared": "0.6.4.0",
           "Mars.WebApiClient": "0.6.4.0",
-          "MarsCodeEditor2": "0.6.3.0",
-          "MarsEditors": "0.6.3.0"
+          "MarsCodeEditor2": "0.6.4.0",
+          "MarsEditors": "0.6.4.0"
         },
         "runtime": {
           "Mars.dll": {}
@@ -4764,8 +4764,8 @@
         },
         "runtime": {
           "BlazoredHtmlRender.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -4825,8 +4825,8 @@
       "mdimai666.Mars.Core/0.6.4-alpha.1": {
         "runtime": {
           "Mars.Core.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -4872,8 +4872,8 @@
         },
         "runtime": {
           "Mars.Host.Data.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -4904,8 +4904,8 @@
         },
         "runtime": {
           "MarsCodeEditor2.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -4916,8 +4916,8 @@
         },
         "runtime": {
           "Mars.Nodes.Core.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -4946,8 +4946,8 @@
         },
         "runtime": {
           "Mars.Nodes.EditorApi.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -4973,16 +4973,16 @@
         },
         "runtime": {
           "Mars.Options.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
       "mdimai666.Mars.Plugin.Abstractions/0.6.4-alpha.1": {
         "runtime": {
           "Mars.Plugin.Abstractions.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5006,8 +5006,8 @@
         },
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5046,8 +5046,8 @@
         },
         "runtime": {
           "MarsEditors.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5067,27 +5067,27 @@
           }
         }
       },
-      "BlazoredHtmlRender/0.6.3.0": {
+      "BlazoredHtmlRender/0.6.4.0": {
         "runtime": {
           "BlazoredHtmlRender.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
-      "Mars.Core/0.6.3.0": {
+      "Mars.Core/0.6.4.0": {
         "runtime": {
           "Mars.Core.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
-      "Mars.Host.Data/0.6.3.0": {
+      "Mars.Host.Data/0.6.4.0": {
         "runtime": {
           "Mars.Host.Data.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5107,11 +5107,11 @@
           }
         }
       },
-      "Mars.Nodes.Core/0.6.3.0": {
+      "Mars.Nodes.Core/0.6.4.0": {
         "runtime": {
           "Mars.Nodes.Core.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5123,11 +5123,11 @@
           }
         }
       },
-      "Mars.Nodes.EditorApi/0.6.3.0": {
+      "Mars.Nodes.EditorApi/0.6.4.0": {
         "runtime": {
           "Mars.Nodes.EditorApi.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5139,27 +5139,27 @@
           }
         }
       },
-      "Mars.Options/0.6.3.0": {
+      "Mars.Options/0.6.4.0": {
         "runtime": {
           "Mars.Options.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
-      "Mars.Plugin.Abstractions/0.6.3.0": {
+      "Mars.Plugin.Abstractions/0.6.4.0": {
         "runtime": {
           "Mars.Plugin.Abstractions.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
-      "Mars.Plugin.Front.Abstractions/0.6.3.0": {
+      "Mars.Plugin.Front.Abstractions/0.6.4.0": {
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -5192,19 +5192,19 @@
           }
         }
       },
-      "MarsCodeEditor2/0.6.3.0": {
+      "MarsCodeEditor2/0.6.4.0": {
         "runtime": {
           "MarsCodeEditor2.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
-      "MarsEditors/0.6.3.0": {
+      "MarsEditors/0.6.4.0": {
         "runtime": {
           "MarsEditors.dll": {
-            "assemblyVersion": "0.6.3.0",
-            "fileVersion": "0.6.3.0"
+            "assemblyVersion": "0.6.4.0",
+            "fileVersion": "0.6.4.0"
           }
         }
       },
@@ -8021,17 +8021,17 @@
       "serviceable": false,
       "sha512": ""
     },
-    "BlazoredHtmlRender/0.6.3.0": {
+    "BlazoredHtmlRender/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Core/0.6.3.0": {
+    "Mars.Core/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Data/0.6.3.0": {
+    "Mars.Host.Data/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -8046,7 +8046,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Core/0.6.3.0": {
+    "Mars.Nodes.Core/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -8056,7 +8056,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.EditorApi/0.6.3.0": {
+    "Mars.Nodes.EditorApi/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -8066,17 +8066,17 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Options/0.6.3.0": {
+    "Mars.Options/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Abstractions/0.6.3.0": {
+    "Mars.Plugin.Abstractions/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Front.Abstractions/0.6.3.0": {
+    "Mars.Plugin.Front.Abstractions/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -8096,12 +8096,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "MarsCodeEditor2/0.6.3.0": {
+    "MarsCodeEditor2/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "MarsEditors/0.6.3.0": {
+    "MarsEditors/0.6.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

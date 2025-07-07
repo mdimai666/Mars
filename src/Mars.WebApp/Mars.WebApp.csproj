@@ -122,9 +122,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Res\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        <Content Include="Res\**" CopyToOutputDirectory="PreserveNewest" />
+        <Content Update="data\**\*" CopyToOutputDirectory="Never" />
+        <Content Update="data\**\*" CopyToPublishDirectory="Never" />
+        <Content Include="data\nodes\help.txt" CopyToPublishDirectory="PreserveNewest" />
+        <Content Include="data\plugins\help.txt" CopyToPublishDirectory="PreserveNewest" />
+        <Content Include="data\fronts\help.txt" CopyToPublishDirectory="PreserveNewest" />
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
     </ItemGroup>
 
     <ItemGroup>
@@ -156,6 +160,9 @@
     <ItemGroup>
         <ContainerEnvironmentVariable Include="ASPNETCORE_HTTPS_PORTS">
             <Value>443</Value>
+        </ContainerEnvironmentVariable>
+        <ContainerEnvironmentVariable Include="ASPNETCORE_HTTP_PORTS">
+            <Value>80</Value>
         </ContainerEnvironmentVariable>
     </ItemGroup>
 
@@ -203,7 +210,7 @@
 
     <!--Clean publish folder from old files-->
     <Target Name="DeletePreviousPublish" BeforeTargets="_CheckForUnsupportedTargetFramework" Condition=" '$(Configuration)' == 'Release' ">
-        <RemoveDir Directories="$(PublishUrl.Remove($(PublishDir.LastIndexOf('\'))))"></RemoveDir>
+        <RemoveDir Directories="$(PublishUrl.Remove($(PublishDir.LastIndexOf('$([System.IO.Path]::DirectorySeparatorChar)'))))"></RemoveDir>
     </Target>
 
     <ItemGroup>

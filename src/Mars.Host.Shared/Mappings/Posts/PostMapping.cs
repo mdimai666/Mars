@@ -62,7 +62,6 @@ public static class PostMapping
             MetaValues = entity.MetaValues.ToDetailResponse(),
         };
 
-
     public static ListDataResult<PostListItemResponse> ToResponse(this ListDataResult<PostSummary> postTypes)
         => postTypes.ToMap(ToListItemResponse);
 

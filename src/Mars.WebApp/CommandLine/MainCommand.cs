@@ -19,7 +19,7 @@ public class MainCommand : CommandCli
     public void ShowInfoCommand()
     {
         var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
-        NpgsqlConnectionStringBuilder npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+        var npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
         string databaseName = npgsqlConnectionStringBuilder.Database!;
 
         var sp = app.Services;
@@ -28,6 +28,7 @@ public class MainCommand : CommandCli
         _ = nameof(IOptionService.FileHostingInfo);// see for sync
         var uploadPath = Path.Join(wwwRoot, "upload");
 
+        Console.WriteLine("version = " + MarsStartupInfo.Version);
         Console.WriteLine("wwwroot = " + wwwRoot);
         Console.WriteLine("upload = " + uploadPath);
         Console.WriteLine("Database = " + databaseName);

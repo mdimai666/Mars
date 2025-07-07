@@ -45,7 +45,18 @@ public static class UserConstants
         UserName = TestUserUsername,
         Email = TestUserEmail,
         SecurityStamp = Guid.NewGuid().ToString(),
-        Roles = []
+        Roles = [],
+        MetaValues = [],
+        UserTypeId = Guid.Empty,
+        UserType = TestUserType,
+    };
+
+    public static readonly UserTypeEntity TestUserType = new()
+    {
+        Id = Guid.Empty,
+        TypeName = UserTypeEntity.DefaultTypeName,
+        Title = UserTypeEntity.DefaultTypeName,
+        CreatedAt = DateTimeOffset.Now,
     };
 
 }

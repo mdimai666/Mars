@@ -20,11 +20,11 @@ public class PostTypeExporter
         this.serviceProvider = serviceProvider;
     }
 
-    public async Task<PostTypeExport> ExportPostType(Guid id)
+    public Task<PostTypeExport> ExportPostType(Guid id)
     {
         PostTypeService postTypeService = serviceProvider.GetRequiredService<PostTypeService>();
 
-        PostTypeDetail postType = default;// await postTypeService.Get1(id);
+        PostTypeDetail postType = default!;// await postTypeService.Get1(id);
 
         PostTypeExport export = new PostTypeExport
         {
@@ -36,10 +36,11 @@ public class PostTypeExporter
             //MetaFields = MetaFieldExportFormat.GetExportList(postType.MetaFields.ToList())
         };
 
-        return export;
+        //return export;
+        throw new NotImplementedException();
     }
 
-    public async Task<UserActionResult> ImportPostType(PostTypeExport import, string asPostType = "")
+    public Task<UserActionResult> ImportPostType(PostTypeExport import, string asPostType = "")
     {
         throw new NotImplementedException();
         //try
@@ -79,7 +80,6 @@ public class PostTypeExporter
         //    ////////ef.Entry(postType);//.CurrentValues.SetValues(entity);
         //    ////////postType.Modified = DateTime.Now;
 
-
         //    ////////var entity = postType;
 
         //    ////////await postTypeService.UpdateManyToMany(ef.PostTypeMetaFields, s => s.PostTypeId == entity.Id,
@@ -110,7 +110,7 @@ public class PostTypeExport
     public string Title { get; set; }
     public string TypeName { get; set; }
     public List<PostStatusExport> PostStatusList { get; set; }
-    public IReadOnlyCollection<string> EnabledFeatures { get; set; } 
+    public IReadOnlyCollection<string> EnabledFeatures { get; set; }
     [Display(Name = "Тип PostContent")]
     //public EPostContentType PostContentType { get; set; } = EPostContentType.PlainText;
 
@@ -165,13 +165,12 @@ public class MetaFieldExportFormat
     [Display(Name = "Key")]
     public string KeyPath { get; set; }
 
-
     [Display(Name = "Тип")]
     public MetaFieldType Type { get; set; }
 
     [Column(TypeName = "jsonb")]
     [Display(Name = "Варианты")]
-    public IReadOnlyCollection<MetaFieldVariantDto> Variants { get; set; } 
+    public IReadOnlyCollection<MetaFieldVariantDto> Variants { get; set; }
 
     [Display(Name = "Максимальное")]
     public decimal? MaxValue { get; set; } = null;
@@ -194,7 +193,6 @@ public class MetaFieldExportFormat
 
     [Display(Name = "Порядок")]
     public int Order { get; set; }
-
 
     /////////////////////////////////////
     /// <summary>
@@ -238,8 +236,6 @@ public class MetaFieldExportFormat
         //List<MetaFieldExportKeyed> list = new();
 
         //List<MetaFieldExport> root = import.Where(s => s.KeyPath.Contains("/") == false).ToList();
-
-
 
         //foreach (var a in root)
         //{

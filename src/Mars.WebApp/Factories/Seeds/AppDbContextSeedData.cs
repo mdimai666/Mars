@@ -1,10 +1,11 @@
 using Mars.Host.Data.Contexts;
+using Mars.Host.Options;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Options;
 
 namespace Mars.Factories.Seeds;
 
-public class AppDbContextSeedData
+public static class AppDbContextSeedData
 {
     public static void SeedFirstOption(
         MarsDbContext ef,
@@ -17,12 +18,12 @@ public class AppDbContextSeedData
 
         if (string.IsNullOrEmpty(existNewSysOption.SiteUrl))
         {
-            var saddr = configuration["urls"].Split(";").First();
-            int port = new Uri(saddr).Port;
+            var urls = string.IsNullOrEmpty(configuration["urls"]) ? "http://localhost" : configuration["urls"]!;
+            var isValidUrl = OptionReaderTool.NormalizeUrl(urls, out var siteUrl);
 
             var sysOptions = new SysOptions
             {
-                SiteUrl = $"http://localhost:{port}",
+                SiteUrl = siteUrl,
                 AdminEmail = "admin@mail.localhost",
                 AllowUsersSelfRegister = false,
                 SiteDescription = "New Mars website description",
@@ -32,4 +33,5 @@ public class AppDbContextSeedData
         }
 
     }
+
 }

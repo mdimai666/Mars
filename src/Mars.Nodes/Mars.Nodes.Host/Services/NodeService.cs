@@ -56,6 +56,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         NodeImplementFabirc.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
         NodeImplementFabirc.RefreshDict();
 
+        var nodesDir = Path.GetDirectoryName(flowFilePath)!;
+        if (!_fileStorage.DirectoryExists(nodesDir)) _fileStorage.CreateDirectory(nodesDir);
+
         try
         {
             TryLoadFlowFile();
@@ -98,7 +101,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         }
         catch (Exception ex)
         {
-            _RED.Nodes = new();
+            _RED.Nodes = [];
             _logger.LogError(ex, "LoadFlowFile");
             return false;
         }
@@ -200,7 +203,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         //fs.StartAsync(new CancellationToken());
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskManager>>();
 
-        NodeTaskManager manager = new NodeTaskManager(serviceProvider, _hub, Nodes, _RED, logger);
+        var manager = new NodeTaskManager(serviceProvider, _hub, Nodes, _RED, logger);
 
         manager.Run(nodeId, msg);//TODO: wait complete
 
@@ -232,13 +235,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         CallNode node = (implNode.Node as CallNode)!;
 
-
-        NodeMsg msg = new NodeMsg();
-        msg.Payload = payload;
+        var msg = new NodeMsg()
+        {
+            Payload = payload
+        };
 
         bool isComplete = false;
         object? returnData = null;
-
 
         var task = new Task<object?>(() =>
         {
@@ -246,7 +249,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             return returnData;
         });
 
-        CallNodeCallbackAction callback = new CallNodeCallbackAction(payload => { returnData = payload; isComplete = true; }, implNode.Id);
+        var callback = new CallNodeCallbackAction(payload => { returnData = payload; isComplete = true; }, implNode.Id);
         msg.Add(callback);
 
         _ = Inject(serviceProvider, implNode.Id, msg);
@@ -273,7 +276,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         if (findList.Any())
         {
-            List<EventNodeImpl> activateNodeList = new();
+            List<EventNodeImpl> activateNodeList = [];
 
             foreach (var _node in findList)
             {
@@ -293,7 +296,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     void TriggerEventNodes(IEnumerable<EventNodeImpl> nodes, ManagerEventPayload payload)
     {
-        List<Task> nodesTask = new();
+        List<Task> nodesTask = [];
 
         foreach (var node in nodes)
         {
@@ -306,7 +309,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
                     NodeMsg msg = new();
                     msg.Add(payload);
                     //Console.WriteLine("11="+node.Node.Label);
-                    await this.Inject(scope.ServiceProvider, node.Node.Id, msg);
+                    await Inject(scope.ServiceProvider, node.Node.Id, msg);
                 }
                 catch (Exception)
                 {

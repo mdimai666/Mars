@@ -54,7 +54,6 @@
 	<ItemGroup>
 	  <Folder Include="QueryLang\" />
 	  <Folder Include="RuntimeTypeCompilerTests\" />
-	  <Folder Include="SomeTests\" />
 	</ItemGroup>
 
     <ItemGroup>

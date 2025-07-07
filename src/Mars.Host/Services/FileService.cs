@@ -90,7 +90,6 @@ internal class FileService : IFileService
     public Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
         => _fileRepository.UpdateBulk(query, hostingInfo, cancellationToken);
 
-
     /*
     public virtual TFileEntity WriteAvatar(User user, IFormFile file)
     {
@@ -154,7 +153,6 @@ internal class FileService : IFileService
     }
     */
 
-
     public Task<Guid> WriteUpload(
         string originalFileNameWithExt,
         string subpath,
@@ -176,9 +174,8 @@ internal class FileService : IFileService
         return WriteUpload(originalFileNameWithExt, subpath, formFile.OpenReadStream(), userId, cancellationToken);
     }
 
-
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <returns>created FileEntity Id</returns>
     /// <exception cref="ArgumentException"></exception>
@@ -357,6 +354,8 @@ internal class FileService : IFileService
             foreach (var cfg in mediaOption.ImagePreviewSizeConfigs)
             {
                 string thumbFilepath = GenerateImageThumbPath(cfg, filePathFromUpload);
+                var thumFileDir = _hostingInfo.NormalizePathSlashes(Path.GetDirectoryName(thumbFilepath))!;
+                if (!_fileStorage.DirectoryExists(thumFileDir)) _fileStorage.CreateDirectory(thumFileDir);
                 string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
                 //TODO: заменить на _fileStorage
                 var result = _imageProcessor.ProcessImage(fullFilePath, thumbFilepathAbsolutePath, cfg);

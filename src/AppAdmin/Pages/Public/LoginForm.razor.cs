@@ -19,9 +19,9 @@ public partial class LoginForm
     class AuthCreditionalsModel
     {
         [Required(ErrorMessage = "Заполните Логин/Почту")]
-        public string Login = "";
+        public string Login { get; set; } = "";
         [Required(ErrorMessage = "Заполните Пароль")]
-        public string Password = "";
+        public string Password { get; set; } = "";
 
         public AuthCreditionalsRequest ToRequest() => new() { Login = Login, Password = Password };
     }
@@ -147,6 +147,8 @@ public partial class LoginForm
         }
         else
         {
+            await Task.Delay(10);//из-за редиректа какя то бага и не переходит по ссылке
+
             if (string.IsNullOrEmpty(ReturnUrl))
             {
                 NavigationManager.NavigateTo(AfterLoginUrl);
@@ -248,9 +250,11 @@ public partial class LoginForm
     async Task<T> SendForm<T>(List<KeyValuePair<string, string>> body, string requestUri)
     {
         var form = new FormUrlEncodedContent(body).ReadAsStringAsync().Result;
-        HttpContent post = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded");
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-        request.Content = post;
+        var post = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded");
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = post
+        };
 
         var req = await client.SendAsync(request);
 

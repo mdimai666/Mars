@@ -15,7 +15,7 @@ public class TokenGenerator
     {
         ExpiryInMinutes = 43200,
         SecurityKey = "MarsSuperSecretKey256greaterThan32",
-        ValidAudience = "https://localhost:5003",
+        ValidAudience = "http://localhost",
         ValidIssuer = "MarsIssuerAPI"
     };
 

@@ -11,6 +11,7 @@ else if (!IsAlreadyAuth)
     @if (authVariantConstOption.Variants.HasFlag(Mars.Options.Models.AuthVariantConstOption.AuthVariants.LoginPass))
     {
         <EditForm Model=@auth OnValidSubmit=ExecuteLogin>
+            <DataAnnotationsValidator />
             <FormItem2 For="()=>auth.Login" Label="@AppRes.LoginOrEmail">
                 <FluentTextField @bind-Value=@auth.Login name="login-email" AutoFocus Class="w-100" />
             </FormItem2>
@@ -24,7 +25,6 @@ else if (!IsAlreadyAuth)
             </div>
             <div class="spacer-1"></div>
             <FluentButton Appearance=@Appearance.Accent Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
-
 
             @if (Q.Site.SysOptions.AllowUsersSelfRegister)
             {

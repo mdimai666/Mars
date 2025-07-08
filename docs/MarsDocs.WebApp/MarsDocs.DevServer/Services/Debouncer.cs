@@ -1,3 +1,5 @@
+namespace MarsDocs.DevServer.Services;
+
 public class Debouncer
 {
     private List<CancellationTokenSource> StepperCancelTokens = [];

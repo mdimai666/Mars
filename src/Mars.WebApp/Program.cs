@@ -175,6 +175,7 @@ if (!IsDevelopment)
 app.UseCors();
 //app.UseIdentityServer();
 app.UseRouting(); //11-22
+//app.UseAntiforgery();
 app.UseAuthentication(); //11-22
 #pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
 app.UseAuthorization(); //11-22

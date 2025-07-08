@@ -1,38 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+
 <head>
-    <meta charset="utf-8">
-    <title>Mars docs</title>
+    <meta charset="utf-8" />
+
+    <title>Марс - бесплатная CMS с открытым исходным кодом.</title>
+    <link rel="icon" type="image/png" href="icon-128.png">
+
+    <!-- SEO теги -->
+    <meta name="description" content="Mars — это бесплатная CMS с открытым исходным кодом, позволяющая вам управлять любым контентом как угодно.">
+    <meta name="keywords" content="Mars CMS, бесплатная CMS, open source CMS, система управления контентом, управление сайтом, headless CMS, CMS для разработчиков">
+    <meta name="author" content="mdimai666">
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (для соцсетей и мессенджеров) -->
+    <meta property="og:title" content="Mars — бесплатная CMS с открытым исходным кодом">
+    <meta property="og:description" content="Управляйте любым контентом как угодно с помощью Mars — бесплатной open source CMS.">
+    <meta property="og:image" content="https://mdimai666.github.io/Mars/img/mars-og-image.png" />
+    <meta property="og:url" content="https://mdimai666.github.io/Mars/" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Mars — бесплатная CMS с открытым исходным кодом">
+    <meta name="twitter:description" content="Управляйте контентом свободно и гибко с Mars CMS.">
+    <meta name="twitter:image" content="https://mdimai666.github.io/Mars/img/mars-og-image.png">
+
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // https://github.com/rafrex/spa-github-pages
-      // Copyright (c) 2016 Rafael Pedicini, licensed under the MIT License
-      // ----------------------------------------------------------------------
-      // This script takes the current url and converts the path and query
-      // string into just a query string, and then redirects the browser
-      // to the new url with only a query string and hash fragment,
-      // e.g. http://www.foo.tld/one/two?a=b&c=d#qwe, becomes
-      // http://www.foo.tld/?p=/one/two&q=a=b~and~c=d#qwe
-      // Note: this 404.html file must be at least 512 bytes for it to work
-      // with Internet Explorer (it is currently > 512 bytes)
+        // Single Page Apps for GitHub Pages
+        // https://github.com/rafrex/spa-github-pages
+        // Copyright (c) 2016 Rafael Pedicini, licensed under the MIT License
+        // ----------------------------------------------------------------------
+        // This script takes the current url and converts the path and query
+        // string into just a query string, and then redirects the browser
+        // to the new url with only a query string and hash fragment,
+        // e.g. http://www.foo.tld/one/two?a=b&c=d#qwe, becomes
+        // http://www.foo.tld/?p=/one/two&q=a=b~and~c=d#qwe
+        // Note: this 404.html file must be at least 512 bytes for it to work
+        // with Internet Explorer (it is currently > 512 bytes)
 
-      // If you're creating a Project Pages site and NOT using a custom domain,
-      // then set segmentCount to 1 (enterprise users may need to set it to > 1).
-      // This way the code will only replace the route part of the path, and not
-      // the real directory in which the app resides, for example:
-      // https://username.github.io/repo-name/one/two?a=b&c=d#qwe becomes
-      // https://username.github.io/repo-name/?p=/one/two&q=a=b~and~c=d#qwe
-      // Otherwise, leave segmentCount as 0.
-      var segmentCount = 1;
+        // If you're creating a Project Pages site and NOT using a custom domain,
+        // then set segmentCount to 1 (enterprise users may need to set it to > 1).
+        // This way the code will only replace the route part of the path, and not
+        // the real directory in which the app resides, for example:
+        // https://username.github.io/repo-name/one/two?a=b&c=d#qwe becomes
+        // https://username.github.io/repo-name/?p=/one/two&q=a=b~and~c=d#qwe
+        // Otherwise, leave segmentCount as 0.
+        var segmentCount = 1;
 
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
-        l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+        var l = window.location;
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
+            l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
     </script>
 </head>
 <body>

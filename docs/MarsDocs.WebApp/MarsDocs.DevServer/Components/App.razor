@@ -27,6 +27,20 @@
     </div>
     <script src="js/highlight-extensions.js"></script>
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        const evtSource = new EventSource("/sse");
+
+        evtSource.onmessage = function (e) {
+            let sp = e.data.split(';')
+            let key = sp[0];
+            let value = sp.length>1? sp[1]:null;
+            if (key === "reload") {
+                console.log(`🔄 Reload received '${value}'`);
+                DotNet.invokeMethodAsync("MarsDocs.WebApp", "NotifyReload", value);
+            }
+            else console.warn(e)
+        };
+    </script>
 </body>
 
 </html>

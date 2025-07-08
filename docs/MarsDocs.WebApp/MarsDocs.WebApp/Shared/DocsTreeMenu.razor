@@ -3,7 +3,7 @@
 
 <FluentNavMenu Class="@Class" Style="@Style" Id="@Id"
                AdditionalAttributes="@AdditionalAttributes">
-    @foreach (var item in Items)
+    @foreach (var item in Items.OrderBy(s => s.Order))
     {
         @if (item.IsDivider)
         {

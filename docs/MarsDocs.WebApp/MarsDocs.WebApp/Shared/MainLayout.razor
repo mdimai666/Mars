@@ -12,28 +12,35 @@
     <FluentStack Orientation="Orientation.Horizontal" Class="flex-fill align-items-stretch" HorizontalGap="0" Width="100%">
         <FluentStack Orientation="Orientation.Vertical"
                      Width="300px"
-                     Class="pt-3 flex-fill flex-shrink-0 align-items-stretch d-none d-md-flex"
+                     Class="flex-fill flex-shrink-0 align-items-stretch1 d-none d-md-flex"
                      Style="border-right: 1px solid #e0e0e0; background-color: #fafafa;">
 
-            <div style="position:sticky; top:16px;">
-                <NavLink href="#">
-                    <img src="img/logo.svg" class="mx-auto w-100" style="height:40px; object-fit:contain;" />
-                </NavLink>
+            <div class="d-flex flex-column justify-content-between"
+                 style="position:sticky; top:0px;min-height:100vh">
+                <div class="__TOP pt-3">
+                    <NavLink href="#">
+                        <img src="img/logo.svg" class="mx-auto w-100" style="height:40px; object-fit:contain;" />
+                    </NavLink>
 
-                <div class="social-icons text-center mt-3">
-                    <a href="https://github.com/mdimai666/Mars">
-                        <i class="bi bi-github"></i>
-                    </a>
+                    <div class="social-icons text-center mt-3">
+                        <a href="https://github.com/mdimai666/Mars" title="Github">
+                            <i class="bi bi-github"></i>
+                        </a>
+                    </div>
+
+                    <div class="p-3">
+                        <FluentSearch Class="mb-3 w-100" Placeholder="Search.." />
+
+                        @* <FluentLabel Class="p-2 color-accent fw-bold" Typo="Typography.Subject">Начало</FluentLabel> *@
+                        <NavMenu />
+                        <FluentDivider Orientation="Orientation.Horizontal" />
+                        @* <FluentLabel Class="p-2 color-accent fw-bold" Typo="Typography.Subject">Как сделать</FluentLabel> *@
+                        <DocsTreeMenu Items="App.Menu" Style="--neutral-fill-stealth-rest: transparent;" />
+
+                    </div>
                 </div>
-
-                <div class="p-3">
-                    <FluentSearch Class="mb-3 w-100" Placeholder="Search.." />
-
-                    <FluentLabel Class="p-2 color-accent fw-bold" Typo="Typography.Subject">Начало</FluentLabel>
-                    <NavMenu />
-                    <FluentDivider Orientation="Orientation.Horizontal" />
-                    <FluentLabel Class="p-2 color-accent fw-bold" Typo="Typography.Subject">Как сделать</FluentLabel>
-                    <DocsTreeMenu Items="App.Menu" Style="--neutral-fill-stealth-rest: transparent;" />
+                <div class="__BOTTOM text-secondary p-3">
+                    @($"v{App.MarsVersion}")
                 </div>
             </div>
         </FluentStack>

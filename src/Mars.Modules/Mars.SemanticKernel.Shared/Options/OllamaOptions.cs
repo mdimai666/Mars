@@ -5,7 +5,7 @@ namespace Mars.SemanticKernel.Shared.Options;
 /// <summary>
 /// Ollama settings.
 /// </summary>
-public sealed class OllamaOptions
+public sealed class OllamaOptions : ILLMOptions
 {
     public const string SectionName = "Ollama";
 

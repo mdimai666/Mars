@@ -5,7 +5,7 @@ namespace Mars.SemanticKernel.Shared.Options;
 /// <summary>
 /// Azure OpenAI settings.
 /// </summary>
-public sealed class AzureOpenAIOptions
+public sealed class AzureOpenAIOptions : ILLMOptions
 {
     public const string SectionName = "AzureOpenAI";
 

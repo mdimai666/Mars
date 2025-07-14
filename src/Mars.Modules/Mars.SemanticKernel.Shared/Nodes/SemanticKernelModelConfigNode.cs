@@ -10,13 +10,12 @@ namespace Mars.SemanticKernel.Shared.Nodes;
 [FunctionApiDocument("./_content/Mars.SemanticKernel.Front/docs/nodes/SemanticKernelModelConfigNode/SemanticKernelModelConfigNode{.lang}.md")]
 public class SemanticKernelModelConfigNode : ConfigNode
 {
-    public readonly static string[] AvailModelTypes = [OllamaOptions.SectionName];
+    public readonly static string[] AvailModelTypes = [OllamaOptions.SectionName, OpenAIOptions.SectionName];
 
     public string ModelType { get; set; } = OllamaOptions.SectionName;
     public JsonNode ModelConfig { get; set; } = JsonSerializer.SerializeToNode(new OllamaOptions())!;
 
     public string SystemPrompt { get; set; } = "";
-
 
     public float? Temperature { get; set; } //= 0.1f; // Температура модели. Повышение температуры заставит модель
                                             // отвечать более креативно. (По умолчанию: 0,8)

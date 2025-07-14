@@ -1,3 +1,7 @@
+window.d_onPageLoad = function () {
+    //console.log('d_onPageLoad');
+}
+
 window.BeauityJsonInSelector = function (selector, value) {
     setTimeout(() => {
         const div = document.querySelector(selector);
@@ -214,7 +218,6 @@ document.body.addEventListener('click', function (e) {
         behavior: 'smooth'
     });
 });
-
 
 document.body.addEventListener('click', function (e) {
     if (e.target.classList.contains('f-dark-theme-toggle')) {

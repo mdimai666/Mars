@@ -1,0 +1,34 @@
+@using System.Text.Json.Nodes
+@using AppFront.Shared.Components
+@using Mars.SemanticKernel.Shared.Options
+@using System.Text.Json
+
+<FormItem2 For="() => Value.ModelId">
+    <FluentTextField @bind-Value=Value.ModelId />
+</FormItem2>
+<FormItem2 For="() => Value.ApiKey">
+    <FluentTextField @bind-Value=Value.ApiKey Class="w-100" />
+</FormItem2>
+<FormItem2 For="() => Value.OrgId">
+    <FluentTextField @bind-Value=Value.OrgId />
+</FormItem2>
+
+@code {
+    OpenAIOptions _value = default!;
+
+    [Parameter]
+    public OpenAIOptions Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<OpenAIOptions> ValueChanged { get; set; }
+
+}

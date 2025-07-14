@@ -5,7 +5,7 @@ namespace Mars.SemanticKernel.Shared.Options;
 /// <summary>
 /// OpenAI settings.
 /// </summary>
-public sealed class OpenAIOptions
+public sealed class OpenAIOptions : ILLMOptions
 {
     public const string SectionName = "OpenAI";
 
@@ -15,6 +15,5 @@ public sealed class OpenAIOptions
     [Required]
     public string ApiKey { get; set; } = string.Empty;
 
-    [Required]
-    public string OrgId { get; set; } = string.Empty;
+    public string? OrgId { get; set; } = string.Empty;
 }

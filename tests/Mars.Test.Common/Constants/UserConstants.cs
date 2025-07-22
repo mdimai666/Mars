@@ -37,6 +37,14 @@ public static class UserConstants
         MetaValues = []
     };
 
+    public static readonly UserTypeEntity TestUserType = new()
+    {
+        Id = Guid.Empty,
+        TypeName = UserTypeEntity.DefaultTypeName,
+        Title = UserTypeEntity.DefaultTypeName,
+        CreatedAt = DateTimeOffset.Now,
+    };
+
     public static readonly UserEntity TestUserEnt = new()
     {
         Id = TestUserId,
@@ -49,14 +57,6 @@ public static class UserConstants
         MetaValues = [],
         UserTypeId = Guid.Empty,
         UserType = TestUserType,
-    };
-
-    public static readonly UserTypeEntity TestUserType = new()
-    {
-        Id = Guid.Empty,
-        TypeName = UserTypeEntity.DefaultTypeName,
-        Title = UserTypeEntity.DefaultTypeName,
-        CreatedAt = DateTimeOffset.Now,
     };
 
 }

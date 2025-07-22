@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentValidation;
 using Mars.Host.Handlers;
 using Mars.Host.Managers;
@@ -6,6 +7,7 @@ using Mars.Host.Services;
 using Mars.Host.Services.GallerySpace;
 using Mars.Host.Services.Keycloak;
 using Mars.Host.Services.MarsSSOClient;
+using Mars.Host.Shared.Attributes;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Interfaces;
@@ -79,6 +81,7 @@ public static class MainMarsHost
         services.AddScoped<IValidatorFabric, ValidatorFabric>();
 
         UseIMetaRelationModelProviderHandler(services);
+        RegisterAIToolScenarioProviders(services);
 
         return services;
     }
@@ -117,5 +120,34 @@ public static class MainMarsHost
 
         services.AddKeyedSingleton<IOptions<FileHostingInfo>>("data", dataDirHostingInfo);
         services.AddKeyedSingleton<IFileStorage>("data", dataFs);
+    }
+
+    static IServiceCollection RegisterAIToolScenarioProviders(this IServiceCollection services)
+    {
+        services.AddSingleton<IAIToolScenarioProvidersLocator, AIToolScenarioProvidersLocator>();
+        //var toolMap = new Dictionary<string, Type>();
+
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location));
+
+        foreach (var type in assemblies.SelectMany(a => a.GetTypes()))
+        {
+            if (!type.IsClass || type.IsAbstract)
+                continue;
+
+            var attr = type.GetCustomAttribute<RegisterAIToolAttribute>();
+            if (attr == null)
+                continue;
+
+            if (typeof(IAIToolScenarioProvider).IsAssignableFrom(type))
+            {
+                var key = attr.Key ?? type.Name;
+                services.AddKeyedTransient(typeof(IAIToolScenarioProvider), key, type);
+            }
+
+            //toolMap[attr.Key] = type;
+        }
+
+        return services;
     }
 }

@@ -2,6 +2,7 @@ using AppFront.Shared.Interfaces;
 using Mars.Core.Extensions;
 using Mars.Datasource.Core.Dto;
 using Mars.Shared.Common;
+using Mars.Shared.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +14,7 @@ public partial class DatabaseQueryWorkspace
     [Inject] IDatasourceServiceClient service { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] IAIToolAppService _aiTool { get; set; } = default!;
 
     bool Busy;
 
@@ -50,7 +52,7 @@ public partial class DatabaseQueryWorkspace
 
     protected override void OnInitialized()
     {
-        Console.WriteLine(">>>I: " + DataSourceConfigSlug);
+        //Console.WriteLine(">>>I: " + DataSourceConfigSlug);
         base.OnInitialized();
         thisurl = new Uri(nav.Uri).LocalPath;
         Load();
@@ -58,7 +60,7 @@ public partial class DatabaseQueryWorkspace
 
     async void Load()
     {
-        Console.WriteLine(">>>L: " + DataSourceConfigSlug);
+        //Console.WriteLine(">>>L: " + DataSourceConfigSlug);
 
         Busy = true;
         StateHasChanged();
@@ -142,7 +144,6 @@ public partial class DatabaseQueryWorkspace
     //            AutomaticLayout = true,
     //            Language = "sql",
     //            Value = "SELECT * from posts",
-
 
     //        };
     //}

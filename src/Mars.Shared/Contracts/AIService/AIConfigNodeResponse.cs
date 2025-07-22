@@ -1,4 +1,4 @@
-namespace Mars.SemanticKernel.Shared.Contracts;
+namespace Mars.Shared.Contracts.AIService;
 
 public record AIConfigNodeResponse
 {

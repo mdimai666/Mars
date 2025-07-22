@@ -25,12 +25,14 @@ public class NodeController : ControllerBase
     private readonly INodeService _nodeService;
     private readonly IServiceScopeFactory _factory;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceCollection _services;
 
-    public NodeController(INodeService nodeService, IServiceScopeFactory factory, IServiceProvider serviceProvider)
+    public NodeController(INodeService nodeService, IServiceScopeFactory factory, IServiceProvider serviceProvider, IServiceCollection services)
     {
         _nodeService = nodeService;
         _factory = factory;
         _serviceProvider = serviceProvider;
+        _services = services;
     }
 
     [HttpPost(nameof(Deploy))]
@@ -72,7 +74,7 @@ public class NodeController : ControllerBase
 
         if (f_action == "di:services")
         {
-            var sc = NodeServiceTemplaryHelper._serviceCollection;
+            var sc = _services;
 
             Func<ServiceDescriptor, KeyValuePair<string, string>> sget =
                 (s) => new(s.ServiceType.Name, $"var {FirstCharToLowerCaseAnrVarName(s.ServiceType.Name)} = RED.GetService<{s.ServiceType.Name}>();");

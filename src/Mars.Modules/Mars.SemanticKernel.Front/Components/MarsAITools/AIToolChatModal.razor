@@ -1,0 +1,81 @@
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+<d-aitool-chat-modal>
+    <FluentDialog Hidden="@(!_visible)" aria-label="AI prompt dialog"
+                  @ref=_dialog
+                  Modal=true
+                  Class="AIToolChatModal"
+                  Style="--dialog-width: 600px;"
+                  @onclose="CloseClick"
+                  @ondialogdismiss=OnDialogDismiss
+                  PreventScroll=true>
+        <div class="vstack gap-2">
+            <FluentDialogHeader TabIndex="-1">
+                <FluentStack VerticalAlignment="VerticalAlignment.Center">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.WindowApps())" />
+                    <FluentLabel Typo="Typography.PaneHeader">
+                        @(ScenarioName ?? "Prompt")
+                    </FluentLabel>
+
+                    <FluentSpacer />
+                    <FluentButton Appearance="Appearance.Stealth"
+                                  Color="var(--bs-danger)"
+                                  OnClick="CloseClick">
+                        <FluentIcon Value="@(new Icons.Filled.Size20.Dismiss())"
+                                    Width="20px" Color="Color.Neutral" />
+                    </FluentButton>
+                </FluentStack>
+            </FluentDialogHeader>
+            <div>
+                @if (_busy)
+                {
+                    <FluentProgressRing />
+                }
+                else if (response is not null)
+                {
+                    <div style="user-select:none">
+                        <strong>AI: </strong>
+                        <a @onclick=CopyClick role="button" style="float:right">[copy]</a>
+                        <pre @ref=aiResponsePreElement
+                             class="form-control w-100 position-relative"
+                             style="user-select:text"> @response.Content </pre>
+                        <FluentSpacer />
+                    </div>
+                }
+            </div>
+
+            <FluentTextArea @bind-Value="@ChatInput"
+                            Placeholder="Type your prompt here..."
+                            @onkeydown="HandleKeyDown"
+                            tabindex="1"
+                            Autofocus
+                            Class="w-100" />
+            <div class="d-flex justify-content-end">
+
+                <FluentButton OnClick="SendMessage"
+                              Loading=@_busy
+                              tabindex="2"
+                              Title="(Ctrl+Enter) Send message"
+                              IconStart="@(new Icons.Regular.Size16.Send())"
+                              Appearance="Appearance.Accent">
+                    Send
+                </FluentButton>
+            </div>
+        </div>
+
+    </FluentDialog>
+</d-aitool-chat-modal>
+
+<style>
+    .fluent-dialog-main {
+        /*bootstrap offcanvas overlow*/
+        /* z-index: 1050 !important; */
+    }
+
+    fluent-dialog.AIToolChatModal::part(control) {
+        /* margin-bottom: 0 !important; */
+        border-radius: 0;
+    }
+</style>

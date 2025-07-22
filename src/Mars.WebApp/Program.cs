@@ -217,7 +217,6 @@ NodeFormsLocator.RefreshDict();
 NodeImplementFabirc.RefreshDict();
 app.UseDevAdmin();
 app.UseMarsNodes(); //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
-NodeServiceTemplaryHelper._serviceCollection = builder.Services;
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
 app.UseMarsExcel();

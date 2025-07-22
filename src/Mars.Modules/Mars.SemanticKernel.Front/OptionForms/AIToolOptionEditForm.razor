@@ -1,9 +1,9 @@
 @using AppFront.Shared.Components
 @using Mars.Options.Attributes
-@using Mars.SemanticKernel.Front.Services
-@using Mars.SemanticKernel.Shared.Contracts
 @using Mars.SemanticKernel.Shared.Options
+@using Mars.Shared.Contracts.AIService
 @using Mars.Shared.Options.Attributes
+@using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.ComponentModel.DataAnnotations
 @attribute [OptionEditFormForOptionAttribute(typeof(AIToolOption))]
@@ -34,7 +34,7 @@
 @code {
     EditOptionForm<AIToolOption>? form;
 
-    [Inject] IAIServiceClient _client { get; set; } = default!;
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     static readonly AIConfigNodeResponse empty = new() { NodeId = "", Title = "--", Description = "" };
@@ -52,7 +52,7 @@
     {
         try
         {
-            var list = await _client.ConfigList();
+            var list = await _client.AITool.ConfigList();
             _configs = [empty, .. list];
 
             StateHasChanged();

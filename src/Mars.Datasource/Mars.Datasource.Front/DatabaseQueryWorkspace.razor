@@ -6,6 +6,7 @@
 @using Mars.Shared.Common
 @using Mars.WebApiClient.Interfaces
 @using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
 @inject NavigationManager nav
 
 @if (Busy)
@@ -121,6 +122,12 @@ else
                                             </div>
                                             <div class="tab-pane container fade" id="menu1">
                                                 <div class="p-3 d-flex flex-column" style="height:350px;">
+                                                    <div class="d-flex flew-wrap gap-3 mb-2">
+                                                        <FluentButton OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
+                                                            <i class="bi bi-stars"></i>
+                                                            AI help
+                                                        </FluentButton>
+                                                    </div>
                                                     <CodeEditor2 @ref=_editor
                                                                  Lang=@CodeEditor2.Language.sql
                                                                  Value="" />
@@ -129,8 +136,6 @@ else
                                             </div>
                                         </div>
                                         @*=======================================*@
-
-
 
                                     </div>
                                 </div>

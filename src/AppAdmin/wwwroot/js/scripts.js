@@ -321,3 +321,18 @@ window.toggleOffcanvas = function (querySel) {
     offcanvasList.map(s => s.toggle())
 
 }
+
+window.selectTextForElement = function (element) {
+    if (!element) return;
+    element.focus();
+    if (element) {
+        const selection = window.getSelection(); // Get the current Selection object
+        const range = document.createRange();   // Create a new Range object
+
+        range.selectNodeContents(element);      // Set the range to encompass all contents of the element
+        selection.removeAllRanges();            // Clear any existing selections
+        selection.addRange(range);              // Add the new range to the selection
+    } else {
+        console.warn(`Element with ID "${elementId}" not found.`);
+    }
+};

@@ -1,4 +1,4 @@
-﻿namespace Mars.Datasource.Core;
+namespace Mars.Datasource.Core;
 
 public class QTableColumn
 {
@@ -11,10 +11,5 @@ public class QTableColumn
     public bool? IsUnique { get; set; }
     public Type DataType { get; set; } = default!;
     public string DataTypeName { get; set; } = "";
-
-    public QTableColumn()
-    {
-
-    }
 
 }

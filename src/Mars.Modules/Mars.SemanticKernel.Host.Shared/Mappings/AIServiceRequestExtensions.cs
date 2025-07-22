@@ -1,5 +1,5 @@
 using Mars.SemanticKernel.Host.Shared.Dto;
-using Mars.SemanticKernel.Shared.Contracts;
+using Mars.Shared.Contracts.AIService;
 
 namespace Mars.SemanticKernel.Host.Shared.Mappings;
 
@@ -9,5 +9,12 @@ public static class AIServiceRequestExtensions
         => new()
         {
             Prompt = request.Prompt,
+        };
+
+    public static AITextToolRequest ToQuery(this AIServiceToolRequest request)
+        => new()
+        {
+            Prompt = request.Prompt,
+            ToolName = request.ToolName,
         };
 }

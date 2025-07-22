@@ -37,7 +37,7 @@ public class NodeServiceUnitTestBase
             _hub = Substitute.For<IHubContext<ChatHub>>();
             RED = Substitute.ForPartsOf<RED>(_hub, _serviceProvider);
             _serviceProvider.GetService(typeof(RED)).Returns(RED);
-            NodeServiceTemplaryHelper._serviceCollection = new ServiceCollection();
+            _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
 
             var scope = Substitute.For<IServiceScope>();
             scope.ServiceProvider.Returns(_serviceProvider);

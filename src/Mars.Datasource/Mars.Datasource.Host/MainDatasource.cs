@@ -19,6 +19,7 @@ public static class DatasourceHostExtensions
     {
         services.AddSingleton<IDatasourceService, DatasourceService>();
         services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
+        services.AddScoped<IDatasourceAIToolSchemaProviderHandler, DatasourceAIToolSchemaProviderHandler>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -40,4 +41,3 @@ public static class DatasourceHostExtensions
     }
 
 }
-

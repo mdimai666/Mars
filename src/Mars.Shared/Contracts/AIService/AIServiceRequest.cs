@@ -1,11 +1,11 @@
-namespace Mars.SemanticKernel.Host.Shared.Dto;
+namespace Mars.Shared.Contracts.AIService;
 
-public record AITextRequest
+public record AIServiceRequest
 {
     public required string Prompt { get; init; }
 }
 
-public record AITextToolRequest
+public record AIServiceToolRequest
 {
     public required string Prompt { get; init; }
     public required string? ToolName { get; init; }

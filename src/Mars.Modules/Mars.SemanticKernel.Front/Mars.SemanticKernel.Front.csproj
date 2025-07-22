@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Mars.SemanticKernel.Shared\Mars.SemanticKernel.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\" />
-  </ItemGroup>
-
 </Project>

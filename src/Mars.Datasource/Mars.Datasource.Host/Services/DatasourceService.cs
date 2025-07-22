@@ -49,7 +49,6 @@ internal class DatasourceService : IDatasourceService
         _databaseBackupService = databaseBackupService;
     }
 
-
     public void InvalidateLocalDictCache(DatasourceOption opt)
     {
         _optionValue = opt;
@@ -174,15 +173,14 @@ internal class DatasourceService : IDatasourceService
 
             if (foundQuery is not null)
             {
-                var result = await this.SqlQuery("default", foundQuery);
+                var result = await SqlQuery("default", foundQuery);
                 return new UserActionResult<string[][]>
                 {
                     Ok = result.Ok,
                     Message = result.Message,
-                    Data = result.Data
+                    Data = result.Data ?? []
                 };
             }
-
 
             if (action.ActionId == "test")
             {
@@ -190,7 +188,7 @@ internal class DatasourceService : IDatasourceService
                 {
                     Message = "test successfully",
                     Ok = true,
-                    Data = new string[][] { new string[] { "data ok" } }
+                    Data = [["data ok"]]
                 };
             }
             else if (action.ActionId == "BackupAsSQLFile")
@@ -259,7 +257,6 @@ internal class DatasourceService : IDatasourceService
 //    }
 //}
 
-
 //internal static class QTableSchemaExtensions
 //{
 //    public static QTableSchema QTableSchema(NpgsqlDataReader reader)
@@ -292,10 +289,10 @@ FROM (
 SELECT row_to_json(X) as data
 FROM (
 	SELECT *
-        ,(select array_agg(row_to_json(z)) as "files_dima" 
-        from (select "FirstName", "Id" from "AspNetUsers" ) 
+        ,(select array_agg(row_to_json(z)) as "files_dima"
+        from (select "FirstName", "Id" from "AspNetUsers" )
         as z)
-	FROM "AnketaQuestions" 
+	FROM "AnketaQuestions"
 ) as X
 */
 

@@ -17,20 +17,28 @@ internal class MarsAIService : IMarsAIService
 {
     private readonly IOptionService _optionService;
     private readonly INodesReader _nodesReader;
+    private readonly IAIToolScenarioProvidersLocator _aiToolScenarioProvidersLocator;
 
-    public MarsAIService(IOptionService optionService, INodesReader nodesReader)
+    public MarsAIService(IOptionService optionService, INodesReader nodesReader, IAIToolScenarioProvidersLocator aiToolScenarioProvidersLocator)
     {
         _optionService = optionService;
         _nodesReader = nodesReader;
+        _aiToolScenarioProvidersLocator = aiToolScenarioProvidersLocator;
     }
 
-    public Task<string> Reply(string prompt, string? systemPrompt, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
+    private void ThrowIfAIToolNotConfigured(out SemanticKernelModelConfigNode configNode)
     {
         var aiToolOption = _optionService.GetOption<AIToolOption>();
 
         if (string.IsNullOrEmpty(aiToolOption.DefaultAIToolConfig)) throw new UserActionException("AITool not configured");
-        var configNode = _nodesReader.GetNode(aiToolOption.DefaultAIToolConfig) as SemanticKernelModelConfigNode;
-        if (configNode is null) throw new UserActionException($"SemanticKernelModelConfigNode not with id '{configNode.Id}' not found");
+        var _configNode = _nodesReader.GetNode(aiToolOption.DefaultAIToolConfig) as SemanticKernelModelConfigNode;
+        if (_configNode is null) throw new UserActionException($"SemanticKernelModelConfigNode not with id '{_configNode.Id}' not found");
+        configNode = _configNode;
+    }
+
+    public Task<string> Reply(string prompt, string? systemPrompt, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
+    {
+        ThrowIfAIToolNotConfigured(out var configNode);
 
         return Reply(prompt,
                     systemPrompt,
@@ -57,6 +65,30 @@ internal class MarsAIService : IMarsAIService
         chatHistory.Add(reply);
 
         return reply.Content!;
+    }
+
+    public IReadOnlyCollection<string> ToolScenarioList(string[]? tags = null)
+    {
+        return _aiToolScenarioProvidersLocator.ListProviderKeys(tags);
+    }
+
+    public async Task<string> ReplyAsTool(string prompt, string? toolKeyName = null, bool useToolPresetSettings = true, CancellationToken cancellationToken = default)
+    {
+        ThrowIfAIToolNotConfigured(out var configNode);
+
+        if (!string.IsNullOrEmpty(toolKeyName))
+        {
+            var provider = _aiToolScenarioProvidersLocator.GetProvider(toolKeyName)
+                                ?? throw new NotFoundException($"Scenario '{toolKeyName}' not found");
+
+            return await provider.Handle(prompt, cancellationToken).ConfigureAwait(false);
+        }
+
+        var newConfigNode = new SemanticKernelModelConfigNode() { ModelType = configNode.ModelType };
+        newConfigNode.SetAsToolParams();
+        var promptExecutionSettings = ResolvePromptExecutionSettings(newConfigNode);
+
+        return await Reply(prompt, systemPrompt: null, configNode: configNode, promptExecutionSettings: promptExecutionSettings, cancellationToken: cancellationToken);
     }
 
     internal AIToolInfo ResolveAITool(SemanticKernelModelConfigNode configNode, PromptExecutionSettings? promptExecutionSettings)

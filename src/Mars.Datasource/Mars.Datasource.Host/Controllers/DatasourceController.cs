@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Net.Mime;
 using Mars.Datasource.Core;
 using Mars.Datasource.Core.Dto;
@@ -59,7 +60,7 @@ public class DatasourceController : ControllerBase
     }
 
     [HttpPost]
-    public Task<UserActionResult<string[][]>> ExecuteAction(string slug, ExecuteActionRequest action)
+    public Task<UserActionResult<string[][]>> ExecuteAction([DefaultValue("default")]string slug, ExecuteActionRequest action)
     {
         return ds.ExecuteAction(action);
     }
@@ -70,6 +71,3 @@ public class DatasourceController : ControllerBase
         return Ok(ds.ListSelectDatasource());
     }
 }
-
-
-

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Mars.Datasource.Host.Services;
 
 internal class UsefulQueries
 {
-    // https://habr.com/ru/articles/696274/ 
-
+    // https://habr.com/ru/articles/696274/
 
     /// <summary>
     /// Размер табличных пространств

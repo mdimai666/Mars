@@ -79,7 +79,12 @@ internal class BasicServiceClient
     {
         if (call.Response.StatusCode == (int)System.Net.HttpStatusCode.NotFound)
         {
-            throw new NotFoundException(innerException: call.Exception);
+            call.ExceptionHandled = true;
+
+            var detail = call.Response.GetJsonAsync<AspNetResponseProblemDetails>().ConfigureAwait(false).GetAwaiter().GetResult();
+            var message = detail?.Detail ?? detail?.Title ?? "Not Found";
+
+            throw new NotFoundException(message, innerException: call.Exception);
         }
     };
 

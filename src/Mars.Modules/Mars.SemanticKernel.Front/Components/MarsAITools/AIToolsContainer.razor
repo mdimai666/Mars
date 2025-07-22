@@ -1,0 +1,15 @@
+@using AppFront.Shared.Services
+
+<AIToolChatModal @ref=aiToolChatModal />
+
+@code {
+    AIToolChatModal aiToolChatModal = default!;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AIToolAppService.Setup(aiToolChatModal);
+        }
+    }
+}

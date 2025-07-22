@@ -9,6 +9,7 @@ namespace Mars.XActions;
 public class ClearCacheAct : IAct
 {
     private readonly IMemoryCache memoryCache;
+
     public static XActionCommand XAction { get; } = new XActionCommand()
     {
         Id = typeof(ClearCacheAct).FullName!,

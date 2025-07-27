@@ -1,7 +1,7 @@
-﻿using Mars.Datasource.Core.Interfaces;
+using Mars.Datasource.Core.Interfaces;
 using Mars.Datasource.Core;
-using MySql.Data.MySqlClient;
 using System.Data.Common;
+using MySqlConnector;
 
 namespace Mars.Datasource.Host.MySQL;
 

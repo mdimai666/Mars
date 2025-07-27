@@ -242,7 +242,7 @@ public class MarsSSOClientService
                     if (userFullInfo is not null)
                         UpdateUser(ref createUser, userFullInfo);
 
-                    var result = await accountsService.RegisterUser(createUser, password);
+                    var result = await accountsService.RegisterUser(createUser, password, cancellationToken);
 
                     if (result.IsSuccessfulRegistration)
                     {

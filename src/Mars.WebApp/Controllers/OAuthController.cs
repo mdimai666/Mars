@@ -55,7 +55,7 @@ public class OAuthController : ControllerBase
                 return new AuthStepsResponse
                 {
                     Action = AuthStepAction.Complete,
-                    AuthResultResponse = _esiaService.EsiaLogin(data.ElementAt(0)).ToResponse()
+                    AuthResultResponse = _esiaService.EsiaLogin(data.ElementAt(0), cancellationToken).ToResponse()
                 };
             }
         }

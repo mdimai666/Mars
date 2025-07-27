@@ -51,12 +51,12 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(AuthResultResponse), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AuthResultResponse>> Login([FromBody] AuthCreditionalsDto authCreditionals)
+    public async Task<ActionResult<AuthResultResponse>> Login([FromBody] AuthCreditionalsDto authCreditionals, CancellationToken cancellationToken)
     {
         if (authCreditionals == null || !ModelState.IsValid)
             return BadRequest();
 
-        var result = await _accountsService.Login(authCreditionals);
+        var result = await _accountsService.Login(authCreditionals, cancellationToken);
 
         if (result.IsAuthSuccessful)
         {
@@ -70,7 +70,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(RegistrationResultResponse), StatusCodes.Status201Created)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<RegistrationResultResponse>> RegisterUser([FromBody] UserForRegistrationRequest userData)
+    public async Task<ActionResult<RegistrationResultResponse>> RegisterUser([FromBody] UserForRegistrationRequest userData, CancellationToken cancellationToken)
     {
         if (_optionService.SysOption.AllowUsersSelfRegister == false)
         {
@@ -85,7 +85,7 @@ public class AccountController : ControllerBase
         if (userData == null || !ModelState.IsValid)
             return BadRequest();
 
-        var result = await _accountsService.RegisterUser(userData.ToQuery());
+        var result = await _accountsService.RegisterUser(userData.ToQuery(), cancellationToken);
 
         if (!result.IsSuccessfulRegistration)
         {

@@ -3,6 +3,7 @@ using Mars.Host.Data.Entities;
 using Mars.Host.Models;
 using Mars.Host.Shared.Dto.Auth;
 using Mars.Host.Shared.Dto.Profile;
+using Mars.Host.Shared.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -14,13 +15,15 @@ public class AccountsService
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
     private readonly ITokenService _tokenService;
+    private readonly IUserTypeRepository _userTypeRepository;
 
     public AccountsService(
         UserManager<UserEntity> userManager,
         SignInManager<UserEntity> signInManager,
         IHttpContextAccessor httpContextAccessor,
         IOptions<JwtSettings> jwtSettings,
-        ITokenService tokenService)
+        ITokenService tokenService,
+        IUserTypeRepository userTypeRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -31,9 +34,10 @@ public class AccountsService
         }
 
         _tokenService = tokenService;
+        _userTypeRepository = userTypeRepository;
     }
 
-    public async Task<AuthResultDto> Login(AuthCreditionalsDto authCreditionals)
+    public async Task<AuthResultDto> Login(AuthCreditionalsDto authCreditionals, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByNameAsync(authCreditionals.Login);
 
@@ -90,13 +94,12 @@ public class AccountsService
     {
         string prefererName = userInfoPrefererUsername;
         int tryCountLeast = 6;
-        Random rnd = new Random();
 
         var existWithThisPrefererName = await _userManager.FindByNameAsync(prefererName);
 
         while (existWithThisPrefererName != null && tryCountLeast > 0)
         {
-            var postfixNumber = rnd.Next(1001, 10000).ToString();
+            var postfixNumber = Random.Shared.Next(1001, 10000).ToString();
             --tryCountLeast;
             prefererName = userInfoPrefererUsername + postfixNumber;
             existWithThisPrefererName = await _userManager.FindByNameAsync(prefererName);
@@ -108,7 +111,7 @@ public class AccountsService
         return prefererName;
     }
 
-    public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationQuery userData)
+    public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationQuery userData, CancellationToken cancellationToken)
     {
         var user = new UserEntity
         {
@@ -120,12 +123,16 @@ public class AccountsService
             LastName = userData.LastName ?? "",
         };
 
-        return await RegisterUser(user, userData.Password);
+        return await RegisterUser(user, userData.Password, cancellationToken);
     }
-    public async Task<RegistrationResponseDto> RegisterUser(UserEntity user, string password)
+    public async Task<RegistrationResponseDto> RegisterUser(UserEntity user, string password, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
-
+        if (user.UserTypeId == Guid.Empty)
+        {
+            var userType = await _userTypeRepository.GetByName("default", cancellationToken);
+            user.UserTypeId = userType?.Id ?? Guid.Empty;
+        }
         IdentityResult result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {

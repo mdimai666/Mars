@@ -47,7 +47,7 @@ public class EsiaService
         return user;
     }
 
-    public AuthResultDto EsiaLogin(string data)
+    public AuthResultDto EsiaLogin(string data, CancellationToken cancellationToken)
     {
         try
         {
@@ -75,7 +75,7 @@ public class EsiaService
 
                     var user = ConvertUser(userInfo);
 
-                    var result = _accountsService.RegisterUser(user, ESIA_PASSW).Result;
+                    var result = _accountsService.RegisterUser(user, ESIA_PASSW, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
 
                     if (result.IsSuccessfulRegistration)
                     {
@@ -111,7 +111,6 @@ public class EsiaService
     //{
     //    if (!AllowSelfRegistration)
     //        return HttpNotFound();
-
 
     //    var userRegistrationInfo = TypeAccessor.CreateInstance<UserRegistrationInfo>();
     //    userRegistrationInfo.RegisterType = SelfRegisterType.Individual;

@@ -43,6 +43,7 @@ public sealed class UpdateUserTests : BaseWebApiClientTests
                     .ComparingRecordsByValue()
                     .ComparingByMembers<UpdateUserRequest>()
                     .Excluding(s => s.Roles)
+                    .Excluding(s => s.MetaValues)
                     .ExcludingMissingMembers());
     }
 

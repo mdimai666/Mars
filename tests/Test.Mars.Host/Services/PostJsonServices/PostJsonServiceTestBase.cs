@@ -5,6 +5,7 @@ using Mars.Host.Repositories.Mappings;
 using Mars.Host.Services;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
@@ -38,12 +39,15 @@ public class PostJsonServiceTestBase
         _metaFieldMaterializerService = Substitute.For<IMetaFieldMaterializerService>();
         _hostingInfo = FileFixtureCustomizeExtension.FileHostingInfo;
         IValidatorFabric validatorFabric = Substitute.For<IValidatorFabric>();
+        var postTransformer = Substitute.For<IPostTransformer>();
+        postTransformer.Transform(Arg.Any<PostDetail>(), default).Returns(callInfo => callInfo.Arg<PostDetail>());
 
         _metaFieldMaterializerService = Substitute.For<IMetaFieldMaterializerService>();
 
         _postJsonService = new PostJsonService(_postRepository,
                                             validatorFabric,
-                                            _metaFieldMaterializerService);
+                                            _metaFieldMaterializerService,
+                                            postTransformer);
     }
 
     protected void SetupSamplePost(Action<PostEntity> metaSetupActon)
@@ -169,7 +173,6 @@ public class PostJsonServiceTestBase
             MetaFieldId = meta1.Id,
         };
 
-
         var meta2 = new MetaFieldEntity
         {
             Id = Guid.NewGuid(),
@@ -230,7 +233,6 @@ public class PostJsonServiceTestBase
             MetaField = meta1,
             MetaFieldId = meta1.Id,
         };
-
 
         var meta2 = new MetaFieldEntity
         {

@@ -1,7 +1,7 @@
+using Flurl.Http;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Posts;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -12,13 +12,15 @@ internal class PostJsonServiceClient : BasicServiceClient, IPostJsonServiceClien
         _controllerName = "PostJson";
     }
 
-    public Task<PostJsonResponse?> Get(Guid id)
+    public Task<PostJsonResponse?> Get(Guid id, bool renderContent = true)
         => _client.Request($"{_basePath}{_controllerName}", id)
+                    .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostJsonResponse?>();
 
-    public Task<PostJsonResponse?> GetBySlug(string slug, string type)
+    public Task<PostJsonResponse?> GetBySlug(string slug, string type, bool renderContent = true)
         => _client.Request($"{_basePath}{_controllerName}", type, slug)
+                    .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostJsonResponse?>();
 

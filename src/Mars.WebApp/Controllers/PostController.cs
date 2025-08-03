@@ -42,18 +42,23 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<PostDetailResponse> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<PostDetailResponse> Get(Guid id, bool renderContent = true, CancellationToken cancellationToken = default)
     {
-        return (await _postService.GetDetail(id, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
+        return (await _postService.GetDetail(id, renderContent: renderContent, cancellationToken))?.ToResponse()
+                ?? throw new NotFoundException();
     }
 
     [HttpGet("p/{type}/{slug}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<PostDetailResponse> GetBySlug(string slug, string type, CancellationToken cancellationToken)
+    public async Task<PostDetailResponse> GetBySlug(string slug,
+                                                    [DefaultValue("post")] string type,
+                                                    bool renderContent = true,
+                                                    CancellationToken cancellationToken = default)
     {
-        return (await _postService.GetDetailBySlug(slug, type, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
+        return (await _postService.GetDetailBySlug(slug, type, renderContent: renderContent, cancellationToken))?.ToResponse()
+                ?? throw new NotFoundException();
     }
 
     [HttpGet("edit/{id:guid}")]
@@ -126,14 +131,18 @@ public class PostController : ControllerBase
 
     [HttpGet("{type}")]
     [AllowAnonymous]
-    public async Task<ListDataResult<PostListItemResponse>> List([FromQuery] ListPostQueryRequest request, string type, CancellationToken cancellationToken)
+    public async Task<ListDataResult<PostListItemResponse>> List([FromQuery] ListPostQueryRequest request,
+                                                                    [DefaultValue("post")] string type,
+                                                                    CancellationToken cancellationToken)
     {
         return (await _postService.List(request.ToQuery(type), cancellationToken)).ToResponse();
     }
 
     [HttpPost("ListTable/{type}")]
     [AllowAnonymous]
-    public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request, string type, CancellationToken cancellationToken)
+    public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request,
+                                                                    [DefaultValue("post")] string type,
+                                                                    CancellationToken cancellationToken)
     {
         return (await _postService.ListTable(request.ToQuery(type), cancellationToken)).ToResponse();
     }
@@ -164,7 +173,6 @@ public class PostController : ControllerBase
     //--
     //--
     //--
-
 
     //[HttpGet(nameof(GetBlank) + "/{postTypeName}")]
     //public async Task<Post> GetBlank(string postTypeName)

@@ -21,6 +21,7 @@ internal static class MarsStartupPartTemplator
         functions.Add(nameof(TemplatorRegisterFunctions.Paginator), TemplatorRegisterFunctions.Paginator);
         functions.Add(nameof(TemplatorRegisterFunctions.Req), TemplatorRegisterFunctions.Req);
         functions.Add(nameof(TemplatorRegisterFunctions.CalendarRow), TemplatorRegisterFunctions.CalendarRow);
+        functions.Add(nameof(TemplatorRegisterFunctions.RenderPostContent), TemplatorRegisterFunctions.RenderPostContent);
 
         return app;
     }

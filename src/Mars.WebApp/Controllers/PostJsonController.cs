@@ -31,18 +31,25 @@ public class PostJsonController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<PostJsonResponse> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<PostJsonResponse> Get(Guid id,
+                                                bool renderContent = true,
+                                                CancellationToken cancellationToken = default)
     {
-        return (await _postJsonService.GetDetail(id, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
+        return (await _postJsonService.GetDetail(id, renderContent: renderContent, cancellationToken))?.ToResponse()
+                            ?? throw new NotFoundException();
     }
 
     [HttpGet("{type}/{slug}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<PostJsonResponse> GetBySlug(string slug, string type, CancellationToken cancellationToken)
+    public async Task<PostJsonResponse> GetBySlug(string slug,
+                                                    string type,
+                                                    bool renderContent = true,
+                                                    CancellationToken cancellationToken = default)
     {
-        return (await _postJsonService.GetDetailBySlug(slug, type, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
+        return (await _postJsonService.GetDetailBySlug(slug, type, renderContent: renderContent, cancellationToken))?.ToResponse()
+                            ?? throw new NotFoundException();
     }
 
     [HttpGet("{type}")]

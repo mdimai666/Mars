@@ -25,29 +25,43 @@ internal class PostService : IPostService
     private readonly IEventManager _eventManager;
     private readonly IRequestContext _requestContext;
     private readonly IValidatorFabric _validatorFabric;
+    private readonly IPostTransformer _postTransformer;
 
     public PostService(
         IPostRepository postRepository,
         IMetaModelTypesLocator metaModelTypesLocator,
         IEventManager eventManager,
         IRequestContext requestContext,
-        IValidatorFabric validatorFabric)
+        IValidatorFabric validatorFabric,
+        IPostTransformer postTransformer)
     {
         _postRepository = postRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
         _eventManager = eventManager;
         _requestContext = requestContext;
         _validatorFabric = validatorFabric;
+        _postTransformer = postTransformer;
     }
 
     public Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
         => _postRepository.Get(id, cancellationToken);
 
-    public Task<PostDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
-        => _postRepository.GetDetail(id, cancellationToken);
+    public async Task<PostDetail?> GetDetail(Guid id, bool renderContent = true, CancellationToken cancellationToken = default)
+    {
+        var post = await _postRepository.GetDetail(id, cancellationToken);
 
-    public Task<PostDetail?> GetDetailBySlug(string slug, string type, CancellationToken cancellationToken)
-        => _postRepository.GetDetailBySlug(slug, type, cancellationToken);
+        if (!renderContent || post is null) return post;
+
+        return await _postTransformer.Transform(post, cancellationToken);
+    }
+
+    public async Task<PostDetail?> GetDetailBySlug(string slug, string type, bool renderContent = true, CancellationToken cancellationToken = default)
+    {
+        var post = await _postRepository.GetDetailBySlug(slug, type, cancellationToken);
+        if (!renderContent || post is null) return post;
+
+        return await _postTransformer.Transform(post, cancellationToken);
+    }
 
     public async Task<ListDataResult<PostSummary>> List(ListPostQuery query, CancellationToken cancellationToken)
     {
@@ -66,7 +80,7 @@ internal class PostService : IPostService
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _postRepository.Create(query, cancellationToken);
-        var created = await GetDetail(id, cancellationToken);
+        var created = await GetDetail(id, renderContent: false, cancellationToken);
 
         //if (created != null)
         {
@@ -83,7 +97,7 @@ internal class PostService : IPostService
         //await _validatorFabric.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
         await _postRepository.Update(query, cancellationToken);
-        var updated = await GetDetail(query.Id, cancellationToken);
+        var updated = await GetDetail(query.Id, renderContent: false, cancellationToken);
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostUpdate(updated.Type), updated);
         _eventManager.TriggerEvent(payload);

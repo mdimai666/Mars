@@ -39,20 +39,19 @@ internal class PageRenderService : IPageRenderService
         if (su_path.StartsWith("//")) su_path = su_path.Substring(1, su_path.Length - 1);
         httpContext.Request.Path = su_path;
 
-        Uri _uri = new Uri(httpContext.Request.GetDisplayUrl());
+        var _uri = new Uri(httpContext.Request.GetDisplayUrl());
         httpContext.Request.Path = _uri.AbsolutePath;
 
         httpContext.Request.QueryString = new QueryString(_uri.Query);
         var qq = System.Web.HttpUtility.ParseQueryString(_uri.Query);
 
-        Dictionary<string, StringValues> q_dict = new();
+        var q_dict = new Dictionary<string, StringValues>();
         foreach (var key in qq.AllKeys)
         {
             q_dict.Add(key, qq[key]);
         }
         httpContext.Request.Query = new QueryCollection(q_dict);
     }
-
 
     RenderParam RenderParam(HttpContext context) => new()
     {
@@ -98,7 +97,7 @@ internal class PageRenderService : IPageRenderService
 
     RenderActionResult<PostRenderDto> AsResult(Host.Shared.WebSite.Models.RenderInfo render, HttpContext httpContext)
     {
-        Uri _uri = new Uri(httpContext.Request.GetDisplayUrl());
+        var _uri = new Uri(httpContext.Request.GetDisplayUrl());
 
         return new RenderActionResult<PostRenderDto>
         {
@@ -166,7 +165,7 @@ internal class PageRenderService : IPageRenderService
         }
 
         var postService = _serviceProvider.GetRequiredService<IPostService>();
-        var post = await postService.GetDetailBySlug(slug, typeName, cancellationToken);
+        var post = await postService.GetDetailBySlug(slug, typeName, renderContent: true, cancellationToken);
 
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         ArgumentNullException.ThrowIfNull(af, nameof(af));
@@ -191,7 +190,7 @@ internal class PageRenderService : IPageRenderService
     public async Task<RenderActionResult<PostRenderDto>> RenderPostById(Guid postId, HttpContext httpContext, CancellationToken cancellationToken)
     {
         var postService = _serviceProvider.GetRequiredService<IPostService>();
-        var post = await postService.GetDetail(postId, cancellationToken);
+        var post = await postService.GetDetail(postId, renderContent: true, cancellationToken);
 
         //TODO: надо подумать как рисовать посты по id
 
@@ -225,7 +224,7 @@ internal class PageRenderService : IPageRenderService
     {
         var filepath = $"/{post.Type}/{post.Id}";
         var attr = new Dictionary<string, string>();
-        WebPage page = new WebPage(new WebSitePart(WebSitePartType.Page, post.Slug, filepath, filepath, post.Content!, attr, post.Title), "/" + post.Slug, post.Title);
+        var page = new WebPage(new WebSitePart(WebSitePartType.Page, post.Slug, filepath, filepath, post.Content!, attr, post.Title), "/" + post.Slug, post.Title);
         return page;
     }
 

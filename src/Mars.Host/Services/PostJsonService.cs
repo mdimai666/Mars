@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Mappings.Posts;
@@ -14,32 +13,38 @@ internal class PostJsonService : IPostJsonService
     private readonly IPostRepository _postRepository;
     private readonly IValidatorFabric _validatorFabric;
     private readonly IMetaFieldMaterializerService _metaFieldMaterializer;
-    static JsonSerializerOptions _serializerOptions = new();
+    private readonly IPostTransformer _postTransformer;
 
     public PostJsonService(
         IPostRepository postRepository,
         IValidatorFabric validatorFabric,
-        IMetaFieldMaterializerService metaFieldMaterializer)
+        IMetaFieldMaterializerService metaFieldMaterializer,
+        IPostTransformer postTransformer)
     {
         _postRepository = postRepository;
         _validatorFabric = validatorFabric;
         _metaFieldMaterializer = metaFieldMaterializer;
+        _postTransformer = postTransformer;
     }
 
-    public async Task<PostJsonDto?> GetDetail(Guid id, CancellationToken cancellationToken)
+    public async Task<PostJsonDto?> GetDetail(Guid id, bool renderContent = true, CancellationToken cancellationToken = default)
     {
         var post = await _postRepository.GetDetail(id, cancellationToken);
         if (post == null) return null;
+
+        if (renderContent) post = await _postTransformer.Transform(post, cancellationToken);
 
         var fillDict = await _metaFieldMaterializer.GetFillContext(post.MetaValues, cancellationToken);
 
         return post?.ToJsonDto(fillDict);
     }
 
-    public async Task<PostJsonDto?> GetDetailBySlug(string slug, string type, CancellationToken cancellationToken)
+    public async Task<PostJsonDto?> GetDetailBySlug(string slug, string type, bool renderContent = true, CancellationToken cancellationToken = default)
     {
         var post = await _postRepository.GetDetailBySlug(slug, type, cancellationToken);
         if (post == null) return null;
+
+        if (renderContent) post = await _postTransformer.Transform(post, cancellationToken);
 
         var fillDict = await _metaFieldMaterializer.GetFillContext(post.MetaValues, cancellationToken);
 

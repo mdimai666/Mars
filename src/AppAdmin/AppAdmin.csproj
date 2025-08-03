@@ -112,6 +112,7 @@
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.WebApp.Front\Mars.Nodes.WebApp.Front.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />
         <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />

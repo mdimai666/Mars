@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35728.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorJsBlazored", "EditorJsBlazored\EditorJsBlazored.csproj", "{669E3311-4DE1-4535-9433-BA79C8B4C307}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5E78E425-4351-4089-8C0A-6B6C75B97978}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorJsBlazoredDemo", "EditorJsBlazoredDemo\EditorJsBlazoredDemo.csproj", "{291BE1AE-20BB-4240-B3A2-65B78BCD387D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.EditorJsBlazored", "..\..\..\tests\Modules\Test.EditorJsBlazored\Test.EditorJsBlazored.csproj", "{5FDA1D96-1176-F509-663F-6460197E53E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{669E3311-4DE1-4535-9433-BA79C8B4C307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{669E3311-4DE1-4535-9433-BA79C8B4C307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{669E3311-4DE1-4535-9433-BA79C8B4C307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{669E3311-4DE1-4535-9433-BA79C8B4C307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{291BE1AE-20BB-4240-B3A2-65B78BCD387D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{291BE1AE-20BB-4240-B3A2-65B78BCD387D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{291BE1AE-20BB-4240-B3A2-65B78BCD387D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{291BE1AE-20BB-4240-B3A2-65B78BCD387D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FDA1D96-1176-F509-663F-6460197E53E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FDA1D96-1176-F509-663F-6460197E53E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FDA1D96-1176-F509-663F-6460197E53E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FDA1D96-1176-F509-663F-6460197E53E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

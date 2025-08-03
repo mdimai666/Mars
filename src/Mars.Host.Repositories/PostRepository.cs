@@ -238,4 +238,13 @@ internal class PostRepository : IPostRepository, IDisposable
         return list.ToMap(PostMapping.ToDetailList);
 
     }
+
+    //============================
+    //Extra methods
+    public async Task<PostDetailWithType?> PostDetailWithType(Guid id, CancellationToken cancellationToken)
+                                    => (await InternalDetail
+                                        .Include(s => s.PostType)
+                                            .ThenInclude(s => s.MetaFields)
+                                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                                        ?.ToDetailWithType();
 }

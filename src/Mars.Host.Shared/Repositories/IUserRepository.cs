@@ -10,6 +10,8 @@ public interface IUserRepository : IDisposable
     Task<UserDetail?> GetDetail(Guid id, CancellationToken cancellationToken);
     Task<UserDetail?> GetDetailByUserName(string username, CancellationToken cancellationToken);
     Task<UserEditDetail?> GetUserEditDetail(Guid id, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(string username, CancellationToken cancellationToken);
+
     Task<Guid> Create(CreateUserQuery query, CancellationToken cancellationToken);
     Task Update(UpdateUserQuery query, CancellationToken cancellationToken);
     Task Delete(Guid id, CancellationToken cancellationToken);
@@ -25,4 +27,5 @@ public interface IUserRepository : IDisposable
     Task<UserActionResult> SetPassword(SetUserPasswordByIdQuery query, CancellationToken cancellationToken);
     Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken);
     Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken);
+
 }

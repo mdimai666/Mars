@@ -58,6 +58,12 @@ internal class UserRepository : IUserRepository, IDisposable
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
                                         ?.ToEditDetail();
 
+    public async Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(string username, CancellationToken cancellationToken)
+                                => (await _marsDbContext.Users.AsNoTracking()
+                                        .Include(s => s.Roles)
+                                        .FirstOrDefaultAsync(s => s.UserName == username, cancellationToken))
+                                        ?.ToDto();
+
     public async Task<Guid> Create(CreateUserQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

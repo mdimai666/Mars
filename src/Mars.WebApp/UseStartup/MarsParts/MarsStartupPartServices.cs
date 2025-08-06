@@ -40,7 +40,6 @@ internal static class MarsStartupPartServices
         services.AddSingleton<IAIToolService, AIToolService>();
 
         //services.AddSingleton<DebugService>();
-        services.AddSingleton<IPluginService, PluginService>();
 
         NodeImplementFabirc.RegisterAssembly(typeof(MarsHostRootLayoutRenderNodeImpl).Assembly);
 
@@ -48,5 +47,4 @@ internal static class MarsStartupPartServices
 
         return services;
     }
-
 }

@@ -1,6 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
     </ItemGroup>
@@ -8,6 +9,12 @@
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.Plugin.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Test.Mars.Plugin</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

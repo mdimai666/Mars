@@ -28,6 +28,7 @@
 	  <ProjectReference Include="..\..\src\Mars.Host.Repositories\Mars.Host.Repositories.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.WebApp\Mars.WebApp.csproj" />
 	  <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
+	  <ProjectReference Include="..\Test.Mars.Plugin\Test.Mars.Plugin.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

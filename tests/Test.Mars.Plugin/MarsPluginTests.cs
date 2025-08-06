@@ -19,7 +19,5 @@ public class MarsPluginTests
 
         Assert.True(plugins.Count() == 2);
 
-
-
     }
 }

@@ -41,4 +41,23 @@ public static class PluginMapping
 
     public static IReadOnlyCollection<PluginManifestInfoResponse> ToResponse(this IEnumerable<PluginManifestInfoDto> list)
         => list.Select(ToResponse).ToList();
+
+    public static PluginsUploadOperationResultResponse ToResponse(this PluginsUploadOperationResultDto entity)
+        => new()
+        {
+            Items = entity.Items.ToResponse(),
+            UploadStart = entity.UploadStart,
+            UploadEnd = entity.UploadEnd,
+        };
+
+    public static PluginsUploadOperationItemResponse ToResponse(this PluginsUploadOperationItemDto entity)
+        => new()
+        {
+            ErrorMessage = entity.ErrorMessage,
+            FileName = entity.FileName,
+            FileSize = entity.FileSize,
+        };
+
+    public static IReadOnlyCollection<PluginsUploadOperationItemResponse> ToResponse(this IEnumerable<PluginsUploadOperationItemDto> list)
+        => list.Select(ToResponse).ToArray();
 }

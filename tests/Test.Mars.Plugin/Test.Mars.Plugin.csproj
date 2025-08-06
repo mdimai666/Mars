@@ -1,8 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="MarsPluginTests.cs" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
@@ -19,6 +23,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Plugin\Mars.Plugin\Mars.Plugin.csproj" />
+        <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
     </ItemGroup>
 
 </Project>

@@ -116,8 +116,7 @@ NodeImplementFabirc.RefreshDict();
 
 //------------------------------------------
 // PLUGINS
-builder.AddPlugins()
-        .Services.AddControllers().AddPluginsAsPartOfMvc();//warn: need for AddPlugins
+builder.AddPlugins();
 
 // ===========================================================================================
 // APP

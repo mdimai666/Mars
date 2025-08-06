@@ -93,4 +93,8 @@ public partial class PluginsListPage
         throw new NotImplementedException("Delete method is not implemented yet.");
     }
 
+    public async Task OnClickUploadFromZipFile()
+    {
+        var result = await ZipUploadDialog.ShowAsync(dialogService);
+    }
 }

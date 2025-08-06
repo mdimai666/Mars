@@ -16,14 +16,12 @@ public partial class App
     static RouteData trackRouteData = default!;
     public static Type PageType => trackRouteData?.PageType!;
 
-
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
     [Inject] AuthenticationService AuthenticationService { get; set; } = default!;
     [Inject] AuthenticationStateProvider authStateProvider { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
-
 
     [Inject] HttpClientInterceptor Interceptor { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
@@ -34,7 +32,6 @@ public partial class App
     [Inject] HotKeys HotKeys { get; set; } = default!;
     HotKeysContext appHotKeysContext = default!;
     FluentDesignSystemProvider? _fluentDesignSystemProvider;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,7 +58,7 @@ public partial class App
 
         //!NavigationManager.Path().Equals("Login", StringComparison.OrdinalIgnoreCase)
 
-        if (e.Response.StatusCode == System.Net.HttpStatusCode.Unauthorized && !isPublicPage && PageType != typeof(LoginPage))
+        if (e.Response is not null && e.Response.StatusCode == System.Net.HttpStatusCode.Unauthorized && !isPublicPage && PageType != typeof(LoginPage))
         {
             _logger.LogWarning("App::Unauthorized");
             Task.Run(async () =>

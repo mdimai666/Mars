@@ -7,8 +7,8 @@ namespace Mars.Host.Shared.Services;
 
 public class InMemoryFileStorage : IFileStorage
 {
-    internal readonly Dictionary<string, byte[]> _files = new Dictionary<string, byte[]>();
-    internal readonly HashSet<string> _directories = new HashSet<string>();
+    internal readonly Dictionary<string, byte[]> _files = [];
+    internal readonly HashSet<string> _directories = [];
 
     public InMemoryFileStorage()
     {
@@ -78,6 +78,17 @@ public class InMemoryFileStorage : IFileStorage
             stream.CopyTo(memoryStream);
             _files[filepath] = memoryStream.ToArray();
         }
+    }
+
+    public Task WriteAsync(string filepath, Stream stream, CancellationToken cancellationToken)
+    {
+        filepath = Normalize(filepath);
+        using (var memoryStream = new MemoryStream())
+        {
+            stream.CopyTo(memoryStream);
+            _files[filepath] = memoryStream.ToArray();
+        }
+        return Task.CompletedTask;
     }
 
     public bool FileExists(string filepath)

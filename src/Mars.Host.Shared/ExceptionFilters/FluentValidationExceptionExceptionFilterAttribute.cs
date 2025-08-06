@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ public sealed class FluentValidationExceptionFilterAttribute : ExceptionFilterAt
         {
             Title = AppRes.ValidationErrorsOccurredTitle,
             Errors = validateResults,
-            Detail = null,
+            Detail = context.Exception.Message,
             Status = StatusCodes.Status400BadRequest,
             Instance = null,
         };
@@ -58,5 +59,6 @@ public sealed class FluentValidationExceptionFilterAttribute : ExceptionFilterAt
             ContentType = "application/json",
             Content = JsonSerializer.Serialize(response)
         };
+        context.ExceptionHandled = true;
     }
 }

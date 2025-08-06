@@ -46,4 +46,20 @@ public class PluginController : ControllerBase
     {
         return _pluginService.RuntimePluginManifests().Values.ToResponse();
     }
+
+    [HttpPost("UploadPlugin")]
+    [RequestSizeLimit(150_000_000)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+
+    public async Task<ActionResult<PluginsUploadOperationResultResponse>> UploadPlugin(
+            IFormFileCollection files,
+            CancellationToken cancellationToken)
+    {
+        if (files == null || files.Count == 0)
+            return BadRequest("No files uploaded.");
+
+        return (await _pluginService.UploadPlugin(files, cancellationToken)).ToResponse();
+    }
 }

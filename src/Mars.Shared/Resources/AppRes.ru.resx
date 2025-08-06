@@ -162,6 +162,9 @@
   <data name="Clear" xml:space="preserve">
     <value>Очистить</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
   <data name="Comment" xml:space="preserve">
     <value>Комментарий</value>
   </data>
@@ -242,6 +245,9 @@
   </data>
   <data name="EnabledFeatures" xml:space="preserve">
     <value>Включенные функции</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
   </data>
   <data name="Excerpt" xml:space="preserve">
     <value>Отрывок</value>

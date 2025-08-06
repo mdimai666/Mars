@@ -22,7 +22,7 @@ public class PluginSetupTests : BasePluginTests
         var expectPluginAssembly = typeof(PluginExamplePlugin).Assembly;
 
         //Act
-        var plugin = ApplicationPluginExtensions.Plugins.FirstOrDefault(s =>
+        var plugin = PluginManager.Plugins.FirstOrDefault(s =>
         {
             return s.Info.AssemblyFullName == expectPluginAssembly.FullName;
         });

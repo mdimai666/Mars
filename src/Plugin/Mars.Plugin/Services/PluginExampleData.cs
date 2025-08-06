@@ -1,69 +1,10 @@
-//#define USE_EXAMPLE_PLUGINS
-
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.Plugins;
-using Mars.Host.Shared.Services;
-using Mars.Plugin;
-using Mars.Shared.Common;
 
-namespace Mars.Services;
+namespace Mars.Plugin.Services;
 
-internal class PluginService : IPluginService
+internal static class PluginExampleData
 {
-    public PluginService()
-    {
-    }
-
-    public ListDataResult<PluginInfoDto> List(ListPluginQuery query)
-    {
-#if USE_EXAMPLE_PLUGINS
-        return GetExamplePluginList(query).AsListDataResult(query);
-#endif
-
-        return ApplicationPluginExtensions.Plugins
-            .Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
-            .Select(s => GetPluginInfoDto(s.Info))
-            .AsListDataResult(query);
-    }
-
-    public PagingResult<PluginInfoDto> ListTable(ListPluginQuery query)
-    {
-#if USE_EXAMPLE_PLUGINS
-        return GetExamplePluginList(query).AsPagingResult(query);
-#endif
-        return ApplicationPluginExtensions.Plugins
-            .Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
-            .Select(s => GetPluginInfoDto(s.Info))
-            .AsPagingResult(query);
-    }
-
-    public IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests()
-    {
-        return ApplicationPluginExtensions.Plugins.Where(s => s.Info.ManifestFile != null)
-                                                    .Select(s => new PluginManifestInfoDto { Name = s.Info.KeyName, Uri = s.Info.ManifestFile! })
-                                                    .ToDictionary(s => s.Name);
-    }
-
-    public static PluginInfoDto GetPluginInfoDto(PluginInfo pluginInfo)
-    {
-        return new PluginInfoDto()
-        {
-            PackageId = pluginInfo.PackageId,
-            Title = pluginInfo.Title,
-            Version = pluginInfo.Version,
-            Description = pluginInfo.Description,
-            AssemblyName = pluginInfo.AssemblyFullName,
-            Enabled = true,
-            InstalledAt = DateTimeOffset.MinValue,
-            FrontManifest = pluginInfo.ManifestFile,
-            PackageTags = pluginInfo.PackageTags,
-            RepositoryUrl = pluginInfo.RepositoryUrl,
-            PackageIconUrl = string.IsNullOrEmpty(pluginInfo.PackageIcon) ? null : $"/_plugin/{pluginInfo.KeyName}/{pluginInfo.PackageIcon}",
-        };
-    }
-
-    #region EXAMPLE ROWS
     public static List<PluginInfoDto> GetExamplePluginList(ListPluginQuery query)
     {
         List<PluginInfoDto> pluginsExample = [
@@ -116,6 +57,4 @@ internal class PluginService : IPluginService
             .OrderBySortStringParam(query.Sort ?? "Title")
             .ToList();
     }
-    #endregion
-
 }

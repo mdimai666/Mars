@@ -71,6 +71,13 @@ public class FileStorage : IFileStorage
         }
     }
 
+    public async Task WriteAsync(string filepath, Stream stream, CancellationToken cancellationToken)
+    {
+        filepath = AbsolutePath(filepath);
+        using var fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+        await stream.CopyToAsync(fileStream, cancellationToken);
+    }
+
     public bool FileExists(string filepath)
     {
         filepath = AbsolutePath(filepath);
@@ -181,7 +188,6 @@ public class FileSystemDirectoryContents : IDirectoryContents
     {
         return GetEnumerator();
     }
-
 
     public class FileSystemFileInfo : IFileInfo
     {

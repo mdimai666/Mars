@@ -1,4 +1,5 @@
 using AutoFixture;
+using FluentAssertions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Services;
@@ -11,7 +12,6 @@ using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -31,7 +31,8 @@ public class MetaFieldMaterializerServiceTests
 
     public MetaFieldMaterializerServiceTests()
     {
-        EntitiesCustomize.PostTypeDict = new Dictionary<string, PostTypeEntity> { ["post"] = new PostTypeEntity() };
+        EntitiesCustomize.PostTypeDict = new() { ["post"] = new PostTypeEntity() };
+        EntitiesCustomize.UserTypeDict = new() { [UserTypeEntity.DefaultTypeName] = UserConstants.TestUserType };
 
         _fixture.Customize(new FixtureCustomize());
 

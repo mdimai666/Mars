@@ -1,6 +1,6 @@
+using Flurl.Http;
 using Mars.WebApiClient.Implements;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient;
 
@@ -28,6 +28,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public ISystemServiceClient System { get; }
     public IPageRenderServiceClient PageRender { get; }
     public IFrontServiceClient Front { get; }
+    public IAIServiceClient AITool { get; }
 
     public MarsWebApiClient(IServiceProvider serviceProvider, IFlurlClient flurlClient)
     {
@@ -52,5 +53,6 @@ public class MarsWebApiClient : IMarsWebApiClient
         System = new SystemServiceClient(serviceProvider, targetClient);
         PageRender = new PageRenderServiceClient(serviceProvider, targetClient);
         Front = new FrontServiceClient(serviceProvider, targetClient);
+        AITool = new AIServiceClient(serviceProvider, targetClient);
     }
 }

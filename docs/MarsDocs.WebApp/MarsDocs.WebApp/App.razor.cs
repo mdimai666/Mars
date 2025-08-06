@@ -1,14 +1,18 @@
 using System.Reflection;
-using System.Runtime.InteropServices;
 using MarsDocs.WebApp.Features;
 using MarsDocs.WebApp.Models;
+using Microsoft.JSInterop;
 
 namespace MarsDocs.WebApp;
 
 public partial class App
 {
+    public static readonly string MarsVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? "0.0.0";
+
     public static MenuItem[] Menu { get; private set; } = default!;
     public static Dictionary<string, MenuItem> MenuDict { get; private set; } = default!;
+
+    public static event Action<string>? OnReload;
 
     public App()
     {
@@ -17,6 +21,8 @@ public partial class App
         Console.WriteLine($"Found {mdFiles.Where(f => f.EndsWith(".md", StringComparison.OrdinalIgnoreCase)).Count()} markdown files.");
 
         var tree = TreeBuilder.BuildTree(mdFiles, ToMenu).ToArray();
+
+        //tree.Where(s => s.FileName == "QuickStart.md").ToList().ForEach(s => s.SetOrder(1f));
 
         Menu = tree;
         MenuDict = TreeBuilder.FlattenMenu(Menu).ToDictionary(s => s.Path);
@@ -47,13 +53,25 @@ public partial class App
     }
 
     static MenuItem ToMenu(TreeDirectoryItem item)
-        => new(
+    {
+        var meta = !item.IsDir ? MarkdownMetadataReader.ReadMetadata(ReadEmbedFile(item.FullPath)) : null;
+
+        return new(
             item.FullPath,
             $"md/{item.FullPath}",
             item.Name,
-            Path.GetFileNameWithoutExtension(item.Name),
+            meta?.GetValueOrDefault("Title") ?? Path.GetFileNameWithoutExtension(item.Name),
             IsDivider: false,
             SubItemFlag: item.IsDir,
-            item.Items?.Select(ToMenu).ToArray() ?? Array.Empty<MenuItem>()
+            item.Items?.Select(ToMenu).ToArray() ?? Array.Empty<MenuItem>(),
+            float.TryParse(meta?.GetValueOrDefault("Order"), out var order) ? order : 10f
         );
+    }
+
+    [JSInvokable("NotifyReload")]
+    public static void NotifyReload(string value)
+    {
+        Console.WriteLine($"[SseBridge] Reload received: {value}");
+        OnReload?.Invoke(value);
+    }
 }

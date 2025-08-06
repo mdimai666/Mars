@@ -48,7 +48,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                     typeof(ServiceProviderServiceExtensions).Assembly
             };
 
-            var sc = NodeServiceTemplaryHelper._serviceCollection;
+            var sc = RED.ServiceProvider.GetRequiredService< IServiceCollection>();
             //var assemblies = sc.Select(s => s.ServiceType.Assembly).Concat(definedAssemblies).Distinct().ToArray();
 
             Regex re = new Regex("RED\\.GetService<(.*?)>");
@@ -81,8 +81,6 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                     comparedAssemblies
                 );
 
-
-
             var compiled = CSharpScript.Create(script, scriptOptions, typeof(ScriptExecuteContext)).CreateDelegate();
 
             var ctx = new ScriptExecuteContext
@@ -102,7 +100,6 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                     callback(input);
                 }
             }
-
 
         }
 

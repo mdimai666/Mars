@@ -27,8 +27,3 @@ public interface INodeService
     void BroadcastStatus(string nodeId, NodeStatus nodeStatus);
 
 }
-
-public class NodeServiceTemplaryHelper
-{
-    public static IServiceCollection _serviceCollection = default!;
-}

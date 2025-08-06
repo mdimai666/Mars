@@ -18,7 +18,7 @@ public record ProfileDto : UserDetail
     //[PersonalData]
     //[NotMapped]
     //[Display(Name = "ФИО")]
-    //public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls()); 
+    //public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
 
     //[Display(Name = "Пол")]
     //public Gender Gender { get; set; }
@@ -51,7 +51,7 @@ public record ProfileDto : UserDetail
 
     public ProfileDto(UserDetail user)
     {
-        this.Id = user.Id;
+        Id = user.Id;
         //this.Created = user.Created;
         //this.Modified = user.Modified;
 

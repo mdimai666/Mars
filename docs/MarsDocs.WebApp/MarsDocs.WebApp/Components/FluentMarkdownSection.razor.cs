@@ -147,12 +147,14 @@ public partial class FluentMarkdownSection : FluentComponentBase
 
             foreach (LinkInline link in document.Descendants<LinkInline>())
             {
-                link.GetAttributes().AddPropertyIfNotExist("target", "_blank");
+                if (link.Url.Contains("://"))
+                    link.GetAttributes().AddPropertyIfNotExist("target", "_blank");
             }
 
             foreach (AutolinkInline link in document.Descendants<AutolinkInline>())
             {
-                link.GetAttributes().AddPropertyIfNotExist("target", "_blank");
+                if (link.Url.Contains("://"))
+                    link.GetAttributes().AddPropertyIfNotExist("target", "_blank");
             }
 
             string html = document.ToHtml(pipeline);

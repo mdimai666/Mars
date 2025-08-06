@@ -5,11 +5,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.2" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.7" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
 		<ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />

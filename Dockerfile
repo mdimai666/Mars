@@ -17,7 +17,7 @@ COPY Directory.Packages.props ./
 
 RUN dotnet restore "Mars.WebApp/Mars.WebApp.csproj"
 WORKDIR "/src/Mars.WebApp"
-RUN dotnet build "./Mars.WebApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Mars.WebApp.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:DockerBuild=true
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release

@@ -6,4 +6,13 @@ public record MenuItem(string Path,
                         string Title,
                         bool IsDivider = false,
                         bool SubItemFlag = false,
-                        MenuItem[] SubItems = default!);
+                        MenuItem[] SubItems = default!,
+                        float Order = 10f)
+{
+    public float Order = Order;
+
+    public void SetOrder(float order)
+    {
+        Order = order;
+    }
+};

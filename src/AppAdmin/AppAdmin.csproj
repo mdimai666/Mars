@@ -1,10 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
+        <!--Author-->
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        
 		<StaticWebAssetBasePath>dev</StaticWebAssetBasePath>
 
         <BlazorEnableCompression>true</BlazorEnableCompression>
-        <PublishTrimmed>true</PublishTrimmed>
+        <!--for plugins support-->
+        <PublishTrimmed>false</PublishTrimmed>
         <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
 
@@ -85,14 +91,14 @@
 
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-        <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.2" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.2" />
-        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.2" />
-        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.0" />
+        <PackageReference Include="Blazored.TextEditor" Version="1.1.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.7" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.7" />
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.1" />
         <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.2.0" />
     </ItemGroup>
 
@@ -106,6 +112,7 @@
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.WebApp.Front\Mars.Nodes.WebApp.Front.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />
         <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
@@ -126,6 +133,5 @@
         <!--<PublishTrimmed>true</PublishTrimmed>-->
         <BlazorEnableCompression>true</BlazorEnableCompression>
     </PropertyGroup>
-
 
 </Project>

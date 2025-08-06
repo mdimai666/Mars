@@ -1,0 +1,53 @@
+@page "/"
+@using EditorJsBlazored
+@using EditorJsBlazored.Blocks
+@using EditorJsBlazored.Core
+
+<PageTitle>Home</PageTitle>
+
+<h1 class="home-title">Welcome to EditorJsBlazored!</h1>
+
+<p>try demo</p>
+
+<BlockEditor1 @ref=blockEditor1 @bind-ContentJson="contentJson"
+              OnFileInput="OnFileInputMethod"
+              OnImageFileRequest="OnImageFileRequest"
+              OnAttachmentFileRequest="OnAttachmentFileRequest" />
+
+<label>content</label>
+<InputTextArea class="form-control" rows="20" @bind-Value=@contentJson />
+
+@code {
+    BlockEditor1 blockEditor1 = default!;
+    string contentJson = "{\"blocks\":[{\"type\":\"raw\",\"data\":{\"html\":\"dima\"}}],\"time\":0,\"version\":\"0.0.0\"}";
+
+    Task<BlockImage.ImageFileData?> OnFileInputMethod(Stream stream, string filename)
+    {
+        return Task.FromResult(new BlockImage.ImageFileData
+        {
+            Url = "https://mdimai666.com/img/ava.jpg",
+            Size = 666,
+            FileName = filename,
+        })!;
+    }
+
+    Task<BlockImage.ImageFileData?> OnImageFileRequest()
+    {
+        return Task.FromResult(new BlockImage.ImageFileData
+        {
+            Url = "https://mdimai666.com/img/ava.jpg",
+            Size = 111,
+            FileName = "image file.jpg",
+        })!;
+    }
+
+    Task<BlockImage.ImageFileData?> OnAttachmentFileRequest()
+    {
+        return Task.FromResult(new BlockImage.ImageFileData
+        {
+            Url = "https://mdimai666.com/img/ava.jpg",
+            Size = 222,
+            FileName = "attachment.jpg",
+        })!;
+    }
+}

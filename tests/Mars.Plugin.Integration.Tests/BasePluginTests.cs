@@ -4,11 +4,13 @@ using AutoFixture;
 using Mars.Host.Data.Contexts;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Plugin.Dto;
 using Mars.Plugin.Integration.Tests.Tests;
+using Mars.Plugin.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PluginExample.Data;
 using PluginExample.Data.Seeds;
-using static Mars.Plugin.ApplicationPluginExtensions;
 
 namespace Mars.Plugin.Integration.Tests;
 
@@ -57,6 +59,8 @@ public abstract class BasePluginTests
     protected readonly PluginApplicationFixture AppFixture;
     protected MarsDbContext DbContext => AppFixture.DbFixture.DbContext;
 
+    internal PluginManager PluginManager { get; }
+
     public IFixture _fixture = new Fixture();
 
     protected BasePluginTests(PluginApplicationFixture appFixture)
@@ -67,6 +71,7 @@ public abstract class BasePluginTests
         AppFixture.ResetMocks();
         //AppFixture.MessageQueueFixture.ClearTopics().RunSync();
         PluginSeed();
+        PluginManager = appFixture.ServiceProvider.GetRequiredService<PluginManager>();
     }
 
     public void PluginSeed()

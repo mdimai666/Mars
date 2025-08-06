@@ -12,13 +12,15 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
         _controllerName = "Post";
     }
 
-    public Task<PostDetailResponse?> Get(Guid id)
+    public Task<PostDetailResponse?> Get(Guid id, bool renderContent = true)
         => _client.Request($"{_basePath}{_controllerName}", id)
+                    .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostDetailResponse?>();
 
-    public Task<PostDetailResponse?> GetBySlug(string slug, string type)
+    public Task<PostDetailResponse?> GetBySlug(string slug, string type, bool renderContent = true)
         => _client.Request($"{_basePath}{_controllerName}/p", type, slug)
+                    .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostDetailResponse?>();
 

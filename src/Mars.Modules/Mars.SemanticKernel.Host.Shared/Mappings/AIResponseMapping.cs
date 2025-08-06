@@ -1,5 +1,5 @@
 using Mars.SemanticKernel.Host.Shared.Dto;
-using Mars.SemanticKernel.Shared.Contracts;
+using Mars.Shared.Contracts.AIService;
 
 namespace Mars.SemanticKernel.Host.Shared.Mappings;
 

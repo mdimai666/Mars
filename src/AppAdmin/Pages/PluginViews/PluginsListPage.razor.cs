@@ -14,7 +14,6 @@ public partial class PluginsListPage
     [Inject] IJSRuntime jSRuntime { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
 
-
     FluentDataGrid<PluginInfoResponse> table = default!;
     string _searchText = "";
     ListDataResult<PluginInfoResponse> data = ListDataResult<PluginInfoResponse>.Empty();
@@ -56,7 +55,7 @@ public partial class PluginsListPage
         table.RefreshDataAsync();
     }
 
-    async void OnRowClick(FluentDataGridRow<PluginInfoResponse> row)
+    void OnRowClick(FluentDataGridRow<PluginInfoResponse> row)
     {
 
         if (row.Item is null) return;
@@ -87,10 +86,15 @@ public partial class PluginsListPage
 
     }
 
-    public async Task Delete(PluginInfoResponse context)
+    public Task Delete(PluginInfoResponse context)
     {
         //await client.Feedback.Delete(id).SmartDelete();
         //_ = table.RefreshDataAsync();
+        throw new NotImplementedException("Delete method is not implemented yet.");
     }
 
+    public async Task OnClickUploadFromZipFile()
+    {
+        var result = await ZipUploadDialog.ShowAsync(dialogService);
+    }
 }

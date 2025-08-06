@@ -32,9 +32,9 @@
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            @*<li><a class="dropdown-item" @onclick=@(e=>ExecuteAction("test"))>Test</a></li>*@
-                            <li><a class="dropdown-item" @onclick=@(e=>ExecuteAction("ScanFiles"))>Сканировать файлы</a></li>
-                            <li><a class="dropdown-item" @onclick=@(e=>ExecuteAction("GenerateThumbnails"))>Пересоздать миниатюры</a></li>
+                            @*<li><a class="dropdown-item" @onclick="@(e=>ExecuteAction("test"))">Test</a></li>*@
+                            <li><a class="dropdown-item" @onclick="@(e => ExecuteAction("ScanFiles"))">Сканировать файлы</a></li>
+                            <li><a class="dropdown-item" @onclick="@(e => ExecuteAction("GenerateThumbnails"))">Пересоздать миниатюры</a></li>
                             @*<li><a class="dropdown-item" href="#">Another action</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li>*@
@@ -49,6 +49,7 @@
 
     <div class="my-4" style="min-height:100px;">
         <FluentInputFile Mode="InputFileMode.Stream"
+                         Id="@_fluentInputFileElementId"
                          Multiple="true"
                          MaximumFileCount="4"
                          MaximumFileSize="@(1000*1024*1024)"
@@ -58,16 +59,12 @@
                          OnFileUploaded="OnFileUploaded"
                          Style="min-height: 100px; max-width: 300px;">
             <ChildContent>
-                <div class="p-3">
-                    <label for="my-file-uploader">
-                        <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
-                    </label>
-
+                <label for="@_fluentInputFileElementId" class="p-3">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
                     <div>
                         Загрузка файла
                     </div>
-                </div>
-
+                </label>
             </ChildContent>
         </FluentInputFile>
 
@@ -75,7 +72,7 @@
         {
             <div>
                 <strong>Список загруженного: </strong>
-                <a @onclick=@(()=>fileUploadResults.Clear())>@AppRes.Clear.ToLower()</a>
+                <a @onclick="@(_ => fileUploadResults.Clear())">@AppRes.Clear.ToLower()</a>
             </div>
             <ul>
                 @foreach (var file in fileUploadResults)
@@ -116,7 +113,7 @@
                                 OnRowClick="OnRowClick"
                                 GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
                                 TGridItem="FileListItemResponse">
-                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f=>f.Name))"
+                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f => f.Name))"
                                     Title="Name"
                                     Sortable="true">
 
@@ -129,18 +126,18 @@
                         @context.Name
 
                     </TemplateColumn>
-                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f=>f.Size))"
+                    <TemplateColumn SortBy="@(GridSort<FileListItemResponse>.ByDescending(f => f.Size))"
                                     Title="Size"
                                     Sortable="true">
                         <span title="@context.Size">@context.Size.ToHumanizedSize()</span>
                     </TemplateColumn>
-                    <PropertyColumn Property="@(f=>f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d"
+                    <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d"
                                     InitialSortDirection="SortDirection.Ascending"
                                     IsDefaultSortColumn="true"
                                     Sortable="true" />
                     <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
                         <div class="hstack">
-                            <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id))>
+                            <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
                                 <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                             </DFluentDeleteButton>
                             <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">
@@ -153,7 +150,7 @@
         }
         else
         {
-            <div style="11height: 534px; overflow:auto;">
+            <div style="__height: 534px; overflow:auto;">
                 <FluentDataGrid ItemsProvider="dataProvider"
                                 @ref=table
                                 Pagination="pagination"
@@ -220,7 +217,6 @@
         @* ///////////////////////////////////////////////////////////////////////////////// *@
         @* ///////////////////////////////////////////////////////////////////////////////// *@
 
-
         <div class="hstack">
             @* <TotalResultsFound TotalCount="@data.TotalCount" /> *@
             <div class="ms-auto">
@@ -235,7 +231,7 @@
 <FluentDialog Hidden="@(!_visibleActionModal)" aria-label="Media action dialog"
               Modal=true
               Class="ActionResultDialog DeletionConfirmationDialog"
-              @ondialogdismiss=@(()=>_visibleActionModal=false)
+              @ondialogdismiss=@(() => { _visibleActionModal = false; })
               PreventScroll=true>
     <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
         <div class="hstack">
@@ -270,7 +266,7 @@
     </FluentDialogBody>
     <FluentFooter>
         <div class="hstack gap-2 justify-content-end flex-fill">
-            <FluentButton Appearance="Appearance.Accent" Style="min-width:100px" OnClick="@(e=>_visibleActionModal=false)">
+            <FluentButton Appearance="Appearance.Accent" Style="min-width:100px" OnClick="@(e => _visibleActionModal = false)">
                 @AppRes.Ok
             </FluentButton>
             @* <FluentButton Appearance="Appearance.Neutral" OnClick="@(e=>_visibleActionModal=false)">
@@ -279,7 +275,6 @@
         </div>
     </FluentFooter>
 </FluentDialog>
-
 
 @code {
 
@@ -292,4 +287,3 @@
         return $"{file.Name}\nsize: {file.Size.ToHumanizedSize()}";
     }
 }
-

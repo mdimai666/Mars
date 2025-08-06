@@ -57,7 +57,6 @@ internal class MarsSystemService : IMarsSystemService
             add("ServerTimeZone", timezone.ServerTimeZone.DisplayName);
             add("DatabaseTimeZone", timezone.DatabaseTimeZone.DisplayName);
 
-
         }
         return cachedAboutSystem;
     }
@@ -208,7 +207,7 @@ internal class MarsSystemService : IMarsSystemService
         await using (var cmd = new NpgsqlCommand("SHOW timezone", connection))
         {
             var timeZone = (string)(await cmd.ExecuteScalarAsync())!;
-            Console.WriteLine($"PostgreSQL TimeZone: {timeZone}");
+            //Console.WriteLine($"PostgreSQL TimeZone: {timeZone}");
             return timeZone;
         }
 

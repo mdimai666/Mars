@@ -16,7 +16,7 @@ internal class NodeTaskManager : IDisposable
     protected readonly RED _RED;
     private readonly ILogger<NodeTaskManager> _logger;
     int executedCount = 0;
-    private readonly int maxExecuteCount = 1_00;
+    private readonly int maxExecuteCount = 1_000;
 
     public NodeTaskManager(IServiceProvider serviceProvider,
         IHubContext<ChatHub> hub,
@@ -37,11 +37,6 @@ internal class NodeTaskManager : IDisposable
         var node = _nodes[nodeId];
 
         node.RED = CreateContextForNode(nodeId);
-        //using var scope = serviceProvider.CreateScope();
-        //var _red = scope.ServiceProvider.GetService<RED_withNode>()!;
-        //_red.NodeId = node.Id;
-        //node.RED = _red;
-
 
         _ = node.Execute(msg ?? new NodeMsg(), (e, output) => { CallbackNext(node.Id, e, output); });
     }
@@ -74,9 +69,6 @@ internal class NodeTaskManager : IDisposable
                 (e, _output) =>
                 {
                     _logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
-#if DEBUG
-                    Console.WriteLine($"==>{node.Node.DisplayName} ({node.Node.Type}) + {e.Payload}");
-#endif
                     CallbackNext(node.Id, e, _output);
                 });
         }
@@ -108,7 +100,7 @@ internal class NodeTaskManager : IDisposable
 
         if (outsIds == null) return Enumerable.Empty<INodeImplement>();
 
-        IEnumerable<INodeImplement> nextNodes = _nodes.Values.Where(s => outsIds.Contains(s.Id));
+        var nextNodes = _nodes.Values.Where(s => outsIds.Contains(s.Id));
 
         return nextNodes;
 
@@ -117,6 +109,5 @@ internal class NodeTaskManager : IDisposable
     public void Dispose()
     {
         _logger.LogTrace($"Dispose; executedCount={executedCount}");
-        Console.WriteLine("NodeTaskManager::Dispose");
     }
 }

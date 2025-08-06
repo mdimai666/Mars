@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-
 public class Debouncer
 {
-    private List<CancellationTokenSource> StepperCancelTokens = new List<CancellationTokenSource>();
+    private List<CancellationTokenSource> StepperCancelTokens = [];
     private int MillisecondsToWait;
-    private readonly object _lockThis = new object(); // Use a locking object to prevent the debouncer to trigger again while the func is still running
+    private readonly object _lockThis = new(); // Use a locking object to prevent the debouncer to trigger again while the func is still running
 
     public Debouncer(int millisecondsToWait = 300)
     {
-        this.MillisecondsToWait = millisecondsToWait;
+        MillisecondsToWait = millisecondsToWait;
     }
 
     public void Debouce(Action func)
@@ -27,7 +22,7 @@ public class Debouncer
             if (!newTokenSrc.IsCancellationRequested) // if it hasn't been cancelled
             {
                 CancelAllStepperTokens(); // Cancel any that remain (there shouldn't be any)
-                StepperCancelTokens = new List<CancellationTokenSource>(); // set to new list
+                StepperCancelTokens = []; // set to new list
                 lock (_lockThis)
                 {
                     func(); // run

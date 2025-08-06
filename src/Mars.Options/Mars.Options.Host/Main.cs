@@ -29,6 +29,7 @@ public static class MarsOptionsHostExtensions
         optionService.RegisterOption<MediaOption>();
         optionService.RegisterOption<MaintenanceModeOption>();
         optionService.RegisterOption<SEOOption>();
+        optionService.RegisterOption<PluginManagerSettingsOption>();
 
         optionService.RegisterOption<OpenIDClientOption>(ChangeOpenIDClientOption);
         optionService.RegisterOption<OpenIDServerOption>();

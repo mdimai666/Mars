@@ -1,0 +1,18 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [OptionEditFormForOptionAttribute(typeof(PluginManagerSettingsOption))]
+@attribute [Display(Name = "Plugins")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=form TModel="PluginManagerSettingsOption">
+    <h3>Настройки менеджера плагинов</h3>
+
+    <FluentCheckbox @bind-Value="@context.AllowUploadZipManually">
+        <AutoInputLabel For="@(() => context.AllowUploadZipManually)" />
+    </FluentCheckbox>
+
+</EditOptionForm>
+
+@code {
+    EditOptionForm<PluginManagerSettingsOption>? form;
+
+}

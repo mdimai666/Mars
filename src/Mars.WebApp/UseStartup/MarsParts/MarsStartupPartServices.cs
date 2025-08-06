@@ -27,6 +27,7 @@ internal static class MarsStartupPartServices
         services.AddMarsQueryLang()
                 .AddMetaModelGenerator();
 
+        // basic services
         services.AddSingleton<IMarsSystemService, MarsSystemService>()
                 .AddSingleton<IImageProcessor, ImageProcessor>()
                 .AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
@@ -35,8 +36,10 @@ internal static class MarsStartupPartServices
 
         services.AddMarsHost(wenv);
 
+        // additional components
+        services.AddSingleton<IAIToolService, AIToolService>();
+
         //services.AddSingleton<DebugService>();
-        services.AddSingleton<IPluginService, PluginService>();
 
         NodeImplementFabirc.RegisterAssembly(typeof(MarsHostRootLayoutRenderNodeImpl).Assembly);
 
@@ -44,5 +47,4 @@ internal static class MarsStartupPartServices
 
         return services;
     }
-
 }

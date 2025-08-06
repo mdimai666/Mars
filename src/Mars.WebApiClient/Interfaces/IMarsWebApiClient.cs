@@ -25,5 +25,6 @@ public interface IMarsWebApiClient
     ISystemServiceClient System { get; }
     IPageRenderServiceClient PageRender { get; }
     IFrontServiceClient Front { get; }
+    IAIServiceClient AITool { get; }
 
 }

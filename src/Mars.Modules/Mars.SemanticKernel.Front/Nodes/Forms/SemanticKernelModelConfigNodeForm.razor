@@ -8,6 +8,7 @@
 @using Mars.SemanticKernel.Shared.Nodes
 @using Mars.SemanticKernel.Shared.Options
 @using System.Text.Json
+@using System.Text.Json.Nodes
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SemanticKernelModelConfigNode))]
 
@@ -15,12 +16,26 @@
     <div class="vstack gap-3">
 
         <FormItem2 For="() => Node.ModelType">
-            <FluentSelect @bind-Value=Node.ModelType TOption="string" Items="SemanticKernelModelConfigNode.AvailModelTypes" />
+            <FluentSelect @bind-Value=ModelTypeSet TOption="string" Items="SemanticKernelModelConfigNode.AvailModelTypes" />
         </FormItem2>
 
-        @if (Node.ModelType == OllamaOptions.SectionName)
+        @if (_config is OllamaOptions)
         {
             <OllamaOptionsForm Value="(OllamaOptions)_config" ValueChanged="@(v => Config = v)" />
+        }
+        else if (_config is OpenAIOptions)
+        {
+            <OpenAIOptionsForm Value="(OpenAIOptions)_config" ValueChanged="@(v => Config = v)" />
+        }
+        else if (Node.ModelType == AzureOpenAIOptions.SectionName)
+        {
+
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Unsupported model type: @Node.ModelType
+            </div>
         }
 
         <hr />
@@ -41,37 +56,69 @@
     [CascadingParameter] Node? Value { get; set; }
     SemanticKernelModelConfigNode Node { get => (SemanticKernelModelConfigNode)Value!; set => Value = value; }
 
-    object _config = new OllamaOptions();
+    object? _config;
 
     object Config
     {
-        get => _config;
+        get => _config!;
         set
         {
             if (_config == value) return;
             _config = value;
             //Console.WriteLine("set Config=" + TextTool.GetPropertiesValueAsString(_config));
-            Node.ModelConfig = JsonSerializer.SerializeToNode(_config)!;
+            Node.ModelConfig = JsonSerializer.SerializeToNode(_config, jsonSerializerOptions)!;
             //Console.WriteLine("Node.ModelConfig=" + Node.ModelConfig.ToJsonString() );
         }
     }
 
-    bool _init;
-
-    protected override void OnParametersSet()
+    string ModelTypeSet
     {
-        if (!_init)
+        get => Node.ModelType;
+        set
         {
-            _config = JsonSerializer.Deserialize<OllamaOptions>(Node.ModelConfig)!;
-            _init = true;
+            if (Node.ModelType != value)
+            {
+                _config = ResolveConfigObject(value, _config);
+                Node.ModelConfig = JsonSerializer.SerializeToNode(_config, jsonSerializerOptions)!;
+            }
+            Node.ModelType = value;
         }
+    }
+
+    object ResolveConfigObject(string modelType, object? value)
+    {
+        var jsonNode = JsonSerializer.SerializeToNode(value, jsonSerializerOptions)!;
+        return ResolveConfigFromJsonNode(modelType, jsonNode);
+    }
+
+    object ResolveConfigFromJsonNode(string modelType, JsonNode? jsonNode)
+    {
+        return modelType switch
+        {
+            OllamaOptions.SectionName => jsonNode.Deserialize<OllamaOptions>(jsonSerializerOptions)!,
+            OpenAIOptions.SectionName => jsonNode.Deserialize<OpenAIOptions>(jsonSerializerOptions)!,
+            AzureOpenAIOptions.SectionName => jsonNode.Deserialize<AzureOpenAIOptions>(jsonSerializerOptions)!,
+            _ => new OllamaOptions() // Default to Ollama if unknown
+        };
+    }
+
+    static JsonSerializerOptions jsonSerializerOptions = new()
+    {
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true,
+    };
+
+    protected override void OnInitialized()
+    {
+        _config ??= ResolveConfigFromJsonNode(Node.ModelType, Node.ModelConfig);
+
     }
 
     public override Task OnEditSave()
     {
-        //Console.WriteLine("OnEditSave=" + TextTool.GetPropertiesValueAsString(_config));
-        //Console.WriteLine("Node.ModelConfig=" + Node.ModelConfig.ToJsonString());
-        Node.ModelConfig = JsonSerializer.SerializeToNode(_config)!;
+        Node.ModelConfig = JsonSerializer.SerializeToNode(_config, jsonSerializerOptions)!;
+        // Console.WriteLine("OnEditSave=" + TextTool.GetPropertiesValueAsString(_config));
+        // Console.WriteLine("Node.ModelConfig=" + Node.ModelConfig.ToJsonString());
         return base.OnEditSave();
     }
 }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -75,55 +72,6 @@ public static class LinqExtensions //https://stackoverflow.com/a/32061921/672396
         var genericMethod = method.MakeGenericMethod(typeof(T), propInfo.PropertyType);
         return (IQueryable<T>)genericMethod.Invoke(null, new object[] { query, expr })!;
     }
-
-    //JTABLE ORDER "Title desc"
-    /// <summary>
-    /// </summary>
-    /// <example>
-    /// "Title desc"
-    /// </example>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="orderQuery"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OrderByJtableSortParam<T>(this IEnumerable<T> query, string orderQuery)
-    {
-        (string field, bool asc) q = ParseJTableQuery(orderQuery);
-        return q.asc ? query.OrderBy(q.field) : query.OrderByDescending(q.field);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>
-    /// "Title desc"
-    /// </example>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="orderQuery"></param>
-    /// <returns></returns>
-    public static IQueryable<T> OrderByJtableSortParam<T>(this IQueryable<T> query, string orderQuery)
-    {
-        (string field, bool asc) q = ParseJTableQuery(orderQuery);
-        return q.asc ? query.OrderBy(q.field) : query.OrderByDescending(q.field);
-    }
-
-    //
-    static (string field, bool asc) ParseJTableQuery(string orderQuery) //LocNameE ASC
-    {
-        if (string.IsNullOrEmpty(orderQuery) || orderQuery == "undefined")
-        {
-            return ("", true);
-        }
-        else
-        {
-            var q = orderQuery.Split(' ');
-            bool desc = q.Length > 1 && q[1].ToLower().Contains("desc");
-            return (q[0], !desc);
-        }
-    }
-
-    //My Solutions 
 
     static (string field, bool asc) ParseMinusNameQuery(string orderQuery) //LocNameE ASC
     {

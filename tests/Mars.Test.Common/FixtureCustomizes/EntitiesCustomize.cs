@@ -15,7 +15,7 @@ namespace Mars.Test.Common.FixtureCustomizes;
 public sealed class EntitiesCustomize : ICustomization
 {
     public static Dictionary<string, PostTypeEntity> PostTypeDict = default!;
-    public static Dictionary<string, UserTypeEntity> UserTypeDict = default!;
+    public static Dictionary<string, UserTypeEntity> UserTypeDict = new() { [UserTypeEntity.DefaultTypeName] = UserConstants.TestUserType };
 
     public void Customize(IFixture fixture)
     {

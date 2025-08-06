@@ -1,9 +1,9 @@
+using FluentAssertions;
 using Mars.Datasource.Core;
 using Mars.Datasource.Host.MySQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
 using Mars.Integration.Tests.Attributes;
-using FluentAssertions;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace Mars.Datasource.Integration.Tests.Engines;
 

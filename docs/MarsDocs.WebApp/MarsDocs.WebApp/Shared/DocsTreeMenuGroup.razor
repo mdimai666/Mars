@@ -1,7 +1,7 @@
 @using MarsDocs.WebApp.Models
 
 <FluentNavGroup Title=@MenuItem.Title>
-    @foreach (var subitem in MenuItem.SubItems)
+    @foreach (var subitem in MenuItem.SubItems.OrderBy(s => s.Order))
     {
         @if (!subitem.SubItemFlag)
         {

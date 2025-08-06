@@ -5,14 +5,14 @@ using Mars.Controllers;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Plugin;
 using Mars.Plugin.Abstractions;
+using Mars.Plugin.Dto;
+using Mars.Plugin.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Plugins;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using static Mars.Plugin.ApplicationPluginExtensions;
 
 namespace Mars.Integration.Tests.Controllers.Plugins;
 
@@ -50,7 +50,7 @@ public class GetPluginTests : ApplicationTests
         _ = nameof(IPluginService.ListTable);
         var client = AppFixture.GetClient();
 
-        _fixture.AddTestPlugin();
+        _fixture.AddTestPlugin(AppFixture.ServiceProvider);
 
         var request = new ListPluginQueryRequest();
 
@@ -67,13 +67,14 @@ public class GetPluginTests : ApplicationTests
 
 public static class PluginTestsExtensions
 {
-    public static void AddTestPlugin(this IFixture _fixture)
+    public static void AddTestPlugin(this IFixture _fixture, IServiceProvider serviceProvider)
     {
         var pluginInfo = _fixture.Create<PluginInfo>();
         var pluginSettings = _fixture.Create<PluginSettings>();
 
         var pluginData = new PluginData(false, false, pluginSettings, null!, pluginInfo);
 
-        ApplicationPluginExtensions.Plugins.Add(pluginData);
+        var pluginManager = serviceProvider.GetRequiredService<PluginManager>();
+        pluginManager.AddPlugin(pluginData);
     }
 }

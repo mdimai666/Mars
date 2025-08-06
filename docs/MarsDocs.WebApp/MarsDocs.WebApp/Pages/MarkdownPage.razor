@@ -1,8 +1,11 @@
 @page "/md/{**DocPath}"
 @using MarsDocs.WebApp.Models
+@inject NavigationManager _navigationManager
+@inject HttpClient _httpClient
+@implements IDisposable
 
 <ContentWrapper>
-    @if(menuItem is null)
+    @if (menuItem is null)
     {
         <Block404 />
     }
@@ -25,6 +28,18 @@
     string Content { get; set; } = "";
 
     FileNotFoundException? fileNotFound;
+    bool isDevServer;
+
+    protected override void OnInitialized()
+    {
+        App.OnReload += HandleReload;
+        isDevServer = _navigationManager.BaseUri.Contains(":5253");
+    }
+
+    public void Dispose()
+    {
+        App.OnReload -= HandleReload;
+    }
 
     protected override void OnParametersSet()
     {
@@ -32,16 +47,31 @@
         Load();
     }
 
-    void Load()
+    async void Load()
     {
         try
         {
             menuItem = App.MenuDict.GetValueOrDefault(DocPath);
-            Content = App.ReadEmbedFile(DocPath);
+
+            if (isDevServer)
+            {
+                Content = await _httpClient.GetStringAsync(_navigationManager.BaseUri + "dev_docs/" + DocPath);
+            }
+            else
+            {
+                Content = App.ReadEmbedFile(DocPath);
+            }
         }
         catch (FileNotFoundException ex)
         {
             fileNotFound = ex;
         }
+
+        StateHasChanged();
+    }
+
+    private void HandleReload(string value)
+    {
+        Load();
     }
 }

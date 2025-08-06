@@ -32,7 +32,7 @@ public class GetPluginTests : BaseWebApiClientTests
     {
         //Arrange
         var client = GetWebApiClient();
-        _fixture.AddTestPlugin();
+        _fixture.AddTestPlugin(AppFixture.ServiceProvider);
 
         //Act
         var list = await client.Plugin.List(new());

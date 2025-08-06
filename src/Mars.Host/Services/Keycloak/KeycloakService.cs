@@ -91,7 +91,6 @@ public partial class KeycloakService
 
         HttpClient client = new HttpClient();
 
-
         var form = new FormUrlEncodedContent(body).ReadAsStringAsync().Result;
         HttpContent post = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded");
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, ssoOption.TokenEndpoint);
@@ -215,7 +214,7 @@ public partial class KeycloakService
 
                     var user = await ConvertUser(userInfo);
 
-                    var result = await accountsService.RegisterUser(user, password);
+                    var result = await accountsService.RegisterUser(user, password, cancellationToken);
 
                     if (result.IsSuccessfulRegistration)
                     {

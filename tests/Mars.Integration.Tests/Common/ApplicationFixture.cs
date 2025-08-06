@@ -169,8 +169,9 @@ public class ApplicationFixture : IAsyncLifetime
             MetaValues = [],
         }, CancellationToken.None);
 
-        EntitiesCustomize.PostTypeDict = await DbFixture.DbContext.PostTypes.ToDictionaryAsync(s => s.TypeName);
-        EntitiesCustomize.UserTypeDict = await DbFixture.DbContext.UserTypes.ToDictionaryAsync(s => s.TypeName);
+        var ef = DbFixture.DbContext;
+        EntitiesCustomize.PostTypeDict = await ef.PostTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        EntitiesCustomize.UserTypeDict = await ef.UserTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
 
         ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 

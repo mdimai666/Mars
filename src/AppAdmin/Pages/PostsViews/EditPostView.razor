@@ -7,7 +7,6 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
 
-
 @implements IDisposable
 
 <StandartEditContainer ID=@ID
@@ -83,6 +82,29 @@
                         <FormItem2 For="@(() => context.Content)">
                             <FluentTextArea Rows="8" @bind-Value=@context.Content Class="w-100" />
                         </FormItem2>
+                    }
+                    else if (PostContentType == DefaultPostContentTypes.BlockEditor)
+                    {
+                        <div class="text-end">
+                            <FluentButton id="@blockEditorMenuButtonId"
+                                          Appearance="Appearance.Stealth"
+                                          @onclick="@(() => blockEditorMenuOpen = !blockEditorMenuOpen)">
+                                Действия
+                                <span slot="end">
+                                    <i class="bi bi-chevron-down"></i>
+                                </span>
+                            </FluentButton>
+                        </div>
+
+                        <FluentMenu Anchor="@blockEditorMenuButtonId" @bind-Open="blockEditorMenuOpen">
+                            <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => blockEditor1.Clear()) />
+                            <FluentMenuItem Label="AI suggest" OnClick=@BlockEditor_OnClickAISuggest />
+                        </FluentMenu>
+
+                        <EditorJsBlazored.BlockEditor1 @bind-ContentJson=@context.Content
+                                                       @ref=blockEditor1
+                                                       OnImageFileRequest="OnImageFileRequest"
+                                                       OnAttachmentFileRequest="OnImageFileRequest" />
                     }
                     else
                     {
@@ -229,4 +251,3 @@
         </div>
     </SectionExtraSidebar>
 </StandartEditContainer>
-

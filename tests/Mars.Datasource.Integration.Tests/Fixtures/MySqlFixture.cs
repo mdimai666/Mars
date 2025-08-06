@@ -1,5 +1,5 @@
 using DotNet.Testcontainers.Builders;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Testcontainers.MySql;
 
 namespace Mars.Datasource.Integration.Tests.Fixtures;

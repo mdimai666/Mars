@@ -110,7 +110,7 @@ internal class RoleRepository : IRoleRepository
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
         var queryable = _listAllQuery.AsNoTracking().Where(s => query.Search == null
-                                    || (EF.Functions.ILike(s.Name, $"%{query.Search}%")));
+                                    || (s.Name != null && EF.Functions.ILike(s.Name, $"%{query.Search}%")));
 
         var list = await queryable.ToListDataResult(query, cancellationToken);
 
@@ -125,7 +125,7 @@ internal class RoleRepository : IRoleRepository
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
         var queryable = _listAllQuery.AsNoTracking().Where(s => query.Search == null
-                                    || (EF.Functions.ILike(s.Name, $"%{query.Search}%")));
+                                    || (s.Name != null && EF.Functions.ILike(s.Name, $"%{query.Search}%")));
 
         var list = await queryable.ToPagingResult(query, cancellationToken);
 

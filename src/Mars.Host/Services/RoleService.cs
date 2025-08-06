@@ -172,7 +172,6 @@ public class RoleService : IRoleService
         //        groups.Add(groupCheckable);
         //    }
 
-
         //    roleClaims.Add(new RoleClaimsDto
         //    {
         //        Role = new RoleShortDto(role, L[role.Name]),
@@ -218,7 +217,6 @@ public class RoleService : IRoleService
         //    var forAddList = setupClaims.Select(s => s.Id).Except(existClaims.Select(e => e.ClaimValue)).ToList();
         //    var forRemoveList = existClaims.Select(s => s.ClaimValue).Intersect(unsetupClaims.Select(e => e.Id)).ToList();
 
-
         //    foreach (var cap in forAddList)
         //    {
         //        ef.RoleClaims.Add(new()
@@ -241,7 +239,7 @@ public class RoleService : IRoleService
         //return new UserActionResult { Ok = true, Message = "Сохранено" };
     }
 
-    public async Task<bool> HasCap(string cap)
+    public Task<bool> HasCap(string cap)
     {
         throw new NotImplementedException();
         //using var ef = GetEFContext();
@@ -252,7 +250,6 @@ public class RoleService : IRoleService
 
         //var user = userManager.GetUserAsync(_user).Result;
         //var userRoles = userManager.GetRolesAsync(user).Result;
-
 
         ////var allClaims = ef.RoleClaims.AsNoTracking().Any(s => s.RoleId == );
 
@@ -279,4 +276,3 @@ public class RoleService : IRoleService
     #endregion
 
 }
-

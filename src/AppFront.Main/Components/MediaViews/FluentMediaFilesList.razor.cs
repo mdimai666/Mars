@@ -22,10 +22,9 @@ public partial class FluentMediaFilesList
     [Parameter] public RenderFragment<FileListItemResponse>? ItemActionBottom { get; set; } = null;
     [Parameter] public static int PageSize { get; set; } = 55;
 
-
     public string? ViewFiltergroup { get; set; } = null;
     public const string AllowExternsionsDefault = ".jpg,.png,.jpeg,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.jfif,.svg,.heic";
-
+    string _fluentInputFileElementId = "my-file-uploader_" + Guid.NewGuid();
 
     //table data
     FluentDataGrid<FileListItemResponse> table = default!;

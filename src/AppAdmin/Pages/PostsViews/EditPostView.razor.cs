@@ -1,5 +1,8 @@
+using EditorJsBlazored;
+using EditorJsBlazored.Blocks;
 using Mars.Core.Features;
 using Mars.Shared.Contracts.PostTypes;
+using Mars.Shared.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +16,7 @@ public partial class EditPostView
     [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
+    [Inject] IAIToolAppService aiTool { get; set; } = default!;
 
     [Parameter, EditorRequired] public Guid ID { get; set; }
     [Parameter, EditorRequired] public string PostTypeName { get; set; } = default!;
@@ -21,11 +25,10 @@ public partial class EditPostView
 
     //OLD
     WysiwygEditor? editor1;
-
     CodeEditor2? codeEditor1;
+    BlockEditor1? blockEditor1;
 
     string lang1 = CodeEditor2.Language.handlebars;
-
 
     void OnChangeTitle()
     {
@@ -71,4 +74,28 @@ public partial class EditPostView
     }
 
     string PostContentType => f?.Model.PostType.PostContentSettings.PostContentType ?? "";
+
+    async Task<BlockImage.ImageFileData?> OnImageFileRequest()
+    {
+        var mediaFile = await mediaService.OpenSelectMedia();
+
+        if (mediaFile is null) return null;
+
+        return new BlockImage.ImageFileData
+        {
+            Url = mediaFile.Url,
+            FileName = mediaFile.Name,
+            Size = (long)mediaFile.Size,
+            //Width = mediaFile.Width,
+            //Height = mediaFile.Height
+        };
+    }
+
+    string blockEditorMenuButtonId = "blockEditorMenuButton-" + Guid.NewGuid().ToString();
+    bool blockEditorMenuOpen;
+
+    void BlockEditor_OnClickAISuggest()
+    {
+        aiTool.Open();
+    }
 }

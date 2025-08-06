@@ -8,6 +8,7 @@ using Mars.SemanticKernel.Shared.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OllamaSharp;
 
 namespace Mars.SemanticKernel.Host.Service;
@@ -16,20 +17,28 @@ internal class MarsAIService : IMarsAIService
 {
     private readonly IOptionService _optionService;
     private readonly INodesReader _nodesReader;
+    private readonly IAIToolScenarioProvidersLocator _aiToolScenarioProvidersLocator;
 
-    public MarsAIService(IOptionService optionService, INodesReader nodesReader)
+    public MarsAIService(IOptionService optionService, INodesReader nodesReader, IAIToolScenarioProvidersLocator aiToolScenarioProvidersLocator)
     {
         _optionService = optionService;
         _nodesReader = nodesReader;
+        _aiToolScenarioProvidersLocator = aiToolScenarioProvidersLocator;
     }
 
-    public Task<string> Reply(string prompt, string? systemPrompt, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
+    private void ThrowIfAIToolNotConfigured(out SemanticKernelModelConfigNode configNode)
     {
         var aiToolOption = _optionService.GetOption<AIToolOption>();
 
         if (string.IsNullOrEmpty(aiToolOption.DefaultAIToolConfig)) throw new UserActionException("AITool not configured");
-        var configNode = _nodesReader.GetNode(aiToolOption.DefaultAIToolConfig) as SemanticKernelModelConfigNode;
-        if (configNode is null) throw new UserActionException($"SemanticKernelModelConfigNode not with id '{configNode.Id}' not found");
+        var _configNode = _nodesReader.GetNode(aiToolOption.DefaultAIToolConfig) as SemanticKernelModelConfigNode;
+        if (_configNode is null) throw new UserActionException($"SemanticKernelModelConfigNode not with id '{_configNode.Id}' not found");
+        configNode = _configNode;
+    }
+
+    public Task<string> Reply(string prompt, string? systemPrompt, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
+    {
+        ThrowIfAIToolNotConfigured(out var configNode);
 
         return Reply(prompt,
                     systemPrompt,
@@ -44,48 +53,94 @@ internal class MarsAIService : IMarsAIService
                                     PromptExecutionSettings? promptExecutionSettings = null,
                                     CancellationToken cancellationToken = default)
     {
+        var aiTool = ResolveAITool(configNode, promptExecutionSettings);
 
-        var modelOptions = configNode.ModelConfig.Deserialize<OllamaOptions>();
-
-        using var ollamaClient = new OllamaApiClient(
-                                       uriString: modelOptions.Endpoint,
-                                       defaultModel: modelOptions.ModelId);
-
-        var executionSettings = promptExecutionSettings ?? ResolvePromptExecutionSettings(configNode);
-
-        var chatService = ollamaClient.AsChatCompletionService();
-
-        var chatHistory = string.IsNullOrEmpty(systemPrompt) ? new() : new ChatHistory(systemPrompt);
+        var chatHistory = string.IsNullOrEmpty(systemPrompt) ? [] : new ChatHistory(systemPrompt);
 
         chatHistory.AddUserMessage(prompt);
 
         // assistant message
-        var reply = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+        var reply = await aiTool.ChatCompletionService.GetChatMessageContentAsync(chatHistory, aiTool.PromptExecutionSettings, cancellationToken: cancellationToken);
 
         chatHistory.Add(reply);
 
         return reply.Content!;
     }
 
-    //IChatCompletionService ResolveChatCompletionService(string configNodeId = "")
-    //{
-    //    var ollamaClient = new OllamaApiClient(
-    //                                   uriString: modelOptions.Endpoint,
-    //                                   defaultModel: modelOptions.ModelId);
-    //    var chatService = ollamaClient.AsChatCompletionService();
-
-    //    return chatService;
-    //}
-
-    PromptExecutionSettings ResolvePromptExecutionSettings(SemanticKernelModelConfigNode node)
+    public IReadOnlyCollection<string> ToolScenarioList(string[]? tags = null)
     {
-        var executionSettings = new OllamaPromptExecutionSettings
+        return _aiToolScenarioProvidersLocator.ListProviderKeys(tags);
+    }
+
+    public async Task<string> ReplyAsTool(string prompt, string? toolKeyName = null, bool useToolPresetSettings = true, CancellationToken cancellationToken = default)
+    {
+        ThrowIfAIToolNotConfigured(out var configNode);
+
+        if (!string.IsNullOrEmpty(toolKeyName))
         {
-            Temperature = node.Temperature,
-            TopK = node.TopK,
-            TopP = node.TopP,
+            var provider = _aiToolScenarioProvidersLocator.GetProvider(toolKeyName)
+                                ?? throw new NotFoundException($"Scenario '{toolKeyName}' not found");
+
+            return await provider.Handle(prompt, cancellationToken).ConfigureAwait(false);
+        }
+
+        var newConfigNode = new SemanticKernelModelConfigNode() { ModelType = configNode.ModelType };
+        newConfigNode.SetAsToolParams();
+        var promptExecutionSettings = ResolvePromptExecutionSettings(newConfigNode);
+
+        return await Reply(prompt, systemPrompt: null, configNode: configNode, promptExecutionSettings: promptExecutionSettings, cancellationToken: cancellationToken);
+    }
+
+    internal AIToolInfo ResolveAITool(SemanticKernelModelConfigNode configNode, PromptExecutionSettings? promptExecutionSettings)
+    {
+        ILLMOptions llmOption = configNode.ModelType switch
+        {
+            OllamaOptions.SectionName => configNode.ModelConfig.Deserialize<OllamaOptions>()!,
+            OpenAIOptions.SectionName => configNode.ModelConfig.Deserialize<OpenAIOptions>()!,
+            _ => throw new UserActionException($"Unknown model type '{configNode.ModelType}'")
         };
-        return executionSettings;
+
+        var executionSettings = promptExecutionSettings ?? ResolvePromptExecutionSettings(configNode);
+
+        IChatCompletionService chatCompletionService = llmOption switch
+        {
+            OllamaOptions ollamaOptions => new OllamaApiClient(
+                uriString: ollamaOptions.Endpoint,
+                defaultModel: ollamaOptions.ModelId).AsChatCompletionService(),
+            OpenAIOptions openAIOptions => new OpenAIChatCompletionService(
+                openAIOptions.ModelId,
+                openAIOptions.ApiKey,
+                openAIOptions.OrgId),
+            _ => throw new UserActionException($"Unknown model type '{configNode.ModelType}'")
+        };
+
+        return new AIToolInfo
+        {
+            OptionType = llmOption.GetType(),
+            lLMOptions = llmOption,
+            ChatCompletionService = chatCompletionService,
+            PromptExecutionSettings = executionSettings
+        };
+    }
+
+    PromptExecutionSettings ResolvePromptExecutionSettings(SemanticKernelModelConfigNode configNode)
+    {
+        return configNode.ModelType switch
+        {
+            OllamaOptions.SectionName => new OllamaPromptExecutionSettings
+            {
+                Temperature = configNode.Temperature,
+                TopK = configNode.TopK,
+                TopP = configNode.TopP,
+            },
+            OpenAIOptions.SectionName => new OpenAIPromptExecutionSettings
+            {
+                Temperature = configNode.Temperature,
+                //TopK = node.TopK,
+                TopP = configNode.TopP,
+            },
+            _ => throw new UserActionException($"Unknown model type '{configNode.ModelType}'")
+        };
     }
 
     public IReadOnlyCollection<AIConfigNodeDto> ConfigList()
@@ -101,4 +156,12 @@ internal class MarsAIService : IMarsAIService
                             .ToArray();
     }
 
+}
+
+internal class AIToolInfo
+{
+    public required Type OptionType { get; init; }
+    public required ILLMOptions lLMOptions { get; init; }
+    public required IChatCompletionService ChatCompletionService { get; init; }
+    public required PromptExecutionSettings PromptExecutionSettings { get; init; }
 }

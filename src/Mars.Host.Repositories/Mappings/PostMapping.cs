@@ -107,4 +107,20 @@ internal static class PostMapping
             MetaValues = query.MetaValues.ToEntity(),
         };
 
+    public static PostDetailWithType ToDetailWithType(this PostEntity entity)
+        => new()
+        {
+            Id = entity.Id,
+            CreatedAt = entity.CreatedAt,
+            Title = entity.Title,
+            Type = entity.PostType!.TypeName,
+            Slug = entity.Slug,
+            Tags = entity.Tags,
+            ModifiedAt = entity.ModifiedAt,
+            Content = entity.Content,
+            Author = entity.User!.ToPostAuthor(),
+            MetaValues = entity.MetaValues!.ToDto(),
+            Status = GetStatus(entity),
+            PostType = entity.PostType.ToDetail(),
+        };
 }

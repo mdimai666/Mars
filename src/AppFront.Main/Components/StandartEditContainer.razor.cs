@@ -18,7 +18,6 @@ public partial class StandartEditContainer<TModel> : ComponentBase
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
 
-
     Guid? _OldId;
     [Parameter] public Guid ID { get; set; }
 
@@ -29,7 +28,6 @@ public partial class StandartEditContainer<TModel> : ComponentBase
     [Parameter] public string? TitleText { get; set; } = null;
     [Parameter] public bool HideDatesSection { get; set; } = false;
     [Parameter] public bool BlankModelFromGetAction { get; set; } = false;
-
 
     [Parameter] public RenderFragment<TModel>? ChildContent { get; set; }
     [Parameter] public RenderFragment<TModel>? SectionSidePublish { get; set; }
@@ -46,7 +44,6 @@ public partial class StandartEditContainer<TModel> : ComponentBase
     [Parameter, EditorRequired] public Func<Task<TModel?>> GetAction { get; set; } = default!;
     [Parameter] public Func<TModel, Task>? DeleteAction { get; set; }
     [Parameter] public Func<TModel, bool, Task<TModel>>? SaveAction { get; set; }
-
 
     EditForm _editForm = default!;
     EditContext _editContext = default!;
@@ -106,7 +103,7 @@ public partial class StandartEditContainer<TModel> : ComponentBase
                 model = a;
                 SetupModel(model);
 
-                if (a != null) _ = OnLoadData.InvokeAsync(a);
+                await OnLoadData.InvokeAsync(model);
             }
         }
         catch (NotFoundException ex)

@@ -60,7 +60,7 @@ public class NavMenuService : INavMenuService
     public async Task Update(UpdateNavMenuQuery query, CancellationToken cancellationToken)
     {
         await _navMenuRepository.Update(query, cancellationToken);
-        var updated = await Get(query.Id, cancellationToken);
+        var updated = (await Get(query.Id, cancellationToken))!;
 
         ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuUpdate(), updated);
         _eventManager.TriggerEvent(payload);
@@ -85,13 +85,13 @@ public class NavMenuService : INavMenuService
         }
     }
 
-    public async Task<NavMenuExport> Export(Guid id)
+    public Task<NavMenuExport> Export(Guid id)
     {
         throw new NotImplementedException();
         //return await Get(id);
     }
 
-    public async Task<UserActionResult> Import(Guid id, NavMenuImport navMenu)
+    public Task<UserActionResult> Import(Guid id, NavMenuImport navMenu)
     {
         throw new NotImplementedException();
         //var exist = await Get(id);
@@ -119,7 +119,7 @@ public class NavMenuService : INavMenuService
     {
         if (_memoryCache.TryGetValue<NavMenuDetail>(DevMenuKey, out var menu))
         {
-            return menu;
+            return menu!;
         }
         else
         {

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -212,7 +212,7 @@ WHERE  name = 'dynamic_shared_memory_type'";
         return args;
     }
 
-    public async Task Restore(string connectionString, RestoreSettings settings, CancellationToken cancellationToken = default)
+    public Task Restore(string connectionString, RestoreSettings settings, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

@@ -1,0 +1,211 @@
+@using Mars.Core.Exceptions
+@using Mars.Options.Models
+@using Mars.Shared.Contracts.Plugins
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Net.Http.Headers
+@inject IMarsWebApiClient client
+@implements IDialogContentComponent<string>
+
+<FluentDialogHeader>
+    <FluentLabel Typo="Typography.Header">Загрузка ZIP файлов</FluentLabel>
+</FluentDialogHeader>
+
+@if (busy)
+{
+    <SharedLoader1 />
+}
+else if (!IsAllowUploadZipManually)
+{
+    <FluentMessageBar Title="Настройки" Intent="@MessageIntent.Warning" AllowDismiss=false>
+        Загрузка zip плагинов отключена
+    </FluentMessageBar>
+}
+else
+{
+    <div class="">
+        <FluentInputFile Accept=".zip" Multiple="true"
+                         Id="@_fluentInputFileElementId"
+                         Mode="InputFileMode.Stream"
+                         MaximumFileCount="10"
+                         @bind-ProgressPercent="@ProgressPercent"
+                         OnInputFileChange="HandleFileChange"
+                         Style="min-height: 100px; ">
+            <ChildContent>
+                <label for="@_fluentInputFileElementId" class="p-3">
+                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+                    <div>
+                        Загрузка файла
+                    </div>
+                </label>
+            </ChildContent>
+        </FluentInputFile>
+        <div class="mx-auto p-2">
+            @if (progressActive)
+            {
+                <FluentProgress />
+            }
+            @if (SuccessResult)
+            {
+                <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageIntent.Success" AllowDismiss=false>
+                    Плагины загружены (@resultResponse?.Items.Count)
+                </FluentMessageBar>
+            }
+            @if (errorMessage is not null)
+            {
+                <FluentMessageBar Title="@AppRes.Error" Intent="@MessageIntent.Error" AllowDismiss=false>
+                    @errorMessage
+                </FluentMessageBar>
+            }
+        </div>
+
+    </div>
+
+    @if (SelectedFiles?.Count > 0)
+    {
+        <div class="mt-3">
+            <strong>Выбранные файлы:</strong>
+            <ul>
+                @foreach (var file in SelectedFiles)
+                {
+                    <li>@file.Name @file.Size.ToHumanizedSize()</li>
+                }
+            </ul>
+        </div>
+    }
+
+}
+
+<FluentDialogFooter>
+    @if (busy || !IsAllowUploadZipManually)
+    {
+        <FluentButton OnClick="CancelAsync">@AppRes.Close</FluentButton>
+    }
+    else if (!SuccessResult)
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="UploadAsync">Загрузить</FluentButton>
+        <FluentButton OnClick="CancelAsync">Отмена</FluentButton>
+    }
+    else if (SuccessResult)
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="OkAsync">@AppRes.Ok</FluentButton>
+    }
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    private Task OkAsync() => Dialog.CloseAsync(resultResponse);
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    string _fluentInputFileElementId = "my-file-uploader_" + Guid.NewGuid();
+
+    private IReadOnlyList<IBrowserFile>? SelectedFiles;
+    int ProgressPercent = 0;
+    bool progressActive;
+    PluginsUploadOperationResultResponse? resultResponse;
+    bool SuccessResult;
+    bool busy = true;
+    bool IsAllowUploadZipManually;
+    string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Load();
+    }
+
+    async void Load()
+    {
+        busy = true;
+        StateHasChanged();
+
+        var opt = await client.Option.GetOption<PluginManagerSettingsOption>();
+        IsAllowUploadZipManually = opt.AllowUploadZipManually;
+
+        busy = false;
+        StateHasChanged();
+    }
+
+    private void HandleFileChange(InputFileChangeEventArgs files)
+    {
+        SelectedFiles = files.GetMultipleFiles();
+    }
+
+    private async Task UploadAsync()
+    {
+        errorMessage = null;
+
+        if (SelectedFiles == null || SelectedFiles.Count == 0)
+        {
+            await Dialog.CancelAsync();
+            return;
+        }
+
+        List<(Stream file, string filename)> files = new();
+
+        foreach (var file in SelectedFiles)
+        {
+            if (!file.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var stream = file.OpenReadStream(maxAllowedSize: 150 * 1024 * 1024); // 150MB
+            files.Add((stream, file.Name));
+        }
+
+        try
+        {
+            progressActive = true;
+            StateHasChanged();
+
+            var result = await client.Plugin.UploadPlugin(files);
+            // _ = _messageService.Success($"Плагины успешно загружены и обработаны ({result.Items.Count}).", duration: 3000);
+
+            progressActive = false;
+            resultResponse = result;
+            SuccessResult = true;
+            StateHasChanged();
+        }
+        catch (MarsValidationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (UserActionException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            progressActive = false;
+            StateHasChanged();
+        }
+
+    }
+
+    public static async Task<PluginsUploadOperationResultResponse?> ShowAsync(IDialogService dialogService)
+    {
+        var dialog = await dialogService.ShowDialogAsync<ZipUploadDialog>("", new DialogParameters()
+        {
+            //Height = "240px",
+            //Title = $"Updating the {DialogData.Name} sheet",
+            PreventDismissOnOverlayClick = false,
+            PreventScroll = true,
+            Modal = true,
+            //Class = "DeletionConfirmationDialog" class not support
+        });
+
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var data = result.Data as PluginsUploadOperationResultResponse;
+            return data;
+        }
+
+        return null;
+    }
+}

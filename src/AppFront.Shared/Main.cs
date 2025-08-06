@@ -15,7 +15,6 @@ using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace AppFront.Shared;
 
-
 public static class AppFrontSharedExtensions
 {
 
@@ -39,7 +38,6 @@ public static class AppFrontSharedExtensions
         Q.Program = program;
         //MarsCodeEditor.HostDomain = Q.BackendUrl;
 
-
         services.AddBlazoredLocalStorage();
         services.AddAuthorizationCore();
         services.TryAddScoped<IAuthenticationService, AuthenticationService>();
@@ -47,7 +45,6 @@ public static class AppFrontSharedExtensions
         services.TryAddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
         services.AddHttpClientInterceptor();
-
 
         HttpClient client = new HttpClient();
 
@@ -94,6 +91,7 @@ public static class AppFrontSharedExtensions
         //services.TryAddScoped<StoEntityTypeService>();
         //services.TryAddScoped<AppDebugService>();
         services.TryAddScoped<IActAppService, ActAppService>();
+        services.TryAddScoped<IAIToolAppService, AIToolAppService>();
 
         services.AddMarsWebApiClient();
 

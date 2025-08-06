@@ -4,7 +4,7 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Flurl.Http;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using Testcontainers.MySql;
 
 namespace ExternalServices.Integration.Tests.WordPressTests;

@@ -39,7 +39,6 @@ internal static class StartupDevAdmin
 
             first.UseAuthorization();
 
-
             first.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -48,8 +47,6 @@ internal static class StartupDevAdmin
                 ////////aa.
 
                 //endpoints.
-
-
 
                 //endpoints.MapGet("/dd", async context =>
                 //{

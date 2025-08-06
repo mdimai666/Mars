@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj"/>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj"/>
-        <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj"/>
+        <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
 
         <!--EXTRA DEPS CONFIG-->
     </ItemGroup>
@@ -53,12 +53,12 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Npgsql" Version="9.0.3"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4"/>
+        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

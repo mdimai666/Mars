@@ -116,4 +116,19 @@ internal static class UserMapping
             Mars.Shared.Contracts.Users.UserGender.Female => UserGender.Female,
             _ => throw new NotImplementedException(),
         };
+
+    public static AuthorizedUserInformationDto ToDto(this UserEntity entity)
+        => new()
+        {
+            Id = entity.Id,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            MiddleName = entity.MiddleName,
+            PhoneNumber = entity.PhoneNumber,
+            Email = entity.Email,
+            UserName = entity.UserName!,
+            BirthDate = entity.BirthDate,
+            Gender = entity.Gender.ToMap(),
+            Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
+        };
 }

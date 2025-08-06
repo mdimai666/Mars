@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -11,32 +10,15 @@ namespace Mars.Host.Services;
 internal class RequestContext : IRequestContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IUserManager _userManager;
     private readonly IUserRepository _userRepository;
-    private bool _init = false;
-    private RequestContextUser? _user = default;
-    private HashSet<string>? _roles = default;
+    private bool _init;
+    private RequestContextUser? _user;
+    private HashSet<string>? _roles;
 
-    public RequestContext(IHttpContextAccessor httpContextAccessor, IUserManager userManager, IUserRepository userRepository, ILogger<RequestContext> logger)
+    public RequestContext(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, ILogger<RequestContext> logger)
     {
-        //logger.LogWarning(">ctor!!!");
         _httpContextAccessor = httpContextAccessor;
-        _userManager = userManager;
         _userRepository = userRepository;
-        //if (IsAuthenticated)
-        //{
-
-        //    //var user = userManager.FindByNameAsync(UserName).ConfigureAwait(false).GetAwaiter().GetResult();
-        //    //var user = userRepository.GetDetailByUserName(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
-        //    //var roles = userManager.GetRolesAsync(use)
-
-        //    //User = 
-        //    //var id = _httpContext.User.Identity.
-        //}
-        //else
-        //{
-        //    _init = true;
-        //}
     }
 
     (RequestContextUser? user, HashSet<string>? roles) GetData()
@@ -45,7 +27,7 @@ internal class RequestContext : IRequestContext
         _init = true;
         if (!IsAuthenticated) return (_user, _roles);
 
-        var user = _userRepository.GetDetailByUserName(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        var user = _userRepository.GetAuthorizedUserInformation(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
         if (user is not null)
         {
@@ -65,46 +47,9 @@ internal class RequestContext : IRequestContext
     public bool IsAuthenticated => _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
 
     public HashSet<string>? Roles => GetData().roles;
-    //{
-    //    get
-    //    {
-    //        var roles = new HashSet<string>();
-    //        if (_httpContext.User.Identity.IsAuthenticated)
-    //        {
-    //            var claimsIdentity = _httpContext.User.Identity as ClaimsIdentity;
-    //            if (claimsIdentity != null)
-    //            {
-    //                roles.UnionWith(claimsIdentity.FindAll(ClaimTypes.Role).Select(x => x.Value));
-    //            }
-    //        }
-    //        return roles;
-    //    }
-    //}
-
     public RequestContextUser? User => GetData().user;
-    //{
-    //    get
-    //    {
-    //        if (_httpContext.User.Identity.IsAuthenticated)
-    //        {
-    //            return new RequestContextUser
-    //            {
-    //                Id = Guid.Parse(_httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
-    //                                CultureInfo.InvariantCulture),
-    //                Email = _httpContext.User.FindFirstValue(ClaimTypes.Email),
-    //                PhoneNumber = _httpContext.User.FindFirstValue(ClaimTypes.PhoneNumber),
-    //                UserName = _httpContext.User.Identity.Name,
-    //                NormalizedUserName = _httpContext.User.FindFirstValue(ClaimTypes.NormalizedUserName),
-    //                FullName = _httpContext.User.FindFirstValue(ClaimTypes.GivenName),
-    //                PictureUrl = _httpContext.User.FindFirstValue(ClaimTypes.Picture),
-    //                Roles = Roles
-    //            };
-    //        }
-    //        return null;
-    //    }
-    //}
 
-    private RequestContextUser ToMap(UserDetail user)
+    private RequestContextUser ToMap(AuthorizedUserInformationDto user)
         => new()
         {
             Id = user.Id,

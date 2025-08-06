@@ -1,0 +1,41 @@
+name: mars
+
+volumes:
+  data:
+
+networks:
+  mars_container:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=mars
+      - POSTGRES_PASSWORD=mars
+      - POSTGRES_DB=mars
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/db
+    networks:
+      - mars_container
+
+  mars-app:
+    image: mdimai666/mars:latest
+    working_dir: /app
+    depends_on:
+      - db
+    networks:
+      - mars_container
+    ports:
+      - "5004:80"
+    environment:
+      - ASPNETCORE_CONTENTROOT=/app
+      # - ConnectionStrings__DefaultConnection=Host=host.docker.internal:5432;Database=mars_v09;Username=postgres;Password=ggxxrr
+    volumes:
+      - ./appsettings.Production.json:/app/appsettings.Production.json #config file
+      - ./data:/app/data #data (plugins, themes, nodes)
+      - ./upload:/app/wwwroot/upload # upload media files
+      - ./data-protection-keys:/root/.aspnet/DataProtection-Keys

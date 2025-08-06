@@ -14,6 +14,7 @@ public interface IFileStorage
     void Write(string filepath, byte[] bytes);
     void Write(string filepath, string text);
     void Write(string filepath, Stream stream);
+    Task WriteAsync(string filepath, Stream stream, CancellationToken cancellationToken);
 
     bool FileExists(string filepath);
 

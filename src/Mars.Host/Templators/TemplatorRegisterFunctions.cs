@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Flurl.Http;
 using Mars.Host.Shared.Exceptions;
 using Mars.Host.Shared.Interfaces;
+using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Templators;
 using Mars.Shared.Templators;
 using Microsoft.Extensions.DependencyInjection;
@@ -164,4 +165,39 @@ public static class TemplatorRegisterFunctions
         return Task.FromResult<object?>(rowCalendar);
     }
 
+    [TemplatorHelperInfo("RenderPostContent", """html = RenderPostContent(@post.Id)""", "Render post content if provider support")]
+    public static async Task<object?> RenderPostContent(IXTFunctionContext ctx)
+    {
+        var args = ctx.Arguments;
+        var key = ctx.Key;
+        var val = ctx.Val;
+
+        if (args.Length != 1)
+        {
+            throw new XTFunctionException($"RenderPostContent arguments wrong count [1] (@post.Id) given {args.Length}: key=\"{key}\" val=\"{val}\"");
+            return Task.FromResult<object?>(null);
+        }
+
+        var arg1 = ctx.Ppt.Get.Eval(args[0]);
+        string? content = null;
+
+        if (arg1 is Guid postId)
+        {
+            var postService = ctx.ServiceProvider.GetService<IPostService>();
+            content = (await postService.GetDetail(postId, renderContent: true, default))?.Content;
+        }
+        else if (arg1 is string st && Guid.TryParse(st, out var postId2))
+        {
+            var postService = ctx.ServiceProvider.GetService<IPostService>();
+            content = (await postService.GetDetail(postId2, renderContent: true, default))?.Content;
+        }
+        else
+        {
+            throw new XTFunctionException($"Not implement exception. RenderPostContent argument: key=\"{key}\" val=\"{val}\".");
+            //throw new XTFunctionException($"RenderPostContent argument must be string or Guid: key=\"{key}\" val=\"{val}\"");
+            //return Task.FromResult<object?>(null);
+        }
+
+        return content;
+    }
 }

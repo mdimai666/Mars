@@ -116,8 +116,7 @@ NodeImplementFabirc.RefreshDict();
 
 //------------------------------------------
 // PLUGINS
-builder.AddPlugins()
-        .Services.AddControllers().AddPluginsAsPartOfMvc();//warn: need for AddPlugins
+builder.AddPlugins();
 
 // ===========================================================================================
 // APP
@@ -175,6 +174,7 @@ if (!IsDevelopment)
 app.UseCors();
 //app.UseIdentityServer();
 app.UseRouting(); //11-22
+//app.UseAntiforgery();
 app.UseAuthentication(); //11-22
 #pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
 app.UseAuthorization(); //11-22
@@ -216,7 +216,6 @@ NodeFormsLocator.RefreshDict();
 NodeImplementFabirc.RefreshDict();
 app.UseDevAdmin();
 app.UseMarsNodes(); //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
-NodeServiceTemplaryHelper._serviceCollection = builder.Services;
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
 app.UseMarsExcel();

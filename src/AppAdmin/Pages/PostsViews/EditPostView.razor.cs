@@ -2,6 +2,7 @@ using EditorJsBlazored;
 using EditorJsBlazored.Blocks;
 using Mars.Core.Features;
 using Mars.Shared.Contracts.PostTypes;
+using Mars.Shared.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
@@ -15,6 +16,7 @@ public partial class EditPostView
     [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
+    [Inject] IAIToolAppService aiTool { get; set; } = default!;
 
     [Parameter, EditorRequired] public Guid ID { get; set; }
     [Parameter, EditorRequired] public string PostTypeName { get; set; } = default!;
@@ -91,4 +93,9 @@ public partial class EditPostView
 
     string blockEditorMenuButtonId = "blockEditorMenuButton-" + Guid.NewGuid().ToString();
     bool blockEditorMenuOpen;
+
+    void BlockEditor_OnClickAISuggest()
+    {
+        aiTool.Open();
+    }
 }

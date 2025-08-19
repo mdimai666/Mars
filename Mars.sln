@@ -236,6 +236,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Host.Repos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Shared", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Shared\Mars.EShopPlugin.Shared.csproj", "{59175BA7-4200-220B-EFEF-3824EF21A788}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Host.Shared", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.Host.Shared\Mars.EShopPlugin.Host.Shared.csproj", "{682BDEF5-C703-44F4-8A61-73654C63840C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{362CB9D2-ACBB-45A3-9E19-0DB69AB38FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Mars.EShopPlugin", "..\Mars.EShopPlugin\tests\Test.Mars.EShopPlugin\Test.Mars.EShopPlugin.csproj", "{1D4C4452-C136-460C-BB12-511B39F52221}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Integration.Tests", "..\Mars.EShopPlugin\tests\Mars.EShopPlugin.Integration.Tests\Mars.EShopPlugin.Integration.Tests.csproj", "{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -610,6 +618,18 @@ Global
 		{59175BA7-4200-220B-EFEF-3824EF21A788}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59175BA7-4200-220B-EFEF-3824EF21A788}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59175BA7-4200-220B-EFEF-3824EF21A788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{682BDEF5-C703-44F4-8A61-73654C63840C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{682BDEF5-C703-44F4-8A61-73654C63840C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{682BDEF5-C703-44F4-8A61-73654C63840C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{682BDEF5-C703-44F4-8A61-73654C63840C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D4C4452-C136-460C-BB12-511B39F52221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D4C4452-C136-460C-BB12-511B39F52221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D4C4452-C136-460C-BB12-511B39F52221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D4C4452-C136-460C-BB12-511B39F52221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -710,6 +730,10 @@ Global
 		{F737943A-CAA3-88C8-11C1-F129ADD011EB} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
 		{53289E1F-0239-7C0A-3499-FBAB8C1D0140} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
 		{59175BA7-4200-220B-EFEF-3824EF21A788} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{682BDEF5-C703-44F4-8A61-73654C63840C} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{362CB9D2-ACBB-45A3-9E19-0DB69AB38FC3} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{1D4C4452-C136-460C-BB12-511B39F52221} = {362CB9D2-ACBB-45A3-9E19-0DB69AB38FC3}
+		{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD} = {362CB9D2-ACBB-45A3-9E19-0DB69AB38FC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8D4F7A-BC38-43EA-9F4B-6BDB92828DCC}

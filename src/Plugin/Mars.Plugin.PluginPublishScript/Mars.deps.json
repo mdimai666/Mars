@@ -4538,6 +4538,7 @@
       },
       "Mars.Plugin/1.0.0": {
         "dependencies": {
+          "mdimai666.Mars.Host.Shared": "0.6.6-alpha.2",
           "mdimai666.Mars.Plugin.Abstractions": "0.6.6-alpha.2",
           "mdimai666.Mars.Plugin.Front": "0.6.6-alpha.2"
         },

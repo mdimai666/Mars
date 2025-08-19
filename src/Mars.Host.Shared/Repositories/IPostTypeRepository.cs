@@ -5,7 +5,7 @@ using Mars.Shared.Common;
 
 namespace Mars.Host.Shared.Repositories;
 
-public interface IPostTypeRepository : IDisposable
+public interface IPostTypeRepository
 {
     Task<PostTypeSummary?> Get(Guid id, CancellationToken cancellationToken);
 

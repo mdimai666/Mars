@@ -9,6 +9,8 @@ namespace Mars.Plugin;
 
 public static class ApplicationPluginExtensions
 {
+    private static readonly bool isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals("Test", StringComparison.OrdinalIgnoreCase);
+
     public static WebApplicationBuilder AddPlugins(this WebApplicationBuilder builder)
     {
         var pluginManager = new PluginManager(builder.Environment.ContentRootPath);
@@ -18,6 +20,14 @@ public static class ApplicationPluginExtensions
 
         builder.Services.AddSingleton<IPluginService, PluginService>();
         return builder;
+    }
+
+    public static void ApplyPluginMigrations(this WebApplication app)
+    {
+        if (isTesting) return;
+
+        var pluginManager = app.Services.GetRequiredService<PluginManager>();
+        pluginManager.ApplyPluginMigrations(app.Services, app.Configuration);
     }
 
     public static void UsePlugins(this WebApplication app)

@@ -8,7 +8,7 @@ namespace PluginExample.Data;
 
 public partial class MyPluginDbContext : PluginDbContextBase
 {
-    public override string PluginName => PluginExamplePlugin.PluginNameFullName;
+    public override string SchemaName => PluginExamplePlugin.PluginNameFullName;
 
     public virtual DbSet<PluginNewsEntity> News { get; set; } = default!;
 

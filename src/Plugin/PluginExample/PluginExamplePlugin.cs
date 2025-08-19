@@ -14,7 +14,7 @@ using PluginExample.Options;
 
 namespace PluginExample;
 
-public class PluginExamplePlugin : WebApplicationPlugin
+public class PluginExamplePlugin : WebApplicationPlugin, IPluginDatabaseMigrator
 {
     public const string PluginName = "PluginExample";
     public const string PluginNameFullName = "PackageName.PluginExample";
@@ -41,17 +41,15 @@ public class PluginExamplePlugin : WebApplicationPlugin
         op.RegisterOption<PluginExampleOption1>(appendToInitialSiteData: true);
         op.SaveOption(new PluginExampleOption1 { Value = "200" });
         op.SetConstOption(new PluginConstOption2() { Value = "222" }, appendToInitialSiteData: true);
-
-        Migration(app, settings).Wait();
     }
 
-    public async Task Migration(WebApplication app, PluginSettings settings)
+    public async Task ApplyMigrations(IServiceProvider rootServices, IConfiguration configuration, PluginSettings settings)
     {
-        using var serviceScope = app.Services.CreateScope();
+        using var serviceScope = rootServices.CreateScope();
         // not work - return invalid DbContextOptions. variant from BaseClass
         //var ef = serviceScope.ServiceProvider.GetRequiredService<MyPluginDbContext>();
 
-        var conn = app.Configuration.GetConnectionString("DefaultConnection")!;
+        var conn = configuration.GetConnectionString("DefaultConnection")!;
         using var ef = MyPluginDbContext.CreateInstance(conn);
 
         var pendingMigrations = (await ef.Database.GetPendingMigrationsAsync()).ToList();
@@ -68,7 +66,7 @@ public class PluginExamplePlugin : WebApplicationPlugin
             Console.WriteLine("Migrate PLUGIN complete.");
         }
 
-        PluginNewsSeed.SeedFirstData(ef, serviceScope.ServiceProvider, app.Configuration, settings.ContentRootPath).Wait();
+        PluginNewsSeed.SeedFirstData(ef, serviceScope.ServiceProvider, configuration, settings.ContentRootPath).Wait();
     }
 
 }

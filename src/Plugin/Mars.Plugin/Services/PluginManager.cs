@@ -43,7 +43,7 @@ internal class PluginManager
 
     internal void ConfigureBuilder(WebApplicationBuilder builder, string pluginSection = "Plugins")
     {
-        if (isTesting) return;
+        //if (isTesting) return;
         var plugins = new List<PluginData>();
 
         var pluginsSection = builder.Configuration.GetSection(pluginSection);
@@ -65,10 +65,13 @@ internal class PluginManager
         }
 
         // Read from /data/plugins dir
-        foreach (var pluginConfig in ReadPluginsFromDirectory(_fileStorage, PluginService.PluginsDefaultPath, _logger))
+        if (!isTesting)
         {
-            var instances = InstatitePlugin(pluginConfig);
-            plugins.AddRange(instances);
+            foreach (var pluginConfig in ReadPluginsFromDirectory(_fileStorage, PluginService.PluginsDefaultPath, _logger))
+            {
+                var instances = InstatitePlugin(pluginConfig);
+                plugins.AddRange(instances);
+            }
         }
 
         foreach (var p in plugins)
@@ -82,21 +85,34 @@ internal class PluginManager
         _plugins = plugins;
     }
 
+    internal void ApplyPluginMigrations(IServiceProvider rootServices, IConfiguration configuration)
+    {
+        //if (isTesting) return;
+        foreach (var pluginData in _plugins)
+        {
+            if (pluginData.Plugin is IPluginDatabaseMigrator migrator)
+            {
+                migrator.ApplyMigrations(rootServices, configuration, pluginData.Settings)
+                        .ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+        }
+    }
+
     internal void UsePlugins(WebApplication app)
     {
-        if (isTesting) return;
-        foreach (var p in _plugins)
+        //if (isTesting) return;
+        foreach (var pluginData in _plugins)
         {
-            if (p.hasConfigureWebApplication)
+            if (pluginData.hasConfigureWebApplication)
             {
-                p.Plugin.ConfigureWebApplication(app, p.Settings);
+                pluginData.Plugin.ConfigureWebApplication(app, pluginData.Settings);
             }
 
-            var pluginWwwRoot = Path.Combine(p.Settings.ContentRootPath, "wwwroot");
+            var pluginWwwRoot = Path.Combine(pluginData.Settings.ContentRootPath, "wwwroot");
 
             if (Directory.Exists(pluginWwwRoot))
             {
-                var pluginUrl = $"/_plugin/{p.Info.KeyName}";
+                var pluginUrl = $"/_plugin/{pluginData.Info.KeyName}";
                 app.Map(pluginUrl, pluginAppBuilder =>
                 {
                     pluginAppBuilder.UseStaticFiles(new StaticFileOptions
@@ -107,10 +123,10 @@ internal class PluginManager
                 });
 
                 var pluginManifestFilePath = Path.Combine(pluginWwwRoot, MarsFrontPluginManifest.DefaultManifestFileName);
-                var pluginManifestBinFilePath = Path.Combine(Path.GetDirectoryName(p.Info.AssemblyPath)!, "wwwroot", MarsFrontPluginManifest.DefaultManifestFileName);
+                var pluginManifestBinFilePath = Path.Combine(Path.GetDirectoryName(pluginData.Info.AssemblyPath)!, "wwwroot", MarsFrontPluginManifest.DefaultManifestFileName);
                 if (File.Exists(pluginManifestFilePath) || File.Exists(pluginManifestBinFilePath))
                 {
-                    p.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
+                    pluginData.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
                 }
             }
         }

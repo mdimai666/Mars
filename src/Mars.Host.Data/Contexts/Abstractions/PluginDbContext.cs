@@ -17,18 +17,19 @@ public abstract class PluginDbContextBase : MarsDbContext
     /// <para />
     /// should be - <b>CompanyName.PluginName</b>
     /// </summary>
-    public abstract string PluginName { get; }
+    public abstract string SchemaName { get; }
 
     public PluginDbContextBase(DbContextOptions options) : base(options)
     {
-        if (string.IsNullOrWhiteSpace(PluginName)) throw new ArgumentNullException(nameof(PluginName) + ", Plugin name must be set");
+        if (string.IsNullOrWhiteSpace(SchemaName))
+            throw new ArgumentNullException("SchemaName name must be set");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseNpgsql(opt => opt.MigrationsHistoryTable(PluginEFMigrationsHistoryTable, PluginName));
+        optionsBuilder.UseNpgsql(opt => opt.MigrationsHistoryTable(PluginEFMigrationsHistoryTable, SchemaName));
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableDetailedErrors();
     }
@@ -41,7 +42,7 @@ public abstract class PluginDbContextBase : MarsDbContext
 
     public static Dictionary<string, Type> GetMarsDbContextDbSetList()
     {
-        Dictionary<string, Type> dict = new();
+        var dict = new Dictionary<string, Type>();
         var memberDbSets = typeof(MarsDbContext).GetProperties()
                 .Where(p => p.PropertyType.IsGenericType
                             && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
@@ -67,7 +68,7 @@ public abstract class PluginDbContextBase : MarsDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.HasDefaultSchema(PluginName);
+        builder.HasDefaultSchema(SchemaName);
         builder.ApplyConfigurationsFromAssembly(typeof(PostEntityConfiguration).Assembly);
 
 #if VARIANT_1
@@ -82,7 +83,7 @@ public abstract class PluginDbContextBase : MarsDbContext
             builder.Entity(entityType).ToTable(entityTableName, "public", a => a.ExcludeFromMigrations());
 
             //builder.Ignore(entityType);
-        } 
+        }
 #endif
 
 #if !VARIANT_1

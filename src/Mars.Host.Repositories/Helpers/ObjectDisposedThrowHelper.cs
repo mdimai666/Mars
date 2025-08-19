@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mars.Host.Repositories.Helpers;
 
-internal static partial class ObjectDisposedThrowHelper
+public static partial class ObjectDisposedThrowHelper
 {
     /// <summary>Throws an <see cref="ObjectDisposedException"/> if the specified <paramref name="condition"/> is <see langword="true"/>.</summary>
     /// <param name="condition">The condition to evaluate.</param>
@@ -42,7 +42,7 @@ internal static partial class ObjectDisposedThrowHelper
     {
         throw new ObjectDisposedException(instance?.GetType().FullName);
     }
- 
+
     [DoesNotReturn]
     private static void ThrowObjectDisposedException(Type? type)
     {

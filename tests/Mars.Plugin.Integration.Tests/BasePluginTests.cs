@@ -9,8 +9,6 @@ using Mars.Plugin.Integration.Tests.Tests;
 using Mars.Plugin.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PluginExample.Data;
-using PluginExample.Data.Seeds;
 
 namespace Mars.Plugin.Integration.Tests;
 
@@ -70,14 +68,15 @@ public abstract class BasePluginTests
         AppFixture.Seed().RunSync();
         AppFixture.ResetMocks();
         //AppFixture.MessageQueueFixture.ClearTopics().RunSync();
-        PluginSeed();
         PluginManager = appFixture.ServiceProvider.GetRequiredService<PluginManager>();
+        PluginManager.ApplyPluginMigrations(AppFixture.ServiceProvider, AppFixture.Configuration);
+        PluginSeed();
     }
 
     public void PluginSeed()
     {
-        var conn0 = AppFixture.Configuration.GetConnectionString("DefaultConnection")!;
-        var ef = MyPluginDbContext.CreateInstance(conn0);
-        PluginNewsSeed.SeedFirstData(ef, AppFixture.ServiceProvider, AppFixture.Configuration, "").Wait();
+        //var conn0 = AppFixture.Configuration.GetConnectionString("DefaultConnection")!;
+        //var ef = MyPluginDbContext.CreateInstance(conn0);
+        //PluginNewsSeed.SeedFirstData(ef, AppFixture.ServiceProvider, AppFixture.Configuration, "").Wait();
     }
 }

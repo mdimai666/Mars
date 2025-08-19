@@ -22,7 +22,7 @@ public class PluginSetupTests : BasePluginTests
         var expectPluginAssembly = typeof(PluginExamplePlugin).Assembly;
 
         //Act
-        var plugin = PluginManager.Plugins.FirstOrDefault(s =>
+        var plugin = PluginManager.Plugins.Single(s =>
         {
             return s.Info.AssemblyFullName == expectPluginAssembly.FullName;
         });
@@ -33,8 +33,8 @@ public class PluginSetupTests : BasePluginTests
 
         //check migrations work
         ef.Database.GetMigrations().Should().HaveCount(1);
-        ef.Database.GetPendingMigrations().Should().HaveCount(1);
-        ef.Database.GetAppliedMigrations().Should().HaveCount(0);
+        ef.Database.GetPendingMigrations().Should().HaveCount(0);
+        ef.Database.GetAppliedMigrations().Should().HaveCount(1);
         ef.News.Should().HaveCount(1);
         ef.Posts.Should().HaveCountGreaterThan(0);
         ef.Users.Should().HaveCountGreaterThan(0);

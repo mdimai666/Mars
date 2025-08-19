@@ -157,6 +157,7 @@ commandsApi.GetCommand<MainCommand>().ShowInfoCommand();
 app.Services.MarsMigrateIfProducation(builder.Configuration, _logger, out var migrated);
 app.Services.UseMarsOptions();
 app.Services.SeedData(builder.Configuration, _logger, migrated);
+app.ApplyPluginMigrations();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {

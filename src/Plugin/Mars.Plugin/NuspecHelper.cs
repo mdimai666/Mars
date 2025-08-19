@@ -50,7 +50,7 @@ public static class NuspecHelper
                     {AddElementIfNotNull("projectUrl", manifest.ProjectUrl)}
                     {AddElementIfNotNull("description", manifest.Description)}
                     {AddElementIfNotNull("tags", manifest.Tags)}
-                    {AddStringIfNotNull($"<repository type=\"{manifest.Repository?.Type}\" url=\"{manifest.Repository?.Url}\" branch\"{manifest.Repository?.Branch}\" commit=\"{manifest.Repository?.Commit}\" />", manifest.Repository?.Url)}
+                    {AddStringIfNotNull($"<repository type=\"{manifest.Repository?.Type}\" url=\"{manifest.Repository?.Url}\" branch=\"{manifest.Repository?.Branch}\" commit=\"{manifest.Repository?.Commit}\" />", manifest.Repository?.Url)}
                     <dependencies>
                         {dependenciesXml.Trim()}
                     </dependencies>

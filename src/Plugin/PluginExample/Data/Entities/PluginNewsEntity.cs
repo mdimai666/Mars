@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Host.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +28,10 @@ public class PluginNewsEntity
     [Comment("Текст")]
     public string? Content { get; set; }
 
+    [ForeignKey(nameof(User))]
     [Comment("ИД пользователя")]
     public Guid UserId { get; set; }
     public virtual UserEntity? User { get; set; }
-
 
     // Relations
     //public virtual ICollection<PluginNewsFilesEntity>? PostFiles { get; set; }

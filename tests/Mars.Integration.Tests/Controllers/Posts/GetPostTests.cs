@@ -169,7 +169,6 @@ public class GetPostTests : ApplicationTests
         result.Items.ElementAt(0).Id.Should().Be(expectPostId);
     }
 
-
     [IntegrationFact(Skip = "not yet")]
     public async Task GetPost__NonFilledMetaField_ShouldReturnBlankMetaValues()
     {

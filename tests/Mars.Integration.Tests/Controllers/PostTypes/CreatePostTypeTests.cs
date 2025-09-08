@@ -15,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.PostTypes;
 
+/// <summary>
+/// Post Type - Create API tests
+/// </summary>
 /// <seealso cref="PostTypeController.Create(CreatePostTypeRequest, CancellationToken)"/>
 public sealed class CreatePostTypeTests : ApplicationTests
 {

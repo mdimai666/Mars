@@ -1,6 +1,8 @@
 using System.Reflection;
+using Mars.Core.Extensions;
+using Mars.Host.Shared.WebSite.Scripts;
 
-namespace Mars.Host.Shared.WebSite.Scripts;
+namespace Mars.Host.WebSite.Scripts;
 
 public class BlazorSpaWasmHtmlScripts
 {
@@ -14,11 +16,12 @@ public class BlazorSpaWasmHtmlScripts
         {
             using Stream resource = MarsHostAssembly.GetManifestResourceStream("Mars.Host.Options.BlazorScriptsAppend.html")!;
             using var reader = new StreamReader(resource);
-            _blazorSpaInlineScipt = new InlineBlockJavaScript(reader.ReadToEnd());
+            var identedHtml = reader.ReadToEnd().Split(["\r\n", "\n", "\r"], StringSplitOptions.None).Select(s => '\t' + s).JoinStr("\n").Trim();
+            _blazorSpaInlineScipt = new InlineBlockJavaScript(identedHtml);
         }
 
         //https://github.com/google/brotli
-        Brotli = new ScriptFileInfo(new Uri("./mars/js/brotli.decode.min.js"), scriptName: "brotli", version: null, order: 1);
+        Brotli = new ScriptFileInfo(new Uri("./mars/js/brotli.decode.min.js", UriKind.RelativeOrAbsolute), scriptName: "brotli", version: null, order: 1);
 
     }
 }

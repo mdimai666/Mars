@@ -3,11 +3,11 @@
 
 <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script type="module">
-    import { BrotliDecode } from './js/brotli.decode.min.js';
+    import { BrotliDecode } from '/mars/js/brotli.decode.min.js';
     Blazor.start({
         applicationCulture: 'ru-RU',
         loadBootResource: function (type, name, defaultUri, integrity) {
-            if (type !== 'dotnetjs' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1' && !window._dev) {
+            if (type !== 'dotnetjs' && location.hostname !== 'localhost' && type !== 'configuration' && !window._dev) {
                 return (async function () {
                     const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
                     if (!response.ok) {

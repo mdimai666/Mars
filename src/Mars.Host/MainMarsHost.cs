@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using Mars.Host.Constants.Website;
 using Mars.Host.Handlers;
 using Mars.Host.Managers;
 using Mars.Host.QueryLang;
@@ -10,10 +11,13 @@ using Mars.Host.Services.MarsSSOClient;
 using Mars.Host.Shared.Attributes;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Handlers;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
+using Mars.Host.Shared.WebSite.Scripts;
+using Mars.Host.WebSite.Scripts;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +40,7 @@ public static class MainMarsHost
         services.AddSingleton<IMetaModelTypesLocator, MetaModelTypesLocator>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
-        //services.AddSingleton<ModelInfoService>(); //C:\Users\D\Documents\VisualStudio\2025\Mars\Mars.Shared\Tools\ModelInfoService.cs
+        //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Shared\Tools\ModelInfoService.cs
 
         services.AddLocalization();
         services.AddSingleton<IStringLocalizer<AppRes>, StringLocalizer<AppRes>>();
@@ -68,6 +72,8 @@ public static class MainMarsHost
         services.AddScoped<IGalleryService, GalleryService>();
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
+        services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
+        services.AddScoped<SiteFaviconConfiguratorHandler>();
 
         //temp
         services.AddScoped<PostTypeExporter>();
@@ -85,12 +91,16 @@ public static class MainMarsHost
         services.AddScoped<IPostTransformer, PostTransformer>();
         RegisterPostContentProcessorsLocator(services);
 
+        AddSiteScriptsBuilders(services);
+
         return services;
     }
 
     public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
     {
         ValidatorFabric.Initialize(serviceCollection);
+
+        UseSiteScriptsBuilders(app.Services);
 
         return app;
     }
@@ -182,4 +192,26 @@ public static class MainMarsHost
         return services;
     }
 
+    static void AddSiteScriptsBuilders(IServiceCollection services)
+    {
+        services.AddKeyedSingleton<ISiteScriptsBuilder, SiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
+        services.AddKeyedSingleton<ISiteScriptsBuilder, SiteScriptsBuilder>(AppFrontConstants.SiteScriptsBuilderKey);
+    }
+
+    static void UseSiteScriptsBuilders(IServiceProvider serviceProvider)
+    {
+        {
+            var appAdminBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
+            appAdminBuilder.RegisterProvider("favicon", new FaviconAssetProvider(serviceProvider.GetRequiredService<IOptionService>()), order: 8f, placeInHead: true);
+            var appAdminSpaHtmlScripts = new AppAdminSpaHtmlScripts();
+            appAdminBuilder.RegisterProvider("appadmin_head", new AppAdminHeadAssetProvider(appAdminSpaHtmlScripts), order: 9f, placeInHead: true);
+            appAdminBuilder.RegisterProvider("appadmin_footer", new AppAdminFooterAssetProvider(appAdminSpaHtmlScripts), order: 9f, placeInHead: false);
+        }
+
+        {
+            var appFrontBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppFrontConstants.SiteScriptsBuilderKey);
+            appFrontBuilder.RegisterProvider("favicon", new FaviconAssetProvider(serviceProvider.GetRequiredService<IOptionService>()), order: 9f, placeInHead: true);
+        }
+
+    }
 }

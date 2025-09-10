@@ -1,4 +1,7 @@
+using Mars.Host.Constants.Website;
+using Mars.Host.Handlers;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.WebSite.Scripts;
 using Mars.Options.Models;
 using Mars.Shared.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +33,8 @@ public static class MarsOptionsHostExtensions
         optionService.RegisterOption<MaintenanceModeOption>();
         optionService.RegisterOption<SEOOption>();
         optionService.RegisterOption<PluginManagerSettingsOption>();
+        optionService.RegisterOption<FaviconOption>(opt => _ = OnChangeFaviconOption(opt, serviceProvider));
+        optionService.RegisterOption<FaviconOptionGenaratedValues>();
 
         optionService.RegisterOption<OpenIDClientOption>(ChangeOpenIDClientOption);
         optionService.RegisterOption<OpenIDServerOption>();
@@ -70,4 +75,42 @@ public static class MarsOptionsHostExtensions
         optionService.SetConstOption(ssoOpt, appendToInitialSiteData: true);
     }
 
+    private static readonly SemaphoreSlim _faviconLock = new(1, 1);
+
+    static async Task OnChangeFaviconOption(FaviconOption opt, IServiceProvider rootServiceProvider)
+    {
+        using var scope = rootServiceProvider.CreateScope();
+        var serviceProvider = scope.ServiceProvider;
+        var messageService = serviceProvider.GetRequiredService<IDevAdminConnectionService>();
+
+        if (!await _faviconLock.WaitAsync(0))
+        {
+            _ = messageService.ShowNotifyMessage("Favicons generation is already in progress", Core.Models.MessageIntent.Warning);
+            return;
+        }
+
+        var faviconHandler = serviceProvider.GetRequiredService<SiteFaviconConfiguratorHandler>();
+        try
+        {
+            await faviconHandler.Handle(opt, CancellationToken.None);
+            ClearCacheAllSiteScriptsBuilders(serviceProvider);
+            _ = messageService.ShowNotifyMessage("Favicons generated successfully", Core.Models.MessageIntent.Success);
+        }
+        catch (Exception ex)
+        {
+            _ = messageService.ShowNotifyMessage("Error generating favicons: " + ex.Message, Core.Models.MessageIntent.Error);
+        }
+        finally
+        {
+            _faviconLock.Release();
+        }
+    }
+
+    static void ClearCacheAllSiteScriptsBuilders(IServiceProvider serviceProvider)
+    {
+        var appAdminBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
+        var appFrontBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppFrontConstants.SiteScriptsBuilderKey);
+        appAdminBuilder.ClearCache();
+        appFrontBuilder.ClearCache();
+    }
 }

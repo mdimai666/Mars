@@ -18,6 +18,7 @@ public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
     public static Regex ExtractScriptUrl = new(@"(src|href)\s*=\s*""([^""]+)""");
 
     /// <summary>
+    /// ScriptFileInfo constructor
     /// </summary>
     /// <param name="scriptTag">
     /// <list type="table">
@@ -28,27 +29,28 @@ public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
     /// <param name="scriptName"></param>
     /// <param name="version"></param>
     /// <param name="order"></param>
-    public ScriptFileInfo(string scriptTag, bool placeInHead = false, string? scriptName = null, string? version = null, float order = 10)
+    public ScriptFileInfo(string scriptTag, bool placeInHead = false, string? scriptName = null, string? version = null, float order = 10, ScriptInfoType? scriptType = null)
     {
         ScriptHtml = scriptTag;
         PlaceInHead = placeInHead;
-        ScriptUrl = new Uri(ExtractScriptUrl.Match(scriptTag).Value);
-        var ext = Path.GetExtension(ScriptUrl.LocalPath).TrimStart('.');
-        Type = DetectType(ext);
+        var url = ExtractScriptUrl.Match(scriptTag).Groups[2].Value;
+        ScriptUrl = new Uri(url, UriKind.RelativeOrAbsolute);
+        var ext = Path.GetExtension(ScriptUrl.OriginalString).TrimStart('.');
+        Type = scriptType ?? DetectType(ext);
 
-        ScriptName = scriptName ?? Path.GetFileName(ScriptUrl.LocalPath);
+        ScriptName = scriptName ?? Path.GetFileName(ScriptUrl.OriginalString);
         Order = order;
         ScriptVersion = version == null ? null : new Version(version);
     }
 
-    public ScriptFileInfo(Uri url, bool placeInHead = false, string? scriptName = null, string? version = null, float order = 10)
+    public ScriptFileInfo(Uri url, bool placeInHead = false, string? scriptName = null, string? version = null, float order = 10, ScriptInfoType? scriptType = null)
     {
         ScriptUrl = url;
         PlaceInHead = placeInHead;
-        var ext = Path.GetExtension(ScriptUrl.LocalPath).TrimStart('.');
-        Type = DetectType(ext);
+        var ext = Path.GetExtension(ScriptUrl.OriginalString).TrimStart('.');
+        Type = scriptType ?? DetectType(ext);
 
-        ScriptName = scriptName ?? Path.GetFileName(ScriptUrl.LocalPath);
+        ScriptName = scriptName ?? Path.GetFileName(ScriptUrl.OriginalString);
         Order = order;
         ScriptVersion = version == null ? null : new Version(version);
 

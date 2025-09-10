@@ -8,7 +8,6 @@ using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Managers.Extensions;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Scripts;
 using Mars.Options.Models;
 using Mars.Shared.Common;
 using Mars.Shared.Options;
@@ -23,31 +22,25 @@ namespace Mars.Host.Services;
 // Singletone
 internal class OptionService : IOptionService
 {
-    internal Dictionary<Type, object> localCache = new();
+    internal Dictionary<Type, object> localCache = [];
     internal static JsonSerializerOptions serializerOptions = new();
-
-    //public string SiteName = "Mars";
-    //public SysOptions SysOptions => ((SysOptions)localCache[typeof(SysOptions)]) ?? new();
-    //public SysOptions SysOption => SysOptions;
 
     public SysOptions SysOption => ((SysOptions)localCache[typeof(SysOptions)]) ?? new();
     public bool IsDevelopment { get; }
 
-    //Registered
-    internal Dictionary<string, Type> RegisteredOptions { get; set; } = new();
-    internal Dictionary<string, Type> OptionsAppendToInitialSiteData { get; set; } = new();
+    internal Dictionary<string, Type> RegisteredOptions { get; set; } = [];
+    internal Dictionary<string, Type> OptionsAppendToInitialSiteData { get; set; } = [];
 
-    internal Dictionary<Type, object> ConstOptions { get; set; } = new();
+    internal Dictionary<Type, object> ConstOptions { get; set; } = [];
 
     private readonly IOptionRepository _optionRepository;
     private readonly IEventManager _eventManager;
     private readonly IMemoryCache _memoryCache;
     private readonly IHostEnvironment _environment;
-    private Dictionary<Type, Action<object>> onChangeActions = new();
+    private Dictionary<Type, Action<object>> onChangeActions = [];
     private IServiceScope _scope;
 
     private FileHostingInfo? _fileHostingInfo;
-
 
     public OptionService(
         IServiceScopeFactory scopeFactory,
@@ -136,7 +129,7 @@ internal class OptionService : IOptionService
     {
         try
         {
-            MethodInfo method = this.GetType().GetMethod(nameof(GetOption), [])!;
+            MethodInfo method = GetType().GetMethod(nameof(GetOption), [])!;
             MethodInfo generic = method.MakeGenericMethod(type);
             return generic.Invoke(this, null)!;
         }
@@ -234,7 +227,7 @@ internal class OptionService : IOptionService
     }
 
     private OptionSummary AsSummary(KeyValuePair<Type, object> opt)
-        => new OptionSummary
+        => new()
         {
             Key = opt.Key.Name,
             Type = opt.Key.FullName!,
@@ -309,7 +302,7 @@ internal class OptionService : IOptionService
 
             try
             {
-                MethodInfo method = this.GetType().GetMethods().FirstOrDefault(s => s.Name == nameof(SaveOption) && s.GetParameters().Count() == 1)!;
+                MethodInfo method = GetType().GetMethods().FirstOrDefault(s => s.Name == nameof(SaveOption) && s.GetParameters().Count() == 1)!;
                 MethodInfo generic = method.MakeGenericMethod(t);
                 _ = generic.Invoke(this, [serializedValue])!;
             }
@@ -352,10 +345,6 @@ internal class OptionService : IOptionService
             PhysicalPath = new Uri(Path.Join(_environment.ContentRootPath, "wwwroot", "upload"), UriKind.Absolute),
             RequestPath = "upload"
         };
-
-    static BlazorSpaWasmHtmlScripts? _blazorSpaWasmHtmlScripts;
-
-    public BlazorSpaWasmHtmlScripts BlazorSpaWasmHtmlScripts() => _blazorSpaWasmHtmlScripts ??= new BlazorSpaWasmHtmlScripts(this.GetType().Assembly);
 
     public string GetDefaultDatabaseConnectionString() => IOptionService.Configuration.GetConnectionString("DefaultConnection")!;
 }

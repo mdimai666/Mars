@@ -65,6 +65,10 @@ public class MyHandlebars : IMarsHtmlTemplator
         //loops
         handlebars.RegisterHelper("for", ForLoopBlock); //{{#for @start @end @step? }}
 
+        //scripts
+        handlebars.RegisterHelper("site_head", MyHandlebarsSiteParts.WriteSiteHeadScripts);
+        handlebars.RegisterHelper("site_footer", MyHandlebarsSiteParts.WriteSiteFooterScripts);
+
         //helper
         handlebars.RegisterHelper("help", HelpHelper);
     }

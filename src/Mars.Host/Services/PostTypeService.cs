@@ -52,11 +52,8 @@ internal class PostTypeService : IPostTypeService
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
-        //if (created != null)
-        {
-            ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
-            _eventManager.TriggerEvent(payload);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
+        _eventManager.TriggerEvent(payload);
 
         return created;
     }
@@ -79,7 +76,7 @@ internal class PostTypeService : IPostTypeService
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeUpdate(updated.TypeName), updated.ToSummary());
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeUpdate(updated.TypeName), updated.ToSummary());
         _eventManager.TriggerEvent(payload);
 
         return updated;
@@ -89,23 +86,13 @@ internal class PostTypeService : IPostTypeService
     {
         var postType = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _postTypeRepository.Delete(id, cancellationToken);
+        await _postTypeRepository.Delete(id, cancellationToken);
 
-            _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
-            //if (result.Ok)
-            {
-                ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeDelete(postType.TypeName), postType);
-                _eventManager.TriggerEvent(payload);
-            }
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeDelete(postType.TypeName), postType);
+        _eventManager.TriggerEvent(payload);
+        return UserActionResult.Success();
     }
 
     public Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure()

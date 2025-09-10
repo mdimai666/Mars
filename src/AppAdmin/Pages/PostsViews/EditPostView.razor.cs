@@ -52,7 +52,7 @@ public partial class EditPostView
                     post.Content = await editor1!.GetHTML();
                 }
             }
-            else if (contentType == PostTypeConstants.DefaultPostContentTypes.WYSIWYG)
+            else if (contentType == PostTypeConstants.DefaultPostContentTypes.Code)
             {
                 post.Content = await codeEditor1!.GetValue();
 

@@ -15,18 +15,16 @@ public partial class GActionCenterContainer
 
     //List<LSearchFoundElement> locals { get; set; } = new();
     //List<LSearchFoundElement> remotes { get; set; } = new();
-    bool IsBusy = false;
+    //bool IsBusy = false;
 
     // string _search = default!;
     // [Parameter] public string Search { get => _search ?? ""; set { _search = value; Load(); } }
-
 
     string? _prevSearch;
     [Parameter] public string Search { get; set; } = default!;
     [Parameter] public bool Visible { get; set; }
 
     IEnumerable<RSearchFoundElement> Items = [];
-
 
     IReadOnlyCollection<RSearchFoundElement> _remoteItems = [];
 
@@ -49,9 +47,8 @@ public partial class GActionCenterContainer
 
         Items = LocalItems();
 
-        IsBusy = true;
+        //IsBusy = true;
         StateHasChanged();
-
 
         if (Search.Length > 1)
         {
@@ -68,7 +65,7 @@ public partial class GActionCenterContainer
             }
         }
 
-        IsBusy = false;
+        //IsBusy = false;
         StateHasChanged();
     }
 

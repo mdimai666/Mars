@@ -51,7 +51,7 @@ public class NavMenuService : INavMenuService
         var id = await _navMenuRepository.Create(query, cancellationToken);
         var created = await Get(id, cancellationToken);
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuAdd(), created!);//TODO: сделать явный тип.
+        var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuAdd(), created!);//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
 
         return id;
@@ -62,7 +62,7 @@ public class NavMenuService : INavMenuService
         await _navMenuRepository.Update(query, cancellationToken);
         var updated = (await Get(query.Id, cancellationToken))!;
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuUpdate(), updated);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuUpdate(), updated);
         _eventManager.TriggerEvent(payload);
     }
 
@@ -70,19 +70,12 @@ public class NavMenuService : INavMenuService
     {
         var role = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _navMenuRepository.Delete(id, cancellationToken);
+        await _navMenuRepository.Delete(id, cancellationToken);
 
-            ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), role);
-            _eventManager.TriggerEvent(payload);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), role);
+        _eventManager.TriggerEvent(payload);
 
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        return UserActionResult.Success();
     }
 
     public Task<NavMenuExport> Export(Guid id)
@@ -201,7 +194,7 @@ public class NavMenuService : INavMenuService
     }
 
     NavMenuItemDto NewMenuItem(MenuItemInternal item)
-        => new NavMenuItemDto()
+        => new()
         {
             Title = item.Title ?? "",
             Url = item.Url ?? "",

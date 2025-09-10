@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 namespace AppAdmin.Pages.PostTypeViews;
 
-public partial class EditPostTypePage2
+public partial class EditPostTypePage
 {
     [Inject] protected IMarsWebApiClient client { get; set; } = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
@@ -67,7 +67,7 @@ public partial class EditPostTypePage2
         importButtonDisabled = true;
         StateHasChanged();
 
-        using MemoryStream ms = new MemoryStream();
+        using MemoryStream ms = new();
         await e.File.OpenReadStream().CopyToAsync(ms);
         var bytes = ms.ToArray();
         string json = System.Text.Encoding.UTF8.GetString(bytes);
@@ -79,7 +79,7 @@ public partial class EditPostTypePage2
 
     }
 
-    async void OnImportClick()
+    void OnImportClick()
     {
         ////importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
         ////var result = await viewModelService.SystemImportSettings(importVal);

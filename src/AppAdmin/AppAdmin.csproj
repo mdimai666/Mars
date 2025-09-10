@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <Content Remove="compilerconfig.json" />
-        <Content Remove="Pages\PostTypeViews\EditPostTypePage.razor" />
         <Content Remove="Pages\Settings\SettingsImportPage.razor" />
         <Content Remove="Pages\UserViews\AdminEditUserPage.razor" />
         <Content Remove="Pages\UserViews\EditUserFieldsPage.razor" />

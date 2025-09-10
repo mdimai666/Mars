@@ -60,11 +60,9 @@ public class MediaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public Task Delete(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _mediaService.Delete(id, cancellationToken);
-        if (result.Ok) return Ok();
-        return NotFound(null);
+        return _mediaService.Delete(id, cancellationToken);
     }
 
     //public async override Task<ActionResult<TotalResponse<FileEntity>>> ListTable([NotNull] QueryFilter filter)
@@ -117,7 +115,6 @@ public class MediaController : ControllerBase
         //        FileEntity f = modelService.WriteUpload(file, EFileType.Media, file_group);
         //        added.Add(f);
         //    }
-
 
         //    return new UserActionResult<List<FileEntity>>
         //    {

@@ -103,11 +103,9 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public Task Delete(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _userService.Delete(id, cancellationToken);
-        if (result.Ok) return Ok();
-        return NotFound(null);
+        return _userService.Delete(id, cancellationToken);
     }
 
     [HttpGet]

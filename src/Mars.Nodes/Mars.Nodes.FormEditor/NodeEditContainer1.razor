@@ -14,7 +14,14 @@
                   PreventScroll=true>
         <div class="hstack justify-content-between">
             <div class="__left-title">
-                <h3 class="">@Node?.Type</h3>
+                @if(Node is UnknownNode unknownNode)
+                {
+                    <h3>(UnknownNode)@unknownNode.UnrecognizedType</h3>
+                }
+                else
+                {
+                    <h3>@Node?.Type</h3>
+                }
             </div>
 
             <div class="__right d-flex gap-3">

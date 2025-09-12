@@ -253,7 +253,7 @@ internal class OptionService : IOptionService
             string className = opt.Key;
             if (RegisteredOptions.TryGetValue(className, out var t))
             {
-                var val = JsonSerializer.Deserialize(opt.Value, t, serializerOptions);
+                var val = JsonSerializer.Deserialize(opt.Value, t, serializerOptions)!;
                 if (val is INormalizableAfterReadValue normalizableAfterRead) normalizableAfterRead.NormalizeAfterRead();
                 if (localCache.ContainsKey(t))
                 {
@@ -274,7 +274,7 @@ internal class OptionService : IOptionService
             string className = optKey;
             if (RegisteredOptions.TryGetValue(className, out var t))
             {
-                var val = Activator.CreateInstance(t);
+                var val = Activator.CreateInstance(t)!;
                 if (val is INormalizableAfterReadValue normalizableAfterRead) normalizableAfterRead.NormalizeAfterRead();
 
                 if (localCache.ContainsKey(t))

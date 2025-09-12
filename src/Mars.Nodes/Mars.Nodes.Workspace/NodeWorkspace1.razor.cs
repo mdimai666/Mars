@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Linq;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Workspace.Components;
@@ -21,7 +22,7 @@ public partial class NodeWorkspace1
     IReadOnlyDictionary<string, Node> _nodes { get; set; } = new Dictionary<string, Node>();
 
     Node? sel_node;
-    List<DragElement> dragElements { get; set; } = new List<DragElement>();
+    List<DragElement> dragElements { get; set; } = [];
     bool drag = false;
 
     [Parameter]
@@ -50,7 +51,7 @@ public partial class NodeWorkspace1
     public NewWire? new_wire = null;
     //public Node new_node = null;
 
-    public List<Wire> Wires { get; set; } = new List<Wire>();
+    public List<Wire> Wires { get; set; } = [];
 
     [Parameter] public EventCallback<IReadOnlyDictionary<string, Node>> NodesChanged { get; set; }
 
@@ -81,7 +82,7 @@ public partial class NodeWorkspace1
     void onMouseMove(MouseEventArgs e)
     {
         //Console.WriteLine("onMouseMove");
-        if (this.drag)
+        if (drag)
         {
             foreach (var d in dragElements)
             {
@@ -176,7 +177,7 @@ public partial class NodeWorkspace1
             dragElements.Add(drag);
         }
 
-        this.drag = true;
+        drag = true;
         EditorActions?.SetSelectContext(typeof(Node));
     }
 
@@ -321,7 +322,7 @@ public partial class NodeWorkspace1
                         float x2 = node2.X + 8;
                         float y2 = node2.Y + 23;
 
-                        var find_wire = this.Wires.Find(s => s.Node1 == node.Id
+                        var find_wire = Wires.Find(s => s.Node1 == node.Id
                           && s.Node2 == node2.Id
                           && s.Node1Output == out_index
                         );
@@ -345,7 +346,7 @@ public partial class NodeWorkspace1
                                 Node1Output = out_index
                             };
 
-                            this.Wires.Add(wire);
+                            Wires.Add(wire);
                         }
                         else
                         {
@@ -386,7 +387,7 @@ public partial class NodeWorkspace1
             Node node = Nodes[wire.Node1];
 
             Wires.Add(wire);
-            if (node.Wires == null) node.Wires = new List<List<string>>();
+            if (node.Wires == null) node.Wires = [];
 
             node.Wires[wire.Node1Output].Add(wire.Node2);
 
@@ -488,7 +489,7 @@ public partial class NodeWorkspace1
 
         //Console.WriteLine($"x={e.ClientX}, y={e.ClientY}, offx={e.OffsetX}, offy={e.OffsetY}");
 
-        MouseEventArgs m2 = new MouseEventArgs()
+        MouseEventArgs m2 = new()
         {
             Type = e.Type,
             AltKey = e.AltKey,
@@ -532,61 +533,74 @@ public partial class NodeWorkspace1
         }
     }
 
-    IEnumerable<string> GetWiredNodes(Node node, SelectWiresMode mode)
+    IEnumerable<NodeWire> GetWiredNodes(Node node, SelectWiresMode mode)
     {
-        var sel_nodes_ids = new List<string>() { node.Id };
+        var sel_nodes_ids = new List<NodeWire>() { node.Id };
 
         //Console.WriteLine(getWiredNodes(node).JoinStr(","));
 
         _logger.LogDebug("node=" + node.Id);
 
-        IEnumerable<string> w = _getWiredNodes(node, mode);
+        var w = _getWiredNodes(node, mode);
 
-        _logger.LogDebug("W0= " + w.JoinStr(","));
+        _logger.LogDebug("W0= " + w.Select(s=>s.ToString()).JoinStr(","));
 
         while (w.Any())
         {
             w = w.Except(sel_nodes_ids).ToList();
             sel_nodes_ids.AddRange(w);
-            _logger.LogDebug("0sel_nodes_ids= " + sel_nodes_ids.JoinStr(","));
+            _logger.LogDebug("0sel_nodes_ids= " + sel_nodes_ids.Select(s => s.ToString()).JoinStr(","));
 
-            _logger.LogDebug("W1= " + w.JoinStr(","));
+            _logger.LogDebug("W1= " + w.Select(s => s.ToString()).JoinStr(","));
 
             var next = w.Select(id => Nodes[id]);
 
             if (next.Any())
             {
                 w = next.Select(_node => _getWiredNodes(_node, mode)).SelectMany(x => x).ToList();
-                _logger.LogDebug("W2= " + w.JoinStr(","));
+                _logger.LogDebug("W2= " + w.Select(s => s.ToString()).JoinStr(","));
 
                 w = w.Except(sel_nodes_ids).ToList();
             }
             else
             {
-                w = Enumerable.Empty<string>();
+                w = Enumerable.Empty<NodeWire>();
             }
 
-            _logger.LogDebug("W= " + w.JoinStr(","));
+            _logger.LogDebug("W= " + w.Select(s => s.ToString()).JoinStr(","));
         }
 
-        _logger.LogDebug("sel_nodes_ids= " + sel_nodes_ids.JoinStr(","));
+        _logger.LogDebug("sel_nodes_ids= " + sel_nodes_ids.Select(s => s.ToString()).JoinStr(","));
 
         return sel_nodes_ids;
     }
 
-    IEnumerable<string> _getWiredNodesOutput(Node node)
+    IEnumerable<NodeWire> _getWiredNodesOutput(Node node)
     {
         var output_nodes_ids = node.Wires.SelectMany(s => s);
         return output_nodes_ids;
     }
 
-    IEnumerable<string> _getWiredNodesInput(Node node)
+    IEnumerable<NodeWire> _getWiredNodesInput(Node node)
     {
-        var input_nodes_ids = Nodes.Values.Where(_node => _node.Wires.SelectMany(s => s).Contains(node.Id)).Select(s => s.Id);
-        return input_nodes_ids;
+        //var input_nodes_ids = Nodes.Values.Where(_node => _node.Wires.SelectMany(s => s).Contains(node.Id)).Select(s => s.Id);
+        //return input_nodes_ids;
+        foreach(var fnode in Nodes.Values)
+        {
+            foreach(var wires in fnode.Wires)
+            {
+                foreach(var w in wires)
+                {
+                    if (w == node.Id)
+                    {
+                        yield return fnode.Id;
+                    }
+                }
+            }
+        }
     }
 
-    IEnumerable<string> _getWiredNodes(Node node, SelectWiresMode mode)
+    IEnumerable<NodeWire> _getWiredNodes(Node node, SelectWiresMode mode)
     {
         return mode switch
         {
@@ -621,11 +635,11 @@ public partial class NodeWorkspace1
 
     void SelectNodesUnderLasso(Lasso lasso)
     {
-        Rectangle _lasso = new Rectangle((int)lasso.drawX, (int)lasso.drawY, (int)lasso.width, (int)lasso.height);
+        Rectangle _lasso = new((int)lasso.drawX, (int)lasso.drawY, (int)lasso.width, (int)lasso.height);
 
         foreach (var node in Nodes.Values)
         {
-            Rectangle rect = new Rectangle((int)node.X, (int)node.Y, 120,/*(int)node.bodyRectHeight*/30);
+            Rectangle rect = new((int)node.X, (int)node.Y, 120,/*(int)node.bodyRectHeight*/30);
 
             if (_lasso.Contains(rect))
             {

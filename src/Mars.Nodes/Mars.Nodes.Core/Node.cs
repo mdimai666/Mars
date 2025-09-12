@@ -43,22 +43,21 @@ public class Node : INodeBasic
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public virtual string Icon { get; set; } = "";
 
-    List<List<string>> _wires = null!;
+    List<List<NodeWire>> _wires = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Disabled { get; set; }
 
-
-    public List<List<string>> Wires
+    public List<List<NodeWire>> Wires
     {
         get
         {
             if (_wires == null)
             {
-                _wires = new List<List<string>>(Outputs.Count);
+                _wires = new List<List<NodeWire>>(Outputs.Count);
                 foreach (var w in Outputs)
                 {
-                    _wires.Add(new List<string>());
+                    _wires.Add(new List<NodeWire>());
                 }
             }
             return _wires;
@@ -80,17 +79,6 @@ public class Node : INodeBasic
     public bool hasTailButton;
     public bool HaveInput { get; set; }
 
-    //public virtual string GetJson()
-    //{
-    //    return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-    //}
-
-    //public virtual Node FromJson(string jsonString)
-    //{
-    //    var basic = JsonSerializer.Deserialize<Node>(jsonString);
-    //    return basic;
-    //}
-
     public virtual Node Copy()
     {
         string json = JsonSerializer.Serialize(this);
@@ -109,7 +97,6 @@ public class Node : INodeBasic
     public static Type[] NonVisualNodes = { typeof(FlowNode), typeof(ConfigNode), typeof(VarNode) };
 
     public static bool IsVisualNode(Type nodeType) => !NonVisualNodes.Any(t => t == nodeType || t.IsAssignableFrom(nodeType));
-
 
     [JsonIgnore]
     public virtual bool IsVisual => IsVisualNode(GetType());
@@ -132,7 +119,7 @@ public class Node : INodeBasic
                 if (Node.Outputs.Count < value)
                 {
                     Node.Outputs.Add(new NodeOutput());
-                    Node.Wires.Add(new List<string>());
+                    Node.Wires.Add(new List<NodeWire>());
                 }
                 else
                 {

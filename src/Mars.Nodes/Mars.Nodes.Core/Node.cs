@@ -57,7 +57,7 @@ public class Node : INodeBasic
                 _wires = new List<List<NodeWire>>(Outputs.Count);
                 foreach (var w in Outputs)
                 {
-                    _wires.Add(new List<NodeWire>());
+                    _wires.Add([]);
                 }
             }
             return _wires;
@@ -65,9 +65,8 @@ public class Node : INodeBasic
         set => _wires = value;
     }
 
-    public List<string> OutputLabels { get; set; } = new List<string>();
-
-    public List<NodeOutput> Outputs { get; set; } = new List<NodeOutput>();
+    public List<NodeInput> Inputs { get; set; } = [];
+    public List<NodeOutput> Outputs { get; set; } = [];
 
     public bool enable_status;
     public bool selected;
@@ -77,7 +76,6 @@ public class Node : INodeBasic
 
     public bool isInjectable;
     public bool hasTailButton;
-    public bool HaveInput { get; set; }
 
     public virtual Node Copy()
     {
@@ -119,7 +117,7 @@ public class Node : INodeBasic
                 if (Node.Outputs.Count < value)
                 {
                     Node.Outputs.Add(new NodeOutput());
-                    Node.Wires.Add(new List<NodeWire>());
+                    Node.Wires.Add([]);
                 }
                 else
                 {

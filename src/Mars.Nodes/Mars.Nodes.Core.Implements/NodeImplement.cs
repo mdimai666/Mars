@@ -13,8 +13,7 @@ public interface INodeImplement<TNode> where TNode : Node
     public IRED RED { get; set; }
 
     //public INodeImplement<TNode> Create(TNode node);
-    public Task Execute(NodeMsg input, ExecuteAction callback);
-
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters);
 
 }
 
@@ -53,22 +52,16 @@ public delegate void ExecuteAction(NodeMsg msg, int output = 0);
 
 //            Applica app = input.Get("app") as Applica;
 
-
-
-
 //            int age = 21;
 
 //            input.Add("age", age);
 
 //            int getAge = (int)input.Get("age");
 
-
 //            if (user is not null)
 //            {
 
 //            }
-
-
 
 //            input.Payload = user;
 

@@ -11,7 +11,7 @@ public class FunctionNode : Node
 
     public FunctionNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#F8D0A3";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/csproj-48.png";

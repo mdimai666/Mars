@@ -30,7 +30,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         TypeInfoResolver = new IgnoreReadOnlySpanPropertiesResolver(),
     };
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         try
         {
@@ -77,7 +77,6 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
 #if DEBUG
             //RED.logger.LogWarning("DebugNode", msg); 
 #endif
-
 
             //RED.DebugMsg(new DebugMessage { message = "dealayed" });
             //Random r = new Random();

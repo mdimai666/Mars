@@ -16,10 +16,9 @@ public class DevAdminConnectionNode : Node
     /// </summary>
     public string MessageIntent { get; set; } = "";
 
-
     public DevAdminConnectionNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#3b9c9c";
         hasTailButton = false;
         Icon = "_content/Mars.Nodes.Workspace/nodes/info-circle.svg";

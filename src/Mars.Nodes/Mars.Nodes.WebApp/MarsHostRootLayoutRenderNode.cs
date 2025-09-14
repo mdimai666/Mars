@@ -8,7 +8,7 @@ public class MarsHostRootLayoutRenderNode: Node
 {
 	public MarsHostRootLayoutRenderNode()
 	{
-		HaveInput = true;
+		Inputs = [new()];
 		Color = "#603dd7";
         Icon = "_content/Mars.Nodes.Workspace/nodes/razor-48.png";
 		Outputs = new List<NodeOutput> { new NodeOutput { Label = "html" } };
@@ -23,7 +23,7 @@ public class RenderPageNode: Node
 
 	public RenderPageNode()
 	{
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#603dd7";
         Icon = "_content/Mars.Nodes.Workspace/nodes/razor-48.png";
         Outputs = new List<NodeOutput> { new NodeOutput { Label = "html" } };

@@ -21,7 +21,7 @@ public class MqttOutNodeImpl : INodeImplement<MqttOutNode>, INodeImplement
         Node.Config = RED.GetConfig(node.Config);
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         _mqttManager ??= RED.ServiceProvider.GetRequiredService<MqttManager>();
 

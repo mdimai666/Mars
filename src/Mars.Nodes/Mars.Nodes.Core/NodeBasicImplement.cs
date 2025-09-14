@@ -13,7 +13,7 @@ public class NodeBasicImplement : INodeBasic
     public string Container { get; init; } = "";
     public bool Disabled { get; init; }
 
-    public bool HaveInput { get; init; }
+    public List<NodeInput> Inputs { get; set; } = [];
     public List<NodeOutput> Outputs { get; init; } = new();
     public List<string> OutputLabels { get; init; } = new List<string>();
 

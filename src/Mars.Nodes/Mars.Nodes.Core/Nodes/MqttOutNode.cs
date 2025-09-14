@@ -15,7 +15,7 @@ public class MqttOutNode : Node
 
     public MqttOutNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#d5c0d8";
         Icon = "_content/Mars.Nodes.Workspace/nodes/mqtt-64.svg";
     }

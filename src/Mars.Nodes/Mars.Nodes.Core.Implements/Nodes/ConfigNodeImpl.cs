@@ -15,7 +15,7 @@ public class ConfigNodeImpl : INodeImplement<ConfigNode>, INodeImplement
         RED = red;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         throw new NotSupportedException("ConfigNode not executable");
     }

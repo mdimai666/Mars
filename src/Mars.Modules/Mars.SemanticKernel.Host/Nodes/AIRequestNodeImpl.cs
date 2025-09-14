@@ -24,7 +24,7 @@ public class AIRequestNodeImpl : INodeImplement<AIRequestNode>, INodeImplement
         Node.Config = RED.GetConfig(node.Config);
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (Node.Config.Value is null)
         {

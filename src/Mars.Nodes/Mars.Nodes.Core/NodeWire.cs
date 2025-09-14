@@ -6,11 +6,11 @@ namespace Mars.Nodes.Core;
 
 [TypeConverter(typeof(NodeWireTypeConverter))]
 [JsonConverter(typeof(NodeWireJsonConverter))]
-public record NodeWire(string NodeId, int Input = 0)
+public record NodeWire(string NodeId, int PortIndex = 0)
 {
     public override string ToString()
     {
-        return Input > 0 ? $"{NodeId}#{Input}" : NodeId;
+        return PortIndex > 0 ? $"{NodeId}#{PortIndex}" : NodeId;
     }
 
     public static NodeWire Parse(string value)

@@ -19,7 +19,7 @@ public class NodeWireTests
 
         // Assert
         Assert.Equal(guid, wire.NodeId);
-        Assert.Equal(input, wire.Input);
+        Assert.Equal(input, wire.PortIndex);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class NodeWireTests
 
         // Assert
         Assert.Equal(guid, wire.NodeId);
-        Assert.Equal(0, wire.Input);
+        Assert.Equal(0, wire.PortIndex);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class NodeWireTests
 
         // Assert
         Assert.Equal("abc", wire.NodeId);
-        Assert.Equal(7, wire.Input);
+        Assert.Equal(7, wire.PortIndex);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class NodeWireTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("test", result!.NodeId);
-        Assert.Equal(9, result.Input);
+        Assert.Equal(9, result.PortIndex);
     }
 
     [Fact]

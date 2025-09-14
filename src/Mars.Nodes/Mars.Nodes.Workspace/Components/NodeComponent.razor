@@ -1,29 +1,28 @@
 @using Mars.Core.Extensions
-<g class="red-ui-flow-node red-ui-flow-node-group @(node.selected?"red-ui-flow-node-selected":"") @(node.Disabled?"red-ui-flow-node-disabled":"")"
-   transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))" 
+<g class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node-selected" : "") @(node.Disabled ? "red-ui-flow-node-disabled" : "")"
+   transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))"
    node-id="@node.Id"
    @onclick:stopPropagation=true
-   @ondblclick:stopPropagation=true
-   >
+   @ondblclick:stopPropagation=true>
     @*transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))">*@
     <!-- push btn -->
     @if (node.isInjectable)
     {
         <g transform="translate(-25,2)" class="red-ui-flow-node-button"
-        @onclick=OnInjectClick @onclick:stopPropagation=true>
+           @onclick=OnInjectClick @onclick:stopPropagation=true>
             <rect class="red-ui-flow-node-button-background" rx="5" ry="5" width="32" height="26"></rect>
             <rect class="red-ui-flow-node-button-button" x="5" y="4" rx="4" ry="4" width="16" height="18"
-              fill="#a6bbcf" fill-opacity="1"></rect>
+                  fill="#a6bbcf" fill-opacity="1"></rect>
         </g>
     }
     <!-- tail -->
     @if (node.hasTailButton)
     {
-        <g transform="translate(@(bodyRectWidth-7),2)" class="red-ui-flow-node-button" style="display: inherit;">
+        <g transform="translate(@(bodyRectWidth - 7),2)" class="red-ui-flow-node-button" style="display: inherit;">
             <rect class="red-ui-flow-node-button-background" rx="5" ry="5" width="32" height="26"
-              fill-opacity="1"></rect>
+                  fill-opacity="1"></rect>
             <rect class="red-ui-flow-node-button-button" x="11" y="4" rx="4" ry="4" width="16" height="18"
-              fill="#87a980" fill-opacity="1"></rect>
+                  fill="#87a980" fill-opacity="1"></rect>
         </g>
     }
     <!-- body -->
@@ -59,19 +58,19 @@
         <rect class="red-ui-flow-node--select-backdrop"
               y="-3"
               x="-4"
-              width="@(bodyRectWidth+9f)"
+              width="@(bodyRectWidth + 9f)"
               rx="12px"
               ry="12px"
               fill="#64b1d9"
               filter="url(#dropshadow-select-backdrop)"
               fill-opacity="0.5"
-              height="@(bodyRectHeight+11)"></rect>
+              height="@(bodyRectHeight + 11)"></rect>
 
         <rect class="red-ui-flow-node-backdrop"
               y="4"
               x="1"
               fill="@node.Color"
-              width="@(bodyRectWidth-1f)"
+              width="@(bodyRectWidth - 1f)"
               height="@bodyRectHeight"></rect>
 
         <rect class="red-ui-flow-node"
@@ -79,19 +78,16 @@
               @onmousedown:stopPropagation=true
               @onmouseup=OnMouseUpMethod
               @onmouseup:stopPropagation=true
-
               @onclick=OnClickEvent
               @onclick:stopPropagation=true
               @ondblclick=OnDblClickEvent
               @ondblclick:stopPropagation=true
-
               fill="@node.Color"
               style="filter:url(#fePointLight1)"
               width="@bodyRectWidth"
               height="@bodyRectHeight"></rect>
 
     </g>
-    
 
     <!-- left icon -->
     <g class="red-ui-flow-node-icon-group"
@@ -110,7 +106,7 @@
                width="26"
                height="26"
                style=""
-               y="@(((bodyRectHeight - 30) / 2)+2)">
+               y="@(((bodyRectHeight - 30) / 2) + 2)">
         </image>
 
         <path d="M 30 1 l 0 @(bodyRectHeight - 2)"
@@ -133,7 +129,7 @@
             @node.DisplayName.TextEllipsis((int)bodyRectWidth/9)
         </text> *@
         <foreignObject x="0" y="@(((bodyRectHeight - 30) / 2))"
-                        width="@(bodyRectWidth - 45)" height="@(bodyRectHeight - 10)">
+                       width="@(bodyRectWidth - 45)" height="@(bodyRectHeight - 10)">
             <p class="red-ui-flow-node-label-text" xmlns="http://www.w3.org/1999/xhtml">
                 @node.DisplayName.TextEllipsis((int)bodyRectWidth / 9)
             </p>
@@ -144,13 +140,13 @@
         <g class="red-ui-flow-node-status-group"
            transform="translate(3,@((bodyRectHeight + 3)))">
             <rect class="red-ui-flow-node-status red-ui-flow-node-status-dot-grey"
-              x="6"
-              y="1"
-              width="9"
-              height="9"
-              rx="2"
-              ry="2"
-              stroke-width="3">
+                  x="6"
+                  y="1"
+                  width="9"
+                  height="9"
+                  rx="2"
+                  ry="2"
+                  stroke-width="3">
             </rect>
             <text class="red-ui-flow-node-status-label" x="20" y="10">
                 @node.status.TextEllipsis(30)
@@ -158,14 +154,14 @@
         </g>
 
         @*<g class="red-ui-flow-node-status-group" style="display: inline;" transform="translate(3,33)">
-            <rect class="red-ui-flow-node-status red-ui-flow-node-status-ring-red" 
-            x="6" 
-            y="1" 
-            width="9" 
-            height="9" 
-            rx="2" 
-            ry="2" 
-            stroke-width="3" 
+            <rect class="red-ui-flow-node-status red-ui-flow-node-status-ring-red"
+            x="6"
+            y="1"
+            width="9"
+            height="9"
+            rx="2"
+            ry="2"
+            stroke-width="3"
             style="display: inline;">
         </rect>
         <text class="red-ui-flow-node-status-label" x="20" y="10">text</text></g>*@
@@ -173,7 +169,7 @@
     @if (node.changed)
     {
         <g class="red-ui-flow-node-changed 1hide"
-       transform="translate(@(bodyRectWidth - 10f), -2)">
+           transform="translate(@(bodyRectWidth - 10f), -2)">
             <circle r="5"></circle>
         </g>
     }
@@ -184,44 +180,50 @@
             <path d="M -5,4 l 10,0 -5,-8 z"></path>
         </g>
     }
-    @if (node.HaveInput)
+
+    @if (node.Inputs.Count > 0)
     {
-        <g class="red-ui-flow-port-input" transform="translate(-5,10)">
-            <rect rx="3"
-              ry="3"
-              width="10"
-              height="10"
-              class="red-ui-flow-port"
-              v-add-class-hover="red-ui-flow-port-hovered"
-              @onmousedown=OnInputWirePointDown
-              @onmousedown:stopPropagation=true
-              @onmouseup=OnInputWirePointUp
-              @onmouseup:stopPropagation=true>
-            </rect>
-            @*@mousedown.stop="(e) => wireStartNew(e, 0, false)"
-        @mouseup.stop="(e) => wireStartNewEnd(e, 0, false)"*@
+        <g class="red-ui-flow-port-input" transform="translate(-5, @(node.Inputs.Count < 2 ? 10 : 2))">
+            @for (int i = 0; i < node.Inputs.Count; i++)
+            {
+                int index = i;
+
+                <rect rx="3"
+                      ry="3"
+                      y="@(i * 16)"
+                      width="10"
+                      height="10"
+                      class="red-ui-flow-port"
+                      v-add-class-hover="red-ui-flow-port-hovered"
+                      @onmousedown="(e => OnInputWirePointDown(e, index))"
+                      @onmousedown:stopPropagation=true
+                      @onmouseup="(e => OnInputWirePointUp(e, index))"
+                      @onmouseup:stopPropagation=true>
+                    <title>@(node.Inputs[i].Label)</title>
+                </rect>
+            }
         </g>
     }
 
     <g class="red-ui-flow-port-output"
-       transform="translate(@(bodyRectWidth-5),@(node.Outputs.Count < 2 ? 10 : 2))">
+       transform="translate(@(bodyRectWidth - 5),@(node.Outputs.Count < 2 ? 10 : 2))">
         @for (int i = 0; i < node.Outputs.Count; i++)
         {
             int index = i;
 
             <rect :key="'node_outputs-' + @node.Id + '.' + @i"
-              rx="3"
-              ry="3"
-              x="0"
-              y="@(i * 16)"
-              width="10"
-              height="10"
-              class="red-ui-flow-port"
-              v-add-class-hover="red-ui-flow-port-hovered"
-              @onmousedown="(e=>OnOutputWirePointDown(e,index))"
-              @onmousedown:stopPropagation=true
-              @onmouseup="(e=>OnOutputWirePointUp(e,index))"
-              @onmouseup:stopPropagation=true>
+                  rx="3"
+                  ry="3"
+                  x="0"
+                  y="@(i * 16)"
+                  width="10"
+                  height="10"
+                  class="red-ui-flow-port"
+                  v-add-class-hover="red-ui-flow-port-hovered"
+                  @onmousedown="(e => OnOutputWirePointDown(e, index))"
+                  @onmousedown:stopPropagation=true
+                  @onmouseup="(e => OnOutputWirePointUp(e, index))"
+                  @onmouseup:stopPropagation=true>
                 @*@mousedown.stop="(e) => wireStartNew(e, i, true)"
             @mouseup.stop="(e) => wireStartNewEnd(e, i, true)"*@
                 <title>@(node.Outputs[i].Label)</title>

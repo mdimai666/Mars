@@ -25,7 +25,7 @@ public class EditorActions
     {
         Console.WriteLine("UserAction_Delete");
 
-        var nestedWires = editor.NodeWorkspace1.Wires.Where(wire => nodeIds.Contains(wire.Node1) || nodeIds.Contains(wire.Node2));
+        var nestedWires = editor.NodeWorkspace1.Wires.Where(wire => nodeIds.Contains(wire.Node1.NodeId) || nodeIds.Contains(wire.Node2.NodeId));
 
         RemoveWires(nestedWires);
 
@@ -41,7 +41,7 @@ public class EditorActions
         var selNodesIds = selNodes.Select(node => node.Id);
 
         // this method also delete already selected
-        var nestedWires = editor.NodeWorkspace1.Wires.Where(wire => selNodesIds.Contains(wire.Node1) || selNodesIds.Contains(wire.Node2));
+        var nestedWires = editor.NodeWorkspace1.Wires.Where(wire => selNodesIds.Contains(wire.Node1.NodeId) || selNodesIds.Contains(wire.Node2.NodeId));
         nestedWires.ToList().ForEach(s => s.Selected = true);
         var wires = editor.NodeWorkspace1.Wires.Where(s => s.Selected);
 

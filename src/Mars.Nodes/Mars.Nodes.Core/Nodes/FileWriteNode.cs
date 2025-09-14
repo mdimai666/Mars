@@ -13,12 +13,11 @@ public class FileWriteNode : Node
     public bool AddAsNewLine { get; set; }
     public bool CreateDirectoryIfItDoesntExist { get; set; }
 
-
     public FileWriteNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#deb887";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
     }
 

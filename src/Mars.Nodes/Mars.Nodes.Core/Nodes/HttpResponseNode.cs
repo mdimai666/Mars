@@ -11,10 +11,9 @@ public class HttpResponseNode : Node
     {
         isInjectable = false;
         Color = "#e7e6af";
-        this.HaveInput = true;
+        Inputs = [new()];
         //Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
     }
 
 }
-

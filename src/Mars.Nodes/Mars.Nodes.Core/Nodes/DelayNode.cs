@@ -11,7 +11,7 @@ public class DelayNode : Node
 
     public DelayNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#e6e0f8";
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "iterate" },

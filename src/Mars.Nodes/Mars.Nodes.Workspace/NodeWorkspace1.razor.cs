@@ -1,7 +1,6 @@
 using System.Drawing;
-using System.Linq;
-using Mars.Core.Extensions;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Workspace.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -214,9 +213,8 @@ public partial class NodeWorkspace1
             Y1 = (float)e.OffsetY,
             X2 = (float)e.OffsetX,
             Y2 = (float)e.OffsetY,
-            Node1 = (output ? node_id : null)!,
-            Node2 = (output ? null : node_id)!,
-            Node1Output = output ? index : 0,
+            Node1 = (output ? new(node_id, index) : null)!,
+            Node2 = (output ? null : new(node_id, index))!,
             IsOutput = output
         };
     }
@@ -236,12 +234,11 @@ public partial class NodeWorkspace1
 
         if (output)
         {
-            new_wire.Node1 = node_id;
-            new_wire.Node1Output = index;
+            new_wire.Node1 = new(node_id, index);
         }
         else
         {
-            new_wire.Node2 = node_id;
+            new_wire.Node2 = new(node_id, index);
         }
 
         //wire with self
@@ -273,95 +270,12 @@ public partial class NodeWorkspace1
         wire_drawWires(node.Id);
     }
 
+    NodeWirePointResolver _nodeWirePointResolver = new();
+
     void wire_drawWires(string? nodeId = null)
     {
-        var nodes_all = Nodes.Values;
-        IEnumerable<Node> nodes = nodes_all;
+        Wires = NodeWireUtil.DrawWires(Nodes, _nodeWirePointResolver).ToList();
 
-        if (nodeId != null)
-        {
-            Node snode = Nodes[nodeId];
-            var to_update_wires = Wires.Where(s => s.Node2 == nodeId);
-            var input_nodes_ids = to_update_wires.Select(s => s.Node1);
-            var input_nodes = input_nodes_ids.Select(id => Nodes[id]);
-
-            nodes = input_nodes.Append(snode);
-
-        }
-
-        foreach (var node in nodes)
-        {
-
-            // let [x1, y1] = [node.x + 135, node.y + 23]
-
-            var out_index = 0;
-            foreach (var wire_one in node.Wires)
-            { //outputs
-
-                foreach (var wnode_id in wire_one)
-                { // putputs is may be multiple
-
-                    //float x1 = node.X + 135;
-                    float x1 = node.X + NodeComponent.CalcBodyWidth(node) + 15f;
-                    float y1 = 0;
-
-                    if (node.Wires.Count <= 1)
-                    {
-                        y1 = node.Y + 23;
-                    }
-                    else
-                    {
-                        y1 = node.Y + 16 + out_index * 16;
-                    }
-
-                    var node2 = Nodes.GetValueOrDefault(wnode_id);
-
-                    if (node2 != null)
-                    {
-
-                        float x2 = node2.X + 8;
-                        float y2 = node2.Y + 23;
-
-                        var find_wire = Wires.Find(s => s.Node1 == node.Id
-                          && s.Node2 == node2.Id
-                          && s.Node1Output == out_index
-                        );
-
-                        var is_update = find_wire != null;
-
-                        // console.warn('>>>>is_update');
-
-                        if (!is_update)
-                        {
-
-                            var wire = new Wire
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                X1 = x1,
-                                Y1 = y1,
-                                X2 = x2,
-                                Y2 = y2,
-                                Node1 = node.Id,
-                                Node2 = node2.Id,
-                                Node1Output = out_index
-                            };
-
-                            Wires.Add(wire);
-                        }
-                        else
-                        {
-                            find_wire.X1 = x1;
-                            find_wire.Y1 = y1;
-                            find_wire.X2 = x2;
-                            find_wire.Y2 = y2;
-                        }
-
-                    }
-                }
-                out_index++;
-
-            }
-        }
     }
 
     void wire_addWire(Wire new_wire)
@@ -375,12 +289,10 @@ public partial class NodeWorkspace1
             Y2 = new_wire.Y2,
             Node1 = new_wire.Node1,
             Node2 = new_wire.Node2,
-            Node1Output = new_wire.Node1Output
         };
 
         bool is_exist = Wires.Exists(s => s.Node1 == wire.Node1
-            && s.Node2 == wire.Node2
-            && s.Node1Output == wire.Node1Output);
+                                        && s.Node2 == wire.Node2);
 
         if (!is_exist)
         {
@@ -389,7 +301,7 @@ public partial class NodeWorkspace1
             Wires.Add(wire);
             if (node.Wires == null) node.Wires = [];
 
-            node.Wires[wire.Node1Output].Add(wire.Node2);
+            node.Wires[wire.Node1.PortIndex].Add(wire.Node2);
 
             wire_drawWires(node.Id);
         }
@@ -525,90 +437,11 @@ public partial class NodeWorkspace1
 
     void SelectAllNodesInFlow(Node node)
     {
-        var nodes_ids = GetWiredNodes(node, SelectWiresMode.Both);
-        var nodes = nodes_ids.Select(id => Nodes[id]);
+        var nodes = NodeWireUtil.GetLinkedNodes(node, Nodes);
         foreach (var _node in nodes)
         {
             _node.selected = true;
         }
-    }
-
-    IEnumerable<NodeWire> GetWiredNodes(Node node, SelectWiresMode mode)
-    {
-        var sel_nodes_ids = new List<NodeWire>() { node.Id };
-
-        //Console.WriteLine(getWiredNodes(node).JoinStr(","));
-
-        _logger.LogDebug("node=" + node.Id);
-
-        var w = _getWiredNodes(node, mode);
-
-        _logger.LogDebug("W0= " + w.Select(s=>s.ToString()).JoinStr(","));
-
-        while (w.Any())
-        {
-            w = w.Except(sel_nodes_ids).ToList();
-            sel_nodes_ids.AddRange(w);
-            _logger.LogDebug("0sel_nodes_ids= " + sel_nodes_ids.Select(s => s.ToString()).JoinStr(","));
-
-            _logger.LogDebug("W1= " + w.Select(s => s.ToString()).JoinStr(","));
-
-            var next = w.Select(id => Nodes[id]);
-
-            if (next.Any())
-            {
-                w = next.Select(_node => _getWiredNodes(_node, mode)).SelectMany(x => x).ToList();
-                _logger.LogDebug("W2= " + w.Select(s => s.ToString()).JoinStr(","));
-
-                w = w.Except(sel_nodes_ids).ToList();
-            }
-            else
-            {
-                w = Enumerable.Empty<NodeWire>();
-            }
-
-            _logger.LogDebug("W= " + w.Select(s => s.ToString()).JoinStr(","));
-        }
-
-        _logger.LogDebug("sel_nodes_ids= " + sel_nodes_ids.Select(s => s.ToString()).JoinStr(","));
-
-        return sel_nodes_ids;
-    }
-
-    IEnumerable<NodeWire> _getWiredNodesOutput(Node node)
-    {
-        var output_nodes_ids = node.Wires.SelectMany(s => s);
-        return output_nodes_ids;
-    }
-
-    IEnumerable<NodeWire> _getWiredNodesInput(Node node)
-    {
-        //var input_nodes_ids = Nodes.Values.Where(_node => _node.Wires.SelectMany(s => s).Contains(node.Id)).Select(s => s.Id);
-        //return input_nodes_ids;
-        foreach(var fnode in Nodes.Values)
-        {
-            foreach(var wires in fnode.Wires)
-            {
-                foreach(var w in wires)
-                {
-                    if (w == node.Id)
-                    {
-                        yield return fnode.Id;
-                    }
-                }
-            }
-        }
-    }
-
-    IEnumerable<NodeWire> _getWiredNodes(Node node, SelectWiresMode mode)
-    {
-        return mode switch
-        {
-            SelectWiresMode.Both => _getWiredNodesOutput(node).Concat(_getWiredNodesInput(node)),
-            SelectWiresMode.Inputs => _getWiredNodesInput(node),
-            SelectWiresMode.Outputs => _getWiredNodesOutput(node),
-            _ => throw new NotImplementedException()
-        };
     }
 
     public enum SelectWiresMode

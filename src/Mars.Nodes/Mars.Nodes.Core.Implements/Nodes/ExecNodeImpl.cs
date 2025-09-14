@@ -16,7 +16,7 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         Process cmd = new Process();
@@ -35,7 +35,6 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
         cmd.StandardInput.Flush();
         cmd.StandardInput.Close();
         cmd.WaitForExit();
-
 
         input.Payload = cmd.StandardOutput.ReadToEnd();
 

@@ -38,7 +38,7 @@ internal class NodeTaskManager : IDisposable
 
         node.RED = CreateContextForNode(nodeId);
 
-        _ = node.Execute(msg ?? new NodeMsg(), (e, output) => { CallbackNext(node.Id, e, output); });
+        _ = node.Execute(msg ?? new NodeMsg(), (e, output) => { CallbackNext(node.Id, e, output); }, new());
     }
 
     void CallbackNext(string completedNodeId, NodeMsg result, int output)
@@ -50,18 +50,21 @@ internal class NodeTaskManager : IDisposable
             throw new Exception($"MAX_EXECUTE_COUNT={maxExecuteCount}");
         }
 
-        var nextNodes = GetNextWires(completedNodeId, output).Where(nodeImpl => !nodeImpl.Node.Disabled);
+        var nextNodes = GetNextWires(completedNodeId, output);
 
-        foreach (var _node in nextNodes)
+        foreach (var _wire in nextNodes)
         {
-            var node = _node;
+            var node = _nodes[_wire.NodeId];
+            var portIndex = _wire.PortIndex;
+            if (node.Node.Disabled) continue;
+
             node.RED = CreateContextForNode(node.Id);
-            ExecuteNode(result, node);
+            ExecuteNode(result, node, new(InputPort: portIndex));
         }
 
     }
 
-    private async void ExecuteNode(NodeMsg input, INodeImplement node)
+    private async void ExecuteNode(NodeMsg input, INodeImplement node, ExecutionParameters parameters)
     {
         try
         {
@@ -70,7 +73,8 @@ internal class NodeTaskManager : IDisposable
                 {
                     _logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
                     CallbackNext(node.Id, e, _output);
-                });
+                },
+                parameters);
         }
         catch (NodeExecuteException ex)
         {
@@ -91,19 +95,15 @@ internal class NodeTaskManager : IDisposable
         return new RED_Context(nodeId, (FlowNodeImpl)flow, _serviceProvider);
     }
 
-    IEnumerable<INodeImplement> GetNextWires(string nodeId, int outputIndex)
+    IEnumerable<NodeWire> GetNextWires(string nodeId, int outputIndex)
     {
         var node = _nodes[nodeId];
-        //var flow = (nodes[node.Node.Container] as FlowNodeImpl)!;
 
-        var outsIds = node.Node.Wires.ElementAtOrDefault(outputIndex);
+        var outsWires = node.Node.Wires.ElementAtOrDefault(outputIndex);
 
-        if (outsIds == null) return Enumerable.Empty<INodeImplement>();
+        if (outsWires == null) return Enumerable.Empty<NodeWire>();
 
-        var nextNodes = _nodes.Values.Where(s => outsIds.Contains(s.Id));
-
-        return nextNodes;
-
+        return outsWires;
     }
 
     public void Dispose()

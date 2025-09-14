@@ -11,7 +11,7 @@ public class EvalNode : Node
 
     public EvalNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#d4eba1";
         Outputs = new List<NodeOutput> { new NodeOutput() };
     }

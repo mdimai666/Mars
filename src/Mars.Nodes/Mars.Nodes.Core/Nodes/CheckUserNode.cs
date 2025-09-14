@@ -9,7 +9,7 @@ public class CheckUserNode : Node
 {
     public CheckUserNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#4cb5e6";
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "Auth" },

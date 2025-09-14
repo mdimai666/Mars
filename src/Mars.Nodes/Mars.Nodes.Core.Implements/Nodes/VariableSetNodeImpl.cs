@@ -20,7 +20,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (!Node.Setters.Any()) return Task.CompletedTask;
 

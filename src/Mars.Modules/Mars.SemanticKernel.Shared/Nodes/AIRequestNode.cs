@@ -12,17 +12,15 @@ public class AIRequestNode : Node
 {
     public override string Label => string.IsNullOrEmpty(Name) ? "AI" : Name;
 
-
     public InputConfig<SemanticKernelModelConfigNode> Config { get; set; }
     public string Prompt { get; set; } = "";
     public float? Temperature { get; set; }
     public int? TopK { get; set; }
     public float? TopP { get; set; }
 
-
     public AIRequestNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#aeb3fa";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.SemanticKernel.Front/img/icon-128.png";

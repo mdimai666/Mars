@@ -17,7 +17,7 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         if (Node.Action == DevAdminConnectionNode.ACTION_MESSAGE)

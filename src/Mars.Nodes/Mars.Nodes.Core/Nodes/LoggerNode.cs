@@ -11,7 +11,7 @@ public class LoggerNode : Node
 
     public LoggerNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#e9d585";
         hasTailButton = false;
         Icon = "_content/Mars.Nodes.Workspace/nodes/journal-text.svg";

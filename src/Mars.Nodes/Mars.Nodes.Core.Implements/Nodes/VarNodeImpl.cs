@@ -14,7 +14,7 @@ public class VarNodeImpl : INodeImplement<VarNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         throw new NotSupportedException("VarNode not executable");
     }

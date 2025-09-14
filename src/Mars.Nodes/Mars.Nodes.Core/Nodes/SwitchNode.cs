@@ -16,7 +16,7 @@ public class SwitchNode : Node
 
     public SwitchNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#E0D870";
         Outputs = new List<NodeOutput>
         {

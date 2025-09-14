@@ -14,7 +14,9 @@ public partial class NodeComponent
     float X => node.X + 10;
     float Y => node.Y + 8;
 
-    public float bodyRectHeight => node.Outputs.Count < 2 ? 30 : node.Outputs.Count * 16f;
+    int inputOrOutputsMax => Math.Max(node.Inputs.Count, node.Outputs.Count);
+
+    public float bodyRectHeight => inputOrOutputsMax < 2 ? 30 : inputOrOutputsMax * 16f;
     //public float bodyRectWidth => 120;
     public float bodyRectWidth => FixedWidth ?? CalcBodyWidth(node);
 
@@ -43,7 +45,6 @@ public partial class NodeComponent
         }
     }
 
-
     void OnMouseDownMethod(MouseEventArgs e)
     {
         OnMouseDown.InvokeAsync(e);
@@ -60,8 +61,6 @@ public partial class NodeComponent
         OnInject.InvokeAsync(node.Id);
     }
 
-
-
     // Simple events ============================
     void OnClickEvent(MouseEventArgs e)
     {
@@ -73,14 +72,14 @@ public partial class NodeComponent
     }
     // Wires ============================
 
-    void OnInputWirePointDown(MouseEventArgs e)
+    void OnInputWirePointDown(MouseEventArgs e, int index)
     {
-        wireStartNew.InvokeAsync(new NodeWirePointEventArgs(e, 0, true, node));
+        wireStartNew.InvokeAsync(new NodeWirePointEventArgs(e, index, true, node));
     }
 
-    void OnInputWirePointUp(MouseEventArgs e)
+    void OnInputWirePointUp(MouseEventArgs e, int index)
     {
-        wireStartNewEnd.InvokeAsync(new NodeWirePointEventArgs(e, 0, true, node));
+        wireStartNewEnd.InvokeAsync(new NodeWirePointEventArgs(e, index, true, node));
     }
 
     void OnOutputWirePointDown(MouseEventArgs e, int index)

@@ -15,8 +15,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (Node.Kind == EForeachKind.PayloadArray)
         {
@@ -69,11 +68,9 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
 
         callback(input);
 
-
         return Task.CompletedTask;
     }
 }
-
 
 public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeImplement
 {
@@ -87,8 +84,7 @@ public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeI
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         ForeachNode.ForeachCycle? cycle = input.Get<ForeachNode.ForeachCycle>();
@@ -97,7 +93,6 @@ public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeI
         {
             throw new ArgumentException("cycle not found in Msg");
         }
-
 
         if (cycle.index < cycle.count)
         {
@@ -120,4 +115,3 @@ public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeI
         return Task.CompletedTask;
     }
 }
-

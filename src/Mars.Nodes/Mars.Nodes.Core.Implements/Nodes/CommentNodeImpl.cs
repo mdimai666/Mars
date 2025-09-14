@@ -17,7 +17,7 @@ public class CommentNodeImpl : INodeImplement<CommentNode>, INodeImplement
         RED = red;
     }
 
-    public Task Execute(NodeMsg _input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         throw new NotImplementedException();
     }

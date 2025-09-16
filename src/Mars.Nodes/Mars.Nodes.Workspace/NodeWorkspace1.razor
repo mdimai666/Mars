@@ -41,7 +41,7 @@
                                OnMouseUp="e=>onWireMouseUp(e,new_wire)" />
             }
 
-            @foreach (var _wire in Wires)
+            @foreach (var _wire in _wires)
             {
                 var wire = _wire;
                 @*key="'wire-' + wire.Id"*@
@@ -56,7 +56,7 @@
                 @*@mousedown.native.stop="(e) => onWireMouseDown(e, wire)"*@
             }
 
-            @foreach (var _node in Nodes.Values)
+            @foreach (var _node in FlowNodes.Values)
             {
                 Node node = _node;
 

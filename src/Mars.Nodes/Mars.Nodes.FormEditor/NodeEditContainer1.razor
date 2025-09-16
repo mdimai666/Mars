@@ -14,13 +14,13 @@
                   PreventScroll=true>
         <div class="hstack justify-content-between">
             <div class="__left-title">
-                @if(Node is UnknownNode unknownNode)
+                @if(_node is UnknownNode unknownNode)
                 {
                     <h3>(UnknownNode)@unknownNode.UnrecognizedType</h3>
                 }
                 else
                 {
-                    <h3>@Node?.Type</h3>
+                    <h3>@_node?.Type</h3>
                 }
             </div>
 
@@ -41,7 +41,7 @@
 
             </div>
         </div>
-        @if (Node != null)
+        @if (_node != null)
         {
             <CascadingValue Value="this">
                 <div class="row flex-fill">
@@ -69,13 +69,13 @@
                         }
                         else
                         {
-                            <NodeFormEditor1 @ref=nodeFormEditor1 @bind-Node=Node OnValidSubmit=OnValidSubmit />
+                            <NodeFormEditor1 @ref=nodeFormEditor1 @bind-Node=_node OnValidSubmit=OnValidSubmit />
 
                         }
                     </div>
                     <div class="col-md-6" style="height:calc(70vh - 80px); overflow:auto;">
                         @* <FluentMarkdownSection FromAsset="./_content/mdimai666.Mars.Nodes.FormEditor/Docs/VariableSetNode/VariableSetNode.ru.md" /> *@
-                        <DocViewer For="() => Node.GetType()" />
+                        <DocViewer For="() => _node.GetType()" />
                     </div>
                 </div>
             </CascadingValue>

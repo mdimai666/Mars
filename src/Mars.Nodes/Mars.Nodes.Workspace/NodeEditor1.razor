@@ -4,6 +4,8 @@
 @using Mars.Nodes.FormEditor
 @using Mars.Nodes.Workspace
 @using Mars.Nodes.Workspace.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
 
 <div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill">
     <CascadingValue Value="this">
@@ -11,7 +13,7 @@
             <div class="d-flex justify-content-between p-1 align-items-center">
                 <div class="d-flex fs-5">
 
-                    <div class="mastet-menu">
+                    <div class="master-menu">
                         <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
                             @foreach (var _tab in masterTabs)
                             {
@@ -25,12 +27,14 @@
                         </div>
                     </div>
                     <div class="vr mx-3"></div>
+                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="Appearance.Stealth"></FluentButton>
+                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="Appearance.Stealth"></FluentButton>
+                    </div>
                 </div>
 
                 <div class="gap-2">
-                    @*<span>wires - @NodeWorkspace1?.Wires?.Count()</span> |
-                <span>nodes - @Nodes?.Count()</span> |*@
-                    <span>[@editorActions.SelectContextString]</span>
+                    <span>[@SelectContextString]</span>
                 </div>
 
                 <div class="d-flex gap-2 me-2">
@@ -78,7 +82,7 @@
                             <p class="card-text">Palette (@Palette.Count)</p>
                         </div>
                         <div class="">
-                            @foreach (var group in Palette.GroupBy(s=>s.GroupName))
+                            @foreach (var group in Palette.GroupBy(s => s.GroupName))
                             {
                                 <div class="px-4">
                                     <label class="text-strong">@group.Key</label>
@@ -126,7 +130,7 @@
                             <p class="card-text">Configs (@Palette.Count)</p>
                         </div>
                         <ul class="list-group">
-                            @foreach (var node in Nodes.Where(node => node is ConfigNode))
+                            @foreach (var node in AllNodes.Values.Where(node => node is ConfigNode))
                             {
                                 Node _node = node;
                                 <li class="list-group-item px-2 py-0 border-0">
@@ -142,15 +146,14 @@
             </div>
             <div class="w-100">
                 <div class="h-100" style="position:relative">
-                    <NodeWorkspace1 @ref=NodeWorkspace1
+                    <NodeWorkspace1 @ref=_nodeWorkspace1
                                     Style=""
                                     Class="h-100"
                                     OnInject="OnInject"
-                                    Nodes=FlowNodes
+                                    FlowNodes=FlowNodes
                                     OnDblClickNode="OnDblClickNode"
                                     OnWorkspaceClick="OnWorkspaceClick"
-                                    OnWorkspaceDblClick="OnWorkspaceDblClick"
-                                    EditorActions="editorActions">
+                                    OnWorkspaceDblClick="OnWorkspaceDblClick">
                         <QuickNodeAddMenu Palette="Palette"
                                           @ref=quickNodeAddMenu
                                           OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />

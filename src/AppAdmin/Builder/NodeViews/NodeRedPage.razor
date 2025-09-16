@@ -7,7 +7,6 @@
 @using Mars.Nodes.Workspace
 @using Mars.Nodes.Workspace.Services
 
-
 @if (Busy)
 {
     <div class="p-5 main-fill xcenter">
@@ -28,14 +27,13 @@ else
         <NodeEditor1 OnDeploy="OnDeploy"
                      OnInject="OnInjectClick"
                      OnCmdClick="OnCmdClick"
-                     @ref=editor1 @bind-Nodes=@nodes>
+                     @ref=editor1 @bind-AllNodes=@nodes>
             <SectionActions>
                 <XActionsDropDown />
             </SectionActions>
         </NodeEditor1>
     }
 }
-
 
 @code {
     [Inject] INodeServiceClient service { get; set; } = default!;
@@ -46,7 +44,7 @@ else
 
     bool Busy = false;
 
-    List<Node> nodes = new();
+    IDictionary<string, Node> nodes = new Dictionary<string, Node>();
 
     protected override void OnInitialized()
     {
@@ -65,7 +63,7 @@ else
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
     {
-        var node = nodes.FirstOrDefault(s => s.Id == nodeId);
+        var node = nodes.TryGetValue(nodeId, out var n) ? n : null;
         if (node is not null)
         {
             node.enable_status = string.IsNullOrEmpty(nodeStatus.Text) == false;
@@ -94,7 +92,7 @@ else
                 node.status = state.Value.Status;
                 node.enable_status = true;
             }
-            nodes = recivedNodes.Values.ToList();
+            nodes = recivedNodes.Values.ToDictionary(s => s.Id);
         }
         catch (Exception ex)
         {
@@ -110,14 +108,17 @@ else
     {
         var res = await service.Deploy(Nodes);
 
-        if (res.Ok) nodes.ForEach(s => s.changed = false);
+        if (res.Ok)
+        {
+            foreach (var node in nodes.Values) node.changed = false;
+        }
 
         editor1!.AddDebugMessage(new DebugMessage
-            {
-                // Topic = (res.Ok ? "OK" : "FAIL"),
-                Message = res.Message,
-                Level = res.Ok? MessageIntent.Info: MessageIntent.Error
-            });
+        {
+            // Topic = (res.Ok ? "OK" : "FAIL"),
+            Message = res.Message,
+            Level = res.Ok ? MessageIntent.Info : MessageIntent.Error
+        });
     }
 
     async void OnInjectClick(string nodeId)
@@ -164,4 +165,3 @@ else
     }
 
 }
-

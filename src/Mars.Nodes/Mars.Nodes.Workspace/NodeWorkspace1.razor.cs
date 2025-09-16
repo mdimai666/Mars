@@ -1,6 +1,9 @@
 using System.Drawing;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.EditorApi.Interfaces;
+using Mars.Nodes.Workspace.ActionManager;
+using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -9,7 +12,7 @@ using Microsoft.JSInterop;
 
 namespace Mars.Nodes.Workspace;
 
-public partial class NodeWorkspace1
+public partial class NodeWorkspace1 : INodeWorkspaceApi
 {
     [Inject] ILogger<NodeWorkspace1> _logger { get; set; } = default!;
 
@@ -18,43 +21,48 @@ public partial class NodeWorkspace1
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
     NodeWorkspaceJsInterop js = default!;
 
-    IReadOnlyDictionary<string, Node> _nodes { get; set; } = new Dictionary<string, Node>();
+    [CascadingParameter] INodeEditorApi _nodeEditor { get; set; } = default!;
+
+    IReadOnlyDictionary<string, Node> _flowNodes { get; set; } = new Dictionary<string, Node>();
 
     Node? sel_node;
     List<DragElement> dragElements { get; set; } = [];
     bool drag = false;
 
     [Parameter]
-    public IReadOnlyDictionary<string, Node> Nodes
+    public IReadOnlyDictionary<string, Node> FlowNodes
     {
-        get => _nodes;
+        get => _flowNodes;
         set
         {
-            if (_nodes == value) return;
+            if (_flowNodes == value) return;
 
-            string? oldFlowId = _nodes.Values.FirstOrDefault()?.Container;
+            string? oldFlowId = _flowNodes.Values.FirstOrDefault()?.Container;
             string? newFlowId = value.Values.FirstOrDefault()?.Container;
 
-            _nodes = value;
+            _flowNodes = value;
 
             if (oldFlowId != newFlowId)
             {
                 RefreshWires();
             }
 
-            Console.WriteLine("Workspace set Nodes");
-            NodesChanged.InvokeAsync(value);
+            _logger.LogTrace("Workspace set: FlowNodes");
+            FlowNodesChanged.InvokeAsync(value);
         }
     }
 
     public NewWire? new_wire = null;
     //public Node new_node = null;
 
-    public List<Wire> Wires { get; set; } = [];
+    List<Wire> _wires { get; set; } = [];
+    public IEnumerable<Wire> Wires => _wires;
+    public IReadOnlyCollection<Node> SelectedNodes() => _flowNodes.Values.Where(s => s.selected).ToList();
+    public IReadOnlyCollection<Wire> SelectedWires() => _wires.Where(s => s.Selected).ToList();
 
-    [Parameter] public EventCallback<IReadOnlyDictionary<string, Node>> NodesChanged { get; set; }
+    [Parameter] public EventCallback<IReadOnlyDictionary<string, Node>> FlowNodesChanged { get; set; }
 
-    [Parameter] public EditorActions? EditorActions { get; set; }
+    [Parameter] public EditorActionManager? ActionManager { get; set; }
 
     [Parameter] public EventCallback<string> OnInject { get; set; }
 
@@ -80,7 +88,6 @@ public partial class NodeWorkspace1
 
     void onMouseMove(MouseEventArgs e)
     {
-        //Console.WriteLine("onMouseMove");
         if (drag)
         {
             foreach (var d in dragElements)
@@ -90,14 +97,11 @@ public partial class NodeWorkspace1
 
                 if (!d.node.changed) d.node.changed = true;
 
-                //if (sel_node != null)
-                //{
-                //    OnNodeMoved(sel_node);
-                //}
-                OnNodeMoved(d.node);
+                //OnNodeMoved();
             }
-        }
 
+            wire_drawWires();
+        }
         wire_dragWire(e);//new wiew
 
         if (lasso.drag)
@@ -107,9 +111,34 @@ public partial class NodeWorkspace1
         }
 
     }
+
+    void CreateNodeMoveAction(MouseEventArgs e)
+    {
+        var moves = new Dictionary<string, MovePoints>(dragElements.Count);
+        dragElements.ForEach(d =>
+        {
+            var x2 = (float)(e.ClientX + d.nodeX - d.clickX);
+            var y2 = (float)(e.ClientY + d.nodeY - d.clickY);
+
+            if (d.nodeX == x2 && d.nodeY == y2) return;
+
+            var p = new MovePoints(
+                new(d.nodeX, d.nodeY),
+                new(x2, y2)
+            );
+            moves.Add(d.node.Id, p);
+        });
+        if (moves.Any())
+            _nodeEditor.ActionManager.ExecuteAction(new MoveNodesAction(_nodeEditor, moves));
+    }
+
     void onMouseUp(MouseEventArgs e)
     {
-        Console.WriteLine("onMouseUp");
+        _logger.LogTrace("onMouseUp");
+        if (drag)
+        {
+            CreateNodeMoveAction(e);
+        }
         drag = false;
 
         new_wire = null;
@@ -126,7 +155,7 @@ public partial class NodeWorkspace1
     }
     void onWorkspaceMouseDown(MouseEventArgs e)
     {
-        Console.WriteLine("onWorkspaceMouseDown");
+        _logger.LogTrace("onWorkspaceMouseDown");
         dragElements.Clear();
         DeselectAll();
 
@@ -139,6 +168,8 @@ public partial class NodeWorkspace1
 
     void onNodeMouseDown(MouseEventArgs e, Node node)
     {
+        _logger.LogTrace("onNodeMouseDown");
+
         bool isCtrlPress = e.CtrlKey;
 
         if (!isCtrlPress && sel_node is not null)
@@ -161,9 +192,8 @@ public partial class NodeWorkspace1
         sel_node = node;
         node.selected = true;
 
-        foreach (var _node in Nodes.Values.Where(s => s.selected))
+        foreach (var _node in FlowNodes.Values.Where(s => s.selected))
         {
-            //Console.WriteLine("onNodeMouseDown");
             var drag = new DragElement
             {
                 node = _node,
@@ -177,11 +207,12 @@ public partial class NodeWorkspace1
         }
 
         drag = true;
-        EditorActions?.SetSelectContext(typeof(Node));
+        _nodeEditor?.SetSelectContext(typeof(Node));
     }
 
     void onNodeMouseUp(MouseEventArgs e, Node node)
     {
+        _logger.LogTrace("onNodeMouseUp");
 
         if (new_wire is not null)
         {
@@ -200,7 +231,7 @@ public partial class NodeWorkspace1
 
     void wire_StartNew(NodeWirePointEventArgs arg)
     {
-        Console.WriteLine("wire_StartNew");
+        _logger.LogTrace("wire_StartNew");
 
         var e = arg.e;
         var index = arg.pinIndex;
@@ -220,7 +251,7 @@ public partial class NodeWorkspace1
     }
     void wire_StartNewEnd(NodeWirePointEventArgs arg)
     {
-        Console.WriteLine("wire_StartNewEnd");
+        _logger.LogTrace("wire_StartNewEnd");
 
         var e = arg.e;
         var index = arg.pinIndex;
@@ -247,7 +278,7 @@ public partial class NodeWorkspace1
 
         if (!is_self && !same_slot)
         {
-            wire_addWire(new_wire);
+            CreateWireAction(new_wire);
         }
 
         //end
@@ -256,14 +287,14 @@ public partial class NodeWorkspace1
 
     void nodes_deselectAll()
     {
-        if (Nodes != null)
+        if (FlowNodes != null)
         {
-            foreach (var node in Nodes.Values) node.selected = false;
+            foreach (var node in FlowNodes.Values) node.selected = false;
         }
     }
     void wire_deselect()
     {
-        Wires.ForEach(s => s.Selected = false);
+        _wires.ForEach(s => s.Selected = false);
     }
     void OnNodeMoved(Node node)
     {
@@ -274,39 +305,22 @@ public partial class NodeWorkspace1
 
     void wire_drawWires(string? nodeId = null)
     {
-        Wires = NodeWireUtil.DrawWires(Nodes, _nodeWirePointResolver).ToList();
-
+        _wires = NodeWireUtil.DrawWires(FlowNodes, _nodeWirePointResolver).ToList();
     }
 
-    void wire_addWire(Wire new_wire)
+    public void RedrawWires()
     {
-        var wire = new Wire
-        {
-            Id = Guid.NewGuid().ToString(),
-            X1 = new_wire.X1,
-            X2 = new_wire.X2,
-            Y1 = new_wire.Y1,
-            Y2 = new_wire.Y2,
-            Node1 = new_wire.Node1,
-            Node2 = new_wire.Node2,
-        };
-
-        bool is_exist = Wires.Exists(s => s.Node1 == wire.Node1
-                                        && s.Node2 == wire.Node2);
-
-        if (!is_exist)
-        {
-            Node node = Nodes[wire.Node1];
-
-            Wires.Add(wire);
-            if (node.Wires == null) node.Wires = [];
-
-            node.Wires[wire.Node1.PortIndex].Add(wire.Node2);
-
-            wire_drawWires(node.Id);
-        }
-
+        wire_drawWires();
         StateHasChanged();
+    }
+
+    void CreateWireAction(Wire new_wire)
+    {
+        var isExist = _wires.Exists(s => s.Node1 == new_wire.Node1 && s.Node2 == new_wire.Node2);
+        if (!isExist)
+        {
+            _nodeEditor.ActionManager.ExecuteAction(new CreateWireAction(_nodeEditor, [new(new_wire.Node1, new_wire.Node2)]));
+        }
     }
 
     void wire_dragWire(MouseEventArgs e)
@@ -328,17 +342,17 @@ public partial class NodeWorkspace1
 
     void onWireMouseDown(MouseEventArgs e, Wire wire)
     {
-        Console.WriteLine("onWireMouseDown");
+        _logger.LogTrace("onWireMouseDown");
         wire_deselect();
         nodes_deselectAll();
         wire.Selected = true;
-        EditorActions?.SetSelectContext(typeof(Wire));
+        _nodeEditor?.SetSelectContext(typeof(Wire));
     }
 
     void onWireMouseUp(MouseEventArgs e, Wire wire)
     {
         bool isNewWire = wire == new_wire;
-        Console.WriteLine($"wire_mouseUP isNewWire:{isNewWire}");
+        _logger.LogTrace($"wire_mouseUP isNewWire:{isNewWire}");
         DeselectAll();
     }
 
@@ -348,12 +362,12 @@ public partial class NodeWorkspace1
         nodes_deselectAll();
         new_wire = null;
         sel_node = null;
-        EditorActions?.SetSelectContext(null);
+        _nodeEditor?.SetSelectContext(null);
     }
 
     public void SelectNode(string nodeId)
     {
-        if (Nodes.TryGetValue(nodeId, out var node))
+        if (FlowNodes.TryGetValue(nodeId, out var node))
         {
             SelectNode(node);
         }
@@ -364,7 +378,7 @@ public partial class NodeWorkspace1
         DeselectAll();
         sel_node = node;
         node.selected = true;
-        EditorActions?.SetSelectContext(node.GetType());
+        _nodeEditor?.SetSelectContext(node.GetType());
     }
 
     /// <summary>
@@ -376,30 +390,15 @@ public partial class NodeWorkspace1
     public async void OnClickPaletteNewNode(MouseEventArgs e, Node node, Node instance)
     {
         DeselectAll();
-        //new_node = null;
-        //Node instance = (Node)Activator.CreateInstance(node.GetType())!;
-        //new_node = instance;
-        //Nodes.Add(instance);
-        //double cx = e.ClientX;
-        //double cy = e.ClientY;
-        //e.ClientX = 230;
-        //e.ClientY = 100;
-
-        //e.ClientX = =e.OffsetX;
-        //e.ClientY -= e.OffsetY;
-
         float w = 250;
-        //float h = 57 + 39;
         float h = 40;
 
         var scr = await js.HtmlGetElementScroll("#red-ui-workspace-chart");
 
-        Console.WriteLine($"SCR={scr.X},{scr.Y}");
+        _logger.LogTrace($"SCR={scr.X},{scr.Y}");
 
         instance.X = (float)(-w + node.X + e.ClientX + 120) + scr.X;
         instance.Y = (float)(node.Y + e.ClientY - h - 30) + scr.Y;
-
-        //Console.WriteLine($"x={e.ClientX}, y={e.ClientY}, offx={e.OffsetX}, offy={e.OffsetY}");
 
         MouseEventArgs m2 = new()
         {
@@ -418,9 +417,6 @@ public partial class NodeWorkspace1
         };
 
         onNodeMouseDown(m2, instance);
-        //dragElements.First().nodeY = 0;
-        //var d = dragElements.First();
-
     }
 
     void onClickNodeEvent(MouseEventArgs e, Node node)
@@ -437,7 +433,7 @@ public partial class NodeWorkspace1
 
     void SelectAllNodesInFlow(Node node)
     {
-        var nodes = NodeWireUtil.GetLinkedNodes(node, Nodes);
+        var nodes = NodeWireUtil.GetLinkedNodes(node, FlowNodes);
         foreach (var _node in nodes)
         {
             _node.selected = true;
@@ -470,7 +466,7 @@ public partial class NodeWorkspace1
     {
         Rectangle _lasso = new((int)lasso.drawX, (int)lasso.drawY, (int)lasso.width, (int)lasso.height);
 
-        foreach (var node in Nodes.Values)
+        foreach (var node in FlowNodes.Values)
         {
             Rectangle rect = new((int)node.X, (int)node.Y, 120,/*(int)node.bodyRectHeight*/30);
 
@@ -493,9 +489,15 @@ public partial class NodeWorkspace1
 
     public void RefreshWires()
     {
-        Wires.Clear();
+        _wires.Clear();
         wire_drawWires();
     }
+
+    public void CallStateHasChanged()
+    {
+        StateHasChanged();
+    }
+
 }
 
 class DragElement

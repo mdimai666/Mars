@@ -52,8 +52,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
         }
     }
 
-    public NewWire? new_wire = null;
-    //public Node new_node = null;
+    public NewWire? new_wire;
 
     List<Wire> _wires { get; set; } = [];
     public IEnumerable<Wire> Wires => _wires;

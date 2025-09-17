@@ -17,7 +17,7 @@ public interface INodeEditorApi
     void AddNodes(IEnumerable<Node> nodes);
     void DeleteNodes(IEnumerable<Node> nodes);
 
-    void SetSelectContext(Type type);
+    void SetSelectContext(Type? type);
 
     ILogger<T> CreateLogger<T>();
 }

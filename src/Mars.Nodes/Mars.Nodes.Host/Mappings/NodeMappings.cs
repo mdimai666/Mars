@@ -5,7 +5,6 @@ namespace Mars.Nodes.Host.Mappings;
 
 public static class NodeMappings
 {
-
     public static NodesDataDto ToNodeDataDto(this IEnumerable<Node> nodes)
         => new()
         {

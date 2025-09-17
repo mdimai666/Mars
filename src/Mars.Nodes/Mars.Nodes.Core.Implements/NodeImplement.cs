@@ -1,5 +1,8 @@
 namespace Mars.Nodes.Core.Implements;
 
+/// <summary>
+/// use <see cref="ISelfFinalizingNode"/> for control manual ending;
+/// </summary>
 public interface INodeImplement : INodeImplement<Node>
 {
 
@@ -16,6 +19,17 @@ public interface INodeImplement<TNode> where TNode : Node
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters);
 
 }
+
+public interface ISelfFinalizingNode
+{
+    //public IRED RED { get; set; }
+    //public void Done(ExecutionParameters parameters) => RED.Done(parameters);
+}
+
+//public interface INodeImplementMultipleResult
+//{
+
+//}
 
 public delegate void ExecuteAction(NodeMsg msg, int output = 0);
 
@@ -77,6 +91,6 @@ public delegate void ExecuteAction(NodeMsg msg, int output = 0);
 //                callback.Invoke(input);
 //        }
 
-//    } 
+//    }
 //#endif
 //}

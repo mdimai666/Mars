@@ -4,6 +4,7 @@ using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Dto;
+using Mars.Nodes.Core.Dto.NodeTasks;
 using Mars.Nodes.Host.Mappings;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -26,13 +27,19 @@ public class NodeController : ControllerBase
     private readonly IServiceScopeFactory _factory;
     private readonly IServiceProvider _serviceProvider;
     private readonly IServiceCollection _services;
+    private readonly INodeTaskManager _nodeTaskManager;
 
-    public NodeController(INodeService nodeService, IServiceScopeFactory factory, IServiceProvider serviceProvider, IServiceCollection services)
+    public NodeController(INodeService nodeService,
+                        IServiceScopeFactory factory,
+                        IServiceProvider serviceProvider,
+                        IServiceCollection services,
+                        INodeTaskManager nodeTaskManager)
     {
         _nodeService = nodeService;
         _factory = factory;
         _serviceProvider = serviceProvider;
         _services = services;
+        _nodeTaskManager = nodeTaskManager;
     }
 
     [HttpPost(nameof(Deploy))]
@@ -50,11 +57,7 @@ public class NodeController : ControllerBase
     [HttpGet(nameof(Inject) + "/{nodeId}")]
     public async Task<ActionResult<UserActionResult>> Inject(string nodeId)
     {
-        //using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-        //factory.CreateScope();
-        //serviceProvider.CreateScope();
         return await _nodeService.Inject(_factory, nodeId);
-        //return await nodeService.Inject(serviceProvider, nodeId);
     }
 
     [AllowAnonymous]
@@ -107,5 +110,11 @@ public class NodeController : ControllerBase
         }
 
         return str;
+    }
+
+    [HttpGet("JobList/all")]
+    public IEnumerable<NodeTaskResultDetail> JobList()
+    {
+        return _nodeTaskManager.CurrentTasksDetails().Concat(_nodeTaskManager.CompletedTasksDetails());
     }
 }

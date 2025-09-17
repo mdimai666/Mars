@@ -432,9 +432,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     Type? _selectContext;
     string SelectContextString => _selectContext?.FullName ?? "null";
 
-    public void SetSelectContext(Type type)
+    public void SetSelectContext(Type? type)
     {
         _selectContext = type;
+        StateHasChanged();
         //editor.CallStateHasChanged();
     }
 

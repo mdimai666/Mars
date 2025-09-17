@@ -2,6 +2,7 @@ using System.Text;
 using Mars.Host.Shared.Services;
 using Mars.Middlewares;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
+using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Scheduler;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Templator;
@@ -15,6 +16,7 @@ public static class MainMarsNodes
     public static IServiceCollection AddMarsNodes(this IServiceCollection services)
     {
         services.AddSingleton<INodeService, NodeService>();
+        services.AddSingleton<INodeTaskManager, NodeTaskManager>();
         services.AddSingleton<INodeSchedulerService, NodeSchedulerService>();
         services.AddSingleton<RED>();
         services.AddSingleton<INodesReader, NodesReader>();

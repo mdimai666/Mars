@@ -1,13 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace Mars.Nodes.Core.Nodes;
 
 [Display(GroupName = "diagnostic")]
 public class CounterNode : Node
 {
-    [JsonConstructor]
     public CounterNode()
     {
         Color = "#A9BBCF";

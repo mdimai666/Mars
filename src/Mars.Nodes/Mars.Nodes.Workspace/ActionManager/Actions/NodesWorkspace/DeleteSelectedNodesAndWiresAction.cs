@@ -31,6 +31,7 @@ public class DeleteSelectedNodesAndWiresAction : BaseEditorHistoryAction
         _editor.DeleteNodes(selected);
         RemoveWires(selWires);
         _editor.NodeWorkspace.RedrawWires();
+        Tools.SetTimeout(_editor.NodeWorkspace.RedrawWires, 1);//хак, не сразу обновляется
     }
 
     IReadOnlyDictionary<string, List<(int outIndex, NodeWire[] wires)>> GetDependWires(IEnumerable<Node> nodes)

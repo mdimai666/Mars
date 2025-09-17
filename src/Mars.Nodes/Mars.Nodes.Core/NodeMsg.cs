@@ -36,6 +36,7 @@ public class NodeMsg
 }
 
 public record ExecutionParameters(
+    Guid JobGuid = default,
     int InputPort = 0,
     bool IsDebugMode = false
 //TimeSpan Timeout

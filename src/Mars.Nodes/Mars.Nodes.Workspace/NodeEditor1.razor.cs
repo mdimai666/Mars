@@ -20,6 +20,9 @@ namespace Mars.Nodes.Workspace;
 
 public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
+    public static INodeEditorApi? Instance;
+
+    [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
@@ -29,6 +32,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     NodeWorkspaceJsInterop js = default!;
 
     Dictionary<string, Node> _allNodes = [];
+
+    string runningTaskCountDisplayText = "-";
 
     [Parameter]
     public IDictionary<string, Node> AllNodes
@@ -90,6 +95,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public NodeEditor1()
     {
+        Instance = this;
+
         RegisteredNodes = NodesLocator.RegisteredNodes();
 
         Type[] topNodes = { typeof(InjectNode), typeof(DebugNode), typeof(FunctionNode), typeof(TemplateNode) };
@@ -130,7 +137,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         //.Add(ModCode.None, Code.Delete, editorActions.UserAction_DeleteSelected);
         //.Add(...)...;
 
-        _actionManager = new EditorActionManager(this, HotKeysContext);
+        _actionManager = new EditorActionManager(this, _serviceProvider, HotKeysContext);
         _actionManager.RegisterAssembly(typeof(DeleteSelectedNodesAndWiresAction).Assembly);
         _actionManager.RefreshDict();
 
@@ -441,6 +448,17 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public ILogger<T> CreateLogger<T>()
         => _loggerFactory.CreateLogger<T>();
+
+    Debouncer _setTaskCountDebouncer = new(200);
+
+    public void SetCurrentTaskCount(int currentTaskCount)
+    {
+        _setTaskCountDebouncer.Debouce(() =>
+        {
+            runningTaskCountDisplayText = currentTaskCount.ToString();
+            StateHasChanged();
+        });
+    }
 
 }
 

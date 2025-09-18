@@ -30,4 +30,8 @@ internal class NodeServiceClient : INodeServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Load")
                     .GetJsonAsync<NodesDataDto>();
 
+    public Task TerminateAllJobs()
+        => _client.Request($"{_basePath}{_controllerName}", "Jobs/TerminateAll")
+                    .PostAsync();
+
 }

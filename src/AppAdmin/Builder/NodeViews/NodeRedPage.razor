@@ -52,6 +52,7 @@ else
 
         hub.OnNodeStatus += OnNodeStatus;
         hub.OnDebugMsg += OnDebugMsg;
+        hub.OnNodeRunningTaskCountChanged += OnNodeRunningTaskCountChanged;
 
         Load();
     }
@@ -59,6 +60,8 @@ else
     public void Dispose()
     {
         hub.OnNodeStatus -= OnNodeStatus;
+        hub.OnDebugMsg -= OnDebugMsg;
+        hub.OnNodeRunningTaskCountChanged -= OnNodeRunningTaskCountChanged;
     }
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
@@ -75,6 +78,11 @@ else
     void OnDebugMsg(string nodeId, DebugMessage msg)
     {
         editor1!.AddDebugMessage(msg);
+    }
+
+    void OnNodeRunningTaskCountChanged(int currentTaskCount)
+    {
+        editor1.SetCurrentTaskCount(currentTaskCount);
     }
 
     async void Load()
@@ -126,15 +134,6 @@ else
 
         bool useWs = false;
 
-        //must be notify
-        //editor1.AddDebugMessage(new DebugMessage
-        //    {
-        //        topic = nodeId,
-        //        message = "Inject",
-        //        id = nodeId
-        //    });
-
-        //hub.SendMessage("mok");
         Console.WriteLine($">Inject:{nodeId}");
 
         if (useWs)
@@ -150,13 +149,6 @@ else
 
             string ok = (res.Ok ? "OK" : "FAIL");
         }
-
-        //editor1.AddDebugMessage(new DebugMessage
-        //    {
-        //        topic = "OnInjectClick",
-        //        message = $"{ok}: {res.Message}",
-        //        id = nodeId
-        //    });
     }
 
     void OnCmdClick(string cmd)

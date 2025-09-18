@@ -19,7 +19,9 @@ internal class NodeTaskManager : INodeTaskManager
     private ConcurrentDictionary<Guid, NodeTaskJob> _currentTasks = [];
     private ConcurrentDictionary<Guid, NodeTaskResultDetail> _completedTasks = [];
 
-    public int CurrentTasksCount => _completedTasks.Count;
+    public int CurrentTasksCount => _currentTasks.Count;
+
+    public event Action<int>? OnCurrentTasksCountChanged;
 
     public IReadOnlyCollection<NodeTaskResultSummary> CurrentTasks() => _currentTasks.Values.ToSummary();
     public IReadOnlyCollection<NodeTaskResultDetail> CurrentTasksDetails() => _currentTasks.Values.ToDetail();
@@ -39,15 +41,31 @@ internal class NodeTaskManager : INodeTaskManager
         var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId, logger);
 
         _currentTasks.TryAdd(taskJob.TaskId, taskJob);
+        OnCurrentTasksCountChanged?.Invoke(_currentTasks.Count);
 
         var tcs = new TaskCompletionSource();
-        taskJob.OnComplete += () => tcs.SetResult();
+        taskJob.OnComplete += tcs.SetResult;
         taskJob.Run(msg);
         await tcs.Task;
 
         _currentTasks.TryRemove(taskJob.TaskId, out _);
         _completedTasks.TryAdd(taskJob.TaskId, taskJob.ToDetail());
+        OnCurrentTasksCountChanged?.Invoke(_currentTasks.Count);
 
         await taskJob.DisposeAsync();
     }
+
+    public void TerminateAllJobs()
+    {
+        _logger.LogTrace("🔴 TerminateAllJobs");
+        _red.DebugMsg("", DebugMessage.NodeErrorMessage("", "TerminateAllJobs"));
+        foreach (var taskJob in _currentTasks.Values)
+        {
+            taskJob.Terminate();
+            _currentTasks.TryRemove(taskJob.TaskId, out _);
+            _completedTasks.TryAdd(taskJob.TaskId, taskJob.ToDetail());
+        }
+        OnCurrentTasksCountChanged?.Invoke(_currentTasks.Count);
+    }
+
 }

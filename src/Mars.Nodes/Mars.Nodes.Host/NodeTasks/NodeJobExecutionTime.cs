@@ -10,12 +10,14 @@ internal class NodeJobExecutionTime
 
     public void Success()
     {
+        if (End is not null) throw new InvalidOperationException("task already ended");
         End = DateTimeOffset.Now;
         Result = NodeJobExecutionResult.Success;
     }
 
     public void Fail(Exception exception)
     {
+        if (End is not null) throw new InvalidOperationException("task already ended");
         End = DateTimeOffset.Now;
         Exception = exception;
         Result = NodeJobExecutionResult.Fail;

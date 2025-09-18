@@ -2,11 +2,6 @@ using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mars.Host.Shared.Hubs;
 
@@ -17,8 +12,6 @@ public class ChatHub : Hub
     private readonly IServiceProvider serviceProvider;
 
     //public static ChatHub instance = null;//костыль, потом убрать
-
-
 
     public ChatHub(INodeService nodeService, IServiceScopeFactory factory, IServiceProvider serviceProvider)
     {
@@ -34,7 +27,6 @@ public class ChatHub : Hub
         if ( instance == null)
             instance = new ChatHub(nodeService, factory);
     }*/
-
 
     public async Task SendMessage(string user, string message)
     {
@@ -62,13 +54,17 @@ public class ChatHub : Hub
         //this.Clients.All.NodeStatus(nodeId, nodeStatus);
         await Clients.All.SendAsync("NodeStatus", nodeId, nodeStatus);
     }
+
+    public async void NodeRunningTaskCountChanged(int nodeRunningTaskCount)
+    {
+        await Clients.All.SendAsync("NodeRunningTaskCountChanged", nodeRunningTaskCount);
+    }
 }
 /*
 public interface IChatHub
 {
     public void DebugMsg(string nodeId, DebugMessage msg);
     public void NodeStatus(string nodeId, NodeStatus nodeStatus);
-
 
 }
 */

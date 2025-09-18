@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Mars.Core.Exceptions;
 using Mars.Nodes.EditorApi.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor.HotKeys2;
 
@@ -16,6 +17,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
 
     private readonly List<EditorActionType> _actions = [];
     private readonly INodeEditorApi _nodeEditor;
+    private readonly IServiceProvider _serviceProvider;
     private readonly HotKeysContext _hotkeysContext;
 
     HashSet<Assembly> assemblies = [];
@@ -27,9 +29,10 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private readonly Stack<IEditorHistoryAction> _redoStack = new();
     private const int MaxHistory = 30;
 
-    public EditorActionManager(INodeEditorApi nodeEditorApi, HotKeysContext hotkeysContext)
+    public EditorActionManager(INodeEditorApi nodeEditorApi, IServiceProvider serviceProvider, HotKeysContext hotkeysContext)
     {
         _nodeEditor = nodeEditorApi;
+        _serviceProvider = serviceProvider;
         _hotkeysContext = hotkeysContext;
         _logger = _nodeEditor.CreateLogger<EditorActionManager>();
     }
@@ -130,7 +133,9 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
         var a = _actions.FirstOrDefault(s => s.ActionType == actionType)
                         ?? throw new NotFoundException($"action '{actionType}' not found");
 
-        var instance = (IEditorAction)Activator.CreateInstance(a.ActionType, _nodeEditor)!;
+        //var instance = (IEditorAction)Activator.CreateInstance(a.ActionType, _nodeEditor)!;
+        //var instance = (IEditorAction)ActivatorUtilities.CreateInstance(_serviceProvider, a.ActionType, _nodeEditor, actionInstance)!;
+        var instance = (IEditorAction)ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, a.ActionType);
 
         if (instance.CanExecute())
         {

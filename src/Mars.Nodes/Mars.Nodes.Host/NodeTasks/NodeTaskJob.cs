@@ -26,7 +26,9 @@ internal class NodeTaskJob : IAsyncDisposable
     public int NodesChainCount { get; }
     public IReadOnlyDictionary<string, NodeJob> Jobs => _jobs;
     public bool IsDone => isAllDone;
+    public bool IsTerminated { get; private set; }
     public int ErrorCount => _jobs.Values.Sum(s => s.Executions.Count(x => x.Result == NodeJobExecutionResult.Fail));
+    readonly CancellationTokenSource _cancellationTokenSource = new();
 
     internal NodeTaskJob(IServiceProvider serviceProvider,
         RED RED,
@@ -52,6 +54,15 @@ internal class NodeTaskJob : IAsyncDisposable
         await ExecuteNode(msg ?? new(), node, new());
     }
 
+    public void Terminate()
+    {
+        _logger.LogTrace($"Terminate (TaskId={TaskId})");
+        _cancellationTokenSource.Cancel();
+
+        IsTerminated = true;
+        Finish();
+    }
+
     void CallbackNext(string completedNodeId, NodeMsg result, int output)
     {
         var nextNodes = GetNextWires(completedNodeId, output);
@@ -63,13 +74,15 @@ internal class NodeTaskJob : IAsyncDisposable
             if (node.Node.Disabled) continue;
 
             node.RED = CreateContextForNode(node.Id);
-            _ = ExecuteNode(result, node, new(InputPort: portIndex));
+            _ = ExecuteNode(result, node, portIndex);
         }
 
     }
 
-    private async Task ExecuteNode(NodeMsg input, INodeImplement node, ExecutionParameters parameters)
+    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex)
     {
+        if (_cancellationTokenSource.IsCancellationRequested) return;
+
         executedCount++;
         if (executedCount > maxExecuteCount)
         {
@@ -95,7 +108,8 @@ internal class NodeTaskJob : IAsyncDisposable
                     //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
                     CallbackNext(node.Id, e, _output);
                 },
-                parameters with { JobGuid = go.JobGuid });
+                new ExecutionParameters(go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token)
+                );
 
             if (node is ISelfFinalizingNode) go.Pending();
             else go.Success();
@@ -153,14 +167,21 @@ internal class NodeTaskJob : IAsyncDisposable
 
     private void _RED_OnNodeImplDone(string nodeId, Guid jobGuid)
     {
+        //TODO: тут есть проблема, event прячет exception,
+        //  и если у NodeImpl будет Больше одного RED.Done() то должно возникать исключение, но этого не происходит
+
         if (_nodes[nodeId] is not ISelfFinalizingNode)
             throw new InvalidOperationException("RED.Done() - may use only :ISelfFinalizingNode ");
 
         var job = _jobs.GetValueOrDefault(nodeId)
                         ?? throw new InvalidOperationException("RED.Done() - job not found");
 
-        var go = job.Executions.FirstOrDefault(s => s.JobGuid == jobGuid)
-                        ?? throw new InvalidOperationException("RED.Done() - job guid not found");
+        var go = job.Executions.FirstOrDefault(s => s.JobGuid == jobGuid);
+        if(go is null)
+        {
+            _logger.LogError("RED.Done() - job guid not found");
+            throw new InvalidOperationException("RED.Done() - job guid not found");
+        }
 
         go.Success();
         Finalizer();
@@ -168,12 +189,18 @@ internal class NodeTaskJob : IAsyncDisposable
 
     void Finish()
     {
-        _logger.LogInformation($"✅ Finish! executedCount={executedCount}");
+        if (IsTerminated)
+            _logger.LogInformation($"🔴 Terminated! executedCount={executedCount}");
+        else
+            _logger.LogInformation($"✅ Finish! executedCount={executedCount}");
+
         OnComplete?.Invoke();
     }
 
     public ValueTask DisposeAsync()
     {
+        _cancellationTokenSource.Dispose();
+
         _RED.OnNodeImplDone -= _RED_OnNodeImplDone;
         _logger.LogTrace($"Dispose");
         return ValueTask.CompletedTask;

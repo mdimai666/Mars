@@ -117,4 +117,10 @@ public class NodeController : ControllerBase
     {
         return _nodeTaskManager.CurrentTasksDetails().Concat(_nodeTaskManager.CompletedTasksDetails());
     }
+
+    [HttpPost("Jobs/TerminateAll")]
+    public void TerminateAllJobs()
+    {
+        _nodeTaskManager.TerminateAllJobs();
+    }
 }

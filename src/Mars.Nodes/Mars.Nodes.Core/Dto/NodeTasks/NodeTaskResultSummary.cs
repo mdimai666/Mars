@@ -6,5 +6,6 @@ public record NodeTaskResultSummary
     public required int ExecuteCount { get; init; }
     public required int NodesChainCount { get; init; }
     public required bool IsDone { get; init; }
+    public required bool IsTerminated { get; init; }
     public required int ErrorCount { get; init; }
 }

@@ -38,6 +38,7 @@ public class NodeMsg
 public record ExecutionParameters(
     Guid JobGuid = default,
     int InputPort = 0,
+    CancellationToken CancellationToken = default,
     bool IsDebugMode = false
 //TimeSpan Timeout
 );

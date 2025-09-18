@@ -12,6 +12,7 @@ internal static class NodeTaskMappings
             ExecuteCount = entity.ExecuteCount,
             NodesChainCount = entity.NodesChainCount,
             IsDone = entity.IsDone,
+            IsTerminated = entity.IsTerminated,
             ErrorCount = entity.ErrorCount,
         };
 
@@ -22,6 +23,7 @@ internal static class NodeTaskMappings
             ExecuteCount = entity.ExecuteCount,
             NodesChainCount = entity.NodesChainCount,
             IsDone = entity.IsDone,
+            IsTerminated = entity.IsTerminated,
             ErrorCount = entity.ErrorCount,
 
             Jobs = entity.Jobs.Values.ToDto(),

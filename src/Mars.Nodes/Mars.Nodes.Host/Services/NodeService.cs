@@ -11,6 +11,7 @@ using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.WebApp.Implements;
 using Mars.Shared.Common;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static Mars.Host.Shared.Services.INodeService;
@@ -74,6 +75,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         //IEventManager eventManager = serviceProvider.GetRequiredService<IEventManager>();
 
         eventManager.OnTrigger += EventManager_OnTrigger;
+        _nodeTaskManager.OnCurrentTasksCountChanged += _nodeTaskManager_OnCurrentTaskCountChanged;
 
     }
 
@@ -393,5 +395,15 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         if (node == null) return;
         node.status = nodeStatus.Text;
         _RED.BroadcastStatus(nodeId, nodeStatus);
+    }
+
+    Debouncer _sendTaskCountDebouncer = new(100);
+
+    private void _nodeTaskManager_OnCurrentTaskCountChanged(int currentTaskCount)
+    {
+        _sendTaskCountDebouncer.Debouce(() =>
+        {
+            _RED.Hub.Clients.All.SendAsync("NodeRunningTaskCountChanged", currentTaskCount);
+        });
     }
 }

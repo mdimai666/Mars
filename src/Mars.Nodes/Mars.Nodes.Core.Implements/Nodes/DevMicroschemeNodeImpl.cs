@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 namespace Mars.Nodes.Core.Implements.Nodes;
 
 #if DEBUG
+/// <summary>
+/// For experiments object
+/// </summary>
 public class DevMicroschemeNodeImpl : INodeImplement<DevMicroschemeNode>, INodeImplement, ISelfFinalizingNode
 {
     public DevMicroschemeNode Node { get; }
@@ -18,23 +21,48 @@ public class DevMicroschemeNodeImpl : INodeImplement<DevMicroschemeNode>, INodeI
         RED = red;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         //RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, $"input port = {parameters.InputPort}"));
         Node.status = $"input port = {parameters.InputPort}";
         RED.Status(new NodeStatus(Node.status));
 
-        callback(input);
-
         var logger = MarsLogger.GetStaticLogger<DevMicroschemeNodeImpl>();
 
-        Tools.SetTimeout(() =>
+        if (parameters.InputPort == 0)
         {
-            logger.LogWarning("GOOD!");
-            RED.Done(parameters);
-        }, 1000);
 
-        return Task.CompletedTask;
+            Tools.SetTimeout(() =>
+            {
+                //parameters.CancellationToken.ThrowIfCancellationRequested();
+                logger.LogWarning("GOOD!");
+                callback(input);
+                RED.Done(parameters);
+            }, 4000, parameters.CancellationToken);
+
+            Tools.SetTimeout(() =>
+            {
+                logger.LogWarning("GOOD!");
+                callback(input);
+                RED.Done(parameters);
+            }, 7000, parameters.CancellationToken);
+        }
+        else if (parameters.InputPort == 1)
+        {
+            foreach (var x in Enumerable.Range(0, 10))
+            {
+                parameters.CancellationToken.ThrowIfCancellationRequested();
+                await Task.Delay(500);
+                input.Payload = $"{x + 1}/10";
+                callback(input);
+            }
+            RED.Done(parameters);
+        }
+        else
+        {
+            RED.Done(parameters);
+            throw new NotImplementedException();
+        }
     }
 
 }

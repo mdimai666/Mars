@@ -3,6 +3,7 @@
 @using Mars.Nodes.Core.Nodes
 @using Mars.Nodes.FormEditor
 @using Mars.Nodes.Workspace
+@using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace
 @using Mars.Nodes.Workspace.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
@@ -38,6 +39,15 @@
                 </div>
 
                 <div class="d-flex gap-2 me-2">
+                    <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
+                                  IconStart="@(new Icons.DismissSquareMultiple())"
+                                  Class="btn-terminate-all-tasks"
+                                  Title="terminate all task"
+                                  Appearance="Appearance.Stealth">
+                        <FluentBadge title="running tasks count">
+                            @runningTaskCountDisplayText
+                        </FluentBadge>
+                    </FluentButton>
 
                     @if (SectionActions is not null)
                     {
@@ -251,6 +261,9 @@
         display: inline-block;
     }
 
+    .btn-terminate-all-tasks:hover {
+        --accent-fill-rest: red;
+    }
 </style>
 
 @code {

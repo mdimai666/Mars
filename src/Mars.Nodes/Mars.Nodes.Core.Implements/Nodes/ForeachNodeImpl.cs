@@ -7,7 +7,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
 {
     public ForeachNodeImpl(ForeachNode node, IRED RED)
     {
-        this.Node = node;
+        Node = node;
         this.RED = RED;
     }
 
@@ -17,6 +17,16 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
+        return parameters.InputPort switch
+        {
+            0 => CreateIterator(input, callback, parameters),
+            1 => IterateStep(input, callback, parameters),
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    private Task CreateIterator(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
+    {
         if (Node.Kind == EForeachKind.PayloadArray)
         {
 
@@ -24,7 +34,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
             {
                 var arr = enumerable.Cast<object>();
 
-                ForeachNode.ForeachCycle foreachCycle = new ForeachNode.ForeachCycle()
+                ForeachNode.ForeachCycle foreachCycle = new()
                 {
                     index = 0,
                     arr = arr,
@@ -56,7 +66,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
                     throw new FormatException("payload must be number", ex);
                 }
             }
-            ForeachNode.ForeachCycle foreachCycle = new ForeachNode.ForeachCycle()
+            ForeachNode.ForeachCycle foreachCycle = new()
             {
                 index = 0,
                 arr = Enumerable.Range(0, count).Cast<object>(),
@@ -66,27 +76,15 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
         }
         else throw new NotImplementedException();
 
-        callback(input);
+        //callback(input, 1);
 
-        return Task.CompletedTask;
-    }
-}
+        //return Task.CompletedTask;
 
-public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeImplement
-{
-    public ForeachIterateNodeImpl(ForeachIterateNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
+        return IterateStep(input, callback, parameters);
     }
 
-    public ForeachIterateNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
-
-    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
+    private Task IterateStep(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-
         ForeachNode.ForeachCycle? cycle = input.Get<ForeachNode.ForeachCycle>();
 
         if (cycle is null)
@@ -96,8 +94,10 @@ public class ForeachIterateNodeImpl : INodeImplement<ForeachIterateNode>, INodeI
 
         if (cycle.index < cycle.count)
         {
-            NodeMsg _input = new NodeMsg();
-            _input.Payload = cycle.arr.ElementAt(cycle.index);
+            NodeMsg _input = new()
+            {
+                Payload = cycle.arr.ElementAt(cycle.index)
+            };
             //input.Payload = cycle.arr.ElementAt(cycle.index);
             cycle.index++;
             _input.Add(cycle);

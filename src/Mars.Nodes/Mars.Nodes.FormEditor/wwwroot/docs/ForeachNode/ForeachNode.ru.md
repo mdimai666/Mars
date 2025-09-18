@@ -2,6 +2,9 @@
 
 Создает цикл.
 
-После него используйте ForeachIterateNode для итерации
+```
+(0) -> Iterate
+(1) -> Finish
+```
 
 Добавляет в контекст `ForeachCycle`

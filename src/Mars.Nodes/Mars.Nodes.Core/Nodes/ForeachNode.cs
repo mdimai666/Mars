@@ -14,12 +14,16 @@ public class ForeachNode : Node
 
     public ForeachNode()
     {
-        Inputs = [new()];
+        Inputs = [
+            new() {  Label = "Start"},
+            new() {  Label = "NextStep"},
+            ];
         Color = "#cfcfcf";
         Outputs = new List<NodeOutput> {
-            new NodeOutput(){ Label = "iterate" },
+            new NodeOutput(){ Label = "Finish" },
+            new NodeOutput(){ Label = "Iterate" },
         };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop-start.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
     }
 
     public class ForeachCycle
@@ -27,22 +31,6 @@ public class ForeachNode : Node
         public int index;
         public int count;
         public IEnumerable<object> arr = Array.Empty<object>();
-    }
-}
-
-[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ForeachIterateNode/ForeachIterateNode{.lang}.md")]
-[Display(GroupName = "sequence")]
-public class ForeachIterateNode : Node
-{
-    public ForeachIterateNode()
-    {
-        Inputs = [new()];
-        Color = "#cfcfcf";
-        Outputs = new List<NodeOutput> {
-            new NodeOutput() { Label = "finish" },
-            new NodeOutput(){ Label = "iterate" },
-        };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
     }
 }
 

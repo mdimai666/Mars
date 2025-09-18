@@ -21,6 +21,8 @@ internal class NodeTaskJob : IAsyncDisposable
     bool isAllDone => _jobs.Values.All(s => s.IsDone);
 
     public string InjectNodeId { get; }
+    public string FlowNodeId { get; }
+
     public event Action? OnComplete;
     public int ExecuteCount => executedCount;
     public int NodesChainCount { get; }
@@ -37,10 +39,13 @@ internal class NodeTaskJob : IAsyncDisposable
     {
         _nodes = RED.Nodes;
         _RED = RED;
-        InjectNodeId = injectNodeId;
         _logger = logger;
         _serviceProvider = serviceProvider;
-        NodesChainCount = NodeWireUtil.GetLinkedNodes(_nodes[injectNodeId].Node, _RED.BasicNodesDict).Count;
+
+        InjectNodeId = injectNodeId;
+        var injectNode = _nodes[injectNodeId].Node;
+        FlowNodeId = _nodes[injectNode.Container].Id;
+        NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _RED.BasicNodesDict).Count;
     }
 
     public async void Run(NodeMsg? msg = null)
@@ -108,7 +113,7 @@ internal class NodeTaskJob : IAsyncDisposable
                     //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
                     CallbackNext(node.Id, e, _output);
                 },
-                new ExecutionParameters(go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token)
+                new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token)
                 );
 
             if (node is ISelfFinalizingNode) go.Pending();
@@ -177,7 +182,7 @@ internal class NodeTaskJob : IAsyncDisposable
                         ?? throw new InvalidOperationException("RED.Done() - job not found");
 
         var go = job.Executions.FirstOrDefault(s => s.JobGuid == jobGuid);
-        if(go is null)
+        if (go is null)
         {
             _logger.LogError("RED.Done() - job guid not found");
             throw new InvalidOperationException("RED.Done() - job guid not found");

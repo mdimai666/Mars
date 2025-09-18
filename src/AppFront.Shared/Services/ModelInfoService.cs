@@ -25,7 +25,6 @@ public class ModelInfo
 
     //public Dictionary<string, string> BadgeHtmlAttributes { get; init; }
 
-
     public static string ShortName(string typeName)
     {
         return typeName switch
@@ -101,7 +100,6 @@ public class ModelInfoService
 
     public ModelInfoService()
     {
-
 
     }
 
@@ -189,7 +187,7 @@ public class ModelInfoService
                 && p.IsPublic
                 && p.IsClass
                 && !p.IsAbstract
-            //&& p.Assembly == 
+            //&& p.Assembly ==
             );
 
         return types.Select(s =>
@@ -221,7 +219,6 @@ public class ModelInfoService
                 var list = at.Roles?.Split(',', StringSplitOptions.TrimEntries);
                 if (list is not null) roles.AddRange(list);
             }
-
 
             string? pageDisplayAttributeName = null;
             //if (kind == EComponentType.Page)
@@ -283,10 +280,8 @@ public class ModelInfoService
 
         var _pages = pages.Where(s => s.Kind == EComponentType.Page);
 
-
         string currentUrl = navigationManager.Uri.Replace(navigationManager.BaseUri, "/").Split("?")[0].TrimEnd('/').Trim();
         //Console.WriteLine(currentUrl);
-
 
         //currentUrl = Regex.Replace(currentUrl, @"(?im)[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?", "{ID:guid}");
         currentUrl = Regex.Replace(currentUrl, @"(?im)[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?", "{");
@@ -337,11 +332,17 @@ public class ModelInfoService
         return filename;
     }
 
+    private readonly string assemblyNameReplaceVar = "_ASSEMBLY_NAME_";
+
     public string GetFileNameFromPageClass(Type pageType)
     {
         string fullclassname = pageType.FullName!;
         //string filename = fullclassname.Replace(nameof(AppFront) + ".", "").Replace(".", "/") + ".razor";
-        string filename = fullclassname.Replace(".", "\\") + ".razor";
+
+        var assemblyName = pageType.Assembly.GetName().Name!;
+        fullclassname = fullclassname.Replace(assemblyName, assemblyNameReplaceVar);
+
+        string filename = (fullclassname.Replace(".", "\\") + ".razor").Replace(assemblyNameReplaceVar, assemblyName);
 
         Console.WriteLine("ptype=" + fullclassname);
         Console.WriteLine("filename=" + filename);

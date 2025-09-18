@@ -14,5 +14,6 @@ public interface INodeTaskManager
     IReadOnlyCollection<NodeTaskResultDetail> CompletedTasksDetails();
 
     Task CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null);
+    void TryKillTaskJob(Guid taskId);
     void TerminateAllJobs();
 }

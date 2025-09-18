@@ -5,12 +5,13 @@ using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.EditorParts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
-namespace Mars.Nodes.Workspace;
+namespace Mars.Nodes.Workspace.EditorParts;
 
 public partial class NodeWorkspace1 : INodeWorkspaceApi
 {

@@ -9,6 +9,7 @@ using Mars.Nodes.FormEditor;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -132,10 +133,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         //_ = js.Prompt("aefaef");
 
         HotKeysContext = HotKeys.CreateContext()
-         .Add(ModCode.Ctrl, Code.D, DeployClick, "Deploy")
          .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
-        //.Add(ModCode.None, Code.Delete, editorActions.UserAction_DeleteSelected);
-        //.Add(...)...;
 
         _actionManager = new EditorActionManager(this, _serviceProvider, HotKeysContext);
         _actionManager.RegisterAssembly(typeof(DeleteSelectedNodesAndWiresAction).Assembly);
@@ -204,7 +202,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _ = js.ScrollDownElement(noderedDebugMessageList);
     }
 
-    void ClearDebugMessages()
+    internal void ClearDebugMessages()
     {
         messages.Clear();
     }
@@ -381,7 +379,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         AllNodesChanged.InvokeAsync(_allNodes);
     }
 
-    void OnClickConsoleDebugMessage(DebugMessage msg)
+    internal void OnClickConsoleDebugMessage(DebugMessage msg)
     {
         if (string.IsNullOrEmpty(msg.NodeId)) return;
 

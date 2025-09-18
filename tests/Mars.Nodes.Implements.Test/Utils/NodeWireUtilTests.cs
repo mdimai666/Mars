@@ -2,8 +2,8 @@ using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Workspace;
 using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.EditorParts;
 
 namespace Mars.Nodes.Implements.Test.Utils;
 

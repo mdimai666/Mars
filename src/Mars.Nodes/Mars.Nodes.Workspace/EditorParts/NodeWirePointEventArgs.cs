@@ -1,7 +1,7 @@
 using Mars.Nodes.Core;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace Mars.Nodes.Workspace;
+namespace Mars.Nodes.Workspace.EditorParts;
 
 public class NodeWirePointEventArgs
 {

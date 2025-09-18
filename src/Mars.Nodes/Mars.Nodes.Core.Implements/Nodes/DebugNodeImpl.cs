@@ -14,10 +14,10 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
     Node INodeImplement<Node>.Node => Node;
     public IRED RED { get; set; }
 
-    public DebugNodeImpl(DebugNode node, IRED RED)
+    public DebugNodeImpl(DebugNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     static readonly JsonSerializerOptions _jsonSerializerOptions = new()
@@ -75,7 +75,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
             RED.DebugMsg(msg);
 
 #if DEBUG
-            //RED.logger.LogWarning("DebugNode", msg); 
+            //RED.logger.LogWarning("DebugNode", msg);
 #endif
 
             //RED.DebugMsg(new DebugMessage { message = "dealayed" });

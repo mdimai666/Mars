@@ -1,4 +1,5 @@
 using Mars.Nodes.Core;
+using Mars.Nodes.Workspace.EditorParts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 

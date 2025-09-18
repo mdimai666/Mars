@@ -90,7 +90,7 @@ public class NodeServiceUnitTestBase
             outputPort = output;
         };
 
-        await node.Execute(input, exa, new());
+        await node.Execute(input, exa, new(default, default));
 
         return new NodeExecutionResult(resultCatcher!, outputPort);
     }

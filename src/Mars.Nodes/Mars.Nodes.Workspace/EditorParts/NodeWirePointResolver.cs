@@ -2,7 +2,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Workspace.Components;
 
-namespace Mars.Nodes.Workspace;
+namespace Mars.Nodes.Workspace.EditorParts;
 
 /// <summary>
 /// Для построения NodeWire вычисляет координаты точек

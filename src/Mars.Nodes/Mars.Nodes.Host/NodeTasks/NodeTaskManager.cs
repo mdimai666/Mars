@@ -55,6 +55,16 @@ internal class NodeTaskManager : INodeTaskManager
         await taskJob.DisposeAsync();
     }
 
+    /// <summary>
+    /// Kill <see cref="NodeTaskJob"/>
+    /// </summary>
+    /// <param name="taskId"></param>
+    public void TryKillTaskJob(Guid taskId)
+    {
+        if (_currentTasks.TryGetValue(taskId, out var taskJob))
+            taskJob.Terminate();
+    }
+
     public void TerminateAllJobs()
     {
         _logger.LogTrace("🔴 TerminateAllJobs");

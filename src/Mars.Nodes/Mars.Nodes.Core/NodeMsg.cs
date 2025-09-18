@@ -36,7 +36,8 @@ public class NodeMsg
 }
 
 public record ExecutionParameters(
-    Guid JobGuid = default,
+    Guid TaskId,
+    Guid JobGuid,
     int InputPort = 0,
     CancellationToken CancellationToken = default,
     bool IsDebugMode = false

@@ -254,12 +254,18 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     }
 
-    void SaveNode(Node node)
+    void OnEditFormSaveNodeClick(Node node)
+    {
+        var editNodeAction = new EditNodeAction(this, AllNodes[node.Id], node);
+        _actionManager.ExecuteAction(editNodeAction);
+    }
+
+    public void SaveNode(Node node, bool changed = true)
     {
         _logger.LogTrace("SaveNode(Node node)");
         EditNode = node;
         AllNodes[node.Id] = EditNode;
-        EditNode.changed = true;
+        EditNode.changed = changed;
 
         AllNodesChanged.InvokeAsync(AllNodes);
 

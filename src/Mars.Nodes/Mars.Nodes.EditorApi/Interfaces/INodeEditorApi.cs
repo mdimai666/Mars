@@ -21,4 +21,5 @@ public interface INodeEditorApi
     void DeployClick();
 
     ILogger<T> CreateLogger<T>();
+    void SaveNode(Node node, bool changed = true);
 }

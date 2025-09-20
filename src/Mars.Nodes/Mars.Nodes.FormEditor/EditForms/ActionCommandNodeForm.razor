@@ -1,0 +1,80 @@
+@using AppFront.Shared.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Mars.Shared.Tools
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(ActionCommandNode))]
+
+<div class="d-flex flex-column flex-fill p-2">
+    <div class="vstack gap-3">
+
+        <CodeEditorSuggestSearchInput SearchApiUrl="/api/Node/FunctionCodeSuggest/GetPagesContexts.dict?search=" OnSnippetSelect="OnSelectSnippet" />
+
+        <!-- Форма добавления -->
+        <EditForm Model="@this" OnValidSubmit="OnAddClick">
+            <div class="hstack gap-2">
+                <FluentTextField Required
+                                 class="flex-fill"
+                                 Label="FrontContextId"
+                                 @bind-Value="newFrontContextId" />
+                <FluentButton Type="ButtonType.Submit"
+                              Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Add())">
+                    @AppRes.Add
+                </FluentButton>
+            </div>
+        </EditForm>
+
+        <!-- Список элементов -->
+        <FluentCard class="p-2">
+            @if (Node.FrontContextId.Any())
+            {
+                <div class="vstack gap-2">
+                    @foreach (var f in Node.FrontContextId)
+                    {
+                        <div class="hstack justify-content-between align-items-center border-bottom pb-1">
+                            <span>@f</span>
+                            <FluentButton Appearance="Appearance.Stealth"
+                                          IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Neutral))"
+                                          OnClick="() => OnRemoveClick(f)">
+                                @AppRes.Delete
+                            </FluentButton>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-muted">No elements yet...</div>
+            }
+        </FluentCard>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    ActionCommandNode Node { get => (ActionCommandNode)Value; set => Value = value; }
+
+    [Inject] ModelInfoService modelService { get; set; } = default!;
+
+    string newFrontContextId = "";
+
+    void OnAddClick()
+    {
+        if (string.IsNullOrWhiteSpace(newFrontContextId)) return;
+
+        Node.FrontContextId = [.. Node.FrontContextId, newFrontContextId];
+        newFrontContextId = "";
+    }
+
+    void OnRemoveClick(string id)
+    {
+        Node.FrontContextId = Node.FrontContextId.Where(x => x != id).ToArray();
+    }
+
+    private void OnSelectSnippet(KeyValuePair<string, string> val)
+    {
+        Node.FrontContextId = [.. Node.FrontContextId, val.Key];
+    }
+
+}

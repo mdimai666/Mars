@@ -19,10 +19,10 @@ public class ForeachNode : Node
             new() {  Label = "NextStep"},
             ];
         Color = "#cfcfcf";
-        Outputs = new List<NodeOutput> {
+        Outputs = [
             new NodeOutput(){ Label = "Finish" },
             new NodeOutput(){ Label = "Iterate" },
-        };
+        ];
         Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
     }
 

@@ -41,7 +41,7 @@
 
                 <div class="d-flex gap-2 me-2">
                     <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
-                                  IconStart="@(new Icons.DismissSquareMultiple())"
+                                  IconStart="@(new Icons.DismissSquareMultiple().WithColor(Color.Neutral))"
                                   Class="btn-terminate-all-tasks"
                                   Title="terminate all task"
                                   Appearance="Appearance.Stealth">
@@ -59,7 +59,7 @@
                                   IconEnd="@(new Icons.SaveMultiple())"
                                   Title="Deploy nodes"
                                   Appearance="Appearance.Accent">
-                                  Deploy
+                        Deploy
                     </FluentButton>
                 </div>
             </div>
@@ -227,7 +227,7 @@
     }
 
     .btn-terminate-all-tasks:hover {
-        --accent-fill-rest: red;
+        --neutral-foreground-rest: red;
     }
 </style>
 

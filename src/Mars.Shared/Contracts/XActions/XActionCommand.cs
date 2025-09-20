@@ -2,10 +2,10 @@ using Mars.Core.Models;
 
 namespace Mars.Shared.Contracts.XActions;
 
-public class XActionCommand
+public record XActionCommand
 {
-    public string Id { get; init; }
-    public string Label { get; init; }
+    public required string Id { get; init; }
+    public required string Label { get; init; }
 
     public XActionType Type { get; init; }
     public string? LinkValue { get; init; }
@@ -13,22 +13,10 @@ public class XActionCommand
     public string? KeybindingContext { get; init; }
     public int[]? Keybindings { get; init; }
 
-    public string ContextMenuGroupId { get; init; }
+    public string ContextMenuGroupId { get; init; } = "";
     public float ContextMenuOrder { get; init; }
     public string[]? FrontContextId { get; init; }
 
-    //[JsonIgnore]
-    //public Func<object> Run { get; init; }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is XActionCommand act)
-            return Id == act.Id;
-
-        return base.Equals(obj);
-    }
-
-    public override int GetHashCode() => (Id, 0).GetHashCode();
 }
 
 public class XActResult : IUserActionResult
@@ -42,7 +30,7 @@ public class XActResult : IUserActionResult
 
     public XActionNextStep NextStep { get; init; }
     public bool Ok { get; init; }
-    public string Message { get; init; }
+    public required string Message { get; init; }
     public MessageIntent MessageIntent { get; init; }
     public string? NextActionId { get; init; }
 
@@ -52,10 +40,10 @@ public class XActResult : IUserActionResult
         => new() { Message = message, MessageIntent = MessageIntent.Error, NextStep = XActionNextStep.Toast };
 }
 
-public class XActionCommandCall
+public record XActionCommandCall
 {
-    public string Id { get; init; }
-    public string[] Args { get; init; }
+    public required string Id { get; init; }
+    public required string[] Args { get; init; }
 }
 
 public interface IActContext

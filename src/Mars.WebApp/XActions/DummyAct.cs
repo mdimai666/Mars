@@ -18,8 +18,6 @@ public class DummyAct(MarsDbContext ef) : IAct
         Id = CommandId,
         Label = "DummyAct",
         FrontContextId = [typeof(SettingsPage).FullName!],
-#if false
-#endif
         Type = XActionType.HostAction
     };
 

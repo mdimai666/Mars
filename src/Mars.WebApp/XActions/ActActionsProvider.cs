@@ -34,7 +34,9 @@ internal class ActActionsProvider : IXActionCommandsProvider, IMarsAppLifetimeSe
     {
         var list = new List<XActionCommand>
         {
-            DummyAct.XAction,
+            #if DEBUG
+		    DummyAct.XAction,
+	        #endif
             ClearCacheAct.XAction,
             CreateMockPostsAct.XAction,
         };

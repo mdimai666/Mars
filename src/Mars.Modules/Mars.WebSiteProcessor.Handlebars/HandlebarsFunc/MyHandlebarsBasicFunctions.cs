@@ -576,7 +576,7 @@ public static class MyHandlebarsBasicFunctions
         output.WriteSafeString(outVal);
     }
 
-#if DEBUG
+#if !DEBUG
     static MyHandlebarsHelpBlock? _helpBlock;
 #endif
 

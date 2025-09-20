@@ -11,7 +11,7 @@ public class StringNode : Node
 
     public StringNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#b2b2b2";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/string.svg";
@@ -75,8 +75,6 @@ public class StringNodeOperation
     }
 
 }
-
-
 
 public enum BaseOperation
 {

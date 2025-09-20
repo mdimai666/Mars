@@ -6,16 +6,18 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.XActions;
 
+[RegisterXActionCommand(CommandId, "Clear cache")]
 public class ClearCacheAct : IAct
 {
+    public const string CommandId = "Mars.XActions." + nameof(ClearCacheAct);
     private readonly IMemoryCache memoryCache;
 
     public static XActionCommand XAction { get; } = new XActionCommand()
     {
-        Id = typeof(ClearCacheAct).FullName!,
+        Id = CommandId,
         Label = "Очистить кеш",
 #if !NOADMIN
-        FrontContextId = [typeof(SettingsHostCachePage).FullName + "-post"],
+        FrontContextId = [typeof(SettingsHostCachePage).FullName!],
 #endif
         Type = XActionType.HostAction
     };

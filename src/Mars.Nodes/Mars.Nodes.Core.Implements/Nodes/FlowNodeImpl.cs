@@ -17,7 +17,7 @@ public class FlowNodeImpl : INodeImplement<FlowNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg _input, ExecuteAction callback)
+    public Task Execute(NodeMsg _input, ExecuteAction callback, ExecutionParameters parameters)
     {
         throw new NotImplementedException();
     }

@@ -4,7 +4,7 @@ public class NodeMsg
 {
     public object? Payload { get; set; }
 
-    Dictionary<string, object> Context { get; set; } = new();
+    Dictionary<string, object> Context { get; set; } = [];
 
     public T? Get<T>() where T : class
     {
@@ -15,8 +15,6 @@ public class NodeMsg
     {
         return Context.ContainsKey(name) ? Context[name] : null;
     }
-
-
 
     public void Add<T>(T obj)
     {
@@ -30,9 +28,18 @@ public class NodeMsg
 
     public Dictionary<string, object> AsFullDict()
     {
-        Dictionary<string, object> dict = new Dictionary<string, object>(Context);
-        dict.Add(nameof(Payload), Payload!);
-
-        return dict;
+        return new(Context)
+        {
+            { nameof(Payload), Payload! }
+        };
     }
 }
+
+public record ExecutionParameters(
+    Guid TaskId,
+    Guid JobGuid,
+    int InputPort = 0,
+    CancellationToken CancellationToken = default,
+    bool IsDebugMode = false
+//TimeSpan Timeout
+);

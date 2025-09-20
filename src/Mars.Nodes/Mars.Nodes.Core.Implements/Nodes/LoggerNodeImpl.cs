@@ -26,7 +26,7 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
         ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
     };
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         try
         {

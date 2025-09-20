@@ -18,7 +18,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
     HandlebarsTemplate<object, object>? template;
     string? compiled_template;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         //https://github.com/Handlebars-Net/Handlebars.Net

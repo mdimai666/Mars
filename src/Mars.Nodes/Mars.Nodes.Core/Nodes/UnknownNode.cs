@@ -26,8 +26,7 @@ public class UnknownNode : Node
         Name = basic.Name;
         Wires = basic.Wires;
         Disabled = basic.Disabled;
-        HaveInput = basic.HaveInput;
-        OutputLabels = basic.OutputLabels;
+        Inputs = basic.Inputs;
         Outputs = basic.Outputs;
 
         IsDefinedAsConfig = basic.IsConfigNode;

@@ -3,7 +3,11 @@
 @using Mars.Nodes.Core.Nodes
 @using Mars.Nodes.FormEditor
 @using Mars.Nodes.Workspace
+@using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace
 @using Mars.Nodes.Workspace.Components
+@using Mars.Nodes.Workspace.EditorParts
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
 
 <div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill">
     <CascadingValue Value="this">
@@ -11,7 +15,7 @@
             <div class="d-flex justify-content-between p-1 align-items-center">
                 <div class="d-flex fs-5">
 
-                    <div class="mastet-menu">
+                    <div class="master-menu">
                         <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
                             @foreach (var _tab in masterTabs)
                             {
@@ -25,28 +29,43 @@
                         </div>
                     </div>
                     <div class="vr mx-3"></div>
+                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="Appearance.Stealth"></FluentButton>
+                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="Appearance.Stealth"></FluentButton>
+                    </div>
                 </div>
 
                 <div class="gap-2">
-                    @*<span>wires - @NodeWorkspace1?.Wires?.Count()</span> |
-                <span>nodes - @Nodes?.Count()</span> |*@
-                    <span>[@editorActions.SelectContextString]</span>
+                    <span>[@SelectContextString]</span>
                 </div>
 
                 <div class="d-flex gap-2 me-2">
+                    <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
+                                  IconStart="@(new Icons.DismissSquareMultiple().WithColor(Color.Neutral))"
+                                  Class="btn-terminate-all-tasks"
+                                  Title="terminate all task"
+                                  Appearance="Appearance.Stealth">
+                        <FluentBadge title="running tasks count">
+                            @runningTaskCountDisplayText
+                        </FluentBadge>
+                    </FluentButton>
 
                     @if (SectionActions is not null)
                     {
                         @SectionActions
                     }
 
-                    @* <button type="button" class="btn btn-outline-primary btn-sm px-3 " @onclick=@(e=>OnCmdClick.InvokeAsync("other"))>other</button> *@
-                    <button type="button" class="btn btn-primary btn-sm px-3 " @onclick=DeployClick>Deploy</button>
+                    <FluentButton OnClick="@(_actionManager.ExecuteAction<DeployNodesAction>)"
+                                  IconEnd="@(new Icons.SaveMultiple())"
+                                  Title="Deploy nodes"
+                                  Appearance="Appearance.Accent">
+                        Deploy
+                    </FluentButton>
                 </div>
             </div>
         </div>
-        <div class="d-flex no-gutters g-0 flex-fill w-100" style="height:calc(100% - 40px)">
-            <div class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;">
+        <main class="d-flex no-gutters g-0 flex-fill w-100" style="height:calc(100% - 40px)">
+            <div class="flex-shrink-0 position-absolute shadow" style="top:50px;left:10px;z-index:1;user-select:none;">
                 <div class="bg-white custom-scroll1" style="overflow-y:scroll;overflow-x:hidden;scroll-behavior: auto;width:190px;max-height:500px">
                     @if (activeMasterTab == "nodes")
                     {
@@ -78,7 +97,7 @@
                             <p class="card-text">Palette (@Palette.Count)</p>
                         </div>
                         <div class="">
-                            @foreach (var group in Palette.GroupBy(s=>s.GroupName))
+                            @foreach (var group in Palette.GroupBy(s => s.GroupName))
                             {
                                 <div class="px-4">
                                     <label class="text-strong">@group.Key</label>
@@ -86,7 +105,7 @@
                                 @foreach (var _palette in group)
                                 {
                                     Node node = _palette.Instance;
-                                    <div class="list-group-item px-2 py-0 border-0">
+                                    <div class="list-group-item px-2 py-0 border-0" @key=_palette>
                                         <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                             @if (node is MicroschemeNode)
                                             {
@@ -112,6 +131,7 @@
                                 bool isactive = activeFlow == flow;
                                 @*<li class="p-2 list-group-item active" aria-current="true">An active item</li>*@
                                 <li class=@($"p-2 list-group-item rounded-0 {(isactive ? "active" : "")}")
+                                    @key=_flow.Id
                                     @onclick=@(e => ChangeFlow(flow))
                                     @ondblclick="@(e => StartEditNode(flow))">@flow.DisplayName</li>
                             }
@@ -126,7 +146,7 @@
                             <p class="card-text">Configs (@Palette.Count)</p>
                         </div>
                         <ul class="list-group">
-                            @foreach (var node in Nodes.Where(node => node is ConfigNode))
+                            @foreach (var node in AllNodes.Values.Where(node => node is ConfigNode))
                             {
                                 Node _node = node;
                                 <li class="list-group-item px-2 py-0 border-0">
@@ -142,15 +162,14 @@
             </div>
             <div class="w-100">
                 <div class="h-100" style="position:relative">
-                    <NodeWorkspace1 @ref=NodeWorkspace1
+                    <NodeWorkspace1 @ref=_nodeWorkspace1
                                     Style=""
                                     Class="h-100"
                                     OnInject="OnInject"
-                                    Nodes=FlowNodes
+                                    FlowNodes=FlowNodes
                                     OnDblClickNode="OnDblClickNode"
                                     OnWorkspaceClick="OnWorkspaceClick"
-                                    OnWorkspaceDblClick="OnWorkspaceDblClick"
-                                    EditorActions="editorActions">
+                                    OnWorkspaceDblClick="OnWorkspaceDblClick">
                         <QuickNodeAddMenu Palette="Palette"
                                           @ref=quickNodeAddMenu
                                           OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />
@@ -159,55 +178,14 @@
                 </div>
             </div>
             <div class="flex-shrink-0 bg-white d-flex flex-column" style="width:250px;height:100%">
-                <div class="bg-light border-bottom p-1 d-flex align-items-center" style="height: 40px;">
-                    Debug
-                    <div class="ms-auto d-flex gap-1">
-                        <button class="btn btn-sm bg-light" @onclick=AddDebugMessageTest
-                                title="Add test messages">
-                            <i class="bi bi-plus-lg"></i>
-                        </button>
-                        <button class="btn btn-sm bg-light xcenter" @onclick=ClearDebugMessages
-                                title="Clear debug window">
-                            <i class="bg-contain bicon" style="background-image:url('_content/Mars.Nodes.Workspace/ban-solid.svg')"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="debug-text flex-fill d-flex" style="height:calc(100% - 40px)">
-                    <div id="nodered-debug-message-list"
-                         class="text-wrap text-break custom-scroll1 w-100 p-1"
-                         style="overflow-y:scroll;scroll-behavior: auto;">
-                        <div class="debug-message-cnt border-bottom">
-
-                            <ul class="list-group list-group-flush">
-                                @foreach (var m in messages)
-                                {
-                                    <li class="list-group-item p-1 nodered-debug-message-list__item" data-id=@m.NodeId data-level=@m.Level @onclick=@(() => OnClickConsoleDebugMessage(m))>
-                                        <div class="debug-msg-id text-nowrap">@m.NodeId</div>
-                                        <div>
-                                            @m.Message
-                                        </div>
-                                        @if (m.Json is not null)
-                                        {
-                                            <pre class="debug-json-pre">@m.Json</pre>
-                                        }
-                                        <div class="debug-msg-footer justify-content-between d-flex text-muted">
-                                            <span>0</span>
-                                            <span>@m.CreatedAt</span>
-                                        </div>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                    @*end #nodered-debug-message-list*@
-                </div>
+                <DebugMessagesConsole Messages="messages" />
             </div>
             <NodeEditContainer1 @ref=nodeEditContainer1
-                                OnSave="SaveNode"
+                                OnSave="OnEditFormSaveNodeClick"
                                 OnDelete="DeleteNode"
                                 OnClickEditConfigNode=OnClickEditConfigNode
                                 OnClickNewConfigNode=OnClickNewConfigNode />
-        </div>
+        </main>
     </CascadingValue>
 </div>
 
@@ -248,6 +226,9 @@
         display: inline-block;
     }
 
+    .btn-terminate-all-tasks:hover {
+        --neutral-foreground-rest: red;
+    }
 </style>
 
 @code {

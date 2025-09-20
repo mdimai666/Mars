@@ -33,7 +33,7 @@ public static class MainMarsHost
 {
     public static IServiceCollection AddMarsHost(this IServiceCollection services, IWebHostEnvironment wenv)
     {
-        services.AddSingleton<IActionManager, ActionManager>();
+        services.AddSingleton<IActionManager, XActionManager>();
         services.AddSingleton<IOptionService, OptionService>();
         services.AddSingleton<IEventManager, EventManager>();
         services.AddSingleton<INavMenuService, NavMenuService>();

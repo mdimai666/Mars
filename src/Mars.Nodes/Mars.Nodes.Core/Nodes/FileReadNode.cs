@@ -12,7 +12,7 @@ public class FileReadNode : Node
 
     public FileReadNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#deb887";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";

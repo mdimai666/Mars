@@ -13,7 +13,7 @@ public class JsonNode : Node
 
     public JsonNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#debd5c";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";

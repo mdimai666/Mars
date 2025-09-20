@@ -9,9 +9,8 @@ public class Wire
     public float Y2 { get; set; }
     public bool Selected { get; set; }
     public bool Disable { get; set; }
-    public string Node1 { get; set; } = default!;
-    public string Node2 { get; set; } = default!;
-    public int Node1Output { get; set; }
+    public NodeWire Node1 { get; set; } = default!;
+    public NodeWire Node2 { get; set; } = default!;
 
 }
 

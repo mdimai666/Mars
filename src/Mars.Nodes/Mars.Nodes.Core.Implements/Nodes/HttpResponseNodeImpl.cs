@@ -25,7 +25,7 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
         ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
     };
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         HttpInNodeHttpRequestContext? http = input.Get<HttpInNodeHttpRequestContext>();
 
@@ -49,7 +49,6 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
         response ??= "";
 
         await http.HttpContext.Response.WriteAsync(response, encoding: Encoding.UTF8); //on async body already has disposed
-
 
         //http.HttpContext.Dispose();
     }

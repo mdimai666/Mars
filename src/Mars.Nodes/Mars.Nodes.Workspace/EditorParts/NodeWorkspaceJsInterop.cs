@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Threading.Tasks;
 
-namespace Mars.Nodes.Workspace
+namespace Mars.Nodes.Workspace.EditorParts
 {
     // This class provides an example of how JavaScript functionality can be wrapped
     // in a .NET class for easy consumption. The associated JavaScript module is

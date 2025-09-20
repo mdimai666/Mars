@@ -1,11 +1,12 @@
 @using Flurl.Http
 @using Mars.Core.Features
 @using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
 
 <FluentAutocomplete TOption="KeyValuePair<string,string>"
                     AutoComplete="off"
-                    Class="CodeEditorSuggestSearchInput"
-                    Width="250px"
+                    Class="@($"CodeEditorSuggestSearchInput {Class}")"
+                    Style="@Style"
                     Placeholder="search snippet..."
                     OnOptionsSearch="@OnSearchSnippetAsync"
                     MaximumSelectedOptions="1"

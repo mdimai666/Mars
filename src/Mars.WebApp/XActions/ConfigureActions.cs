@@ -17,18 +17,10 @@ namespace Mars.XActions;
 
 internal static class ConfigureActions
 {
-    static Type[] actTypes = default!;
 
     public static IServiceCollection AddConfigureActions(this IServiceCollection services)
     {
-        Assembly[] assemblies = [typeof(Program).Assembly];
-
-        actTypes = assemblies.SelectMany(assembly => assembly.GetTypes().Where(s => typeof(IAct).IsAssignableFrom(s))).ToArray();
-
-        foreach (var type in actTypes)
-        {
-            services.AddTransient(type);
-        }
+        services.AddSingleton<ActActionsProvider>();
 
         return services;
     }
@@ -36,11 +28,6 @@ internal static class ConfigureActions
     public static IApplicationBuilder UseConfigureActions(this WebApplication app)
     {
         IActionManager actionManager = app.Services.GetRequiredService<IActionManager>();
-
-        foreach (var type in actTypes)
-            actionManager.AddAction(type);
-        //actionManager.AddAction<DummyAct>();
-        //actionManager.AddAction<ClearCacheAct>();
 
 #if !NOADMIN
         actionManager.AddXLink(new XActionCommand
@@ -94,7 +81,9 @@ internal static class ConfigureActions
             Label = AppRes.DownloadExcel,
             LinkValue = $"/api/Feedback/{nameof(FeedbackController.DownloadExcel)}"
         });
+
 #endif
+        actionManager.RefreshDict();
 
         return app;
     }

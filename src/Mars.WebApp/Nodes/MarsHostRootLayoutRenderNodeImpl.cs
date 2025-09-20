@@ -24,7 +24,7 @@ public class MarsHostRootLayoutRenderNodeImpl : INodeImplement<MarsHostRootLayou
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         HttpInNodeHttpRequestContext? http = input.Get<HttpInNodeHttpRequestContext>();
 
@@ -54,7 +54,6 @@ public class MarsHostRootLayoutRenderNodeImpl : INodeImplement<MarsHostRootLayou
         var html = new PrepareHostHtml(af, optionsService, request, userDetail, new RenderParam(), RED.ServiceProvider, default);
 
         string rendered = html.BeforeBodyHtml + "\n" + pageHtml + "\n" + html.AfterBodyHtml;
-
 
         input.Payload = rendered;
         callback(input);

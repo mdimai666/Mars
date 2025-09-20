@@ -15,7 +15,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         bool exist = File.Exists(Node.Filename);
 
@@ -37,7 +37,6 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
 
             //streamReader.w
             bool isBuffer = input.Payload is byte[];
-
 
             if (!isBuffer)
             {
@@ -84,7 +83,6 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
                 }
             }
 
-
         }
 
         callback(input);
@@ -92,4 +90,3 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
         return Task.CompletedTask;
     }
 }
-

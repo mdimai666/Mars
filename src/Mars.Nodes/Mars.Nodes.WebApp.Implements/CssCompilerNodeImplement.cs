@@ -15,7 +15,7 @@ public class CssCompilerNodeImplement : INodeImplement<CssCompilerNode>, INodeIm
         RED = _RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (input.Payload is not string)
         {

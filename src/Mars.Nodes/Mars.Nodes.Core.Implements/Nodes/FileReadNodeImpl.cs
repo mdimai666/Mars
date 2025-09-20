@@ -18,7 +18,7 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         if (Node.OutputMode == FileReadNode.FileOutputMode.SingleBuffer)
@@ -54,4 +54,3 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>, INodeImplement
         return Task.CompletedTask;
     }
 }
-

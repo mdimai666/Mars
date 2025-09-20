@@ -23,24 +23,26 @@ internal class RED
 {
     public IServiceProvider ServiceProvider { get; }
 
-    public IHubContext<ChatHub> Hub;// => ChatHub.instance;
-    public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = new();
+    public IHubContext<ChatHub> Hub;
+    public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = [];
     public VariablesContextDictionary GlobalContext { get; } = new();
 
-    public Dictionary<string, VariablesContextDictionary> FlowContexts { get; } = new();
+    public Dictionary<string, VariablesContextDictionary> FlowContexts { get; } = [];
 
-    public Dictionary<string, INodeImplement> Nodes { get; set; } = new Dictionary<string, INodeImplement>();
+    public Dictionary<string, INodeImplement> Nodes { get; set; } = [];
 
-    private Dictionary<string, VarNode> _varNodesDict = new();
+    private Dictionary<string, VarNode> _varNodesDict = [];
     public IReadOnlyDictionary<string, VarNode> VarNodesDict => _varNodesDict;
 
-    private Dictionary<string, ConfigNode> _configNodesDict = new();
+    private Dictionary<string, ConfigNode> _configNodesDict = [];
     public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict => _configNodesDict;
 
-    private Dictionary<string, Node> _basicNodesDict = new();
+    private Dictionary<string, Node> _basicNodesDict = [];
     public IReadOnlyDictionary<string, Node> BasicNodesDict => _basicNodesDict;
 
     private int _assignedCount = 0;
+
+    public event NodeImplDoneEvent OnNodeImplDone;
 
     public RED(IHubContext<ChatHub> hub, IServiceProvider serviceProvider)
     {
@@ -179,11 +181,15 @@ internal class RED
 
     public HttpClient GetHttpClient()
     {
-        HttpClient httpClient = HttpClientFactory.Create();
+        var httpClient = HttpClientFactory.Create();
         return httpClient;
     }
 
+    public void Done(string nodeId, Guid jobGuid)
+        => OnNodeImplDone?.Invoke(nodeId, jobGuid);
 }
+
+internal delegate void NodeImplDoneEvent(string nodeId, Guid jobGuid);
 
 internal class RED_Context : IRED
 {
@@ -210,9 +216,11 @@ internal class RED_Context : IRED
         if (!RED.FlowContexts.ContainsKey(Flow.Node.Id)) RED.FlowContexts.Add(Flow.Node.Id, new());
     }
 
-    public void DebugMsg(DebugMessage msg) => RED.DebugMsg(NodeId, msg);
+    public void DebugMsg(DebugMessage msg)
+        => RED.DebugMsg(NodeId, msg);
 
-    public void DebugMsg(Exception ex) => RED.DebugMsg(NodeId, ex);
+    public void DebugMsg(Exception ex)
+        => RED.DebugMsg(NodeId, ex);
 
     public void Status(NodeStatus nodeStatus)
         => RED.BroadcastStatus(NodeId, nodeStatus);
@@ -240,7 +248,7 @@ internal class RED_Context : IRED
 
     public InputConfig<TConfigNode> GetConfig<TConfigNode>(InputConfig<TConfigNode> config) where TConfigNode : ConfigNode
         => new() { Id = config.Id, Value = RED.ConfigNodesDict.GetValueOrDefault(config.Id ?? "") as TConfigNode };
+
+    public void Done(ExecutionParameters parameters)
+        => RED.Done(NodeId, parameters.JobGuid);
 }
-
-
-

@@ -42,6 +42,12 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
+#if DEBUG
+        builder.Logging.SetMinimumLevel(LogLevel.Trace);
+        builder.Logging.AddFilter("System", LogLevel.Warning);
+        builder.Logging.AddFilter("Microsoft", LogLevel.Error);
+#endif
+
         string? backendUrl = builder.Configuration["BackendUrl"];
         if (string.IsNullOrEmpty(backendUrl))
         {

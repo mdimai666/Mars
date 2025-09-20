@@ -15,7 +15,7 @@ public class EventNodeImpl : INodeImplement<EventNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         ManagerEventPayload _event = input.Get<ManagerEventPayload>()!;

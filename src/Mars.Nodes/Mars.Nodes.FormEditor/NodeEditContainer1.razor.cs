@@ -15,18 +15,6 @@ public partial class NodeEditContainer1
     bool _visible = false;
 
     Node? _node = default!;
-    [Parameter]
-    public Node? Node
-    {
-        get => _node;
-        set
-        {
-            if (value == _node) return;
-            _node = value;
-            NodeChanged.InvokeAsync(_node);
-        }
-    }
-    [Parameter] public EventCallback<Node> NodeChanged { get; set; }
     [Parameter] public EventCallback<Node> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback OnBackdropCancel { get; set; }
@@ -45,7 +33,6 @@ public partial class NodeEditContainer1
     NodeFormEditor1 nodeFormEditor1 = default!;
     bool saveLoading = false;
 
-
     void OpenOffcanvasEditor(bool show)
     {
         _visible = show;
@@ -53,7 +40,7 @@ public partial class NodeEditContainer1
 
     public void StartEditNode(Node node)
     {
-        Node = node.Copy();
+        _node = node.Copy();
         OpenOffcanvasEditor(true);
     }
 
@@ -77,7 +64,7 @@ public partial class NodeEditContainer1
             }
         }
 
-        _ = OnSave.InvokeAsync(Node);
+        _ = OnSave.InvokeAsync(_node);
         OpenOffcanvasEditor(false);
     }
 
@@ -88,7 +75,7 @@ public partial class NodeEditContainer1
             await nodeFormEditor1.Form.OnEditCancel();
         }
         OpenOffcanvasEditor(false);
-        Node = null;
+        _node = null;
         await OnCancel.InvokeAsync();
     }
 
@@ -100,7 +87,7 @@ public partial class NodeEditContainer1
         }
         OpenOffcanvasEditor(false);
         //Node = null;
-        await OnDelete.InvokeAsync(Node.Id);
+        await OnDelete.InvokeAsync(_node.Id);
     }
 
     Task OnValidSubmit()

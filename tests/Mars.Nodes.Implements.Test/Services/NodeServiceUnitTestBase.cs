@@ -6,6 +6,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using Microsoft.AspNetCore.SignalR;
@@ -22,9 +23,11 @@ public class NodeServiceUnitTestBase
     internal readonly IHubContext<ChatHub> _hub;
     internal readonly IFileStorage _fileStorage;
     internal readonly IEventManager _eventManager;
-    private readonly ILogger<NodeTaskManager> _logger;
+    internal readonly ILogger<NodeTaskManager> _loggerManager;
+    internal readonly ILogger<NodeTaskJob> _loggerJob;
     internal NodeService? _nodeService;
     internal RED RED;
+    internal NodeTaskManager _nodeTaskManager;
 
     static object _lock = new { };
 
@@ -34,8 +37,14 @@ public class NodeServiceUnitTestBase
         {
             _serviceProvider = Substitute.For<IServiceProvider>();
             MarsLogger.Initialize(Substitute.For<ILoggerFactory>());
+            _loggerManager = MarsLogger.GetStaticLogger<NodeTaskManager>();
+            _loggerJob = MarsLogger.GetStaticLogger<NodeTaskJob>();
+            _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_loggerManager);
+            _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
+
             _hub = Substitute.For<IHubContext<ChatHub>>();
             RED = Substitute.ForPartsOf<RED>(_hub, _serviceProvider);
+            _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
             _serviceProvider.GetService(typeof(RED)).Returns(RED);
             _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
 
@@ -47,8 +56,6 @@ public class NodeServiceUnitTestBase
 
             _fileStorage = Substitute.For<IFileStorage>();
             _eventManager = Substitute.For<IEventManager>();
-            _logger = MarsLogger.GetStaticLogger<NodeTaskManager>();
-            _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_logger);
             //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
             NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
@@ -57,7 +64,7 @@ public class NodeServiceUnitTestBase
             //NodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
             NodeImplementFabirc.RegisterAssembly(typeof(TestCallBackNode).Assembly);
 
-            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _hub, _eventManager);
+            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _eventManager);
 
             NodesLocator.RefreshDict();
             NodeImplementFabirc.RefreshDict();
@@ -83,7 +90,7 @@ public class NodeServiceUnitTestBase
             outputPort = output;
         };
 
-        await node.Execute(input, exa);
+        await node.Execute(input, exa, new(default, default));
 
         return new NodeExecutionResult(resultCatcher!, outputPort);
     }
@@ -138,5 +145,21 @@ public class NodeServiceUnitTestBase
         var result = await ExecuteNodeImplementEx(nodeImpl, msg);
 
         return result;
+    }
+
+    public Task RunUsingTaskManager<T>(T node, NodeMsg? msg = null, FlowNode? flowNode = null, VarNode? varNode = null)
+        where T : Node
+    {
+        flowNode ??= new FlowNode();
+        node.Container = flowNode.Id;
+        var nodes = new List<Node> { flowNode, node };
+        if (varNode != null)
+        {
+            varNode.Container = flowNode.Id;
+            nodes.Add(varNode);
+        }
+        _nodeService.Deploy(nodes);
+
+        return _nodeTaskManager.CreateJob(_serviceProvider, node.Id);
     }
 }

@@ -16,7 +16,7 @@ public class SwitchNodeImpl : INodeImplement<SwitchNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         var interpreter = new Interpreter();//https://github.com/dynamicexpresso/DynamicExpresso
 

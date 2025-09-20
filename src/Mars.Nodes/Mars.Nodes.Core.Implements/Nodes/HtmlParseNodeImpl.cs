@@ -15,7 +15,7 @@ public class HtmlParseNodeImpl : INodeImplement<HtmlParseNode>, INodeImplement
         RED = red;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (input.Payload is not string html) throw new Exception("input.Payload must be string");
 

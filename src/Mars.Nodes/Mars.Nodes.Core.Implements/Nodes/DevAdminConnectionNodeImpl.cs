@@ -17,7 +17,7 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         if (Node.Action == DevAdminConnectionNode.ACTION_MESSAGE)
@@ -25,7 +25,7 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
 
             var adminConnectionService = RED.ServiceProvider.GetRequiredService<IDevAdminConnectionService>();
 
-            var message = string.IsNullOrEmpty(Node.Message) ? input.Payload.ToString()! : Node.Message;
+            var message = string.IsNullOrEmpty(Node.Message) ? input.Payload?.ToString()! : Node.Message;
             var messageIntent = Enum.TryParse(Node.MessageIntent, out MessageIntent intent) ? intent : MessageIntent.Info;
 
             await adminConnectionService.ShowNotifyMessage(message, messageIntent);

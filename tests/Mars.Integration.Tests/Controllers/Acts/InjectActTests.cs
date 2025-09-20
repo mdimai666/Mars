@@ -28,7 +28,7 @@ public class InjectActTests : ApplicationTests
     {
         //Arrange
         _ = nameof(ActController.Inject);
-        _ = nameof(ActionManager.Inject);
+        _ = nameof(XActionManager.Inject);
         _ = nameof(DummyAct);
         var client = AppFixture.GetClient();
         var act = DummyAct.XAction;
@@ -48,7 +48,7 @@ public class InjectActTests : ApplicationTests
     {
         //Arrange
         _ = nameof(ActController.Inject);
-        _ = nameof(ActionManager.Inject);
+        _ = nameof(XActionManager.Inject);
         var client = AppFixture.GetClient();
         var actId = "XAction_invalidId";
         string[] args = [];

@@ -18,7 +18,7 @@ public class EmailSendNode : Node
 
     public EmailSendNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#cce8c0";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/envelope-48.png";

@@ -15,7 +15,6 @@ public class MqttInNodeImpl : INodeImplement<MqttInNode>, INodeImplement
     Node INodeImplement<Node>.Node => Node;
     private readonly ILogger<MqttInNodeImpl> _logger;
 
-
     public MqttInNodeImpl(MqttInNode node, IRED red)
     {
         Node = node;
@@ -33,7 +32,7 @@ public class MqttInNodeImpl : INodeImplement<MqttInNode>, INodeImplement
     /// <param name="callback"></param>
     /// <param name="Error"></param>
     /// <returns></returns>
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         _logger.LogTrace("Execute");
 

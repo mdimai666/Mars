@@ -39,6 +39,7 @@ internal class NodeTaskManager : INodeTaskManager
     {
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
         var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId, logger);
+        msg ??= new();
 
         _currentTasks.TryAdd(taskJob.TaskId, taskJob);
         OnCurrentTasksCountChanged?.Invoke(_currentTasks.Count);

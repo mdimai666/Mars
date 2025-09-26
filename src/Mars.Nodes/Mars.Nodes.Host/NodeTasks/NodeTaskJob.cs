@@ -48,7 +48,7 @@ internal class NodeTaskJob : IAsyncDisposable
         NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _RED.BasicNodesDict).Count;
     }
 
-    public async void Run(NodeMsg? msg = null)
+    public async void Run(NodeMsg msg)
     {
         var node = _nodes[InjectNodeId];
         node.RED = CreateContextForNode(InjectNodeId);
@@ -56,7 +56,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
         _logger.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
 
-        await ExecuteNode(msg ?? new(), node, new());
+        await ExecuteNode(msg, node, new());
     }
 
     public void Terminate()

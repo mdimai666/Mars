@@ -5,12 +5,12 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @attribute [Authorize(Roles = "Admin")]
-@inject NavigationManager navigationManager 
+@inject NavigationManager navigationManager
 
 <ContentWrapper Title="@AppRes.Media">
     <SectionActions>
         <XActionsDropDown>
-            <FluentMenuItem Label="Настройки медиа" OnClick=@((e) => navigationManager.NavigateTo($"/dev/Settings/Option/Mars+Options+Front+MediaOptionEditForm")) />
+            <FluentMenuItem Label="Настройки медиа" OnClick=@((e) => navigationManager.NavigateTo($"/dev/Settings/Option/Mars+Options+Models+MediaOption")) />
         </XActionsDropDown>
     </SectionActions>
     <ChildContent>

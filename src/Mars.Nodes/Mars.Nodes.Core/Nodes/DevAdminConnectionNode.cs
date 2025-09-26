@@ -8,8 +8,9 @@ namespace Mars.Nodes.Core.Nodes;
 public class DevAdminConnectionNode : Node
 {
     public string Action { get; set; } = ACTION_MESSAGE;
-
     public string Message { get; set; } = "";
+
+    public MessageRecipientType MessageRecipient { get; set; }
 
     /// <summary>
     /// <see cref="Mars.Core.Models.MessageIntent"/>
@@ -27,4 +28,12 @@ public class DevAdminConnectionNode : Node
     public static string[] Actions = [ACTION_MESSAGE];
 
     public const string ACTION_MESSAGE = "Message";
+}
+
+public enum MessageRecipientType
+{
+    [Display(Name = "тот, кто отправил request")]
+    Caller,
+    [Display(Name = "всем")]
+    All,
 }

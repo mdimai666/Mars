@@ -3,20 +3,30 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(DevAdminConnectionNode))]
 
-<div>
+<div class="vstack gap-3">
 
-    <FluentSelect @bind-Value="@Node.Action"
-                  OptionText=@(s=>s.ToString())
-                  Items="DevAdminConnectionNode.Actions"
-                  Style="width: 250px;" />
+    <FormItem2 For="() => Node.Action" Class="">
+        <FluentSelect @bind-Value="@Node.Action"
+                      OptionText=@(s => s.ToString())
+                      Items="DevAdminConnectionNode.Actions"
+                      Style="width: 250px;" />
+    </FormItem2>
 
     @if (Node.Action == DevAdminConnectionNode.ACTION_MESSAGE)
     {
-        <FormItem2 For="()=>Node.Message" Class="col mb-3">
+        <FormItem2 For="() => Node.Message" Class="">
             <FluentTextArea @bind-Value="@Node.Message" Class="w-100" Placeholder="leave it empty for msg.payload" />
         </FormItem2>
 
-        <FormItem2 For=@(()=>Node.MessageIntent)>
+        <FormItem2 For=@(() => Node.MessageRecipient)>
+            <FluentSelect @bind-SelectedOption="@Node.MessageRecipient"
+                          TOption="MessageRecipientType"
+                          Items="Enum.GetValues<MessageRecipientType>()"
+                          Style="width: 250px;">
+            </FluentSelect>
+        </FormItem2>
+
+        <FormItem2 For=@(() => Node.MessageIntent)>
             <FluentSelect @bind-Value="@Node.MessageIntent"
                           TOption="Mars.Core.Models.MessageIntent"
                           OptionValue=@(s=>s.ToString())
@@ -27,7 +37,6 @@
         </FormItem2>
     }
 </div>
-
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;

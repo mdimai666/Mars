@@ -16,7 +16,7 @@ public class ActionCommandNode : Node
         Outputs = new List<NodeOutput> {
             new NodeOutput(){ Label = "" },
         };
-        Icon = "_content/Mars.Nodes.Workspace/nodes/loop.svg";
+        Icon = "_content/Mars.Nodes.Workspace/nodes/usercase-64.png";
     }
 
 }

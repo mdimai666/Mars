@@ -32,6 +32,6 @@ public class DevAdminConnectionNodeTests : NodeServiceUnitTestBase
         //Assert
         await _devAdminConnectionService
             .Received(1)
-            .ShowNotifyMessage(Arg.Any<string>());
+            .ShowNotifyMessageForAll(Arg.Any<string>());
     }
 }

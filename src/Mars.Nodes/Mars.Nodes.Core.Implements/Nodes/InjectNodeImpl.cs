@@ -14,9 +14,8 @@ public class InjectNodeImpl : INodeImplement<InjectNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg _, ExecuteAction callback, ExecutionParameters parameters)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        NodeMsg input = new NodeMsg();
 
         input.Payload = string.IsNullOrEmpty(Node.Payload) ? DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() : Node.Payload;
 

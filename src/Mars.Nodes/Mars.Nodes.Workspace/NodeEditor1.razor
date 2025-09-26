@@ -142,11 +142,13 @@
                     }
                     else if (activeMasterTab == "configs")
                     {
+                        var configNodes = AllNodes.Values.Where(node => node is ConfigNode);
+
                         <div class="card-body p-2 ">
-                            <p class="card-text">Configs (@Palette.Count)</p>
+                            <p class="card-text">Configs (@configNodes.Count())</p>
                         </div>
                         <ul class="list-group">
-                            @foreach (var node in AllNodes.Values.Where(node => node is ConfigNode))
+                            @foreach (var node in configNodes)
                             {
                                 Node _node = node;
                                 <li class="list-group-item px-2 py-0 border-0">

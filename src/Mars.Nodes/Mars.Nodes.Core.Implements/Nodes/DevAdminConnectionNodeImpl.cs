@@ -1,5 +1,6 @@
 using Mars.Core.Models;
 using Mars.Host.Shared.Services;
+using Mars.Nodes.Core.Dto;
 using Mars.Nodes.Core.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,10 +12,10 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
     Node INodeImplement<Node>.Node => Node;
     public IRED RED { get; set; }
 
-    public DevAdminConnectionNodeImpl(DevAdminConnectionNode node, IRED RED)
+    public DevAdminConnectionNodeImpl(DevAdminConnectionNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -28,7 +29,21 @@ public class DevAdminConnectionNodeImpl : INodeImplement<DevAdminConnectionNode>
             var message = string.IsNullOrEmpty(Node.Message) ? input.Payload?.ToString()! : Node.Message;
             var messageIntent = Enum.TryParse(Node.MessageIntent, out MessageIntent intent) ? intent : MessageIntent.Info;
 
-            await adminConnectionService.ShowNotifyMessage(message, messageIntent);
+            var recepient = Node.MessageRecipient;
+
+            if (recepient == MessageRecipientType.Caller)
+            {
+                var userId = input.Get<RequestUserInfo>()?.UserId
+                                ?? throw new ArgumentException("requestUserInfo not found");
+
+                await adminConnectionService.ShowNotifyMessage(message, userId.ToString(), messageIntent);
+            }
+            else if (recepient == MessageRecipientType.All)
+            {
+                await adminConnectionService.ShowNotifyMessageForAll(message.ToString(), messageIntent);
+            }
+            else throw new NotImplementedException($"MessageRecipient '{recepient}' not implement");
+
         }
         else
         {

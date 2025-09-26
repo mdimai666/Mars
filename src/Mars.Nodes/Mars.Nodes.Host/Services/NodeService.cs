@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
@@ -8,7 +9,7 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
-using Mars.Nodes.Host.NodeTasks;
+using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.WebApp.Implements;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.SignalR;
@@ -206,9 +207,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         //var fs = serviceProvider.GetService<FlowExecutionBackgroundService>();
         //fs.Setup(nodeId, msg);
         //fs.StartAsync(new CancellationToken());
-        var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
+        //var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
 
-        _nodeTaskManager.CreateJob(serviceProvider, nodeId);
+        var requestUserInfo = serviceProvider.GetRequiredService<IRequestContext>().ToRequestUserInfo();
+        msg ??= new();
+        msg.Add(requestUserInfo);
+
+        _nodeTaskManager.CreateJob(serviceProvider, nodeId, msg);
 
         return Task.FromResult(new UserActionResult
         {

@@ -17,7 +17,12 @@ internal class DevAdminConnectionService : IDevAdminConnectionService
         _modelInfoService = modelInfoService;
     }
 
-    public Task ShowNotifyMessage(string message, MessageIntent? messageIntent = MessageIntent.Info)
+    public Task ShowNotifyMessage(string message, string userId, MessageIntent? messageIntent = MessageIntent.Info)
+    {
+        return hub.Clients.User(userId).SendAsync("ShowNotifyMessage", message, messageIntent);
+    }
+
+    public Task ShowNotifyMessageForAll(string message, MessageIntent? messageIntent = MessageIntent.Info)
     {
         return hub.Clients.All.SendAsync("ShowNotifyMessage", message, messageIntent);
     }

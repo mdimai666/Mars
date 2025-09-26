@@ -85,7 +85,7 @@ public static class MarsOptionsHostExtensions
 
         if (!await _faviconLock.WaitAsync(0))
         {
-            _ = messageService.ShowNotifyMessage("Favicons generation is already in progress", Core.Models.MessageIntent.Warning);
+            _ = messageService.ShowNotifyMessageForAll("Favicons generation is already in progress", Core.Models.MessageIntent.Warning);
             return;
         }
 
@@ -94,11 +94,11 @@ public static class MarsOptionsHostExtensions
         {
             await faviconHandler.Handle(opt, CancellationToken.None);
             ClearCacheAllSiteScriptsBuilders(serviceProvider);
-            _ = messageService.ShowNotifyMessage("Favicons generated successfully", Core.Models.MessageIntent.Success);
+            _ = messageService.ShowNotifyMessageForAll("Favicons generated successfully", Core.Models.MessageIntent.Success);
         }
         catch (Exception ex)
         {
-            _ = messageService.ShowNotifyMessage("Error generating favicons: " + ex.Message, Core.Models.MessageIntent.Error);
+            _ = messageService.ShowNotifyMessageForAll("Error generating favicons: " + ex.Message, Core.Models.MessageIntent.Error);
         }
         finally
         {

@@ -66,9 +66,15 @@ internal class MarsNodesMiddleware
                 msg.Add(ctx);
                 msg.Add(requestUserInfo);
 
-                await _nodeTaskManager.CreateJob(httpContext.RequestServices, find.NodeId, msg);
+                var taskId = await _nodeTaskManager.CreateJob(httpContext.RequestServices, find.NodeId, msg);
 
-                //TODO: При возникновении ошибки логировать и возвращать правильный статус
+                var task = _nodeTaskManager.Get(taskId);
+
+                if (task.IsDone && task.ErrorCount > 0 && !httpContext.Response.HasStarted)
+                {
+                    httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    await httpContext.Response.WriteAsync("error");
+                }
 
                 return;
             }

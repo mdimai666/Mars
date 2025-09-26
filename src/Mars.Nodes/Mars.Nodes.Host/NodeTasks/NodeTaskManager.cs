@@ -35,7 +35,7 @@ internal class NodeTaskManager : INodeTaskManager
         _logger = logger;
     }
 
-    public async Task CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null)
+    public async Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
         var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId, logger);
@@ -54,7 +54,17 @@ internal class NodeTaskManager : INodeTaskManager
         OnCurrentTasksCountChanged?.Invoke(_currentTasks.Count);
 
         await taskJob.DisposeAsync();
+
+        return taskJob.TaskId;
     }
+
+    public NodeTaskResultSummary? Get(Guid taskId)
+        => _currentTasks.GetValueOrDefault(taskId)?.ToSummary()
+            ?? _completedTasks.GetValueOrDefault(taskId);
+
+    public NodeTaskResultDetail? GetDetail(Guid taskId)
+        => _currentTasks.GetValueOrDefault(taskId)?.ToDetail()
+            ?? _completedTasks.GetValueOrDefault(taskId);
 
     /// <summary>
     /// Kill <see cref="NodeTaskJob"/>

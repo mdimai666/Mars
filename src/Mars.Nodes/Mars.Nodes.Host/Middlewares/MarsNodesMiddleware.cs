@@ -40,6 +40,7 @@ internal class MarsNodesMiddleware
 
         if (httpContext.Request.Path == "/favicon.ico") goto Next;
         if (httpContext.Request.Method == "OPTIONS") goto Next;
+        if (httpContext.Request.Method == "TRACE") goto Next;
 
 #if DEBUG
         //Console.WriteLine("MarsNodesMiddleware: " + httpContext.Request.Path);

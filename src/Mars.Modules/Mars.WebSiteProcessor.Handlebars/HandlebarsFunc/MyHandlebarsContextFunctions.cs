@@ -1,6 +1,7 @@
 using HandlebarsDotNet;
 using Mars.Core.Extensions;
 using Mars.Host.Shared.Interfaces;
+using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.WebSiteProcessor.Handlebars.Parsers;
@@ -213,5 +214,36 @@ public static class MyHandlebarsContextFunctions
             throw new HandlebarsException("IffBlock: " + ex.Message, ex);
             //throw new HandlebarsException("Condition error", ex);
         }
+    }
+
+    [TemplatorHelperInfo("RenderPostContent", "{{#RenderPostContent @postId}}", "Отрисовывает содержимое Post исходя из настроек")]
+    public static void RenderPostContent(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments args)
+    {
+        var renderContext = options.Data.RenderContext();
+        if (args.Length != 1) new HandlebarsException("{{#RenderPostContent @postId}} helper must have exactly 1 arguments");
+
+        var arg1 = args[0];
+        string? content = null;
+
+        if (arg1 == null)
+            throw new HandlebarsException($"argument: arg1 is null");
+
+        if (arg1 is Guid postId)
+        {
+            var postService = renderContext.ServiceProvider.GetService<IPostService>();
+            content = (postService.GetDetail(postId, renderContent: true, default)).ConfigureAwait(false).GetAwaiter().GetResult()?.Content;
+        }
+        else if (arg1 is string st && Guid.TryParse(st, out var postId2))
+        {
+            var postService = renderContext.ServiceProvider.GetService<IPostService>();
+            content = (postService.GetDetail(postId2, renderContent: true, default)).ConfigureAwait(false).GetAwaiter().GetResult()?.Content;
+        }
+        else
+        {
+            throw new HandlebarsException($"Not implement exception. RenderPostContent argument: arg1=\"{arg1}\" of type '{arg1.GetType()}'.");
+            //return Task.FromResult<object?>(null);
+        }
+
+        output.WriteSafeString(content);
     }
 }

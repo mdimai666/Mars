@@ -243,32 +243,26 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         CallNode node = (implNode.Node as CallNode)!;
 
-        var msg = new NodeMsg()
+        var msg = new NodeMsg() { Payload = payload };
+
+        var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var callback = new CallNodeCallbackAction(payload =>
         {
-            Payload = payload
-        };
+            tcs.TrySetResult(payload); // завершает задачу
+        }, implNode.Id);
 
-        bool isComplete = false;
-        object? returnData = null;
-
-        var task = new Task<object?>(() =>
-        {
-            while (!isComplete) { }
-            return returnData;
-        });
-
-        var callback = new CallNodeCallbackAction(payload => { returnData = payload; isComplete = true; }, implNode.Id);
         msg.Add(callback);
 
+        // запускаем асинхронный процесс
         _ = Inject(serviceProvider, implNode.Id, msg);
-        task.Start();
 
         object? data;
 
         if (node.Timeout == TimeSpan.Zero)
-            data = await task;
+            data = await tcs.Task;
         else
-            data = await task.WaitAsync(node.Timeout);
+            data = await tcs.Task.WaitAsync(node.Timeout);
 
         return new UserActionResult<object?>
         {

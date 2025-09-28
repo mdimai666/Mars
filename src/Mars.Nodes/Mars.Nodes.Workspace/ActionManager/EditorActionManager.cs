@@ -29,6 +29,8 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private readonly Stack<IEditorHistoryAction> _redoStack = new();
     private const int MaxHistory = 30;
 
+    private ICopyBufferItem? _copyBuffer;
+
     public EditorActionManager(INodeEditorApi nodeEditorApi, IServiceProvider serviceProvider, HotKeysContext hotkeysContext)
     {
         _nodeEditor = nodeEditorApi;
@@ -123,11 +125,12 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     }
 
     public void ExecuteAction<TAction>() where TAction : IEditorAction
-    {
-        ExecuteAction(typeof(TAction));
-    }
+        => ExecuteAction(typeof(TAction));
 
-    public void ExecuteAction(Type actionType)
+    public void ExecuteAction<TAction>(bool addToHistory) where TAction : IEditorAction
+        => ExecuteAction(typeof(TAction), addToHistory);
+
+    public void ExecuteAction(Type actionType, bool addToHistory = true)
     {
         _logger.LogTrace($"ExecuteAction('{actionType}')");
         var a = _actions.FirstOrDefault(s => s.ActionType == actionType)
@@ -141,7 +144,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
         {
             instance.Execute();
 
-            if (instance is IEditorHistoryAction historyAction)
+            if (addToHistory && instance is IEditorHistoryAction historyAction)
             {
                 _undoStack.Push(historyAction);
                 if (_undoStack.Count > MaxHistory)
@@ -156,7 +159,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
         }
     }
 
-    public void ExecuteAction(IEditorAction actionInstance)
+    public void ExecuteAction(IEditorAction actionInstance, bool addToHistory = true)
     {
         _logger.LogTrace($"ExecuteAction((instance)'{actionInstance.GetType()}')");
 
@@ -164,7 +167,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
         {
             actionInstance.Execute();
 
-            if (actionInstance is IEditorHistoryAction historyAction)
+            if (addToHistory && actionInstance is IEditorHistoryAction historyAction)
             {
                 _undoStack.Push(historyAction);
                 if (_undoStack.Count > MaxHistory)
@@ -210,6 +213,16 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     public bool CanUndo => _undoStack.Count > 0;
     public bool CanRedo => _redoStack.Count > 0;
 
+    public void SetCopyBuffer(ICopyBufferItem copyBufferItem)
+        => _copyBuffer = copyBufferItem;
+    public bool IsHaveCopyBuffer => _copyBuffer != null;
+    public void PasteCopiedBuffer()
+    {
+        if (_copyBuffer?.CanPaste() ?? false)
+        {
+            _copyBuffer.Paste();
+        }
+    }
 }
 
 static class StackExtensions

@@ -5,7 +5,6 @@ using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
-using Mars.Nodes.Workspace.EditorParts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -29,6 +28,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
     Node? sel_node;
     List<DragElement> dragElements { get; set; } = [];
     bool drag = false;
+    bool isProcessPasteNewNode;
 
     [Parameter]
     public IReadOnlyDictionary<string, Node> FlowNodes
@@ -76,6 +76,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
 
     Lasso lasso = new();
 
+    MouseEventArgs _lastMouseWorkspaceState = new();
+
     //--------------------------------------
 
     protected override void OnInitialized()
@@ -88,6 +90,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
 
     void onMouseMove(MouseEventArgs e)
     {
+        _lastMouseWorkspaceState = e;
         if (drag)
         {
             foreach (var d in dragElements)
@@ -132,10 +135,51 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
             _nodeEditor.ActionManager.ExecuteAction(new MoveNodesAction(_nodeEditor, moves));
     }
 
+    void StartDragSelectedNodes(MouseEventArgs e)
+    {
+        StartDragNodes(FlowNodes.Values.Where(s => s.selected), e, false);
+    }
+
+    public void StartDragNodes(IEnumerable<Node> nodes, bool startMoveUnderCursor = true)
+        => StartDragNodes(nodes, _lastMouseWorkspaceState, startMoveUnderCursor);
+
+    void StartDragNodes(IEnumerable<Node> nodes, MouseEventArgs e, bool startMoveUnderCursor)
+    {
+        dragElements.Clear();
+        float w = 50;
+        float h = 40;
+
+        var minX = nodes.Min(s => s.X);
+        var minY = nodes.Min(s => s.Y);
+
+        foreach (var _node in nodes)
+        {
+            //Console.WriteLine($"_node.X={_node.X}, _node.Y={_node.Y}, e.ClientX={e.ClientX}, e.ClientY={e.ClientY}");
+
+            var drag = new DragElement
+            {
+                node = _node,
+                nodeX = startMoveUnderCursor ? (float)(-w + _node.X - minX) : _node.X,
+                nodeY = startMoveUnderCursor ? (float)(-h + _node.Y - minY) : _node.Y,
+                clickX = startMoveUnderCursor ? 0 : e.ClientX,
+                clickY = startMoveUnderCursor ? 0 : e.ClientY,
+            };
+
+            dragElements.Add(drag);
+        }
+
+        drag = true;
+    }
+
     void onMouseUp(MouseEventArgs e)
     {
         _logger.LogTrace("onMouseUp");
-        if (drag)
+        if (isProcessPasteNewNode)
+        {
+            _nodeEditor.ActionManager.ExecuteAction(new CreateNewNodesAction(_nodeEditor, dragElements.Select(s => s.node).ToList()));
+            isProcessPasteNewNode = false;
+        }
+        else if (drag)
         {
             CreateNodeMoveAction(e);
         }
@@ -192,21 +236,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
         sel_node = node;
         node.selected = true;
 
-        foreach (var _node in FlowNodes.Values.Where(s => s.selected))
-        {
-            var drag = new DragElement
-            {
-                node = _node,
-                nodeX = _node.X,
-                nodeY = _node.Y,
-                clickX = e.ClientX,
-                clickY = e.ClientY,
-            };
-
-            dragElements.Add(drag);
-        }
-
-        drag = true;
+        StartDragSelectedNodes(e);
         _nodeEditor?.SetSelectContext(typeof(Node));
     }
 
@@ -390,6 +420,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
     public async void OnClickPaletteNewNode(MouseEventArgs e, Node node, Node instance)
     {
         DeselectAll();
+        isProcessPasteNewNode = true;
         float w = 250;
         float h = 40;
 

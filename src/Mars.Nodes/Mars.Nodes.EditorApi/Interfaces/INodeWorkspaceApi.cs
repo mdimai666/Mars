@@ -1,3 +1,4 @@
+using System.Drawing;
 using Mars.Nodes.Core;
 
 namespace Mars.Nodes.EditorApi.Interfaces;
@@ -11,5 +12,5 @@ public interface INodeWorkspaceApi
 
     void RedrawWires();
     void CallStateHasChanged();
-
+    void StartDragNodes(IEnumerable<Node> nodes, bool startMoveUnderCursor = true);
 }

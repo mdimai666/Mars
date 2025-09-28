@@ -12,7 +12,7 @@ public partial class NodeEditContainer1
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     FluentDialog _dialog = default!;
-    bool _visible = false;
+    bool _visible;
 
     Node? _node = default!;
     [Parameter] public EventCallback<Node> OnSave { get; set; }
@@ -20,18 +20,17 @@ public partial class NodeEditContainer1
     [Parameter] public EventCallback OnBackdropCancel { get; set; }
     [Parameter] public EventCallback<string> OnDelete { get; set; }
     [Parameter] public EventCallback<string> OnClickEditConfigNode { get; set; } //TODO: Убрать это и все делать через _nodeEditorApi
-    [Parameter] public EventCallback<Type> OnClickNewConfigNode { get; set; } // и это
+    [Parameter] public EventCallback<AppendNewConfigNodeEvent> OnClickNewConfigNode { get; set; } // и это
 
     [Parameter] public bool DisableSaveOnBackdropClick { get; set; } = false;
 
-    [CascadingParameter]
-    INodeEditorApi _nodeEditorApi { get; set; } = default!;
-
     CodeEditor2 codeEditor = default!;
-    bool isEditJsonMode = false;
+    bool isEditJsonMode;
 
     NodeFormEditor1 nodeFormEditor1 = default!;
-    bool saveLoading = false;
+    bool saveLoading;
+
+    private readonly Stack<Node> _windowStack = new();
 
     void OpenOffcanvasEditor(bool show)
     {
@@ -41,7 +40,20 @@ public partial class NodeEditContainer1
     public void StartEditNode(Node node)
     {
         _node = node.Copy();
+        _windowStack.Push(_node);
         OpenOffcanvasEditor(true);
+    }
+
+    void CloseEditNode()
+    {
+        OpenOffcanvasEditor(false);
+        _node = null;
+        _windowStack.Pop();
+        if (_windowStack.Any())
+        {
+            _node = _windowStack.Peek();
+            OpenOffcanvasEditor(true);
+        }
     }
 
     public async Task FormSaveClick()
@@ -65,7 +77,7 @@ public partial class NodeEditContainer1
         }
 
         _ = OnSave.InvokeAsync(_node);
-        OpenOffcanvasEditor(false);
+        CloseEditNode();
     }
 
     async Task FormCloseClick()
@@ -74,9 +86,8 @@ public partial class NodeEditContainer1
         {
             await nodeFormEditor1.Form.OnEditCancel();
         }
-        OpenOffcanvasEditor(false);
-        _node = null;
         await OnCancel.InvokeAsync();
+        CloseEditNode();
     }
 
     async Task FormDeleteClick()
@@ -85,9 +96,8 @@ public partial class NodeEditContainer1
         {
             await nodeFormEditor1.Form.OnEditDelete();
         }
-        OpenOffcanvasEditor(false);
-        //Node = null;
         await OnDelete.InvokeAsync(_node.Id);
+        CloseEditNode();
     }
 
     Task OnValidSubmit()
@@ -97,7 +107,6 @@ public partial class NodeEditContainer1
 
     async void OnDialogDismiss(DialogEventArgs e)
     {
-        _visible = false;
         if (DisableSaveOnBackdropClick)
         {
             await FormCloseClick();

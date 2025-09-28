@@ -18,7 +18,7 @@ public abstract class BaseEditorHistoryAction : IEditorHistoryAction
     public string NodesToJson(IEnumerable<Node> nodes)
         => JsonSerializer.Serialize(nodes);
 
-    public IEnumerable<Node> NodesFromJson(string json)
+    public Node[] NodesFromJson(string json)
         => JsonSerializer.Deserialize<Node[]>(json)!;
 
     public abstract void Execute();

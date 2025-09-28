@@ -1,4 +1,5 @@
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.EditorApi.Interfaces;
@@ -22,4 +23,14 @@ public interface INodeEditorApi
 
     ILogger<T> CreateLogger<T>();
     void SaveNode(Node node, bool changed = true);
+    void ChangeFlow(FlowNode flowNode);
+    IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId);
+    void StartEditNode(Node node);
+    void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
+}
+
+public class AppendNewConfigNodeEvent
+{
+    public required Type ConfigNodeType { get; init; }
+    public required Action<ConfigNode> ConfigNodeSetter { get; init; }
 }

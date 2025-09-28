@@ -18,6 +18,7 @@ public static class DialogExtensions
             PreventDismissOnOverlayClick = false,
             PreventScroll = true,
             Modal = true,
+            TrapFocus = false,
             //Class = "DeletionConfirmationDialog" class not support
         });
 

@@ -58,6 +58,15 @@ public partial class InputConfigField<TConfig>
 
     void ClickNew()
     {
-        _nodeEditContainer1.OnClickNewConfigNode.InvokeAsync(typeof(TConfig));
+        _nodeEditContainer1.OnClickNewConfigNode.InvokeAsync(new AppendNewConfigNodeEvent
+        {
+            ConfigNodeType = typeof(TConfig),
+            ConfigNodeSetter = ConfigSetter
+        });
+    }
+
+    void ConfigSetter(ConfigNode configNode)
+    {
+        Value = new InputConfig<TConfig> { Id = configNode.Id, Value = (TConfig)configNode };
     }
 }

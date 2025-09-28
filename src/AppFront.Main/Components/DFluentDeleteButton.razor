@@ -15,7 +15,6 @@
     }
 </FluentButton>
 
-
 @code {
     [Inject] IDialogService _dialogService { get; set; } = default!;
 
@@ -32,11 +31,8 @@
     [Parameter]
     public string? ConfirmationContent { get; set; }
 
-
-
     public async void OnDeleteClick(MouseEventArgs e)
     {
-
         var ok = await _dialogService.MarsDeleteConfirmation(ConfirmationContent);
 
         if (ok)

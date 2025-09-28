@@ -169,13 +169,14 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _nodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
     }
 
-    Node CreateConfigNodeFromType(Type nodeType)
+    ConfigNode CreateConfigNodeFromType(Type nodeType)
     {
-        Node instance = (Node)Activator.CreateInstance(nodeType)!;
+        ConfigNode instance = (ConfigNode)Activator.CreateInstance(nodeType)!;
         var thisTypeCount = AllNodes.Values.Count(s => s.Type == instance.Type);
         instance.Container = activeFlow.Id;
         instance.Name = instance.Label + (thisTypeCount + 1);
         AllNodes.Add(instance);
+        RecalcNodes();
         return instance;
     }
 
@@ -230,7 +231,27 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         nodeEditContainer1.StartEditNode(EditNode);
     }
 
-    public void OnClickEditConfigNode(string id)
+    public void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent)
+    {
+        Type configNodeType = appendNewConfigNodeEvent.ConfigNodeType;
+
+        var found = RegisteredNodes.FirstOrDefault(s => s == configNodeType);
+        if (found == null)
+        {
+            _ = _messageService.Error($"Error newConfigNode command: type:{configNodeType.Name} not found");
+            return;
+        }
+        var instance = CreateConfigNodeFromType(found);
+        Task.Run(async () =>
+        {
+            await Task.Delay(10);
+            appendNewConfigNodeEvent.ConfigNodeSetter(instance);
+            nodeEditContainer1.StartEditNode(instance);
+            StateHasChanged();
+        });
+    }
+
+    void OnClickEditConfigNode(string id)
     {
         var node = AllNodes.GetValueOrDefault(id);
         if (node == null)
@@ -241,17 +262,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         nodeEditContainer1.StartEditNode(node);
     }
 
-    public void OnClickNewConfigNode(Type nodeType)
+    void OnClickNewConfigNode(AppendNewConfigNodeEvent e)
     {
-        var found = RegisteredNodes.FirstOrDefault(s => s == nodeType);
-        if (found == null)
-        {
-            _ = _messageService.Error($"Error newConfigNode command: type:{nodeType.Name} not found");
-            return;
-        }
-        var instance = CreateConfigNodeFromType(found);
-        nodeEditContainer1.StartEditNode(instance);
-
+        StartCreateNewConfigNode(e);
     }
 
     void OnEditFormSaveNodeClick(Node node)
@@ -282,7 +295,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void DeleteNode(string nodeId)
     {
-        _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
+        if (_allNodes[nodeId] is FlowNode)
+            _actionManager.ExecuteAction(new DeleteFlowNodeAction(this, nodeId));
+        else
+            _actionManager.ExecuteAction(new DeleteNodesAndWiresAction(this, [_allNodes[nodeId]]));
     }
 
     void OnWorkspaceClick(MouseEventArgs e)
@@ -305,7 +321,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         flows = AllNodes.Values.Where(node => node is FlowNode).Select(s => s as FlowNode).OrderBy(s => s.Order).ToList()!;
         if (flows.Count == 0)
         {
-            ClickAddFlow();
+            _actionManager.ExecuteAction<CreateFlowNodeAction>(addToHistory: false);
         }
     }
 
@@ -332,14 +348,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     FlowNode? activeFlow = null;
 
-    public IReadOnlyDictionary<string, Node> FlowNodes => AllNodes.Values.Where(s => s.IsVisual
-                                                    && s.Container == activeFlow.Id
-                                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s => s.Id);
-
+    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(activeFlow.Id);
     //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
     //public string InitialFlowId { get; set; }
 
-    void ChangeFlow(FlowNode flowNode)
+    public void ChangeFlow(FlowNode flowNode)
     {
         activeFlow = flowNode;
         CalcFlowNodes();
@@ -348,6 +361,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         NavigationManager.NavigateTo(url);
     }
 
+    public IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId)
+        => AllNodes.Values.Where(s => s.IsVisual
+                                    && s.Container == flowId
+                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s => s.Id);
+
     void CalcFlowNodes()
     {
         //FlowNodes = Nodes.Where(s => s.IsVisual && s.Container == activeFlow.Id).ToList();
@@ -355,11 +373,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void ClickAddFlow()
     {
-        var flow = new FlowNode() { Name = "flow " + flows.Count };
-        AllNodes.Add(flow);
-        AllNodesChanged.InvokeAsync(AllNodes);
-        CalcTabs();
-        ChangeFlow(flow);
+        _actionManager.ExecuteAction<CreateFlowNodeAction>();
     }
 
     IReadOnlyCollection<VarNode> varNodes = [];

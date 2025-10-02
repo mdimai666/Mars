@@ -1,25 +1,27 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(FileReadNode))]
 
-<div class="form-group">
-    <label>Filename</label>
-    <InputText class="form-control" @bind-Value=Node.Filename />
-</div>
+<div class="vstack gap-3">
+    <FormItem2 For="() => Node.FilePath" Class="">
+            <FluentTextField @bind-Value="@Node.FilePath" Class="w-100" />
+    </FormItem2>
 
-<div class="form-group">
-    <label>OutputMode</label>
-    <InputSelect @bind-Value=Node.OutputMode>
-        @foreach (var m in Enum.GetValues(typeof(FileReadNode.FileOutputMode)))
-        {
-            <option value="@((FileReadNode.FileOutputMode)m)">@m</option>
-        }
-    </InputSelect>
-</div>
+    <FormItem2 For=@(() => Node.OutputMode)>
+        <FluentSelect @bind-SelectedOption="@Node.OutputMode"
+                      TOption="FileReadNode.FileOutputMode"
+                      Items="Enum.GetValues<FileReadNode.FileOutputMode>()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
 
-<div class="alert alert-warning">
-    Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the Node-RED process.
+    <div class="mt-3">
+        <div class="alert alert-warning">
+            Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the Node-RED process.
+        </div>
+    </div>
 </div>
-
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;

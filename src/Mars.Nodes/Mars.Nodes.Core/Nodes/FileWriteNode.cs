@@ -7,8 +7,8 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "storage")]
 public class FileWriteNode : Node
 {
-    public string Filename { get; set; } = "";
-    public FileWriteMode WriteMode { get; set; }
+    public string FilePath { get; set; } = "";
+    public FileWriteMode WriteMode { get; set; } = FileWriteMode.Overwrite;
 
     public bool AddAsNewLine { get; set; }
     public bool CreateDirectoryIfItDoesntExist { get; set; }
@@ -23,8 +23,8 @@ public class FileWriteNode : Node
 
     public enum FileWriteMode
     {
-        Append,
-        Overwrite,
-        Delete
+        Overwrite = 1,
+        Delete = 2,
+        Append = 3,
     }
 }

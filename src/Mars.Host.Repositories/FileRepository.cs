@@ -17,7 +17,6 @@ internal class FileRepository : IFileRepository
 
     IQueryable<FileEntity> _listAllQuery => _marsDbContext.Files.OrderByDescending(s => s.CreatedAt);
 
-
     public FileRepository(MarsDbContext marsDbContext)
     {
         _marsDbContext = marsDbContext;
@@ -33,6 +32,18 @@ internal class FileRepository : IFileRepository
     {
         var resolver = new ImagePreviewResolver(new(), hostingInfo);
         return (await _marsDbContext.Files.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToDetail(resolver);
+    }
+
+    public async Task<FileDetail?> GetFileByPathDetail(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
+    {
+        var resolver = new ImagePreviewResolver(new(), hostingInfo);
+        return (await _marsDbContext.Files.AsNoTracking().FirstOrDefaultAsync(s => s.FilePhysicalPath == filePath, cancellationToken))?.ToDetail(resolver);
+    }
+
+    public Task<bool> FileExistByPath(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
+    {
+        var resolver = new ImagePreviewResolver(new(), hostingInfo);
+        return _marsDbContext.Files.AsNoTracking().AnyAsync(s => EF.Functions.ILike(s.FilePhysicalPath, filePath));
     }
 
     public async Task<Guid> Create(CreateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)

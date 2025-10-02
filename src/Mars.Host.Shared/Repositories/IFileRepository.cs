@@ -7,6 +7,8 @@ public interface IFileRepository : IDisposable
 {
     Task<FileSummary?> Get(Guid id, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<FileDetail?> GetDetail(Guid id, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
+    Task<FileDetail?> GetFileByPathDetail(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
+    Task<bool> FileExistByPath(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<Guid> Create(CreateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task CreateMany(IReadOnlyCollection<CreateFileQuery> queries, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);

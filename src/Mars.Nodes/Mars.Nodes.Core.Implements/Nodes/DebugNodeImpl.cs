@@ -45,7 +45,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 msg = new DebugMessage
                 {
                     NodeId = Node.Id,
-                    Message = "DebugNode:",
+                    Message = "DebugNode (complete):",
                     Json = json.TextEllipsis(jsonSymbolsLimit),
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };
@@ -57,7 +57,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 msg = new DebugMessage
                 {
                     NodeId = Node.Id,
-                    Message = "DebugNode:",
+                    Message = $"DebugNode (serialized)\nType=({input.Payload?.GetType().Name}):",
                     Json = json.TextEllipsis(jsonSymbolsLimit),
                     Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
                 };

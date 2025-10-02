@@ -1,41 +1,36 @@
-using System.Text.Json;
+using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
 {
-    public FileWriteNodeImpl(FileWriteNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public FileWriteNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
+    public FileWriteNodeImpl(FileWriteNode node, IRED red)
+    {
+        Node = node;
+        RED = red;
+    }
+
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        bool exist = File.Exists(Node.Filename);
+        bool exist = File.Exists(Node.FilePath);
 
         if (Node.WriteMode == FileWriteNode.FileWriteMode.Delete)
         {
             if (exist)
-            {
-                File.Delete(Node.Filename);
-            }
+                File.Delete(Node.FilePath);
+            else
+                throw new NodeExecuteException(Node, $"File '{Node.FilePath}' not found");
         }
         else
         {
-            //const int bufferSize = 2048;
             bool isString = input.Payload is string;
             bool isAppend = Node.WriteMode == FileWriteNode.FileWriteMode.Append;
 
-            //using var fileStream = File.OpenWrite(Node.Filename);
-            //using var streamReader = new StreamWriter(fileStream, Encoding.UTF8, bufferSize);
-
-            //streamReader.w
             bool isBuffer = input.Payload is byte[];
 
             if (!isBuffer)
@@ -54,7 +49,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
 
                 if (isAppend)
                 {
-                    using var sw = File.AppendText(Node.Filename);
+                    using var sw = File.AppendText(Node.FilePath);
                     if (Node.AddAsNewLine)
                         sw.WriteLine(payload);
                     else
@@ -62,7 +57,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
                 }
                 else
                 {
-                    File.WriteAllText(Node.Filename, payload);
+                    File.WriteAllText(Node.FilePath, payload);
                 }
             }
             else
@@ -70,7 +65,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
 
                 if (isAppend)
                 {
-                    using var sw = File.OpenWrite(Node.Filename);
+                    using var sw = File.OpenWrite(Node.FilePath);
 
                     var buffer = input.Payload as byte[];
 
@@ -79,7 +74,7 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
                 }
                 else
                 {
-                    File.WriteAllBytes(Node.Filename, (input.Payload as byte[])!);
+                    File.WriteAllBytes(Node.FilePath, (input.Payload as byte[])!);
                 }
             }
 

@@ -7,6 +7,7 @@ public class BackendHostingInfo
 {
     public required Uri Backend { get; init; }
 
+    const string ic_txt = "/img/docs/txt.png";
     const string ic_pdf = "/img/docs/pdf.png";
     const string ic_doc = "/img/docs/doc.png";
     const string ic_xls = "/img/docs/xls.png";
@@ -28,6 +29,8 @@ public class BackendHostingInfo
 
         switch (ext)
         {
+            case "txt":
+                return ic_txt;
             case "pdf":
                 return ic_pdf;
             case "doc":

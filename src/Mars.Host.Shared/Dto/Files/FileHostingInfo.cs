@@ -9,13 +9,13 @@ public record FileHostingInfo
     private string _requestPath = default!;
     public required string RequestPath { get => _requestPath; init => _requestPath = NormalizePathSlash(value) ?? ""; }
 
-
     string __normalizedAbsoluteRequestPath = default!;
     string NormalizedAbsoluteRequestPathAndSlash => __normalizedAbsoluteRequestPath ??=
         RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
         ? NormalizePathSlash(PhysicalPath.AbsolutePath) + '/'
         : PhysicalPath.AbsolutePath + '/';
 
+    const string ic_txt = "/img/docs/txt.png";
     const string ic_pdf = "/img/docs/pdf.png";
     const string ic_doc = "/img/docs/doc.png";
     const string ic_xls = "/img/docs/xls.png";
@@ -46,6 +46,8 @@ public record FileHostingInfo
 
         switch (ext)
         {
+            case "txt":
+                return ic_txt;
             case "pdf":
                 return ic_pdf;
             case "doc":

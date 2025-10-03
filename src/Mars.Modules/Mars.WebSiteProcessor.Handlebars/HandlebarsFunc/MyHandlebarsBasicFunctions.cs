@@ -576,7 +576,9 @@ public static class MyHandlebarsBasicFunctions
         output.WriteSafeString(outVal);
     }
 
+#if !DEBUG
     static MyHandlebarsHelpBlock? _helpBlock;
+#endif
 
     [TemplatorHelperInfo("help", "{{#help}}", "Displays information about available helpers.")]
     public static void HelpHelper(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments arguments)

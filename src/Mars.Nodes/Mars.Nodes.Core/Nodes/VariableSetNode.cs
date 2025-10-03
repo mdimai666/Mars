@@ -14,7 +14,7 @@ public class VariableSetNode : Node
 
     public VariableSetNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/function-x.svg";

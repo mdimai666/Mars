@@ -7,25 +7,24 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "storage")]
 public class FileWriteNode : Node
 {
-    public string Filename { get; set; } = "";
-    public FileWriteMode WriteMode { get; set; }
+    public string FilePath { get; set; } = "";
+    public FileWriteMode WriteMode { get; set; } = FileWriteMode.Overwrite;
 
     public bool AddAsNewLine { get; set; }
     public bool CreateDirectoryIfItDoesntExist { get; set; }
 
-
     public FileWriteNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#deb887";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
     }
 
     public enum FileWriteMode
     {
-        Append,
-        Overwrite,
-        Delete
+        Overwrite = 1,
+        Delete = 2,
+        Append = 3,
     }
 }

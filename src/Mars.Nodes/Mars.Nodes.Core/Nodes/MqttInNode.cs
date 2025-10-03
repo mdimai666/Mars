@@ -14,7 +14,6 @@ public class MqttInNode : Node
 
     public MqttInNode()
     {
-        HaveInput = false;
         Color = "#d5c0d8";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/mqtt-64.svg";

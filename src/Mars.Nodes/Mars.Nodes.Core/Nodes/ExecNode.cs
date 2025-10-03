@@ -9,11 +9,12 @@ public class ExecNode : Node
 {
     public string Command { get; set; } = "pwsh.exe";
 
+    [Display(Name = "append payload to cmd")]
     public bool Append { get; set; } = true;
 
     public ExecNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/terminal-fill.svg";
     }

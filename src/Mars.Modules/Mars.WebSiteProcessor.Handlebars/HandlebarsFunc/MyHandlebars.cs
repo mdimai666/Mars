@@ -65,6 +65,10 @@ public class MyHandlebars : IMarsHtmlTemplator
         //loops
         handlebars.RegisterHelper("for", ForLoopBlock); //{{#for @start @end @step? }}
 
+        //scripts
+        handlebars.RegisterHelper("site_head", MyHandlebarsSiteParts.WriteSiteHeadScripts);
+        handlebars.RegisterHelper("site_footer", MyHandlebarsSiteParts.WriteSiteFooterScripts);
+
         //helper
         handlebars.RegisterHelper("help", HelpHelper);
     }
@@ -136,6 +140,7 @@ public class MyHandlebars : IMarsHtmlTemplator
         handlebars.RegisterHelper("L", Localizer_Helper);
         handlebars.RegisterHelper("raw_block", RawBlock);
         handlebars.RegisterHelper("iff", IffBlock);
+        handlebars.RegisterHelper("RenderPostContent", RenderPostContent);
     }
 
     public static TimeSpan? ParseStringTimespan(string simespanString)

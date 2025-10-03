@@ -81,7 +81,7 @@ public static class AppFrontSharedExtensions
         //services.TryAddScoped<GeoRegionService>();
         //services.TryAddScoped<GeoRegionCenterService>();
 
-        services.TryAddScoped<ModelInfoService>();
+        services.TryAddSingleton<ModelInfoService>();
         services.TryAddScoped<DeveloperControlService>();
         //services.TryAddScoped<GalleryService>();
 

@@ -6,10 +6,14 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.FormEditor;
+using Mars.Nodes.Workspace.ActionManager;
+using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.HotKeys2;
 
@@ -17,39 +21,48 @@ namespace Mars.Nodes.Workspace;
 
 public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
+    public static INodeEditorApi? Instance;
+
+    [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] ILoggerFactory _loggerFactory { get; set; } = default!;
+    [Inject] ILogger<NodeEditor1> _logger { get; set; } = default!;
 
     NodeWorkspaceJsInterop js = default!;
 
-    List<Node> _nodes = new();
+    Dictionary<string, Node> _allNodes = [];
+
+    string runningTaskCountDisplayText = "-";
 
     [Parameter]
-    public List<Node> Nodes
+    public IDictionary<string, Node> AllNodes
     {
-        get => _nodes;
+        get => _allNodes;
         set
         {
-            if (value == _nodes) return;
-            _nodes = value;
+            if (value == _allNodes) return;
+            _allNodes = (value as Dictionary<string, Node>)!;
             CalcTabs();
             CalcVarNodes();
             CheckActiveTab();
-            NodesChanged.InvokeAsync(_nodes);
+            AllNodesChanged.InvokeAsync(_allNodes);
         }
     }
 
-    [Parameter] public EventCallback<List<Node>> NodesChanged { get; set; }
+    [Parameter] public EventCallback<IDictionary<string, Node>> AllNodesChanged { get; set; }
 
-    public List<PaletteNode> Palette { get; private set; } = new();
+    public List<PaletteNode> Palette { get; private set; } = [];
     List<Node> INodeEditorApi.Palette => Palette.Select(s => s.Instance).ToList();
 
+    public List<Type> RegisteredNodes { get; private set; } = [];
 
-    public List<Type> RegisteredNodes { get; private set; } = new();
+    EditorActionManager _actionManager = default!;
+    public IEditorActionManager ActionManager => _actionManager;
 
-    EditorActions editorActions;
-    public NodeWorkspace1? NodeWorkspace1 = default!;
+    NodeWorkspace1? _nodeWorkspace1 = default!;
+    public INodeWorkspaceApi NodeWorkspace => _nodeWorkspace1!;
 
     [Inject] HotKeys HotKeys { get; set; } = default!;
     HotKeysContext HotKeysContext = default!;
@@ -83,10 +96,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public NodeEditor1()
     {
+        Instance = this;
 
         RegisteredNodes = NodesLocator.RegisteredNodes();
-
-        editorActions = new EditorActions(this);
 
         Type[] topNodes = { typeof(InjectNode), typeof(DebugNode), typeof(FunctionNode), typeof(TemplateNode) };
 
@@ -120,21 +132,23 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _ = js.InitModule();
         //_ = js.Prompt("aefaef");
 
-        this.HotKeysContext = this.HotKeys.CreateContext()
-         .Add(ModCode.Ctrl | ModCode.Shift, Code.A, SomeKeyTrigger, "do foo bar.")
-         .Add(ModCode.Ctrl, Code.D, DeployClick, "Deploy")
-         .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form")
-         .Add(ModCode.None, Code.Delete, editorActions.UserAction_DeleteSelected);
-        //.Add(...)...;
+        HotKeysContext = HotKeys.CreateContext()
+         .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
 
-        //Console.WriteLine(">>>NodeEditor>LoadFromJson");
-        //LoadFromJson();
+        _actionManager = new EditorActionManager(this, _serviceProvider, HotKeysContext);
+        _actionManager.RegisterAssembly(typeof(DeleteSelectedNodesAndWiresAction).Assembly);
+        _actionManager.RefreshDict();
+
+        _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await this.HotKeysContext.DisposeAsync();
+        await HotKeysContext.DisposeAsync();
+        _actionManager.PropertyChanged -= (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
     }
+
+    void OnChildComponentPropertyChangedRepaint() => StateHasChanged();
 
     async void OpenOffcanvasEditor()
     {
@@ -146,40 +160,30 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         StateHasChanged();
     }
 
-    void SomeKeyTrigger()
-    {
-        Console.WriteLine("hotkey detect!");
-        AddDebugMessage(new DebugMessage
-        {
-            Message = "CTRL+SHIFT+A hotkey detect!"
-        });
-    }
-
     void CreateNewNodeFromPalette(MouseEventArgs e, Node paletteNode)
     {
         Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
         instance.Container = activeFlow.Id;
-        Nodes.Add(instance);
+        AllNodes.Add(instance);
         CalcFlowNodes();
-        NodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
+        _nodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
     }
 
-    Node CreateConfigNodeFromType(Type nodeType)
+    ConfigNode CreateConfigNodeFromType(Type nodeType)
     {
-        Node instance = (Node)Activator.CreateInstance(nodeType)!;
-        var thisTypeCount = Nodes.Count(s => s.Type == instance.Type);
+        ConfigNode instance = (ConfigNode)Activator.CreateInstance(nodeType)!;
+        var thisTypeCount = AllNodes.Values.Count(s => s.Type == instance.Type);
         instance.Container = activeFlow.Id;
         instance.Name = instance.Label + (thisTypeCount + 1);
-        Nodes.Add(instance);
+        AllNodes.Add(instance);
+        RecalcNodes();
         return instance;
     }
 
     #region DEBUGGER
     const string noderedDebugMessageList = "#nodered-debug-message-list";
 
-
-
-    List<DebugMessage> messages = new() { new() };
+    List<DebugMessage> messages = [new()];
 
     //string obj1 = JsonSerializer.Serialize(new Msg1());
 
@@ -199,7 +203,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _ = js.ScrollDownElement(noderedDebugMessageList);
     }
 
-    void ClearDebugMessages()
+    internal void ClearDebugMessages()
     {
         messages.Clear();
     }
@@ -207,15 +211,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void SaveFormClick()
     {
-        //Console.WriteLine("SaveFormClick");
-        //AddDebugMessage(new DebugMessage { message = "SaveFormClick" });
-        //await js.ShowOffcanvas("node-editor-offcanvas", false);
+        _logger.LogTrace("SaveFormClick");
         _ = nodeEditContainer1.FormSaveClick();
     }
 
     public void DeployClick()
     {
-        OnDeploy.InvokeAsync(Nodes);
+        OnDeploy.InvokeAsync(AllNodes.Values);
     }
 
     void OnDblClickNode(NodeClickEventArgs e)
@@ -229,9 +231,29 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         nodeEditContainer1.StartEditNode(EditNode);
     }
 
-    public void OnClickEditConfigNode(string id)
+    public void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent)
     {
-        var node = Nodes.FirstOrDefault(n => n.Id == id);
+        Type configNodeType = appendNewConfigNodeEvent.ConfigNodeType;
+
+        var found = RegisteredNodes.FirstOrDefault(s => s == configNodeType);
+        if (found == null)
+        {
+            _ = _messageService.Error($"Error newConfigNode command: type:{configNodeType.Name} not found");
+            return;
+        }
+        var instance = CreateConfigNodeFromType(found);
+        Task.Run(async () =>
+        {
+            await Task.Delay(10);
+            appendNewConfigNodeEvent.ConfigNodeSetter(instance);
+            nodeEditContainer1.StartEditNode(instance);
+            StateHasChanged();
+        });
+    }
+
+    void OnClickEditConfigNode(string id)
+    {
+        var node = AllNodes.GetValueOrDefault(id);
         if (node == null)
         {
             _ = _messageService.Error($"Error editConfigNode command: id:{id} not found");
@@ -240,30 +262,25 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         nodeEditContainer1.StartEditNode(node);
     }
 
-    public void OnClickNewConfigNode(Type nodeType)
+    void OnClickNewConfigNode(AppendNewConfigNodeEvent e)
     {
-        var found = RegisteredNodes.FirstOrDefault(s => s == nodeType);
-        if (found == null)
-        {
-            _ = _messageService.Error($"Error newConfigNode command: type:{nodeType.Name} not found");
-            return;
-        }
-        var instance = CreateConfigNodeFromType(found);
-        nodeEditContainer1.StartEditNode(instance);
-
+        StartCreateNewConfigNode(e);
     }
 
-    void SaveNode(Node node)
+    void OnEditFormSaveNodeClick(Node node)
     {
-        Console.WriteLine("void SaveNode(Node node)");
-        //var n = Nodes.First(s => s.Id == node.Id);
-        //n = EditNode = node;
+        var editNodeAction = new EditNodeAction(this, AllNodes[node.Id], node);
+        _actionManager.ExecuteAction(editNodeAction);
+    }
+
+    public void SaveNode(Node node, bool changed = true)
+    {
+        _logger.LogTrace("SaveNode(Node node)");
         EditNode = node;
-        int index = Nodes.FindIndex(item => item.Id == node.Id);
-        Nodes[index] = EditNode;
-        EditNode.changed = true;
-        Nodes = Nodes.ToList();
-        NodesChanged.InvokeAsync(Nodes);
+        AllNodes[node.Id] = EditNode;
+        EditNode.changed = changed;
+
+        AllNodesChanged.InvokeAsync(AllNodes);
 
         if (node is FlowNode flow)
         {
@@ -278,7 +295,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void DeleteNode(string nodeId)
     {
-        editorActions.UserAction_Delete([nodeId]);
+        if (_allNodes[nodeId] is FlowNode)
+            _actionManager.ExecuteAction(new DeleteFlowNodeAction(this, nodeId));
+        else
+            _actionManager.ExecuteAction(new DeleteNodesAndWiresAction(this, [_allNodes[nodeId]]));
     }
 
     void OnWorkspaceClick(MouseEventArgs e)
@@ -298,16 +318,16 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void CalcTabs()
     {
-        flows = Nodes.Where(node => node is FlowNode).Select(s => s as FlowNode).OrderBy(s => s.Order).ToList()!;
+        flows = AllNodes.Values.Where(node => node is FlowNode).Select(s => s as FlowNode).OrderBy(s => s.Order).ToList()!;
         if (flows.Count == 0)
         {
-            ClickAddFlow();
+            _actionManager.ExecuteAction<CreateFlowNodeAction>(addToHistory: false);
         }
     }
 
     void CheckActiveTab()
     {
-        if (Nodes is not null && activeFlow is null)
+        if (AllNodes is not null && activeFlow is null)
         {
             var querystring = HttpUtility.ParseQueryString(new Uri(NavigationManager.Uri).Query);
 
@@ -324,19 +344,15 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         }
     }
 
-
-    List<FlowNode> flows = new();
+    List<FlowNode> flows = [];
 
     FlowNode? activeFlow = null;
 
-    public IReadOnlyDictionary<string, Node> FlowNodes => Nodes.Where(s => s.IsVisual
-                                                    && s.Container == activeFlow.Id
-                                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s=>s.Id);
-
+    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(activeFlow.Id);
     //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
     //public string InitialFlowId { get; set; }
 
-    void ChangeFlow(FlowNode flowNode)
+    public void ChangeFlow(FlowNode flowNode)
     {
         activeFlow = flowNode;
         CalcFlowNodes();
@@ -345,6 +361,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         NavigationManager.NavigateTo(url);
     }
 
+    public IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId)
+        => AllNodes.Values.Where(s => s.IsVisual
+                                    && s.Container == flowId
+                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s => s.Id);
+
     void CalcFlowNodes()
     {
         //FlowNodes = Nodes.Where(s => s.IsVisual && s.Container == activeFlow.Id).ToList();
@@ -352,25 +373,21 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void ClickAddFlow()
     {
-        var flow = new FlowNode() { Name = "flow " + flows.Count };
-        Nodes.Add(flow);
-        NodesChanged.InvokeAsync(Nodes);
-        CalcTabs();
-        ChangeFlow(flow);
+        _actionManager.ExecuteAction<CreateFlowNodeAction>();
     }
 
-    IReadOnlyCollection<VarNode> varNodes = new List<VarNode>();
+    IReadOnlyCollection<VarNode> varNodes = [];
 
     void CalcVarNodes()
     {
-        varNodes = Nodes.Where(s => s is VarNode).Select(s => (VarNode)s).OrderBy(s => s.Name).ToList();
+        varNodes = AllNodes.Values.Where(s => s is VarNode).Select(s => (VarNode)s).OrderBy(s => s.Name).ToList();
     }
 
     void OnClickAddVarNode()
     {
         var vname = "var" + Random.Shared.Next(10, 99);
-        Nodes.Add(new VarNode() { Container = activeFlow.Id, Name = vname });
-        NodesChanged.InvokeAsync(Nodes);
+        AllNodes.Add(new VarNode() { Container = activeFlow.Id, Name = vname });
+        AllNodesChanged.InvokeAsync(AllNodes);
         CalcVarNodes();
     }
 
@@ -379,12 +396,99 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         CalcTabs();
         CalcVarNodes();
         CheckActiveTab();
+        AllNodesChanged.InvokeAsync(_allNodes);
     }
 
-    void OnClickConsoleDebugMessage(DebugMessage msg)
+    internal void OnClickConsoleDebugMessage(DebugMessage msg)
     {
         if (string.IsNullOrEmpty(msg.NodeId)) return;
 
-        NodeWorkspace1.SelectNode(msg.NodeId);
+        _nodeWorkspace1.SelectNode(msg.NodeId);
     }
+
+    public void SetNodes(IDictionary<string, Node> nodes)
+    {
+        AllNodes = nodes;
+        RecalcNodes();
+    }
+
+    public void SetNodes(IEnumerable<Node> nodes)
+    {
+        AllNodes = nodes.ToDictionary(s => s.Id);
+    }
+    public void AddNodes(IEnumerable<Node> nodes)
+    {
+        foreach (var node in nodes)
+            _allNodes.Add(node);
+        AllNodes = _allNodes;
+        RecalcNodes();
+    }
+
+    public void DeleteNodes(IEnumerable<Node> nodes)
+    {
+        var nodeIds = nodes.Select(s => s.Id).ToHashSet();
+
+        var linkNodesIds = _nodeWorkspace1.Wires.Where(w => nodeIds.Contains(w.Node1.NodeId) || nodeIds.Contains(w.Node2.NodeId))
+                        .SelectMany(s => (IEnumerable<string>)[s.Node1.NodeId, s.Node2.NodeId])
+                        .Except(nodeIds)
+                        .Distinct();
+
+        //Console.WriteLine($"wires={linkNodesIds.Count()}");
+
+        foreach (var id in linkNodesIds)
+        {
+            var node = _allNodes[id];
+            foreach (var wireOuts in node.Wires)
+            {
+                var outsToRemove = wireOuts.Where(s => nodeIds.Contains(s.NodeId)).ToList();
+                foreach (var x in outsToRemove)
+                {
+                    wireOuts.Remove(x);
+                }
+            }
+        }
+
+        foreach (var node in nodes)
+            _allNodes.Remove(node.Id);
+        AllNodes = _allNodes;
+        RecalcNodes();
+    }
+
+    Type? _selectContext;
+    string SelectContextString => _selectContext?.FullName ?? "null";
+
+    public void SetSelectContext(Type? type)
+    {
+        _selectContext = type;
+        StateHasChanged();
+        //editor.CallStateHasChanged();
+    }
+
+    public ILogger<T> CreateLogger<T>()
+        => _loggerFactory.CreateLogger<T>();
+
+    Debouncer _setTaskCountDebouncer = new(200);
+
+    public void SetCurrentTaskCount(int currentTaskCount)
+    {
+        _setTaskCountDebouncer.Debouce(() =>
+        {
+            runningTaskCountDisplayText = currentTaskCount.ToString();
+            StateHasChanged();
+        });
+    }
+
+}
+
+internal static class NodeEditor1Extension
+{
+    public static IDictionary<string, Node> Add(this IDictionary<string, Node> nodes, Node node)
+    {
+        nodes.Add(node.Id, node);
+        return nodes;
+    }
+
+    public static T? GetValueOrDefault<K, T>(this IDictionary<K, T> dictionary, K key)
+        => dictionary.TryGetValue(key, out var value) ? value : default(T);
+
 }

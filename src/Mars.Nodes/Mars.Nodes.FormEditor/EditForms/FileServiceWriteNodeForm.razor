@@ -1,0 +1,80 @@
+@using AppFront.Shared.Components
+@using AppFront.Shared.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+@using static Mars.Nodes.Core.Nodes.FileWriteNode
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FileServiceWriteNode))]
+
+<div class="vstack gap-3">
+    <FormItem2 For=@(() => Node.FileStorageProvider)>
+        <FluentSelect @bind-Value="@Node.FileStorageProvider"
+                      Items="FileServiceReadNode.FileStorageProvidersList"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+    <FluentSwitch @bind-Value=Node.ByFileId>
+        <AutoInputLabel For=@(() => Node.ByFileId) />
+    </FluentSwitch>
+
+    @if (Node.ByFileId)
+    {
+        <FormItem2 For="() => Node.StorageFileId" Class="">
+            <div class="hstack">
+                <FluentTextField @bind-Value="@Node.StorageFileId" Class="w-100" />
+                <FluentButton IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="ClickSelectMedia" />
+            </div>
+        </FormItem2>
+    }
+    else
+    {
+        <FormItem2 For="() => Node.FilePath" Class="">
+            <div class="hstack">
+                <FluentTextField @bind-Value="@Node.FilePath" Class="w-100" />
+                <FluentButton IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="ClickSelectMedia" />
+            </div>
+        </FormItem2>
+    }
+
+    <FormItem2 For=@(() => Node.WriteMode)>
+        <FluentSelect @bind-SelectedOption="@Node.WriteMode"
+                      TOption="FileWriteMode"
+                      Items="Enum.GetValues<FileWriteMode>()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+    @if (Node.WriteMode != FileWriteMode.Delete)
+    {
+        <FluentCheckbox @bind-Value=@Node.AddAsNewLine Class="">
+            <AutoInputLabel For="() => Node.AddAsNewLine" />
+        </FluentCheckbox>
+
+        <FluentCheckbox @bind-Value=@Node.CreateDirectoryIfItDoesntExist Class="">
+            <AutoInputLabel For="() => Node.CreateDirectoryIfItDoesntExist" />
+        </FluentCheckbox>
+
+        <FluentCheckbox @bind-Value=@Node.CreateDatabaseRecord Class="">
+            <AutoInputLabel For="() => Node.CreateDatabaseRecord" />
+        </FluentCheckbox>
+    }
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FileServiceWriteNode Node { get => (FileServiceWriteNode)Value; set => Value = value; }
+
+    [Inject] IAppMediaService appMediaService { get; set; } = default!;
+
+    async Task ClickSelectMedia()
+    {
+        var file = await appMediaService.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            Node.FilePath = file.FileVirtualPath;
+            Node.StorageFileId = file.Id.ToString();
+        }
+    }
+
+}

@@ -40,7 +40,7 @@ public class RoleService : IRoleService
         var id = await _roleRepository.Create(query, cancellationToken);
         var created = await Get(id, cancellationToken);
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.RoleAdd(), created!);//TODO: сделать явный тип.
+        var payload = new ManagerEventPayload(_eventManager.Defaults.RoleAdd(), created!);//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
 
         return created!;
@@ -49,9 +49,9 @@ public class RoleService : IRoleService
     public async Task<RoleDetail> Update(UpdateRoleQuery query, CancellationToken cancellationToken)
     {
         await _roleRepository.Update(query, cancellationToken);
-        var updated = await Get(query.Id, cancellationToken);
+        var updated = (await Get(query.Id, cancellationToken))!;
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.RoleUpdate(), updated);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.RoleUpdate(), updated);
         _eventManager.TriggerEvent(payload);
 
         return updated;
@@ -61,19 +61,12 @@ public class RoleService : IRoleService
     {
         var role = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _roleRepository.Delete(id, cancellationToken);
+        await _roleRepository.Delete(id, cancellationToken);
 
-            ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.RoleDelete(), role);
-            _eventManager.TriggerEvent(payload);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.RoleDelete(), role);
+        _eventManager.TriggerEvent(payload);
 
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        return UserActionResult.Success();
     }
 
     #region OLD
@@ -90,22 +83,22 @@ public class RoleService : IRoleService
                                                    BindingFlags.Instance |
                                                    BindingFlags.Public);
 
-        List<RoleCapGroup> groups = new();
+        List<RoleCapGroup> groups = [];
 
         foreach (Type model in internals)
         {
             var constants = GetConstants(model);
 
-            List<RoleCapElement> caps = new();
+            List<RoleCapElement> caps = [];
 
             foreach (var field in constants)
             {
-                DisplayAttribute? display = field.GetCustomAttribute<DisplayAttribute>();
+                var display = field.GetCustomAttribute<DisplayAttribute>()!;
 
                 string name = field.Name;
-                string value = field.GetRawConstantValue() as string;
+                string value = (field.GetRawConstantValue() as string)!;
                 string title = display?.Name ?? L[name];
-                string? desc = display?.Description;
+                string desc = display?.Description ?? "";
 
                 caps.Add(new RoleCapElement(value, title, desc));
             }
@@ -133,9 +126,7 @@ public class RoleService : IRoleService
         return fieldInfos.Where(fi => fi.IsLiteral && !fi.IsInitOnly).ToList();
     }
 
-    EditRolesViewModelDto? _cachedEditRolesViewModelDto;
-
-    public async Task<EditRolesViewModelDto> EditRolesViewModel()
+    public Task<EditRolesViewModelDto> EditRolesViewModel()
     {
         throw new NotImplementedException();
         //if (_cachedEditRolesViewModelDto is not null) return _cachedEditRolesViewModelDto;

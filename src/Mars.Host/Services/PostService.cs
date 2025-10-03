@@ -109,21 +109,11 @@ internal class PostService : IPostService
     {
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _postRepository.Delete(id, cancellationToken);
+        await _postRepository.Delete(id, cancellationToken);
 
-            //if (result.Ok)
-            {
-                var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
-                _eventManager.TriggerEvent(payload);
-            }
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
+        _eventManager.TriggerEvent(payload);
+        return UserActionResult.Success();
     }
 
     #region EDIT_MODEL

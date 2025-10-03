@@ -23,7 +23,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         try
@@ -108,12 +108,14 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
             //Error(ex);
             RED.Status(NodeStatus.Error("compile error"));
             RED.DebugMsg(ex);
+            throw;
         }
         catch (Exception ex)
         {
             //Error(ex);
             RED.Status(NodeStatus.Error("error"));
             RED.DebugMsg(ex);
+            throw;
         }
 
         return Task.CompletedTask;

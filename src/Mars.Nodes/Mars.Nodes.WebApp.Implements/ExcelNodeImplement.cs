@@ -23,7 +23,7 @@ public class ExcelNodeImplement : INodeImplement<ExcelNode>, INodeImplement
         RED = _RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (input.Payload is null)
         {
@@ -42,7 +42,6 @@ public class ExcelNodeImplement : INodeImplement<ExcelNode>, INodeImplement
         var hostingInfo = RED.ServiceProvider.GetRequiredService<IOptions<FileHostingInfo>>().Value;
 
         var templateFullPath = Node.TemplateFile;
-
 
         if (templateFullPath.StartsWith('/'))
         {

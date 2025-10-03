@@ -19,15 +19,13 @@
         <FormItem2 For="()=>Node.RepeatCount">
             <FluentNumberField @bind-Value=Node.RepeatCount Placeholder="payload" Min="0" />
         </FormItem2>
-        
+
     }
 
 </div>
-
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;
     ForeachNode Node { get => (ForeachNode)Value; set => Value = value; }
 
 }
-

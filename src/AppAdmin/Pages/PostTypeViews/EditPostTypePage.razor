@@ -1,26 +1,43 @@
 @page "/EditPostType"
 @page "/EditPostType/{ID:guid}"
 
+@using Mars.Shared.Contracts.PostTypes
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @attribute [Authorize(Roles = "Admin")]
+@inject IStringLocalizer<AppRes> L
 
 
 <ContentWrapper>
-
-    <StandartEditContainer ID=@ID TModel=PostType TService=PostTypeService @ref=f
+    <StandartEditContainer ID=@ID
+                           TModel=PostTypeEditModel
+                           GetAction="@(()=>PostTypeEditModel.GetAction(client,ID))"
+                           SaveAction="@((s,create)=>PostTypeEditModel.SaveAction(client,s,create))"
+                           DeleteAction="@(s=>PostTypeEditModel.DeleteAction(client,s))"
                            AfterDelete=AfterDelete
                            AfterSave="AfterSave"
-                           CanCreate=false>
+                           @ref=f CanCreate=false>
         <ChildContent>
-            <AntDesign.FormItem>
-                <AntDesign.Input @bind-Value=@context.Title Size="@InputSize.Large" />
-            </AntDesign.FormItem>
-            <AntDesign.FormItem WrapperColSpan="10">
-                <AntDesign.Input @bind-Value=@context.TypeName />
-            </AntDesign.FormItem>
+            <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
+            </FluentStack>
+
+            <div class="vstack gap-3">
+
+                <div class="vstack">
+                    <FluentTextField @bind-Value=@context.Title Label="@AppRes.Title"
+                                     Appearance="@FluentInputAppearance.Filled"
+                                     Required
+                                     Style="zoom:1.4" />
+                    <FluentValidationMessage For="@(() => context.Title)" />
+                </div>
+                <div class="">
+                    <FluentTextField @bind-Value=@context.TypeName Label="TypeName" />
+                    <FluentValidationMessage For="@(() => context.TypeName)" />
+                </div>
+
+            </div>
 
             <div class="spacer-2"></div>
 
@@ -33,22 +50,23 @@
                     <div class="card-body">
                         <div class="d-flex flex-wrap">
 
-                            @foreach (var d in PostType.ListOfFeatures())
+                            @foreach (var d in PostTypeConstants.Features.All)
                             {
                                 <div class="col-lg-4">
-                                    <AntDesign.Checkbox Checked=@context.EnabledFeatures.Contains(d.Key)
-                                                        CheckedChange=@(v=>{
-                                                    if(v)context.EnabledFeatures.Add(d.Key);
-                                                    else context.EnabledFeatures.Remove(d.Key);
-                                                    })>
-                                        @d.Value
-                                    </AntDesign.Checkbox>
+                                    <FluentCheckbox Value=@context.EnabledFeatures.Contains(d)
+                                                    ValueChanged=@(v=>{
+                                                if(v)context.EnabledFeatures.Add(d);
+                                                else context.EnabledFeatures.Remove(d);
+                                                })>
+                                        @d
+                                    </FluentCheckbox>
                                 </div>
                             }
                         </div>
                     </div>
                 </div>
 
+                @*
                 <div class="card">
                     <div class="card-header">
                         Forms
@@ -66,34 +84,38 @@
                         </FormItem2>
                     </div>
                 </div>
+                *@
 
-                @if (context.EnabledFeatures.Contains(nameof(Post.Content)))
+                @if (context.FeatureActivated(PostTypeConstants.Features.Content))
                 {
                     <div class="card">
                         <div class="card-header">
-                            @nameof(PostType.PostContentType)
+                            @nameof(context.PostContentSettings)
                         </div>
                         <div class="statuses card-body">
 
-                            <div class="px-1 py-3">
-                                <AntDesign.Select @bind-Value="@context.PostContentType"
-                                                  TItemValue="EPostContentType"
-                                                  TItem="string"
-                                                  Style="width: 250px;"
-                                                  EnableSearch>
-                                    <SelectOptions>
-                                        @foreach (var item in PostType.ListPostContentType())
-                                        {
-                                            <SelectOption TItemValue="EPostContentType" TItem="string" Value=@item.Key Label=@item.Value />
-                                        }
-                                    </SelectOptions>
-                                </AntDesign.Select>
+                            <div class="row row-cols-sm-3 py-2">
+                                <div class="col">
+                                    <FormItem2 For="@(()=>context.PostContentSettings.PostContentType)">
+                                        <FluentSelect TOption="string"
+                                                      Items="@PostTypeConstants.DefaultPostContentTypes.All"
+                                                      @bind-Value="@context.PostContentSettings.PostContentType" />
+                                    </FormItem2>
+                                </div>
+                                <div class="col">
+                                    @if (context.PostContentSettings.PostContentType == PostTypeConstants.DefaultPostContentTypes.Code)
+                                    {
+                                        <FormItem2 For="@(()=>context.PostContentSettings.CodeLang)">
+                                            <FluentTextField @bind-Value="@context.PostContentSettings.CodeLang" />
+                                        </FormItem2>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 }
 
-                @if (context.EnabledFeatures.Contains(nameof(Post.Status)))
+                @if (context.FeatureActivated(PostTypeConstants.Features.Status))
                 {
                     <div class="">
                         <div class="spacer-2"></div>
@@ -105,26 +127,17 @@
                             <div class="card">
                                 <div class="card-body small">
                                     <div class="st-item row mb-3 ">
-                                        <div class="col-lg-4">Название</div>
-                                        <div class="col-lg-4">slug</div>
-                                        <div class="col-lg-4">
-                                            <AntDesign.Button Size="small" OnClick=@(e=>context.PostStatusList.Add(new PostStatus()))>
+                                        <div class="col-lg-4">@AppRes.Name</div>
+                                        <div class="col-lg-4">@AppRes.Slug</div>
+                                        <div class="col-lg-4 d-flex gap-2">
+                                            <FluentButton OnClick=@(e=>context.PostStatusList.Add(new ()))>
                                                 Добавить
-                                            </AntDesign.Button>
-                                            <AntDesign.Dropdown>
-                                                <Overlay>
-                                                    <Menu>
-                                                        <MenuItem OnClick=@(e=>context.PostStatusList.AddRange(PostStatus.DefaultStatuses()))>
-                                                            Добавить стандартные
-                                                        </MenuItem>
-                                                    </Menu>
-                                                </Overlay>
-                                                <ChildContent>
-                                                    <a class="ant-dropdown-link fz14px ms-2" @onclick:preventDefault>
-                                                        средства <Icon Type="down" />
-                                                    </a>
-                                                </ChildContent>
-                                            </AntDesign.Dropdown>
+                                            </FluentButton>
+                                            <FluentMenuButton ButtonAppearance="Appearance.Neutral" Text="@AppRes.Actions">
+                                                <FluentMenuItem OnClick=@(e=>context.PostStatusList.AddRange(PostStatusEditModel.DefaultStatuses()))>
+                                                    Добавить стандартные
+                                                </FluentMenuItem>
+                                            </FluentMenuButton>
                                         </div>
                                     </div>
 
@@ -133,20 +146,20 @@
                                         var st = _st;
                                         <div class="st-item row mb-3">
                                             <div class="col-lg-4">
-                                                <AntDesign.Input @bind-Value=@st.Title Size=@InputSize.Small />
+                                                <FluentTextField @bind-Value=@st.Title />
                                             </div>
                                             <div class="col-lg-4">
-                                                <AntDesign.Input @bind-Value=@st.Slug Size=@InputSize.Small />
+                                                <FluentTextField @bind-Value=@st.Slug />
                                             </div>
                                             <div class="col-lg-4">
-                                                <DDeleteButton Type="text" Size="small" OnConfirm=@(e=>context.PostStatusList.Remove(st)) />
+                                                <DFluentDeleteButton OnConfirm=@(e=>context.PostStatusList.Remove(st)) />
                                             </div>
                                         </div>
                                     }
                                     @if (context.PostStatusList.Count == 0)
                                     {
                                         <div class="text-secondary">
-                                            &lt;нет строк&gt;
+                                            <SharedContentNoRecords />
                                         </div>
                                     }
 
@@ -156,7 +169,9 @@
                     </div>
                 }
 
-                @if (context.EnabledFeatures.Contains(nameof(Post.CategoryId)))
+
+                @*
+                @if (context.FeatureActivated(PostTypeConstants.Features.CategoryId))
                 {
                     <div class="d-category">
                         <div class="">
@@ -169,6 +184,7 @@
 
                     </div>
                 }
+                *@
 
                 <div class="card">
                     <div class="card-header">
@@ -183,58 +199,38 @@
                             }
 
                             <CascadingValue Value="@context.MetaFields">
-                                <CascadeStateChanger Context="h" OnStateChange="()=>StateHasChanged()">
-                                    <CascadingValue Value="h">
-                                        <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
-                                    </CascadingValue>
-                                </CascadeStateChanger>
+                                <CascadingValue Value="@context.MetaRelationModels">
+                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
+                                </CascadingValue>
                             </CascadingValue>
 
                             <div class="mt-2">
-                                <AntDesign.Button Icon="plus" OnClick="AddNewField">Добавить</AntDesign.Button>
+                                <FluentButton IconStart="@(new Icons.Regular.Size16.Add())" OnClick="AddNewField">Добавить</FluentButton>
                             </div>
                         </div>
                     </div>
                 </div>
 
             </div>
+            <div class="d-block" style="height:50vh"></div>
+
         </ChildContent>
         <SectionExtraSidebar>
-
-            <section class="editpost-taxonomy mb-3">
-                <div class="card">
-                    <div class="card-body">
-
-
-                        <AntDesign.FormItem>
-                            <AntDesign.Select Mode="tags"
-                                              Placeholder="tags"
-                                              @bind-Values="@context.SetTags"
-                                              TItemValue="string"
-                                              TItem="string"
-                                              MaxTagCount="20"
-                                              HideSelected
-                                              EnableSearch=false
-                                              Size="small">
-                                <SelectOptions>
-                                    @foreach (var _item in context.Tags)
-                                    {
-                                        <SelectOption TItemValue="string" TItem="string" Value=@_item Label=@_item />
-                                    }
-                                </SelectOptions>
-                            </AntDesign.Select>
-                        </AntDesign.FormItem>
-
-                    </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <FluentSwitch @bind-Checked="context.Disabled" Label="@AppRes.Disable" />
+                    <div class="spacer-1"></div>
+                    <FormItem2 For="@(()=>context.Tags)">
+                        <InputTags2 @bind-Value=context.Tags />
+                    </FormItem2>
                 </div>
-            </section>
-
+            </div>
             <div class="card">
                 <div class="card-body">
                     <a href=@url target="_blank">
-                        <AntDesign.Button Type="text">Export</AntDesign.Button>
+                        <FluentButton Appearance="Appearance.Neutral">Export</FluentButton>
                     </a>
-                    <AntDesign.Button Type="text" OnClick="ShowImportModal">Import</AntDesign.Button>
+                    <FluentButton Appearance="Appearance.Neutral" OnClick="ShowImportModal">Import</FluentButton>
                 </div>
             </div>
         </SectionExtraSidebar>
@@ -242,104 +238,23 @@
 
 </ContentWrapper>
 
-<AntDesign.Modal Visible=visibleImportModal Footer="null" Title="Import" OnCancel="ImportModalOnCancel">
+<FluentDialog Hidden="@(!visibleImportModal)"
+              aria-label="Import dialog"
+              Modal=true
+              @ondialogdismiss=@(()=>visibleImportModal=false)
+              PreventScroll=true>
+    <FluentDialogHeader Visible="false" />
+    <h2>Import</h2>
     <div>
-        <InputFile OnChange="@LoadFiles" class="" />
-        <AntDesign.TextArea @bind-Value=import_json />
+        @* <FluentInputFile OnInputFileChange="LoadFiles" /> *@
+        <div class="my-2">
+            <InputFile OnChange="LoadFiles" />
+        </div>
+        <FluentTextArea Class="w-100" Rows="20" @bind-Value=import_json />
         <div class="spacer-2"></div>
-        <AntDesign.Button Type="@AntDesign.ButtonType.Primary" Icon="upload" Disabled=importButtonDisabled OnClick=OnImportClick>
+        <FluentButton Appearance="Appearance.Accent" Disabled=importButtonDisabled OnClick=OnImportClick>
+            <i class="bi bi-upload me-2"></i>
             Импорт
-        </AntDesign.Button>
+        </FluentButton>
     </div>
-</AntDesign.Modal>
-
-@code {
-    [Parameter] public Guid ID { get; set; }
-    StandartEditContainer<PostType, PostTypeService> f = default!;
-
-    [Inject] IJSRuntime JSRuntime { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
-    [Inject] NavigationManager navigationManager { get; set; } = default!;
-    [Inject] ViewModelService viewModelService { get; set; } = default!;
-    MyJS js = default!;
-
-    bool importButtonDisabled;
-    string url = "";
-    string import_json = "";
-    bool visibleImportModal;
-
-    [ValidateSourceUri]
-    string _FormListSetter = "";
-    [ValidateSourceUri]
-    string _FormEditSetter = "";
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        js = new MyJS(JSRuntime);
-
-        url = Q.ServerUrlJoin($"/api/PostType/PostTypeExport/{ID}");
-    }
-
-    void AddNewField()
-    {
-        int order = f.Model.MetaFields.Any() ? f.Model.MetaFields.Max(s => s.Order) + 1 : 0;
-        Guid parentId = Guid.Empty;
-        f.Model.MetaFields.Add(FormMetaField.NewField(order, parentId));
-    }
-
-    void AfterSave(PostType postType)
-    {
-        _ = viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
-    }
-
-    void AfterDelete()
-    {
-        _ = viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
-    }
-
-    void ShowImportModal()
-    {
-        visibleImportModal = true;
-    }
-
-    void ImportModalOnCancel()
-    {
-        visibleImportModal = false;
-    }
-
-    private async void LoadFiles(InputFileChangeEventArgs e)
-    {
-        importButtonDisabled = true;
-        StateHasChanged();
-
-        using MemoryStream ms = new MemoryStream();
-        await e.File.OpenReadStream().CopyToAsync(ms);
-        var bytes = ms.ToArray();
-        string json = System.Text.Encoding.UTF8.GetString(bytes);
-        import_json = json;
-        //importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
-
-        importButtonDisabled = false;
-        StateHasChanged();
-
-    }
-
-    async void OnImportClick()
-    {
-        //importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
-        //var result = await viewModelService.SystemImportSettings(importVal);
-        string asPostType = f!.Model.TypeName;
-        var result = await f!.service.PostTypeImport(import_json, asPostType);
-
-        if (result.Ok)
-        {
-            _ = messageService.Success(result.Message);
-            _ = f!.Load();
-        }
-        else
-        {
-            _ = messageService.Error(result.Message);
-        }
-    }
-}
+</FluentDialog>

@@ -1,6 +1,5 @@
-using System.IO.Pipelines;
 using System.Net.Mime;
-using System.Text;
+using System.Text.Json.Nodes;
 using Mars.Core.Constants;
 using Mars.Core.Models;
 using Mars.Host.Shared.ExceptionFilters;
@@ -120,14 +119,9 @@ public class OptionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public async Task<IActionResult> SaveOption(string optionClass, /*[FromBody] PostOptionValue jsonValue, */CancellationToken cancellationToken)
+    public async Task<IActionResult> SaveOption(string optionClass, [FromBody] JsonNode jsonValue, CancellationToken cancellationToken)
     {
-        ReadResult requestBodyInBytes = await Request.BodyReader.ReadAsync(cancellationToken);
-        Request.BodyReader.AdvanceTo(requestBodyInBytes.Buffer.Start, requestBodyInBytes.Buffer.End);
-        string body = Encoding.UTF8.GetString(requestBodyInBytes.Buffer.FirstSpan);
-
-        _optionService.SetOptionByClass(optionClass, body);
+        _optionService.SetOptionByClass(optionClass, jsonValue.ToString());
 
         return Ok();
     }

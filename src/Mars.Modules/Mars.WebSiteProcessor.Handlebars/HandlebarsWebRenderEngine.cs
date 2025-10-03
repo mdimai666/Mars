@@ -210,7 +210,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
 #if DEBUG
             stopwatch.Stop();
-            Console.WriteLine($"render_finish: {stopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"render_finish: {stopwatch.ElapsedMilliseconds}ms. Page:{page?.Url}");
             var z2 = GC.GetTotalMemory(false);
 #endif
         }

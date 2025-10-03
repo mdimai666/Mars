@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Mars.Host.Data.OwnedTypes.Files;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Data.OwnedTypes.NavMenus;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -23,7 +20,7 @@ namespace PluginExample.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("PackageName.PluginExample")
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -269,12 +266,6 @@ namespace PluginExample.Data.Migrations
                         .HasColumnName("type")
                         .HasComment("Тип");
 
-                    b.Property<List<MetaFieldVariant>>("Variants")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("variants")
-                        .HasComment("Варианты");
-
                     b.HasKey("Id")
                         .HasName("pk_meta_fields");
 
@@ -304,7 +295,7 @@ namespace PluginExample.Data.Migrations
                         .HasComment("Создан");
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_time");
 
                     b.Property<decimal>("Decimal")
@@ -407,12 +398,6 @@ namespace PluginExample.Data.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("disabled")
                         .HasComment("Отключен");
-
-                    b.Property<List<NavMenuItem>>("MenuItems")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("menu_items")
-                        .HasComment("Элементы");
 
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("timestamp with time zone")
@@ -684,18 +669,6 @@ namespace PluginExample.Data.Migrations
                         .HasColumnName("modified_at")
                         .HasComment("Изменен");
 
-                    b.Property<PostContentSettings>("PostContentType")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("post_content_type")
-                        .HasComment("Настройки контента");
-
-                    b.Property<List<PostStatusEntity>>("PostStatusList")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("post_status_list")
-                        .HasComment("Статусы");
-
                     b.PrimitiveCollection<List<string>>("Tags")
                         .IsRequired()
                         .HasColumnType("character varying(128)[]")
@@ -878,7 +851,7 @@ namespace PluginExample.Data.Migrations
                         .HasColumnName("access_failed_count");
 
                     b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("birth_date")
                         .HasComment("День рождения");
 
@@ -975,6 +948,10 @@ namespace PluginExample.Data.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
 
+                    b.Property<Guid>("UserTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_type_id");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -984,6 +961,9 @@ namespace PluginExample.Data.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("UserTypeId")
+                        .HasDatabaseName("ix_users_user_type_id");
 
                     b.ToTable("users", "public", t =>
                         {
@@ -1016,28 +996,6 @@ namespace PluginExample.Data.Migrations
                         .HasDatabaseName("ix_user_logins_user_id");
 
                     b.ToTable("user_logins", "public", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Mars.Host.Data.Entities.UserMetaFieldEntity", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<Guid>("MetaFieldId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("meta_field_id");
-
-                    b.HasKey("UserId", "MetaFieldId")
-                        .HasName("pk_user_meta_fields");
-
-                    b.HasIndex("MetaFieldId")
-                        .HasDatabaseName("ix_user_meta_fields_meta_field_id");
-
-                    b.ToTable("user_meta_fields", "public", t =>
                         {
                             t.ExcludeFromMigrations();
                         });
@@ -1121,6 +1079,77 @@ namespace PluginExample.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("ИД");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()")
+                        .HasComment("Создан");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("modified_at")
+                        .HasComment("Изменен");
+
+                    b.PrimitiveCollection<List<string>>("Tags")
+                        .IsRequired()
+                        .HasColumnType("character varying(128)[]")
+                        .HasColumnName("tags")
+                        .HasComment("Теги");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("text")
+                        .HasColumnName("title")
+                        .HasComment("Название");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("type_name")
+                        .HasComment("Тип");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_types");
+
+                    b.ToTable("user_types", "public", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeMetaFieldEntity", b =>
+                {
+                    b.Property<Guid>("UserTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_type_id");
+
+                    b.Property<Guid>("MetaFieldId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("meta_field_id");
+
+                    b.HasKey("UserTypeId", "MetaFieldId")
+                        .HasName("pk_user_type_meta_fields");
+
+                    b.HasIndex("MetaFieldId")
+                        .HasDatabaseName("ix_user_type_meta_fields_meta_field_id");
+
+                    b.ToTable("user_type_meta_fields", "public", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("PluginExample.Data.Entities.PluginNewsEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1190,6 +1219,49 @@ namespace PluginExample.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.MetaFieldEntity", b =>
+                {
+                    b.OwnsMany("Mars.Host.Data.OwnedTypes.MetaFields.MetaFieldVariant", "Variants", b1 =>
+                        {
+                            b1.Property<Guid>("MetaFieldEntityId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            b1.Property<bool>("Disable")
+                                .HasColumnType("boolean");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uuid");
+
+                            b1.PrimitiveCollection<List<string>>("Tags")
+                                .IsRequired()
+                                .HasColumnType("text[]");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)");
+
+                            b1.Property<float>("Value")
+                                .HasColumnType("real");
+
+                            b1.HasKey("MetaFieldEntityId", "__synthesizedOrdinal");
+
+                            b1.ToTable("meta_fields", "public");
+
+                            b1.ToJson("variants");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MetaFieldEntityId")
+                                .HasConstraintName("fk_meta_fields_meta_fields_meta_field_entity_id");
+                        });
+
+                    b.Navigation("Variants");
+                });
+
             modelBuilder.Entity("Mars.Host.Data.Entities.MetaValueEntity", b =>
                 {
                     b.HasOne("Mars.Host.Data.Entities.MetaFieldEntity", "MetaField")
@@ -1200,6 +1272,88 @@ namespace PluginExample.Data.Migrations
                         .HasConstraintName("fk_meta_values_meta_fields_meta_field_id");
 
                     b.Navigation("MetaField");
+                });
+
+            modelBuilder.Entity("Mars.Host.Data.Entities.NavMenuEntity", b =>
+                {
+                    b.OwnsMany("Mars.Host.Data.OwnedTypes.NavMenus.NavMenuItem", "MenuItems", b1 =>
+                        {
+                            b1.Property<Guid>("NavMenuEntityId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Class")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasComment("Class");
+
+                            b1.Property<bool>("Disabled")
+                                .HasColumnType("boolean")
+                                .HasComment("Отключен");
+
+                            b1.Property<string>("Icon")
+                                .HasColumnType("text")
+                                .HasComment("Иконка");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uuid")
+                                .HasComment("#");
+
+                            b1.Property<bool>("IsDivider")
+                                .HasColumnType("boolean")
+                                .HasComment("Разделитель");
+
+                            b1.Property<bool>("IsHeader")
+                                .HasColumnType("boolean")
+                                .HasComment("Заголовок");
+
+                            b1.Property<bool>("OpenInNewTab")
+                                .HasColumnType("boolean")
+                                .HasComment("Открывать в новой вкладке");
+
+                            b1.Property<Guid>("ParentId")
+                                .HasColumnType("uuid")
+                                .HasComment("Родитель");
+
+                            b1.PrimitiveCollection<List<string>>("Roles")
+                                .IsRequired()
+                                .HasColumnType("text[]")
+                                .HasComment("Роли");
+
+                            b1.Property<bool>("RolesInverse")
+                                .HasColumnType("boolean")
+                                .HasComment("Не для ролей");
+
+                            b1.Property<string>("Style")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasComment("Style");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasComment("Название");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasComment("Ссылка");
+
+                            b1.HasKey("NavMenuEntityId", "__synthesizedOrdinal");
+
+                            b1.ToTable("nav_menus", "public");
+
+                            b1.ToJson("menu_items");
+
+                            b1.WithOwner()
+                                .HasForeignKey("NavMenuEntityId")
+                                .HasConstraintName("fk_nav_menus_nav_menus_nav_menu_entity_id");
+                        });
+
+                    b.Navigation("MenuItems");
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.PostEntity", b =>
@@ -1265,6 +1419,84 @@ namespace PluginExample.Data.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.PostTypeEntity", b =>
+                {
+                    b.OwnsOne("Mars.Host.Data.OwnedTypes.PostTypes.PostContentSettings", "PostContentType", b1 =>
+                        {
+                            b1.Property<Guid>("PostTypeEntityId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CodeLang")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("PostContentType")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("PostTypeEntityId");
+
+                            b1.ToTable("post_types", "public");
+
+                            b1.ToJson("post_content_type");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostTypeEntityId")
+                                .HasConstraintName("fk_post_types_post_types_post_type_entity_id");
+                        });
+
+                    b.OwnsMany("Mars.Host.Data.OwnedTypes.PostTypes.PostStatusEntity", "PostStatusList", b1 =>
+                        {
+                            b1.Property<Guid>("PostTypeEntityId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            b1.Property<DateTimeOffset>("CreatedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasComment("Создан");
+
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uuid")
+                                .HasComment("ИД");
+
+                            b1.Property<DateTimeOffset?>("ModifiedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasComment("Изменен");
+
+                            b1.Property<string>("Slug")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasComment("Значение");
+
+                            b1.PrimitiveCollection<List<string>>("Tags")
+                                .IsRequired()
+                                .HasColumnType("text[]")
+                                .HasComment("Теги");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasComment("Название");
+
+                            b1.HasKey("PostTypeEntityId", "__synthesizedOrdinal");
+
+                            b1.ToTable("post_types", "public");
+
+                            b1.ToJson("post_status_list");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostTypeEntityId")
+                                .HasConstraintName("fk_post_types_post_types_post_type_entity_id");
+                        });
+
+                    b.Navigation("PostContentType")
+                        .IsRequired();
+
+                    b.Navigation("PostStatusList");
+                });
+
             modelBuilder.Entity("Mars.Host.Data.Entities.PostTypeMetaFieldEntity", b =>
                 {
                     b.HasOne("Mars.Host.Data.Entities.MetaFieldEntity", "MetaField")
@@ -1310,6 +1542,18 @@ namespace PluginExample.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserEntity", b =>
+                {
+                    b.HasOne("Mars.Host.Data.Entities.UserTypeEntity", "UserType")
+                        .WithMany()
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_user_types_user_type_id");
+
+                    b.Navigation("UserType");
+                });
+
             modelBuilder.Entity("Mars.Host.Data.Entities.UserLoginEntity", b =>
                 {
                     b.HasOne("Mars.Host.Data.Entities.UserEntity", "User")
@@ -1318,27 +1562,6 @@ namespace PluginExample.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_logins_users_user_id");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Mars.Host.Data.Entities.UserMetaFieldEntity", b =>
-                {
-                    b.HasOne("Mars.Host.Data.Entities.MetaFieldEntity", "MetaField")
-                        .WithMany("UserMetaFields")
-                        .HasForeignKey("MetaFieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_meta_fields_meta_fields_meta_field_id");
-
-                    b.HasOne("Mars.Host.Data.Entities.UserEntity", "User")
-                        .WithMany("UserMetaFields")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_meta_fields_users_user_id");
-
-                    b.Navigation("MetaField");
 
                     b.Navigation("User");
                 });
@@ -1397,6 +1620,27 @@ namespace PluginExample.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeMetaFieldEntity", b =>
+                {
+                    b.HasOne("Mars.Host.Data.Entities.MetaFieldEntity", "MetaField")
+                        .WithMany("UserTypeMetaFields")
+                        .HasForeignKey("MetaFieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_type_meta_fields_meta_fields_meta_field_id");
+
+                    b.HasOne("Mars.Host.Data.Entities.UserTypeEntity", "UserType")
+                        .WithMany("UserTypeMetaFields")
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_type_meta_fields_user_types_user_type_id");
+
+                    b.Navigation("MetaField");
+
+                    b.Navigation("UserType");
+                });
+
             modelBuilder.Entity("PluginExample.Data.Entities.PluginNewsEntity", b =>
                 {
                     b.HasOne("Mars.Host.Data.Entities.UserEntity", "User")
@@ -1420,7 +1664,7 @@ namespace PluginExample.Data.Migrations
 
                     b.Navigation("PostTypeMetaFields");
 
-                    b.Navigation("UserMetaFields");
+                    b.Navigation("UserTypeMetaFields");
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.MetaValueEntity", b =>
@@ -1461,11 +1705,14 @@ namespace PluginExample.Data.Migrations
 
                     b.Navigation("Tokens");
 
-                    b.Navigation("UserMetaFields");
-
                     b.Navigation("UserMetaValues");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Mars.Host.Data.Entities.UserTypeEntity", b =>
+                {
+                    b.Navigation("UserTypeMetaFields");
                 });
 #pragma warning restore 612, 618
         }

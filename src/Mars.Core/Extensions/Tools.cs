@@ -34,7 +34,6 @@ public static class Tools
         return Enumerable.Range(0, count);
     }
 
-
     /// <summary>   
     /// Return Unique int enumerate
     /// </summary>
@@ -178,17 +177,20 @@ public static class Tools
         return arr.Where(s => !string.IsNullOrEmpty(s)).ToArray()!;
     }
 
-    public static void SetTimeout(Action action, int delayMillis)
-        => SetTimeout(action, TimeSpan.FromMilliseconds(delayMillis));
+    public static void SetTimeout(Action action, int delayMillis, CancellationToken cancellationToken = default)
+        => SetTimeout(action, TimeSpan.FromMilliseconds(delayMillis), cancellationToken);
 
     //TODO: Not tested with Unity Main thread only functions
-    public static void SetTimeout(Action action, TimeSpan delay)
+    public static void SetTimeout(Action action, TimeSpan delay, CancellationToken cancellationToken = default)
     {
-        _ = System.Threading.Tasks.Task.Run(async () =>
+        if (action == null) throw new ArgumentNullException(nameof(action));
+
+        _ = Task.Run(async () =>
         {
-            await System.Threading.Tasks.Task.Delay(delay);
+            await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            if (cancellationToken.IsCancellationRequested) return;
             action();
-        });
+        }, cancellationToken);
     }
 
     public static T CopyViaJsonConversion<T>(this object source)

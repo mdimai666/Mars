@@ -15,7 +15,7 @@ public class SqlNode : Node
 
     public SqlNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#faeaae";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/db-48.png";

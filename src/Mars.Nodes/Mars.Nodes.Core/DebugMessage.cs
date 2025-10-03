@@ -5,6 +5,7 @@ namespace Mars.Nodes.Core;
 
 public class DebugMessage
 {
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string? NodeId { get; init; }
     //public string Id { get; init; } = "";
     //public string Topic { get; init; } = "";
@@ -27,6 +28,9 @@ public class DebugMessage
 
     public static DebugMessage NodeMessage(string nodeId, string text, MessageIntent Level = MessageIntent.Info)
         => new() { Message = text, Level = Level, NodeId = nodeId };
+
+    public static DebugMessage NodeWarnMessage(string nodeId, string text)
+        => new() { Message = text, Level = MessageIntent.Warning, NodeId = nodeId };
 
     public static DebugMessage NodeErrorMessage(string nodeId, string text)
         => new() { Message = text, Level = MessageIntent.Error, NodeId = nodeId };

@@ -1,0 +1,65 @@
+@using AppFront.Shared.Components
+@using AppFront.Shared.Services
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(FileServiceReadNode))]
+
+<div class="vstack gap-3">
+    <FormItem2 For=@(() => Node.FileStorageProvider)>
+        <FluentSelect @bind-Value="@Node.FileStorageProvider"
+                      Items="FileServiceReadNode.FileStorageProvidersList"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+    <FluentSwitch @bind-Value=Node.ByFileId>
+        <AutoInputLabel For=@(() => Node.ByFileId) />
+    </FluentSwitch>
+
+    @if (Node.ByFileId)
+    {
+        <FormItem2 For="() => Node.StorageFileId" Class="">
+            <div class="hstack">
+                <FluentTextField @bind-Value="@Node.StorageFileId" Class="w-100" />
+                <FluentButton IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="ClickSelectMedia" />
+            </div>
+        </FormItem2>
+    }
+    else
+    {
+        <FormItem2 For="() => Node.FilePath" Class="">
+            <div class="hstack">
+                <FluentTextField @bind-Value="@Node.FilePath" Class="w-100" />
+                <FluentButton IconStart="@(new Icons.Regular.Size16.FolderAdd())" OnClick="ClickSelectMedia" />
+            </div>
+        </FormItem2>
+    }
+
+    <FormItem2 For=@(() => Node.OutputMode)>
+        <FluentSelect @bind-SelectedOption="@Node.OutputMode"
+                      TOption="FileServiceReadNode.FileOutputMode"
+                      Items="Enum.GetValues<FileServiceReadNode.FileOutputMode>()"
+                      Style="width: 250px;">
+        </FluentSelect>
+    </FormItem2>
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    FileServiceReadNode Node { get => (FileServiceReadNode)Value; set => Value = value; }
+
+    [Inject] IAppMediaService appMediaService { get; set; } = default!;
+
+    async Task ClickSelectMedia()
+    {
+        var file = await appMediaService.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            Node.FilePath = file.FileVirtualPath;
+            Node.StorageFileId = file.Id.ToString();
+        }
+    }
+
+}

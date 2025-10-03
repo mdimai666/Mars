@@ -8,14 +8,14 @@ internal static class MarsStartupPartLocalization
 {
     public static IServiceCollection MarsAddLocalization(this IServiceCollection services)
     {
-        var defaultCulture = new CultureInfo("ru");
+        var defaultCulture = new CultureInfo("ru-RU");
 
         services.Configure<RequestLocalizationOptions>(options =>
         {
             var supportedCultures = new[]
              {
-                new CultureInfo("ru"),
-                new CultureInfo("en"),
+                new CultureInfo("ru-RU"),
+                new CultureInfo("en-US"),
             };
             options.DefaultRequestCulture = new RequestCulture("ru-RU");
             options.SupportedCultures = supportedCultures;
@@ -41,6 +41,5 @@ internal static class MarsStartupPartLocalization
 
         return app;
     }
-
 
 }

@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace Mars.Host.Shared.Utils;
 
@@ -29,10 +29,10 @@ public class ConsoleTable
     public ConsoleTable()
     {
         _headers = new string[0];
-        _rows = new();
+        _rows = [];
     }
 
-    public ConsoleTable(IEnumerable<string[]> rows)
+    public ConsoleTable(string[][] rows)
     {
         _headers = rows.First();
         if (rows.Count() > 1)
@@ -41,7 +41,7 @@ public class ConsoleTable
         }
         else
         {
-            _rows = new();
+            _rows = [];
         }
     }
 

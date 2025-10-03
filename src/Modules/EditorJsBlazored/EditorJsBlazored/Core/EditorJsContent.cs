@@ -54,6 +54,7 @@ public class EditorJsContent
         try
         {
             isReplaced = false;
+            if (string.IsNullOrEmpty(jsonOrHtml)) return new();
             return FromJson(jsonOrHtml);
         }
         catch (JsonException)

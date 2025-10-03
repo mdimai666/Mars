@@ -107,11 +107,9 @@ public class PostTypeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public Task Delete(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _postTypeService.Delete(id, cancellationToken);
-        if (result.Ok) return Ok();
-        return NotFound(null);
+        return _postTypeService.Delete(id, cancellationToken);
     }
 
     [HttpGet("MetaFieldsTypeEnums")]
@@ -129,7 +127,6 @@ public class PostTypeController : ControllerBase
         {
             dict.Add((int)e, e.ToString());
         }
-
 
         return dict;
     }

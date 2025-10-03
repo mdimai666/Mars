@@ -1,5 +1,8 @@
 #if !NOADMIN
+using System.ComponentModel.Design;
 using AppAdmin.Pages.PostsViews;
+using AppAdmin.Pages.Settings;
+
 #endif
 using Bogus;
 using Mars.Host.Shared.Dto.Posts;
@@ -9,14 +12,17 @@ using Mars.Shared.Contracts.XActions;
 
 namespace Mars.XActions;
 
+[RegisterXActionCommand(CommandId, "Create mock posts")]
 public class CreateMockPostsAct(
     IPostService postService,
     IMetaModelTypesLocator metaModelTypesLocator,
     IRequestContext requestContext) : IAct
 {
+    public const string CommandId = "Mars.XActions." + nameof(CreateMockPostsAct);
+
     public static XActionCommand XAction { get; } = new XActionCommand()
     {
-        Id = typeof(CreateMockPostsAct).FullName!,
+        Id = CommandId,
         Label = "Create mock posts",
 #if !NOADMIN
         FrontContextId = [typeof(ManagePostPage).FullName + "-post"],

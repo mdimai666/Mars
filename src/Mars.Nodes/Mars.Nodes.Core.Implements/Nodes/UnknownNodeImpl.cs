@@ -15,7 +15,7 @@ public class UnknownNodeImpl : INodeImplement<UnknownNode>, INodeImplement
         RED = red;
     }
 
-    public Task Execute(NodeMsg _, ExecuteAction callback)
+    public Task Execute(NodeMsg _, ExecuteAction callback, ExecutionParameters parameters)
     {
         throw new NodeExecuteException(Node, $"UnknownNode: '{Node.UnrecognizedType}' not found");
     }

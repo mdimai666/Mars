@@ -9,5 +9,5 @@ public interface INodeServiceClient
     Task<UserActionResult> Deploy(IEnumerable<Node> nodes);
     Task<UserActionResult> Inject(string nodeId);
     Task<NodesDataDto> Load();
-
+    Task TerminateAllJobs();
 }

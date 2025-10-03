@@ -38,7 +38,7 @@ public partial class BlockEditor1 : BlazorInteropComponent
     {
         await base.OnParametersSetAsync();
 
-        if (Content is null && !string.IsNullOrEmpty(ContentJson))
+        if (Content is null && ContentJson is not null)
         {
             Content = EditorJsContent.FromJsonAutoConvertToRawBlockOnException(ContentJson, out var isReplaced);
             ContentJson = Content.ToJson(Config.PrettyJsonOutput);

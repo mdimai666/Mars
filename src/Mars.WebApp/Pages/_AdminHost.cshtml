@@ -1,41 +1,37 @@
 @page ""
 @namespace Mars.Pages
+@using AppFront.Shared
+@using Mars.Controllers
+@using Mars.Core.Features
+@using Mars.Host.Constants.Website
+@using Mars.Host.Shared.Interfaces
+@using Mars.Host.Shared.Models
+@using Mars.Host.Shared.Services
+@using Mars.Host.Shared.WebSite.Scripts
+@using Mars.Host.WebSite.Scripts
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
 }
-@using AppFront;
-@using AppFront.Shared
-@using Mars.Controllers
-@using Mars.Core.Features
-@using Mars.Host.Data
-@using Mars.Host.Data.Entities
-@using Mars.Host.Services
-@using Mars.Host.Shared.Interfaces
-@using Mars.Host.Shared.Models
-@using Mars.Host.Shared.Services
-@using Mars.Services
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.EntityFrameworkCore
-@inject IUserService userService;
 @inject IOptionService optionService
 @inject IServiceProvider serviceProvider;
-@inject IRequestContext requsetContext;
+@inject IRequestContext requestContext;
 @{
     //TODO: Uncomment
     // AppAdmin.Program.IsPrerender = false;
     Q.IsPrerender = false;
     MarsAppFront af = new MarsAppFront
-            {
-                Configuration = new Mars.Core.Models.AppFrontSettingsCfg
-                {
-                    Mode = Mars.Core.Models.AppFrontMode.ServeStaticBlazor,
-                    Url = "/dev",
-                    Path = "dev"
-                }
-            };
+    {
+        Configuration = new Mars.Core.Models.AppFrontSettingsCfg
+        {
+            Mode = Mars.Core.Models.AppFrontMode.ServeStaticBlazor,
+            Url = "/dev",
+            Path = "dev"
+        }
+    };
     HttpContext.Items.Add(nameof(MarsAppFront), af);
+
+    var scriptsBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
 
     var vm = await ViewModelController.InitialSiteDataViewModel(serviceProvider, Request, devAdminPageData: true);
 
@@ -50,9 +46,9 @@
     try
     {
 
-        if (User.Identity.IsAuthenticated && requsetContext.Roles is not null)
+        if (User.Identity.IsAuthenticated && requestContext.Roles is not null)
         {
-            var isAdmin = requsetContext.Roles.Contains("Admin");
+            var isAdmin = requestContext.Roles.Contains("Admin");
 
             bodyClass += $"{(isAdmin ? "admin" : "")} ";
         }
@@ -78,35 +74,14 @@
     <title>@optionService.SysOption.SiteName</title>
     <base href="/dev/" />
 
-    @* <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"> *@
-    @* <link rel="icon" href="/favicon.ico" type="image/x-icon"> *@
-
-    <link href="/mars/vendor/bootstrap/bootstrap5.min.css" rel="stylesheet" />
-
-    <link rel="preconnect" href="https://cdnjs.cloudflare.net">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.net">
-    <link rel="stylesheet" href="/mars/vendor/bootstrap-icons/bootstrap-icons.min.css" referrerpolicy="no-referrer" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&display=swap" rel="stylesheet" />
-
-    <link href="/mars/vendor/quilljs/quill.snow.css" rel="stylesheet" />
-    @* <link href="//cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet" /> *@
-
-    @*<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />*@
-    @*<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />*@
-
-    @*<link rel="stylesheet" type="text/css" href="vendor/bvi/css/bvi.min.css" />*@
-    @*<link rel="stylesheet" type="text/css" href="vendor/kanban/jkanban.css" />*@
-
-    <link href="css/style.css?v=000019" rel="stylesheet" />
-    <link href="AppAdmin.styles.css?v=000019" rel="stylesheet" />
-    <link href="/Mars.styles.css?v=000019" rel="stylesheet" />
+    @{
+        // all scripts moved to:
+        _ = nameof(AppAdminSpaHtmlScripts);
+    }
+    @Html.Raw(scriptsBuilder.HeadScriptsRender())
 
 </head>
-<body class="@($"{bodyClass} {(isDarkTheme?"dark":"")}")" prerender>
+<body class="@($"{bodyClass} {(isDarkTheme ? "dark" : "")}")" prerender>
 
     <script>
         //window._dev = true;
@@ -134,65 +109,7 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="/mars/vendor/bootstrap/bootstrap5.bundle.min.js"></script>
-    <script src="_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js" type="module" async></script>
-    <script src="/mars/vendor/quilljs/quill.js"></script>
-    <script src="_content/Blazored.TextEditor/quill-blot-formatter.min.js"></script>
-    <script src="_content/Blazored.TextEditor/Blazored-BlazorQuill.js"></script>
-    @* https://blazorsortable.theurlist.com/ *@
-    <script src="/mars/vendor/Sortable-1.15.6.min.js" referrerpolicy="no-referrer"></script>
-    <script src="_content/BlazorMonaco/jsInterop.js"></script>
-    @* <script>var require = { paths: { vs: 'my-path/monaco-editor/min/vs' } };</script> *@
-    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
-    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
-    <script src="/mars/js/emmet-monaco.min.js"></script>
-    <script src="/mars/js/language-log.js"></script>
+    @Html.Raw(scriptsBuilder.FooterScriptsRender())
 
-    @*<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>*@
-
-    @*<script src="vendor/bvi/js/bvi.min.js"></script>*@
-    @*<script src="vendor/kanban/jkanban.js"></script>*@
-
-    @* https://github.com/nextapps-de/spotlight *@
-    <script src="/mars/vendor/spotlight/spotlight.bundle.js"></script>
-
-    <script src="./_content/mdimai666.Mars.AppFront.Main/js/highlight-extensions.js"></script>
-
-    <script src="js/scripts.js?v=000019" asp-append-version="true"></script>
-    @*<script src="js/mykanban.js" asp-append-version="true"></script>*@
-
-    <!--BlazorScriptsAppend-->
-    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
-
-    @if (Mars.UseStartup.MarsStartupInfo.IsDevelopment)
-    {
-        <script>window._dev = true;</script>
-    }
-    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
-    <script type="module">
-        import { BrotliDecode } from '/mars/js/brotli.decode.min.js';
-        Blazor.start({
-            applicationCulture: 'ru-RU',
-            loadBootResource: function (type, name, defaultUri, integrity) {
-                if (type !== 'dotnetjs' && location.hostname !== 'localhost' && type !== 'configuration' && !window._dev) {
-                    return (async function () {
-                    const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    const originalResponseBuffer = await response.arrayBuffer();
-                    const originalResponseArray = new Int8Array(originalResponseBuffer);
-                    const decompressedResponseArray = BrotliDecode(originalResponseArray);
-                    const contentType = type ===
-                        'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
-                    return new Response(decompressedResponseArray,
-                        { headers: { 'content-type': contentType } });
-                    })();
-                }
-            }
-        });
-    </script>
-    <!--//BlazorScriptsAppend-->
-    @*<script src="_framework/blazor.server.js"></script>*@
 </body>
 </html>

@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.WebSiteProcessor.Handlebars.HandlebarsFunc;
 
+/// <summary>
+/// при вызове {{#help}} выводит справочную информацию по зарегистрированным хелперам и функциям
+/// </summary>
 public class MyHandlebarsHelpBlock
 {
     List<HbsHelperItem> _hbsHelperItems;

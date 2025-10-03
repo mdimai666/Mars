@@ -1,0 +1,55 @@
+@using Mars.Nodes.Core
+<div class="bg-light border-bottom p-1 d-flex align-items-center" style="height: 40px;">
+    Debug
+    <div class="ms-auto d-flex gap-1">
+        <button class="btn btn-sm bg-light"
+                title="Add test messages">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+        <button class="btn btn-sm bg-light xcenter" @onclick=_editor.ClearDebugMessages
+                title="Clear debug window">
+            <i class="bg-contain bicon" style="background-image:url('_content/Mars.Nodes.Workspace/ban-solid.svg')"></i>
+        </button>
+    </div>
+</div>
+<div class="debug-text flex-fill d-flex" style="height:calc(100% - 40px)">
+    <div id="nodered-debug-message-list"
+         class="text-wrap text-break custom-scroll1 w-100 p-1"
+         style="overflow-y:scroll;scroll-behavior: auto;">
+        <div class="debug-message-cnt border-bottom">
+
+            <ul class="list-group list-group-flush">
+                @foreach (var m in Messages)
+                {
+                    <li class="list-group-item p-1 nodered-debug-message-list__item"
+                        @key=@m.Id
+                        data-id=@m.Id
+                        data-node-id=@m.NodeId
+                        data-level=@m.Level
+                        @onclick=@(() => _editor.OnClickConsoleDebugMessage(m))>
+
+                        <div class="debug-msg-id text-nowrap">@m.NodeId</div>
+                        <div>
+                            @m.Message
+                        </div>
+                        @if (m.Json is not null)
+                        {
+                            <pre class="debug-json-pre">@m.Json</pre>
+                        }
+                        <div class="debug-msg-footer justify-content-between d-flex text-muted">
+                            <span>0</span>
+                            <span>@m.CreatedAt</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    @*end #nodered-debug-message-list*@
+</div>
+
+@code {
+    [CascadingParameter] NodeEditor1 _editor { get; set; } = default!;
+
+    [Parameter] public IReadOnlyCollection<DebugMessage> Messages { get; set; } = new List<DebugMessage>();
+}

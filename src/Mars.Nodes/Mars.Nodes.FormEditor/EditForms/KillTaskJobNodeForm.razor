@@ -1,0 +1,15 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(KillTaskJobNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>KillTaskJobNode</label>
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    KillTaskJobNode Node { get => (KillTaskJobNode)Value; set => Value = value; }
+
+}

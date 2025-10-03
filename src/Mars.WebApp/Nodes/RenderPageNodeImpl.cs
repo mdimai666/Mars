@@ -20,7 +20,7 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         HttpInNodeHttpRequestContext? http = input.Get<HttpInNodeHttpRequestContext>();
 

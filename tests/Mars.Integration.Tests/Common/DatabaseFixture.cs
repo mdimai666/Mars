@@ -76,7 +76,11 @@ public class DatabaseFixture : IAsyncLifetime
         await connection.OpenAsync();
 
         _respawner = await Respawner.CreateAsync(connection,
-            new RespawnerOptions { DbAdapter = DbAdapter.Postgres });
+            new RespawnerOptions
+            {
+                DbAdapter = DbAdapter.Postgres,
+                TablesToIgnore = ["__EFMigrationsHistory"]
+            });
     }
 
     public async Task DisposeAsync()

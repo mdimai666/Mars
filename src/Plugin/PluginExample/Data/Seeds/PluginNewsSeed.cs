@@ -4,7 +4,7 @@ using PluginExample.Data.Entities;
 
 namespace PluginExample.Data.Seeds;
 
-public class PluginNewsSeed
+public static class PluginNewsSeed
 {
     public const string InitialPostTitle = "Hello, World - from plugin!";
 
@@ -17,7 +17,7 @@ public class PluginNewsSeed
         int count = await ef.News.CountAsync();
         if (count > 0) return;
 
-        var firstUser = ef.Users.First();
+        var firstUser = ef.Users.OrderBy(s => s.UserName).First();
 
         var post = new PluginNewsEntity()
         {

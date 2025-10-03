@@ -5,6 +5,7 @@ using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Controllers.Schedulers;
+using Mars.Integration.Tests.Interfaces;
 using Mars.Integration.Tests.TestControllers;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
@@ -109,6 +110,7 @@ public class ApplicationFixture : IAsyncLifetime
                         services.Replace(ServiceDescriptor.KeyedSingleton<IFileStorage, InMemoryFileStorage>("data"));
 
                         services.AddSingleton(NSubstitute.Substitute.For<ITestDummyTriggerService>());
+                        services.AddSingleton<IPluginManagerWrapperForTests, PluginManagerWrapperForTests>();
 
                         ModifyConfigureTestServices(services);
                     });

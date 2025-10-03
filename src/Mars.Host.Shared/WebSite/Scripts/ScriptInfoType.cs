@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.WebSite.Scripts;
+namespace Mars.Host.Shared.WebSite.Scripts;
 
 public enum ScriptInfoType
 {

@@ -89,23 +89,14 @@ internal class UserTypeService : IUserTypeService
     {
         var userType = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _userTypeRepository.Delete(id, cancellationToken);
+        await _userTypeRepository.Delete(id, cancellationToken);
 
-            _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
-            //if (result.Ok)
-            {
-                var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
-                _eventManager.TriggerEvent(payload);
-            }
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
+        _eventManager.TriggerEvent(payload);
+
+        return UserActionResult.Success();
     }
 
     public Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure()

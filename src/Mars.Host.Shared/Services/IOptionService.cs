@@ -17,15 +17,23 @@ public interface IOptionService
 
     SysOptions SysOption { get; }
     bool IsDevelopment { get; }
-
+    ///<summary>
+    ///SaveOption
+    /// </summary>
     /// <exception cref="MarsValidationException" />
     /// <exception cref="OptionNotRegisteredException" />
     void SaveOption<T>(T option) where T : class;
 
+    /// <summary>
+    /// SaveOptionAsync
+    /// </summary>
     /// <exception cref="MarsValidationException" />
     /// <exception cref="OptionNotRegisteredException" />
     Task SaveOptionAsync<T>(T option, CancellationToken cancellationToken) where T : class;
 
+    /// <summary>
+    /// GetOption
+    /// </summary>
     /// <exception cref="OptionNotRegisteredException" />
     T GetOption<T>() where T : class, new();
     object GetOption(Type type);
@@ -36,6 +44,9 @@ public interface IOptionService
     T? GetConstOption<T>() where T : class;
     List<OptionSummary> GetOptionsForInitialSiteData();
 
+    /// <summary>
+    /// SaveSmtpSettings
+    /// </summary>
     /// <exception cref="MarsValidationException" />
     /// <exception cref="OptionNotRegisteredException" />
     void SetOptionByClass(string className, string jsonString);
@@ -49,6 +60,5 @@ public interface IOptionService
     /// <returns></returns>
     FileHostingInfo FileHostingInfo();
     string GetDefaultDatabaseConnectionString();
-
 
 }

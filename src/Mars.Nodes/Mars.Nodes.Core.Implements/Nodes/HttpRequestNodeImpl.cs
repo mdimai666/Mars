@@ -17,7 +17,7 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
         this.RED = RED;
     }
 
-    public async Task Execute(NodeMsg input, ExecuteAction callback)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         using var client = RED.GetHttpClient();
         var q = new FlurlClient(client);
@@ -45,9 +45,7 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
                 _ => throw new NotImplementedException()
             };
 
-
             RED.Status(new NodeStatus { Text = "200", Color = "green" });
-
 
             input.Payload = response;
             callback(input);

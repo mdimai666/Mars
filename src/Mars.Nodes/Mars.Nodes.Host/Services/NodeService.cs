@@ -1,6 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using Mars.Host.Shared.Hubs;
+using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
@@ -9,6 +9,7 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.WebApp.Implements;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.SignalR;
@@ -26,9 +27,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     private readonly IFileStorage _fileStorage;
     protected readonly RED _RED;
     protected readonly IServiceProvider _serviceProvider;
+    private readonly INodeTaskManager _nodeTaskManager;
 
     //private readonly ChatHub callerHub;// => ChatHub.instance;
-    private readonly IHubContext<ChatHub> _hub;
     readonly ILogger _logger;
 
     public event NodeServiceDeployHandler OnDeploy = default!;
@@ -38,12 +39,16 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public IReadOnlyDictionary<string, INodeImplement> Nodes => _RED.Nodes;
     public IReadOnlyDictionary<string, Node> BaseNodes => _RED.BasicNodesDict;
 
-    public NodeService([FromKeyedServices("data")] IFileStorage fileStorage, RED RED, IServiceProvider serviceProvider, IHubContext<ChatHub> hub, IEventManager eventManager)
+    public NodeService([FromKeyedServices("data")] IFileStorage fileStorage,
+                        RED RED,
+                        IServiceProvider serviceProvider,
+                        INodeTaskManager nodeTaskManager,
+                        IEventManager eventManager)
     {
         _fileStorage = fileStorage;
         _RED = RED;
         _serviceProvider = serviceProvider;
-        _hub = hub;
+        _nodeTaskManager = nodeTaskManager;
         _logger = MarsLogger.GetStaticLogger<INodeService>();
 
         //Console.WriteLine(">>NodeService.Load()");
@@ -71,6 +76,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         //IEventManager eventManager = serviceProvider.GetRequiredService<IEventManager>();
 
         eventManager.OnTrigger += EventManager_OnTrigger;
+        _nodeTaskManager.OnCurrentTasksCountChanged += _nodeTaskManager_OnCurrentTaskCountChanged;
 
     }
 
@@ -201,11 +207,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         //var fs = serviceProvider.GetService<FlowExecutionBackgroundService>();
         //fs.Setup(nodeId, msg);
         //fs.StartAsync(new CancellationToken());
-        var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskManager>>();
+        //var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
 
-        var manager = new NodeTaskManager(serviceProvider, _hub, Nodes, _RED, logger);
+        var requestUserInfo = serviceProvider.GetRequiredService<IRequestContext>().ToRequestUserInfo();
+        msg ??= new();
+        msg.Add(requestUserInfo);
 
-        manager.Run(nodeId, msg);//TODO: wait complete
+        _nodeTaskManager.CreateJob(serviceProvider, nodeId, msg);
 
         return Task.FromResult(new UserActionResult
         {
@@ -235,32 +243,26 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         CallNode node = (implNode.Node as CallNode)!;
 
-        var msg = new NodeMsg()
+        var msg = new NodeMsg() { Payload = payload };
+
+        var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var callback = new CallNodeCallbackAction(payload =>
         {
-            Payload = payload
-        };
+            tcs.TrySetResult(payload); // завершает задачу
+        }, implNode.Id);
 
-        bool isComplete = false;
-        object? returnData = null;
-
-        var task = new Task<object?>(() =>
-        {
-            while (!isComplete) { }
-            return returnData;
-        });
-
-        var callback = new CallNodeCallbackAction(payload => { returnData = payload; isComplete = true; }, implNode.Id);
         msg.Add(callback);
 
+        // запускаем асинхронный процесс
         _ = Inject(serviceProvider, implNode.Id, msg);
-        task.Start();
 
         object? data;
 
         if (node.Timeout == TimeSpan.Zero)
-            data = await task;
+            data = await tcs.Task;
         else
-            data = await task.WaitAsync(node.Timeout);
+            data = await tcs.Task.WaitAsync(node.Timeout);
 
         return new UserActionResult<object?>
         {
@@ -392,5 +394,15 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         if (node == null) return;
         node.status = nodeStatus.Text;
         _RED.BroadcastStatus(nodeId, nodeStatus);
+    }
+
+    Debouncer _sendTaskCountDebouncer = new(100);
+
+    private void _nodeTaskManager_OnCurrentTaskCountChanged(int currentTaskCount)
+    {
+        _sendTaskCountDebouncer.Debouce(() =>
+        {
+            _RED.Hub.Clients.All.SendAsync("NodeRunningTaskCountChanged", currentTaskCount);
+        });
     }
 }

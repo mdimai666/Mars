@@ -17,7 +17,6 @@ using Mars.Host.Shared.Dto.PostTypes;
 
 namespace Mars.Host.Templators;
 
-
 #if false
 public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 {
@@ -51,7 +50,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
         //ef.Posts.ToList().TakeRandom
         //ef.Posts.ToList().TakeRandomRange
 
-
         //var query = ef.Posts.AsQueryable();
         Type entityType = mlocator.GetModelType(MetaFieldType.Bool, cmd);
 
@@ -74,7 +72,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
         query = query.OrderByDescending(s => s.CreatedAt);
 
         bool isOneRecordRequest = info.IsOneQuery(val);
-
 
         //is one query
         if (isOneRecordRequest)
@@ -147,7 +144,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 
             //    string salaryKey = "int1";
 
-
             //    post1 = ((IQueryable<Post>)query)
             //        .Include(s => s.MetaValues)
             //        .ThenInclude(s => s.MetaField)
@@ -219,7 +215,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
                 else //if(entityType == typeof(PostType))
                 {
 
-
                     //var _postJson = await postService.AsJson2(po);
                     var _context = JObject.FromObject(post1);
 
@@ -267,7 +262,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 
                 //    string salaryKey = "int1";
 
-
                 //    query = ((IQueryable<Post>)query)
                 //        .Include(s => s.MetaValues)
                 //        .ThenInclude(s => s.MetaField);
@@ -281,7 +275,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
                 }
             }
             if (breaked) return;
-
 
             //var posts = await ef.Posts.ToListAsync();
             //var result = await ef.Posts.Where(expression).ToListAsync();
@@ -341,7 +334,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
                         var _postJson = postService.AsJson22(pctx3);
                         arr.Add(_postJson);
 
-
                     }
 
                     var _context = arr;
@@ -355,7 +347,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
                     .Include(s => s.MetaValues)
                             .ThenInclude(s => s.MetaField)
                     .ToListAsync();
-
 
                 if (context.ContainsKey(key)) context.Remove(key);
 
@@ -402,7 +393,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 
                 var result = await query.ToListAsync();
 
-
                 if (context.ContainsKey(key)) context.Remove(key);
 
                 if (result.Count == 0)
@@ -431,8 +421,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
                     ppt.parameters.Add(key, new Parameter(key, _context));
                 }
             }
-
-
 
         }
     }
@@ -482,7 +470,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 
         //}
 
-
         return ppt.Get.ParseAsExpression<Func<TEntity, bool>>(text, varible);
     }
 }
@@ -500,7 +487,6 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 //        this.varName = varName;
 //    }
 
-
 //    public T First()
 //    {
 //        return query.First();
@@ -517,7 +503,7 @@ public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 
 public class EfDynamicQuery<TEntity> where TEntity : class, IBasicEntity, new()
 {
-    public async Task Query(string key, string val, int index, object pctx, XInterpreter ppt)
+    public Task Query(string key, string val, int index, object pctx, XInterpreter ppt)
     {
         throw new NotImplementedException();
     }

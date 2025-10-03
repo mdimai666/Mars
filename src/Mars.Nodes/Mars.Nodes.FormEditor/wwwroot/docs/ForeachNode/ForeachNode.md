@@ -2,6 +2,9 @@
 
 Create loop.
 
-next use ForeachIterateNode for iterate
+```
+(0) -> Iterate
+(1) -> Finish
+```
 
 add context `ForeachCycle`

@@ -16,7 +16,7 @@ public class HtmlParseNode : Node
 
     public HtmlParseNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#ecb56a";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";

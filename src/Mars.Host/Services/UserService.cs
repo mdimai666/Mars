@@ -97,12 +97,10 @@ internal class UserService : IUserService
         //await _validatorFabric.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
         await _userRepository.Update(query, cancellationToken);
-        var updated = await GetDetail(query.Id, cancellationToken);
+        var updated = (await GetDetail(query.Id, cancellationToken))!;
 
-        {
-            var payload = new ManagerEventPayload(_eventManager.Defaults.UserUpdate(), updated!);
-            _eventManager.TriggerEvent(payload);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserUpdate(), updated!);
+        _eventManager.TriggerEvent(payload);
 
         return updated;
     }
@@ -111,21 +109,12 @@ internal class UserService : IUserService
     {
         var user = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _userRepository.Delete(id, cancellationToken);
+        await _userRepository.Delete(id, cancellationToken);
 
-            {
-                var payload = new ManagerEventPayload(_eventManager.Defaults.UserDelete(), user!);
-                _eventManager.TriggerEvent(payload);
-            }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserDelete(), user!);
+        _eventManager.TriggerEvent(payload);
 
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        return UserActionResult.Success();
     }
 
     #region EDIT_MODEL
@@ -231,7 +220,7 @@ internal class UserService : IUserService
     //    return new UserEditProfileDto();
     //}
 
-    public async Task<UserActionResult<UserEditProfileDto>> UserEditProfileUpdate(UserEditProfileDto profile, CancellationToken cancellationToken)
+    public Task<UserActionResult<UserEditProfileDto>> UserEditProfileUpdate(UserEditProfileDto profile, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
         //var ef = GetEFContext();

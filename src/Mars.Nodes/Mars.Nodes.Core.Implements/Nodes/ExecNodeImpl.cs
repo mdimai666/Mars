@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Text;
+using System.Text.RegularExpressions;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -16,17 +18,23 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
         this.RED = RED;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
-        Process cmd = new Process();
-        cmd.StartInfo.FileName = Node.Command;
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = Node.Command,
+            //Arguments = "-Command \"Get-ChildItem\"",
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = false,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
+        };
 
-        cmd.StartInfo.RedirectStandardInput = true;
-        cmd.StartInfo.RedirectStandardOutput = true;
-        cmd.StartInfo.CreateNoWindow = false;
-        cmd.StartInfo.UseShellExecute = false;
-        cmd.Start();
+        var cmd = Process.Start(processInfo);
 
         if (Node.Append && input.Payload is not null)
         {
@@ -36,11 +44,19 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
         cmd.StandardInput.Close();
         cmd.WaitForExit();
 
-
-        input.Payload = cmd.StandardOutput.ReadToEnd();
+        var output = cmd.StandardOutput.ReadToEnd();
+        var cleanOutput = RemoveAnsiEscapeCodes(output);
+        input.Payload = cleanOutput;
 
         callback(input);
 
         return Task.CompletedTask;
+    }
+
+    public static string RemoveAnsiEscapeCodes(string text)
+    {
+        // Регулярное выражение для удаления ANSI escape-кодов
+        var ansiPattern = @"\x1B\[[0-9;]*[a-zA-Z]|\x1B\].*?\x07|\[[\d;]*m";
+        return Regex.Replace(text, ansiPattern, string.Empty);
     }
 }

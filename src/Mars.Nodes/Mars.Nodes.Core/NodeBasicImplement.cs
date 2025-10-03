@@ -13,11 +13,11 @@ public class NodeBasicImplement : INodeBasic
     public string Container { get; init; } = "";
     public bool Disabled { get; init; }
 
-    public bool HaveInput { get; init; }
+    public List<NodeInput> Inputs { get; set; } = [];
     public List<NodeOutput> Outputs { get; init; } = new();
     public List<string> OutputLabels { get; init; } = new List<string>();
 
-    public List<List<string>> Wires { get; init; } = new();
+    public List<List<NodeWire>> Wires { get; init; } = new();
 
     public bool IsConfigNode { get; init; }
 

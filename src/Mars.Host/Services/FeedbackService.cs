@@ -47,11 +47,8 @@ internal class FeedbackService : IFeedbackService
         var id = await _feedbackRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
 
-        //if (created != null)
-        {
-            ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackAdd(), created);//TODO: сделать явный тип.
-            _eventManager.TriggerEvent(payload);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackAdd(), created);//TODO: сделать явный тип.
+        _eventManager.TriggerEvent(payload);
 
         return created;
     }
@@ -63,7 +60,7 @@ internal class FeedbackService : IFeedbackService
         await _feedbackRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 
-        ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackUpdate(), updated);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackUpdate(), updated);
         _eventManager.TriggerEvent(payload);
 
         return updated;
@@ -73,21 +70,11 @@ internal class FeedbackService : IFeedbackService
     {
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
-        try
-        {
-            await _feedbackRepository.Delete(id, cancellationToken);
+        await _feedbackRepository.Delete(id, cancellationToken);
 
-            //if (result.Ok)
-            {
-                ManagerEventPayload payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackDelete(), post);
-                _eventManager.TriggerEvent(payload);
-            }
-            return UserActionResult.Success();
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult.Exception(ex);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackDelete(), post);
+        _eventManager.TriggerEvent(payload);
+        return UserActionResult.Success();
     }
 
     public async Task ExcelFeedbackList(MemoryStream stream, CancellationToken cancellationToken)
@@ -107,7 +94,7 @@ internal class FeedbackService : IFeedbackService
 
         public FeedbacksExcelReportDto(IReadOnlyCollection<FeedbackDetail> list)
         {
-            this.Feedbacks = list;
+            Feedbacks = list;
         }
     }
 }

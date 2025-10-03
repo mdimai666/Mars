@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
+using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -12,41 +14,25 @@ namespace Mars.Middlewares;
 
 internal class MarsNodesMiddleware
 {
-    private readonly RequestDelegate next;
+    private readonly RequestDelegate _next;
     private readonly LinkGenerator _linkGenerator;
-    private readonly INodeService nodeService;
-    private readonly IServiceScopeFactory scopeFactory;
-    private readonly IServiceProvider serviceProvider;
-    //private readonly ILogger<MarsNodesMiddleware> logger;
-    private readonly IInlineConstraintResolver inlineConstraintResolver;
+    private readonly IInlineConstraintResolver _inlineConstraintResolver;
     private readonly RED _RED;
-
-    //private readonly IServiceProvider serviceProvider;
-
-    //public MarsNodesMiddleware(IServiceProvider serviceProvider)
-    //{
-    //    this.serviceProvider = serviceProvider;
-    //}
+    private readonly INodeTaskManager _nodeTaskManager;
 
     public MarsNodesMiddleware(RequestDelegate next,
                     LinkGenerator linkGenerator,
-                    INodeService nodeService,
-                    RED _RED,
-                    IServiceScopeFactory scopeFactory,
-                    IServiceProvider serviceProvider,
+                    RED red,
+                    INodeTaskManager nodeTaskManager,
                     ILogger<MarsNodesMiddleware> logger,
                     IInlineConstraintResolver inlineConstraintResolver)
     {
-        this.next = next;
+        _next = next;
         _linkGenerator = linkGenerator;
-        this.nodeService = nodeService;
-        this._RED = _RED;
-        this.scopeFactory = scopeFactory;
-        this.serviceProvider = serviceProvider;
-        //this.logger = logger;
-        this.inlineConstraintResolver = inlineConstraintResolver;
+        _RED = red;
+        _nodeTaskManager = nodeTaskManager;
+        _inlineConstraintResolver = inlineConstraintResolver;
     }
-
 
     [DebuggerStepThrough]
     public async Task InvokeAsync(HttpContext httpContext)
@@ -54,10 +40,10 @@ internal class MarsNodesMiddleware
 
         if (httpContext.Request.Path == "/favicon.ico") goto Next;
         if (httpContext.Request.Method == "OPTIONS") goto Next;
-
+        if (httpContext.Request.Method == "TRACE") goto Next;
 
 #if DEBUG
-        //Console.WriteLine("MarsNodesMiddleware: " + httpContext.Request.Path); 
+        //Console.WriteLine("MarsNodesMiddleware: " + httpContext.Request.Path);
 #endif
 
         if (_RED.HttpRegisterdCatchers.Count > 0)
@@ -71,28 +57,24 @@ internal class MarsNodesMiddleware
             HttpCatchRegister? find = list.OrderBy(s => s.IsContainCurlyBracket)
                                             .FirstOrDefault(reg => reg.Pattern == httpContext.Request.Path);
 
-
             if (find != null)
             {
                 //await context.Response.WriteAsync($"middleware: {find.NodeId}");
-                using var scope = serviceProvider.CreateScope();
+                var ctx = new HttpInNodeHttpRequestContext(httpContext, find);
+                var requestUserInfo = httpContext.RequestServices.GetRequiredService<IRequestContext>().ToRequestUserInfo();
 
-                try
-                {
-                    HttpInNodeHttpRequestContext ctx = new(httpContext, find);
-                    //nodeService.HttpResponseWaitList.Add(ctx);
+                var msg = new NodeMsg();
+                msg.Add(ctx);
+                msg.Add(requestUserInfo);
 
-                    NodeMsg msg = new();
-                    msg.Add(ctx);
-                    _ = nodeService.Inject(scope.ServiceProvider, find.NodeId, msg);//TODO: Тут кажется проблема
-                }
-                catch (Exception)
+                var taskId = await _nodeTaskManager.CreateJob(httpContext.RequestServices, find.NodeId, msg);
+
+                var task = _nodeTaskManager.Get(taskId);
+
+                if (task.IsDone && task.ErrorCount > 0 && !httpContext.Response.HasStarted)
                 {
-                    throw;
-                }
-                finally
-                {
-                    scope.Dispose();
+                    httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    await httpContext.Response.WriteAsync("error");
                 }
 
                 return;
@@ -101,7 +83,7 @@ internal class MarsNodesMiddleware
         }
 
     Next:
-        await next(httpContext);
+        await _next(httpContext);
     }
 }
 

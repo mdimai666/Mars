@@ -35,7 +35,6 @@ public interface IRED
     List<HttpCatchRegister> HttpRegisterdCatchers { get; }
     IEnumerable<HttpCatchRegister> GetHttpCatchRegistersForMethod(string method);
 
-
     public HttpClient GetHttpClient();
 
     public IServiceProvider ServiceProvider { get; }
@@ -66,9 +65,9 @@ public interface IRED
     {
         return JsonNodeImpl.ParseString(input);
     }
+
+    public void Done(ExecutionParameters parameters);
 }
-
-
 
 public interface IRedUtils
 {

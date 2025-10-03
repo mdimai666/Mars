@@ -7,14 +7,15 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "storage")]
 public class FileReadNode : Node
 {
-    public string Filename { get; set; } = "";
+    public string FilePath { get; set; } = "";
+
     public FileOutputMode OutputMode { get; set; }
 
     public FileReadNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#deb887";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/file-48.png";
     }
 

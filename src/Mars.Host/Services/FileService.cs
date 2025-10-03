@@ -84,6 +84,11 @@ internal class FileService : IFileService
     public Task<FileDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
         => _fileRepository.GetDetail(id, _hostingInfo, cancellationToken);
 
+    public Task<FileDetail?> GetFileByPath(string filePath, CancellationToken cancellationToken)
+        => _fileRepository.GetFileByPathDetail(filePath, _hostingInfo, cancellationToken);
+    public Task<bool> FileExistByPath(string filePath, CancellationToken cancellationToken)
+        => _fileRepository.FileExistByPath(filePath, _hostingInfo, cancellationToken);
+
     public Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
         => _fileRepository.Update(query, hostingInfo, cancellationToken);
 
@@ -175,7 +180,7 @@ internal class FileService : IFileService
     }
 
     /// <summary>
-    ///
+    /// WriteUpload
     /// </summary>
     /// <returns>created FileEntity Id</returns>
     /// <exception cref="ArgumentException"></exception>
@@ -219,7 +224,7 @@ internal class FileService : IFileService
             if (isImage && mediaOption.IsAutoResizeUploadImage && _imageProcessor.IsSupportImageExt(ext))
             {
                 //TODO: заменить на _fileStorage
-                using (FileStream fs = new FileStream(fileAbsolutePath, FileMode.CreateNew, FileAccess.Write))
+                using (var fs = new FileStream(fileAbsolutePath, FileMode.CreateNew, FileAccess.Write))
                 {
                     var result = _imageProcessor.ProcessImage(fileStream, fs, mediaOption.AutoResizeUploadImageConfig);
 

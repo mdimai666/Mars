@@ -31,6 +31,8 @@ public static class MainInfrastructure
 
             options.UseSnakeCaseNamingConvention();
             options.EnableDetailedErrors(true);
+            //options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+
 #if DEBUG
             options.EnableSensitiveDataLogging(true);
 #endif

@@ -37,6 +37,12 @@ public class ClientHub
             OnShowNotifyMessage?.Invoke(message, messageIntent);
         });
 
+        ws.On("NodeRunningTaskCountChanged", (int taskCount) =>
+        {
+            Console.WriteLine($"<<= NodeRunningTaskCountChanged:{taskCount}");
+            OnNodeRunningTaskCountChanged?.Invoke(taskCount);
+        });
+
         this.ws = ws;
     }
 
@@ -54,5 +60,5 @@ public class ClientHub
     public event Action<string, DebugMessage> OnDebugMsg = default!;
     public event Action<string, Mars.Core.Models.MessageIntent> OnShowNotifyMessage = default!;
 
+    public event Action<int> OnNodeRunningTaskCountChanged = default!;
 }
-

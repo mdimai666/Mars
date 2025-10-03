@@ -91,15 +91,19 @@ public partial class FluentMarkdownSection : FluentComponentBase
             // create markup from markdown source
             HtmlContent = await MarkdownToMarkupStringAsync();
             StateHasChanged();
-            await Task.Delay(10);
 
             // notify that content converted from markdown
             if (OnContentConverted.HasDelegate)
             {
                 await OnContentConverted.InvokeAsync();
             }
-            await _jsModule.InvokeVoidAsync("highlight");
-            await _jsModule.InvokeVoidAsync("addCopyButton");
+            _ = Task.Run(async () =>
+            {
+                //StateHasChanged();
+                await Task.Delay(10);
+                await _jsModule.InvokeVoidAsync("highlight");
+                await _jsModule.InvokeVoidAsync("addCopyButton");
+            });
         }
     }
 

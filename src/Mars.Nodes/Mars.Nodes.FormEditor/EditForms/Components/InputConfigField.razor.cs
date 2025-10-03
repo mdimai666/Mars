@@ -30,7 +30,6 @@ public partial class InputConfigField<TConfig>
     [CascadingParameter]
     INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
-
     Dictionary<string, KeyValuePair<string, string>> _items = [];
 
     KeyValuePair<string, string> _valueSetter
@@ -44,13 +43,13 @@ public partial class InputConfigField<TConfig>
     protected override void OnParametersSet()
     {
         _items = ((KeyValuePair<string, string>[])[Empty,
-                    .. _nodeEditorApi.Nodes
+                    .. _nodeEditorApi.AllNodes.Values
                                 .Where(s => s.GetType() == typeof(TConfig))
                                 .Select(node => new KeyValuePair<string,string>(node.Id, node.Label))
                                 ]).ToDictionary(s => s.Key);
     }
 
-    TConfig? GetById(string id) => (TConfig?)_nodeEditorApi.Nodes.FirstOrDefault(s => s.Id == id);
+    TConfig? GetById(string id) => (TConfig?)(_nodeEditorApi.AllNodes.TryGetValue(id, out var val) ? val : null);
 
     void ClickEdit()
     {
@@ -59,6 +58,15 @@ public partial class InputConfigField<TConfig>
 
     void ClickNew()
     {
-        _nodeEditContainer1.OnClickNewConfigNode.InvokeAsync(typeof(TConfig));
+        _nodeEditContainer1.OnClickNewConfigNode.InvokeAsync(new AppendNewConfigNodeEvent
+        {
+            ConfigNodeType = typeof(TConfig),
+            ConfigNodeSetter = ConfigSetter
+        });
+    }
+
+    void ConfigSetter(ConfigNode configNode)
+    {
+        Value = new InputConfig<TConfig> { Id = configNode.Id, Value = (TConfig)configNode };
     }
 }

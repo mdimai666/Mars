@@ -68,7 +68,7 @@ builder.Services.AddFeatureManagement();
 builder.Services.MarsAddLocalization()
                 .MarsAddCore(builder.Configuration)
                 .AddAspNetTools()
-                .MarsAddMetrics()
+                .MarsAddMetrics(builder.Configuration)
                 .AddConfigureActions()
                 .AddMarsWebSiteProcessor();
 builder.AddFront();
@@ -146,8 +146,8 @@ else
     //app.UseHsts();
 }
 
-await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
-if (!commandsApi.IsContinueRun) return 0;
+var baseCmdInvoked = await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
+if (baseCmdInvoked) return 0;
 
 //Hello message
 Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
@@ -207,7 +207,7 @@ app.Map("/_ws", ws =>
     });
 });
 
-//app.MarsUseMetrics();
+app.MarsUseMetrics();
 app.UseMarsHost(builder.Services);
 app.UseConfigureActions();
 app.MarsUseTemplator();

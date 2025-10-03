@@ -1,0 +1,22 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(TerminateAllJobsNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <label>TerminateAllJobsNode</label>
+
+    <FluentRadioGroup @bind-Value=Node.Scope Orientation="Orientation.Vertical">
+        @foreach (var item in Enum.GetValues<TerminateNodesScope>())
+        {
+            <FluentRadio Value="@item" Label="@item.ToString()" />
+        }
+    </FluentRadioGroup>
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    TerminateAllJobsNode Node { get => (TerminateAllJobsNode)Value; set => Value = value; }
+
+}

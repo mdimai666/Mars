@@ -10,7 +10,7 @@ public class ExcelNode : Node
 
     public ExcelNode()
     {
-        HaveInput = true;
+        Inputs = [new()];
         Color = "#21a366";
         Outputs = new List<NodeOutput> { new NodeOutput() };
         Icon = "_content/Mars.Nodes.Workspace/nodes/excel-48.png";

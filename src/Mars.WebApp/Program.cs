@@ -68,7 +68,7 @@ builder.Services.AddFeatureManagement();
 builder.Services.MarsAddLocalization()
                 .MarsAddCore(builder.Configuration)
                 .AddAspNetTools()
-                .MarsAddMetrics()
+                .MarsAddMetrics(builder.Configuration)
                 .AddConfigureActions()
                 .AddMarsWebSiteProcessor();
 builder.AddFront();
@@ -207,7 +207,7 @@ app.Map("/_ws", ws =>
     });
 });
 
-//app.MarsUseMetrics();
+app.MarsUseMetrics();
 app.UseMarsHost(builder.Services);
 app.UseConfigureActions();
 app.MarsUseTemplator();

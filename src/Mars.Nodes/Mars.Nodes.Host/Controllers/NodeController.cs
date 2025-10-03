@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using System.Net.Mime;
+using Mars.Host.Shared.Constants;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
@@ -28,6 +30,10 @@ public class NodeController : ControllerBase
     private readonly INodeTaskManager _nodeTaskManager;
     private readonly FunctionCodeSuggestService _functionCodeSuggestService;
 
+    private static readonly Meter Meter = new(MetricsConstants.AppName);
+    private static readonly Counter<long> InjectCounter =
+        Meter.CreateCounter<long>("node_inject_calls", description: "Сколько раз вызывался Inject");
+
     public NodeController(INodeService nodeService,
                         IServiceScopeFactory factory,
                         INodeTaskManager nodeTaskManager,
@@ -54,6 +60,7 @@ public class NodeController : ControllerBase
     [HttpGet(nameof(Inject) + "/{nodeId}")]
     public async Task<ActionResult<UserActionResult>> Inject(string nodeId)
     {
+        InjectCounter.Add(1, new KeyValuePair<string, object?>("nodeId", nodeId));
         return await _nodeService.Inject(_factory, nodeId);
     }
 

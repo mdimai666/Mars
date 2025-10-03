@@ -1,8 +1,10 @@
 using System.Text;
+using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Middlewares;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
+using Mars.Nodes.Host.CommandLine;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Scheduler;
 using Mars.Nodes.Host.Services;
@@ -27,6 +29,8 @@ public static class MainMarsNodes
         //services.AddHostedService<FlowExecutionBackgroundService>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        ICommandLineApi.Register<NodesCli>();
 
         return services;
     }

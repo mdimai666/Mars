@@ -146,8 +146,8 @@ else
     //app.UseHsts();
 }
 
-await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
-if (!commandsApi.IsContinueRun) return 0;
+var baseCmdInvoked = await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
+if (baseCmdInvoked) return 0;
 
 //Hello message
 Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());

@@ -10,4 +10,6 @@ public record NodeTaskResultSummary
     public required bool IsDone { get; init; }
     public required bool IsTerminated { get; init; }
     public required int ErrorCount { get; init; }
+    public required DateTimeOffset StartDate { get; init; }
+    public required DateTimeOffset? EndDate { get; init; }
 }

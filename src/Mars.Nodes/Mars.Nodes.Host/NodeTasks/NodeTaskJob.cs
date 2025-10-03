@@ -32,6 +32,9 @@ internal class NodeTaskJob : IAsyncDisposable
     public int ErrorCount => _jobs.Values.Sum(s => s.Executions.Count(x => x.Result == NodeJobExecutionResult.Fail));
     readonly CancellationTokenSource _cancellationTokenSource = new();
 
+    public DateTimeOffset StartDate { get; init; }
+    public DateTimeOffset? EndDate { get; private set; }
+
     internal NodeTaskJob(IServiceProvider serviceProvider,
         RED RED,
         string injectNodeId,
@@ -42,6 +45,7 @@ internal class NodeTaskJob : IAsyncDisposable
         _logger = logger;
         _serviceProvider = serviceProvider;
 
+        StartDate = DateTimeOffset.Now;
         InjectNodeId = injectNodeId;
         var injectNode = _nodes[injectNodeId].Node;
         FlowNodeId = _nodes[injectNode.Container].Id;
@@ -198,6 +202,8 @@ internal class NodeTaskJob : IAsyncDisposable
             _logger.LogInformation($"🔴 Terminated! executedCount={executedCount}");
         else
             _logger.LogInformation($"✅ Finish! executedCount={executedCount}");
+
+        EndDate = DateTimeOffset.Now;
 
         OnComplete?.Invoke();
     }

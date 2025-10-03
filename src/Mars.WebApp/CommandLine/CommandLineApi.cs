@@ -1,7 +1,8 @@
 using System.CommandLine;
 using System.Reflection;
-using Mars.Host.Shared.CommandLine;
+using Mars.Core.Extensions;
 using Mars.Core.Models;
+using Mars.Host.Shared.CommandLine;
 
 namespace Mars.CommandLine;
 
@@ -15,9 +16,11 @@ public class CommandLineApi : ICommandLineApi
 
     public bool IsContinueRun = false;
 
-    Dictionary<Type, CommandCli> cli = new();
+    Dictionary<Type, CommandCli> cli = [];
 
     Type[] initalCommands = [typeof(MainCommand)];
+
+    static readonly string[] _allowedBaseCommands = ["info"];
 
     public CommandLineApi()
     {
@@ -59,26 +62,28 @@ public class CommandLineApi : ICommandLineApi
         {
             var ctors = type.GetConstructors();
             var instance = ctors[0].Invoke([this]) as CommandCli;
-            cli.Add(type, instance);
+            cli.Add(type, instance!);
         }
     }
 
     static IEnumerable<Type> GetEnumerableOfType<T>(Assembly assembly, params object[] constructorArgs) where T : class
     {
-        List<Type> objects = new List<Type>();
-        foreach (Type type in
-            assembly.GetTypes()
-            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))))
-        {
-            objects.Add(type);
-        }
+        List<Type> objects =
+        [
+            .. assembly.GetTypes()
+            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))),
+        ];
         return objects;
     }
 
-    public async Task InvokeBaseCommands(string[] args)
+    public async Task<bool> InvokeBaseCommands(string[] args)
     {
         LoadBaseCommandCliTypes();
+        var a = args.JoinStr(" ").Trim();
+        if (!_allowedBaseCommands.Contains(a)) return false;
+
         await rootCommand.InvokeAsync(args);
+        return true;
     }
 
     public async Task InvokeCommands(string[] args)
@@ -89,7 +94,7 @@ public class CommandLineApi : ICommandLineApi
 
     public T GetCommand<T>() where T : CommandCli
     {
-        return cli[typeof(T)] as T;
+        return (cli[typeof(T)] as T)!;
     }
 
     public void OutResult(IUserActionResult result)
@@ -135,7 +140,7 @@ public class CommandLineApi : ICommandLineApi
             ?? throw new Exception($"option '{optionName} not found'");
         var value = parsed.GetValueForOption(option);
 
-        return (T)value;
+        return (T)value!;
     }
 
     public void AddCommand(Command command)

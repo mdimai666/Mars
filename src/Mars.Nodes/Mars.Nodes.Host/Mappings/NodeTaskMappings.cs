@@ -16,6 +16,8 @@ internal static class NodeTaskMappings
             IsDone = entity.IsDone,
             IsTerminated = entity.IsTerminated,
             ErrorCount = entity.ErrorCount,
+            StartDate = entity.StartDate,
+            EndDate = entity.EndDate,
         };
 
     public static NodeTaskResultDetail ToDetail(this NodeTaskJob entity)
@@ -29,6 +31,8 @@ internal static class NodeTaskMappings
             IsDone = entity.IsDone,
             IsTerminated = entity.IsTerminated,
             ErrorCount = entity.ErrorCount,
+            StartDate = entity.StartDate,
+            EndDate = entity.EndDate,
 
             Jobs = entity.Jobs.Values.ToDto(),
         };

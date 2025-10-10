@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security;
 using System.Security.Claims;
 using System.Text;
 using Mars.Host.Models;
+using Mars.Host.Shared.Dto.Users;
 using Mars.Test.Common.Constants;
 using Microsoft.IdentityModel.Tokens;
 
@@ -36,14 +38,17 @@ public class TokenGenerator
 
     public string GenerateTokenWithClaims(string[]? roles = null)
     {
-        var user = UserConstants.TestUser;
+        return GenerateTokenWithClaims(UserConstants.TestUser, UserConstants.TestUser.SecurityStamp, roles);
+    }
 
+    public string GenerateTokenWithClaims(UserDetail user, string securityStamp, string[]? roles = null)
+    {
         var claims = new List<Claim> {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName!),
             new Claim(ClaimTypes.Email, user?.Email??""),
             // https://learn.microsoft.com/ru-ru/dotnet/api/microsoft.aspnetcore.identity.identityuser-1.securitystamp?view=aspnetcore-8.0#definition
-            new Claim("AspNet.Identity.SecurityStamp", user.SecurityStamp),
+            new Claim("AspNet.Identity.SecurityStamp", securityStamp),
             new Claim(ClaimTypes.GivenName, user.FirstName??""),
             new Claim(ClaimTypes.Surname, user.LastName??""),
         };

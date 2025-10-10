@@ -2,11 +2,11 @@ using System.Linq.Expressions;
 using AutoFixture;
 using Mars.Integration.Tests;
 using Mars.Integration.Tests.Common;
+using Mars.Test.Common.Helpers;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.WebApiClient.Integration.Tests;
-
 
 [Collection("WebApiClientTestApp")]
 public class BaseWebApiClientTests : ApplicationTests

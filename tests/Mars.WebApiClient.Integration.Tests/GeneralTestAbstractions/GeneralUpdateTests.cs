@@ -1,9 +1,11 @@
 using AutoFixture;
+using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Extensions;
-using Mars.WebApiClient.Integration.Tests;
+using Mars.Test.Common.Helpers;
 using Mars.WebApiClient.Interfaces;
-using FluentAssertions;
+
+namespace Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
 public class GeneralUpdateTests<TEntity, TRequest, TResponse> : GeneralUpdateTests<TEntity, TRequest>
     where TEntity : class

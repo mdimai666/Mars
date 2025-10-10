@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,21 +8,32 @@ namespace Mars.Host.Shared.Validators;
 public class ValidatorFabric : IValidatorFabric
 {
     private readonly IServiceProvider _serviceProvider;
-    private static Dictionary<Type, List<Type>> _validators = default!;
+    private static Dictionary<Type, List<Type>> _validators = [];
 
-    public static void Initialize(IServiceCollection services)
+    public ValidatorFabric(IServiceProvider serviceProvider)
     {
-        // составить словарь из generic аргумента. AbstractValidator<(этот)> 
-        _validators = services.Where(x => !x.ServiceType.IsInterface && typeof(IValidator).IsAssignableFrom(x.ServiceType))
+        _serviceProvider = serviceProvider;
+    }
+
+    private static Dictionary<Type, List<Type>> ExtractValidatorsFromServiceCollections(IServiceCollection services)
+    {
+        // составить словарь из generic аргумента. AbstractValidator<(этот)>
+        return services.Where(x => !x.ServiceType.IsInterface && typeof(IValidator).IsAssignableFrom(x.ServiceType))
                                 .Select(x => x.ServiceType)
                                 .GroupBy(GetBaseTypeGenericArgument)
                                 .Where(s => !s.Key.IsPrimitive && s.Key != typeof(string))
                                 .ToDictionary(g => g.Key, g => g.Where(v => !v.IsAbstract).ToList());
     }
 
-    public ValidatorFabric(IServiceProvider serviceProvider)
+    public static void AddValidatorsFromAssembly(IServiceCollection services, Assembly assembly)
     {
-        _serviceProvider = serviceProvider;
+        services.AddValidatorsFromAssembly(assembly);
+        var foundValidators = ExtractValidatorsFromServiceCollections(services);
+
+        foreach (var v in foundValidators)
+        {
+            _validators.TryAdd(v.Key, v.Value);
+        }
     }
 
     /// <summary>

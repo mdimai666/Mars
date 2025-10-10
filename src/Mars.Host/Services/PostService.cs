@@ -82,11 +82,8 @@ internal class PostService : IPostService
         var id = await _postRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, renderContent: false, cancellationToken);
 
-        //if (created != null)
-        {
-            var payload = new ManagerEventPayload(_eventManager.Defaults.PostAdd(created.Type), created);//TODO: сделать явный тип.
-            _eventManager.TriggerEvent(payload);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostAdd(created.Type), created);//TODO: сделать явный тип.
+        _eventManager.TriggerEvent(payload);
 
         return created;
     }

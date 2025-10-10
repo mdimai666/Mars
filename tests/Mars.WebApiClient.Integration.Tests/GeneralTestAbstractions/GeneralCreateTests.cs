@@ -1,8 +1,9 @@
 using AutoFixture;
+using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Extensions;
+using Mars.Test.Common.Helpers;
 using Mars.WebApiClient.Interfaces;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -20,7 +21,6 @@ public class GeneralCreateTests<TEntity, TRequest, TResponse>
         _base = baseWebApiClient;
         _createAction = createAction;
     }
-
 
     public async Task ValidRequest_Unauthorized()
     {

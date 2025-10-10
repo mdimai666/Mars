@@ -43,8 +43,6 @@ public sealed class EntitiesCustomize : ICustomization
                                     .OmitAutoProperties()
                                 );
 
-        //fixture.Customizations.Add(new ElementsBuilder<User>(new Faker<User>()));
-
         fixture.Customize<UserTypeEntity>(composer => composer
                                    .OmitAutoProperties()
                                    .With(s => s.Id)
@@ -58,23 +56,10 @@ public sealed class EntitiesCustomize : ICustomization
                                     .With(s => s.PostContentType, PostTypeConstants.DefaultPostContentTypes.PlainText)
                                     );
 
-        //fixture.Customize<PostType>(composer => composer
-        //                           .OmitAutoProperties()
-        //                           .With(s => s.Id)
-        //                           .With(s => s.Title, fixture.Create("Title - "))
-        //                           //.With(s => s.PostStatusList, PostStatus.DefaultStatuses())
-        //                           .With(s => s.TypeName)
-        //                           .With(s => s.PostContentType, AppShared.Models.EPostContentType.PlainText)
-        //                           .With(s => s.EnabledFeatures, [nameof(Post.Content)])
-        //                           .With(s => s.Created, FixtureCustomize.DefaultCreated)
-        //                           .With(s => s.Modified, DateTime.MinValue)
-        //                           .Without(s => s.ViewSettings)
-        //                           );
-
         fixture.Customize<PostTypeEntity>(composer => composer
                                    .OmitAutoProperties()
                                    .With(s => s.Id)
-                                   .With(s => s.Title, fixture.Create("Title - "))
+                                   .With(s => s.Title, () => fixture.Create("Title - "))
                                    //.With(s => s.PostStatusList, PostStatus.DefaultStatuses())
                                    .With(s => s.TypeName)
                                    .With(s => s.PostContentType)
@@ -85,19 +70,27 @@ public sealed class EntitiesCustomize : ICustomization
                                    );
 
         fixture.Customize<PostEntity>(composer => composer
+                                    .FromFactory(() =>
+                                    {
+                                        var id = Guid.NewGuid();
+                                        return new()
+                                        {
+                                            Id = id,
+                                            Slug = TextTool.TranslateToPostSlug("slug-" + id)
+                                        };
+                                    })
                                    .OmitAutoProperties()
                                    .With(s => s.Id)
-                                   .With(s => s.Title, fixture.Create("Title - "))
-                                   .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
-                                   .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
-                                   .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
+                                   .With(s => s.Title, () => fixture.Create("Title - "))
+                                   .With(s => s.Content, () => "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
+                                   .With(s => s.Status, () => PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
                                    //.With(s => s.Image, "")
-                                   .With(s => s.LangCode, Random.Shared.GetItems(["", "ru"], 1)[0])
+                                   .With(s => s.LangCode, () => Random.Shared.GetItems(["", "ru"], 1)[0])
                                    //.With(s => s.Type, "post")
                                    .With(s => s.PostTypeId, PostTypeDict["post"].Id)
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    //.With(s => s.ModifiedAt, null!)
-                                   .With(s => s.Tags, Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
+                                   .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
                                    .With(s => s.UserId, UserConstants.TestUserId)
                                    //.Without(s => s.FileList)
                                    //.Without(s => s.PostFiles)
@@ -117,11 +110,11 @@ public sealed class EntitiesCustomize : ICustomization
         fixture.Customize<FileEntity>(composer => composer
                                    .OmitAutoProperties()
                                    .With(s => s.Id)
-                                   .With(s => s.FileName, faker.System.FileName(fixtureFileExt))
+                                   .With(s => s.FileName, () => faker.System.FileName(fixtureFileExt))
                                    .With(s => s.FileExt, fixtureFileExt)
-                                   .With(s => s.FileSize, (ulong)Random.Shared.Next(100, 2_000_000))
-                                   .With(s => s.FilePhysicalPath, $"Media/file-{Guid.NewGuid()}.{fixtureFileExt}")
-                                   .With(s => s.FileVirtualPath, $"Media/file-{Guid.NewGuid()}.{fixtureFileExt}")
+                                   .With(s => s.FileSize, () => (ulong)Random.Shared.Next(100, 2_000_000))
+                                   .With(s => s.FilePhysicalPath, () => $"Media/file-{Guid.NewGuid()}.{fixtureFileExt}")
+                                   .With(s => s.FileVirtualPath, () => $"Media/file-{Guid.NewGuid()}.{fixtureFileExt}")
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    .With(s => s.UserId, UserConstants.TestUserId)
                                    .Without(s => s.Meta)
@@ -133,7 +126,7 @@ public sealed class EntitiesCustomize : ICustomization
                                     .With(s => s.Title)
                                     .With(s => s.Slug)
                                     .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
-                                    .With(s => s.Tags, Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
                                     .With(s => s.MenuItems)
                                    );
 

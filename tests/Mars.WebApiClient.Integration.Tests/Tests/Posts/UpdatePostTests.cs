@@ -5,6 +5,7 @@ using Mars.Integration.Tests.Common;
 using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
+using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Posts;
 

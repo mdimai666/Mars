@@ -6,7 +6,7 @@ using Mars.WebApiClient.Models;
 
 namespace Mars.WebApiClient.Implements;
 
-internal class BasicServiceClient
+public class BasicServiceClient
 {
     protected readonly IServiceProvider _serviceProvider;
     protected readonly IFlurlClient _client;

@@ -22,10 +22,15 @@ public interface IPostTypeRepository
     Task<PostTypeDetail?> GetDetailByName(string name, CancellationToken cancellationToken);
 
     Task<Guid> Create(CreatePostTypeQuery query, CancellationToken cancellationToken);
-
+    /// <summary>
+    /// Update
+    /// </summary>
     /// <exception cref="NotFoundException"/>
     Task Update(UpdatePostTypeQuery query, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Delete
+    /// </summary>
     /// <exception cref="NotFoundException"/>
     Task Delete(Guid id, CancellationToken cancellationToken);
 

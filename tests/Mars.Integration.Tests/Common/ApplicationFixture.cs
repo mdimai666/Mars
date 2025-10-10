@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using Flurl.Http;
 using Mars.Host.Data.Contexts;
+using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
@@ -133,6 +134,22 @@ public class ApplicationFixture : IAsyncLifetime
 
         var tokenString = _tokenGenerator.GenerateTokenWithClaims();
         _authClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, tokenString);
+    }
+
+    public IFlurlClient GetClientForUser(Guid userId)
+    {
+        var user = DbFixture.DbContext.Users.AsNoTracking()
+                                            .Include(s => s.Roles)
+                                            .Include(s => s.UserType)
+                                            .Include(s => s.MetaValues!)
+                                                .ThenInclude(s => s.MetaField)
+                                            .First(s => s.Id == userId);
+
+        var clientOptions = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+        var tokenString = _tokenGenerator.GenerateTokenWithClaims(user.ToDetail(), user.SecurityStamp!);
+        var client = new FlurlClient(ApplicationFactory.CreateClient(clientOptions));
+        client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, tokenString);
+        return client;
     }
 
     private void ResetClients()

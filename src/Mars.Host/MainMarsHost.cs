@@ -75,6 +75,8 @@ public static class MainMarsHost
         services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
         services.AddScoped<SiteFaviconConfiguratorHandler>();
 
+        ValidatorFabric.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
+
         //temp
         services.AddScoped<PostTypeExporter>();
 
@@ -98,8 +100,6 @@ public static class MainMarsHost
 
     public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
     {
-        ValidatorFabric.Initialize(serviceCollection);
-
         UseSiteScriptsBuilders(app.Services);
 
         return app;

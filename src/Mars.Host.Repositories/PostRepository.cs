@@ -43,7 +43,7 @@ internal class PostRepository : IPostRepository, IDisposable
     public async Task<PostDetail?> GetDetailBySlug(string slug, string type, CancellationToken cancellationToken)
                                 => (await InternalDetail
                                         .FirstOrDefaultAsync(s => s.PostType.TypeName == type
-                                                            && s.Slug.ToLower() == slug.ToLower(), cancellationToken))
+                                                            && EF.Functions.ILike(s.Slug, slug), cancellationToken))
                                         ?.ToDetail();
 
     public async Task<PostEditDetail?> GetPostEditDetail(Guid id, CancellationToken cancellationToken)

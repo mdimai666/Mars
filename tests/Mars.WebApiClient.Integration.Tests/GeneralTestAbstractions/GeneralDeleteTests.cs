@@ -1,7 +1,8 @@
 using AutoFixture;
-using Mars.Core.Exceptions;
-using Mars.WebApiClient.Interfaces;
 using FluentAssertions;
+using Mars.Core.Exceptions;
+using Mars.Test.Common.Helpers;
+using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 

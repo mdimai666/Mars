@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Mars.WebApiClient.Integration.Tests;
+namespace Mars.Test.Common.Helpers;
 
 public static class ReflectionHelper
 {
@@ -16,15 +16,15 @@ public static class ReflectionHelper
         return Expression.Lambda<Func<T, bool>>(body, parameter);
     }
 
-    public static Expression<Func<T, Guid>> GetIdPropertyExpression<T>()
+    public static Expression<Func<T, Guid>> GetIdPropertyExpression<T>(string prefix = "")
     {
         var parameter = Expression.Parameter(typeof(T), "x");
-        var property = Expression.Property(parameter, "Id");
+        var property = Expression.Property(parameter, prefix + "Id");
 
         return Expression.Lambda<Func<T, Guid>>(property, parameter);
     }
 
-    public static bool HasGuidIdProperty(Type type)
+    public static bool HasGuidIdProperty(Type type, string prefix = "")
     {
         if (type is null)
             throw new ArgumentNullException(nameof(type));
@@ -34,16 +34,16 @@ public static class ReflectionHelper
 
         foreach (PropertyInfo property in properties)
         {
-            if (property.Name == "Id" && property.PropertyType == typeof(Guid))
+            if (property.Name == prefix + "Id" && property.PropertyType == typeof(Guid))
                 return true;
         }
 
         return false;
     }
 
-    public static bool HasGuidIdProperty<T>() => HasGuidIdProperty(typeof(T));
+    public static bool HasGuidIdProperty<T>(string prefix = "") => HasGuidIdProperty(typeof(T), prefix);
 
-    public static void SetGuidIdProperty(object obj, Guid id)
+    public static void SetGuidIdProperty(object obj, Guid id, string prefix = "")
     {
         if (obj is null)
             throw new ArgumentNullException(nameof(obj));
@@ -52,7 +52,7 @@ public static class ReflectionHelper
 
         // Находим открытое свойство типа Guid с названием "Id"
         PropertyInfo? property = objectType.GetProperty(
-            "Id",
+            prefix + "Id",
             BindingFlags.Public | BindingFlags.Instance,
             null,
             typeof(Guid),

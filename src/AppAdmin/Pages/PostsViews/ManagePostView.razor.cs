@@ -19,7 +19,7 @@ public partial class ManagePostView
 
     [Parameter, EditorRequired]
     public PostTypeSummaryResponse PostType { get; set; } = default!;
-
+    string previousRequestPostTypeName = "";
 
     string urlEditPage = "/dev/EditPost";
 
@@ -65,6 +65,13 @@ public partial class ManagePostView
                 }
             );
             Refresh();
+        }
+
+        if (previousRequestPostTypeName != PostType.TypeName)
+        {
+            previousRequestPostTypeName = PostType.TypeName;
+            //data = ListDataResult<PostListItemResponse>.Empty();
+            //dataProvider.ClearData()
         }
     }
 

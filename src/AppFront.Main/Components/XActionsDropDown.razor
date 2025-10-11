@@ -4,7 +4,7 @@
 @inject IActAppService actService
 @inject ViewModelService vms
 
-<div class="XActionsDropDown d-flex" data-context-id="@App.PageType">
+<div class="XActionsDropDown d-flex" data-context-id="@_contextId">
 
     @if (_actions is not null && _actions.Any() || ChildContent is not null)
     {
@@ -36,21 +36,31 @@
     }
 </div>
 
-
 @code {
     [Parameter] public string? ContextId { get; set; }
     [Parameter] public string? ContextPart { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     [Parameter] public bool AlsoShowRootContext { get; set; }
+    [Parameter] public Type? ContextElement { get; set; }
+
+    [CascadingParameter(Name = "RouteData")]
+    RouteData? router { get; set; }
+
+    Type? _appPageType => router?.PageType;
 
     bool open = false;
     string buttonId = "menubtn-" + Guid.NewGuid().ToString();
 
-    public string? _rootContextId => ContextId ?? App.PageType.FullName;
+    public string? _rootContextId => ContextId ?? _appPageType?.FullName ?? "AppLoading";
     public string? _contextId => _rootContextId + (string.IsNullOrEmpty(ContextPart) ? "" : $"-{ContextPart}");
 
     Dictionary<string, string>? _actions;
+
+    public static void Setup(Func<Type> currentPageTypeGetter)
+    {
+
+    }
 
     protected override async Task OnParametersSetAsync()
     {

@@ -14,7 +14,7 @@ namespace AppAdmin;
 public partial class App
 {
     static RouteData trackRouteData = default!;
-    public static Type PageType => trackRouteData?.PageType!;
+    public static Type PageType => trackRouteData?.PageType ?? typeof(App);
 
     [CascadingParameter]
     protected Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -39,7 +39,7 @@ public partial class App
         Q.Root.On("GoBack", () => JSRuntime.InvokeVoidAsync("history.back"));
         Q.Root.On("App.SetupTheme", SetupThemeExternal);
 
-        this.appHotKeysContext = this.HotKeys.CreateContext()
+        appHotKeysContext = HotKeys.CreateContext()
                                 .Add(Code.F9, OpenPageSource, "open page source");
 
         await viewModelService.GetLocalInitialSiteDataViewModel();

@@ -1,4 +1,4 @@
-namespace Mars.Host.Constants.Website;
+namespace Mars.Host.Shared.Constants.Website;
 
 public static class AppAdminConstants
 {

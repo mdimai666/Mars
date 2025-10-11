@@ -77,7 +77,7 @@ public class AppAdminSpaHtmlScripts
         Scripts = [
             ..scripts,
             #if DEBUG
-            new InlineBlockJavaScript("<script>window._dev=true;</script>"),
+            new InlineBlockJavaScript("window._dev=true;"),
             #endif
             blazorSpaWasmHtmlScripts.BlazorSpaInlineScipt,
             ];

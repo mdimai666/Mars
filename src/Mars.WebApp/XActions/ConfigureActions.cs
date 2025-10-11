@@ -20,7 +20,7 @@ internal static class ConfigureActions
 
     public static IServiceCollection AddConfigureActions(this IServiceCollection services)
     {
-        services.AddSingleton<ActActionsProvider>();
+        services.AddSingleton<IActActionsProvider, ActActionsProvider>();
 
         return services;
     }

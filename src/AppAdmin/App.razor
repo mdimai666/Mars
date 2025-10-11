@@ -1,7 +1,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@if (Q.Site is not null && !Q.IsPrerender)
-{
+    @if (Q.Site is not null && !Q.IsPrerender)
+    {
     <FluentDesignSystemProvider @ref=_fluentDesignSystemProvider
                                 AccentBaseColor="@styler.AccentBaseColor"
                                 NeutralBaseColor="@styler.NeutralBaseColor"
@@ -20,7 +20,7 @@
         <CascadingAuthenticationState>
             <Router AppAssembly="@typeof(Program).Assembly">
                 <Found Context="routeData">
-                    <CascadingValue Name="RouteData" Value="trackRouteData=routeData">
+                    <CascadingValue Name="RouteData" Value="trackRouteData = routeData">
                         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(AdminLayout)">
                             <Authorizing>
                                 <text> Пожалуйста, подождите, мы авторизуем пользователя... </text>
@@ -68,7 +68,7 @@ else
 }
 
 <AppFront.Shared.AppFrontSharedContainer />
-<Mars.SemanticKernel.Front.Components.MarsAITools.AIToolsContainer/>
+<Mars.SemanticKernel.Front.Components.MarsAITools.AIToolsContainer />
 
 <FluentToastProvider Position="ToastPosition.TopCenter" />
 <FluentDialogProvider />

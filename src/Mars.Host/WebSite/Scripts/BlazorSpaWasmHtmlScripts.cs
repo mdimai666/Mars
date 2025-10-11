@@ -7,8 +7,8 @@ namespace Mars.Host.WebSite.Scripts;
 public class BlazorSpaWasmHtmlScripts
 {
     public ScriptFileInfo Brotli { get; }
-    public InlineBlockJavaScript BlazorSpaInlineScipt => _blazorSpaInlineScipt;
-    static InlineBlockJavaScript _blazorSpaInlineScipt = default!;
+    public InlineRawBlock BlazorSpaInlineScipt => _blazorSpaInlineScipt;
+    static InlineRawBlock _blazorSpaInlineScipt = default!;
 
     public BlazorSpaWasmHtmlScripts(Assembly MarsHostAssembly)
     {
@@ -17,7 +17,7 @@ public class BlazorSpaWasmHtmlScripts
             using Stream resource = MarsHostAssembly.GetManifestResourceStream("Mars.Host.Options.BlazorScriptsAppend.html")!;
             using var reader = new StreamReader(resource);
             var identedHtml = reader.ReadToEnd().Split(["\r\n", "\n", "\r"], StringSplitOptions.None).Select(s => '\t' + s).JoinStr("\n").Trim();
-            _blazorSpaInlineScipt = new InlineBlockJavaScript(identedHtml);
+            _blazorSpaInlineScipt = new InlineRawBlock(identedHtml);
         }
 
         //https://github.com/google/brotli

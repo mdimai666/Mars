@@ -15,5 +15,9 @@ public class InlineCssStyle : IWebSiteInjectContentPart
         Scoped = scoped;
     }
 
-    public string HtmlContent() => Content;
+    public string HtmlContent() => $$"""
+        <style{{(Scoped ? " scoped" : "")}}>
+        {{Content}}
+        <?style>
+        """;
 }

@@ -1,5 +1,5 @@
 using HandlebarsDotNet;
-using Mars.Host.Constants.Website;
+using Mars.Host.Shared.Constants.Website;
 using Mars.Host.Shared.Templators;
 using Mars.Host.Shared.WebSite.Scripts;
 using Microsoft.Extensions.DependencyInjection;

@@ -248,6 +248,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.Front", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin.WebApiClient", "..\Mars.EShopPlugin\src\Mars.EShopPlugin.WebApiClient\Mars.EShopPlugin.WebApiClient.csproj", "{99B506C1-40DC-407D-9181-42AE2CA3EC7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.EShopPlugin", "..\Mars.EShopPlugin\src\Mars.EShopPlugin\Mars.EShopPlugin.csproj", "{3F9E5AB3-0266-43FD-BFA0-7F1BC55887BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -642,6 +644,10 @@ Global
 		{99B506C1-40DC-407D-9181-42AE2CA3EC7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99B506C1-40DC-407D-9181-42AE2CA3EC7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99B506C1-40DC-407D-9181-42AE2CA3EC7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F9E5AB3-0266-43FD-BFA0-7F1BC55887BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F9E5AB3-0266-43FD-BFA0-7F1BC55887BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F9E5AB3-0266-43FD-BFA0-7F1BC55887BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F9E5AB3-0266-43FD-BFA0-7F1BC55887BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -748,6 +754,7 @@ Global
 		{12E9BA55-0FE0-4B43-A95E-AA2D8B4BF5DD} = {362CB9D2-ACBB-45A3-9E19-0DB69AB38FC3}
 		{D0EC2434-0D9D-4337-874E-0360609D09EC} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
 		{99B506C1-40DC-407D-9181-42AE2CA3EC7A} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
+		{3F9E5AB3-0266-43FD-BFA0-7F1BC55887BB} = {7E7BE1C3-F6BC-47D8-8AEB-3B5ACBE49FC4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8D4F7A-BC38-43EA-9F4B-6BDB92828DCC}

@@ -72,11 +72,17 @@ internal class XActionManager : IActionManager, IMarsAppLifetimeService
     {
         if (!invalide && !force) return;
 
-        List<XActionCommandContext> providersCommands = [];
+        Dictionary<string, XActionCommandContext> providersCommands = [];
 
         foreach (var provider in _xActionCommandsProviders)
             foreach (var action in await provider.ReadCommands())
-                providersCommands.Add(new XActionCommandContext { Command = action, Provider = provider });
+            {
+                if (!providersCommands.TryAdd(action.Id, new XActionCommandContext { Command = action, Provider = provider }))
+                {
+                    _logger.LogWarning($"providersCommands '{provider.GetType().Name}' try add duplicate command '{action.Id}'");
+                }
+
+            }
 
         if (!invalide && !force) return;
 
@@ -86,10 +92,15 @@ internal class XActionManager : IActionManager, IMarsAppLifetimeService
 
             foreach (var action in _registeredActions.Values)
             {
-                _allActions.Add(action.Id, new() { Command = action });
+                IXActionCommandsProvider? provider = null;
+                if (providersCommands.TryGetValue(action.Id, out var providedHostCommand))
+                {
+                    provider = providedHostCommand.Provider;
+                }
+                _allActions.Add(action.Id, new() { Command = action, Provider = provider });
             }
 
-            foreach (var action in providersCommands)
+            foreach (var action in providersCommands.Values)
             {
                 if (_allActions.ContainsKey(action.Command.Id)) continue;
                 _allActions.Add(action.Command.Id, action);

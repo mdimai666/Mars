@@ -15,25 +15,25 @@
             </span>
         </FluentButton>
 
-        <FluentMenu Anchor="@buttonId"
-                    @bind-Open="open"
-                    @onmenuchange="HandleOnMenuChanged">
-            @if (_actions is not null && _actions.Any())
-            {
-                @foreach (var item in _actions)
-                {
-                    <FluentMenuItem Id="@item.Key">
-                        @item.Value
-                    </FluentMenuItem>
-                }
-                @if (_actions.Any() && ChildContent != null)
-                {
-                    <FluentDivider />
-                }
-            }
-            @ChildContent
-        </FluentMenu>
     }
+    <FluentMenu Anchor="@buttonId"
+                @bind-Open="open"
+                @onmenuchange="HandleOnMenuChanged">
+        @if (_actions is not null && _actions.Any())
+        {
+            @foreach (var item in _actions)
+            {
+                <FluentMenuItem Id="@item.Key">
+                    @item.Value
+                </FluentMenuItem>
+            }
+            @if (_actions.Any() && ChildContent != null)
+            {
+                <FluentDivider />
+            }
+        }
+        @ChildContent
+    </FluentMenu>
 </div>
 
 @code {
@@ -50,7 +50,7 @@
     Type? _appPageType => router?.PageType;
 
     bool open = false;
-    string buttonId = "menubtn-" + Guid.NewGuid().ToString();
+    string buttonId { get; set; } = "menubtn-" + Guid.NewGuid().ToString();
 
     public string? _rootContextId => ContextId ?? _appPageType?.FullName ?? "AppLoading";
     public string? _contextId => _rootContextId + (string.IsNullOrEmpty(ContextPart) ? "" : $"-{ContextPart}");

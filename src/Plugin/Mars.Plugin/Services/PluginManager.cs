@@ -3,7 +3,7 @@ using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Services;
 using Mars.Plugin.Abstractions;
 using Mars.Plugin.Dto;
-using Mars.Plugin.Front.Abstractions;
+using Mars.Plugin.PluginProvider.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
@@ -110,6 +110,9 @@ internal class PluginManager
 
             var pluginWwwRoot = Path.Combine(pluginData.Settings.ContentRootPath, "wwwroot");
 
+            var manifestProvider = new PluginManifestProvider(pluginData.Plugin.GetType().Assembly);
+            manifestProvider.ProvideManifest(app, pluginData);
+
             if (Directory.Exists(pluginWwwRoot))
             {
                 var pluginUrl = $"/_plugin/{pluginData.Info.KeyName}";
@@ -121,13 +124,6 @@ internal class PluginManager
                         FileProvider = new PhysicalFileProvider(pluginWwwRoot),
                     });
                 });
-
-                var pluginManifestFilePath = Path.Combine(pluginWwwRoot, MarsFrontPluginManifest.DefaultManifestFileName);
-                var pluginManifestBinFilePath = Path.Combine(Path.GetDirectoryName(pluginData.Info.AssemblyPath)!, "wwwroot", MarsFrontPluginManifest.DefaultManifestFileName);
-                if (File.Exists(pluginManifestFilePath) || File.Exists(pluginManifestBinFilePath))
-                {
-                    pluginData.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
-                }
             }
         }
 

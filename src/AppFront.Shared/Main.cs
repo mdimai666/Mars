@@ -1,12 +1,12 @@
 using AppFront.Shared.AuthProviders;
 using AppFront.Shared.Services;
+using Blazored.LocalStorage;
+using BlazoredHtmlRender;
+using Flurl.Http;
 using Mars.Shared.Interfaces;
 using Mars.Shared.Resources;
 using Mars.Shared.Tools;
 using Mars.WebApiClient;
-using Blazored.LocalStorage;
-using BlazoredHtmlRender;
-using Flurl.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -46,15 +46,15 @@ public static class AppFrontSharedExtensions
 
         services.AddHttpClientInterceptor();
 
-        HttpClient client = new HttpClient();
+        var client = new HttpClient();
 
         if (string.IsNullOrEmpty(backendUrl) == false)
         {
-            //BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) 
+            //BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
             //BaseAddress = new Uri("http://localhostq:5003")
             //BaseAddress = new Uri(builder.Configuration["BackendUrl"])
             client.BaseAddress = new Uri(backendUrl);
-        };
+        }
 
         services.TryAddScoped(sp =>
         {

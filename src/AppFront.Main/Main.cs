@@ -21,6 +21,6 @@ public static class AppFrontSharedMainExtensions
         services.TryAddScoped<Interfaces.IMessageService, FluentMessageServiceBridge>();
 
         BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.Affix).Assembly, true);
-        //BlazoredHtml.AddComponentsFromAssembly(typeof(AntDesign.Button).Assembly, true);
+        BlazoredHtml.AddComponentsFromAssembly(typeof(FluentButton).Assembly, true);
     }
 }

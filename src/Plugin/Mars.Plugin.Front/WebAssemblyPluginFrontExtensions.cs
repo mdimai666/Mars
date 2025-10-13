@@ -7,25 +7,20 @@ using Mars.Nodes.Core;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Shared.Contracts.Plugins;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Components.WebAssembly.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.Front;
 
 public static class WebAssemblyPluginFrontExtensions
 {
-    public static async Task LoadPluginRemoteAssemblies(this WebAssemblyHost app, WebAssemblyHostBuilder builder)
+    private static List<IWebAssemblyPluginFront> pluginStartups = [];
+
+    public static async Task AddRemotePluginAssemblies(this WebAssemblyHostBuilder builder, string backendUrl)
     {
-        // https://learn.microsoft.com/ru-ru/aspnet/core/blazor/webassembly-lazy-load-assemblies?view=aspnetcore-9.0
-        LazyAssemblyLoader LazyLoader = app.Services.GetRequiredService<LazyAssemblyLoader>();
-        var baseHttp = app.Services.GetRequiredService<HttpClient>();
-        var http = new HttpClient() { BaseAddress = baseHttp.BaseAddress };
-        var logger = app.Services.GetRequiredService<ILogger<IWebAssemblyPluginFront>>();
+        var http = new HttpClient() { BaseAddress = new Uri(backendUrl) };
 
         var loadAssemblies = new List<Assembly>();
 
-        await LoadManifest(loadAssemblies, logger, http);
+        await LoadManifest(loadAssemblies, http);
 
         foreach (var assembly in loadAssemblies)
         {
@@ -38,11 +33,8 @@ public static class WebAssemblyPluginFrontExtensions
             {
                 var instance = (IWebAssemblyPluginFront)Activator.CreateInstance(startupType)!;
                 instance.ConfigureServices(builder);
-                instance.ConfigureApplication(app);
+                pluginStartups.Add(instance);
             }
-
-            //NodesLocator.RegisterAssembly(assembly);
-            //NodeFormsLocator.RegisterAssembly(assembly);
         }
 
         NodesLocator.RefreshDict();
@@ -50,12 +42,19 @@ public static class WebAssemblyPluginFrontExtensions
         OptionsFormsLocator.RefreshDict();
     }
 
-    private static async Task LoadManifest(List<Assembly> loadAssemblies, ILogger logger, HttpClient http)
+    public static void UseRemotePluginAssemblies(this WebAssemblyHost app)
     {
+        foreach (var startupInstance in pluginStartups)
+        {
+            startupInstance.ConfigureApplication(app);
+        }
+    }
 
+    private static async Task LoadManifest(List<Assembly> loadAssemblies, HttpClient http)
+    {
         var runtimeManifests = (await http.GetFromJsonAsync<PluginManifestInfoResponse[]>("/api/Plugin/RuntimePluginManifests"))!;
 
-        Console.WriteLine($"LoadPluginRemoteAssemblies: [{string.Join(',', runtimeManifests.Select(s => s.Name))}]" );
+        Console.WriteLine($"LoadPluginRemoteAssemblies: [{string.Join(',', runtimeManifests.Select(s => s.Name))}]");
 
         // манифест файлы
         foreach (var manifestInfo in runtimeManifests)
@@ -79,7 +78,7 @@ public static class WebAssemblyPluginFrontExtensions
 
                     try
                     {
-                        logger.LogInformation($"start load: {pluginDll.AssetFile}");
+                        Console.WriteLine($"start load: {pluginDll.AssetFile}");
 
                         var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
                         Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
@@ -92,7 +91,7 @@ public static class WebAssemblyPluginFrontExtensions
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError($"({pluginDll.AssetFile}) Ошибка загрузки: {ex.Message}");
+                        Console.WriteLine($"({pluginDll.AssetFile}) Ошибка загрузки: {ex.Message}");
                     }
                 }
             }

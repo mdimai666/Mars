@@ -6,12 +6,12 @@ namespace Mars.Host.Managers;
 public class ActLocator
 {
     private readonly Dictionary<string, ActLocatorItem> dict = [];
-    private bool invalide = true;
+    private bool invalid = true;
     private List<Assembly> assemblies = [];
 
     public void RefreshDict(bool force = false)
     {
-        if (!invalide && !force) return;
+        if (!invalid && !force) return;
         dict.Clear();
 
         foreach (var assembly in assemblies)
@@ -28,6 +28,7 @@ public class ActLocator
     public void RegisterAssembly(Assembly assembly)
     {
         assemblies.Add(assembly);
+        invalid = true;
     }
 
     public ActLocatorItem? TryGetActionById(string actionId)
@@ -35,7 +36,14 @@ public class ActLocator
         return dict.GetValueOrDefault(actionId);
     }
 
-    public IReadOnlyCollection<ActLocatorItem> ActItems => dict.Values;
+    public IReadOnlyCollection<ActLocatorItem> ActItems
+    {
+        get
+        {
+            RefreshDict();
+            return dict.Values;
+        }
+    }
 
     private static Dictionary<string, ActLocatorItem> ExtractTypesWithAttributes(Assembly assembly)
     {
@@ -45,7 +53,6 @@ public class ActLocator
             assembly.GetTypes()
             .Where(p =>
                 type.IsAssignableFrom(p)
-                && p.IsPublic
                 && p.IsClass
                 && !p.IsAbstract
             );

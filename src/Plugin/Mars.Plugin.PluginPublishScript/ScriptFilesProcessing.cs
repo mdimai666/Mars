@@ -2,7 +2,7 @@ using Mars.Plugin.PluginPublishScript.Models;
 
 namespace Mars.Plugin.PluginPublishScript;
 
-internal class ScriptFilesProcessing
+internal static class ScriptFilesProcessing
 {
     internal static string[] CalculateDlls(Dictionary<string, Library> libraries, ProjectDependencies projectDependencies)
     {

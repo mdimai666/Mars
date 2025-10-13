@@ -27,7 +27,7 @@ internal class ManifestProcessing
 
         }
 
-        var simplifiedJson = requireFiles.Select(s => new EndpointJsonDtoSimplified { AssetFile = s.AssetFile, Route = s.Route }).ToArray(); 
+        var simplifiedJson = requireFiles.Select(s => new EndpointJsonDtoSimplified { AssetFile = s.AssetFile, Route = s.Route }).ToArray();
 #endif
 
         var frontAssemblies = ReadFrontPluginAssemblies(settings, projectDependencies);
@@ -50,7 +50,6 @@ internal class ManifestProcessing
                 Route = s.Route
             }).ToArray();
             //END
-
 
             string version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
 

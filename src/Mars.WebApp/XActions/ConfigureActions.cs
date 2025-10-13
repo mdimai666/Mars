@@ -1,7 +1,5 @@
-using System.Reflection;
 using AppAdmin.Builder.DebugViews;
 using AppAdmin.Builder.NodeViews;
-
 #if !NOADMIN
 using AppAdmin.Pages.FeedbackViews;
 using AppAdmin.Pages.PostsViews;
@@ -27,7 +25,7 @@ internal static class ConfigureActions
 
     public static IApplicationBuilder UseConfigureActions(this WebApplication app)
     {
-        IActionManager actionManager = app.Services.GetRequiredService<IActionManager>();
+        var actionManager = app.Services.GetRequiredService<IActionManager>();
 
 #if !NOADMIN
         actionManager.AddXLink(new XActionCommand

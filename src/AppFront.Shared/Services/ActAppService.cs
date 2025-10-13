@@ -36,11 +36,18 @@ internal class ActAppService : IActAppService
             }
             else if (act.Type == XActionType.HostAction)
             {
-                var res = await _client.Act.Inject(id, args ?? []);
-
-                if (res.NextStep == XActResult.XActionNextStep.Toast)
+                try
                 {
-                    _ = _messageService.Show(res.Message, res.MessageIntent);
+                    var res = await _client.Act.Inject(id, args ?? []);
+
+                    if (res.NextStep == XActResult.XActionNextStep.Toast)
+                    {
+                        _ = _messageService.Show(res.Message, res.MessageIntent);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _ = _messageService.Error(ex.Message);
                 }
             }
             else

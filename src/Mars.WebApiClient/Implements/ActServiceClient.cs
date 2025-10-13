@@ -1,7 +1,7 @@
 using System.Net;
+using Flurl.Http;
 using Mars.Shared.Contracts.XActions;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 

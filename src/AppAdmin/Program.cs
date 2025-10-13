@@ -70,7 +70,6 @@ public class Program
         Thread.CurrentThread.CurrentUICulture = cultureInfo;
         //END LANG
 
-        builder.Services.AddScoped<LazyAssemblyLoader>();
         builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
 
         Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
@@ -131,12 +130,11 @@ public class Program
             };
 
         }
-
+        await builder.AddRemotePluginAssemblies(Q.BackendUrl);
         var app = builder.Build();
 
-        await app.LoadPluginRemoteAssemblies(builder);
-
         SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
+        app.UseRemotePluginAssemblies();
 
         await app.RunAsync();
     }

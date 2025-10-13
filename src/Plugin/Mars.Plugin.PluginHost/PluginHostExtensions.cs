@@ -56,7 +56,7 @@ public static class PluginHostExtensions
 
             ServePluginManifest(pluginAppBuilder, mainAssembly);
 
-            // Serve /wwwroot 
+            // Serve /wwwroot
             // truble : this method override Mars Plugin Serve functions
             var pluginWwwRoot = Path.Combine(pluginSettings.ContentRootPath, "wwwroot");
             if (Directory.Exists(pluginWwwRoot))

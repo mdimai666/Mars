@@ -2,12 +2,11 @@ using System.Reflection;
 using Mars.Core.Extensions;
 using Mars.Host.Managers;
 using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Startup;
 using Mars.Shared.Contracts.XActions;
 
 namespace Mars.XActions;
 
-internal class ActActionsProvider : IXActionCommandsProvider, IActActionsProvider, IMarsAppLifetimeService
+internal class ActActionsProvider : IXActionCommandsProvider, IActActionsProvider
 {
     private readonly IActionManager _actionManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -22,13 +21,14 @@ internal class ActActionsProvider : IXActionCommandsProvider, IActActionsProvide
         _actLocator = new ActLocator();
         _actLocator.RegisterAssembly(typeof(ClearCacheAct).Assembly);
         _actionManager.AddActionsProvider(this);
-    }
 
-    [StartupOrder]
-    public Task OnStartupAsync()
-    {
-        _actLocator.RefreshDict();
-        return Task.CompletedTask;
+        ((List<XActionCommand>)[
+            #if DEBUG
+            DummyAct.XAction,
+            #endif
+            ClearCacheAct.XAction,
+            CreateMockPostsAct.XAction,
+        ]).ForEach(x => _actionManager.AddAction(x));
     }
 
     public void RegisterAssembly(Assembly assembly)
@@ -38,27 +38,9 @@ internal class ActActionsProvider : IXActionCommandsProvider, IActActionsProvide
 
     public Task<IReadOnlyCollection<XActionCommand>> ReadCommands()
     {
-        var list = new List<XActionCommand>
-        {
-            #if DEBUG
-		    DummyAct.XAction,
-	        #endif
-            ClearCacheAct.XAction,
-            CreateMockPostsAct.XAction,
-        };
-
-        foreach (var act in _actLocator.ActItems)
-        {
-            var a = act.Attr;
-
-            list.Add(new()
-            {
-                Id = a.ActionId,
-                Label = a.Label,
-                Type = XActionType.HostAction,
-            });
-        }
-        return Task.FromResult<IReadOnlyCollection<XActionCommand>>(list);
+        return Task.FromResult<IReadOnlyCollection<XActionCommand>>(
+            _actLocator.ActItems.Select(x => new XActionCommand() { Id = x.Attr.ActionId, Label = x.Attr.Label, Type = XActionType.HostAction }).ToList()
+        );
     }
 
     public async Task<XActResult> RunCommand(XActionCommand action, string[] args)

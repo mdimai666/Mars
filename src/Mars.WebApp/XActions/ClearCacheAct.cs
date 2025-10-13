@@ -10,7 +10,7 @@ namespace Mars.XActions;
 public class ClearCacheAct : IAct
 {
     public const string CommandId = "Mars.XActions." + nameof(ClearCacheAct);
-    private readonly IMemoryCache memoryCache;
+    private readonly IMemoryCache _memoryCache;
 
     public static XActionCommand XAction { get; } = new XActionCommand()
     {
@@ -24,12 +24,12 @@ public class ClearCacheAct : IAct
 
     public ClearCacheAct(IMemoryCache memoryCache)
     {
-        this.memoryCache = memoryCache;
+        _memoryCache = memoryCache;
     }
 
     public Task<XActResult> Execute(IActContext context, CancellationToken cancellationToken)
     {
-        if (memoryCache is MemoryCache mc)
+        if (_memoryCache is MemoryCache mc)
         {
             mc.Clear();
             return Task.FromResult(XActResult.ToastSuccess("cache clear"));

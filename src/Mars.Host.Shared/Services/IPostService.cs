@@ -1,4 +1,5 @@
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Posts;
 
@@ -14,9 +15,9 @@ public interface IPostService
     Task<PostDetail> Create(CreatePostQuery query, CancellationToken cancellationToken);
     Task<PostEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken);
     Task<PostEditViewModel> GetEditModelBlank(string type, CancellationToken cancellationToken);
+    PostEditDetail GetPostBlank(PostTypeDetail postType);
     Task<PostDetail> Update(UpdatePostQuery query, CancellationToken cancellationToken);
     Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
     CreatePostQuery EnrichQuery(CreatePostRequest request);
     UpdatePostQuery EnrichQuery(UpdatePostRequest request);
-
 }

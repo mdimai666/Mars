@@ -60,6 +60,12 @@ public class BasicServiceClient
 
             throw new UnauthorizedException(detail?.Message ?? ExtractResponseErrorMessage(call), call.Exception);
         }
+        else if (call.Response.StatusCode == (int)System.Net.HttpStatusCode.InternalServerError)
+        {
+            call.ExceptionHandled = true;
+
+            throw new InternalServerErrorException(ExtractResponseErrorMessage(call), call.Exception);
+        }
     };
 
     private static string ExtractResponseErrorMessage(FlurlCall call)
@@ -109,6 +115,10 @@ public class BasicServiceClient
         {
             var detail = res.GetJsonAsync<UserActionResult>().ConfigureAwait(false).GetAwaiter().GetResult();
             throw new UnauthorizedException(detail?.Message ?? ExtractResponseErrorMessage(res));
+        }
+        else if (res.StatusCode == (int)System.Net.HttpStatusCode.InternalServerError)
+        {
+            throw new InternalServerErrorException(ExtractResponseErrorMessage(res));
         }
         else
         {

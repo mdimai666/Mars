@@ -258,6 +258,14 @@ public class ModelInfoService
             .ToList();
     }
 
+    public List<GPageInfo> GetPagesPageNonId(Assembly[] assemblies)
+    {
+        return assemblies.SelectMany(assembly => GetPages(assembly)
+            .Where(s => s.Kind == EComponentType.Page)
+            .Where(s => !s.Urls?.Any(x => x.Contains("/{")) ?? true)
+            ).ToList();
+    }
+
     public string? GetFileNameFromPageClass(NavigationManager navigationManager, List<GPageInfo> pages)
     {
         //foreach (var p in _pages)

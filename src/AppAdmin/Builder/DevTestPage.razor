@@ -1,4 +1,5 @@
 @page "/builder/DevTestPage"
+@using Mars.Plugin.Front
 @using Mars.Shared.Tools
 @inject ModelInfoService modelService
 
@@ -6,7 +7,6 @@
 
     <div class="card">
         <div class="card-body">
-
 
             <div>
                 @if (pages is not null)
@@ -29,9 +29,7 @@
         </div>
     </div>
 
-
 </ContentWrapper>
-
 
 @code {
     List<GPageInfo> pages = new();
@@ -40,6 +38,10 @@
     {
         base.OnInitialized();
 
-        this.pages = modelService.GetPagesPageNonId(typeof(Program).Assembly).ToList();
+        this.pages = modelService.GetPagesPageNonId(
+            [
+                typeof(Program).Assembly,
+                .. WebAssemblyPluginFrontExtensions.PluginLoadAssemblies
+            ]).ToList();
     }
 }

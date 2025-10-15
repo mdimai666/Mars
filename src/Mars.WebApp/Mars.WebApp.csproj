@@ -104,7 +104,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Mars.EShopPlugin\src\Mars.EShopPlugin.Front\Mars.EShopPlugin.Front.csproj" ReferenceOutputAssembly="false" />
-        <ProjectReference Include="..\..\..\Mars.EShopPlugin\src\Mars.EShopPlugin.Host\Mars.EShopPlugin.Host.csproj" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\..\..\Mars.EShopPlugin\src\Mars.EShopPlugin\Mars.EShopPlugin.csproj" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\AppFront.Main\AppFront.Main.csproj" />
         <ProjectReference Include="..\Mars.Host.Infrastructure\Mars.Host.Infrastructure.csproj" />
         <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />

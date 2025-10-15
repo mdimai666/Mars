@@ -1,7 +1,9 @@
+using System.Reflection;
 using AppAdmin.Pages.Public;
 using AppFront.Shared.AuthProviders;
 using AppFront.Shared.Hub;
 using Mars.Options.Models;
+using Mars.Plugin.Front;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -94,4 +96,6 @@ public partial class App
         SetupTheme();
         StateHasChanged();
     }
+    IEnumerable<Assembly> AdditionalAssemblies => WebAssemblyPluginFrontExtensions.PluginLoadAssemblies;
+
 }

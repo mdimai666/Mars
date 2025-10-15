@@ -47,6 +47,8 @@
     [CascadingParameter(Name = "RouteData")]
     RouteData? router { get; set; }
 
+    [Parameter] public EventCallback<string> OnInjected { get; set; }
+
     Type? _appPageType => router?.PageType;
 
     bool open = false;
@@ -76,5 +78,6 @@
     {
         var id = args.Id!;
         actService.Inject(id);
+        OnInjected.InvokeAsync(id);
     }
 }

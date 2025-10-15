@@ -331,6 +331,15 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date deleted.
+        /// </summary>
+        public static string DateDeleted {
+            get {
+                return ResourceManager.GetString("DateDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date modified.
         /// </summary>
         public static string DateModified {

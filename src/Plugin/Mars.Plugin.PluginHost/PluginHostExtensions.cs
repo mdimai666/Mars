@@ -54,7 +54,8 @@ public static class PluginHostExtensions
                 });
             });
 
-            ServePluginManifest(pluginAppBuilder, mainAssembly);
+            // Теперь сервер сам генерирует этот файл
+            //ServePluginManifest(pluginAppBuilder, mainAssembly);
 
             // Serve /wwwroot
             // truble : this method override Mars Plugin Serve functions

@@ -4,7 +4,6 @@ using System.Reflection;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.Localization;
 
 namespace AppFront.Shared.Components;
@@ -86,32 +85,40 @@ public partial class AutoInputLabel<TValue> : ComponentBase, IDisposable
         _displayName = Label ?? _fieldIdentifier.FieldName;
         var prop = _fieldIdentifier.Model.GetType().GetProperty(_fieldIdentifier.FieldName);
 
-        DisplayAttribute? attr;
+        DisplayAttribute? displayAttr;
 
         if (prop is not null)
         {
-            attr = prop.GetCustomAttribute<DisplayAttribute>();
+            displayAttr = prop.GetCustomAttribute<DisplayAttribute>();
 
-            if (!string.IsNullOrEmpty(attr?.Description))
+            if (!string.IsNullOrEmpty(displayAttr?.Description))
             {
-                _description = attr?.Description;
+                _description = displayAttr?.Description;
             }
         }
         else
         {
             var field = _fieldIdentifier.Model.GetType().GetField(_fieldIdentifier.FieldName);
-            attr = field?.GetCustomAttribute<DisplayAttribute>();
+            displayAttr = field?.GetCustomAttribute<DisplayAttribute>();
         }
 
         _required = prop?.GetCustomAttribute<RequiredAttribute>() != null ? true : false;
 
-        if (Label is null && attr?.ResourceType is not null)
+        if (Label is null && displayAttr?.ResourceType is not null && displayAttr.Name is not null)
         {
-            _displayName = L[attr?.Name ?? _displayName];
+            var resourceProp = displayAttr.ResourceType.GetProperty(
+                                    displayAttr.Name,
+                                    BindingFlags.Public | BindingFlags.Static
+                                );
+            _displayName = resourceProp.GetValue(null)?.ToString() ?? displayAttr.Name;
+        }
+        else if (Label is null && displayAttr?.ResourceType is null)
+        {
+            _displayName = L[displayAttr?.Name ?? _displayName];
         }
         else
         {
-            _displayName = Label ?? attr?.Name ?? _displayName;
+            _displayName = Label ?? displayAttr?.Name ?? _displayName;
         }
 
         // Добавляем вызов StateHasChanged(), чтобы перерисовать компонент

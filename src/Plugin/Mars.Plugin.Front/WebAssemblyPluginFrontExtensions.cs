@@ -14,6 +14,8 @@ public static class WebAssemblyPluginFrontExtensions
 {
     private static List<IWebAssemblyPluginFront> pluginStartups = [];
 
+    public static List<Assembly> PluginLoadAssemblies = [];
+
     public static async Task AddRemotePluginAssemblies(this WebAssemblyHostBuilder builder, string backendUrl)
     {
         var http = new HttpClient() { BaseAddress = new Uri(backendUrl) };
@@ -36,6 +38,8 @@ public static class WebAssemblyPluginFrontExtensions
                 pluginStartups.Add(instance);
             }
         }
+
+        PluginLoadAssemblies = loadAssemblies;
 
         NodesLocator.RefreshDict();
         NodeFormsLocator.RefreshDict();

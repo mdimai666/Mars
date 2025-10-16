@@ -30,9 +30,12 @@ public class PluginManifestProvider
 
         var marsEndpointsMap = marsEndpoints.Endpoints.Select(s => s.AssetFile).ToHashSet();
 
+        //var without_fingerprint
+
         var pluginEndpoints = manifest.Endpoints.Where(s => !marsEndpointsMap.Contains(s.AssetFile))
                                                 .Where(s => !s.AssetFile.StartsWith("_framework/Mars.Plugin.Kit"))
                                                 .Where(s => !s.AssetFile.StartsWith("_framework/icudt_"))
+                                                .Where(s => !s.AssetFile.StartsWith("_framework/System.")) //TODO: если fingerprint отличается, то начинает поподать мусор
                                                 .Where(f => !f.AssetFile.EndsWith(".pdb") && !f.AssetFile.EndsWith(".pdb.gz"))
                                                 //.Where(f => !f.AssetFile.EndsWith(".modules.json"))
                                                 .DistinctBy(s => s.AssetFile)

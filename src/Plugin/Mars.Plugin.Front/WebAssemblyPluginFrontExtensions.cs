@@ -82,7 +82,7 @@ public static class WebAssemblyPluginFrontExtensions
 
                     try
                     {
-                        Console.WriteLine($"start load: {pluginDll.AssetFile}");
+                        Console.Write($"Start load: {pluginDll.AssetFile} -> ");
 
                         var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
                         Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
@@ -95,7 +95,7 @@ public static class WebAssemblyPluginFrontExtensions
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"({pluginDll.AssetFile}) Ошибка загрузки: {ex.Message}");
+                        Console.WriteLine($"Ошибка загрузки: {ex.Message}");
                     }
                 }
             }

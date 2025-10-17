@@ -117,11 +117,24 @@ public partial class StandartEditContainer<TModel> : ComponentBase
         }
     }
 
-    public virtual async Task OnSubmit()
+    /// <summary>
+    /// Save form
+    /// </summary>
+    /// <returns>is complete</returns>
+    public Task<bool> Save()
+    {
+        return OnSubmit();
+    }
+
+    /// <summary>
+    /// Submit form
+    /// </summary>
+    /// <returns>is complete</returns>
+    public virtual async Task<bool> OnSubmit()
     {
         _validationStore.Clear();
         _isInvalidState = false;
-        if (!_editContext.Validate()) return;
+        if (!_editContext.Validate()) return false;
 
         saveButtonBusy = true;
         StateHasChanged();
@@ -138,33 +151,32 @@ public partial class StandartEditContainer<TModel> : ComponentBase
 
             if (a is null) throw new NotFoundException();
 
-            if (a is not null)
+            if (_addNewItem)
             {
-                if (_addNewItem)
+                string ss = NavigationManager.Uri.Replace(NavigationManager.BaseUri, "").Trim('/');
+                var sp = ss.Split('?', 2);
+                string newUrl = sp[0];
+                if (newUrl.EndsWith("/new"))
                 {
-                    string ss = NavigationManager.Uri.Replace(NavigationManager.BaseUri, "").Trim('/');
-                    var sp = ss.Split('?', 2);
-                    string newUrl = sp[0];
-                    if (newUrl.EndsWith("/new"))
-                    {
-                        newUrl = newUrl.Substring(0, newUrl.Length - 4);
-                    }
-                    string query = sp.Length > 1 ? $"?{sp[1]}" : "";
-                    _ = AfterSave.InvokeAsync(a);
-                    NavigationManager.NavigateTo($"{newUrl}/{a.Id}{query}");
+                    newUrl = newUrl.Substring(0, newUrl.Length - 4);
                 }
-                else
-                {
-                    _ = AfterSave.InvokeAsync(a);
-
-                    if (!a.Equals(model))
-                    {
-                        SetupModel(model);
-                    }
-                }
-
-                _ = _messageService.Success(AppRes.SavedSuccessfully);
+                string query = sp.Length > 1 ? $"?{sp[1]}" : "";
+                _ = AfterSave.InvokeAsync(a);
+                NavigationManager.NavigateTo($"{newUrl}/{a.Id}{query}");
             }
+            else
+            {
+                _ = AfterSave.InvokeAsync(a);
+
+                if (!a.Equals(model))
+                {
+                    SetupModel(model);
+                }
+            }
+
+            _ = _messageService.Success(AppRes.SavedSuccessfully);
+
+            return true;
         }
         catch (NotFoundException ex)
         {
@@ -194,6 +206,7 @@ public partial class StandartEditContainer<TModel> : ComponentBase
             StateHasChanged();
         }
 
+        return false;
     }
 
     public virtual async void OnDeleteClick()

@@ -12,10 +12,8 @@ public partial class StandartEditForm1<TModel> : ComponentBase
 {
     [Inject] IMessageService _messageService { get; set; } = default!;
 
-
     [Parameter] public string Class { get; set; } = "";
     [Parameter] public string Style { get; set; } = "";
-
 
     [Parameter] public RenderFragment<TModel>? ChildContent { get; set; }
 
@@ -28,6 +26,8 @@ public partial class StandartEditForm1<TModel> : ComponentBase
     [Parameter] public Func<TModel, Task>? DeleteAction { get; set; }
     [Parameter, EditorRequired] public Func<TModel, bool, Task<TModel>> SaveAction { get; set; } = default!;
 
+    [Parameter] public bool IsAddNew { get; set; } = true;
+    [Parameter] public bool HideFooterActions { get; set; }
 
     EditForm _editForm = default!;
     EditContext _editContext = default!;
@@ -42,9 +42,6 @@ public partial class StandartEditForm1<TModel> : ComponentBase
 
     TModel model = new();
     public TModel Model { get => model; set => SetupModel(model = value); }
-    //public bool IsAddNew => _addNewItem;
-
-    [Parameter] public bool IsAddNew { get; set; } = true;
 
     void SetupModel(TModel model)
     {
@@ -96,11 +93,33 @@ public partial class StandartEditForm1<TModel> : ComponentBase
         }
     }
 
-    public virtual async Task OnSubmit(EditContext editContext)
+    /// <summary>
+    /// validate form
+    /// </summary>
+    /// <returns>form is valid</returns>
+    public bool Validate()
+    {
+        return _editContext.Validate();
+    }
+
+    /// <summary>
+    /// Save form
+    /// </summary>
+    /// <returns>is complete</returns>
+    public Task<bool> Save()
+    {
+        return OnSubmit();
+    }
+
+    /// <summary>
+    /// Submit form
+    /// </summary>
+    /// <returns>is complete</returns>
+    public virtual async Task<bool> OnSubmit()
     {
         _validationStore.Clear();
         _isInvalidState = false;
-        if (!editContext.Validate()) return;
+        if (!_editContext.Validate()) return false;
 
         saveButtonBusy = true;
         StateHasChanged();
@@ -116,24 +135,23 @@ public partial class StandartEditForm1<TModel> : ComponentBase
 
             if (a is null) throw new NotFoundException();
 
-            if (a is not null)
+            if (_addNewItem)
             {
-                if (_addNewItem)
-                {
-                    _ = AfterSave.InvokeAsync(a);
-                }
-                else
-                {
-                    _ = AfterSave.InvokeAsync(a);
-
-                    if (!a.Equals(model))
-                    {
-                        SetupModel(model);
-                    }
-                }
-
-                _ = _messageService.Success(AppRes.SavedSuccessfully);
+                _ = AfterSave.InvokeAsync(a);
             }
+            else
+            {
+                _ = AfterSave.InvokeAsync(a);
+
+                if (!a.Equals(model))
+                {
+                    SetupModel(model);
+                }
+            }
+
+            _ = _messageService.Success(AppRes.SavedSuccessfully);
+
+            return true;
         }
         catch (NotFoundException ex)
         {
@@ -146,10 +164,10 @@ public partial class StandartEditForm1<TModel> : ComponentBase
 
             foreach (var item in ex.Errors)
             {
-                var field = editContext.Field(item.Key);
+                var field = _editContext.Field(item.Key);
                 _validationStore.Add(field, item.Value);
             }
-            editContext.NotifyValidationStateChanged();
+            _editContext.NotifyValidationStateChanged();
             _isInvalidState = true;
         }
         finally
@@ -158,6 +176,7 @@ public partial class StandartEditForm1<TModel> : ComponentBase
             StateHasChanged();
         }
 
+        return false;
     }
 
     public virtual async void OnDeleteClick()

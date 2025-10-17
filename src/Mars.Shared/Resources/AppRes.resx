@@ -240,6 +240,9 @@
   <data name="DownloadExcel" xml:space="preserve">
     <value>Download Excel</value>
   </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>

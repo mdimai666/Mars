@@ -35,16 +35,20 @@
                                     </FluentMessageBar>
                                     @ChildContent?.Invoke(model)
 
-                                    <div class="mt-3 d-flex flex-nowrap justify-content-end gap-2">
-                                        @if(!IsAddNew){
-                                            <DFluentDeleteButton OnConfirm=OnDeleteClick Disabled=saveButtonBusy />
-                                        }
+                                    @if (!HideFooterActions)
+                                    {
+                                        <div class="mt-3 d-flex flex-nowrap justify-content-end gap-2">
+                                            @if (!IsAddNew)
+                                            {
+                                                <DFluentDeleteButton OnConfirm=OnDeleteClick Disabled=saveButtonBusy />
+                                            }
 
-                                        <FluentButton Appearance="Appearance.Accent" Loading="saveButtonBusy" Type="@ButtonType.Submit">
-                                            @AppRes.Save
-                                        </FluentButton>
+                                            <FluentButton Appearance="Appearance.Accent" Loading="saveButtonBusy" Type="@ButtonType.Submit">
+                                                @AppRes.Save
+                                            </FluentButton>
 
-                                    </div>
+                                        </div>
+                                    }
                                 </section>
                             }
                         </div>

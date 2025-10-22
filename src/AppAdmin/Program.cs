@@ -88,7 +88,6 @@ public class Program
         ContentWrapper.GeneralSectionActions = typeof(Shared.GeneralSectionActions);
         OptionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
         OptionsFormsLocator.RegisterAssembly(typeof(SmtpSettingsEditForm).Assembly);
-        OptionsFormsLocator.RefreshDict();
 
         //string? version = Assembly.GetExecutingAssembly().
         //    GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.

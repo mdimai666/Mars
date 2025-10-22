@@ -43,7 +43,6 @@ public static class WebAssemblyPluginFrontExtensions
 
         NodesLocator.RefreshDict();
         NodeFormsLocator.RefreshDict();
-        OptionsFormsLocator.RefreshDict();
     }
 
     public static void UseRemotePluginAssemblies(this WebAssemblyHost app)

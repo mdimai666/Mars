@@ -10,13 +10,13 @@ public static class OptionsFormsLocator
 {
     static Dictionary<Type, OptionsFormsLocatorItem> dict = new();
 
-    static bool invalide = true;
+    static bool invalid = true;
 
     static List<Assembly> assemblies = new();
 
-    public static void RefreshDict(bool force = false)
+    static void RefreshDict(bool force = false)
     {
-        if (!invalide && !force) return;
+        if (!invalid && !force) return;
         dict.Clear();
 
         foreach (var assembly in assemblies)
@@ -28,34 +28,30 @@ public static class OptionsFormsLocator
                 dict.Add(a.Key, a.Value);
             }
         }
+        invalid = false;
     }
 
     public static void RegisterAssembly(Assembly assembly)
     {
+        invalid = true;
         assemblies.Add(assembly);
     }
 
-    //public static Type GetTypeByFullName(string typeFullname)
-    //{
-    //    if (dict.ContainsKey(typeFullname))
-    //    {
-    //        return dict[typeFullname];
-    //    }
-    //    throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
-    //}
-
     public static OptionsFormsLocatorItem? TryGetForOptionType(Type optionType)
     {
+        RefreshDict();
         return dict.GetValueOrDefault(optionType);
     }
 
     public static IEnumerable<OptionsFormsLocatorItem> RegisteredForms()
     {
+        RefreshDict();
         return dict.Values.ToList();
     }
 
     public static IEnumerable<OptionsFormsLocatorItem> RegisteredFormsAutoShow()
     {
+        RefreshDict();
         return dict.Values.Where(s => s.IsAutoShowFormOnSettingsPageAttribute).ToList();
     }
 

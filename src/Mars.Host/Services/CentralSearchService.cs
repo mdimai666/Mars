@@ -24,9 +24,7 @@ internal class CentralSearchService(
     {
         bool isAdmin = _requestContext.IsAuthenticated && _requestContext.Roles.Contains("Admin");
 
-
         var (actions, postTypes, posts, navs) = await Aggregator(query, maxCount, cancellationToken);
-
 
         var items = (IReadOnlyCollection<SearchFoundElement>)[
             ..actions.Select(CreateAction),
@@ -46,7 +44,7 @@ internal class CentralSearchService(
         )> Aggregator(string query, int maxCount, CancellationToken cancellationToken)
     {
         var actions = _actionManager.XActions.Values
-                                    .Where(s => s.Label.Contains(query, StringComparison.OrdinalIgnoreCase))
+                                    .Where(s => s.Label.Contains(query, StringComparison.OrdinalIgnoreCase) || s.Id.Contains(query, StringComparison.OrdinalIgnoreCase))
                                     .Take(maxCount)
                                     .ToList();
 
@@ -78,6 +76,5 @@ internal class CentralSearchService(
 
     string PostTypeUrl(PostTypeSummary postType) => $"/dev/EditPostType/{postType.Id}";
     string PostUrl(PostSummary post) => $"/dev/EditPost/{post.Type}/{post.Id}";
-
 
 }

@@ -54,7 +54,7 @@ public class MyFirstNodeImpl : INodeImplement<MyFirstNode>, INodeImplement
         _logger = RED.ServiceProvider.GetRequiredService<ILogger<MyFirstNodeImpl>>();
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback)
+    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         // Ваша логика
         var message = $"CustomProperty: {Node.CustomProperty}"

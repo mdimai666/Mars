@@ -14,6 +14,7 @@ public partial class StandartEditForm1<TModel> : ComponentBase
 
     [Parameter] public string Class { get; set; } = "";
     [Parameter] public string Style { get; set; } = "";
+    [Parameter] public string? FormName { get; set; }
 
     [Parameter] public RenderFragment<TModel>? ChildContent { get; set; }
 

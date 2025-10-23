@@ -8,27 +8,15 @@ namespace Mars.XActions;
 
 internal class ActActionsProvider : IXActionCommandsProvider, IActActionsProvider
 {
-    private readonly IActionManager _actionManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ActActionsProvider> _logger;
     ActLocator _actLocator;
 
-    public ActActionsProvider(IActionManager actionManager, IServiceScopeFactory serviceScopeFactory, ILogger<ActActionsProvider> logger)
+    public ActActionsProvider(IServiceScopeFactory serviceScopeFactory, ILogger<ActActionsProvider> logger)
     {
-        _actionManager = actionManager;
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
         _actLocator = new ActLocator();
-        _actLocator.RegisterAssembly(typeof(ClearCacheAct).Assembly);
-        _actionManager.AddActionsProvider(this);
-
-        ((List<XActionCommand>)[
-            #if DEBUG
-            DummyAct.XAction,
-            #endif
-            ClearCacheAct.XAction,
-            CreateMockPostsAct.XAction,
-        ]).ForEach(x => _actionManager.AddAction(x));
     }
 
     public void RegisterAssembly(Assembly assembly)

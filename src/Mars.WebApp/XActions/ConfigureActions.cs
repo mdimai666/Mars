@@ -26,6 +26,18 @@ internal static class ConfigureActions
     public static IApplicationBuilder UseConfigureActions(this WebApplication app)
     {
         var actionManager = app.Services.GetRequiredService<IActionManager>();
+        var actActionsProvider = app.Services.GetRequiredService<IActActionsProvider>();
+
+        actActionsProvider.RegisterAssembly(typeof(ClearCacheAct).Assembly);
+        actionManager.AddActionsProvider((IXActionCommandsProvider)actActionsProvider);
+
+        ((List<XActionCommand>)[
+            #if DEBUG
+            DummyAct.XAction,
+            #endif
+            ClearCacheAct.XAction,
+            CreateMockPostsAct.XAction,
+        ]).ForEach(actionManager.AddAction);
 
 #if !NOADMIN
         actionManager.AddXLink(new XActionCommand

@@ -239,8 +239,8 @@ public class ModelInfoService
                 Attributes = attributes,
                 Urls = urls,
                 Roles = roles,
-                DisplayAttributeName = pageDisplayAttributeName ?? SplitCamelCase(Regex.Replace(s.Name, "Page$", ""))
-
+                DisplayAttributeName = pageDisplayAttributeName ?? SplitCamelCase(Regex.Replace(s.Name, "Page$", "")),
+                Assembly = assembly
             };
         }).ToList();
     }
@@ -369,6 +369,7 @@ public class GPageInfo
     public required List<string>? Urls { get; init; }
     public required List<string>? Roles { get; init; }
     public required string DisplayAttributeName { get; init; }
+    public required Assembly Assembly { get; init; }
 }
 
 public enum EComponentType

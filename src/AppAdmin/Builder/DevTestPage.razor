@@ -1,6 +1,8 @@
 @page "/builder/DevTestPage"
 @using Mars.Plugin.Front
 @using Mars.Shared.Tools
+@using System.Reflection
+@using Microsoft.FluentUI.AspNetCore.Components
 @inject ModelInfoService modelService
 
 <ContentWrapper Title="DevTestPage">
@@ -8,20 +10,34 @@
     <div class="card">
         <div class="card-body">
 
-            <div>
-                @if (pages is not null)
+            <div class="d-flex flex-column gap-3">
+                @if (pagesGroup is not null)
                 {
-                    foreach (var p in pages)
+                    foreach (var (assembly, pages) in pagesGroup)
                     {
                         <div>
-                            <b>@p.Name</b> |
-                            @foreach (var url in p.Urls)
-                            {
-                                <a href=@($"/dev{url}")>@url</a>
-                                ;
+                            <div>
+                                <FluentLabel Typo="Typography.Subject" Class="fw-bold">
+                                    @assembly.GetName().Name
+                                </FluentLabel>
+                            </div>
 
+                            @foreach (var p in pages)
+                            {
+                                <div>
+                                    <span>@p.Name</span> |
+                                    @foreach (var url in p.Urls)
+                                    {
+                                        <a href=@($"/dev{url}")>@url</a>
+                                    }
+                                    @if (p.Roles?.Any()??false)
+                                    {
+                                        <text>
+                                        | <span style="color:red;"> @p.Roles?.JoinStr(";") </span>
+                                        </text>
+                                    }
+                                </div>
                             }
-                            | <span style="color:red;"> @p.Roles?.JoinStr(";") </span>
                         </div>
                     }
                 }
@@ -32,16 +48,16 @@
 </ContentWrapper>
 
 @code {
-    List<GPageInfo> pages = new();
+    Dictionary<Assembly, List<GPageInfo>> pagesGroup = [];
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        this.pages = modelService.GetPagesPageNonId(
+        this.pagesGroup = modelService.GetPagesPageNonId(
             [
                 typeof(Program).Assembly,
                 .. WebAssemblyPluginFrontExtensions.PluginLoadAssemblies
-            ]).ToList();
+            ]).GroupBy(x=>x.Assembly).ToDictionary(x=>x.Key, x=>x.ToList());
     }
 }

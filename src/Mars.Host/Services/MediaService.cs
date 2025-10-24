@@ -1,32 +1,52 @@
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Startup;
 using Mars.Options.Models;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Host.Services;
 
-internal class MediaService : FileService, IMediaService
+internal class MediaService : FileService, IMediaService, IMarsAppLifetimeService
 {
+    private readonly ILogger<MediaService> _logger;
+    internal string MediaDirByYear => MediaDirName + '/' + DateTimeOffset.Now.Year;
 
     public MediaService(
         IFileStorage fileStorage,
         IOptionService optionService,
         IFileRepository fileRepository,
-        IImageProcessor imageProcessor)
+        IImageProcessor imageProcessor,
+        ILogger<MediaService> logger)
         : base(
             fileStorage,
             optionService,
             fileRepository,
             imageProcessor)
     {
+        _logger = logger;
+    }
+
+    public new Task OnStartupAsync()
+    {
+        EnsureMediaYearDirExist();
+        return Task.CompletedTask;
+    }
+
+    void EnsureMediaYearDirExist()
+    {
+        if (!_fileStorage.DirectoryExists(MediaDirByYear))
+        {
+            _fileStorage.CreateDirectory(MediaDirByYear);
+        }
     }
 
     public Task<Guid> WriteUploadToMedia(IFormFile formFile, Guid userId, CancellationToken cancellationToken)
     {
-        return WriteUpload(formFile, MediaDirName, userId, cancellationToken);
+        return WriteUpload(formFile, MediaDirByYear, userId, cancellationToken);
     }
 
     public async Task<UserActionResult> ExecuteAction(ExecuteActionRequest action, Guid userId, CancellationToken cancellationToken)
@@ -89,7 +109,7 @@ internal class MediaService : FileService, IMediaService
             string filename = Path.GetFileName(filepath);
             //string ext = Path.GetExtension(filepath).TrimStart('.');
             //FileInfo fi = new FileInfo(absPath);
-            FileInfo fi = new FileInfo(filepath);
+            FileInfo fi = new(filepath);
 
             var filePathFromUpload = filepath.Substring(uploadPath.Length);
 
@@ -157,8 +177,9 @@ internal class MediaService : FileService, IMediaService
                             imageMeta = new ImageInfoDto { Width = image.Width, Height = image.Height };
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        _logger.LogError(ex, "error on read image size from stream");
                     }
                 }
 
@@ -183,7 +204,7 @@ internal class MediaService : FileService, IMediaService
                         var filePathFromUpload = file.FilePhysicalPath;
                         string thumbFilepath = GenerateImageThumbPath(cfg, filePathFromUpload);
                         var thumFileDir = _hostingInfo.NormalizePathSlashes(Path.GetDirectoryName(thumbFilepath))!;
-                        if(!_fileStorage.DirectoryExists(thumFileDir)) _fileStorage.CreateDirectory(thumFileDir);
+                        if (!_fileStorage.DirectoryExists(thumFileDir)) _fileStorage.CreateDirectory(thumFileDir);
 
                         string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
 
@@ -265,9 +286,9 @@ internal class MediaService : FileService, IMediaService
                 }
 
             }
-            catch (Exception /* TODO: catch correct exception */)
+            catch (Exception ex)
             {
-                // Swallow.  Gulp!
+                Console.Error.WriteLine("FindAllFiles: " + ex.Message);
             }
         }
 

@@ -207,6 +207,9 @@ public sealed class UploadMediaTests : ApplicationTests
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        var file = await result.GetJsonAsync<FileDetailResponse>();
+        var fs = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
+        fs.Delete(file.FilePhysicalPath);//TODO: Костыль пока не починим InMemoryFileStorage.
     }
 
     [IntegrationFact]

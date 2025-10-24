@@ -2,13 +2,14 @@ using Mars.Core.Features;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Startup;
 using Mars.Options.Models;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Host.Services;
 
-internal class FileService : IFileService
+internal class FileService : IFileService, IMarsAppLifetimeService
 {
     public const int MaxFileNameSize = 256;
     public const string MediaDirName = "Media";
@@ -33,8 +34,12 @@ internal class FileService : IFileService
         _imageProcessor = imageProcessor;
 
         _hostingInfo = _optionService.FileHostingInfo();
+    }
 
+    public Task OnStartupAsync()
+    {
         EnsureDirectoriesExist();
+        return Task.CompletedTask;
     }
 
     void EnsureDirectoriesExist()

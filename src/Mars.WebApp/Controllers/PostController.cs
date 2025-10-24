@@ -10,6 +10,7 @@ using Mars.Host.Shared.Mappings.Files;
 using Mars.Host.Shared.Mappings.Posts;
 using Mars.Host.Shared.Mappings.PostTypes;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Files;
 using Mars.Shared.Contracts.Posts;
@@ -30,12 +31,17 @@ public class PostController : ControllerBase
     private readonly IPostService _postService;
     private readonly IFileService _fileService;
     private readonly IRequestContext _requestContext;
+    private readonly IValidatorFabric _validatorFabric;
 
-    public PostController(IPostService postService, IFileService fileService, IRequestContext requestContext)
+    public PostController(IPostService postService,
+                            IFileService fileService,
+                            IRequestContext requestContext,
+                            IValidatorFabric validatorFabric)
     {
         _postService = postService;
         _fileService = fileService;
         _requestContext = requestContext;
+        _validatorFabric = validatorFabric;
     }
 
     [HttpGet("{id:guid}")]
@@ -181,7 +187,7 @@ public class PostController : ControllerBase
 
     [Authorize]
     [HttpPost(nameof(Upload))]
-    [RequestSizeLimit(150_000_000)]
+    [RequestSizeLimit(2_147_483_648)]//2GB
     public async Task<UserActionResult<FileDetailResponse>> Upload(
                 IFormFile file,
                 [FromForm] Guid id,
@@ -189,6 +195,7 @@ public class PostController : ControllerBase
                 CancellationToken cancellationToken)
     {
         if (id == Guid.Empty) throw new ArgumentException("ID is empty");
+        await _validatorFabric.ValidateAndThrowAsync<UploadMediaFileValidator, IFormFile>(file, cancellationToken);
 
         //FileEntity fileEntity = _fileService.WriteUpload(file, EFileType.PostAttachment, file_group);
         Guid userId = Guid.Empty;

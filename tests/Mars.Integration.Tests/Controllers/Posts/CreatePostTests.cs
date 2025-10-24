@@ -13,6 +13,7 @@ using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -116,4 +117,34 @@ public sealed class CreatePostTests : ApplicationTests
         validate.Errors.Should().HaveCount(1);
         validate.Errors.ElementAt(0).Key.Should().Be(nameof(CreatePostRequest.Status));
     }
+
+    [IntegrationFact(Skip = "on test mode Kestrel settings overrided")]
+    public async Task CreatePost_BodyTooLarge_ShouldReturnPayloadTooLarge()
+    {
+        //Arrange
+        var client = AppFixture.GetClient();
+
+        // Создаём объект, который гарантированно превышает 10 МБ
+        var largeText = new string('A', 116 * 1024 * 1024); // 16 MB
+        var request = new
+        {
+            Title = "Large body test",
+            Content = largeText
+        };
+
+        //Act
+        var response = await client.Request(_apiUrl).AllowAnyHttpStatus().PostJsonAsync(request);
+
+        /*
+         curl -X POST http://localhost:5003/api/Post -H "Content-Type: application/json" --data-binary "@.\some_big_file.bin" -H "Authorization: Bearer eyJhbG..."
+         */
+
+        //Assert
+        if (response.StatusCode == 400)
+        {
+            var validateErrros = await response.GetJsonAsync<ValidationProblemDetails>();
+        }
+        response.StatusCode.Should().Be((int)System.Net.HttpStatusCode.RequestEntityTooLarge);
+    }
+
 }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -154,14 +155,14 @@ internal static class MarsStartupPartCore
             .Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal)
             .Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
 
-        //TODO: только для определенных эндпоинтов
+        services.Configure<KestrelServerOptions>(options =>
+        {
+            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // if don't set default value is: 30 MB
+        });
+
         services.Configure<FormOptions>(x =>
         {
-            x.MultipartBodyLengthLimit = 200 * 1024 * 1024;
-        });
-        services.Configure<IHttpMaxRequestBodySizeFeature>(x =>
-        {
-            x.MaxRequestBodySize = 200 * 1024 * 1024;
+            x.MultipartBodyLengthLimit = 2L * 1024 * 1024 * 1024;// 2GB
         });
 
         return services;

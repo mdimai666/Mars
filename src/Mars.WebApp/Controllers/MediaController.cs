@@ -6,6 +6,7 @@ using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Mappings.Files;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Files;
 using Microsoft.AspNetCore.Authorization;
@@ -25,11 +26,13 @@ public class MediaController : ControllerBase
 {
     private readonly IMediaService _mediaService;
     private readonly IRequestContext _requestContext;
+    private readonly IValidatorFabric _validatorFabric;
 
-    public MediaController(IMediaService mediaService, IRequestContext requestContext)
+    public MediaController(IMediaService mediaService, IRequestContext requestContext, IValidatorFabric validatorFabric)
     {
         _mediaService = mediaService;
         _requestContext = requestContext;
+        _validatorFabric = validatorFabric;
     }
 
     [HttpGet("{id:guid}")]
@@ -88,12 +91,14 @@ public class MediaController : ControllerBase
     //}
 
     [HttpPost("Upload")]
-    [RequestSizeLimit(150_000_000)]
+    [RequestSizeLimit(2_147_483_648)]//2GB
     public async Task<ActionResult<FileDetailResponse>> Upload(
             IFormFile file,
             //[FromQuery] string file_group = "Files",
             CancellationToken cancellationToken = default)
     {
+        await _validatorFabric.ValidateAndThrowAsync<UploadMediaFileValidator, IFormFile>(file, cancellationToken);
+
         var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken);
         return (await _mediaService.GetDetail(fileId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
     }

@@ -19,6 +19,7 @@ namespace Mars.Integration.Tests.Controllers.Medias;
 public sealed class UploadMediaTests : ApplicationTests
 {
     private const string _apiUrl = "/api/Media/Upload";
+    private readonly IOptionService _optionService;
     private readonly FileHostingInfo _fileHostingInfo;
     private readonly MediaOption _mediaOption;
     private readonly string _exampleFilesPath;
@@ -27,11 +28,11 @@ public sealed class UploadMediaTests : ApplicationTests
     public UploadMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
-        var opService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        _fileHostingInfo = opService.FileHostingInfo();
-        _mediaOption = opService.GetOption<MediaOption>();
+        _optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
+        _fileHostingInfo = _optionService.FileHostingInfo();
+        _mediaOption = _optionService.GetOption<MediaOption>();
         _mediaOption.IsAutoResizeUploadImage = true;
-        opService.SetOptionOnMemory(_mediaOption);
+        _optionService.SetOptionOnMemory(_mediaOption);
         _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "..\\..\\..", "Controllers\\Medias\\ExampleFiles\\");
         _image_CreationOfSpace1jpg = "creation of space1.jpg";
 
@@ -141,5 +142,94 @@ public sealed class UploadMediaTests : ApplicationTests
     private MemoryStream GenerateStreamFromString(string value)
     {
         return new MemoryStream(Encoding.UTF8.GetBytes(value ?? ""));
+    }
+
+    private MemoryStream GenerateStreamOfSize(ulong sizeInBytes)
+    {
+        var buffer = new byte[sizeInBytes];
+        // Можно заполнить чем угодно, например случайными байтами:
+        new Random().NextBytes(buffer);
+
+        return new MemoryStream(buffer);
+    }
+
+    void SetupMediaOption(Action<MediaOption> action)
+    {
+        action(_mediaOption);
+        _optionService.SetOptionOnMemory(_mediaOption);
+    }
+
+    void SetupMediaMaxInpuFileSize(ulong maxInpuFileSize = 10 * 1024 * 1024)
+        => SetupMediaOption(op => op.MaximumInputFileSize = maxInpuFileSize);
+
+    ulong _fileTooLargeSize = 15 * 1024 * 1024;
+
+    [IntegrationFact]
+    public async Task Upload_FileTooLarge_ShouldValidateError()
+    {
+        //Arrange
+        _ = nameof(MediaController.Upload);
+        _ = nameof(UploadMediaFileValidator);
+        var client = AppFixture.GetClient();
+        var fileName = "file1.txt";
+        SetupMediaMaxInpuFileSize();
+
+        //Act
+        var result = await client.Request(_apiUrl)
+                                .PostMultipartAsync(mp => mp
+                                    //.AddString("file_group", "some group")
+                                    .AddFile("file", GenerateStreamOfSize(_fileTooLargeSize), fileName)
+                                ).ReceiveValidationError();
+
+        //Assert
+        result.Should().NotBeNull();
+        result.Errors.Should().HaveCount(1)
+                .And.Subject.Values.First().Should().ContainMatch("*max file size*");
+
+    }
+
+    [IntegrationFact]
+    public async Task Upload_FileTooLargeCheckAspNetConfiguration_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(MediaController.Upload);
+        _ = nameof(UploadMediaFileValidator);
+        var client = AppFixture.GetClient();
+        var fileName = "file1.txt";
+        SetupMediaMaxInpuFileSize(205 * 1024 * 1024);
+
+        //Act
+        var result = await client.Request(_apiUrl)
+                                .PostMultipartAsync(mp => mp
+                                    //.AddString("file_group", "some group")
+                                    .AddFile("file", GenerateStreamOfSize(205 * 1024 * 1024), fileName)
+                                );
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+    }
+
+    [IntegrationFact]
+    public async Task Upload_FileNotAllowedExtensions_ShouldValidateError()
+    {
+        //Arrange
+        _ = nameof(MediaController.Upload);
+        _ = nameof(UploadMediaFileValidator);
+        var client = AppFixture.GetClient();
+        var fileName = "file1.not_allow_ext";
+        SetupMediaMaxInpuFileSize();
+
+        //Act
+        var result = await client.Request(_apiUrl)
+                                .PostMultipartAsync(mp => mp
+                                    //.AddString("file_group", "some group")
+                                    .AddFile("file", GenerateStreamFromString("000"), fileName)
+                                ).ReceiveValidationError();
+
+        //Assert
+        result.Should().NotBeNull();
+        result.Errors.Should().HaveCount(1)
+                .And.Subject.Values.First().Should().ContainMatch("*file extension is not allowed*");
+
     }
 }

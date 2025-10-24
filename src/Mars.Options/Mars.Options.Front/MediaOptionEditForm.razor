@@ -1,4 +1,5 @@
-﻿@attribute [OptionEditFormForOptionAttribute(typeof(MediaOption))]
+@using Mars.Core.Extensions
+@attribute [OptionEditFormForOptionAttribute(typeof(MediaOption))]
 @attribute [Display(Name = "Media")]
 @attribute [AutoShowFormOnSettingsPage]
 
@@ -10,19 +11,23 @@
         <div class="card">
             <div class="card-header">Расширения файлов</div>
             <div class="card-body">
-                <div>
-                    <label>Maximum Input File Size</label>
+
+                <FormItem2 For="() => context.MaximumInputFileSize">
                     <Microsoft.AspNetCore.Components.Forms.InputNumber @bind-Value=@context.MaximumInputFileSizeSetter
                                                                        class="form-control" />
+                </FormItem2>
+                <div class="hstack gap-4">
+                    <div class="text-secondary">@context.MaximumInputFileSizeSetter.ToHumanizedSize()</div>
+                    <a role="button" @onclick=@(() => context.MaximumInputFileSize = MediaOption.DefaultMaximumInputFileSize)>reset</a>
                 </div>
 
                 <div class="spacer-2"></div>
 
-                <FormItem2 For=@(()=>context.IsAllowAllFileTypes)>
+                <FormItem2 For=@(() => context.IsAllowAllFileTypes)>
                     <Microsoft.FluentUI.AspNetCore.Components.FluentSwitch @bind-Value=@context.IsAllowAllFileTypes />
                 </FormItem2>
 
-                <FormItem2 For="@(()=>context.AllowedFileExtensionsSetter)" class="col">
+                <FormItem2 For="@(() => context.AllowedFileExtensionsSetter)" class="col">
                     <Microsoft.FluentUI.AspNetCore.Components.FluentTextField @bind-Value=@context.AllowedFileExtensionsSetter Disabled=@context.IsAllowAllFileTypes Class="w-100" />
                 </FormItem2>
             </div>
@@ -42,8 +47,14 @@
                 @if (context.IsAutoResizeUploadImage)
                 {
                     <ImagePreviewSizeConfigEditForm @bind-Model="@context.AutoResizeUploadImageConfig" IgnoreName />
-                }
 
+                    <div class="hstack gap-4">
+                        <button class="btn btn-light ms-3" type="button" @onclick=@(() => context.AutoResizeUploadImageConfig = new MediaOption().AutoResizeUploadImageConfig)>
+                            <i class="bi bi bi-arrow-clockwise me-3"></i>
+                            Сбросить по умолчанию
+                        </button>
+                    </div>
+                }
 
             </div>
         </div>
@@ -58,7 +69,7 @@
                         <ImagePreviewSizeConfigEditForm @bind-Model=@variant />
                         <button class="btn btn-outline-danger btn-close align-self-center ms-3"
                                 type="button"
-                        @onclick=@(e=>RemovePrevireSizeCfg(variant))></button>
+                                @onclick=@(e => RemovePrevireSizeCfg(variant))></button>
                     </div>
                 }
                 <div class="__FOOTER">

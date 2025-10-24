@@ -206,7 +206,7 @@ internal class FileService : IFileService
         string ext = hostingInfo.GetExtension(originalFileNameWithExt);
         var isImage = hostingInfo.ExtIsImage(ext);
         var isSvg = hostingInfo.ExtIsSvg(ext);
-        var newfilename = RetriveNewFileName(fileNameWithoutExtension, ext, filedir);
+        var newfilename = RetrieveNewFileName(fileNameWithoutExtension, ext);
 
         string filepathFromUpload = filedir + '/' + newfilename;
         string fileAbsolutePath = hostingInfo.FileAbsolutePath(filepathFromUpload);
@@ -288,39 +288,24 @@ internal class FileService : IFileService
         }
     }
 
-    internal string RetriveNewFileName(string fileNameWithoutExtension, string ext, string filedir)
+    internal string RetrieveNewFileName(string fileNameWithoutExtension, string ext)
     {
-        string newfilenameAsSlug = TextTool.TranslateToPostSlug(fileNameWithoutExtension);
-        string newfilename;
+        if (string.IsNullOrWhiteSpace(fileNameWithoutExtension))
+            throw new ArgumentException(nameof(fileNameWithoutExtension));
 
-        int tryCount = 1;
-        newfilename = newfilenameAsSlug + "." + ext;
+        ext = ext.TrimStart('.');
+        string slug = TextTool.TranslateToPostSlug(fileNameWithoutExtension);
+        string dateStamp = DateTime.UtcNow.ToString("yyyyMMdd");
+        string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 8);
 
-        var dateStamp = DateTime.Now.ToString("yyyyMMdd_HH-mm-ss");
+        int postfixLength = 1 /*_*/ + dateStamp.Length + 1 /*_*/ + uniqueSuffix.Length + 1 /*dot*/ + ext.Length;
+        int maxSlugLength = Math.Max(1, MaxFileNameSize - postfixLength);
 
-        var postfixFileNameLength = dateStamp.Length + ext.Length + 1/*dot sumbol*/ + 4/*(tryCount00)*/;
+        if (slug.Length > maxSlugLength)
+            slug = slug.Substring(0, maxSlugLength);
 
-    TryFileName:
-
-        if (_fileStorage.FileExists(Path.Join(filedir, newfilename)))
-        {
-            if (tryCount > 100) throw new Exception("maximum filename give count");
-            tryCount++;
-            if (tryCount < 10)
-            {
-                newfilename = $"{newfilenameAsSlug}({tryCount}).{ext}";
-            }
-            else
-            {
-                if (postfixFileNameLength + newfilenameAsSlug.Length > MaxFileNameSize)
-                    newfilenameAsSlug = newfilenameAsSlug.Substring(0, MaxFileNameSize - postfixFileNameLength);
-
-                newfilename = $"{newfilenameAsSlug}({dateStamp}).{ext}";
-            }
-            goto TryFileName;
-        }
-
-        return newfilename;
+        string newFileName = $"{slug}_{dateStamp}_{uniqueSuffix}.{ext}";
+        return newFileName;
     }
 
     internal FileEntityMetaDto? GenerateThumbnailsAndGetFileMeta(

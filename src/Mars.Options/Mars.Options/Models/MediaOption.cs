@@ -8,17 +8,19 @@ namespace Mars.Options.Models;
 [Display(Name = "Настройки Api")]
 public class MediaOption
 {
-    [Display(Name = "Maximum InputFile Size")]
-    public ulong MaximumInputFileSize { get; set; } = 100 * 1024 * 1024;
-    [Display(Name = "Maximum InputFile Size")]
-    [JsonIgnore]
+    public const ulong DefaultMaximumInputFileSize = 100 * 1024 * 1024;
 
+    [Display(Name = "Maximum InputFile Size", Description = "default is 104857600 (100mb)")]
+    public ulong MaximumInputFileSize { get; set; } = DefaultMaximumInputFileSize;
+
+    [Display(Name = "Maximum InputFile Size", Description = "default is 104857600 (100mb)")]
+    [JsonIgnore]
     public long MaximumInputFileSizeSetter { get => (long)MaximumInputFileSize; set => MaximumInputFileSize = (ulong)value; }
 
     [Display(Name = "Is Allow All File Types")]
     public bool IsAllowAllFileTypes { get; set; }
 
-    public static readonly string DefaultAllowedExtensions = ".png,.jpg,.jpeg,.webp,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf";
+    public static readonly string DefaultAllowedExtensions = ".png,.jpg,.jpeg,.webp,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.txt";
 
     string[] _allowedFileExtensions
         = DefaultAllowedExtensions.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
@@ -100,17 +102,17 @@ public class ImagePreviewSizeConfig : IImageConverConfig
     public enum CropScaleMode
     {
         /// <summary>
-        /// Preserve the aspect ratio of the input image. 
+        /// Preserve the aspect ratio of the input image.
         /// Crop if necessary to fit the output dimensions.
         /// <para>
-        /// Сохраните соотношение сторон входного изображения. 
+        /// Сохраните соотношение сторон входного изображения.
         /// Обрежьте, если необходимо, чтобы соответствовать выходным размерам.
         /// </para>
         /// </summary>
         Crop,
 
         /// <summary>
-        /// Preserve the aspect ratio of the input image. 
+        /// Preserve the aspect ratio of the input image.
         /// Reduce one of the output dimensions if necessary to preserve the ratio.
         /// <para>
         /// Сохраните соотношение сторон входного изображения.
@@ -128,7 +130,7 @@ public class ImagePreviewSizeConfig : IImageConverConfig
         Stretch,
 
         /// <summary>
-        /// Preserve the aspect ratio of the input image. 
+        /// Preserve the aspect ratio of the input image.
         /// Fill any undefined pixels with the PhotoSauce.MagicScaler.ProcessImageSettings.MatteColor.
         /// <para>
         /// Сохраните соотношение сторон входного изображения.
@@ -138,7 +140,7 @@ public class ImagePreviewSizeConfig : IImageConverConfig
         Pad,
 
         /// <summary>
-        /// Preserve the aspect ratio of the input image. 
+        /// Preserve the aspect ratio of the input image.
         /// Reduce one or both of the output dimensions if necessary to preserve the ratio but never enlarge.
         /// <para>
         /// Сохраните соотношение сторон входного изображения.

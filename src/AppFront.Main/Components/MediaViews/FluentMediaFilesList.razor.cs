@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using AppFront.Main.Extensions;
 using AppFront.Shared.Extensions;
 using AppFront.Shared.Services;
+using Mars.Core.Exceptions;
 using Mars.Shared.Contracts.Files;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
@@ -152,6 +153,10 @@ public partial class FluentMediaFilesList
             var x = await client.Media.Upload(file.Stream!, file.Name);
             var result = new FileUploadResult(x.Name, x.Size, null);
             fileUploadResults.Add(result);
+        }
+        catch (MarsValidationException ex)
+        {
+            fileUploadResults.Add(new FileUploadResult(file.Name, (ulong)file.Size, string.Join("; ", ex.Errors.Values.SelectMany(x => x))));
         }
         catch (Exception ex)
         {

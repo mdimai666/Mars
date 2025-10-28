@@ -102,7 +102,7 @@ public class MarsSSOOpenIDServerService
 
         var existUser = ef.Users.FirstOrDefault(s => s.Id == code_state.UserId);
 
-        var auth = accountsService.LoginForce(existUser.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+        var auth = accountsService.LoginForce(existUser.Id, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
 
         if (auth.IsAuthSuccessful == false)
             throw new OpenIDAuthException(OpenIdErrorCodesForAuthorizationEndpointErrors.login_required, auth.ErrorMessage);

@@ -96,8 +96,8 @@ internal static class MarsStartupPartCore
             });
         services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.SameSite = SameSiteMode.Unspecified;
-            options.Cookie.HttpOnly = false;
+            //options.Cookie.SameSite = SameSiteMode.Unspecified;
+            //options.Cookie.HttpOnly = false;
             int expInMinutes = int.Parse(jwtSettings["expiryInMinutes"]!);
             options.ExpireTimeSpan = TimeSpan.FromMinutes(expInMinutes);
 

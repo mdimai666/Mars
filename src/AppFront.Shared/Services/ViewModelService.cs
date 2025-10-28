@@ -1,12 +1,13 @@
 using System.Text.Json;
+using AppFront.Shared.Mappings;
+using AppFront.Shared.Models;
+using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Features;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.Common;
 using Mars.Shared.Contracts.Search;
 using Mars.Shared.Contracts.Systems;
 using Mars.Shared.ViewModels;
-using Flurl.Http;
 using Microsoft.JSInterop;
 
 namespace AppFront.Shared.Services;
@@ -39,57 +40,28 @@ public class ViewModelService : IViewModelService
     {
         if (Q.IsPrerender) return true;
 
-        InitialSiteDataViewModel? vm = null;
+        AppInitialViewModel? vm = null;
 
         if (!forceRemote)
         {
             vm = await GetLocalInitialSiteDataViewModel();
-            //Console.WriteLine("_vm:" + _vm.NavMenus.Count);
         }
-        vm ??= await InitialSiteDataViewModel(devAdminPageData: devAdminPageData);
+        vm ??= await GetInitialSiteDataViewModel(devAdminPageData: devAdminPageData);
 
         if (vm == null)
         {
             Console.Error.WriteLine("InitialSiteDataViewModel is null");
             return false;
         }
-        else
-        {
-            Q.UpdateInitialSiteData(vm);
-        }
+
+        Q.UpdateInitialSiteData(vm);
         return true;
     }
 
-    public async Task<InitialSiteDataViewModel> InitialSiteDataViewModel(bool devAdminPageData = false)
+    public async Task<AppInitialViewModel> GetInitialSiteDataViewModel(bool devAdminPageData = false)
     {
-        return await Get<InitialSiteDataViewModel>("devAdminPageData=" + devAdminPageData.ToString().ToLower());
-    }
-
-    SemaphoreSlim __DevAdminExtraViewModel = new(1);
-    static DevAdminExtraViewModel DevViewModel { get; set; } = default!;
-
-    public async Task<DevAdminExtraViewModel> DevAdminExtraViewModel(bool force = false)
-    {
-        if (DevViewModel is not null && !force) return DevViewModel;
-
-        try
-        {
-            await __DevAdminExtraViewModel.WaitAsync();
-
-            if (DevViewModel is not null && !force) goto End;
-
-            DevViewModel = await Get<DevAdminExtraViewModel>();
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        finally
-        {
-            __DevAdminExtraViewModel.Release();
-        }
-    End:
-        return DevViewModel;
+        var vm = await Get<InitialSiteDataViewModel>("devAdminPageData=" + devAdminPageData.ToString().ToLower());
+        return vm.ToModel();
     }
 
     public async Task<EditUserViewModel> EditUserViewModel(Guid id)
@@ -119,23 +91,23 @@ public class ViewModelService : IViewModelService
     public async Task<List<SearchFoundElementResponse>> GlobalSearch(string text, int maxCount = 20)
     {
         return await _client.Request($"{_basePath}{_controllerName}/GlobalSearch")
-            .AppendQueryParam(new { text , maxCount })
+            .AppendQueryParam(new { text, maxCount })
             .GetJsonAsync<List<SearchFoundElementResponse>>();
     }
 
     SemaphoreSlim initialSiteDataIsLoad = new(1);
 
-    public async Task<InitialSiteDataViewModel> GetLocalInitialSiteDataViewModel(bool force = false)
+    public async Task<AppInitialViewModel> GetLocalInitialSiteDataViewModel(bool force = false)
     {
         InitialSiteDataViewModel? vm;
 
-        if (Q._site is not null && !force) return Q._site;
+        if (Q.Site is not null && !force) return Q.Site;
 
         try
         {
             await initialSiteDataIsLoad.WaitAsync();
 
-            if (Q._site is not null && !force) goto End;
+            if (Q.Site is not null && !force) goto End;
 
             JsonSerializerOptions opt = new()
             {
@@ -162,7 +134,7 @@ public class ViewModelService : IViewModelService
                 throw new ArgumentNullException("InitialSiteDataViewModel");
             }
 
-            Q._site = vm;
+            return vm.ToModel();
         }
         catch (Exception)
         {
@@ -173,6 +145,6 @@ public class ViewModelService : IViewModelService
             initialSiteDataIsLoad.Release();
         }
     End:
-        return Q._site;
+        return Q.Site!;
     }
 }

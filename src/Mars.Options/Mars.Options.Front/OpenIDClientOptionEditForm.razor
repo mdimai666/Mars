@@ -68,6 +68,10 @@
                     <FluentTextField @bind-Value="@sso.CallbackPath" Class="w-100" />
                 </FormItem2>
 
+                <FormItem2 For="()=>sso.Issuer" Class="col mb-3">
+                    <FluentTextField @bind-Value="@sso.Issuer" Class="w-100" />
+                </FormItem2>
+
                 @* <FormItem2 For="()=>sso.SignedOutCallbackPath" Class="col mb-3">
             <FluentTextField @bind-Value="@sso.SignedOutCallbackPath" Class="w-100" />
             </FormItem2>
@@ -93,11 +97,9 @@
 
 </EditOptionForm>
 
-
 @code {
     EditOptionForm<OpenIDClientOption> form = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
-
 
     void AddSSOClick()
     {

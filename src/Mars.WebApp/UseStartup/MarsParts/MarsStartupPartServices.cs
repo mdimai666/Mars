@@ -19,8 +19,9 @@ internal static class MarsStartupPartServices
         //services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<UserEntity>>();
 
         //services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.JwtSectionKey));
-        services.AddScoped<ITokenService, TokenService>()
-                .AddScoped<AccountsService>();
+        services.AddSingleton<ITokenService, TokenService>()
+                .AddScoped<AccountsService>()
+                .AddScoped<IExperimentalSignInService, ExperimentalSignInService>();
 
         services.AddDatabaseDeveloperPageExceptionFilter();//from clear template
 

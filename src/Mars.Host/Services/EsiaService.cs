@@ -3,9 +3,11 @@ using System.Text.RegularExpressions;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Shared.Dto.Auth;
+using Mars.Host.Shared.Services;
 
 namespace Mars.Host.Services;
 
+[Obsolete]
 public class EsiaService
 {
     string JWT_SECRET = "";
@@ -62,7 +64,7 @@ public class EsiaService
 
                 if (existUser != null)
                 {
-                    return _accountsService.LoginForce(existUser.Id).Result;
+                    return _accountsService.LoginForce(existUser.Id, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
                 }
                 else
                 {
@@ -79,8 +81,8 @@ public class EsiaService
 
                     if (result.IsSuccessfulRegistration)
                     {
-                        existUser = ef.Users.FirstOrDefault(s => s.Email.ToLower() == userInfo.email.ToLower());
-                        return _accountsService.LoginForce(existUser.Id).Result;
+                        existUser = ef.Users.FirstOrDefault(s => s.Email.ToLower() == userInfo.email.ToLower()!);
+                        return _accountsService.LoginForce(existUser.Id, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
                     }
                     else
                     {

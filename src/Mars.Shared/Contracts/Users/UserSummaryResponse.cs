@@ -2,7 +2,7 @@ using Mars.Core.Extensions;
 
 namespace Mars.Shared.Contracts.Users;
 
-public class UserSummaryResponse
+public record UserSummaryResponse
 {
     public required Guid Id { get; init; }
     public required string FirstName { get; init; }

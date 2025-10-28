@@ -1,5 +1,7 @@
 using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.Users;
+using Mars.Host.Shared.Dto.Profile;
+using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.Dto.Users;
 using Microsoft.AspNetCore.Identity;
 
@@ -61,7 +63,29 @@ internal static class UserMapping
     public static IReadOnlyCollection<UserDetail> ToDetailList(this IEnumerable<UserEntity> entities)
         => entities.Select(ToDetail).ToList();
 
-    public static UserEditProfileDto ToProfile(this UserEntity entity)
+    public static UserProfileDto ToProfile(this UserEntity entity)
+        => new()
+        {
+            Id = entity.Id,
+            CreatedAt = entity.CreatedAt,
+            ModifiedAt = entity.ModifiedAt,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            MiddleName = entity.MiddleName,
+            Email = entity.Email,
+            PhoneNumber = entity.PhoneNumber,
+            UserName = entity.UserName ?? "xxxx",
+            BirthDate = entity.BirthDate,
+            Gender = entity.Gender.ToMap(),
+            Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
+            Type = entity.UserType.TypeName,
+            MetaValues = entity.MetaValues!.ToDetailDto(),
+
+            AvatarUrl = "",
+            About = "",
+        };
+
+    public static UserEditProfileDto ToEditProfile(this UserEntity entity)
         => new()
         {
             Id = entity.Id,
@@ -108,6 +132,21 @@ internal static class UserMapping
 
         };
 
+    public static UserEntity UpdateEntity(this UserEntity entity, UpdateUserQuery query)
+    {
+        entity.FirstName = query.FirstName;
+        entity.LastName = query.LastName ?? "";
+        entity.MiddleName = query.MiddleName;
+        entity.Email = query.Email;
+
+        entity.PhoneNumber = query.PhoneNumber;
+        entity.BirthDate = query.BirthDate;
+        entity.Gender = UserMapping.ParseGender(query.Gender);
+
+        entity.ModifiedAt = DateTimeOffset.Now;
+        return entity;
+    }
+
     public static UserGender ParseGender(Mars.Shared.Contracts.Users.UserGender gender)
         => gender switch
         {
@@ -130,5 +169,58 @@ internal static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
+            SecurityStamp = entity.SecurityStamp!
         };
+
+    public static UserEntity ToEntity(this UpsertUserRemoteDataQuery query, Guid userTypeId, ILookupNormalizer lookupNormalizer)
+        => new()
+        {
+            //Id = query.Id ?? Guid.Empty,
+            UserName = query.PreferredUserName ?? query.Email,
+            NormalizedUserName = lookupNormalizer.NormalizeName(query.PreferredUserName ?? query.Email),
+
+            Email = query.Email,
+            NormalizedEmail = lookupNormalizer.NormalizeEmail(query.Email),
+
+            FirstName = query.FirstName,
+            LastName = query.LastName ?? "",
+
+            EmailConfirmed = true,
+            LockoutEnabled = true,
+
+            PhoneNumber = query.PhoneNumber,
+            BirthDate = query.BirthDate,
+            Gender = ParseGender(query.Gender),
+            UserTypeId = userTypeId,
+        };
+
+    public static UserEntity UpdateEntity(this UserEntity entity, UpsertUserRemoteDataQuery query)
+    {
+        entity.FirstName = query.FirstName;
+        entity.LastName = query.LastName ?? "";
+        entity.MiddleName = query.MiddleName;
+        entity.Email = query.Email;
+
+        entity.PhoneNumber = query.PhoneNumber;
+        entity.BirthDate = query.BirthDate;
+        entity.Gender = UserMapping.ParseGender(query.Gender);
+
+        entity.ModifiedAt = DateTimeOffset.Now;
+        return entity;
+    }
+
+    public static bool UserInfoHasChanges(this UserEntity entity, UpsertUserRemoteDataQuery query)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(query);
+
+        return
+            entity.FirstName != query.FirstName ||
+            entity.LastName != (query.LastName ?? "") ||
+            entity.MiddleName != query.MiddleName ||
+            entity.Email != query.Email ||
+            entity.PhoneNumber != query.PhoneNumber ||
+            entity.BirthDate != query.BirthDate ||
+            entity.Gender != UserMapping.ParseGender(query.Gender);
+    }
 }

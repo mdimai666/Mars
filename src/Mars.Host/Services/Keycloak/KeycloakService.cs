@@ -12,6 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.Host.Services.Keycloak;
 
+[Obsolete]
 public partial class KeycloakService
 {
     readonly IOptionService optionService;
@@ -60,7 +61,7 @@ public partial class KeycloakService
     }
 
     /// <summary>
-    /// 
+    /// KeycloakRequestUserJwtByCode
     /// </summary>
     /// <param name="code">после авторизации через интерфейс отдается code</param>
     /// <param name="cancellationToken"></param>
@@ -89,12 +90,14 @@ public partial class KeycloakService
             new ("redirect_uri", redirect_uri),
         };
 
-        HttpClient client = new HttpClient();
+        HttpClient client = new();
 
         var form = new FormUrlEncodedContent(body).ReadAsStringAsync().Result;
         HttpContent post = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded");
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, ssoOption.TokenEndpoint);
-        request.Content = post;
+        HttpRequestMessage request = new(HttpMethod.Post, ssoOption.TokenEndpoint)
+        {
+            Content = post
+        };
 
         var req = await client.SendAsync(request, cancellationToken);
         if (req.IsSuccessStatusCode)
@@ -151,7 +154,7 @@ public partial class KeycloakService
           "family_name": "Macconohi",
           "email": "user-non-work@mail.ru"
         }
-        """; 
+        """;
 #endif
 
     public async Task<UserEntity> ConvertUser(KeycloakUserInfo userData)
@@ -190,7 +193,7 @@ public partial class KeycloakService
 
     public async Task<AuthResultDto> KeycloakLogin(OpenIDAuthTokenResponse tokenResponse, CancellationToken cancellationToken)
     {
-        KeycloakUserInfo userInfo = tokenService.JwtDecode<KeycloakUserInfo>(tokenResponse.AccessToken, verify: false);
+        var userInfo = tokenService.JwtDecode<KeycloakUserInfo>(tokenResponse.AccessToken, verify: false);
 
         try
         {
@@ -206,7 +209,7 @@ public partial class KeycloakService
                     var roles = ef.Roles.Where(s => userInfo.RealmAccess.Roles.Contains(s.Name)).Select(s => s.Name).ToList();
                     await userService.UpdateUserRoles(existUser.Id, roles!, cancellationToken);
 
-                    return accountsService.LoginForce(existUser.Id).Result;
+                    return await accountsService.LoginForce(existUser.Id, cancellationToken);
                 }
                 else
                 {
@@ -221,7 +224,7 @@ public partial class KeycloakService
                         existUser = ef.Users.FirstOrDefault(s => s.Id == userInfo.Id);
                         var roles = ef.Roles.Where(s => userInfo.RealmAccess.Roles.Contains(s.Name)).Select(s => s.Name).ToList();
                         await userService.UpdateUserRoles(existUser.Id, roles!, cancellationToken);
-                        return accountsService.LoginForce(existUser.Id).Result;
+                        return await accountsService.LoginForce(existUser.Id, cancellationToken);
                     }
                     else
                     {

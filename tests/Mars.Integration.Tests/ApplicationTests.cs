@@ -28,7 +28,7 @@ public abstract class ApplicationTests
                 .Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Subject, TimeSpan.FromMilliseconds(50))).WhenTypeIs<DateTimeOffset>()
         );
 
-        //AppFixture.MessageQueueFixture.ClearTopics().RunSync(); 
+        //AppFixture.MessageQueueFixture.ClearTopics().RunSync();
     }
 
 }

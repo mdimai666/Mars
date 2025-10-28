@@ -1,86 +1,72 @@
 using System.Security.Claims;
 using AppFront.Shared.AuthProviders;
 using AppFront.Shared.Features;
+using AppFront.Shared.Mappings;
+using AppFront.Shared.Models;
+using Mars.Shared.Contracts.SSO;
 using Mars.Shared.ViewModels;
-using Microsoft.Extensions.Logging;
 
 namespace AppFront.Shared;
 
-public class Q
+public static class Q
 {
     public static string BackendUrl = "";
     public static Type Program = default!;
     public static string WorkDir = default!;
 
-    public static Emitter Root = new Emitter();
-
-    public static string AuthToken = default!;
+    public static Emitter Root = new();
 
     static UserFromClaims _user = new();
+    public static UserFromClaims User => _user;
 
-    public static UserFromClaims User { get => _user; }
-
-
-    public static InitialSiteDataViewModel _site = default!;
-    public static InitialSiteDataViewModel Site => _site;
-
-    static IServiceProvider _serviceProvider = default!;
+    static AppInitialViewModel _site = default!;
+    public static AppInitialViewModel Site => _site;
 
     public static bool IsPrerender = false;// Program.IsPrerender;
-
 #if DEBUG
     public static bool Dev = true;
 #else
-    public static bool Dev = false; 
+    public static bool Dev = false;
 #endif
-
-    public static void AddSrvProv(IServiceProvider sp)
-    {
-        _serviceProvider = sp;
-        //_logger = sp.GetService<ILogger>();//not work
-    }
-
-    public static void LogWarn(string text)
-    {
-        //_logger.LogWarning(text);//not work
-    }
 
     public static void UpdateInitialSiteData(InitialSiteDataViewModel vm)
     {
-        if (vm == null)
-        {
-            Console.WriteLine("InitialSiteDataViewModel is null");
-            return;
-        }
-        _site = vm;
+        ArgumentNullException.ThrowIfNull(vm);
+        _site = vm.ToModel();
         Root.Emit(Site.GetType(), vm);
-
     }
 
-    //public static void UpdateProfile(Profile profile)
-    //{
-    //    if (profile == null)
-    //    {
-    //        _profile = _anonymous;
-    //        Root.Emit(_profile.GetType(), _profile);
-    //        return;
-    //    }
-
-    //    // Console.WriteLine("UpdateProfile");
-    //    _profile = profile;
-    //    Root.Emit(_profile.GetType(), _profile);
-    //}
+    public static void UpdateInitialSiteData(AppInitialViewModel vm)
+    {
+        ArgumentNullException.ThrowIfNull(vm);
+        _site = vm;
+        Root.Emit(Site.GetType(), vm);
+    }
 
     public static void UpdateNotifyCount(int count)
     {
         Root.Emit("UpdateNotifyCount", count);
     }
 
-    public static void UpdateClaimUser(ClaimsPrincipal claimsPrincipal)
+    public static void UpdateUserByMarsClaims(ClaimsPrincipal marsClaims)
     {
-        _user = new UserFromClaims(claimsPrincipal);
+        //Console.WriteLine(">UpdateUserByMarsClaims");
+        _user = new UserFromClaims(marsClaims);
         Root.Emit(_user.GetType(), _user);
     }
+
+    public static void UpdateUserByExternalClaims(ClaimsPrincipal externalClaims, SsoUserInfoResponse ssoUserInfo)
+    {
+        //Console.WriteLine(">UpdateUserByExternalClaims + internalUserId=" + ssoUserInfo.InternalId);
+        _user = new UserFromClaims(ssoUserInfo); //Тут проблема что токен имеен другие клеймы
+    }
+
+    public static void UpdateUserByInitailVM(UserPrimaryInfo userPrimaryInfo, string? externalId)
+    {
+        //Console.WriteLine(">UpdateUserByInitailVM");
+        _user = new UserFromClaims(userPrimaryInfo, externalId);
+    }
+
     public static void LogoutUser()
     {
         _user = new UserFromClaims(new ClaimsPrincipal());
@@ -113,13 +99,8 @@ public class Q
         return domain + path.TrimStart('/');
     }
 
-    public static List<string> Roles = new() { "Admin", "Manager", "Developer" };
-
-    //public List<PostType> PostTypes { get; set; }
-    //public List<PostCategory> PostCategories { get; set; }
-
+    public static List<string> Roles = ["Admin", "Manager", "Developer"];
     public static BackendHostingInfo HostingInfo { get; private set; } = default!;
 
     public static void SetupHostingInfo(BackendHostingInfo hostingInfo) => HostingInfo = hostingInfo;
 }
-

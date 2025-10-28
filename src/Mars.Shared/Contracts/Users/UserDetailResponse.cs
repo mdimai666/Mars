@@ -2,7 +2,7 @@ using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Shared.Contracts.Users;
 
-public class UserDetailResponse : UserSummaryResponse
+public record UserDetailResponse : UserSummaryResponse
 {
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset? ModifiedAt { get; init; }

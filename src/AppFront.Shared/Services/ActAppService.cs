@@ -23,8 +23,7 @@ internal class ActAppService : IActAppService
 
     public async void Inject(string id, string[]? args = null)
     {
-        var dev = await _viewModelService.DevAdminExtraViewModel().ConfigureAwait(false);
-        var actions = dev.XActions;
+        var actions = Q.Site.XActions;
 
         if (actions.TryGetValue(id, out var act))
         {

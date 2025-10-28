@@ -3,6 +3,7 @@
 @using AppFront.Shared
 @using Mars.Controllers
 @using Mars.Core.Features
+@using Mars.Host.Handlers
 @using Mars.Host.Shared.Constants.Website
 @using Mars.Host.Shared.Interfaces
 @using Mars.Host.Shared.Models
@@ -16,6 +17,8 @@
 @inject IOptionService optionService
 @inject IServiceProvider serviceProvider;
 @inject IRequestContext requestContext;
+@inject InitialSiteDataViewModelHandler _initialSiteDataHandler;
+
 @{
     //TODO: Uncomment
     // AppAdmin.Program.IsPrerender = false;
@@ -33,7 +36,7 @@
 
     var scriptsBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
 
-    var vm = await ViewModelController.InitialSiteDataViewModel(serviceProvider, Request, devAdminPageData: true);
+    var vm = await _initialSiteDataHandler.Handle(Request, devAdminPageData: true, CancellationToken.None);
 
     Q.UpdateInitialSiteData(vm);
 

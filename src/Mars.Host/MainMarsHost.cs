@@ -69,6 +69,7 @@ public static class MainMarsHost
         services.AddScoped<MarsSSOClientService>();
         services.AddScoped<MarsSSOOpenIDServerService>();
 
+        services.AddScoped<InitialSiteDataViewModelHandler>();
         services.AddScoped<IGalleryService, GalleryService>();
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();

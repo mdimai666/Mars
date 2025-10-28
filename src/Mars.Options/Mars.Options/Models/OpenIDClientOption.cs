@@ -41,9 +41,11 @@ public class OpenIDClientConfig
     public bool Enable { get; set; }
 
     [Display(Name = "oauth2_auth_endpoint")]
+    [Required]
     public string AuthEndpoint { get; set; } = default!;
 
     [Display(Name = "oauth2_token_endpoint")]
+    [Required]
     public string TokenEndpoint { get; set; } = default!;
 
     [Display(Name = "ClientId", Description = "the 'client_id'")]
@@ -63,4 +65,8 @@ public class OpenIDClientConfig
 
     [Display(Name = "Scopes", Description = "extra scopes except openid and profile")]
     public string Scopes { get; set; } = "openid email profile";
+
+    [Display(Name = "Issuer", Description = "Базовый идентификатор (URI) провайдера, указывающий, кто выдал токен.")]
+    [Required]
+    public string Issuer { get; set; } = "";
 }

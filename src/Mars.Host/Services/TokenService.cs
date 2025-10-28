@@ -3,9 +3,11 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Mars.Host.Data.Entities;
+using Mars.Core.Exceptions;
 using Mars.Host.Models;
-using Microsoft.AspNetCore.Identity;
+using Mars.Host.Shared.Dto.Users;
+using Mars.Host.Shared.Repositories;
+using Mars.Host.Shared.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,7 +19,7 @@ public class TokenService : ITokenService
 
     public TokenService(IOptions<JwtSettings> jwtSettings)
     {
-        this._jwtSettings = jwtSettings.Value;
+        _jwtSettings = jwtSettings.Value;
 
         if (!CheckSecretKeyLength())
         {
@@ -31,22 +33,20 @@ public class TokenService : ITokenService
         var secret = new SymmetricSecurityKey(key);
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
-    public async Task<List<Claim>> GetClaimsAsync(UserEntity user, UserManager<UserEntity> userManager)
+    public List<Claim> GetClaims(AuthorizedUserInformationDto user)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user?.Email??""),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Email, user?.Email??""),
             // https://learn.microsoft.com/ru-ru/dotnet/api/microsoft.aspnetcore.identity.identityuser-1.securitystamp?view=aspnetcore-8.0#definition
-            new Claim("AspNet.Identity.SecurityStamp", user.SecurityStamp),
-            new Claim(ClaimTypes.GivenName, user.FirstName??""),
-            new Claim(ClaimTypes.Surname, user.LastName??""),
-            //new Claim("Id", user.Id.ToString()),
+            new("AspNet.Identity.SecurityStamp", user.SecurityStamp),
+            new(ClaimTypes.GivenName, user.FirstName??""),
+            new(ClaimTypes.Surname, user.LastName??""),
         };
 
-        var roles = await userManager.GetRolesAsync(user);
-        foreach (var role in roles)
+        foreach (var role in user.Roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
@@ -64,6 +64,24 @@ public class TokenService : ITokenService
             signingCredentials: signingCredentials);
         return tokenOptions;
     }
+
+    public long JwtExpireUnixSeconds()
+    {
+        var expireDate = DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSettings.ExpiryInMinutes));
+        return JwtExpireDateTimeToUnixSeconds(expireDate);
+    }
+
+    public async Task<string> CreateToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken)
+    {
+        var userInfo = await userRepository.GetAuthorizedUserInformation(userId, cancellationToken) ?? throw new NotFoundException();
+
+        var signingCredentials = GetSigningCredentials();
+        var claims = GetClaims(userInfo);
+        var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
+        var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        return token;
+    }
+
     public string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
@@ -73,6 +91,35 @@ public class TokenService : ITokenService
             return Convert.ToBase64String(randomNumber);
         }
     }
+
+    public ClaimsPrincipal? ValidateToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey));
+
+        var parameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = _jwtSettings.ValidIssuer,
+            ValidAudience = _jwtSettings.ValidAudience,
+            IssuerSigningKey = key,
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+
+        try
+        {
+            var principal = handler.ValidateToken(token, parameters, out _);
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
         var tokenValidationParameters = new TokenValidationParameters

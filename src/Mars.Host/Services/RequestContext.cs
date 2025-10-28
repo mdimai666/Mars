@@ -61,5 +61,6 @@ internal class RequestContext : IRequestContext
             Gender = user.Gender,
             PhoneNumber = user.PhoneNumber,
             UserName = user.UserName,
+            Roles = user.Roles.ToHashSet()
         };
 }

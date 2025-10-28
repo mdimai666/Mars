@@ -6,6 +6,7 @@ using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.NavMenus;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Data.OwnedTypes.Users;
+using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.Constants;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
@@ -29,7 +30,7 @@ public sealed class EntitiesCustomize : ICustomization
             .RuleFor(s => s.NormalizedUserName, (f, s) => s.UserName.ToUpper())
             .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))
             .RuleFor(s => s.NormalizedEmail, (f, s) => s.Email.ToUpper())
-            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(UserEntity.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
             .RuleFor(s => s.Gender, f => f.PickRandom<UserGender>())
             .RuleFor(s => s.SecurityStamp, Guid.NewGuid().ToString())
             .RuleFor(s => s.Status, EUserStatus.Activated)

@@ -1,14 +1,18 @@
 using System.Net.Mime;
 using Mars.Core.Constants;
+using Mars.Core.Exceptions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Services;
 using Mars.Host.Shared.Dto.Auth;
-using Mars.Host.Shared.Dto.Profile;
 using Mars.Host.Shared.ExceptionFilters;
+using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Mappings.Accounts;
+using Mars.Host.Shared.Mappings.UserProfiles;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.Auth;
 using Mars.Shared.Contracts.Files;
+using Mars.Shared.Contracts.Users.UserProfiles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,19 +32,22 @@ public class AccountController : ControllerBase
     protected readonly IUserService _userService;
     protected readonly IFileService _fileService;
     protected readonly IOptionService _optionService;
+    private readonly IRequestContext _requestContext;
 
     public AccountController(
         UserManager<UserEntity> userManager,
         AccountsService accountsService,
         IUserService userService,
         IFileService fileService,
-        IOptionService optionService)
+        IOptionService optionService,
+        IRequestContext requestContext)
     {
         _userManager = userManager;
         _accountsService = accountsService;
         _userService = userService;
         _fileService = fileService;
         _optionService = optionService;
+        _requestContext = requestContext;
     }
 
     //https://code-maze.com/blazor-webassembly-authentication-aspnetcore-identity/
@@ -64,6 +71,13 @@ public class AccountController : ControllerBase
         }
 
         return Unauthorized(result.ToResponse());
+    }
+
+    [HttpPost("Logout")]
+    [Authorize]
+    public Task Logout()
+    {
+        return _accountsService.Logout();
     }
 
     [HttpPost("RegisterUser")]
@@ -98,16 +112,11 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("Profile")]
-    public async Task<ActionResult<ProfileDto?>> GetProfile()
+    [Authorize]
+    public async Task<UserProfileResponse?> Profile(CancellationToken cancellationToken)
     {
-        ProfileDto? profile = await _accountsService.GetProfile();
-
-        if (profile == null)
-        {
-            return StatusCode(401);
-        }
-
-        return profile;
+        var userId = _requestContext.User.Id;
+        return (await _accountsService.GetProfile(userId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
     }
 
     [HttpPost("UploadAvatar")]

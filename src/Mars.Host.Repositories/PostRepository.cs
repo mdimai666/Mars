@@ -63,6 +63,7 @@ internal class PostRepository : IPostRepository, IDisposable
 
         await _marsDbContext.Posts.AddAsync(entity, cancellationToken);
         await _marsDbContext.SaveChangesAsync(cancellationToken);
+        _marsDbContext.Entry(entity).State = EntityState.Detached;
 
         return entity.Id;
     }
@@ -97,8 +98,8 @@ internal class PostRepository : IPostRepository, IDisposable
             var newPostType = await _marsDbContext.PostTypes.FirstAsync(s => s.TypeName == query.Type);
             entity.PostTypeId = newPostType.Id;
         }
-
         await _marsDbContext.SaveChangesAsync(cancellationToken);
+        _marsDbContext.Entry(entity).State = EntityState.Detached;
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken)

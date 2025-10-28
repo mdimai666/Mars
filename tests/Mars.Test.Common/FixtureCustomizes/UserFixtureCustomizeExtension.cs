@@ -4,6 +4,7 @@ using Mars.Core.Utils;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Shared.Dto.Users;
+using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ public static class UserFixtureCustomizeExtension
             .RuleFor(s => s.FirstName, f => f.Person.FirstName)
             .RuleFor(s => s.LastName, f => f.Person.LastName)
             .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))
-            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(UserDetail.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
             .RuleFor(s => s.Password, Password.Generate(6, 2))
             .RuleFor(s => s.Roles, ["Viewer"])
             .RuleFor(s => s.BirthDate, new DateTime(1991, 6, 10))

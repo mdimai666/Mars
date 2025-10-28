@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Options.Host;
 
-public static class MarsOptionsHostExtensions
+public static class MainOptions
 {
     static IOptionService optionService = default!;
 

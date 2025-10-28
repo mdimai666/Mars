@@ -59,15 +59,10 @@
 
     Dictionary<string, string>? _actions;
 
-    public static void Setup(Func<Type> currentPageTypeGetter)
-    {
-
-    }
-
     protected override async Task OnParametersSetAsync()
     {
         //Console.WriteLine(">>DW: " + _contextId);
-        _actions = (await vms.DevAdminExtraViewModel()).XActions.Values
+        _actions = Q.Site.XActions.Values
                        .Where(s => (s.FrontContextId?.Contains(_contextId) ?? false)
                                     || (AlsoShowRootContext && (s.FrontContextId?.Contains(_rootContextId) ?? false)))
                        .OrderBy(s => s.ContextMenuOrder)

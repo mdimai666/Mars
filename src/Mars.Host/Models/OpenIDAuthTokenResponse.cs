@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Mars.Host.Models;
 
+[Obsolete]
 public class OpenIDAuthTokenResponse
 {
 

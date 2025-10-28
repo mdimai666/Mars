@@ -5,7 +5,7 @@ using Mars.Core.Features;
 using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Feedbacks;
-using Mars.Host.Shared.Dto.Users;
+using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.Feedbacks;
 using Mars.Shared.Contracts.NavMenus;
 using Mars.Shared.Contracts.Posts;
@@ -111,7 +111,7 @@ public sealed class RequestCustomize : ICustomization
             .RuleFor(s => s.Title, f => f.Name.JobTitle())
             .RuleFor(s => s.Content, f => f.Name.JobDescriptor())
             .RuleFor(s => s.Email, (f, s) => f.PickRandom(null, faker.Internet.Email(s.FilledUsername)))
-            .RuleFor(s => s.Phone, f => f.PickRandom(UserDetail.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.Phone, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
             .RuleFor(s => s.Type, f => f.PickRandom(Enum.GetValues<FeedbackType>().Select(s => s.ToString())))
             .Generate();
 

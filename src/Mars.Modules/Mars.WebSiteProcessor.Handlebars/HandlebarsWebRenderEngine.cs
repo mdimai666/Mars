@@ -92,6 +92,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
             {
                 endpoints.MapFallback(async req =>
                 {
+                    req.Response.StatusCode = StatusCodes.Status404NotFound;
                     await req.Response.WriteAsync("None");
                 }).ShortCircuit();
             });

@@ -19,4 +19,6 @@ public record AuthorizedUserInformationDto : UserSummary
     public required UserGender Gender { get; init; }
 
     public required IReadOnlyCollection<string> Roles { get; init; }
+
+    public required string SecurityStamp { get; init; }
 }

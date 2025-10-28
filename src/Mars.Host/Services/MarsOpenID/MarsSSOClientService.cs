@@ -90,12 +90,14 @@ public class MarsSSOClientService
             new ("redirect_uri", redirect_uri),
         };
 
-        HttpClient client = new HttpClient();
+        HttpClient client = new();
 
         var form = new FormUrlEncodedContent(body).ReadAsStringAsync().Result;
         HttpContent post = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded");
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, ssoOption.TokenEndpoint);
-        request.Content = post;
+        HttpRequestMessage request = new(HttpMethod.Post, ssoOption.TokenEndpoint)
+        {
+            Content = post
+        };
 
         var req = await client.SendAsync(request, cancellationToken);
         if (req.IsSuccessStatusCode)
@@ -231,7 +233,7 @@ public class MarsSSOClientService
                     var roles = ef.Roles.Where(s => userInfo.Role.Contains(s.Name)).Select(s => s.Name).ToList();
                     await userService.UpdateUserRoles(existUser.Id, roles!, cancellationToken);
 
-                    return accountsService.LoginForce(existUser.Id).Result;
+                    return await accountsService.LoginForce(existUser.Id, cancellationToken);
                 }
                 else
                 {
@@ -249,7 +251,7 @@ public class MarsSSOClientService
                         existUser = ef.Users.FirstOrDefault(s => s.Id == userInfo.Id);
                         var roles = ef.Roles.Where(s => userInfo.Role.Contains(s.Name)).Select(s => s.Name).ToList();
                         await userService.UpdateUserRoles(existUser.Id, roles!, cancellationToken);
-                        return accountsService.LoginForce(existUser.Id).Result;
+                        return await accountsService.LoginForce(existUser.Id, cancellationToken);
                     }
                     else
                     {

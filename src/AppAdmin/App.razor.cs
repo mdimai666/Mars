@@ -17,10 +17,7 @@ public partial class App
 {
     static RouteData trackRouteData = default!;
     public static Type PageType => trackRouteData?.PageType ?? typeof(App);
-
-    [CascadingParameter]
-    protected Task<AuthenticationState> AuthState { get; set; } = default!;
-    [Inject] AuthenticationService AuthenticationService { get; set; } = default!;
+    [Inject] IAuthenticationService AuthenticationService { get; set; } = default!;
     [Inject] AuthenticationStateProvider authStateProvider { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
@@ -44,11 +41,8 @@ public partial class App
         appHotKeysContext = HotKeys.CreateContext()
                                 .Add(Code.F9, OpenPageSource, "open page source");
 
-        await viewModelService.GetLocalInitialSiteDataViewModel();
-        //if (NavigationManager.BaseUri.Contains(":5185") == false)
-        //{
-        //    _ = AuthenticationService.GetProfile();
-        //}
+        var vm = await viewModelService.GetLocalInitialSiteDataViewModel();
+        Q.UpdateInitialSiteData(vm);
         SetupTheme();
 
         hub.OnShowNotifyMessage += Hub_OnShowNotifyMessage;

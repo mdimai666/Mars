@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-using Mars.Core.Extensions;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Shared.Contracts.Users;
 using Microsoft.AspNetCore.Identity;
@@ -31,10 +29,4 @@ public record UserDetail : UserSummary
     public required string Type { get; init; }
     public required IReadOnlyCollection<MetaValueDetailDto> MetaValues { get; init; }
 
-    public static string NormalizePhone(string phone)
-    {
-        phone = Regex.Replace(phone ?? "", "[^0-9+]", "");
-        if (phone.Length == 11 && phone.StartsWith("8")) phone = "+7" + phone.Right(10);
-        return phone;
-    }
 }

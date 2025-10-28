@@ -3,4 +3,24 @@
 
 <PageTitle>Admin</PageTitle>
 
-<AppFront.Shared.Pages.OnePage SLUG="admin" />
+<div>
+    <AuthorizeView>
+        <Authorized>
+            <h1>Hello, @context.User.Identity.Name!</h1>
+            <p>User has the following claims:</p>
+            <ul>
+                @foreach (var claim in context.User.Claims)
+                {
+                    <li>@claim.Type: @claim.Value</li>
+                }
+            </ul>
+        </Authorized>
+        <NotAuthorized>
+            <p>You are not logged in.</p>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    <JsonDump Model="@Q.User" />
+
+    <AppFront.Shared.Pages.OnePage SLUG="admin" />
+</div>

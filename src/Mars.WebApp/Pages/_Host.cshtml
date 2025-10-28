@@ -4,39 +4,25 @@
 @{
     Layout = null;
 }
-@using AppFront;
 @using AppFront.Shared
-@using Mars.Controllers
 @using Mars.Core.Features
-@using Mars.Core.Models;
-@using Mars.Host.Data
-@using Mars.Host.Data.Entities
-@using Mars.Host.Models
-@using Mars.Host.Services
+@using Mars.Core.Models
+@using Mars.Host.Handlers
 @using Mars.Host.Shared.Dto.Users
 @using Mars.Host.Shared.Interfaces
 @using Mars.Host.Shared.Models
 @using Mars.Host.Shared.Services
 @using Mars.Host.Shared.WebSite.Models
-@using Mars.Services
-@using Mars.UseStartup
-@using Mars.WebSiteProcessor.Endpoints;
-@using Mars.WebSiteProcessor.Handlebars
-@using Mars.WebSiteProcessor.Interfaces
 @using Mars.WebSiteProcessor.Services
 @using Mars.WebSiteProcessor.WebSite
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.EntityFrameworkCore
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.DependencyInjection;
 
 @inject IRequestContext requestContext
-@inject IUserService userService;
 @inject IOptionService optionService;
 @inject IServiceProvider serviceProvider;
-@inject IConfiguration configuration
-
+@inject IUserService userService;
+@inject InitialSiteDataViewModelHandler _initialSiteDataHandler;
 
 @{
     //AppFront.Program.IsPrerender = true;
@@ -48,9 +34,9 @@
 
     if (StartupFront_Mode == AppFrontMode.BlazorPrerender || StartupFront_Mode == AppFrontMode.ServeStaticBlazor)
     {
-        var vm = await ViewModelController.InitialSiteDataViewModel(serviceProvider, Request);
+        var vm = await _initialSiteDataHandler.Handle(Request, devAdminPageData: false, CancellationToken.None);
         Q.UpdateInitialSiteData(vm);
-        json = System.Text.Json.JsonSerializer.Serialize(vm);        
+        json = System.Text.Json.JsonSerializer.Serialize(vm);
     }
 
     // PrepareHostHtml html = await PrepareHostHtml.GetHostTemplate(HttpContext, serviceProvider, typeof(Mars.Host.MainMarsHost).Assembly, requestContext, default);
@@ -92,7 +78,6 @@ else
             }
         </script>
 
-
         <app id="app">
             @if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor)
             {
@@ -119,7 +104,6 @@ else
             <a href="" class="reload">Перезагрузить</a>
             <a class="dismiss">🗙</a>
         </div>
-
 
     }
     else

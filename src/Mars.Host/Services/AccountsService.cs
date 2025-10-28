@@ -1,9 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
 using Mars.Host.Data.Entities;
 using Mars.Host.Models;
 using Mars.Host.Shared.Dto.Auth;
 using Mars.Host.Shared.Dto.Profile;
 using Mars.Host.Shared.Repositories;
+using Mars.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -15,6 +15,7 @@ public class AccountsService
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
     private readonly ITokenService _tokenService;
+    private readonly IUserRepository _userRepository;
     private readonly IUserTypeRepository _userTypeRepository;
 
     public AccountsService(
@@ -23,6 +24,7 @@ public class AccountsService
         IHttpContextAccessor httpContextAccessor,
         IOptions<JwtSettings> jwtSettings,
         ITokenService tokenService,
+        IUserRepository userRepository,
         IUserTypeRepository userTypeRepository)
     {
         _userManager = userManager;
@@ -34,6 +36,7 @@ public class AccountsService
         }
 
         _tokenService = tokenService;
+        _userRepository = userRepository;
         _userTypeRepository = userTypeRepository;
     }
 
@@ -46,10 +49,7 @@ public class AccountsService
             return AuthResultDto.InvalidDataResponse();
         }
 
-        var signingCredentials = _tokenService.GetSigningCredentials();
-        var claims = await _tokenService.GetClaimsAsync(user, _userManager);
-        var tokenOptions = _tokenService.GenerateTokenOptions(signingCredentials, claims);
-        var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        var token = await _tokenService.CreateToken(user.Id, _userRepository, cancellationToken);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         if (true)
@@ -61,13 +61,13 @@ public class AccountsService
         return new AuthResultDto
         {
             Token = token,
-            ExpiresIn = TokenService.JwtExpireDateTimeToUnixSeconds(tokenOptions.ValidTo),
+            ExpiresIn = _tokenService.JwtExpireUnixSeconds(),
             ErrorMessage = null,
             RefreshToken = null
         };
     }
 
-    public async Task<AuthResultDto> LoginForce(Guid userId)
+    public async Task<AuthResultDto> LoginForce(Guid userId, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
@@ -76,15 +76,12 @@ public class AccountsService
             return AuthResultDto.InvalidDataResponse();
         }
 
-        var signingCredentials = _tokenService.GetSigningCredentials();
-        var claims = await _tokenService.GetClaimsAsync(user, _userManager);
-        var tokenOptions = _tokenService.GenerateTokenOptions(signingCredentials, claims);
-        var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        var token = await _tokenService.CreateToken(user.Id, _userRepository, cancellationToken);
 
         return new AuthResultDto
         {
             Token = token,
-            ExpiresIn = TokenService.JwtExpireDateTimeToUnixSeconds(tokenOptions.ValidTo),
+            ExpiresIn = _tokenService.JwtExpireUnixSeconds(),
             ErrorMessage = null,
             RefreshToken = null
         };
@@ -163,18 +160,14 @@ public class AccountsService
         };
     }
 
-    public Task<ProfileDto?> GetProfile()
+    public Task<UserProfileDto?> GetProfile(Guid userId, CancellationToken cancellationToken)
     {
-        //var _user = _httpContextAccessor.HttpContext.User;
+        return _userRepository.UserProfile(userId, cancellationToken);
+    }
 
-        //if (!_user.Identity.IsAuthenticated) return null;
-
-        //var user = await _userManager.GetUserAsync(_user);
-
-        //if (user == null) return null;
-
-        //return new ProfileDto(user);
-        throw new NotImplementedException();
+    public Task Logout()
+    {
+        return _signInManager.SignOutAsync();
     }
 
 }

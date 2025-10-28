@@ -5,6 +5,8 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.Common;
+using Mars.Host.Shared.Dto.Profile;
+using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Dto.Users.Passwords;
 using Mars.Host.Shared.Repositories;
@@ -64,6 +66,12 @@ internal class UserRepository : IUserRepository, IDisposable
                                         .FirstOrDefaultAsync(s => s.UserName == username, cancellationToken))
                                         ?.ToDto();
 
+    public async Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(Guid userId, CancellationToken cancellationToken)
+                                => (await _marsDbContext.Users.AsNoTracking()
+                                        .Include(s => s.Roles)
+                                        .FirstOrDefaultAsync(s => s.Id == userId, cancellationToken))
+                                        ?.ToDto();
+
     public async Task<Guid> Create(CreateUserQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -109,17 +117,26 @@ internal class UserRepository : IUserRepository, IDisposable
                                                 .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                 ?? throw new NotFoundException();
 
-        entity.FirstName = query.FirstName;
-        entity.LastName = query.LastName ?? "";
-        entity.MiddleName = query.MiddleName;
-        entity.Email = query.Email;
+        entity.UpdateEntity(query);
+        await UpdateRoles(entity, query.Roles);
 
-        entity.PhoneNumber = query.PhoneNumber;
-        entity.BirthDate = query.BirthDate;
-        entity.Gender = UserMapping.ParseGender(query.Gender);
+        MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
 
+        if (entity.UserType.TypeName != query.Type)
+        {
+            var newUserType = await _marsDbContext.UserTypes.FirstAsync(s => s.TypeName == query.Type);
+            entity.UserTypeId = newUserType.Id;
+        }
+
+        await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+        _marsDbContext.Entry(entity).State = EntityState.Detached;
+    }
+
+    async Task UpdateRoles(UserEntity entity, IReadOnlyCollection<string> queryRoles)
+    {
         var oldRoles = entity.Roles!.Select(s => s.NormalizedName!).Order().ToList();
-        var newRoles = query.Roles.Select(s => _lookupNormalizer.NormalizeName(s)).Order().ToList();
+        var newRoles = queryRoles.Select(s => _lookupNormalizer.NormalizeName(s)).Order().ToList();
 
         if (oldRoles.Count != newRoles.Count || oldRoles.SequenceEqual(newRoles))
         {
@@ -131,18 +148,6 @@ internal class UserRepository : IUserRepository, IDisposable
                 if (diff.ToAdd.Any()) await _userManager.AddToRolesAsync(entity, diff.ToAdd);
             }
         }
-
-        entity.ModifiedAt = DateTimeOffset.Now;
-        MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt.Value);
-
-        if (entity.UserType.TypeName != query.Type)
-        {
-            var newUserType = await _marsDbContext.UserTypes.FirstAsync(s => s.TypeName == query.Type);
-            entity.UserTypeId = newUserType.Id;
-        }
-
-        await _marsDbContext.SaveChangesAsync(cancellationToken);
-        await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken)
@@ -325,6 +330,14 @@ internal class UserRepository : IUserRepository, IDisposable
         return UserActionResult.Success("Пароль успешно изменен");
     }
 
+    public async Task<UserProfileDto?> UserProfile(Guid id, CancellationToken cancellationToken)
+    {
+        var user = (await InternalDetail
+                        .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
+                        ?.ToProfile();
+        return user;
+    }
+
     public async Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -340,7 +353,7 @@ internal class UserRepository : IUserRepository, IDisposable
         //user.MetaFields = metaFields;
         //return new UserEditProfileDto(user);
 
-        return user?.ToProfile();
+        return user?.ToEditProfile();
     }
 
     public async Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken)
@@ -364,5 +377,87 @@ internal class UserRepository : IUserRepository, IDisposable
         await _userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
 
         return UserActionResult.Success("успешно");
+    }
+
+    public async Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken)
+                                => (await InternalDetail
+                                        .FirstOrDefaultAsync(s => s.Email == email, cancellationToken))
+                                        ?.ToDto();
+
+    public async Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        var userLogin = await _marsDbContext.UserLogins.AsNoTracking()
+                                                .Include(s => s.User)
+                                                    .ThenInclude(s => s.UserType)
+                                                .Include(s => s.User)
+                                                    .ThenInclude(s => s.Roles)
+                                                .FirstOrDefaultAsync(s => s.LoginProvider == query.Prodvider.ProviderSlug
+                                                                        && s.ProviderKey == query.ExternalKey, cancellationToken);
+
+        var availableRoles = await _marsDbContext.Roles.AsNoTracking().Select(s => s.Name).ToListAsync(cancellationToken);
+        string[] setupRoles = availableRoles.Intersect(query.Roles, StringComparer.OrdinalIgnoreCase).ToArray()!;
+
+        if (userLogin is null)
+        {
+            var userTypesId = (await _marsDbContext.UserTypes.FirstAsync()).Id; //TODO: установить в настройках
+
+            var prefererUserName = query.PreferredUserName;
+            var thisUserNameBusy = await _marsDbContext.Users.AnyAsync(s => s.UserName == prefererUserName, cancellationToken);
+
+            if (thisUserNameBusy) // TODO: пересмотреть
+                prefererUserName = Guid.TryParse(query.ExternalKey, out var uid) ? uid.ToString("N") : Guid.NewGuid().ToString("N");
+
+            var user = (query with { PreferredUserName = prefererUserName }).ToEntity(userTypesId, _lookupNormalizer);
+            var password = Guid.NewGuid().ToString("N");
+
+            IdentityResult result = await _userManager.CreateAsync(user, password);
+
+            user = await _marsDbContext.Users.Include(s => s.UserType)
+                                                    .Include(s => s.Roles)
+                                                    //.Include(s => s.MetaValues!)
+                                                    //    .ThenInclude(s => s.MetaField)
+                                                    .FirstAsync(s => s.Id == user.Id, cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                throw new UserActionException("cannot create user", result.Errors.Select(s => s.Description).ToArray());
+            }
+
+            await _userManager.AddLoginAsync(user, new UserLoginInfo(query.Prodvider.ProviderSlug, query.ExternalKey, query.Prodvider.DisplayName));
+
+            if (setupRoles.Count() > 0)
+            {
+                var addRolesResult = await _userManager.AddToRolesAsync(user, setupRoles);
+
+                if (!addRolesResult.Succeeded)
+                {
+                    throw new UserActionException("cannot add user to Roles", result.Errors.Select(s => s.Description).ToArray());
+                }
+            }
+            _marsDbContext.Entry(user).State = EntityState.Detached;
+
+            return user.ToDto();
+        }
+        else
+        {
+            var entity = userLogin.User!;
+
+            if (entity.UserInfoHasChanges(query))
+            {
+                entity.UpdateEntity(query);
+                await UpdateRoles(entity, setupRoles);
+
+                await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
+                await _marsDbContext.SaveChangesAsync(cancellationToken);
+                _marsDbContext.Entry(entity).State = EntityState.Detached;
+            }
+
+            return entity.ToDto();
+        }
+
     }
 }

@@ -6,7 +6,6 @@ using Mars.Shared.Common;
 using Mars.Shared.Contracts.Auth;
 using Mars.Shared.Contracts.SSO;
 using Mars.WebApiClient.Interfaces;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 
 namespace AppFront.Shared.AuthProviders;
@@ -14,11 +13,11 @@ namespace AppFront.Shared.AuthProviders;
 public class AuthenticationService : IAuthenticationService
 {
     protected readonly IMarsWebApiClient _client;
-    protected readonly AuthenticationStateProvider _authStateProvider;
+    protected readonly CookieOrLocalStorageAuthStateProvider _authStateProvider;
     protected readonly ILocalStorageService _localStorage;
     protected MyJS _js;
 
-    public AuthenticationService(IMarsWebApiClient client, AuthenticationStateProvider authStateProvider, ILocalStorageService localStorage, IJSRuntime jsRuntime)
+    public AuthenticationService(IMarsWebApiClient client, CookieOrLocalStorageAuthStateProvider authStateProvider, ILocalStorageService localStorage, IJSRuntime jsRuntime)
     {
         _client = client;
         _authStateProvider = authStateProvider;
@@ -37,7 +36,12 @@ public class AuthenticationService : IAuthenticationService
         return new AuthResultResponse { ErrorMessage = null };
     }
 
-    public virtual async Task Login(AuthResultResponse authData)
+    public virtual Task MarkUserAsAuthenticated(string token, SsoUserInfoResponse? ssoUserInfo = null)
+    {
+        return _authStateProvider.MarkUserAsAuthenticated(token, ssoUserInfo);
+    }
+
+    public virtual async Task LoginCallback(AuthResultResponse authData)
     {
         await LoginStage(authData);
     }
@@ -46,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
     {
         ArgumentNullException.ThrowIfNull(result.Token, nameof(result.Token));
         await _localStorage.SetItemAsync("authToken", result.Token);
-        ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(result.Token);
+        await _authStateProvider.MarkUserAsAuthenticated(result.Token, null);
         _client.Client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
     }
 
@@ -54,7 +58,7 @@ public class AuthenticationService : IAuthenticationService
     {
         await _js.CookieRemove(".AspNetCore.Identity.Application");
         await _localStorage.RemoveItemAsync("authToken");
-        ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
+        await _authStateProvider.MarkUserAsLoggedOut();
         _client.Client.HttpClient.DefaultRequestHeaders.Authorization = null;
         Q.LogoutUser();
     }

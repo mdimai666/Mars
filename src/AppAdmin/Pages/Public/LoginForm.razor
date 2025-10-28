@@ -6,16 +6,16 @@
         <FluentProgressRing />
     </div>
 }
-else if (!IsAlreadyAuth)
+else if (!_isAlreadyAuth)
 {
     @if (authVariantConstOption.Variants.HasFlag(Mars.Options.Models.AuthVariantConstOption.AuthVariants.LoginPass))
     {
         <EditForm Model=@auth OnValidSubmit=ExecuteLogin>
             <DataAnnotationsValidator />
-            <FormItem2 For="()=>auth.Login" Label="@AppRes.LoginOrEmail">
+            <FormItem2 For="() => auth.Login" Label="@AppRes.LoginOrEmail">
                 <FluentTextField @bind-Value=@auth.Login name="login-email" AutoFocus Class="w-100" />
             </FormItem2>
-            <FormItem2 For="()=>auth.Password" Label="@AppRes.Password">
+            <FormItem2 For="() => auth.Password" Label="@AppRes.Password">
                 <FluentTextField TextFieldType="TextFieldType.Password" @bind-Value=@auth.Password name="password" Class="w-100" />
             </FormItem2>
             <div class="spacer-1"></div>
@@ -48,14 +48,27 @@ else if (!IsAlreadyAuth)
         <div class="xcenter vstack gap-3">
             @foreach (var sso in authVariantConstOption.SSOConfigs)
             {
-                <FluentButton OnClick=@(()=>ThirdLogin(sso.Slug))>
+                <FluentButton OnClick=@(() => SsoProviderLogin(sso.Slug))>
                     @if (!string.IsNullOrEmpty(sso.IconUrl))
                     {
-                        <FluentIcon Slot="start" Value="@(Icon.FromImageUrl(sso.IconUrl??""))" />
+                        <FluentIcon Slot="start" Value="@(Icon.FromImageUrl(sso.IconUrl ?? ""))" />
                     }
                     @(sso.Label ?? "Авторизация")
                 </FluentButton>
             }
+        </div>
+    }
+
+    <FluentOverlay @bind-Visible=@_loginOverlayVisible Transparent="false">
+        <FluentProgressRing />
+    </FluentOverlay>
+
+    if (_successAlertMessage is not null)
+    {
+        <div class="mt-5">
+            <FluentMessageBar Title="@AppRes.CompletedSuccessfully" Intent="@MessageIntent.Success" AllowDismiss=false>
+                @_successAlertMessage
+            </FluentMessageBar>
         </div>
     }
 }

@@ -1,6 +1,7 @@
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Dto.Auth;
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Dto.Users.Passwords;
 using Mars.Host.Shared.Dto.UserTypes;
@@ -288,4 +289,13 @@ internal class UserService : IUserService
         return _notifyService.SendNotify_Invation(userId, cancellationToken);
     }
 
+    public Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        return _userRepository.FindByEmailAsync(email, cancellationToken);
+    }
+
+    public Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken)
+    {
+        return _userRepository.RemoteUserUpsert(query, cancellationToken);
+    }
 }

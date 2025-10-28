@@ -19,6 +19,7 @@ using Mars.Options.Host;
 using Mars.Plugin;
 using Mars.Scheduler.Host;
 using Mars.SemanticKernel.Host;
+using Mars.SSO;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor;
@@ -99,7 +100,8 @@ builder.Services.MarsAddSwagger()
                 .AddMarsExcel()
                 .AddMarsScheduler()
                 .AddMarsDocker()
-                .AddMarsSemanticKernel();
+                .AddMarsSemanticKernel()
+                .AddMarsSSO();
 
 //------------------------------------------
 // CLIENT
@@ -177,6 +179,7 @@ app.UseCors();
 app.UseRouting(); //11-22
 //app.UseAntiforgery();
 app.UseAuthentication(); //11-22
+app.UseMarsSSOMiddlewares();
 #pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
 app.UseAuthorization(); //11-22
 #pragma warning restore ASP0001 // Authorization middleware is incorrectly configured
@@ -222,6 +225,7 @@ app.UseMarsWebSiteProcessor();
 app.UseMarsExcel();
 app.UseForFeature(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
 app.UseForFeature(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
+app.UseMarsSSO();
 
 await commandsApi.InvokeCommands(IsTesting ? [] : args);
 if (!commandsApi.IsContinueRun) return 0;

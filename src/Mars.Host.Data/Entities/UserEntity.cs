@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
+using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
 using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.Users;
-using Mars.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -86,23 +85,4 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
     public virtual ICollection<UserLoginEntity>? Logins { get; set; }
     public virtual ICollection<UserTokenEntity>? Tokens { get; set; }
 
-    // Helpers
-    public static string StringDigitOnly(string st)
-    {
-        var rx = new Regex(@"[^0-9]+");
-        return rx.Replace(st, "");
-    }
-
-    public static string NormalizePhone(string phone)
-    {
-        ArgumentNullException.ThrowIfNullOrEmpty(phone, nameof(phone));
-        phone = Regex.Replace(phone ?? "", "[^0-9+]", "");
-        if (phone.Length == 11 && phone.StartsWith("8")) phone = "+7" + phone.Right(10);
-        return phone;
-    }
-
-    //private static readonly Regex EmailRegex = new Regex("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*", RegexOptions.IgnoreCase);
-
-    //public static bool IsEmail(string input)
-    //    => EmailRegex.Match(input).Success;
 }

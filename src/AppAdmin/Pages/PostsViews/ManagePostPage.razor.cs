@@ -5,7 +5,6 @@ namespace AppAdmin.Pages.PostsViews;
 
 public partial class ManagePostPage
 {
-
     ManagePostView _managePostView = default!;
 
     string urlEditPage => "/dev/EditPost";

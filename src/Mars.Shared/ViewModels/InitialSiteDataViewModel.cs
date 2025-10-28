@@ -11,53 +11,16 @@ namespace Mars.Shared.ViewModels;
 
 public class InitialSiteDataViewModel
 {
-    public SysOptions SysOptions { get; set; } = default!;
-    //public List<Post> Posts { get; set; }
-    public List<PostTypeSummaryResponse> PostTypes { get; set; } = new();
-    public List<NavMenuDetailResponse> NavMenus { get; set; } = new();
+    public required SysOptions SysOptions { get; init; }
+    public required UserPrimaryInfo? UserPrimaryInfo { get; init; }
+    public required IReadOnlyCollection<PostTypeSummaryResponse> PostTypes { get; init; }
+    public required IReadOnlyCollection<NavMenuDetailResponse> NavMenus { get; init; }
 
     [JsonIgnore]
     public RenderActionResult<PostRenderResponse>? IndexPage => LocalPages.FirstOrDefault(s => s.Data?.PostSlug == "index");
-    public List<RenderActionResult<PostRenderResponse>> LocalPages { get; set; } = new();
+    public required IReadOnlyCollection<RenderActionResult<PostRenderResponse>> LocalPages { get; init; }
 
-    List<OptionSummaryResponse> _options { get; set; } = new();
-    public List<OptionSummaryResponse> Options { get => _options; set { _options = value; optCache.Clear(); } }
+    public required IReadOnlyCollection<OptionSummaryResponse> Options { get; init; }
 
-    static Dictionary<Type, object> optCache = new();
-
-    public T? GetOption<T>() where T : class
-    {
-        Type t = typeof(T);
-        var key = t.Name;
-
-        lock (optCache)
-        {
-            if (!optCache.ContainsKey(t))
-            {
-                var json = Options.FirstOrDefault(s => s.Key == key)?.Value;
-
-                if (json is null) return null;
-
-                T val = System.Text.Json.JsonSerializer.Deserialize<T>(json) ?? throw new ArgumentException($"cannot parse key='{key}', json='{json}'");
-
-                optCache[t] = val;
-            }
-        }
-
-        return optCache[t] as T;
-    }
-
-    public T GetRequiredOption<T>() where T : class
-    {
-        var val = GetOption<T>();
-        ArgumentNullException.ThrowIfNull(val, nameof(val));
-        return val;
-    }
-
-}
-
-public class DevAdminExtraViewModel //TODO: объединить с InitialSiteDataViewModel
-{
-    public Dictionary<string, XActionCommand> XActions { get; set; } = new();
-
+    public required IReadOnlyDictionary<string, XActionCommand> XActions { get; init; }
 }

@@ -1,3 +1,5 @@
+using Mars.Host.Shared.Dto.Profile;
+using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Dto.Users.Passwords;
 using Mars.Shared.Common;
@@ -11,6 +13,7 @@ public interface IUserRepository : IDisposable
     Task<UserDetail?> GetDetailByUserName(string username, CancellationToken cancellationToken);
     Task<UserEditDetail?> GetUserEditDetail(Guid id, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(string username, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(Guid userId, CancellationToken cancellationToken);
 
     Task<Guid> Create(CreateUserQuery query, CancellationToken cancellationToken);
     Task Update(UpdateUserQuery query, CancellationToken cancellationToken);
@@ -25,7 +28,9 @@ public interface IUserRepository : IDisposable
 
     Task<UserActionResult> SetPassword(SetUserPasswordQuery query, CancellationToken cancellationToken);
     Task<UserActionResult> SetPassword(SetUserPasswordByIdQuery query, CancellationToken cancellationToken);
+    Task<UserProfileDto?> UserProfile(Guid id, CancellationToken cancellationToken);
     Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken);
     Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken);
-
+    Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken);
 }

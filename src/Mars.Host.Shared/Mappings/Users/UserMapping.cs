@@ -4,6 +4,7 @@ using Mars.Host.Shared.Mappings.MetaFields;
 using Mars.Host.Shared.Mappings.Roles;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Users;
+using Mars.Shared.ViewModels;
 
 namespace Mars.Host.Shared.Mappings.Users;
 
@@ -110,4 +111,14 @@ public static class UserMapping
             MetaValues = entity.MetaValues.ToDetailResponse(),
         };
 
+    public static UserPrimaryInfo ToPrimaryInfo(this RequestContextUser entity)
+        => new()
+        {
+            Id = entity.Id,
+            Username = entity.UserName,
+            Email = entity.Email,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            Roles = entity.Roles
+        };
 }

@@ -41,8 +41,8 @@ public static class AppFrontSharedExtensions
         services.AddBlazoredLocalStorage();
         services.AddAuthorizationCore();
         services.TryAddScoped<IAuthenticationService, AuthenticationService>();
-        services.TryAddScoped<AuthenticationService, AuthenticationService>();
-        services.TryAddScoped<AuthenticationStateProvider, AuthStateProvider>();
+        services.TryAddScoped<AuthenticationStateProvider, CookieOrLocalStorageAuthStateProvider>();
+        services.TryAddScoped<CookieOrLocalStorageAuthStateProvider>(sp => (CookieOrLocalStorageAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 
         services.AddHttpClientInterceptor();
 
@@ -96,12 +96,6 @@ public static class AppFrontSharedExtensions
         services.AddMarsWebApiClient();
 
         //builder.Logging.SetMinimumLevel(LogLevel.Error);
-
-        services.TryAddScoped(sp =>
-        {
-            Q.AddSrvProv(sp);
-            return new Q();
-        });
 
         BlazoredHtml.AddComponentsFromAssembly(Q.Program.Assembly, true);
         BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.LikeButton).Assembly, true);

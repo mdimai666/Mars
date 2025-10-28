@@ -1,3 +1,4 @@
+using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Dto.Users.Passwords;
 using Mars.Shared.Common;
@@ -31,4 +32,6 @@ public interface IUserService
     Task<UpdateUserQuery> EnrichQuery(UpdateUserRequest request, CancellationToken cancellationToken);
     Task<UserEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken);
     Task<UserEditViewModel> GetEditModelBlank(string type, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken);
 }

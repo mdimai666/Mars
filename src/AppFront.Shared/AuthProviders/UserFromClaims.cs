@@ -1,18 +1,21 @@
 using System.Security.Claims;
+using AppFront.Shared.Extensions;
+using Mars.Shared.Contracts.SSO;
+using Mars.Shared.ViewModels;
 
 namespace AppFront.Shared.AuthProviders;
 
 public class UserFromClaims
 {
-    public Guid Id { get; internal set; }
-    public string Username { get; internal set; } = "";
-    public string Email { get; internal set; } = "";
-    public string FirstName { get; internal set; } = "";
-    public string LastName { get; internal set; } = "";
+    public Guid Id { get; private set; }
+    public string? ExternalId { get; private set; }
+    public string Username { get; private set; } = "";
+    public string? Email { get; private set; }
+    public string FirstName { get; private set; } = "";
+    public string LastName { get; private set; } = "";
     private string SecurityStamp { get; set; } = "";
 
-    public List<string> Roles { get; internal set; } = new();
-    public string Role { get; internal set; } = "";
+    public HashSet<string> Roles { get; private set; } = [];
 
     public bool IsAdmin => Roles.Contains("Admin");
     public bool IsDeveloper => Roles.Contains("Developer");
@@ -24,31 +27,20 @@ public class UserFromClaims
 
     }
 
-    public UserFromClaims(ClaimsPrincipal claimsPrincipal)
+    public UserFromClaims(ClaimsPrincipal principal, Guid? internalMarsId = null)
     {
-        Dictionary<string, Action<UserFromClaims, string>> dict = new()
-        {
-            [ClaimTypes.NameIdentifier] = (user, val) => user.Id = Guid.Parse(val),
-            [ClaimTypes.Name] = (user, val) => user.Username = val,
-            [ClaimTypes.Email] = (user, val) => user.Email = val,
-            ["AspNet.Identity.SecurityStamp"] = (user, val) => user.SecurityStamp = val,
-            [ClaimTypes.GivenName] = (user, val) => user.FirstName = val,
-            [ClaimTypes.Surname] = (user, val) => user.LastName = val,
+        Id = internalMarsId != null ? internalMarsId.Value : Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier) ?? Guid.Empty.ToString());
+        Username = principal.FindFirstValue(ClaimTypes.Name) ?? "";
+        Email = principal.FindFirstValue(ClaimTypes.Email);
+        FirstName = principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
+        LastName = principal.FindFirstValue(ClaimTypes.Surname) ?? "";
+        SecurityStamp = principal.FindFirstValue("AspNet.Identity.SecurityStamp") ?? "";
 
-        };
+        ExternalId = internalMarsId == null ? null : principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        foreach (var claim in claimsPrincipal.Claims)
-        {
-            if (dict.ContainsKey(claim.Type))
-            {
-                var action = dict[claim.Type];
-                action(this, claim.Value);
-            }
-        }
+        List<string> roles = [];
 
-        List<string> roles = new();
-
-        foreach (var claim in claimsPrincipal.Claims)
+        foreach (var claim in principal.Claims)
         {
             if (claim.Type == ClaimTypes.Role)
             {
@@ -63,9 +55,32 @@ public class UserFromClaims
         }
 
         roles.Sort();
-        Roles = roles;
-        Role = Roles.First();
+        Roles = roles.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+    }
+
+    public UserFromClaims(UserPrimaryInfo userPrimaryInfo, string? externalId)
+    {
+        Id = userPrimaryInfo.Id;
+        ExternalId = externalId;
+        Username = userPrimaryInfo.Username;
+        Email = userPrimaryInfo.Email;
+        FirstName = userPrimaryInfo.FirstName;
+        LastName = userPrimaryInfo.LastName;
+        SecurityStamp = "";
+        Roles = userPrimaryInfo.Roles.ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    public UserFromClaims(SsoUserInfoResponse ssoUserInfo)
+    {
+        Id = ssoUserInfo.InternalId;
+        ExternalId = ssoUserInfo.ExternalId;
+        Username = ssoUserInfo.UserPrimaryInfo.Username;
+        Email = ssoUserInfo.UserPrimaryInfo.Email;
+        FirstName = ssoUserInfo.UserPrimaryInfo.FirstName;
+        LastName = ssoUserInfo.UserPrimaryInfo.LastName;
+        SecurityStamp = "";
+        Roles = ssoUserInfo.UserPrimaryInfo.Roles.ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
     string _initials = null!;
@@ -80,8 +95,10 @@ public class UserFromClaims
             _initials = $"{LastName[0]}".ToUpper();
         else if (!string.IsNullOrEmpty(FirstName))
             _initials = $"{FirstName[0]}".ToUpper();
-        else
+        else if (!string.IsNullOrEmpty(Email))
             _initials = Email.Substring(0, 2).ToUpper();
+        else
+            _initials = "An";
         return _initials;
     }
 }

@@ -16,19 +16,19 @@
         @foreach (var _sso in context.OpenIDClientConfigs)
         {
             var sso = _sso;
-            <FluentCard>
+            <FluentCard Class="d-flex flex-column gap-3">
 
-                <FormItem2 For="()=>sso.Enable" Class="col mb-3">
+                <FormItem2 For="() => sso.Enable" Class="col">
                     <FluentSwitch @bind-Value="@sso.Enable" />
                 </FormItem2>
 
-                <FluentDivider Class="my-4" />
+                <FluentDivider />
 
-                <FormItem2 For="()=>sso.ClientId" Class="col mb-3">
+                <FormItem2 For="() => sso.ClientId" Class="col">
                     <FluentTextField @bind-Value="@sso.ClientId" Class="w-100" />
                 </FormItem2>
 
-                <FormItem2 For="()=>sso.ClientSecret" Class="col mb-3">
+                <FormItem2 For="() => sso.ClientSecret" Class="col">
                     <FluentTextField @bind-Value="@sso.ClientSecret" Class="w-100">
                         <FluentButton Appearance="@Appearance.Stealth"
                                       OnClick=@(e=>{ sso.ClientSecret = Password.Generate(16,6); })
@@ -36,11 +36,25 @@
                     </FluentTextField>
                 </FormItem2>
 
-                <FormItem2 For="()=>sso.CallbackUrl" Class="col mb-3">
+                <FormItem2 For="() => sso.CallbackUrl" Class="col">
                     <FluentTextField @bind-Value="@sso.CallbackUrl" Class="w-100" />
                 </FormItem2>
 
-                <FluentButton Appearance="Appearance.Stealth" OnClick=@(e=>DeleteSSOClick(sso))>Delete</FluentButton>
+                <FormItem2 For="() => sso.RedirectUris" Class="col">
+                    <FluentTextField @bind-Value="@sso.RedirectUris" Class="w-100" />
+                </FormItem2>
+
+                <FluentCheckbox @bind-Value="sso.RequirePkce">
+                    <AutoInputLabel For="() => sso.RequirePkce" />
+                </FluentCheckbox>
+
+                <FormItem2 For="() => sso.AllowedGrantTypes" Class="col">
+                    <FluentTextField @bind-Value="@sso.AllowedGrantTypes" Class="w-100" />
+                </FormItem2>
+
+                <div class="">
+                    <FluentButton Appearance="Appearance.Stealth" OnClick=@(e => DeleteSSOClick(sso))>Delete</FluentButton>
+                </div>
 
             </FluentCard>
         }
@@ -53,11 +67,9 @@
 
 </EditOptionForm>
 
-
 @code {
     EditOptionForm<OpenIDServerOption> form = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
-
 
     void AddSSOClick()
     {

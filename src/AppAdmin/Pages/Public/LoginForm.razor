@@ -13,10 +13,10 @@ else if (!_isAlreadyAuth)
         <EditForm Model=@auth OnValidSubmit=ExecuteLogin>
             <DataAnnotationsValidator />
             <FormItem2 For="() => auth.Login" Label="@AppRes.LoginOrEmail">
-                <FluentTextField @bind-Value=@auth.Login name="login-email" AutoFocus Class="w-100" />
+                <FluentTextField @bind-Value=@auth.Login name="login-email" Immediate AutoFocus Class="w-100" />
             </FormItem2>
             <FormItem2 For="() => auth.Password" Label="@AppRes.Password">
-                <FluentTextField TextFieldType="TextFieldType.Password" @bind-Value=@auth.Password name="password" Class="w-100" />
+                <FluentTextField TextFieldType="TextFieldType.Password" @bind-Value=@auth.Password name="password" Immediate Class="w-100" />
             </FormItem2>
             <div class="spacer-1"></div>
 

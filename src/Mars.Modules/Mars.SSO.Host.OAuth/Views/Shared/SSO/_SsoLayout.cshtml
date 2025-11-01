@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"]</title>
+    <link href="~/mars/vendor/bootstrap/bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+
+        .login-card {
+            max-width: 400px;
+            margin: 5rem auto;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .form-floating > label {
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background-color: #0069d9;
+            border-color: #0069d9;
+        }
+    </style>
+</head>
+<body>
+    @RenderBody()
+
+    @* <script scr="~/mars/vendor/bootstrap/bootstrap5.min.js" type="text/javascript"></script> *@
+</body>
+</html>

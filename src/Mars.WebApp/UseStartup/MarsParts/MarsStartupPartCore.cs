@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.UseStartup.MarsParts;
@@ -79,21 +80,31 @@ internal static class MarsStartupPartCore
             {
                 cfg.SlidingExpiration = true;
             })
-            .AddJwtBearer(options =>
+            .AddJwtBearer(); ;
+
+        services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<IKeyMaterialService, IOptions<JwtSettings>, IOptionService>((options, keys, jwtSettings, ops) =>
             {
-                options.TokenValidationParameters = new()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
 
-                    ValidIssuer = jwtSettings["ValidIssuer"],
-                    ValidAudience = jwtSettings["ValidAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"])),
-                };
+                    //ValidIssuer = jwtSettings.Value.ValidIssuer,
+                    ValidAudience = jwtSettings.Value.ValidAudience,
+                    IssuerSigningKey = keys.SigningKey,
 
+                    IssuerValidator = (issuer, token, parameters) =>
+                    {
+                        if (issuer == ops.SysOption.SiteUrl)
+                            return issuer;
+                        throw new SecurityTokenInvalidIssuerException($"Invalid issuer: {issuer}");
+                    },
+                };
             });
+
         services.ConfigureApplicationCookie(options =>
         {
             //options.Cookie.SameSite = SameSiteMode.Unspecified;

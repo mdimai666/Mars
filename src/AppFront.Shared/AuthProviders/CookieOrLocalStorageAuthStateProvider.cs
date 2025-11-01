@@ -124,8 +124,26 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
     {
         var payload = jwt.Split('.')[1];
         var jsonBytes = ParseBase64WithoutPadding(payload);
-        var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes)!;
-        return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString() ?? ""));
+        var json = JsonSerializer.Deserialize<JsonElement>(jsonBytes);
+
+        var claims = new List<Claim>();
+
+        foreach (var property in json.EnumerateObject())
+        {
+            if (property.Value.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in property.Value.EnumerateArray())
+                {
+                    claims.Add(new Claim(property.Name, item.ToString()));
+                }
+            }
+            else
+            {
+                claims.Add(new Claim(property.Name, property.Value.ToString()));
+            }
+        }
+
+        return claims;
     }
 
     private static byte[] ParseBase64WithoutPadding(string base64)

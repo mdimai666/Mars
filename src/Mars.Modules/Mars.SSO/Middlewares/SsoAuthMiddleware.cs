@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Claims;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Services;
@@ -17,6 +18,7 @@ public class SsoAuthMiddleware
         _next = next;
     }
 
+    [DebuggerStepThrough]
     public async Task InvokeAsync(HttpContext context,
         ISsoService ssoService,
         IUserService userService,
@@ -43,12 +45,14 @@ public class SsoAuthMiddleware
             await _next(context);
             return;
         }
+        cancellationToken.ThrowIfCancellationRequested();
 
         var providers = ssoService.CreateProviderList();
 
         // Если токен внешний
         foreach (var provider in providers)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var extPrincipal = await provider.ValidateTokenAsync(token);
             if (extPrincipal == null) continue;
 

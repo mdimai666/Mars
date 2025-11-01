@@ -150,6 +150,9 @@
   <data name="BirthDate" xml:space="preserve">
     <value>Дата рождения</value>
   </data>
+  <data name="Button_SignIn" xml:space="preserve">
+    <value>Войти</value>
+  </data>
   <data name="ByDate" xml:space="preserve">
     <value>По дате</value>
   </data>
@@ -342,6 +345,9 @@
   <data name="LoginOrEmail" xml:space="preserve">
     <value>Логин или Email</value>
   </data>
+  <data name="LoginPage_AccessYourAccount" xml:space="preserve">
+    <value>Доступ к вашей учетной записи</value>
+  </data>
   <data name="Male" xml:space="preserve">
     <value>Мужской</value>
   </data>
@@ -461,6 +467,9 @@
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Настройки</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Вход</value>
   </data>
   <data name="Slug" xml:space="preserve">
     <value>Slug</value>

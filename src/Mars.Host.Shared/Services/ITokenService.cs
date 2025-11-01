@@ -8,6 +8,9 @@ namespace Mars.Host.Shared.Services;
 
 public interface ITokenService
 {
+    int ExpiryInMinutes { get; }
+    int ExpiryInSeconds { get; }
+
     SigningCredentials GetSigningCredentials();
     List<Claim> GetClaims(AuthorizedUserInformationDto user);
     JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
@@ -16,7 +19,7 @@ public interface ITokenService
     T? JwtDecode<T>(string payload, string? secret = null, bool verify = true);
     string JwtEncode(Dictionary<string, object> payload);
     string JwtEncode(Dictionary<string, object> payload, string secret);
-    Task<string> CreateToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken);
+    Task<string> CreateAccessToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken);
     long JwtExpireUnixSeconds();
     ClaimsPrincipal? ValidateToken(string token);
 }

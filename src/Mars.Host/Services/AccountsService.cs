@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Mars.Host.Services;
 
-public class AccountsService
+public class AccountsService : IAccountsService
 {
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
@@ -49,7 +49,7 @@ public class AccountsService
             return AuthResultDto.InvalidDataResponse();
         }
 
-        var token = await _tokenService.CreateToken(user.Id, _userRepository, cancellationToken);
+        var token = await _tokenService.CreateAccessToken(user.Id, _userRepository, cancellationToken);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         if (true)
@@ -76,7 +76,7 @@ public class AccountsService
             return AuthResultDto.InvalidDataResponse();
         }
 
-        var token = await _tokenService.CreateToken(user.Id, _userRepository, cancellationToken);
+        var token = await _tokenService.CreateAccessToken(user.Id, _userRepository, cancellationToken);
 
         return new AuthResultDto
         {
@@ -168,6 +168,17 @@ public class AccountsService
     public Task Logout()
     {
         return _signInManager.SignOutAsync();
+    }
+
+    public async Task<Guid?> ValidateUserCredentials(string username, string password, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+
+        if (user == null) return null;
+
+        var valid = await _userManager.CheckPasswordAsync(user, password);
+
+        return valid ? user.Id : null;
     }
 
 }

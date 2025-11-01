@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using Mars.Core.Attributes;
 
 namespace Mars.Options.Models;
@@ -10,7 +8,7 @@ namespace Mars.Options.Models;
 public class OpenIDServerOption
 {
 
-    public List<OpenIDServerClientConfig> OpenIDClientConfigs { get; set; } = new();
+    public List<OpenIDServerClientConfig> OpenIDClientConfigs { get; set; } = [];
 
 }
 
@@ -30,4 +28,13 @@ public class OpenIDServerClientConfig
 
     [Display(Name = "CallbackPath")]
     public string CallbackUrl { get; set; } = "https://example.com/dev/Login";
+
+    [Display(Name = "RedirectUris")]
+    public string RedirectUris { get; set; } = "*";
+
+    [Display(Name = "RequirePkce")]
+    public bool RequirePkce { get; set; }
+
+    [Display(Name = "AllowedGrantTypes", Description = "comma list")]
+    public string AllowedGrantTypes { get; set; } = "authorization_code,refresh_token"; // comma list
 }

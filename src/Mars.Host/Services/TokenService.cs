@@ -16,8 +16,12 @@ namespace Mars.Host.Services;
 public class TokenService : ITokenService
 {
     readonly JwtSettings _jwtSettings;
+    private readonly IKeyMaterialService _keys;
 
-    public TokenService(IOptions<JwtSettings> jwtSettings)
+    public int ExpiryInMinutes => _jwtSettings.ExpiryInMinutes;
+    public int ExpiryInSeconds => _jwtSettings.ExpiryInMinutes * 60;
+
+    public TokenService(IOptions<JwtSettings> jwtSettings, IKeyMaterialService keys)
     {
         _jwtSettings = jwtSettings.Value;
 
@@ -25,14 +29,18 @@ public class TokenService : ITokenService
         {
             throw new ApplicationException("Jwt Secret too short. Require min 32 symbols");
         }
+
+        _keys = keys;
     }
 
     public SigningCredentials GetSigningCredentials()
-    {
-        var key = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
-        var secret = new SymmetricSecurityKey(key);
-        return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
-    }
+        => _keys.GetSigningCredentials();
+    //{
+    //    var key = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
+    //    var secret = new SymmetricSecurityKey(key);
+    //    return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+    //}
+
     public List<Claim> GetClaims(AuthorizedUserInformationDto user)
     {
         var claims = new List<Claim>
@@ -60,25 +68,27 @@ public class TokenService : ITokenService
             issuer: _jwtSettings.ValidIssuer,
             audience: _jwtSettings.ValidAudience,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSettings.ExpiryInMinutes)),
+            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtSettings.ExpiryInMinutes)),
             signingCredentials: signingCredentials);
         return tokenOptions;
     }
 
     public long JwtExpireUnixSeconds()
     {
-        var expireDate = DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSettings.ExpiryInMinutes));
+        var expireDate = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtSettings.ExpiryInMinutes));
         return JwtExpireDateTimeToUnixSeconds(expireDate);
     }
 
-    public async Task<string> CreateToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken)
+    public async Task<string> CreateAccessToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken)
     {
         var userInfo = await userRepository.GetAuthorizedUserInformation(userId, cancellationToken) ?? throw new NotFoundException();
 
         var signingCredentials = GetSigningCredentials();
         var claims = GetClaims(userInfo);
         var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
-        var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.WriteToken(tokenOptions);
+
         return token;
     }
 
@@ -95,7 +105,6 @@ public class TokenService : ITokenService
     public ClaimsPrincipal? ValidateToken(string token)
     {
         var handler = new JwtSecurityTokenHandler();
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey));
 
         var parameters = new TokenValidationParameters
         {
@@ -105,7 +114,7 @@ public class TokenService : ITokenService
             ValidateIssuerSigningKey = true,
             ValidIssuer = _jwtSettings.ValidIssuer,
             ValidAudience = _jwtSettings.ValidAudience,
-            IssuerSigningKey = key,
+            IssuerSigningKey = _keys.SigningKey,
             ClockSkew = TimeSpan.FromMinutes(1)
         };
 
@@ -127,8 +136,7 @@ public class TokenService : ITokenService
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey)),
+            IssuerSigningKey = _keys.SigningKey,
             ValidateLifetime = false,
             ValidIssuer = _jwtSettings.ValidIssuer,
             ValidAudience = _jwtSettings.ValidAudience,

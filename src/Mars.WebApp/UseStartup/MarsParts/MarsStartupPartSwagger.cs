@@ -4,6 +4,8 @@ using Mars.Host.Features;
 using Mars.Host.Shared.Services;
 using Mars.Options.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
 
 namespace Mars.UseStartup.MarsParts;
@@ -75,6 +77,8 @@ internal static class MarsStartupPartSwagger
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+
+                c.TagActionsBy(ControllersGroupingByName);
             });
 
         return services;
@@ -83,7 +87,6 @@ internal static class MarsStartupPartSwagger
     public static IApplicationBuilder MarsUseSwagger(this IApplicationBuilder app)
     {
         IOptionService optionService = app.ApplicationServices.GetRequiredService<IOptionService>()!;
-
 
         app.Use([DebuggerStepThrough] async (context, next) =>
         {
@@ -142,6 +145,25 @@ internal static class MarsStartupPartSwagger
         });
 
         return endpoints;
+    }
+
+    // Добавляет возможно группировки по Name="group1", основанным на RouteAttribute контроллера
+    static IList<string> ControllersGroupingByName(Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription apiDesc)
+    {
+        if (apiDesc.ActionDescriptor is ControllerActionDescriptor cad)
+        {
+            // Берём RouteAttribute только с контроллера
+            var ctrlRouteName = cad.ControllerTypeInfo
+                .GetCustomAttributes(typeof(RouteAttribute), true)
+                .Cast<RouteAttribute>()
+                .FirstOrDefault()?.Name;
+
+            if (!string.IsNullOrEmpty(ctrlRouteName))
+                return [ctrlRouteName!];
+        }
+
+        // Фоллбэк по имени контроллера
+        return [apiDesc.ActionDescriptor.RouteValues["controller"] ?? "Misc"];
     }
 
 }

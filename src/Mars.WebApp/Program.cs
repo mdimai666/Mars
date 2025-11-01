@@ -20,6 +20,7 @@ using Mars.Plugin;
 using Mars.Scheduler.Host;
 using Mars.SemanticKernel.Host;
 using Mars.SSO;
+using Mars.SSO.Host.OAuth;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor;
@@ -101,7 +102,8 @@ builder.Services.MarsAddSwagger()
                 .AddMarsScheduler()
                 .AddMarsDocker()
                 .AddMarsSemanticKernel()
-                .AddMarsSSO();
+                .AddMarsSSO()
+                .AddMarsOAuthHost();
 
 //------------------------------------------
 // CLIENT

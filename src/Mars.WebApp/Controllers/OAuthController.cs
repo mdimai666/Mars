@@ -12,8 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Mars.Controllers;
 
 [ApiController]
+[Obsolete]
 [Route("api/[controller]/[action]")]
-public class OAuthController : ControllerBase
+public class OAuthOldController : ControllerBase
 {
     protected readonly IOptionService _optionService;
     protected readonly MarsSSOOpenIDServerService _marsSSOOpenIDServerService;
@@ -21,7 +22,7 @@ public class OAuthController : ControllerBase
     protected readonly EsiaService _esiaService;
     protected readonly KeycloakService _keycloakService;
 
-    public OAuthController(IOptionService optionService, MarsSSOOpenIDServerService MarsSSOOpenIDServerService,
+    public OAuthOldController(IOptionService optionService, MarsSSOOpenIDServerService MarsSSOOpenIDServerService,
         EsiaService esiaService, KeycloakService keycloakService, MarsSSOClientService MarsSSOClientService)
     {
         _optionService = optionService;
@@ -150,12 +151,6 @@ public class OAuthController : ControllerBase
 
     }
 
-    /// <summary>
-    /// OpenIDLogin
-    /// <see cref="AppAdmin.Pages.Public.LoginForm"/>
-    /// </summary>
-    /// <param name="form"></param>
-    /// <returns></returns>
     [HttpPost]
     public async Task<AuthStepsResponse> Login([FromForm] OpenIDAuthFormLoginPass form)
     {

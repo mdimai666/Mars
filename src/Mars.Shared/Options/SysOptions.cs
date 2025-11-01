@@ -9,7 +9,8 @@ public class SysOptions
     [Url]
     [Display(Name = "Адрес сайта")]
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
-    public string SiteUrl { get; set; } = "";
+    public string SiteUrl { get => _siteUrl; set => _siteUrl = value.Trim('/'); }
+    string _siteUrl = "";
 
     [Display(Name = "Имя сайта")]
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]

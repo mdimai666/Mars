@@ -31,7 +31,7 @@ public class MarsLocalJwtService : ILocalJwtService
         //using var scope = _serviceScopeFactory.CreateScope();
         //var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
-        return _tokenService.CreateToken(userId, _userRepository, cancellationToken);
+        return _tokenService.CreateAccessToken(userId, _userRepository, cancellationToken);
 
         /*
         var claims = new List<Claim>

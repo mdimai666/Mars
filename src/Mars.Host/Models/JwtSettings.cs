@@ -12,4 +12,5 @@ public class JwtSettings
     [Url]
     public required string ValidAudience { get; set; }
     public int ExpiryInMinutes { get; set; }
+    public string PrivateKeyPath { get; set; } = "data/jwt_private.pem";
 }

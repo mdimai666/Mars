@@ -21,6 +21,8 @@
 
         <RootNamespace>Mars</RootNamespace>
         <AssemblyName>Mars</AssemblyName>
+
+        <SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>Mars.xml</DocumentationFile>
@@ -113,6 +115,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host.OAuth\Mars.SSO.Host.OAuth.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO\Mars.SSO.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Blazor\Mars.WebSiteProcessor.Blazor.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
@@ -186,7 +189,7 @@
         <DebugType>None</DebugType>
         <!--<PublishSingleFile>true</PublishSingleFile>-->
         <!--<RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>-->
-        <!--<SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>-->
+        <SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>
         <!--some props in ./Directory.Build.props-->
         <PublishTrimmed>false</PublishTrimmed>
     </PropertyGroup>

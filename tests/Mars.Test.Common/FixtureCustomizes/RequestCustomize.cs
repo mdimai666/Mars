@@ -91,6 +91,7 @@ public sealed class RequestCustomize : ICustomization
                                         return new UpdateUserRequest
                                         {
                                             Id = Guid.NewGuid(),
+                                            UserName = user.UserName,
                                             Email = user.Email,
                                             FirstName = user.FirstName,
                                             LastName = user.LastName,

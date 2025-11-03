@@ -228,6 +228,7 @@ app.UseMarsExcel();
 app.UseForFeature(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
 app.UseForFeature(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
 app.UseMarsSSO();
+app.Services.UseMarsOAuthHost();
 
 await commandsApi.InvokeCommands(IsTesting ? [] : args);
 if (!commandsApi.IsContinueRun) return 0;

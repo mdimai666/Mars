@@ -4,6 +4,7 @@ using Flurl.Http;
 using Mars.Controllers;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories;
+using Mars.Host.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -70,7 +71,7 @@ public sealed class CreateUserTests : ApplicationTests
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
         var dbUser = ef.Users.Include(s => s.Roles)
-                                .Include(s=>s.MetaValues)
+                                .Include(s => s.MetaValues)
                                 .FirstOrDefault(s => s.Email == userRequest.Email);
         dbUser.Should().NotBeNull();
         dbUser.Should().BeEquivalentTo(userRequest, options => options
@@ -92,5 +93,31 @@ public sealed class CreateUserTests : ApplicationTests
             //e.DateTime.Date.ToString("g").Should().Be(req.DateTime.Date.ToString("g"));
 
         });
+    }
+
+    [IntegrationFact]
+    public async Task CreateUser_UsernameInvalidByBlacklist_ShouldFail()
+    {
+        //Arrange
+        _ = nameof(UserService.Create);
+        _ = nameof(UserController.Create);
+        var client = AppFixture.GetClient();
+
+        using var ef = AppFixture.MarsDbContext();
+        var userType = ef.UserTypes.AsNoTracking().Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
+
+        var userRequest = _fixture.Create<CreateUserRequest>() with
+        {
+            UserName = "sex"
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PostJsonAsync(userRequest).ReceiveValidationError();
+
+        //Assert
+        result.Status.Should().Be(StatusCodes.Status400BadRequest);
+        result.Errors.Should().HaveCount(1);
+        result.Errors[nameof(CreateUserRequest.UserName)].Should().ContainMatch("This username is reserved or not allowed.");
+
     }
 }

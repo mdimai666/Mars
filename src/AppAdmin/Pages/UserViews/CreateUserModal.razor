@@ -8,7 +8,7 @@
               @ref=Dialog
               OnDialogResult="OnDialogResult"
               Class="CreateUserModal"
-              @ondialogdismiss=@(()=>Visible=false)
+              @ondialogdismiss=@(() => Visible = false)
               PreventScroll=true>
     <FluentDialogHeader ShowDismiss="false" ShowDismissTooltip="false">
         <div class="hstack">
@@ -22,19 +22,23 @@
                            AfterSave="AfterSave"
                            SaveAction="@((model, isCreate)=>CreateUserModel.SaveAction(client, model, isCreate))">
 
-            <FormItem2 For="()=>model.FirstName">
+            <FormItem2 For="() => model.UserName">
+                <FluentTextField @bind-Value="model.UserName" AutoComplete="off" />
+            </FormItem2>
+
+            <FormItem2 For="() => model.FirstName">
                 <FluentTextField @bind-Value="model.FirstName" AutoComplete="off" />
             </FormItem2>
 
-            <FormItem2 For="()=>model.LastName">
+            <FormItem2 For="() => model.LastName">
                 <FluentTextField @bind-Value="model.LastName" AutoComplete="off" />
             </FormItem2>
 
-            <FormItem2 For="()=>model.Email">
+            <FormItem2 For="() => model.Email">
                 <FluentTextField @bind-Value="model.Email" TextFieldType="@TextFieldType.Email" AutoComplete="no" />
             </FormItem2>
 
-            <FormItem2 For="()=>model.Password">
+            <FormItem2 For="() => model.Password">
                 <div class="hstack gap-2">
                     <FluentTextField @bind-Value="model.Password" TextFieldType="@passwordFieldType" AutoComplete="new-password" />
                     <FluentButton OnClick="TogglePassword" IconStart="@passwordShowButtonIcon" Title="show password" />
@@ -42,16 +46,15 @@
                 </div>
             </FormItem2>
 
-            <FormItem2 For="()=>model.Type">
+            <FormItem2 For="() => model.Type">
                 <FluentSelect TOption="UserTypeListItemResponse"
-                                    Items="@Content.UserTypes"
-                                    OptionText="@(s=>s.Title)"
-                                    Placeholder="user type"
-                                    @bind-SelectedOption="@SelUserType"
-                                    />
+                              Items="@Content.UserTypes"
+                              OptionText="@(s=>s.Title)"
+                              Placeholder="user type"
+                              @bind-SelectedOption="@SelUserType" />
             </FormItem2>
 
-            <FormItem2 For="()=>model.Roles">
+            <FormItem2 For="() => model.Roles">
                 <FluentAutocomplete TOption="RoleSummaryResponse"
                                     AutoComplete="off"
                                     Items="@Content.Roles"

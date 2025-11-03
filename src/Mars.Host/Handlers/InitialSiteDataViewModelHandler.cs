@@ -63,7 +63,7 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
         return new InitialSiteDataViewModel
         {
             SysOptions = optionService.SysOption,
-            UserPrimaryInfo = requestContext.IsAuthenticated ? requestContext.User!.ToPrimaryInfo() : null,
+            UserPrimaryInfo = requestContext.User!?.ToPrimaryInfo(),
             PostTypes = (await postTypeRepository.ListAll(default)).Select(s => s.ToResponse()).ToList(),
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),
             LocalPages = localPages ?? [],

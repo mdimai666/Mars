@@ -27,6 +27,9 @@
                            Style="width:50px"
                            ImageSize="50px" />
             <div class="spacer-1"></div>
+            <FormItem2 For="@(() => model.UserName)">
+                <FluentTextField @bind-Value=@model.UserName />
+            </FormItem2>
             <FormItem2 For="@(() => model.LastName)">
                 <FluentTextField @bind-Value=@model.LastName />
             </FormItem2>

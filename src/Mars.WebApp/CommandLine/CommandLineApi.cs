@@ -20,7 +20,7 @@ public class CommandLineApi : ICommandLineApi
 
     Type[] initalCommands = [typeof(MainCommand)];
 
-    static readonly string[] _allowedBaseCommands = ["info"];
+    static readonly string[] _allowedBaseCommands = ["info", "migrate"];
 
     public CommandLineApi()
     {
@@ -79,8 +79,9 @@ public class CommandLineApi : ICommandLineApi
     public async Task<bool> InvokeBaseCommands(string[] args)
     {
         LoadBaseCommandCliTypes();
-        var a = args.JoinStr(" ").Trim();
-        if (!_allowedBaseCommands.Contains(a)) return false;
+        var commandName = rootCommand.Parse(args).CommandResult.Command.Name;
+
+        if (!_allowedBaseCommands.Contains(commandName)) return false;
 
         await rootCommand.InvokeAsync(args);
         return true;

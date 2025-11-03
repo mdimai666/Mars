@@ -13,7 +13,7 @@ public class MigrationCommandCli : CommandCli
     {
         //var optionMigrate = new Option<bool>("-migrate", "run migrate script");
 
-        var migrateCommand = new Command("-migrate", "run migrate script");
+        var migrateCommand = new Command("migrate", "run migrate script");
         migrateCommand.SetHandler(RunMigrateCommand);
         cli.AddCommand(migrateCommand);
     }

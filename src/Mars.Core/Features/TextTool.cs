@@ -45,7 +45,6 @@ public static class TextTool
         return slugWithUpperReg.IsMatch(slug);
     }
 
-
     /// <summary>
     /// Отадет строку в виде = 'value1,True,null,,1'
     /// </summary>

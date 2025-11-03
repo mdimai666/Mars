@@ -48,7 +48,7 @@ else if (!_isAlreadyAuth)
         <div class="xcenter vstack gap-3">
             @foreach (var sso in authVariantConstOption.SSOConfigs)
             {
-                <FluentButton OnClick=@(() => SsoProviderLogin(sso.Slug))>
+                <FluentButton OnClick=@(() => SsoProviderLogin(sso.Slug)) Class="w-100">
                     @if (!string.IsNullOrEmpty(sso.IconUrl))
                     {
                         <FluentIcon Slot="start" Value="@(Icon.FromImageUrl(sso.IconUrl ?? ""))" />

@@ -379,6 +379,11 @@ internal class UserRepository : IUserRepository, IDisposable
         return UserActionResult.Success("успешно");
     }
 
+    public Task<bool> UserNameExistAsync(string username)
+                                => _marsDbContext.Users.AnyAsync(s => s.UserName == username);
+    public Task<bool> UsernameIsAlreadyTakenByAnotherUser(string newUsername, Guid userId)
+                                => _marsDbContext.Users.AnyAsync(s => s.UserName == newUsername && s.Id != userId);
+
     public async Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken)
                                 => (await InternalDetail
                                         .FirstOrDefaultAsync(s => s.Email == email, cancellationToken))
@@ -406,7 +411,8 @@ internal class UserRepository : IUserRepository, IDisposable
             var userTypesId = (await _marsDbContext.UserTypes.FirstAsync()).Id; //TODO: установить в настройках
 
             var prefererUserName = query.PreferredUserName;
-            var thisUserNameBusy = await _marsDbContext.Users.AnyAsync(s => s.UserName == prefererUserName, cancellationToken);
+            var thisUserNameBusy = UsernameBlacklistValidator.IsBlacklisted(query.PreferredUserName)
+                                    || await _marsDbContext.Users.AnyAsync(s => s.UserName == prefererUserName, cancellationToken);
 
             if (thisUserNameBusy) // TODO: пересмотреть
                 prefererUserName = Guid.TryParse(query.ExternalKey, out var uid) ? uid.ToString("N") : Guid.NewGuid().ToString("N");

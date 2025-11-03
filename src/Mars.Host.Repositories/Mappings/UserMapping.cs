@@ -134,6 +134,7 @@ internal static class UserMapping
 
     public static UserEntity UpdateEntity(this UserEntity entity, UpdateUserQuery query)
     {
+        entity.UserName = query.UserName;
         entity.FirstName = query.FirstName;
         entity.LastName = query.LastName ?? "";
         entity.MiddleName = query.MiddleName;

@@ -23,7 +23,7 @@ public class OAuthTokenResponse
     public required string? RefreshToken { get; init; }
 
     [JsonPropertyName("scope")]
-    public required string Scope { get; init; }
+    public string? Scope { get; init; }
 
     [JsonPropertyName("expires_in")]
     public long? ExpiresIn { get; init; }

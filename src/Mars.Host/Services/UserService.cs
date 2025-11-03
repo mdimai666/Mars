@@ -294,8 +294,9 @@ internal class UserService : IUserService
         return _userRepository.FindByEmailAsync(email, cancellationToken);
     }
 
-    public Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken)
+    public async Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken)
     {
-        return _userRepository.RemoteUserUpsert(query, cancellationToken);
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        return await _userRepository.RemoteUserUpsert(query, cancellationToken);
     }
 }

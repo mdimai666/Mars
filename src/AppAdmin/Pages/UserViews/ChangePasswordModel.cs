@@ -10,7 +10,7 @@ public class ChangePasswordModel
     public Guid UserId { get; set; }
 
     [Display(Name = nameof(AppRes.NewPassword), ResourceType = typeof(AppRes))]
-    [Range(6, 30, ErrorMessageResourceName = nameof(AppRes.v_range), ErrorMessageResourceType = typeof(AppRes))]
+    [Length(6, 30, ErrorMessageResourceName = nameof(AppRes.v_range), ErrorMessageResourceType = typeof(AppRes))]
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     public string NewPassword { get; set; } = "";
 

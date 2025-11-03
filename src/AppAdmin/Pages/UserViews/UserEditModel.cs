@@ -16,6 +16,10 @@ public class UserEditModel
 {
     public Guid Id { get; set; }
 
+    [MinLength(3)]
+    [SlugString(true)]
+    public string UserName { get; set; } = "";
+
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     [Display(Name = nameof(AppRes.FirstName), ResourceType = typeof(AppRes))]
     public string FirstName { get; set; } = "";
@@ -92,6 +96,7 @@ public class UserEditModel
     public CreateUserRequest ToCreateRequest(string password)
         => new()
         {
+            UserName = UserName,
             FirstName = FirstName,
             LastName = LastName,
             MiddleName = MiddleName.AsNullIfEmpty(),
@@ -111,6 +116,7 @@ public class UserEditModel
         => new()
         {
             Id = Id,
+            UserName = UserName,
             FirstName = FirstName,
             LastName = LastName,
             MiddleName = MiddleName.AsNullIfEmpty(),
@@ -131,6 +137,7 @@ public class UserEditModel
             => new()
             {
                 Id = response.Id,
+                UserName = response.UserName,
                 FirstName = response.FirstName,
                 LastName = response.LastName,
                 MiddleName = response.MiddleName ?? "",

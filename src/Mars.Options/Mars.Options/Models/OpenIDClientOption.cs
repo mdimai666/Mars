@@ -9,14 +9,42 @@ namespace Mars.Options.Models;
 public class OpenIDClientOption
 {
 
-    public List<OpenIDClientConfig> OpenIDClientConfigs { get; set; } = new();
+    public List<OpenIDClientConfig> OpenIDClientConfigs { get; set; } = [];
 
     [JsonIgnore]
-    public static Dictionary<string,string> DriverList { get; set; } = new()
+    public static Dictionary<string, string> DriverList { get; } = new()
     {
         ["mars"] = "Mars",
         ["keycloak"] = "Keycloak",
-        ["esia"] = "Esia",
+        ["google"] = "Google",
+        ["github"] = "Github",
+        ["microsoft"] = "Microsoft/AzureAD",
+    };
+
+    public static Dictionary<string, OpenIDClientConfig> Examples() => new()
+    {
+        ["mars"] = new()
+        {
+            Title = "Mars",
+            Issuer = "https://example.com",
+            AuthEndpoint = "https://example.com/api/oauth/authorize",
+            TokenEndpoint = "https://example.com/api/oauth/token",
+            Driver = "mars",
+            Slug = "mars1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["keycloak"] = new()
+        {
+            Title = "keycloak",
+            Issuer = "http://localhost:6767/realms/<myrealm>",
+            AuthEndpoint = "http://localhost:6767/realms/<myrealm>/protocol/openid-connect/auth",
+            TokenEndpoint = "http://localhost:6767/realms/<myrealm>/protocol/openid-connect/token",
+            Driver = "keycloak",
+            Slug = "keycloak1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
     };
 }
 

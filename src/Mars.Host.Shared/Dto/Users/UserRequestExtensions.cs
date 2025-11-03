@@ -10,11 +10,11 @@ public static class UserRequestExtensions
     public static CreateUserQuery ToQuery(this CreateUserRequest request, IDictionary<Guid, MetaFieldDto> metaFields)
         => new()
         {
+            UserName = request.UserName,
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
             Password = request.Password,
-            UserName = request.Email, //TODO
             Roles = request.Roles,
 
             BirthDate = request.BirthDate,
@@ -28,6 +28,7 @@ public static class UserRequestExtensions
         => new()
         {
             Id = request.Id,
+            UserName = request.UserName,
             FirstName = request.FirstName,
             LastName = request.LastName,
             MiddleName = request.MiddleName,

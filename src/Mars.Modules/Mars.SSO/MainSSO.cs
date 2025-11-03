@@ -1,5 +1,6 @@
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Managers.Extensions;
+using Mars.Host.Shared.Services;
 using Mars.Host.Shared.SSO.Services;
 using Mars.Options.Models;
 using Mars.SSO.Middlewares;
@@ -45,6 +46,12 @@ public static class MainSSO
         //op.on
         eventManager.AddEventListener(eventTopic, OnSSOOptionUpdate);
 
+        var optionService = app.Services.GetRequiredService<IOptionService>();
+
+        optionService.RegisterOption<OpenIDClientOption>(x => ChangeOpenIDClientOption(x, optionService));
+        var openIdClient = optionService.GetOption<OpenIDClientOption>();
+        ChangeOpenIDClientOption(openIdClient, optionService);
+
         return app;
     }
 
@@ -54,5 +61,20 @@ public static class MainSSO
     {
         //_memoryCache.Remove("sso:providers:instances");
         _memoryCache.Remove("sso:providers:descriptors");
+    }
+
+    static void ChangeOpenIDClientOption(OpenIDClientOption opt, IOptionService optionService)
+    {
+        var ssoOpt = new AuthVariantConstOption
+        {
+            Variants = AuthVariantConstOption.AuthVariants.LoginPass | AuthVariantConstOption.AuthVariants.SSO,
+            SSOConfigs = opt.OpenIDClientConfigs.Where(s => s.Enable).Select(s => new AuthVariantConstOption.SSOProviderInfo
+            {
+                IconUrl = s.IconUrl,
+                Label = s.Title,
+                Slug = s.Slug,
+            }).ToList()
+        };
+        optionService.SetConstOption(ssoOpt, appendToInitialSiteData: true);
     }
 }

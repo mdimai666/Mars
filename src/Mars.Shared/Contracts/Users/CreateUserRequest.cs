@@ -8,6 +8,9 @@ namespace Mars.Shared.Contracts.Users;
 
 public record CreateUserRequest
 {
+    [MinLength(3)]
+    public required string UserName { get; init; }
+
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     [Display(Name = "Имя")]
     public required string FirstName { get; init; }
@@ -41,6 +44,9 @@ public record CreateUserRequest
 public record UpdateUserRequest
 {
     public required Guid Id { get; init; }
+
+    [MinLength(3)]
+    public required string UserName { get; init; }
 
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     [Display(Name = "Имя")]

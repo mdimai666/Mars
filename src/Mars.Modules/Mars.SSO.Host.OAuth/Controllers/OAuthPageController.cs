@@ -87,6 +87,7 @@ public class OAuthPageController : Controller
 
         //ViewData["Request.Query"] = Request.Query;
         ViewData["credential_id"] = credential_id;
+        ViewData["username"] = username;
         return View(LoginPageView);
     }
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Mars.Core.Attributes;
 using Mars.Core.Extensions;
 using Mars.Shared.Contracts.Users;
 using Mars.Shared.Resources;
@@ -8,6 +9,10 @@ namespace AppAdmin.Pages.UserViews;
 
 public class CreateUserModel
 {
+    [MinLength(3)]
+    [SlugString(true)]
+    public string UserName { get; set; } = "";
+
     [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     [Display(Name = nameof(AppRes.FirstName), ResourceType = typeof(AppRes))]
     public string FirstName { get; set; } = "";
@@ -38,6 +43,7 @@ public class CreateUserModel
     public CreateUserRequest ToCreateRequest()
         => new()
         {
+            UserName = UserName,
             FirstName = FirstName,
             LastName = LastName.AsNullIfEmpty(),
             MiddleName = MiddleName.AsNullIfEmpty(),

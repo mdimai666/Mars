@@ -24,17 +24,19 @@
 
                 <FluentDivider />
 
-                <FormItem2 For="() => sso.ClientId" Class="col">
-                    <FluentTextField @bind-Value="@sso.ClientId" Class="w-100" />
-                </FormItem2>
+                <div class="row row-cols-3 g-2">
+                    <FormItem2 For="() => sso.ClientId" Class="col">
+                        <FluentTextField @bind-Value="@sso.ClientId" Class="w-100" />
+                    </FormItem2>
 
-                <FormItem2 For="() => sso.ClientSecret" Class="col">
-                    <FluentTextField @bind-Value="@sso.ClientSecret" Class="w-100">
-                        <FluentButton Appearance="@Appearance.Stealth"
-                                      OnClick=@(e=>{ sso.ClientSecret = Password.Generate(16,6); })
-                                      slot="end">generate</FluentButton>
-                    </FluentTextField>
-                </FormItem2>
+                    <FormItem2 For="() => sso.ClientSecret" Class="col">
+                        <FluentTextField @bind-Value="@sso.ClientSecret" Class="w-100">
+                            <FluentButton Appearance="@Appearance.Stealth"
+                                          OnClick=@(e=>{ sso.ClientSecret = Password.Generate(16,6); })
+                                          slot="end">generate</FluentButton>
+                        </FluentTextField>
+                    </FormItem2>
+                </div>
 
                 <FormItem2 For="() => sso.CallbackUrl" Class="col">
                     <FluentTextField @bind-Value="@sso.CallbackUrl" Class="w-100" />
@@ -49,7 +51,7 @@
                 </FluentCheckbox>
 
                 <FormItem2 For="() => sso.AllowedGrantTypes" Class="col">
-                    <FluentTextField @bind-Value="@sso.AllowedGrantTypes" Class="w-100" />
+                    <FluentTextField @bind-Value="@sso.AllowedGrantTypes" Class="" />
                 </FormItem2>
 
                 <div class="">

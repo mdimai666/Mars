@@ -36,15 +36,9 @@ public static class MainOptions
         optionService.RegisterOption<FaviconOption>(opt => _ = OnChangeFaviconOption(opt, serviceProvider));
         optionService.RegisterOption<FaviconOptionGenaratedValues>();
 
-        optionService.RegisterOption<OpenIDClientOption>(ChangeOpenIDClientOption);
-        optionService.RegisterOption<OpenIDServerOption>();
-
         optionService.GetOption<SysOptions>();
         optionService.GetOption<SmtpSettingsModel>();
         optionService.GetOption<SEOOption>();
-
-        var openIdClient = optionService.GetOption<OpenIDClientOption>();
-        ChangeOpenIDClientOption(openIdClient);
 
         return serviceProvider;
     }
@@ -58,21 +52,6 @@ public static class MainOptions
     static void ChangeMailSettings(SmtpSettingsModel opt)
     {
 
-    }
-
-    static void ChangeOpenIDClientOption(OpenIDClientOption opt)
-    {
-        var ssoOpt = new AuthVariantConstOption
-        {
-            Variants = AuthVariantConstOption.AuthVariants.LoginPass | AuthVariantConstOption.AuthVariants.SSO,
-            SSOConfigs = opt.OpenIDClientConfigs.Where(s => s.Enable).Select(s => new AuthVariantConstOption.SSOProviderInfo
-            {
-                IconUrl = s.IconUrl,
-                Label = s.Title,
-                Slug = s.Slug,
-            }).ToList()
-        };
-        optionService.SetConstOption(ssoOpt, appendToInitialSiteData: true);
     }
 
     private static readonly SemaphoreSlim _faviconLock = new(1, 1);

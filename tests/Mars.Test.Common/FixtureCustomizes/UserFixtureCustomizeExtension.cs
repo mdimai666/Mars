@@ -18,6 +18,7 @@ public static class UserFixtureCustomizeExtension
 
     public static CreateUserRequest User(Faker faker, IReadOnlyCollection<CreateMetaValueRequest>? metaValues = null)
         => new Faker<CreateUserRequest>("ru")
+            .RuleFor(s => s.UserName, f => f.Person.UserName)
             .RuleFor(s => s.FirstName, f => f.Person.FirstName)
             .RuleFor(s => s.LastName, f => f.Person.LastName)
             .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))

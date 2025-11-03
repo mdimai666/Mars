@@ -17,13 +17,10 @@ public class OAuthHostController : ControllerBase
     private readonly IOAuthService _oauth;
     private readonly IRequestContext _requestContext;
 
-    //private readonly UserManager<User> _userManager; // для интерактивного approve/login
-
     public OAuthHostController(IOAuthService oauth, IRequestContext requestContext)
     {
         _oauth = oauth;
         _requestContext = requestContext;
-        //_userManager = userManager;
     }
 
     // Authorization endpoint (GET) - Authorization Code flow

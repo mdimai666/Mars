@@ -53,7 +53,7 @@ public class ApplicationFixture : IAsyncLifetime
 
         await SetupAppFactory();
         AddHttpClients();
-
+        await Task.Delay(1000);
     }
 
     public async Task DisposeAsync()
@@ -109,6 +109,7 @@ public class ApplicationFixture : IAsyncLifetime
                         //services.Replace(ServiceDescriptor.Singleton<IFileStorage>(x => ExternalServiceMock));
                         //services.Replace(ServiceDescriptor.Singleton<IFileStorage, InMemoryFileStorage>()); нельзя заменить из-за ImageProcessor для Media он записывает картинки и тесты ломаются, а IFileStorage плохо поддерживает StreamWritter
                         services.Replace(ServiceDescriptor.KeyedSingleton<IFileStorage, InMemoryFileStorage>("data"));
+                        services.Replace(ServiceDescriptor.Singleton<IKeyMaterialService, TestKeyMaterialService>(sp => _tokenGenerator.KeyMaterialService));
 
                         services.AddSingleton(NSubstitute.Substitute.For<ITestDummyTriggerService>());
                         services.AddSingleton<IPluginManagerWrapperForTests, PluginManagerWrapperForTests>();

@@ -1,14 +1,20 @@
+using System.Security.Claims;
+using System.Text.Json.Serialization;
 using AutoFixture;
+using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Hubs;
+using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Dto;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
+using Mars.Test.Common.Constants;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -47,6 +53,8 @@ public class NodeServiceUnitTestBase
             _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
             _serviceProvider.GetService(typeof(RED)).Returns(RED);
             _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
+            IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
+            _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
 
             var scope = Substitute.For<IServiceScope>();
             scope.ServiceProvider.Returns(_serviceProvider);
@@ -84,6 +92,12 @@ public class NodeServiceUnitTestBase
         NodeMsg? resultCatcher = null;
         int outputPort = 0;
         var input = msg ?? new NodeMsg();
+        input.Add(new RequestUserInfo
+        {
+            IsAuthenticated = true,
+            UserId = UserConstants.TestUserId,
+            UserName = UserConstants.TestUserUsername
+        });
         ExecuteAction exa = (msg, output) =>
         {
             resultCatcher = msg;
@@ -161,5 +175,21 @@ public class NodeServiceUnitTestBase
         _nodeService.Deploy(nodes);
 
         return _nodeTaskManager.CreateJob(_serviceProvider, node.Id);
+    }
+
+    private class RequestContextImpl : IRequestContext
+    {
+        [JsonIgnore]
+        [JsonPropertyName("ClaimsOld")]
+        public ClaimsPrincipal Claims { get; init; } = default!;
+
+        [JsonPropertyName("Claims")]
+        public IReadOnlyCollection<KeyValuePair<string, string>> Claims2 { get; init; } = default!;
+
+        public string Jwt { get; init; } = "jwtString";
+        public string UserName { get; init; } = UserConstants.TestUserUsername;
+        public bool IsAuthenticated { get; init; } = true;
+        public HashSet<string>? Roles { get; init; } = ["Admin"];
+        public RequestContextUser? User { get; init; }
     }
 }

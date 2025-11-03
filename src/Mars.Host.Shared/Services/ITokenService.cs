@@ -16,9 +16,6 @@ public interface ITokenService
     JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
     string GenerateRefreshToken();
     ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
-    T? JwtDecode<T>(string payload, string? secret = null, bool verify = true);
-    string JwtEncode(Dictionary<string, object> payload);
-    string JwtEncode(Dictionary<string, object> payload, string secret);
     Task<string> CreateAccessToken(Guid userId, IUserRepository userRepository, CancellationToken cancellationToken);
     long JwtExpireUnixSeconds();
     ClaimsPrincipal? ValidateToken(string token);

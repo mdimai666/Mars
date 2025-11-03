@@ -24,7 +24,7 @@ public class DevAdminConnectionNodeTests : NodeServiceUnitTestBase
         _ = nameof(DevAdminConnectionNodeImpl.Execute);
         var input = new NodeMsg() { Payload = 123 };
 
-        var node = new DevAdminConnectionNode { Message = "ok" };
+        var node = new DevAdminConnectionNode { Message = "ok", MessageRecipient = MessageRecipientType.All };
 
         //Act
         var msg = await ExecuteNodeEx(node, input);

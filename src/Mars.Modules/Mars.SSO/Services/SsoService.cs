@@ -4,7 +4,6 @@ using Mars.Host.Shared.SSO.Dto;
 using Mars.Host.Shared.SSO.Interfaces;
 using Mars.Host.Shared.SSO.Services;
 using Mars.SSO.Providers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.SSO.Services;
@@ -15,7 +14,6 @@ internal class SsoService : ISsoService
     private readonly DynamicSsoProviderFactory _factory;
     private readonly IMemoryCache _cache;
     private readonly IExperimentalSignInService _experimentalSignInService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserService _userService;
     private readonly IEnumerable<ISsoProvider> _staticProviders; // e.g., LocalJwtProvider if registered
     private readonly TimeSpan _cacheTtl = TimeSpan.FromMinutes(5);
@@ -24,7 +22,6 @@ internal class SsoService : ISsoService
                         DynamicSsoProviderFactory factory,
                         IMemoryCache cache,
                         IExperimentalSignInService experimentalSignInService,
-                        IHttpContextAccessor httpContextAccessor,
                         IUserService userService,
                         IEnumerable<ISsoProvider> staticProviders)
     {
@@ -32,25 +29,9 @@ internal class SsoService : ISsoService
         _factory = factory;
         _cache = cache;
         _experimentalSignInService = experimentalSignInService;
-        _httpContextAccessor = httpContextAccessor;
         _userService = userService;
         _staticProviders = staticProviders;
     }
-
-    //public IEnumerable<ISsoProvider> Providers
-    //{
-    //    get
-    //    {
-    //        var dynamic = _cache.GetOrCreate("sso:providers:instances", entry =>
-    //        {
-    //            entry.AbsoluteExpirationRelativeToNow = _cacheTtl;
-    //            var descriptors = _repo.ListEnabledAsync().GetAwaiter().GetResult();
-    //            return descriptors.Select(d => _factory.Create(d)).ToList();
-    //        }) as List<ISsoProvider> ?? new List<ISsoProvider>();
-
-    //        return _staticProviders.Concat(dynamic);
-    //    }
-    //}
 
     public IEnumerable<SsoProviderDescriptor> Providers
     {
@@ -67,12 +48,6 @@ internal class SsoService : ISsoService
         }
     }
 
-    //public async Task<IReadOnlyCollection<SsoProviderDescriptor>> ProviderList()
-    //{
-    //    var list = await _repo.ListEnabledAsync();
-    //    return list.Select(s => s.ToInfo()).ToList();
-    //}
-
     public IEnumerable<ISsoProvider> CreateProviderList()
     {
         return Providers.Select(d => _factory.Create(d));
@@ -80,7 +55,6 @@ internal class SsoService : ISsoService
 
     public ISsoProvider? GetProvider(string name)
     {
-        //return Providers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         var d = Providers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         var provider = _factory.Create(d);
         return provider;

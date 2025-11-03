@@ -1,45 +1,23 @@
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
-using Mars.Host.Models;
 using Mars.Host.Shared.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mars.Host.Services;
+namespace Mars.Integration.Tests.Common;
 
-public class KeyMaterialService : IKeyMaterialService
+public class TestKeyMaterialService : IKeyMaterialService
 {
     private readonly RSA _rsa;
-    private readonly IFileStorage _fileStorage;
 
     public SecurityKey SigningKey { get; }
     private const string _keyId = "main-jwt-key";
     public string KeyId => _keyId;
 
-    public KeyMaterialService(IOptions<JwtSettings> jwtSettings, [FromKeyedServices("data")] IFileStorage fileStorage)
+    public TestKeyMaterialService()
     {
-        _fileStorage = fileStorage;
-        var keyPath = jwtSettings.Value.PrivateKeyPath;
 
-        RSA rsa;
-
-        if (_fileStorage.FileExists(keyPath))
-        {
-            var keyText = _fileStorage.ReadAllText(keyPath);
-            rsa = RSA.Create();
-            rsa.ImportFromPem(keyText);
-        }
-        else
-        {
-            rsa = RSA.Create(2048);
-            var pem = ExportPrivateKeyPem(rsa);
-            _fileStorage.Write(keyPath, pem);
-        }
-        _rsa = rsa;
-
-        SigningKey = new RsaSecurityKey(rsa)
+        _rsa = RSA.Create(2048);
+        SigningKey = new RsaSecurityKey(_rsa)
         {
             KeyId = _keyId
         };
@@ -109,14 +87,5 @@ public class KeyMaterialService : IKeyMaterialService
         var jwks = new { keys = new[] { jwk } };
 
         return _getJwksJson = JsonSerializer.Serialize(jwks, new JsonSerializerOptions { WriteIndented = true });
-    }
-
-    private static string ExportPrivateKeyPem(RSA rsa)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine("-----BEGIN PRIVATE KEY-----");
-        builder.AppendLine(Convert.ToBase64String(rsa.ExportPkcs8PrivateKey(), Base64FormattingOptions.InsertLineBreaks));
-        builder.AppendLine("-----END PRIVATE KEY-----");
-        return builder.ToString();
     }
 }

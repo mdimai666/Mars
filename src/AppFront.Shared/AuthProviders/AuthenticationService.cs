@@ -1,8 +1,6 @@
 using System.Net.Http.Headers;
 using AppFront.Shared.Tools;
 using Blazored.LocalStorage;
-using Flurl.Http;
-using Mars.Shared.Common;
 using Mars.Shared.Contracts.Auth;
 using Mars.Shared.Contracts.SSO;
 using Mars.WebApiClient.Interfaces;
@@ -68,40 +66,6 @@ public class AuthenticationService : IAuthenticationService
         var registrationResult = await _client.Account.RegisterUser(userForRegistration);
 
         return registrationResult!;
-    }
-
-    public virtual async Task<UserActionResult> ThirdLogin(string serviceName, string token)
-    {
-        try
-        {
-            var result = await _client.Client.Request("/api/Account/EsiaLogin").PostJsonAsync(new[] { token }).ReceiveJson<AuthResultResponse>();
-
-            if (result?.IsAuthSuccessful ?? false)
-            {
-                await LoginStage(result);
-            }
-
-            return new UserActionResult
-            {
-                Ok = result?.IsAuthSuccessful ?? false,
-                Message = result?.ErrorMessage ?? ""
-            };
-
-        }
-        catch (Exception ex)
-        {
-            return new UserActionResult
-            {
-                Ok = false,
-                Message = ex.Message,
-            };
-        }
-    }
-
-    public Task<AuthStepsResponse> SSOLogin(string ssoName, string? returnUrl, string redirectUrl, string? querystring)
-    {
-        return _client.Client.Request($"/api/OAuth/SSOLogin?ssoName={ssoName}&returnUrl={returnUrl}&redirectUrl={redirectUrl}&{querystring}")
-            .PostJsonAsync(new string[] { }).ReceiveJson<AuthStepsResponse>();
     }
 
 }

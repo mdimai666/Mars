@@ -1,6 +1,5 @@
 using System.IO.Compression;
 using System.Net;
-using System.Text;
 using Flurl.Http;
 using Mars.Host.Data.Entities;
 using Mars.Host.Infrastructure;
@@ -54,9 +53,8 @@ internal static class MarsStartupPartCore
 
         services.AddScoped<IUserClaimsPrincipalFactory<UserEntity>, AppClaimsPrincipalFactory>();
 
-        var jwtSettings = configuration.GetSection(JwtSettings.JwtSectionKey);
-        TokenService.ThrowIfJwtProblem(jwtSettings["securityKey"]!);
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.JwtSectionKey));
+        var jwtSettings = configuration.GetSection(JwtSettings.JwtSectionKey).Get<JwtSettings>();
 
         services
             .AddAuthentication(opt =>
@@ -76,11 +74,8 @@ internal static class MarsStartupPartCore
                     return IdentityConstants.ApplicationScheme;
                 };
             })
-            .AddCookie(cfg =>
-            {
-                cfg.SlidingExpiration = true;
-            })
-            .AddJwtBearer(); ;
+            .AddCookie()
+            .AddJwtBearer();
 
         services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
             .Configure<IKeyMaterialService, IOptions<JwtSettings>, IOptionService>((options, keys, jwtSettings, ops) =>
@@ -109,8 +104,9 @@ internal static class MarsStartupPartCore
         {
             //options.Cookie.SameSite = SameSiteMode.Unspecified;
             //options.Cookie.HttpOnly = false;
-            int expInMinutes = int.Parse(jwtSettings["expiryInMinutes"]!);
+            int expInMinutes = jwtSettings.ExpiryInMinutes;
             options.ExpireTimeSpan = TimeSpan.FromMinutes(expInMinutes);
+            options.SlidingExpiration = true;
 
             options.Events = new CookieAuthenticationEvents()
             {

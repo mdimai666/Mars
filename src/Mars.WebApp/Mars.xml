@@ -10,14 +10,6 @@
             <param name="lineCount">The number of lines to return.</param>
             <returns>The last lneCount lines from the reader.</returns>
         </member>
-        <member name="M:Mars.Controllers.OAuthOldController.AuthToken(Mars.Host.Services.MarsOpenID.MarsSSOAuthTokenRequest,System.Threading.CancellationToken)">
-            <summary>
-            </summary>
-            <see cref="M:Mars.Host.Services.MarsSSOClient.MarsSSOClientService.RequestUserJwtByCode(System.String,System.String,System.String,System.Threading.CancellationToken)"/>
-            <param name="form"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
-        </member>
         <member name="T:Mars.Services.ImageProcessor">
             <summary>
             Singletone.

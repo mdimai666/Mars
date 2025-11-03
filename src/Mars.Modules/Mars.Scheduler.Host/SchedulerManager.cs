@@ -104,6 +104,12 @@ internal class SchedulerManager : ISchedulerManager
         await scheduler.DeleteJobs(jobKeys);
     }
 
+    public async Task Clear()
+    {
+        IScheduler scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);
+        await scheduler.Clear();
+    }
+
     public async Task PauseAll()
     {
         IScheduler scheduler = await _schedulerFactory.GetScheduler().ConfigureAwait(false);

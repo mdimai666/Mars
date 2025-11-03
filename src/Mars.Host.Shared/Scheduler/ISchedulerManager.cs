@@ -36,4 +36,10 @@ public interface ISchedulerManager
     public Task<SchedulerJobDto?> Job(string jobName, string jobGroup);
     Task<ListDataResult<SchedulerJobDto>> JobList(ListSchedulerJobQuery filter);
     Task<PagingResult<SchedulerJobDto>> JobListPaging(ListSchedulerJobQuery filter);
+
+    /// <summary>
+    /// Clears (deletes!) all scheduling data - all Quartz.IJobs, Quartz.ITriggers Quartz.ICalendars.
+    /// </summary>
+    /// <returns></returns>
+    Task Clear();
 }

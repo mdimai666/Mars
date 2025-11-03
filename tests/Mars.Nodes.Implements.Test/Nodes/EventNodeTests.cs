@@ -62,7 +62,7 @@ public class EventNodeTests : NodeServiceUnitTestBase
 
         //Act
         _eventManager.OnTrigger += Raise.Event<ManagerEventPayloadHandler>(eventPayload);
-        await Task.Delay(1);
+        await Task.Delay(10);
 
         //Assert
         touchedFlag.Should().Be(expectTouched);

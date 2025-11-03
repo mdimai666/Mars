@@ -54,10 +54,11 @@ public class FileServiceTests
             .Returns(returnFileId);
 
         var createdFileId = await _fileService.WriteUpload(newFileName, "path1", Encoding.UTF8.GetBytes(newFileContent), userId, cancellationToken);
-
+        var files = _inMemoryFileStorage.GetDirectoryContents("");
+        var writtedFileName = files.First(s => s.Name.StartsWith(Path.GetFileNameWithoutExtension(newFileName))).Name;
         // Act
         //var content = await _fileService.ReadFile($"path1/{newFileName}", cancellationToken);
-        var content = _inMemoryFileStorage.ReadAllText($"path1/{newFileName}");
+        var content = _inMemoryFileStorage.ReadAllText($"path1/{writtedFileName}");
 
         // Assert
         content.Should().Be(newFileContent);

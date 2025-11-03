@@ -19,7 +19,6 @@ public class DiscoveryController : Controller
     [HttpGet("openid-configuration")]
     public IActionResult GetConfig()
     {
-        //var issuer = _config["Jwt:Issuer"] ?? $"{Request.Scheme}://{Request.Host}";
         var issuer = _optionService.SysOption.SiteUrl;
         var baseUrl = issuer.TrimEnd('/');
 

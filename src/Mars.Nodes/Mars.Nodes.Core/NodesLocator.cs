@@ -21,7 +21,7 @@ public static class NodesLocator
         {
             dict.Clear();
 
-            foreach (var assembly in assemblies)
+            foreach (var assembly in assemblies.ToList())
             {
 
                 var types = GetEnumerableOfType<Node>(assembly);

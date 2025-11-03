@@ -1,13 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
 using Mars.Core.Exceptions;
 using Mars.Host.Models;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Shared.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,29 +16,31 @@ public class TokenService : ITokenService
 {
     readonly JwtSettings _jwtSettings;
     private readonly IKeyMaterialService _keys;
+    private readonly IOptionService _optionService;
 
     public int ExpiryInMinutes => _jwtSettings.ExpiryInMinutes;
     public int ExpiryInSeconds => _jwtSettings.ExpiryInMinutes * 60;
 
-    public TokenService(IOptions<JwtSettings> jwtSettings, IKeyMaterialService keys)
+    string _validIssuer;
+
+    public TokenService(IOptions<JwtSettings> jwtSettings, IKeyMaterialService keys, IOptionService optionService)
     {
         _jwtSettings = jwtSettings.Value;
-
-        if (!CheckSecretKeyLength())
-        {
-            throw new ApplicationException("Jwt Secret too short. Require min 32 symbols");
-        }
-
         _keys = keys;
+        _optionService = optionService;
+        _validIssuer = _optionService.SysOption.SiteUrl.TrimEnd('/');
+
+        _optionService.OnOptionUpdate += _optionService_OnOptionUpdate;
+    }
+
+    private void _optionService_OnOptionUpdate(object obj)
+    {
+        if (obj is SysOptions sysOptions)
+            _validIssuer = sysOptions.SiteUrl;
     }
 
     public SigningCredentials GetSigningCredentials()
         => _keys.GetSigningCredentials();
-    //{
-    //    var key = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
-    //    var secret = new SymmetricSecurityKey(key);
-    //    return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
-    //}
 
     public List<Claim> GetClaims(AuthorizedUserInformationDto user)
     {
@@ -65,7 +66,7 @@ public class TokenService : ITokenService
     public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
         var tokenOptions = new JwtSecurityToken(
-            issuer: _jwtSettings.ValidIssuer,
+            issuer: _validIssuer,
             audience: _jwtSettings.ValidAudience,
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtSettings.ExpiryInMinutes)),
@@ -112,7 +113,7 @@ public class TokenService : ITokenService
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = _jwtSettings.ValidIssuer,
+            ValidIssuer = _validIssuer,
             ValidAudience = _jwtSettings.ValidAudience,
             IssuerSigningKey = _keys.SigningKey,
             ClockSkew = TimeSpan.FromMinutes(1)
@@ -138,7 +139,7 @@ public class TokenService : ITokenService
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = _keys.SigningKey,
             ValidateLifetime = false,
-            ValidIssuer = _jwtSettings.ValidIssuer,
+            ValidIssuer = _validIssuer,
             ValidAudience = _jwtSettings.ValidAudience,
         };
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -154,105 +155,9 @@ public class TokenService : ITokenService
         return principal;
     }
 
-    public T? JwtDecode<T>(string token, string? secret = null, bool verify = true)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        string json;
-
-        if (secret is null)
-        {
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-            var validations = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = false,
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-
-            //if (verify)
-            //{
-            //    var claims = handler.ValidateToken(token, validations, out var _);
-            //}
-
-            json = JsonSerializer.Serialize(jwtSecurityToken.Payload);
-        }
-        else
-        {
-            //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-            var bb = Encoding.UTF8.GetBytes(secret);
-            //var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
-            var hmac = new HMACSHA256(bb);
-            var key = new SymmetricSecurityKey(hmac.Key);
-            var validations = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = key,
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                RequireExpirationTime = false
-            };
-
-            //if (verify && bb.Length >= 128) // для legacy совместимости
-            //{
-            //    var claims = handler.ValidateToken(token, validations, out var _);
-            //}
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-
-            json = JsonSerializer.Serialize(jwtSecurityToken.Payload);
-        }
-
-        try
-        {
-            return JsonSerializer.Deserialize<T>(json);
-        }
-        catch (Exception)
-        {
-            return default;
-        }
-    }
-
-    public string JwtEncode(Dictionary<string, object> payload)
-    {
-        return JwtEncode(payload, _jwtSettings.SecurityKey);
-    }
-
-    public string JwtEncode(Dictionary<string, object> payload, string secret)
-    {
-
-        Claim[] claims = payload.Select(s => new Claim(s.Key, s.Value.ToString())).ToArray();
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken("issuer", "audience", claims, expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryInMinutes), signingCredentials: credentials);
-        var encodedToken = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return encodedToken;
-    }
-
     public static long JwtExpireDateTimeToUnixSeconds(DateTime expire)
     {
         return new DateTimeOffset(expire).ToUnixTimeSeconds();
     }
 
-    private bool CheckSecretKeyLength()
-    {
-        var key = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
-
-        int length = key.Length;
-
-        return length * 8 >= 256;
-    }
-
-    public static void ThrowIfJwtProblem(string jwtKey)
-    {
-        ArgumentNullException.ThrowIfNull(jwtKey, nameof(jwtKey));
-
-        int length = jwtKey.Length;
-
-        if (length * 8 <= 256)
-        {
-            throw new ArgumentException("Jwt Secret too short. Require min 32 symbols. \nsee: appsettings.json");
-        }
-    }
 }

@@ -17,6 +17,9 @@ public interface IOptionService
 
     SysOptions SysOption { get; }
     bool IsDevelopment { get; }
+
+    event Action<object> OnOptionUpdate;
+
     ///<summary>
     ///SaveOption
     /// </summary>

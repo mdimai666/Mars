@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
 using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.Services;
 using Mars.Host.Shared.SSO.Dto;
 using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.Users;
@@ -47,54 +46,6 @@ internal class KeycloakProvider : GenericOidcProvider
             OAuthResponse = _OAuth,
             RawResponse = token.Value
         };
-
-        //var accessToken = token.Value.GetProperty("access_token").GetString()!;
-
-        //if (!token.Value.TryGetProperty("id_token", out var idTokenProp))
-        //    return null;
-
-        //var idToken = idTokenProp.GetString();
-        //var handler = new JwtSecurityTokenHandler();
-        //var jwt = handler.ReadJwtToken(idToken!);
-
-        ////there create user
-        //var claims = ExtractClaims(handler, accessToken) ?? throw new UserActionException("ExtractClaims error");
-        //var user = await _userService.RemoteUserUpsert(MapToCreateUserQuery(claims), CancellationToken.None);
-
-        //return new SsoUserInfo
-        //{
-        //    InternalId = user.Id,
-        //    ExternalId = jwt.Subject,
-        //    Email = user.Email ?? jwt.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? string.Empty,
-        //    Name = jwt.Claims.FirstOrDefault(c => c.Type == "name")?.Value,
-        //    Provider = Name,
-        //    RawData = new Dictionary<string, object>
-        //    {
-        //        ["id_token"] = idToken!,
-        //        ["access_token"] = accessToken!,
-        //    }
-        //};
-    }
-
-    ClaimsPrincipal? ExtractClaims(JwtSecurityTokenHandler handler, string token)
-    {
-        var tvp = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = false,
-            RequireSignedTokens = false,
-            SignatureValidator = (token, _) => new JwtSecurityToken(token)
-        };
-        try
-        {
-            var principal = handler.ValidateToken(token, tvp, out _);
-            return principal;
-        }
-        catch
-        {
-            return null;
-        }
     }
 
     public override async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
@@ -118,16 +69,6 @@ internal class KeycloakProvider : GenericOidcProvider
         {
             var handler = new JwtSecurityTokenHandler();
             var principal = handler.ValidateToken(token, tvp, out _);
-            //if (!principal.HasClaim(c => c.Type == "sub"))
-            //{
-            //    var jwt = handler.ReadJwtToken(token);
-            //    var sub = jwt.Claims.FirstOrDefault(c => c.Type == "sub");
-            //    if (sub != null)
-            //    {
-            //        var identity = (ClaimsIdentity)principal.Identity!;
-            //        identity.AddClaim(sub);
-            //    }
-            //}
             return principal;
         }
         catch
@@ -138,7 +79,6 @@ internal class KeycloakProvider : GenericOidcProvider
 
     public override UpsertUserRemoteDataQuery MapToCreateUserQuery(ClaimsPrincipal principal)
     {
-        //var claims = principal.Claims.ToDictionary(c => c.Type, c => c.Value);
         var claims = principal.Claims.GroupBy(c => c.Type).ToDictionary(g => g.Key, g => string.Join(",", g.Select(c => c.Value)));
 
         var externalKey = principal.FindFirstValue(ClaimTypes.NameIdentifier);

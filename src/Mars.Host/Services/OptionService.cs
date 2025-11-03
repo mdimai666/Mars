@@ -27,6 +27,7 @@ internal class OptionService : IOptionService
 
     public SysOptions SysOption => ((SysOptions)localCache[typeof(SysOptions)]) ?? new();
     public bool IsDevelopment { get; }
+    public event Action<object> OnOptionUpdate = default!;
 
     internal Dictionary<string, Type> RegisteredOptions { get; set; } = [];
     internal Dictionary<string, Type> OptionsAppendToInitialSiteData { get; set; } = [];
@@ -90,6 +91,7 @@ internal class OptionService : IOptionService
         }
 
         if (typeof(T) == typeof(SysOptions)) _fileHostingInfo = null;
+        OnOptionUpdate?.Invoke(option);
     }
 
     private T? GetOptionFromRepo<T>() where T : class

@@ -4,6 +4,7 @@ using Mars.Controllers;
 using Mars.Host.Shared.Scheduler;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Integration.Tests.Extensions;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Schedulers;
 using Mars.Test.Common.FixtureCustomizes;
@@ -21,6 +22,7 @@ public class GetSchedulerJobTests : ApplicationTests
     {
         _fixture.Customize(new FixtureCustomize());
         _scheduler = AppFixture.ServiceProvider.GetRequiredService<ISchedulerManager>();
+        _scheduler.Clear().RunSync();
     }
 
     [IntegrationFact]

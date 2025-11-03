@@ -1,4 +1,3 @@
-using System.Net;
 using Flurl.Http;
 using Mars.Shared.Contracts.XActions;
 using Mars.WebApiClient.Interfaces;
@@ -14,25 +13,10 @@ internal class ActServiceClient : BasicServiceClient, IActServiceClient
         //TODO: implement ActService.Inject
     }
 
-    public async Task<XActResult> Inject(string actionId, string[] args)
-    {
-        var res = await _client.Request($"{_basePath}{_controllerName}", "Inject", actionId)
-                    .AllowAnyHttpStatus()
-                    .PostJsonAsync(args);
-
-        if (res.StatusCode == (int)HttpStatusCode.NotFound)
-        {
-            var result = await res.GetJsonAsync<XActResult>();
-            return result;
-        }
-        else if (res.StatusCode == (int)HttpStatusCode.OK)
-        {
-            var result = await res.GetJsonAsync<XActResult>();
-            return result;
-        }
-
-        HandleResponseGeneralErrors(res);
-        throw new NotImplementedException();
-    }
+    public Task<XActResult> Inject(string actionId, string[] args)
+        => _client.Request($"{_basePath}{_controllerName}", "Inject", actionId)
+                    .OnError(OnStatus404ThrowException)
+                    .PostJsonAsync(args)
+                    .ReceiveJson<XActResult>();
 
 }

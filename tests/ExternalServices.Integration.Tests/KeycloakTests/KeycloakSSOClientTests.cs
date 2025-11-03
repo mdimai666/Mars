@@ -150,7 +150,6 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
         //Arrange
         _ = nameof(SsoController.Login);
         _ = nameof(SsoController.Callback);
-        _ = nameof(LoginForm.ThirdLogin);
         _ = nameof(LoginForm.ExecuteLogin);
         var marsClient = AppFixture.GetClient(true);
         var extClient = new FlurlClient();

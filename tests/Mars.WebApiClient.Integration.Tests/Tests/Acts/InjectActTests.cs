@@ -1,12 +1,11 @@
+using FluentAssertions;
 using Mars.Controllers;
+using Mars.Core.Exceptions;
 using Mars.Host.Shared.Managers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Integration.Tests.Extensions;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.XActions;
-using FluentAssertions;
-using static Mars.Shared.Contracts.XActions.XActResult;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 
@@ -33,7 +32,7 @@ public class InjectActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void Inject_InvalidRequest_Fail404NotException()
+    public async Task Inject_InvalidRequest_Fail404Exception()
     {
         //Arrange
         _ = nameof(ActController.Inject);
@@ -45,7 +44,6 @@ public class InjectActTests : BaseWebApiClientTests
         var action = () => client.Act.Inject(invalidActionid, []);
 
         //Assert
-        var result = action.Should().NotThrowAsync().RunSync().Subject;
-        result.NextStep.Should().Be(XActionNextStep.Toast);
+        await action.Should().ThrowAsync<NotFoundException>();
     }
 }

@@ -28,6 +28,9 @@ public class SsoAuthMiddleware
         if (context.Request.Path == "/favicon.ico") goto Next;
         if (context.Request.Method == "OPTIONS") goto Next;
         if (context.Request.Method == "TRACE") goto Next;
+        if (context.Request.Path.StartsWithSegments("/upload")) goto Next;
+
+        if (context.User.Identity.IsAuthenticated) goto Next;
 
         var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
@@ -76,7 +79,7 @@ public class SsoAuthMiddleware
             ];
             if (!string.IsNullOrEmpty(extUser.Email))
                 claims.Add(new Claim(ClaimTypes.Email, extUser.Email!));
-            foreach(var role in extUser.Roles)
+            foreach (var role in extUser.Roles)
             {
                 claims.Add(new(ClaimTypes.Role, role));
             }

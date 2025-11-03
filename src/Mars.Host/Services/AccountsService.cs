@@ -1,12 +1,10 @@
 using Mars.Host.Data.Entities;
-using Mars.Host.Models;
 using Mars.Host.Shared.Dto.Auth;
 using Mars.Host.Shared.Dto.Profile;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 
 namespace Mars.Host.Services;
 
@@ -22,18 +20,12 @@ public class AccountsService : IAccountsService
         UserManager<UserEntity> userManager,
         SignInManager<UserEntity> signInManager,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<JwtSettings> jwtSettings,
         ITokenService tokenService,
         IUserRepository userRepository,
         IUserTypeRepository userTypeRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
-
-        if (jwtSettings.Value.SecurityKey == null)
-        {
-            throw new ApplicationException("Jwt section not field JWTSettings");
-        }
 
         _tokenService = tokenService;
         _userRepository = userRepository;

@@ -18,4 +18,5 @@ public record RequestContextUser
     public required string UserName { get; init; }
 
     public required HashSet<string> Roles { get; init; }
+    public required string? AvatarUrl { get; init; }
 }

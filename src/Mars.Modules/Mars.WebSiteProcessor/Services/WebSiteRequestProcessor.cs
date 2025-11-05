@@ -170,8 +170,7 @@ public class WebSiteRequestProcessor
             //PREPARE context
 
             UserDetail? userDetail = null;
-            //тут может быть так что jwt есть, но не от этой базы
-            if (requestContext.IsAuthenticated && requestContext.User is not null)
+            if (requestContext.IsAuthenticated)
             {
                 userDetail = await userService.GetDetail(requestContext.User.Id, cancellationToken);
             }

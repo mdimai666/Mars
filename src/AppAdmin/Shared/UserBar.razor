@@ -4,17 +4,13 @@
 @using System.Web
 @using AppFront.Shared.Features
 
-
-
 @if (Q.User is null || !Q.User.IsAuth)
 {
     <ul class="navbar-nav navbar-nav-right flex-row">
 
-
         <li class="nav-item d-flex">
             <a class="nav-link btn btn-outline-light px-4 cursor-pointer" href="/dev/login">Вход</a>
         </li>
-
 
         @if (Q.Site.SysOptions.AllowUsersSelfRegister)
         {
@@ -35,6 +31,7 @@ else
 
                 <Microsoft.FluentUI.AspNetCore.Components.FluentPersona Initials=@Q.User.Initials()
                                                                         Style="width:50px"
+                                                                        Image="@Q.User.AvatarUrl"
                                                                         ImageSize="50px" />
 
                 @* </div> *@

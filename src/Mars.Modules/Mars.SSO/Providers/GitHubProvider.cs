@@ -1,11 +1,14 @@
-using System.CommandLine.Parsing;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Web;
 using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.SSO.Dto;
 using Mars.Host.Shared.SSO.Interfaces;
+using Mars.Shared.Contracts.Users;
+using Mars.SSO.Dto;
+using Mars.SSO.Mappings;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.SSO.Providers;
 
@@ -14,11 +17,13 @@ public class GitHubProvider : ISsoProvider
 {
     private readonly SsoProviderDescriptor _desc;
     private readonly IHttpClientFactory _httpFactory;
+    private readonly ILogger<GitHubProvider> _logger;
 
-    public GitHubProvider(SsoProviderDescriptor desc, IHttpClientFactory httpFactory)
+    public GitHubProvider(SsoProviderDescriptor desc, IHttpClientFactory httpFactory, ILogger<GitHubProvider> logger)
     {
         _desc = desc;
         _httpFactory = httpFactory;
+        _logger = logger;
     }
 
     public string Name => _desc.Name;
@@ -58,37 +63,6 @@ public class GitHubProvider : ISsoProvider
 
         var _OAuth = JsonSerializer.Deserialize<OAuthTokenResponse>(token.Value);
 
-        // fetch user
-        if (false)
-        {
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _OAuth.AccessToken);
-            var userResp = await client.GetAsync(_desc.UserInfoEndpoint ?? "https://api.github.com/user");
-            if (!userResp.IsSuccessStatusCode) return null;
-            var userJson = await userResp.Content.ReadFromJsonAsync<JsonElement>();
-            var id = userJson.GetProperty("id").GetRawText();
-            var login = userJson.TryGetProperty("login", out var loginP) ? loginP.GetString() : null;
-            // get email (may need separate call)
-            string? email = null;
-            try
-            {
-                if (userJson.TryGetProperty("email", out var emailP) && emailP.ValueKind == JsonValueKind.String)
-                    email = emailP.GetString();
-            }
-            catch { }
-
-            var userInfo = new SsoUserInfo
-            {
-                InternalId = Guid.Empty,
-                ExternalId = id,
-                Email = email ?? string.Empty,
-                Name = login,
-                Provider = Name,
-                //RawData = new Dictionary<string, object> { ["user"] = userJson },
-                AccessToken = _OAuth.AccessToken,
-                UserPrimaryInfo = null!,
-            };
-        }
-
         return new()
         {
             AccessToken = _OAuth.AccessToken,
@@ -102,19 +76,98 @@ public class GitHubProvider : ISsoProvider
     {
         var client = _httpFactory.CreateClient();
         var res = await client.PostAsync(tokenEndpoint, new FormUrlEncodedContent(form));
-        if (!res.IsSuccessStatusCode) return null;
-        var json = await res.Content.ReadAsStringAsync();
-        return JsonDocument.Parse(json).RootElement;
+        if (!res.IsSuccessStatusCode)
+        {
+            var errDetail = await res.Content.ReadAsStringAsync();
+            _logger.LogError($"ExchangeCodeForTokenAsync: {res.StatusCode} " + errDetail);
+            return null;
+        }
+        var json = ConvertFormUrlEncodedToJsonElement(await res.Content.ReadAsStringAsync());
+        return json;
     }
 
-    public Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
+    static JsonElement ConvertFormUrlEncodedToJsonElement(string formUrlEncoded)
+    {
+        // Парсим FormUrlEncoded строку
+        var nameValueCollection = HttpUtility.ParseQueryString(formUrlEncoded);
+
+        var dictionary = new Dictionary<string, string>();
+        foreach (string key in nameValueCollection.AllKeys!)
+        {
+            if (key != null)
+            {
+                dictionary[key] = nameValueCollection[key]!;
+            }
+        }
+
+        string jsonString = JsonSerializer.Serialize(dictionary);
+        JsonDocument doc = JsonDocument.Parse(jsonString);
+
+        return doc.RootElement.Clone(); // Clone для безопасного использования после Dispose
+    }
+
+    private List<Claim> GetClaims(GithubUserInfoResponse user)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.id.ToString()),
+            new(ClaimTypes.Name, user.login),
+            new(ClaimTypes.Email, user.email ?? ""),
+            new(ClaimTypes.GivenName, user.name??user.login??""),
+            new(ClaimTypes.Surname, ""),
+            new(ClaimTypes.Role, "Viewer"),
+        };
+
+        if (!string.IsNullOrEmpty(user.avatar_url))
+            claims.Add(new("picture", user.avatar_url));
+
+        return claims;
+    }
+
+    public async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
     {
         // GitHub uses opaque tokens for OAuth2 by default — no JWT validation
-        return Task.FromResult<ClaimsPrincipal?>(null);
+        //return Task.FromResult<ClaimsPrincipal?>(null);
+        var client = _httpFactory.CreateClient();
+
+        // fetch user
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("MarsApp/1.0");
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var userResp = await client.GetAsync(_desc.UserInfoEndpoint ?? "https://api.github.com/user");
+        if (!userResp.IsSuccessStatusCode) return null;
+        var userInfo = await userResp.Content.ReadFromJsonAsync<GithubUserInfoResponse>();
+        //var id = userInfo.id;
+        //var login = userInfo.login;
+        //// get email (may need separate call)
+        //string? email = userInfo.email;
+
+        var claims = GetClaims(userInfo!);
+        var identity = new ClaimsIdentity(claims);
+        var principial = new ClaimsPrincipal(identity);
+
+        return principial;
     }
 
     public UpsertUserRemoteDataQuery MapToCreateUserQuery(ClaimsPrincipal principal)
     {
-        throw new NotImplementedException();
+        var claims = principal.Claims.ToDictionary(c => c.Type, c => c.Value);
+        var externalKey = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        string[] roles = principal.FindFirstValue(ClaimTypes.Role) != null ? [principal.FindFirstValue(ClaimTypes.Role)!] : GenericOidcProvider.DefaultExternalUserRoles;
+
+        return new()
+        {
+            ExternalKey = externalKey ?? throw new InvalidOperationException("Missing 'sub' claim in Google token"),
+            PreferredUserName = claims.GetValueOrDefault(ClaimTypes.Name) ?? claims.GetValueOrDefault(ClaimTypes.Email)?.Split('@', 2)[0] ?? Guid.NewGuid().ToString("N"),
+            FirstName = principal.FindFirstValue(ClaimTypes.GivenName) ?? "Unknown",
+            LastName = principal.FindFirstValue(ClaimTypes.Surname) ?? "",
+            MiddleName = null,
+            Email = principal.FindFirstValue(ClaimTypes.Email),
+            Roles = roles,
+            Gender = UserGender.None,
+            AvatarUrl = claims.GetValueOrDefault("picture"),
+            BirthDate = null,
+            PhoneNumber = null,
+            Prodvider = _desc.ToInfo()
+        };
     }
 }

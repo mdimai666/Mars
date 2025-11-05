@@ -55,6 +55,9 @@ public class TokenService : ITokenService
             new(ClaimTypes.Surname, user.LastName??""),
         };
 
+        if (!string.IsNullOrEmpty(user.AvatarUrl))
+            claims.Add(new("picture", user.AvatarUrl));
+
         foreach (var role in user.Roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));

@@ -20,7 +20,7 @@ public class OAuthTokenResponse
     public required string TokenType { get; init; }
 
     [JsonPropertyName("refresh_token")]
-    public required string? RefreshToken { get; init; }
+    public string? RefreshToken { get; init; }
 
     [JsonPropertyName("scope")]
     public string? Scope { get; init; }

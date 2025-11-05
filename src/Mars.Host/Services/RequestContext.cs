@@ -25,7 +25,7 @@ internal class RequestContext : IRequestContext
     {
         if (_init) return (_user, _roles);
         _init = true;
-        if (!IsAuthenticated) return (_user, _roles);
+        if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated) return (_user, _roles);
 
         var user = _userRepository.GetAuthorizedUserInformation(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -44,7 +44,7 @@ internal class RequestContext : IRequestContext
 
     public string UserName => _httpContextAccessor.HttpContext.User.Identity?.Name ?? null!;
 
-    public bool IsAuthenticated => _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+    public bool IsAuthenticated => User is not null;
 
     public HashSet<string>? Roles => GetData().roles;
     public RequestContextUser? User => GetData().user;
@@ -61,6 +61,7 @@ internal class RequestContext : IRequestContext
             Gender = user.Gender,
             PhoneNumber = user.PhoneNumber,
             UserName = user.UserName,
-            Roles = user.Roles.ToHashSet()
+            Roles = user.Roles.ToHashSet(),
+            AvatarUrl = user.AvatarUrl,
         };
 }

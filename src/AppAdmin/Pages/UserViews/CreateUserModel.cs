@@ -54,8 +54,9 @@ public class CreateUserModel
             PhoneNumber = null,
             BirthDate = null,
             Gender = UserGender.None,
-            Type = Type,
+            AvatarUrl = null,
 
+            Type = Type,
             MetaValues = []
         };
 

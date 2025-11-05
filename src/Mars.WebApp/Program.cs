@@ -64,7 +64,7 @@ var commandsApi = new CommandLineApi();
 var builder = WebApplication.CreateBuilder(args);
 if (!IsTesting && !IsRunningInDocker)
 {
-    builder.ConfigureAppConfiguration(args);
+    builder.Configuration.ConfigureAppConfiguration(args);
 }
 builder.Services.AddFeatureManagement();
 builder.Services.MarsAddLocalization()

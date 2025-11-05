@@ -39,39 +39,35 @@ public class OAuthHostController : ControllerBase
     {
         // validate response_type
         if (response_type != "code") return BadRequest("unsupported_response_type");
-
-        //// authenticate user (this depends on your UI). For API demo, require already authenticated user
-        //if (!User.Identity?.IsAuthenticated ?? true)
-        //{
-        //    // redirect to login page, preserving original query
-        //    // For API usage, return 401
-        //    return Challenge();
-        //}
-
-        // create code
-        //var subjectId = _userManager.GetUserId(User); // Identity user id as string
-        //var subjectId = _requestContext.User.Id.ToString();
         var scopes = scope?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? [];
-
-        var (code, auth) = await _oauth.CreateAuthorizationCodeAsync(client_id, redirect_uri, state, Guid.Empty, code_challenge ?? "", code_challenge_method ?? "S256", scopes, cancellationToken);
-
-        // redirect back to client
-        //var uri = QueryHelpers.AddQueryString(redirect_uri, new Dictionary<string, string?>
-        //{
-        //    ["code"] = code,
-        //    ["state"] = state
-        //});
-        //return Redirect(uri);
-
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        string redirectUrl = QueryHelpers.AddQueryString(baseUrl + OAuthPageController.LoginPageUrl, new Dictionary<string, string?>
+
+        if (_requestContext.IsAuthenticated)
         {
-            ["code"] = code,
-            ["state"] = state,
-            ["client_id"] = client_id,
-            ["credential_id"] = auth.Id.ToString(),
-        });
-        return Redirect(redirectUrl);
+            var (code, auth) = await _oauth.CreateAuthorizationCodeAsync(client_id, redirect_uri, state, _requestContext.User.Id, code_challenge ?? "", code_challenge_method ?? "S256", scopes, cancellationToken);
+
+            string redirectUrl = QueryHelpers.AddQueryString(auth.RedirectUri!, new Dictionary<string, string?>
+            {
+                ["code"] = auth.Code,
+                ["state"] = auth.State,
+                ["client_id"] = auth.ClientId,
+                ["redirect_uri"] = auth.RedirectUri,
+            });
+            return Redirect(redirectUrl);
+        }
+        else
+        {
+            var (code, auth) = await _oauth.CreateAuthorizationCodeAsync(client_id, redirect_uri, state, Guid.Empty, code_challenge ?? "", code_challenge_method ?? "S256", scopes, cancellationToken);
+
+            string redirectUrl = QueryHelpers.AddQueryString(baseUrl + OAuthPageController.LoginPageUrl, new Dictionary<string, string?>
+            {
+                ["code"] = code,
+                ["state"] = state,
+                ["client_id"] = client_id,
+                ["credential_id"] = auth.Id.ToString(),
+            });
+            return Redirect(redirectUrl);
+        }
     }
 
     // Token endpoint (POST)
@@ -120,7 +116,7 @@ public class OAuthHostController : ControllerBase
                 return Ok(new OpenIdTokenResponse
                 {
                     AccessToken = access,
-                    TokenType = "bearer",
+                    TokenType = "Bearer",
                     ExpiresIn = expiresIn,
                     RefreshToken = refresh
                 });
@@ -132,7 +128,7 @@ public class OAuthHostController : ControllerBase
                 return Ok(new
                 {
                     access_token = accessToken,
-                    token_type = "bearer",
+                    token_type = "Bearer",
                     expires_in = expiresIn,
                     refresh_token = newRefresh
                 });
@@ -142,14 +138,10 @@ public class OAuthHostController : ControllerBase
             //    var scope = form["scope"].FirstOrDefault();
             //    var scopes = (scope ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
             //    var (access, expiresIn) = await _oauth.ClientCredentialsAsync(clientId!, clientSecret!, scopes, cancellationToken);
-            //    return Ok(new { access_token = access, token_type = "bearer", expires_in = expiresIn });
+            //    return Ok(new { access_token = access, token_type = "Bearer", expires_in = expiresIn });
             //}
             else if (grantType == "password")
             {
-                //var code = form["code"].FirstOrDefault() ?? throw new InvalidOperationException("code required");
-                //var redirectUri = form["redirect_uri"].FirstOrDefault() ?? throw new InvalidOperationException("redirect_uri required");
-                //var codeVerifier = form["code_verifier"].FirstOrDefault();
-
                 var username = form["username"].FirstOrDefault() ?? throw new InvalidOperationException("username required");
                 var password = form["password"].FirstOrDefault() ?? throw new InvalidOperationException("password required");
                 var scope = form["scope"].FirstOrDefault();
@@ -159,7 +151,7 @@ public class OAuthHostController : ControllerBase
                 return Ok(new OpenIdTokenResponse
                 {
                     AccessToken = access,
-                    TokenType = "bearer",
+                    TokenType = "Bearer",
                     ExpiresIn = expiresIn,
                     RefreshToken = refresh
                 });
@@ -189,13 +181,6 @@ public class OAuthHostController : ControllerBase
     [HttpGet("userinfo")]
     public async Task<IActionResult> UserInfo()
     {
-        //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        //if (userId == null) return Unauthorized();
-
-        //// load user info from Identity or own store
-        //var user = await _userManager.FindByIdAsync(userId);
-        //if (user == null) return NotFound();
-
         if (!_requestContext.IsAuthenticated) return Unauthorized();
 
         var user = _requestContext.User;

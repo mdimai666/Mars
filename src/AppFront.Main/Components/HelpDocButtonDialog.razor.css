@@ -1,0 +1,23 @@
+::deep .FluentMarkdown h1 {
+    font-size: 24px;
+}
+
+::deep .FluentMarkdown h2 {
+    font-size: 20px;
+}
+
+::deep .FluentMarkdown h3 {
+    font-size: 18px;
+}
+
+::deep .FluentMarkdown h4 {
+    font-size: 16px;
+}
+
+::deep .FluentMarkdown h5 {
+    font-size: 16px;
+}
+
+::deep .FluentMarkdown h6 {
+    font-size: 14px;
+}

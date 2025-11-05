@@ -33,8 +33,10 @@ public static class UserConstants
         Roles = ["Admin"],
         CreatedAt = DateTime.Now,
         ModifiedAt = null,
+        AvatarUrl = null,
+
         Type = UserTypeEntity.DefaultTypeName,
-        MetaValues = []
+        MetaValues = [],
     };
 
     public static readonly UserTypeEntity TestUserType = new()

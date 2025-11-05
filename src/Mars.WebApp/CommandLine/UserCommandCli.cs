@@ -100,6 +100,8 @@ public class UserCommandCli : CommandCli
                 FirstName = firstName ?? username,
                 LastName = lastName ?? "",
                 Roles = setRole,
+                AvatarUrl = null,
+
                 Type = userType ?? UserTypeEntity.DefaultTypeName,
                 MetaValues = [],
             }, CancellationToken.None);

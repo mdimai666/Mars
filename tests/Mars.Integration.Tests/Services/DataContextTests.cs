@@ -1,13 +1,13 @@
 using System.Security.Claims;
 using System.Text.Json.Serialization;
+using FluentAssertions;
+using Flurl.Http;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Interfaces;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.TestControllers;
 using Mars.Test.Common.Constants;
-using FluentAssertions;
-using Flurl.Http;
 
 namespace Mars.Integration.Tests.Services;
 

@@ -11,4 +11,5 @@ public interface ISsoService
     Task<SsoUserInfo?> AuthenticateAsync(string providerName, string code, string redirectUri);
     Task<ClaimsPrincipal?> ValidateTokenAsync(string token);
     IEnumerable<ISsoProvider> CreateProviderList();
+    bool TryValidateIssuer(string issuer, out SsoProviderDescriptor? ssoProviderDescriptor);
 }

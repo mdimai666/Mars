@@ -16,7 +16,7 @@ internal class SsoService : ISsoService
     private readonly IExperimentalSignInService _experimentalSignInService;
     private readonly IUserService _userService;
     private readonly IEnumerable<ISsoProvider> _staticProviders; // e.g., LocalJwtProvider if registered
-    private readonly TimeSpan _cacheTtl = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan _cacheTtl = TimeSpan.FromMinutes(30);
 
     public SsoService(ISsoProviderRepository repo,
                         DynamicSsoProviderFactory factory,
@@ -70,7 +70,11 @@ internal class SsoService : ISsoService
         if (authResult is null) return null;
 
         //var claims = ExtractClaims(handler, accessToken) ?? throw new UserActionException("ExtractClaims error");
-        var claims = await provider.ValidateTokenAsync(authResult.AccessToken) ?? throw new ArgumentNullException();
+        var claims = await provider.ValidateTokenAsync(authResult.OAuthResponse.IdToken ?? authResult.AccessToken) ?? throw new ArgumentNullException();
+
+        //var handler = new JwtSecurityTokenHandler();
+        //var jwt = handler.ReadJwtToken(authResult.OAuthResponse.IdToken ?? authResult.AccessToken);
+        //var claims = jwt.Claims;
 
         var userData = provider.MapToCreateUserQuery(claims);
         var internalUser = await _userService.RemoteUserUpsert(userData, CancellationToken.None);
@@ -92,7 +96,8 @@ internal class SsoService : ISsoService
                 Email = internalUser.Email,
                 FirstName = internalUser.FirstName,
                 LastName = internalUser.LastName,
-                Roles = internalUser.Roles
+                Roles = internalUser.Roles,
+                AvatarUrl = userData.AvatarUrl,
             }
         };
     }
@@ -116,5 +121,12 @@ internal class SsoService : ISsoService
         }
 
         return null;
+    }
+
+    public bool TryValidateIssuer(string issuer, out SsoProviderDescriptor? ssoProviderDescriptor)
+    {
+        var found = Providers.FirstOrDefault(s => s.Issuer == issuer);
+        ssoProviderDescriptor = found;
+        return found is not null;
     }
 }

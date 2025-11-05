@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Mars.Host.Data.Constants.UserConstants;
 
-
 namespace Mars.Host.Data.Configurations;
 
 public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
@@ -26,6 +25,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
         entity.Property(x => x.SecurityStamp).HasColumnType($"varchar({EntityDefaultConstants.DefaultHashMaxLength})");
         entity.Property(x => x.ConcurrencyStamp).HasColumnType($"varchar({EntityDefaultConstants.DefaultHashMaxLength})");
         entity.Property(x => x.PhoneNumber).HasColumnType($"varchar({PhoneNumberMaxLength})");
+        entity.Property(x => x.AvatarUrl).HasColumnType($"varchar({512})");
 
         entity.HasMany(s => s.Files)
             .WithOne(s => s.User)

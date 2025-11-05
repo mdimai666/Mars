@@ -23,6 +23,8 @@ public partial class LoginForm
     [Inject] IFlurlClient _client { get; set; } = default!;
 
     [Parameter] public string AfterLoginUrl { get; set; } = "/dev";
+    [Parameter] public string? ProviderPassedInUriPart { get; set; }
+
     private AuthCreditionalsModel auth = new();
 
     public bool ShowAuthError { get; set; }
@@ -98,17 +100,27 @@ public partial class LoginForm
         }
     }
 
+    string GenerateRedirectUri(string ssoSlug)
+    {
+        var providerDriver = authVariantConstOption.SSOConfigs.FirstOrDefault(s => s.Slug == ssoSlug)?.Driver;
+        string redirectUri;
+        if (providerDriver == "microsoft")
+            redirectUri = UrlTool.Combine(_navigationManager.BaseUri, "/Login/sso/", ssoSlug);
+        else
+            redirectUri = (_navigationManager.Uri.Split('?', 2)[0] + "?provider=" + ssoSlug);
+        return redirectUri;
+    }
+
     public void SsoProviderLogin(string ssoSlug)
     {
         _loginOverlayVisible = true;
         StateHasChanged();
 
         // see SsoController
-        //var redirectUri = HttpUtility.UrlEncode(NavigationManager.Uri.Split('?')[0]);
-        //var redirectUri = HttpUtility.UrlEncode(NavigationManager.Uri.Split('?')[0] + "?provider=" + ssoSlug);
-        var redirectUri = (_navigationManager.Uri.Split('?')[0] + "?provider=" + ssoSlug);
+        var redirectUri = GenerateRedirectUri(ssoSlug);
         Console.WriteLine("redirectUri=" + redirectUri);
-        var url = UrlTool.Combine(_client.BaseUrl.ToString(), "/api/sso/login", ssoSlug) + "?redirectUri=" + redirectUri;
+        string url = UrlTool.Combine(_client.BaseUrl.ToString(), "/api/sso/login", ssoSlug) + "?redirectUri=" + redirectUri;
+
         _navigationManager.NavigateTo(url);
 
         // http://localhost:5003/dev/Login?returnUrl=http://localhost:5003/dev/Login&state=6cab21716a5840ada5e8a26ee3f79c20&session_state=880247b9-b36f-4404-b9e3-d179657e7a7f&iss=http%3A%2F%2Flocalhost%3A6767%2Frealms%2Fmyrealm&code=58de7b26-2c04-44a5-a710-e8b965ae3d0c.880247b9-b36f-4404-b9e3-d179657e7a7f.40143acd-6972-45aa-965a-39fa3b33b0b5
@@ -121,7 +133,7 @@ public partial class LoginForm
     {
         var querystring = HttpUtility.ParseQueryString(new Uri(_navigationManager.Uri).Query);
         var code = querystring["code"];
-        var provider = querystring["provider"];
+        var provider = ProviderPassedInUriPart ?? querystring["provider"];
 
         Console.WriteLine("code=" + code + "& provider=" + provider);
 
@@ -139,10 +151,8 @@ public partial class LoginForm
         Console.WriteLine("ExchangeProvidedCodeToToken");
         var querystring = HttpUtility.ParseQueryString(new Uri(_navigationManager.Uri).Query);
         var code = querystring["code"];
-        var provider = querystring["provider"];
-        //var redirectUri = NavigationManager.Uri.Split('?')[0]; ;
-        //var redirectUri = HttpUtility.UrlEncode(NavigationManager.Uri.Split('?')[0] + "?provider=" + provider);
-        var redirectUri = (_navigationManager.Uri.Split('?')[0] + "?provider=" + provider);// должно строго совподать с redirectUri которую передали при получении кода
+        var provider = ProviderPassedInUriPart ?? querystring["provider"]!;
+        var redirectUri = GenerateRedirectUri(provider); ;// должно строго совподать с redirectUri которую передали при получении кода
         Console.WriteLine("redirectUri=" + redirectUri);
 
         try
@@ -150,10 +160,6 @@ public partial class LoginForm
             var userInfo = await _client.Request("/api/sso/callback", provider).AppendQueryParam(new { code, redirectUri }).GetJsonAsync<SsoUserInfoResponse>();
             //var token = userInfo.RawData["access_token"];
             _successAlertMessage = "Авторизировано";
-            //_loginOverlayVisible = false;
-            //StateHasChanged();
-
-            //await Task.Delay(1000);
 
             return userInfo;
         }

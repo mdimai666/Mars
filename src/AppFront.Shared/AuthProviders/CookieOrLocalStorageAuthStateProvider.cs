@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Mars.Shared.Contracts.SSO;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace AppFront.Shared.AuthProviders;
@@ -12,14 +13,16 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
 {
     private readonly HttpClient _httpClient;
     private readonly IJSRuntime _js;
+    private readonly ILogger<CookieOrLocalStorageAuthStateProvider> _logger;
     private readonly string _tokenKey = "authToken";
     private readonly string _refreshUrl = "auth/refresh"; // 👈 твой эндпоинт для обновления токена
     private ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
 
-    public CookieOrLocalStorageAuthStateProvider(HttpClient httpClient, IJSRuntime js)
+    public CookieOrLocalStorageAuthStateProvider(HttpClient httpClient, IJSRuntime js, ILogger<CookieOrLocalStorageAuthStateProvider> logger)
     {
         _httpClient = httpClient;
         _js = js;
+        _logger = logger;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -27,6 +30,9 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
         //Console.WriteLine(">GetAuthenticationStateAsync:1");
         var token = await TryGetAccessTokenAsync();
         if (string.IsNullOrEmpty(token))
+            return new AuthenticationState(_anonymous);
+
+        if (Q.Site.InitailUserPrimaryInfo is null)
             return new AuthenticationState(_anonymous);
 
         // Настроим HTTP заголовок
@@ -120,30 +126,39 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
         }
     }
 
-    private static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+    private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
-        var payload = jwt.Split('.')[1];
-        var jsonBytes = ParseBase64WithoutPadding(payload);
-        var json = JsonSerializer.Deserialize<JsonElement>(jsonBytes);
-
-        var claims = new List<Claim>();
-
-        foreach (var property in json.EnumerateObject())
+        try
         {
-            if (property.Value.ValueKind == JsonValueKind.Array)
+            var payload = jwt.Split('.')[1];
+            var jsonBytes = ParseBase64WithoutPadding(payload);
+            var json = JsonSerializer.Deserialize<JsonElement>(jsonBytes);
+
+            var claims = new List<Claim>();
+
+            foreach (var property in json.EnumerateObject())
             {
-                foreach (var item in property.Value.EnumerateArray())
+                if (property.Value.ValueKind == JsonValueKind.Array)
                 {
-                    claims.Add(new Claim(property.Name, item.ToString()));
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        claims.Add(new Claim(property.Name, item.ToString()));
+                    }
+                }
+                else
+                {
+                    claims.Add(new Claim(property.Name, property.Value.ToString()));
                 }
             }
-            else
-            {
-                claims.Add(new Claim(property.Name, property.Value.ToString()));
-            }
-        }
 
-        return claims;
+            return claims;
+        }
+        catch (Exception ex)
+        {
+            //Console.Error.WriteLine("ERROR ParseClaimsFromJwt: " + ex.Message);
+            _logger.LogError(ex, "ERROR ParseClaimsFromJwt");
+        }
+        return [];
     }
 
     private static byte[] ParseBase64WithoutPadding(string base64)
@@ -168,6 +183,8 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
 
     private void EnrichUserClaims(ClaimsPrincipal principal)
     {
+        if (Q.Site.InitailUserPrimaryInfo is null) return;
+
         var marsIdentity = new ClaimsIdentity([
             new (ClaimTypes.NameIdentifier, Q.Site.InitailUserPrimaryInfo.Id.ToString()),
             new (ClaimTypes.Email, Q.Site.InitailUserPrimaryInfo.Email??""),

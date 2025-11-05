@@ -16,6 +16,7 @@ internal static class UserMapping
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             MiddleName = entity.MiddleName,
+            AvatarUrl = entity.AvatarUrl
         };
 
     public static UserDetail ToDetail(this UserEntity entity)
@@ -33,6 +34,8 @@ internal static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
+            AvatarUrl = entity.AvatarUrl,
+
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDetailDto(),
         };
@@ -52,6 +55,8 @@ internal static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
+            AvatarUrl = entity.AvatarUrl,
+
             Type = entity.UserType.TypeName,
             MetaValues = entity.MetaValues!.ToDetailDto(),
             UserTypeDetail = entity.UserType.ToDetail(),
@@ -127,6 +132,8 @@ internal static class UserMapping
             PhoneNumber = query.PhoneNumber,
             BirthDate = query.BirthDate,
             Gender = ParseGender(query.Gender),
+            AvatarUrl = query.AvatarUrl,
+
             UserTypeId = userTypeId,
             MetaValues = query.MetaValues.ToEntity(),
 
@@ -143,6 +150,7 @@ internal static class UserMapping
         entity.PhoneNumber = query.PhoneNumber;
         entity.BirthDate = query.BirthDate;
         entity.Gender = UserMapping.ParseGender(query.Gender);
+        entity.AvatarUrl = query.AvatarUrl;
 
         entity.ModifiedAt = DateTimeOffset.Now;
         return entity;
@@ -170,7 +178,8 @@ internal static class UserMapping
             BirthDate = entity.BirthDate,
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
-            SecurityStamp = entity.SecurityStamp!
+            SecurityStamp = entity.SecurityStamp!,
+            AvatarUrl = entity.AvatarUrl
         };
 
     public static UserEntity ToEntity(this UpsertUserRemoteDataQuery query, Guid userTypeId, ILookupNormalizer lookupNormalizer)
@@ -193,6 +202,7 @@ internal static class UserMapping
             BirthDate = query.BirthDate,
             Gender = ParseGender(query.Gender),
             UserTypeId = userTypeId,
+            AvatarUrl = query.AvatarUrl,
         };
 
     public static UserEntity UpdateEntity(this UserEntity entity, UpsertUserRemoteDataQuery query)
@@ -207,6 +217,7 @@ internal static class UserMapping
         entity.Gender = UserMapping.ParseGender(query.Gender);
 
         entity.ModifiedAt = DateTimeOffset.Now;
+        entity.AvatarUrl = query.AvatarUrl;
         return entity;
     }
 
@@ -222,6 +233,7 @@ internal static class UserMapping
             entity.Email != query.Email ||
             entity.PhoneNumber != query.PhoneNumber ||
             entity.BirthDate != query.BirthDate ||
+            entity.AvatarUrl != query.AvatarUrl ||
             entity.Gender != UserMapping.ParseGender(query.Gender);
     }
 }

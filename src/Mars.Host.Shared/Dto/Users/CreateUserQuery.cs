@@ -20,6 +20,7 @@ public record CreateUserQuery
     public DateTime? BirthDate { get; init; }
     public UserGender Gender { get; init; }
     public string? PhoneNumber { get; init; }
+    public required string? AvatarUrl { get; init; }
 
     public required string Type { get; init; }
     public required IReadOnlyCollection<ModifyMetaValueDetailQuery> MetaValues { get; init; }

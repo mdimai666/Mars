@@ -25,6 +25,7 @@
         <div class="vstack gap-2">
             <FluentPersona Name="@model.FullName"
                            Style="width:50px"
+                           Image="@model.AvatarUrl"
                            ImageSize="50px" />
             <div class="spacer-1"></div>
             <FormItem2 For="@(() => model.UserName)">

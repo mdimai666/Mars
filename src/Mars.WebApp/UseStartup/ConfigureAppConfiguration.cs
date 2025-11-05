@@ -2,7 +2,7 @@ namespace Mars.UseStartup;
 
 public static class ConfigureAppConfigurationExtensiions
 {
-    public static void ConfigureAppConfiguration(this WebApplicationBuilder builder, string[] args)
+    public static IConfigurationBuilder ConfigureAppConfiguration(this IConfigurationBuilder builder, string[] args)
     {
         string? env_cfg = Environment.GetEnvironmentVariable("MARS_CFG");
 
@@ -16,28 +16,26 @@ public static class ConfigureAppConfigurationExtensiions
                 cfgpath = Path.Join(MarsStartupInfo.StartWorkDirectory, cfgpath);
             }
 
-            builder.Configuration
-                .AddJsonFile(
+            builder.AddJsonFile(
                     cfgpath,
                      optional: false,
                      reloadOnChange: false);
         }
         else if (env_cfg is not null)
         {
-            builder.Configuration
-                .AddJsonFile(
+            builder.AddJsonFile(
                     env_cfg,
                      optional: false,
                      reloadOnChange: false);
         }
         else
         {
-            builder.Configuration
-                .AddJsonFile(
+            builder.AddJsonFile(
                     "appsettings.Local.json",
                      optional: true,
                      reloadOnChange: false);
         }
 
+        return builder;
     }
 }

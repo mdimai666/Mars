@@ -1,18 +1,23 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 using Mars.Host.Shared.Dto.SSO;
 using Mars.Host.Shared.SSO.Dto;
 using Mars.Shared.Contracts.Users;
 using Mars.SSO.Mappings;
 using Mars.SSO.Utilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.SSO.Providers;
 
 public class GoogleProvider : GenericOidcProvider
 {
-    public GoogleProvider(SsoProviderDescriptor descriptor, IHttpClientFactory httpClientFactory, OidcMetadataCache metadataCache)
-    : base(descriptor, httpClientFactory, metadataCache) { }
+    public GoogleProvider(SsoProviderDescriptor descriptor,
+                        IHttpClientFactory httpClientFactory,
+                        OidcMetadataCache metadataCache,
+                        ILogger<GoogleProvider> logger)
+    : base(descriptor, httpClientFactory, metadataCache, logger) { }
 
     public override async Task<SsoTokenResponse?> AuthenticateAsync(string code, string redirectUri)
     {
@@ -28,24 +33,20 @@ public class GoogleProvider : GenericOidcProvider
             ["redirect_uri"] = redirectUri
         });
 
+#if DEBUG
+        var jwt = token?.ToString();
+#endif
+
         if (token == null) return null;
 
-        throw new NotImplementedException();
+        var _OAuth = JsonSerializer.Deserialize<OAuthTokenResponse>(token.Value);
 
-        //if (!token.Value.TryGetProperty("id_token", out var idTokenProp)) return null;
-        //var idToken = idTokenProp.GetString();
-
-        //var handler = new JwtSecurityTokenHandler();
-        //var jwt = handler.ReadJwtToken(idToken!);
-
-        //return new SsoUserInfo
-        //{
-        //    InternalId = Guid.Empty,
-        //    ExternalId = jwt.Subject,
-        //    Email = jwt.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? string.Empty,
-        //    Name = jwt.Claims.FirstOrDefault(c => c.Type == "name")?.Value,
-        //    Provider = Name
-        //};
+        return new()
+        {
+            AccessToken = _OAuth.AccessToken,
+            OAuthResponse = _OAuth,
+            RawResponse = token.Value
+        };
     }
 
     public override async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
@@ -74,17 +75,19 @@ public class GoogleProvider : GenericOidcProvider
     public override UpsertUserRemoteDataQuery MapToCreateUserQuery(ClaimsPrincipal principal)
     {
         var claims = principal.Claims.ToDictionary(c => c.Type, c => c.Value);
+        var externalKey = principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
         return new()
         {
-            ExternalKey = claims.GetValueOrDefault("sub") ?? throw new InvalidOperationException("Missing 'sub' claim in Google token"),
-            PreferredUserName = claims.GetValueOrDefault("email") ?? Guid.NewGuid().ToString("N"),
-            FirstName = claims.GetValueOrDefault("given_name") ?? "Unknown",
-            LastName = claims.GetValueOrDefault("family_name"),
+            ExternalKey = externalKey ?? claims.GetValueOrDefault("sub") ?? throw new InvalidOperationException("Missing 'sub' claim in Google token"),
+            PreferredUserName = claims.GetValueOrDefault("email")?.Split('@', 2)[0] ?? Guid.NewGuid().ToString("N"),
+            FirstName = principal.FindFirstValue(ClaimTypes.GivenName) ?? claims.GetValueOrDefault("given_name") ?? "Unknown",
+            LastName = principal.FindFirstValue(ClaimTypes.Surname) ?? claims.GetValueOrDefault("family_name"),
             MiddleName = null,
-            Email = claims.GetValueOrDefault("email"),
-            Roles = Array.Empty<string>(),
+            Email = principal.FindFirstValue(ClaimTypes.Email) ?? claims.GetValueOrDefault("email"),
+            Roles = DefaultExternalUserRoles,
             Gender = UserGender.None,
+            AvatarUrl = claims.GetValueOrDefault("picture"),
             BirthDate = null,
             PhoneNumber = null,
             Prodvider = _descriptor.ToInfo()

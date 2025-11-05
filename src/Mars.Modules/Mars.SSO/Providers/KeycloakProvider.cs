@@ -7,6 +7,7 @@ using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.Users;
 using Mars.SSO.Mappings;
 using Mars.SSO.Utilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.SSO.Providers;
@@ -16,14 +17,15 @@ internal class KeycloakProvider : GenericOidcProvider
     public KeycloakProvider(SsoProviderDescriptor descriptor,
                                 IHttpClientFactory httpClientFactory,
                                 IServiceProvider serviceProvider,
-                                OidcMetadataCache metadataCache)
-    : base(descriptor, httpClientFactory, metadataCache)
+                                OidcMetadataCache metadataCache,
+                                ILogger<KeycloakProvider> logger)
+    : base(descriptor, httpClientFactory, metadataCache, logger)
     {
     }
 
     public override async Task<SsoTokenResponse?> AuthenticateAsync(string code, string redirectUri/*, bool writeCookies*/)
     {
-        Console.WriteLine("KeycloakProvider:AuthenticateAsync");
+        _logger.LogTrace("AuthenticateAsync");
         var config = await _metadataCache.GetConfigurationAsync(_descriptor.Issuer!);
         if (config == null) return null;
 
@@ -50,7 +52,7 @@ internal class KeycloakProvider : GenericOidcProvider
 
     public override async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
     {
-        Console.WriteLine("KeycloakProvider:ValidateTokenAsync");
+        _logger.LogTrace("ValidateTokenAsync");
         var config = await _metadataCache.GetConfigurationAsync(_descriptor.Issuer!);
         if (config == null) return null;
 
@@ -94,7 +96,7 @@ internal class KeycloakProvider : GenericOidcProvider
             LastName = principal.FindFirstValue(ClaimTypes.Surname) ?? claims.GetValueOrDefault("family_name"),
             MiddleName = null,
             Email = principal.FindFirstValue(ClaimTypes.Email) ?? claims.GetValueOrDefault("email"),
-            Roles = roles,
+            Roles = roles.Any() ? roles : DefaultExternalUserRoles,
             BirthDate = DateTime.TryParse(claims.GetValueOrDefault("birthdate"), out var birth)
                         ? birth : null,
             Gender = claims.GetValueOrDefault("gender")?.ToLower() switch

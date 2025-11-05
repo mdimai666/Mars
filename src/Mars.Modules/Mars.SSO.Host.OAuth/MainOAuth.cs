@@ -15,7 +15,7 @@ public static class MainOAuth
 {
     public static IServiceCollection AddMarsOAuthHost(this IServiceCollection services)
     {
-        services.AddDbContext<AuthDbContext>(opt => opt.UseInMemoryDatabase("oauth"));
+        services.AddDbContext<SsoAuthDbContext>(opt => opt.UseInMemoryDatabase("oauth"));
 
         services.AddScoped<IOAuthService, OAuthService>();
 

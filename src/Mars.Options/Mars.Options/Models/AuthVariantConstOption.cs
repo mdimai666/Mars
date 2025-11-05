@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mars.Options.Models;
 
@@ -12,6 +12,7 @@ public class AuthVariantConstOption
         public string? IconUrl { get; set; }
         public string Label { get; set; } = default!;
         public string Slug { get; set; } = default!;
+        public string Driver { get; set; } = default!;
     }
 
     [Flags]

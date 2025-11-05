@@ -6,6 +6,7 @@ using Mars.Host.Shared.SSO.Dto;
 using Mars.Shared.Contracts.Users;
 using Mars.SSO.Mappings;
 using Mars.SSO.Utilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.SSO.Providers;
@@ -15,8 +16,9 @@ internal class ExternalMarsProvider : GenericOidcProvider
     public ExternalMarsProvider(SsoProviderDescriptor descriptor,
                                 IHttpClientFactory httpClientFactory,
                                 IServiceProvider serviceProvider,
-                                OidcMetadataCache metadataCache)
-    : base(descriptor, httpClientFactory, metadataCache)
+                                OidcMetadataCache metadataCache,
+                                ILogger<ExternalMarsProvider> logger)
+    : base(descriptor, httpClientFactory, metadataCache, logger)
     {
     }
 
@@ -48,7 +50,6 @@ internal class ExternalMarsProvider : GenericOidcProvider
 
     public override async Task<ClaimsPrincipal?> ValidateTokenAsync(string token)
     {
-        Console.WriteLine("KeycloakProvider:ValidateTokenAsync");
         var config = await _metadataCache.GetConfigurationAsync(_descriptor.Issuer!);
         if (config == null) return null;
 
@@ -90,7 +91,7 @@ internal class ExternalMarsProvider : GenericOidcProvider
             LastName = claims[ClaimTypes.Surname],
             MiddleName = null,
             Email = claims[ClaimTypes.Email],
-            Roles = roles,
+            Roles = roles.Any() ? roles : DefaultExternalUserRoles,
             BirthDate = null,
             Gender = UserGender.None,
             PhoneNumber = null,

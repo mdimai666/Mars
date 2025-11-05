@@ -1,4 +1,5 @@
 @page "/Login"
+@page "/Login/sso/{ProviderSlug}"
 @layout BlankLayout
 
 @*<Header1 />*@
@@ -18,9 +19,9 @@
                 </header>
                 <main id="Content" class="flex-fill p-3 xcenter">
                     <div class="d-block mx-auto w-100" style="1width: 349px">
-                        <h2 class="fz20px fw-bold text-center">ВХОД</h2>
+                        <h2 class="fz20px fw-bold text-center">@AppRes.SignIn</h2>
 
-                        <LoginForm />
+                        <LoginForm ProviderPassedInUriPart=@ProviderSlug />
 
                     </div>
                 </main>
@@ -33,6 +34,10 @@
     <div class="spacer-2"></div>
 
 </div>
+
+@code {
+    [Parameter] public string? ProviderSlug { get; set; }
+}
 
 <style>
     h1 {

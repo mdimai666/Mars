@@ -185,6 +185,8 @@ public class ApplicationFixture : IAsyncLifetime
             Password = UserConstants.TestUserPassword,
             UserName = user.UserName,
             Id = user.Id,
+            AvatarUrl = user.AvatarUrl,
+
             Type = user.Type,
             MetaValues = [],
         }, CancellationToken.None);

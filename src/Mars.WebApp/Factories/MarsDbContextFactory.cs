@@ -1,5 +1,6 @@
+using Mars.Core.Extensions;
 using Mars.Host.Data.Contexts;
-using Mars.Host.Shared.Services;
+using Mars.UseStartup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Npgsql;
@@ -10,9 +11,17 @@ public class MarsDbContextFactory : IDesignTimeDbContextFactory<MarsDbContext>
 {
     public MarsDbContext CreateDbContext(string[] args)
     {
-        string connectionString = IOptionService.Configuration.GetConnectionString("DefaultConnection")!;
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .ConfigureAppConfiguration(args)
+            .Build();
+        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 
-        //string connectionString = configuration.GetConnectionString("DefaultConnection")!;
+#if DEBUG
+        Console.WriteLine($"args = {args.JoinStr(" ")}");
+        Console.WriteLine($"directory = {Directory.GetCurrentDirectory()}");
+        Console.WriteLine("connectionString = " + connectionString);
+#endif
 
         var optionsBuilder = new DbContextOptionsBuilder<MarsDbContext>();
 

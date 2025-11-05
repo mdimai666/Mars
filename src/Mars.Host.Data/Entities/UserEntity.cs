@@ -46,6 +46,8 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
 
     public EUserStatus Status { get; set; }
 
+    public string? AvatarUrl { get; set; }
+
     //-------------GEO-----------
 
     //[Comment("Регион")]

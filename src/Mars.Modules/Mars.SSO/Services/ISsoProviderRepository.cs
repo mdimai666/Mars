@@ -2,6 +2,7 @@ using Mars.Core.Extensions;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.SSO.Dto;
 using Mars.Options.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.SSO.Services;
 
@@ -9,6 +10,7 @@ public interface ISsoProviderRepository
 {
     Task<IEnumerable<SsoProviderDescriptor>> ListEnabledAsync();
     Task<SsoProviderDescriptor?> GetByNameAsync(string name);
+    bool TryValidateIssuer(string issuer, out SsoProviderDescriptor? ssoProviderDescriptor);
 }
 /*
 public class EfProviderRepository : IProviderRepository
@@ -47,10 +49,28 @@ public class EfProviderRepository : IProviderRepository
 public class SsoOptionsProviderRepository : ISsoProviderRepository
 {
     private readonly IOptionService _optionService;
+    private readonly IMemoryCache _cache;
+    private readonly TimeSpan _cacheTtl = TimeSpan.FromMinutes(30);
 
-    public SsoOptionsProviderRepository(IOptionService optionService)
+    public SsoOptionsProviderRepository(IOptionService optionService, IMemoryCache cache)
     {
         _optionService = optionService;
+        _cache = cache;
+    }
+
+    private IEnumerable<SsoProviderDescriptor> Providers
+    {
+        get
+        {
+            var dynamic = _cache.GetOrCreate("sso:providers:descriptors", entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = _cacheTtl;
+                var descriptors = ListEnabledAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                return descriptors.ToList();
+            }) as List<SsoProviderDescriptor> ?? [];
+
+            return dynamic;
+        }
     }
 
     public Task<IEnumerable<SsoProviderDescriptor>> ListEnabledAsync()
@@ -81,6 +101,13 @@ public class SsoOptionsProviderRepository : ISsoProviderRepository
             TokenEndpoint = config.TokenEndpoint,
             IsEnabled = config.Enable,
             Issuer = config.Issuer,
-            IconUrl = config.IconUrl.AsNullIfEmpty()
+            IconUrl = config.IconUrl.AsNullIfEmpty(),
         };
+
+    public bool TryValidateIssuer(string issuer, out SsoProviderDescriptor? ssoProviderDescriptor)
+    {
+        var found = Providers.FirstOrDefault(s => s.Issuer == issuer);
+        ssoProviderDescriptor = found;
+        return found is not null;
+    }
 }

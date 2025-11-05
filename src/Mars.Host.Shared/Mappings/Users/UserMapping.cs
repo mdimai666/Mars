@@ -32,6 +32,7 @@ public static class UserMapping
             Roles = entity.Roles,
             CreatedAt = entity.CreatedAt,
             ModifiedAt = entity.ModifiedAt,
+            AvatarUrl = entity.AvatarUrl,
 
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
@@ -46,6 +47,7 @@ public static class UserMapping
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             MiddleName = entity.MiddleName,
+            AvatarUrl = entity.AvatarUrl,
         };
 
     public static ListDataResult<UserListItemResponse> ToResponse(this ListDataResult<UserSummary> items)
@@ -104,7 +106,7 @@ public static class UserMapping
 
             BirthDate = entity.BirthDate,
             Gender = entity.Gender,
-            AvatarUrl = "entity.AvatarUrl",
+            AvatarUrl = entity.AvatarUrl,
 
             Roles = entity.Roles,
             Type = entity.Type,
@@ -119,6 +121,7 @@ public static class UserMapping
             Email = entity.Email,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
-            Roles = entity.Roles
+            Roles = entity.Roles,
+            AvatarUrl = entity.AvatarUrl,
         };
 }

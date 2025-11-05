@@ -36,6 +36,7 @@ public record CreateUserRequest
     public required string? PhoneNumber { get; init; }
     public required DateTime? BirthDate { get; init; }
     public required UserGender Gender { get; init; }
+    public required string? AvatarUrl { get; init; }
 
     public required string Type { get; init; }
     public required IReadOnlyCollection<CreateMetaValueRequest> MetaValues { get; init; }
@@ -69,6 +70,7 @@ public record UpdateUserRequest
     public required string? PhoneNumber { get; init; }
     public required DateTime? BirthDate { get; init; }
     public required UserGender Gender { get; init; }
+    public required string? AvatarUrl { get; init; }
 
     [StringLength(1000, MinimumLength = 3)]
     [Required]
@@ -83,6 +85,7 @@ public record UserListItemResponse
     public required string LastName { get; init; }
     public required string? MiddleName { get; init; }
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
+    public required string? AvatarUrl { get; init; }
 }
 
 public record ListUserQueryRequest : BasicListQueryRequest

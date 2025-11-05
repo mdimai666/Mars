@@ -1,0 +1,48 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<mars-help-doc-button>
+    @if (ChildContent is not null)
+    {
+        <a role="button" @onclick=OnClick>
+            @ChildContent
+        </a>
+    }
+    else
+    {
+        <FluentButton OnClick=OnClick Appearance="Appearance.Stealth" IconStart="_infoIcon">@Label</FluentButton>
+    }
+</mars-help-doc-button>
+
+@code {
+    [Inject] IDialogService _dialogService { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public string Url { get; set; } = default!;
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string? Label { get; set; }
+
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private static Icon _infoIcon = new Icons.Regular.Size16.Info();
+
+    private async void OnClick()
+    {
+        DialogParameters parameters = new()
+        {
+            Title = "Help",
+            PrimaryActionEnabled = false,
+            SecondaryActionEnabled = false,
+            Width = "1200px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        IDialogReference dialog = await _dialogService.ShowDialogAsync<HelpDocButtonDialog>(Url, parameters);
+        DialogResult? result = await dialog.Result;
+
+        _ = OnClose.InvokeAsync();
+    }
+}

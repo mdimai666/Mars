@@ -16,7 +16,6 @@
         {
             var sso = _sso;
             <FluentCard>
-
                 <FormItem2 For="() => sso.Enable" Class="col">
                     <FluentSwitch @bind-Value="@sso.Enable" />
                 </FormItem2>
@@ -32,8 +31,8 @@
                     </FormItem2>
                     <FormItem2 For="() => sso.Driver" Class="col">
                         <FluentSelect @bind-Value="@sso.Driver"
-                                      OptionText=@(s => s.Value)
                                       OptionValue=@(s => s.Key)
+                                      OptionText=@(s => s.Value)
                                       Items="OpenIDClientOption.DriverList"
                                       Style="width: 250px;" />
                     </FormItem2>
@@ -88,7 +87,15 @@
 
                 <div class="spacer-2"></div>
 
-                <FluentButton Appearance="Appearance.Stealth" OnClick=@(e => DeleteSSOClick(sso))>Delete</FluentButton>
+                <div class="hstack gap-3">
+                    <FluentButton Appearance="Appearance.Stealth" OnClick=@(e => DeleteSSOClick(sso))>Delete</FluentButton>
+                    <div class="ms-auto">
+                        @if (OpenIDClientOption.Documentations.TryGetValue(sso.Driver, out var url))
+                        {
+                            <HelpDocButton Url="@url" Label="@($"Как сделать для {sso.Driver}")" />
+                        }
+                    </div>
+                </div>
 
             </FluentCard>
         }

@@ -21,13 +21,9 @@ public static class MainSSO
         services.AddScoped<ILocalJwtService, MarsLocalJwtService>();
         services.AddSingleton<ITokenCache, MemoryTokenCache>();
         services.AddScoped<DynamicSsoProviderFactory>();
-        services.AddScoped<ISsoProviderRepository, SsoOptionsProviderRepository>();
-
-        //services.AddSingleton<ISsoProvider, LocalJwtProvider>();
+        services.AddSingleton<ISsoProviderRepository, SsoOptionsProviderRepository>();
 
         services.AddScoped<ISsoService, SsoService>();
-        //services.AddTransient<ISsoProvider, KeycloakProvider2>();
-        //services.AddControllers();
 
         return services;
     }
@@ -73,6 +69,7 @@ public static class MainSSO
                 IconUrl = s.IconUrl,
                 Label = s.Title,
                 Slug = s.Slug,
+                Driver = s.Driver,
             }).ToList()
         };
         optionService.SetConstOption(ssoOpt, appendToInitialSiteData: true);

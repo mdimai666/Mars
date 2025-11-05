@@ -45,6 +45,47 @@ public class OpenIDClientOption
             Enable = true,
             Scopes = "openid email profile",
         },
+        ["google"] = new()
+        {
+            Title = "Google",
+            Issuer = "https://accounts.google.com",
+            AuthEndpoint = "https://accounts.google.com/o/oauth2/v2/auth",
+            TokenEndpoint = "https://oauth2.googleapis.com/token",
+            Driver = "google",
+            Slug = "google1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["github"] = new()
+        {
+            Title = "GitHub",
+            Issuer = "https://github.com",
+            AuthEndpoint = "https://github.com/login/oauth/authorize",
+            TokenEndpoint = "https://github.com/login/oauth/access_token",
+            Driver = "github",
+            Slug = "github1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+        ["microsoft"] = new()
+        {
+            Title = "Microsoft_AAD",
+            Issuer = "https://login.microsoftonline.com/<tenant_id>/v2.0",
+            AuthEndpoint = "https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize",
+            TokenEndpoint = "https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token",
+            Driver = "microsoft",
+            Slug = "microsoft1",
+            Enable = true,
+            Scopes = "openid email profile",
+        },
+    };
+
+    public static Dictionary<string, string> Documentations = new()
+    {
+        ["keycloak"] = "/mars/docs/SSO/KeycloakProvider.startup.md",
+        ["google"] = "/mars/docs/SSO/GoogleProvider.startup.md",
+        ["github"] = "/mars/docs/SSO/GitHubProvider.startup.md",
+        ["microsoft"] = "/mars/docs/SSO/MicrosoftProvider.startup.md",
     };
 }
 

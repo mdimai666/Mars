@@ -100,6 +100,7 @@ public sealed class RequestCustomize : ICustomization
                                             BirthDate = user.BirthDate,
                                             Gender = user.Gender,
                                             PhoneNumber = user.PhoneNumber,
+                                            AvatarUrl = user.AvatarUrl,
                                             MetaValues = [],
                                             Type = UserTypeEntity.DefaultTypeName,
                                         };

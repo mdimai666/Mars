@@ -20,6 +20,8 @@ public static class UserRequestExtensions
             BirthDate = request.BirthDate,
             Gender = request.Gender,
             PhoneNumber = request.PhoneNumber,
+            AvatarUrl = null,
+
             Type = request.Type,
             MetaValues = request.MetaValues.ToQuery(metaFields)
         };
@@ -38,6 +40,8 @@ public static class UserRequestExtensions
             BirthDate = request.BirthDate,
             Gender = request.Gender,
             PhoneNumber = request.PhoneNumber,
+            AvatarUrl = request.AvatarUrl,
+
             Type = request.Type,
             MetaValues = request.MetaValues.ToQuery(metaFields)
         };

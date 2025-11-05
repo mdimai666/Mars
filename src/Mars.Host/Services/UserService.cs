@@ -179,6 +179,8 @@ internal class UserService : IUserService
 
             BirthDate = null,
             CreatedAt = DateTimeOffset.UtcNow,
+            AvatarUrl = null,
+
             MetaValues = [],
             UserTypeDetail = userType
         };

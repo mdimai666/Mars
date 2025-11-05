@@ -11,24 +11,27 @@ namespace Mars.SSO.Host.OAuth.Services;
 
 public class OAuthService : IOAuthService
 {
-    private readonly AuthDbContext _db;
+    private readonly SsoAuthDbContext _db;
     private readonly IOAuthClientStore _clientStore;
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
+    private readonly IExperimentalSignInService _experimentalSignInService;
     private readonly IAccountsService _accountsService;
 
     //private readonly LocalJwtService _jwtService;
     private readonly TimeSpan _defaultCodeLifetime = TimeSpan.FromMinutes(5);
 
     //public OAuthService(AuthDbContext db, LocalJwtService jwtService IOptionService optionService)
-    public OAuthService(AuthDbContext db, IOAuthClientStore clientStore,
+    public OAuthService(SsoAuthDbContext db, IOAuthClientStore clientStore,
                         ITokenService tokenService, IUserRepository userRepository,
+                        IExperimentalSignInService experimentalSignInService,
                         IAccountsService accountsService)
     {
         _db = db;
         _clientStore = clientStore;
         _tokenService = tokenService;
         _userRepository = userRepository;
+        _experimentalSignInService = experimentalSignInService;
         _accountsService = accountsService;
         //_jwtService = jwtService;
     }
@@ -235,6 +238,7 @@ public class OAuthService : IOAuthService
         var userId = await _accountsService.ValidateUserCredentials(username, password, cancellationToken);
         if (userId is null)
             return false;
+        await _experimentalSignInService.LoginForceByIdAsync(userId.Value, cancellationToken);
         auth.SubjectId = userId.Value;
         await _db.SaveChangesAsync(cancellationToken);
         return true;

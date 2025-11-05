@@ -19,4 +19,5 @@ public record UserSummary
     [PersonalData]
     public string FullName => string.Join(' ', ((string?[])[LastName, FirstName, MiddleName]).TrimNulls());
 
+    public required string? AvatarUrl { get; init; }
 }

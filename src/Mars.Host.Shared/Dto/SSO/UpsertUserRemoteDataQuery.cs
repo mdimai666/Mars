@@ -27,4 +27,5 @@ public record UpsertUserRemoteDataQuery
     public string? PhoneNumber { get; init; }
     public required SsoProviderInfo Prodvider { get; init; }
 
+    public string? AvatarUrl { get; init; }
 }

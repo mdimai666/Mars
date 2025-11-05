@@ -20,7 +20,7 @@ public class MediaOption
     [Display(Name = "Is Allow All File Types")]
     public bool IsAllowAllFileTypes { get; set; }
 
-    public static readonly string DefaultAllowedExtensions = ".png,.jpg,.jpeg,.webp,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.txt";
+    public static readonly string DefaultAllowedExtensions = ".png,.jpg,.jpeg,.webp,.svg,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.txt";
 
     string[] _allowedFileExtensions
         = DefaultAllowedExtensions.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);

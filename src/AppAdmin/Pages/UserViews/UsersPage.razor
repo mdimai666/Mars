@@ -45,13 +45,14 @@
                                 InitialSortDirection="SortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
-
                     <div class="vstack">
                         <a href="@urlEditPage/@context.Id" class="text-primary">
-                            <div>@context.FullName</div>
+                            <FluentPersona Name="@context.FullName"
+                                           Style="width:32px"
+                                           Image="@context.AvatarUrl"
+                                           ImageSize="32px" />
                         </a>
                     </div>
-
                 </TemplateColumn>
                 <PropertyColumn Property="@(f => f.Email)" Title="@AppRes.Email" Sortable="true" />
                 <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.Roles))"

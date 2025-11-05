@@ -15,6 +15,7 @@ public class UserFromClaims
     public string LastName { get; private set; } = "";
     private string SecurityStamp { get; set; } = "";
 
+    public string? AvatarUrl { get; private set; }
     public HashSet<string> Roles { get; private set; } = [];
 
     public bool IsAdmin => Roles.Contains("Admin");
@@ -35,6 +36,7 @@ public class UserFromClaims
         FirstName = principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
         LastName = principal.FindFirstValue(ClaimTypes.Surname) ?? "";
         SecurityStamp = principal.FindFirstValue("AspNet.Identity.SecurityStamp") ?? "";
+        AvatarUrl = principal.FindFirstValue("picture");
 
         ExternalId = internalMarsId == null ? null : principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -69,6 +71,7 @@ public class UserFromClaims
         LastName = userPrimaryInfo.LastName;
         SecurityStamp = "";
         Roles = userPrimaryInfo.Roles.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        AvatarUrl = userPrimaryInfo.AvatarUrl;
     }
 
     public UserFromClaims(SsoUserInfoResponse ssoUserInfo)
@@ -81,6 +84,7 @@ public class UserFromClaims
         LastName = ssoUserInfo.UserPrimaryInfo.LastName;
         SecurityStamp = "";
         Roles = ssoUserInfo.UserPrimaryInfo.Roles.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        AvatarUrl = ssoUserInfo.UserPrimaryInfo.AvatarUrl;
     }
 
     string _initials = null!;

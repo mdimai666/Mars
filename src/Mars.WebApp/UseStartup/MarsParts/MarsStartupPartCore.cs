@@ -7,6 +7,7 @@ using Mars.Host.Models;
 using Mars.Host.Services;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
+using Mars.SSO.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
@@ -78,7 +79,7 @@ internal static class MarsStartupPartCore
             .AddJwtBearer();
 
         services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-            .Configure<IKeyMaterialService, IOptions<JwtSettings>, IOptionService>((options, keys, jwtSettings, ops) =>
+            .Configure<IKeyMaterialService, IOptions<JwtSettings>, IOptionService, ISsoProviderRepository>((options, keys, jwtSettings, ops, sso) =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -94,6 +95,8 @@ internal static class MarsStartupPartCore
                     IssuerValidator = (issuer, token, parameters) =>
                     {
                         if (issuer == ops.SysOption.SiteUrl)
+                            return issuer;
+                        else if (sso.TryValidateIssuer(issuer, out var validIssuer))
                             return issuer;
                         throw new SecurityTokenInvalidIssuerException($"Invalid issuer: {issuer}");
                     },

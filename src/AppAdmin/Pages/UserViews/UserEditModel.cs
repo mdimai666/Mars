@@ -51,6 +51,8 @@ public class UserEditModel
     public UserGender Gender { get; set; }
     public string Type { get; set; } = "";
 
+    public string AvatarUrl { get; set; } = "";
+
     public List<MetaValueEditModel> MetaValues { get; set; } = [];
     public UserTypeEditModel UserType { get; init; } = new();
 
@@ -106,6 +108,7 @@ public class UserEditModel
             BirthDate = ConvertValid(BirthDate),
             Gender = Gender,
             PhoneNumber = PhoneNumber.AsNullIfEmpty(),
+            AvatarUrl = AvatarUrl.AsNullIfEmpty(),
 
             Password = password,
             Type = Type,
@@ -126,6 +129,8 @@ public class UserEditModel
             BirthDate = ConvertValid(BirthDate),
             Gender = Gender,
             PhoneNumber = PhoneNumber.AsNullIfEmpty(),
+            AvatarUrl = AvatarUrl.AsNullIfEmpty(),
+
             Type = Type,
             MetaValues = MetaValues.Select(s => s.ToUpdateRequest()).ToList(),
         };
@@ -147,6 +152,8 @@ public class UserEditModel
                 BirthDate = response.BirthDate,
                 Gender = response.Gender,
                 PhoneNumber = response.Phone ?? "",
+                AvatarUrl = response.AvatarUrl ?? "",
+
                 Type = response.Type ?? "",
                 MetaValues = response.MetaValues.Select(MetaValueEditModel.ToModel).ToList(),
 

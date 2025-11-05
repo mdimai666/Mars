@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.SSO.Host.OAuth.Data;
 
-public class AuthDbContext : DbContext
+public class SsoAuthDbContext : DbContext
 {
-    public AuthDbContext(DbContextOptions<AuthDbContext> opts) : base(opts) { }
+    public SsoAuthDbContext(DbContextOptions<SsoAuthDbContext> opts) : base(opts) { }
 
     //public DbSet<OAuthClient> Clients { get; set; } = default!;
     public DbSet<AuthCode> AuthCodes { get; set; } = default!;

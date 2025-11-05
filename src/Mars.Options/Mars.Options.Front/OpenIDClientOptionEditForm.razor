@@ -115,7 +115,7 @@
 
     void AddSSOClick()
     {
-        form.Model.OpenIDClientConfigs.Add(new());
+        form.Model.OpenIDClientConfigs.Add(new() { Enable = true });
     }
 
     void DeleteSSOClick(OpenIDClientConfig sso)

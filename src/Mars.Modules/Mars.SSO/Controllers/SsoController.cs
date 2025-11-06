@@ -1,9 +1,11 @@
 using System.Net.Mime;
 using Mars.Host.Shared.ExceptionFilters;
+using Mars.Host.Shared.Features;
 using Mars.Host.Shared.SSO.Services;
 using Mars.Shared.Contracts.SSO;
 using Mars.SSO.Mappings;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Mars.SSO.Controllers;
 
@@ -14,6 +16,7 @@ namespace Mars.SSO.Controllers;
 [NotFoundExceptionFilter]
 [FluentValidationExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]
+[FeatureGate(FeatureFlags.SingleSignOn)]
 public class SsoController : ControllerBase
 {
     private readonly ISsoService _sso;

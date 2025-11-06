@@ -1,3 +1,4 @@
+using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Managers.Extensions;
 using Mars.Host.Shared.Services;
@@ -10,6 +11,7 @@ using Mars.SSO.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FeatureManagement;
 
 namespace Mars.SSO;
 
@@ -30,25 +32,25 @@ public static class MainSSO
 
     public static IApplicationBuilder UseMarsSSOMiddlewares(this IApplicationBuilder app)
     {
-        return app.UseMiddleware<SsoAuthMiddleware>();
+        return app.UseMiddlewareForFeature<SsoAuthMiddleware>(FeatureFlags.SingleSignOn);
     }
 
-    public static IApplicationBuilder UseMarsSSO(this WebApplication app)
+    public static IServiceProvider UseMarsSSO(this IServiceProvider services)
     {
-        _memoryCache = app.Services.GetRequiredService<IMemoryCache>();
+        _memoryCache = services.GetRequiredService<IMemoryCache>();
         //var op = app.Services.GetRequiredService<IOptionService>();
-        var eventManager = app.Services.GetRequiredService<IEventManager>();
+        var eventManager = services.GetRequiredService<IEventManager>();
         var eventTopic = eventManager.Defaults.OptionUpdate(typeof(OpenIDClientOption).Name);
         //op.on
         eventManager.AddEventListener(eventTopic, OnSSOOptionUpdate);
 
-        var optionService = app.Services.GetRequiredService<IOptionService>();
+        var optionService = services.GetRequiredService<IOptionService>();
 
         optionService.RegisterOption<OpenIDClientOption>(x => ChangeOpenIDClientOption(x, optionService));
         var openIdClient = optionService.GetOption<OpenIDClientOption>();
         ChangeOpenIDClientOption(openIdClient, optionService);
 
-        return app;
+        return services;
     }
 
     static IMemoryCache _memoryCache = default!;
@@ -63,7 +65,6 @@ public static class MainSSO
     {
         var ssoOpt = new AuthVariantConstOption
         {
-            Variants = AuthVariantConstOption.AuthVariants.LoginPass | AuthVariantConstOption.AuthVariants.SSO,
             SSOConfigs = opt.OpenIDClientConfigs.Where(s => s.Enable).Select(s => new AuthVariantConstOption.SSOProviderInfo
             {
                 IconUrl = s.IconUrl,

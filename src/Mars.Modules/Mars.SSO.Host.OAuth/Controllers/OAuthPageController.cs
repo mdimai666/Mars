@@ -1,12 +1,15 @@
+using Mars.Host.Shared.Features;
 using Mars.SSO.Host.OAuth.interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Mars.SSO.Host.OAuth.Controllers;
 
 [Controller]
 [ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/openid-connect", Name = "oauth")]
+[FeatureGate(FeatureFlags.SingleSignOn)]
 public class OAuthPageController : Controller
 {
     const string ViewPath = "~/Views/SSO/";

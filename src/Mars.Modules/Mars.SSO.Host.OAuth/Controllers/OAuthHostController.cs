@@ -1,4 +1,5 @@
 using System.Text;
+using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.SSO.Dto;
 using Mars.SSO.Host.OAuth.interfaces;
@@ -7,11 +8,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Mars.SSO.Host.OAuth.Controllers;
 
 [ApiController]
 [Route("api/oauth", Name = "oauth")]
+[FeatureGate(FeatureFlags.SingleSignOn)]
 public class OAuthHostController : ControllerBase
 {
     private readonly IOAuthService _oauth;

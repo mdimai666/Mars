@@ -43,7 +43,7 @@ public partial class LoginForm
 
     bool IsLoginLoading = false;
 
-    AuthVariantConstOption authVariantConstOption = default!;
+    AuthVariantConstOption? authVariantConstOption = default!;
 
     protected override void OnInitialized()
     {
@@ -63,7 +63,7 @@ public partial class LoginForm
             _navigationManager.NavigateTo(AfterLoginUrl);
         }
 
-        authVariantConstOption = Q.Site.GetRequiredOption<AuthVariantConstOption>();
+        authVariantConstOption = Q.Site.GetOption<AuthVariantConstOption>();
 
         if (DetectIsSsoAuthProcessingAndUrlHasStateCode())
         {

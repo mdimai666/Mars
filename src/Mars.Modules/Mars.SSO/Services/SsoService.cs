@@ -88,7 +88,7 @@ internal class SsoService : ISsoService
             Name = internalUser.UserName,
             Email = userData.Email,
             Provider = providerName,
-            AccessToken = authResult.AccessToken,
+            AccessToken = authResult.OAuthResponse.IdToken ?? authResult.AccessToken,
             UserPrimaryInfo = new Shared.ViewModels.UserPrimaryInfo
             {
                 Id = internalUser.Id,

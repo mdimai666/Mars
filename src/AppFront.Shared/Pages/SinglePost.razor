@@ -33,6 +33,12 @@
                 <SharedLoader1 />
             </div>
         }
+        else if (_error is not null)
+        {
+            <div class="alert alert-danger">
+                @_error
+            </div>
+        }
         else if(res is null)
         {
             <div>null</div>
@@ -64,5 +70,3 @@
         }
     </ChildContent>
 </ContentWrapper>
-
-

@@ -5,8 +5,7 @@ namespace Mars.Options.Models;
 [Display(Name = "Варианты авторизации")]
 public class AuthVariantConstOption
 {
-    public AuthVariants Variants { get; set; }
-    public List<SSOProviderInfo> SSOConfigs { get; set; } = new();
+    public List<SSOProviderInfo> SSOConfigs { get; set; } = [];
     public class SSOProviderInfo
     {
         public string? IconUrl { get; set; }
@@ -15,10 +14,4 @@ public class AuthVariantConstOption
         public string Driver { get; set; } = default!;
     }
 
-    [Flags]
-    public enum AuthVariants
-    {
-        LoginPass,
-        SSO
-    }
 }

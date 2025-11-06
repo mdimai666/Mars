@@ -5,6 +5,8 @@ using Mars.Host.Data.Entities;
 using Mars.Host.Infrastructure;
 using Mars.Host.Models;
 using Mars.Host.Services;
+using Mars.Host.Shared.Extensions;
+using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
 using Mars.SSO.Services;
@@ -78,9 +80,13 @@ internal static class MarsStartupPartCore
             .AddCookie()
             .AddJwtBearer();
 
+        bool isSsoEnabled = configuration.GetSection(FeatureExtensions.SectionName).GetValue<bool>(FeatureFlags.SingleSignOn, false);
+
         services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-            .Configure<IKeyMaterialService, IOptions<JwtSettings>, IOptionService, ISsoProviderRepository>((options, keys, jwtSettings, ops, sso) =>
+            .Configure<IKeyMaterialService, IOptions<JwtSettings>, IOptionService, IServiceProvider>((options, keys, jwtSettings, ops, sp) =>
             {
+                var sso = isSsoEnabled ? sp.GetRequiredService<ISsoProviderRepository>() : null;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -96,7 +102,7 @@ internal static class MarsStartupPartCore
                     {
                         if (issuer == ops.SysOption.SiteUrl)
                             return issuer;
-                        else if (sso.TryValidateIssuer(issuer, out var validIssuer))
+                        else if (isSsoEnabled && sso.TryValidateIssuer(issuer, out var validIssuer))
                             return issuer;
                         throw new SecurityTokenInvalidIssuerException($"Invalid issuer: {issuer}");
                     },

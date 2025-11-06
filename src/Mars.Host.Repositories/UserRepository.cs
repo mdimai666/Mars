@@ -25,7 +25,8 @@ internal class UserRepository : IUserRepository, IDisposable
 
     IQueryable<UserEntity> _listAllQuery => _marsDbContext.Users.OrderByDescending(s => s.CreatedAt);
 
-    public UserRepository(MarsDbContext marsDbContext, UserManager<UserEntity> userManager, ILookupNormalizer lookupNormalizer)
+    public UserRepository(MarsDbContext marsDbContext, UserManager<UserEntity> userManager,
+                            ILookupNormalizer lookupNormalizer)
     {
         _marsDbContext = marsDbContext;
         _userManager = userManager;
@@ -450,7 +451,11 @@ internal class UserRepository : IUserRepository, IDisposable
         }
         else
         {
-            var entity = userLogin.User!;
+            var entity = await _marsDbContext.Users.Include(s => s.UserType)
+                                                    .Include(s => s.Roles)
+                                                    //.Include(s => s.MetaValues!)
+                                                    //    .ThenInclude(s => s.MetaField)
+                                                    .FirstAsync(s => s.Id == userLogin.UserId, cancellationToken);
 
             if (entity.UserInfoHasChanges(query))
             {

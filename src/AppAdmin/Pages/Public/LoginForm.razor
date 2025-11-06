@@ -8,7 +8,7 @@
 }
 else if (!_isAlreadyAuth)
 {
-    @if (authVariantConstOption.Variants.HasFlag(Mars.Options.Models.AuthVariantConstOption.AuthVariants.LoginPass))
+    @if (true)
     {
         <EditForm Model=@auth OnValidSubmit=ExecuteLogin>
             <DataAnnotationsValidator />
@@ -41,7 +41,7 @@ else if (!_isAlreadyAuth)
         </EditForm>
     }
 
-    @if (authVariantConstOption.Variants.HasFlag(Mars.Options.Models.AuthVariantConstOption.AuthVariants.SSO))
+    @if (authVariantConstOption is not null)
     {
         <hr />
 

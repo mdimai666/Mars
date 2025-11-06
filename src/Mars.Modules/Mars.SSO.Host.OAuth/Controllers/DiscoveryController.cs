@@ -1,10 +1,13 @@
+using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Mars.SSO.Host.OAuth.Controllers;
 
 [Route(".well-known", Name = "oauth")]
+[FeatureGate(FeatureFlags.SingleSignOn)]
 public class DiscoveryController : Controller
 {
     private readonly IConfiguration _config;

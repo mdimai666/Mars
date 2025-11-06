@@ -8,6 +8,7 @@ using Mars.Datasource.Host;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
 using Mars.Host;
+using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
@@ -66,7 +67,7 @@ if (!IsTesting && !IsRunningInDocker)
 {
     builder.Configuration.ConfigureAppConfiguration(args);
 }
-builder.Services.AddFeatureManagement();
+builder.Services.AddFeatureManagement(builder.Configuration.GetSection(FeatureExtensions.SectionName));
 builder.Services.MarsAddLocalization()
                 .MarsAddCore(builder.Configuration)
                 .AddAspNetTools()
@@ -99,11 +100,11 @@ builder.Services.MarsAddSwagger()
                 .AddMarsNodes()
                 .AddDatasourceHost()
                 .AddMarsExcel()
-                .AddMarsScheduler()
-                .AddMarsDocker()
-                .AddMarsSemanticKernel()
-                .AddMarsSSO()
-                .AddMarsOAuthHost();
+                .AddMarsScheduler();
+
+builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker());
+builder.AddIfFeatureEnabled(FeatureFlags.AITool, b => b.Services.AddMarsSemanticKernel());
+builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuthHost());
 
 //------------------------------------------
 // CLIENT
@@ -178,7 +179,7 @@ app.UseCors();
 app.UseRouting(); //11-22
 //app.UseAntiforgery();
 app.UseAuthentication(); //11-22
-app.UseMarsSSOMiddlewares();
+app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.UseMarsSSOMiddlewares());
 #pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
 app.UseAuthorization(); //11-22
 #pragma warning restore ASP0001 // Authorization middleware is incorrectly configured
@@ -226,10 +227,9 @@ app.UseMarsNodes(); //TODO: запросы на ресурсы тоже лови
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
 app.UseMarsExcel();
-app.UseForFeature(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
-app.UseForFeature(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
-app.UseMarsSSO();
-app.Services.UseMarsOAuthHost();
+app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
+app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
+app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());
 
 await commandsApi.InvokeCommands(IsTesting ? [] : args);
 if (!commandsApi.IsContinueRun) return 0;

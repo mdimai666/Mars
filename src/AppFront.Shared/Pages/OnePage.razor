@@ -9,15 +9,21 @@
 
 <PageTitle>@(CurrentPageTitle ?? Q.Site?.SysOptions.SiteName)</PageTitle>
 
-    @*<HeadContent>
+@*<HeadContent>
     <meta name="description" content="@CurrentPageTitle">
 </HeadContent>*@
 
-    <ContentWrapper Wrapper=Wrapper>
-        @if (Busy)
+<ContentWrapper Wrapper=Wrapper>
+    @if (Busy)
     {
         <div class="xcenter" style="min-height:50vh">
             <SharedLoader1 />
+        </div>
+    }
+    else if (_error is not null)
+    {
+        <div class="alert alert-danger">
+            @_error
         </div>
     }
     else if (res is null)
@@ -36,29 +42,19 @@
     }
     else
     {
-        @*@((MarkupString)postRender.Html)*@
-        @*<div>
-    @foreach (var d in BlazoredHtml.ComponentsDict)
-    {
-    <div>@d.Key</div>
-    }
-    </div>*@
         <BlazoredHtml Html=@postRender?.Html />
-        @*<Button OnClick="e=>{}">btn1</Button>*@
-
     }
 
     @if (Q.Dev || Q.User.IsDeveloper)
     {
         @*<Button Icon="redo" OnClick="e=>Load(true,true)" Class="DEV_btn_page__refresh" />*@
-        <button class="btn DEV_btn_page__refresh" @onclick="e=>Load(true,true)">
+        <button class="btn DEV_btn_page__refresh" @onclick="e => Load(true, true)">
             <i class="bi bi-arrow-clockwise"></i>
         </button>
         <HotCheckAni />
     }
 
 </ContentWrapper>
-
 
 @code {
 
@@ -73,7 +69,6 @@
     //Костыль - потом удалить
     public static bool IgnoreLoader { get; set; }
 
-
     //[Parameter] public string SLUG { get; set; }
     //public Post Post { get; set; } = null;
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
@@ -85,36 +80,11 @@
     RenderActionResult<PostRenderResponse>? res = null;
 
     bool Busy = false;
+    string? _error;
 
     PostRenderResponse? postRender => res?.Data;
 
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
-
-    public static void UpdateComponentsDict()
-    {
-        //if (BlazoredHtml.ComponentsDict is null)
-        //{
-        //    BlazoredHtml.ComponentsDict = new();
-        //    var app = BlazoredHtml.GetAssemblyComponents(AppSharedSettings.Program, true);
-        //    var shared = BlazoredHtml.GetAssemblyComponents(typeof(AppFront.Shared.Components.LikeButton), true);
-        //    foreach (var a in app.Concat(shared)/*.Concat(ant)*/)
-        //    {
-        //        if (BlazoredHtml.ComponentsDict.ContainsKey(a.Key))
-        //        {
-        //            Console.WriteLine($"BlazoredHtml.ComponentsDict > key already exist = {a.Key}");
-        //        }
-        //        else
-        //        {
-        //            BlazoredHtml.ComponentsDict.Add(a.Key, a.Value);
-        //        }
-        //    }
-        //}
-
-        //if(BlazoredHtml.ComponentsDict.Count == 0)
-        //{
-
-        //}
-    }
 
     protected override void OnInitialized()
     {
@@ -122,7 +92,6 @@
         _navigationManager.LocationChanged += HandleLocationChanged;
 
         //BlazoredHtml.ComponentsDict ??= BlazoredHtml.GetAssemblyComponents(typeof(Program));
-        UpdateComponentsDict();
     }
 
     private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -138,6 +107,7 @@
     async void Load(bool force = false, bool hot = false)
     {
         if (string.IsNullOrEmpty(SLUG) || Busy) return;
+        _error = null;
 
         var inLocal = Q.Site?.LocalPages.FirstOrDefault(s => !s.NotFound && s.Data?.PostSlug == SLUG);
 
@@ -154,7 +124,6 @@
             return;
         }
 
-
         if (Q.IsPrerender)
         {
             Busy = true;
@@ -164,21 +133,28 @@
         if (!hot) Busy = true;
         StateHasChanged();
 
-        if (postRender is null || _oldSlug != _slug || force)
+        try
         {
-            if (SLUG.StartsWith('/'))
+            if (postRender is null || _oldSlug != _slug || force)
             {
-                res = await client.PageRender.RenderUrl(SLUG);
+                if (SLUG.StartsWith('/'))
+                {
+                    res = await client.PageRender.RenderUrl(SLUG);
+                }
+                else
+                {
+                    res = await client.PageRender.Render(SLUG);
+                }
+                if (MauiReplaceUrl && res?.Data is not null)
+                {
+                    res.Data.Html = ReplaceRelativeUrls(res.Data.Html);
+                }
+                CurrentPageTitle = postRender?.Title;
             }
-            else
-            {
-                res = await client.PageRender.Render(SLUG);
-            }
-            if (MauiReplaceUrl && res?.Data is not null)
-            {
-                res.Data.Html = ReplaceRelativeUrls(res.Data.Html);
-            }
-            CurrentPageTitle = postRender?.Title;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
         }
 
         if (hot)

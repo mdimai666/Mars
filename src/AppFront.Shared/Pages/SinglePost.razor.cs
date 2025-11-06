@@ -40,36 +40,17 @@ public partial class SinglePost
     RenderActionResult<PostRenderResponse>? res = null;
 
     bool Busy = false;
+    string? _error;
 
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
     [Inject] ViewModelService vms { get; set; } = default!;
 
-
     PostRenderResponse postRender => res?.Data!;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        OnePage.UpdateComponentsDict();
-    }
-
-    //async void Load()
-    //{
-    //    if (Post is null)
-    //    {
-    //        Post = await postService.Get(ID);
-    //    }
-    //    else if (Post.Id != ID)
-    //    {
-    //        Post = await postService.Get(ID);
-    //    }
-    //    CurrentPageTitle = Post.Title;
-    //    StateHasChanged();
-    //}
     async void Load(bool force = false, bool hot = false)
     {
         if (string.IsNullOrEmpty(IDorSLUG) || Busy) return;
+        _error = null;
 
         var inLocal = Q.Site.LocalPages.FirstOrDefault(s => !s.NotFound && (s.Data.DataId.ToString() == IDorSLUG || s.Data.PostSlug == IDorSLUG));
 
@@ -91,19 +72,27 @@ public partial class SinglePost
         {
             Busy = true;
             return;
-        };
+        }
+        ;
 
         if (!hot) Busy = true;
         StateHasChanged();
 
-        if (postRender is null || _oldId != _id || force)
+        try
         {
-            res = await _client.PageRender.RenderPost(POSTTYPE, IDorSLUG);
-            if (MauiReplaceUrl && res.Data is not null)
+            if (postRender is null || _oldId != _id || force)
             {
-                res.Data.Html = OnePage.ReplaceRelativeUrls(res.Data.Html);
+                res = await _client.PageRender.RenderPost(POSTTYPE, IDorSLUG);
+                if (MauiReplaceUrl && res.Data is not null)
+                {
+                    res.Data.Html = OnePage.ReplaceRelativeUrls(res.Data.Html);
+                }
+                CurrentPageTitle = postRender?.Title;
             }
-            CurrentPageTitle = postRender?.Title;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
         }
 
         if (hot)

@@ -4,72 +4,64 @@ using Microsoft.AspNetCore.Components;
 
 namespace Mars.Nodes.Core;
 
-public static class NodeFormsLocator
+public class NodeFormsLocator
 {
-    static Dictionary<Type, Type> dict = new();
+    Dictionary<Type, Type> _dict = [];
+    IDictionary<Type, Type> Dict { get { if (invalid) RefreshDict(); return _dict; } }
+    bool invalid = true;
+    HashSet<Assembly> assemblies = [];
 
-    static bool invalide = true;
+    object _lock = new { };
 
-    static HashSet<Assembly> assemblies = new();
-
-    static object _lock = new { };
-
-    public static void RefreshDict(bool force = false)
+    private void RefreshDict(bool force = false)
     {
-        if (!invalide && !force) return;
+        if (!invalid && !force) return;
 
         lock (_lock)
         {
-            dict.Clear();
+            _dict.Clear();
 
             foreach (var assembly in assemblies)
             {
-                var _dict = GetNodeEditForms(assembly);
+                var types = GetNodeEditForms(assembly);
 
-                foreach (var a in _dict)
+                foreach (var a in types)
                 {
-                    dict.Add(a.Key, a.Value);
+                    _dict.Add(a.Key, a.Value);
                 }
             }
+            invalid = false;
         }
     }
 
-    public static void RegisterAssembly(Assembly assembly)
+    public void RegisterAssembly(Assembly assembly)
     {
         if (assemblies.Contains(assembly)) return;
         assemblies.Add(assembly);
+        invalid = true;
     }
 
-    //public static Type GetTypeByFullName(string typeFullname)
-    //{
-    //    if (dict.ContainsKey(typeFullname))
-    //    {
-    //        return dict[typeFullname];
-    //    }
-    //    throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
-    //}
-
-    public static Type GetForNodeType(Type nodeType)
+    public Type GetForNodeType(Type nodeType)
     {
-        if (dict.ContainsKey(nodeType))
+        if (Dict.ContainsKey(nodeType))
         {
-            return dict[nodeType];
+            return Dict[nodeType];
         }
         throw new NullReferenceException($"node with type {nodeType.FullName} not found in NodeFormsLocator");
     }
 
-    public static Type? TryGetForNodeType(Type nodeType)
+    public Type? TryGetForNodeType(Type nodeType)
     {
-        if (dict.ContainsKey(nodeType))
+        if (Dict.ContainsKey(nodeType))
         {
-            return dict[nodeType];
+            return Dict[nodeType];
         }
         return null;
     }
 
-    public static List<Type> RegisteredForms()
+    public List<Type> RegisteredForms()
     {
-        return dict.Select(s => s.Value).ToList();
+        return Dict.Select(s => s.Value).ToList();
     }
 
     /// <summary>
@@ -77,7 +69,7 @@ public static class NodeFormsLocator
     /// </summary>
     /// <param name="assembly"></param>
     /// <returns>Key NodeType; Valye FormType</returns>
-    public static Dictionary<Type, Type> GetNodeEditForms(Assembly assembly)
+    public Dictionary<Type, Type> GetNodeEditForms(Assembly assembly)
     {
         var type = typeof(ComponentBase);
 
@@ -95,7 +87,7 @@ public static class NodeFormsLocator
             //&& p.Assembly ==
             );
 
-        Dictionary<Type, Type> dict = new();
+        Dictionary<Type, Type> dict = [];
 
         foreach (var formType in types)
         {

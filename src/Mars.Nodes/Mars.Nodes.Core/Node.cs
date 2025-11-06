@@ -8,18 +8,18 @@ namespace Mars.Nodes.Core;
 /// <summary>
 /// all property field will save in json
 /// </summary>
-[JsonConverter(typeof(NodeJsonConverter))]
+//[JsonConverter(typeof(NodeJsonConverter))] use from DI
 public class Node : INodeBasic
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public virtual string Name { get; set; } = "";
     public string Type => GetType().FullName!;
+
     public virtual string Label
     {
         get
         {
             string n = GetType().Name;
-
             return string.IsNullOrWhiteSpace(Name) ? n.Substring(0, n.Length - 4) : Name;
         }
     }
@@ -77,18 +77,20 @@ public class Node : INodeBasic
     public bool isInjectable;
     public bool hasTailButton;
 
-    public virtual Node Copy()
+    // use : NodeJsonConverter
+    public virtual Node Copy(JsonSerializerOptions jsonSerializerOptions)
     {
-        string json = JsonSerializer.Serialize(this);
-        Node node = (JsonSerializer.Deserialize(json, typeof(Node)) as Node)!;
+        string json = JsonSerializer.Serialize(this, jsonSerializerOptions);
+        Node node = (JsonSerializer.Deserialize(json, GetType(), jsonSerializerOptions) as Node)!;
         return node;
     }
 
-    public virtual Node CopyWithNewId()
+    public virtual Node Copy(NodesLocator nodesLocator)
     {
-        string json = JsonSerializer.Serialize(this);
-        Node node = (JsonSerializer.Deserialize(json, typeof(Node)) as Node)!;
-        node.Id = Guid.NewGuid().ToString();
+        var jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(nodesLocator);
+
+        string json = JsonSerializer.Serialize(this, jsonSerializerOptions);
+        Node node = (JsonSerializer.Deserialize(json, GetType(), jsonSerializerOptions) as Node)!;
         return node;
     }
 

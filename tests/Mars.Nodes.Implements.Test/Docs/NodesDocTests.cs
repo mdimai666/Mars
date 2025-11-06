@@ -8,27 +8,27 @@ namespace Mars.Nodes.Implements.Test.Docs;
 
 public class NodesDocTests
 {
+    public readonly string[] Langs = ["", "ru"];
+
+    record NodeInfo(Type NodeType, FunctionApiDocumentAttribute? Attribute);
+
+    private NodesLocator _nodesLocator;
+
+    public NodesDocTests()
+    {
+        _nodesLocator = new NodesLocator();
+        _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
+    }
+
     private string GetMarsPath()
     {
         return Directory.GetCurrentDirectory().Split(@"\Mars\", 2)[0] + @"\Mars\src\";
     }
 
-    public readonly string[] Langs = ["", "ru"];
-
-    record NodeInfo(Type NodeType, FunctionApiDocumentAttribute? Attribute);
-
-    static object _lock = new object();
-
     IEnumerable<NodeInfo> GetNodes()
     {
-        lock (_lock)
-        {
-            NodesLocator.assemblies.Clear();
-            NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-            NodesLocator.RefreshDict();
-            var nodes = NodesLocator.dict.Values.ToList();
-            return nodes.Select(t => new NodeInfo(t.NodeType, t.NodeType.GetCustomAttribute<FunctionApiDocumentAttribute>())).ToList();
-        }
+        var nodes = _nodesLocator.Dict.Values.ToList();
+        return nodes.Select(t => new NodeInfo(t.NodeType, t.NodeType.GetCustomAttribute<FunctionApiDocumentAttribute>())).ToList();
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class NodesDocTests
 
         //NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
         //NodesLocator.RefreshDict();
-        var nodes = NodesLocator.dict.Values.Where(s => s.NodeType.Assembly == typeof(InjectNode).Assembly).Select(s => s.NodeType).ToList();
+        var nodes = _nodesLocator.Dict.Values.Where(s => s.NodeType.Assembly == typeof(InjectNode).Assembly).Select(s => s.NodeType).ToList();
 
         foreach (var nodeType in nodes)
         {

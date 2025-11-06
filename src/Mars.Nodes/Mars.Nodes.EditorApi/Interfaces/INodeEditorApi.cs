@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
 using Microsoft.Extensions.Logging;
@@ -6,11 +7,13 @@ namespace Mars.Nodes.EditorApi.Interfaces;
 
 public interface INodeEditorApi
 {
-    List<Type> RegisteredNodes { get; }
-    List<Node> Palette { get; }
+    IReadOnlyCollection<Type> RegisteredNodes { get; }
+    IReadOnlyCollection<Node> Palette { get; }
+
     IDictionary<string, Node> AllNodes { get; }
     INodeWorkspaceApi NodeWorkspace { get; }
     IEditorActionManager ActionManager { get; }
+    JsonSerializerOptions NodesJsonSerializerOptions { get; }
 
     void CallStateHasChanged();
     void SetNodes(IDictionary<string, Node> nodes);

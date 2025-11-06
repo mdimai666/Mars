@@ -46,20 +46,14 @@
 </style>
 
 @code {
-    static List<OptionsFormsLocatorItem> OptionFormList = new();
+    [Inject] OptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
+
+    static List<OptionsFormsLocatorItem> OptionFormList = default!;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        OptionFormList = OptionForms();
+        OptionFormList ??= _optionsFormsLocator.RegisteredFormsAutoShow().OrderBy(s => s.OptionType.Name).ToList();
     }
 
-    public static List<OptionsFormsLocatorItem> OptionForms()
-    {
-        if (OptionFormList.Any()) return OptionFormList;
-
-        OptionFormList = OptionsFormsLocator.RegisteredFormsAutoShow().OrderBy(s => s.OptionType.Name).ToList();
-
-        return OptionFormList;
-    }
 }

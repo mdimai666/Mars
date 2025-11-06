@@ -128,7 +128,7 @@ public class UserCommandCli : CommandCli
 
         var users = await userRepo.ListDetail(new ListUserQuery { Search = filter }, CancellationToken.None);
         var usersArray = users.Items.Select(s => new string[] {
-            s.Id.ToString(), s.UserName, s.Email, s.FirstName, s.LastName, string.Join(',', s.Roles)
+            s.Id.ToString(), s.UserName, s.Email??string.Empty, s.FirstName, s.LastName, string.Join(',', s.Roles)
         }).ToList();
 
         if (!showIdColumn)

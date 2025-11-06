@@ -17,7 +17,7 @@ public class CreateFlowNodeAction : BaseEditorHistoryAction
     public override void Execute()
     {
         var flowsCount = _editor.AllNodes.Values.Count(s => s is FlowNode);
-        var flow = new FlowNode() { Name = "flow " + flowsCount };
+        var flow = new FlowNode() { Name = "Flow " + flowsCount };
         _editor.AddNodes([flow]);
         _addedFlowNodeId = flow.Id;
         _editor.ChangeFlow(flow);

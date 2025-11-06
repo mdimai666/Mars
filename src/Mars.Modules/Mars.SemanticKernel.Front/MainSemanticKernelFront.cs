@@ -9,11 +9,18 @@ namespace Mars.SemanticKernel.Front;
 
 public static class MainSemanticKernelFront
 {
-    public static void AddSemanticKernelFront(this IServiceCollection services)
+    public static IServiceCollection AddSemanticKernelFront(this IServiceCollection services)
     {
-        NodesLocator.RegisterAssembly(typeof(AIRequestNode).Assembly);
-        NodeFormsLocator.RegisterAssembly(typeof(AIRequestNodeForm).Assembly);
-        OptionsFormsLocator.RegisterAssembly(typeof(AIToolOptionEditForm).Assembly);
+        return services;
+    }
+
+    public static IServiceProvider UseSemanticKernelFront(this IServiceProvider services)
+    {
+        services.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
+        services.GetRequiredService<NodeFormsLocator>().RegisterAssembly(typeof(AIRequestNodeForm).Assembly);
+        services.GetRequiredService<OptionsFormsLocator>().RegisterAssembly(typeof(AIToolOptionEditForm).Assembly);
+
+        return services;
     }
 
 }

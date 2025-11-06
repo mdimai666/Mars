@@ -34,8 +34,8 @@ public static class DatasourceHostExtensions
         IOptionService optionService = app.ApplicationServices.GetRequiredService<IOptionService>()!;
         optionService.RegisterOption<DatasourceOption>();
 
-        NodeImplementFabirc.RegisterAssembly(typeof(SqlNodeImpl).Assembly);
-        NodesLocator.RegisterAssembly(typeof(SqlNode).Assembly);
+        app.ApplicationServices.GetRequiredService<NodeImplementFabirc>().RegisterAssembly(typeof(SqlNodeImpl).Assembly);
+        app.ApplicationServices.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);
 
         return app;
     }

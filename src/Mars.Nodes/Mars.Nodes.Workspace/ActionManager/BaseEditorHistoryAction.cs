@@ -16,10 +16,10 @@ public abstract class BaseEditorHistoryAction : IEditorHistoryAction
     }
 
     public string NodesToJson(IEnumerable<Node> nodes)
-        => JsonSerializer.Serialize(nodes);
+        => JsonSerializer.Serialize(nodes, _editor.NodesJsonSerializerOptions);
 
     public Node[] NodesFromJson(string json)
-        => JsonSerializer.Deserialize<Node[]>(json)!;
+        => JsonSerializer.Deserialize<Node[]>(json, _editor.NodesJsonSerializerOptions)!;
 
     public abstract void Execute();
     public abstract void Undo();

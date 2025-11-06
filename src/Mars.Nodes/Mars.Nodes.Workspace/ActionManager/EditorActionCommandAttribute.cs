@@ -3,7 +3,7 @@ using Toolbelt.Blazor.HotKeys2;
 namespace Mars.Nodes.Workspace.ActionManager;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-internal sealed class EditorActionCommandAttribute : Attribute
+public sealed class EditorActionCommandAttribute : Attribute
 {
     public string Name { get; }
     public string Description { get; set; } = "";

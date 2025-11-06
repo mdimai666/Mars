@@ -11,6 +11,8 @@ public partial class NodeEditContainer1
 {
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
 
+    [CascadingParameter] public INodeEditorApi _nodeEditorApi { get; set; } = default!;
+
     FluentDialog _dialog = default!;
     bool _visible;
 
@@ -39,7 +41,7 @@ public partial class NodeEditContainer1
 
     public void StartEditNode(Node node)
     {
-        _node = node.Copy();
+        _node = node.Copy(_nodeEditorApi.NodesJsonSerializerOptions);
         _windowStack.Push(_node);
         OpenOffcanvasEditor(true);
     }

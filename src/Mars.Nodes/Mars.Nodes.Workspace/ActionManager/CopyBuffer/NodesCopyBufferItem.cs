@@ -32,7 +32,7 @@ public class NodesCopyBufferItem : ICopyBufferItem
 
     }
 
-    public static Node[] CreateNodesCopies(string nodesJson)
+    public Node[] CreateNodesCopies(string nodesJson)
     {
         var nodes = NodesFromJson(nodesJson);
         var idMap = nodes.Select(s => s.Id).ToDictionary(s => s, s => Guid.NewGuid().ToString());
@@ -60,9 +60,9 @@ public class NodesCopyBufferItem : ICopyBufferItem
         return nodes;
     }
 
-    public static string NodesToJson(IEnumerable<Node> nodes)
-        => JsonSerializer.Serialize(nodes);
+    public string NodesToJson(IEnumerable<Node> nodes)
+        => JsonSerializer.Serialize(nodes, _editor.NodesJsonSerializerOptions);
 
-    public static Node[] NodesFromJson(string json)
-        => JsonSerializer.Deserialize<Node[]>(json)!;
+    public Node[] NodesFromJson(string json)
+        => JsonSerializer.Deserialize<Node[]>(json, _editor.NodesJsonSerializerOptions)!;
 }

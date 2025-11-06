@@ -22,6 +22,12 @@ public class PluginManifestProvider
 
         var manifestFileName = projectName + ".staticwebassets.endpoints.json";
         var manifestFilePath = Path.Combine(targetDir, manifestFileName);
+        if (!File.Exists(manifestFilePath))
+        {
+            Files = [];
+            return;
+        }
+
         var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath));
 
         //var mars_deps = MarsDeps();

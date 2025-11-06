@@ -8,10 +8,10 @@ public class InjectNodeImpl : INodeImplement<InjectNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public InjectNodeImpl(InjectNode node, IRED RED)
+    public InjectNodeImpl(InjectNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

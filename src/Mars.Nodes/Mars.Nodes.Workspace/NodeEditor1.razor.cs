@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text.Json;
 using System.Web;
 using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.FormEditor;
@@ -21,20 +23,18 @@ namespace Mars.Nodes.Workspace;
 
 public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
-    public static INodeEditorApi? Instance;
-
     [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
     [Inject] ILoggerFactory _loggerFactory { get; set; } = default!;
     [Inject] ILogger<NodeEditor1> _logger { get; set; } = default!;
+    [Inject] NodesLocator _nodesLocator { get; set; } = default!;
+    [Inject] EditorActionLocator _edittorActionLocator { get; set; } = default!;
+    [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
 
-    NodeWorkspaceJsInterop js = default!;
-
-    Dictionary<string, Node> _allNodes = [];
-
-    string runningTaskCountDisplayText = "-";
+    [Inject] HotKeys HotKeys { get; set; } = default!;
+    HotKeysContext HotKeysContext = default!;
 
     [Parameter]
     public IDictionary<string, Node> AllNodes
@@ -52,25 +52,28 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     }
 
     [Parameter] public EventCallback<IDictionary<string, Node>> AllNodesChanged { get; set; }
+    [Parameter] public EventCallback<string> OnInject { get; set; }
+    [Parameter] public EventCallback<IEnumerable<Node>> OnDeploy { get; set; }
+    [Parameter] public EventCallback<string> OnCmdClick { get; set; }
+    [Parameter] public RenderFragment? SectionActions { get; set; } = null;
 
-    public List<PaletteNode> Palette { get; private set; } = [];
-    List<Node> INodeEditorApi.Palette => Palette.Select(s => s.Instance).ToList();
+    public JsonSerializerOptions NodesJsonSerializerOptions => _jsonSerializerOptions;
 
-    public List<Type> RegisteredNodes { get; private set; } = [];
+    NodeWorkspaceJsInterop js = default!;
+    Dictionary<string, Node> _allNodes = [];
+    string runningTaskCountDisplayText = "-";
+    List<PaletteNode> _palette = [];
+
+    public IReadOnlyCollection<PaletteNode> Palette => _palette;
+    IReadOnlyCollection<Node> INodeEditorApi.Palette => Palette.Select(s => s.Instance).ToList();
+
+    public IReadOnlyCollection<Type> RegisteredNodes { get; private set; } = [];
 
     EditorActionManager _actionManager = default!;
     public IEditorActionManager ActionManager => _actionManager;
 
     NodeWorkspace1? _nodeWorkspace1 = default!;
     public INodeWorkspaceApi NodeWorkspace => _nodeWorkspace1!;
-
-    [Inject] HotKeys HotKeys { get; set; } = default!;
-    HotKeysContext HotKeysContext = default!;
-
-    [Parameter] public EventCallback<string> OnInject { get; set; }
-    [Parameter] public EventCallback<IEnumerable<Node>> OnDeploy { get; set; }
-    [Parameter] public EventCallback<string> OnCmdClick { get; set; }
-    [Parameter] public RenderFragment? SectionActions { get; set; } = null;
 
     Node? EditNode { get; set; }
 
@@ -94,11 +97,18 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     MasterTab[] masterTabs = [new("tabs", "Tabs"), new("nodes", "Nodes"), new("configs", "Configs")];
 
-    public NodeEditor1()
+    protected override void OnInitialized()
     {
-        Instance = this;
+        base.OnInitialized();
+        HotKeysContext = HotKeys.CreateContext()
+            .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
+        js = new(JS);
+        _ = js.InitModule();
 
-        RegisteredNodes = NodesLocator.RegisteredNodes();
+        _actionManager = new EditorActionManager(this, _serviceProvider, HotKeysContext, _edittorActionLocator);
+        _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
+
+        RegisteredNodes = _nodesLocator.RegisteredNodes();
 
         Type[] topNodes = { typeof(InjectNode), typeof(DebugNode), typeof(FunctionNode), typeof(TemplateNode) };
 
@@ -119,32 +129,15 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
                 DisplayName = node.Label,
                 GroupName = displayAttr?.GroupName ?? "other"
             };
-            Palette.Add(item);
+            _palette.Add(item);
 
         }
-
-    }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        js = new(JS);
-        _ = js.InitModule();
-        //_ = js.Prompt("aefaef");
-
-        HotKeysContext = HotKeys.CreateContext()
-         .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
-
-        _actionManager = new EditorActionManager(this, _serviceProvider, HotKeysContext);
-        _actionManager.RegisterAssembly(typeof(DeleteSelectedNodesAndWiresAction).Assembly);
-        _actionManager.RefreshDict();
-
-        _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await HotKeysContext.DisposeAsync();
+        if (HotKeysContext is not null)
+            await HotKeysContext.DisposeAsync();
         _actionManager.PropertyChanged -= (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
     }
 
@@ -184,8 +177,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     const string noderedDebugMessageList = "#nodered-debug-message-list";
 
     List<DebugMessage> messages = [new()];
-
-    //string obj1 = JsonSerializer.Serialize(new Msg1());
 
     public void AddDebugMessage(DebugMessage msg)
     {
@@ -348,7 +339,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     FlowNode? activeFlow = null;
 
-    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(activeFlow.Id);
+    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(activeFlow?.Id);
     //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
     //public string InitialFlowId { get; set; }
 
@@ -361,8 +352,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         NavigationManager.NavigateTo(url);
     }
 
-    public IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId)
-        => AllNodes.Values.Where(s => s.IsVisual
+    public IReadOnlyDictionary<string, Node> GetFlowNodes(string? flowId)
+        => flowId == null
+            ? []
+            : AllNodes.Values.Where(s => s.IsVisual
                                     && s.Container == flowId
                                     && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s => s.Id);
 

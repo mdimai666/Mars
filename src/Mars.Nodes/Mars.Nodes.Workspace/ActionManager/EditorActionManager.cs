@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Mars.Core.Exceptions;
 using Mars.Nodes.EditorApi.Interfaces;
@@ -15,15 +14,12 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private void Notify([CallerMemberName] string? name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private readonly List<EditorActionType> _actions = [];
     private readonly INodeEditorApi _nodeEditor;
     private readonly IServiceProvider _serviceProvider;
     private readonly HotKeysContext _hotkeysContext;
-
-    HashSet<Assembly> assemblies = [];
-    object _lock = new { };
-    bool invalide = true;
-    ILogger _logger;
+    private readonly EditorActionLocator _edittorActionLocator;
+    private ILogger _logger;
+    private IReadOnlyCollection<EditorActionType> _actions;
 
     private readonly Stack<IEditorHistoryAction> _undoStack = new();
     private readonly Stack<IEditorHistoryAction> _redoStack = new();
@@ -31,70 +27,36 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
 
     private ICopyBufferItem? _copyBuffer;
 
-    public EditorActionManager(INodeEditorApi nodeEditorApi, IServiceProvider serviceProvider, HotKeysContext hotkeysContext)
+    public EditorActionManager(INodeEditorApi nodeEditorApi,
+                                IServiceProvider serviceProvider,
+                                HotKeysContext hotkeysContext,
+                                EditorActionLocator edittorActionLocator)
     {
         _nodeEditor = nodeEditorApi;
         _serviceProvider = serviceProvider;
         _hotkeysContext = hotkeysContext;
+        _edittorActionLocator = edittorActionLocator;
         _logger = _nodeEditor.CreateLogger<EditorActionManager>();
+        _actions = _edittorActionLocator.Actions.ToList();
+        BuildActions();
     }
 
-    public void RegisterAction(Type actionType)
+    private void BuildActions()
     {
-        var attr = actionType.GetCustomAttribute<EditorActionCommandAttribute>()
-                        ?? throw new ArgumentException("Action must have [EditorActionHotkeyAttribute]");
-        var at = new EditorActionType(actionType, attr);
-        _actions.Add(at);
-
-        if (at.ActiveHotkey is not null)
+        foreach (var action in _actions)
         {
-            var k = at.ActiveHotkey.Value;
-            _hotkeysContext.Add(k.Modifiers, k.Code, () => ExecuteAction(actionType), at.ActionType.Name);
-        }
-        _logger.LogTrace($"RegisterAction '{actionType}', hotkey='{at.ActiveHotkey}'");
-    }
-
-    public void RegisterAssembly(Assembly assembly)
-    {
-        if (assemblies.Contains(assembly)) return;
-        assemblies.Add(assembly);
-    }
-
-    public void RefreshDict(bool force = false)
-    {
-        if (!invalide && !force) return;
-
-        lock (_lock)
-        {
-            _actions.Clear();
-
-            foreach (var assembly in assemblies)
-            {
-                var _dict = GetActionImplements(assembly);
-
-                foreach (var a in _dict)
-                {
-                    var attr = a.GetCustomAttribute<EditorActionCommandAttribute>();
-                    if (attr is null) continue;
-                    RegisterAction(a);
-                }
-            }
+            RegisterAction(action);
         }
     }
 
-    public static IEnumerable<Type> GetActionImplements(Assembly assembly)
+    private void RegisterAction(EditorActionType action)
     {
-        var type = typeof(IEditorAction);
-
-        var types = assembly.GetTypes()
-                                .Where(p =>
-                                    type.IsAssignableFrom(p)
-                                    && p.IsPublic
-                                    && p.IsClass
-                                    && !p.IsAbstract
-                                );
-
-        return types;
+        if (action.ActiveHotkey is not null)
+        {
+            var k = action.ActiveHotkey.Value;
+            _hotkeysContext.Add(k.Modifiers, k.Code, () => ExecuteAction(action.ActionType), action.ActionType.Name);
+        }
+        _logger.LogTrace($"RegisterAction '{_actions}', hotkey='{action.ActiveHotkey}'");
     }
 
     /// <summary>
@@ -137,8 +99,8 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                         ?? throw new NotFoundException($"action '{actionType}' not found");
 
         //var instance = (IEditorAction)Activator.CreateInstance(a.ActionType, _nodeEditor)!;
-        //var instance = (IEditorAction)ActivatorUtilities.CreateInstance(_serviceProvider, a.ActionType, _nodeEditor, actionInstance)!;
-        var instance = (IEditorAction)ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, a.ActionType);
+        var instance = (IEditorAction)ActivatorUtilities.CreateInstance(_serviceProvider, a.ActionType, [_nodeEditor])!;
+        //var instance = (IEditorAction)ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, a.ActionType);
 
         if (instance.CanExecute())
         {

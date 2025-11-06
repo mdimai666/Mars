@@ -41,10 +41,15 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
             new SomeNonExistNode(){ Container = flowNode.Id, ImportantData = "123" },
         };
 
-        var json = JsonSerializer.Serialize(nodes);
+        var json = JsonSerializer.Serialize(nodes, _jsonSerializerOptions);
+
+        var nodesLocator__WithoutSomeNonExistNode = new NodesLocator();
+        nodesLocator__WithoutSomeNonExistNode.RegisterAssembly(typeof(InjectNode).Assembly);
+
+        var jsonSerializerOptions2 = NodesLocator.CreateJsonSerializerOptions(nodesLocator__WithoutSomeNonExistNode);
 
         //Act
-        var nodesFromJson = JsonSerializer.Deserialize<List<Node>>(json)!;
+        var nodesFromJson = JsonSerializer.Deserialize<List<Node>>(json, jsonSerializerOptions2)!;
 
         //Assert
         var unknownNode = nodesFromJson.ElementAt(2);
@@ -65,11 +70,11 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
             new SomeNonExistNode(){ Container = flowNode.Id, ImportantData = "123" },
         };
 
-        var json = JsonSerializer.Serialize(nodes);
-        var nodesFromJson = JsonSerializer.Deserialize<List<Node>>(json)!;
+        var json = JsonSerializer.Serialize(nodes, _jsonSerializerOptions);
+        var nodesFromJson = JsonSerializer.Deserialize<List<Node>>(json, _jsonSerializerOptions)!;
 
         //Act
-        var serializedWithUnknownNodes = JsonSerializer.Serialize(nodesFromJson)!;
+        var serializedWithUnknownNodes = JsonSerializer.Serialize(nodesFromJson, _jsonSerializerOptions)!;
 
         //Assert
         serializedWithUnknownNodes.Should().BeEquivalentTo(json);

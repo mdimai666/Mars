@@ -1,105 +1,110 @@
 using System.Reflection;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements;
 
-public static class NodeImplementFabirc
+public class NodeImplementFabirc
 {
-    public static Dictionary<Type, Type> dict = new();
+    Dictionary<Type, NodeImplementItem> _dict = [];
+    public IReadOnlyDictionary<Type, NodeImplementItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
 
-    static bool invalide = true;
+    bool invalid;
 
-    static HashSet<Assembly> assemblies = new();
+    HashSet<Assembly> assemblies = [];
 
-    static object _lock = new { };
+    object _lock = new { };
 
-    public static void RefreshDict(bool force = false)
+    private void RefreshDict(bool force = false)
     {
-        if (!invalide && !force) return;
+        if (!invalid && !force) return;
         lock (_lock)
         {
-            dict.Clear();
+            _dict.Clear();
 
             foreach (var assembly in assemblies)
             {
 
-                var types = GetAllTypesImplementingOpenGenericType2(typeof(INodeImplement<>), assembly);
-                //var types = typeof(NodeImplement<>).Assembly.GetTypes();
+                var types = GetAllTypesImplementingOfInterface(typeof(INodeImplement<>), assembly).ToList();
 
                 int count = types.Count();
 
-                foreach (Type type in types)
+                foreach (var type in types)
                 {
-                    ////var parent = type.BaseType; variant 1
-                    var parent = type.GetInterfaces().FirstOrDefault(s => s.Name == typeof(INodeImplement<>).Name); //variant 2
-                    Type nodeType = parent!.GenericTypeArguments.First();//Node Class
-                    if (dict.ContainsKey(nodeType) == false)
-                    {
-                        dict.Add(nodeType, type);
-                    }
+                    _dict.Add(type.Key, type.Value);
                 }
             }
+
+            invalid = false;
         }
     }
 
-    //https://stackoverflow.com/questions/8645430/get-all-types-implementing-specific-open-generic-type
-    public static IEnumerable<Type> GetAllTypesImplementingOpenGenericType(Type openGenericType, Assembly assembly)
+    private Dictionary<Type, NodeImplementItem> GetAllTypesImplementingOfInterface(Type interfaceType, Assembly assembly)
     {
-        var types = from x in assembly.GetTypes()
-                    let y = x.BaseType
-                    where !x.IsAbstract && !x.IsInterface &&
-                    y != null && y.IsGenericType &&
-                    y.GetGenericTypeDefinition() == openGenericType
-                    select x;
-        return types;
-    }
-    public static IEnumerable<Type> GetAllTypesImplementingOpenGenericType2(Type openGenericType, Assembly assembly)
-    {
-        return from x in assembly.GetTypes()
-               from z in x.GetInterfaces()
-               let y = x.BaseType
-               where
-               !x.IsInterface &&
-               ((y != null && y.IsGenericType &&
-               openGenericType.IsAssignableFrom(y.GetGenericTypeDefinition())) ||
-               (z.IsGenericType &&
-               openGenericType.IsAssignableFrom(z.GetGenericTypeDefinition())))
-               select x;
+        if (!interfaceType.IsInterface)
+            throw new ArgumentException($"{interfaceType} is not an interface");
+
+        return assembly
+            .GetTypes()
+            .Where(t =>
+                t.IsClass &&
+                !t.IsAbstract &&
+                t.GetInterfaces()
+                    .Any(i =>
+                        i.IsGenericType &&
+                        i.GetGenericTypeDefinition() == interfaceType.GetGenericTypeDefinition()
+                    )
+            )
+            .Select(t =>
+            {
+                // находим интерфейс с конкретным generic типом
+                var implInterface = t.GetInterfaces()
+                    .First(i => i.IsGenericType &&
+                                i.GetGenericTypeDefinition() == interfaceType.GetGenericTypeDefinition());
+
+                var genericArg = implInterface.GetGenericArguments().Single();
+
+                return new NodeImplementItem
+                {
+                    NodeBaseType = genericArg,
+                    NodeImplementType = t
+                };
+            })
+            .GroupBy(x => x.NodeBaseType)
+            .ToDictionary(g => g.Key, g => g.First());
     }
 
-    public static INodeImplement Create(INodeBasic node, IRED _RED)
+    public INodeImplement Create(INodeBasic node, IRED _RED)
     {
         Type instantiateType;
 
         if (node is ConfigNode) instantiateType = typeof(ConfigNodeImpl);
-        else instantiateType = dict[node.GetType()];
+        else instantiateType = Dict[node.GetType()].NodeImplementType;
 
-        var ctor = instantiateType.GetConstructors().First();
-        object instance;
-        if (ctor.GetParameters().Length == 1)
-            instance = Activator.CreateInstance(instantiateType, node)!;
-        else
-            instance = Activator.CreateInstance(instantiateType, node, _RED)!;
-        INodeImplement nodeImpl = (INodeImplement)instance;
+        var instance = (INodeImplement)ActivatorUtilities.CreateInstance(_RED.ServiceProvider, instantiateType, [node, _RED]);
 
-        //nodeImpl.Node = node;
-        //nodeImpl = nodeImpl.Create(node);
-        return nodeImpl;
-        //return instance;
+        return instance;
     }
 
-    public static void RegisterAssembly(Assembly assembly)
+    public void RegisterAssembly(Assembly assembly)
     {
         if (assemblies.Contains(assembly)) return;
         assemblies.Add(assembly);
+        invalid = true;
     }
 
-    //public static Type GetTypeByFullName(string typeFullname)
+    //public  Type GetTypeByFullName(string typeFullname)
     //{
     //    Type type = typeof(Node).Assembly.GetType(typeFullname)!;
     //    return type;
     //}
+}
+
+public record NodeImplementItem
+{
+    public required Type NodeBaseType;
+    public required Type NodeImplementType;
 }
 
 //public abstract class NodeImplement<TNode>: INodeImplement<TNode> where TNode : Node
@@ -124,7 +129,6 @@ public static class NodeImplementFabirc
 
 //        public Task Execute(NodeMsg input, ExecuteAction callback)
 
-
 //#if asas
 
 //    public virtual async Task Execute(InputMsg input, Action<object> callback, Action<Exception> Error, bool ErrorTolerance)
@@ -136,22 +140,16 @@ public static class NodeImplementFabirc
 
 //            Applica app = input.Get("app") as Applica;
 
-
-
-
 //            int age = 21;
 
 //            input.Add("age", age);
 
 //            int getAge = (int)input.Get("age");
 
-
 //            if (user is not null)
 //            {
 
 //            }
-
-
 
 //            input.Payload = user;
 

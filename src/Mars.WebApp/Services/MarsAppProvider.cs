@@ -14,8 +14,8 @@ public class MarsAppProvider : IMarsAppProvider
 
     public MarsAppProvider(ConfigurationManager configuration)
     {
-        var _af = configuration.GetRequiredSection("AppFront").Get<AppFrontSettingsCfg>();
-        var _afs = configuration.GetRequiredSection("AppFront").Get<AppFrontSettingsCfg[]>();
+        var _af = configuration.GetRequiredSection("AppFront").Get<AppFrontSettingsCfg>()!;
+        var _afs = configuration.GetRequiredSection("AppFront").Get<AppFrontSettingsCfg[]>()!;
 
         var section = configuration.GetRequiredSection("AppFront");
         var sectionString = section.GetValue<string>("Mode");
@@ -28,7 +28,6 @@ public class MarsAppProvider : IMarsAppProvider
         {
             throw new ArgumentException("setup AppFront in 'appsettings.json'");
         }
-
 
         List<AppFrontSettingsCfg> appFrontsConfigs = new();
 
@@ -47,8 +46,6 @@ public class MarsAppProvider : IMarsAppProvider
                 _af.Url = "";
             }
         }
-
-
 
         foreach (var appCfg in appFrontsConfigs)
         {

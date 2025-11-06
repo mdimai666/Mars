@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using AppFront.Main.OptionEditForms;
 using AppFront.Shared;
 using Mars.CommandLine;
 using Mars.Datasource.Front;
@@ -11,10 +12,9 @@ using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
-using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Host;
 using Mars.Nodes.Workspace;
+using Mars.Options.Front;
 using Mars.Options.Host;
 using Mars.Plugin;
 using Mars.Scheduler.Host;
@@ -93,7 +93,7 @@ if (!disableLogs && !IsTesting)
 // Mars
 builder.Services.MarsAddSwagger()
                 .AddMarsOptions()
-                .MarsAddServices(builder.Environment)
+                .AddMarsHostServices(builder.Environment)
                 .MarsAddTemplator()
                 .AddDevAdmin()
                 .AddMarsNodes()
@@ -111,11 +111,7 @@ builder.Services.MarsAddSwagger()
 builder.Services.AddAppFrontMain(builder.Configuration, typeof(AppAdmin.Program));
 #endif
 builder.Services.AddNodeWorkspace();
-builder.Services.DatasourceWorspace();
-
-NodesLocator.RefreshDict();
-NodeFormsLocator.RefreshDict();
-NodeImplementFabirc.RefreshDict();
+builder.Services.AddDatasourceWorkspace();
 // end CLIENT
 
 //------------------------------------------
@@ -159,6 +155,7 @@ Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
 commandsApi.GetCommand<MainCommand>().ShowInfoCommand();
 
 app.Services.MarsMigrateIfProducation(builder.Configuration, _logger, out var migrated);
+app.Services.UseMarsHostServices();
 app.Services.UseMarsOptions();
 app.Services.SeedData(builder.Configuration, _logger, migrated);
 app.ApplyPluginMigrations();
@@ -216,10 +213,14 @@ app.MarsUseMetrics();
 app.UseMarsHost(builder.Services);
 app.UseConfigureActions();
 app.MarsUseTemplator();
+app.Services.UseNodeWorkspace()
+            .UseDatasourceWorkspace()
+            .UseAppFrontMain();
+
+var optionsFormsLocator = app.Services.GetRequiredService<OptionsFormsLocator>();
+optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
+
 app.UsePlugins();
-NodesLocator.RefreshDict();
-NodeFormsLocator.RefreshDict();
-NodeImplementFabirc.RefreshDict();
 app.UseDevAdmin();
 app.UseMarsNodes(); //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
 app.UseDatasourceHost();

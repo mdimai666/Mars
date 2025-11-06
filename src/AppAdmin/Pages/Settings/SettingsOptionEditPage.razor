@@ -4,7 +4,7 @@
 
 <SettingsPageWrapper>
 
-    @if (Busy)
+    @if (OptionFormList is null)
     {
         <SharedLoader2 />
     }
@@ -18,29 +18,33 @@
     }
 </SettingsPageWrapper>
 
-@code {
+    @code {
+    [Inject] OptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
+
+    static List<OptionsFormsLocatorItem>? OptionFormList;
     string _optionTypeFullName = default!;
-    bool Busy;
 
     [Parameter]
     public string OptionTypeFullName
     {
         get => _optionTypeFullName;
-        set { _optionTypeFullName = value; Load(); }
+        set { _optionTypeFullName = value; }
     }
 
     OptionsFormsLocatorItem? optionFormType;
 
-    void Load()
+    protected override void OnInitialized()
     {
-        Busy = true;
+        base.OnInitialized();
+        OptionFormList ??= _optionsFormsLocator.RegisteredFormsAutoShow().OrderBy(s => s.OptionType.Name).ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
         optionFormType = null;
 
         string normalName = OptionTypeFullName.Replace("+", ".");
 
-        optionFormType = ASideOptions.OptionForms()
-           .FirstOrDefault(s => s.OptionType.FullName == normalName);
-
-        Busy = false;
+        optionFormType = OptionFormList.FirstOrDefault(s => s.OptionType.FullName == normalName);
     }
 }

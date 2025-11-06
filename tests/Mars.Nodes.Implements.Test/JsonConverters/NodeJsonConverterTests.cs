@@ -1,19 +1,21 @@
 using System.Text.Json;
+using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.WebApp;
-using FluentAssertions;
 
 namespace Mars.Nodes.Implements.Test.JsonConverters;
 
 public class NodeJsonConverterTests
 {
+    private readonly NodesLocator _nodesLocator;
+
     public NodeJsonConverterTests()
     {
-        NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-        NodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
-        NodesLocator.RefreshDict();
+        _nodesLocator = new NodesLocator();
+        _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
+        _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
 
         //NodeFormsLocator.RegisterAssembly(typeof(InjectNodeForm).Assembly);
         //NodeFormsLocator.RefreshDict();
@@ -31,10 +33,12 @@ public class NodeJsonConverterTests
             },
             new TemplateNode(),
         ];
-        var nodesJson = JsonSerializer.Serialize(nodes);
+
+        var jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
+        var nodesJson = JsonSerializer.Serialize(nodes, jsonSerializerOptions);
 
         //Act
-        var deserialized = JsonSerializer.Deserialize<Node[]>(nodesJson);
+        var deserialized = JsonSerializer.Deserialize<Node[]>(nodesJson, jsonSerializerOptions);
 
         //Assert
         var _injectNode = deserialized[0];

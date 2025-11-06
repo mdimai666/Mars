@@ -24,6 +24,8 @@ internal class RED
     public IServiceProvider ServiceProvider { get; }
 
     public IHubContext<ChatHub> Hub;
+    private readonly NodeImplementFabirc _nodeImplementFabirc;
+
     public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = [];
     public VariablesContextDictionary GlobalContext { get; } = new();
 
@@ -42,12 +44,13 @@ internal class RED
 
     private int _assignedCount = 0;
 
-    public event NodeImplDoneEvent OnNodeImplDone;
+    public event NodeImplDoneEvent OnNodeImplDone = default!;
 
-    public RED(IHubContext<ChatHub> hub, IServiceProvider serviceProvider)
+    public RED(IHubContext<ChatHub> hub, NodeImplementFabirc nodeImplementFabirc, IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         Hub = hub;
+        _nodeImplementFabirc = nodeImplementFabirc;
     }
 
     void ValidateNodes(IEnumerable<Node> nodes)
@@ -57,12 +60,22 @@ internal class RED
 
         foreach (var node in nodes)
         {
+            var nodeErrors = new List<string>();
+
+            if (node.GetType() == typeof(Node))
+                nodeErrors.Add("All nodes must be of derived types.");
+
             var hasContainer = node.Type == typeof(FlowNode).FullName
                                 || node.Type == typeof(UnknownNode).FullName
                                 || !string.IsNullOrEmpty(node.Container) && dict.ContainsKey(node.Container);
             if (!hasContainer)
             {
-                errors.Add(node.Id, [$"node(id='{node.Id}', name='{node.Label}') has no container"]);
+                nodeErrors.Add($"node(id='{node.Id}', name='{node.Label}') has no container");
+            }
+
+            if (nodeErrors.Any())
+            {
+                errors.Add(node.Id, nodeErrors.ToArray());
             }
         }
 
@@ -75,6 +88,14 @@ internal class RED
     public void AssignNodes(List<Node> nodes)
     {
         ValidateNodes(nodes);
+
+        //if (nodes.Count == 0)
+        //{
+        //    nodes.Add(new FlowNode
+        //    {
+        //        Name = "Flow 0",
+        //    });
+        //}
 
         if (_assignedCount > 0) SaveVarNodeValuesAndClear();
         Nodes.Clear();
@@ -94,7 +115,7 @@ internal class RED
         foreach (var node in nodes.Except(flowNodes))
         {
             var flow = node is FlowNode ? flows[node.Id] : flows[node.Container];
-            Nodes.Add(node.Id, NodeImplementFabirc.Create(node, CreateContextForNode(node, flow)));
+            Nodes.Add(node.Id, _nodeImplementFabirc.Create(node, CreateContextForNode(node, flow)));
         }
 
         _varNodesDict = Nodes.Values.Where(s => s.Node is VarNode).ToDictionary(s => s.Node.Name, s => (s.Node as VarNode)!);

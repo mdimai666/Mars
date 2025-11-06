@@ -5,10 +5,7 @@ using AppFront.Main.OptionEditForms;
 using AppFront.Shared.Features;
 using AppFront.Shared.Hub;
 using AppFront.Shared.Interfaces;
-using AppFront.Shared.OptionEditForms;
 using Mars.Datasource.Front;
-using Mars.Nodes.Core;
-using Mars.Nodes.WebApp.Front.Forms;
 using Mars.Nodes.Workspace;
 using Mars.Options.Front;
 using Mars.Plugin.Front;
@@ -16,7 +13,6 @@ using Mars.SemanticKernel.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Components.WebAssembly.Services;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
@@ -77,17 +73,12 @@ public class Program
 
         builder.Services.AddHotKeys2();
 
-        NodeFormsLocator.RegisterAssembly(typeof(RenderPageNodeForm).Assembly);
-        builder.Services.AddNodeWorkspace();
-        builder.Services.DatasourceWorspace();
-        builder.Services.AddSemanticKernelFront();
+        builder.Services.AddNodeWorkspace()
+                        .AddDatasourceWorkspace()
+                        .AddSemanticKernelFront();
 
-        NodesLocator.RefreshDict();
-        NodeFormsLocator.RefreshDict();
         CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
         ContentWrapper.GeneralSectionActions = typeof(Shared.GeneralSectionActions);
-        OptionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
-        OptionsFormsLocator.RegisterAssembly(typeof(SmtpSettingsEditForm).Assembly);
 
         //string? version = Assembly.GetExecutingAssembly().
         //    GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.
@@ -97,7 +88,28 @@ public class Program
 
         if (!Q.IsPrerender)
         {
-            var connection = new HubConnectionBuilder()
+            ConfigureWebSockets(builder, backendUrl);
+        }
+        await builder.AddRemotePluginAssemblies(Q.BackendUrl);
+        var app = builder.Build();
+
+        app.Services.UseAppFrontMain()
+                    .UseNodeWorkspace()
+                    .UseDatasourceWorkspace()
+                    .UseSemanticKernelFront();
+
+        var optionsFormsLocator = app.Services.GetRequiredService<OptionsFormsLocator>();
+        optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
+
+        SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
+        app.UseRemotePluginAssemblies();
+
+        await app.RunAsync();
+    }
+
+    private static void ConfigureWebSockets(WebAssemblyHostBuilder builder, string backendUrl)
+    {
+        var connection = new HubConnectionBuilder()
             .WithUrl($"{backendUrl}/_ws/ws", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
             .ConfigureLogging(logging =>
             {
@@ -107,35 +119,26 @@ public class Program
             .WithAutomaticReconnect()
             .Build();
 
-            builder.Services.AddScoped<HubConnection>(sp => connection);
-            builder.Services.AddScoped<ClientHub>();
+        builder.Services.AddScoped<HubConnection>(sp => connection);
+        builder.Services.AddScoped<ClientHub>();
 
-            _ = connection.StartAsync();
+        _ = connection.StartAsync();
 
-            connection.Reconnecting += (e) =>
-            {
-                Q.Root.Emit(nameof(HubConnectionState), connection.State);
-                return Task.CompletedTask;
-            };
-            connection.Closed += (e) =>
-            {
-                Q.Root.Emit(nameof(HubConnectionState), connection.State);
-                return Task.CompletedTask;
-            };
-            connection.Reconnected += (e) =>
-            {
-                Q.Root.Emit(nameof(HubConnectionState), connection.State);
-                return Task.CompletedTask;
-            };
-
-        }
-        await builder.AddRemotePluginAssemblies(Q.BackendUrl);
-        var app = builder.Build();
-
-        SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
-        app.UseRemotePluginAssemblies();
-
-        await app.RunAsync();
+        connection.Reconnecting += (e) =>
+        {
+            Q.Root.Emit(nameof(HubConnectionState), connection.State);
+            return Task.CompletedTask;
+        };
+        connection.Closed += (e) =>
+        {
+            Q.Root.Emit(nameof(HubConnectionState), connection.State);
+            return Task.CompletedTask;
+        };
+        connection.Reconnected += (e) =>
+        {
+            Q.Root.Emit(nameof(HubConnectionState), connection.State);
+            return Task.CompletedTask;
+        };
     }
 }
 

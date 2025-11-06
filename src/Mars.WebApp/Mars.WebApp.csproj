@@ -22,7 +22,7 @@
         <RootNamespace>Mars</RootNamespace>
         <AssemblyName>Mars</AssemblyName>
 
-        <SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>
+        <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>Mars.xml</DocumentationFile>

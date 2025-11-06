@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
@@ -10,7 +9,6 @@ using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Mappings;
-using Mars.Nodes.WebApp.Implements;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,11 +24,12 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public readonly string flowFilePath = Path.Combine("nodes", flowFileName);
     private readonly IFileStorage _fileStorage;
     protected readonly RED _RED;
+    private readonly NodesLocator _nodesLocator;
     protected readonly IServiceProvider _serviceProvider;
     private readonly INodeTaskManager _nodeTaskManager;
-
-    //private readonly ChatHub callerHub;// => ChatHub.instance;
     readonly ILogger _logger;
+
+    static JsonSerializerOptions _jsonSerializerOptions = default!;
 
     public event NodeServiceDeployHandler OnDeploy = default!;
     public event NodeServiceVoidHandler OnAssignNodes = default!;
@@ -43,41 +42,52 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
                         RED RED,
                         IServiceProvider serviceProvider,
                         INodeTaskManager nodeTaskManager,
+                        NodesLocator nodesLocator,
                         IEventManager eventManager)
     {
         _fileStorage = fileStorage;
         _RED = RED;
+        _nodesLocator = nodesLocator;
         _serviceProvider = serviceProvider;
         _nodeTaskManager = nodeTaskManager;
         _logger = MarsLogger.GetStaticLogger<INodeService>();
 
-        //Console.WriteLine(">>NodeService.Load()");
-        //called in NodeWorkspaceExtensions.AddNodeWorkspace
-        //NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-        //NodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
-        //NodesLocator.RefreshDict();
-
-        NodeImplementFabirc.RegisterAssembly(typeof(INodeImplement<>).Assembly);
-        NodeImplementFabirc.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
-        NodeImplementFabirc.RefreshDict();
+        _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator, writeIndented: true);
 
         var nodesDir = Path.GetDirectoryName(flowFilePath)!;
         if (!_fileStorage.DirectoryExists(nodesDir)) _fileStorage.CreateDirectory(nodesDir);
 
-        try
-        {
-            TryLoadFlowFile();
-        }
-        catch (Exception)
-        {
-            _logger.LogError("error on load flow file");
-        }
-
-        //IEventManager eventManager = serviceProvider.GetRequiredService<IEventManager>();
-
         eventManager.OnTrigger += EventManager_OnTrigger;
         _nodeTaskManager.OnCurrentTasksCountChanged += _nodeTaskManager_OnCurrentTaskCountChanged;
+    }
 
+    void Setup()
+    {
+        List<Node> nodes;
+
+        if (TryLoadFlowFile(out var fileData))
+        {
+            nodes = fileData!.Nodes.ToList();
+        }
+        else
+        {
+            nodes = GetBlank();
+        }
+
+        if (!nodes.Any()) nodes = GetBlank();
+
+        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList());
+        OnAssignNodes?.Invoke();
+
+        VarNodesSetDefaultValues();
+    }
+
+    List<Node> GetBlank()
+    {
+        return [new FlowNode
+        {
+            Name = "Flow 0",
+        }];
     }
 
     /// <summary>
@@ -94,23 +104,29 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         ];
     }
 
-    bool TryLoadFlowFile()
+    bool TryLoadFlowFile(out NodesFlowSaveFile? fileData)
     {
         try
         {
-            if (!_fileStorage.FileExists(flowFilePath)) return false;
+            if (!_fileStorage.FileExists(flowFilePath))
+            {
+                fileData = null;
+                return false;
+            }
             string json = _fileStorage.ReadAllText(flowFilePath);
-            var flowsFile = JsonSerializer.Deserialize<NodesFlowSaveFile>(json)!;
-            _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(flowsFile.Nodes).ToList());
-            OnAssignNodes?.Invoke();
-            return false;
+            var flowsFile = JsonSerializer.Deserialize<NodesFlowSaveFile>(json, _jsonSerializerOptions)!;
+            {
+                fileData = flowsFile;
+                return true;
+            }
         }
         catch (Exception ex)
         {
             _RED.Nodes = [];
             _logger.LogError(ex, "LoadFlowFile");
-            return false;
         }
+        fileData = null;
+        return false;
     }
 
     public UserActionResult Deploy(List<Node> nodes)
@@ -126,12 +142,6 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             Message = "saved: nodes " + nodes.Count
         };
     }
-
-    static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        WriteIndented = true,
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-    };
 
     public void SaveToFile()
     {
@@ -154,7 +164,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return nodes.Select(node =>
         {
             if (node is UnknownNode) return node;
-            var copy = node.Copy();
+            var copy = node.Copy(_jsonSerializerOptions);
             if (defaultDict.TryGetValue(node.GetType(), out var de))
             {
                 if (copy.Color == de.Color) copy.Color = "";
@@ -182,7 +192,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     private IDictionary<Type, Node> NodeDefaultInstanceDict()
     {
-        return NodesLocator.RegisteredNodes().Select(type =>
+        return _nodesLocator.RegisteredNodes().Select(type =>
         {
             Node instance = (Node)Activator.CreateInstance(type)!;
             return new KeyValuePair<Type, Node>(type, instance);
@@ -380,7 +390,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     [StartupOrder(10)]
     public Task OnStartupAsync()
     {
-        VarNodesSetDefaultValues();
+        Setup();
         _ = InjectStartupNodes();
         OnStart?.Invoke();
         return Task.CompletedTask;

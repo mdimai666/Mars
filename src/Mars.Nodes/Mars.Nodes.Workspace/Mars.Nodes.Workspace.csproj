@@ -19,6 +19,7 @@
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
+		<ProjectReference Include="..\Mars.Nodes.WebApp.Front\Mars.Nodes.WebApp.Front.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
 	</ItemGroup>

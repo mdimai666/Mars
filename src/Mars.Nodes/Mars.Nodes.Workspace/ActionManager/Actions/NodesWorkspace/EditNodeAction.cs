@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Converters;
 using Mars.Nodes.EditorApi.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 
@@ -31,8 +33,8 @@ public class EditNodeAction : BaseEditorHistoryAction
     }
 
     string ToJson(Node node)
-        => JsonSerializer.Serialize(node);
+        => JsonSerializer.Serialize(node, _editor.NodesJsonSerializerOptions);
 
     Node FromJson(string json)
-        => JsonSerializer.Deserialize<Node>(json)!;
+        => JsonSerializer.Deserialize<Node>(json, _editor.NodesJsonSerializerOptions)!;
 }

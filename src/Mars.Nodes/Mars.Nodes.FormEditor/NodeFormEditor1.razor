@@ -6,6 +6,8 @@
 @using Microsoft.JSInterop
 @using Mars.Nodes.FormEditor.EditForms
 
+@inject NodeFormsLocator _nodeFormsLocator
+
 <div class="NodeFormEditor1 h-100">
 
     <EditForm @ref=EditForm Model="@Node"
@@ -37,7 +39,7 @@
         <p>
             @* <label>name: (@Node.GetType().FullName)</label> *@
             <label>name</label>
-            <InputText class="form-control" @bind-Value=Node.Name placeholder="@Node.Label" />
+            <InputText class="form-control" @bind-Value=Node.Name placeholder="@Node.GetType().Name[..^4]" />
         </p>
 
         <div class="flex-fill d-flex flex-column">
@@ -109,7 +111,7 @@
 
     void UpdateEditFormType()
     {
-        NodeEditFormType = NodeFormsLocator.TryGetForNodeType(Node.GetType());
+        NodeEditFormType = _nodeFormsLocator.TryGetForNodeType(Node.GetType());
 
     }
 

@@ -7,7 +7,7 @@ public class ActLocator
 {
     private readonly Dictionary<string, ActLocatorItem> dict = [];
     private bool invalid = true;
-    private List<Assembly> assemblies = [];
+    private HashSet<Assembly> assemblies = [];
 
     public void RefreshDict(bool force = false)
     {
@@ -23,6 +23,7 @@ public class ActLocator
                 dict.Add(a.Key, a.Value);
             }
         }
+        invalid = false;
     }
 
     public void RegisterAssembly(Assembly assembly)
@@ -38,11 +39,7 @@ public class ActLocator
 
     public IReadOnlyCollection<ActLocatorItem> ActItems
     {
-        get
-        {
-            RefreshDict();
-            return dict.Values;
-        }
+        get { if (invalid) RefreshDict(); return dict.Values; }
     }
 
     private static Dictionary<string, ActLocatorItem> ExtractTypesWithAttributes(Assembly assembly)

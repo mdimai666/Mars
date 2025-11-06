@@ -46,9 +46,9 @@ internal class PageRenderService : IPageRenderService
         var qq = System.Web.HttpUtility.ParseQueryString(_uri.Query);
 
         var q_dict = new Dictionary<string, StringValues>();
-        foreach (var key in qq.AllKeys)
+        foreach (var key in qq.AllKeys!)
         {
-            q_dict.Add(key, qq[key]);
+            q_dict.Add(key!, qq[key]);
         }
         httpContext.Request.Query = new QueryCollection(q_dict);
     }
@@ -173,13 +173,11 @@ internal class PageRenderService : IPageRenderService
 
         if (af.Configuration.Mode is AppFrontMode.None or AppFrontMode.HandlebarsTemplate or AppFrontMode.HandlebarsTemplateStatic)
         {
-            var page = PostAsWebPage(post);
-            if (page is null)
-            {
+            if (post is null)
                 return await RenderPage404(httpContext, cancellationToken);
-            }
-            return await RenderPage(page, httpContext, cancellationToken);
 
+            var page = PostAsWebPage(post);
+            return await RenderPage(page, httpContext, cancellationToken);
         }
         else
         {

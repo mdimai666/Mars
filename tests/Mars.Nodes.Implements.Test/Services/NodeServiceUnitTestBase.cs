@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using AutoFixture;
 using Mars.Host.Shared.Dto.Users;
@@ -7,6 +8,7 @@ using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Dto;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
@@ -34,6 +36,7 @@ public class NodeServiceUnitTestBase
     internal NodeService? _nodeService;
     internal RED RED;
     internal NodeTaskManager _nodeTaskManager;
+    internal JsonSerializerOptions _jsonSerializerOptions;
 
     static object _lock = new { };
 
@@ -41,6 +44,7 @@ public class NodeServiceUnitTestBase
     {
         lock (_lock)
         {
+            // minimal setup
             _serviceProvider = Substitute.For<IServiceProvider>();
             MarsLogger.Initialize(Substitute.For<ILoggerFactory>());
             _loggerManager = MarsLogger.GetStaticLogger<NodeTaskManager>();
@@ -48,8 +52,21 @@ public class NodeServiceUnitTestBase
             _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_loggerManager);
             _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
 
+            // add locators and fabric
+            var _nodesLocator = new NodesLocator();
+            _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
+            _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
+            _jsonSerializerOptions = new JsonSerializerOptions()
+            {
+                Converters = { new NodeJsonConverter(_nodesLocator) }
+            };
+            var nodeImplementFabirc = new NodeImplementFabirc();
+            nodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+            nodeImplementFabirc.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
+
+            // dependies
             _hub = Substitute.For<IHubContext<ChatHub>>();
-            RED = Substitute.ForPartsOf<RED>(_hub, _serviceProvider);
+            RED = Substitute.ForPartsOf<RED>(_hub, nodeImplementFabirc, _serviceProvider);
             _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
             _serviceProvider.GetService(typeof(RED)).Returns(RED);
             _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
@@ -66,18 +83,8 @@ public class NodeServiceUnitTestBase
             _eventManager = Substitute.For<IEventManager>();
             //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
-            NodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-            //NodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
-
-            //NodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
-            NodeImplementFabirc.RegisterAssembly(typeof(TestCallBackNode).Assembly);
-
-            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _eventManager);
-
-            NodesLocator.RefreshDict();
-            NodeImplementFabirc.RefreshDict();
-
-            NodesLocator.dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
+            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, _eventManager);
+            //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
         }
     }
 

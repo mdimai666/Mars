@@ -1,25 +1,26 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text.Json;
+using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core;
 
-public static class NodesLocator
+public class NodesLocator
 {
-    public static Dictionary<string, NodeDictItem> dict = new();
+    Dictionary<string, NodeDictItem> _dict = [];
+    bool invalid = true;
+    HashSet<Assembly> assemblies = [];
+    object _lock = new { };
 
-    static bool invalide = true;
+    public IReadOnlyDictionary<string, NodeDictItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
 
-    public static HashSet<Assembly> assemblies = new();
-
-    static object _lock = new { };
-
-    public static void RefreshDict(bool force = false)
+    private void RefreshDict(bool force = false)
     {
-        if (!invalide && !force) return;
+        if (!invalid && !force) return;
 
         lock (_lock)
         {
-            dict.Clear();
+            _dict.Clear();
 
             foreach (var assembly in assemblies.ToList())
             {
@@ -31,55 +32,66 @@ public static class NodesLocator
                     var item = new NodeDictItem
                     {
                         NodeType = type,
-                        DisplayAttribute = type.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute()
+                        DisplayAttribute = type.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(),
+                        FunctionApiDocument = type.GetCustomAttribute<FunctionApiDocumentAttribute>()
                     };
-                    dict.Add(type.FullName!, item);
+                    _dict.Add(type.FullName!, item);
                 }
             }
+            invalid = false;
         }
     }
 
-    public static IEnumerable<Type> GetEnumerableOfType<T>(Assembly assembly, params object[] constructorArgs) where T : class
+    public IReadOnlyCollection<Type> GetEnumerableOfType<T>(Assembly assembly, params object[] constructorArgs) where T : class
     {
-        List<Type> objects = new List<Type>();
-        foreach (Type type in
-            assembly.GetTypes()
-            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))))
-        {
-            //objects.Add((T)Activator.CreateInstance(type, constructorArgs));
-            //return typeof(T);
-            objects.Add(type);
-        }
+        List<Type> objects =
+        [
+            .. assembly.GetTypes()
+            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))),
+        ];
         //objects.Sort();
         return objects;
     }
 
-    public static void RegisterAssembly(Assembly assembly)
+    public void RegisterAssembly(Assembly assembly)
     {
         if (assemblies.Contains(assembly)) return;
         assemblies.Add(assembly);
     }
 
-    public static Type? GetTypeByFullName(string typeFullname)
+    public Type? GetTypeByFullName(string typeFullname)
     {
-        return dict.GetValueOrDefault(typeFullname)?.NodeType;
+        return Dict.GetValueOrDefault(typeFullname)?.NodeType;
         //throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
     }
 
-    public static List<Type> RegisteredNodes()
+    public IReadOnlyCollection<Type> RegisteredNodes()
     {
-        return dict.Select(s => s.Value.NodeType).ToList();
+        return Dict.Select(s => s.Value.NodeType).ToList();
     }
 
-    public static List<NodeDictItem> RegisteredNodesEx()
+    public IReadOnlyCollection<NodeDictItem> RegisteredNodesEx()
     {
-        return dict.Select(s => s.Value).ToList();
+        return Dict.Select(s => s.Value).ToList();
     }
 
+    public static JsonSerializerOptions CreateJsonSerializerOptions(NodesLocator nodesLocator, bool writeIndented = false)
+    {
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            WriteIndented = writeIndented,
+            PropertyNameCaseInsensitive = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            
+            Converters = { new Converters.NodeJsonConverter(nodesLocator) }
+        };
+        return jsonSerializerOptions;
+    }
 }
 
 public record NodeDictItem
 {
     public required Type NodeType;
     public required DisplayAttribute DisplayAttribute;
+    public required FunctionApiDocumentAttribute? FunctionApiDocument;
 }

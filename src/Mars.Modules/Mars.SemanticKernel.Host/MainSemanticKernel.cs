@@ -15,9 +15,6 @@ public static class MainSemanticKernel
 {
     public static IServiceCollection AddMarsSemanticKernel(this IServiceCollection services)
     {
-        NodesLocator.RegisterAssembly(typeof(AIRequestNode).Assembly);
-        NodeImplementFabirc.RegisterAssembly(typeof(AIRequestNodeImpl).Assembly);
-
         services.AddSingleton<IMarsAIService, MarsAIService>();
 
         return services;
@@ -26,8 +23,10 @@ public static class MainSemanticKernel
     public static IApplicationBuilder UseMarsSemanticKernel(this IApplicationBuilder app)
     {
         var op = app.ApplicationServices.GetRequiredService<IOptionService>();
-
         op.RegisterOption<AIToolOption>();
+
+        app.ApplicationServices.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
+        app.ApplicationServices.GetRequiredService<NodeImplementFabirc>().RegisterAssembly(typeof(AIRequestNodeImpl).Assembly);
 
         return app;
     }

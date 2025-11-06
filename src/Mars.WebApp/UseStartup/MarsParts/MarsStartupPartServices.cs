@@ -14,7 +14,7 @@ namespace Mars.UseStartup.MarsParts;
 
 internal static class MarsStartupPartServices
 {
-    public static IServiceCollection MarsAddServices(this IServiceCollection services, IWebHostEnvironment wenv)
+    public static IServiceCollection AddMarsHostServices(this IServiceCollection services, IWebHostEnvironment wenv)
     {
         //services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<UserEntity>>();
 
@@ -44,10 +44,17 @@ internal static class MarsStartupPartServices
 
         //services.AddSingleton<DebugService>();
 
-        NodeImplementFabirc.RegisterAssembly(typeof(MarsHostRootLayoutRenderNodeImpl).Assembly);
-
         services.AddSingleton<IServiceCollection>(services);
 
         return services;
     }
+
+    public static IServiceProvider UseMarsHostServices(this IServiceProvider services)
+    {
+        var nodeImplementFabirc = services.GetRequiredService<NodeImplementFabirc>();
+        nodeImplementFabirc.RegisterAssembly(typeof(MarsHostRootLayoutRenderNodeImpl).Assembly);
+
+        return services;
+    }
+
 }

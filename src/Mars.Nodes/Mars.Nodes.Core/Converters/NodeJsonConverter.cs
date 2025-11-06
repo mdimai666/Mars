@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Mars.Nodes.Core.Nodes;
 
@@ -5,16 +6,34 @@ namespace Mars.Nodes.Core.Converters;
 
 public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<Node>
 {
+    private readonly NodesLocator _nodesLocator;
+
+    public NodeJsonConverter(NodesLocator nodesLocator)
+    {
+        _nodesLocator = nodesLocator;
+    }
+
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeToConvert == typeof(Node) || typeToConvert == typeof(UnknownNode);// || typeof(Node).IsAssignableFrom(typeToConvert);
+    }
+
     public override Node Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        JsonElement jObj = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
-        string? nodeType;
-        if (jObj.TryGetProperty(nameof(Node.Type), out var prop1)) nodeType = prop1.GetString();
-        else if (jObj.TryGetProperty("type", out var prop2)) nodeType = prop2.GetString();
-        else throw new InvalidOperationException("Node.Type cannot read");
+        using var doc = JsonDocument.ParseValue(ref reader);
+        var jObj = doc.RootElement;
 
+        if (!jObj.TryGetProperty(nameof(Node.Type), out var typeProp) &&
+            !jObj.TryGetProperty("type", out typeProp))
+        {
+            throw new JsonException("Property 'Type' is missing in Node JSON.");
+        }
 
-        var type = NodesLocator.GetTypeByFullName(nodeType!);
+        var nodeType = typeProp.GetString();
+        if (string.IsNullOrWhiteSpace(nodeType))
+            throw new JsonException("Node.Type is null or empty.");
+
+        var type = _nodesLocator.GetTypeByFullName(nodeType!);
         if (type is null)
         {
             var basic = jObj.Deserialize<NodeBasicImplement>(options)!;
@@ -25,17 +44,25 @@ public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<No
         return model;
     }
 
+    //static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    //{
+    //    WriteIndented = true,
+    //    PropertyNameCaseInsensitive = true,
+    //    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    //};
+
     public override void Write(Utf8JsonWriter writer, Node node, JsonSerializerOptions options)
     {
+
         if (node is UnknownNode unknownNode)
         {
-            var unel = JsonSerializer.Deserialize<JsonElement>(unknownNode.JsonBody, options);
-            unel.WriteTo(writer);
+            using var doc = JsonDocument.Parse(unknownNode.JsonBody);
+            doc.RootElement.WriteTo(writer);
             return;
         }
-
-        JsonElement jsonElement = JsonSerializer.SerializeToElement(node, node.GetType(), options);
-        jsonElement.WriteTo(writer);
-        //writer.WriteStringValue(JsonSerializer.Serialize(node, options));
+        var fullName = node.GetType().FullName!;
+        var type = _nodesLocator.GetTypeByFullName(fullName)
+                        ?? throw new JsonException($"Node.Type '{fullName}' not found.");
+        JsonSerializer.Serialize(writer, node, type, options);
     }
 }

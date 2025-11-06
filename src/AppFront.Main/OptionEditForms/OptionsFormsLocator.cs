@@ -6,53 +6,51 @@ using Microsoft.AspNetCore.Components;
 
 namespace AppFront.Main.OptionEditForms;
 
-public static class OptionsFormsLocator
+public class OptionsFormsLocator
 {
-    static Dictionary<Type, OptionsFormsLocatorItem> dict = new();
+    Dictionary<Type, OptionsFormsLocatorItem> _dict = [];
+    public IReadOnlyDictionary<Type, OptionsFormsLocatorItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
 
-    static bool invalid = true;
+    bool invalid = true;
 
-    static List<Assembly> assemblies = new();
+    HashSet<Assembly> assemblies = [];
 
-    static void RefreshDict(bool force = false)
+    private void RefreshDict(bool force = false)
     {
         if (!invalid && !force) return;
-        dict.Clear();
+        _dict.Clear();
 
         foreach (var assembly in assemblies)
         {
-            var _dict = GetOptionsEditForms(assembly);
+            var types = GetOptionsEditForms(assembly);
 
-            foreach (var a in _dict)
+            foreach (var a in types)
             {
-                dict.Add(a.Key, a.Value);
+                _dict.Add(a.Key, a.Value);
             }
         }
         invalid = false;
     }
 
-    public static void RegisterAssembly(Assembly assembly)
+    public void RegisterAssembly(Assembly assembly)
     {
         invalid = true;
         assemblies.Add(assembly);
     }
 
-    public static OptionsFormsLocatorItem? TryGetForOptionType(Type optionType)
+    public OptionsFormsLocatorItem? TryGetForOptionType(Type optionType)
     {
-        RefreshDict();
-        return dict.GetValueOrDefault(optionType);
+        return Dict.GetValueOrDefault(optionType);
     }
 
-    public static IEnumerable<OptionsFormsLocatorItem> RegisteredForms()
+    public IEnumerable<OptionsFormsLocatorItem> RegisteredForms()
     {
-        RefreshDict();
-        return dict.Values.ToList();
+        return Dict.Values.ToList();
     }
 
-    public static IEnumerable<OptionsFormsLocatorItem> RegisteredFormsAutoShow()
+    public IEnumerable<OptionsFormsLocatorItem> RegisteredFormsAutoShow()
     {
-        RefreshDict();
-        return dict.Values.Where(s => s.IsAutoShowFormOnSettingsPageAttribute).ToList();
+        return Dict.Values.Where(s => s.IsAutoShowFormOnSettingsPageAttribute).ToList();
     }
 
     /// <summary>
@@ -60,7 +58,7 @@ public static class OptionsFormsLocator
     /// </summary>
     /// <param name="assembly"></param>
     /// <returns>Key NodeType; Valye FormType</returns>
-    public static Dictionary<Type, OptionsFormsLocatorItem> GetOptionsEditForms(Assembly assembly)
+    Dictionary<Type, OptionsFormsLocatorItem> GetOptionsEditForms(Assembly assembly)
     {
         var type = typeof(ComponentBase);
 

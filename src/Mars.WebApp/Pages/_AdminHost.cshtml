@@ -43,13 +43,13 @@
     var json = System.Text.Json.JsonSerializer.Serialize(vm);
 
     string bodyClass = "";
-    bool loggedIn = User.Identity.IsAuthenticated;
+    bool loggedIn = requestContext.IsAuthenticated;
     bodyClass += "logged-in ";
 
     try
     {
 
-        if (User.Identity.IsAuthenticated && requestContext.Roles is not null)
+        if (requestContext.IsAuthenticated && requestContext.Roles is not null)
         {
             var isAdmin = requestContext.Roles.Contains("Admin");
 

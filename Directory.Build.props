@@ -22,8 +22,8 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
-        <!--<DebugSymbols>true</DebugSymbols>-->
-        <!--<DebugType>None</DebugType>-->
-        <SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
     </PropertyGroup>
 </Project>

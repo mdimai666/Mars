@@ -19,7 +19,7 @@ public class MarsStartTests : IClassFixture<MarsFixture>
     [IntegrationFact(Skip = MarsFixture.SkipTest)]
     public async Task MarsStart_EmptyDb_ShouldSuccessAsync()
     {
-        var req = await _fixture.Client.Request("/").AllowAnyHttpStatus().GetAsync();
+        var req = await _fixture.Client.Request("/dev").AllowAnyHttpStatus().GetAsync();
 
         req.StatusCode.Should().Be(StatusCodes.Status200OK);
     }

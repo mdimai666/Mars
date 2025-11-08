@@ -32,9 +32,12 @@ public class PluginManifestProvider
 
         //var mars_deps = MarsDeps();
 
+        static string? EndpointFileLabel(EndpointJsonDto endpoint) => endpoint.EndpointProperties.FirstOrDefault(p => p.Name == "label")?.Value;
+
         var marsEndpoints = MarsDevAdminEndpoints();
 
         var marsEndpointsMap = marsEndpoints.Endpoints.Select(s => s.AssetFile).ToHashSet();
+        var marsEndpointsFilesLabel = marsEndpoints.Endpoints.Select(s => EndpointFileLabel(s)).ToHashSet();
 
         //var without_fingerprint
 
@@ -44,6 +47,7 @@ public class PluginManifestProvider
                                                 .Where(s => !s.AssetFile.StartsWith("_framework/System.")) //TODO: если fingerprint отличается, то начинает поподать мусор
                                                 .Where(f => !f.AssetFile.EndsWith(".pdb") && !f.AssetFile.EndsWith(".pdb.gz"))
                                                 //.Where(f => !f.AssetFile.EndsWith(".modules.json"))
+                                                .Where(f => !marsEndpointsFilesLabel.Contains(EndpointFileLabel(f)))
                                                 .DistinctBy(s => s.AssetFile)
                                                 .ToList();
 

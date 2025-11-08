@@ -40,10 +40,10 @@ public static class MarsStartupPartMigrations
     {
         var env = services.GetRequiredService<IWebHostEnvironment>();
 
-        var conn = configuration.GetConnectionString("DefaultConnection")!;
-        using var marsDbContext = MarsDbContext.CreateInstance(conn);
         if (env.IsProduction())
         {
+            var conn = configuration.GetConnectionString("DefaultConnection")!;
+            using var marsDbContext = MarsDbContext.CreateInstance(conn);
             //using var MarsDbContext = serviceScope.ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance() as MarsDbContext;
             migrated = MigrateAsync(marsDbContext, logger).ConfigureAwait(false).GetAwaiter().GetResult();
         }

@@ -134,6 +134,7 @@
     <ItemGroup>
         <Folder Include="Areas\" />
         <Folder Include="data\logs\" />
+        <Folder Include="logs\" />
         <Folder Include="Res\Excel\Feedback\" />
         <Folder Include="wwwroot\mars\vendor\" />
     </ItemGroup>
@@ -189,9 +190,12 @@
         <DebugType>None</DebugType>
         <!--<PublishSingleFile>true</PublishSingleFile>-->
         <!--<RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>-->
-        <SatelliteResourceLanguages>en-US;ru-RU</SatelliteResourceLanguages>
+        <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
         <!--some props in ./Directory.Build.props-->
         <PublishTrimmed>false</PublishTrimmed>
+
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'DevRelease' ">

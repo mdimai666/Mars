@@ -28,7 +28,7 @@
     //AppFront.Program.IsPrerender = true;
     Q.IsPrerender = true;
     var appFront = HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
-    AppFrontMode StartupFront_Mode = appFront.Configuration.Mode;
+    AppFrontMode StartupFront_Mode = appFront!.Configuration.Mode;
 
     string json = "";
 
@@ -44,7 +44,7 @@
     UserDetail? userDetail = null;
     var cnToken = new CancellationTokenSource();
 
-    if (requestContext.IsAuthenticated)
+    if (requestContext.IsAuthenticated && requestContext.User is not null)
     {
         userDetail = await userService.GetDetail(requestContext.User.Id, cnToken.Token);
     }

@@ -86,24 +86,31 @@ public class MarsFixture : IAsyncLifetime
         if (SkipTest is not null) return;
 #pragma warning restore CS8793 // The given expression always matches the provided pattern.
 
-        await _marsContainer.DisposeAsync();
         await _postgresContainer.DisposeAsync();
+        await _marsContainer.DisposeAsync();
+        await _network.DisposeAsync();
     }
 
     // Custom wait strategy implementation
     public class WaitUntilHealthCheckOk : IWaitUntil
     {
+        private static readonly HttpClient _httpClient = new()
+        {
+            Timeout = TimeSpan.FromSeconds(5)
+        };
+
         public async Task<bool> UntilAsync(IContainer container)
         {
             try
             {
-                using var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync($"http://{container.Hostname}:{container.GetMappedPublicPort(80)}{ApiEndpointHealthCheck}");
+                var url = $"http://{container.Hostname}:{container.GetMappedPublicPort(80)}{ApiEndpointHealthCheck}";
+                var response = await _httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
                 return content.Contains("OK");
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Health check failed: {ex.Message}");
                 return false;
             }
         }

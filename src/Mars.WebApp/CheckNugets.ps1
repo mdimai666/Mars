@@ -15,7 +15,6 @@ $dirs = @(
     # host
     "Mars.Host.Shared",
     "Mars.Host.Data",
-    "Mars.Shared",
     # nodes
     "Mars.Nodes/Mars.Nodes.Core",
     "Mars.Nodes/Mars.Nodes.Core.Implements",
@@ -173,7 +172,7 @@ foreach ($d in $dirs) {
     
     try {
         if ($isDeployRelease) {
-            $processResult = dotnet pack --configuration Release
+            $processResult = dotnet pack --configuration Release -p:DebugType=portable -p:DebugSymbols=true
             if ($LASTEXITCODE -ne 0) {
                 throw "Ошибка при упаковке пакета"
             }
@@ -205,6 +204,7 @@ foreach ($d in $dirs) {
         Write-Host "   Код выхода: $LASTEXITCODE" -ForegroundColor Yellow
         Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Red
         cd $__DIR__
+        $processResult | ForEach-Object { Write-Host $_ }
         Stop-Transcript
         Read-Host "Нажмите Enter для выхода"
         return

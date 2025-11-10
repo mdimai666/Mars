@@ -4,9 +4,10 @@
 @using Mars.Shared.Contracts.Roles
 @using Mars.Shared.Contracts.Users
 @using Microsoft.FluentUI.AspNetCore.Components
-@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Редактирования профиля")]
 @attribute [DParentPage(typeof(AppAdmin.Pages.UserViews.UsersPage))]
+@inject IStringLocalizer<AppRes> L
 
 <ContentWrapper Title="Редактирования профиля">
 

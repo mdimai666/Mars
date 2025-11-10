@@ -119,7 +119,6 @@ internal class UserRepository : IUserRepository, IDisposable
                                                 ?? throw new NotFoundException();
 
         entity.UpdateEntity(query);
-        await UpdateRoles(entity, query.Roles);
 
         MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
 
@@ -129,24 +128,32 @@ internal class UserRepository : IUserRepository, IDisposable
             entity.UserTypeId = newUserType.Id;
         }
 
-        await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
+        await UpdateRoles(entity, query.Roles, cancellationToken);
         await _marsDbContext.SaveChangesAsync(cancellationToken);
+        await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
         _marsDbContext.Entry(entity).State = EntityState.Detached;
     }
 
-    async Task UpdateRoles(UserEntity entity, IReadOnlyCollection<string> queryRoles)
+    async Task UpdateRoles(UserEntity entity, IReadOnlyCollection<string> queryRoles, CancellationToken cancellationToken)
     {
         var oldRoles = entity.Roles!.Select(s => s.NormalizedName!).Order().ToList();
         var newRoles = queryRoles.Select(s => _lookupNormalizer.NormalizeName(s)).Order().ToList();
 
-        if (oldRoles.Count != newRoles.Count || oldRoles.SequenceEqual(newRoles))
+        if (oldRoles.Count != newRoles.Count || !oldRoles.SequenceEqual(newRoles))
         {
-            var diff = DiffList.FindDifferences(oldRoles!, newRoles);
+            var diff = DiffList.FindDifferences(oldRoles!, newRoles, StringComparer.OrdinalIgnoreCase);
 
             if (diff.HasChanges)
             {
-                if (diff.ToRemove.Any()) await _userManager.RemoveFromRolesAsync(entity, diff.ToRemove);
-                if (diff.ToAdd.Any()) await _userManager.AddToRolesAsync(entity, diff.ToAdd);
+                if (diff.ToRemove.Any())
+                {
+                    entity.Roles.RemoveAll(s => diff.ToRemove.Contains(s.NormalizedName));
+                }
+                if (diff.ToAdd.Any())
+                {
+                    var addRoles = await _marsDbContext.Roles.AsNoTracking().Where(s => diff.ToAdd.Contains(s.NormalizedName)).ToListAsync(cancellationToken);
+                    entity.Roles.AddRange(addRoles);
+                }
             }
         }
     }
@@ -457,13 +464,13 @@ internal class UserRepository : IUserRepository, IDisposable
                                                     //    .ThenInclude(s => s.MetaField)
                                                     .FirstAsync(s => s.Id == userLogin.UserId, cancellationToken);
 
-            if (entity.UserInfoHasChanges(query))
+            if (entity.UserInfoHasChanges(query, setupRoles))
             {
                 entity.UpdateEntity(query);
-                await UpdateRoles(entity, setupRoles);
 
-                await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
+                await UpdateRoles(entity, setupRoles, cancellationToken);
                 await _marsDbContext.SaveChangesAsync(cancellationToken);
+                await _userManager.UpdateSecurityStampAsync(entity).ConfigureAwait(false);
                 _marsDbContext.Entry(entity).State = EntityState.Detached;
             }
 

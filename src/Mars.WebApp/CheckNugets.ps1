@@ -185,7 +185,7 @@ foreach ($d in $dirs) {
             }
         }
         else {
-            $processResult = dotnet pack --configuration Release -o "C:\Users\D\Documents\VisualStudio\_LocalNugets" --include-source
+            $processResult = dotnet pack --configuration Release -o "C:\Users\D\Documents\VisualStudio\_LocalNugets" --include-source  -p:DebugType=portable -p:DebugSymbols=true
             if ($LASTEXITCODE -ne 0) {
                 throw "Ошибка при локальной упаковке пакета"
             }

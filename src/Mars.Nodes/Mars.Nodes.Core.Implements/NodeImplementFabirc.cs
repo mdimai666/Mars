@@ -82,9 +82,17 @@ public class NodeImplementFabirc
         if (node is ConfigNode) instantiateType = typeof(ConfigNodeImpl);
         else instantiateType = Dict[node.GetType()].NodeImplementType;
 
-        var instance = (INodeImplement)ActivatorUtilities.CreateInstance(_RED.ServiceProvider, instantiateType, [node, _RED]);
+        try
+        {
+            //TODO: тут есть загвоздка. Он будет искать конструкторы для который требуется [node, _RED] иначе исключение
+            var instance = (INodeImplement)ActivatorUtilities.CreateInstance(_RED.ServiceProvider, instantiateType, [node, _RED]);
+            return instance;
 
-        return instance;
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException($"type '{instantiateType}' should require ctor with [({node.GetType().Name} node, IRED red, ...)]", ex);
+        }
     }
 
     public void RegisterAssembly(Assembly assembly)
@@ -165,6 +173,6 @@ public record NodeImplementItem
 //                callback.Invoke(input);
 //        }
 
-//    } 
+//    }
 //#endif
 //}

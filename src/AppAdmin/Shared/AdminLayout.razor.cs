@@ -1,6 +1,8 @@
+using System.Linq;
 using AppFront.Shared.AuthProviders;
 using AppFront.Shared.Features;
 using AppFront.Shared.Models;
+using Mars.Shared.Contracts.NavMenus;
 using Mars.Shared.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -81,8 +83,20 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
     void UpdateMenuItems()
     {
         var devMenu = Q.Site.NavMenus.First(s => s.Slug == "dev");
+        devMenu = devMenu with { MenuItems = devMenu.MenuItems.Where(MenuRolesCheck).ToList() };
+
+        //remove last divider
+        if (devMenu.MenuItems.LastOrDefault()?.IsDivider ?? false)
+        {
+            devMenu = devMenu with { MenuItems = devMenu.MenuItems.Take(devMenu.MenuItems.Count - 1).ToList() };
+        }
         menu_items = MyNavMenu.Convert(devMenu);
 
+    }
+
+    bool MenuRolesCheck(NavMenuItemResponse item)
+    {
+        return !item.Roles.Any() || Q.User.Roles.Intersect(item.Roles).Count() > 0 == !item.RolesInverse;
     }
 
     void onCollapse(bool collapsed)

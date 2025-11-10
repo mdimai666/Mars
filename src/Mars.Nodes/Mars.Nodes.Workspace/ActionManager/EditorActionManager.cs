@@ -98,9 +98,9 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
         var a = _actions.FirstOrDefault(s => s.ActionType == actionType)
                         ?? throw new NotFoundException($"action '{actionType}' not found");
 
-        //var instance = (IEditorAction)Activator.CreateInstance(a.ActionType, _nodeEditor)!;
-        var instance = (IEditorAction)ActivatorUtilities.CreateInstance(_serviceProvider, a.ActionType, [_nodeEditor])!;
-        //var instance = (IEditorAction)ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, a.ActionType);
+        var instance = HasNodeEditorApiConstructor(a.ActionType)
+            ? (IEditorAction)ActivatorUtilities.CreateInstance(_serviceProvider, a.ActionType, [_nodeEditor])!
+            : (IEditorAction)ActivatorUtilities.CreateInstance(_serviceProvider, a.ActionType)!;
 
         if (instance.CanExecute())
         {
@@ -119,6 +119,15 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                 //Tools.SetTimeout(_nodeEditor.CallStateHasChanged, 1);
             }
         }
+    }
+
+    bool HasNodeEditorApiConstructor(Type type)
+    {
+        return type
+            .GetConstructors()
+            .Any(ctor => ctor
+                .GetParameters()
+                .Any(p => p.ParameterType == typeof(INodeEditorApi)));
     }
 
     public void ExecuteAction(IEditorAction actionInstance, bool addToHistory = true)

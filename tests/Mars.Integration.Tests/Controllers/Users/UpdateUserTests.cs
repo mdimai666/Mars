@@ -64,6 +64,8 @@ public sealed class UpdateUserTests : ApplicationTests
         }).ToList();
         createdUser.MetaValues = metaValues;
         ef.Users.Add(createdUser);
+        var newRole = _fixture.Create<RoleEntity>();
+        ef.Roles.Add(newRole);
         var createdUserSecurityStamp = createdUser.SecurityStamp;
         ef.SaveChanges();
 
@@ -73,7 +75,8 @@ public sealed class UpdateUserTests : ApplicationTests
         {
             Id = createdUser.Id,
             Type = userType.TypeName,
-            MetaValues = metaValueUpdates
+            MetaValues = metaValueUpdates,
+            Roles = [newRole.Name!]
         };
 
         //Act
@@ -135,4 +138,5 @@ public sealed class UpdateUserTests : ApplicationTests
             [nameof(UpdateUserRequest.FirstName)] = ["*обязательно*"],
         });
     }
+
 }

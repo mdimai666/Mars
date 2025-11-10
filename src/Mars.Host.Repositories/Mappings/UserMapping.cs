@@ -194,6 +194,7 @@ internal static class UserMapping
 
             FirstName = query.FirstName,
             LastName = query.LastName ?? "",
+            MiddleName = query.MiddleName,
 
             EmailConfirmed = true,
             LockoutEnabled = true,
@@ -221,10 +222,12 @@ internal static class UserMapping
         return entity;
     }
 
-    public static bool UserInfoHasChanges(this UserEntity entity, UpsertUserRemoteDataQuery query)
+    public static bool UserInfoHasChanges(this UserEntity entity, UpsertUserRemoteDataQuery query, string[] setupRoles)
     {
         ArgumentNullException.ThrowIfNull(entity);
         ArgumentNullException.ThrowIfNull(query);
+
+        bool rolesEqual = entity.Roles!.Select(s => s.Name).OrderBy(x => x).SequenceEqual(setupRoles.OrderBy(x => x), StringComparer.OrdinalIgnoreCase);
 
         return
             entity.FirstName != query.FirstName ||
@@ -234,6 +237,7 @@ internal static class UserMapping
             entity.PhoneNumber != query.PhoneNumber ||
             entity.BirthDate != query.BirthDate ||
             entity.AvatarUrl != query.AvatarUrl ||
+            !rolesEqual ||
             entity.Gender != UserMapping.ParseGender(query.Gender);
     }
 }

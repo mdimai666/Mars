@@ -153,7 +153,7 @@ public class NavMenuService : INavMenuService
                 new(){ Title = "Разделы", Url = "#razdels", Id=razdels, Roles=adminRoles },
                     new(){ Title = "Письма", Url = d+"FeedbackList", ParentId=razdels },
                     //new(){ Title = "Geo", Url = d+"geo/GeoRegion", ParentId=razdels },
-                new(){ Title = "Управление", Url = d+"Manage", Id=manage },
+                new(){ Title = "Управление", Url = d+"Manage", Id=manage, Roles = adminRoles },
                     //new() { Title = "Анкета", Url = d+"Manage/AnketaManage", ParentId=manage },
                     new() { Title = AppRes.Users, Url = d+"Users", ParentId=manage},
                     new() { Title = AppRes.UserTypes, Url = d+"UserType", ParentId=manage},

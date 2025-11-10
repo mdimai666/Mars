@@ -4,13 +4,14 @@ public class DiffList
 {
     public static DiffListResult<TSource> FindDifferences<TSource>(
         IReadOnlyCollection<TSource> existList,
-        IReadOnlyCollection<TSource> newList)
+        IReadOnlyCollection<TSource> newList,
+        IEqualityComparer<TSource>? comparer = null)
     {
-        HashSet<TSource> existingItems = new(existList);
-        HashSet<TSource> newItems = new(newList);
+        HashSet<TSource> existingItems = [.. existList];
+        HashSet<TSource> newItems = [.. newList];
 
-        var toRemove = existingItems.Except(newItems).ToArray();
-        var toAdd = newItems.Except(existingItems).ToArray();
+        var toRemove = existingItems.Except(newItems, comparer).ToArray();
+        var toAdd = newItems.Except(existingItems, comparer).ToArray();
 
         return new DiffListResult<TSource>(toRemove, toAdd);
     }

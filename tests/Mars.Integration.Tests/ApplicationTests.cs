@@ -24,8 +24,8 @@ public abstract class ApplicationTests
         // Из-за способа хранения и округления DateTime, оно может на миллисекунды отличаться
         AssertionOptions.AssertEquivalencyUsing(
             options => options
-                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Subject, TimeSpan.FromMilliseconds(50))).WhenTypeIs<DateTime>()
-                .Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Subject, TimeSpan.FromMilliseconds(50))).WhenTypeIs<DateTimeOffset>()
+                .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMilliseconds(50))).WhenTypeIs<DateTime>()
+                .Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMilliseconds(50))).WhenTypeIs<DateTimeOffset>()
         );
 
         //AppFixture.MessageQueueFixture.ClearTopics().RunSync();

@@ -1,6 +1,6 @@
 namespace Mars.Shared.Contracts.NavMenus;
 
-public class NavMenuSummaryResponse
+public record NavMenuSummaryResponse
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
@@ -10,7 +10,7 @@ public class NavMenuSummaryResponse
     public required IReadOnlyCollection<string> Tags { get; init; }
 }
 
-public class NavMenuDetailResponse
+public record NavMenuDetailResponse
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
@@ -27,8 +27,7 @@ public class NavMenuDetailResponse
     public required bool RolesInverse { get; init; }
 }
 
-
-public class NavMenuItemResponse
+public record NavMenuItemResponse
 {
     public required Guid Id { get; init; }
     public required Guid ParentId { get; init; }
@@ -44,4 +43,3 @@ public class NavMenuItemResponse
     public required bool IsHeader { get; init; }
     public required bool IsDivider { get; init; }
 }
-

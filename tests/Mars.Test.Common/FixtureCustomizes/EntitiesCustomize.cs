@@ -52,6 +52,20 @@ public sealed class EntitiesCustomize : ICustomization
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    );
 
+        fixture.Customize<RoleEntity>(composer => composer
+                                   .FromSeed(role =>
+                                   {
+                                       role ??= new RoleEntity();
+                                       var roleName = "role-" + Guid.NewGuid().ToString("N");
+                                       role.Name = roleName;
+                                       role.NormalizedName = roleName.ToUpper();
+                                       return role;
+                                   })
+                                   .OmitAutoProperties()
+                                   .With(s => s.Id)
+                                   .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
+                                   );
+
         fixture.Customize<PostContentSettings>(composer => composer
                                     .OmitAutoProperties()
                                     .With(s => s.PostContentType, PostTypeConstants.DefaultPostContentTypes.PlainText)

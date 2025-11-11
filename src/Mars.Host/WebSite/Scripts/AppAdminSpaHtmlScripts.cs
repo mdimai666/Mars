@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.Core.Extensions;
 using Mars.Host.Shared.WebSite.Scripts;
 
@@ -19,11 +20,13 @@ public class AppAdminSpaHtmlScripts
 
     public AppAdminSpaHtmlScripts()
     {
+        var assembly = Assembly.GetExecutingAssembly();
+        var appVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
+
         var helperLinksOrder = 1f;
         var fontOrder = 2f;
         var defaultOrder = 5f;
         var interactScriptsOrder = 10f;
-        var appVersion = new Version(0, 5, 1).ToString();
 
         DefaultFonts = [
             new(@"<link rel=""preconnect"" href=""https://fonts.googleapis.com""/>", placeInHead: true, order: helperLinksOrder),

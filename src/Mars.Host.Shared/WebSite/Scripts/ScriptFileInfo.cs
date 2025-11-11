@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Mars.Host.Shared.WebSite.Scripts;
 
@@ -8,7 +9,7 @@ public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
     public bool PlaceInHead { get; }
     public Uri ScriptUrl { get; }
     public string? ScriptName { get; }
-    public Version? ScriptVersion { get; }
+    public string? ScriptVersion { get; }
     public float Order { get; }
 
     public ScriptInfoType Type { get; }
@@ -40,7 +41,7 @@ public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
 
         ScriptName = scriptName ?? Path.GetFileName(ScriptUrl.OriginalString);
         Order = order;
-        ScriptVersion = version == null ? null : new Version(version);
+        ScriptVersion = version;
     }
 
     public ScriptFileInfo(Uri url, bool placeInHead = false, string? scriptName = null, string? version = null, float order = 10, ScriptInfoType? scriptType = null)
@@ -52,7 +53,7 @@ public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
 
         ScriptName = scriptName ?? Path.GetFileName(ScriptUrl.OriginalString);
         Order = order;
-        ScriptVersion = version == null ? null : new Version(version);
+        ScriptVersion = version;
 
         ScriptHtml = BuildScriptTag();
     }
@@ -69,11 +70,17 @@ public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
 
     string BuildScriptTag()
     {
+        var scriptUrlWithVersion = ScriptVersion == null
+                                    ? ScriptUrl.ToString()
+                                    : QueryHelpers.AddQueryString(ScriptUrl.ToString(), new Dictionary<string, string?>()
+                                    {
+                                        ["v"] = ScriptVersion
+                                    });
         return Type switch
         {
-            ScriptInfoType.Style => $"<link rel=\"stylesheet\" href=\"{ScriptUrl}\">",
-            ScriptInfoType.Script => $"<script src=\"{ScriptUrl}\"></script>",
-            _ => $"<link href=\"{ScriptUrl}\">"
+            ScriptInfoType.Style => $"<link rel=\"stylesheet\" href=\"{scriptUrlWithVersion}\">",
+            ScriptInfoType.Script => $"<script src=\"{scriptUrlWithVersion}\"></script>",
+            _ => $"<link href=\"{scriptUrlWithVersion}\">"
         };
     }
 

@@ -1,34 +1,28 @@
 @using AppFront.Main.OptionEditForms
 @using Mars.Options.Front
 @using Mars.Shared.Tools
+@using Microsoft.FluentUI.AspNetCore.Components
 
-<div class="ASideOptions d-flex flex-column g-2">
-
-    <NavLink class="mb-2" href="/dev/Settings" Match="@NavLinkMatch.All">
-        Общие
-    </NavLink>
-    @* <NavLink class="mb-2" href="/dev/Settings/ActionHistory">
-        Активность
-    </NavLink> *@
-    <NavLink class="mb-2" href="/dev/Settings/html">
-        Host html
-    </NavLink>
-    <NavLink class="mb-2" href="/dev/Settings/Front">
-        Front settings
-    </NavLink>
-    @foreach (var form in OptionFormList)
-    {
-        <NavLink class="mb-2"
-                 href=@($"/dev/Settings/Option/{form.OptionType.FullName!.Replace(".", "+")}")>
-            @form.DisplayName
-        </NavLink>
-    }
-    <NavLink class="mb-2" href="/dev/Settings/HostCache">
-        Кеширование
-    </NavLink>
-    <NavLink class="mb-2" href="/dev/Settings/About">
-        О системе
-    </NavLink>
+<div class="ASideOptions d-flex flex-column">
+    <div class="d-none d-lg-flex flex-column gap-1">
+        @foreach (var item in Menu)
+        {
+            <NavLink href=@item.Url Match="item.Match">
+                @item.Title
+            </NavLink>
+        }
+    </div>
+    <div class="d-flex d-lg-none">
+        <FluentSelect TOption="OptionMenuItem"
+                      Items="@Menu"
+                      Id="options-menu"
+                      Width="100%"
+                      OptionValue="@(p => p.Url)"
+                      OptionText="@(p => p.Title)"
+                      OptionTitle="@(p => p.Title)"
+                      SelectedOption="_selMenu"
+                      SelectedOptionChanged="SelectedOptionChanged" />
+    </div>
 </div>
 
 <style>
@@ -46,14 +40,54 @@
 </style>
 
 @code {
+    [Inject] NavigationManager _navigationManager { get; set; } = default!;
     [Inject] OptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
 
     static List<OptionsFormsLocatorItem> OptionFormList = default!;
+
+    List<OptionMenuItem>? _menu;
+    List<OptionMenuItem> Menu => _menu ?? CreateMenuList();
+
+    OptionMenuItem? _selMenu;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         OptionFormList ??= _optionsFormsLocator.RegisteredFormsAutoShow().OrderBy(s => s.OptionType.Name).ToList();
+
+        var currentUri = _navigationManager.Uri;
+        var baseUri = _navigationManager.BaseUri;
+        // Получаем относительный путь (например, "Settings/Front")
+        var relativePath = currentUri.StartsWith(baseUri)
+            ? currentUri[baseUri.Length..]
+            : currentUri;
+
+        // Убираем возможный слеш в конце
+        relativePath = relativePath.TrimEnd('/');
+
+        // Находим элемент меню по Url
+        _selMenu = Menu.FirstOrDefault(m =>
+            string.Equals(m.Url.TrimEnd('/'), relativePath, StringComparison.OrdinalIgnoreCase))
+            ?? Menu.FirstOrDefault(); // fallback — первый пункт
     }
 
+    private List<OptionMenuItem> CreateMenuList()
+    {
+        return [
+            new("Settings","Общие", Match: NavLinkMatch.All),
+            new("Settings/html","Host html"),
+            new("Settings/Front","Front settings"),
+            ..OptionFormList.Select(form=>new OptionMenuItem($"Settings/Option/{form.OptionType.FullName!.Replace(".", "+")}", form.DisplayName)),
+            new("Settings/HostCache","Кеширование"),
+            new("Settings/About","О системе"),
+        ];
+    }
+
+    record OptionMenuItem(string Url, string Title, NavLinkMatch Match = NavLinkMatch.Prefix);
+
+    void SelectedOptionChanged(OptionMenuItem item)
+    {
+        _selMenu = item;
+        _navigationManager.NavigateTo(item.Url);
+    }
 }

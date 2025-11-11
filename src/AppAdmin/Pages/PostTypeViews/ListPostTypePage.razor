@@ -7,7 +7,6 @@
 @inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
-
 <ContentWrapper Title="@AppRes.PostTypes">
 
     <div class="hstack">
@@ -33,32 +32,42 @@
                             ResizableColumns
                             GridTemplateColumns="3fr 2fr 1fr 1fr"
                             GenerateHeader="GenerateHeaderOption.Sticky"
+                            Class="adaptive-table"
                             TGridItem="PostTypeListItemResponse">
-                <TemplateColumn SortBy="@(GridSort<PostTypeListItemResponse>.ByDescending(f=>f.Title))"
+                <TemplateColumn SortBy="@(GridSort<PostTypeListItemResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
                                 InitialSortDirection="SortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
-
-                    <div class="card1 h-100 list-group-item-action d-card-glow position-relative">
+                    <div class="d-none d-lg-block">
+                        <div class="card-body py-1 px-3">
+                            <div class="fs-6">
+                                <a href="@urlEditPage/@context.Id">
+                                    @context.Title
+                                </a>
+                            </div>
+                            <div class="text-secondary small">@context.TypeName</div>
+                        </div>
+                    </div>
+                    <div class="d-block d-lg-none d-card-glow position-relative">
                         <div class="card-body py-1 px-3">
                             <h5 class="card-title">@context.Title</h5>
                             <div class="text-secondary small">@context.TypeName</div>
                         </div>
                         <a href="@urlEditPage/@context.Id" class="stretched-link"></a>
                     </div>
-
                 </TemplateColumn>
                 <TemplateColumn Title="@AppRes.EnabledFeatures">
-                    <FluentOverflow Style="width: 100%;" >
-                        @foreach(var tag in context.EnabledFeatures){
+                    <FluentOverflow Style="width: 100%;">
+                        @foreach (var tag in context.EnabledFeatures)
+                        {
                             <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
                         }
                     </FluentOverflow>
                 </TemplateColumn>
-                <PropertyColumn Property=@(f=>f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
+                <PropertyColumn Property=@(f => f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
                 </TemplateColumn>
             </FluentDataGrid>
         </div>
@@ -71,5 +80,3 @@
     </div>
 
 </ContentWrapper>
-
-

@@ -4,7 +4,6 @@
 @inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
-
 <ContentWrapper Title="@(postType?.Title)">
     <SectionActions>
         <XActionsDropDown ContextPart="@POSTTYPE" />
@@ -20,28 +19,6 @@
         }
 
         @*<h3>@(L[postType.Title])</h3>*@
-
-        <div class="d-flex mb-3" style="max-width:90vw;">
-            <div class="flex-fill d-flex gap-3">
-                @*<div class="PostTypeTabs">
-                <ul class="nav nav-pills shadow-none bg-transparent px-0">
-                @foreach (var type in Q.Site.PostTypes.OrderBy(s => s.Created))
-                {
-                <li class="nav-item px-3">
-                <NavLink class="nav-link" href=@($"/dev/Post/{type.TypeName}")>
-                @type.Title
-                </NavLink>
-                </li>
-                }
-                </ul>
-                </div>*@
-            </div>
-            <div class="text-end d-flex gap-2">
-                @* <a href="@($"{urlEditPage}{query}")">
-                    <Button Icon="plus">Создать</Button>
-                </a> *@
-            </div>
-        </div>
 
         @if (POSTTYPE == "gallery")
         {

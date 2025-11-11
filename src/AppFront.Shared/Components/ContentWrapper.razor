@@ -14,7 +14,6 @@ else
          style="@Style">
         <div class="d-flex flex-column flex-fill">
 
-
             @if (this.Breadcrumb is not null)
             {
                 @*<Breadcrumb2 Path=@($"/:Главная|/Pages:Гражданам|/Profile:{CurrentPageTitle}") />*@
@@ -30,7 +29,7 @@ else
             else if (Title is not null)
             {
                 <div class="layout-standart-title">
-                    <div class="mb-5">
+                    <div class="mb-3">
                         <div class="d-flex">
 
                             @if (BackButton)

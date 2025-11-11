@@ -14,7 +14,7 @@
                 </header>
 
                 <div class="flex-fill d-flex">
-                    <div class="__l_side 1bg-dark-accent me-3 d-flex flex-column" style="position:sticky; top:63px;max-height: calc(100vh - 63px);">
+                    <div class="__l_side 1bg-dark-accent me-3 flex-column d-none d-lg-flex" style="position:sticky; top:63px;max-height: calc(100vh - 63px);">
                         <div class="flex-fill">
 
                             <div class="flex-shrink-0 d-none d-md-block" style="width: 265px;">
@@ -26,20 +26,7 @@
 
                         </div>
                         <div class="__bottom_menu">
-                            <div class="vstack gap-2 p-3">
-                                <a href="/dev/builder">
-                                    <FluentButton Appearance="Appearance.Stealth" Class="w-100">
-                                        <i class="bi bi-grid-3x3-gap-fill me-1"></i>
-                                        Builder
-                                    </FluentButton>
-                                </a>
-                                <a href="/dev/Settings">
-                                    <FluentButton Appearance="Appearance.Stealth" Class="w-100">
-                                        <i class="bi bi-gear me-1"></i>
-                                        @AppRes.Settings
-                                    </FluentButton>
-                                </a>
-                            </div>
+                            <AsideBottomItems />
                         </div>
                     </div>
 

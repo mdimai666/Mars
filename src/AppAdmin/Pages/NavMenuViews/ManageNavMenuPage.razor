@@ -33,13 +33,13 @@
                             GenerateHeader="GenerateHeaderOption.Sticky"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="3fr 1fr 1fr"
+                            Class="adaptive-table"
                             TGridItem="NavMenuSummaryResponse">
-                <TemplateColumn SortBy="@(GridSort<NavMenuSummaryResponse>.ByDescending(f=>f.Title))"
+                <TemplateColumn SortBy="@(GridSort<NavMenuSummaryResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
                                 InitialSortDirection="SortDirection.Ascending"
                                 IsDefaultSortColumn="true"
                                 Sortable="true">
-
                     <div class="col">
                         <div class="card h-100 list-group-item-action d-card-glow">
                             <div class="card-body">
@@ -55,14 +55,13 @@
                             <a href="@urlEditPage/@context.Id" class="text-primary stretched-link"></a>
                         </div>
                     </div>
-
                 </TemplateColumn>
-                <PropertyColumn Property=@(f=>f.CreatedAt)
+                <PropertyColumn Property=@(f => f.CreatedAt)
                                 Title="@AppRes.CreatedAt"
                                 Format="d"
                                 Sortable="true" Align="Align.End" />
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
                 </TemplateColumn>
             </FluentDataGrid>
         </div>
@@ -91,5 +90,3 @@
     *@
 
 </ContentWrapper>
-
-

@@ -35,10 +35,10 @@
                             ItemSize="46"
                             Virtualize
                             ShowHover="false"
-                            AutoFit
                             GenerateHeader="GenerateHeaderOption.Sticky"
                             OnRowClick="OnRowClick"
                             GridTemplateColumns="2fr 2fr 1fr 1fr 1fr"
+                            Class="adaptive-table"
                             TGridItem="UserDetailResponse">
                 <TemplateColumn SortBy="@(GridSort<UserDetailResponse>.ByDescending(f => f.LastName))"
                                 Title="FullName"

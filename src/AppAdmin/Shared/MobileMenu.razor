@@ -2,8 +2,13 @@
 
 @implements IDialogContentComponent<List<MenuItem>>
 
-<FluentDialogBody>
-    <Menu2 Class="menu-admin1" Items=Content />
+<FluentDialogBody Class="d-flex flex-column">
+    <div class="__top flex-fill">
+        <Menu2 Class="menu-admin1" Items=Content />
+    </div>
+    <div class="__bottom_menu">
+        <AsideBottomItems />
+    </div>
 </FluentDialogBody>
 <FluentDialogFooter Visible=false />
 

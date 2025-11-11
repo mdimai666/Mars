@@ -37,19 +37,38 @@ else *@
                             ResizableColumns
                             GridTemplateColumns="3fr 2fr 1fr 1fr"
                             GenerateHeader="GenerateHeaderOption.Sticky"
+                            Class="adaptive-table"
                             TGridItem="PostListItemResponse">
-                <TemplateColumn SortBy="@(GridSort<PostListItemResponse>.ByDescending(f=>f.Title))"
+                <TemplateColumn SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
                                 Sortable="true">
-
-                    <div class="card1 h-100 list-group-item-action d-card-glow position-relative">
-                        <div class="card-body py-1 px-3">
-                            <h5 class="card-title">@context.Title</h5>
-                            <div class="text-secondary small">@context.Type</div>
+                    <div class="position-relative d-block d-lg-none">
+                        <div class="fs-6">@context.Title</div>
+                        @* <div class="text-secondary small">@context.Slug</div> *@
+                        <div class="hstack gap-4">
+                            <div class="text-secondary small">@context.CreatedAt.ToString("d")</div>
+                            @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                            {
+                                <FluentOverflow Style="width: 100%;">
+                                    @foreach (var tag in context.Tags)
+                                    {
+                                        <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                                    }
+                                </FluentOverflow>
+                            }
                         </div>
                         <a href="@urlEditPage/@PostType.TypeName/@context.Id" class="stretched-link"></a>
                     </div>
-
+                    <div class="position-relative d-none d-lg-block">
+                        <div class="">
+                            <div class="fs-6">
+                                <a href="@urlEditPage/@PostType.TypeName/@context.Id">
+                                    @context.Title
+                                </a>
+                            </div>
+                            @* <div class="text-secondary small">@context.Slug</div> *@
+                        </div>
+                    </div>
                 </TemplateColumn>
                 @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
                 {
@@ -65,17 +84,17 @@ else *@
                 @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
                 {
                     <TemplateColumn Title="@AppRes.Status"
-                                    SortBy="@(GridSort<PostListItemResponse>.ByDescending(f=>f.Status))"
+                                    SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Status))"
                                     Sortable="true">
                         @context.Status?.Value
                     </TemplateColumn>
                 }
                 <TemplateColumn Title="@AppRes.Author"
-                                SortBy="@(GridSort<PostListItemResponse>.ByDescending(f=>f.Author))"
+                                SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Author))"
                                 Sortable="true">
                     @context.Author.UserName
                 </TemplateColumn>
-                <PropertyColumn Property=@(f=>f.CreatedAt)
+                <PropertyColumn Property=@(f => f.CreatedAt)
                                 Title="@AppRes.CreatedAt"
                                 Format="d"
                                 InitialSortDirection="SortDirection.Descending"
@@ -83,7 +102,7 @@ else *@
                                 Sortable="true" Align="Align.End" />
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
                     <div class="hstack">
-                        <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id))>
+                        <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id))>
                             <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
                         </DFluentDeleteButton>
                         @* <FluentMenuButton Text="@AppRes.Action" ButtonAppearance="Appearance.Stealth">

@@ -1,10 +1,10 @@
-using System.Linq;
 using AppFront.Shared.AuthProviders;
 using AppFront.Shared.Features;
 using AppFront.Shared.Models;
 using Mars.Shared.Contracts.NavMenus;
 using Mars.Shared.ViewModels;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.HotKeys2;
@@ -18,8 +18,9 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService vms { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
+    [CascadingParameter] public Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    private List<MenuItem> menu_items = new();
+    private List<MenuItem> menu_items = [];
 
     bool _menuDrawerVisible = !true;
     public bool MenuDrawerVisible
@@ -47,8 +48,10 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
         MenuDrawerOnClose();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthState;
+
         navigationManager.LocationChanged += NavigationManager_LocationChanged;
 
         //if (Q.Profile.Username == "anonymous")
@@ -74,7 +77,7 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
 
         //Load();
 
-        this.HotKeysContext = this.HotKeys.CreateContext()
+        HotKeysContext = HotKeys.CreateContext()
              .Add(ModCode.None, Code.F1, () => headerAdmin.FocusActionCenter(), "Focus Action center");
     }
 
@@ -96,7 +99,18 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
 
     bool MenuRolesCheck(NavMenuItemResponse item)
     {
-        return !item.Roles.Any() || Q.User.Roles.Intersect(item.Roles).Count() > 0 == !item.RolesInverse;
+        // роли пользователя (добавляем "Viewer" по умолчанию)
+        var userRoles = Q.User.Roles.Append("Viewer").ToHashSet(StringComparer.OrdinalIgnoreCase);
+        //Console.WriteLine("userRoles=" + userRoles.JoinStr(","));
+
+        // если у меню нет указанных ролей — доступно всем (включая Viewer)
+        if (item.Roles == null || !item.Roles.Any())
+            return true;
+
+        // пересечение ролей пользователя и меню
+        bool hasIntersection = item.Roles.Intersect(userRoles, StringComparer.OrdinalIgnoreCase).Any();
+
+        return item.RolesInverse ? !hasIntersection : hasIntersection;
     }
 
     void onCollapse(bool collapsed)
@@ -123,7 +137,8 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         navigationManager.LocationChanged -= NavigationManager_LocationChanged;
-        await HotKeysContext.DisposeAsync();
+        if (HotKeysContext is not null)
+            await HotKeysContext.DisposeAsync();
     }
 
     void MenuDrawerOnClose()

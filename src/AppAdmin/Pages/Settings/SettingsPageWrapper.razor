@@ -1,7 +1,7 @@
 <ContentWrapper Title="@Title" Breadcrumb="">
 
-    <div class="d-flex flex-column flex-md-row flex-fill gap-4">
-        <aside style="flex: 0 0 200px">
+    <div class="SettingsPageWrapper d-flex flex-column flex-lg-row flex-fill gap-4">
+        <aside class="SettingsPageWrapper__aside" style="">
             <ASideOptions />
         </aside>
         <div class="flex-fill">
@@ -15,10 +15,17 @@
         </div>
     </div>
 
-
 </ContentWrapper>
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string? Title { get; set; } = "Настройки";
 }
+
+<style>
+    @@media (min-width: 1200px) {
+        .SettingsPageWrapper .SettingsPageWrapper__aside {
+            flex: 0 0 200px
+        }
+    }
+</style>

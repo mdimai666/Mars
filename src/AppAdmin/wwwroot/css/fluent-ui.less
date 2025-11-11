@@ -1,3 +1,15 @@
 .fluent-data-grid .fluent-data-grid-row .column-header {
     height: unset !important;
 }
+
+.adaptive-table {
+    @media @mobiles {
+        & {
+            grid-template-columns: auto !important;
+        }
+
+        td[role="gridcell"]:not(:nth-child(1)), th.column-header {
+            display: none;
+        }
+    }
+}

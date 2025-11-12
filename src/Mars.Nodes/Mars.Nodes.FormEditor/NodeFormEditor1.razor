@@ -20,7 +20,7 @@
                 <span>id: </span>
                 <span>@Node.Id</span>
                 @* etype: @(NodeEditFormType?.FullName ?? "null") *@
-                @if (AppFront.Shared.Q.Dev)
+                @if (AppFront.Shared.Q.IsDevelopment)
                 {
                     <div class="vr mx-3"></div>
                     <a role="button" class="" @onclick="OpenFormSourceCode">

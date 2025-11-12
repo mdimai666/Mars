@@ -22,11 +22,11 @@ public static class Q
     static AppInitialViewModel _site = default!;
     public static AppInitialViewModel Site => _site;
 
-    public static bool IsPrerender = false;// Program.IsPrerender;
+    public static bool IsPrerenderProcess;
 #if DEBUG
-    public static bool Dev = true;
+    public static readonly bool IsDevelopment = true;
 #else
-    public static bool Dev = false;
+    public static readonly bool IsDevelopment;
 #endif
 
     public static void UpdateInitialSiteData(InitialSiteDataViewModel vm)

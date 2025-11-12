@@ -29,7 +29,7 @@ internal class DevAdminConnectionService : IDevAdminConnectionService
 
     public IReadOnlyCollection<PageContextInfo> GetPageContexts()
     {
-        var pages = _modelInfoService.GetPagesPageNonId(typeof(AppAdmin.Program).Assembly);
+        var pages = _modelInfoService.GetPagesPageNonId(typeof(AppAdmin.App).Assembly);
 
         return pages.Select(x => new PageContextInfo(x.PageType.FullName!, x.DisplayAttributeName ?? x.Name)).ToList();
     }

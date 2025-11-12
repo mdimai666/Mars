@@ -122,6 +122,11 @@
         <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
         <DebugSymbols>False</DebugSymbols>
         <DebugType>None</DebugType>
+
+        <WasmStripILAfterAOT>false</WasmStripILAfterAOT>
+        <PublishTrimmed>false</PublishTrimmed>
+        <RunAOTCompilation>false</RunAOTCompilation>
+        <InvariantGlobalization>false</InvariantGlobalization>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'DevRelease' ">

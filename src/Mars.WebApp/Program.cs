@@ -109,7 +109,7 @@ builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSS
 //------------------------------------------
 // CLIENT
 #if !NOADMIN
-builder.Services.AddAppFrontMain(builder.Configuration, typeof(AppAdmin.Program));
+builder.Services.AddAppFrontMain(builder.Configuration, typeof(AppAdmin.App));
 #endif
 builder.Services.AddNodeWorkspace();
 builder.Services.AddDatasourceWorkspace();

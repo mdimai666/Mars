@@ -1,28 +1,91 @@
 <!--BlazorScriptsAppend-->
 <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
-
 <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script type="module">
     import { BrotliDecode } from '/mars/js/brotli.decode.min.js';
+
+    window.blazorLoadErrors = [];
+
+    // Show accumulated errors after 3 seconds if Blazor fails to start
+    setTimeout(() => {
+        if (window.blazorLoadErrors && window.blazorLoadErrors.length > 0) {
+            const message = window.blazorLoadErrors[0];
+            document.body.innerHTML = `
+                <div style="padding: 20px; background: #fee; font-family: monospace;">
+                    <h2>❌ MONO Runtime Error Detected</h2>
+                    <pre style="background: white; padding: 10px; overflow: auto; color: red;">${message}</pre>
+                    <h3>All errors:</h3>
+                    <pre style="background: white; padding: 10px; overflow: auto;">${JSON.stringify(window.blazorLoadErrors, null, 2)}</pre>
+                </div>
+            `;
+        }
+    }, 3000);
+
     Blazor.start({
         applicationCulture: 'ru-RU',
         loadBootResource: function (type, name, defaultUri, integrity) {
-            if (type !== 'dotnetjs' && location.hostname !== 'localhost' && type !== 'configuration' && !window._dev) {
-                return (async function () {
-                    const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    const originalResponseBuffer = await response.arrayBuffer();
-                    const originalResponseArray = new Int8Array(originalResponseBuffer);
-                    const decompressedResponseArray = BrotliDecode(originalResponseArray);
-                    const contentType = type ===
-                        'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
-                    return new Response(decompressedResponseArray,
-                        { headers: { 'content-type': contentType } });
-                })();
+            console.debug(`[Blazor] Loading ${type}: ${name}`);
+            if (type === 'dotnetjs' || type === 'configuration' || location.hostname === 'localhost') {
+                console.debug(`[Blazor] URI: ${defaultUri}`);
+                return defaultUri;
             }
+
+            // For production with Brotli
+            return (async function () {
+                try {
+                    const brotliUri = defaultUri + '.br';
+                    const response = await fetch(brotliUri, { cache: 'no-cache' });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const buffer = await response.arrayBuffer();
+                    const array = new Int8Array(buffer);
+                    const decompressed = BrotliDecode(array);
+
+                    const contentType = type === 'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
+                    return new Response(decompressed, {
+                        headers: { 'content-type': contentType }
+                    });
+                } catch (err) {
+                    console.error(`[Blazor] Error loading ${name}:`, err);
+                    window.blazorLoadErrors.push(`${name}: ${err.message}`);
+                    throw err;
+                }
+            })();
         }
+    }).catch(err => {
+        console.error('=== BLAZOR STARTUP FAILED ===');
+        console.error('Error:', err);
+        console.error('Type:', typeof err);
+        console.error('Constructor:', err?.constructor?.name);
+        console.error('Keys:', Object.keys(err));
+        console.error('Values:', Object.values(err));
+
+        const errorDetails = {};
+        for (let key in err) {
+            errorDetails[key] = err[key];
+        }
+        console.error('All properties:', errorDetails);
+
+        document.body.innerHTML = `
+            <div style="padding: 20px; background: #fee; font-family: monospace; font-size: 12px;">
+                <h2>❌ Blazor Startup Failed</h2>
+
+                <h3>Blazor Error:</h3>
+                <pre style="background: white; padding: 10px; overflow: auto;">${JSON.stringify(errorDetails, null, 2)}</pre>
+
+                <h3>MONO Errors:</h3>
+                <pre style="background: white; padding: 10px; overflow: auto; color: red;">${JSON.stringify(window.monoErrors, null, 2)}</pre>
+
+                <h3>Load Errors:</h3>
+                <pre style="background: white; padding: 10px; overflow: auto;">${window.blazorLoadErrors.join('\n')}</pre>
+
+                <h3>Raw Error:</h3>
+                <pre style="background: white; padding: 10px; overflow: auto;">${String(err)}</pre>
+            </div>
+        `;
     });
 </script>
 <!--//BlazorScriptsAppend-->

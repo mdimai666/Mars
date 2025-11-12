@@ -35,10 +35,8 @@ internal class PluginManager
             PhysicalPath = new Uri(Path.Combine(contentRootPath, "data"), UriKind.Absolute),
             RequestPath = ""
         });
-
         _fileStorage = new FileStorage(dataDirHostingInfo);
-
-        isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals("Test", StringComparison.OrdinalIgnoreCase);
+        isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Test", StringComparison.OrdinalIgnoreCase) ?? false;
     }
 
     internal void ConfigureBuilder(WebApplicationBuilder builder, string pluginSection = "Plugins")

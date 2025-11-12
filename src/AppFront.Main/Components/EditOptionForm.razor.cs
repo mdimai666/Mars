@@ -39,7 +39,7 @@ public partial class EditOptionForm<TModel> where TModel : class, new()
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && !Q.IsPrerender)
+        if (firstRender && !Q.IsPrerenderProcess)
         {
             _ = Load();
         }

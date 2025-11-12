@@ -1,9 +1,9 @@
-using System.Globalization;
+using AppAdmin;
 using AppAdmin.Components;
+using AppAdmin.Startups;
 using AppFront.Main.Extensions;
 using AppFront.Main.OptionEditForms;
 using AppFront.Shared.Features;
-using AppFront.Shared.Hub;
 using AppFront.Shared.Interfaces;
 using Mars.Datasource.Front;
 using Mars.Nodes.Workspace;
@@ -13,136 +13,66 @@ using Mars.SemanticKernel.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.SignalR.Client;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
-namespace AppAdmin;
+//Info: Для быстрой разработки через dotnet watch запускайте Dev/DevAdmin.DevServer
 
-/*
- Для быстрой разработки через dotnet watch запускайте Dev/DevAdmin.DevServer
- */
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-public class Program
+builder.Logging.SetMinimumLevel(LogLevel.Trace);
+builder.Logging.AddFilter("System", LogLevel.Warning);
+builder.Logging.AddFilter("Microsoft", LogLevel.Error);
+
+var logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+logger.LogTrace("=== Application startup begin ===");
+
+string? backendUrl = builder.Configuration["BackendUrl"];
+if (string.IsNullOrEmpty(backendUrl))
 {
-#if DEBUG
-    public static readonly bool Dev = true;
-#else
-    public static readonly bool Dev = false;
-#endif
-    public static bool IsPrerender = false; //set on the server "_Host.cshtml"
-
-    public static async Task Main(string[] args)
-    {
-        var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        builder.RootComponents.Add<App>("#app");
-        builder.RootComponents.Add<HeadOutlet>("head::after");
-
-#if DEBUG
-        builder.Logging.SetMinimumLevel(LogLevel.Trace);
-        builder.Logging.AddFilter("System", LogLevel.Warning);
-        builder.Logging.AddFilter("Microsoft", LogLevel.Error);
-#endif
-
-        string? backendUrl = builder.Configuration["BackendUrl"];
-        if (string.IsNullOrEmpty(backendUrl))
-        {
-            backendUrl = builder.HostEnvironment.BaseAddress.Replace("/dev", "", StringComparison.OrdinalIgnoreCase).TrimEnd('/');
-
-            if (backendUrl == "http://localhost:5185")
-            {
-                backendUrl = "http://localhost:5003";
-            }
-
-            Q.BackendUrl = backendUrl;
-        }
-
-        //LANG
-        var defaultCulture = new CultureInfo("ru");
-        var cultureInfo = defaultCulture;
-        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-        Thread.CurrentThread.CurrentCulture = cultureInfo;
-        Thread.CurrentThread.CurrentUICulture = cultureInfo;
-        //END LANG
-
-        builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
-
-        Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
-        Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
-
-        builder.Services.AddHotKeys2();
-
-        builder.Services.AddNodeWorkspace()
-                        .AddDatasourceWorkspace()
-                        .AddSemanticKernelFront();
-
-        CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
-        ContentWrapper.GeneralSectionActions = typeof(Shared.GeneralSectionActions);
-
-        //string? version = Assembly.GetExecutingAssembly().
-        //    GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.
-        //    InformationalVersion;
-
-        //Console.WriteLine($"InformationalVersion={version}");
-
-        if (!Q.IsPrerender)
-        {
-            ConfigureWebSockets(builder, backendUrl);
-        }
-        await builder.AddRemotePluginAssemblies(Q.BackendUrl);
-        var app = builder.Build();
-
-        app.Services.UseAppFrontMain()
-                    .UseNodeWorkspace()
-                    .UseDatasourceWorkspace()
-                    .UseSemanticKernelFront();
-
-        var optionsFormsLocator = app.Services.GetRequiredService<OptionsFormsLocator>();
-        optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
-
-        SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
-        app.UseRemotePluginAssemblies();
-
-        await app.RunAsync();
-    }
-
-    private static void ConfigureWebSockets(WebAssemblyHostBuilder builder, string backendUrl)
-    {
-        var connection = new HubConnectionBuilder()
-            .WithUrl($"{backendUrl}/_ws/ws", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
-            .ConfigureLogging(logging =>
-            {
-                //logging.SetMinimumLevel(LogLevel.Information);
-                //logging.AddConsole();
-            })
-            .WithAutomaticReconnect()
-            .Build();
-
-        builder.Services.AddScoped<HubConnection>(sp => connection);
-        builder.Services.AddScoped<ClientHub>();
-
-        _ = connection.StartAsync();
-
-        connection.Reconnecting += (e) =>
-        {
-            Q.Root.Emit(nameof(HubConnectionState), connection.State);
-            return Task.CompletedTask;
-        };
-        connection.Closed += (e) =>
-        {
-            Q.Root.Emit(nameof(HubConnectionState), connection.State);
-            return Task.CompletedTask;
-        };
-        connection.Reconnected += (e) =>
-        {
-            Q.Root.Emit(nameof(HubConnectionState), connection.State);
-            return Task.CompletedTask;
-        };
-    }
+    backendUrl = builder.HostEnvironment.BaseAddress.TrimEnd('/').Replace("/dev", "", StringComparison.OrdinalIgnoreCase).TrimEnd('/');
+    if (backendUrl == "http://localhost:5185") backendUrl = "http://localhost:5003";
+    logger.LogTrace("BackendUrl from BaseAddress: {BackendUrl}", backendUrl);
+    Q.BackendUrl = backendUrl;
 }
 
-/*
-* AUTH - https://docs.microsoft.com/ru-ru/aspnet/core/blazor/security/?view=aspnetcore-5.0
-*
-*/
+builder.ConfigureAppLanguage();
+builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
+
+Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
+Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
+CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
+ContentWrapper.GeneralSectionActions = typeof(AppAdmin.Shared.GeneralSectionActions);
+
+logger.LogTrace("Adding workspace services...");
+builder.Services.AddHotKeys2();
+builder.Services.AddNodeWorkspace()
+                .AddDatasourceWorkspace()
+                .AddSemanticKernelFront();
+
+if (!App.IsPrerenderProcess)
+    builder.ConfigureWebSockets(backendUrl);
+
+logger.LogTrace("Loading remote plugin assemblies");
+await builder.AddRemotePluginAssemblies(Q.BackendUrl);
+
+logger.LogTrace("Building application...");
+var app = builder.Build();
+
+logger.LogTrace("Initializing services...");
+app.Services.UseAppFrontMain()
+            .UseNodeWorkspace()
+            .UseDatasourceWorkspace()
+            .UseSemanticKernelFront();
+
+var optionsFormsLocator = app.Services.GetRequiredService<OptionsFormsLocator>();
+optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
+
+SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
+
+logger.LogTrace("Using remote plugin assemblies...");
+app.UseRemotePluginAssemblies();
+
+logger.LogTrace("=== Application startup complete, running... ===");
+await app.RunAsync();

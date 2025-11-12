@@ -50,7 +50,7 @@ public partial class DSelectGuidServ<TModel, TListQueryRequest>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        if (!Q.IsPrerender)
+        if (!Q.IsPrerenderProcess)
         {
             _ = Load();
         }

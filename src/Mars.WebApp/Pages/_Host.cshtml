@@ -25,8 +25,7 @@
 @inject InitialSiteDataViewModelHandler _initialSiteDataHandler;
 
 @{
-    //AppFront.Program.IsPrerender = true;
-    Q.IsPrerender = true;
+    Q.IsPrerenderProcess = true;
     var appFront = HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
     AppFrontMode StartupFront_Mode = appFront!.Configuration.Mode;
 

@@ -44,7 +44,7 @@
         <SharedLoader1 />
     </Authorizing>
     <NotAuthorized>
-        @if (!Q.IsPrerender)
+        @if (!Q.IsPrerenderProcess)
         {
             <RedirectToLogin />
         }

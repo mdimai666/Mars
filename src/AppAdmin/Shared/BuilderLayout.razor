@@ -34,7 +34,7 @@
                             <AppUsageResBadge />
                         </div>
                         <div class="_RIGHT hstack pe-2 gap-2">
-                            @if (Program.Dev)
+                            @if (App.IsDevelopment)
                             {
                                 <span class="cursor-pointer" @onclick=@(e=>pageService.OpenPageSource(App.PageType)) title="open page in Visual Studio 2022">[code]</span>
                             }

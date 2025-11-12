@@ -20,7 +20,6 @@ namespace AppFront.Shared.Components
 
         //public TModel model { get; set; }
 
-
         [Parameter]
         public Func<Task<TModel>> LoadFunc { get; set; } = default!;
 
@@ -46,7 +45,7 @@ namespace AppFront.Shared.Components
 
         protected override void OnInitialized()
         {
-            if (Q.IsPrerender == false)
+            if (Q.IsPrerenderProcess == false)
             {
                 _ = StartLoad();
             }
@@ -58,7 +57,6 @@ namespace AppFront.Shared.Components
 
         //    _ = StartLoad();
         //}
-
 
         public async virtual Task StartLoad()
         {

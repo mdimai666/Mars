@@ -9,7 +9,7 @@ namespace Mars.Plugin;
 
 public static class ApplicationPluginExtensions
 {
-    private static readonly bool isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals("Test", StringComparison.OrdinalIgnoreCase);
+    private static readonly bool isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Test", StringComparison.OrdinalIgnoreCase) ?? false;
 
     public static WebApplicationBuilder AddPlugins(this WebApplicationBuilder builder)
     {

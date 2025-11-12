@@ -38,7 +38,7 @@ public class ViewModelService : IViewModelService
 
     public async Task<bool> TryUpdateInitialSiteData(bool forceRemote = false, bool devAdminPageData = false)
     {
-        if (Q.IsPrerender) return true;
+        if (Q.IsPrerenderProcess) return true;
 
         AppInitialViewModel? vm = null;
 

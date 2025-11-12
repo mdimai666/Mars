@@ -1,6 +1,6 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@if (Q.Site is not null && !Q.IsPrerender)
+@if (Q.Site is not null && !Q.IsPrerenderProcess)
 {
     <FluentDesignSystemProvider @ref=_fluentDesignSystemProvider
                                 AccentBaseColor="@styler.AccentBaseColor"
@@ -28,7 +28,7 @@
                             <NotAuthorized>
 
                                 <ContentWrapper>
-                                    @if (Q.IsPrerender)
+                                    @if (Q.IsPrerenderProcess)
                                     {
                                         <SharedLoader1 />
                                     }

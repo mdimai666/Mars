@@ -68,7 +68,7 @@ public partial class SinglePost
             return;
         }
 
-        if (Q.IsPrerender)
+        if (Q.IsPrerenderProcess)
         {
             Busy = true;
             return;

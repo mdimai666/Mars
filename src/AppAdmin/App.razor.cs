@@ -29,11 +29,17 @@ public partial class App
     [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] DeveloperControlService controlService { get; set; } = default!;
     [Inject] HotKeys HotKeys { get; set; } = default!;
+
+    public static bool IsDevelopment => Q.IsDevelopment;
+    public static bool IsPrerenderSupport = false;
+    public static bool IsPrerenderProcess => Q.IsPrerenderProcess;
+
     HotKeysContext appHotKeysContext = default!;
     FluentDesignSystemProvider? _fluentDesignSystemProvider;
 
     protected override async Task OnInitializedAsync()
     {
+        _logger.LogTrace("App.OnInitializedAsync...");
         Interceptor.AfterSend += Interceptor_AfterSend!;
         Q.Root.On("GoBack", () => JSRuntime.InvokeVoidAsync("history.back"));
         Q.Root.On("App.SetupTheme", SetupThemeExternal);
@@ -43,9 +49,11 @@ public partial class App
 
         var vm = await viewModelService.GetLocalInitialSiteDataViewModel();
         Q.UpdateInitialSiteData(vm);
+        _logger.LogTrace("App.OnInitializedAsync - UpdateInitialSiteData updated.");
         SetupTheme();
 
         hub.OnShowNotifyMessage += Hub_OnShowNotifyMessage;
+        _logger.LogTrace("App.OnInitializedAsync - finish.");
     }
 
     private void Interceptor_AfterSend(object sender, HttpClientInterceptorEventArgs e)

@@ -147,6 +147,8 @@
         <Content Include="data\plugins\help.txt" CopyToPublishDirectory="PreserveNewest" />
         <Content Include="data\fronts\help.txt" CopyToPublishDirectory="PreserveNewest" />
         <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+        <Content Update="package.json" CopyToPublishDirectory="Never" />
+        <Content Update="package-lock.json" CopyToPublishDirectory="Never" />
     </ItemGroup>
 
     <ItemGroup>
@@ -193,9 +195,6 @@
         <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
         <!--some props in ./Directory.Build.props-->
         <PublishTrimmed>false</PublishTrimmed>
-
-        <DebugType>none</DebugType>
-        <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'DevRelease' ">

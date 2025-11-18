@@ -25,6 +25,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
         if (template is null || compiled_template is null || !Node.Template.Equals(compiled_template))
         {
             template = Handlebars.Compile(Node.Template);
+            compiled_template = Node.Template;
         }
 
         input.Payload = template(input);

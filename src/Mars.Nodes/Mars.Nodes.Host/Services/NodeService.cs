@@ -247,7 +247,8 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         {
             return new UserActionResult<object?>
             {
-                Message = $"callNodeName Name = {callNodeName} not found"
+                Message = $"callNodeName Name = {callNodeName} not found",
+                Data = null,
             };
         }
 

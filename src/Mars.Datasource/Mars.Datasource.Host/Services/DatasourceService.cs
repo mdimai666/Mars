@@ -211,7 +211,8 @@ internal class DatasourceService : IDatasourceService
                 return new UserActionResult<string[][]>
                 {
                     Message = $"Action \"{action.ActionId}\" not found",
-                    Ok = false
+                    Ok = false,
+                    Data = []
                 };
             }
         }
@@ -221,7 +222,8 @@ internal class DatasourceService : IDatasourceService
             //throw;
             return new UserActionResult<string[][]>
             {
-                Message = ex.Message
+                Message = ex.Message,
+                Data = [],
             };
         }
     }

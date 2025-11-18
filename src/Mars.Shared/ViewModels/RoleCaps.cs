@@ -4,14 +4,14 @@ namespace Mars.Shared.ViewModels;
 
 public static class RoleCaps
 {
-    public class PostCap
+    public static class PostCap
     {
         public const string Add = "Post.Add";
         public const string Update = "Post.Update";
         public const string Delete = "Post.Delete";
         //public const string ChangeStatus = "Post.ChangeStatus";
 
-        public class CommentCap
+        public static class CommentCap
         {
             public const string Add = "Post.Comment.Add";
             public const string Delete = "Post.Comment.Delete";
@@ -19,7 +19,7 @@ public static class RoleCaps
         }
     }
 
-    public class UserCap
+    public static class UserCap
     {
         public const string Add = "User.Add";
         public const string Update = "User.Update";
@@ -29,7 +29,7 @@ public static class RoleCaps
     }
 
     [Display(Name = "Типы записей")]
-    public class PostTypeCap
+    public static class PostTypeCap
     {
         [Display(Name = "Управлять всем")]
         public const string Manage = "PostType.Manage";
@@ -37,34 +37,32 @@ public static class RoleCaps
     }
 
     [Display(Name = "Навигационное меню")]
-    public class NavMenuCap
+    public static class NavMenuCap
     {
         public const string Manage = "PostType.Manage";
     }
 
-    public class ContactPersonCap
+    public static class ContactPersonCap
     {
         public const string Add = "ContactPerson.Add";
         public const string Update = "ContactPerson.Update";
         public const string Delete = "ContactPerson.Delete";
     }
 
-    public class GeoLocationCap
+    public static class GeoLocationCap
     {
         public const string Add = "GeoLocation.Add";
         public const string Update = "GeoLocation.Update";
         public const string Delete = "GeoLocation.Delete";
     }
 
-
-
 }
 
 public class RoleCapElement
 {
-    public string Id { get; set; }
-    public string Title { get; set; }
-    public string? Description { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; } 
 
     public RoleCapElement()
     {
@@ -99,18 +97,16 @@ public class RoleCapElementCheckable : RoleCapElement
 
 public class RoleCapGroup
 {
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public RoleCapElement[] RoleCapElements { get; set; }
+    public RoleCapElement[] RoleCapElements { get; set; } = [];
 }
-
-
 
 public class RoleCapGroupCheckable
 {
-    public string Title { get; set; }
-    public string? Description { get; set; }
-    public RoleCapElementCheckable[] RoleCapElements { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; } = string.Empty;
+    public RoleCapElementCheckable[] RoleCapElements { get; set; } = [];
 
     public RoleCapGroupCheckable()
     {

@@ -52,7 +52,7 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
             }
         }
 
-        var localPages = new List<RenderActionResult<PostRenderResponse?>>();
+        var localPages = new List<RenderActionResult<PostRenderResponse>>();
         if (indexPage is not null) localPages.Add(indexPage.ToResponse());
         if (currentPage is not null) localPages.Add(currentPage.ToResponse());
 

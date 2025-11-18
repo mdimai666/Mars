@@ -4,6 +4,10 @@
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
+    <PropertyGroup>
+        <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
+    </PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9" />
 		<PackageReference Include="BlazorMonaco" Version="3.3.0" />

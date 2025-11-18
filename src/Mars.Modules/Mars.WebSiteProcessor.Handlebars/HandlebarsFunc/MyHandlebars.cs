@@ -1,8 +1,6 @@
 using HandlebarsDotNet;
 using HandlebarsDotNet.Extension.Json;
 using HandlebarsDotNet.Extension.NewtonsoftJson;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Templators;
 using static Mars.Host.Shared.Templators.IMarsHtmlTemplator;
 using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsBasicFunctions;
@@ -73,64 +71,10 @@ public class MyHandlebars : IMarsHtmlTemplator
         handlebars.RegisterHelper("help", HelpHelper);
     }
 
-    [Obsolete]
-    public static Dictionary<Guid, MetaRelationObjectDict> FillData(ICollection<MetaValueDto> metaValues, IServiceProvider sp)
-    {
-        //IMetaModelTypesLocator mlocator = sp.GetRequiredService<IMetaModelTypesLocator>();
-
-        //var list = metaValues.Where(s => s.MetaField.IsTypeRelation && s.ModelId != Guid.Empty)
-        //    //distinct after fix
-        //    .DistinctBy(s => s.ModelId).Select(s => new MetaRelationObjectDict(s));
-
-        //if (list.Count() == 0) return new Dictionary<Guid, MetaRelationObjectDict>();
-
-        //Dictionary<Guid, MetaRelationObjectDict> dict = list.ToDictionary(s => s.ModelId);
-        //var grouped = list.GroupBy(s => mlocator.GetModelType(s.Type, s.ModelName));
-        //foreach (var group in grouped)
-        //{
-        //    Type t = group.Key;
-        //    //IQueryable<IBasicEntity> query = MarsDbContext.DbSetByType(t, q.ef, sp);
-        //    IQueryable<IBasicEntity> query = mlocator.GetModelQueryable(sp, t.Name);
-        //    var ids = group.Select(s => s.ModelId);
-        //    var items = query.Where(s => ids.Contains(s.Id)).ToList();
-        //    foreach (var a in items)
-        //    {
-        //        dict[a.Id].Entity = a;
-        //    }
-        //}
-        //return dict;
-        throw new NotImplementedException();
-        /*see*/
-        _ = nameof(IMetaModelTypesLocator.AllMetaRelationsStructure);
-    }
-
-    public static List<Action<IHandlebars, Dictionary<Guid, MetaRelationObjectDict>, Func<ICollection<MetaValueDto>, IServiceProvider, Dictionary<Guid, MetaRelationObjectDict>>>> extraRegisteredActions = [];
-
     public void RegisterContextFunctions()
     {
         //var sp = renderContext.ServiceProvider;
         // -> var renderContext = options.Data[ChainSegment.Create("rctx")] as IRenderContext;
-
-        Dictionary<Guid, MetaRelationObjectDict> data = null;
-
-        foreach (var x in extraRegisteredActions)
-        {
-            x(handlebars, data, FillData);
-        }
-
-        //handlebars.RegisterHelper("display1", (output, context, args) =>
-        //{
-        //    data ??= FillData(q, q.post.MetaValues);
-        //    string html = TemplatorFormOutput.RenderMetaFields(q.post.MetaValues, data, q.req);
-        //    output.WriteSafeString(html);
-        //});
-
-        //handlebars.RegisterHelper("edit1", (output, context, args) =>
-        //{
-        //    data ??= FillData(q, q.post.MetaValues);
-        //    string html = TemplatorFormOutput.RenderMetaFields(q.post.MetaValues, data, q.req, edit: true);
-        //    output.WriteSafeString(html);
-        //});
 
         handlebars.RegisterHelper("mobile", MobileBlock);
         handlebars.RegisterHelper("!mobile", NotMobileBlock);

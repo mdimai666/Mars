@@ -26,14 +26,14 @@
                             {
                                 <div>
                                     <span>@p.Name</span> |
-                                    @foreach (var url in p.Urls)
+                                    @foreach (var url in p?.Urls ?? [])
                                     {
                                         <a href=@($"/dev{url}")>@url</a>
                                     }
-                                    @if (p.Roles?.Any()??false)
+                                    @if (p?.Roles?.Any() ?? false)
                                     {
                                         <text>
-                                        | <span style="color:red;"> @p.Roles?.JoinStr(";") </span>
+                                            | <span style="color:red;"> @p.Roles?.JoinStr(";") </span>
                                         </text>
                                     }
                                 </div>
@@ -58,6 +58,6 @@
             [
                 typeof(Program).Assembly,
                 .. WebAssemblyPluginFrontExtensions.PluginLoadAssemblies
-            ]).GroupBy(x=>x.Assembly).ToDictionary(x=>x.Key, x=>x.ToList());
+            ]).GroupBy(x => x.Assembly).ToDictionary(x => x.Key, x => x.ToList());
     }
 }

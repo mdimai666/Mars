@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Text.Json;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Host.Services;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.ExceptionFilters;
@@ -30,13 +28,10 @@ namespace Mars.Controllers;
 public class PostTypeController : ControllerBase
 {
     private readonly IPostTypeService _postTypeService;
-    private readonly PostTypeExporter _postTypeExporter;
-    public PostTypeController(
-        IPostTypeService postTypeService,
-        PostTypeExporter postTypeExporter)
+
+    public PostTypeController(IPostTypeService postTypeService)
     {
         _postTypeService = postTypeService;
-        _postTypeExporter = postTypeExporter;
     }
 
     [HttpGet("{id:guid}")]
@@ -129,30 +124,6 @@ public class PostTypeController : ControllerBase
         }
 
         return dict;
-    }
-
-    [HttpGet("PostTypeExport/{id:guid}")]
-    public Task<PostTypeExport> PostTypeExport(Guid id)
-    {
-        return _postTypeExporter.ExportPostType(id);
-    }
-
-    [HttpPost("PostTypeImport")]
-    public Task<UserActionResult> PostTypeImport(PostTypeExport postType, string asPostType = "")
-    {
-        return _postTypeExporter.ImportPostType(postType, asPostType);
-    }
-
-    [HttpPost("PostTypeImportFile")]
-    public Task<UserActionResult> PostTypeImportFile(IFormFile file)
-    {
-        using var reader = new StreamReader(file.OpenReadStream());
-
-        string json = reader.ReadToEnd();
-
-        PostTypeExport postType = JsonSerializer.Deserialize<PostTypeExport>(json) ?? throw new UserActionException("json not valid");
-
-        return _postTypeExporter.ImportPostType(postType);
     }
 
     [HttpGet("AllMetaRelationsStructure")]

@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 using Mars.Datasource.Core;
 using Mars.Datasource.Core.Interfaces;
 using Microsoft.Data.SqlClient;
@@ -179,7 +179,7 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
         _this.IsLong = column.IsLong;
         _this.IsUnique = column.IsUnique;
         _this.DataType = column.DataType!;
-        _this.DataTypeName = column.DataTypeName;
+        _this.DataTypeName = column.DataTypeName!;
         return _this;
 
     }

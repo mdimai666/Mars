@@ -17,7 +17,7 @@ public interface IOAuthService
     // token flows:
     Task<(string accessToken, string? refreshToken, int expiresIn)> ExchangeCodeForTokenAsync(string code,
                         string clientId, string clientSecret, string redirectUri, string? state,
-                        string codeVerifier, CancellationToken cancellationToken);
+                        string? codeVerifier, CancellationToken cancellationToken);
     Task<(string accessToken, string? refreshToken, int expiresIn)> ExchangeRefreshTokenAsync(string refreshToken,
                         string clientId, string clientSecret,
                         CancellationToken cancellationToken);

@@ -109,7 +109,6 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         //    (Guid[])[new Guid("5473a8fb-01b9-40e2-8eba-d92134d8fdc1"),new Guid("daaef7ca-d92b-4059-9c04-59166c5c2ef2")]],
     ];
 
-
     [Theory]
     [MemberData(nameof(SetVarData))]
     public async Task Execute_VarNodeSet_Success(string valuePath, string varType, string valueString, object expectValue)
@@ -140,7 +139,6 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     //[InlineData("decimal[]", "[ 1M,2M,3M ]", (decimal[])[ 1M, 2M, 3M ])] not work on C#
     [InlineData("bool[]", "[ false, true, true ]", (bool[])[false, true, true])]
     [InlineData("string[]", "[ \"x1\", \"x2\" ]", (string[])["x1", "x2"])]
-    [InlineData("int", "321", 321)]
     public void InitArray_Ctor_Success(string varType, string expression, object expect)
     {
         //Arrange
@@ -152,6 +150,7 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
 
         //Assert
         result.Should().BeEquivalentTo(expect);
+        VarNode.GetPureArrayInitializerPrefix(result.GetType()).Should().Be(varType);
     }
 
     [Fact]

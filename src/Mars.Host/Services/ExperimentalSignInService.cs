@@ -8,14 +8,14 @@ public class ExperimentalSignInService(SignInManager<UserEntity> signInManager, 
 {
     public async Task LoginForceByIdAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var user = await userManager.FindByIdAsync(userId.ToString());
+        var user = await userManager.FindByIdAsync(userId.ToString()) ?? throw new InvalidOperationException("user not found");
 
         await signInManager.SignInAsync(user, false);
     }
 
     public async Task LoginForceByNameIdentifierAsync(string providerName, string nameIdentifier, CancellationToken cancellationToken)
     {
-        var user = await userManager.FindByLoginAsync(providerName, nameIdentifier);
+        var user = await userManager.FindByLoginAsync(providerName, nameIdentifier) ?? throw new InvalidOperationException("user not found");
 
         await signInManager.SignInAsync(user, false);
     }

@@ -34,7 +34,7 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
 
         http.HttpContext.Items.Add(nameof(MarsAppFront), af);
 
-        WebPage page = WebPage.Blank(input.Payload.ToString());
+        WebPage page = WebPage.Blank(input.Payload?.ToString() ?? "");
 
         var render = await processor.RenderPage(page, http.HttpContext, null, default);
 

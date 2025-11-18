@@ -504,12 +504,12 @@ public class MetaValueEntity : IBasicEntity
 
 public class MetaValueTree
 {
-    public string Key { get; set; }
+    public string Key { get; set; } = string.Empty;
     public EMetaFieldType Type { get; set; }
-    public object Value { get; set; }
+    public object Value { get; set; } = default!;
     public bool IsList { get; set; }
     //public int Index { get; set; }
-    public IEnumerable<MetaValueTree> Childs { get; set; }
+    public IEnumerable<MetaValueTree> Childs { get; set; } = [];
 
     public MetaValueTree()
     {
@@ -520,7 +520,7 @@ public class MetaValueTree
     {
         Key = value.MetaField.Key;
         Type = value.Type;
-        Value = value.Type == EMetaFieldType.List ? null : value.Get();
+        Value = (value.Type == EMetaFieldType.List ? null : value.Get())!;
         IsList = value.Type == EMetaFieldType.List;
     }
 

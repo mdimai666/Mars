@@ -9,13 +9,12 @@ public class PaginatorHelper
     public int PageSize { get; set; }
 
     public Dictionary<int, string> Items { get; set; }
-    public string Prev { get; set; }
-    public string Next { get; set; }
+    public string? Prev { get; set; }
+    public string? Next { get; set; }
 
     public int PagesCount { get; set; }
     public int Skip { get; set; }
     public int Take { get; set; }
-
 
     public PaginatorHelper(int page, int total, int pageSize)
     {

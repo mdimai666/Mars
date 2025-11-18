@@ -58,7 +58,7 @@ public class SourceUri : IEquatable<SourceUri>
 
     public override string ToString()
     {
-        return Value;
+        return Value!;
     }
 
     public bool StartsWithSegments(SourceUri other)
@@ -136,12 +136,12 @@ public class SourceUri : IEquatable<SourceUri>
         return new SourceUri(Value + other.Value);
     }
 
-    public bool Equals(SourceUri other)
+    public bool Equals(SourceUri? other)
     {
         return Equals(other, StringComparison.OrdinalIgnoreCase);
     }
 
-    public bool Equals(SourceUri other, StringComparison comparisonType)
+    public bool Equals(SourceUri? other, StringComparison comparisonType)
     {
         if (!HasValue && !other.HasValue)
         {
@@ -196,8 +196,8 @@ public class SourceUri : IEquatable<SourceUri>
     public static implicit operator SourceUri(string? s)
         => ConvertFromString(s);
 
-    public static implicit operator string(SourceUri path)
-        => path?.ToString();
+    public static implicit operator string(SourceUri? path)
+        => path?.ToString()!;
 
     internal static SourceUri ConvertFromString(string? s)
         => string.IsNullOrEmpty(s) ? new SourceUri(s) : FromUriComponent(s);

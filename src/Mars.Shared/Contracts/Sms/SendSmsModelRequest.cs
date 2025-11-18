@@ -9,12 +9,11 @@ public class SendSmsModelRequest : IValidatableObject
     [Required, Display(Name = "Мобильный телефон")]
     [DataType(DataType.PhoneNumber)]
     [Phone]
-    public string Phone { get; set; }
-
+    public required string Phone { get; set; }
 
     [Required, Display(Name = "Сообщение")]
     [DataType(DataType.MultilineText)]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -33,7 +32,6 @@ public class SendSmsModelRequest : IValidatableObject
                 "Нельзя отправить пустое сообщение", new string[] { nameof(Message) })
             );
         }
-
 
         return errors;
     }
@@ -58,7 +56,7 @@ public class SendSmsModelRequest : IValidatableObject
         return isValid;
     }
 
-    public UserActionResult EnsureValidate(SendSmsModelRequest form)
+    public UserActionResult? EnsureValidate(SendSmsModelRequest form)
     {
         ValidationContext validationContext = new(form);
         var errors = form.Validate(validationContext);

@@ -19,11 +19,11 @@ public static class PostRenderMapping
             TemplateId = entity.TemplateId,
         };
 
-    public static RenderActionResult<PostRenderResponse?> ToResponse(this RenderActionResult<PostRenderDto> entity)
+    public static RenderActionResult<PostRenderResponse> ToResponse(this RenderActionResult<PostRenderDto> entity)
         => new()
         {
             Message = entity.Message,
-            Data = entity.Data?.ToResponse(),
+            Data = entity.Data?.ToResponse()!,
             NotFound = entity.NotFound,
             Ok = entity.Ok,
         };

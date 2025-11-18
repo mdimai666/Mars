@@ -79,7 +79,7 @@ public class WebClientRequest
         Method = method;
         if (HasFormContentType)
         {
-            Form = DictionaryWithDefaultExtension.ToDictionary(formCollection, s => s.Key, s => s.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+            Form = DictionaryWithDefaultExtension.ToDictionary(formCollection!, s => s.Key, s => s.Value.ToString(), StringComparer.OrdinalIgnoreCase);
         }
         Headers = headers ?? new HeaderDictionary();
         Cookies = [];

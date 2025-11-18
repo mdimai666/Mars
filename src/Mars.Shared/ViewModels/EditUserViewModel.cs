@@ -5,8 +5,8 @@ namespace Mars.Shared.ViewModels;
 
 public class EditUserViewModel
 {
-    public UserDetailResponse User { get; set; }
-    public IReadOnlyCollection<RoleSummaryResponse> Roles { get; set; }
+    public required UserDetailResponse User { get; set; }
+    public required IReadOnlyCollection<RoleSummaryResponse> Roles { get; set; }
 
 }
 

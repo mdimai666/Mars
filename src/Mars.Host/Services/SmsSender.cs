@@ -37,7 +37,7 @@ internal class SmsSender : ISmsSender
 
         var result = await HttpPost(client, form);
 
-        string message = codes.GetValueOrDefault(result.status_code);
+        string message = codes.GetValueOrDefault(result.status_code) ?? throw new InvalidOperationException($"code '{result.status_code}' not found");
 
         if (result.Ok) message += " Баланс=" + result.balance.ToString("0.00");
 
@@ -79,17 +79,17 @@ internal class SmsSender : ISmsSender
 
     class SmsApiMessageData
     {
-        public string api_id { get; set; }
-        public string to { get; set; }
-        public string text { get; set; }
+        public string api_id { get; set; } = default!;
+        public string to { get; set; } = default!;
+        public string text { get; set; } = default!;
     }
 
 
     public class ResponseResult
     {
-        public string status { get; set; }
+        public string status { get; set; } = default!;
         public int status_code { get; set; }
-        public Dictionary<string, AbonentStatus> sms { get; set; }
+        public Dictionary<string, AbonentStatus> sms { get; set; } = default!;
         public decimal balance { get; set; }
 
         public bool Ok => status == "OK";
@@ -97,9 +97,9 @@ internal class SmsSender : ISmsSender
 
     public class AbonentStatus
     {
-        public string status { get; set; }
+        public string status { get; set; } = default!;
         public int status_code { get; set; }
-        public string status_text { get; set; }
+        public string status_text { get; set; } = default!;
 
         public bool Ok => status == "OK";
 

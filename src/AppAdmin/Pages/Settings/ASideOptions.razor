@@ -46,7 +46,7 @@
     static List<OptionsFormsLocatorItem> OptionFormList = default!;
 
     List<OptionMenuItem>? _menu;
-    List<OptionMenuItem> Menu => _menu ?? CreateMenuList();
+    List<OptionMenuItem> Menu => _menu ??= CreateMenuList();
 
     OptionMenuItem? _selMenu;
 

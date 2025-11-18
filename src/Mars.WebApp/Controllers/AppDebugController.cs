@@ -46,7 +46,6 @@ public class AppDebugController : ControllerBase
 
             //using TextReader reader = new StreamReader(System.IO.File.OpenRead(logspath));
 
-
             using var fs = new FileStream(logspath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var sr = new StreamReader(fs);
             using TextReader reader = sr;//System.IO.File.OpenText(logspath);
@@ -64,6 +63,7 @@ public class AppDebugController : ControllerBase
             return new UserActionResult<string>
             {
                 Message = ex.Message,
+                Data = string.Empty,
             };
         }
     }

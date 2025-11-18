@@ -6,7 +6,7 @@ public interface IGeneralPostQuery
     string Type { get; }
     string Slug { get; }
     IReadOnlyCollection<string> Tags { get; }
-    string Status { get; }
+    string? Status { get; }
     Guid UserId { get; }
     string? Excerpt { get; }
     string? Content { get; }

@@ -2,11 +2,12 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @using System.Reflection
+@using Mars.Shared.Contracts.Posts
 @using Mars.Shared.Tools
 
 <ContentWrapper Title="ModelListPage">
 
-    <MModelPropSel @bind-Value="propSel1" />
+    @* <MModelPropSel @bind-Value="propSel1" /> *@
 
     <h2>models = @Models.Count()</h2>
 
@@ -28,8 +29,8 @@
                         <div>
                             [actions]
                             <a href="@m.SourceFilePath" class="text-primary cursor-pointer"
-                            @onclick:preventDefault
-                               @onclick=@(e=>OpenModelFile(m))>[file]</a>
+                               @onclick:preventDefault
+                               @onclick=@(e => OpenModelFile(m))>[file]</a>
                         </div>
                         <hr class="m-0">
                         <div>
@@ -86,18 +87,20 @@
     {
         Models = modelService.ModelList();
 
-        var option = Models.FirstOrDefault(s => s.Name == "Option");
+        var option = Models.FirstOrDefault(s => s.Name == "OptionEntity")!;
 
-        propSel1 = new ModelProperySel
-                {
-                    Model = option,
-                    Property = option.Properties.FirstOrDefault()
-                };
+        if (option is not null)
+        {
+            propSel1 = new ModelProperySel
+            {
+                Model = option,
+                Property = option.Properties.FirstOrDefault()!
+            };
+        }
     }
 
     void OpenModelFile(ModelInfo model)
     {
-
 
         string path = Q.WorkDir;
 
@@ -110,40 +113,38 @@
 
         _logger.LogWarning("ff=" + ff);
 
-        navigationManager.NavigateTo($"vs2022://{ff}");
-
-        //_ = js.OpenNewTab($"vs2022://{path}{filename}");
+        navigationManager.NavigateTo($"vs2026://{ff}");
 
     }
 
     RenderFragment drawField(PropertyInfo field, ModelInfo model) => @<div>
-        <span class="font-monospace fw-bold">
-            @field.Name
-        </span>
-        :
-        <MTypeBadge Value=@field.PropertyType />
-        @if (@field.GetCustomAttributes(true).Count(s => s is RequiredAttribute) > 0)
+    <span class="font-monospace fw-bold">
+        @field.Name
+    </span>
+    :
+    <MTypeBadge Value=@field.PropertyType />
+@if (@field.GetCustomAttributes(true).Count(s => s is RequiredAttribute) > 0)
     {
-        <span class="text-danger d-inline-block position-relative" style="width:0.7em;height:1em;" title="required">
-            <span class="fs-4 position-absolute" style="top:-0.2em">*</span>
-        </span>
+    <span class="text-danger d-inline-block position-relative" style="width:0.7em;height:1em;" title="required">
+        <span class="fs-4 position-absolute" style="top:-0.2em">*</span>
+    </span>
     }
-        @if(field.CanWrite == false)
+@if(field.CanWrite == false)
     {
-        <span class="text-dark" title="read only">(r)</span>
+    <span class="text-dark" title="read only">(r)</span>
     }
-        @if (field.DeclaringType!.Name != model.ModelType.Name)
+@if (field.DeclaringType!.Name != model.ModelType.Name)
     {
-        <span class="text-dark">:@field.DeclaringType.Name</span>
+    <span class="text-dark">:@field.DeclaringType.Name</span>
     }
-    </div>;
+</div>;
 }
 
 <style>
     .mansory {
         /*display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: masonry;*/
+              grid-template-columns: repeat(4, 1fr);
+              grid-template-rows: masonry;*/
         column-count: 3;
         column-gap: 20px;
     }

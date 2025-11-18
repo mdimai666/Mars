@@ -41,7 +41,7 @@ public class RuntimeMetaTypeCompiler
                             //typeof(EntityFrameworkQueryableExtensions),
                             typeof(MetaValueEntity),
                             typeof(MetaFieldEntity),
-                            typeof(IDtoMarker),
+                            typeof(IMtoMarker),
                             typeof(MetaFieldVariant),
                             ..entityWithMetaFields.Select(s=>s.BaseEntityType)
                             ];

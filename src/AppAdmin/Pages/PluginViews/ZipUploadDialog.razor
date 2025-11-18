@@ -124,7 +124,7 @@ else
         busy = true;
         StateHasChanged();
 
-        var opt = await client.Option.GetOption<PluginManagerSettingsOption>();
+        var opt = await client.Option.GetOption<PluginManagerSettingsOption>() ?? throw new NotFoundException($"option 'PluginManagerSettingsOption' not found");
         IsAllowUploadZipManually = opt.AllowUploadZipManually;
 
         busy = false;

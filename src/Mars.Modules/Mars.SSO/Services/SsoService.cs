@@ -56,6 +56,7 @@ internal class SsoService : ISsoService
     public ISsoProvider? GetProvider(string name)
     {
         var d = Providers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (d is null) return null;
         var provider = _factory.Create(d);
         return provider;
     }

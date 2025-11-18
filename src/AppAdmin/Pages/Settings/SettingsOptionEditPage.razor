@@ -45,6 +45,6 @@
 
         string normalName = OptionTypeFullName.Replace("+", ".");
 
-        optionFormType = OptionFormList.FirstOrDefault(s => s.OptionType.FullName == normalName);
+        optionFormType = OptionFormList?.FirstOrDefault(s => s.OptionType.FullName == normalName);
     }
 }

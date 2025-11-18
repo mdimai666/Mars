@@ -5,14 +5,14 @@ public class EditRolesViewModelDto
     //public List<Role> Roles { get; set; }
     //public List<Claim> Claims { get; set; }
 
-    public IEnumerable<RoleClaimsDto> RoleClaims { get; set; }
+    public IEnumerable<RoleClaimsDto> RoleClaims { get; set; } = [];
 }
 
 public class RoleShortDto
 {
     public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string Title { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
     public RoleShortDto()
     {
@@ -28,6 +28,6 @@ public class RoleShortDto
 
 public class RoleClaimsDto
 {
-    public RoleShortDto Role { get; set; }
-    public RoleCapGroupCheckable[] Groups { get; set; }
+    public required RoleShortDto Role { get; set; }
+    public required RoleCapGroupCheckable[] Groups { get; set; }
 }

@@ -11,8 +11,8 @@
         <div class="hstack gap-3">
             @foreach (var group in grouped)
             {
-                <a scroll-to="#_@(group.Key.FullName.Split(',')[0].Replace('.','_'))" scroll-target="main" class="btn btn-light">
-                    @group.Key.FullName.Split(',')[0]
+                <a scroll-to="#_@(group!.Key.FullName!.Split(',')[0].Replace('.','_'))" scroll-target="main" class="btn btn-light">
+                    @group.Key.FullName!.Split(',')[0]
                 </a>
             }
         </div>
@@ -21,7 +21,7 @@
     <div class="vstack gap-4">
         @foreach (var group in grouped)
         {
-            <div class="card card-body" id="_@(group.Key.FullName.Split(',')[0].Replace('.','_'))">
+            <div class="card card-body" id="_@(group!.Key.FullName!.Split(',')[0].Replace('.','_'))">
                 <div class="text-accent">
                     Assembly: <b>@group.Key.FullName</b>
                     <hr />
@@ -45,7 +45,6 @@
 
     List<IGrouping<System.Reflection.Assembly, KeyValuePair<string, Type>>> grouped = new();
     int typesCount = 0;
-    string baseUrl = "/dev/builder/com/list";
 
     protected override void OnInitialized()
     {

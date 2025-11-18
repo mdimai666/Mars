@@ -60,7 +60,6 @@ public static class MainMarsHost
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IFeedbackService, FeedbackService>();
 
-        services.AddScoped<ViewModelService>();
         services.AddScoped<InitialSiteDataViewModelHandler>();
         services.AddScoped<IGalleryService, GalleryService>();
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
@@ -69,9 +68,6 @@ public static class MainMarsHost
         services.AddScoped<SiteFaviconConfiguratorHandler>();
 
         ValidatorFabric.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
-
-        //temp
-        services.AddScoped<PostTypeExporter>();
 
         UseFileStorages(services, wenv);
 

@@ -83,7 +83,7 @@ public class OAuthService : IOAuthService
 
     public async Task<(string accessToken, string? refreshToken, int expiresIn)> ExchangeCodeForTokenAsync(
                         string code, string clientId, string clientSecret,
-                        string redirectUri, string? state, string codeVerifier,
+                        string redirectUri, string? state, string? codeVerifier,
                         CancellationToken cancellationToken)
     {
         var auth = await FindAuthCodeAsync(code, cancellationToken) ?? throw new InvalidOperationException("Invalid code");
@@ -107,7 +107,8 @@ public class OAuthService : IOAuthService
         if (client.RequirePkce)
         {
             if (string.IsNullOrEmpty(auth.CodeChallenge)) throw new InvalidOperationException("No code challenge");
-            if (!VerifyPkce(auth.CodeChallengeMethod, auth.CodeChallenge!, codeVerifier)) throw new InvalidOperationException("Invalid PKCE verifier");
+            ArgumentNullException.ThrowIfNull(codeVerifier, "Code verifier required");
+            if (!VerifyPkce(auth.CodeChallengeMethod, auth.CodeChallenge!, codeVerifier!)) throw new InvalidOperationException("Invalid PKCE verifier");
         }
 
         // ok — create tokens

@@ -28,7 +28,7 @@ public class PageRenderController : ControllerBase
     }
 
     [HttpGet("Render/{id:guid}")]
-    public async Task<RenderActionResult<PostRenderResponse?>> Render(Guid id, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> Render(Guid id, CancellationToken cancellationToken)
     {
         SetupAppFront();
         return (await _pageRenderService.RenderPostById(id, HttpContext, cancellationToken)).ToResponse();
@@ -42,21 +42,21 @@ public class PageRenderController : ControllerBase
     //}
 
     [HttpGet("RenderPost/{type}/{slug}")]
-    public async Task<RenderActionResult<PostRenderResponse?>> RenderPost(string type, string slug, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> RenderPost(string type, string slug, CancellationToken cancellationToken)
     {
         SetupAppFront();
         return (await _pageRenderService.RenderPostBySlug(type, slug, HttpContext, cancellationToken)).ToResponse();
     }
 
     [HttpGet("Render/{slug}")]
-    public async Task<RenderActionResult<PostRenderResponse?>> Render(string slug, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> Render(string slug, CancellationToken cancellationToken)
     {
         SetupAppFront();
         return (await _pageRenderService.RenderPageBySlug(slug, HttpContext, cancellationToken)).ToResponse();
     }
 
     [HttpGet("RenderUrl/{*url}")]
-    public async Task<RenderActionResult<PostRenderResponse?>> RenderUrl(string url, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> RenderUrl(string url, CancellationToken cancellationToken)
     {
         SetupAppFront();
         return (await _pageRenderService.RenderUrl(HttpUtility.UrlDecode(url), HttpContext)).ToResponse();

@@ -10,7 +10,7 @@ public class MetaValueTree
     public object? Value { get; set; }
     public bool IsList { get; set; }
     //public int Index { get; set; }
-    public IEnumerable<MetaValueTree> Childs { get; set; }
+    public IEnumerable<MetaValueTree> Childs { get; set; } = [];
 
     public MetaValueTree(MetaValueDto value)
     {

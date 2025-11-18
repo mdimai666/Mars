@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using AppFront.Shared.Components;
 using FluentAssertions;
 using HtmlAgilityPack;
@@ -39,7 +39,6 @@ public class WysiwygEditorHelperTest
         var minWidth = infos.Min(s => s.WidthPx);
         var minHeight = infos.Min(s => s.HeightPx);
 
-
         int expectMaxWidth = 400;
         int expectMaxHeight = 300;
         int expectMinWidth = 139;
@@ -52,13 +51,12 @@ public class WysiwygEditorHelperTest
         minWidth.Should().Be(expectMinWidth);
         minHeight.Should().Be(expectMinHeight);
 
-
     }
 
     [Fact]
     public void WysiwygEditorHelper_ModifyImages()
     {
-        var html2 = WysiwygEditorHelper.ModifyImages(html, ImageCollectionModify.ByFirst);
+        var html2 = WysiwygEditorHelper.ModifyImages(html, ImageCollectionModify.ByFirst)!;
 
         var doc = new HtmlDocument();
         doc.LoadHtml(html2);

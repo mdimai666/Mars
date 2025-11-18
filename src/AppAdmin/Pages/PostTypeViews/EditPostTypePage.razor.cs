@@ -22,10 +22,10 @@ public partial class EditPostTypePage
     string import_json = "";
     bool visibleImportModal;
 
-    [ValidateSourceUri]
-    string _FormListSetter = "";
-    [ValidateSourceUri]
-    string _FormEditSetter = "";
+    //[ValidateSourceUri]
+    //string _FormListSetter = "";
+    //[ValidateSourceUri]
+    //string _FormEditSetter = "";
 
     protected override void OnInitialized()
     {

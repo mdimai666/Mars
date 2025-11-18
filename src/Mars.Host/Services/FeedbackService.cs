@@ -45,7 +45,7 @@ internal class FeedbackService : IFeedbackService
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _feedbackRepository.Create(query, cancellationToken);
-        var created = await GetDetail(id, cancellationToken);
+        var created = (await GetDetail(id, cancellationToken))!;
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackAdd(), created);//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
@@ -58,7 +58,7 @@ internal class FeedbackService : IFeedbackService
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
 
         await _feedbackRepository.Update(query, cancellationToken);
-        var updated = await GetDetail(query.Id, cancellationToken);
+        var updated = (await GetDetail(query.Id, cancellationToken))!;
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackUpdate(), updated);
         _eventManager.TriggerEvent(payload);

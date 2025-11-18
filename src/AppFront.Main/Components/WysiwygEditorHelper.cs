@@ -1,15 +1,14 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Globalization;
 using HtmlAgilityPack;
 using static Mars.Options.Models.ImagePreviewSizeConfig;
 
 namespace AppFront.Shared.Components;
 
-public class WysiwygEditorHelper
+public static class WysiwygEditorHelper
 {
 
     public static ImageNodeInfo NodeToImageInfo(HtmlNode node) => new ImageNodeInfo(node.GetAttributeValue("width", (string)null!), node.GetAttributeValue("height", (string)null!));
-
 
     /// <summary>
     /// Не хватает информации с рендера картинок (ширина/высота картинок)
@@ -29,7 +28,6 @@ public class WysiwygEditorHelper
                                     .ToList();
 
         if (infos.Count == 0) return null;
-
 
         //float templateSize = infos.Where(s => s.info.WidthPx is not null).Select(s => s.info.WidthPx!.Value).Max();
         ImageNodeInfo templateInfo = mode switch

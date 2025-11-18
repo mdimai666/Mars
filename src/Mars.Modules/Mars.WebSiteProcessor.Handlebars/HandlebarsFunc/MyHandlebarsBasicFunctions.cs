@@ -350,8 +350,8 @@ public static class MyHandlebarsBasicFunctions
             return;
         }
 
-        var left = args[0]?.ToString();
-        var parseformat = args[1].ToString();
+        var left = args[0]?.ToString()!;
+        var parseformat = args[1].ToString()!;
         var format = args[2].ToString();
 
         DateTime date = DateTime.ParseExact(left, parseformat, null);
@@ -401,7 +401,7 @@ public static class MyHandlebarsBasicFunctions
             return;
         }
 
-        var left = args[0]?.ToString();
+        var left = args[0]?.ToString()!;
 
         var formatString = left;
 
@@ -442,7 +442,7 @@ public static class MyHandlebarsBasicFunctions
             return;
         }
 
-        var url = args[0] as string;
+        var url = args[0]?.ToString()!;
 
         var match = Regex.Match(url, @"(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|watch)\/|.*[?&amp;]v=)|youtu\.be\/)([\w-]{11})");
 

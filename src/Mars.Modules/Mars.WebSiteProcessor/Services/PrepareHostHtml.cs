@@ -23,7 +23,7 @@ public class PrepareHostHtml
         CancellationToken cancellationToken)
     {
         FrontOptions frontOpt = optionService.GetOption<FrontOptions>();
-        var hostHtml = frontOpt.HostItems.FirstOrDefault(s=>s.Url == appFront.Configuration.Url)?.HostHtml;
+        var hostHtml = frontOpt.HostItems.FirstOrDefault(s=>s.Url == appFront.Configuration.Url)?.HostHtml!;
 
         if (string.IsNullOrEmpty(hostHtml))
         {

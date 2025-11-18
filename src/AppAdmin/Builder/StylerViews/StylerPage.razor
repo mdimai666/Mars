@@ -11,18 +11,18 @@
                 <h5>Components</h5>
                 <FluentCard>
                     <FluentDesignSystemProvider AccentBaseColor="@ss.AccentBaseColor"
-                    NeutralBaseColor="@ss.NeutralBaseColor"
-                    FillColor="@ss.FillColor"
-                    NoPaint=@ss.NoPaint
-                    BaseHeightMultiplier="@ss.BaseHeightMultiplier"
-                    BaseHorizontalSpacingMultiplier="@ss.BaseHorizontalSpacingMultiplier"
-                    ControlCornerRadius="@ss.ControlCornerRadius"
-                    LayerCornerRadius="@ss.LayerCornerRadius"
-                    StrokeWidth="@ss.StrokeWidth"
-                    FocusStrokeWidth="@ss.FocusStrokeWidth"
-                    Density="@ss.Density"
-                    DesignUnit="@ss.DesignUnit"
-                    BaseLayerLuminance="@ss.BaseLayerLuminance">
+                                                NeutralBaseColor="@ss.NeutralBaseColor"
+                                                FillColor="@ss.FillColor"
+                                                NoPaint=@ss.NoPaint
+                                                BaseHeightMultiplier="@ss.BaseHeightMultiplier"
+                                                BaseHorizontalSpacingMultiplier="@ss.BaseHorizontalSpacingMultiplier"
+                                                ControlCornerRadius="@ss.ControlCornerRadius"
+                                                LayerCornerRadius="@ss.LayerCornerRadius"
+                                                StrokeWidth="@ss.StrokeWidth"
+                                                FocusStrokeWidth="@ss.FocusStrokeWidth"
+                                                Density="@ss.Density"
+                                                DesignUnit="@ss.DesignUnit"
+                                                BaseLayerLuminance="@ss.BaseLayerLuminance">
 
                         <FluentStack VerticalGap="20" Orientation="@Orientation.Vertical">
 
@@ -35,7 +35,7 @@
                                 <FluentButton Appearance="Appearance.Outline">Outline</FluentButton>
                                 <FluentButton Appearance="Appearance.Stealth">Stealth</FluentButton>
                                 <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowClockwise())"
-                                Appearance="Appearance.Accent">
+                                              Appearance="Appearance.Accent">
                                     Refresh
                                 </FluentButton>
                                 <FluentButton Loading="@true" Appearance="Appearance.Accent">Loading</FluentButton>
@@ -122,13 +122,13 @@
 </ContentWrapper>
 
 @code {
-    StylerStyle ss => form.Model.StylerStyle;
+    StylerStyle ss => form?.Model.StylerStyle ?? new();
 
     EditOptionForm<DevAdminStyleOption>? form;
 
     void ResetStyle()
     {
-        form.Model.StylerStyle = new();
+        form!.Model.StylerStyle = new();
     }
 
     void OnLoadData()

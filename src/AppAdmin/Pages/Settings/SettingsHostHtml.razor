@@ -69,12 +69,11 @@
 </SettingsPageWrapper>
 
 @code {
-    CodeEditor2? editor1 = default!;
+    CodeEditor2 editor1 = default!;
 
     EditOptionForm<FrontOptions> form = default!;
 
     FrontOptionHostItem? selItem;
-
 
     void OnLoadData(FrontOptions model)
     {
@@ -88,14 +87,14 @@
     async void StartSetter()
     {
         await Task.Delay(10);
-        await editor1?.SetValue(selItem.HostHtml);
+        await editor1.SetValue(selItem?.HostHtml ?? "");
     }
 
     async Task BeforeSave(FrontOptions opt)
     {
         if (selItem is not null)
         {
-            selItem.HostHtml = await editor1?.GetValue();
+            selItem.HostHtml = await editor1.GetValue();
         }
     }
 
@@ -106,9 +105,9 @@
 
     async Task SelItem(FrontOptionHostItem item)
     {
-        if (item != selItem)
+        if (item is not null && item != selItem)
         {
-            selItem.HostHtml = await editor1?.GetValue();
+            selItem!.HostHtml = await editor1.GetValue();
             selItem = item;
             await editor1.SetValue(selItem.HostHtml);
         }

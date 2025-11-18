@@ -5,13 +5,13 @@ namespace Mars.Host.Shared.Dto.Emails;
 
 public class EmailSendMessageDto : IValidatableObject
 {
-    public string ToEmail { get; set; }
-    public string Subject { get; set; }
-    public string Message { get; set; }
+    public string ToEmail { get; set; } = string.Empty;
+    public string Subject { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
 
     public EmailSendMessageDto()
     {
-        
+
     }
 
     public EmailSendMessageDto(string toemail, string subject, string message)

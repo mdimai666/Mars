@@ -97,7 +97,7 @@
                         </div>
 
                         <FluentMenu Anchor="@blockEditorMenuButtonId" @bind-Open="blockEditorMenuOpen">
-                            <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => blockEditor1.Clear()) />
+                            <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => blockEditor1?.Clear()) />
                             <FluentMenuItem Label="AI suggest" OnClick=@BlockEditor_OnClickAISuggest />
                         </FluentMenu>
 

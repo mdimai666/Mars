@@ -117,7 +117,8 @@ internal class PageRenderService : IPageRenderService
         => new()
         {
             Ok = false,
-            Message = "AppFront mode not support render"
+            Message = "AppFront mode not support render",
+            Data = null!
         };
 
     bool IsRenderNotSupport(MarsAppFront af)

@@ -46,7 +46,7 @@ public class DeveloperControlService
         }
 
         var x = Q.HostingInfo.NormalizedPathJoin(path, filename);
-        _ = js.OpenNewTab($"vs2022://{x}");
+        _ = js.OpenNewTab($"vs2026://{x}");
     }
 
     public void OpenPageSource(Type pageType, string? prependPath = null)
@@ -61,6 +61,6 @@ public class DeveloperControlService
         };
 
         var x = Q.HostingInfo.NormalizedPathJoin(path, prependPath, filename);
-        _ = js.OpenNewTab($"vs2022://{x}");
+        _ = js.OpenNewTab($"vs2026://{x}");
     }
 }

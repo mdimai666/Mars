@@ -16,7 +16,7 @@ interface IQueryChainFilter
 
 public abstract class QueryBase
 {
-    public EfDynQueryDict.DQC_Context ctx { get; set; }
+    public required EfDynQueryDict.DQC_Context ctx { get; set; }
 
 }
 
@@ -30,8 +30,6 @@ public abstract class QueryChainFilter<T> : QueryBase, IQueryChainFilter where T
 
     }
 }
-
-
 
 public abstract class QueryGetter<T, TResult> : QueryBase where T : class, new()
 {
@@ -50,7 +48,7 @@ class QWhere : QueryChainFilter<PostEntity>
     {
         MyThrowHelper.IfArgumentCount(args, 1);
 
-        var expr = parseExpression(args[0] as string);
+        var expr = parseExpression((args[0] as string)!);
 
         return query.Where(expr);
     }
@@ -68,12 +66,11 @@ class QCount : QueryGetter<PostEntity, int>
         }
         else
         {
-            var expr = parseExpression(args[0] as string);
+            var expr = parseExpression((args[0] as string)!);
             return query.Count(expr);
         }
     }
 }
-
 
 public static class EfDynQueryDict
 {
@@ -144,9 +141,10 @@ public static class EfDynQueryDict
         var find = filters.FirstOrDefault(s => s.name == name && s.type == typeof(T));
         if (find == null)
         {
-            result = default;
+            result = default!;
             return false;
-        };
+        }
+        ;
         var z = (find.instance as QueryChainFilter<T>);
         z.ctx = ctx;
         result = z.Execute(query, args);
@@ -158,9 +156,10 @@ public static class EfDynQueryDict
         var find = getters.FirstOrDefault(s => s.name == name && s.type == typeof(T));
         if (find == null)
         {
-            result = default;
+            result = default!;
             return false;
-        };
+        }
+        ;
         var z = (find.instance as QueryGetter<T, TResult>);
         z.ctx = ctx;
         result = z.Execute(query, args);
@@ -168,4 +167,3 @@ public static class EfDynQueryDict
 
     }
 }
-

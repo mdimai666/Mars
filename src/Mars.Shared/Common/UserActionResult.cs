@@ -9,7 +9,7 @@ public class UserActionResult : IUserActionResult
 
     [DefaultValue(false)]
     public bool Ok { get; init; }
-    public string Message { get; init; }
+    public string Message { get; init; } = default!;
     public string[]? DetailMessages { get; init; }
 
     public static UserActionResult Success(string? message = null) => new() { Ok = true, Message = message ?? "Успешно выполнено" };
@@ -22,13 +22,13 @@ public class UserActionResult : IUserActionResult
 public class UserActionResult<TData> : IUserActionResult<TData>
 {
     public bool Ok { get; set; }
-    public string Message { get; set; }
-    public TData Data { get; set; }
+    public string Message { get; set; } = default!;
+    public required TData Data { get; set; }
 
     public static UserActionResult<TData> Success(TData data, string? message = null) => new() { Ok = true, Data = data, Message = message ?? "Успешно выполнено" };
-    public static UserActionResult<TData> SuccessDeleted() => new() { Ok = true, Message = "Успешно удалено" };
+    public static UserActionResult<TData> SuccessDeleted() => new() { Ok = true, Message = "Успешно удалено", Data = default! };
 
-    public static UserActionResult<TData> Exception(Exception exception) => new() { Ok = false, Message = exception.Message };
+    public static UserActionResult<TData> Exception(Exception exception) => new() { Ok = false, Message = exception.Message, Data = default! };
 }
 
 public class RenderActionResult<TData> : UserActionResult<TData>

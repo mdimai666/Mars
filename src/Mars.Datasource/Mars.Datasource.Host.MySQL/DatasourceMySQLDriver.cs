@@ -175,7 +175,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         _this.IsLong = column.IsLong;
         _this.IsUnique = column.IsUnique;
         _this.DataType = column.DataType!;
-        _this.DataTypeName = column.DataTypeName;
+        _this.DataTypeName = column.DataTypeName!;
         return _this;
 
     }

@@ -8,7 +8,7 @@
     {
         <AuthorizeView>
             <Authorized>
-                <h1>Hello, @context.User.Identity.Name!</h1>
+                <h1>Hello, @context.User.Identity!.Name!</h1>
                 <p>User has the following claims:</p>
                 <ul>
                     @foreach (var claim in context.User.Claims)

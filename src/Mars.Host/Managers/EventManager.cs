@@ -14,7 +14,7 @@ internal class EventManager : IEventManager
 
     //public delegate void ManagerEventPayloadHandler(ManagerEventPayload payload);
 
-    public event Shared.Managers.IEventManager.ManagerEventPayloadHandler OnTrigger;
+    public event Shared.Managers.IEventManager.ManagerEventPayloadHandler OnTrigger = default!;
 
     EventManagerDefaults _defaults = new();
     public EventManagerDefaults Defaults => _defaults;

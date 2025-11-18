@@ -39,11 +39,10 @@ public class HttpInNodeImpl : INodeImplement<HttpInNode>, INodeImplement
         HttpRequest request = httpContext.Request;
 
         //request.EnableBuffering();
-        var buffer = new byte[Convert.ToInt32(request.ContentLength)];
-        await request.Body.ReadAsync(buffer, 0, buffer.Length);
+        var body = await request.BodyReader.ReadAsync();
 
-        string body = System.Text.Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+        string bodyString = System.Text.Encoding.UTF8.GetString(body.Buffer);
 
-        return body;
+        return bodyString;
     }
 }

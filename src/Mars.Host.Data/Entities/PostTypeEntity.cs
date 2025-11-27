@@ -2,14 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
 [DebuggerDisplay("{TypeName}/{Title}/{Id}")]
-[EntityTypeConfiguration(typeof(PostTypeEntityConfiguration))]
 public class PostTypeEntity : IBasicEntity
 {
     [Key]
@@ -35,15 +33,13 @@ public class PostTypeEntity : IBasicEntity
     /// <b>[jsonb]</b>
     /// </summary>
     [Comment("Статусы")]
-    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
-    public List<PostStatusEntity> PostStatusList { get; set; } = new();
+    public List<PostStatusEntity> PostStatusList { get; set; } = [];
 
     /// <summary>
     /// <b>[jsonb]</b>
     /// </summary>
     [Comment("Функции")]
-    [Column(TypeName = "jsonb")]
-    public List<string> EnabledFeatures { get; set; } = new();
+    public List<string> EnabledFeatures { get; set; } = [];
 
     [Comment("Отключен")]
     public bool Disabled { get; set; }
@@ -57,7 +53,6 @@ public class PostTypeEntity : IBasicEntity
     /// <b>[jsonb]</b>
     /// </summary>
     [Comment("Настройки контента")]
-    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     public PostContentSettings PostContentType { get; set; } = new();
 
     [Comment("Теги")]

@@ -3,14 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
 [DebuggerDisplay("{Type}/{Id}")]
-[EntityTypeConfiguration(typeof(MetaValueEntityConfiguration))]
 public class MetaValueEntity : IBasicEntity
 {
     [Key]
@@ -302,7 +300,7 @@ public class MetaValueEntity : IBasicEntity
 
     public static IEnumerable<string> Check(MetaFieldEntity t, object value)
     {
-        List<string> err = new();
+        List<string> err = [];
 
         if (t.IsNullable == false && value is null)
         {

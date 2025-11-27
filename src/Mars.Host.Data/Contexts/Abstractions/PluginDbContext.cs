@@ -1,4 +1,3 @@
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,9 +28,6 @@ public abstract class PluginDbContextBase : MarsDbContext
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseNpgsql(opt => opt.MigrationsHistoryTable(PluginEFMigrationsHistoryTable, SchemaName));
-        optionsBuilder.UseSnakeCaseNamingConvention();
-        optionsBuilder.EnableDetailedErrors();
     }
 
     public static IEnumerable<Type> ListMarsAllEntities()
@@ -69,7 +65,6 @@ public abstract class PluginDbContextBase : MarsDbContext
     {
         base.OnModelCreating(builder);
         builder.HasDefaultSchema(SchemaName);
-        builder.ApplyConfigurationsFromAssembly(typeof(PostEntityConfiguration).Assembly);
 
 #if VARIANT_1
         var internalTypes = GetMarsDbContextDbSetList();

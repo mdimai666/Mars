@@ -1,13 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.NavMenus;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
-[EntityTypeConfiguration(typeof(NavMenuEntityConfiguration))]
 public class NavMenuEntity : IBasicEntity
 {
     [Key]
@@ -29,8 +26,7 @@ public class NavMenuEntity : IBasicEntity
     public virtual string Slug { get; set; } = Guid.NewGuid().ToString();
 
     [Comment("Элементы")]
-    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
-    public List<NavMenuItem> MenuItems { get; set; } = new();
+    public List<NavMenuItem> MenuItems { get; set; } = [];
 
     [Comment("Class")]
     public string Class { get; set; } = "";
@@ -38,7 +34,7 @@ public class NavMenuEntity : IBasicEntity
     public string Style { get; set; } = "";
 
     [Comment("Роли")]
-    public List<string> Roles { get; set; } = new();
+    public List<string> Roles { get; set; } = [];
 
     //[NotMapped]
     //[JsonIgnore]

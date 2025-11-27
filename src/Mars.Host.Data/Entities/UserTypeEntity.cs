@@ -2,13 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
 [DebuggerDisplay("{TypeName}/{Title}/{Id}")]
-[EntityTypeConfiguration(typeof(UserTypeEntityConfiguration))]
 public class UserTypeEntity : IBasicEntity
 {
     public const string DefaultTypeName = "default";

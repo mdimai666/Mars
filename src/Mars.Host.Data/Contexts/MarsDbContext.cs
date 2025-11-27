@@ -4,13 +4,14 @@ using Mars.Host.Data.Contexts.Abstractions;
 using Mars.Host.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace Mars.Host.Data.Contexts;
 
 public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, Guid,
                 UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity>//, IMarsDbContext
 {
+    private readonly DbContextOptions _options;
+
     //--------Asp.Net defaults----------
 
     public override DbSet<UserEntity> Users { get; set; } = default!;
@@ -44,10 +45,11 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
 
     public MarsDbContext(DbContextOptions options) : base(options)
     {
+        _options = options;
 #if DEBUG
-        Console.WriteLine($"new {this.GetType().Name}()");
+        Console.WriteLine($"new {GetType().Name}()");
 #endif
-        this.SaveChangesFailed += MarsDbContext_SaveChangesFailed;
+        SaveChangesFailed += MarsDbContext_SaveChangesFailed;
     }
 
     [DebuggerStepThrough]
@@ -64,16 +66,16 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
     {
         base.OnModelCreating(builder);
 
-        //Apply all [EntityTypeConfiguration(Type)] attribute configurations
-        builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+        //ApplyConfigurationsFromAssembly
+        var extension = _options.GetExtension<MarsDbContextOptionExtension>();
+        var factory = extension.Factory;
+        factory.OnModelCreating(builder);
 
-        builder.UseSerialColumns();
-
-        bool isPluginInherit = typeof(PluginDbContextBase).IsAssignableFrom(this.GetType());
+        bool isPluginInherit = typeof(PluginDbContextBase).IsAssignableFrom(GetType());
         if (isPluginInherit)
         {
 #if DEBUG
-            Console.WriteLine($"PLUGIN>>EF+init>{this.GetType().Name}");
+            Console.WriteLine($"PLUGIN>>EF+init>{GetType().Name}");
 #endif
         }
 
@@ -82,19 +84,4 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    public static MarsDbContext CreateInstance(string connectionString)
-    {
-        //string connectionString = IOptionService.Configuration.GetConnectionString("DefaultConnection");
-        var optionsBuilder = new DbContextOptionsBuilder<MarsDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
-        optionsBuilder.UseSnakeCaseNamingConvention();
-        optionsBuilder.EnableDetailedErrors();
-#pragma warning disable CS0618 // Type or member is obsolete
-        NpgsqlConnection.GlobalTypeMapper.UseJsonNet();
-        NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
-#pragma warning restore CS0618 // Type or member is obsolete
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        return new MarsDbContext(optionsBuilder.Options);
-
-    }
 }

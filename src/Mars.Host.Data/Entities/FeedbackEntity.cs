@@ -1,14 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.Feedbacks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
 [Comment("Обратная связь")]
-[EntityTypeConfiguration(typeof(FeedbackEntityConfiguration))]
 public class FeedbackEntity : IBasicEntity
 {
     [Key]
@@ -20,7 +18,6 @@ public class FeedbackEntity : IBasicEntity
 
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
-
 
     [Comment("Название")]
     public string Title { get; set; } = default!;
@@ -46,6 +43,5 @@ public class FeedbackEntity : IBasicEntity
     [ForeignKey(nameof(AuthorizedUser))]
     public Guid? AuthorizedUserId { get; set; }
     public virtual UserEntity? AuthorizedUser { get; set; }
-
 
 }

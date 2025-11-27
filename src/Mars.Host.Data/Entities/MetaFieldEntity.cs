@@ -3,14 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.MetaFields;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
 [DebuggerDisplay("{Type}/{Id}/{Title}")]
-[EntityTypeConfiguration(typeof(MetaFieldEntityConfiguration))]
 public class MetaFieldEntity : IBasicEntity
 {
     [Key]
@@ -36,7 +34,6 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("Тип")]
     public EMetaFieldType Type { get; set; } = EMetaFieldType.String;
 
-    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     [Comment("Варианты")]
     public virtual List<MetaFieldVariant> Variants { get; set; } = [];
 
@@ -52,7 +49,6 @@ public class MetaFieldEntity : IBasicEntity
     public bool IsNullable { get; set; }
 
     [NotMapped]
-    [Column(TypeName = "jsonb")]
     [Comment("Значение по умолчанию")]
     public MetaValueEntity? Default { get; set; }
 

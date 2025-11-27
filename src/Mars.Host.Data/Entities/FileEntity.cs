@@ -2,14 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Mars.Host.Data.OwnedTypes.Files;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
 [DebuggerDisplay("{FileName}/{Id}")]
-[EntityTypeConfiguration(typeof(FileEntityConfiguration))]
 public class FileEntity : IBasicUserEntity
 {
     [Key]
@@ -62,7 +60,6 @@ public class FileEntity : IBasicUserEntity
     //public string FileGroup { get; set; } = default!;
 
     [Comment("Мета поля")]
-    [Column(TypeName = "jsonb")] // see configuration: used .ToJson()
     public virtual FileEntityMeta Meta { get; set; } = new();
 
     //////////////// Relations

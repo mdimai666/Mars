@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Mars.Host.Data.Constants;
 using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Services;
 using Mars.UseStartup;
@@ -19,8 +20,17 @@ public class MainCommand : CommandCli
     public void ShowInfoCommand()
     {
         var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
+        string databaseName;
+
+        if (connectionString.StartsWith(DatabaseProviderConstants.InMemoryDb))
+        {
+            databaseName = DatabaseProviderConstants.InMemoryDb;
+        }
+        else
+        {
         var npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
-        string databaseName = npgsqlConnectionStringBuilder.Database!;
+            databaseName = npgsqlConnectionStringBuilder.Database!;
+        }
 
         var sp = app.Services;
         var env = sp.GetRequiredService<IHostEnvironment>();

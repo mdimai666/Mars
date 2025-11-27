@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
 
-[EntityTypeConfiguration(typeof(OptionEntityConfiguration))]
 public class OptionEntity : IBasicEntity
 {
     [Key]

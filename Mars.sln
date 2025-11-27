@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36616.10
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Core", "src\Mars.Core\Mars.Core.csproj", "{4538C8A5-58EE-8280-8656-B0715C1EFCFB}"
 EndProject
@@ -225,6 +225,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.SSO", "src\Mars.Modules\Mars.SSO\Mars.SSO.csproj", "{E71B91FB-AA96-B9A1-7AB5-9F30577A492D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.SSO.Host.OAuth", "src\Mars.Modules\Mars.SSO.Host.OAuth\Mars.SSO.Host.OAuth.csproj", "{B41A6C4B-DDC2-4539-9235-3B4132073CE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorTemplateExample", "tests\RazorTemplateExample\RazorTemplateExample.csproj", "{B728DA8E-5844-4767-B5EB-1A3EFE29B6F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Host.Data.InMemory", "src\Mars.Host.Data.InMemory\Mars.Host.Data.InMemory.csproj", "{472AF0B0-E8FC-3FA1-2026-B1ED1D00BC86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Host.Data.PostgreSQL", "src\Mars.Host.Data.PostgreSQL\Mars.Host.Data.PostgreSQL.csproj", "{499FB3B9-C9CA-4CE9-83CE-09BC33D81169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -580,6 +586,18 @@ Global
 		{B41A6C4B-DDC2-4539-9235-3B4132073CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B41A6C4B-DDC2-4539-9235-3B4132073CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B41A6C4B-DDC2-4539-9235-3B4132073CE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B728DA8E-5844-4767-B5EB-1A3EFE29B6F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B728DA8E-5844-4767-B5EB-1A3EFE29B6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B728DA8E-5844-4767-B5EB-1A3EFE29B6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B728DA8E-5844-4767-B5EB-1A3EFE29B6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{472AF0B0-E8FC-3FA1-2026-B1ED1D00BC86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{472AF0B0-E8FC-3FA1-2026-B1ED1D00BC86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{472AF0B0-E8FC-3FA1-2026-B1ED1D00BC86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{472AF0B0-E8FC-3FA1-2026-B1ED1D00BC86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499FB3B9-C9CA-4CE9-83CE-09BC33D81169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499FB3B9-C9CA-4CE9-83CE-09BC33D81169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499FB3B9-C9CA-4CE9-83CE-09BC33D81169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499FB3B9-C9CA-4CE9-83CE-09BC33D81169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -676,6 +694,9 @@ Global
 		{DA4C7D27-D677-4AA6-BF86-B376B998C143} = {E49F71CA-3458-4760-818D-8496255D0FDF}
 		{E71B91FB-AA96-B9A1-7AB5-9F30577A492D} = {DA4C7D27-D677-4AA6-BF86-B376B998C143}
 		{B41A6C4B-DDC2-4539-9235-3B4132073CE4} = {DA4C7D27-D677-4AA6-BF86-B376B998C143}
+		{B728DA8E-5844-4767-B5EB-1A3EFE29B6F6} = {07D2B207-6B97-4A25-BDD0-8BDD447263E9}
+		{472AF0B0-E8FC-3FA1-2026-B1ED1D00BC86} = {FE062109-9930-4643-9725-002DACBD091B}
+		{499FB3B9-C9CA-4CE9-83CE-09BC33D81169} = {FE062109-9930-4643-9725-002DACBD091B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8D4F7A-BC38-43EA-9F4B-6BDB92828DCC}

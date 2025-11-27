@@ -70,12 +70,6 @@
         <PackageReference Include="Flurl.Http" Version="4.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.9" />
         <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.2" />-->
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.9" />
-        <PackageReference Include="Npgsql" Version="9.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="9.0.4" />
-        <PackageReference Include="Npgsql.Json.NET" Version="9.0.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.13.0" />
         <PackageReference Include="MailKit" Version="4.13.0" PrivateAssets="All" />
         <PackageReference Include="MimeKit" Version="4.13.0" PrivateAssets="All" />

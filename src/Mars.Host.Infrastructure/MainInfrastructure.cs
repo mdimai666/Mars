@@ -1,13 +1,15 @@
 using Mars.Host.Data;
+using Mars.Host.Data.Constants;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
-using Mars.Host.Infrastructure.Services;
+using Mars.Host.Data.InMemory;
+using Mars.Host.Data.Options;
+using Mars.Host.Data.PostgreSQL;
 using Mars.Host.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 
 namespace Mars.Host.Infrastructure;
 
@@ -16,35 +18,31 @@ public static class MainInfrastructure
     public static IServiceCollection AddMarsHostInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
+        ArgumentException.ThrowIfNullOrEmpty(connectionString, nameof(connectionString));
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        NpgsqlConnection.GlobalTypeMapper.UseJsonNet();
-        NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
-#pragma warning restore CS0618 // Type or member is obsolete
+        var isInMemory = connectionString.StartsWith(DatabaseProviderConstants.InMemoryDb, StringComparison.OrdinalIgnoreCase);
+
+        var connectionOpt = new DatabaseConnectionOpt()
+        {
+            ConnectionString = connectionString,
+            ProviderName = isInMemory ? DatabaseProviderConstants.InMemoryDb : DatabaseProviderConstants.PostgreSQL
+        };
+        services.AddSingleton(connectionOpt);
+
+        IMarsDbContextFactory factory = isInMemory
+                                            ? new MarsDbContextInMemoryFactory(connectionOpt)
+                                            : new MarsDbContextPostgreSQLFactory(connectionOpt);
+        services.AddSingleton<IMarsDbContextFactory>(factory);
 
         Action<DbContextOptionsBuilder> actionOptBuilder = options =>
         {
-            options.UseNpgsql(connectionString, o =>
-            {
-                o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            });
-
-            options.UseSnakeCaseNamingConvention();
-            options.EnableDetailedErrors(true);
-            //options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-
+            factory.OptionsBuilderAction(options);
 #if DEBUG
             options.EnableSensitiveDataLogging(true);
 #endif
         };
 
-        services
-            //.AddDbContextPool<IMarsDbContext, IMarsDbContextMock>(actionOptBuilder)
-            //.AddDbContextPool<Mars.Host.Data.Contexts.MarsDbContext, ApplicationDbContext>(actionOptBuilder);
-            .AddDbContextPool<Mars.Host.Data.Contexts.MarsDbContext>(actionOptBuilder);
-
-        //for legacy timstamp
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        services.AddDbContextPool<MarsDbContext>(actionOptBuilder);
 
         services.AddIdentity<UserEntity, RoleEntity>(options =>
         {
@@ -54,15 +52,11 @@ public static class MainInfrastructure
             options.Password.RequireLowercase = false;
             options.Password.RequireDigit = false;
         })
-            .AddEntityFrameworkStores<Mars.Host.Data.Contexts.MarsDbContext>()
-            //.AddRoles<RoleEntity>()
+            .AddEntityFrameworkStores<MarsDbContext>()
             .AddDefaultTokenProviders();
 
         services.AddMarsHostData(connectionString!);
         services.AddMarsHostRepositories();
-
-        MarsDbContextFactory.ConnectionString = connectionString!;
-        services.AddSingleton<IMarsDbContextFactory, MarsDbContextFactory>();
 
         return services;
     }

@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using Mars.Core.Models;
 using Microsoft.AspNetCore.Builder;
 
@@ -16,4 +16,6 @@ public interface ICommandLineApi
 
     public static void Register<TCommandCli>() => modulesCommandList.Add(typeof(TCommandCli));
     public static IReadOnlyCollection<Type> GetModulesCommands => modulesCommandList;
+
+    internal static void Reset() => modulesCommandList.Clear();
 }

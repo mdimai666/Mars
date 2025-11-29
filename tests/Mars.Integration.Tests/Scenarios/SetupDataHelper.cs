@@ -26,7 +26,7 @@ internal class SetupDataHelper
         postType.TypeName = postTypeName;
         postType.MetaFields = metaFields ?? [];
 
-        using var ef = _appFixture.DbFixture.DbContext;
+        var ef = _appFixture.DbFixture.DbContext;
         ef.PostTypes.Add(postType);
         await ef.SaveChangesAsync();
 
@@ -38,7 +38,7 @@ internal class SetupDataHelper
                                                     Action<PostEntity, int>? postModifyFunc = null,
                                                     Func<PostEntity, int, List<MetaValueEntity>>? metaValuesCreateFunc = null)
     {
-        using var ef = _appFixture.DbFixture.DbContext;
+        var ef = _appFixture.DbFixture.DbContext;
         var postType = await ef.PostTypes.Include(s => s.MetaFields).FirstAsync();
 
         return await SetupPosts(postType, postCount, postModifyFunc, metaValuesCreateFunc);
@@ -49,7 +49,7 @@ internal class SetupDataHelper
                                                 Action<PostEntity, int>? postModifyFunc = null,
                                                 Func<PostEntity, int, List<MetaValueEntity>>? metaValuesCreateFunc = null)
     {
-        using var ef = _appFixture.DbFixture.DbContext;
+        var ef = _appFixture.DbFixture.DbContext;
 
         var mfdict = postType.MetaFields!.ToDictionary(s => s.Key);
 

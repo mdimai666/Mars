@@ -18,7 +18,7 @@ public class PluginDbContextTests : BasePluginTests
     {
         //Arrange
         _ = nameof(MyPluginDbContext);
-        using var ef = AppFixture.ServiceProvider.GetRequiredService<MyPluginDbContext>();
+        var ef = AppFixture.ServiceProvider.GetRequiredService<MyPluginDbContext>();
 
         //Act
         var data = await ef.News.CountAsync();
@@ -33,7 +33,7 @@ public class PluginDbContextTests : BasePluginTests
         //Arrange
         _ = nameof(MyPluginDbContext);
         _ = nameof(PluginNewsEntity);
-        using var ef = AppFixture.ServiceProvider.GetRequiredService<MyPluginDbContext>();
+        var ef = AppFixture.ServiceProvider.GetRequiredService<MyPluginDbContext>();
         var user = await ef.Users.FirstAsync();
         var created = Enumerable.Range(0, 3).Select(i => new PluginNewsEntity
         {

@@ -30,7 +30,7 @@ public class PluginSetupTests : BasePluginTests
 
         //Assert
         plugin.Should().NotBeNull();
-        using var ef = AppFixture.ServiceProvider.GetRequiredService<MyPluginDbContext>();
+        var ef = AppFixture.ServiceProvider.GetRequiredService<MyPluginDbContext>();
 
         //check migrations work
         ef.Database.GetMigrations().Should().HaveCount(1);

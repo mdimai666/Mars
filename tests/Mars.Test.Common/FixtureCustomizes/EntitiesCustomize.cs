@@ -30,7 +30,7 @@ public sealed class EntitiesCustomize : ICustomization
             .RuleFor(s => s.NormalizedUserName, (f, s) => s.UserName.ToUpper())
             .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))
             .RuleFor(s => s.NormalizedEmail, (f, s) => s.Email.ToUpper())
-            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (914) ### ## ##")), null))
             .RuleFor(s => s.Gender, f => f.PickRandom<UserGender>())
             .RuleFor(s => s.SecurityStamp, Guid.NewGuid().ToString())
             .RuleFor(s => s.Status, EUserStatus.Activated)

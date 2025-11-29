@@ -9,10 +9,13 @@ public class PostTypeNameValidator
     {
         var postType = metaModelTypesLocator.GetPostTypeByName(postTypeName);
 
-        if (postType == null) throw new MarsValidationException(new Dictionary<string, string[]>
+        if (postType == null)
         {
-            [nameof(PostDetail.Type)] = [$"post type '{postTypeName}' not exist"]
-        });
+            throw new MarsValidationException(new Dictionary<string, string[]>
+            {
+                [nameof(PostDetail.Type)] = [$"post type '{postTypeName}' not exist"]
+            });
+        }
 
         //RuleFor(x => x)
         //    .NotEmpty()

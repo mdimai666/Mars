@@ -1,4 +1,4 @@
-﻿using Mars.Host.Shared.Models;
+using Mars.Host.Shared.Models;
 
 namespace Mars.Host.Shared.Services;
 

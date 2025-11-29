@@ -1,6 +1,7 @@
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Factories.Seeds;
 
@@ -23,8 +24,8 @@ public static class SeedUsers
 
         if (!ef.Users.Any(s => s.Email == "admin@mail.ru"))
         {
-            var userTypeId = ef.UserTypes.FirstOrDefault(s => s.TypeName == UserTypeEntity.DefaultTypeName)?.Id
-                                ?? ef.UserTypes.First().Id;
+            var userTypeId = ef.UserTypes.AsNoTracking().FirstOrDefault(s => s.TypeName == UserTypeEntity.DefaultTypeName)?.Id
+                                ?? ef.UserTypes.AsNoTracking().First().Id;
 
             var user = new UserEntity
             {
@@ -40,7 +41,6 @@ public static class SeedUsers
                 FirstName = "Admin",
                 LastName = "Adminov",
                 MiddleName = "A",
-                BirthDate = new DateTime(1989, 1, 1),
 
                 UserTypeId = userTypeId,
             };

@@ -88,6 +88,10 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Mars.Host.Data.PostgreSQL\Mars.Host.Data.PostgreSQL.csproj" />
+    </ItemGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <OutputPath>bin\Debug\net9.0\plugin-subfolder\</OutputPath>
     </PropertyGroup>

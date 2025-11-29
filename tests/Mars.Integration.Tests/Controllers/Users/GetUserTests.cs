@@ -96,7 +96,7 @@ public class GetUserTests : ApplicationTests
 
         var createdUsers = _fixture.CreateMany<UserEntity>(3);
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Users.AddRangeAsync(createdUsers);
         await ef.SaveChangesAsync();
 
@@ -124,7 +124,7 @@ public class GetUserTests : ApplicationTests
         var createdUsers = _fixture.CreateMany<UserEntity>(3);
         createdUsers.ElementAt(0).FirstName = searchNameString;
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Users.AddRangeAsync(createdUsers);
         await ef.SaveChangesAsync();
 

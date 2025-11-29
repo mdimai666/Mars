@@ -1,6 +1,11 @@
+using Mars.Host.Data.Constants;
+using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Contexts.Abstractions;
+using Mars.Host.Data.Options;
+using Mars.Host.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using PluginExample.Data.Entities;
 
@@ -12,7 +17,7 @@ public partial class MyPluginDbContext : PluginDbContextBase
 
     public virtual DbSet<PluginNewsEntity> News { get; set; } = default!;
 
-    public MyPluginDbContext(DbContextOptions options) : base(options)
+    public MyPluginDbContext(DbContextOptions<MyPluginDbContext> options) : base(options)
     {
 
     }
@@ -20,6 +25,8 @@ public partial class MyPluginDbContext : PluginDbContextBase
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
+
+        var x = optionsBuilder.IsConfigured;
 
         if (optionsBuilder.Options.ContextType != typeof(MyPluginDbContext))
             throw new ArgumentException($"optionsBuilder.Options.ContextType must be '{nameof(MyPluginDbContext)}'. Given '{optionsBuilder.Options.ContextType}'");
@@ -29,20 +36,21 @@ public partial class MyPluginDbContext : PluginDbContextBase
     {
         base.OnModelCreating(builder);
 
-        builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+        builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
         OnModelCreatingPartial(builder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    public static new MyPluginDbContext CreateInstance(string connectionString)
+    public new static MyPluginDbContext CreateInstance(string connectionString)
     {
         var builder = new DbContextOptionsBuilder<MyPluginDbContext>();
 
-        builder.UseNpgsql(connectionString);
-        builder.UseSnakeCaseNamingConvention();
-        builder.EnableDetailedErrors();
+        var connectOpt = new DatabaseConnectionOpt() { ConnectionString = connectionString, ProviderName = DatabaseProviderConstants.PostgreSQL };
+        var factory = new MarsDbContextPostgreSQLForPluginFactory(connectOpt, typeof(MyPluginDbContext).Assembly, PluginExamplePlugin.PluginNameFullName);
+        factory.OptionsBuilderAction(builder);
+        ((IDbContextOptionsBuilderInfrastructure)builder).AddOrUpdateExtension(new MarsDbContextOptionExtension(factory));
 
         return new MyPluginDbContext(builder.Options);
     }

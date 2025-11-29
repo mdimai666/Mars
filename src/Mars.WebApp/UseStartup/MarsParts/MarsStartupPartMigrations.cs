@@ -16,7 +16,7 @@ public static class MarsStartupPartMigrations
         Console.WriteLine("Start migrate...");
 
         using var serviceScope = app.Services.CreateScope();
-        var marsDbContext = serviceScope.ServiceProvider.GetService<MarsDbContext>();
+        using var marsDbContext = serviceScope.ServiceProvider.GetService<MarsDbContext>();
         //MarsDbContext.Database.EnsureCreated(); не требуется. создает схему без истории миграций.
 
         var migrations = marsDbContext.Database.GetPendingMigrations();
@@ -42,9 +42,8 @@ public static class MarsStartupPartMigrations
 
         if (env.IsProduction())
         {
-            var conn = configuration.GetConnectionString("DefaultConnection")!;
-            using var marsDbContext = MarsDbContext.CreateInstance(conn);
-            //using var MarsDbContext = serviceScope.ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance() as MarsDbContext;
+            using var serviceScope = services.CreateScope();
+            using var marsDbContext = serviceScope.ServiceProvider.GetRequiredService<MarsDbContext>();
             migrated = MigrateAsync(marsDbContext, logger).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
@@ -69,13 +68,13 @@ public static class MarsStartupPartMigrations
     public static IServiceProvider SeedData(this IServiceProvider services, IConfiguration configuration, ILogger logger, bool migrated)
     {
         using var serviceScope = services.CreateScope();
-        var conn = configuration.GetConnectionString("DefaultConnection")!;
-        using var marsDbContext = MarsDbContext.CreateInstance(conn);
+        using var marsDbContext = serviceScope.ServiceProvider.GetRequiredService<MarsDbContext>();
         if (migrated)
         {
             //
         }
         SeedDataAsync(marsDbContext, serviceScope.ServiceProvider, configuration, logger).ConfigureAwait(false).GetAwaiter().GetResult();
+        marsDbContext.ChangeTracker.Clear();
         return services;
     }
 

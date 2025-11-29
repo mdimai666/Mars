@@ -1,4 +1,6 @@
+using Mars.Host.Data.Constants;
 using Mars.Host.Data.Contexts;
+using Mars.Host.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -21,25 +23,12 @@ public class MarsDbContextFactory : IDesignTimeDbContextFactory<MarsDbContext>
         //---
 
         var optionsBuilder = new DbContextOptionsBuilder<MarsDbContext>();
+        var factory = new MarsDbContextPostgreSQLFactory(new() { ConnectionString = connectionString, ProviderName = DatabaseProviderConstants.PostgreSQL });
+        factory.OptionsBuilderAction(optionsBuilder);
 
-        optionsBuilder.UseNpgsql(connectionString, o =>
-        {
-            //o.UseNodaTime();
-            //o.SetPostgresVersion(9, 6);
-            //o.MigrationsAssembly("Mars.Host"); //non required
-            o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-#pragma warning disable CS0618 // Type or member is obsolete
-            NpgsqlConnection.GlobalTypeMapper.UseJsonNet();
-            NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
-#pragma warning restore CS0618 // Type or member is obsolete
-        });
-
-        optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableDetailedErrors(true);
-#if DEBUG
         optionsBuilder.EnableSensitiveDataLogging(true);
-#endif
-        return new MarsDbContext(optionsBuilder.Options);
+
+        return factory.CreateInstance();
     }
 }

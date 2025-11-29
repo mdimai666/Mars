@@ -4,6 +4,9 @@ using Mars.Host.Data.Contexts.Abstractions;
 using Mars.Host.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.Data.Contexts;
 
@@ -11,6 +14,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
                 UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity>//, IMarsDbContext
 {
     private readonly DbContextOptions _options;
+    public bool IsPooled { get; }
 
     //--------Asp.Net defaults----------
 
@@ -50,6 +54,10 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
         Console.WriteLine($"new {GetType().Name}()");
 #endif
         SaveChangesFailed += MarsDbContext_SaveChangesFailed;
+
+        var infra = this.GetInfrastructure();
+        //var type = typeof(IDbContextFactory<>).MakeGenericType(GetType());
+        IsPooled = infra.GetService<IDbContextFactory<MarsDbContext>>() != null;
     }
 
     [DebuggerStepThrough]
@@ -84,4 +92,8 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
+    public void ChangeTrackerClearIfPooled()
+    {
+        if (IsPooled) ChangeTracker.Clear();
+    }
 }

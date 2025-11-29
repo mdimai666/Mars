@@ -72,7 +72,7 @@ public sealed class UploadMediaTests : ApplicationTests
 
         //Assert
         result.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var dbFile = ef.Files.FirstOrDefault(s => s.Id == result.Id);
         dbFile.Should().NotBeNull();
         dbFile.FileSize.Should().Be((ulong)fileContent.Length);
@@ -107,7 +107,7 @@ public sealed class UploadMediaTests : ApplicationTests
         //Assert
         // 1. записано в БД
         result.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var dbFile = ef.Files.FirstOrDefault(s => s.Id == result.Id);
         dbFile.Should().NotBeNull();
         dbFile.FileSize.Should().BeGreaterThan(0);

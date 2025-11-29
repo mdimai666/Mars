@@ -22,7 +22,7 @@ public class BaseWebApiClientTests : ApplicationTests
     public async Task<T?> GetEntity<T>(Guid id)
         where T : class
     {
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var exp = ReflectionHelper.GetIdEqualsExpression<T>(id);
         return await ef.Set<T>().FirstOrDefaultAsync(exp);
     }
@@ -30,7 +30,7 @@ public class BaseWebApiClientTests : ApplicationTests
     public async Task<T?> GetEntity<T>(Expression<Func<T, bool>> exp)
         where T : class
     {
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         return await ef.Set<T>().FirstOrDefaultAsync(exp);
     }
 
@@ -38,7 +38,7 @@ public class BaseWebApiClientTests : ApplicationTests
         where T : class
     {
         var created = _fixture.Create<T>()!;
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Set<T>().AddAsync(created);
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();
@@ -49,7 +49,7 @@ public class BaseWebApiClientTests : ApplicationTests
         where T : class
     {
         var created = _fixture.CreateMany<T>(count).ToList();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Set<T>().AddRangeAsync(created);
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();

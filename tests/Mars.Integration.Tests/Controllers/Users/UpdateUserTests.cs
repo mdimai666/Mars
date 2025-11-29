@@ -52,7 +52,7 @@ public sealed class UpdateUserTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var createdUser = _fixture.Create<UserEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
         var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
         userType.MetaFields = new(metaFields);

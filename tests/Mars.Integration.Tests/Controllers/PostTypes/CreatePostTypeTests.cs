@@ -62,7 +62,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
         //Assert
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.Id == postTypeRequest.Id);
         postTypeEntity.Should().NotBeNull();
         postTypeEntity.Should().BeEquivalentTo(postTypeRequest, options => options

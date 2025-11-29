@@ -50,7 +50,7 @@ public sealed class CreateUserTests : ApplicationTests
         _ = nameof(UserController.Create);
         var client = AppFixture.GetClient();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray().ToList();
         var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
         userType.MetaFields = metaFields;
@@ -103,7 +103,7 @@ public sealed class CreateUserTests : ApplicationTests
         _ = nameof(UserController.Create);
         var client = AppFixture.GetClient();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var userType = ef.UserTypes.AsNoTracking().Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
 
         var userRequest = _fixture.Create<CreateUserRequest>() with

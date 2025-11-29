@@ -47,7 +47,7 @@ public class GetRoleTests : ApplicationTests
 
         var createdRole = _fixture.Create<RoleEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Roles.AddAsync(createdRole);
         await ef.SaveChangesAsync();
 
@@ -102,7 +102,7 @@ public class GetRoleTests : ApplicationTests
 
         var createdRoles = _fixture.CreateMany<RoleEntity>(3);
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Roles.AddRangeAsync(createdRoles);
         await ef.SaveChangesAsync();
 
@@ -130,7 +130,7 @@ public class GetRoleTests : ApplicationTests
         var createdRoles = _fixture.CreateMany<RoleEntity>(3);
         createdRoles.ElementAt(0).Name = searchTitleString;
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Roles.AddRangeAsync(createdRoles);
         await ef.SaveChangesAsync();
 

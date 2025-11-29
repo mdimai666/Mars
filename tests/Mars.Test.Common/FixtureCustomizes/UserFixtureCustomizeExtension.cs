@@ -22,7 +22,7 @@ public static class UserFixtureCustomizeExtension
             .RuleFor(s => s.FirstName, f => f.Person.FirstName)
             .RuleFor(s => s.LastName, f => f.Person.LastName)
             .RuleFor(s => s.Email, (f, s) => faker.Internet.Email(s.FirstName, s.LastName))
-            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.PhoneNumber, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (914) ### ## ##")), null))
             .RuleFor(s => s.Password, Password.Generate(6, 2))
             .RuleFor(s => s.Roles, ["Viewer"])
             .RuleFor(s => s.BirthDate, new DateTime(1991, 6, 10))

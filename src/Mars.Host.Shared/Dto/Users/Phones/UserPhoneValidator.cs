@@ -10,6 +10,6 @@ public class UserPhoneValidator : AbstractValidator<string?>
     {
         RuleFor(x => x)
             .Must(x => PhoneUtil.TryNormalizePhone(x, out _))
-            .WithMessage(AppRes.InvalidPhoneNumberError);
+            .WithMessage(x=>$"{AppRes.InvalidPhoneNumberError} '{x}'");
     }
 }

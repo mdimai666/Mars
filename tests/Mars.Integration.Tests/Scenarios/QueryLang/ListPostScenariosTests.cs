@@ -35,7 +35,7 @@ public class ListPostScenariosTests : ApplicationTests
 
         string[] expectOrder = ["post-1", "post-0", "post-2", "post-3"]; // leading one pinned post
 
-        using var ef = AppFixture.DbFixture.DbContext;
+        var ef = AppFixture.DbFixture.DbContext;
         var expectPosts = ef.Posts.Where(s => s.PostType.TypeName == postTypeName);
 
         /*

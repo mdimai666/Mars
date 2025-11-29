@@ -42,7 +42,10 @@ public static class MainInfrastructure
 #endif
         };
 
-        services.AddDbContextPool<MarsDbContext>(actionOptBuilder);
+        if (isInMemory)
+            services.AddDbContext<MarsDbContext>(actionOptBuilder);
+        else
+            services.AddDbContextPool<MarsDbContext>(actionOptBuilder);
 
         services.AddIdentity<UserEntity, RoleEntity>(options =>
         {

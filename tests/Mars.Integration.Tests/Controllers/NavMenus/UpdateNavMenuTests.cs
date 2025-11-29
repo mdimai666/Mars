@@ -50,7 +50,7 @@ public class UpdateNavMenuTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var createdNavMenu = _fixture.Create<NavMenuEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         ef.NavMenus.Add(createdNavMenu);
         ef.SaveChanges();
         ef.ChangeTracker.Clear();

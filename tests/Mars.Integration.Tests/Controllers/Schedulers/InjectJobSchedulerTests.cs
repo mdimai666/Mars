@@ -62,6 +62,7 @@ public class InjectJobSchedulerTests : ApplicationTests
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        await Task.Delay(200);
         _triggerService.Received().Execute();
     }
 

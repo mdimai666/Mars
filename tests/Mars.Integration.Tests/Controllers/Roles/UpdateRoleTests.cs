@@ -50,7 +50,7 @@ public class UpdateRoleTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var createdRole = _fixture.Create<RoleEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         ef.Roles.Add(createdRole);
         ef.SaveChanges();
         ef.ChangeTracker.Clear();

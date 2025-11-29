@@ -20,7 +20,7 @@ using Microsoft.Extensions.Hosting;
 namespace Mars.Host.Services;
 
 // Singletone
-internal class OptionService : IOptionService
+internal class OptionService : IOptionService, IDisposable
 {
     internal Dictionary<Type, object> localCache = [];
     internal static JsonSerializerOptions serializerOptions = new();
@@ -349,4 +349,9 @@ internal class OptionService : IOptionService
         };
 
     public string GetDefaultDatabaseConnectionString() => IOptionService.Configuration.GetConnectionString("DefaultConnection")!;
+
+    public void Dispose()
+    {
+        _scope?.Dispose();
+    }
 }

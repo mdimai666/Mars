@@ -69,9 +69,10 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
         var dict = await _runtimeMetaTypeCompiler.Compile([mti], null);
         var compiledType = dict[newClassName];
 
-        using var ef = AppFixture.DbFixture.DbContext;
+        var ef = AppFixture.DbFixture.DbContext;
 
-        var query = ef.Posts.Include(post => post.PostType)
+        var query = ef.Posts.AsNoTracking()
+                            .Include(post => post.PostType)
                             .Include(post => post.MetaValues!)
                                 .ThenInclude(mv => mv.MetaField)
                             .Where(post => post.PostType.TypeName == typeName);

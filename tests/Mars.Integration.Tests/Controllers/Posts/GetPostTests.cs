@@ -36,7 +36,7 @@ public class GetPostTests : ApplicationTests
 
         var createdPost = _fixture.Create<PostEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddAsync(createdPost);
         await ef.SaveChangesAsync();
 
@@ -59,7 +59,7 @@ public class GetPostTests : ApplicationTests
 
         var createdPost = _fixture.Create<PostEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddAsync(createdPost);
         await ef.SaveChangesAsync();
 
@@ -98,7 +98,7 @@ public class GetPostTests : ApplicationTests
 
         var createdPosts = _fixture.CreateMany<PostEntity>(3);
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddRangeAsync(createdPosts);
         await ef.SaveChangesAsync();
 
@@ -122,7 +122,7 @@ public class GetPostTests : ApplicationTests
 
         var createdPosts = _fixture.CreateMany<PostEntity>(3);
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddRangeAsync(createdPosts);
         await ef.SaveChangesAsync();
 
@@ -150,7 +150,7 @@ public class GetPostTests : ApplicationTests
         var createdPosts = _fixture.CreateMany<PostEntity>(3);
         createdPosts.ElementAt(0).Title = searchTitleString;
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddRangeAsync(createdPosts);
         await ef.SaveChangesAsync();
 
@@ -177,7 +177,7 @@ public class GetPostTests : ApplicationTests
         _ = nameof(PostService.Get);
         var client = AppFixture.GetClient();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToList();
         var postType = ef.PostTypes.Include(s => s.MetaFields).First(s => s.TypeName == "post");
         postType.MetaFields = metaFields;
@@ -208,7 +208,7 @@ public class GetPostTests : ApplicationTests
         _ = nameof(PostRepository.GetPostEditDetail);
         var client = AppFixture.GetClient();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToList();
         var postType = ef.PostTypes.Include(s => s.MetaFields).First(s => s.TypeName == "post");
         postType.MetaFields = metaFields;

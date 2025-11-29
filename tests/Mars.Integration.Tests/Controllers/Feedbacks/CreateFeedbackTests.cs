@@ -39,7 +39,7 @@ public class CreateFeedbackTests : ApplicationTests
 
         //Assert
         resultId.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var dbFeedback = ef.Feedbacks.FirstOrDefault(s => s.Id == resultId);
         dbFeedback.Should().NotBeNull();
         dbFeedback.Title.Should().Be(feedback.Title);
@@ -64,7 +64,7 @@ public class CreateFeedbackTests : ApplicationTests
         //Assert
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         resultId.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var dbFeedback = ef.Feedbacks.AsNoTracking().Include(s => s.AuthorizedUser).FirstOrDefault(s => s.Id == resultId);
         dbFeedback.Should().NotBeNull();
         dbFeedback.Title.Should().Be(feedback.Title);

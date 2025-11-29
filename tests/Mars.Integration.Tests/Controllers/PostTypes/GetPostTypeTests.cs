@@ -32,7 +32,7 @@ public sealed class GetPostTypeTests : ApplicationTests
 
         var createdPostType = _fixture.Create<PostTypeEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.PostTypes.AddAsync(createdPostType);
         await ef.SaveChangesAsync();
 

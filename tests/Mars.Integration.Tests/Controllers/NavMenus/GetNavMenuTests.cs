@@ -47,7 +47,7 @@ public class GetNavMenuTests : ApplicationTests
 
         var createdNavMenu = _fixture.Create<NavMenuEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.NavMenus.AddAsync(createdNavMenu);
         await ef.SaveChangesAsync();
 
@@ -102,7 +102,7 @@ public class GetNavMenuTests : ApplicationTests
 
         var createdNavMenus = _fixture.CreateMany<NavMenuEntity>(3);
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.NavMenus.AddRangeAsync(createdNavMenus);
         await ef.SaveChangesAsync();
 
@@ -130,7 +130,7 @@ public class GetNavMenuTests : ApplicationTests
         var createdNavMenus = _fixture.CreateMany<NavMenuEntity>(3);
         createdNavMenus.ElementAt(0).Title = searchTitleString;
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.NavMenus.AddRangeAsync(createdNavMenus);
         await ef.SaveChangesAsync();
 

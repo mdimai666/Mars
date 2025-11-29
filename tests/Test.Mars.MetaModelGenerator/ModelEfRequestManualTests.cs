@@ -50,7 +50,7 @@ public class ModelEfRequestManualTests : MetaModelGeneratorTests
                                                                                             ] },
             ];
 
-        using var ef = AppFixture.DbFixture.DbContext;
+        var ef = AppFixture.DbFixture.DbContext;
         ef.PostTypes.Add(postType);
         ef.SaveChanges();
 
@@ -89,9 +89,10 @@ public class ModelEfRequestManualTests : MetaModelGeneratorTests
         var (postTypeDetail, posts) = await SetupPostType();
         var mf = postTypeDetail.MetaFields.First();
 
-        using var ef = AppFixture.DbFixture.DbContext;
+        var ef = AppFixture.DbFixture.DbContext;
 
-        var post = ef.Posts.Include(s => s.PostType)
+        var post = ef.Posts.AsNoTracking()
+                        .Include(s => s.PostType)
                         .Include(s => s.MetaValues!)
                             .ThenInclude(s => s.MetaField)
                         .Where(s => s.PostType.TypeName == postTypeDetail.TypeName)

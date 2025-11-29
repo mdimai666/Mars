@@ -43,7 +43,7 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
         var createdPosts = _fixture.CreateMany<PostEntity>(3).ToList();
         createdPosts.ForEach(s => s.Title = "111");
         createdPosts[0].Title = "000";
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddRangeAsync(createdPosts);
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();
@@ -95,7 +95,7 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
 
         string[] expectOrder = ["post-1", "post-0", "post-2", "post-3"]; // leading one pinned post
 
-        using var ef = AppFixture.DbFixture.DbContext;
+        var ef = AppFixture.DbFixture.DbContext;
 
         var query = ef.Posts.Where(s => s.PostType.TypeName == postTypeName);
 

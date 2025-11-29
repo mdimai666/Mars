@@ -30,7 +30,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
         //Arrange
         _ = nameof(SsoController.Callback);
         _ = nameof(UserRepository.RemoteUserUpsert);
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var newRole = _fixture.Create<RoleEntity>();
         ef.Roles.Add(newRole);
         ef.SaveChanges();
@@ -55,7 +55,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
         //Arrange
         _ = nameof(SsoController.Callback);
         _ = nameof(UserRepository.RemoteUserUpsert);
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         string userExternalKey = "external-" + Guid.NewGuid().ToString("N");
         var provider = _fixture.Create<SsoProviderInfo>();
 
@@ -90,7 +90,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
 
     private async Task AssertCreatedUser(UpsertUserRemoteDataQuery query, AuthorizedUserInformationDto userInfo)
     {
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var user = await _userRepository.GetDetail(userInfo.Id, default);
         var userLogin = await ef.UserLogins.FirstOrDefaultAsync(s => s.UserId == userInfo.Id);
 

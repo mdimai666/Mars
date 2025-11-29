@@ -113,7 +113,7 @@ public sealed class RequestCustomize : ICustomization
             .RuleFor(s => s.Title, f => f.Name.JobTitle())
             .RuleFor(s => s.Content, f => f.Name.JobDescriptor())
             .RuleFor(s => s.Email, (f, s) => f.PickRandom(null, faker.Internet.Email(s.FilledUsername)))
-            .RuleFor(s => s.Phone, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 (###) ### ## ##")), null, null))
+            .RuleFor(s => s.Phone, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 914 ### ## ##")), null, null))
             .RuleFor(s => s.Type, f => f.PickRandom(Enum.GetValues<FeedbackType>().Select(s => s.ToString())))
             .Generate();
 

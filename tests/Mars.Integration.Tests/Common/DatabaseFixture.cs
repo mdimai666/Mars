@@ -1,5 +1,7 @@
-using Mars.Host.Data.Contexts;
 using DotNet.Testcontainers.Builders;
+using Mars.Host.Data.Constants;
+using Mars.Host.Data.Contexts;
+using Mars.Host.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -9,15 +11,16 @@ using Testcontainers.PostgreSql;
 
 namespace Mars.Integration.Tests.Common;
 
-public class DatabaseFixture : IAsyncLifetime
+public class DatabaseFixture : IDatabaseFixture
 {
     private readonly PostgreSqlContainer _container = default!;
-    public DbContextOptions _dbContextOptions = default!;
+    public DbContextOptions<MarsDbContext> _dbContextOptions = default!;
     private Respawner _respawner = default!;
+    public MarsDbContext DbContext => new(_dbContextOptions);
 
     protected string? SkipTest => TestConstants.SkipTest;
 
-    public string connectionString => _container.GetConnectionString();
+    public string ConnectionString => _container.GetConnectionString();
 
     public DatabaseFixture()
     {
@@ -36,8 +39,6 @@ public class DatabaseFixture : IAsyncLifetime
             .WithCleanUp(true)
             .Build();
     }
-
-    public MarsDbContext DbContext => new MarsDbContext(_dbContextOptions);
 
     public async Task InitializeAsync()
     {
@@ -98,21 +99,20 @@ public class DatabaseFixture : IAsyncLifetime
         await using var connection = new NpgsqlConnection(_container.GetConnectionString() + ";Include Error Detail=True;");
         await connection.OpenAsync();
         await _respawner.ResetAsync(connection);
+        await Task.Delay(200);
     }
 
-    private static DbContextOptions<TDbContext> CreateOptions<TDbContext>(IConfiguration configuration, string migrationAssembly) where TDbContext : DbContext =>
-        new DbContextOptionsBuilder<TDbContext>()
-            .UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly(migrationAssembly)
-                      .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
-            .UseApplicationServiceProvider(GetServiceProviderMock())
-            //.ReplaceHistoryRepositoryToPostgres()
-            .UseSnakeCaseNamingConvention()
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .EnableSensitiveDataLogging()
-            .EnableDetailedErrors()
-            //.LogTo(m => Debug.WriteLine(m))
-            .Options;
+    private static DbContextOptions<TDbContext> CreateOptions<TDbContext>(IConfiguration configuration, string migrationAssembly) where TDbContext : DbContext
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection")!;
+        var optionsBuilder = new DbContextOptionsBuilder<TDbContext>();
+        var factory = new MarsDbContextPostgreSQLFactory(new() { ConnectionString = connectionString, ProviderName = DatabaseProviderConstants.PostgreSQL });
+        factory.OptionsBuilderAction(optionsBuilder);
+        return optionsBuilder.EnableSensitiveDataLogging()
+                            .UseApplicationServiceProvider(GetServiceProviderMock())
+                            .EnableDetailedErrors()
+                            .Options;
+    }
 
     private static IServiceProvider GetServiceProviderMock()
     {

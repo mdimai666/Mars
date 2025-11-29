@@ -33,7 +33,7 @@ public class UpdateUserTypeTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var postType = _fixture.Create<UserTypeEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
         postType.MetaFields = [.. metaFields];
         ef.UserTypes.Add(postType);

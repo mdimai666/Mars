@@ -30,7 +30,7 @@ public class DeleteFeedbackTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var post = _fixture.Create<FeedbackEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Feedbacks.AddAsync(post);
         await ef.SaveChangesAsync();
         var deletingId = post.Id;

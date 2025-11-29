@@ -58,7 +58,7 @@ public class CreateNavMenuTests : ApplicationTests
         //Assert
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         resultId.Should().NotBeEmpty();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var dbNavMenu = ef.NavMenus.AsNoTracking().FirstOrDefault(s => s.Id == resultId);
         dbNavMenu.Should().NotBeNull();
         dbNavMenu.Title.Should().Be(request.Title);

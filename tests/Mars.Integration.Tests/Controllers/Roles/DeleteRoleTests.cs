@@ -30,7 +30,7 @@ public class DeleteRoleTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var post = _fixture.Create<RoleEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Roles.AddAsync(post);
         await ef.SaveChangesAsync();
         var deletingId = post.Id;

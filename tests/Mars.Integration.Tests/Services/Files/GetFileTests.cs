@@ -17,7 +17,6 @@ public class GetFileTests : ApplicationTests
     private readonly FileHostingInfo _fileHostingInfo;
     private readonly string _exampleFilesPath;
 
-
     public GetFileTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
@@ -36,7 +35,7 @@ public class GetFileTests : ApplicationTests
         _ = nameof(FileRepository.List);
         FileEntity[] files = [_fixture.CreateImagePng(), _fixture.CreateImagePng()];
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         ef.Files.AddRange(files);
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();

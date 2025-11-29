@@ -25,8 +25,6 @@ public class RoleCommandCli : CommandCli
     public async Task RoleListCommand(string? filter)
     {
         using var scope = app.Services.CreateScope();
-        //var marsDbContextFactory = scope.ServiceProvider.GetRequiredService<IMarsDbContextFactory>();
-        //using var ef = MarsDbContextFactory.CreateInstance();
         var roleRepo = scope.ServiceProvider.GetRequiredService<IRoleRepository>();
         var L = scope.ServiceProvider.GetRequiredService<IStringLocalizer>();
 

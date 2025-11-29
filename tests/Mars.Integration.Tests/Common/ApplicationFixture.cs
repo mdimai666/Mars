@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using Flurl.Http;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Repositories.Mappings;
+using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
@@ -28,7 +29,7 @@ public class ApplicationFixture : IAsyncLifetime
 {
     protected string? SkipTest => TestConstants.SkipTest;
 
-    public readonly DatabaseFixture DbFixture = new();
+    public virtual IDatabaseFixture DbFixture { get; } = new DatabaseFixture();
 
     private HttpClient _authClient = default!;
     private HttpClient _nonAuthClient = default!;
@@ -74,11 +75,14 @@ public class ApplicationFixture : IAsyncLifetime
     public HttpClient GetClientEx(bool isAnonymous = false) => isAnonymous ? _nonAuthClient : _authClient;
     public IFlurlClient GetClient(bool isAnonymous = false) => new FlurlClient(GetClientEx(isAnonymous));
 
+    //public MarsDbContext MarsDbContext() => ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<MarsDbContext>();
     public MarsDbContext MarsDbContext() => ServiceProvider.GetRequiredService<MarsDbContext>();
 
     private async Task SetupAppFactory()
     {
         await Task.WhenAll([DbFixture.InitializeAsync()]);
+
+        ResetStaticFields();
 
         ApplicationFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(
             builder =>
@@ -87,7 +91,7 @@ public class ApplicationFixture : IAsyncLifetime
                 Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
                 var configurationBuilder = new ConfigurationBuilder()
                                     .AddInMemoryCollection([
-                                        new ("ConnectionStrings:DefaultConnection", DbFixture.connectionString )
+                                        new ("ConnectionStrings:DefaultConnection", DbFixture.ConnectionString )
                                     ]);
                 ModifyConfigurationBuilder(configurationBuilder);
                 Configuration = configurationBuilder.Build();
@@ -99,7 +103,6 @@ public class ApplicationFixture : IAsyncLifetime
                     services =>
                     {
                         services.AddLogging();
-                        services.AddSingleton(DbFixture._dbContextOptions);
 
                         //add test controllers
                         services.AddControllers().AddApplicationPart(typeof(TestApi1Controller).Assembly);
@@ -153,6 +156,11 @@ public class ApplicationFixture : IAsyncLifetime
         return client;
     }
 
+    private void ResetStaticFields()
+    {
+        ICommandLineApi.Reset();
+    }
+
     private void ResetClients()
     {
         _nonAuthClient?.Dispose();
@@ -162,19 +170,24 @@ public class ApplicationFixture : IAsyncLifetime
 
     public void ResetMocks()
     {
-        MarsDbContext().ChangeTracker.Clear(); //use DbContrext is Pool like .AddDbContextPool()
+        var ef = MarsDbContext();
+        if (ef.IsPooled) ef.ChangeTracker.Clear(); //use DbContrext is Pool like .AddDbContextPool()
         ResetClients();
+        MarsLogger.Initialize(ServiceProvider.GetRequiredService<ILoggerFactory>());
         //ApiClientMock = Substitute.For<IApiClient>();
 
     }
 
     public async Task Seed()
     {
-        MarsDbContext().ChangeTracker.Clear();
+        using var scope = ServiceProvider.CreateScope();
+        var ef = ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance();
+        ef.ChangeTracker.Clear();
         var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
         MarsStartupPartMigrations.SeedData(ApplicationFactory.Services, Configuration, logger, true);
 
-        var userRepo = ServiceProvider.GetRequiredService<IUserRepository>();
+        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
         var user = UserConstants.TestUser;
         await userRepo.Create(new CreateUserQuery
         {
@@ -189,14 +202,18 @@ public class ApplicationFixture : IAsyncLifetime
 
             Type = user.Type,
             MetaValues = [],
-        }, CancellationToken.None);
+        }, default);
 
-        var ef = DbFixture.DbContext;
         EntitiesCustomize.PostTypeDict = await ef.PostTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
         EntitiesCustomize.UserTypeDict = await ef.UserTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        ef.ChangeTracker.Clear();
+
+        if (EntitiesCustomize.PostTypeDict.Count == 0 || EntitiesCustomize.UserTypeDict.Count == 0)
+        {
+            throw new InvalidOperationException("PostTypeDict or UserTypeDict is empty after seeding data");
+        }
 
         ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
-
     }
 
 }

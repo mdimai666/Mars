@@ -12,7 +12,11 @@ namespace Mars.Integration.Tests.Extensions;
 
 public static class FlurlExtensions
 {
-    private static JsonSerializerOptions _options = new JsonSerializerOptions() { WriteIndented = true };
+    private static JsonSerializerOptions _options = new JsonSerializerOptions()
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
 
     [DebuggerStepThrough]
     public static async Task<IFlurlResponse> CatchUserActionError(this Task<IFlurlResponse> flurlResponse)

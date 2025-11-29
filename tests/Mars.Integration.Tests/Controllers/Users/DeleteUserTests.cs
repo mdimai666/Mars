@@ -30,7 +30,7 @@ public class DeleteUserTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var user = _fixture.Create<UserEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Users.AddAsync(user);
         await ef.SaveChangesAsync();
         var deletingId = user.Id;

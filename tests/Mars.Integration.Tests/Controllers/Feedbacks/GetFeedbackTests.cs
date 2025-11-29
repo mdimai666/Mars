@@ -32,7 +32,7 @@ public class GetFeedbackTests : ApplicationTests
 
         var createdFeedback = _fixture.Create<FeedbackEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Feedbacks.AddAsync(createdFeedback);
         await ef.SaveChangesAsync();
 
@@ -73,7 +73,7 @@ public class GetFeedbackTests : ApplicationTests
         var createdFeedbacks = _fixture.CreateMany<FeedbackEntity>(13);
         var expectCount = 10;
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Feedbacks.AddRangeAsync(createdFeedbacks);
         await ef.SaveChangesAsync();
 
@@ -105,7 +105,7 @@ public class GetFeedbackTests : ApplicationTests
         var createdFeedbacks = _fixture.CreateMany<FeedbackEntity>(3);
         createdFeedbacks.ElementAt(0).Title = searchTitleString;
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Feedbacks.AddRangeAsync(createdFeedbacks);
         await ef.SaveChangesAsync();
 
@@ -134,7 +134,7 @@ public class GetFeedbackTests : ApplicationTests
 
         var createdFeedbacks = _fixture.CreateMany<FeedbackEntity>(15);
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Feedbacks.AddRangeAsync(createdFeedbacks);
         await ef.SaveChangesAsync();
 

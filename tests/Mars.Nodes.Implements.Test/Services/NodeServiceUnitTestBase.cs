@@ -31,6 +31,7 @@ public class NodeServiceUnitTestBase
     internal readonly IHubContext<ChatHub> _hub;
     internal readonly IFileStorage _fileStorage;
     internal readonly IEventManager _eventManager;
+    internal readonly ILogger<NodeService> _loggerNodeService;
     internal readonly ILogger<NodeTaskManager> _loggerManager;
     internal readonly ILogger<NodeTaskJob> _loggerJob;
     internal NodeService? _nodeService;
@@ -47,8 +48,10 @@ public class NodeServiceUnitTestBase
             // minimal setup
             _serviceProvider = Substitute.For<IServiceProvider>();
             MarsLogger.Initialize(Substitute.For<ILoggerFactory>());
+            _loggerNodeService = MarsLogger.GetStaticLogger<NodeService>();
             _loggerManager = MarsLogger.GetStaticLogger<NodeTaskManager>();
             _loggerJob = MarsLogger.GetStaticLogger<NodeTaskJob>();
+            _serviceProvider.GetService(typeof(ILogger<NodeService>)).Returns(_loggerNodeService);
             _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_loggerManager);
             _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
 
@@ -83,7 +86,7 @@ public class NodeServiceUnitTestBase
             _eventManager = Substitute.For<IEventManager>();
             //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
-            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, _eventManager);
+            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, _loggerNodeService, _eventManager);
             //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
         }
     }

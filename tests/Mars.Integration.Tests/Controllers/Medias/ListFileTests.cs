@@ -30,7 +30,6 @@ public sealed class ListFileTests : ApplicationTests
         var client = AppFixture.GetClient(true);
         var listFileRequest = new ListFileQueryRequest();
 
-
         //Act
         var result = await client.Request(_apiUrl).AppendQueryParam(listFileRequest).AllowAnyHttpStatus().GetAsync();
 
@@ -46,7 +45,7 @@ public sealed class ListFileTests : ApplicationTests
         var client = AppFixture.GetClient();
         var listFileRequest = new ListFileQueryRequest();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var fileEntities = _fixture.CreateMany<FileEntity>(2);
         await ef.Files.AddRangeAsync(fileEntities);
         await ef.SaveChangesAsync();

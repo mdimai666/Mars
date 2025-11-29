@@ -39,8 +39,6 @@ public class OptionCommand : CommandCli
     public async Task OptionListCommand(string? filter)
     {
         using var scope = app.Services.CreateScope();
-        //var marsDbContextFactory = scope.ServiceProvider.GetRequiredService<IMarsDbContextFactory>();
-        //using var ef = MarsDbContextFactory.CreateInstance();
         var optionRepo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
         var L = scope.ServiceProvider.GetRequiredService<IStringLocalizer>();
 
@@ -57,7 +55,7 @@ public class OptionCommand : CommandCli
 
         if (filter is not null)
         {
-            Regex re = new Regex(filter);
+            var re = new Regex(filter);
             optionsArray = optionsArray.Where(s => s.Any(re.IsMatch)).ToList();
         }
 
@@ -83,8 +81,6 @@ public class OptionCommand : CommandCli
         }
 
         using var scope = app.Services.CreateScope();
-        //var marsDbContextFactory = scope.ServiceProvider.GetRequiredService<IMarsDbContextFactory>();
-        //using var ef = MarsDbContextFactory.CreateInstance();
         var optionRepo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
 
         var L = scope.ServiceProvider.GetRequiredService<IStringLocalizer>();

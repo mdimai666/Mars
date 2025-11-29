@@ -30,7 +30,7 @@ public class DeleteNavMenuTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var post = _fixture.Create<NavMenuEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.NavMenus.AddAsync(post);
         await ef.SaveChangesAsync();
         var deletingId = post.Id;

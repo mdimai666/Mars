@@ -1,4 +1,6 @@
+using System.Reflection;
 using Mars.Host.Data.Contexts;
+using Mars.Host.Data.Contexts.Abstractions;
 using Mars.Host.Data.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -6,7 +8,7 @@ using Npgsql;
 
 namespace Mars.Host.Data.PostgreSQL;
 
-public class MarsDbContextPostgreSQLFactory(DatabaseConnectionOpt connectionOpt) : IMarsDbContextFactory
+public class MarsDbContextPostgreSQLForPluginFactory(DatabaseConnectionOpt connectionOpt, Assembly migrationsAssembly, string schemaName) : IMarsDbContextFactory
 {
     public void OptionsBuilderAction(DbContextOptionsBuilder optionsBuilder)
     {
@@ -17,7 +19,8 @@ public class MarsDbContextPostgreSQLFactory(DatabaseConnectionOpt connectionOpt)
         optionsBuilder.UseNpgsql(connectionOpt.ConnectionString, opt =>
         {
             opt.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            opt.MigrationsAssembly(GetType().Assembly);
+            opt.MigrationsAssembly(migrationsAssembly);
+            opt.MigrationsHistoryTable(PluginDbContextBase.PluginEFMigrationsHistoryTable, schemaName);
         });
         optionsBuilder.UseSnakeCaseNamingConvention();
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -35,6 +38,7 @@ public class MarsDbContextPostgreSQLFactory(DatabaseConnectionOpt connectionOpt)
     public void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        builder.ApplyConfigurationsFromAssembly(migrationsAssembly);
         builder.UseSerialColumns();
     }
 

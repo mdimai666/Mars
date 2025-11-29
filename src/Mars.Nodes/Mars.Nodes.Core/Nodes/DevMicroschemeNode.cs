@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Mars.Core.Attributes;
 
 namespace Mars.Nodes.Core.Nodes;
 
 #if DEBUG
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/Common/FeatureUnderDevelopment{.lang}.md")]
 [Display(GroupName = "dev")]
 public class DevMicroschemeNode : Node
 {

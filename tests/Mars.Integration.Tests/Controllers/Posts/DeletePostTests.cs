@@ -30,7 +30,7 @@ public class DeletePostTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var post = _fixture.Create<PostEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.Posts.AddAsync(post);
         await ef.SaveChangesAsync();
         var deletingId = post.Id;

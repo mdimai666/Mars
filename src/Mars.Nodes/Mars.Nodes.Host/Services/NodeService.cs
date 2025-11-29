@@ -27,7 +27,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     private readonly NodesLocator _nodesLocator;
     protected readonly IServiceProvider _serviceProvider;
     private readonly INodeTaskManager _nodeTaskManager;
-    readonly ILogger _logger;
+    readonly ILogger<NodeService> _logger;
 
     static JsonSerializerOptions _jsonSerializerOptions = default!;
 
@@ -43,6 +43,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
                         IServiceProvider serviceProvider,
                         INodeTaskManager nodeTaskManager,
                         NodesLocator nodesLocator,
+                        ILogger<NodeService> logger,
                         IEventManager eventManager)
     {
         _fileStorage = fileStorage;
@@ -50,7 +51,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         _nodesLocator = nodesLocator;
         _serviceProvider = serviceProvider;
         _nodeTaskManager = nodeTaskManager;
-        _logger = MarsLogger.GetStaticLogger<INodeService>();
+        _logger = logger;
 
         _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator, writeIndented: true);
 

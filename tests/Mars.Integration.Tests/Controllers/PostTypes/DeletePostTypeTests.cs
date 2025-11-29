@@ -30,7 +30,7 @@ public class DeletePostTypeTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var postType = _fixture.Create<PostTypeEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.PostTypes.AddAsync(postType);
         await ef.SaveChangesAsync();
         var deletingId = postType.Id;

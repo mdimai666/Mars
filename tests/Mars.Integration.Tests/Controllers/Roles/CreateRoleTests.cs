@@ -58,7 +58,7 @@ public class CreateRoleTests : ApplicationTests
         //Assert
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         var dbRole = ef.Roles.AsNoTracking().FirstOrDefault(s => s.Id == result.Id);
         dbRole.Should().NotBeNull();
         dbRole.Name.Should().Be(request.Name);

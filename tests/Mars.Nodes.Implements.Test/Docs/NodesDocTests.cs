@@ -36,7 +36,10 @@ public class NodesDocTests
     {
         var nodes = GetNodes();
 
-        nodes.Count(s => s.Attribute != null).Should().Be(nodes.Count());
+        nodes.Should().AllSatisfy(node =>
+        {
+            node.Attribute.Should().NotBeNull($"node '{node.NodeType}' should have attr");
+        });
     }
 
     [Fact]
@@ -46,11 +49,9 @@ public class NodesDocTests
 
         var nodes = GetNodes();
 
-        var expectDocCount = nodes.Count() * Langs.Length;
+        var expectDocCount = nodes.Count(s => s.Attribute != null) * Langs.Length;
         var existFilesList = new List<string>(expectDocCount);
         var nonExistDocuments = new List<string>();
-
-        var nodesWithoutAttributes = nodes.Where(s => s.Attribute == null).ToList();
 
         foreach (var nodeInfo in nodes.Where(s => s.Attribute != null))
         {
@@ -70,7 +71,6 @@ public class NodesDocTests
         //CreateDocsForNodesIfNotExist();
 
         existFilesList.Count().Should().Be(expectDocCount, "\nSome doc files missing: \n" + string.Join(",", nonExistDocuments.Select(f => Path.GetFileName(f))));
-        nodesWithoutAttributes.Should().BeEmpty();
     }
 
     private void CreateDocsForNodesIfNotExist()

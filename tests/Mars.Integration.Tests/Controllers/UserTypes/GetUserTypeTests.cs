@@ -32,7 +32,7 @@ public sealed class GetUserTypeTests : ApplicationTests
 
         var createdUserType = _fixture.Create<UserTypeEntity>();
 
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         await ef.UserTypes.AddAsync(createdUserType);
         await ef.SaveChangesAsync();
 

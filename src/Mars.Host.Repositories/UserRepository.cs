@@ -81,7 +81,7 @@ internal class UserRepository : IUserRepository, IDisposable
 
         //var roles = await _marsDbContext.Roles.ToListAsync(cancellationToken);
 
-        var userTypesId = (await _marsDbContext.UserTypes.FirstAsync(s => s.TypeName == query.Type)).Id;
+        var userTypesId = await _marsDbContext.UserTypes.AsNoTracking().Where(s => s.TypeName == query.Type).Select(s => s.Id).FirstAsync(cancellationToken);
 
         var user = query.ToEntity(userTypesId, _lookupNormalizer);
 
@@ -355,7 +355,7 @@ internal class UserRepository : IUserRepository, IDisposable
 
         //MetaFieldService metaFieldService = _serviceProvider.GetRequiredService<MetaFieldService>();
         //var user = Get(id, s => s.MetaValues).Result;
-        //using var ef = GetEFContext();
+        //var ef = GetEFContext();
         //var metaFields = UserMetaFields(ef);
         //user.MetaValues = metaFieldService.GetValuesBlank(user.MetaValues, metaFields);
         //user.MetaFields = metaFields;

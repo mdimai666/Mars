@@ -51,7 +51,7 @@ public class UpdateFeedbackTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var createdFeedback = _fixture.Create<FeedbackEntity>();
-        using var ef = AppFixture.MarsDbContext();
+        var ef = AppFixture.MarsDbContext();
         ef.Feedbacks.Add(createdFeedback);
         ef.SaveChanges();
         ef.ChangeTracker.Clear();

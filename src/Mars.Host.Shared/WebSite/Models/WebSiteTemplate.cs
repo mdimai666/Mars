@@ -9,7 +9,7 @@ public class WebSiteTemplate
     public IReadOnlyCollection<WebPage> Pages { get; private init; }
     public IReadOnlyCollection<WebSitePart> Parts { get; private init; }
     public IReadOnlyCollection<WebPageLayout> Layouts { get; private init; }
-    public IDictionary<string, WebRoot> Roots { get; private init; }
+    public IReadOnlyDictionary<string, WebRoot> Roots { get; private init; }
 
     public WebPage? Page404 { get; init; }
     public WebPage? Page500 { get; init; }
@@ -18,7 +18,7 @@ public class WebSiteTemplate
     public Guid Hash { get; init; } = Guid.NewGuid();
 
     public WebSiteTemplate(
-        IDictionary<string, WebRoot> roots,
+        IReadOnlyDictionary<string, WebRoot> roots,
         IReadOnlyCollection<WebPage> pages,
         WebPage indexPage,
         IReadOnlyCollection<WebPageLayout>? layouts = null,

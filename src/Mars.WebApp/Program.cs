@@ -127,7 +127,7 @@ var app = builder.Build();
 
 var _logger = app.Services.GetRequiredService<ILogger<Program>>();
 MarsLogger.Initialize(app.Services.GetRequiredService<ILoggerFactory>()); // use like: MarsLogger.GetStaticLogger<T>().LogError(...)
-var env = app.Services.GetRequiredService<IWebHostEnvironment>();
+var env = app.Environment;
 //var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
 commandsApi.Setup(app);
@@ -135,7 +135,6 @@ commandsApi.Setup(app);
 if (env.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    //app.UseDatabaseErrorPage();//deplrecated
     app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
 
@@ -212,6 +211,7 @@ app.Map("/_ws", ws =>
 
 app.MarsUseMetrics();
 app.UseMarsHost(builder.Services);
+app.UseHostFiles();
 app.UseConfigureActions();
 app.MarsUseTemplator();
 app.Services.UseNodeWorkspace()

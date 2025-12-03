@@ -8,6 +8,7 @@ using Mars.WebSiteProcessor.Interfaces;
 
 namespace Mars.WebSiteProcessor.Services;
 
+[Obsolete]
 public class PrepareHostHtml
 {
     public string BeforeBodyHtml { get; }
@@ -41,7 +42,8 @@ public class PrepareHostHtml
         {
             Request = webClientRequest,
             SysOptions = optionService.SysOption,
-            User = userDetail == null ? null : new RenderContextUser(userDetail),
+            //User = userDetail == null ? null : new RenderContextUser(userDetail),
+            User = null,
             RenderParam = renderParam,
             IsDevelopment = optionService.IsDevelopment,
         };

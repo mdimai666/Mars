@@ -17,7 +17,7 @@ namespace Mars.WebSiteProcessor.Services;
 public class WebDatabaseTemplateService : IWebTemplateService
 {
     WebSiteTemplate? _template;
-    private Debouncer debouncer;
+    Debouncer _debouncer;
     MarsAppFront _appFront;
     IMarsDbContextFactory _marsDbContextFactory;
 
@@ -33,28 +33,26 @@ public class WebDatabaseTemplateService : IWebTemplateService
     }
 
     //bool lastErrored = false;
-    readonly IServiceProvider rootServiceProvider;
-    readonly IHubContext<ChatHub> hub;
-    readonly IMemoryCache memoryCache;
+    readonly IServiceProvider _rootServiceProvider;
+    readonly IHubContext<ChatHub> _hub;
+    readonly IMemoryCache _memoryCache;
 
     public event EventHandler? OnFileUpdated;
-
 
     public WebDatabaseTemplateService(IServiceProvider rootServiceProvider,
         IHubContext<ChatHub> hub, MarsAppFront appFront, IEventManager eventManager)
     {
         var af = appFront.Configuration;
-        this._appFront = appFront;
-        this._marsDbContextFactory = rootServiceProvider.GetRequiredService<IMarsDbContextFactory>();
+        _appFront = appFront;
+        _marsDbContextFactory = rootServiceProvider.GetRequiredService<IMarsDbContextFactory>();
 
         //IWebFilesService webFilesService = rootServiceProvider.GetRequiredService<IWebFilesService>();
 
-
         //var see = nameof(Microsoft.AspNetCore.Mvc.HotReload.HotReloadService);
 
-        this.rootServiceProvider = rootServiceProvider;
-        this.hub = hub;
-        this.memoryCache = rootServiceProvider.GetRequiredService<IMemoryCache>();
+        _rootServiceProvider = rootServiceProvider;
+        _hub = hub;
+        _memoryCache = rootServiceProvider.GetRequiredService<IMemoryCache>();
 
         {
             string[] eventTypes = WebTemplateDatabaseSource.activeTypeNames;
@@ -89,16 +87,16 @@ public class WebDatabaseTemplateService : IWebTemplateService
             });
         }
 
-        this.debouncer = new Debouncer(200);
+        _debouncer = new Debouncer(200);
 
         TryScanSite();
     }
 
     public void ScanSite()
     {
-        using var scope = rootServiceProvider.CreateScope();
+        using var scope = _rootServiceProvider.CreateScope();
         var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
-        WebTemplateDatabaseSource templateSource = new WebTemplateDatabaseSource(optionService, _appFront, _marsDbContextFactory.CreateInstance);
+        var templateSource = new WebTemplateDatabaseSource(optionService, _appFront, _marsDbContextFactory.CreateInstance);
         _template = new WebSiteTemplate(templateSource.ReadParts());
         //string indexContent = _template.Page404.Content;
     }
@@ -139,19 +137,19 @@ public class WebDatabaseTemplateService : IWebTemplateService
 
     void UpdateFile(string path, WatcherChangeTypes changeType)
     {
-        debouncer.Debouce(() => { _updateFile(path, changeType); });
+        _debouncer.Debouce(() => { _updateFile(path, changeType); });
     }
     void _updateFile(string path, WatcherChangeTypes changeType)
     {
         ScanSite();
 
-        hub.Clients.All.SendAsync("reload");//refreshcss
+        _hub.Clients.All.SendAsync("reload");//refreshcss
 
     }
 
     public void ClearCache()
     {
-        if (memoryCache is MemoryCache mc)
+        if (_memoryCache is MemoryCache mc)
         {
             mc.Clear();
         }

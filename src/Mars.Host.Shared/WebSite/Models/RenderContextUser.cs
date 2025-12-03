@@ -24,12 +24,13 @@ public class RenderContextUser
 
     public string UserName => Detail.UserName;
 
-    public UserDetail Detail { get; init; }
+    public AuthorizedUserInformationDto Detail { get; init; }
 
     public IReadOnlyCollection<string> Roles => Detail.Roles;
 
-    public RenderContextUser(UserDetail userDetail)
+    public RenderContextUser(AuthorizedUserInformationDto userDetail)
     {
         Detail = userDetail;
     }
+
 }

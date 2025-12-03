@@ -1,0 +1,10 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <PropertyGroup>
+        <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
+    </PropertyGroup>
+</Project>

@@ -13,7 +13,7 @@ namespace Mars.Host.Data.Contexts;
 public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, Guid,
                 UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity>//, IMarsDbContext
 {
-    private readonly DbContextOptions _options;
+    private readonly DbContextOptions<MarsDbContext> _options;
     public bool IsPooled { get; }
 
     //--------Asp.Net defaults----------
@@ -47,7 +47,7 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
     public virtual DbSet<NavMenuEntity> NavMenus { get; set; } = default!;
     public virtual DbSet<FeedbackEntity> Feedbacks { get; set; } = default!;
 
-    public MarsDbContext(DbContextOptions options) : base(options)
+    public MarsDbContext(DbContextOptions<MarsDbContext> options) : base(options)
     {
         _options = options;
 #if DEBUG

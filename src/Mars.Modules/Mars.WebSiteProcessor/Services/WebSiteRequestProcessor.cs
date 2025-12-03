@@ -169,11 +169,7 @@ public class WebSiteRequestProcessor
             //=======================================================
             //PREPARE context
 
-            UserDetail? userDetail = null;
-            if (requestContext.IsAuthenticated)
-            {
-                userDetail = await userService.GetDetail(requestContext.User.Id, cancellationToken);
-            }
+            var userDetail = requestContext.IsAuthenticated ? await userService.GetAuthorizedUserInformation(requestContext.User.Id, cancellationToken) : null;
 
             //var hostHtml = new PrepareHostHtml2();
             var pageRenderContext = new PageRenderContext()

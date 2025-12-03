@@ -1,0 +1,9 @@
+@page "/prerender_flag"
+
+<div>IsPrerenderProcess=@IsPrerenderProcess.ToString().ToLower()</div>
+
+@code {
+    [CascadingParameter] public App App { get; set; } = default!;
+
+    public bool IsPrerenderProcess => App.IsPrerenderProcess;
+}

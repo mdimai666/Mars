@@ -51,6 +51,12 @@ internal class UserService : IUserService
     public Task<UserDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
         => _userRepository.GetDetail(id, cancellationToken);
 
+    public Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(string username, CancellationToken cancellationToken)
+        => _userRepository.GetAuthorizedUserInformation(username, cancellationToken);
+
+    public Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(Guid userId, CancellationToken cancellationToken)
+        => _userRepository.GetAuthorizedUserInformation(userId, cancellationToken);
+
     public Task<ListDataResult<UserSummary>> List(ListUserQuery query, CancellationToken cancellationToken)
         => _userRepository.List(query, cancellationToken);
 

@@ -23,7 +23,7 @@ namespace Mars.WebSiteProcessor.Handlebars;
 
 public class HandlebarsWebRenderEngine : IWebRenderEngine
 {
-    MarsAppFront appFront = default!;
+    protected MarsAppFront AppFront = default!;
     private IMemoryCache? _memoryCache;
     //private readonly IMarsHtmlTemplator _marsHtmlTemplator;
 
@@ -32,11 +32,11 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         //_memoryCache = memoryCache;
     }
 
-    public virtual void AddFront(WebApplicationBuilder builder, MarsAppFront cfg)
+    public virtual void AddFront(WebApplicationBuilder builder, MarsAppFront appFront)
     {
-        appFront = cfg;
+        AppFront = appFront;
 
-        if (appFront.Configuration.Mode == Mars.Core.Models.AppFrontMode.HandlebarsTemplateStatic && string.IsNullOrEmpty(appFront.Configuration.Path))
+        if (AppFront.Configuration.Mode == Mars.Core.Models.AppFrontMode.HandlebarsTemplateStatic && string.IsNullOrEmpty(AppFront.Configuration.Path))
         {
             throw new ArgumentNullException("cfg: AppFront.Path");
         }
@@ -44,43 +44,30 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
     public virtual void UseFront(IApplicationBuilder app)
     {
-        Initialize(appFront, app.ApplicationServices);
+        Initialize(AppFront, app.ApplicationServices);
         _memoryCache = app.ApplicationServices.GetRequiredService<IMemoryCache>();
 
         var front = app;
 
-        var allowStatic = new AppFrontMode[]{
-            AppFrontMode.HandlebarsTemplateStatic,
-            AppFrontMode.ServeStaticBlazor,
-            AppFrontMode.BlazorPrerender,
-        };
-
-        if (appFront.Configuration.Mode == AppFrontMode.HandlebarsTemplateStatic)
+        if (AppFront.Configuration.Mode == AppFrontMode.HandlebarsTemplateStatic)
         {
-            bool hasWwwRoot = Directory.Exists(Path.Join(appFront.Configuration.Path, "wwwroot"));
-            string path = !hasWwwRoot ? appFront.Configuration.Path : Path.Join(appFront.Configuration.Path, "wwwroot");
-            front.UseStaticFiles(new StaticFileOptions
+            bool hasWwwRoot = Directory.Exists(Path.Join(AppFront.Configuration.Path, "wwwroot"));
+            if (hasWwwRoot)
             {
-                FileProvider = new PhysicalFileProvider(path),
-                //RequestPath = appFront.Configuration.Url,
-                ServeUnknownFileTypes = true,
-            });
-        }
-        else if (allowStatic.Contains(appFront.Configuration.Mode))
-        {
-            front.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(appFront.Configuration.Path),
-                //RequestPath = appFront.Configuration.Url,
-                ServeUnknownFileTypes = true,
-            });
+                string path = Path.Join(AppFront.Configuration.Path, "wwwroot");
+                front.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(path),
+                    //RequestPath = appFront.Configuration.Url,
+                    ServeUnknownFileTypes = true,
+                });
+            }
         }
 
         IWebSiteProcessor webSiteProcessor = app.ApplicationServices.GetRequiredService<IWebSiteProcessor>();
 
-        if (appFront.Configuration.Mode != AppFrontMode.None)
+        if (AppFront.Configuration.Mode != AppFrontMode.None)
         {
-
             front.UseEndpoints(endpoints =>
             {
                 endpoints.MapFallback(webSiteProcessor.Response);
@@ -102,8 +89,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
     protected virtual void Initialize(MarsAppFront appFront, IServiceProvider rootServices)
     {
-        this.appFront = appFront;
-
         var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();
         var wts = new WebTemplateService(rootServices, hub, appFront);
         appFront.Features.Set<IWebTemplateService>(wts);
@@ -170,7 +155,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
             string? layoutBlockName = null;
 
-            if (page.Layout is not null && (ctx.RenderParam.AllowLayout || !ctx.RenderParam.OnlyBody))
+            if (page?.Layout is not null && (ctx.RenderParam.AllowLayout || !ctx.RenderParam.OnlyBody))
             {
                 layoutBlockName = page.Layout ?? root.DefaultLayout;
             }

@@ -1,9 +1,8 @@
 using FluentAssertions;
-using Flurl.Http;
+using Mars.AppFrontEngines.Integration.Tests.Common;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Host.Shared.WebSite.Models;
-using Mars.Integration.Tests.AppFront;
 using Mars.Integration.Tests.Attributes;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
@@ -13,14 +12,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Mars.Integration.Tests.AppFronts.HandlebarsEngine.Scenarions;
+namespace Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
 
-public class MainScenarios : BaseAppFrontTests
+public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicationFixture>
 {
     private readonly IWebTemplateService _webTemplateService;
 
-    public MainScenarios(AppFrontApplicationFixture appFixture) : base(appFixture)
+    public WebSiteTemplateTests(HandlebarsAppFrontApplicationFixture appFixture) : base(appFixture)
     {
+
         _fixture.Customize(new FixtureCustomize());
         _ = nameof(WebFilesReadFilesystemService);
         _ = nameof(WebTemplateService.ScanSite);
@@ -29,22 +29,8 @@ public class MainScenarios : BaseAppFrontTests
         app.FirstApp.Features.Set<IWebTemplateService>(_webTemplateService);
     }
 
-    async Task<string> RenderRequestPage(string url = "/")
-    {
-        var client = AppFixture.GetClient();
-        return await client.Request(url).GetStringAsync(); //render index page
-    }
-
-    async Task<(string html, int statusCode)> RenderRequestPageEx(string url = "/")
-    {
-        var client = AppFixture.GetClient();
-        var res = await client.Request(url).AllowAnyHttpStatus().GetAsync();
-        var html = await res.GetStringAsync();
-        return (html, res.StatusCode);
-    }
-
     WebSiteTemplate EmptyWebSiteTemplate(string indexContent, WebPartSource[]? parts = null) =>
-        new WebSiteTemplate([
+        new([
             new WebPartSource("""
                 <html>
                 <body>
@@ -65,26 +51,10 @@ public class MainScenarios : BaseAppFrontTests
         _webTemplateService.Template.Returns(EmptyWebSiteTemplate(template));
 
         //Act
-        var render = await RenderRequestPage();
+        var render = await RenderRequestPage("/");
 
         //Assert
         render.Should().Contain(UserConstants.TestUserFirstName);
-    }
-
-    [IntegrationFact]
-    public async Task Basic_PlacedWwwrootFileWillServe_FileIsAvailableAtTheLink()
-    {
-        //Arrange
-        _webTemplateService.Template.Returns(EmptyWebSiteTemplate("index_page"));
-
-        //Act
-        var client = AppFixture.GetClient();
-        var res = await client.Request("1.txt").GetAsync();
-        var fileContent = await res.GetStringAsync();
-
-        //Assert
-        res.StatusCode.Should().Be(StatusCodes.Status200OK);
-        fileContent.Trim().Should().Be("1");
     }
 
     [IntegrationFact]

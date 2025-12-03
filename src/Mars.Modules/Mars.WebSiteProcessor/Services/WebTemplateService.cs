@@ -21,10 +21,10 @@ public class WebTemplateService : IWebTemplateService
 {
     public string Path { get; init; }
 
-    FileSystemWatcher? watcher;
+    FileSystemWatcher? _watcher;
     WebSiteTemplate _template = default!;
-    Debouncer debouncer;
-    MarsAppFront appFront;
+    Debouncer _debouncer;
+    MarsAppFront _appFront;
 
     public event EventHandler? OnFileUpdated;
 
@@ -40,9 +40,9 @@ public class WebTemplateService : IWebTemplateService
     }
 
     //bool lastErrored = false;
-    private readonly IServiceProvider rootServiceProvider;
-    private readonly IHubContext<ChatHub> hub;
-    private readonly IMemoryCache memoryCache;
+    private readonly IServiceProvider _rootServiceProvider;
+    private readonly IHubContext<ChatHub> _hub;
+    private readonly IMemoryCache _memoryCache;
 
     readonly IHostEnvironment env;
     bool IsDevelopment;
@@ -52,42 +52,43 @@ public class WebTemplateService : IWebTemplateService
     {
         //var af = configuration.GetRequiredSection("AppFront").Get<AppFrontSettingsCfg>();
         var af = appFront.Configuration;
-        this.appFront = appFront;
-        this.Path = af.Path;
+        _appFront = appFront;
+        Path = af.Path;
         bool enableWatcher = true;
 
         //IWebFilesService webFilesService = rootServiceProvider.GetRequiredService<IWebFilesService>();
         //var see = nameof(Microsoft.AspNetCore.Mvc.HotReload.HotReloadService);
 
-        this.rootServiceProvider = rootServiceProvider;
-        this.hub = hub;
-        this.memoryCache = rootServiceProvider.GetRequiredService<IMemoryCache>();
+        _rootServiceProvider = rootServiceProvider;
+        _hub = hub;
+        _memoryCache = rootServiceProvider.GetRequiredService<IMemoryCache>();
 
-        this.env = rootServiceProvider.GetRequiredService<IHostEnvironment>();
-        this.IsDevelopment = env.IsDevelopment();
+        env = rootServiceProvider.GetRequiredService<IHostEnvironment>();
+        IsDevelopment = env.IsDevelopment();
 
         if (enableWatcher)
         {
-            watcher = new FileSystemWatcher(Path);
+            _watcher = new FileSystemWatcher(Path)
+            {
+                NotifyFilter = NotifyFilters.DirectoryName
+                                     | NotifyFilters.FileName
+                                     | NotifyFilters.LastWrite
+            };
 
-            watcher.NotifyFilter = NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastWrite;
+            _watcher.Changed += OnChanged;
+            _watcher.Created += OnCreated;
+            _watcher.Deleted += OnDeleted;
+            _watcher.Renamed += OnRenamed;
+            _watcher.Error += OnError;
 
-            watcher.Changed += OnChanged;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-            watcher.Renamed += OnRenamed;
-            watcher.Error += OnError;
+            _watcher.Disposed += Watcher_Disposed;
 
-            watcher.Disposed += Watcher_Disposed;
-
-            watcher.Filters.Add("*.hbs");
-            watcher.Filters.Add("*.css");
-            watcher.Filters.Add("*.js");
-            watcher.Filters.Add("*.resx");
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
+            _watcher.Filters.Add("*.hbs");
+            _watcher.Filters.Add("*.css");
+            _watcher.Filters.Add("*.js");
+            _watcher.Filters.Add("*.resx");
+            _watcher.IncludeSubdirectories = true;
+            _watcher.EnableRaisingEvents = true;
             //Console.WriteLine("SetWatcher");
         }
 
@@ -126,7 +127,7 @@ public class WebTemplateService : IWebTemplateService
             });
         }
 
-        this.debouncer = new Debouncer(200);
+        _debouncer = new Debouncer(200);
 
         TryScanSite();
     }
@@ -135,13 +136,13 @@ public class WebTemplateService : IWebTemplateService
     {
         var wfs = new WebFilesReadFilesystemService();
         var templateSource = new WebTemplateFilesystemSource(Path, wfs);
-        var optionService = rootServiceProvider.GetRequiredService<IOptionService>();
-        var eff = rootServiceProvider.GetRequiredService<IMarsDbContextFactory>();
+        var optionService = _rootServiceProvider.GetRequiredService<IOptionService>();
+        var eff = _rootServiceProvider.GetRequiredService<IMarsDbContextFactory>();
 
         if (eff is not null)
         {
 
-            WebTemplateDatabaseSource dbTemplateSource = new WebTemplateDatabaseSource(optionService, appFront, () => eff?.CreateInstance() ?? null!);
+            var dbTemplateSource = new WebTemplateDatabaseSource(optionService, _appFront, () => eff?.CreateInstance() ?? null!);
 
             var dbParts = dbTemplateSource.ReadParts();
             dbParts = dbParts.Where(x => x.Name != "_root.hbs");
@@ -223,14 +224,14 @@ public class WebTemplateService : IWebTemplateService
 
     void UpdateFile(string path, WatcherChangeTypes changeType)
     {
-        debouncer.Debouce(() => { _updateFile(path, changeType); });
+        _debouncer.Debouce(() => { _updateFile(path, changeType); });
     }
     void _updateFile(string path, WatcherChangeTypes changeType)
     {
         if (path == "x") //updated parts from Datadase
         {
             ScanSite();
-            hub.Clients.All.SendAsync("reload");
+            _hub.Clients.All.SendAsync("reload");
         }
 
         string ext = System.IO.Path.GetExtension(path);
@@ -238,12 +239,12 @@ public class WebTemplateService : IWebTemplateService
         if (ext == ".css")
         {
             string filename = System.IO.Path.GetFileName(path);
-            hub.Clients.All.SendAsync("refreshcss", filename);
+            _hub.Clients.All.SendAsync("refreshcss", filename);
             return;
         }
         else if (ext == ".js")
         {
-            hub.Clients.All.SendAsync("reload");
+            _hub.Clients.All.SendAsync("reload");
             return;
         }
         else if (ext == ".hbs")
@@ -273,7 +274,7 @@ public class WebTemplateService : IWebTemplateService
         }
         else if (ext == ".resx")
         {
-            IAppFrontLocalizer? afl = rootServiceProvider.GetService<IAppFrontLocalizer>();
+            IAppFrontLocalizer? afl = _rootServiceProvider.GetService<IAppFrontLocalizer>();
             if (afl != null)
             {
                 afl.Refresh();
@@ -281,13 +282,13 @@ public class WebTemplateService : IWebTemplateService
         }
 
         OnFileUpdated?.Invoke(path, EventArgs.Empty);
-        hub.Clients.All.SendAsync("reload");//refreshcss
+        _hub.Clients.All.SendAsync("reload");//refreshcss
 
     }
 
     public void ClearCache()
     {
-        if (memoryCache is MemoryCache mc)
+        if (_memoryCache is MemoryCache mc)
         {
             if (IsDevelopment == false)
             {

@@ -1,26 +1,17 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using AutoFixture;
 using Mars.Core.Models;
-using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Common;
-using Mars.Integration.Tests.Extensions;
 using Mars.UseStartup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Mars.Integration.Tests.AppFront;
+namespace Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
 
-[CollectionDefinition("AppFrontTestApp")]
-public class TestAppFrontAppCollection : ICollectionFixture<AppFrontApplicationFixture>
-{
-
-}
-
-public class AppFrontApplicationFixture : ApplicationFixture
+public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
 {
     internal AppFrontSettingsCfg[] _appFrontConfigs = default!;
 
@@ -37,17 +28,17 @@ public class AppFrontApplicationFixture : ApplicationFixture
         builder.AddJsonStream(new MemoryStream(Encoding.ASCII.GetBytes(json)));
     }
 
-    internal AppFrontSettingsCfg[] GetAppFrontConfigs()
+    protected virtual internal AppFrontSettingsCfg[] GetAppFrontConfigs()
     {
         _ = nameof(StartupFront.AddFront);
 
         var testDirPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "..", "..", ".."));
-        var wwwRoot = Path.Combine(testDirPath, "AppFronts", "appTheme");
+        var themeRoot = Path.Combine(testDirPath, "HandlebarsEngine", "appTheme");
 
         return [
             new AppFrontSettingsCfg(){
                 Mode = AppFrontMode.HandlebarsTemplateStatic,
-                Path = wwwRoot,
+                Path = themeRoot,
                 Url = ""
             }
         ];
@@ -58,23 +49,4 @@ public class AppFrontApplicationFixture : ApplicationFixture
         _webFilesReadFilesystemService = Substitute.ForPartsOf<WebFilesReadFilesystemService>();
         services.AddSingleton(_webFilesReadFilesystemService);
     }
-}
-
-[Collection("AppFrontTestApp")]
-public abstract class BaseAppFrontTests
-{
-    protected readonly AppFrontApplicationFixture AppFixture;
-    protected MarsDbContext DbContext => AppFixture.DbFixture.DbContext;
-
-    public IFixture _fixture = new Fixture();
-
-    protected BaseAppFrontTests(AppFrontApplicationFixture appFixture)
-    {
-        AppFixture = appFixture;
-        AppFixture.DbFixture.Reset().RunSync();
-        AppFixture.Seed().RunSync();
-        AppFixture.ResetMocks();
-        //AppFixture.MessageQueueFixture.ClearTopics().RunSync();
-    }
-
 }

@@ -41,7 +41,7 @@ public class WebTemplateDatabaseSource : IWebTemplateSource
             .Where(s => activeTypeNames.Contains(s.PostType!.TypeName))
             .ToList();
 
-        if (appFront.Configuration.Mode is AppFrontMode.HandlebarsTemplate or AppFrontMode.None)
+        if (appFront.Configuration.Mode is AppFrontMode.HandlebarsTemplate or AppFrontMode.None or AppFrontMode.BlazorPrerender)
         {
             var frontOpt = optionService.GetOption<FrontOptions>();
             var frontHost = frontOpt.HostItems.FirstOrDefault(s => s.Url == appFront.Configuration.Url);
@@ -69,11 +69,11 @@ public class WebTemplateDatabaseSource : IWebTemplateSource
                 }
                 else if (post.Slug == "404")
                 {
-                    content = "@page \"404\"\n\n" + content;
+                    content = "@page \"/404\"\n\n" + content;
                 }
                 else if (post.Slug == "500")
                 {
-                    content = "@page \"500\"\n\n" + content;
+                    content = "@page \"/500\"\n\n" + content;
                 }
                 else
                 {

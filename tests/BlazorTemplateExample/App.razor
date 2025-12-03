@@ -1,0 +1,48 @@
+@using AppFront.Shared.Components
+@using BlazorTemplateExample.Pages
+@if (true || Q.Site is not null)
+{
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <CascadingValue Name="RouteData" Value="trackRouteData = routeData">
+                    <CascadingValue Value="this">
+                        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                            <Authorizing>
+                                <text> Пожалуйста, подождите, мы авторизуем пользователя... </text>
+                            </Authorizing>
+                            <NotAuthorized>
+
+                                <ContentWrapper>
+                                    @if (Q.IsPrerenderProcess)
+                                    {
+                                        <SharedLoader1 />
+                                    }
+                                    else
+                                    {
+                                        <AccessDenied />
+                                    }
+                                </ContentWrapper>
+
+                            </NotAuthorized>
+                        </AuthorizeRouteView>
+                    </CascadingValue>
+                </CascadingValue>
+            </Found>
+            <NotFound>
+                <Error404Page />
+                @* <SharedError404 /> *@
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+}
+else
+{
+    <ContentWrapper>
+        <div class="h-100 xcenter">
+            <SharedLoader1 />
+        </div>
+    </ContentWrapper>
+}
+
+@* <AppFront.Shared.AppFrontSharedContainer /> *@

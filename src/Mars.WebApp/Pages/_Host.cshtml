@@ -5,6 +5,7 @@
     Layout = null;
 }
 @using AppFront.Shared
+@using AppFront.Shared.Interfaces
 @using Mars.Core.Features
 @using Mars.Core.Models
 @using Mars.Host.Handlers
@@ -13,8 +14,11 @@
 @using Mars.Host.Shared.Models
 @using Mars.Host.Shared.Services
 @using Mars.Host.Shared.WebSite.Models
+@using Mars.WebSiteProcessor.Blazor
+@using Mars.WebSiteProcessor.Interfaces
 @using Mars.WebSiteProcessor.Services
 @using Mars.WebSiteProcessor.WebSite
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Configuration
 @using Microsoft.Extensions.DependencyInjection;
 
@@ -23,15 +27,17 @@
 @inject IServiceProvider serviceProvider;
 @inject IUserService userService;
 @inject InitialSiteDataViewModelHandler _initialSiteDataHandler;
+@inject IMarsHostBlazorPrerenderHttpAccessor _blazorPrerenderHttpAccessor;
 
 @{
     Q.IsPrerenderProcess = true;
     var appFront = HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
-    AppFrontMode StartupFront_Mode = appFront!.Configuration.Mode;
+
+    if (appFront.Configuration.Mode is not AppFrontMode.ServeStaticBlazor and not AppFrontMode.BlazorPrerender)
+        throw new NotSupportedException("Only Blazor modes are supported in this host.");
 
     string json = "";
-
-    if (StartupFront_Mode == AppFrontMode.BlazorPrerender || StartupFront_Mode == AppFrontMode.ServeStaticBlazor)
+    if (!Q.IsPrerenderProcess)
     {
         var vm = await _initialSiteDataHandler.Handle(Request, devAdminPageData: false, CancellationToken.None);
         Q.UpdateInitialSiteData(vm);
@@ -39,37 +45,59 @@
     }
 
     // PrepareHostHtml html = await PrepareHostHtml.GetHostTemplate(HttpContext, serviceProvider, typeof(Mars.Host.MainMarsHost).Assembly, requestContext, default);
-    // var re = appFront.Features.Get<IWebRenderEngine>();
-    UserDetail? userDetail = null;
-    var cnToken = new CancellationTokenSource();
+}
 
-    if (requestContext.IsAuthenticated && requestContext.User is not null)
+@* <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" /> *@
+
+@if (false)
+{
+    var renderEngine = appFront.Features.Get<IWebRenderEngine>() as BlazorWebRenderEngine;
+    var html = await renderEngine.RenderBlazorPageWithHbsRoot(appFront, "", HttpContext, serviceProvider, default);
+    @Html.Raw(html)
+
+    @if (_blazorPrerenderHttpAccessor.StatusCode is not null)
     {
-        userDetail = await userService.GetDetail(requestContext.User.Id, cnToken.Token);
+        // Этот код должен быть здесь. Присваивание статуса после отрисовки страницы.
+        HttpContext.Response.StatusCode = _blazorPrerenderHttpAccessor.StatusCode.Value;
     }
-
-    var html = new PrepareHostHtml(appFront, optionService, new WebClientRequest(HttpContext.Request), userDetail, new RenderParam(), serviceProvider, default);
 }
-
-@Html.Raw(html.BeforeBodyHtml)
-@*<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />*@
-
-@if (StartupFront_Mode == AppFrontMode.None)
+@* else if (true)
 {
-    <p>none</p>
-}
-else if (StartupFront_Mode == AppFrontMode.HandlebarsTemplate)
-{
-    throw new NotImplementedException("Deplrecated method. See MapWebSiteProcessor");
-}
+    <app id="app">
+        @if (appFront.Configuration.Mode is AppFrontMode.BlazorPrerender)
+        {
+            var appFrontBlazorAsm = appFront.Features.Get<AppFrontBlazorAsm>();
+            var appHtml = await Html.RenderComponentAsync(appFrontBlazorAsm.AppType, RenderMode.Static, null);
+
+            using var writer = new StringWriter();
+            appHtml.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
+
+            var renderEngine = appFront.Features.Get<IWebRenderEngine>() as BlazorWebRenderEngine;
+            var html = await renderEngine.RenderBlazorPageWithHbsRoot(appFront, writer.ToString(), HttpContext, serviceProvider, default);
+
+            @Html.Raw(html)
+
+            @if (_blazorPrerenderHttpAccessor.StatusCode is not null)
+            {
+                // Этот код должен быть здесь. Присваивание статуса после отрисовки страницы.
+                HttpContext.Response.StatusCode = _blazorPrerenderHttpAccessor.StatusCode.Value;
+            }
+        }
+    </app>
+} *@
 else
 {
-    /*@if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor or AppFrontMode.BlazorPrerender && html.isEmpty)
-    {
+    var renderEngine = appFront.Features.Get<IWebRenderEngine>() as BlazorWebRenderEngine;
+    var html = await renderEngine.RenderBlazorPageWithHbsRoot(appFront, "@Body", HttpContext, serviceProvider, default);
 
-    }
-    else*/
-    if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor or AppFrontMode.BlazorPrerender)
+    var splitter = new RootPageBodyTagSplitter(html);
+
+    var BeforeBodyHtml = splitter.PreBody;
+    var AfterBodyHtml = splitter.AfterBody;
+
+    @Html.Raw(BeforeBodyHtml)
+
+    if (!Q.IsPrerenderProcess)
     {
         <script>
             function InitialSiteDataViewModel() {
@@ -78,43 +106,37 @@ else
                 return vm;
             }
         </script>
-
-        <app id="app">
-            @if (StartupFront_Mode is AppFrontMode.ServeStaticBlazor)
-            {
-
-            }
-            else if (AppFrontInstance.AppType is not null)
-            {
-                @*<component type="typeof(App)" render-mode="Static" />*@
-                <component type="AppFrontInstance.AppType" render-mode="Static" />
-            }
-            else
-            {
-                <div class="alert alert-dange">AppFrontInstance.AppType is null</div>
-            }
-        </app>
-
-        <div id="blazor-error-ui">
-            <environment include="Staging,Production">
-                Произошла ошибка. Это приложение может больше не отвечать до перезагрузки.
-            </environment>
-            <environment include="Development">
-                Произошло необработанное исключение. Дополнительные сведения см. в инструментах разработки браузера.
-            </environment>
-            <a href="" class="reload">Перезагрузить</a>
-            <a class="dismiss">🗙</a>
-        </div>
-
     }
-    else
-    {
-        <main>
-            <div class="container">
-                <h1>app not set</h1>
-            </div>
-        </main>
-    }
+
+    <app id="app">
+        @if (appFront.Configuration.Mode is AppFrontMode.BlazorPrerender)
+        {
+            var appFrontBlazorAsm = appFront.Features.Get<AppFrontBlazorAsm>();
+
+            <component type="appFrontBlazorAsm.AppType" param-IsPrerenderProcess="true" render-mode="Static" />
+
+            @if (_blazorPrerenderHttpAccessor.StatusCode is not null)
+            {
+                // Этот код должен быть здесь. Присваивание статуса после отрисовки страницы.
+                HttpContext.Response.StatusCode = _blazorPrerenderHttpAccessor.StatusCode.Value;
+            }
+        }
+        else
+        {
+            <div class="alert alert-dange">AppFrontBlazorAsm.AppType is null</div>
+        }
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            Произошла ошибка. Это приложение может больше не отвечать до перезагрузки.
+        </environment>
+        <environment include="Development">
+            Произошло необработанное исключение. Дополнительные сведения см. в инструментах разработки браузера.
+        </environment>
+        <a href="" class="reload">Перезагрузить</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    @Html.Raw(AfterBodyHtml)
 }
-
-@Html.Raw(html.AfterBodyHtml)

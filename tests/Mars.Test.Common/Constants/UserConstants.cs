@@ -61,6 +61,21 @@ public static class UserConstants
         UserType = TestUserType,
     };
 
+    public static readonly AuthorizedUserInformationDto AuthorizedUserInfo = new()
+    {
+        Id = TestUserId,
+        FirstName = TestUserFirstName,
+        LastName = TestUserLastName,
+        UserName = TestUserUsername,
+        Email = TestUserEmail,
+        Roles = ["Admin"],
+        AvatarUrl = "",
+        MiddleName = null,
+        BirthDate = TestUserBirthDate,
+        Gender = UserGender.Male,
+        PhoneNumber = "+79990000666",
+        SecurityStamp = "",
+    };
 }
 
 public record UserDetailTestModel : UserDetail

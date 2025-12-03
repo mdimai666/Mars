@@ -30,7 +30,7 @@ public class QueryLangProcessingTests
         {
             Request = new WebClientRequest(new Uri(sysOptions.SiteUrl)),
             SysOptions = sysOptions,
-            User = new RenderContextUser(UserConstants.TestUser),
+            User = new RenderContextUser(UserConstants.AuthorizedUserInfo),
             RenderParam = new RenderParam(),
             IsDevelopment = true,
         };

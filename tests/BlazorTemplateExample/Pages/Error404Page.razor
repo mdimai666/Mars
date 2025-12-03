@@ -1,0 +1,18 @@
+@page "/404"
+@using AppFront.Shared.Interfaces
+
+<h1>404</h1>
+<br />
+<h3>Page not found in Blazor app</h3>
+
+@code {
+    [Inject] IMarsHostBlazorPrerenderHttpAccessor? _httpAccessor { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        if (!OperatingSystem.IsBrowser())
+        {
+            _httpAccessor.StatusCode = 404;
+        }
+    }
+}

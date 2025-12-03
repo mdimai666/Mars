@@ -72,6 +72,7 @@
           "BlazoredHtmlRender": "0.6.12.0",
           "Mars.Core": "0.6.12.0",
           "Mars.Host.Data": "0.6.12.0",
+          "Mars.Host.Data.PostgreSQL": "0.6.12.0",
           "Mars.Host": "0.6.12.0",
           "Mars.Host.Shared": "0.6.12.0",
           "Mars.Nodes.Core": "0.6.12.0",
@@ -2900,10 +2901,24 @@
           }
         }
       },
+      "Mars.Host.Data.InMemory/1.0.0": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.InMemory": "9.0.9",
+          "mdimai666.Mars.Host.Data": "0.6.12-alpha.7"
+        },
+        "runtime": {
+          "Mars.Host.Data.InMemory.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.Host.Infrastructure/1.0.0": {
         "dependencies": {
+          "Mars.Host.Data.InMemory": "1.0.0",
           "Mars.Host.Repositories": "1.0.0",
           "mdimai666.Mars.Host.Data": "0.6.12-alpha.7",
+          "mdimai666.Mars.Host.Data.PostgreSQL": "0.6.12-alpha.7",
           "mdimai666.Mars.Host.Shared": "0.6.12-alpha.7"
         },
         "runtime": {
@@ -2915,8 +2930,10 @@
       },
       "Mars.Host.Repositories/1.0.0": {
         "dependencies": {
+          "Mars.Host.Data.InMemory": "1.0.0",
           "mdimai666.Mars.Core": "0.6.12-alpha.7",
           "mdimai666.Mars.Host.Data": "0.6.12-alpha.7",
+          "mdimai666.Mars.Host.Data.PostgreSQL": "0.6.12-alpha.7",
           "mdimai666.Mars.Host.Shared": "0.6.12-alpha.7"
         },
         "runtime": {
@@ -3190,7 +3207,9 @@
         "dependencies": {
           "Mars.WebSiteProcessor": "1.0.0",
           "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
-          "Mars.WebSiteProcessor.Handlebars": "1.0.0"
+          "Mars.WebSiteProcessor.Handlebars": "1.0.0",
+          "Microsoft.AspNetCore.Components.Web": "9.0.9",
+          "mdimai666.Mars.AppFront.Shared": "0.6.12-alpha.7"
         },
         "runtime": {
           "Mars.WebSiteProcessor.Blazor.dll": {
@@ -3310,12 +3329,6 @@
           "Handlebars.Net": "2.1.6",
           "Mars.Host.Repositories": "1.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "9.0.9",
-          "Microsoft.AspNetCore.JsonPatch": "9.0.9",
-          "Npgsql": "9.0.3",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.4",
-          "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.1.0",
-          "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime": "9.0.4",
-          "Npgsql.Json.NET": "9.0.3",
           "System.IdentityModel.Tokens.Jwt": "8.13.0",
           "mdimai666.Mars.Host.Data": "0.6.12-alpha.7",
           "mdimai666.Mars.Host.Shared": "0.6.12-alpha.7"
@@ -3332,15 +3345,26 @@
           "EFCore.NamingConventions": "9.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "9.0.9",
           "Microsoft.EntityFrameworkCore": "9.0.9",
+          "mdimai666.Mars.Core": "0.6.12-alpha.7"
+        },
+        "runtime": {
+          "Mars.Host.Data.dll": {
+            "assemblyVersion": "0.6.12.0",
+            "fileVersion": "0.6.12.0"
+          }
+        }
+      },
+      "mdimai666.Mars.Host.Data.PostgreSQL/0.6.12-alpha.7": {
+        "dependencies": {
           "Npgsql": "9.0.3",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.1.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime": "9.0.4",
           "Npgsql.Json.NET": "9.0.3",
-          "mdimai666.Mars.Core": "0.6.12-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.6.12-alpha.7"
         },
         "runtime": {
-          "Mars.Host.Data.dll": {
+          "Mars.Host.Data.PostgreSQL.dll": {
             "assemblyVersion": "0.6.12.0",
             "fileVersion": "0.6.12.0"
           }
@@ -3558,6 +3582,14 @@
       "Mars.Host.Data/0.6.12.0": {
         "runtime": {
           "Mars.Host.Data.dll": {
+            "assemblyVersion": "0.6.12.0",
+            "fileVersion": "0.6.12.0"
+          }
+        }
+      },
+      "Mars.Host.Data.PostgreSQL/0.6.12.0": {
+        "runtime": {
+          "Mars.Host.Data.PostgreSQL.dll": {
             "assemblyVersion": "0.6.12.0",
             "fileVersion": "0.6.12.0"
           }
@@ -5281,6 +5313,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Mars.Host.Data.InMemory/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mars.Host.Infrastructure/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -5431,6 +5468,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "mdimai666.Mars.Host.Data.PostgreSQL/0.6.12-alpha.7": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "mdimai666.Mars.Host.Shared/0.6.12-alpha.7": {
       "type": "project",
       "serviceable": false,
@@ -5517,6 +5559,11 @@
       "sha512": ""
     },
     "Mars.Host.Data/0.6.12.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Host.Data.PostgreSQL/0.6.12.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

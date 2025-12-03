@@ -37,7 +37,10 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
 
         RenderActionResult<PostRenderDto>? currentPage = null;
 
-        if (af.Configuration.Mode == Core.Models.AppFrontMode.BlazorPrerender && req.Path != "/" && !req.Path.StartsWithSegments("/dev") && !req.Path.StartsWithSegments("/AppAdmin"))
+        if (af is not null
+            && af.Configuration.Mode == Core.Models.AppFrontMode.BlazorPrerender
+            && req.Path != "/" && !req.Path.StartsWithSegments("/dev")
+            && !req.Path.StartsWithSegments("/AppAdmin"))
         {
             //var exp = renderService.ResolveUrlGetPostExpr(req.Path.Value);
             //if (exp != null)

@@ -15,6 +15,4 @@ public interface IWebRenderEngine
         WebRoot root, WebPage? page, IReadOnlyCollection<WebSitePart>? parts,
         IServiceProvider serviceProvider, CancellationToken cancellationToken);
 
-    //TODO: переработать, костыль временно
-    static Dictionary<string, Type> RenderEnginesLocator = new();
 }

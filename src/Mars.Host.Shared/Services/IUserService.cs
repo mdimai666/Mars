@@ -10,6 +10,8 @@ public interface IUserService
 {
     Task<UserSummary?> Get(Guid id, CancellationToken cancellationToken);
     Task<UserDetail?> GetDetail(Guid id, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(string username, CancellationToken cancellationToken);
+    Task<AuthorizedUserInformationDto?> GetAuthorizedUserInformation(Guid userId, CancellationToken cancellationToken);
     Task<ListDataResult<UserSummary>> List(ListUserQuery query, CancellationToken cancellationToken);
     Task<ListDataResult<UserDetail>> ListDetail(ListUserQuery query, CancellationToken cancellationToken);
     Task<PagingResult<UserSummary>> ListTable(ListUserQuery query, CancellationToken cancellationToken);

@@ -5,7 +5,7 @@ namespace Mars.Integration.Tests.Data;
 
 public class TestMarsDbContext : MarsDbContext
 {
-    public TestMarsDbContext(DbContextOptions options) : base(options)
+    public TestMarsDbContext(DbContextOptions<MarsDbContext> options) : base(options)
     {
     }
 }

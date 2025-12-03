@@ -41,8 +41,9 @@ public static class AppFrontSharedExtensions
         services.AddBlazoredLocalStorage();
         services.AddAuthorizationCore();
         services.TryAddScoped<IAuthenticationService, AuthenticationService>();
-        services.TryAddScoped<AuthenticationStateProvider, CookieOrLocalStorageAuthStateProvider>();
-        services.TryAddScoped<CookieOrLocalStorageAuthStateProvider>(sp => (CookieOrLocalStorageAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
+        services.TryAddScoped<CookieOrLocalStorageAuthStateProvider>();
+        services.TryAddScoped<AuthenticationStateProvider>(sp =>
+            sp.GetRequiredService<CookieOrLocalStorageAuthStateProvider>());
 
         services.AddHttpClientInterceptor();
 

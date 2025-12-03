@@ -28,7 +28,7 @@ public class MainCommand : CommandCli
         }
         else
         {
-        var npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+            var npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
             databaseName = npgsqlConnectionStringBuilder.Database!;
         }
 
@@ -53,7 +53,7 @@ public class MainCommand : CommandCli
         }
         else
         {
-            Console.WriteLine("Mode = " + StartupFront.FirstAppFront.Configuration.Mode);
+            Console.WriteLine("Mode = " + StartupFront.AppProvider.FirstApp.Configuration.Mode);
         }
     }
 }

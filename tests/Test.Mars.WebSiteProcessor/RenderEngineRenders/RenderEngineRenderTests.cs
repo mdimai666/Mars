@@ -25,7 +25,6 @@ public class RenderEngineRenderTests
         _ = nameof(MapWebSiteProcessor);
         _ = nameof(WebSiteRequestProcessor);
         //_ = nameof(PrepareHostHtml.PreparePageContext);
-        _ = nameof(PrepareHostHtml);
         //_ = nameof(ViewModelController.InitialSiteDataViewModel);
         _ = nameof(InitialSiteDataViewModel);
         //_ = nameof(PageRenderContextOld);
@@ -58,7 +57,7 @@ public class RenderEngineRenderTests
     {
         var sys = new SysOptions { SiteUrl = "http://localhost" };
         var dataDict = JsonSerializer.SerializeToNode(data).Deserialize<Dictionary<string, object?>>();
-        var user = UserConstants.TestUser;
+        var user = UserConstants.AuthorizedUserInfo;
 
         var template = GetTemplateByPage(content, "Index page");
         var httpContext = Substitute.For<HttpContext>();
@@ -113,7 +112,6 @@ public class RenderEngineRenderTests
         var renderEngine = new HandlebarsWebRenderEngine();
         var context = GetRenderContext(content);
 
-        _ = nameof(PrepareHostHtml);
         _ = nameof(HandlebarsTmpCtxBasicDataContext);
         var dict = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {

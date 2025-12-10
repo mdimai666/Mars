@@ -1,6 +1,5 @@
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
@@ -8,7 +7,7 @@ namespace Mars.Host.Shared.Dto.PostTypes;
 /// <summary>
 /// <see cref="CreatePostTypeRequest"/>
 /// </summary>
-public record CreatePostTypeQuery
+public record CreatePostTypeQuery : IGeneralPostTypeQuery
 {
     public Guid? Id { get; init; }
     public required string Title { get; init; }

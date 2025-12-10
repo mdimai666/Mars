@@ -4,11 +4,14 @@ using Flurl.Http;
 using Mars.Controllers;
 using Mars.Host.Data.Entities;
 using Mars.Host.Services;
+using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.PostTypes;
 
@@ -74,5 +77,24 @@ public class DeletePostTypeTests : ApplicationTests
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+    }
+
+    [IntegrationFact]
+    public async Task DeletePostType_InternalTypeCannotBeDelete_Should400()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.Delete);
+        _ = nameof(PostTypeService.Delete);
+        _ = nameof(DeletePostTypeQueryValidator);
+        var client = AppFixture.GetClient();
+        var metaModelLocator = AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>();
+        var postTypeId = metaModelLocator.GetPostTypeByName("post").Id;
+
+        //Act
+        var result = await client.Request(_apiUrl, postTypeId).DeleteAsync().ReceiveValidationError();
+
+        //Assert
+        result.Errors.Should().HaveCount(1);
+        result.Errors.First().Value.First().Should().Match("*is internal type and cannot be delete");
     }
 }

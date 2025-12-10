@@ -7,6 +7,7 @@ using Mars.Host.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.PostJsons;
 using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;

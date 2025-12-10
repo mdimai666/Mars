@@ -1,12 +1,18 @@
 using System.ComponentModel;
 using System.Net.Mime;
+using Mars.Core.Constants;
 using Mars.Core.Exceptions;
+using Mars.Host.Shared.Dto.PostJsons;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.ExceptionFilters;
+using Mars.Host.Shared.Interfaces;
+using Mars.Host.Shared.Mappings.PostJsons;
 using Mars.Host.Shared.Mappings.Posts;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.PostJsons;
 using Mars.Shared.Contracts.Posts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Controllers;
@@ -21,10 +27,12 @@ namespace Mars.Controllers;
 public class PostJsonController : ControllerBase
 {
     private readonly IPostJsonService _postJsonService;
+    private readonly IRequestContext _requestContext;
 
-    public PostJsonController(IPostJsonService postJsonService)
+    public PostJsonController(IPostJsonService postJsonService, IRequestContext requestContext)
     {
         _postJsonService = postJsonService;
+        _requestContext = requestContext;
     }
 
     [HttpGet("{id:guid}")]
@@ -62,5 +70,33 @@ public class PostJsonController : ControllerBase
     public async Task<PagingResult<PostJsonResponse>> ListTable([FromQuery] TablePostQueryRequest request, [DefaultValue("post")] string type, CancellationToken cancellationToken)
     {
         return (await _postJsonService.ListTable(request.ToQuery(type), cancellationToken)).ToResponse();
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task<ActionResult<PostJsonResponse>> Create([FromBody] CreatePostJsonRequest request, CancellationToken cancellationToken)
+    {
+        var created = await _postJsonService.Create(request.ToQuery(_requestContext.User.Id), cancellationToken);
+        return Created("{id}", created.ToResponse());
+    }
+
+    [HttpPut]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task<PostJsonResponse> Update([FromBody] UpdatePostJsonRequest request, CancellationToken cancellationToken)
+    {
+        return (await _postJsonService.Update(request.ToQuery(_requestContext.User.Id), cancellationToken)).ToResponse();
     }
 }

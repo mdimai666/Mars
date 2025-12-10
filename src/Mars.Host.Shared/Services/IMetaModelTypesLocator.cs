@@ -6,6 +6,7 @@ namespace Mars.Host.Shared.Services;
 public interface IMetaModelTypesLocator
 {
     PostTypeDetail? GetPostTypeByName(string postTypeName);
+    PostTypeDetail? GetPostTypeById(Guid id);
     IReadOnlyDictionary<string, PostTypeDetail> PostTypesDict();
     IReadOnlyCollection<string> ListMetaRelationModelProviderKeys();
     IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName);

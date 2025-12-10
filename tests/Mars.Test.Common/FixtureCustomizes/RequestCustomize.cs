@@ -8,6 +8,7 @@ using Mars.Host.Shared.Dto.Feedbacks;
 using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.Feedbacks;
 using Mars.Shared.Contracts.NavMenus;
+using Mars.Shared.Contracts.PostJsons;
 using Mars.Shared.Contracts.Posts;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Contracts.Roles;
@@ -145,5 +146,35 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Roles, Array.Empty<string>())
                                     .With(s => s.MenuItems)
                                 );
+
+        fixture.Customize<CreatePostJsonRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title, fixture.Create("Title - "))
+                                    .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
+                                    .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
+                                    .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
+                                    //.With(s => s.Image, "")
+                                    //.With(s => s.Lang, Random.Shared.GetItems(["", "ru"], 1)[0])
+                                    .With(s => s.Type, "post")
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.LangCode, Chance(["", "ru"]))
+                                    //.With(s => s.Meta, null)
+                                    );
+
+        fixture.Customize<UpdatePostJsonRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title, fixture.Create("Title - "))
+                                    .With(s => s.Content, "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
+                                    .With(s => s.Status, PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
+                                    .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
+                                    //.With(s => s.Image, "")
+                                    //.With(s => s.Lang, Random.Shared.GetItems(["", "ru"], 1)[0])
+                                    .With(s => s.Type, "post")
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.LangCode, Chance(["", "ru"]))
+                                    //.With(s => s.Meta, null)
+                                    );
     }
 }

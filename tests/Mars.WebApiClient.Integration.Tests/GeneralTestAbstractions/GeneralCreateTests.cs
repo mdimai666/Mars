@@ -36,11 +36,13 @@ public class GeneralCreateTests<TEntity, TRequest, TResponse>
         await action.Should().ThrowAsync<UnauthorizedException>();
     }
 
-    public async Task<TEntity> ValidRequest_ShouldSuccess()
+    public async Task<TEntity> ValidRequest_ShouldSuccess(Func<TRequest, TRequest>? createRequest = null)
     {
         //Arrange
         var client = GetWebApiClient();
         var request = _fixture.Create<TRequest>();
+        if (createRequest != null)
+            request = createRequest(request);
 
         //Act
         var result = await _createAction(client, request);

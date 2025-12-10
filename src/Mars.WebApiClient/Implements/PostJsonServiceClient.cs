@@ -1,5 +1,6 @@
 using Flurl.Http;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.PostJsons;
 using Mars.Shared.Contracts.Posts;
 using Mars.WebApiClient.Interfaces;
 
@@ -33,5 +34,12 @@ internal class PostJsonServiceClient : BasicServiceClient, IPostJsonServiceClien
         => _client.Request($"{_basePath}{_controllerName}/ListTable", type)
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<PostJsonResponse>>();
-
+    public Task<PostJsonResponse> Create(CreatePostJsonRequest request)
+        => _client.Request($"{_basePath}{_controllerName}")
+                    .PostJsonAsync(request)
+                    .ReceiveJson<PostJsonResponse>();
+    public Task<PostJsonResponse> Update(UpdatePostJsonRequest request)
+        => _client.Request($"{_basePath}{_controllerName}")
+                    .PutJsonAsync(request)
+                    .ReceiveJson<PostJsonResponse>();
 }

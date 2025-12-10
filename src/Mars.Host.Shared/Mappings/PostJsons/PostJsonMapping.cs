@@ -1,13 +1,16 @@
 using Mars.Core.Extensions;
 using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Dto.PostJsons;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Mappings.MetaFields;
+using Mars.Host.Shared.Mappings.PostJsons;
+using Mars.Host.Shared.Mappings.Posts;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
+using Mars.Shared.Contracts.PostJsons;
 
-namespace Mars.Host.Shared.Mappings.Posts;
+namespace Mars.Host.Shared.Mappings.PostJsons;
 
 public static class PostJsonMapping
 {

@@ -63,24 +63,12 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
                                                     .Include(s => s.PostStatusList)
                                                     .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                     ?? throw new NotFoundException();
-
-        var modifiedAt = DateTimeOffset.Now;
         var oldTypeName = entity.TypeName;
-
-        entity.Title = query.Title;
-        entity.TypeName = query.TypeName;
-        entity.Tags = query.Tags.ToList();
-        entity.EnabledFeatures = query.EnabledFeatures.ToList();
-        entity.Disabled = query.Disabled;
-        entity.PostContentType = new()
-        {
-            PostContentType = query.PostContentSettings.PostContentType,
-            CodeLang = query.PostContentSettings.CodeLang,
-        };
+        entity.UpdateEntity(query);
+        var modifiedAt = entity.ModifiedAt!.Value;
+        
         ModifyStatusList(entity, query, modifiedAt);
         MetaFieldsTools.ModifyMetaFields(_marsDbContext, entity.MetaFields!, query.MetaFields, modifiedAt);
-
-        entity.ModifiedAt = modifiedAt;
 
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }

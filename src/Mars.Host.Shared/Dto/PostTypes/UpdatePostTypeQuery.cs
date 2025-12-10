@@ -7,7 +7,7 @@ namespace Mars.Host.Shared.Dto.PostTypes;
 /// <summary>
 /// <see cref="UpdatePostTypeRequest"/>
 /// </summary>
-public record UpdatePostTypeQuery
+public record UpdatePostTypeQuery : IGeneralPostTypeQuery
 {
     public required Guid Id { get; init; }
     public required string Title { get; init; }

@@ -27,4 +27,6 @@ public interface IPostRepository : IDisposable
     Task<ListDataResult<PostDetail>> ListDetail(ListPostQuery query, CancellationToken cancellationToken);
     Task<PagingResult<PostDetail>> ListTableDetail(ListPostQuery query, CancellationToken cancellationToken);
     Task<PostDetailWithType?> PostDetailWithType(Guid id, CancellationToken cancellationToken);
+    Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken);
 }

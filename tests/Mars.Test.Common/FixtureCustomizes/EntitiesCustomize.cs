@@ -153,12 +153,19 @@ public sealed class EntitiesCustomize : ICustomization
                                    );
 
         fixture.Customize<MetaFieldEntity>(composer => composer
+                                    .FromFactory(() =>
+                                    {
+                                        var type = Chance([EMetaFieldType.String, EMetaFieldType.Int, EMetaFieldType.Bool, EMetaFieldType.DateTime])();
+                                        return new()
+                                        {
+                                            Type = type,
+                                            Key = $"{type.ToString().ToLower()}-{Guid.NewGuid()}",
+                                            Title = $"Title {type}",
+                                        };
+                                    })
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.ParentId, Guid.Empty)
-                                    .With(s => s.Title)
-                                    .With(s => s.Key)
-                                    .With(s => s.Type, Chance([EMetaFieldType.String, EMetaFieldType.Int, EMetaFieldType.Bool, EMetaFieldType.DateTime]))
                                     .With(s => s.Order)
                                     .With(s => s.Tags)
                                     .With(s => s.Variants)

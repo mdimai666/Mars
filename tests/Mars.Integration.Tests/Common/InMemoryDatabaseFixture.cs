@@ -3,14 +3,12 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Data.InMemory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Respawn;
 
 namespace Mars.Integration.Tests.Common;
 
 public class InMemoryDatabaseFixture : IDatabaseFixture
 {
     public DbContextOptions<MarsDbContext> _dbContextOptions = default!;
-    private Respawner? _respawner;
     MarsDbContext? _dbContext;
     public MarsDbContext DbContext => _dbContext ??= new MarsDbContext(_dbContextOptions);
 

@@ -51,7 +51,7 @@ public sealed class CreateUserTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var ef = AppFixture.MarsDbContext();
-        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray().ToList();
+        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToList();
         var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
         userType.MetaFields = metaFields;
         ef.MetaFields.AddRange(metaFields);

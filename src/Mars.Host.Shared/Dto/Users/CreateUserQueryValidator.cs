@@ -33,7 +33,7 @@ public class CreateUserQueryValidator : AbstractValidator<CreateUserQuery>
             .WithMessage(v => $"user type '{v.Type}' does not exist");
 
         RuleFor(x => x.UserName)
-            .MustAsync(async (ctx, x, ct) => !await userRepository.UserNameExistAsync(x))
+            .MustAsync(async (ctx, x, ct) => !await userRepository.UserNameExistAsync(x, ct))
             .WithMessage("This username is already taken by another user.");
 
         //var roles = (await _roleRepository.ListAll(cancellationToken)).ToDictionary(s => s.Name);

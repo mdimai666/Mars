@@ -10,8 +10,6 @@ public class GeneralPostQueryValidator : AbstractValidator<IGeneralPostQuery>
 
     public GeneralPostQueryValidator(IMetaModelTypesLocator metaModelTypesLocator)
     {
-
-
         RuleFor(x => x.Slug)
             .NotEmpty()
             .Must(TextTool.IsValidSlugWithUpperCase)
@@ -29,9 +27,15 @@ public class GeneralPostQueryValidator : AbstractValidator<IGeneralPostQuery>
                     return;
                 }
 
+                if (postType.Disabled)
+                {
+                    context.AddFailure(nameof(x.Type), $"post type '{x.Type}' is disabled");
+                    return;
+                }
+
                 if (postType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
                 {
-                    if (!postType.PostStatusList.Any(s => s.Slug == x.Status))
+                    if (!string.IsNullOrEmpty(x.Status) && !postType.PostStatusList.Any(s => s.Slug == x.Status))
                     {
                         context.AddFailure(nameof(x.Status), $"status '{x.Status}' not exist");
                     }
@@ -40,7 +44,7 @@ public class GeneralPostQueryValidator : AbstractValidator<IGeneralPostQuery>
                 {
                     if (!string.IsNullOrEmpty(x.Status))
                     {
-                        context.AddFailure(nameof(x.Status), $"status feature is disabled. status must be empty");
+                        context.AddFailure(nameof(x.Status), "status feature is disabled. status must be empty");
                     }
                 }
             });

@@ -11,7 +11,6 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SqlNode))]
 
-
 <div class="form-group d-flex flex-column flex-fill">
     <label>SqlNode</label>
     @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Template />*@
@@ -29,7 +28,7 @@
                     {
                         var a = _a;
                         if (a.Slug == Node.DatasourceSlug) continue;
-                        <li><a class="dropdown-item" @onclick=@(e=>Node.DatasourceSlug = a.Slug) >@a.Title</a></li>
+                        <li><a class="dropdown-item" @onclick=@(e => Node.DatasourceSlug = a.Slug)>@a.Title</a></li>
                     }
                     @if (listDatasources.Count > 1)
                     {
@@ -42,14 +41,13 @@
         <div class="col">
             <label>input source</label>
             <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@Node.Source class="form-select form-select-sm">
-                @foreach (var m in Enum.GetValues(typeof(SqlNode.ESqlNodeInputSource)))
+                @foreach (var m in Enum.GetValues<SqlNode.ESqlNodeInputSource>())
                 {
-                    <option value="@((SqlNode.ESqlNodeInputSource)m)">@m</option>
+                    <option value="@m">@m</option>
                 }
             </Microsoft.AspNetCore.Components.Forms.InputSelect>
         </div>
     </div>
-
 
     @if (Node.Source == SqlNode.ESqlNodeInputSource.Static)
     {
@@ -65,16 +63,14 @@
     <div class="mt-3">
         <label>output type</label>
         <Microsoft.AspNetCore.Components.Forms.InputSelect @bind-Value=@Node.OutputType class="form-select">
-            @foreach (var m in Enum.GetValues(typeof(SqlNode.ESqlNodeOutputType)))
+            @foreach (var m in Enum.GetValues<SqlNode.ESqlNodeOutputType>())
             {
-                <option value="@((SqlNode.ESqlNodeOutputType)m)">@m</option>
+                <option value="@m">@m</option>
             }
         </Microsoft.AspNetCore.Components.Forms.InputSelect>
     </div>
 
-
 </div>
-
 
 @code {
     [CascadingParameter] Node? Value { get; set; }
@@ -92,7 +88,6 @@
 
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = new List<SelectDatasourceDto>();
 
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -105,7 +100,6 @@
         });
     }
 
-
     public override async Task OnEditSave()
     {
         //Console.WriteLine("X>1111");
@@ -113,7 +107,6 @@
         //Console.WriteLine("X>2222");
         //await Task.Delay(100);
     }
-
 
     void OnEditorSave(string val)
     {
@@ -129,11 +122,10 @@
     {
 
         return new StandaloneEditorConstructionOptions
-            {
-                AutomaticLayout = true,
-                Language = "sql",
-                Value = Node.SqlQuery,
-            };
+        {
+            AutomaticLayout = true,
+            Language = "sql",
+            Value = Node.SqlQuery,
+        };
     }
 }
-

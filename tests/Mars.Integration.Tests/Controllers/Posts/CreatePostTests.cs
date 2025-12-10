@@ -5,12 +5,14 @@ using Mars.Controllers;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories;
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Posts;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +56,7 @@ public sealed class CreatePostTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         var ef = AppFixture.MarsDbContext();
-        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray().ToList();
+        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToList();
         var postType = ef.PostTypes.Include(s => s.MetaFields).First(s => s.TypeName == "post");
         postType.MetaFields = metaFields;
         ef.MetaFields.AddRange(metaFields);
@@ -145,6 +147,29 @@ public sealed class CreatePostTests : ApplicationTests
             var validateErrros = await response.GetJsonAsync<ValidationProblemDetails>();
         }
         response.StatusCode.Should().Be((int)System.Net.HttpStatusCode.RequestEntityTooLarge);
+    }
+
+    [IntegrationFact]
+    public async Task CreatePost_ForDisabledType_ShouldFail400()
+    {
+        //Arrange
+        _ = nameof(PostRepository.Create);
+        _ = nameof(PostController.Create);
+        _ = nameof(GeneralPostQueryValidator);
+        var client = AppFixture.GetClient();
+
+        var postTypeRequest = _fixture.Create<CreatePostTypeRequest>().ToQuery() with { Disabled = true };
+        await AppFixture.ServiceProvider.GetRequiredService<IPostTypeService>().Create(postTypeRequest, default);
+
+        var post = _fixture.Create<CreatePostRequest>() with { Type = postTypeRequest.TypeName };
+
+        //Act
+        var validate = await client.Request(_apiUrl).PostJsonAsync(post).ReceiveValidationError();
+
+        //Assert
+        validate.Errors.Should().HaveCount(1);
+        validate.Errors.ElementAt(0).Key.Should().Be(nameof(CreatePostRequest.Type));
+        validate.Errors.ElementAt(0).Value.Should().Contain($"post type '{postTypeRequest.TypeName}' is disabled");
     }
 
 }

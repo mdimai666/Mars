@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AutoFixture;
+using FluentAssertions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories;
 using Mars.Host.Repositories.Helpers;
@@ -9,23 +10,16 @@ using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Mappings.Posts;
+using Mars.Host.Shared.Mappings.PostJsons;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using NSubstitute;
 
 namespace Test.Mars.Host.Services.PostJsonServices;
 
 public sealed class PostJsonServiceTests : PostJsonServiceTestBase
 {
-
-    public PostJsonServiceTests() : base()
-    {
-
-    }
-
     [Fact]
     public async Task GetDetailFromRepository_RetriveMetaFields_PrimitivesValuesSuccess()
     {

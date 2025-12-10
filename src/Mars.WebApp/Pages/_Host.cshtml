@@ -31,7 +31,7 @@
 
 @{
     Q.IsPrerenderProcess = true;
-    var appFront = HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
+    var appFront = (MarsAppFront)HttpContext.Items[nameof(MarsAppFront)]!;
 
     if (appFront.Configuration.Mode is not AppFrontMode.ServeStaticBlazor and not AppFrontMode.BlazorPrerender)
         throw new NotSupportedException("Only Blazor modes are supported in this host.");
@@ -87,7 +87,7 @@
 } *@
 else
 {
-    var renderEngine = appFront.Features.Get<IWebRenderEngine>() as BlazorWebRenderEngine;
+    var renderEngine = (BlazorWebRenderEngine)appFront.Features.Get<IWebRenderEngine>()!;
     var html = await renderEngine.RenderBlazorPageWithHbsRoot(appFront, "@Body", HttpContext, serviceProvider, default);
 
     var splitter = new RootPageBodyTagSplitter(html);
@@ -111,7 +111,7 @@ else
     <app id="app">
         @if (appFront.Configuration.Mode is AppFrontMode.BlazorPrerender)
         {
-            var appFrontBlazorAsm = appFront.Features.Get<AppFrontBlazorAsm>();
+            var appFrontBlazorAsm = appFront.Features.Get<AppFrontBlazorAsm>()!;
 
             <component type="appFrontBlazorAsm.AppType" param-IsPrerenderProcess="true" render-mode="Static" />
 

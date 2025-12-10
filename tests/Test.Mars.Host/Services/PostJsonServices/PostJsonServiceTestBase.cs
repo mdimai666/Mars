@@ -23,6 +23,8 @@ public class PostJsonServiceTestBase
     protected readonly IFileRepository _fileRepository;
     protected readonly IMetaFieldMaterializerService _metaFieldMaterializerService;
     protected readonly FileHostingInfo _hostingInfo;
+    protected readonly IPostService _postService;
+    protected readonly IMetaModelTypesLocator _metaModelTypesLocator;
     internal readonly PostJsonService _postJsonService;
     protected static readonly JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = true };
     protected readonly IFixture _fixture = new Fixture();
@@ -42,11 +44,14 @@ public class PostJsonServiceTestBase
         var postTransformer = Substitute.For<IPostTransformer>();
         postTransformer.Transform(Arg.Any<PostDetail>(), default).Returns(callInfo => callInfo.Arg<PostDetail>());
 
-        _metaFieldMaterializerService = Substitute.For<IMetaFieldMaterializerService>();
+        _postService = Substitute.For<IPostService>();
+        _metaModelTypesLocator = Substitute.For<IMetaModelTypesLocator>();
 
         _postJsonService = new PostJsonService(_postRepository,
                                             validatorFabric,
                                             _metaFieldMaterializerService,
+                                            _postService,
+                                            _metaModelTypesLocator,
                                             postTransformer);
     }
 

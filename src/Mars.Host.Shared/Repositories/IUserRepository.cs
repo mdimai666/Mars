@@ -33,6 +33,6 @@ public interface IUserRepository : IDisposable
     Task<UserActionResult> UpdateUserRoles(Guid userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken);
-    Task<bool> UserNameExistAsync(string username);
-    Task<bool> UsernameIsAlreadyTakenByAnotherUser(string newUsername, Guid userId);
+    Task<bool> UserNameExistAsync(string username, CancellationToken cancellationToken);
+    Task<bool> UsernameIsAlreadyTakenByAnotherUser(string newUsername, Guid userId, CancellationToken cancellationToken);
 }

@@ -7,6 +7,7 @@ using Mars.Host.Shared.Mappings.MetaFields;
 using Mars.Host.Shared.Mappings.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Resources;
@@ -20,17 +21,20 @@ internal class PostTypeService : IPostTypeService
     private readonly IStringLocalizer<AppRes> _stringLocalizer;
     private readonly IEventManager _eventManager;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
+    private readonly IValidatorFabric _validatorFabric;
 
     public PostTypeService(
         IPostTypeRepository postTypeRepository,
         IStringLocalizer<AppRes> stringLocalizer,
         IEventManager eventManager,
-        IMetaModelTypesLocator metaModelTypesLocator)
+        IMetaModelTypesLocator metaModelTypesLocator,
+        IValidatorFabric validatorFabric)
     {
         _postTypeRepository = postTypeRepository;
         _stringLocalizer = stringLocalizer;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
+        _validatorFabric = validatorFabric;
     }
 
     public Task<PostTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -47,6 +51,8 @@ internal class PostTypeService : IPostTypeService
 
     public async Task<PostTypeDetail> Create(CreatePostTypeQuery query, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
         var id = await _postTypeRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
 
@@ -71,6 +77,8 @@ internal class PostTypeService : IPostTypeService
 
     public async Task<PostTypeDetail> Update(UpdatePostTypeQuery query, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
         await _postTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 
@@ -85,6 +93,8 @@ internal class PostTypeService : IPostTypeService
     public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var postType = await Get(id, cancellationToken) ?? throw new NotFoundException();
+
+        await _validatorFabric.ValidateAndThrowAsync<Guid, DeletePostTypeQueryValidator>(id, cancellationToken);
 
         await _postTypeRepository.Delete(id, cancellationToken);
 

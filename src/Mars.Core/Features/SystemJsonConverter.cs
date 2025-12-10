@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Mars.Core.Features.JsonConverter;
 
-public class SystemJsonConverter
+public static class SystemJsonConverter
 {
     static JsonSerializerOptions? opt;
 

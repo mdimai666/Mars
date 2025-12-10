@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.MetaFields;
+using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.Shared.Contracts.Posts;
 
@@ -11,7 +12,7 @@ public record CreatePostRequest
     [Required]
     public required string Title { get; init; }
 
-    [StringLength(1000, MinimumLength = 3)]
+    [StringLength(PostTypeConstants.TypeNameMaxLength, MinimumLength = PostTypeConstants.TypeNameMinLength)]
     [Required]
     public required string Type { get; init; }
 
@@ -35,7 +36,7 @@ public record UpdatePostRequest
     [Required]
     public required string Title { get; init; }
 
-    [StringLength(1000, MinimumLength = 3)]
+    [StringLength(PostTypeConstants.TypeNameMaxLength, MinimumLength = PostTypeConstants.TypeNameMinLength)]
     [Required]
     public required string Type { get; init; }
 
@@ -44,7 +45,6 @@ public record UpdatePostRequest
     public required IReadOnlyCollection<string> Tags { get; init; }
 
     public required string? Content { get; init; }
-    //[Required]
     public required string? Status { get; init; }
 
     public required string? Excerpt { get; init; }

@@ -1,7 +1,8 @@
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Dto.Posts;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Host.Shared.Dto.PostJsons;
 
 public record PostJsonDto : PostSummary
 {
@@ -17,5 +18,5 @@ public record PostJsonDto : PostSummary
     /// <inheritdoc cref="MetaValueDto.Value"/>
     /// </summary>
     public required Dictionary<string, object?> Meta { get; init; }
-    
+
 }

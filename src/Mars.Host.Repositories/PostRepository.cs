@@ -91,7 +91,10 @@ internal class PostRepository : IPostRepository, IDisposable
         entity.LangCode = query.LangCode;
 
         entity.ModifiedAt = DateTimeOffset.Now;
-        MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt.Value);
+        if (query.MetaValues is not null)
+        {
+            MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt.Value);
+        }
 
         if (entity.PostType.TypeName != query.Type)
         {
@@ -248,4 +251,10 @@ internal class PostRepository : IPostRepository, IDisposable
                                             .ThenInclude(s => s.MetaFields)
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
                                         ?.ToDetailWithType();
+
+    public Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken)
+                        => _marsDbContext.Posts.AsNoTracking().AnyAsync(s => s.Id == id, cancellationToken);
+
+    public Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken)
+                        => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug == slug, cancellationToken);
 }

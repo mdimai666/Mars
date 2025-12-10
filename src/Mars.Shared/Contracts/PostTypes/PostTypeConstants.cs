@@ -2,6 +2,8 @@ namespace Mars.Shared.Contracts.PostTypes;
 
 public sealed class PostTypeConstants
 {
+    public const int TypeNameMinLength = 3;
+    public const int TypeNameMaxLength = 128;
 
     public sealed class DefaultPostContentTypes
     {

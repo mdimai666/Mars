@@ -387,10 +387,10 @@ internal class UserRepository : IUserRepository, IDisposable
         return UserActionResult.Success("успешно");
     }
 
-    public Task<bool> UserNameExistAsync(string username)
-                                => _marsDbContext.Users.AnyAsync(s => s.UserName == username);
-    public Task<bool> UsernameIsAlreadyTakenByAnotherUser(string newUsername, Guid userId)
-                                => _marsDbContext.Users.AnyAsync(s => s.UserName == newUsername && s.Id != userId);
+    public Task<bool> UserNameExistAsync(string username, CancellationToken cancellationToken)
+                                => _marsDbContext.Users.AnyAsync(s => s.UserName == username, cancellationToken);
+    public Task<bool> UsernameIsAlreadyTakenByAnotherUser(string newUsername, Guid userId, CancellationToken cancellationToken)
+                                => _marsDbContext.Users.AnyAsync(s => s.UserName == newUsername && s.Id != userId, cancellationToken);
 
     public async Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken)
                                 => (await InternalDetail

@@ -37,9 +37,9 @@ public sealed class UpdatePostTests : ApplicationTests
 
         var createdPost = _fixture.Create<PostEntity>();
         var ef = AppFixture.MarsDbContext();
-        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
+        var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToList();
         var postType = ef.PostTypes.Include(s => s.MetaFields).First(s => s.TypeName == "post");
-        postType.MetaFields = new(metaFields);
+        postType.MetaFields = metaFields;
         var metaValues = metaFields.Select(mf =>
         {
             var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);

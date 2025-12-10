@@ -26,7 +26,7 @@ public class UpdateUserQueryValidator : AbstractValidator<UpdateUserQuery>
             .SetValidator(new UsernameBlacklistValidator());
 
         RuleFor(x => x.UserName)
-            .MustAsync(async (ctx, x, ct) => !await userRepository.UsernameIsAlreadyTakenByAnotherUser(x, ctx.Id))
+            .MustAsync(async (ctx, x, ct) => !await userRepository.UsernameIsAlreadyTakenByAnotherUser(x, ctx.Id, ct))
             .WithMessage("This username is already taken by another user.");
 
     }

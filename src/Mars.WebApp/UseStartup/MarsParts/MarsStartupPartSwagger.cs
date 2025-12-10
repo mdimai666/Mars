@@ -6,7 +6,9 @@ using Mars.Options.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Mars.UseStartup.MarsParts;
 
@@ -30,6 +32,7 @@ internal static class MarsStartupPartSwagger
                 c.SchemaFilter<DescribeEnumMemberValues>();
                 c.DocumentFilter<FeatureGateSwaggerFilter>();
                 c.OperationFilter<FeatureGateOperationFilter>();
+                c.UseCustomizeMetaDictionarySchemaFilter();
                 //c.UseInlineDefinitionsForEnums();
 
                 //Allow Auth
@@ -166,4 +169,33 @@ internal static class MarsStartupPartSwagger
         return [apiDesc.ActionDescriptor.RouteValues["controller"] ?? "Misc"];
     }
 
+    static void UseCustomizeMetaDictionarySchemaFilter(this SwaggerGenOptions options)
+    {
+        options.MapType<IReadOnlyDictionary<string, object?>>(() => new OpenApiSchema
+        {
+            Type = "object",
+            AdditionalProperties = new OpenApiSchema
+            {
+                OneOf = new List<OpenApiSchema>
+            {
+                new OpenApiSchema { Type = "string" },
+                new OpenApiSchema { Type = "number" },
+                new OpenApiSchema { Type = "integer" },
+                new OpenApiSchema { Type = "boolean" },
+                new OpenApiSchema { Type = "object" },
+                new OpenApiSchema { Type = "array" }
+            }
+            },
+            Example = new OpenApiObject
+            {
+                ["key1"] = new OpenApiInteger(123),
+                ["key2"] = new OpenApiString("value"),
+                ["key3"] = new OpenApiBoolean(true)
+            }
+        });
+
+        options.SchemaFilter<MetaDictionarySchemaFilter>();
+        options.OperationFilter<PostJsonExamplesFilter>();
+
+    }
 }

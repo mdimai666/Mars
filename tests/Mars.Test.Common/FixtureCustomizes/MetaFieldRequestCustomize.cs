@@ -1,5 +1,6 @@
 using AutoFixture;
 using Mars.Host.Data.Entities;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Test.Common.FixtureCustomizes;
@@ -37,7 +38,7 @@ public static class MetaValueFixtureCustomizeExtension
                                     .With(s => s.MetaFieldId, metaFieldId)
                                     .With(s => s.VariantsIds, [])
                                     .Create()
-                                    .SetMetaValue(fixture, metaFieldId, type);
+                                    .SetMetaValue(fixture, type);
     }
 
     public static UpdateMetaValueRequest UpdateSimpleCreateMetaValueRequest(this IFixture fixture, Guid metaValueId, Guid metaFieldId, EMetaFieldType type)
@@ -49,7 +50,7 @@ public static class MetaValueFixtureCustomizeExtension
                                     .With(s => s.MetaFieldId, metaFieldId)
                                     .With(s => s.VariantsIds, [])
                                     .Create()
-                                    .SetMetaValue(fixture, metaFieldId, type);
+                                    .SetMetaValue(fixture, type);
     }
 
     public static MetaValueEntity MetaValueEntity(this IFixture fixture, Guid metaFieldId, EMetaFieldType type)
@@ -61,10 +62,10 @@ public static class MetaValueFixtureCustomizeExtension
                                     .With(s => s.MetaFieldId, metaFieldId)
                                     .With(s => s.Type, type)
                                     .Create()
-                                    .SetMetaValue(fixture, metaFieldId, type);
+                                    .SetMetaValue(fixture, type);
     }
 
-    public static MetaValueEntity SetMetaValue(this MetaValueEntity mv, IFixture _fixture, Guid metaFieldId, EMetaFieldType type)
+    public static MetaValueEntity SetMetaValue(this MetaValueEntity mv, IFixture _fixture, EMetaFieldType type)
     {
         if (type == EMetaFieldType.Int) mv.Int = _fixture.Create<int>();
         else if (type == EMetaFieldType.Bool) mv.Bool = _fixture.Create<bool>();
@@ -78,7 +79,7 @@ public static class MetaValueFixtureCustomizeExtension
         return mv;
     }
 
-    public static CreateMetaValueRequest SetMetaValue(this CreateMetaValueRequest mv, IFixture _fixture, Guid metaFieldId, EMetaFieldType type)
+    public static CreateMetaValueRequest SetMetaValue(this CreateMetaValueRequest mv, IFixture _fixture, EMetaFieldType type)
     {
         if (type == EMetaFieldType.Int) mv = mv with { Int = _fixture.Create<int>() };
         else if (type == EMetaFieldType.Bool) mv = mv with { Bool = _fixture.Create<bool>() };
@@ -92,7 +93,7 @@ public static class MetaValueFixtureCustomizeExtension
         return mv;
     }
 
-    public static UpdateMetaValueRequest SetMetaValue(this UpdateMetaValueRequest mv, IFixture _fixture, Guid metaFieldId, EMetaFieldType type)
+    public static UpdateMetaValueRequest SetMetaValue(this UpdateMetaValueRequest mv, IFixture _fixture, EMetaFieldType type)
     {
         if (type == EMetaFieldType.Int) mv = mv with { Int = _fixture.Create<int>() };
         else if (type == EMetaFieldType.Bool) mv = mv with { Bool = _fixture.Create<bool>() };
@@ -104,5 +105,19 @@ public static class MetaValueFixtureCustomizeExtension
         else if (type == EMetaFieldType.DateTime) mv = mv with { DateTime = _fixture.Create<DateTime>() };
         else throw new NotImplementedException();
         return mv;
+    }
+
+    public static ModifyMetaValueDetailQuery SetMetaValue(this ModifyMetaValueDetailQuery mv, IFixture _fixture)
+    {
+        var type = mv.MetaField.Type;
+        if (type == MetaFieldType.Int) return mv with { Int = _fixture.Create<int>() };
+        else if (type == MetaFieldType.Bool) return mv with { Bool = _fixture.Create<bool>() };
+        else if (type == MetaFieldType.Float) return mv with { Float = _fixture.Create<float>() };
+        else if (type == MetaFieldType.Decimal) return mv with { Decimal = _fixture.Create<decimal>() };
+        else if (type == MetaFieldType.Long) return mv with { Long = _fixture.Create<long>() };
+        else if (type == MetaFieldType.String) return mv with { StringShort = _fixture.Create<string>() };
+        else if (type == MetaFieldType.Text) return mv with { StringText = _fixture.Create<string>() };
+        else if (type == MetaFieldType.DateTime) return mv with { DateTime = _fixture.Create<DateTime>() };
+        else throw new NotImplementedException();
     }
 }

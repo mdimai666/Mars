@@ -9,7 +9,6 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject IStringLocalizer<AppRes> L
 
-
 <ContentWrapper>
     <StandartEditContainer ID=@ID
                            TModel=NavMenu
@@ -43,7 +42,6 @@
                         <FluentTextField @bind-Value=@context.Style />
                     </FormItem2>
                 </div>
-
 
                 <div class="d-roles">
                     <FluentAutocomplete TOption="string"
@@ -216,7 +214,7 @@
         <SectionExtraSidebar>
             <div class="card mb-3">
                 <div class="card-body">
-                    <FluentSwitch @bind-Checked="context.Disabled" Label="@AppRes.Disable" />
+                    <FluentSwitch @bind-Value="context.Disabled" Label="@AppRes.Disable" />
                     <div class="spacer-1"></div>
                     <FormItem2 For="@(()=>context.Tags)">
                         <InputTags2 @bind-Value=context.Tags />
@@ -256,7 +254,6 @@
         </FluentButton>
     </div>
 </FluentDialog>
-
 
 <style>
     .d-nav-menu.disabled {

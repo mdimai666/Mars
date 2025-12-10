@@ -1,6 +1,7 @@
 using Mars.Host.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Shared.Contracts.PostJsons;
 using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
@@ -36,7 +37,6 @@ public class GetPostJsonTests : BaseWebApiClientTests
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
-
 
     [IntegrationFact]
     public async void ListPostJson_ValidRequest_ShouldSuccess()

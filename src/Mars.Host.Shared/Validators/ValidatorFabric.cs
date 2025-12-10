@@ -65,7 +65,7 @@ public class ValidatorFabric : IValidatorFabric
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [DebuggerStepThrough]
-    public async Task ValidateAndThrowAsync<TValidator, TQuery>(TQuery query, CancellationToken cancellationToken = default)
+    public async Task ValidateAndThrowAsync<TQuery, TValidator>(TQuery query, CancellationToken cancellationToken = default)
         where TValidator : AbstractValidator<TQuery>
     {
         var validator = _serviceProvider.GetRequiredService<TValidator>();
@@ -86,6 +86,6 @@ public class ValidatorFabric : IValidatorFabric
 public interface IValidatorFabric
 {
     Task ValidateAndThrowAsync<TQuery>(TQuery query, CancellationToken cancellationToken = default);
-    Task ValidateAndThrowAsync<TValidator, TQuery>(TQuery query, CancellationToken cancellationToken = default)
+    Task ValidateAndThrowAsync<TQuery, TValidator>(TQuery query, CancellationToken cancellationToken = default)
         where TValidator : AbstractValidator<TQuery>;
 }

@@ -12,6 +12,7 @@ namespace Mars.Host.QueryLang;
 internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeService
 {
     private FrozenDictionary<string, PostTypeInfo>? _postTypes;
+    private Dictionary<Guid, string>? _postTypesById;
 
     private readonly IServiceScope _scope;
     private readonly IPostTypeRepository _postTypeRepository;
@@ -32,17 +33,32 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         try
         {
             await _lockPostTypes.WaitAsync(1000);
+            _postTypesById = new();
 
             var types = await _postTypeRepository.ListAllDetail(CancellationToken.None);
-            return types.ToFrozenDictionary(s => s.TypeName, s => new PostTypeInfo
+            return types.ToFrozenDictionary(s => s.TypeName, s =>
             {
-                PostType = s
+                _postTypesById.Add(s.Id, s.TypeName);
+                return new PostTypeInfo
+                {
+                    PostType = s
+                };
             });
         }
         finally
         {
             _lockPostTypes.Release();
         }
+    }
+
+    public PostTypeDetail? GetPostTypeById(Guid id)
+    {
+        _postTypes ??= GetPostTypes().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        var name = _postTypesById!.GetValueOrDefault(id);
+        if (name == null) return null;
+
+        return _postTypes.GetValueOrDefault(name)?.PostType;
     }
 
     public PostTypeDetail? GetPostTypeByName(string postTypeName)

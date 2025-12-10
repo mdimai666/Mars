@@ -89,4 +89,21 @@ internal static class PostTypeMapping
             CreatedAt = DateTimeOffset.Now,
             ModifiedAt = modifiedAt,
         };
+
+    public static PostTypeEntity UpdateEntity(this PostTypeEntity entity, UpdatePostTypeQuery query)
+    {
+        entity.Title = query.Title;
+        entity.TypeName = query.TypeName;
+        entity.Tags = query.Tags.ToList();
+        entity.EnabledFeatures = query.EnabledFeatures.ToList();
+        entity.Disabled = query.Disabled;
+        entity.PostContentType = new()
+        {
+            PostContentType = query.PostContentSettings.PostContentType,
+            CodeLang = query.PostContentSettings.CodeLang,
+        };
+
+        entity.ModifiedAt = DateTimeOffset.Now;
+        return entity;
+    }
 }

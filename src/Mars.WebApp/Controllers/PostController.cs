@@ -195,7 +195,7 @@ public class PostController : ControllerBase
                 CancellationToken cancellationToken)
     {
         if (id == Guid.Empty) throw new ArgumentException("ID is empty");
-        await _validatorFabric.ValidateAndThrowAsync<UploadMediaFileValidator, IFormFile>(file, cancellationToken);
+        await _validatorFabric.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
 
         //FileEntity fileEntity = _fileService.WriteUpload(file, EFileType.PostAttachment, file_group);
         Guid userId = Guid.Empty;

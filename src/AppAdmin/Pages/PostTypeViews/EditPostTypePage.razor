@@ -9,7 +9,6 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject IStringLocalizer<AppRes> L
 
-
 <ContentWrapper>
     <StandartEditContainer ID=@ID
                            TModel=PostTypeEditModel
@@ -169,7 +168,6 @@
                     </div>
                 }
 
-
                 @*
                 @if (context.FeatureActivated(PostTypeConstants.Features.CategoryId))
                 {
@@ -218,7 +216,7 @@
         <SectionExtraSidebar>
             <div class="card mb-3">
                 <div class="card-body">
-                    <FluentSwitch @bind-Checked="context.Disabled" Label="@AppRes.Disable" />
+                    <FluentSwitch @bind-Value="context.Disabled" Label="@AppRes.Disable" />
                     <div class="spacer-1"></div>
                     <FormItem2 For="@(()=>context.Tags)">
                         <InputTags2 @bind-Value=context.Tags />

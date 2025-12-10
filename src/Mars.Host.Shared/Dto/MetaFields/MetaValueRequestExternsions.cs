@@ -61,4 +61,26 @@ public static class MetaValueRequestExternsions
             Sort = request.Sort,
             ModelName = request.ModelName
         };
+
+    public static ModifyMetaValueDetailQuery ToModifyDto(this MetaValueDetailDto request)
+        => new()
+        {
+            Id = request.Id,
+            ParentId = request.ParentId,
+            Index = request.Index,
+            Bool = request.Bool,
+            Int = request.Int,
+            Float = request.Float,
+            Decimal = request.Decimal,
+            Long = request.Long,
+            StringShort = request.StringShort,
+            StringText = request.StringText,
+            VariantId = request.VariantId,
+            VariantsIds = request.VariantsIds,
+            DateTime = request.DateTime,
+            NULL = request.NULL,
+            ModelId = request.ModelId,
+            MetaFieldId = request.MetaField.Id,
+            MetaField = request.MetaField,
+        };
 }

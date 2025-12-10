@@ -97,7 +97,7 @@ public class MediaController : ControllerBase
             //[FromQuery] string file_group = "Files",
             CancellationToken cancellationToken = default)
     {
-        await _validatorFabric.ValidateAndThrowAsync<UploadMediaFileValidator, IFormFile>(file, cancellationToken);
+        await _validatorFabric.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
 
         var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken);
         return (await _mediaService.GetDetail(fileId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();

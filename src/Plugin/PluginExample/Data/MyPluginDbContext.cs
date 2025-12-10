@@ -43,7 +43,7 @@ public partial class MyPluginDbContext : PluginDbContextBase
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    public new static MyPluginDbContext CreateInstance(string connectionString)
+    public static MyPluginDbContext CreateInstance(string connectionString)
     {
         var builder = new DbContextOptionsBuilder<MyPluginDbContext>();
 

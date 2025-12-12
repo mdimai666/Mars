@@ -2,7 +2,7 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(VariableSetNode))]
 
-<div class="form-group">
+<div class="form-group d-flex flex-column flex-fill">
     <label>Setters</label>
     @*<InputText class="form-control" @bind-Value=Node.Payload />*@
 
@@ -31,7 +31,6 @@
         <FluentButton OnClick="AppendSetter">AppendSetter</FluentButton>
     </div>
 </div>
-
 
 @code {
     [CascadingParameter] Node? Value { get; set; }

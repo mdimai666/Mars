@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Mars.Host.Shared.JsonConverters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -10,8 +11,9 @@ public class WebClientRequest
     public IQueryCollection QueryDict { get; }
     public bool HasFormContentType { get; }
     public string? ContentType { get; }
-    //public RouteValueDictionary RouteValues { get; set; }
     public string QueryString { get; }
+
+    [JsonConverter(typeof(PathStringJsonConverter))]
     public PathString Path { get; }
     //public PathString PathBase { get; set; }
     public HostString Host { get; }
@@ -25,13 +27,14 @@ public class WebClientRequest
     public DictionaryWithDefault<string, string?> Cookies;
 
     public DictionaryWithDefault<string, string>? Form { get; }
+    public DictionaryWithDefault<string, object?>? RouteValues { get; }
 
     public bool IsMobile { get; }
 
     [JsonIgnore]
     public IDictionary<object, object?> Items = new Dictionary<object, object?>();
 
-    public WebClientRequest(HttpRequest req)
+    public WebClientRequest(HttpRequest req, IReadOnlyDictionary<string, object?>? routeValues = null)
     {
         Query = DictionaryWithDefaultExtension.ToDictionary(req.Query
                 .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString()))
@@ -59,6 +62,10 @@ public class WebClientRequest
         {
             var uag = req.Headers["User-Agent"].ToString().ToLower();
             IsMobile = mobileDevices.Any(s => uag.Contains(s));
+        }
+        if (routeValues is not null)
+        {
+            RouteValues = DictionaryWithDefaultExtension.ToDictionary(routeValues, s => s.Key, s => s.Value);
         }
     }
 

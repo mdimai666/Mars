@@ -17,7 +17,7 @@ public partial class App
 
     protected override async Task OnInitializedAsync()
     {
-        var vm = await viewModelService.GetLocalInitialSiteDataViewModel();
-        Q.UpdateInitialSiteData(vm);
+        //var vm = await viewModelService.GetLocalInitialSiteDataViewModel();
+        //Q.UpdateInitialSiteData(vm);
     }
 }

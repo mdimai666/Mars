@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
+using Mars.Core.Extensions;
 
 namespace Mars.Nodes.Core.Nodes;
 
@@ -7,18 +8,18 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "network")]
 public class HttpInNode : Node
 {
+    public override string Label => Name.AsNullIfEmpty() ?? UrlPattern.AsNullIfEmpty() ?? base.Label;
 
     public string Method { get; set; } = "GET";
     public string UrlPattern { get; set; } = "";
 
     public string[] MethodVariants = { "GET", "POST", "PUT", "DELETE", "HEAD" };
 
-
     public HttpInNode()
     {
         isInjectable = false;
         Color = "#e7e6af";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/web-48.png";
     }
 

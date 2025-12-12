@@ -28,7 +28,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
             compiled_template = Node.Template;
         }
 
-        input.Payload = template(input);
+        input.Payload = template(input.AsFullDict());
 
         callback(input);
 

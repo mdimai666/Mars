@@ -16,4 +16,11 @@ public class NodeExecuteException : Exception
         NodeId = node.Id;
         NodeType = node.GetType();
     }
+
+    public NodeExecuteException(Node node, string message, Exception? innerException) : base(message, innerException: innerException)
+    {
+        NodeId = node.Id;
+        NodeType = node.GetType();
+    }
+
 }

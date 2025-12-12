@@ -85,7 +85,7 @@ internal class RED
         }
     }
 
-    public void AssignNodes(List<Node> nodes)
+    public void AssignNodes(IReadOnlyCollection<Node> nodes)
     {
         ValidateNodes(nodes);
 

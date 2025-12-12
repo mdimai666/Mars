@@ -7,10 +7,10 @@
 
 <div class="form-group compact" style="--fluent-input-label-basis:150px">
     <div class="vstack gap-2">
-        <FormItem2 For="()=>Node.Url">
+        <FormItem2 For="() => Node.Url">
             <FluentTextField TextFieldType="TextFieldType.Url" @bind-Value=@Node.Url Appearance="FluentInputAppearance.Filled" Class="flex-fill" />
         </FormItem2>
-        <FormItem2 For="()=>Node.Method">
+        <FormItem2 For="() => Node.Method">
             <FluentSelect TOption="string"
                           Items="Node.MethodVariants"
                           Appearance="Appearance.Stealth"
@@ -20,7 +20,7 @@
         <div class="spacer-1"></div>
 
         <div>
-            <AutoInputLabel For="()=>Node.Headers" />
+            <AutoInputLabel For="() => Node.Headers" />
             <FluentSortableList Id="dragHandles" Handle="true" Items="Node.Headers" OnUpdate="@SortList" Context="item">
                 <ItemTemplate>
                     <div class="sortable-grab">
@@ -30,17 +30,28 @@
                         <div class="hstack">
                             <FluentTextField @bind-Value=item.Name Placeholder="Key" />
                             <FluentTextField @bind-Value=item.Value Placeholder="Value" />
-                            <FluentButton OnClick=@(()=>DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                            <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                         </div>
                     </div>
                 </ItemTemplate>
             </FluentSortableList>
-            <div class="mt-1">
-                <FluentButton OnClick="AddNew" IconStart="@(new Icons.Regular.Size16.Add())">Add</FluentButton>
+            <div class="mt-1 hstack gap-1">
+                <FluentButton OnClick="AddNewBlank" IconStart="@(new Icons.Regular.Size16.Add())">Add blank</FluentButton>
+                <FluentButton Id="btnOpenMenuExampleHeaders1" OnClick="@(() => open1 = !open1)">Add...</FluentButton>
             </div>
         </div>
 
     </div>
+
+    <FluentMenu UseMenuService="true"
+                Anchor="btnOpenMenuExampleHeaders1"
+                @bind-Open="open1"
+                VerticalThreshold="170">
+        @foreach (var value in HttpRequestNode.ExampleHeaders)
+        {
+            <FluentMenuItem OnClick="@(() => AddNewFromExample(value))">@value</FluentMenuItem>
+        }
+    </FluentMenu>
 </div>
 
 @code {
@@ -49,13 +60,23 @@
 
     void SortList(FluentSortableListEventArgs args) => Node.Headers = Node.Headers.MoveItem(args.OldIndex, args.NewIndex);
 
-    void AddNew()
+    void AddNewBlank()
     {
         Node.Headers = [.. Node.Headers, new()];
+    }
+    void AddNewFromExample(string value)
+    {
+        var sp = value.Split('=', 2);
+        Node.Headers = [.. Node.Headers, new() { Name = sp[0], Value = sp[1] }];
     }
 
     void DeleteItem(HeaderItem item)
     {
-        Node.Headers = Node.Headers.Where(s => s.Equals(item)).ToArray();
+        var list = Node.Headers.ToList();
+        list.Remove(item);
+        Node.Headers = list.ToArray();
     }
+
+    bool open1 = false;
+
 }

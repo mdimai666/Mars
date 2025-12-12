@@ -56,6 +56,12 @@ public class HtmlParseNodeImpl : INodeImplement<HtmlParseNode>, INodeImplement
                     var fieldName = string.IsNullOrEmpty(field.OutputField) ? $"field{fieldIndex + 1}" : field.OutputField;
                     var subEl = (string.IsNullOrEmpty(field.Selector) ? el : el.QuerySelector(field.Selector));
 
+                    if (subEl is null)
+                    {
+                        obj[fieldName] = null;
+                        continue;
+                    }
+
                     var val = field.ReturnValue switch
                     {
                         InputMappingReturnValue.Text => subEl.TextContent,

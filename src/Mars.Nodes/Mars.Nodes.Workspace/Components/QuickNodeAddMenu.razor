@@ -1,20 +1,19 @@
 @using Mars.Nodes.Core
 @using Mars.Nodes.Workspace.Models
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.FluentUI.AspNetCore.Components
 
 <div id="QuickNodeAddMenu" class="card user-select-none"
      style=@($"left:{X}px;top:{Y}px;display:{(Visible ? "block" : "none")}")>
     <div class="card-body p-1 h-100 d-flex flex-column">
 
-        @* <EditForm Model="@SearchText" style="height:31px;"> *@
         <div class="input-group input-group-sm">
-            <input type="text" class="form-control"
-                   value=@SearchText
-                   @oninput="OnInput"
-                   @ref=inputSearch
-                   autocomplete="off" placeholder="search..." />
+            <FluentSearch @ref=inputSearch @bind-Value="@SearchText"
+                          Appearance="FluentInputAppearance.Filled"
+                          Immediate
+                          Placeholder="Search..."
+                          AutoComplete="off" />
         </div>
-        @* </EditForm> *@
 
         <div class="flex-fill flex-grow-0" style="height: calc(100% - 31px)">
             <ul class="list-group nodes-list">
@@ -40,8 +39,7 @@
 
     [Parameter] public EventCallback<SelectNodeEvent> OnSelectNode { get; set; }
 
-
-    ElementReference inputSearch;
+    FluentSearch inputSearch = default!;
 
     string SearchText = "";
 
@@ -90,13 +88,6 @@
         }
     }
 
-    private void OnInput(ChangeEventArgs args)
-    {
-        var newValue = args.Value?.ToString() ?? string.Empty;
-
-        SearchText = newValue;
-    }
-
     public void Show(MouseEventArgs e)
     {
         Visible = true;
@@ -109,9 +100,9 @@
         Visible = false;
     }
 
-    public async Task Focus()
+    public void Focus()
     {
-        await inputSearch.FocusAsync();
+        inputSearch.FocusAsync();
     }
 }
 

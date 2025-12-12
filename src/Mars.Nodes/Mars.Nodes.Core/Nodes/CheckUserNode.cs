@@ -11,10 +11,10 @@ public class CheckUserNode : Node
     {
         Inputs = [new()];
         Color = "#4cb5e6";
-        Outputs = new List<NodeOutput> {
-            new NodeOutput(){ Label = "Auth" },
-            new NodeOutput(){ Label = "Non auth" },
-        };
+        Outputs = [
+            new(){ Label = "Auth" },
+            new(){ Label = "Non auth" },
+        ];
         Icon = "_content/Mars.Nodes.Workspace/nodes/person-bounding-box.svg";
     }
 }

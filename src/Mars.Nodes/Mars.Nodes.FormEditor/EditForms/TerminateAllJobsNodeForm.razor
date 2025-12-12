@@ -4,14 +4,14 @@
 @attribute [NodeEditFormForNode(typeof(TerminateAllJobsNode))]
 
 <div class="form-group d-flex flex-column flex-fill">
-    <label>TerminateAllJobsNode</label>
-
-    <FluentRadioGroup @bind-Value=Node.Scope Orientation="Orientation.Vertical">
-        @foreach (var item in Enum.GetValues<TerminateNodesScope>())
-        {
-            <FluentRadio Value="@item" Label="@item.ToString()" />
-        }
-    </FluentRadioGroup>
+    <FormItem2 For="() => Node.Scope">
+        <FluentRadioGroup @bind-Value=Node.Scope Orientation="Orientation.Vertical">
+            @foreach (var item in Enum.GetValues<TerminateNodesScope>())
+            {
+                <FluentRadio Value="@item" Label="@item.ToString()" />
+            }
+        </FluentRadioGroup>
+    </FormItem2>
 
 </div>
 

@@ -15,23 +15,19 @@ namespace Mars.Middlewares;
 internal class MarsNodesMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly LinkGenerator _linkGenerator;
-    private readonly IInlineConstraintResolver _inlineConstraintResolver;
     private readonly RED _RED;
     private readonly INodeTaskManager _nodeTaskManager;
+    private readonly ILogger<MarsNodesMiddleware> _logger;
 
     public MarsNodesMiddleware(RequestDelegate next,
-                    LinkGenerator linkGenerator,
                     RED red,
                     INodeTaskManager nodeTaskManager,
-                    ILogger<MarsNodesMiddleware> logger,
-                    IInlineConstraintResolver inlineConstraintResolver)
+                    ILogger<MarsNodesMiddleware> logger)
     {
         _next = next;
-        _linkGenerator = linkGenerator;
         _RED = red;
         _nodeTaskManager = nodeTaskManager;
-        _inlineConstraintResolver = inlineConstraintResolver;
+        _logger = logger;
     }
 
     [DebuggerStepThrough]
@@ -42,26 +38,26 @@ internal class MarsNodesMiddleware
         if (httpContext.Request.Method == "OPTIONS") goto Next;
         if (httpContext.Request.Method == "TRACE") goto Next;
         if (httpContext.Request.Path.StartsWithSegments("/upload")) goto Next;
+        if (httpContext.Request.Path.StartsWithSegments("/api")) goto Next;
 
 #if DEBUG
         //Console.WriteLine("MarsNodesMiddleware: " + httpContext.Request.Path);
+        _logger.LogInformation(httpContext.Request.Path);
 #endif
 
         if (_RED.HttpRegisterdCatchers.Count > 0)
         {
-            //context.Request.Method = "GET";
             var list = _RED.GetHttpCatchRegistersForMethod(httpContext.Request.Method);
+            RouteValueDictionary? routeValues = null;
 
             //запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
-            //HttpCatchRegister? find = list.OrderBy(s => s.IsContainCurlyBracket) ловит ре
-            //                                .FirstOrDefault(reg => reg.TryMatch(context.Request.Path, context, logger));
             HttpCatchRegister? find = list.OrderBy(s => s.IsContainCurlyBracket)
-                                            .FirstOrDefault(reg => reg.Pattern == httpContext.Request.Path);
+                                            .FirstOrDefault(reg => reg.TryMatch(httpContext.Request.Path, out routeValues));
 
-            if (find != null)
+            if (find is not null)
             {
                 //await context.Response.WriteAsync($"middleware: {find.NodeId}");
-                var ctx = new HttpInNodeHttpRequestContext(httpContext, find);
+                var ctx = new HttpInNodeHttpRequestContext(httpContext, find, routeValues);
                 var requestUserInfo = httpContext.RequestServices.GetRequiredService<IRequestContext>().ToRequestUserInfo();
 
                 var msg = new NodeMsg();
@@ -87,37 +83,3 @@ internal class MarsNodesMiddleware
         await _next(httpContext);
     }
 }
-
-//public static class AA
-//{
-
-//    IInlineConstraintResolver inlineConstraintResolver;
-
-//    public static IRouteBuilder MapVerb(
-//        this IRouteBuilder builder,
-//        string verb,
-//        string template,
-//        RequestDelegate handler)
-//    {
-//        var constraints = new RouteValueDictionary
-//        {
-//            ["httpMethod"] = new HttpMethodRouteConstraint(verb),
-//        };
-
-//        var route = new Route(
-//            new RouteHandler(handler),
-//            template,
-//            defaults: null,
-//            constraints: constraints!,
-//            dataTokens: null,
-//            inlineConstraintResolver: GetConstraintResolver(builder));
-
-//        builder.Routes.Add(route);
-//        return builder;
-//    }
-
-//private static IInlineConstraintResolver GetConstraintResolver(IRouteBuilder builder)
-//{
-//    return builder.ServiceProvider.GetRequiredService<IInlineConstraintResolver>();
-//}
-//}

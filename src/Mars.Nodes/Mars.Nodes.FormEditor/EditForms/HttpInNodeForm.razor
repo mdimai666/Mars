@@ -1,22 +1,29 @@
+@using AppFront.Shared
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(HttpInNode))]
 
-<div class="form-group">
-    <label>Method</label>
-    <InputSelect @bind-Value=Node.Method>
-        @foreach(var m in Node.MethodVariants)
-        {
-            <option value="@m" >@m</option>
-        }
-    </InputSelect>
-    @*<InputText class="form-control" @bind-Value=Node.Method />*@
-</div>
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
 
-<div class="form-group">
-    <label>UrlPattern</label>
-    <InputText class="form-control" @bind-Value=Node.UrlPattern placeholder="/path/{id}" />
-</div>
+        <FormItem2 For="() => Node.Method">
+            <FluentSelect Items="Node.MethodVariants" @bind-Value=@Node.Method Class="" />
+        </FormItem2>
 
+        <FormItem2 For="() => Node.UrlPattern">
+            <div class="vstack gap-2">
+                <FluentTextField @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
+                <div class="">
+                    <a href="@Q.ServerUrlJoin(Node.UrlPattern)" role="button" class="" target="_blank">
+                        @Q.ServerUrlJoin(Node.UrlPattern)
+                        <i class="bi bi-box-arrow-up-right" style="font-size:10px;"></i>
+                    </a>
+                </div>
+            </div>
+        </FormItem2>
+    </div>
+</div>
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;

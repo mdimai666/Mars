@@ -22,7 +22,7 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
         using var client = RED.GetHttpClient();
         var q = new FlurlClient(client);
 
-        foreach (var head in Node.Headers)
+        foreach (var head in Node.Headers.Where(s => !string.IsNullOrEmpty(s.Name)))
         {
             q.WithHeader(head.Name, head.Value);
         }

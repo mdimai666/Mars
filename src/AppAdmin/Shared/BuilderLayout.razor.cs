@@ -42,7 +42,7 @@ public partial class BuilderLayout
 
     async void AfterLoad()
     {
-        if (Q.User.IsAuth)
+        if (Q.User.IsAuth && Q.User.Roles.Contains("Admin", StringComparer.OrdinalIgnoreCase))
         {
             hostAppStat = await client.System.SystemMinStat();
             StateHasChanged();

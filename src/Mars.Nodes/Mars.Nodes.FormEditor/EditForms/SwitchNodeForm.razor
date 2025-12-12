@@ -1,37 +1,37 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SwitchNode))]
 
-<div class="form-group">
-    <label>conditions</label>
-    @*<InputText class="form-control" @bind-Value=Node.Payload />*@
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
 
-    <div class="form-check">
-        <InputCheckbox class="form-check-input" @bind-Value=Node.BreakAfterFirst id=@($"Node-{Node.Id}-BreakAfterFirst") />
-        <label class="form-check-label" for=@($"Node-{Node.Id}-BreakAfterFirst")>
-            BreakAfterFirst
-        </label>
-    </div>
+        <FormItem2 For="() => Node.BreakAfterFirst" Label="Break">
+            <FluentCheckbox @bind-Value="Node.BreakAfterFirst" Class="">
+                <AutoInputLabel For="() => Node.BreakAfterFirst" />
+            </FluentCheckbox>
+        </FormItem2>
 
-    <div>
-        <b>varible is "Payload"</b>
-    </div>
-
-    @{
-        int index = -1;
-    }
-
-    @foreach (var _a in Node.Conditions)
-    {
-        var a = _a;
-        index++;
-        <div>
-            <label>condition - @(index + 1)</label>
-            <InputText class="form-control" @bind-Value=a.Value />
+        <!-- Variable notice -->
+        <div class="text-secondary" style="margin-left: 4px;">
+            <b>variable is "Payload"</b>
         </div>
 
-    }
-</div>
+        <!-- Conditions list -->
+        @{
+            int index = -1;
+        }
+        @foreach (var _a in Node.Conditions)
+        {
+            var a = _a;
+            index++;
 
+            <FormItem2 For="() => Node.Conditions" Label=@($"Condition {index + 1}")>
+                <FluentTextField @bind-Value="a.Value" Class="w-100" />
+            </FormItem2>
+        }
+    </div>
+</div>
 
 @code {
     [CascadingParameter] Node? Value { get; set; }

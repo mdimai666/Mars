@@ -6,14 +6,13 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(HtmlParseNode))]
 
-
 <div class="form-group d-flex flex-column flex-fill">
 
     <div class="vstack gap-2">
-        <FormItem2 For="()=>Node.Selector">
+        <FormItem2 For="() => Node.Selector">
             <FluentTextField @bind-Value=Node.Selector />
         </FormItem2>
-        <FormItem2 For="()=>Node.Output">
+        <FormItem2 For="() => Node.Output">
             <FluentSelect TOption="HtmlParseNodeOutput"
                           Items="Enum.GetValues<HtmlParseNodeOutput>()"
                           @bind-SelectedOption=@Node.Output />
@@ -32,30 +31,28 @@
                         <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
                     </div>
                     <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
-                        <div class="hstack">
+                        <div class="d-grid align-items-center" style="grid-template-columns: 1.5fr 100px 1fr auto 120px 33px;">
                             <FluentTextField @bind-Value=item.Selector Placeholder="Selector" />
                             <FluentSelect TOption="InputMappingReturnValue"
                                           Items="Enum.GetValues<InputMappingReturnValue>()"
+                                          Style="min-width:unset;"
                                           @bind-SelectedOption=@item.ReturnValue />
                             <FluentTextField @bind-Value=item.Attribute Placeholder="Attribute"
                                              Style=@( item.ReturnValue == InputMappingReturnValue.Attribute ? "visibility:visible":"visibility:hidden") />
                             <i class="bi bi-arrow-right-short"></i>
                             <FluentTextField @bind-Value=item.OutputField Placeholder="Field" />
-                            <FluentButton OnClick=@(()=>DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                            <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
                         </div>
                     </div>
                 </ItemTemplate>
             </FluentSortableList>
-            <div class="mt-1">
+            <div class="mt-1 hstack gap-1">
                 <FluentButton OnClick="AddNew" IconStart="@(new Icons.Regular.Size16.Add())">Add</FluentButton>
             </div>
         }
     </div>
 
-
-
 </div>
-
 
 @code {
     [CascadingParameter] Node? Value { get; set; }
@@ -73,4 +70,3 @@
         Node.InputMappings = Node.InputMappings.Where(s => s != item).ToArray();
     }
 }
-

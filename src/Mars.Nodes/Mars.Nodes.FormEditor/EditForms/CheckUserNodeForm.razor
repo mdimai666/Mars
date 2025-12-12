@@ -1,16 +1,9 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(CheckUserNode))]
 
-<div class="form-group">
+<div class="form-group d-flex flex-column flex-fill">
     
-    <p>
-        if auth out first node
-        else out last node
-    </p>
-    <p>check in HttpContext</p>
-
 </div>
-
 
 @code {
     [CascadingParameter] Node? Value { get; set; }

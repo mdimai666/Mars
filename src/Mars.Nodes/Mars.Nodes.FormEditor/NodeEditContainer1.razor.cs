@@ -3,6 +3,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.EditorApi.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Nodes.FormEditor;
@@ -10,6 +11,7 @@ namespace Mars.Nodes.FormEditor;
 public partial class NodeEditContainer1
 {
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] ILogger<NodeEditContainer1> _logger { get; set; } = default!;
 
     [CascadingParameter] public INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
@@ -50,6 +52,8 @@ public partial class NodeEditContainer1
     {
         OpenOffcanvasEditor(false);
         _node = null;
+
+        _logger.LogTrace("CloseEditNode");
         _windowStack.Pop();
         if (_windowStack.Any())
         {
@@ -78,8 +82,9 @@ public partial class NodeEditContainer1
             }
         }
 
-        _ = OnSave.InvokeAsync(_node);
+        await OnSave.InvokeAsync(_node);
         CloseEditNode();
+        StateHasChanged();
     }
 
     async Task FormCloseClick()
@@ -90,6 +95,7 @@ public partial class NodeEditContainer1
         }
         await OnCancel.InvokeAsync();
         CloseEditNode();
+        StateHasChanged();
     }
 
     async Task FormDeleteClick()
@@ -100,6 +106,7 @@ public partial class NodeEditContainer1
         }
         await OnDelete.InvokeAsync(_node.Id);
         CloseEditNode();
+        StateHasChanged();
     }
 
     Task OnValidSubmit()

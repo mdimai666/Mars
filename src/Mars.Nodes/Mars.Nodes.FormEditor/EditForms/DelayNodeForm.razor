@@ -1,11 +1,13 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(DelayNode))]
 
 <div class="form-group d-flex flex-column flex-fill">
-    <label>DelayMillis</label>
-    <InputNumber class="form-control" @bind-Value=Node.DelayMillis />
+    <FormItem2 For="() => Node.DelayMillis">
+        <FluentNumberField @bind-Value=Node.DelayMillis Class="" Min="0" />
+    </FormItem2>
 </div>
-
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace Mars.Host.Shared.Models;
 
@@ -12,10 +13,10 @@ public class HttpInNodeHttpRequestContext
 
     public WebClientRequest Request { get; }
 
-    public HttpInNodeHttpRequestContext(HttpContext httpContext, HttpCatchRegister httpCatch)
+    public HttpInNodeHttpRequestContext(HttpContext httpContext, HttpCatchRegister httpCatch, RouteValueDictionary? routeValues)
     {
         HttpContext = httpContext;
         HttpCatch = httpCatch;
-        Request = new WebClientRequest(httpContext.Request);
+        Request = new WebClientRequest(httpContext.Request, routeValues: routeValues);
     }
 }

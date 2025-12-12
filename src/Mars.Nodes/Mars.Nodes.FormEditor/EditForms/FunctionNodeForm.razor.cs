@@ -39,9 +39,8 @@ public partial class FunctionNodeForm
     {
         //Console.WriteLine("save action");
         //_ = nodeEditContainer1.FormSaveClick();
-        _ = this.NodeEditContainer.FormSaveClick();
+        _ = NodeEditContainer.FormSaveClick();
     }
-
 
     void OnEditorSave(string val)
     {
@@ -65,14 +64,12 @@ public partial class FunctionNodeForm
             //editor1.ActionCallback();
             await js.Editor_DoAction(actionId);
 
-
         });
 
         await editor1.AddCommand((int)KeyMod.CtrlCmd | (int)KeyCode.KeyD, async args =>
         {
             string actionId = "editor.action.duplicateSelection";
             await js.Editor_DoAction(actionId);
-
 
         });
 

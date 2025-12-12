@@ -9,10 +9,10 @@ public class SwitchNode : Node
 {
     public List<Condition> Conditions { get; set; } = [
         new Condition() { Key = "if1", Value = "Payload == 123" },
-        new Condition() { Key = "if2", Value = "msg.Payload != 123" },
+        new Condition() { Key = "if2", Value = "Payload.ToString() == \"ok\""},
     ];
 
-    public bool BreakAfterFirst { get; set; }
+    public bool BreakAfterFirst { get; set; } = true;
 
     public SwitchNode()
     {

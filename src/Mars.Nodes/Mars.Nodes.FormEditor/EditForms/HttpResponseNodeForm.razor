@@ -1,16 +1,36 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(HttpResponseNode))]
 
-<div class="form-group">
-    @*<label>payload</label>*@
-    @*<InputText class="form-control" @bind-Value=Node.Payload />*@
-    <label>status code</label>
-    <label>headers</label>
-</div>
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
 
+        <FormItem2 For="() => Node.ResponseStatusCode">
+            <div class="hstack gap-2">
+                <FluentNumberField @bind-Value=@Node.ResponseStatusCode Class="" />
+
+                <FluentButton Id="btnOpenMenuStatusCodes1" OnClick="@(() => open1 = !open1)">
+                    Select
+                </FluentButton>
+            </div>
+        </FormItem2>
+
+        <FluentMenu UseMenuService="true"
+                    Anchor="btnOpenMenuStatusCodes1"
+                    @bind-Open="open1"
+                    VerticalThreshold="170">
+            @foreach (var (key, value) in HttpResponseNode.StatusCodes)
+            {
+                <FluentMenuItem OnClick="@(() => Node.ResponseStatusCode = key)">@value</FluentMenuItem>
+            }
+        </FluentMenu>
+    </div>
+</div>
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;
     HttpResponseNode Node { get => (HttpResponseNode)Value; set => Value = value; }
 
+    bool open1 = false;
 }

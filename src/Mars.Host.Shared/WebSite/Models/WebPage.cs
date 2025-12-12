@@ -1,8 +1,8 @@
 using System.Collections.Immutable;
+using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.WebSite.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Routing.Template;
 
@@ -37,42 +37,23 @@ public class WebPage : WebSitePart
     {
         Type = WebSitePartType.Page;
 
+        if (string.IsNullOrEmpty(url))
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                var pageAttribute = Attributes["page"];
-                Url = pageAttribute == "/" ? "/" : pageAttribute.TrimEnd('/');
-            }
-            else
-            {
-                Url = url;
-            }
-
-            UrlIsContainCurlyBracket = Url.Value.Contains('{');
-
-            //try
-            //{
-            RouteTemplate = TemplateParser.Parse(Url.Value);
-            RoutePattern = RouteTemplate.ToRoutePattern();
-
-            //this.TemplateMatcher = new Microsoft.AspNetCore.Routing.Template.TemplateMatcher(this.RouteTemplate, new RouteValueDictionary());
-            TemplateMatcher = new TemplateMatcher(RouteTemplate, _templateMatcherRouteValues ??= new());
-            IsRoutePatternHasConstraints = TemplateMatcherUsedConstraints().Length > 0;
-            //}
-            //catch (Exception ex)
-            //{
-            //    //Log
-            //    //ILogger<WebPage> a;
-            //    //a.LogError()
-            //    //LoggerFactory.
-            //    //Console.Out.err
-            //    //Console.Error.WriteLine($"page Url not valid: file:{FileFullPath} url:{Url} \n {ex.Message} ");
-
-            //    MarsLogger.GetStaticLogger<WebPage>().LogError(ex, $"page Url not valid: file:{FileFullPath} url:{Url} \n {ex.Message}");
-
-            //}
-
+            var pageAttribute = Attributes["page"];
+            Url = pageAttribute == "/" ? "/" : pageAttribute.TrimEnd('/');
         }
+        else
+        {
+            Url = url;
+        }
+
+        UrlIsContainCurlyBracket = Url.Value.Contains('{');
+
+        RouteTemplate = TemplateParser.Parse(Url.Value);
+        RoutePattern = RouteTemplate.ToRoutePattern();
+
+        TemplateMatcher = new TemplateMatcher(RouteTemplate, _templateMatcherRouteValues ??= []);
+        IsRoutePatternHasConstraints = TemplateMatcherUsedConstraints().Length > 0;
 
         if (Attributes.TryGetValue("layout", out var layoutName))
         {
@@ -85,76 +66,6 @@ public class WebPage : WebSitePart
 
         Title ??= title ?? Attributes.GetValueOrDefault("title") ?? Name;
     }
-
-    public static readonly IReadOnlyDictionary<string, Type> DefaultConstraintMap =
-        new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
-        {
-            // Type-specific constraints
-            { "int", typeof(IntRouteConstraint) },
-            { "bool", typeof(BoolRouteConstraint) },
-            { "datetime", typeof(DateTimeRouteConstraint) },
-            { "decimal", typeof(DecimalRouteConstraint) },
-            { "double", typeof(DoubleRouteConstraint) },
-            { "float", typeof(FloatRouteConstraint) },
-            { "guid", typeof(GuidRouteConstraint) },
-            { "long", typeof(LongRouteConstraint) },
-
-            // Length constraints
-            { "minlength", typeof(MinLengthRouteConstraint) },
-            { "maxlength", typeof(MaxLengthRouteConstraint) },
-            { "length", typeof(LengthRouteConstraint) },
-
-            // Min/Max value constraints
-            { "min", typeof(MinRouteConstraint) },
-            { "max", typeof(MaxRouteConstraint) },
-            { "range", typeof(RangeRouteConstraint) },
-
-            // Regex-based constraints
-            { "alpha", typeof(AlphaRouteConstraint) },
-            { "regex", typeof(RegexInlineRouteConstraint) },
-
-            { "required", typeof(RequiredRouteConstraint) },
-
-            { "file", typeof(FileNameRouteConstraint) },
-            { "nonfile", typeof(NonFileNameRouteConstraint) },
-        };
-
-    /// <summary>
-    /// </summary>
-    /// <param name="constrainFuncs">
-    /// <list type="bullet">
-    /// <item>int</item>
-    /// <item>minlength(10)</item>
-    /// </list>
-    /// </param>
-    /// <returns></returns>
-    public static IReadOnlyDictionary<string, IRouteConstraint> CreateConstraints(IEnumerable<string> constrainFuncs)
-      => new Dictionary<string, IRouteConstraint>(constrainFuncs.Select(constrainFunc =>
-      {
-          var sp = constrainFunc.Split('(', 2);
-          var constrainName = sp[0];
-          string? argString = sp.Length == 1 ? null : sp[1][..^1];
-          string[]? args = argString?.Split(',', StringSplitOptions.TrimEntries);
-          var type = DefaultConstraintMap[constrainName];
-          int[]? _ints = args?.Select(s => int.TryParse(s, out var _int) ? _int : -1).ToArray();
-          int _int = _ints?[0] ?? -1;
-
-          var instance = constrainName switch
-          {
-              "minlength" => new MinLengthRouteConstraint(_int),
-              "maxlength" => new MaxLengthRouteConstraint(_int),
-              "length" => new LengthRouteConstraint(_int),
-              "min" => new MinRouteConstraint(_int),
-              "max" => new MaxRouteConstraint(_int),
-              "range" => new RangeRouteConstraint(_ints[0], _ints[1]),
-
-              "regex" => new RegexInlineRouteConstraint(argString!),
-
-              _ => Activator.CreateInstance(type) as IRouteConstraint
-          };
-
-          return new KeyValuePair<string, IRouteConstraint>(constrainFunc, instance!);
-      }));
 
     public bool MatchUrl(PathString path)
     {
@@ -179,7 +90,7 @@ public class WebPage : WebSitePart
         if (_routeConstraints is null)
         {
             var constrainUsed = TemplateMatcherUsedConstraints();
-            _routeConstraints = CreateConstraints(constrainUsed).ToImmutableDictionary();
+            _routeConstraints = RouteUtil.CreateConstraints(constrainUsed).ToImmutableDictionary();
         }
 
         //var constraints = CreateConstraints(["id:int"]);

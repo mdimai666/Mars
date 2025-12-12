@@ -33,12 +33,16 @@ public class Debouncer
 
     private void CancelAllStepperTokens()
     {
-        foreach (var token in StepperCancelTokens)
+        try
         {
-            if (!token.IsCancellationRequested)
+            foreach (var token in StepperCancelTokens)
             {
-                token.Cancel();
+                if (!token.IsCancellationRequested)
+                {
+                    token.Cancel();
+                }
             }
         }
+        catch { }
     }
 }

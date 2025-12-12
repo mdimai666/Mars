@@ -6,12 +6,12 @@
 @attribute [NodeEditFormForNode(typeof(InjectNode))]
 @inject IStringLocalizer<AppRes> L
 
-<div class="form-group">
-    <FormItem2 For="()=>Node.Payload">
+<div class="form-group d-flex flex-column flex-fill gap-4">
+    <FormItem2 For="() => Node.Payload">
         <FluentTextField @bind-Value=Node.Payload Class="w-100" Placeholder="DateTimeOffset.Now.ToUnixTimeMilliseconds" />
     </FormItem2>
 
-    <div class="hstack gap-3 mt-4">
+    <div class="hstack gap-3">
         <div class="hstack gap-2">
             <i class="bi bi-clock"></i>
             <FluentLabel>@(L[nameof(Node.RunAtStartup)])</FluentLabel>
@@ -21,7 +21,7 @@
         <FluentNumberField @bind-Value=Node.StartupDelayMillis Min="10" Disabled=!Node.RunAtStartup />
     </div>
 
-    <div class="hstack gap-3 mt-4" style="min-height:32px;">
+    <div class="hstack gap-3" style="min-height:32px;">
         <div class="hstack gap-2">
             <i class="bi bi-repeat"></i>
             <FluentLabel>@(L[nameof(Node.IsSchedule)])</FluentLabel>
@@ -34,7 +34,6 @@
         }
     </div>
 </div>
-
 
 @code {
     [CascadingParameter] Node Value { get; set; } = default!;

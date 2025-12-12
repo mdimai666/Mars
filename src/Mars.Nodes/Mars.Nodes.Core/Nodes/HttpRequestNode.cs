@@ -19,12 +19,38 @@ public class HttpRequestNode : Node
     {
         Inputs = [new()];
         Color = "#e7e6af";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";
     }
+
+    public static IReadOnlyCollection<string> ExampleHeaders =
+    [
+        "Content-Type=application/json",
+        "Content-Type=application/x-www-form-urlencoded",
+        "Content-Type=text/plain",
+        "Content-Type=application/xml",
+        "Content-Type=text/html",
+
+        "Authorization=Bearer <token>",
+
+        "Accept=application/json",
+        "Accept=application/xml",
+        "Accept=text/html",
+
+        // Common browser headers
+        "User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Cache-Control=no-cache",
+        "Pragma=no-cache",
+        "Connection=keep-alive",
+        "Accept-Encoding=gzip, deflate, br",
+        "Accept-Language=en-US,en;q=0.9",
+
+        // Custom API example
+        "X-Api-Key=<your-api-key>",
+    ];
 }
 
-public class HeaderItem
+public record HeaderItem
 {
     public string Name { get; set; } = "";
     public string Value { get; set; } = "";

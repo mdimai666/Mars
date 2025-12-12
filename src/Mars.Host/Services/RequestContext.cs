@@ -25,7 +25,7 @@ internal class RequestContext : IRequestContext
     {
         if (_init) return (_user, _roles);
         _init = true;
-        if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated) return (_user, _roles);
+        if (_httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == false) return (_user, _roles);
 
         var user = _userRepository.GetAuthorizedUserInformation(UserName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -42,7 +42,7 @@ internal class RequestContext : IRequestContext
 
     public string Jwt => _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
 
-    public string UserName => _httpContextAccessor.HttpContext.User.Identity?.Name ?? null!;
+    public string UserName => _httpContextAccessor.HttpContext?.User.Identity?.Name ?? null!;
 
     public bool IsAuthenticated => User is not null;
 

@@ -8,15 +8,15 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImplement
 {
-    public HttpResponseNodeImpl(HttpResponseNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public HttpResponseNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
+
+    public HttpResponseNodeImpl(HttpResponseNode node, IRED _RED)
+    {
+        Node = node;
+        RED = _RED;
+    }
 
     static readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web)
     {
@@ -48,8 +48,7 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
 
         response ??= "";
 
+        http.HttpContext.Response.StatusCode = Node.ResponseStatusCode;
         await http.HttpContext.Response.WriteAsync(response, encoding: Encoding.UTF8); //on async body already has disposed
-
-        //http.HttpContext.Dispose();
     }
 }

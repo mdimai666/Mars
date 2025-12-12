@@ -304,7 +304,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         quickNodeAddMenu.Show(e);
         await Task.Delay(100);
-        await quickNodeAddMenu.Focus();
+        quickNodeAddMenu.Focus();
     }
 
     void CalcTabs()

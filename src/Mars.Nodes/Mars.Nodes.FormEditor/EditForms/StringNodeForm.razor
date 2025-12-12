@@ -4,7 +4,6 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(StringNode))]
 
-
 <div class="vstack">
     <label>Operations</label>
 
@@ -37,12 +36,12 @@
                                 var f = item.Inputs().ElementAt(i);
                                 @if (f.Type == OperationInputType.Input)
                                 {
-                                    <FluentTextField Label=@f.Label Placeholder=@f.Label Value=@item.Args[i] ValueChanged=@(v=>item.Args[index]=v) />
+                                    <FluentTextField Label=@f.Label Placeholder=@f.Label Value=@item.Args[i] ValueChanged=@(v => item.Args[index] = v) />
                                 }
                             }
                         </div>
                         <div class="ms-auto hstack">
-                            <FluentButton OnClick=@(e=>DelOp(item))>
+                            <FluentButton OnClick=@(e => DelOp(item))>
                                 <i class="bi bi-x"></i>
                             </FluentButton>
                         </div>
@@ -58,7 +57,6 @@
         </div>
     }
 </div>
-
 
 @code {
     [CascadingParameter] Node? Value { get; set; }
@@ -84,4 +82,3 @@
         return Task.CompletedTask;
     }
 }
-

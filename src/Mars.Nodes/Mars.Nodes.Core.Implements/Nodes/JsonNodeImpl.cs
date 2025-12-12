@@ -28,12 +28,12 @@ public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
 
         object payload = input.Payload;
 
-        if (Node.Action == JsonNode.JsonNodeAction.toJsonString)
+        if (Node.Action == JsonNode.JsonNodeAction.ToJsonString)
         {
             string json = JsonNodeImpl.ToJsonString(payload, true);
             input.Payload = json;
         }
-        else if (Node.Action == JsonNode.JsonNodeAction.toObject)
+        else if (Node.Action == JsonNode.JsonNodeAction.ToObject)
         {
             var v = JsonNodeImpl.ParseString(payload.ToString()!);
             var obj = v.Deserialize<ExpandoObject>()!;

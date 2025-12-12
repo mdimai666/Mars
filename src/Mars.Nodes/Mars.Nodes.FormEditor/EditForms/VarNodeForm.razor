@@ -3,7 +3,7 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(VarNode))]
 
-<div class="form-group">
+<div class="form-group d-flex flex-column flex-fill">
 
     <div class="vstack gap-3">
         <FormItem2 For=@(()=>Node.VarType)>
@@ -17,7 +17,6 @@
     </div>
 
 </div>
-
 
 @code {
     [CascadingParameter] Node? Value { get; set; }

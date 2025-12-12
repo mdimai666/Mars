@@ -1,24 +1,23 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(JsonNode))]
 
-<div class="form-group">
-    <label>property</label>
-    <InputText class="form-control" @bind-Value=Node.Property />
-</div>
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-3">
+        <FormItem2 For="() => Node.Property">
+            <FluentTextField @bind-Value=Node.Property Class="" />
+        </FormItem2>
 
-<div class="form-group">
-    <label>Action</label>
-    <InputSelect @bind-Value=Node.Action>
-        @foreach (var m in Enum.GetValues<JsonNode.JsonNodeAction>())
-        {
-            <option value="@m">@m</option>
-        }
-    </InputSelect>
-</div>
-
-<div class="form-group">
-    <label>FormatJsonString</label>
-    <InputCheckbox @bind-Value=Node.FormatJsonString />
+        <FormItem2 For="() => Node.Action">
+            <FluentSelect Items="Enum.GetValues<JsonNode.JsonNodeAction>()" @bind-SelectedOption=@Node.Action Class="" />
+        </FormItem2>
+        <FormItem2 For="() => Node.FormatJsonString" Label="Format">
+            <FluentCheckbox @bind-Value="@Node.FormatJsonString">
+                <AutoInputLabel For="() => Node.FormatJsonString" />
+            </FluentCheckbox>
+        </FormItem2>
+    </div>
 </div>
 
 @code {

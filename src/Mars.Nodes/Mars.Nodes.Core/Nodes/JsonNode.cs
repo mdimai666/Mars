@@ -15,14 +15,14 @@ public class JsonNode : Node
     {
         Inputs = [new()];
         Color = "#debd5c";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
     }
 
     public enum JsonNodeAction
     {
         Auto,
-        toJsonString,
-        toObject
+        ToJsonString,
+        ToObject
     }
 }

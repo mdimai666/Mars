@@ -1,9 +1,9 @@
+using System.Collections.Immutable;
+using Mars.Host.Shared.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Routing.Template;
-using Microsoft.Extensions.Logging;
 
 namespace Mars.Host.Shared.Models;
 
@@ -16,13 +16,20 @@ public class HttpCatchRegister
     public string Pattern { get; set; } = default!;
     public string NodeId { get; set; } = default!;
 
-    //public string isStaticUrl
+    /// <summary>
+    /// Имеются ли параметры типа /path/<b>{id}</b>
+    /// </summary>
+    public bool IsContainCurlyBracket { get; private init; }
 
-    public bool IsContainCurlyBracket;
-    public RouteTemplate RouteTemplate;
-    public RoutePattern RoutePattern;
-
-    public TemplateMatcher TemplateMatcher { get; }
+    /// <summary>
+    /// Имеются ли фильтры у параметров типа /path/{id<b>:int</b>}
+    /// </summary>
+    public bool IsRoutePatternHasConstraints { get; private init; }
+    protected RouteTemplate RouteTemplate;
+    protected RoutePattern RoutePattern;
+    protected TemplateMatcher TemplateMatcher;
+    private RouteValueDictionary? _templateMatcherRouteValues;
+    private IReadOnlyDictionary<string, IRouteConstraint>? _routeConstraints;
 
     public HttpCatchRegister(string method, string pattern, string nodeId)
     {
@@ -35,81 +42,55 @@ public class HttpCatchRegister
         RouteTemplate = TemplateParser.Parse(Pattern);
         RoutePattern = RouteTemplate.ToRoutePattern();
 
-        //this.TemplateMatcher = new Microsoft.AspNetCore.Routing.Template.TemplateMatcher(this.RouteTemplate, new RouteValueDictionary());
-        TemplateMatcher = new TemplateMatcher(RouteTemplate, GetDefaults(RouteTemplate));
-        //var b = x2.TryMatch(context.Request.Path, new RouteValueDictionary());
+        //TemplateMatcher = new TemplateMatcher(RouteTemplate, GetDefaults(RouteTemplate));
+        TemplateMatcher = new TemplateMatcher(RouteTemplate, _templateMatcherRouteValues ??= []);
+        IsRoutePatternHasConstraints = TemplateMatcherUsedConstraints().Length > 0;
     }
 
-    private RouteValueDictionary GetDefaults(RouteTemplate parsedTemplate)
+    public bool TryMatch(PathString path, out RouteValueDictionary? routeValues)
     {
-        var result = new RouteValueDictionary();
-
-        foreach (var parameter in parsedTemplate.Parameters)
+        if (TemplateMatcher is null)
         {
-            if (parameter.DefaultValue != null)
-            {
-                result.Add(parameter.Name!, parameter.DefaultValue);
-            }
+            routeValues = null;
+            return false;
         }
 
-        return result;
-    }
+        routeValues = new RouteValueDictionary();
+        var match = TemplateMatcher.TryMatch(path, routeValues);
 
-    public bool TryMatch(PathString path, HttpContext httpContext, ILogger logger)
-    {
-        //PathString p = new PathString(a.Pattern);
-        //var x = new RoutePatternFactory.
-        //var x = Microsoft.AspNetCore.Routing.Template.RouteTemplate
-        //var x2 = new Microsoft.AspNetCore.Routing.Template.TemplateMatcher()
-        //var x = Microsoft.AspNetCore.Routing.Template.TemplateParser.Parse(a.Pattern);
-
-        //Microsoft.AspNetCore.Routing.Template.TemplateMatcher
-        //Microsoft.AspNetCore.Routing.Constraints.defa
-
-        //var match = TemplateMatcher.TryMatch(path, TemplateMatcher.Defaults);
-        var match = TemplateMatcher.TryMatch(path, TemplateMatcher.Defaults);
-        //var match = RouteConstraintMatcher.Match(GetDefaultConstraintMap() as IDictionary<string, IRouteConstraint>, new RouteValueDictionary(),
-        //    httpContext, new , RouteDirection.IncomingRequest, logger);
-
-        //RouteTemplate.
-        //TemplateMatcher.
-        //RoutePattern.
+        //Если совподает шаблон, дополнительно проверить типы {id:int:min(5)}. и т.д.
+        if (IsRoutePatternHasConstraints)
+        {
+            match = RouteConstraintMatch(path, routeValues);
+        }
 
         return match;
     }
 
+    public string[] TemplateMatcherUsedConstraints()
+        => TemplateMatcher.Template.Parameters.SelectMany(s => s.InlineConstraints.Select(s => s.Constraint)).Distinct().ToArray();
 
-    private static IDictionary<string, Type> GetDefaultConstraintMap()
+    public bool RouteConstraintMatch(PathString pathString, RouteValueDictionary routeValues)
     {
-        return new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
+        if (_routeConstraints is null)
         {
-            // Type-specific constraints
-            { "int", typeof(IntRouteConstraint) },
-            { "bool", typeof(BoolRouteConstraint) },
-            { "datetime", typeof(DateTimeRouteConstraint) },
-            { "decimal", typeof(DecimalRouteConstraint) },
-            { "double", typeof(DoubleRouteConstraint) },
-            { "float", typeof(FloatRouteConstraint) },
-            { "guid", typeof(GuidRouteConstraint) },
-            { "long", typeof(LongRouteConstraint) },
+            var constrainUsed = TemplateMatcherUsedConstraints();
+            _routeConstraints = RouteUtil.CreateConstraints(constrainUsed).ToImmutableDictionary();
+        }
 
-            // Length constraints
-            { "minlength", typeof(MinLengthRouteConstraint) },
-            { "maxlength", typeof(MaxLengthRouteConstraint) },
-            { "length", typeof(LengthRouteConstraint) },
+        //var constraints = CreateConstraints(["id:int"]);
+        foreach (var (key, val) in routeValues)
+        {
+            var par = TemplateMatcher.Template.GetParameter(key);
+            foreach (var inlineCon in par.InlineConstraints)
+            {
+                var constraint = _routeConstraints[inlineCon.Constraint];
+                var match = constraint.Match(null, null, key, routeValues, RouteDirection.IncomingRequest);
+                if (!match) return false;
+            }
 
-            // Min/Max value constraints
-            { "min", typeof(MinRouteConstraint) },
-            { "max", typeof(MaxRouteConstraint) },
-            { "range", typeof(RangeRouteConstraint) },
-
-            // Regex-based constraints
-            { "alpha", typeof(AlphaRouteConstraint) },
-            { "regex", typeof(RegexInlineRouteConstraint) },
-
-            { "required", typeof(RequiredRouteConstraint) },
-        };
+        }
+        return true;
     }
-
 
 }

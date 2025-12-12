@@ -15,7 +15,23 @@ public class NodesWorkflowBuilder
         return new NodesWorkflowBuilder();
     }
 
+    /// <summary>
+    /// add wired with previous generation nodes
+    /// </summary>
+    /// <param name="nodes"></param>
+    /// <returns></returns>
     public NodesWorkflowBuilder AddNext(params Node[] nodes)
+        => AddNext(nodes, false);
+
+    /// <summary>
+    /// add without wiring
+    /// </summary>
+    /// <param name="nodes"></param>
+    /// <returns></returns>
+    public NodesWorkflowBuilder Add(params Node[] nodes)
+        => AddNext(nodes, true);
+
+    private NodesWorkflowBuilder AddNext(Node[] nodes, bool allowUnlink)
     {
         if (_nodes.Count == 0)
         {
@@ -28,14 +44,15 @@ public class NodesWorkflowBuilder
         }
 
         var nextNodes = GetLastGenerationOutputables();
-        if (nextNodes.Count() == 0) throw new InvalidOperationException("not have any nodes with output");
+        if (!allowUnlink && nextNodes.Count() == 0) throw new InvalidOperationException("not have any nodes with output");
 
         foreach (var newNode in nodes)
         {
             _nodes.Add(newNode.Id, new(newNode, LastCreatedGeneration + 1));
             foreach (var node in nextNodes)
             {
-                node.Wires.First().Add(new(newNode.Id));
+                if (node.Outputs.Any())
+                    node.Wires.First().Add(new(newNode.Id));
             }
         }
         LastCreatedGeneration++;
@@ -58,6 +75,14 @@ public class NodesWorkflowBuilder
                         .Select(s => s.Node);
 
     public Node[] Build() => Nodes.ToArray();
+
+    public Node[] BuildWithFlowNode()
+    {
+        var flowNode = new FlowNode();
+        Nodes.ToList().ForEach(s => s.Container = flowNode.Id);
+
+        return [flowNode, .. Nodes];
+    }
 
     internal Node[] GetLastGenerationOutputables()
         => _nodes.Values.Where(s => s.Generation == LastCreatedGeneration)

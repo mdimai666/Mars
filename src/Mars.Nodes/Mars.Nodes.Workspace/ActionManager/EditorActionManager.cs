@@ -19,7 +19,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     private readonly HotKeysContext _hotkeysContext;
     private readonly EditorActionLocator _edittorActionLocator;
     private ILogger _logger;
-    private IReadOnlyCollection<EditorActionType> _actions;
+    private IReadOnlyDictionary<Type, EditorActionType> _actions;
 
     private readonly Stack<IEditorHistoryAction> _undoStack = new();
     private readonly Stack<IEditorHistoryAction> _redoStack = new();
@@ -37,13 +37,13 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
         _hotkeysContext = hotkeysContext;
         _edittorActionLocator = edittorActionLocator;
         _logger = _nodeEditor.CreateLogger<EditorActionManager>();
-        _actions = _edittorActionLocator.Actions.ToList();
+        _actions = _edittorActionLocator.Actions.ToDictionary(s => s.ActionType);
         BuildActions();
     }
 
     private void BuildActions()
     {
-        foreach (var action in _actions)
+        foreach (var action in _actions.Values)
         {
             RegisterAction(action);
         }
@@ -62,7 +62,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     /// <summary>
     /// Получить все действия с хоткеями
     /// </summary>
-    public IEnumerable<Type> GetAllActionTypes() => _actions.Select(s => s.ActionType);
+    public IEnumerable<Type> GetAllActionTypes() => _actions.Values.Select(s => s.ActionType);
 
     /// <summary>
     /// Позволяет пользователю переназначить хоткей
@@ -95,7 +95,7 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     public void ExecuteAction(Type actionType, bool addToHistory = true)
     {
         _logger.LogTrace($"ExecuteAction('{actionType}')");
-        var a = _actions.FirstOrDefault(s => s.ActionType == actionType)
+        var a = _actions.GetValueOrDefault(actionType)
                         ?? throw new NotFoundException($"action '{actionType}' not found");
 
         var instance = HasNodeEditorApiConstructor(a.ActionType)

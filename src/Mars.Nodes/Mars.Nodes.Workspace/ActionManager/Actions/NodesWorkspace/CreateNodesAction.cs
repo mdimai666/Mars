@@ -3,14 +3,15 @@ using Mars.Nodes.EditorApi.Interfaces;
 
 namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 
-public class CreateNewNodesAction : BaseEditorHistoryAction
+public class CreateNodesAction : BaseEditorHistoryAction
 {
     private readonly string _newNodesJson;
+    private readonly bool _startDrag;
 
-    public CreateNewNodesAction(INodeEditorApi editor, IReadOnlyCollection<Node> newNodes) : base(editor)
+    public CreateNodesAction(INodeEditorApi editor, IReadOnlyCollection<Node> newNodes, bool startDrag = false) : base(editor)
     {
         _newNodesJson = NodesToJson(newNodes);
-
+        _startDrag = startDrag;
     }
 
     public override bool CanExecute() => true;
@@ -20,17 +21,18 @@ public class CreateNewNodesAction : BaseEditorHistoryAction
         // Тут сложность в том что ноде задается место только после MouseUp, и он уже добавлен
         // поэтому добавляем их если только их уже нет
         var nodes = NodesFromJson(_newNodesJson);
-        var toAddNodes = new List<Node>();
-        foreach (var node in nodes)
+        var nonExistNodes = nodes.Where(node => !_editor.AllNodes.ContainsKey(node.Id)).ToList();
+
+        if (nonExistNodes.Any())
         {
-            if (!_editor.AllNodes.ContainsKey(node.Id))
-                toAddNodes.Add(node);
+            _editor.AddNodes(nonExistNodes);
+            _editor.NodeWorkspace.RedrawWires();
         }
 
-        if (toAddNodes.Any())
+        if (_startDrag)
         {
-            _editor.AddNodes(toAddNodes);
-            _editor.NodeWorkspace.RedrawWires();
+            var createdNodes = nodes.Select(node => _editor.AllNodes[node.Id]);
+            _editor.NodeWorkspace.StartDragNodes(createdNodes);
         }
     }
 

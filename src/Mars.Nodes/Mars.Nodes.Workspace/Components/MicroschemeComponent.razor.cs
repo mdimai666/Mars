@@ -26,8 +26,7 @@ public partial class MicroschemeComponent
     [Parameter] public EventCallback<string> OnInject { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnDblClick { get; set; }
-
-
+    [Parameter] public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
 
     void OnMouseDownMethod(MouseEventArgs e)
     {
@@ -44,8 +43,6 @@ public partial class MicroschemeComponent
     {
         OnInject.InvokeAsync(this.node.Id);
     }
-
-
 
     // Simple events ============================
     void OnClickEvent(MouseEventArgs e)

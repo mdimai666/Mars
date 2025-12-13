@@ -34,6 +34,7 @@ public class NodeServiceUnitTestBase
     internal readonly ILogger<NodeService> _loggerNodeService;
     internal readonly ILogger<NodeTaskManager> _loggerManager;
     internal readonly ILogger<NodeTaskJob> _loggerJob;
+    internal readonly NodesLocator _nodesLocator;
     internal NodeService? _nodeService;
     internal RED RED;
     internal NodeTaskManager _nodeTaskManager;
@@ -56,7 +57,7 @@ public class NodeServiceUnitTestBase
             _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
 
             // add locators and fabric
-            var _nodesLocator = new NodesLocator();
+            _nodesLocator = new NodesLocator();
             _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
             _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
             _jsonSerializerOptions = new JsonSerializerOptions()

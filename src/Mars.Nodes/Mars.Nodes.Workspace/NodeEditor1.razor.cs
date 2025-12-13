@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using System.Web;
-using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
@@ -13,9 +12,11 @@ using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
 using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Models;
+using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.HotKeys2;
 
@@ -26,7 +27,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
-    [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILoggerFactory _loggerFactory { get; set; } = default!;
     [Inject] ILogger<NodeEditor1> _logger { get; set; } = default!;
     [Inject] NodesLocator _nodesLocator { get; set; } = default!;
@@ -62,12 +63,25 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     NodeWorkspaceJsInterop js = default!;
     Dictionary<string, Node> _allNodes = [];
     string runningTaskCountDisplayText = "-";
-    List<PaletteNode> _palette = [];
 
+    #region PALETTE
+    List<PaletteNode> _palette = [];
     public IReadOnlyCollection<PaletteNode> Palette => _palette;
     IReadOnlyCollection<Node> INodeEditorApi.Palette => Palette.Select(s => s.Instance).ToList();
 
     public IReadOnlyCollection<Type> RegisteredNodes { get; private set; } = [];
+    #endregion
+
+    #region FLOWS
+    List<FlowNode> flows = [];
+
+    FlowNode? _activeFlow;
+    public FlowNode? ActiveFlow => _activeFlow;
+
+    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(_activeFlow?.Id);
+    //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
+    //public string InitialFlowId { get; set; } 
+    #endregion
 
     EditorActionManager _actionManager = default!;
     public IEditorActionManager ActionManager => _actionManager;
@@ -80,6 +94,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     QuickNodeAddMenu? quickNodeAddMenu = default!;
     NodeEditContainer1? nodeEditContainer1 = default!;
 
+    bool _showWorkspaceContextMenu;
+    FluentMenu _workspaceContextMenu = default!;
+
+    bool _showPaletteNodeContextMenu;
+    FluentMenu _paletteNodeContextMenu = default!;
+
+    #region MenuTabs
     string activeMasterTab = "tabs";
 
     class MasterTab
@@ -96,6 +117,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     }
 
     MasterTab[] masterTabs = [new("tabs", "Tabs"), new("nodes", "Nodes"), new("configs", "Configs")];
+    #endregion
+
+    IReadOnlyCollection<NodeExampleInfo> _examplesList = [];
+    IReadOnlyCollection<NodeExampleInfo> _currentPaletteNodeExamples = [];
 
     protected override void OnInitialized()
     {
@@ -132,6 +157,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             _palette.Add(item);
 
         }
+
+        _examplesList = _nodesLocator.CreateExamplesList();
     }
 
     public async ValueTask DisposeAsync()
@@ -153,10 +180,19 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         StateHasChanged();
     }
 
+    void OnMouseDownPaletteNode(MouseEventArgs e, Node paletteNode)
+    {
+        if (e.Button != (long)MouseButton.Left) return;
+
+        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+
+        CreateNewNodeFromPalette(e, paletteNode);
+    }
+
     void CreateNewNodeFromPalette(MouseEventArgs e, Node paletteNode)
     {
         Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
-        instance.Container = activeFlow.Id;
+        instance.Container = _activeFlow.Id;
         AllNodes.Add(instance);
         CalcFlowNodes();
         _nodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
@@ -166,7 +202,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         ConfigNode instance = (ConfigNode)Activator.CreateInstance(nodeType)!;
         var thisTypeCount = AllNodes.Values.Count(s => s.Type == instance.Type);
-        instance.Container = activeFlow.Id;
+        instance.Container = _activeFlow.Id;
         instance.Name = instance.Label + (thisTypeCount + 1);
         AllNodes.Add(instance);
         RecalcNodes();
@@ -209,6 +245,12 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     public void DeployClick()
     {
         OnDeploy.InvokeAsync(AllNodes.Values);
+    }
+
+    void OnClickNode(NodeClickEventArgs e)
+    {
+        if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
+        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
     }
 
     void OnDblClickNode(NodeClickEventArgs e)
@@ -294,6 +336,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnWorkspaceClick(MouseEventArgs e)
     {
+        if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
+        if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
+
         if (quickNodeAddMenu.Visible)
         {
             quickNodeAddMenu.Hide();
@@ -318,7 +363,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void CheckActiveTab()
     {
-        if (AllNodes is not null && activeFlow is null)
+        if (AllNodes is not null && _activeFlow is null)
         {
             var querystring = HttpUtility.ParseQueryString(new Uri(NavigationManager.Uri).Query);
 
@@ -326,26 +371,18 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
             if (string.IsNullOrEmpty(flow) == false)//NOT WORK
             {
-                activeFlow = flows.FirstOrDefault(s => s.Id == flow);
+                _activeFlow = flows.FirstOrDefault(s => s.Id == flow);
             }
 
-            activeFlow ??= flows.OrderBy(s => s.Order).FirstOrDefault();
+            _activeFlow ??= flows.OrderBy(s => s.Order).FirstOrDefault();
 
             CalcFlowNodes();
         }
     }
 
-    List<FlowNode> flows = [];
-
-    FlowNode? activeFlow = null;
-
-    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(activeFlow?.Id);
-    //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
-    //public string InitialFlowId { get; set; }
-
     public void ChangeFlow(FlowNode flowNode)
     {
-        activeFlow = flowNode;
+        _activeFlow = flowNode;
         CalcFlowNodes();
         CalcVarNodes();
         var url = NavigationManager.GetUriWithQueryParameter("flow", flowNode.Id);
@@ -379,7 +416,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     void OnClickAddVarNode()
     {
         var vname = "var" + Random.Shared.Next(10, 99);
-        AllNodes.Add(new VarNode() { Container = activeFlow.Id, Name = vname });
+        AllNodes.Add(new VarNode() { Container = _activeFlow.Id, Name = vname });
         AllNodesChanged.InvokeAsync(AllNodes);
         CalcVarNodes();
     }
@@ -471,6 +508,54 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         });
     }
 
+    Task OnNodeContextMenu(NodeClickEventArgs e)
+    {
+        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height, (int)e.MouseEvent.ClientX - 48, (int)e.MouseEvent.ClientY - 40);
+    }
+
+    private static readonly Dictionary<string, string> NodeContextMenuItems = new()
+    {
+        ["DuplicateSelectedNodes"] = "Дублировать",
+        ["DeleteSelectedNodes"] = AppRes.Delete,
+    };
+
+    void OnNodeContextMenuItemClick(MouseEventArgs e, string actionId)
+    {
+        if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
+        else if (actionId == "DuplicateSelectedNodes") _actionManager.ExecuteAction<DuplicateSelectedNodesAction>();
+        else throw new NotImplementedException();
+    }
+
+    Task OnPaletteNodeContextMenu(NodeClickEventArgs e)
+    {
+        _currentPaletteNodeExamples = _examplesList.Where(s => s.NodeType == e.Node.GetType()).ToList();
+        return _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height, (int)e.MouseEvent.ClientX - 48, (int)e.MouseEvent.ClientY - 40);
+    }
+
+    void UseExample(NodeExampleInfo example)
+    {
+        var nodes = example.ExampleHandlerInstance.Handle();
+        var flowId = ActiveFlow?.Id ?? throw new ArgumentNullException("ActiveFlow is null, ActiveFlow should be set");
+        foreach (var node in nodes)
+            node.Container = flowId;
+        _actionManager.ExecuteAction(new CreateNodesAction(this, nodes, startDrag: true));
+    }
+
+    Task OnWireContextMenu(SelWireEventArgs e)
+    {
+        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height, (int)e.MouseEvent.ClientX - 48, (int)e.MouseEvent.ClientY - 40);
+    }
+
+    private static readonly Dictionary<string, string> WireContextMenuItems = new()
+    {
+        ["DeleteSelectedNodes"] = AppRes.Delete,
+    };
+
+    void OnWireContextMenuItemClick(MouseEventArgs e, string actionId)
+    {
+        if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
+        else throw new NotImplementedException();
+    }
 }
 
 internal static class NodeEditor1Extension

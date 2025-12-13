@@ -5,14 +5,16 @@ using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
+using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Mars.Nodes.Workspace.EditorParts;
 
-public partial class NodeWorkspace1 : INodeWorkspaceApi
+public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
 {
     [Inject] ILogger<NodeWorkspace1> _logger { get; set; } = default!;
 
@@ -22,6 +24,12 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
     NodeWorkspaceJsInterop js = default!;
 
     [CascadingParameter] INodeEditorApi _nodeEditor { get; set; } = default!;
+
+    ElementReference _containerRef = default!;
+    ElementReference _svgContainerRef = default!;
+
+    public int Width { get; protected set; }
+    public int Height { get; protected set; }
 
     IReadOnlyDictionary<string, Node> _flowNodes { get; set; } = new Dictionary<string, Node>();
 
@@ -48,7 +56,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
                 RefreshWires();
             }
 
-            _logger.LogTrace("Workspace set: FlowNodes");
+            //_logger.LogTrace("Workspace set: FlowNodes");
             FlowNodesChanged.InvokeAsync(value);
         }
     }
@@ -68,15 +76,18 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
 
     [Parameter] public EventCallback<NodeClickEventArgs> OnClickNode { get; set; }
     [Parameter] public EventCallback<NodeClickEventArgs> OnDblClickNode { get; set; }
-
+    [Parameter] public EventCallback<NodeClickEventArgs> OnNodeContextMenu { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceDblClick { get; set; }
+    [Parameter] public EventCallback<SelWireEventArgs> OnWireContextMenu { get; set; }
 
     [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     Lasso lasso = new();
 
     MouseEventArgs _lastMouseWorkspaceState = new();
+    NodeWirePointResolver _nodeWirePointResolver = new();
+    private DotNetObjectReference<IResizeObserver> _dotNetRef = default!;
 
     //--------------------------------------
 
@@ -86,6 +97,16 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
         js = new NodeWorkspaceJsInterop(JSRuntime);
 
         //wire_drawWires();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create<IResizeObserver>(this);
+
+            await js.ObserveAsync(_containerRef, _dotNetRef);
+        }
     }
 
     void onMouseMove(MouseEventArgs e)
@@ -176,7 +197,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
         _logger.LogTrace("onMouseUp");
         if (isProcessPasteNewNode)
         {
-            _nodeEditor.ActionManager.ExecuteAction(new CreateNewNodesAction(_nodeEditor, dragElements.Select(s => s.node).ToList()));
+            _nodeEditor.ActionManager.ExecuteAction(new CreateNodesAction(_nodeEditor, dragElements.Select(s => s.node).ToList()));
             isProcessPasteNewNode = false;
         }
         else if (drag)
@@ -259,14 +280,28 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
         onMouseUp(e);
     }
 
+    void OnNodeContextMenuEvent(MouseEventArgs e, Node node)
+    {
+        _logger.LogTrace($"OnNodeContextMenu={e.Button}");
+        var a = new NodeClickEventArgs { MouseEvent = e, Node = node };
+        OnNodeContextMenu.InvokeAsync(a);
+    }
+
+    void OnWireContextMenuEvent(MouseEventArgs e, Wire wire)
+    {
+        _logger.LogTrace($"OnWireContextMenuEvent={e.Button}");
+        var a = new SelWireEventArgs(e, wire.Node1, wire.Node2);
+        OnWireContextMenu.InvokeAsync(a);
+    }
+
     void wire_StartNew(NodeWirePointEventArgs arg)
     {
         _logger.LogTrace("wire_StartNew");
 
-        var e = arg.e;
-        var index = arg.pinIndex;
-        var output = !arg.isInput;
-        var node_id = arg.node.Id;
+        var e = arg.MouseEvent;
+        var index = arg.PinIndex;
+        var output = !arg.IsInput;
+        var node_id = arg.Node.Id;
 
         new_wire = new NewWire
         {
@@ -283,10 +318,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
     {
         _logger.LogTrace("wire_StartNewEnd");
 
-        var e = arg.e;
-        var index = arg.pinIndex;
-        var output = !arg.isInput;
-        var node_id = arg.node.Id;
+        var e = arg.MouseEvent;
+        var index = arg.PinIndex;
+        var output = !arg.IsInput;
+        var node_id = arg.Node.Id;
 
         bool is_node1_set = new_wire.Node1 != null;
 
@@ -330,8 +365,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
     {
         wire_drawWires(node.Id);
     }
-
-    NodeWirePointResolver _nodeWirePointResolver = new();
 
     void wire_drawWires(string? nodeId = null)
     {
@@ -529,6 +562,12 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi
         StateHasChanged();
     }
 
+    [JSInvokable]
+    public void OnElementResize(double width, double height)
+    {
+        Width = (int)width;
+        Height = (int)height;
+    }
 }
 
 class DragElement

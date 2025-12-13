@@ -9,8 +9,8 @@ public interface INodeEditorApi
 {
     IReadOnlyCollection<Type> RegisteredNodes { get; }
     IReadOnlyCollection<Node> Palette { get; }
-
     IDictionary<string, Node> AllNodes { get; }
+    FlowNode? ActiveFlow { get; }
     INodeWorkspaceApi NodeWorkspace { get; }
     IEditorActionManager ActionManager { get; }
     JsonSerializerOptions NodesJsonSerializerOptions { get; }

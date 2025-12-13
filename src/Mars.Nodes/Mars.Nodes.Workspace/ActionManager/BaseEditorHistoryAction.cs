@@ -1,6 +1,6 @@
-using System.Text.Json;
 using Mars.Nodes.Core;
 using Mars.Nodes.EditorApi.Interfaces;
+using Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 
 namespace Mars.Nodes.Workspace.ActionManager;
 
@@ -16,10 +16,10 @@ public abstract class BaseEditorHistoryAction : IEditorHistoryAction
     }
 
     public string NodesToJson(IEnumerable<Node> nodes)
-        => JsonSerializer.Serialize(nodes, _editor.NodesJsonSerializerOptions);
+        => NodesCopyBufferItem.NodesToJson(nodes, _editor.NodesJsonSerializerOptions);
 
     public Node[] NodesFromJson(string json)
-        => JsonSerializer.Deserialize<Node[]>(json, _editor.NodesJsonSerializerOptions)!;
+        => NodesCopyBufferItem.NodesFromJson(json, _editor.NodesJsonSerializerOptions);
 
     public abstract void Execute();
     public abstract void Undo();

@@ -28,6 +28,7 @@ public partial class CommentNodeComponent
     [Parameter] public EventCallback<MouseEventArgs> OnDblClick { get; set; }
 
     [Parameter] public float? FixedWidth { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
 
     string IconUrl
     {
@@ -42,7 +43,6 @@ public partial class CommentNodeComponent
         }
     }
 
-
     void OnMouseDownMethod(MouseEventArgs e)
     {
         OnMouseDown.InvokeAsync(e);
@@ -53,7 +53,6 @@ public partial class CommentNodeComponent
         //OnOutputWirePointUp(e, 0);
         OnMouseUp.InvokeAsync(e);
     }
-
 
     // Simple events ============================
     void OnClickEvent(MouseEventArgs e)

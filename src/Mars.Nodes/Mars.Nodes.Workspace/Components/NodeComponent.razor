@@ -3,7 +3,9 @@
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))"
    node-id="@node.Id"
    @onclick:stopPropagation=true
-   @ondblclick:stopPropagation=true>
+   @ondblclick:stopPropagation=true
+   @oncontextmenu="OnContextMenu"
+   @oncontextmenu:preventDefault="true">
     @*transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))">*@
     <!-- push btn -->
     @if (node.isInjectable)

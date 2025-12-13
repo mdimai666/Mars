@@ -2,10 +2,11 @@
 @using Mars.Nodes.Core.Nodes
 @using Mars.Nodes.Workspace.Components
 
-<div class="@Class" id="red-ui-workspace-chart" tabindex="1" style="@Style">
+<div @ref="_containerRef" class="@Class" id="red-ui-workspace-chart" tabindex="1" style="@Style">
     <svg width="5000"
          height="5000"
          version="1.1"
+         @ref="_svgContainerRef"
          @onmousemove=onMouseMove
          @onmousedown=onWorkspaceMouseDown
          @onmouseup=onMouseUp
@@ -28,6 +29,8 @@
             <!-- <rect class="red-ui-workspace-chart-background" width="5000" height="5000"></rect> -->
             <rect class="1red-ui-workspace-chart-background"
                   fill="url(#img1)"
+                  @oncontextmenu=@(e=>{ })
+                  @oncontextmenu:preventDefault="true"
                   width="5000"
                   height="5000"></rect>
 
@@ -52,7 +55,8 @@
                                y1="wire.Y1"
                                x2="wire.X2"
                                y2="wire.Y2"
-                               OnMouseDown="e=>onWireMouseDown(e,wire)" />
+                               OnMouseDown="e=>onWireMouseDown(e,wire)"
+                               OnContextMenu="e=>OnWireContextMenuEvent(e, wire)"/>
                 @*@mousedown.native.stop="(e) => onWireMouseDown(e, wire)"*@
             }
 
@@ -93,6 +97,7 @@
                                    y="node.Y"
                                    OnMouseDown="(e) => onNodeMouseDown(e, node)"
                                    OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                   OnContextMenu="(e) => OnNodeContextMenuEvent(e, node)"
                                    wireStartNew="wire_StartNew"
                                    wireStartNewEnd="wire_StartNewEnd"
                                    OnInject="OnInject"

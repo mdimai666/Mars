@@ -1,9 +1,11 @@
-﻿
+
 <g class="red-ui-flow-link @(selected?"red-ui-flow-link-selected":"")"
    @onmousedown=OnMouseDownMethod
    @onmousedown:stopPropagation=true
    @onmouseup=OnMouseUpMethod
-   @onmouseup:stopPropagation=true>
+   @onmouseup:stopPropagation=true
+   @oncontextmenu="OnContextMenu"
+   @oncontextmenu:preventDefault="true">
     <path class="red-ui-flow-link-background red-ui-flow-link-path"
           d="@Path"></path>
     <path class="red-ui-flow-link-outline red-ui-flow-link-path"

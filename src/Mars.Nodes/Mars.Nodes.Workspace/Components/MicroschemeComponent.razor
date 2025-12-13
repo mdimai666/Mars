@@ -2,7 +2,9 @@
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture)) scale(0.9)"
    node-id="@node.Id"
    @onclick:stopPropagation=true
-   @ondblclick:stopPropagation=true>
+   @ondblclick:stopPropagation=true
+   @oncontextmenu="OnContextMenu"
+   @oncontextmenu:preventDefault="true">
     <g id="Layer_1-2" data-name="Layer 1">
         @*body*@
         <g class="red-ui-flow-node"
@@ -67,7 +69,6 @@
                 bool rotate = i >= 4;
                 string rot_str = rotate ? "scale(-1, 1)" : "";
                 string transl = $"translate({x.ToString(CultureInfo.InvariantCulture)},{y.ToString(CultureInfo.InvariantCulture)})";
-
 
                 <g transform="@transl @rot_str" class="red-ui-flow-port">
                     <polyline class="micr-cls-9" points="24.33 8.01 7 8.01 7 21.99 24.33 21.99" />
@@ -146,4 +147,3 @@
         }
     </g>
 </g>
-

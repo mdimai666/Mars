@@ -14,7 +14,6 @@ public partial class WireComponent
     [Parameter]
     public float x2 { get; set; }
 
-
     public float X1 => x1 + 10;
     public float Y1 => y1 + 8;
 
@@ -24,13 +23,12 @@ public partial class WireComponent
     [Parameter]
     public bool disable { get; set; }
 
-
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
 
-
+    [Parameter] public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
     void OnMouseDownMethod(MouseEventArgs e)
     {
         OnMouseDown.InvokeAsync(e);

@@ -32,6 +32,7 @@ public partial class NodeComponent
     [Parameter] public EventCallback<MouseEventArgs> OnDblClick { get; set; }
 
     [Parameter] public float? FixedWidth { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
 
     string IconUrl
     {

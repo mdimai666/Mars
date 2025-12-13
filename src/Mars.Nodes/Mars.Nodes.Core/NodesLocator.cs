@@ -82,11 +82,52 @@ public class NodesLocator
             WriteIndented = writeIndented,
             PropertyNameCaseInsensitive = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            
+
             Converters = { new Converters.NodeJsonConverter(nodesLocator) }
         };
         return jsonSerializerOptions;
     }
+
+    public IReadOnlyCollection<NodeExampleInfo> CreateExamplesList()
+    {
+        RefreshDict();
+        var list = new List<NodeExampleInfo>();
+
+        foreach (var assembly in assemblies)
+        {
+            var types = assembly
+                .GetTypes()
+                .Where(t =>
+                    t.IsClass &&
+                    !t.IsAbstract &&
+                    t.GetInterfaces().Any(i =>
+                        i.IsGenericType &&
+                        i.GetGenericTypeDefinition() == typeof(INodeExample<>)))
+                .ToList();
+
+            foreach (var type in types)
+            {
+                var iface = type.GetInterfaces()
+                    .First(i => i.IsGenericType &&
+                                i.GetGenericTypeDefinition() == typeof(INodeExample<>));
+
+                var nodeType = iface.GetGenericArguments()[0];
+
+                var instance = (INodeExample<Node>)Activator.CreateInstance(type)!;
+
+                list.Add(new NodeExampleInfo
+                {
+                    NodeType = nodeType,
+                    Name = ((dynamic)instance).Name,
+                    Description = ((dynamic)instance).Description,
+                    ExampleHandlerInstance = instance
+                });
+            }
+        }
+
+        return list;
+    }
+
 }
 
 public record NodeDictItem
@@ -94,4 +135,12 @@ public record NodeDictItem
     public required Type NodeType;
     public required DisplayAttribute DisplayAttribute;
     public required FunctionApiDocumentAttribute? FunctionApiDocument;
+}
+
+public record NodeExampleInfo
+{
+    public required string Name;
+    public required string Description;
+    public required Type NodeType;
+    public required INodeExample<Node> ExampleHandlerInstance;
 }

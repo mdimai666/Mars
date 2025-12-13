@@ -31,7 +31,6 @@ export function InitModule() {
     });
 }
 
-
 export function ScrollDownElement(selector) {
     /** @type {HTMLElement} */
     var objDiv = document.querySelector(selector);
@@ -57,4 +56,31 @@ export function HtmlGetElementScroll(selector) {
     let e = document.querySelector(selector)
 
     return { x: e.scrollLeft, y: e.scrollTop }
+}
+
+const observers = new Map();
+
+export function observeSize(element, dotNetRef) {
+    if (!element) return;
+
+    const observer = new ResizeObserver(entries => {
+        for (const entry of entries) {
+            dotNetRef.invokeMethodAsync(
+                "OnElementResize",
+                entry.contentRect.width,
+                entry.contentRect.height
+            );
+        }
+    });
+
+    observer.observe(element);
+    observers.set(element, observer);
+}
+
+export function unobserveSize(element) {
+    const observer = observers.get(element);
+    if (observer) {
+        observer.disconnect();
+        observers.delete(element);
+    }
 }

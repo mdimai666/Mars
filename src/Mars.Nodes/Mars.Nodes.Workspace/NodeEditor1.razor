@@ -6,6 +6,7 @@
 @using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace
 @using Mars.Nodes.Workspace.Components
 @using Mars.Nodes.Workspace.EditorParts
+@using Mars.Shared.Resources
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
 
@@ -109,11 +110,16 @@
                                         <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                             @if (node is MicroschemeNode)
                                             {
-                                                <MicroschemeComponent Node="@node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, node)) />
+                                                <MicroschemeComponent Node="@node"
+                                                                      OnMouseDown=@(e => OnMouseDownPaletteNode(e, node))
+                                                                      OnContextMenu="@(e=>OnPaletteNodeContextMenu(new(){ MouseEvent = e, Node = node }))" />
                                             }
                                             else
                                             {
-                                                <NodeComponent Node="@node" OnMouseDown=@(e => CreateNewNodeFromPalette(e, node)) FixedWidth="120" />
+                                                <NodeComponent Node="@node"
+                                                               OnMouseDown=@(e => OnMouseDownPaletteNode(e, node))
+                                                               OnContextMenu="@(e=>OnPaletteNodeContextMenu(new(){ MouseEvent = e, Node = node }))"
+                                                               FixedWidth="120" />
                                             }
                                         </svg>
                                     </div>
@@ -128,7 +134,7 @@
                             @foreach (FlowNode _flow in flows)
                             {
                                 var flow = _flow;
-                                bool isactive = activeFlow == flow;
+                                bool isactive = _activeFlow == flow;
                                 @*<li class="p-2 list-group-item active" aria-current="true">An active item</li>*@
                                 <li class=@($"p-2 list-group-item rounded-0 {(isactive ? "active" : "")}")
                                     @key=_flow.Id
@@ -160,6 +166,21 @@
 
                         </ul>
                     }
+                    <FluentMenu UseMenuService="!true"
+                                @ref="_paletteNodeContextMenu"
+                                @bind-Open="_showPaletteNodeContextMenu"
+                                Style="position:absolute !important;"
+                                VerticalThreshold="170">
+                        <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
+                            <MenuItems>
+                                @foreach (var _example in _currentPaletteNodeExamples)
+                                {
+                                    var example = _example;
+                                    <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
+                                }
+                            </MenuItems>
+                        </FluentMenuItem>
+                    </FluentMenu>
                 </div>
             </div>
             <div class="w-100">
@@ -169,14 +190,36 @@
                                     Class="h-100"
                                     OnInject="OnInject"
                                     FlowNodes=FlowNodes
+                                    OnClickNode="OnClickNode"
                                     OnDblClickNode="OnDblClickNode"
+                                    OnNodeContextMenu="OnNodeContextMenu"
+                                    OnWireContextMenu="OnWireContextMenu"
                                     OnWorkspaceClick="OnWorkspaceClick"
                                     OnWorkspaceDblClick="OnWorkspaceDblClick">
                         <QuickNodeAddMenu Palette="Palette"
                                           @ref=quickNodeAddMenu
                                           OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />
+                        <FluentMenu UseMenuService="!true"
+                                    @ref="_workspaceContextMenu"
+                                    @bind-Open="_showWorkspaceContextMenu"
+                                    Style="position:absolute !important;"
+                                    VerticalThreshold="170">
+                            @if (_selectContext == typeof(Node))
+                            {
+                                foreach (var item in NodeContextMenuItems)
+                                {
+                                    <FluentMenuItem OnClick="@((e) => OnNodeContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                }
+                            }
+                            else if (_selectContext == typeof(Wire))
+                            {
+                                foreach (var item in WireContextMenuItems)
+                                {
+                                    <FluentMenuItem OnClick="@((e) => OnWireContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                }
+                            }
+                        </FluentMenu>
                     </NodeWorkspace1>
-
                 </div>
             </div>
             <div class="flex-shrink-0 bg-white d-flex flex-column" style="width:250px;height:100%">

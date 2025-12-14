@@ -5,6 +5,7 @@ using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Middlewares;
+using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Test.Common.FixtureCustomizes;
@@ -24,10 +25,10 @@ public class HttpResponseNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_StaticUrlRequest_ShouldOK()
+    public async Task Execute_StatusCodeSetup_ShouldReturnCode()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpResponseNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();

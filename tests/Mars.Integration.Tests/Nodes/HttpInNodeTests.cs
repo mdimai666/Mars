@@ -5,6 +5,7 @@ using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Middlewares;
+using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Test.Common.FixtureCustomizes;
@@ -37,7 +38,7 @@ public class HttpInNodeTests : ApplicationTests
     public async Task TryMatch_InvalidUrlRequest_ShouldNotOK()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();
@@ -54,7 +55,7 @@ public class HttpInNodeTests : ApplicationTests
     public async Task TryMatch_StaticUrlRequest_ShouldOK()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();
@@ -71,7 +72,7 @@ public class HttpInNodeTests : ApplicationTests
     public async Task TryMatch_PatternUrlRequest_ShouldOK()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();
@@ -88,7 +89,7 @@ public class HttpInNodeTests : ApplicationTests
     public async Task TryMatch_StaticUrlShouldBePrioritizedOverPatternUrl_ShouldMatchStatic()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();
@@ -113,7 +114,7 @@ public class HttpInNodeTests : ApplicationTests
     public async Task TryMatch_TypedPatternUrlRequest_ShouldOK()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();
@@ -130,7 +131,7 @@ public class HttpInNodeTests : ApplicationTests
     public async Task TryMatch_TypedPatternUrlInvalidTypeRequest_ShouldNotOK()
     {
         //Arrange
-        _ = nameof(HttpInNode);
+        _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(MarsNodesMiddleware);
         _ = nameof(HttpCatchRegister.TryMatch);
         var client = AppFixture.GetClient();

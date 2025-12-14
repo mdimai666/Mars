@@ -8,7 +8,7 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "network")]
 public class HttpInNode : Node
 {
-    public override string Label => Name.AsNullIfEmpty() ?? UrlPattern.AsNullIfEmpty() ?? base.Label;
+    public override string DisplayName => Name.AsNullIfEmpty() ?? (Method + " " + (UrlPattern.AsNullIfEmpty() ?? base.Label));
 
     public string Method { get; set; } = "GET";
     public string UrlPattern { get; set; } = "";

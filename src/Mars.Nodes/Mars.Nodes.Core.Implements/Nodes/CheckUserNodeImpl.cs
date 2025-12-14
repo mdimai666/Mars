@@ -11,10 +11,10 @@ public class CheckUserNodeImpl : INodeImplement<CheckUserNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public CheckUserNodeImpl(CheckUserNode node, IRED RED)
+    public CheckUserNodeImpl(CheckUserNode node, IRED _RED)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = _RED;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -26,7 +26,7 @@ public class CheckUserNodeImpl : INodeImplement<CheckUserNode>, INodeImplement
 
         if (isAuth)
         {
-            input.Add(requestContext);
+            input.TryAdd(requestContext);
             callback(input, 0);
         }
         else

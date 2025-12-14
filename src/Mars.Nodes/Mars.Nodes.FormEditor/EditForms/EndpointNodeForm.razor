@@ -1,0 +1,94 @@
+@using AppFront.Shared
+@using AppFront.Shared.Components
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(EndpointNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="() => Node.Method">
+            <FluentSelect Items="Node.MethodVariants" @bind-Value=@Node.Method Class="" />
+        </FormItem2>
+
+        <FormItem2 For="() => Node.UrlPattern">
+            <div class="vstack gap-2">
+                <FluentTextField @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
+                <div class="">
+                    <a href="@Q.ServerUrlJoin(Node.UrlPattern)" role="button" class="" target="_blank">
+                        @Q.ServerUrlJoin(Node.UrlPattern)
+                        <i class="bi bi-box-arrow-up-right" style="font-size:10px;"></i>
+                    </a>
+                </div>
+            </div>
+        </FormItem2>
+
+        <FormItem2 For="() => Node.IsRequireAuthorize" Label="Authorize">
+            <FluentCheckbox @bind-Value="@Node.IsRequireAuthorize">
+                <AutoInputLabel For="() => Node.IsRequireAuthorize" />
+            </FluentCheckbox>
+        </FormItem2>
+
+        @if (Node.IsRequireAuthorize)
+        {
+            <FormItem2 For="() => Node.AllowedRoles">
+                <FluentAutocomplete TOption="string"
+                                    AutoComplete="off"
+                                    Width="300px"
+                                    Items="@Q.Roles"
+                                    Placeholder="Select"
+                                    IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                                    KeepOpen
+                                    @bind-SelectedOptions="@SetRoles" />
+            </FormItem2>
+        }
+
+        <FormItem2 For="() => Node.EndpointInputModel">
+            <FluentSelect Items="Enum.GetValues<EndpointInputModelType>()" @bind-SelectedOption=@Node.EndpointInputModel Class="" />
+        </FormItem2>
+
+        @if (Node.EndpointInputModel == EndpointInputModelType.JsonSchema)
+        {
+            <div class="d-flex flex-column" style="height:50vh">
+
+                <MarsCodeEditor2.CodeEditor2 @ref=editor1
+                                             Lang="@CodeEditor2.Language.json"
+                                             HideToolbarComponents="true"
+                                             OnSave="OnEditorSave"
+                                             Value="@Node.JsonSchema">
+                    <HeaderArea>
+                        <FluentToolbar>
+                            <FluentButton OnClick="@(() => editor1.SetValue("{}"))">@AppRes.Clear</FluentButton>
+
+                        </FluentToolbar>
+                    </HeaderArea>
+                </MarsCodeEditor2.CodeEditor2>
+
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    EndpointNode Node { get => (EndpointNode)Value; set => Value = value; }
+
+    CodeEditor2? editor1;
+
+    public IEnumerable<string> SetRoles { get => Node.AllowedRoles; set => Node.AllowedRoles = value.ToList(); }
+
+    public override async Task OnEditSave()
+    {
+        if (Node.EndpointInputModel == EndpointInputModelType.JsonSchema)
+        {
+            Node.JsonSchema = await editor1!.GetValue();
+        }
+    }
+
+    void OnEditorSave(string val)
+    {
+        //_ = form.OnFinish();
+        _ = NodeEditContainer.FormSaveClick();
+    }
+}

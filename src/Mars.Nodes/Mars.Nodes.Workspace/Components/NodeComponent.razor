@@ -128,12 +128,12 @@
         @* <text class="red-ui-flow-node-label-text"
               x="0"
               y="@(((bodyRectHeight - 30) / 2))">
-            @node.DisplayName.TextEllipsis((int)bodyRectWidth/9)
+            @DisplayTitle
         </text> *@
         <foreignObject x="0" y="@(((bodyRectHeight - 30) / 2))"
                        width="@(bodyRectWidth - 45)" height="@(bodyRectHeight - 10)">
             <p class="red-ui-flow-node-label-text" xmlns="http://www.w3.org/1999/xhtml">
-                @node.DisplayName.TextEllipsis((int)bodyRectWidth / 9)
+                @DisplayTitle
             </p>
         </foreignObject>
     </g>

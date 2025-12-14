@@ -119,6 +119,7 @@
                                                 <NodeComponent Node="@node"
                                                                OnMouseDown=@(e => OnMouseDownPaletteNode(e, node))
                                                                OnContextMenu="@(e=>OnPaletteNodeContextMenu(new(){ MouseEvent = e, Node = node }))"
+                                                               ShowLabelInsteadDisplayName="true"
                                                                FixedWidth="120" />
                                             }
                                         </svg>
@@ -275,7 +276,3 @@
         --neutral-foreground-rest: red;
     }
 </style>
-
-@code {
-
-}

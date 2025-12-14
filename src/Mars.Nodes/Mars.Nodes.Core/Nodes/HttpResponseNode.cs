@@ -7,7 +7,7 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "network")]
 public class HttpResponseNode : Node
 {
-    public override string Label => base.Label + $":{ResponseStatusCode}";
+    public override string DisplayName => base.Label + $":{ResponseStatusCode}";
 
     public int ResponseStatusCode { get; set; } = 200;
 

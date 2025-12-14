@@ -116,7 +116,7 @@ public class PostTypeController : ControllerBase
         //       .Cast<EMetaFieldType>()
         //       .ToDictionary(t => (int)t, t => t.ToString()); вылетает сервер
 
-        Dictionary<int, string> dict = new Dictionary<int, string>();
+        Dictionary<int, string> dict = [];
 
         foreach (var e in enums)
         {

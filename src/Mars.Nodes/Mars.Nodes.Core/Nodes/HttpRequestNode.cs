@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
+using Mars.Core.Extensions;
 
 namespace Mars.Nodes.Core.Nodes;
 
@@ -7,7 +8,7 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "network")]
 public class HttpRequestNode : Node
 {
-
+    public override string DisplayName => Name.AsNullIfEmpty() ?? Url.AsNullIfEmpty() ?? base.Label;
     public string Method { get; set; } = "GET";
     public string Url { get; set; } = "http://localhost";
 

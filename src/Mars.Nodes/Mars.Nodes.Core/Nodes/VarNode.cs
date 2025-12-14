@@ -18,7 +18,7 @@ public class VarNode : Node, IValidatableObject
     [JsonIgnore]
     public object? Value { get; set; } = 0;
 
-    public override string Label => $"{VarType}: {Name}";
+    public override string DisplayName => $"{VarType}: {Name}";
 
     [Required]
     [SlugString]
@@ -136,7 +136,7 @@ public class VarNode : Node, IValidatableObject
 
         if (value?.GetType() == type)
         {
-            this.Value = value;
+            Value = value;
         }
         else
         {

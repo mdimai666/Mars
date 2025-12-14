@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core;
@@ -13,6 +12,8 @@ public class Node : INodeBasic
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public virtual string Name { get; set; } = "";
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
     public string Type => GetType().FullName!;
 
     public virtual string Label
@@ -35,7 +36,7 @@ public class Node : INodeBasic
     public string Container { get; set; } = "";
 
     [JsonIgnore]
-    public string DisplayName => string.IsNullOrEmpty(Name) ? Label : Name;
+    public virtual string DisplayName => Label;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public virtual string Color { get; set; } = "#A8A8A8";

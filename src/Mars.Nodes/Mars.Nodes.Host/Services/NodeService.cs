@@ -158,6 +158,11 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         _fileStorage.Write(flowFilePath, json);
     }
 
+    /// <summary>
+    /// Не записываем дефолтные значения.
+    /// Фактически «дефолтность» определяется не значением свойства, а тем, что оно не было переопределено по сравнению с дефолтным экземпляром ноды.
+    /// Сделано так чтобы можно было в конструкторе присвоить значение.
+    /// </summary>
     internal IEnumerable<Node> ReplaceDefaultFieldsToEmptyString(IEnumerable<Node> nodes)
     {
         var defaultDict = NodeDefaultInstanceDict();
@@ -166,15 +171,35 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         {
             if (node is UnknownNode) return node;
             var copy = node.Copy(_jsonSerializerOptions);
-            if (defaultDict.TryGetValue(node.GetType(), out var de))
+            if (defaultDict.TryGetValue(node.GetType(), out var def))
             {
-                if (copy.Color == de.Color) copy.Color = "";
-                if (copy.Icon == de.Icon) copy.Icon = "";
+                if (copy.Color == def.Color) copy.Color = "";
+                if (copy.Icon == def.Icon) copy.Icon = "";
+                // Inputs
+                for (int i = 0; i < copy.Inputs.Count && i < def.Inputs.Count; i++)
+                {
+                    if (copy.Inputs[i].Label == def.Inputs[i].Label)
+                    {
+                        copy.Inputs[i].Label = "";
+                    }
+                }
+
+                // Outputs
+                for (int i = 0; i < copy.Outputs.Count && i < def.Outputs.Count; i++)
+                {
+                    if (copy.Outputs[i].Label == def.Outputs[i].Label)
+                    {
+                        copy.Outputs[i].Label = "";
+                    }
+                }
             }
             return copy;
         });
     }
 
+    /// <summary>
+    /// Ок, делаем обратную операцию симметрично: если поле пустое → восстанавливаем дефолт
+    /// </summary>
     internal IEnumerable<Node> ReplaceEmptyStringToDefaultFields(IEnumerable<Node> nodes)
     {
         var defaultDict = NodeDefaultInstanceDict();
@@ -182,10 +207,27 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return nodes.Select(node =>
         {
             if (node is UnknownNode) return node;
-            if (defaultDict.TryGetValue(node.GetType(), out var de))
+            if (defaultDict.TryGetValue(node.GetType(), out var def))
             {
-                if (string.IsNullOrEmpty(node.Color)) node.Color = de.Color;
-                if (string.IsNullOrEmpty(node.Icon)) node.Icon = de.Icon;
+                if (string.IsNullOrEmpty(node.Color)) node.Color = def.Color;
+                if (string.IsNullOrEmpty(node.Icon)) node.Icon = def.Icon;
+                // Inputs
+                for (int i = 0; i < node.Inputs.Count && i < def.Inputs.Count; i++)
+                {
+                    if (string.IsNullOrEmpty(node.Inputs[i].Label))
+                    {
+                        node.Inputs[i].Label = def.Inputs[i].Label;
+                    }
+                }
+
+                // Outputs
+                for (int i = 0; i < node.Outputs.Count && i < def.Outputs.Count; i++)
+                {
+                    if (string.IsNullOrEmpty(node.Outputs[i].Label))
+                    {
+                        node.Outputs[i].Label = def.Outputs[i].Label;
+                    }
+                }
             }
             return node;
         });

@@ -82,6 +82,7 @@ public class NodesLocator
             WriteIndented = writeIndented,
             PropertyNameCaseInsensitive = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            IgnoreReadOnlyProperties = true,
 
             Converters = { new Converters.NodeJsonConverter(nodesLocator) }
         };

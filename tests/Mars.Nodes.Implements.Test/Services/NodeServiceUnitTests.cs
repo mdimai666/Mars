@@ -88,17 +88,39 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
     [Fact]
     public void ReplaceDefaultFieldsToEmptyString_DefaultValuesMustEmpty_ShouldReturnEmptyFields()
     {
+        //Arrange
+        _ = nameof(NodeService.ReplaceDefaultFieldsToEmptyString);
         var nodes = new List<Node>
         {
             new InjectNode(){ },
             new InjectNode(){ Color = "red", Icon = "/new/icon/icon-48.png" },
         };
+
+        //Act
         var newNodes = _nodeService.ReplaceDefaultFieldsToEmptyString(nodes).ToArray();
 
+        //Assert
         newNodes[0].Color.Should().BeEmpty();
         newNodes[0].Icon.Should().BeEmpty();
 
         newNodes[1].Color.Should().Be("red");
         newNodes[1].Icon.Should().Be("/new/icon/icon-48.png");
+    }
+
+    [Fact]
+    public void ReplaceDefaultFieldsToEmptyString_DifferentOutputCount_ShouldNotThrowError()
+    {
+        //Arrange
+        _ = nameof(NodeService.ReplaceDefaultFieldsToEmptyString);
+        var nodes = new List<Node>
+        {
+            new FunctionNode(){ Outputs = [new(), new()], Inputs = [new(), new()] },
+        };
+
+        //Act
+        var action = () => _nodeService.ReplaceDefaultFieldsToEmptyString(nodes).ToArray();
+
+        //Assert
+        action.Should().NotThrow();
     }
 }

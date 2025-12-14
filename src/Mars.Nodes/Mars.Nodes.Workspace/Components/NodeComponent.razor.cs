@@ -1,3 +1,4 @@
+using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Workspace.EditorParts;
 using Microsoft.AspNetCore.Components;
@@ -33,6 +34,7 @@ public partial class NodeComponent
 
     [Parameter] public float? FixedWidth { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
+    [Parameter] public bool ShowLabelInsteadDisplayName { get; set; }
 
     string IconUrl
     {
@@ -46,6 +48,8 @@ public partial class NodeComponent
             return iconUrl;
         }
     }
+
+    string DisplayTitle => (ShowLabelInsteadDisplayName ? node.Label : node.DisplayName).TextEllipsis((int)bodyRectWidth / 9);
 
     void OnMouseDownMethod(MouseEventArgs e)
     {

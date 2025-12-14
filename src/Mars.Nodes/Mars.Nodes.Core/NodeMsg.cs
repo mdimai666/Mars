@@ -21,9 +21,19 @@ public class NodeMsg
         Context.Add(typeof(T).Name, obj!);
     }
 
+    public bool TryAdd<T>(T obj)
+    {
+        return Context.TryAdd(typeof(T).Name, obj!);
+    }
+
     public void Add(string name, object obj)
     {
         Context.Add(name, obj);
+    }
+
+    public bool TryAdd(string name, object obj)
+    {
+        return Context.TryAdd(name, obj);
     }
 
     public Dictionary<string, object> AsFullDict()

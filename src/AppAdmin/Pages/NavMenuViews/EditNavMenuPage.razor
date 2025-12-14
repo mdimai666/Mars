@@ -48,7 +48,7 @@
                                         AutoComplete="off"
                                         Label="@AppRes.Roles"
                                         Width="300px"
-                                        Items="@Q.Roles"
+                                        Items="@_availRoles.Select(s=>s.Name)"
                                         Placeholder="Select"
                                         IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
                                         KeepOpen
@@ -165,7 +165,7 @@
                                                                 AutoComplete="off"
                                                                 Label="@AppRes.Roles"
                                                                 Width="300px"
-                                                                Items="@Q.Roles"
+                                                                Items="@_availRoles.Select(s=>s.Name)"
                                                                 Placeholder="Select"
                                                                 IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
                                                                 KeepOpen

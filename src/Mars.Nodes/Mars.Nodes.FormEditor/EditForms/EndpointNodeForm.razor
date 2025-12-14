@@ -1,5 +1,7 @@
 @using AppFront.Shared
 @using AppFront.Shared.Components
+@using Mars.Shared.Contracts.Roles
+@using Mars.WebApiClient.Interfaces
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
@@ -36,7 +38,7 @@
                 <FluentAutocomplete TOption="string"
                                     AutoComplete="off"
                                     Width="300px"
-                                    Items="@Q.Roles"
+                                    Items="@_availRoles.Select(s=>s.Name)"
                                     Placeholder="Select"
                                     IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
                                     KeepOpen
@@ -74,9 +76,24 @@
     [CascadingParameter] Node Value { get; set; } = default!;
     EndpointNode Node { get => (EndpointNode)Value; set => Value = value; }
 
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
+
     CodeEditor2? editor1;
 
-    public IEnumerable<string> SetRoles { get => Node.AllowedRoles; set => Node.AllowedRoles = value.ToList(); }
+    IEnumerable<string> SetRoles { get => Node.AllowedRoles; set => Node.AllowedRoles = value.ToList(); }
+
+    IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Task.Run(async () =>
+            {
+                _availRoles = (await _client.Role.List(new())).Items;
+            });
+        }
+    }
 
     public override async Task OnEditSave()
     {

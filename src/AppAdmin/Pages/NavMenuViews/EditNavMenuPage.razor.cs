@@ -1,6 +1,7 @@
 using System.Reflection.Metadata;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
+using Mars.Shared.Contracts.Roles;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -18,10 +19,22 @@ public partial class EditNavMenuPage
     NavMenuItem? _selMenu => _selNode?.Node;
 
     DTreeNode<NavMenuItem>? _selNode;
+    IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
 
     protected override void OnInitialized()
     {
         initExport();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Task.Run(async () =>
+            {
+                _availRoles = (await client.Role.List(new())).Items;
+            });
+        }
     }
 
     void OnClickItem(DTreeNode<NavMenuItem> node)

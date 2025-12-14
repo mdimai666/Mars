@@ -99,7 +99,6 @@ public static class Q
         return domain + path.TrimStart('/');
     }
 
-    public static List<string> Roles = ["Admin", "Manager", "Developer"];
     public static BackendHostingInfo HostingInfo { get; private set; } = default!;
 
     public static void SetupHostingInfo(BackendHostingInfo hostingInfo) => HostingInfo = hostingInfo;

@@ -15,8 +15,7 @@ public partial class UsersPage
 {
     string urlEditPage = "/dev/EditUser";
 
-    [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
 
@@ -26,6 +25,8 @@ public partial class UsersPage
     ListDataResult<UserDetailResponse> data = ListDataResult<UserDetailResponse>.Empty();
 
     GridItemsProvider<UserDetailResponse> dataProvider = default!;
+
+    IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
 
     protected override void OnParametersSet()
     {
@@ -39,7 +40,7 @@ public partial class UsersPage
 
                 //_roleFilter
 
-                data = await client.User.ListDetail(new()
+                data = await _client.User.ListDetail(new()
                 {
                     Skip = req.StartIndex,
                     Take = req.Count ?? BasicListQuery.DefaultPageSize,
@@ -58,6 +59,17 @@ public partial class UsersPage
         );
 
         //_ = Load();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Task.Run(async () =>
+            {
+                _availRoles = (await _client.Role.List(new())).Items;
+            });
+        }
     }
 
     void HandleSearchInput()
@@ -83,7 +95,7 @@ public partial class UsersPage
             PreventScroll = true
         };
 
-        var detail = await client.NavMenu.Get(row.Item.Id);
+        var detail = await _client.NavMenu.Get(row.Item.Id);
 
         if (detail is not null)
         {
@@ -99,7 +111,7 @@ public partial class UsersPage
 
     public async Task Delete(Guid id)
     {
-        await client.User.Delete(id).SmartDelete();
+        await _client.User.Delete(id).SmartDelete();
         _ = table.RefreshDataAsync();
     }
 
@@ -110,8 +122,8 @@ public partial class UsersPage
 
     public async Task OnClickCreateUser()
     {
-        rolesForCreate ??= (await client.Role.List(new() { Take = 20 })).Items;
-        userTypesForCreate ??= (await client.UserType.List(new() { Take = 20 })).Items;
+        rolesForCreate ??= (await _client.Role.List(new() { Take = 20 })).Items;
+        userTypesForCreate ??= (await _client.UserType.List(new() { Take = 20 })).Items;
 
         createFormData = new()
         {
@@ -143,6 +155,6 @@ public partial class UsersPage
 
     private void SendInvation(Guid userId)
     {
-        _ = client.User.SendInvation(userId).SmartActionResult();
+        _ = _client.User.SendInvation(userId).SmartActionResult();
     }
 }

@@ -72,7 +72,7 @@
                             <FluentAutocomplete TOption="string"
                                                 AutoComplete="off"
                                                 Label="@AppRes.Roles"
-                                                Items="@Q.Roles"
+                                                Items="@_availRoles.Select(s=>s.Name)"
                                                 Placeholder="Select"
                                                 IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
                                                 KeepOpen

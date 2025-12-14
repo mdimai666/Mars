@@ -4,7 +4,6 @@
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(ExcelNode))]
 
-
 <div class="form-group d-flex flex-column flex-fill">
     <label>TemplateFile</label>
 
@@ -13,7 +12,6 @@
     </FluentTextField>
 
 </div>
-
 
 @code {
     [Inject] public IAppMediaService service { get; set; } = default!;

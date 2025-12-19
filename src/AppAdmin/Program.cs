@@ -10,6 +10,7 @@ using Mars.Nodes.Workspace;
 using Mars.Options.Front;
 using Mars.Plugin.Front;
 using Mars.SemanticKernel.Front;
+using Mars.WebApp.Nodes.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -48,6 +49,7 @@ ContentWrapper.GeneralSectionActions = typeof(AppAdmin.Shared.GeneralSectionActi
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();
 builder.Services.AddNodeWorkspace()
+                .AddMarsWebAppNodesFront()
                 .AddDatasourceWorkspace()
                 .AddSemanticKernelFront();
 
@@ -63,6 +65,7 @@ var app = builder.Build();
 logger.LogTrace("Initializing services...");
 app.Services.UseAppFrontMain()
             .UseNodeWorkspace()
+            .UseMarsWebAppNodesFront()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront();
 

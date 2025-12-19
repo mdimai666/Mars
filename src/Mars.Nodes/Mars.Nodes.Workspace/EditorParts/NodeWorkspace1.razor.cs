@@ -1,7 +1,6 @@
 using System.Drawing;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
@@ -9,7 +8,6 @@ using Mars.Nodes.Workspace.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
-using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Mars.Nodes.Workspace.EditorParts;

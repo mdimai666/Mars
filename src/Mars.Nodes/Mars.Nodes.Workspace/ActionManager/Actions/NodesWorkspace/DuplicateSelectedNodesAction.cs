@@ -1,9 +1,8 @@
-using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 
 namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 
-[EditorActionCommand("DuplicateSelectedNodes", "Ctrl+KeyD")]
+[EditorActionCommand("DuplicateSelectedNodes", "Ctrl+Shift+KeyD")]
 public class DuplicateSelectedNodesAction : BaseEditorHistoryAction
 {
     private readonly string _selectNodesJson;

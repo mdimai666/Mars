@@ -1,0 +1,181 @@
+@using AppFront.Shared.Components
+@using AppFront.Shared.Services
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Mars.Core.Utils
+@using Mars.Nodes.Core.Models.EntityQuery
+@using Mars.Nodes.Front.Shared.Services
+@using Mars.Shared.Contracts.Files
+@using Mars.Shared.Resources
+@using Mars.WebApiClient.Interfaces
+@using Mars.WebApp.Nodes.Front.Forms.Components
+@using Mars.WebApp.Nodes.Front.Models.NodeEntityQuery
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(AppEntityReadNode))]
+
+<div class="form-group d-flex flex-column flex-fill gap-2">
+
+    <FormItem2 For="() => Node.ExpressionInput">
+        <FluentSelect Items="Enum.GetValues<NodeExpressionInput>()" @bind-SelectedOption=@Node.ExpressionInput Class="" />
+    </FormItem2>
+
+    @if (_busy)
+    {
+        <FluentProgressRing />
+    }
+    else if (BuilderModel is null)
+    {
+        <div>Error: BuilderModel is null</div>
+    }
+    else
+    {
+
+        @if (Node.ExpressionInput == NodeExpressionInput.String)
+        {
+            <FormItem2 For="() => Node.Expression" Class="">
+                <FluentTextField @bind-Value="@Node.Expression" />
+            </FormItem2>
+        }
+        else if (Node.ExpressionInput == NodeExpressionInput.Builder)
+        {
+            <div class="d-flex flex-column gap-2">
+
+                <FormItem2 For="() => BuilderModel.EntityName">
+                    <EntitySelectDropDown Items="BuilderModel.ProvidersDict.Providers.Values" @bind-Value="@BuilderModel.EntityName" />
+                </FormItem2>
+
+                <FluentSortableList Class="AppEntityReadNode__SortableList" Handle="true" Items="BuilderModel.CallChains" OnUpdate="@SortList" Context="item">
+                    <ItemTemplate>
+                        <div class="sortable-grab">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                        </div>
+                        <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                            <div class="d-grid align-items-center" style="grid-template-columns: 100px 33px auto 33px 33px;">
+                                <div class="@(item.Disabled ? $"AppEntityReadNode__SortableList__item--disabled" : "")">
+                                    @item.Method.Name
+                                </div>
+                                <div>
+                                    <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.Method.Helper.Description" />
+                                </div>
+                                <div>
+                                    @for (int i = 0; i < item.Parameters.Count; i++)
+                                    {
+                                        var p = i;
+                                        <FluentTextField Placeholder="@item.Method.Parameters.ElementAtOrDefault(p)?.Name"
+                                                         @bind-Value="item.Parameters[p]" />
+                                    }
+                                </div>
+                                <FluentCheckbox @bind-Value="@item.Disabled" title="Отключить" />
+                                <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                            </div>
+                        </div>
+                    </ItemTemplate>
+                </FluentSortableList>
+                <div class="mt-1 hstack gap-1">
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size16.Add())"
+                                      Text="@AppRes.Add"
+                                      Items="AddButtonMenuItems"
+                                      UseMenuService="false"
+                                      OnMenuChanged="HandleOnAddItemMenuChanged" />
+                </div>
+                <div class="my-2">
+                    <b class="text-secondary">expression:</b>
+                    <br />
+                    <code>@BuilderModel.ToRequest().BuildString()</code>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div>Not implement</div>
+        }
+    }
+</div>
+
+@code {
+    [Inject] INodeEditorToolServiceClient _client { get; set; } = default!;
+
+    [CascadingParameter] Node? Value { get; set; }
+    AppEntityReadNode Node { get => (AppEntityReadNode)Value!; set => Value = value; }
+
+    bool _busy;
+    NodeEntityQueryBuilderDictionary? _builderDictionary;
+    NodeEntityQueryRequestModelEditModel? BuilderModel;
+
+    Dictionary<string, string> AddButtonMenuItems = [];
+
+    protected override void OnParametersSet()
+    {
+        if (BuilderModel is null)
+            _ = Load();
+    }
+
+    async Task Load()
+    {
+        if (BuilderModel is not null) return;
+
+        _busy = true;
+        StateHasChanged();
+
+        _builderDictionary ??= await _client.NodeEntityQueryBuilderDictionary();
+
+        BuilderModel = new(_builderDictionary, Node.Query);
+        if (!BuilderModel.CallChains.Any())
+            AddItem(_builderDictionary.Providers[BuilderModel.EntityName].Methods.First());
+
+        EntityNameUpdated();
+
+        _busy = false;
+        StateHasChanged();
+    }
+
+    void EntityNameUpdated()
+    {
+        AddButtonMenuItems = _builderDictionary.Providers[BuilderModel.EntityName].Methods.ToDictionary(s => s.Name, s => s.ToMethodIntelliView());
+    }
+
+    public override Task OnEditSave()
+    {
+        Node.Query = BuilderModel.ToRequest();
+        return Task.CompletedTask;
+    }
+
+    void AddItem(LinqMethodSignarute signarute)
+    {
+        BuilderModel.CallChains = [.. BuilderModel.CallChains, new() { Method = signarute, Parameters = signarute.Parameters.Select(_ => "").ToList(), Disabled = false }];
+    }
+
+    void AddItemAfterIndex(int index, LinqMethodSignarute signarute)
+    {
+        var list = BuilderModel.CallChains.ToList();
+        list.Insert(index, new NEQRM_MethodCallEditModel
+        {
+            Method = signarute,
+            Parameters = signarute.Parameters.Select(_ => "").ToList(),
+            Disabled = false,
+        });
+        BuilderModel.CallChains = list.ToArray();
+    }
+
+    void SortList(FluentSortableListEventArgs args) => BuilderModel.CallChains = BuilderModel.CallChains.MoveItem(args.OldIndex, args.NewIndex);
+
+    void DeleteItem(NEQRM_MethodCallEditModel item)
+    {
+        BuilderModel.CallChains = BuilderModel.CallChains.Where(s => s != item).ToArray();
+    }
+
+    void HandleOnAddItemMenuChanged(MenuChangeEventArgs e)
+    {
+        var key = e.Id;
+        var method = _builderDictionary.Providers[BuilderModel.EntityName].Methods.First(s => s.Name == key);
+        AddItem(method);
+    }
+}
+
+<style>
+
+    .AppEntityReadNode__SortableList__item--disabled {
+        color: var(--bs-secondary);
+    }
+</style>

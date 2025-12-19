@@ -4,6 +4,7 @@ using Flurl.Http.Configuration;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Dto;
+using Mars.Nodes.Front.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
 

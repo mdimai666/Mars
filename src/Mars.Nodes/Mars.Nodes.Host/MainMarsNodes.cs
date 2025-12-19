@@ -13,7 +13,6 @@ using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Scheduler;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Templator;
-using Mars.Nodes.WebApp.Implements;
 using Mars.Nodes.Workspace;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +33,7 @@ public static class MainMarsNodes
         services.AddSingleton<MqttManager>();
         services.AddScoped<FunctionCodeSuggestService>();
         services.AddSingleton<CommandNodesActionProvider>();
+        services.AddSingleton<NodeEditorToolServce>();
         //services.AddHostedService<FlowExecutionBackgroundService>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -57,10 +57,9 @@ public static class MainMarsNodes
 
         var nodeImplementFabirc = app.Services.GetRequiredService<NodeImplementFabirc>();
         nodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
-        nodeImplementFabirc.RegisterAssembly(typeof(ExcelNodeImplement).Assembly);
 
-        var locator = app.Services.GetRequiredService<ITemplatorFeaturesLocator>();
-        locator.Functions.Add(nameof(RegisterNodeTemplatorFunction.Node), RegisterNodeTemplatorFunction.Node!);
+        var templatorFeaturesLocator = app.Services.GetRequiredService<ITemplatorFeaturesLocator>();
+        templatorFeaturesLocator.Functions.Add(nameof(RegisterNodeTemplatorFunction.Node), RegisterNodeTemplatorFunction.Node!);
 
         var actionManager = app.Services.GetRequiredService<IActionManager>();
         var commandNodesActionProvider = app.Services.GetRequiredService<CommandNodesActionProvider>();

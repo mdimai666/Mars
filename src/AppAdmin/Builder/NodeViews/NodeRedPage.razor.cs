@@ -1,8 +1,8 @@
 using AppFront.Shared.Hub;
 using Mars.Core.Models;
 using Mars.Nodes.Core;
+using Mars.Nodes.Front.Shared.Services;
 using Mars.Nodes.Workspace;
-using Mars.Nodes.Workspace.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace AppAdmin.Builder.NodeViews;

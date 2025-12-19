@@ -1,5 +1,4 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.EditorApi.Interfaces;
 using Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 
 namespace Mars.Nodes.Workspace.ActionManager;

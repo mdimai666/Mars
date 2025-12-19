@@ -117,6 +117,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host.OAuth\Mars.SSO.Host.OAuth.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO\Mars.SSO.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Host\Mars.WebApp.Nodes.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Blazor\Mars.WebSiteProcessor.Blazor.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />

@@ -19,11 +19,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
+	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.WebApp.Nodes.Host\Mars.WebApp.Nodes.Host.csproj" />
+	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.WebApp.Nodes\Mars.WebApp.Nodes.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
 	  <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
-	  <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.WebApp\Mars.Nodes.WebApp.csproj" />
 	</ItemGroup>
 
     <ItemGroup>

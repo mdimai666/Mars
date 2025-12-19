@@ -46,7 +46,6 @@
         <None Include="compilerconfig.json" />
     </ItemGroup>
 
-
     <ItemGroup>
         <SupportedPlatform Include="browser" />
     </ItemGroup>
@@ -79,7 +78,7 @@
         <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Front.Shared\Mars.Nodes.Front.Shared.csproj" />
     </ItemGroup>
 
 </Project>

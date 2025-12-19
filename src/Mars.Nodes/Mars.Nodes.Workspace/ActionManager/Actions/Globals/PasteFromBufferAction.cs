@@ -1,5 +1,3 @@
-using Mars.Nodes.EditorApi.Interfaces;
-
 namespace Mars.Nodes.Workspace.ActionManager.Actions.Globals;
 
 [EditorActionCommand("PasteFromBuffer", "Ctrl+KeyV")]

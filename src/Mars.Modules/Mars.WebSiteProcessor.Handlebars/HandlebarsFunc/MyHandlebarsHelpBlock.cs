@@ -173,7 +173,7 @@ public class MyHandlebarsHelpBlock
             output.WriteSafeString("<tr>");
             output.WriteSafeString($"<td>{item.Key}</td>");
             output.WriteSafeString($"<td class=\"text-secondary\" >{item.Type}</td>");
-            output.WriteSafeString($"<td><code>{HtmlEncode(item.Attribute?.Example)}</ code ></ td >");
+            output.WriteSafeString($"<td><code>{HtmlEncode(item.Attribute?.Example)}</code></td >");
             if (item.Attribute is not null)
             {
                 output.WriteSafeString($"<td>{HtmlEncode(item.Attribute?.Description)}</td>");

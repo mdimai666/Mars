@@ -107,8 +107,8 @@
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Front\Mars.Docker.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Front\Mars.SemanticKernel.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
-        <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.WebApp.Front\Mars.Nodes.WebApp.Front.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />

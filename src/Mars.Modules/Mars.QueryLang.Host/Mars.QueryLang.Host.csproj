@@ -5,10 +5,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
-      <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-      <ProjectReference Include="..\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
-      <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
+        <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
+        <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.Nodes.Implements.Test</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>

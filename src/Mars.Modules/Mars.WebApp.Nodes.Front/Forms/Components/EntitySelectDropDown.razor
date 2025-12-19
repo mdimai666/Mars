@@ -1,0 +1,88 @@
+@using Mars.Nodes.Core.Models.EntityQuery
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+<FluentButton @onclick="OpenMenu"
+            Appearance="Appearance.Neutral"
+            IconEnd="@(new Icons.Regular.Size16.ChevronDown())"
+            Style="min-width: 100px;"
+            Id="@_buttonId">
+    @(Value ?? "-Выберите элемент-")
+</FluentButton>
+
+@* без UseMenuService="false" не срабатывают клики на вложенных меню *@
+<FluentMenu Anchor="@_buttonId"
+            @bind-Open="isMenuOpen"
+            UseMenuService="false"
+            Anchored="true">
+    @foreach (var group in _groupedItems)
+    {
+        @if (group.Count()>1)
+        {
+            <FluentMenuItem Label="@group.Key"> 
+                <MenuItems>
+                    @foreach (var item in group)
+                    {
+                        <FluentMenuItem Label="@item.Title" 
+                                        OnClick="() => SelectItem(item)">
+                        </FluentMenuItem>
+                    }
+                </MenuItems>
+            </FluentMenuItem>
+        }
+        else
+        {
+            @foreach (var item in group)
+            {
+                <FluentMenuItem Label="@item.Title"
+                                OnClick="() => SelectItem(item)">
+                </FluentMenuItem>
+            }
+        }
+    }
+</FluentMenu>
+
+@code {
+    string _buttonId = "menuButton-" + Guid.NewGuid().ToString();
+
+    [Parameter, EditorRequired] public IEnumerable<NodeEntityModelProviderInfo> Items { get; set; } = default!;
+
+    public string _value = "";
+    [Parameter, EditorRequired]
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private bool isMenuOpen = false;
+    private IEnumerable<IGrouping<string?, NodeEntityModelProviderInfo>> _groupedItems =
+        Enumerable.Empty<IGrouping<string?, NodeEntityModelProviderInfo>>();
+
+    protected override void OnParametersSet()
+    {
+        _groupedItems = Items
+            .GroupBy(x => string.IsNullOrEmpty(x.Group) ? null : x.Group)
+            .OrderBy(g => g.Key == "internal" ? 1 : 0)
+            .ThenBy(g => g.Key);
+    }
+
+    private void OpenMenu()
+    {
+        isMenuOpen = true;
+    }
+
+    private void SelectItem(NodeEntityModelProviderInfo item)
+    {
+        Value = item.EntityName;
+        isMenuOpen = false;
+    }
+}

@@ -24,6 +24,7 @@ using Mars.SSO;
 using Mars.SSO.Host.OAuth;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
+using Mars.WebApp.Nodes.Host;
 using Mars.WebSiteProcessor;
 using Mars.XActions;
 using Microsoft.AspNetCore.Http.Connections;
@@ -98,6 +99,7 @@ builder.Services.MarsAddSwagger()
                 .MarsAddTemplator()
                 .AddDevAdmin()
                 .AddMarsNodes()
+                .AddMarsWebAppNodes()
                 .AddDatasourceHost()
                 .AddMarsExcel()
                 .AddMarsScheduler();
@@ -223,7 +225,8 @@ optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
 app.UsePlugins();
 app.UseDevAdmin();
-app.UseMarsNodes(); //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
+app.UseMarsNodes() //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
+   .UseMarsWebAppNodes();
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
 app.UseMarsExcel();

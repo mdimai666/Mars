@@ -1,15 +1,19 @@
 <div class="CodeEditor2 d-flex flex-column flex-fill" style=@ContainerCssStyle>
 
     <CascadingValue Value="this">
-        @HeaderArea
+        <div class="d-flex flex-rows align-items-center" style="height:38px;">
+            @HeaderArea
 
-        @if (!HideToolbarComponents)
-        {
-            @foreach (var toolbar in ToolbarComponents)
+            @if (!HideToolbarComponents)
             {
-                <DynamicComponent Type="toolbar" />
+                <div class="ms-auto hstack">
+                    @foreach (var toolbar in ToolbarComponents)
+                    {
+                        <DynamicComponent Type="toolbar" />
+                    }
+                </div>
             }
-        }
+        </div>
     </CascadingValue>
 
     <BlazorMonaco.Editor.StandaloneCodeEditor @ref="editor1"

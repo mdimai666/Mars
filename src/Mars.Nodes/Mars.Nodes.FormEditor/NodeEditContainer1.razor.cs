@@ -1,6 +1,8 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Mars.Nodes.Core;
-using Mars.Nodes.EditorApi.Interfaces;
+using Mars.Nodes.Front.Shared.Editor.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
@@ -12,6 +14,7 @@ public partial class NodeEditContainer1
 {
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILogger<NodeEditContainer1> _logger { get; set; } = default!;
+    [Inject] NodesLocator _nodesLocator { get; set; } = default!;
 
     [CascadingParameter] public INodeEditorApi _nodeEditorApi { get; set; } = default!;
 
@@ -30,11 +33,27 @@ public partial class NodeEditContainer1
 
     CodeEditor2 codeEditor = default!;
     bool isEditJsonMode;
+    static JsonSerializerOptions? _nodeJsonSerializerOptionsWithIdent;
 
     NodeFormEditor1 nodeFormEditor1 = default!;
     bool saveLoading;
 
     private readonly Stack<Node> _windowStack = new();
+
+    protected override void OnInitialized()
+    {
+        _nodeJsonSerializerOptionsWithIdent = new JsonSerializerOptions
+        {
+            IncludeFields = false,
+            MaxDepth = 0,
+            WriteIndented = true,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            IgnoreReadOnlyFields = true,
+            IgnoreReadOnlyProperties = true,
+            Converters = { new Mars.Nodes.Core.Converters.NodeJsonConverter(_nodesLocator) }
+        };
+    }
 
     void OpenOffcanvasEditor(bool show)
     {
@@ -137,7 +156,7 @@ public partial class NodeEditContainer1
             StateHasChanged();
             await Task.Delay(10);
 
-            var json = JsonSerializer.Serialize(_node, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
+            var json = JsonSerializer.Serialize(_node, _nodeJsonSerializerOptionsWithIdent);
             await codeEditor.SetValue(json);
         }
         else
@@ -158,7 +177,7 @@ public partial class NodeEditContainer1
     async Task CodeEditorJsonToModel()
     {
         var json = await codeEditor.GetValue();
-        var obj = JsonSerializer.Deserialize(json, _node.GetType(), CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly) ?? throw new ArgumentNullException();
+        var obj = JsonSerializer.Deserialize(json, _node.GetType(), _nodeJsonSerializerOptionsWithIdent) ?? throw new ArgumentNullException();
         _node = (Node)obj;
     }
 
@@ -169,7 +188,7 @@ public partial class NodeEditContainer1
 
     string GetModelAsJson()
     {
-        var json = JsonSerializer.Serialize(_node, CodeEditor2.SimpleJsonSerializerOptionsIgnoreReadonly);
+        var json = JsonSerializer.Serialize(_node, _nodeJsonSerializerOptionsWithIdent);
         return json;
     }
 

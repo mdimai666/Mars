@@ -1,5 +1,4 @@
-using Mars.Nodes.EditorApi.Interfaces;
-using Mars.Nodes.Workspace.Services;
+using Mars.Nodes.Front.Shared.Services;
 
 namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 

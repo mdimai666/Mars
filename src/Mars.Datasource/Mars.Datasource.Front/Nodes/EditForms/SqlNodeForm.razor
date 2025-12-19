@@ -3,8 +3,11 @@
 @using Mars.Datasource.Front.Services
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Attributes
+@using Mars.Shared.Interfaces
 @using Mars.WebApiClient.Interfaces
 @using BlazorMonaco.Editor
+@using MarsCodeEditor2
+@using Microsoft.FluentUI.AspNetCore.Components
 @using Microsoft.JSInterop
 @using Mars.Nodes.FormEditor
 
@@ -12,9 +15,6 @@
 @attribute [NodeEditFormForNode(typeof(SqlNode))]
 
 <div class="form-group d-flex flex-column flex-fill">
-    <label>SqlNode</label>
-    @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Template />*@
-
     <div class="row mt-3">
         <div class="col">
             <label>datasource</label>
@@ -52,10 +52,18 @@
     @if (Node.Source == SqlNode.ESqlNodeInputSource.Static)
     {
         <div class="d-flex mt-3" style="height:50vh">
-            <BlazorMonaco.Editor.StandaloneCodeEditor @ref="editor1"
-                                                      CssClass="flex-fill"
-                                                      OnDidInit="EditorOnDidInit"
-                                                      ConstructionOptions="EditorConstructionOptions" />
+            <CodeEditor2 @ref=_editor
+                         Lang=@CodeEditor2.Language.sql
+                         Value=@Node.SqlQuery>
+                <HeaderArea>
+                    <div class="d-flex flew-wrap gap-3">
+                        <FluentButton OnClick="@(e => _aiTool.Open(scenarioName: "MarsSQLQueryPromptHelper"))">
+                            <i class="bi bi-stars"></i>
+                            AI help
+                        </FluentButton>
+                    </div>
+                </HeaderArea>
+            </CodeEditor2>
 
         </div>
     }
@@ -76,22 +84,16 @@
     [CascadingParameter] Node? Value { get; set; }
     SqlNode Node { get => (SqlNode)Value!; set => Value = value; }
 
-    [Inject]
-    IDatasourceServiceClient service { get; set; } = default!;
+    [Inject] IDatasourceServiceClient service { get; set; } = default!;
+    [Inject] IAIToolAppService _aiTool { get; set; } = default!;
 
-    BlazorMonaco.Editor.StandaloneCodeEditor? editor1 = default!;
-
-    [Inject]
-    IJSRuntime jsRuntime { get; set; } = default!;
-
-    NodeFormEditorJsInterop js = default!;
+    CodeEditor2? _editor = default!;
 
     IReadOnlyCollection<SelectDatasourceDto> listDatasources = new List<SelectDatasourceDto>();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        js = new NodeFormEditorJsInterop(jsRuntime);
 
         _ = Task.Run(async () =>
         {
@@ -102,10 +104,10 @@
 
     public override async Task OnEditSave()
     {
-        //Console.WriteLine("X>1111");
-        Node.SqlQuery = await editor1!.GetValue();
-        //Console.WriteLine("X>2222");
-        //await Task.Delay(100);
+        if (Node.Source == SqlNode.ESqlNodeInputSource.Static)
+        {
+            Node.SqlQuery = await _editor!.GetValue();
+        }
     }
 
     void OnEditorSave(string val)
@@ -113,19 +115,4 @@
         //_ = form.OnFinish();
     }
 
-    private async Task EditorOnDidInit()
-    {
-        await Mars.Nodes.FormEditor.EditForms.FunctionNodeForm.EditorOnDidInit(editor1!, js, NodeEditContainer);
-    }
-
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
-    {
-
-        return new StandaloneEditorConstructionOptions
-        {
-            AutomaticLayout = true,
-            Language = "sql",
-            Value = Node.SqlQuery,
-        };
-    }
 }

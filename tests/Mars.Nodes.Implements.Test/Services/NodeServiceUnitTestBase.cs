@@ -8,7 +8,6 @@ using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Dto;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
@@ -17,6 +16,8 @@ using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using Mars.Test.Common.Constants;
+using Mars.WebApp.Nodes.Host.Nodes;
+using Mars.WebApp.Nodes.Nodes;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -60,13 +61,12 @@ public class NodeServiceUnitTestBase
             _nodesLocator = new NodesLocator();
             _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
             _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
-            _jsonSerializerOptions = new JsonSerializerOptions()
-            {
-                Converters = { new NodeJsonConverter(_nodesLocator) }
-            };
+            _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
+            _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
             var nodeImplementFabirc = new NodeImplementFabirc();
             nodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
             nodeImplementFabirc.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
+            nodeImplementFabirc.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
 
             // dependies
             _hub = Substitute.For<IHubContext<ChatHub>>();

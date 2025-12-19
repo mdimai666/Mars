@@ -1,5 +1,5 @@
 using Mars.Nodes.Core.Nodes;
-using Mars.Nodes.EditorApi.Interfaces;
+using Mars.Nodes.Front.Shared.Editor.Interfaces;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Nodes.FormEditor.EditForms.Components;

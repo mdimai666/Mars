@@ -3,8 +3,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.FormEditor.EditForms;
-using Mars.Nodes.WebApp.Front.Forms;
-using Mars.Nodes.WebApp.Nodes;
+using Mars.Nodes.Front.Shared.Services;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Services;
@@ -26,6 +25,7 @@ public static class MainNodeWorkspace
         services.AddSingleton<EditorActionLocator>();
 
         services.AddScoped<INodeServiceClient, NodeServiceClient>();
+        services.AddScoped<INodeEditorToolServiceClient, NodeEditorToolServiceClient>();
 
         return services;
     }
@@ -35,11 +35,9 @@ public static class MainNodeWorkspace
         var nodesLocator = services.GetRequiredService<NodesLocator>();
 
         nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-        nodesLocator.RegisterAssembly(typeof(ExcelNode).Assembly);
 
         var nodeFormsLocator = services.GetRequiredService<NodeFormsLocator>();
         nodeFormsLocator.RegisterAssembly(typeof(InjectNodeForm).Assembly);
-        nodeFormsLocator.RegisterAssembly(typeof(ExcelNodeForm).Assembly);
 
         var editorActionLocator = services.GetRequiredService<EditorActionLocator>();
         editorActionLocator.RegisterAssembly(typeof(DeleteSelectedNodesAndWiresAction).Assembly);

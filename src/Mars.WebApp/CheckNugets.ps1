@@ -19,7 +19,7 @@ $dirs = @(
     # nodes
     "Mars.Nodes/Mars.Nodes.Core",
     "Mars.Nodes/Mars.Nodes.Core.Implements",
-    "Mars.Nodes/Mars.Nodes.EditorApi",
+    "Mars.Nodes/Mars.Nodes.Front.Shared",
     "Mars.Nodes/Mars.Nodes.FormEditor",
     # modules
     "Modules/MarsEditors",

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="dotless.Core" Version="1.6.7" />
+        <!--<PackageReference Include="System.Drawing.Common" Version="9.0.7" />-->
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+        <ProjectReference Include="..\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
+    </ItemGroup>
+
+</Project>

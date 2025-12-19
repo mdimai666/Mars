@@ -36,8 +36,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
-        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.EditorApi\Mars.Nodes.EditorApi.csproj" />
         <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Front.Shared\Mars.Nodes.Front.Shared.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
     </ItemGroup>
 

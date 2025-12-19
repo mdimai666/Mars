@@ -4,7 +4,7 @@ using Mars.Host.Shared.WebSite;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
-using Mars.Nodes.WebApp.Nodes;
+using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.Nodes;
 
@@ -14,10 +14,10 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public RenderPageNodeImpl(RenderPageNode node, IRED RED)
+    public RenderPageNodeImpl(RenderPageNode node, IRED _RED)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = _RED;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

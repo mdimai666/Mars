@@ -41,4 +41,15 @@ public static class FeatureExtensions
 
         return app;
     }
+
+    public static WebApplication UseIfFeatureEnabled(
+        this WebApplication app,
+        string featureName,
+        Action<WebApplication> configure)
+    {
+        if (app.IsFeatureEnabled(featureName))
+            configure(app);
+
+        return app;
+    }
 }

@@ -30,6 +30,7 @@ using Mars.XActions;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FeatureManagement;
+using MonacoRoslynCompletionProvider;
 using static Mars.UseStartup.MarsStartupInfo;
 
 Console.OutputEncoding = Encoding.UTF8;
@@ -107,6 +108,7 @@ builder.Services.MarsAddSwagger()
 builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker());
 builder.AddIfFeatureEnabled(FeatureFlags.AITool, b => b.Services.AddMarsSemanticKernel());
 builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuthHost());
+builder.AddIfFeatureEnabled(FeatureFlags.MonacoRoslynCompletionProvider, b => b.AddRoslynCompletionProvider());
 
 //------------------------------------------
 // CLIENT
@@ -233,6 +235,7 @@ app.UseMarsExcel();
 app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
 app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
 app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());
+app.UseIfFeatureEnabled(FeatureFlags.MonacoRoslynCompletionProvider, app => app.UseRoslynCompletionProvider());
 
 await commandsApi.InvokeCommands(IsTesting ? [] : args);
 if (!commandsApi.IsContinueRun) return 0;

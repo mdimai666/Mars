@@ -35,7 +35,6 @@ public partial class CodeEditor2 : IDisposable
     [Parameter] public string ContainerCssStyle { get; set; } = "height:80vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;";
     [Parameter] public bool HideToolbarComponents { get; set; } = false;
 
-
     [Parameter] public EventCallback<string> OnSave { get; set; }
     [Parameter] public EventCallback OnInit { get; set; }
 
@@ -107,6 +106,10 @@ public partial class CodeEditor2 : IDisposable
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
+#if DEBUG
+        _ = JSRuntime.InvokeVoidAsync("registerCsharpProvider"); 
+#endif
+
         return new StandaloneEditorConstructionOptions
         {
             AutomaticLayout = true,

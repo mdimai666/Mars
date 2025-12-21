@@ -238,6 +238,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Nodes.Host.Shared", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mars.Nodes.Front.Shared", "src\Mars.Nodes\Mars.Nodes.Front.Shared\Mars.Nodes.Front.Shared.csproj", "{CEFA88B9-7448-4E5D-8E53-A84F97D03CDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonacoRoslynCompletionProvider", "src\Modules\MonacoRoslynCompletionProvider\MonacoRoslynCompletionProvider.csproj", "{37EEC1AA-4DA5-970F-B555-1EB78638DD6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -612,6 +614,10 @@ Global
 		{CEFA88B9-7448-4E5D-8E53-A84F97D03CDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEFA88B9-7448-4E5D-8E53-A84F97D03CDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEFA88B9-7448-4E5D-8E53-A84F97D03CDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37EEC1AA-4DA5-970F-B555-1EB78638DD6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37EEC1AA-4DA5-970F-B555-1EB78638DD6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37EEC1AA-4DA5-970F-B555-1EB78638DD6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37EEC1AA-4DA5-970F-B555-1EB78638DD6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -714,6 +720,7 @@ Global
 		{D732C749-BB78-43BC-B6E6-64F066511CFE} = {DCBCAA46-E421-423B-B560-75DFA91B3BF4}
 		{5B0DA129-94A9-4AD5-B1F4-2906C2C9305C} = {7044F725-E691-4C66-814C-C4ED23871946}
 		{CEFA88B9-7448-4E5D-8E53-A84F97D03CDB} = {7044F725-E691-4C66-814C-C4ED23871946}
+		{37EEC1AA-4DA5-970F-B555-1EB78638DD6B} = {3959D17C-A3F8-46CC-8A23-DBF80A2F6260}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD8D4F7A-BC38-43EA-9F4B-6BDB92828DCC}

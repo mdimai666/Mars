@@ -24,6 +24,8 @@ public static class MonacoRoslynCompletionProviderHostExtensions
         var scripts = app.Services.GetRequiredKeyedService<IWebSitePluggablePluginScripts>(AppAdminConstants.SiteScriptsBuilderKey);
         scripts.AddScript($"csharpLanguageProvider.js", new ScriptFileInfo(new Uri("_content/MonacoRoslynCompletionProvider/monaco_csharp/csharpLanguageProvider.js", UriKind.Relative), placeInHead: true));
 
+        scripts.AddScript($"registerCsharpProvider", new InlineBlockJavaScript("registerCsharpProvider()", placeInHead: false, order: 11));
+
         app.MapPost("/api/Monaco/completion/complete", async (TabCompletionRequest request) =>
         {
             var result = await CompletitionRequestHandler.Handle(request);
@@ -48,6 +50,6 @@ public static class MonacoRoslynCompletionProviderHostExtensions
             return Results.Json(result);
         }).ShortCircuit();
 
-        return app; 
+        return app;
     }
 }

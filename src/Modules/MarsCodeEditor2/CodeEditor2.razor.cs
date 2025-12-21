@@ -106,10 +106,6 @@ public partial class CodeEditor2 : IDisposable
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
-#if DEBUG
-        _ = JSRuntime.InvokeVoidAsync("registerCsharpProvider"); 
-#endif
-
         return new StandaloneEditorConstructionOptions
         {
             AutomaticLayout = true,

@@ -1,6 +1,7 @@
+using Mars.Nodes.Front.Shared.Editor.Models;
 using Toolbelt.Blazor.HotKeys2;
 
-namespace Mars.Nodes.Workspace.ActionManager;
+namespace Mars.Nodes.Front.Shared.Editor.Attributes;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class EditorActionCommandAttribute : Attribute
@@ -21,7 +22,7 @@ public sealed class EditorActionCommandAttribute : Attribute
     public EditorActionCommandAttribute(string name, string hotKey)
     {
         Name = name;
-        Hotkey = ActionManager.Hotkey.Parse(hotKey);
+        Hotkey = Models.Hotkey.Parse(hotKey);
     }
 
     public EditorActionCommandAttribute(string name)

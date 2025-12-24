@@ -30,6 +30,7 @@ public interface INodeEditorApi
     IReadOnlyDictionary<string, Node> GetFlowNodes(string flowId);
     void StartEditNode(Node node);
     void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
+    void EnableHotkeys(bool enable);
 }
 
 public class AppendNewConfigNodeEvent

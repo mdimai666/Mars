@@ -81,6 +81,7 @@
           "Mars.Nodes.Core.Implements": "0.6.15.0",
           "Mars.Nodes.FormEditor": "0.6.15.0",
           "Mars.Nodes.Front.Shared": "0.6.15.0",
+          "Mars.Nodes.Host.Shared": "0.6.15.0",
           "Mars.Options": "0.6.15.0",
           "Mars.Plugin.Abstractions": "0.6.15.0",
           "Mars.Plugin.Front.Abstractions": "0.6.15.0",
@@ -3033,7 +3034,8 @@
           "Mars.QueryLang": "1.0.0",
           "Microsoft.AspNet.WebApi.Client": "6.0.0",
           "mdimai666.Mars.Host.Shared": "0.6.15-alpha.3",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.6.15-alpha.3"
+          "mdimai666.Mars.Nodes.Core.Implements": "0.6.15-alpha.3",
+          "mdimai666.Mars.Nodes.Host.Shared": "0.6.15-alpha.3"
         },
         "runtime": {
           "Mars.Nodes.Host.dll": {
@@ -3046,7 +3048,6 @@
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Microsoft.AspNetCore.Components.Web": "9.0.9",
-          "Toolbelt.Blazor.HotKeys2": "6.0.1",
           "mdimai666.Mars.AppFront.Shared": "0.6.15-alpha.3",
           "mdimai666.Mars.Core": "0.6.15-alpha.3",
           "mdimai666.Mars.Nodes.Core": "0.6.15-alpha.3",
@@ -3498,7 +3499,8 @@
           "MQTTnet.Extensions.TopicTemplate": "5.0.1.1416",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
           "mdimai666.Mars.Host.Shared": "0.6.15-alpha.3",
-          "mdimai666.Mars.Nodes.Core": "0.6.15-alpha.3"
+          "mdimai666.Mars.Nodes.Core": "0.6.15-alpha.3",
+          "mdimai666.Mars.Nodes.Host.Shared": "0.6.15-alpha.3"
         },
         "runtime": {
           "Mars.Nodes.Core.Implements.dll": {
@@ -3526,11 +3528,24 @@
       "mdimai666.Mars.Nodes.Front.Shared/0.6.15-alpha.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Components.Web": "9.0.9",
+          "Toolbelt.Blazor.HotKeys2": "6.0.1",
           "mdimai666.Mars.Nodes.Core": "0.6.15-alpha.3",
           "mdimai666.Mars.Shared": "0.6.15-alpha.3"
         },
         "runtime": {
           "Mars.Nodes.Front.Shared.dll": {
+            "assemblyVersion": "0.6.15.0",
+            "fileVersion": "0.6.15.0"
+          }
+        }
+      },
+      "mdimai666.Mars.Nodes.Host.Shared/0.6.15-alpha.3": {
+        "dependencies": {
+          "mdimai666.Mars.Host.Shared": "0.6.15-alpha.3",
+          "mdimai666.Mars.Nodes.Core": "0.6.15-alpha.3"
+        },
+        "runtime": {
+          "Mars.Nodes.Host.Shared.dll": {
             "assemblyVersion": "0.6.15.0",
             "fileVersion": "0.6.15.0"
           }
@@ -3726,6 +3741,14 @@
       "Mars.Nodes.Front.Shared/0.6.15.0": {
         "runtime": {
           "Mars.Nodes.Front.Shared.dll": {
+            "assemblyVersion": "0.6.15.0",
+            "fileVersion": "0.6.15.0"
+          }
+        }
+      },
+      "Mars.Nodes.Host.Shared/0.6.15.0": {
+        "runtime": {
+          "Mars.Nodes.Host.Shared.dll": {
             "assemblyVersion": "0.6.15.0",
             "fileVersion": "0.6.15.0"
           }
@@ -5626,6 +5649,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "mdimai666.Mars.Nodes.Host.Shared/0.6.15-alpha.3": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "mdimai666.Mars.Options/0.6.15-alpha.3": {
       "type": "project",
       "serviceable": false,
@@ -5722,6 +5750,11 @@
       "sha512": ""
     },
     "Mars.Nodes.Front.Shared/0.6.15.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Nodes.Host.Shared/0.6.15.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

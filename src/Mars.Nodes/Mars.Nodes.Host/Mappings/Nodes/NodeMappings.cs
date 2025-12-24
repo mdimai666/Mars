@@ -1,7 +1,7 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Dto;
+using Mars.Nodes.Host.Shared.Dto;
 
-namespace Mars.Nodes.Host.Mappings;
+namespace Mars.Nodes.Host.Mappings.Nodes;
 
 public static class NodeMappings
 {

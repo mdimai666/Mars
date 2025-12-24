@@ -1,3 +1,5 @@
+using Mars.Nodes.Host.Shared.Dto.NodeTasks;
+
 namespace Mars.Nodes.Host.NodeTasks;
 
 internal class NodeJobExecutionTime

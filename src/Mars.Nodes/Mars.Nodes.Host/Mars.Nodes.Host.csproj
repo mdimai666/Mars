@@ -13,6 +13,7 @@
 		<ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+		<ProjectReference Include="..\Mars.Nodes.Host.Shared\Mars.Nodes.Host.Shared.csproj" />
 		<ProjectReference Include="..\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
 	</ItemGroup>
 

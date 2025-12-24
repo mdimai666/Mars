@@ -1,6 +1,6 @@
 using Toolbelt.Blazor.HotKeys2;
 
-namespace Mars.Nodes.Workspace.ActionManager;
+namespace Mars.Nodes.Front.Shared.Editor.Models;
 
 public readonly struct Hotkey
 {

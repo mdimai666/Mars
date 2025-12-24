@@ -1,0 +1,113 @@
+@using Mars.Nodes.Workspace.Components.SettingsViews
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+@implements IDialogContentComponent<string>
+
+<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
+    <div class="hstack">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Settings())" Color="Color.Info" Class="me-2" />
+        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? AppRes.Settings)</FluentLabel>
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-row gap-4" style="min-height:80vh;">
+        <aside class="d-flex flex-column" style="flex-basis: 200px;">
+            <FluentTreeView @ref="_treeView"
+                            Items="_treeItems"
+                            SelectedItem="_selectedMenu"
+                            SelectedItemChanged="@((v) => _selectedMenu = (SettingsMenuItem)v)">
+            </FluentTreeView>
+        </aside>
+        <div class="settings-content flex-fill">
+            @if (_selectedMenu is not null)
+            {
+                <DynamicComponent Type="_selectedMenu.ComponentView" />
+            }
+            else
+            {
+                <AppFront.Shared.Components.SharedContentNoRecords />
+            }
+        </div>
+    </div>
+</FluentDialogBody>
+<FluentDialogFooter Visible="false" />
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    private string StartMenuName => Content;
+
+    private Task OkAsync() => Dialog.CloseAsync();
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    FluentTreeView _treeView = default!;
+
+    Dictionary<string, Type> _menuItems = [];
+    IReadOnlyCollection<SettingsMenuItem> _treeItems = [];
+    SettingsMenuItem? _selectedMenu;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _menuItems.Add("Keyboard", typeof(KeyboardSettingsView));
+        _menuItems.Add("NodeProviders", typeof(NodeProvidersSettingsView));
+
+        _treeItems = _menuItems.Select(s => new SettingsMenuItem(s.Key, s.Value)).ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (_selectedMenu == null && _menuItems.TryGetValue(StartMenuName, out var t))
+        {
+            _selectedMenu = _treeItems.First(s => s.Text == StartMenuName);
+        }
+        else
+        {
+            _selectedMenu = _treeItems.First();
+        }
+    }
+
+    public static void ShowDialog(IDialogService _dialogService, string startMenuName = "")
+    {
+        DialogParameters parameters = new()
+        {
+            Title = AppRes.Settings,
+            PrimaryActionEnabled = false,
+            SecondaryActionEnabled = false,
+            Width = "1200px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        _dialogService.ShowDialogAsync<NodeEditorSettingsDialog>(startMenuName, parameters);
+    }
+
+    private class SettingsMenuItem : ITreeViewItem
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Text { get; set; } = "";
+        public IEnumerable<ITreeViewItem>? Items { get; set; }
+        public Icon? IconCollapsed { get; set; }
+        public Icon? IconExpanded { get; set; }
+        public bool Disabled { get; set; }
+        public bool Expanded { get; set; }
+        public Func<TreeViewItemExpandedEventArgs, Task>? OnExpandedAsync { get; set; }
+
+        public Type ComponentView { get; set; }
+
+        public SettingsMenuItem(string text, Type componentView)
+        {
+            Text = text;
+            ComponentView = componentView;
+        }
+    }
+}

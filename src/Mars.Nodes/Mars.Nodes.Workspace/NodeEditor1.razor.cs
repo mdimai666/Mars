@@ -23,7 +23,10 @@ namespace Mars.Nodes.Workspace;
 
 public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorApi
 {
+    internal static NodeEditor1? Instance { get; private set; }
+
     [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
@@ -34,7 +37,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
 
     [Inject] HotKeys HotKeys { get; set; } = default!;
-    HotKeysContext HotKeysContext = default!;
+    HotKeysContext _hotKeysContext = default!;
+    bool _hotkeysPrevSetState = true;
 
     [Parameter]
     public IDictionary<string, Node> AllNodes
@@ -124,12 +128,14 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        HotKeysContext = HotKeys.CreateContext()
+        Instance = this;
+
+        _hotKeysContext = HotKeys.CreateContext()
             .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
         js = new(JS);
         _ = js.InitModule();
 
-        _actionManager = new EditorActionManager(this, _serviceProvider, HotKeysContext, _edittorActionLocator);
+        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator);
         _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
 
         RegisteredNodes = _nodesLocator.RegisteredNodes();
@@ -162,8 +168,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public async ValueTask DisposeAsync()
     {
-        if (HotKeysContext is not null)
-            await HotKeysContext.DisposeAsync();
+        Instance = null;
+        if (_hotKeysContext is not null)
+            await _hotKeysContext.DisposeAsync();
         _actionManager.PropertyChanged -= (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
     }
 
@@ -259,7 +266,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void StartEditNode(Node node)
     {
-        EditNode = node;//.Copy();
+        EnableHotkeys(false);
+        EditNode = node;
         nodeEditContainer1.StartEditNode(EditNode);
     }
 
@@ -555,6 +563,46 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
         else throw new NotImplementedException();
     }
+
+    void OnSettingsButtonClick()
+    {
+        NodeEditorSettingsDialog.ShowDialog(_dialogService);
+        EnableHotkeys(false);
+    }
+
+    void OnJobListHistoryButtonClick()
+    {
+        NodeTaskHistoryDialog.ShowDialog(_dialogService);
+        EnableHotkeys(false);
+    }
+
+    private void SetHotkeysState(bool enable)
+    {
+        foreach (var k in _hotKeysContext.HotKeyEntries)
+        {
+            k.State.Disabled = !enable;
+        }
+    }
+
+    /// <summary>
+    /// Включить/Отключить хук горячих клавиш Actions
+    /// Надо вызывать EnableHotkeys(false) когда появляются Диалоги или Редактор теряет фокус.
+    /// </summary>
+    /// <param name="enable"></param>
+    public void EnableHotkeys(bool enable)
+    {
+        if (_hotkeysPrevSetState == enable) return;
+
+        _hotkeysPrevSetState = enable;
+
+        SetHotkeysState(enable);
+    }
+
+    void OnWorkspaceMouseEnter()
+    {
+        EnableHotkeys(true);
+    }
+
 }
 
 internal static class NodeEditor1Extension

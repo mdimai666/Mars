@@ -33,13 +33,10 @@
     flex-shrink: 0;
 }
 
-
-
 .has-body-background-dark,
 .has-body-background-medium {
     background-color: var(--bs-grey-200) !important;
 }
-
 
 .hero .hero-body,
 .uhf-container:not(.has-padding) {
@@ -189,7 +186,6 @@
     color: @color-accent;
 }
 
-
 /////////////////////////////////////////////
 ///////////////   CAROUSEL
 /////////////////////////////////////////////
@@ -295,4 +291,37 @@ body.dark {
 
 .btn-check:focus + .btn-outline-secondary, .btn-outline-secondary:focus {
     box-shadow: none;
+}
+
+.fluent-heading(@sizeVar) {
+    /*font-family: var(--body-font);*/
+    font-size: var(@sizeVar);
+    /*font-weight: var(--font-weight-semibold);*/
+    /*line-height: var(--line-height-base);*/
+}
+
+.use-fluent-typo, fluent-dialog {
+    h1 {
+        .fluent-heading(--type-ramp-plus-5-font-size);
+    }
+
+    h2 {
+        .fluent-heading(--type-ramp-plus-4-font-size);
+    }
+
+    h3 {
+        .fluent-heading(--type-ramp-plus-3-font-size);
+    }
+
+    h4 {
+        .fluent-heading(--type-ramp-plus-2-font-size);
+    }
+
+    h5 {
+        .fluent-heading(--type-ramp-plus-1-font-size);
+    }
+
+    h6 {
+        .fluent-heading(--type-ramp-base-font-size);
+    }
 }

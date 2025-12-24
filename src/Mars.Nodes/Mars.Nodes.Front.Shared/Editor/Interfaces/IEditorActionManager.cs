@@ -1,7 +1,10 @@
+using Mars.Nodes.Front.Shared.Editor.Models;
+
 namespace Mars.Nodes.Front.Shared.Editor.Interfaces;
 
 public interface IEditorActionManager
 {
+    public IReadOnlyDictionary<Type, EditorActionType> Actions { get; }
     IEnumerable<Type> GetAllActionTypes();
     void ExecuteAction<TAction>() where TAction : IEditorAction;
     void ExecuteAction<TAction>(bool addToHistory) where TAction : IEditorAction;

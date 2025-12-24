@@ -4,6 +4,7 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared.Dto.NodeTasks;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Host.NodeTasks;
@@ -11,6 +12,9 @@ namespace Mars.Nodes.Host.NodeTasks;
 internal class NodeTaskJob : IAsyncDisposable
 {
     public Guid TaskId { get; } = Guid.NewGuid();
+    internal Node InjectNode => _nodes[InjectNodeId].Node;
+    internal Node FlowNode => _nodes[FlowNodeId].Node;
+
     protected readonly IServiceProvider _serviceProvider;
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
     protected Dictionary<string, NodeJob> _jobs = [];
@@ -30,7 +34,7 @@ internal class NodeTaskJob : IAsyncDisposable
     public bool IsDone => isAllDone;
     public bool IsTerminated { get; private set; }
     public int ErrorCount => _jobs.Values.Sum(s => s.Executions.Count(x => x.Result == NodeJobExecutionResult.Fail));
-    readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     public DateTimeOffset StartDate { get; init; }
     public DateTimeOffset? EndDate { get; private set; }

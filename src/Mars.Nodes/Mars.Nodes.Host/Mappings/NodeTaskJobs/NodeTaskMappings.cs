@@ -1,7 +1,7 @@
-using Mars.Nodes.Core.Dto.NodeTasks;
 using Mars.Nodes.Host.NodeTasks;
+using Mars.Nodes.Host.Shared.Dto.NodeTasks;
 
-namespace Mars.Nodes.Host.Mappings;
+namespace Mars.Nodes.Host.Mappings.NodeTaskJobs;
 
 internal static class NodeTaskMappings
 {
@@ -18,6 +18,9 @@ internal static class NodeTaskMappings
             ErrorCount = entity.ErrorCount,
             StartDate = entity.StartDate,
             EndDate = entity.EndDate,
+
+            FlowName = entity.FlowNode.DisplayName,
+            InjectNodeDisplayName = entity.InjectNode.DisplayName,
         };
 
     public static NodeTaskResultDetail ToDetail(this NodeTaskJob entity)
@@ -33,6 +36,9 @@ internal static class NodeTaskMappings
             ErrorCount = entity.ErrorCount,
             StartDate = entity.StartDate,
             EndDate = entity.EndDate,
+
+            FlowName = entity.FlowNode.DisplayName,
+            InjectNodeDisplayName = entity.InjectNode.DisplayName,
 
             Jobs = entity.Jobs.Values.ToDto(),
         };

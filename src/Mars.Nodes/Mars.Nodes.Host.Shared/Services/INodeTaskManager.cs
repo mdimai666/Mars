@@ -1,7 +1,8 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Dto.NodeTasks;
+using Mars.Nodes.Host.Shared.Dto.NodeTasks;
+using Mars.Shared.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Nodes.Host.Shared.Services;
 
 public interface INodeTaskManager
 {
@@ -25,4 +26,6 @@ public interface INodeTaskManager
     NodeTaskResultDetail? GetDetail(Guid taskId);
     void TryKillTaskJob(Guid taskId);
     void TerminateAllJobs();
+    ListDataResult<NodeTaskResultSummary> List(ListNodeTaskJobQuery query);
+    PagingResult<NodeTaskResultSummary> ListTable(ListNodeTaskJobQuery query);
 }

@@ -1,0 +1,29 @@
+@using Mars.Nodes.Core
+@using Mars.Nodes.Workspace.ActionManager
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div>
+    <h2>Nodes providers</h2>
+
+    <FluentDataGrid Items="@_assemblies" TGridItem="string">
+        <TemplateColumn Title="@AppRes.Name">
+            @context
+        </TemplateColumn>
+    </FluentDataGrid>
+
+</div>
+
+@code {
+    IQueryable<string> _assemblies = Array.Empty<string>().AsQueryable();
+
+    [Inject] NodesLocator _nodesLocator { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _assemblies = _nodesLocator.Assemblies.Select(s=>$"{s.GetName().Name}, v{s.GetName().Version}").AsQueryable();
+    }
+
+}

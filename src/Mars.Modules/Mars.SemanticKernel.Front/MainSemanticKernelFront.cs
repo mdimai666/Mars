@@ -1,5 +1,6 @@
 using AppFront.Main.OptionEditForms;
 using Mars.Nodes.Core;
+using Mars.Nodes.FormEditor;
 using Mars.SemanticKernel.Front.Nodes.Forms;
 using Mars.SemanticKernel.Front.OptionForms;
 using Mars.SemanticKernel.Shared.Nodes;

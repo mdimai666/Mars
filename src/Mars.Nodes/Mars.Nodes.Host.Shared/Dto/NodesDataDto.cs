@@ -1,4 +1,6 @@
-﻿namespace Mars.Nodes.Core.Dto;
+using Mars.Nodes.Core;
+
+namespace Mars.Nodes.Host.Shared.Dto;
 
 public class NodesDataDto
 {

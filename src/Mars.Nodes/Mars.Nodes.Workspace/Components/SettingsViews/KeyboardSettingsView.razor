@@ -1,0 +1,30 @@
+@using Mars.Nodes.Front.Shared.Editor.Models
+@using Mars.Nodes.Workspace.ActionManager
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div>
+    <h2>Keyboard settings</h2>
+
+    <FluentDataGrid Items="@_actions" TGridItem="EditorActionType">
+        <TemplateColumn Title="@AppRes.Name">
+            @context.Attr!.Name
+        </TemplateColumn>
+        <TemplateColumn Title="Key">
+            @context.DefaultHotkey
+        </TemplateColumn>
+    </FluentDataGrid>
+
+</div>
+
+@code {
+    IQueryable<EditorActionType> _actions = Array.Empty<EditorActionType>().AsQueryable();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _actions = NodeEditor1.Instance!.ActionManager.Actions.Values.Where(s => s.Attr != null && s.DefaultHotkey != null).AsQueryable();
+    }
+
+}

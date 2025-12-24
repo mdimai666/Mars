@@ -1,23 +1,26 @@
 @using System.Text.Json;
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
+@using Icons16R = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Nodes
 @using Mars.Nodes.FormEditor
 @using Mars.Nodes.Workspace
+@using Mars.Nodes.Workspace.ActionManager.Actions.Globals
 @using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace
 @using Mars.Nodes.Workspace.Components
 @using Mars.Nodes.Workspace.EditorParts
 @using Mars.Shared.Resources
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size16;
 
-<div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill">
+<div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill use-fluent-typo">
     <CascadingValue Value="this">
         <div class="border-bottom shadow-sm 1position-fixed" style="height:40px;">
             <div class="d-flex justify-content-between p-1 align-items-center">
                 <div class="d-flex fs-5">
 
-                    <div class="master-menu">
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
+                    <div class="master-menu d-flex align-items-center">
+                        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size24.Settings())" OnClick="OnSettingsButtonClick" />
+                        <div class="btn-group btn-group-sm ms-3" role="group">
                             @foreach (var _tab in masterTabs)
                             {
                                 var tab = _tab;
@@ -31,8 +34,8 @@
                     </div>
                     <div class="vr mx-3"></div>
                     <div class="btn-group" role="group" aria-label="Basic outlined example">
-                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="Appearance.Stealth"></FluentButton>
-                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="Appearance.Stealth"></FluentButton>
+                        <FluentButton OnClick="@_actionManager.Undo" IconStart="@(new Icons16R.ArrowUndo())" Disabled=!_actionManager.CanUndo Appearance="Appearance.Stealth"></FluentButton>
+                        <FluentButton OnClick="@_actionManager.Redo" IconStart="@(new Icons16R.ArrowRedo())" Disabled=!_actionManager.CanRedo Appearance="Appearance.Stealth"></FluentButton>
                     </div>
                 </div>
 
@@ -41,8 +44,11 @@
                 </div>
 
                 <div class="d-flex gap-2 me-2">
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="OnJobListHistoryButtonClick" Title="task history">
+                        <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Neutral" />
+                    </FluentButton>
                     <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
-                                  IconStart="@(new Icons.DismissSquareMultiple().WithColor(Color.Neutral))"
+                                  IconStart="@(new Icons16R.DismissSquareMultiple().WithColor(Color.Neutral))"
                                   Class="btn-terminate-all-tasks"
                                   Title="terminate all task"
                                   Appearance="Appearance.Stealth">
@@ -57,7 +63,7 @@
                     }
 
                     <FluentButton OnClick="@(_actionManager.ExecuteAction<DeployNodesAction>)"
-                                  IconEnd="@(new Icons.SaveMultiple())"
+                                  IconEnd="@(new Icons16R.SaveMultiple())"
                                   Title="Deploy nodes"
                                   Appearance="Appearance.Accent">
                         Deploy
@@ -191,6 +197,7 @@
                                     Class="h-100"
                                     OnInject="OnInject"
                                     FlowNodes=FlowNodes
+                                    OnMouseEnter="OnWorkspaceMouseEnter"
                                     OnClickNode="OnClickNode"
                                     OnDblClickNode="OnDblClickNode"
                                     OnNodeContextMenu="OnNodeContextMenu"

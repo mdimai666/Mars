@@ -1,0 +1,61 @@
+@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
+@using Mars.Nodes.Workspace.Components.JobViews
+@using Mars.Nodes.Workspace.Components.SettingsViews
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+@implements IDialogContentComponent<string>
+
+<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
+    <div class="hstack">
+        <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Info" Class="me-2" />
+        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "NodeTask History")</FluentLabel>
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-row gap-4" style="min-height:80vh;">
+        <div class="settings-content flex-fill">
+            <NodeTaskJobListView OnClickItem="OnClickItem" />
+        </div>
+    </div>
+</FluentDialogBody>
+<FluentDialogFooter Visible="false" />
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Inject] IDialogService _dialogService { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    private string StartMenuName => Content;
+
+    private Task OkAsync() => Dialog.CloseAsync();
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    public static void ShowDialog(IDialogService _dialogService, string startMenuName = "")
+    {
+        DialogParameters parameters = new()
+        {
+            Title = "Job list history",
+            PrimaryActionEnabled = false,
+            SecondaryActionEnabled = false,
+            Width = "1200px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        _dialogService.ShowDialogAsync<NodeTaskHistoryDialog>(startMenuName, parameters);
+    }
+
+    void OnClickItem(NodeTaskResultSummaryResponse task)
+    {
+        NodeTaskJobResultDialog.ShowDialog(_dialogService, task.TaskId);
+    }
+
+}

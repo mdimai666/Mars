@@ -1,0 +1,52 @@
+@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Utilities
+@using static Mars.Nodes.Workspace.Components.JobViews.NodeTaskJobResultDetailView
+
+<div class="execution-bar"
+     style="@Style">
+    <svg xmlns="http://www.w3.org/2000/svg" width="142" height="48" style="flex-shrink: 0;">
+        <NodeComponent node="Item.Node" ShowLabelInsteadDisplayName=true FixedWidth="120" />
+    </svg>
+    <FluentBadge Fill="@FillColorName" Id="@Id">
+        @Item.Job.TaskDurationTotalMillisecondsText
+    </FluentBadge>
+
+    <FluentTooltip Anchor="@Id">
+        <FluentBadge Fill="@FillColorName">
+            @Item.Result
+        </FluentBadge>
+        <FluentLabel>
+            @Item.Job.Start.ToLocalTime()
+            →
+            @(Item.Job.End?.ToLocalTime().ToString() ?? "running")
+        </FluentLabel>
+
+        @if (Item.Job.Exception is not null)
+        {
+            <FluentLabel Typo="Typography.Subject">
+                @Item.Job.Exception.Message
+            </FluentLabel>
+        }
+    </FluentTooltip>
+</div>
+
+@code {
+    [Parameter] public GanttBarData Item { get; set; } = default!;
+    [Parameter] public DateTimeOffset TaskStart { get; set; }
+    [Parameter] public TimeSpan TaskDuration { get; set; }
+
+    string Id = "bar-item-" + Guid.NewGuid().ToString();
+    string? Style => new StyleBuilder()
+                        .AddStyle("margin-left", Item.OffsetPercentCssVal)
+                        .AddStyle("width", Item.WidthPercentCssVal)
+                        .Build();
+
+    private string FillColorName => Item.Result switch
+    {
+        NodeJobExecutionResultResponse.Success => "success",
+        NodeJobExecutionResultResponse.Fail => "error",
+        NodeJobExecutionResultResponse.Pending => "info",
+        _ => ""
+    };
+}

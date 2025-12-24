@@ -1,13 +1,16 @@
 using System.Diagnostics.Metrics;
 using System.Net.Mime;
+using Mars.Core.Exceptions;
 using Mars.Host.Shared.Constants;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Dto;
-using Mars.Nodes.Core.Dto.NodeTasks;
-using Mars.Nodes.Host.Mappings;
+using Mars.Nodes.Front.Shared.Contracts.Nodes;
+using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
+using Mars.Nodes.Host.Mappings.Nodes;
+using Mars.Nodes.Host.Mappings.NodeTaskJobs;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +20,7 @@ namespace Mars.Nodes.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
@@ -52,9 +55,9 @@ public class NodeController : ControllerBase
     }
 
     [HttpGet(nameof(Load))]
-    public NodesDataDto Load()
+    public NodesDataResponse Load()
     {
-        return _nodeService.GetNodesForResponse().ToNodeDataDto();
+        return _nodeService.GetNodesForResponse().ToResponse();
     }
 
     [HttpGet(nameof(Inject) + "/{nodeId}")]
@@ -71,10 +74,22 @@ public class NodeController : ControllerBase
         return _functionCodeSuggestService.FunctionCodeSuggest(f_action, search);
     }
 
-    [HttpGet("JobList/all")]
-    public IEnumerable<NodeTaskResultDetail> JobList()
+    [HttpGet("Job/List")]
+    public ListDataResult<NodeTaskResultSummaryResponse> JobList([FromQuery] ListNodeTaskJobQueryRequest request)
     {
-        return _nodeTaskManager.CurrentTasksDetails().Concat(_nodeTaskManager.CompletedTasksDetails());
+        return _nodeTaskManager.List(request.ToQuery()).ToResponse();
+    }
+
+    [HttpGet("Job/ListTable")]
+    public PagingResult<NodeTaskResultSummaryResponse> JobListTable([FromQuery] TableNodeTaskJobQueryRequest request)
+    {
+        return _nodeTaskManager.ListTable(request.ToQuery()).ToResponse();
+    }
+
+    [HttpGet("Job/Detail/{id:guid}")]
+    public NodeTaskResultDetailResponse JobDetail(Guid id)
+    {
+        return _nodeTaskManager.GetDetail(id)?.ToDetailResponse() ?? throw new NotFoundException();
     }
 
     [HttpPost("Jobs/TerminateAll")]

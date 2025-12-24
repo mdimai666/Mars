@@ -13,6 +13,7 @@ public class NodesLocator
     object _lock = new { };
 
     public IReadOnlyDictionary<string, NodeDictItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
+    public IReadOnlyCollection<Assembly> Assemblies => assemblies;
 
     private void RefreshDict(bool force = false)
     {

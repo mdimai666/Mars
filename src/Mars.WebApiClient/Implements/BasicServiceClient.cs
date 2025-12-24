@@ -73,7 +73,7 @@ public class BasicServiceClient
     private static string ExtractResponseErrorMessage(IFlurlResponse response)
         => response.ResponseMessage.ReasonPhrase ?? response.StatusCode.ToString();
 
-    protected static Action<FlurlCall> OnStatus404ReturnNull = call =>
+    public static Action<FlurlCall> OnStatus404ReturnNull = call =>
     {
         if (call.Response.StatusCode == (int)System.Net.HttpStatusCode.NotFound)
         {
@@ -81,7 +81,7 @@ public class BasicServiceClient
         }
     };
 
-    protected static Action<FlurlCall> OnStatus404ThrowException = call =>
+    public static Action<FlurlCall> OnStatus404ThrowException = call =>
     {
         if (call.Response.StatusCode == (int)System.Net.HttpStatusCode.NotFound)
         {

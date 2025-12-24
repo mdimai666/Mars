@@ -1,5 +1,5 @@
 using Mars.Host.Shared.Interfaces;
-using Mars.Nodes.Core.Dto;
+using Mars.Nodes.Host.Shared.Dto;
 
 namespace Mars.Nodes.Host.Mappings;
 

@@ -3,9 +3,11 @@ using Flurl.Http;
 using Flurl.Http.Configuration;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Core.Dto;
+using Mars.Nodes.Front.Shared.Contracts.Nodes;
+using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
 using Mars.Nodes.Front.Shared.Services;
 using Mars.Shared.Common;
+using Mars.WebApiClient.Implements;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Workspace.Services;
@@ -46,9 +48,24 @@ internal class NodeServiceClient : INodeServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Inject", nodeId)
                     .GetJsonAsync<UserActionResult>();
 
-    public Task<NodesDataDto> Load()
+    public Task<NodesDataResponse> Load()
         => _client.Request($"{_basePath}{_controllerName}", "Load")
-                    .GetJsonAsync<NodesDataDto>();
+                    .GetJsonAsync<NodesDataResponse>();
+
+    public Task<ListDataResult<NodeTaskResultSummaryResponse>> JobList(ListNodeTaskJobQueryRequest filter)
+        => _client.Request($"{_basePath}{_controllerName}/Job/List")
+                    .AppendQueryParam(filter)
+                    .GetJsonAsync<ListDataResult<NodeTaskResultSummaryResponse>>();
+
+    public Task<PagingResult<NodeTaskResultSummaryResponse>> JobListTable(TableNodeTaskJobQueryRequest filter)
+        => _client.Request($"{_basePath}{_controllerName}/Job/ListTable")
+                    .AppendQueryParam(filter)
+                    .GetJsonAsync<PagingResult<NodeTaskResultSummaryResponse>>();
+
+    public Task<NodeTaskResultDetailResponse?> JobDetail(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}/Job/Detail", id)
+                    .OnError(BasicServiceClient.OnStatus404ReturnNull)
+                    .GetJsonAsync<NodeTaskResultDetailResponse?>();
 
     public Task TerminateAllJobs()
         => _client.Request($"{_basePath}{_controllerName}", "Jobs/TerminateAll")

@@ -9,6 +9,7 @@ using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Mappings;
+using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;

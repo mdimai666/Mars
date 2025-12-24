@@ -1,0 +1,175 @@
+@using Mars.Core.Extensions
+@using Mars.Nodes.Core
+@using Mars.Nodes.Core.Nodes
+@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<node-task-job-result-detail>
+    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="16">
+
+        <!-- SUMMARY CARD -->
+        <FluentCard Class="task-summary-card">
+            <FluentStack Orientation="Orientation.Vertical" Gap="8">
+
+                <FluentLabel Typo="Typography.H2">
+                    Task execution report
+                </FluentLabel>
+
+                <FluentStack HorizontalGap="24">
+                    <JobSummaryItem Label="Task ID" Value="@Model.TaskId.ToString()" />
+                    <JobSummaryItem Label="Flow" Value="@Model.FlowName" />
+                    <JobSummaryItem Label="Inject node">
+                        <div>
+                            Name: <FluentBadge>@Model.InjectNodeDisplayName</FluentBadge>
+                        </div>
+                        <div>
+                            Id: <span class="text-secondary">@Model.InjectNodeId</span>
+                        </div>
+                    </JobSummaryItem>
+                </FluentStack>
+
+                <FluentDivider Class="w-100 my-3" />
+
+                <FluentStack HorizontalGap="24">
+                    <JobSummaryItem Label="Status">
+                        <FluentBadge Fill="@NodeTaskJobListView.GetStatusColorFillName(Model)">
+                            @NodeTaskJobListView.GetStatusText(Model)
+                        </FluentBadge>
+                    </JobSummaryItem>
+
+                    <JobSummaryItem Label="Executions" Value="@Model.ExecuteCount" />
+                    <JobSummaryItem Label="Nodes" Value="@Model.NodesChainCount" />
+                    <JobSummaryItem Label="Errors" Value="@Model.ErrorCount" />
+                </FluentStack>
+
+                <FluentDivider />
+
+                <FluentStack HorizontalGap="24">
+                    <JobSummaryItem Label="Started" Value="@(Model.StartDate.ToString("g"))" />
+                    <JobSummaryItem Label="Finished" Value="@(Model.EndDate?.ToString("g"))" />
+                    <JobSummaryItem Label="Duration" Value="@TheDuration" />
+                    <JobSummaryItem Label="" />
+                </FluentStack>
+
+            </FluentStack>
+        </FluentCard>
+
+        <!-- JOBS TIMELINE -->
+        <FluentCard>
+            <FluentLabel Typo="Typography.H3">
+                Jobs execution timeline
+            </FluentLabel>
+
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Class="jobs-timeline" Style="width: calc(100% - 180px);">
+                @foreach (var job in _ganttItems)
+                {
+                    <ExecutionBar Item="job" TaskStart="Model.StartDate" TaskDuration="TaskDuration" />
+                }
+            </FluentStack>
+        </FluentCard>
+
+    </FluentStack>
+</node-task-job-result-detail>
+
+@code {
+
+    [Parameter] public NodeTaskResultDetailResponse Model { get; set; } = default!;
+
+    TimeSpan TaskDuration;
+    string TheDuration => TaskDuration.TotalMilliseconds.ToString("0.0") + "ms";
+
+    GanttBarData[] _ganttItems = [];
+
+    protected override void OnInitialized()
+    {
+        TaskDuration = ((Model.EndDate ?? DateTimeOffset.Now) - Model.StartDate);
+
+        var items = Model.Jobs.SelectMany(job => job.Executions.Select(x => new GanttItem
+            {
+                Start = x.Start,
+                End = x.End,
+                Exception = x.Exception,
+                JobGuid = x.JobGuid,
+                Result = x.Result,
+                NodeId = job.NodeId,
+            })).OrderBy(s=>s.Start)
+                .ToList();
+
+        _ganttItems = items.Select(x=>new GanttBarData(x, Model, NodeEditor1.Instance!.AllNodes)).ToArray();
+    }
+
+    public static double CalculateOffsetPercent(GanttItem execution, NodeTaskResultDetailResponse task)
+    {
+
+        var taskStart = task.StartDate;
+        var offset = execution.Start - taskStart;
+
+        if (task.TaskDuration.TotalMilliseconds == 0)
+            return 0;
+
+        return (offset.TotalMilliseconds / task.TaskDuration.TotalMilliseconds) * 100;
+    }
+
+    public static double CalculateWidthPercent(GanttItem execution, NodeTaskResultDetailResponse task)
+    {
+        if (task.TaskDuration.TotalMilliseconds == 0)
+            return 0;
+
+        var executionEnd = execution.End ?? DateTimeOffset.Now;
+        var executionDuration = executionEnd - execution.Start;
+
+        return (executionDuration.TotalMilliseconds / task.TaskDuration.TotalMilliseconds) * 100;
+    }
+
+    public record GanttBarData
+    {
+        public double OffsetPercent { get; init; }
+        public double WidthPercent { get; init; }
+        public NodeJobExecutionResultResponse Result { get; init; }
+
+        public GanttItem Job { get; init; }
+
+        public string OffsetPercentCssVal { get; init; }
+        public string WidthPercentCssVal { get; init; }
+
+        public Node Node { get; init; }
+
+        public GanttBarData(GanttItem job, NodeTaskResultDetailResponse task, IDictionary<string,Node> nodes)
+        {
+            OffsetPercent = CalculateOffsetPercent(job, task);
+            WidthPercent = CalculateWidthPercent(job, task);
+            Result = job.Result;
+            Job = job;
+            Node = nodes.GetValueOrDefault(job.NodeId)?.Copy(NodeEditor1.Instance!.NodesJsonSerializerOptions) ?? new UnknownNode() { };
+            Node.X = 0;
+            Node.Y = 0;
+            Node.Inputs = [];
+            Node.Outputs = [];
+            Node.isInjectable = false;
+            Node.hasTailButton = false;
+
+            OffsetPercentCssVal = OffsetPercent.ToString("0.00", CultureInfo.InvariantCulture) + "%";
+            WidthPercentCssVal = WidthPercent.ToString("0.00", CultureInfo.InvariantCulture) + "%";
+        }
+    }
+
+    public record GanttItem : NodeJobExecutionTimeResponse
+    {
+        public required string NodeId { get; init; }
+    }
+}
+
+<style>
+    .task-summary-card {
+        padding: 16px;
+    }
+
+    .execution-bar {
+        height: 28px;
+        display: flex;
+        align-items: center;
+        padding: 0 6px;
+        border-radius: 4px;
+        background: var(--neutral-layer-3);
+    }
+</style>

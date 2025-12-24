@@ -1,4 +1,6 @@
-namespace Mars.Nodes.Workspace.ActionManager;
+using Mars.Nodes.Front.Shared.Editor.Attributes;
+
+namespace Mars.Nodes.Front.Shared.Editor.Models;
 
 public record EditorActionType
 {

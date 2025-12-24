@@ -1,9 +1,11 @@
 using System.Collections.Concurrent;
-using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Dto.Common;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Dto.NodeTasks;
-using Mars.Nodes.Host.Mappings;
+using Mars.Nodes.Host.Mappings.NodeTaskJobs;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared.Dto.NodeTasks;
+using Mars.Nodes.Host.Shared.Services;
+using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -89,4 +91,19 @@ internal class NodeTaskManager : INodeTaskManager
         OnCurrentTasksCountChanged?.Invoke(_currentTasks.Count);
     }
 
+    public ListDataResult<NodeTaskResultSummary> List(ListNodeTaskJobQuery query)
+    {
+        return _currentTasks.Values.ToSummary()
+                        .Concat(_completedTasks.Values)
+                        .Where(x => query.Search == null || (x.InjectNodeId.Equals(query.Search, StringComparison.OrdinalIgnoreCase)))
+                        .AsListDataResult(query);
+    }
+
+    public PagingResult<NodeTaskResultSummary> ListTable(ListNodeTaskJobQuery query)
+    {
+        return _currentTasks.Values.ToSummary()
+                        .Concat(_completedTasks.Values)
+                        .Where(x => query.Search == null || (x.InjectNodeId.Equals(query.Search, StringComparison.OrdinalIgnoreCase)))
+                        .AsPagingResult(query);
+    }
 }

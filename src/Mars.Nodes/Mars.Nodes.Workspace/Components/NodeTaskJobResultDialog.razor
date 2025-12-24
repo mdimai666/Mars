@@ -1,0 +1,87 @@
+@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
+@using Mars.Nodes.Front.Shared.Services
+@using Mars.Nodes.Workspace.Components.JobViews
+@using Mars.Nodes.Workspace.Components.SettingsViews
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+@implements IDialogContentComponent<Guid>
+
+<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
+    <div class="hstack">
+        <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Info" Class="me-2" />
+        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "NodeTask Job result")</FluentLabel>
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-row gap-4" style="min-height:80vh;">
+        <div class="flex-fill">
+            @if (_busy)
+            {
+                <FluentProgressRing />
+            }
+            else if (_model is not null)
+            {
+                <NodeTaskJobResultDetailView Model="_model" />
+            }
+            else
+            {
+                <AppFront.Shared.Components.SharedContentNoRecords />
+            }
+        </div>
+    </div>
+</FluentDialogBody>
+<FluentDialogFooter Visible="false" />
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Inject] INodeServiceClient _client { get; set; } = default!;
+
+    [Parameter]
+    public Guid Content { get; set; } = default!;
+
+    private Guid TaskId => Content;
+
+    bool _busy;
+    NodeTaskResultDetailResponse? _model;
+
+    private Task OkAsync() => Dialog.CloseAsync();
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) Load();
+    }
+
+    async void Load()
+    {
+        _busy = true;
+        StateHasChanged();
+
+        _model = await _client.JobDetail(TaskId);
+
+        _busy = false;
+        StateHasChanged();
+    }
+
+    public static void ShowDialog(IDialogService _dialogService, Guid taskId)
+    {
+        DialogParameters parameters = new()
+        {
+            Title = "NodeTask Job result",
+            PrimaryActionEnabled = false,
+            SecondaryActionEnabled = false,
+            Width = "1200px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        _dialogService.ShowDialogAsync<NodeTaskJobResultDialog>(taskId, parameters);
+    }
+
+}

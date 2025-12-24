@@ -34,7 +34,7 @@
         @if (Node.ExpressionInput == NodeExpressionInput.String)
         {
             <FormItem2 For="() => Node.Expression" Class="">
-                <FluentTextField @bind-Value="@Node.Expression" />
+                <FluentTextArea @bind-Value="@Node.Expression" Rows="4" Class="w-100" />
             </FormItem2>
         }
         else if (Node.ExpressionInput == NodeExpressionInput.Builder)
@@ -53,7 +53,7 @@
                         <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
                             <div class="d-grid align-items-center" style="grid-template-columns: 100px 33px auto 33px 33px;">
                                 <div class="@(item.Disabled ? $"AppEntityReadNode__SortableList__item--disabled" : "")">
-                                    @item.Method.Name
+                                    @item.Method?.Name
                                 </div>
                                 <div>
                                     <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.Method.Helper.Description" />
@@ -132,23 +132,23 @@
 
     void EntityNameUpdated()
     {
-        AddButtonMenuItems = _builderDictionary.Providers[BuilderModel.EntityName].Methods.ToDictionary(s => s.Name, s => s.ToMethodIntelliView());
+        AddButtonMenuItems = _builderDictionary!.Providers[BuilderModel!.EntityName].Methods.ToDictionary(s => s.Name, s => s.ToMethodIntelliView());
     }
 
     public override Task OnEditSave()
     {
-        Node.Query = BuilderModel.ToRequest();
+        Node.Query = BuilderModel!.ToRequest();
         return Task.CompletedTask;
     }
 
     void AddItem(LinqMethodSignarute signarute)
     {
-        BuilderModel.CallChains = [.. BuilderModel.CallChains, new() { Method = signarute, Parameters = signarute.Parameters.Select(_ => "").ToList(), Disabled = false }];
+        BuilderModel!.CallChains = [.. BuilderModel.CallChains, new() { Method = signarute, Parameters = signarute.Parameters.Select(_ => "").ToList(), Disabled = false }];
     }
 
     void AddItemAfterIndex(int index, LinqMethodSignarute signarute)
     {
-        var list = BuilderModel.CallChains.ToList();
+        var list = BuilderModel!.CallChains.ToList();
         list.Insert(index, new NEQRM_MethodCallEditModel
         {
             Method = signarute,
@@ -158,17 +158,17 @@
         BuilderModel.CallChains = list.ToArray();
     }
 
-    void SortList(FluentSortableListEventArgs args) => BuilderModel.CallChains = BuilderModel.CallChains.MoveItem(args.OldIndex, args.NewIndex);
+    void SortList(FluentSortableListEventArgs args) => BuilderModel!.CallChains = BuilderModel.CallChains.MoveItem(args.OldIndex, args.NewIndex);
 
     void DeleteItem(NEQRM_MethodCallEditModel item)
     {
-        BuilderModel.CallChains = BuilderModel.CallChains.Where(s => s != item).ToArray();
+        BuilderModel.CallChains = BuilderModel!.CallChains.Where(s => s != item).ToArray();
     }
 
     void HandleOnAddItemMenuChanged(MenuChangeEventArgs e)
     {
         var key = e.Id;
-        var method = _builderDictionary.Providers[BuilderModel.EntityName].Methods.First(s => s.Name == key);
+        var method = _builderDictionary!.Providers[BuilderModel!.EntityName].Methods.First(s => s.Name == key);
         AddItem(method);
     }
 }

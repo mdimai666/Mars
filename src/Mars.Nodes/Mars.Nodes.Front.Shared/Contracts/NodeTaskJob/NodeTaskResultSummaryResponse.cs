@@ -1,6 +1,6 @@
-namespace Mars.Nodes.Core.Dto.NodeTasks;
+namespace Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
 
-public record NodeTaskResultSummary
+public record NodeTaskResultSummaryResponse
 {
     public required Guid TaskId { get; init; }
     public required int ExecuteCount { get; init; }
@@ -12,4 +12,8 @@ public record NodeTaskResultSummary
     public required int ErrorCount { get; init; }
     public required DateTimeOffset StartDate { get; init; }
     public required DateTimeOffset? EndDate { get; init; }
+
+    public required string FlowName { get; init; }
+    public required string InjectNodeDisplayName { get; init; }
+
 }

@@ -1,7 +1,7 @@
 using Mars.Core.Models;
 using Mars.Host.Shared.Services;
-using Mars.Nodes.Core.Dto;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared.Dto;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;

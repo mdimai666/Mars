@@ -79,6 +79,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceDblClick { get; set; }
     [Parameter] public EventCallback<SelWireEventArgs> OnWireContextMenu { get; set; }
 
+    [Parameter] public EventCallback<MouseEventArgs> OnMouseEnter { get; set; }
+
     [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     Lasso lasso = new();

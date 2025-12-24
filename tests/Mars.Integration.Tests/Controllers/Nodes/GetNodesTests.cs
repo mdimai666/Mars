@@ -5,9 +5,9 @@ using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Core.Dto;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Controllers;
+using Mars.Nodes.Host.Shared.Dto;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Nodes;

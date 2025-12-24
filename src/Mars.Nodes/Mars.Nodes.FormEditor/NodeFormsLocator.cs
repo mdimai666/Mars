@@ -2,7 +2,7 @@ using System.Reflection;
 using Mars.Nodes.Core.Attributes;
 using Microsoft.AspNetCore.Components;
 
-namespace Mars.Nodes.Core;
+namespace Mars.Nodes.FormEditor;
 
 public class NodeFormsLocator
 {

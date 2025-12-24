@@ -1,0 +1,24 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+    <FluentLabel Typo="Typography.Header">
+        @Label
+    </FluentLabel>
+
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        <FluentLabel Typo="Typography.Body">
+            @Value
+        </FluentLabel>
+    }
+</FluentStack>
+
+@code {
+    [Parameter] public string Label { get; set; } = default!;
+    [Parameter] public object? Value { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,16 +1,16 @@
 using System.Diagnostics;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.Middlewares;
+namespace Mars.Nodes.Host.Middlewares;
 
 internal class MarsNodesMiddleware
 {

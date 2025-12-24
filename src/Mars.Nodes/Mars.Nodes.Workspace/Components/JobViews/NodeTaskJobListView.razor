@@ -1,0 +1,108 @@
+@using AppFront.Shared.Components
+@using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob
+@using Mars.Shared.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+<nodes-task-job-list-view>
+
+    <div class="hstack">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+        <FluentButton aria-label="refresh" IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+        <div class="ms-auto">
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div style="height: 534px; overflow:auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="48"
+                            Virtualize
+                            ShowHover
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            Class="adaptive-table"
+                            GridTemplateColumns="min-content min-content auto min-content min-content min-content min-content"
+                            TGridItem="NodeTaskResultSummaryResponse">
+                <TemplateColumn Title="Status"
+                                Sortable="true"
+                                SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.IsDone))">
+                    <FluentBadge Fill="@GetStatusColorFillName(context)">
+                        @GetStatusText(context)
+                    </FluentBadge>
+                </TemplateColumn>
+
+                <TemplateColumn Title="Task ID"
+                                Sortable="true"
+                                SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.TaskId))">
+                    <FluentLabel Id="@($"task-id-label-{context.TaskId}")" Typo="Typography.Body">
+                        @context.TaskId.ToString()[..8]…
+                    </FluentLabel>
+                    <FluentTooltip Anchor="@($"task-id-label-{context.TaskId}")">
+                        @context.TaskId
+                    </FluentTooltip>
+                </TemplateColumn>
+                <TemplateColumn Title="Node"
+                                Sortable="true"
+                                SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.InjectNodeId))">
+                    <div id="@($"task-inject-node-{context.TaskId}")" class="hstack gap-1 cursor-pointer" @onclick="@(() => OnClickItemEvent(context))">
+                        <FluentBadge>@context.FlowName</FluentBadge>
+                        /
+                        <FluentBadge>@context.InjectNodeDisplayName</FluentBadge>
+                        <FluentIcon Value="_infoIcon" Class="ms-1" />
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="ExecuteCount"
+                                Sortable="true"
+                                SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.ExecuteCount))">
+                    <div class="hstack" title="@($"NodesChainCount: {context.NodesChainCount}, ExecuteCount: {context.ExecuteCount}")">
+                        <FluentLabel>@context.NodesChainCount</FluentLabel>
+                        <i class="bi bi-arrow-right-short"></i>
+                        <FluentBadge>@context.ExecuteCount</FluentBadge>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="Errors">
+                    @if (context.ErrorCount > 0)
+                    {
+                        <FluentBadge Fill="error">
+                            @context.ErrorCount
+                        </FluentBadge>
+                    }
+                    else
+                    {
+                        <FluentLabel>-</FluentLabel>
+                    }
+                </TemplateColumn>
+                <TemplateColumn Title="Started"
+                                InitialSortDirection="SortDirection.Descending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true"
+                                SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.StartDate))"
+                                Align="Align.End">
+                    <FluentLabel>
+                        @context.StartDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                    </FluentLabel>
+                </TemplateColumn>
+                <TemplateColumn Title="Finished"
+                                Sortable="true"
+                                SortBy="@(GridSort<NodeTaskResultSummaryResponse>.ByDescending(f => f.EndDate))"
+                                Align="Align.End">
+                    <FluentLabel>
+                        @(context.EndDate?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")
+                    </FluentLabel>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+            <div class="ms-auto">
+            </div>
+        </div>
+    </div>
+</nodes-task-job-list-view>

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Mars.Core.Exceptions;
+using Mars.Nodes.Front.Shared.Editor.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor.HotKeys2;
@@ -10,6 +11,8 @@ namespace Mars.Nodes.Workspace.ActionManager;
 public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
+    public IReadOnlyDictionary<Type, EditorActionType> Actions => _actions;
+
     private void Notify([CallerMemberName] string? name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 

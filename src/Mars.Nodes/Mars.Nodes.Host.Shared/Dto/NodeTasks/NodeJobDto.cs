@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Core.Dto.NodeTasks;
+namespace Mars.Nodes.Host.Shared.Dto.NodeTasks;
 
 public record NodeJobDto
 {

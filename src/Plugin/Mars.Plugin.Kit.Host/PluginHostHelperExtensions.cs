@@ -11,7 +11,7 @@ public static class PluginHostHelperExtensions
     {
         var nodesLocator = serviceProvider.GetRequiredService<NodesLocator>();
         //var nodeFormsLocator = serviceProvider.GetRequiredService<NodeFormsLocator>();
-        var nodeImplementFabirc = serviceProvider.GetRequiredService<NodeImplementFabirc>();
+        var nodeImplementFactory = serviceProvider.GetRequiredService<NodeImplementFactory>();
         //var optionsFormsLocator = serviceProvider.GetRequiredService<OptionsFormsLocator>();
 
         foreach (var assembly in assemblies)
@@ -27,7 +27,7 @@ public static class PluginHostHelperExtensions
             if (types.Any(type => type.GetInterfaces()
                                         .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(INodeImplement<>))))
             {
-                nodeImplementFabirc.RegisterAssembly(assembly);
+                nodeImplementFactory.RegisterAssembly(assembly);
             }
 
             //ValidatorFabric

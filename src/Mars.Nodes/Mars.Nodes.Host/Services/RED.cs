@@ -24,7 +24,7 @@ internal class RED
     public IServiceProvider ServiceProvider { get; }
 
     public IHubContext<ChatHub> Hub;
-    private readonly NodeImplementFabirc _nodeImplementFabirc;
+    private readonly NodeImplementFactory _nodeImplementFactory;
 
     public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = [];
     public VariablesContextDictionary GlobalContext { get; } = new();
@@ -46,11 +46,11 @@ internal class RED
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
 
-    public RED(IHubContext<ChatHub> hub, NodeImplementFabirc nodeImplementFabirc, IServiceProvider serviceProvider)
+    public RED(IHubContext<ChatHub> hub, NodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         Hub = hub;
-        _nodeImplementFabirc = nodeImplementFabirc;
+        _nodeImplementFactory = nodeImplementFactory;
     }
 
     void ValidateNodes(IEnumerable<Node> nodes)
@@ -115,7 +115,7 @@ internal class RED
         foreach (var node in nodes.Except(flowNodes))
         {
             var flow = node is FlowNode ? flows[node.Id] : flows[node.Container];
-            Nodes.Add(node.Id, _nodeImplementFabirc.Create(node, CreateContextForNode(node, flow)));
+            Nodes.Add(node.Id, _nodeImplementFactory.Create(node, CreateContextForNode(node, flow)));
         }
 
         _varNodesDict = Nodes.Values.Where(s => s.Node is VarNode).ToDictionary(s => s.Node.Name, s => (s.Node as VarNode)!);

@@ -24,7 +24,7 @@ public static class MainMarsNodes
 {
     public static IServiceCollection AddMarsNodes(this IServiceCollection services)
     {
-        services.AddSingleton<NodeImplementFabirc>();
+        services.AddSingleton<NodeImplementFactory>();
 
         services.AddSingleton<INodeService, NodeService>();
         services.AddSingleton<INodeTaskManager, NodeTaskManager>();
@@ -56,8 +56,8 @@ public static class MainMarsNodes
     {
         app.Services.UseNodeWorkspace();
 
-        var nodeImplementFabirc = app.Services.GetRequiredService<NodeImplementFabirc>();
-        nodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+        var nodeImplementFactory = app.Services.GetRequiredService<NodeImplementFactory>();
+        nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
 
         var templatorFeaturesLocator = app.Services.GetRequiredService<ITemplatorFeaturesLocator>();
         templatorFeaturesLocator.Functions.Add(nameof(RegisterNodeTemplatorFunction.Node), RegisterNodeTemplatorFunction.Node!);

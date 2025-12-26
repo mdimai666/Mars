@@ -63,14 +63,14 @@ public class NodeServiceUnitTestBase
             _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
             _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
             _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
-            var nodeImplementFabirc = new NodeImplementFabirc();
-            nodeImplementFabirc.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
-            nodeImplementFabirc.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
-            nodeImplementFabirc.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
+            var nodeImplementFactory = new NodeImplementFactory();
+            nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+            nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
+            nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
 
             // dependies
             _hub = Substitute.For<IHubContext<ChatHub>>();
-            RED = Substitute.ForPartsOf<RED>(_hub, nodeImplementFabirc, _serviceProvider);
+            RED = Substitute.ForPartsOf<RED>(_hub, nodeImplementFactory, _serviceProvider);
             _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
             _serviceProvider.GetService(typeof(RED)).Returns(RED);
             _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());

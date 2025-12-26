@@ -15,8 +15,8 @@ public static class MainWebAppNodes
     {
         app.ApplicationServices.UseMarsWebAppNodesFront();
 
-        var nodeImplementFabirc = app.ApplicationServices.GetRequiredService<NodeImplementFabirc>();
-        nodeImplementFabirc.RegisterAssembly(typeof(ExcelNodeImplement).Assembly);
+        var nodeImplementFactory = app.ApplicationServices.GetRequiredService<NodeImplementFactory>();
+        nodeImplementFactory.RegisterAssembly(typeof(ExcelNodeImplement).Assembly);
         return app;
     }
 

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements;
 
-public class NodeImplementFabirc
+public class NodeImplementFactory
 {
     Dictionary<Type, NodeImplementItem> _dict = [];
     public IReadOnlyDictionary<Type, NodeImplementItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }

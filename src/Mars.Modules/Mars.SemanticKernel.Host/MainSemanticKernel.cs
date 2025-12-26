@@ -26,7 +26,7 @@ public static class MainSemanticKernel
         op.RegisterOption<AIToolOption>();
 
         app.ApplicationServices.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
-        app.ApplicationServices.GetRequiredService<NodeImplementFabirc>().RegisterAssembly(typeof(AIRequestNodeImpl).Assembly);
+        app.ApplicationServices.GetRequiredService<NodeImplementFactory>().RegisterAssembly(typeof(AIRequestNodeImpl).Assembly);
 
         return app;
     }

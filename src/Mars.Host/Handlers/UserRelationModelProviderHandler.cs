@@ -46,4 +46,9 @@ internal class UserRelationModelProviderHandler(IUserRepository userRepository) 
             Description = value.UserName,
             CreatedAt = value.CreatedAt,
         };
+
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return userRepository.DeleteMany(ids, cancellationToken);
+    }
 }

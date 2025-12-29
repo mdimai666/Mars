@@ -43,6 +43,15 @@ public class NodeMsg
             { nameof(Payload), Payload! }
         };
     }
+
+    public NodeMsg Copy(object? payload = null)
+    {
+        return new NodeMsg
+        {
+            Payload = payload ?? Payload,
+            Context = new Dictionary<string, object>(Context)
+        };
+    }
 }
 
 public record ExecutionParameters(

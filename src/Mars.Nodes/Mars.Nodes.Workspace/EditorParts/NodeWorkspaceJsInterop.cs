@@ -1,6 +1,4 @@
-using System;
 using System.Drawing;
-using System.Threading.Tasks;
 using Mars.Nodes.Workspace.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -63,7 +61,7 @@ namespace Mars.Nodes.Workspace.EditorParts
             }
         }
 
-        public async ValueTask ObserveAsync(ElementReference element, DotNetObjectReference<IResizeObserver> callback)
+        public async ValueTask ObserveSizeAsync(ElementReference element, DotNetObjectReference<IResizeObserver> callback)
         {
             var module = await _moduleTask.Value;
             await module.InvokeVoidAsync(
@@ -73,10 +71,26 @@ namespace Mars.Nodes.Workspace.EditorParts
             );
         }
 
-        public async ValueTask UnobserveAsync(ElementReference element)
+        public async ValueTask UnobserveSizeAsync(ElementReference element)
         {
             var module = await _moduleTask.Value;
             await module.InvokeVoidAsync("unobserveSize", element);
+        }
+
+        public async ValueTask ObserveScrollAsync(ElementReference element, DotNetObjectReference<IScrollObserver> callback)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync(
+                "observeScroll",
+                element,
+                callback
+            );
+        }
+
+        public async ValueTask UnobserveScrollAsync(ElementReference element)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("unobserveScroll", element);
         }
     }
 }

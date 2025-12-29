@@ -1,6 +1,8 @@
+using Mars.Core.Interfaces;
+
 namespace Mars.Host.Shared.Dto.Feedbacks;
 
-public record FeedbackSummary
+public record FeedbackSummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

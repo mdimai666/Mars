@@ -1,9 +1,10 @@
 using Mars.Core.Extensions;
+using Mars.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Mars.Host.Shared.Dto.Users;
 
-public record UserSummary
+public record UserSummary : IHasId
 {
     public required Guid Id { get; init; }
 

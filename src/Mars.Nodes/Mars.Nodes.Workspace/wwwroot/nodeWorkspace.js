@@ -58,7 +58,7 @@ export function HtmlGetElementScroll(selector) {
     return { x: e.scrollLeft, y: e.scrollTop }
 }
 
-const observers = new Map();
+const resizeObservers = new Map();
 
 export function observeSize(element, dotNetRef) {
     if (!element) return;
@@ -74,13 +74,49 @@ export function observeSize(element, dotNetRef) {
     });
 
     observer.observe(element);
-    observers.set(element, observer);
+    resizeObservers.set(element, observer);
 }
 
 export function unobserveSize(element) {
-    const observer = observers.get(element);
+    const observer = resizeObservers.get(element);
     if (observer) {
         observer.disconnect();
-        observers.delete(element);
+        resizeObservers.delete(element);
     }
+}
+
+const scrollObservers = new Map();
+
+/**
+ * 
+ * @param {HTMLElement} element
+ * @param {any} dotNetRef
+ * @returns
+ */
+export function observeScroll(element, dotNetRef) {
+    if (!element) return;
+
+    const handler = () => {
+        dotNetRef.invokeMethodAsync(
+            "OnElementScroll",
+            element.scrollTop,
+            element.scrollLeft,
+            element.scrollHeight,
+            element.clientHeight,
+            element.scrollWidth,
+            element.clientWidth
+        );
+    };
+
+    element.addEventListener("scroll", handler, { passive: true });
+
+    scrollObservers.set(element, handler);
+}
+
+export function unobserveScroll(element) {
+    const handler = scrollObservers.get(element);
+    if (!handler) return;
+
+    element.removeEventListener("scroll", handler);
+    scrollObservers.delete(element);
 }

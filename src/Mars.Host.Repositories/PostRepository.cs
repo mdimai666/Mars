@@ -257,4 +257,9 @@ internal class PostRepository : IPostRepository, IDisposable
 
     public Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken)
                         => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug == slug, cancellationToken);
+
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return _marsDbContext.Posts.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
 }

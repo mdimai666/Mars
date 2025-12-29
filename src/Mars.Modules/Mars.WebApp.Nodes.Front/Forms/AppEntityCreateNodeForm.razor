@@ -1,0 +1,137 @@
+@using AppFront.Shared.Components
+@using AppFront.Shared.Services
+@using Flurl.Http
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Mars.Core.Utils
+@using Mars.Nodes.Core.Models.EntityQuery
+@using Mars.Nodes.Front.Shared.Services
+@using Mars.Shared.Contracts.Files
+@using Mars.Shared.Models
+@using Mars.Shared.Resources
+@using Mars.WebApiClient.Interfaces
+@using Mars.WebApp.Nodes.Front.Forms.Components
+@using Mars.WebApp.Nodes.Front.Models.AppEntityForms
+@using Mars.WebApp.Nodes.Front.Models.NodeEntityQuery
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(AppEntityCreateNode))]
+
+<div class="form-group d-flex flex-column flex-fill gap-2">
+
+    @if (_busy)
+    {
+        <FluentProgressRing />
+    }
+    else if (EditModel is null)
+    {
+        <div>Error: BuilderModel is null</div>
+    }
+    else
+    {
+
+        @if (true)
+        {
+            <div class="d-flex flex-column gap-2">
+
+                <FormItem2 For="() => EditModel.EntityUri">
+                    <FluentSelect @bind-SelectedOption="@EditModel.EntityUri" Items="EditModel.FormsSchemaDict.Keys" TOption="SourceUri" />
+                </FormItem2>
+
+                <FluentSortableList Class="AppEntityCreateNode__SortableList"
+                                    Handle="true"
+                                    ListItemHeight="48px"
+                                    Items="EditModel.PropertyBindings"
+                                    OnUpdate="@SortList"
+                                    Context="item">
+                    <ItemTemplate>
+                        <div class="sortable-grab">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                        </div>
+                        <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                            <div class="d-grid align-items-center" style="grid-template-columns: 200px 33px 60px max-content;">
+                                <div class="@(true ? $"AppEntityCreateNode__SortableList__item--disabled" : "")">
+                                    <div>
+                                        <FluentInputLabel Label="@item.Title" Required=item.IsRequired />
+                                    </div>
+                                    <div class="text-secondary">
+                                        @item.PropertyName
+                                    </div>
+                                </div>
+                                <div>
+                                    <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.PropertyName" />
+                                </div>
+                                <FluentCheckbox @bind-Value="@item.IsEvalExpression" Label="X" title="IsExpression" />
+                                <div class="w-100">
+                                    <FluentTextField Placeholder="@item.Placeholder"
+                                                     @bind-Value="item.ValueOrExpression"
+                                                     Class="w-100"
+                                                     Required="@item.IsRequired" />
+                                </div>
+                            </div>
+                        </div>
+                    </ItemTemplate>
+                </FluentSortableList>
+                <div class="mt-1 hstack gap-1">
+                    footer
+                </div>
+            </div>
+        }
+        else
+        {
+            <div>Not implement</div>
+        }
+    }
+</div>
+
+@code {
+    [Inject] INodeEditorToolServiceClient _client { get; set; } = default!;
+
+    [CascadingParameter] Node? Value { get; set; }
+    AppEntityCreateNode Node { get => (AppEntityCreateNode)Value!; set => Value = value; }
+
+    bool _busy;
+    AppEntityCreateFormsBuilderDictionary? _builderDictionary;
+    AppEntityCreateFormSchemaEditModel? EditModel;
+
+    protected override void OnParametersSet()
+    {
+        if (EditModel is null)
+            _ = Load();
+    }
+
+    async Task Load()
+    {
+        if (EditModel is not null) return;
+
+        _busy = true;
+        StateHasChanged();
+
+        _builderDictionary ??= await _client.Client.Request("/api/WebAppNodesAppEntity/FormBuilder/CreateFormsBuilderDictionary")
+                                                    .GetJsonAsync<AppEntityCreateFormsBuilderDictionary>();
+
+        EditModel = new(_builderDictionary, Node.FormCommand);
+        if (!EditModel.EntityUri.HasValue)
+            EditModel.EntityUri = _builderDictionary.Forms.FirstOrDefault(s => s.EntityUri == "/Post/post")?.EntityUri
+                                                            ?? _builderDictionary.Forms.First().EntityUri;
+
+        EntityNameUpdated();
+
+        _busy = false;
+        StateHasChanged();
+    }
+
+    void EntityNameUpdated()
+    {
+        // AddButtonMenuItems = _builderDictionary!.Providers[EditModel!.EntityName].Methods.ToDictionary(s => s.Name, s => s.ToMethodIntelliView());
+    }
+
+    public override Task OnEditSave()
+    {
+        Node.FormCommand = EditModel!.ToRequest();
+        return Task.CompletedTask;
+    }
+
+    void SortList(FluentSortableListEventArgs args) => EditModel!.PropertyBindings = EditModel.PropertyBindings.MoveItem(args.OldIndex, args.NewIndex);
+
+}

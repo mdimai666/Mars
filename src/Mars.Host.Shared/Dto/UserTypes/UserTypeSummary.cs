@@ -1,6 +1,8 @@
+using Mars.Core.Interfaces;
+
 namespace Mars.Host.Shared.Dto.UserTypes;
 
-public record UserTypeSummary
+public record UserTypeSummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

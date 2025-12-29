@@ -35,4 +35,5 @@ public interface IUserRepository : IDisposable
     Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken);
     Task<bool> UserNameExistAsync(string username, CancellationToken cancellationToken);
     Task<bool> UsernameIsAlreadyTakenByAnotherUser(string newUsername, Guid userId, CancellationToken cancellationToken);
+    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

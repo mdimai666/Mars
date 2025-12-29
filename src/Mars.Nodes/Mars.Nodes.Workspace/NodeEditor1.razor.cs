@@ -517,7 +517,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     Task OnNodeContextMenu(NodeClickEventArgs e)
     {
-        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height, (int)e.MouseEvent.ClientX - 48, (int)e.MouseEvent.ClientY - 40);
+        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
+                                                (int)e.MouseEvent.ClientX - 48 + _nodeWorkspace1.ScrollInfo.ScrollLeft,
+                                                (int)e.MouseEvent.ClientY - 40 + _nodeWorkspace1.ScrollInfo.ScrollTop);
     }
 
     private static readonly Dictionary<string, string> NodeContextMenuItems = new()
@@ -536,7 +538,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     Task OnPaletteNodeContextMenu(NodeClickEventArgs e)
     {
         _currentPaletteNodeExamples = _examplesList.Where(s => s.NodeType == e.Node.GetType()).ToList();
-        return _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height, (int)e.MouseEvent.ClientX - 48, (int)e.MouseEvent.ClientY - 40);
+        return _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
+                                                (int)e.MouseEvent.ClientX - 48,
+                                                (int)e.MouseEvent.ClientY - 40);
     }
 
     void UseExample(NodeExampleInfo example)
@@ -550,7 +554,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     Task OnWireContextMenu(SelWireEventArgs e)
     {
-        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height, (int)e.MouseEvent.ClientX - 48, (int)e.MouseEvent.ClientY - 40);
+        return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
+                                                (int)e.MouseEvent.ClientX - 48 + _nodeWorkspace1.ScrollInfo.ScrollLeft,
+                                                (int)e.MouseEvent.ClientY - 40 + _nodeWorkspace1.ScrollInfo.ScrollTop);
     }
 
     private static readonly Dictionary<string, string> WireContextMenuItems = new()

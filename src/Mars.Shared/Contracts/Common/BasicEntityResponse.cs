@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Models.Interfaces;
+using Mars.Core.Interfaces;
 
 namespace Mars.Shared.Contracts.Common;
 

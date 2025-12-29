@@ -17,12 +17,13 @@ namespace Mars.Integration.Tests.Nodes;
 
 public class AppEntityReadNodeTests : ApplicationTests
 {
-    const string _apiUrl = "/api2/url1";
+    const string _apiUrl = "/api2/AppEntityReadNode";
     private readonly INodeService _nodeService;
 
     public AppEntityReadNodeTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
+        _fixture.Customize(new MetaFieldDtoCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }
 
@@ -59,8 +60,9 @@ public class AppEntityReadNodeTests : ApplicationTests
 
         var metaModelTypesLocator = AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>();
         var queryLangHelperAvailableMethods = AppFixture.ServiceProvider.GetRequiredService<IQueryLangHelperAvailableMethodsProvider>();
+        var databaseEntityTypeCatalogService = AppFixture.ServiceProvider.GetRequiredService<IDatabaseEntityTypeCatalogService>();
 
-        var builder = new NodeEntityQueryBuilder(metaModelTypesLocator, queryLangHelperAvailableMethods);
+        var builder = new NodeEntityQueryBuilder(metaModelTypesLocator, queryLangHelperAvailableMethods, databaseEntityTypeCatalogService);
 
         var formDict = builder.CreateDictionary();
 

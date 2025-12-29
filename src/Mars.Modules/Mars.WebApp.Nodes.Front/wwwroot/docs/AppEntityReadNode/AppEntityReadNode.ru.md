@@ -18,6 +18,7 @@ AppEntityReadNode — это узел для чтения данных из су
 | первая запись | page.First()
 | все записи со статусом draft  | post.Where(post.Status == "draft")
 | запись с самым длинным названием |    post.OrderByDescending(x=>x.Title.Length)
+| содержит тег | post.Where(post.Tags.Contains("tag1")) |
 
 ### Methods
 | Name	|   Description

@@ -18,7 +18,7 @@ using NSubstitute;
 
 namespace Test.Mars.Host.Services.PostJsonServices;
 
-public sealed class PostJsonServiceTests : PostJsonServiceTestBase
+public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 {
     [Fact]
     public async Task GetDetailFromRepository_RetriveMetaFields_PrimitivesValuesSuccess()

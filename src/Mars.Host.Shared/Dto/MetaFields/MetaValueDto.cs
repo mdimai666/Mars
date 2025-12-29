@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using Mars.Core.Interfaces;
 using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Host.Shared.Dto.MetaFields;
 
 [DebuggerDisplay("{Type}={Value} /id={Id}")]
-public record MetaValueDto
+public record MetaValueDto : IHasId
 {
     public required Guid Id { get; init; }
     public required MetaFieldType Type { get; init; }

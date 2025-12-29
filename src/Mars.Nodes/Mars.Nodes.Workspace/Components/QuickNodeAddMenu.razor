@@ -22,7 +22,11 @@
                     NodeFil f = _f;
                     <li class="list-group-item px-1 py-0" :key="'pnode' + node.id">
                         <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <NodeComponent Node="@f.Node" OnMouseDown=@(e => SelectNode(e, f.Node)) FixedWidth="120" />
+                            <NodeComponent Node="@f.Node"
+                                           OnMouseDown=@(e => SelectNode(e, f.Node))
+                                           OnContextMenu="@(e=>OnNodeContextMenu.InvokeAsync(new(){ MouseEvent = e, Node = f.Node }))"
+                                           ShowLabelInsteadDisplayName="true"
+                                           FixedWidth="120" />
                         </svg>
                     </li>
                 }
@@ -38,6 +42,7 @@
     [Parameter] public IEnumerable<PaletteNode> Palette { get; set; } = default!;
 
     [Parameter] public EventCallback<SelectNodeEvent> OnSelectNode { get; set; }
+    [Parameter] public EventCallback<NodeClickEventArgs> OnNodeContextMenu { get; set; }
 
     FluentSearch inputSearch = default!;
 
@@ -45,6 +50,8 @@
 
     void SelectNode(MouseEventArgs e, Node node)
     {
+        if (e.Button == (long)MouseButton.Right) return;
+
         SelectNodeEvent a = new(e, node);
 
         OnSelectNode.InvokeAsync(a);

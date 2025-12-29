@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
-using Mars.Shared.Models;
 using Mars.WebApp.Nodes.Models.NodeEntityQuery;
 
 namespace Mars.WebApp.Nodes.Nodes;
@@ -10,8 +9,6 @@ namespace Mars.WebApp.Nodes.Nodes;
 [Display(GroupName = "entity")]
 public class AppEntityReadNode : Node
 {
-    public SourceUri EntityUri { get; set; } = "/entity/Post";
-
     /// <summary>
     /// Example: Posts.Where(post.Title!=\"111\").ToList()
     /// </summary>
@@ -26,8 +23,6 @@ public class AppEntityReadNode : Node
         Inputs = [new()];
         Outputs = [
             new (){ Label = "Success" },
-            //new (){ Label = "ValidationError" },
-            //new (){ Label = "Error" },
         ];
     }
 }

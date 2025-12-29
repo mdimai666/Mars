@@ -1,8 +1,9 @@
+using Mars.Core.Interfaces;
 using Mars.Host.Shared.Dto.Files;
 
 namespace Mars.Host.Shared.Dto.Galleries;
 
-public record GallerySummary
+public record GallerySummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
+        <ProjectReference Include="..\..\Mars.Host.Infrastructure\Mars.Host.Infrastructure.csproj" />
         <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
         <ProjectReference Include="..\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
         <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />

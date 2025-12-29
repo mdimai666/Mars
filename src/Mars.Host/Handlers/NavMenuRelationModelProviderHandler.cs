@@ -46,4 +46,9 @@ internal class NavMenuRelationModelProviderHandler(INavMenuRepository navMenuRep
             Description = value.Slug,
             CreatedAt = value.CreatedAt,
         };
+
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return navMenuRepository.DeleteMany(ids, cancellationToken);
+    }
 }

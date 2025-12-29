@@ -1,12 +1,12 @@
-using System.ComponentModel.DataAnnotations;
+using Mars.Core.Interfaces;
 using Mars.Host.Data.Entities;
 
 namespace Mars.Host.Data.Common;
 
-public interface IBasicEntity
+public interface IBasicEntity : IHasId
 {
-    [Key]
-    Guid Id { get; set; }
+    //[Key]
+    //Guid Id { get; set; }
 
     DateTimeOffset CreatedAt { get; set; }
 

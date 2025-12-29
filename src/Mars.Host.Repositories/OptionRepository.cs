@@ -134,7 +134,6 @@ internal class OptionRepository : IOptionRepository
         _disposed = true;
     }
 
-
     public async Task<IReadOnlyCollection<OptionSummary>> ListAll(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -173,5 +172,10 @@ internal class OptionRepository : IOptionRepository
 
         return list.ToMap(OptionMapping.ToSummaryList);
 
+    }
+
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return _marsDbContext.Options.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
     }
 }

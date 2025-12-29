@@ -20,4 +20,5 @@ public interface IFeedbackRepository : IDisposable
     Task<IReadOnlyCollection<FeedbackDetail>> ListAllDetail(ListAllFeedbackQuery query, CancellationToken cancellationToken);
     Task<ListDataResult<FeedbackSummary>> List(ListFeedbackQuery query, CancellationToken cancellationToken);
     Task<PagingResult<FeedbackSummary>> ListTable(ListFeedbackQuery query, CancellationToken cancellationToken);
+    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

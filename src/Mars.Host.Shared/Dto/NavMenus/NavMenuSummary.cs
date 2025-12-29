@@ -1,6 +1,8 @@
+using Mars.Core.Interfaces;
+
 namespace Mars.Host.Shared.Dto.NavMenus;
 
-public record NavMenuSummary
+public record NavMenuSummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

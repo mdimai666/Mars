@@ -10,6 +10,8 @@ internal class NodeEditorToolServiceClient : INodeEditorToolServiceClient
     protected string _basePath;
     protected string _controllerName;
 
+    public IFlurlClient Client => _client;
+
     public NodeEditorToolServiceClient(IFlurlClient client)
     {
         _basePath = "/api/";

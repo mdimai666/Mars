@@ -3,6 +3,7 @@ using System.Reflection;
 using Mars.Host.Features;
 using Mars.Host.Shared.Services;
 using Mars.Options.Models;
+using Mars.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -33,6 +34,7 @@ internal static class MarsStartupPartSwagger
                 c.DocumentFilter<FeatureGateSwaggerFilter>();
                 c.OperationFilter<FeatureGateOperationFilter>();
                 c.UseCustomizeMetaDictionarySchemaFilter();
+                c.UseCustomizeSourceUriTypeSchemaFilter();
                 //c.UseInlineDefinitionsForEnums();
 
                 //Allow Auth
@@ -176,15 +178,15 @@ internal static class MarsStartupPartSwagger
             Type = "object",
             AdditionalProperties = new OpenApiSchema
             {
-                OneOf = new List<OpenApiSchema>
-            {
+                OneOf =
+            [
                 new OpenApiSchema { Type = "string" },
                 new OpenApiSchema { Type = "number" },
                 new OpenApiSchema { Type = "integer" },
                 new OpenApiSchema { Type = "boolean" },
                 new OpenApiSchema { Type = "object" },
                 new OpenApiSchema { Type = "array" }
-            }
+            ]
             },
             Example = new OpenApiObject
             {
@@ -196,6 +198,23 @@ internal static class MarsStartupPartSwagger
 
         options.SchemaFilter<MetaDictionarySchemaFilter>();
         options.OperationFilter<PostJsonExamplesFilter>();
+
+    }
+
+    static void UseCustomizeSourceUriTypeSchemaFilter(this SwaggerGenOptions options)
+    {
+        options.MapType<SourceUri>(() => new OpenApiSchema
+        {
+            Type = "string",
+            Format = null,
+
+            Example = new OpenApiString("/Post/post"),
+
+            Properties = null,
+            AdditionalPropertiesAllowed = false,
+        });
+
+        options.SchemaFilter<SourceUriSchemaFilter>();
 
     }
 }

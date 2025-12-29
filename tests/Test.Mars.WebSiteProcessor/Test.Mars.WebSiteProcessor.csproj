@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />

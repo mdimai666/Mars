@@ -1,6 +1,8 @@
+using Mars.Core.Interfaces;
+
 namespace Mars.Host.Shared.Dto.Files;
 
-public record FileSummary
+public record FileSummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

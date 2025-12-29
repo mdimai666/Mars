@@ -20,5 +20,5 @@ public interface IOptionRepository : IDisposable
     Task<IReadOnlyCollection<OptionSummary>> ListAll(CancellationToken cancellationToken);
     Task<ListDataResult<OptionSummary>> List(ListOptionQuery query, CancellationToken cancellationToken);
     Task<PagingResult<OptionSummary>> ListTable(ListOptionQuery query, CancellationToken cancellationToken);
-
+    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

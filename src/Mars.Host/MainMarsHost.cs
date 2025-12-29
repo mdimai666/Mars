@@ -2,7 +2,6 @@ using System.Reflection;
 using FluentValidation;
 using Mars.Host.Handlers;
 using Mars.Host.Managers;
-using Mars.Host.QueryLang;
 using Mars.Host.Services;
 using Mars.Host.Services.GallerySpace;
 using Mars.Host.Shared.Attributes;
@@ -66,6 +65,7 @@ public static class MainMarsHost
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
         services.AddScoped<SiteFaviconConfiguratorHandler>();
+        services.AddSingleton<IDatabaseEntityTypeCatalogService, DatabaseEntityTypeCatalogService>();
 
         ValidatorFabric.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
 

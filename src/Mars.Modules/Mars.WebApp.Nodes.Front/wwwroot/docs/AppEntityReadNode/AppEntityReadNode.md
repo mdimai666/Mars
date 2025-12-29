@@ -18,6 +18,7 @@ The node allows you to:
 | first entry | page.First()
 | all entries with 'draft' status  | post.Where(post.Status == "draft")
 | the entry with the longest title |    post.OrderByDescending(x=>x.Title.Length)
+| the post contain tag | post.Where(post.Tags.Contains("tag1")) |
 
 ### Methods
 | Name	|   Description

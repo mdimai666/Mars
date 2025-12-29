@@ -1,5 +1,6 @@
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Shared.Models;
 
 namespace Mars.Host.Shared.Services;
 
@@ -13,8 +14,17 @@ public interface IMetaModelTypesLocator
     IReadOnlyCollection<MetaRelationModel> AllMetaRelationsStructure();
 
     void InvalidateCompiledMetaMtoModels();
-    Dictionary<string, Type> MetaMtoModelsCompiledTypeDict { get; }
+    IReadOnlyDictionary<string, MtoModelInfo> MetaMtoModelsCompiledTypeDict { get; }
     void UpdateMetaModelMtoRuntimeCompiledTypes();
     void TryUpdateMetaModelMtoRuntimeCompiledTypes();
     Task<string> MetaTypesSourceCode(string lang = "csharp");
+    MetaModelSourceResult? ResolveEntityNameToSourceUri(string entityName);
+}
+
+public record MetaModelSourceResult
+{
+    public required SourceUri EntityUri { get; init; }
+    public required Type MetaEntityModelType { get; init; }
+    public required Type BaseEntityType { get; init; }
+    public required bool IsMetaType { get; init; }
 }

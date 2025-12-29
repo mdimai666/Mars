@@ -9,7 +9,7 @@ public interface IMetaRelationModelProviderHandler
     MetaRelationModel Structure();
     Task<ListDataResult<MetaValueRelationModelSummary>> ListData(MetaValueRelationModelsListQuery query, CancellationToken cancellationToken);
     Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetIds(string modelName, Guid[] ids, CancellationToken cancellationToken);
-
+    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }
 
 public interface IMetaRelationModelProviderWithSubItemsHandler

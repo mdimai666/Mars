@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Mars.Host.Handlers;
 
-internal class FileRelationModelProviderHandler(IFileRepository fileRepository, IOptions<FileHostingInfo> hostingInfo) : IMetaRelationModelProviderHandler
+internal class FileRelationModelProviderHandler(IFileRepository fileRepository, IOptions<FileHostingInfo> hostingInfo, IFileService fileService) : IMetaRelationModelProviderHandler
 {
     public async Task<Dictionary<Guid, object>> ListHandle(IReadOnlyCollection<Guid> ids, string modelName, CancellationToken cancellationToken)
     {
@@ -47,4 +47,12 @@ internal class FileRelationModelProviderHandler(IFileRepository fileRepository, 
             Description = value.Url,
             CreatedAt = value.CreatedAt,
         };
+
+    public async Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        foreach (var id in ids)
+            await fileService.Delete(id, cancellationToken);
+
+        return ids.Count;
+    }
 }

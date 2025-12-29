@@ -14,4 +14,5 @@ public interface INavMenuRepository : IDisposable
     Task<IReadOnlyCollection<NavMenuDetail>> ListAllActiveDetail(ListAllNavMenuQuery query, CancellationToken cancellationToken);
     Task<ListDataResult<NavMenuSummary>> List(ListNavMenuQuery query, CancellationToken cancellationToken);
     Task<PagingResult<NavMenuSummary>> ListTable(ListNavMenuQuery query, CancellationToken cancellationToken);
+    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

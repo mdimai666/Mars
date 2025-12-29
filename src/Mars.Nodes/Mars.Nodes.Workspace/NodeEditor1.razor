@@ -206,7 +206,8 @@
                                     OnWorkspaceDblClick="OnWorkspaceDblClick">
                         <QuickNodeAddMenu Palette="Palette"
                                           @ref=quickNodeAddMenu
-                                          OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))" />
+                                          OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))"
+                                          OnNodeContextMenu="OnPaletteNodeContextMenu" />
                         <FluentMenu UseMenuService="!true"
                                     @ref="_workspaceContextMenu"
                                     @bind-Open="_showWorkspaceContextMenu"

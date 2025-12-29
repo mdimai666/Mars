@@ -308,6 +308,11 @@ internal class UserRepository : IUserRepository, IDisposable
 
     }
 
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return _marsDbContext.Users.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+
     // -----------------------
 
     public async Task<UserActionResult> SetPassword(SetUserPasswordQuery query, CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <!--Project-->
@@ -40,6 +40,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9" />
+        <PackageReference Include="Flurl.Http" Version="4.0.2" />
         <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.0.1" />
     </ItemGroup>
 

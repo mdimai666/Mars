@@ -1,5 +1,7 @@
 using System.Collections.Frozen;
+using System.Collections.Immutable;
 using FluentValidation;
+using Mars.Core.Extensions;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Repositories;
@@ -7,7 +9,7 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.QueryLang;
+namespace Mars.Host.Services;
 
 internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeService
 {
@@ -18,14 +20,19 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
     private readonly IPostTypeRepository _postTypeRepository;
     private readonly IServiceCollection _serviceCollection;
     private readonly IMetaEntityTypeProvider _metaEntityTypeProvider;
+    private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
     public SemaphoreSlim _lockPostTypes = new(1, 1);
 
-    public MetaModelTypesLocator(IServiceScopeFactory serviceScopeFactory, IServiceCollection serviceCollection, IMetaEntityTypeProvider metaEntityTypeProvider)
+    public MetaModelTypesLocator(IServiceScopeFactory serviceScopeFactory,
+                                IServiceCollection serviceCollection,
+                                IMetaEntityTypeProvider metaEntityTypeProvider,
+                                IDatabaseEntityTypeCatalogService databaseEntityTypeCatalogService)
     {
         _scope = serviceScopeFactory.CreateScope();
         _postTypeRepository = _scope.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         _serviceCollection = serviceCollection;
         _metaEntityTypeProvider = metaEntityTypeProvider;
+        _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
     }
 
     private async Task<FrozenDictionary<string, PostTypeInfo>> GetPostTypes()
@@ -33,7 +40,7 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         try
         {
             await _lockPostTypes.WaitAsync(1000);
-            _postTypesById = new();
+            _postTypesById = [];
 
             var types = await _postTypeRepository.ListAllDetail(CancellationToken.None);
             return types.ToFrozenDictionary(s => s.TypeName, s =>
@@ -78,16 +85,20 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         _postTypes ??= await GetPostTypes();
     }
 
+    IReadOnlyDictionary<string, Type>? _metaRelationModelProviderDict;
+
     public IReadOnlyCollection<string> ListMetaRelationModelProviderKeys()
     {
-        var providers = _serviceCollection.Where(x => x.IsKeyedService
+        _metaRelationModelProviderDict ??= _serviceCollection.Where(x => x.IsKeyedService
                                             && x.ServiceType == typeof(IMetaRelationModelProviderHandler)
                                             //&& typeof(IMetaRelationModelProviderHandler).IsAssignableFrom(x.ServiceType)
                                             )
                                 .Where(s => s.ServiceKey.GetType() == typeof(string))
-                                .ToDictionary(g => g.ServiceKey!);
+                                .ToDictionary(g => (string)g.ServiceKey!, g => g.ServiceType);
 
-        return providers.Select(s => (string)s.Key).ToList();
+        return _metaRelationModelProviderDict.Keys is IReadOnlyCollection<string> collection
+                    ? collection
+                    : _metaRelationModelProviderDict.Keys.ToArray();
     }
 
     public IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName)
@@ -119,18 +130,18 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         //TODO: для PostType добавить VersionToken. B повесить хук, который инвалидирует при изменении
     }
 
-    Dictionary<string, Type>? _metaMtoModelsCompiledTypeDict = null;
+    IReadOnlyDictionary<string, MtoModelInfo>? _metaMtoModelsCompiledTypeDict;
     string? _metaMtoModelsCompiledSourceCode = null;
 
-    public Dictionary<string, Type> MetaMtoModelsCompiledTypeDict => _metaMtoModelsCompiledTypeDict ?? [];
+    public IReadOnlyDictionary<string, MtoModelInfo> MetaMtoModelsCompiledTypeDict => _metaMtoModelsCompiledTypeDict ?? ImmutableDictionary<string, MtoModelInfo>.Empty;
 
     private object _metaMtoModelsCompiledTypeDictLock = new();
 
     public void UpdateMetaModelMtoRuntimeCompiledTypes()
     {
-        Dictionary<string, Type> result = _metaEntityTypeProvider.GenerateMetaTypes().ConfigureAwait(false).GetAwaiter().GetResult();
+        var result = _metaEntityTypeProvider.GenerateMetaTypes().ConfigureAwait(false).GetAwaiter().GetResult();
 
-        _metaMtoModelsCompiledTypeDict = result;
+        _metaMtoModelsCompiledTypeDict = result.ToDictionary(s => s.KeyName);
     }
 
     public async Task<string> MetaTypesSourceCode(string lang = "csharp")
@@ -159,6 +170,34 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
                 UpdateMetaModelMtoRuntimeCompiledTypes();
             }
         }
+    }
+
+    public MetaModelSourceResult? ResolveEntityNameToSourceUri(string entityName)
+    {
+        var databaseEntity = _databaseEntityTypeCatalogService.ResolveName(entityName);
+        if (databaseEntity is not null) return new()
+        {
+            EntityUri = databaseEntity.EntityUri,
+            BaseEntityType = databaseEntity.MetaEntityModelType,
+            IsMetaType = databaseEntity.IsMetaType,
+            MetaEntityModelType = databaseEntity.MetaEntityModelType,
+        };
+
+        TryUpdateMetaModelMtoRuntimeCompiledTypes();
+
+        var metaMtoType = MetaMtoModelsCompiledTypeDict.GetValueOrDefault(entityName);
+        if (metaMtoType is not null)
+        {
+            return new MetaModelSourceResult
+            {
+                EntityUri = $"/{metaMtoType.BaseEntityType.Name.TrimSubstringEnd("Entity")}/{metaMtoType.KeyName}",
+                MetaEntityModelType = metaMtoType.CreatedType,
+                IsMetaType = true,
+                BaseEntityType = metaMtoType.BaseEntityType,
+            };
+        }
+
+        return null;
     }
 
     [StartupOrder(10)]

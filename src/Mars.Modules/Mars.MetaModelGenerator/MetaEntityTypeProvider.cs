@@ -49,7 +49,7 @@ internal class MetaEntityTypeProvider : IMetaEntityTypeProvider
         return runtimeMetaTypeCompiler.GenerateFullSourceCode(dict.Values.ToArray(), metaModelTypesResolverDict, true);
     }
 
-    public async Task<Dictionary<string, Type>> GenerateMetaTypes(/*pass external types*/)
+    public async Task<IReadOnlyCollection<MtoModelInfo>> GenerateMetaTypes(/*pass external types*/)
     {
         var dict = await PrepateData();
         var runtimeMetaTypeCompiler = new RuntimeMetaTypeCompiler();
@@ -57,7 +57,12 @@ internal class MetaEntityTypeProvider : IMetaEntityTypeProvider
 
         var compiledTypesDict = await runtimeMetaTypeCompiler.Compile(dict.Values.ToArray(), metaModelTypesResolverDict);
 
-        return dict.ToDictionary(s => s.Key, s => compiledTypesDict[s.Value.NewClassName]);
+        return dict.Select(s => new MtoModelInfo
+        {
+            CreatedType = compiledTypesDict[s.Value.NewClassName],
+            KeyName = s.Key,
+            BaseEntityType = s.Value.BaseEntityType
+        }).ToList();
     }
 
     /// <summary>

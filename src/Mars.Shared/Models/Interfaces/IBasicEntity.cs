@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Users;
+using Mars.Core.Interfaces;
 
 namespace Mars.Shared.Models.Interfaces;
 
@@ -18,8 +17,3 @@ public interface IBasicEntity : IHasId
 //    Guid UserId { get; set; }
 //    UserSummaryResponse? User { get; set; }
 //}
-
-public interface IHasId
-{
-    Guid Id { get; }
-}

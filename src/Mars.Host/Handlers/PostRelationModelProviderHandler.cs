@@ -77,4 +77,9 @@ internal class PostRelationModelProviderHandler(IPostRepository postRepository, 
         };
 
     //TODO: переместить сюда PostTypes list sub types
+
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return postRepository.DeleteMany(ids, cancellationToken);
+    }
 }

@@ -15,11 +15,15 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
 {
     private readonly MarsDbContext _marsDbContext;
     private readonly IMetaModelTypesLocator? _metaModelTypesLocator;
+    private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
 
-    public QueryLangLinqDatabaseQueryHandler(MarsDbContext MarsDbContext, IMetaModelTypesLocator? metaModelTypesLocator)
+    public QueryLangLinqDatabaseQueryHandler(MarsDbContext MarsDbContext,
+                                            IMetaModelTypesLocator? metaModelTypesLocator,
+                                            IDatabaseEntityTypeCatalogService databaseEntityTypeCatalogService)
     {
         _marsDbContext = MarsDbContext;
         _metaModelTypesLocator = metaModelTypesLocator;
+        _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
     }
 
     public async Task<object?> Handle(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
@@ -31,20 +35,22 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         //var ppt = new XInterpreter(pageContext, localVaribles);
         var chains = TextHelper.ParseChainPairKeyValue(linqExpression);
 
-        var xEntityType = FindEntityDbSetByPropertyName(efPropertyName);
+        //var resolveResult = _databaseEntityTypeCatalogService.ResolveName(efPropertyName);
+        var resolveResult = _metaModelTypesLocator.ResolveEntityNameToSourceUri(efPropertyName);
+        if (resolveResult is null)
+            throw new InvalidOperationException($"ef entity '{efPropertyName}' or MetaType not found");
+
         IQueryable? query;
+        Type xEntityType = resolveResult.MetaEntityModelType;
+        var isMetaType = resolveResult.IsMetaType;
 
-        xEntityType ??= FindEntityDbSetByTypeName(efPropertyName);
-
-        xEntityType ??= FindEntityDbSetByTypeName(efPropertyName + "Entity");
-
-        var isMetaType = false;
-
-        if (xEntityType is not null) query = GetEntitySbSet(xEntityType);
+        if (!isMetaType)
+        {
+            query = GetEntityDbSet(xEntityType);
+        }
         else
         {
-            (xEntityType, query) = GetMetaTypeQuerySet(efPropertyName);
-            isMetaType = true;
+            query = GetMetaTypeQuerySet(resolveResult);
         }
 
         if (query is null)
@@ -71,7 +77,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
                     throw new NotImplementedException("Union for metaTypes not work yet. Please use 'ef.Union(arr1,arr2) method. \nLike: 'posts = ef.Union(myType.Take(1),posts.Where(post.Slug=123))'");
                 }
 
-                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator).Handle(args, ppt, cancellationToken);
+                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService).Handle(args, ppt, cancellationToken);
                 var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
 
                 result = instance.InvokeMethodArgs(methodName, [internalQuery]);
@@ -87,38 +93,49 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         return result;
     }
 
-    IQueryable GetEntitySbSet(Type entityType)
+    IQueryable GetEntityDbSet(Type entityType)
     {
+        // DbContext.Set<TEntity>()
         var dbContext = _marsDbContext;
-        MethodInfo method = dbContext.GetType().GetMethod(nameof(DbContext.Set), BindingFlags.Public | BindingFlags.Instance, [])!;
-        method = method.MakeGenericMethod(entityType);
-        return (method.Invoke(dbContext, null) as IQueryable)!;
+        MethodInfo methodSet = dbContext.GetType().GetMethod(nameof(DbContext.Set), BindingFlags.Public | BindingFlags.Instance, [])!;
+        methodSet = methodSet.MakeGenericMethod(entityType);
+        var query = (methodSet.Invoke(dbContext, null) as IQueryable)!;
+
+        // QueryableExtensions.AsNoTracking<TEntity>(IQueryable<TEntity>)
+        MethodInfo asNoTrackingMethod = typeof(EntityFrameworkQueryableExtensions)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(m =>
+                m.Name == nameof(EntityFrameworkQueryableExtensions.AsNoTracking) &&
+                m.IsGenericMethodDefinition &&
+                m.GetParameters().Length == 1);
+
+        asNoTrackingMethod = asNoTrackingMethod.MakeGenericMethod(entityType);
+
+        query = (IQueryable)asNoTrackingMethod.Invoke(null, [query])!;
+
+        return query;
     }
 
-    (Type? entityType, IQueryable?) GetMetaTypeQuerySet(string typeName)
+    IQueryable? GetMetaTypeQuerySet(MetaModelSourceResult metaModelType)
     {
         _metaModelTypesLocator.TryUpdateMetaModelMtoRuntimeCompiledTypes();
 
-        if (_metaModelTypesLocator.MetaMtoModelsCompiledTypeDict.TryGetValue(typeName, out var metaModelType))
-        {
-            var dbContext = _marsDbContext;
+        var dbContext = _marsDbContext;
 
-            if (typeof(PostEntity).IsAssignableFrom(metaModelType))
-            {
-                var query = _marsDbContext.Posts.Include(s => s.MetaValues!)
-                                                    .ThenInclude(s => s.MetaField)
-                                                .Include(s => s.User)
-                                                .Include(s => s.PostType)
-                                                .AsNoTracking()
-                                                .Where(s => s.PostType.TypeName == typeName);
-                return (metaModelType, ApplySelectExpression(query, metaModelType));
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+        if (typeof(PostEntity) == metaModelType.BaseEntityType)
+        {
+            var query = _marsDbContext.Posts.Include(s => s.MetaValues!)
+                                                .ThenInclude(s => s.MetaField)
+                                            .Include(s => s.User)
+                                            .Include(s => s.PostType)
+                                            .AsNoTracking()
+                                            .Where(s => s.PostType.TypeName == metaModelType.EntityUri[1]);
+            return ApplySelectExpression(query, metaModelType.MetaEntityModelType);
         }
-        return (null, null); //throw new KeyNotFoundException($"IMetaModelTypesLocator metaType '{typeName}' not found");
+        else
+        {
+            throw new NotImplementedException();
+        }
     }
 
     IQueryable? ApplySelectExpression(IQueryable<PostEntity> query, Type compiledType)
@@ -136,33 +153,6 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         return selectMethod.Invoke(query, [query, selectExpression]) as IQueryable;
     }
 
-    Type? FindEntityDbSetByPropertyName(string entityName)
-    {
-        var dbContext = _marsDbContext;
-
-        _memberDbSetsByName ??= typeof(MarsDbContext).GetProperties()
-                .Where(p => p.PropertyType.IsGenericType
-                            && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)))
-                .ToDictionary(s => s.Name);
-
-        return _memberDbSetsByName.GetValueOrDefault(entityName)?.PropertyType.GenericTypeArguments[0];
-    }
-
-    static Dictionary<string, PropertyInfo>? _memberDbSetsByName;
-    static Dictionary<string, PropertyInfo>? _memberDbSetsByTypeName;
-
-    Type? FindEntityDbSetByTypeName(string typeName)
-    {
-        var dbContext = _marsDbContext;
-
-        _memberDbSetsByTypeName ??= typeof(MarsDbContext).GetProperties()
-                .Where(p => p.PropertyType.IsGenericType
-                            && (p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)))
-                .ToDictionary(s => s.PropertyType.GenericTypeArguments[0].Name);
-
-        return _memberDbSetsByTypeName.GetValueOrDefault(typeName)?.PropertyType.GenericTypeArguments[0];
-    }
-
     async Task<IEnumerable<object>> ExecuteUnionExpressions(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
     {
         var chains = TextHelper.ParseArguments(linqExpression);
@@ -173,7 +163,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator).Handle(args, ppt, cancellationToken);
+            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService).Handle(args, ppt, cancellationToken);
             var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
 
             //list.Add(internalQuery);

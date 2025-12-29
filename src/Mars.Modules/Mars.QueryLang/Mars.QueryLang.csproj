@@ -5,7 +5,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Mars.Host\Mars.Host.csproj" />
+	  <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

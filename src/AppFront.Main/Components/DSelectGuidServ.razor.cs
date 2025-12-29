@@ -1,4 +1,4 @@
-using Mars.Shared.Models.Interfaces;
+using Mars.Core.Interfaces;
 using Microsoft.AspNetCore.Components;
 
 namespace AppFront.Shared.Components;
@@ -32,7 +32,7 @@ public partial class DSelectGuidServ<TModel, TListQueryRequest>
     [Parameter] public Func<TModel, string>? LabelExpression { get; set; }
     [Parameter] public string Placeholder { get; set; } = "-не выбрано-";
 
-    IEnumerable<TModel> VarianList = new List<TModel>();
+    IEnumerable<TModel> VarianList = [];
 
     string? errorMessage = null;
     //bool Busy = true;

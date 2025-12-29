@@ -1,8 +1,9 @@
+using Mars.Core.Interfaces;
 using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Host.Shared.Dto.MetaFields;
 
-public record MetaFieldDto
+public record MetaFieldDto : IHasId
 {
     public required Guid Id { get; init; }
     public required Guid ParentId { get; init; }

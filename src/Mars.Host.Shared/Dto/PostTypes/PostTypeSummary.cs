@@ -1,8 +1,9 @@
+using Mars.Core.Interfaces;
 using Mars.Shared.Validators;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
 
-public record PostTypeSummary
+public record PostTypeSummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

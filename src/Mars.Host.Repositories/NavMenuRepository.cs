@@ -18,7 +18,6 @@ internal class NavMenuRepository : INavMenuRepository
 
     IQueryable<NavMenuEntity> _listAllQuery => _marsDbContext.NavMenus.OrderByDescending(s => s.CreatedAt);
 
-
     public NavMenuRepository(MarsDbContext marsDbContext)
     {
         _marsDbContext = marsDbContext;
@@ -193,5 +192,10 @@ internal class NavMenuRepository : INavMenuRepository
 
         return list.ToMap(NavMenuMapping.ToSummaryList);
 
+    }
+
+    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        return _marsDbContext.NavMenus.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
     }
 }

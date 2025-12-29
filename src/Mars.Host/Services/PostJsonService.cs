@@ -11,9 +11,9 @@ using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Mappings.PostJsons;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Utils;
 using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.Host.Services;
@@ -168,7 +168,7 @@ internal class PostJsonService : IPostJsonService
         {
             var jsonVal = meta[key];
             var blank = ModifyMetaValueDetailQuery.GetBlank(mfDict[key]);
-            var modified = UpdateMetaValueFromJson(blank, jsonVal);
+            var modified = MetaFieldUtils.MetaValueFromJson(blank, jsonVal);
             appendValues.Add(modified);
         }
 
@@ -196,7 +196,7 @@ internal class PostJsonService : IPostJsonService
         {
             var jsonVal = meta[key];
             var blank = ModifyMetaValueDetailQuery.GetBlank(mfDict[key]);
-            var modified = UpdateMetaValueFromJson(blank, jsonVal);
+            var modified = MetaFieldUtils.MetaValueFromJson(blank, jsonVal);
             return modified;
         }).ToList();
 
@@ -205,39 +205,8 @@ internal class PostJsonService : IPostJsonService
             var updValue = meta.GetValueOrDefault(s.MetaField.Key);
 
             if (updValue == null) return s.ToModifyDto();
-            else return UpdateMetaValueFromJson(s.ToModifyDto(), updValue);
+            else return MetaFieldUtils.MetaValueFromJson(s.ToModifyDto(), updValue);
         }).Concat(appendValues).ToList();
-    }
-
-    internal static ModifyMetaValueDetailQuery UpdateMetaValueFromJson(ModifyMetaValueDetailQuery mv, JsonValue jsonValue)
-    {
-        //if(mv.NULL && jsonValue == null) 
-
-        var t = mv.MetaField.Type;
-        if (t == MetaFieldType.Bool)
-            return mv with { Bool = jsonValue.GetValue<bool>() };
-        else if (t == MetaFieldType.Int)
-            return mv with { Int = jsonValue.GetValue<int>() };
-        else if (t == MetaFieldType.Float)
-            return mv with { Float = jsonValue.GetValue<float>() };
-        else if (t == MetaFieldType.Decimal)
-            return mv with { Decimal = jsonValue.GetValue<decimal>() };
-        else if (t == MetaFieldType.Long)
-            return mv with { Long = jsonValue.GetValue<long>() };
-        else if (t == MetaFieldType.DateTime)
-            return mv with { DateTime = jsonValue.GetValue<DateTime>() };
-        else if (t == MetaFieldType.String)
-            return mv with { StringShort = jsonValue.GetValue<string>() };
-        else if (t == MetaFieldType.Text)
-            return mv with { StringText = jsonValue.GetValue<string>() };
-        else if (t == MetaFieldType.Relation)
-            return mv with { ModelId = jsonValue.GetValue<Guid>() };
-        else if (t == MetaFieldType.Select)
-            return mv with { VariantId = jsonValue.GetValue<Guid>() };
-        else if (t == MetaFieldType.SelectMany)
-            return mv with { VariantsIds = jsonValue.GetValue<Guid[]>() };
-        else
-            throw new NotImplementedException($" casting for '{t}' not implement");
     }
 
     private string? ResolveStatus(string? inputStatus, PostTypeDetail postType)

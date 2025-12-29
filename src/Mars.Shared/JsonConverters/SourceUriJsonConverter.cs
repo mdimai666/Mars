@@ -11,8 +11,6 @@ public class SourceUriJsonConverter : JsonConverter<SourceUri>
         if (reader.TokenType != JsonTokenType.String)
             throw new JsonException($"must be string");//Вероятно вы не добавили в JsonSerializerOptions.Converters
         var value = reader.GetString();
-        if (string.IsNullOrEmpty(value))
-            throw new JsonException($"argument cannot be empty");
 
         return SourceUri.ConvertFromString(value);
     }

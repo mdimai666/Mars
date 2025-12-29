@@ -12,7 +12,7 @@ using Microsoft.JSInterop;
 
 namespace Mars.Nodes.Workspace.EditorParts;
 
-public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
+public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrollObserver
 {
     [Inject] ILogger<NodeWorkspace1> _logger { get; set; } = default!;
 
@@ -28,6 +28,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
 
     public int Width { get; protected set; }
     public int Height { get; protected set; }
+
+    public ScrollInfo ScrollInfo { get; private set; }
 
     IReadOnlyDictionary<string, Node> _flowNodes { get; set; } = new Dictionary<string, Node>();
 
@@ -88,6 +90,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
     MouseEventArgs _lastMouseWorkspaceState = new();
     NodeWirePointResolver _nodeWirePointResolver = new();
     private DotNetObjectReference<IResizeObserver> _dotNetRef = default!;
+    private DotNetObjectReference<IScrollObserver> _dotNetRef2 = default!;
 
     //--------------------------------------
 
@@ -104,8 +107,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
         if (firstRender)
         {
             _dotNetRef = DotNetObjectReference.Create<IResizeObserver>(this);
+            await js.ObserveSizeAsync(_containerRef, _dotNetRef);
 
-            await js.ObserveAsync(_containerRef, _dotNetRef);
+            _dotNetRef2 = DotNetObjectReference.Create<IScrollObserver>(this);
+            await js.ObserveScrollAsync(_containerRef, _dotNetRef2);
         }
     }
 
@@ -567,6 +572,22 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver
     {
         Width = (int)width;
         Height = (int)height;
+    }
+
+    [JSInvokable]
+    public void OnElementScroll(int scrollTop, int scrollLeft, int scrollHeight, int clientHeight, int scrollWidth, int clientWidth)
+    {
+        ScrollInfo = new ScrollInfo
+        {
+            ScrollTop = scrollTop,
+            ScrollLeft = scrollLeft,
+            ScrollHeight = scrollHeight,
+            ClientHeight = clientHeight,
+            ScrollWidth = scrollWidth,
+            ClientWidth = clientWidth
+        };
+
+        //Console.WriteLine($"ScrollInfo: Top={ScrollInfo.ScrollTop}, Left={ScrollInfo.ScrollLeft}, Height={ScrollInfo.ScrollHeight}, ClientHeight={ScrollInfo.ClientHeight}, Width={ScrollInfo.ScrollWidth}, ClientWidth={ScrollInfo.ClientWidth}");
     }
 }
 

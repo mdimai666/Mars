@@ -20,7 +20,8 @@ public interface IUserService
     Task<UserListEditViewModel> UsersEditViewModel(ListUserQuery query, CancellationToken cancellationToken);
     Task<UserDetail> Create(CreateUserQuery query, CancellationToken cancellationToken);
     Task<UserDetail> Update(UpdateUserQuery query, CancellationToken cancellationToken);
-    Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
+    Task<UserSummary> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserSummary>> DeleteMany(DeleteManyUserQuery query, CancellationToken cancellationToken);
     Task<UserProfileInfoDto?> UserProfileInfo(Guid id, CancellationToken cancellationToken);
     Task<UserEditProfileDto?> UserEditProfileGet(Guid id, CancellationToken cancellationToken);
     //Task<UserEditProfileDto> UserEditProfileForAdminGet(Guid id);

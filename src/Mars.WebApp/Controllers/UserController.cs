@@ -108,6 +108,18 @@ public class UserController : ControllerBase
         return _userService.Delete(id, cancellationToken);
     }
 
+    [HttpDelete("DeleteMany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task DeleteMany([FromQuery] Guid[] ids, CancellationToken cancellationToken)
+    {
+        return _userService.DeleteMany(new DeleteManyUserQuery { Ids = ids }, cancellationToken);
+    }
+
     [HttpGet]
     public async Task<ListDataResult<UserListItemResponse>> List([FromQuery] ListUserQueryRequest request, CancellationToken cancellationToken)
     {

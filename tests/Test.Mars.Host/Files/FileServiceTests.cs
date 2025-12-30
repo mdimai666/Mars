@@ -1,11 +1,12 @@
 using System.Text;
+using FluentAssertions;
 using Mars.Host.Services;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 using Mars.Options.Models;
 using Mars.Test.Common.Constants;
-using FluentAssertions;
 using NSubstitute;
 
 namespace Test.Mars.Host.Files;
@@ -17,6 +18,7 @@ public class FileServiceTests
     private readonly IOptionService _optionService;
     private readonly IFileRepository _fileRepository;
     private readonly IImageProcessor _imageProcessor;
+    private readonly IValidatorFabric _validatorFabric;
     private readonly FileHostingInfo _fileHostingInfo;
     private readonly FileService _fileService;
 
@@ -26,6 +28,7 @@ public class FileServiceTests
         _optionService = Substitute.For<IOptionService>();
         _fileRepository = Substitute.For<IFileRepository>();
         _imageProcessor = Substitute.For<IImageProcessor>();
+        _validatorFabric = Substitute.For<IValidatorFabric>();
 
         _fileHostingInfo = new FileHostingInfo
         {
@@ -36,7 +39,7 @@ public class FileServiceTests
 
         _optionService.FileHostingInfo().Returns(_fileHostingInfo);
 
-        _fileService = new FileService(_inMemoryFileStorage, _optionService, _fileRepository, _imageProcessor);
+        _fileService = new FileService(_inMemoryFileStorage, _optionService, _fileRepository, _imageProcessor, _validatorFabric);
     }
 
     [Fact]

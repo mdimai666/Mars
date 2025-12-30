@@ -74,4 +74,27 @@ public class DeletePostTests : ApplicationTests
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
     }
+
+    [IntegrationFact]
+    public async Task DeleteManyPost_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(PostController.DeleteMany);
+        var client = AppFixture.GetClient();
+
+        var posts = _fixture.CreateMany<PostEntity>().ToList();
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddRangeAsync(posts);
+        await ef.SaveChangesAsync();
+        var deletingIds = posts.Select(s => s.Id).ToList();
+
+        //Act
+        var result = await client.Request(_apiUrl, "DeleteMany").AppendQueryParam(new { ids = deletingIds }).DeleteAsync().CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        var postsEntities = ef.Posts.Where(s => deletingIds.Contains(s.Id)).ToList();
+        postsEntities.Should().BeEmpty();
+    }
 }

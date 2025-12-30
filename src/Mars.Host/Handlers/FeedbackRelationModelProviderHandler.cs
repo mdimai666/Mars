@@ -49,6 +49,6 @@ internal class FeedbackRelationModelProviderHandler(IFeedbackRepository feedback
 
     public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
     {
-        return feedbackRepository.DeleteMany(ids, cancellationToken);
+        return feedbackRepository.DeleteMany(new() { Ids = ids }, cancellationToken);
     }
 }

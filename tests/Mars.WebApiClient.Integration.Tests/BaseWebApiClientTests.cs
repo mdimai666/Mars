@@ -27,6 +27,15 @@ public class BaseWebApiClientTests : ApplicationTests
         return await ef.Set<T>().FirstOrDefaultAsync(exp);
     }
 
+    public async Task<List<T>> GetEntities<T>(Guid[] ids)
+        where T : class
+    {
+        var ef = AppFixture.MarsDbContext();
+        var exp = ReflectionHelper.GetIdInExpression<T>(ids);
+
+        return await ef.Set<T>().Where(exp).ToListAsync();
+    }
+
     public async Task<T?> GetEntity<T>(Expression<Func<T, bool>> exp)
         where T : class
     {
@@ -54,5 +63,17 @@ public class BaseWebApiClientTests : ApplicationTests
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();
         return created.ToList();
+    }
+
+    public async Task<bool> AnyEntities<T>(Guid[] ids)
+        where T : class
+    {
+        var exp = ReflectionHelper.GetAnyByIdsExpression<T>(ids);
+
+        bool exists = await AppFixture.MarsDbContext()
+            .Set<T>()
+            .AnyAsync(exp);
+
+        return exists;
     }
 }

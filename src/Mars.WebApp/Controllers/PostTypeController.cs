@@ -107,6 +107,18 @@ public class PostTypeController : ControllerBase
         return _postTypeService.Delete(id, cancellationToken);
     }
 
+    [HttpDelete("DeleteMany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task DeleteMany([FromQuery] Guid[] ids, CancellationToken cancellationToken)
+    {
+        return _postTypeService.DeleteMany(new DeleteManyPostTypeQuery { Ids = ids }, cancellationToken);
+    }
+
     [HttpGet("MetaFieldsTypeEnums")]
     public Dictionary<int, string> MetaFieldsTypeEnums()
     {

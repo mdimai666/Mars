@@ -21,6 +21,7 @@ public interface IPostTypeServiceClient
     Task<ListDataResult<PostTypeListItemResponse>> List(ListPostTypeQueryRequest filter);
     Task<PagingResult<PostTypeListItemResponse>> ListTable(TablePostTypeQueryRequest filter);
     Task Delete(Guid id);
+    Task DeleteMany(Guid[] ids);
     Task<PostTypeEditViewModel> GetEditModel(Guid id);
 
     Task<UserActionResult> PostTypeImport(string json);
@@ -29,5 +30,4 @@ public interface IPostTypeServiceClient
     Task<IReadOnlyCollection<MetaRelationModelResponse>> AllMetaRelationsStructure();
     Task<ListDataResult<MetaValueRelationModelSummaryResponse>> ListMetaValueRelationModels(MetaValueRelationModelsListQueryRequest request);
     Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>> GetMetaValueRelationModels(string modelName, Guid[] ids);
-
 }

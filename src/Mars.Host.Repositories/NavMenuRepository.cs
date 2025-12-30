@@ -116,6 +116,15 @@ internal class NavMenuRepository : INavMenuRepository
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<int> DeleteMany(DeleteManyNavMenuQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.NavMenus.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Throws if this class has been disposed.
     /// </summary>
@@ -193,9 +202,5 @@ internal class NavMenuRepository : INavMenuRepository
         return list.ToMap(NavMenuMapping.ToSummaryList);
 
     }
-
-    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
-    {
-        return _marsDbContext.NavMenus.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
-    }
+    
 }

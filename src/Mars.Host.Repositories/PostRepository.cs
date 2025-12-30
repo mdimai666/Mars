@@ -118,6 +118,15 @@ internal class PostRepository : IPostRepository, IDisposable
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<int> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.Posts.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Throws if this class has been disposed.
     /// </summary>
@@ -258,8 +267,4 @@ internal class PostRepository : IPostRepository, IDisposable
     public Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken)
                         => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug == slug, cancellationToken);
 
-    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
-    {
-        return _marsDbContext.Posts.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
-    }
 }

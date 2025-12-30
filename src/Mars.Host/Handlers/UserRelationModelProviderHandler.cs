@@ -49,6 +49,6 @@ internal class UserRelationModelProviderHandler(IUserRepository userRepository) 
 
     public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
     {
-        return userRepository.DeleteMany(ids, cancellationToken);
+        return userRepository.DeleteMany(new() { Ids = ids }, cancellationToken);
     }
 }

@@ -19,7 +19,7 @@ namespace Mars.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
@@ -105,6 +105,18 @@ public class UserTypeController : ControllerBase
     public Task Delete(Guid id, CancellationToken cancellationToken)
     {
         return _userTypeService.Delete(id, cancellationToken);
+    }
+
+    [HttpDelete("DeleteMany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task DeleteMany([FromQuery] Guid[] ids, CancellationToken cancellationToken)
+    {
+        return _userTypeService.DeleteMany(new DeleteManyUserTypeQuery { Ids = ids }, cancellationToken);
     }
 
     [HttpGet("MetaFieldsTypeEnums")]

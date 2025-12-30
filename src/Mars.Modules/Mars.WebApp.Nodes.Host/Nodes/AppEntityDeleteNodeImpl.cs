@@ -1,25 +1,25 @@
 using Mars.Core.Interfaces;
-using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements;
+using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
 public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INodeImplement
 {
-    private readonly IMetaModelTypesLocator _metaModelTypesLocator;
+    private readonly IAppEntityFormBuilderFactory _formBuilderFactory;
 
     public AppEntityDeleteNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public AppEntityDeleteNodeImpl(AppEntityDeleteNode node, IRED _RED, IMetaModelTypesLocator metaModelTypesLocator)
+    public AppEntityDeleteNodeImpl(AppEntityDeleteNode node, IRED _RED, IAppEntityFormBuilderFactory appEntityFormBuilderFactory)
     {
         Node = node;
         RED = _RED;
-        _metaModelTypesLocator = metaModelTypesLocator;
+        _formBuilderFactory = appEntityFormBuilderFactory;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -37,12 +37,12 @@ public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INod
 
         if (ids.Any())
         {
-            var handler = _metaModelTypesLocator.GetMetaRelationModelProvider(requestInfo.EntityUri.Root!);
+            var builder = _formBuilderFactory.GetBuilder(requestInfo.EntityUri.Root!);
 
-            if (handler == null)
-                throw new NodeExecuteException(Node, $"AppEntityDeleteNodeImpl: Not found provider for '{requestInfo.EntityUri.Root}'");
+            if (builder is null)
+                throw new NodeExecuteException(Node, $"Cannot find form builder for entity '{requestInfo.EntityUri.Root}'.");
 
-            var deletedCount = await handler.DeleteMany(ids, parameters.CancellationToken);
+            var deletedCount = await builder.DeleteMany(ids, parameters.CancellationToken);
 
             input.Payload = deletedCount;
         }

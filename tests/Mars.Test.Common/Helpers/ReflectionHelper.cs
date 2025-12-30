@@ -76,4 +76,91 @@ public static class ReflectionHelper
             throw new InvalidOperationException($"Объект типа '{objectType.Name}' не содержит открытого свойства 'Id' типа Guid.");
         }
     }
+
+    public static Expression<Func<T, bool>> GetIdInExpression<T>(Guid[] ids)
+        where T : class
+    {
+        if (ids == null || ids.Length == 0)
+            throw new ArgumentException("ids must not be empty", nameof(ids));
+
+        var parameter = Expression.Parameter(typeof(T), "x");
+        var property = Expression.Property(parameter, "Id");
+
+        var containsMethod = typeof(Enumerable)
+            .GetMethods()
+            .Single(m =>
+                m.Name == nameof(Enumerable.Contains) &&
+                m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(Guid));
+
+        var idsConstant = Expression.Constant(ids);
+
+        var body = Expression.Call(
+            containsMethod,
+            idsConstant,
+            property
+        );
+
+        return Expression.Lambda<Func<T, bool>>(body, parameter);
+    }
+
+    public static Guid[] SelectIds<T>(IEnumerable<T> entities)
+        where T : class
+    {
+        if (entities == null)
+            throw new ArgumentNullException(nameof(entities));
+
+        var type = typeof(T);
+
+        var idProperty = type.GetProperty("Id");
+        if (idProperty == null)
+            throw new InvalidOperationException(
+                $"Type '{type.Name}' does not contain property 'Id'");
+
+        if (idProperty.PropertyType != typeof(Guid))
+            throw new InvalidOperationException(
+                $"Property 'Id' of type '{type.Name}' is not Guid");
+
+        return entities
+            .Select(e => (Guid)idProperty.GetValue(e)!)
+            .ToArray();
+    }
+
+    public static Expression<Func<T, bool>> GetAnyByIdsExpression<T>(
+        Guid[] ids,
+        string idPropertyName = "Id")
+        where T : class
+    {
+        if (ids == null || ids.Length == 0)
+            throw new ArgumentException("ids must not be empty", nameof(ids));
+
+        // x =>
+        var parameter = Expression.Parameter(typeof(T), "x");
+
+        // x.Id
+        var idProperty = Expression.Property(parameter, idPropertyName);
+
+        if (idProperty.Type != typeof(Guid))
+            throw new InvalidOperationException(
+                $"Property '{idPropertyName}' of '{typeof(T).Name}' must be Guid");
+
+        // ids.Contains(x.Id)
+        var containsMethod = typeof(Enumerable)
+            .GetMethods()
+            .Single(m =>
+                m.Name == nameof(Enumerable.Contains) &&
+                m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(Guid));
+
+        var idsConstant = Expression.Constant(ids);
+
+        var body = Expression.Call(
+            containsMethod,
+            idsConstant,
+            idProperty
+        );
+
+        // x => ids.Contains(x.Id)
+        return Expression.Lambda<Func<T, bool>>(body, parameter);
+    }
 }

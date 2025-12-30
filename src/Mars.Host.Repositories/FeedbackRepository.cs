@@ -158,8 +158,12 @@ internal class FeedbackRepository : IFeedbackRepository, IDisposable
         return list.ToMap(FeedbackMapping.ToSummaryList);
     }
 
-    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    public Task<int> DeleteMany(DeleteManyFeedbackQuery query, CancellationToken cancellationToken)
     {
-        return _marsDbContext.Feedbacks.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.Feedbacks.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
     }
 }

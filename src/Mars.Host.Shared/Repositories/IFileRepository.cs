@@ -8,13 +8,14 @@ public interface IFileRepository : IDisposable
     Task<FileSummary?> Get(Guid id, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<FileDetail?> GetDetail(Guid id, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<FileDetail?> GetFileByPathDetail(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
-    Task<bool> FileExistByPath(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
+    Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> FileExistByPath(string filePath, CancellationToken cancellationToken);
     Task<Guid> Create(CreateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task CreateMany(IReadOnlyCollection<CreateFileQuery> queries, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task Delete(Guid id, CancellationToken cancellationToken);
-    Task<int> DeleteBulk(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
+    Task<int> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<FileListItem>> ListAll(ListAllFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<FileDetail>> ListAllDetail(ListAllFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> ListAllAbsolutePaths(FileHostingInfo hostingInfo, CancellationToken cancellationToken);

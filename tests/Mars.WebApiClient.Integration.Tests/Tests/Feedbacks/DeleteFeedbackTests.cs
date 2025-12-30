@@ -14,7 +14,7 @@ public sealed class DeleteFeedbackTests : BaseWebApiClientTests
     {
         _fixture.Customize(new FixtureCustomize());
 
-        _deleteTest = new(this, (client, req) => client.Feedback.Delete(req));
+        _deleteTest = new(this, (client, req) => client.Feedback.Delete(req), (client, req) => client.Feedback.DeleteMany(req));
     }
 
     [IntegrationFact]
@@ -33,5 +33,11 @@ public sealed class DeleteFeedbackTests : BaseWebApiClientTests
     public async Task DeleteFeedback_NotExistEntity_ThrowNotFoundException()
     {
         await _deleteTest.NotExistEntity_ThrowNotFoundException();
+    }
+
+    [IntegrationFact]
+    public async Task DeleteManyFeedback_ValidRequest_ShouldSuccess()
+    {
+        await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }
 }

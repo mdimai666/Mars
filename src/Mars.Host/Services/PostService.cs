@@ -102,15 +102,33 @@ internal class PostService : IPostService
         return updated;
     }
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<PostSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync<Guid, DeletePostQueryValidator>(id, cancellationToken);
+
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
         await _postRepository.Delete(id, cancellationToken);
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
         _eventManager.TriggerEvent(payload);
-        return UserActionResult.Success();
+        return post;
+    }
+
+    public async Task<IReadOnlyCollection<PostSummary>> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
+        var posts = await _postRepository.ListAll(new () { Type = null, Ids = query.Ids  }, cancellationToken);
+
+        await _postRepository.DeleteMany(query, cancellationToken);
+
+        foreach (var post in posts)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
+            _eventManager.TriggerEvent(payload);
+        }
+        return posts;
     }
 
     #region EDIT_MODEL
@@ -259,56 +277,5 @@ internal class PostService : IPostService
 
         return updateQuery;
     }
-
-    // ----------- OLD
-
-    //public UserActionResult ImportData(string postTypeName, JArray json)
-    //{
-    //    throw new NotImplementedException();
-    //    IServiceProvider _serviceProvider = default!;
-    //    try
-    //    {
-    //        MarsDbContextLegacy ef = _serviceProvider.GetRequiredService<MarsDbContextLegacy>();
-
-    //        PostType postType = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.TypeName == postTypeName);
-
-    //        FormService formService = _serviceProvider.GetRequiredService<FormService>();
-
-    //        List<Post> posts = new List<Post>();
-
-    //        foreach (JObject item in json)
-    //        {
-
-    //            Post post = formService.ParseJsonToPost(postType, item);
-    //            foreach (var f in post.MetaValues)
-    //            {
-    //                f.MetaField = null;
-    //            }
-    //            posts.Add(post);
-    //        }
-
-    //        ef.Posts.AddRange(posts);
-
-    //        throw new NotImplementedException();
-    //        //compare option field
-
-    //        //await ef.SaveChangesAsync();
-
-    //        //return new UserActionResult
-    //        //{
-    //        //    Ok = true,
-    //        //    Message = "import success"
-    //        //};
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new UserActionResult
-    //        {
-    //            Ok = false,
-    //            Message = ex.Message,
-    //        };
-    //    }
-
-    //}
 
 }

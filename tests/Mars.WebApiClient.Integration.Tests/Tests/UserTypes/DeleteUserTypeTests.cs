@@ -55,4 +55,19 @@ public sealed class DeleteUserTypeTests : BaseWebApiClientTests
         //Assert
         action.Should().ThrowAsync<NotFoundException>().RunSync();
     }
+
+    [IntegrationFact]
+    public async Task DeleteManyUserType_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+        var entityList = await CreateManyEntities<UserTypeEntity>();
+        var ids = entityList.Select(s => s.Id).ToArray();
+
+        //Act
+        await client.UserType.DeleteMany(ids);
+
+        //Assert
+        AppFixture.MarsDbContext().UserTypes.Any(s => ids.Contains(s.Id)).Should().BeFalse();
+    }
 }

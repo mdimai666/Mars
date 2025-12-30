@@ -74,4 +74,27 @@ public class DeleteFeedbackTests : ApplicationTests
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
     }
+
+    [IntegrationFact]
+    public async Task DeleteManyFeedback_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(FeedbackController.DeleteMany);
+        var client = AppFixture.GetClient();
+
+        var feedbacks = _fixture.CreateMany<FeedbackEntity>().ToList();
+        var ef = AppFixture.MarsDbContext();
+        await ef.Feedbacks.AddRangeAsync(feedbacks);
+        await ef.SaveChangesAsync();
+        var deletingIds = feedbacks.Select(s => s.Id).ToList();
+
+        //Act
+        var result = await client.Request(_apiUrl, "DeleteMany").AppendQueryParam(new { ids = deletingIds }).DeleteAsync().CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        var feedbackEntity = ef.Feedbacks.Any(s => deletingIds.Contains(s.Id));
+        feedbackEntity.Should().BeFalse();
+    }
 }

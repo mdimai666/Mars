@@ -11,7 +11,8 @@ public interface IFileService
     Task<bool> FileExistByPath(string filePath, CancellationToken cancellationToken);
     Task<ListDataResult<FileListItem>> List(ListFileQuery query, CancellationToken cancellationToken);
     Task<PagingResult<FileListItem>> ListTable(ListFileQuery query, CancellationToken cancellationToken);
-    Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
+    Task<FileSummary> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<FileSummary>> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken);
     Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
 

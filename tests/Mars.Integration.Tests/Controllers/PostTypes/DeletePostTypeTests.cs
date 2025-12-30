@@ -97,4 +97,27 @@ public class DeletePostTypeTests : ApplicationTests
         result.Errors.Should().HaveCount(1);
         result.Errors.First().Value.First().Should().Match("*is internal type and cannot be delete");
     }
+
+    [IntegrationFact]
+    public async Task DeleteManyPostType_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.DeleteMany);
+        var client = AppFixture.GetClient();
+
+        var postTypes = _fixture.CreateMany<PostTypeEntity>().ToList();
+        var ef = AppFixture.MarsDbContext();
+        await ef.PostTypes.AddRangeAsync(postTypes);
+        await ef.SaveChangesAsync();
+        var deletingIds = postTypes.Select(s => s.Id).ToList();
+
+        //Act
+        var result = await client.Request(_apiUrl, "DeleteMany").AppendQueryParam(new { ids = deletingIds }).DeleteAsync().CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+        var postTypesEntities = ef.Posts.Where(s => deletingIds.Contains(s.Id)).ToList();
+        postTypesEntities.Should().BeEmpty();
+    }
 }

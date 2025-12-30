@@ -166,6 +166,19 @@ public class PostController : ControllerBase
         return _postService.Delete(id, cancellationToken);
     }
 
+    [HttpDelete("DeleteMany")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task DeleteMany([FromQuery] Guid[] ids, CancellationToken cancellationToken)
+    {
+        return _postService.DeleteMany(new DeleteManyPostQuery { Ids = ids }, cancellationToken);
+    }
+
     //------------ Extra
     //------------ Extra
     //------------ Extra

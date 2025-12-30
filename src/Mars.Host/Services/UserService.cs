@@ -112,8 +112,10 @@ internal class UserService : IUserService
         return updated;
     }
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<UserSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync<Guid, DeleteUserQueryValidator>(id, cancellationToken);
+
         var user = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
         await _userRepository.Delete(id, cancellationToken);
@@ -121,7 +123,23 @@ internal class UserService : IUserService
         var payload = new ManagerEventPayload(_eventManager.Defaults.UserDelete(), user!);
         _eventManager.TriggerEvent(payload);
 
-        return UserActionResult.Success();
+        return user;
+    }
+
+    public async Task<IReadOnlyCollection<UserSummary>> DeleteMany(DeleteManyUserQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
+        var users = await _userRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
+
+        await _userRepository.DeleteMany(query, cancellationToken);
+
+        foreach (var user in users)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.UserDelete(), user);
+            _eventManager.TriggerEvent(payload);
+        }
+        return users;
     }
 
     #region EDIT_MODEL

@@ -187,32 +187,47 @@ internal class UserRepository : IUserRepository, IDisposable
         _disposed = true;
     }
 
-    private Task<List<UserEntity>> ListAllInternal(ListAllUserQuery query, CancellationToken cancellationToken)
+    private IQueryable<UserEntity> ListAllInternal(ListAllUserQuery query)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        ThrowIfDisposed();
+        var list = _listAllQuery.AsNoTracking();
 
-        return _listAllQuery.AsNoTracking()
-            .Where(s => query.Ids == null || query.Ids.Contains(s.Id))
-            .ToListAsync(cancellationToken);
+        if (query.Ids is { Count: > 0 })
+        {
+            list = list.Where(u => query.Ids.Contains(u.Id));
+        }
+
+        if (query.InRoles is { Count: > 0 })
+        {
+            list = list.Where(u => u.Roles!.Any(r => query.InRoles.Contains(r.Name)));
+        }
+
+        return list;
     }
 
     private Task<List<UserEntity>> ListAllDetailInternal(ListAllUserQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        return _listAllQuery.AsNoTracking()
-            .Where(s => query.Ids == null || query.Ids.Contains(s.Id))
-            .Include(s => s.Roles)
-            .Include(s => s.UserType)
-            .Include(s => s.MetaValues!)
-                .ThenInclude(s => s.MetaField)
-            .ToListAsync(cancellationToken);
+        return ListAllInternal(query).Include(s => s.Roles)
+                    .Include(s => s.UserType)
+                    .Include(s => s.MetaValues!)
+                        .ThenInclude(s => s.MetaField)
+                    .ToListAsync(cancellationToken);
+
     }
 
     public async Task<IReadOnlyCollection<UserSummary>> ListAll(ListAllUserQuery query, CancellationToken cancellationToken)
-        => (await ListAllInternal(query, cancellationToken)).ToSummaryList();
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return (await ListAllInternal(query)
+                    .ToListAsync(cancellationToken))
+                    .ToSummaryList();
+    }
 
     public async Task<IReadOnlyCollection<UserDetail>> ListAllDetail(ListAllUserQuery query, CancellationToken cancellationToken)
         => (await ListAllDetailInternal(query, cancellationToken)).ToDetailList();
@@ -308,9 +323,13 @@ internal class UserRepository : IUserRepository, IDisposable
 
     }
 
-    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    public Task<int> DeleteMany(DeleteManyUserQuery query, CancellationToken cancellationToken)
     {
-        return _marsDbContext.Users.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.Users.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
     }
 
     // -----------------------

@@ -33,6 +33,12 @@ internal class UserTypeServiceClient : BasicServiceClient, IUserTypeServiceClien
                     .OnError(OnStatus404ThrowException)
                     .DeleteAsync();
 
+    public Task DeleteMany(Guid[] ids)
+        => _client.Request($"{_basePath}{_controllerName}/DeleteMany")
+                    .AppendQueryParam(new { ids })
+                    .OnError(OnStatus404ThrowException)
+                    .DeleteAsync();
+
     public Task<UserTypeEditViewModel> GetEditModel(Guid id)
         => _client.Request($"{_basePath}{_controllerName}/edit", id)
                     .OnError(OnStatus404ReturnNull)

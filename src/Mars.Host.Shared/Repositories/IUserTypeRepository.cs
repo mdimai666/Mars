@@ -19,8 +19,9 @@ public interface IUserTypeRepository : IDisposable
     /// <exception cref="NotFoundException"/>
     Task Delete(Guid id, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<UserTypeSummary>> ListAll(CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<UserTypeDetail>> ListAllDetail(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserTypeSummary>> ListAll(ListAllUserTypeQuery query, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserTypeDetail>> ListAllDetail(ListAllUserTypeQuery query, CancellationToken cancellationToken);
     Task<ListDataResult<UserTypeSummary>> List(ListUserTypeQuery query, CancellationToken cancellationToken);
     Task<PagingResult<UserTypeSummary>> ListTable(ListUserTypeQuery query, CancellationToken cancellationToken);
+    Task<int> DeleteMany(DeleteManyUserTypeQuery query, CancellationToken cancellationToken);
 }

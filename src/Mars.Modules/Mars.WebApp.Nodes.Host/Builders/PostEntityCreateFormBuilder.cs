@@ -182,4 +182,11 @@ public class PostEntityCreateFormBuilder : IAppEntityCreateFormBuilder
         return appendValues;
     }
 
+    public async Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        var posts = await _postService.DeleteMany(new() { Ids = ids }, cancellationToken);
+
+        return posts.Count;
+    }
+
 }

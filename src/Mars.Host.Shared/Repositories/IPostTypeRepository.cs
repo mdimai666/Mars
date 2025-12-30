@@ -33,6 +33,7 @@ public interface IPostTypeRepository
     /// </summary>
     /// <exception cref="NotFoundException"/>
     Task Delete(Guid id, CancellationToken cancellationToken);
+    Task<int> DeleteMany(DeleteManyPostTypeQuery query, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<PostTypeSummary>> ListAll(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<PostTypeSummary>> ListAllActive(CancellationToken cancellationToken);
@@ -40,4 +41,5 @@ public interface IPostTypeRepository
     Task<ListDataResult<PostTypeSummary>> List(ListPostTypeQuery query, CancellationToken cancellationToken);
     Task<PagingResult<PostTypeSummary>> ListTable(ListPostTypeQuery query, CancellationToken cancellationToken);
     Task<bool> TypeNameExist(string name, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostTypeSummary>> ListAllIds(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

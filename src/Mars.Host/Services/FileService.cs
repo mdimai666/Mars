@@ -1,8 +1,10 @@
+using Mars.Core.Exceptions;
 using Mars.Core.Features;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
+using Mars.Host.Shared.Validators;
 using Mars.Options.Models;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Http;
@@ -19,20 +21,21 @@ internal class FileService : IFileService, IMarsAppLifetimeService
     protected readonly IOptionService _optionService;
     protected readonly IFileRepository _fileRepository;
     protected readonly IImageProcessor _imageProcessor;
-
+    private readonly IValidatorFabric _validatorFabric;
     protected readonly FileHostingInfo _hostingInfo;
 
     public FileService(
         IFileStorage fileStorage,
         IOptionService optionService,
         IFileRepository fileRepository,
-        IImageProcessor imageProcessor)
+        IImageProcessor imageProcessor,
+        IValidatorFabric validatorFabric)
     {
         _fileStorage = fileStorage;
         _optionService = optionService;
         _fileRepository = fileRepository;
         _imageProcessor = imageProcessor;
-
+        _validatorFabric = validatorFabric;
         _hostingInfo = _optionService.FileHostingInfo();
     }
 
@@ -60,14 +63,23 @@ internal class FileService : IFileService, IMarsAppLifetimeService
     public Task<PagingResult<FileListItem>> ListTable(ListFileQuery query, CancellationToken cancellationToken)
         => _fileRepository.ListTable(query, _hostingInfo, cancellationToken);
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<FileSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync<Guid, DeleteFileQueryValidator>(id, cancellationToken);
+
         //delete file
         //delete thumbnails
-        var file = await _fileRepository.GetDetail(id, _hostingInfo, cancellationToken);
+        var file = await _fileRepository.GetDetail(id, _hostingInfo, cancellationToken) ?? throw new NotFoundException();
 
         await _fileRepository.Delete(id, cancellationToken);
 
+        DeletePhysicalFile(file);
+
+        return file;
+    }
+
+    private void DeletePhysicalFile(FileDetail file)
+    {
         if (_fileStorage.FileExists(file.FilePhysicalPath))
         {
             _fileStorage.Delete(file.FilePhysicalPath);
@@ -82,8 +94,23 @@ internal class FileService : IFileService, IMarsAppLifetimeService
                 }
             }
         }
+    }
 
-        return UserActionResult.Success();
+    public async Task<IReadOnlyCollection<FileSummary>> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
+        var files = await _fileRepository.ListAllDetail(new() { Ids = query.Ids }, _hostingInfo, cancellationToken);
+
+        await _fileRepository.DeleteMany(query, cancellationToken);
+
+        foreach (var file in files)
+        {
+            DeletePhysicalFile(file);
+            //var payload = new ManagerEventPayload(_eventManager.Defaults.PostDelete(post.Type), post);
+            //_eventManager.TriggerEvent(payload);
+        }
+        return files;
     }
 
     public Task<FileDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
@@ -92,7 +119,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
     public Task<FileDetail?> GetFileByPath(string filePath, CancellationToken cancellationToken)
         => _fileRepository.GetFileByPathDetail(filePath, _hostingInfo, cancellationToken);
     public Task<bool> FileExistByPath(string filePath, CancellationToken cancellationToken)
-        => _fileRepository.FileExistByPath(filePath, _hostingInfo, cancellationToken);
+        => _fileRepository.FileExistByPath(filePath, cancellationToken);
 
     public Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
         => _fileRepository.Update(query, hostingInfo, cancellationToken);

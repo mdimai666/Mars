@@ -14,10 +14,10 @@ public interface IPostTypeService
     Task<PostTypeDetail> Create(CreatePostTypeQuery query, CancellationToken cancellationToken);
     Task<PostTypeEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken);
     Task<PostTypeDetail> Update(UpdatePostTypeQuery query, CancellationToken cancellationToken);
-    Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
+    Task<PostTypeSummary> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostTypeSummary>> DeleteMany(DeleteManyPostTypeQuery query, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure();
     Task<ListDataResult<MetaValueRelationModelSummary>> ListMetaValueRelationModels(MetaValueRelationModelsListQuery query, CancellationToken cancellationToken);
     Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetMetaValueRelationModels(string modelName, Guid[] ids, CancellationToken cancellationToken);
-
 }

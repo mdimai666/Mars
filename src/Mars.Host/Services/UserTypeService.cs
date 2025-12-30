@@ -7,6 +7,7 @@ using Mars.Host.Shared.Mappings.MetaFields;
 using Mars.Host.Shared.Mappings.UserTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.UserTypes;
 using Mars.Shared.Resources;
@@ -20,17 +21,20 @@ internal class UserTypeService : IUserTypeService
     private readonly IStringLocalizer<AppRes> _stringLocalizer;
     private readonly IEventManager _eventManager;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
+    private readonly IValidatorFabric _validatorFabric;
 
     public UserTypeService(
         IUserTypeRepository userTypeRepository,
         IStringLocalizer<AppRes> stringLocalizer,
         IEventManager eventManager,
-        IMetaModelTypesLocator metaModelTypesLocator)
+        IMetaModelTypesLocator metaModelTypesLocator,
+        IValidatorFabric validatorFabric)
     {
         _userTypeRepository = userTypeRepository;
         _stringLocalizer = stringLocalizer;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
+        _validatorFabric = validatorFabric;
     }
 
     public Task<UserTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -85,8 +89,10 @@ internal class UserTypeService : IUserTypeService
         return updated;
     }
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<UserTypeSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync<Guid, DeleteUserTypeQueryValidator>(id, cancellationToken);
+
         var userType = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
         await _userTypeRepository.Delete(id, cancellationToken);
@@ -96,7 +102,25 @@ internal class UserTypeService : IUserTypeService
         var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
         _eventManager.TriggerEvent(payload);
 
-        return UserActionResult.Success();
+        return userType;
+    }
+
+    public async Task<IReadOnlyCollection<UserTypeSummary>> DeleteMany(DeleteManyUserTypeQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
+        var userTypes = await _userTypeRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
+
+        await _userTypeRepository.DeleteMany(query, cancellationToken);
+
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        foreach (var userType in userTypes)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
+            _eventManager.TriggerEvent(payload);
+        }
+        return userTypes;
     }
 
     public Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure()

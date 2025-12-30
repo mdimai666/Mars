@@ -8,7 +8,7 @@ using Mars.Shared.Resources;
 
 namespace Mars.Host.Handlers;
 
-internal class PostRelationModelProviderHandler(IPostRepository postRepository, IMetaModelTypesLocator modelTypesLocator)
+internal class PostRelationModelProviderHandler(IPostRepository postRepository, IMetaModelTypesLocator modelTypesLocator, IPostService postService)
     : IMetaRelationModelProviderHandler, IMetaRelationModelProviderWithSubItemsHandler
 {
     public async Task<Dictionary<Guid, object>> ListHandle(IReadOnlyCollection<Guid> ids, string modelName, CancellationToken cancellationToken)
@@ -78,8 +78,10 @@ internal class PostRelationModelProviderHandler(IPostRepository postRepository, 
 
     //TODO: переместить сюда PostTypes list sub types
 
-    public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    public async Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
     {
-        return postRepository.DeleteMany(ids, cancellationToken);
+        var posts = await postService.DeleteMany(new() { Ids = ids }, cancellationToken);
+
+        return posts.Count;
     }
 }

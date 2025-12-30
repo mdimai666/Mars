@@ -14,7 +14,8 @@ public interface INavMenuService
     Task<PagingResult<NavMenuSummary>> ListTable(ListNavMenuQuery query, CancellationToken cancellationToken);
     Task<Guid> Create(CreateNavMenuQuery query, CancellationToken cancellationToken);
     Task Update(UpdateNavMenuQuery query, CancellationToken cancellationToken);
-    Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
+    Task<NavMenuSummary> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<NavMenuSummary>> DeleteMany(DeleteManyNavMenuQuery query, CancellationToken cancellationToken);
 
     NavMenuDetail DevMenu();
     IReadOnlyCollection<NavMenuDetail> GetAppInitialDataMenus(bool includeDevMenu = false);

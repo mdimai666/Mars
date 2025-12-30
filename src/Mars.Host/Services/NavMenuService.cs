@@ -66,16 +66,30 @@ public class NavMenuService : INavMenuService
         _eventManager.TriggerEvent(payload);
     }
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<NavMenuSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var role = await Get(id, cancellationToken) ?? throw new NotFoundException();
+        var navMenu = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
         await _navMenuRepository.Delete(id, cancellationToken);
 
-        var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), role);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), navMenu);
         _eventManager.TriggerEvent(payload);
 
-        return UserActionResult.Success();
+        return navMenu;
+    }
+
+    public async Task<IReadOnlyCollection<NavMenuSummary>> DeleteMany(DeleteManyNavMenuQuery query, CancellationToken cancellationToken)
+    {
+        var navMenus = await _navMenuRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
+
+        await _navMenuRepository.DeleteMany(query, cancellationToken);
+
+        foreach (var navMenu in navMenus)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), navMenu);
+            _eventManager.TriggerEvent(payload);
+        }
+        return navMenus;
     }
 
     public Task<NavMenuExport> Export(Guid id)

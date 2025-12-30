@@ -90,11 +90,11 @@ internal class PostTypeService : IPostTypeService
         return updated;
     }
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<PostTypeSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var postType = await Get(id, cancellationToken) ?? throw new NotFoundException();
-
         await _validatorFabric.ValidateAndThrowAsync<Guid, DeletePostTypeQueryValidator>(id, cancellationToken);
+
+        var postType = await Get(id, cancellationToken);
 
         await _postTypeRepository.Delete(id, cancellationToken);
 
@@ -102,7 +102,25 @@ internal class PostTypeService : IPostTypeService
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeDelete(postType.TypeName), postType);
         _eventManager.TriggerEvent(payload);
-        return UserActionResult.Success();
+        return postType;
+    }
+
+    public async Task<IReadOnlyCollection<PostTypeSummary>> DeleteMany(DeleteManyPostTypeQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
+        var postTypes = await _postTypeRepository.ListAllIds(query.Ids, cancellationToken);
+
+        await _postTypeRepository.DeleteMany(query, cancellationToken);
+
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        foreach (var postType in postTypes)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeDelete(postType.TypeName), postType);
+            _eventManager.TriggerEvent(payload);
+        }
+        return postTypes;
     }
 
     public Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure()

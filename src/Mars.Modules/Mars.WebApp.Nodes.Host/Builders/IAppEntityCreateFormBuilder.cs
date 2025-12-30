@@ -11,5 +11,5 @@ public interface IAppEntityCreateFormBuilder
     AppEntityCreateFormSchema CreateForm(SourceUri entityUri);
     IReadOnlyCollection<AppEntityCreateFormSchema> AllForms();
     Task<IBasicEntity> Save(CreateAppEntityFromFormCommand form, NodeMsg input, CancellationToken cancellationToken);
-
+    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

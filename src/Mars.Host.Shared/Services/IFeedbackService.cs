@@ -11,6 +11,7 @@ public interface IFeedbackService
     Task<PagingResult<FeedbackSummary>> ListTable(ListFeedbackQuery query, CancellationToken cancellationToken);
     Task<FeedbackDetail> Create(CreateFeedbackQuery query, CancellationToken cancellationToken);
     Task<FeedbackDetail> Update(UpdateFeedbackQuery query, CancellationToken cancellationToken);
-    Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
+    Task<FeedbackSummary> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<FeedbackSummary>> DeleteMany(DeleteManyFeedbackQuery query, CancellationToken cancellationToken);
     Task ExcelFeedbackList(MemoryStream stream, CancellationToken cancellationToken);
 }

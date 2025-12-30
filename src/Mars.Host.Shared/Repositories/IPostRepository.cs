@@ -29,5 +29,5 @@ public interface IPostRepository : IDisposable
     Task<PostDetailWithType?> PostDetailWithType(Guid id, CancellationToken cancellationToken);
     Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken);
     Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken);
-    Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
+    Task<int> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken);
 }

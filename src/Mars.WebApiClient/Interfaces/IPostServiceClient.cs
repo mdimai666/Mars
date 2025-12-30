@@ -23,8 +23,8 @@ public interface IPostServiceClient
     Task<ListDataResult<PostListItemResponse>> List(string postType, ListPostQueryRequest filter);
     Task<PagingResult<PostListItemResponse>> ListTable(string postType, TablePostQueryRequest filter);
     Task Delete(Guid id);
+    Task DeleteMany(Guid[] ids);
 
     Task<PostEditViewModel> GetEditModel(Guid id);
     Task<PostEditViewModel> GetPostBlank(string type);
-
 }

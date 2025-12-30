@@ -14,7 +14,7 @@ public sealed class DeletePostTests : BaseWebApiClientTests
     {
         _fixture.Customize(new FixtureCustomize());
 
-        _deleteTest = new(this, (client, req) => client.Post.Delete(req));
+        _deleteTest = new(this, (client, req) => client.Post.Delete(req), (client, req) => client.Post.DeleteMany(req));
     }
 
     [IntegrationFact]
@@ -33,5 +33,11 @@ public sealed class DeletePostTests : BaseWebApiClientTests
     public async Task DeletePost_NotExistEntity_ThrowNotFoundException()
     {
         await _deleteTest.NotExistEntity_ThrowNotFoundException();
+    }
+
+    [IntegrationFact]
+    public async Task DeleteManyPost_ValidRequest_ShouldSuccess()
+    {
+        await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }
 }

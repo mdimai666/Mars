@@ -21,5 +21,5 @@ public interface INavMenuServiceClient
     Task<PagingResult<NavMenuSummaryResponse>> ListTable(TableNavMenuQueryRequest filter);
     Task Delete(Guid id);
     Task<UserActionResult> Import(Guid id, string json);
-
+    Task DeleteMany(Guid[] ids);
 }

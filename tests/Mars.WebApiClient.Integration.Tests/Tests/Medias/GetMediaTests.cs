@@ -42,7 +42,6 @@ public class GetMediaTests : BaseWebApiClientTests
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
 
-
     [IntegrationFact]
     public async void ListFile_Request_Unauthorized()
     {

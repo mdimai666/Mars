@@ -32,6 +32,12 @@ internal class UserServiceClient : BasicServiceClient, IUserServiceClient
                     .OnError(OnStatus404ThrowException)
                     .DeleteAsync();
 
+    public Task DeleteMany(Guid[] ids)
+        => _client.Request($"{_basePath}{_controllerName}/DeleteMany")
+                    .AppendQueryParam(new { ids })
+                    .OnError(OnStatus404ThrowException)
+                    .DeleteAsync();
+
     public Task<ListDataResult<UserListItemResponse>> List(ListUserQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}")
                     .AppendQueryParam(filter)

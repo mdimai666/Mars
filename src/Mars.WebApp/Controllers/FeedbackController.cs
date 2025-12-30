@@ -96,6 +96,18 @@ public class FeedbackController : ControllerBase
         return _feedbackService.Delete(id, cancellationToken);
     }
 
+    [HttpDelete("DeleteMany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public Task DeleteMany([FromQuery] Guid[] ids, CancellationToken cancellationToken)
+    {
+        return _feedbackService.DeleteMany(new DeleteManyFeedbackQuery { Ids = ids }, cancellationToken);
+    }
+
     [HttpGet("DownloadExcel")]
     public async Task<FileContentResult> DownloadExcel(CancellationToken cancellationToken)
     {

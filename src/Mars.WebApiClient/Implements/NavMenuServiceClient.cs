@@ -31,6 +31,12 @@ internal class NavMenuServiceClient : BasicServiceClient, INavMenuServiceClient
                     .OnError(OnStatus404ThrowException)
                     .DeleteAsync();
 
+    public Task DeleteMany(Guid[] ids)
+        => _client.Request($"{_basePath}{_controllerName}/DeleteMany")
+                    .AppendQueryParam(new { ids })
+                    .OnError(OnStatus404ThrowException)
+                    .DeleteAsync();
+
     public Task<ListDataResult<NavMenuSummaryResponse>> List(ListNavMenuQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}")
                     .AppendQueryParam(filter)

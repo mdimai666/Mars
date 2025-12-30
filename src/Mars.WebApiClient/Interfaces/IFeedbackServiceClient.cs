@@ -20,5 +20,5 @@ public interface IFeedbackServiceClient
     Task<ListDataResult<FeedbackSummaryResponse>> List(ListFeedbackQueryRequest filter);
     Task<PagingResult<FeedbackSummaryResponse>> ListTable(TableFeedbackQueryRequest filter);
     Task Delete(Guid id);
-
+    Task DeleteMany(Guid[] ids);
 }

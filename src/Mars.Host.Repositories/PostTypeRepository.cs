@@ -66,7 +66,7 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         var oldTypeName = entity.TypeName;
         entity.UpdateEntity(query);
         var modifiedAt = entity.ModifiedAt!.Value;
-        
+
         ModifyStatusList(entity, query, modifiedAt);
         MetaFieldsTools.ModifyMetaFields(_marsDbContext, entity.MetaFields!, query.MetaFields, modifiedAt);
 
@@ -113,6 +113,15 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<int> DeleteMany(DeleteManyPostTypeQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.PostTypes.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Throws if this class has been disposed.
     /// </summary>
@@ -135,6 +144,17 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         ThrowIfDisposed();
 
         return (await _listAllQuery.AsNoTracking().ToListAsync(cancellationToken)).ToSummaryList();
+    }
+
+    public async Task<IReadOnlyCollection<PostTypeSummary>> ListAllIds(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        return (await _listAllQuery.AsNoTracking()
+                                    .Where(s => ids.Contains(s.Id))
+                                    .ToListAsync(cancellationToken))
+                                    .ToSummaryList();
     }
 
     public async Task<IReadOnlyCollection<PostTypeSummary>> ListAllActive(CancellationToken cancellationToken)

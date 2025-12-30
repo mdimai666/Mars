@@ -49,6 +49,6 @@ internal class NavMenuRelationModelProviderHandler(INavMenuRepository navMenuRep
 
     public Task<int> DeleteMany(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
     {
-        return navMenuRepository.DeleteMany(ids, cancellationToken);
+        return navMenuRepository.DeleteMany(new() { Ids = ids }, cancellationToken);
     }
 }

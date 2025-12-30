@@ -95,6 +95,15 @@ internal class UserTypeRepository : IUserTypeRepository, IDisposable
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<int> DeleteMany(DeleteManyUserTypeQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return _marsDbContext.UserTypes.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Throws if this class has been disposed.
     /// </summary>
@@ -111,20 +120,34 @@ internal class UserTypeRepository : IUserTypeRepository, IDisposable
         _disposed = true;
     }
 
-    public async Task<IReadOnlyCollection<UserTypeSummary>> ListAll(CancellationToken cancellationToken)
+    private IQueryable<UserTypeEntity> ListAllInternal(ListAllUserTypeQuery query)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        ThrowIfDisposed();
+        var list = _listAllQuery.AsNoTracking();
 
-        return (await _listAllQuery.AsNoTracking().ToListAsync(cancellationToken)).ToSummaryList();
+        if (query.Ids is { Count: > 0 })
+        {
+            list = list.Where(u => query.Ids.Contains(u.Id));
+        }
+
+        return list;
     }
 
-    public async Task<IReadOnlyCollection<UserTypeDetail>> ListAllDetail(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<UserTypeSummary>> ListAll(ListAllUserTypeQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        return (await _listAllQuery.AsNoTracking().Include(s => s.MetaFields).ToListAsync(cancellationToken)).ToDetailList();
+        return (await ListAllInternal(query).ToListAsync(cancellationToken)).ToSummaryList();
+    }
+
+    public async Task<IReadOnlyCollection<UserTypeDetail>> ListAllDetail(ListAllUserTypeQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        return (await ListAllInternal(query).Include(s => s.MetaFields).ToListAsync(cancellationToken)).ToDetailList();
     }
 
     IQueryable<UserTypeEntity> ListFilterQuery(ListUserTypeQuery query) => _listAllQuery

@@ -11,14 +11,18 @@ public class GeneralDeleteTests<TEntity, TRequest>
 {
     private readonly BaseWebApiClientTests _base;
     private readonly Func<IMarsWebApiClient, Guid, Task> _deleteAction;
+    private readonly Func<IMarsWebApiClient, Guid[], Task>? _deleteManyAction;
 
     private IFixture _fixture => _base._fixture;
     private IMarsWebApiClient GetWebApiClient(bool isAnonymous = false) => _base.GetWebApiClient(isAnonymous);
 
-    public GeneralDeleteTests(BaseWebApiClientTests baseWebApiClient, Func<IMarsWebApiClient, Guid, Task> createAction)
+    public GeneralDeleteTests(BaseWebApiClientTests baseWebApiClient,
+                                Func<IMarsWebApiClient, Guid, Task> deleteAction,
+                                Func<IMarsWebApiClient, Guid[], Task>? deleteManyAction)
     {
         _base = baseWebApiClient;
-        _deleteAction = createAction;
+        _deleteAction = deleteAction;
+        _deleteManyAction = deleteManyAction;
     }
 
     public async Task ValidRequest_Unauthorized()
@@ -61,5 +65,21 @@ public class GeneralDeleteTests<TEntity, TRequest>
 
         //Assert
         await action.Should().ThrowAsync<NotFoundException>();
+    }
+
+    public async Task DeleteMany_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+        var entityList = await _base.CreateManyEntities<TEntity>();
+        var ids = ReflectionHelper.SelectIds(entityList).ToArray();
+
+        //Act
+        var action = () => _deleteManyAction(client, ids);
+
+        //Assert
+        await action.Should().NotThrowAsync();
+        var anyExist = await _base.AnyEntities<TEntity>(ids);
+        anyExist.Should().BeFalse();
     }
 }

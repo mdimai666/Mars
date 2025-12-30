@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Host.Shared.Dto.Files;
 
 public record CreateFileQuery
 {

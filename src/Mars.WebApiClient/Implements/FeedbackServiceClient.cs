@@ -32,6 +32,12 @@ internal class FeedbackServiceClient : BasicServiceClient, IFeedbackServiceClien
                     .OnError(OnStatus404ThrowException)
                     .DeleteAsync();
 
+    public Task DeleteMany(Guid[] ids)
+        => _client.Request($"{_basePath}{_controllerName}/DeleteMany")
+                    .AppendQueryParam(new { ids })
+                    .OnError(OnStatus404ThrowException)
+                    .DeleteAsync();
+
     public Task<ListDataResult<FeedbackSummaryResponse>> List(ListFeedbackQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}")
                     .AppendQueryParam(filter)

@@ -21,5 +21,5 @@ public interface IMediaServiceClient
     Task<PagingResult<FileListItemResponse>> ListTable(TableFileQueryRequest filter);
     Task Delete(Guid id);
     Task<UserActionResult> ExecuteAction(ExecuteActionRequest action);
-
+    Task DeleteMany(Guid[] ids);
 }

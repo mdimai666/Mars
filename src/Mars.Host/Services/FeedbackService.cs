@@ -66,7 +66,7 @@ internal class FeedbackService : IFeedbackService
         return updated;
     }
 
-    public async Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<FeedbackSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
@@ -74,7 +74,21 @@ internal class FeedbackService : IFeedbackService
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackDelete(), post);
         _eventManager.TriggerEvent(payload);
-        return UserActionResult.Success();
+        return post;
+    }
+
+    public async Task<IReadOnlyCollection<FeedbackSummary>> DeleteMany(DeleteManyFeedbackQuery query, CancellationToken cancellationToken)
+    {
+        var feedbacks = await _feedbackRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
+
+        await _feedbackRepository.DeleteMany(query, cancellationToken);
+
+        foreach (var feedback in feedbacks)
+        {
+            var payload = new ManagerEventPayload(_eventManager.Defaults.FeedbackDelete(), feedback);
+            _eventManager.TriggerEvent(payload);
+        }
+        return feedbacks;
     }
 
     public async Task ExcelFeedbackList(MemoryStream stream, CancellationToken cancellationToken)

@@ -14,7 +14,7 @@ public sealed class DeleteRoleTests : BaseWebApiClientTests
     {
         _fixture.Customize(new FixtureCustomize());
 
-        _deleteTest = new(this, (client, req) => client.Role.Delete(req));
+        _deleteTest = new(this, (client, req) => client.Role.Delete(req), null);
     }
 
     [IntegrationFact]

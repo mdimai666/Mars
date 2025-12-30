@@ -14,7 +14,7 @@ public sealed class DeleteUserTests : BaseWebApiClientTests
     {
         _fixture.Customize(new FixtureCustomize());
 
-        _deleteTest = new(this, (client, req) => client.User.Delete(req));
+        _deleteTest = new(this, (client, req) => client.User.Delete(req), (client, req) => client.User.DeleteMany(req));
     }
 
     [IntegrationFact]
@@ -33,5 +33,11 @@ public sealed class DeleteUserTests : BaseWebApiClientTests
     public async Task DeleteUser_NotExistEntity_ThrowNotFoundException()
     {
         await _deleteTest.NotExistEntity_ThrowNotFoundException();
+    }
+
+    [IntegrationFact]
+    public async Task DeleteManyUser_ValidRequest_ShouldSuccess()
+    {
+        await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }
 }

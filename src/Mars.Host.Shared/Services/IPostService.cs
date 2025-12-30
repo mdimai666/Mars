@@ -17,7 +17,8 @@ public interface IPostService
     Task<PostEditViewModel> GetEditModelBlank(string type, CancellationToken cancellationToken);
     PostEditDetail GetPostBlank(PostTypeDetail postType);
     Task<PostDetail> Update(UpdatePostQuery query, CancellationToken cancellationToken);
-    Task<UserActionResult> Delete(Guid id, CancellationToken cancellationToken);
+    Task<PostSummary> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostSummary>> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken);
     CreatePostQuery EnrichQuery(CreatePostRequest request);
     UpdatePostQuery EnrichQuery(UpdatePostRequest request);
 }

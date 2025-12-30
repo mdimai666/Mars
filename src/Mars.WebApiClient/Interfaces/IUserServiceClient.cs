@@ -22,6 +22,7 @@ public interface IUserServiceClient
     Task<PagingResult<UserListItemResponse>> ListTable(TableUserQueryRequest filter);
     Task<PagingResult<UserDetailResponse>> ListTableDetail(TableUserQueryRequest filter);
     Task Delete(Guid id);
+    Task DeleteMany(Guid[] ids);
 
     Task<UserActionResult> UpdateUserRoles(Guid id, IEnumerable<Guid> roles);
     Task<UserActionResult> SetPassword(SetUserPasswordByIdRequest auth);

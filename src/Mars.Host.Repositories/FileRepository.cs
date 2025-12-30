@@ -40,11 +40,13 @@ internal class FileRepository : IFileRepository
         return (await _marsDbContext.Files.AsNoTracking().FirstOrDefaultAsync(s => s.FilePhysicalPath == filePath, cancellationToken))?.ToDetail(resolver);
     }
 
-    public Task<bool> FileExistByPath(string filePath, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
+    public Task<bool> FileExistByPath(string filePath, CancellationToken cancellationToken)
     {
-        var resolver = new ImagePreviewResolver(new(), hostingInfo);
         return _marsDbContext.Files.AsNoTracking().AnyAsync(s => EF.Functions.ILike(s.FilePhysicalPath, filePath));
     }
+
+    public Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken)
+                        => _marsDbContext.Files.AsNoTracking().AnyAsync(s => s.Id == id, cancellationToken);
 
     public async Task<Guid> Create(CreateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
     {
@@ -146,12 +148,13 @@ internal class FileRepository : IFileRepository
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<int> DeleteBulk(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    public async Task<int> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var deletedCount = await _marsDbContext.Files.Where(s => ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
+        var deletedCount = await _marsDbContext.Files.Where(s => query.Ids.Contains(s.Id)).ExecuteDeleteAsync(cancellationToken);
         return deletedCount;
     }
 

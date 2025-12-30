@@ -2,6 +2,7 @@ using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
+using Mars.Host.Shared.Validators;
 using Mars.Options.Models;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Http;
@@ -20,12 +21,14 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         IOptionService optionService,
         IFileRepository fileRepository,
         IImageProcessor imageProcessor,
+        IValidatorFabric validatorFabric,
         ILogger<MediaService> logger)
         : base(
             fileStorage,
             optionService,
             fileRepository,
-            imageProcessor)
+            imageProcessor,
+            validatorFabric)
     {
         _logger = logger;
     }

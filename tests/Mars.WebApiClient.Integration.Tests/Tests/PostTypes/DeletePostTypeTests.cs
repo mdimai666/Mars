@@ -1,11 +1,10 @@
+using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Host.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PostTypes;
 
@@ -55,5 +54,20 @@ public sealed class DeletePostTypeTests : BaseWebApiClientTests
 
         //Assert
         action.Should().ThrowAsync<NotFoundException>().RunSync();
+    }
+
+    [IntegrationFact]
+    public async Task DeleteManyPostType_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+        var entityList = await CreateManyEntities<PostTypeEntity>();
+        var ids = entityList.Select(s => s.Id).ToArray();
+
+        //Act
+        await client.PostType.DeleteMany(ids);
+
+        //Assert
+        AppFixture.MarsDbContext().PostTypes.Any(s => ids.Contains(s.Id)).Should().BeFalse();
     }
 }

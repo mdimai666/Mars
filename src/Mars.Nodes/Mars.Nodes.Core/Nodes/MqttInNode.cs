@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
+using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes;
 

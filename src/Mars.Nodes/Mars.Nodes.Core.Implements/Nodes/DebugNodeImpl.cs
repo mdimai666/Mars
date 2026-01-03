@@ -90,6 +90,12 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
             {
                 RED.Status(new NodeStatus(DateTime.Now.ToString("HH:mm:ss.fff")));
             }
+
+            if (Node.WriteToConsole)
+            {
+                var outputBody = msg.Json?.IsNullOrEmpty() == true ? "" : ("\n" + msg.Json);
+                Console.WriteLine(msg.Message + outputBody);
+            }
         }
         catch (Exception ex)
         {

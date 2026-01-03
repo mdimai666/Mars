@@ -7,8 +7,9 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "common")]
 public class DebugNode : Node
 {
-    public bool CompleteInputMessage { get; set; } = false;
-    public bool ShowPayloadTypeInStatus { get; set; } = false;
+    public bool CompleteInputMessage { get; set; }
+    public bool WriteToConsole { get; set; }
+    public bool ShowPayloadTypeInStatus { get; set; }
     public override string Label => CompleteInputMessage ? "Msg" : base.Label;
     public Mars.Core.Models.MessageIntent? Level { get; set; }
 

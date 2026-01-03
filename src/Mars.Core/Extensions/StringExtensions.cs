@@ -2,6 +2,9 @@ namespace Mars.Core.Extensions;
 
 public static class StringExtensions
 {
+    public static bool IsNullOrEmpty(this string source)
+        => string.IsNullOrEmpty(source);
+
     public static string TrimSubstringStart(
         this string source,
         string substring,

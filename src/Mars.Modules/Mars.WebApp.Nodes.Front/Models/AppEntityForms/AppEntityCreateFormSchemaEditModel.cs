@@ -6,30 +6,46 @@ namespace Mars.WebApp.Nodes.Front.Models.AppEntityForms;
 
 public class AppEntityCreateFormSchemaEditModel
 {
-    public string Title { get; set; }
-    public SourceUri EntityUri { get; set; }
-    public AppEntityCreateFormsBuilderDictionary BuilderDictionary { get; init; }
+    public string Title { get; set; } = "";
+    SourceUri _entityUri = "";
+    public SourceUri EntityUri { get => _entityUri; set => UpdateValue(value); }
+    public AppEntityCreateFormsBuilderDictionary BuilderDictionary { get; }
 
     public IReadOnlyDictionary<SourceUri, AppEntityCreateFormSchema> FormsSchemaDict { get; }
 
     public EntityPropertyFormFieldEditModel[] PropertyBindings { get; set; } = [];
-    //public AppEntityCreateFormSchema Form => FormsSchemaDict[EntityUri];
 
     public AppEntityCreateFormSchemaEditModel(AppEntityCreateFormsBuilderDictionary builderDictionary, CreateAppEntityFromFormCommand currentValues)
     {
         BuilderDictionary = builderDictionary;
         FormsSchemaDict = builderDictionary.Forms.ToDictionary(f => f.EntityUri);
-        EntityUri = currentValues.EntityUri;
+
+        EntityChanged(currentValues.EntityUri, currentValues.PropertyBindings);
+    }
+
+    void EntityChanged(SourceUri entityUri, IReadOnlyCollection<EntityPropertyBinding> propertyBindings)
+    {
+        _entityUri = entityUri;
 
         var form = FormsSchemaDict.GetValueOrDefault(EntityUri) ?? FormsSchemaDict.First().Value;
         Title = form.Title;
 
-        PropertyBindings = ItemsToModel(currentValues.PropertyBindings, form);
-
-        //TODO: on change EntityUri update PropertyBindings
+        PropertyBindings = ItemsToModel(form, propertyBindings);
     }
 
-    public static EntityPropertyFormFieldEditModel[] ItemsToModel(IReadOnlyCollection<EntityPropertyBinding> propertySetters, AppEntityCreateFormSchema form)
+    void UpdateValue(SourceUri entityUri)
+    {
+        var propertyBindings = PropertyBindings.Select(s => new EntityPropertyBinding
+        {
+            IsEvalExpression = s.IsEvalExpression,
+            PropertyName = s.PropertyName,
+            ValueOrExpression = s.ValueOrExpression,
+        }).ToList();
+
+        EntityChanged(entityUri, propertyBindings);
+    }
+
+    public static EntityPropertyFormFieldEditModel[] ItemsToModel(AppEntityCreateFormSchema form, IReadOnlyCollection<EntityPropertyBinding> propertySetters)
     {
         var valuesDict = propertySetters.ToDictionary(s => s.PropertyName);
         return form.Properties.Select(s => new EntityPropertyFormFieldEditModel

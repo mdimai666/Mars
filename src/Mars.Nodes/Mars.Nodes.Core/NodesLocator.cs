@@ -117,11 +117,13 @@ public class NodesLocator
 
                 var instance = (INodeExample<Node>)Activator.CreateInstance(type)!;
 
+                if (instance is null) continue;
+
                 list.Add(new NodeExampleInfo
                 {
                     NodeType = nodeType,
-                    Name = ((dynamic)instance).Name,
-                    Description = ((dynamic)instance).Description,
+                    Name = instance.Name,
+                    Description = instance.Description,
                     ExampleHandlerInstance = instance
                 });
             }

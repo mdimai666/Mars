@@ -94,13 +94,9 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
 
         if (cycle.index < cycle.count)
         {
-            NodeMsg _input = new()
-            {
-                Payload = cycle.arr.ElementAt(cycle.index)
-            };
-            //input.Payload = cycle.arr.ElementAt(cycle.index);
+            NodeMsg _input = input.Copy(cycle.arr.ElementAt(cycle.index));
             cycle.index++;
-            _input.Add(cycle);
+            _input.Set(cycle);
             RED.Status(new NodeStatus($"{cycle.index}/{cycle.count}"));
             callback(_input, 1);
         }
@@ -108,7 +104,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
         {
             RED.Status(new NodeStatus($"{cycle.index}/{cycle.count} complete"));
 
-            NodeMsg _input = new() { Payload = cycle.count };
+            NodeMsg _input = input.Copy(cycle.count);
             callback(_input, 0);
         }
 

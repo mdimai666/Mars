@@ -7,7 +7,7 @@
 @inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
-<ContentWrapper Title="@AppRes.PostTypes">
+<ContentWrapper Title="@AppRes.PostTypes" WrapperClass="vstack">
 
     <div class="hstack">
         <FluentSearch @bind-Value=_searchText
@@ -23,12 +23,13 @@
         </div>
     </div>
 
-    <div class="mt-4">
-        <div style="height: 534px; overflow:auto;">
+    <div class="mt-4 vstack flex-fill">
+        <div class="flex-fill" style="height: 534px; overflow:auto;">
             <FluentDataGrid ItemsProvider="dataProvider"
                             @ref=table
                             ItemSize="76"
                             Virtualize
+                            EmptyContent="DataGrid_EmptyContent"
                             ResizableColumns
                             GridTemplateColumns="3fr 2fr 1fr 1fr"
                             GenerateHeader="GenerateHeaderOption.Sticky"

@@ -210,6 +210,9 @@
   <data name="CssStyle" xml:space="preserve">
     <value>Css стиль</value>
   </data>
+  <data name="DataGrid__EmptyContent" xml:space="preserve">
+    <value>Нет данных</value>
+  </data>
   <data name="DateDeleted" xml:space="preserve">
     <value>Дата удаления</value>
   </data>

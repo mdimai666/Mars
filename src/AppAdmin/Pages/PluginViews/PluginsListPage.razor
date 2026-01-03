@@ -5,7 +5,7 @@
 @using Mars.Shared.Contracts.Plugins
 @using Microsoft.FluentUI.AspNetCore.Components
 
-<ContentWrapper Title="@AppRes.Plugins">
+<ContentWrapper Title="@AppRes.Plugins" WrapperClass="vstack">
     <SectionActions>
         <XActionsDropDown>
             <FluentMenuItem Label="Upload from zip-file" OnClick="OnClickUploadFromZipFile" />
@@ -23,12 +23,13 @@
             <FluentSpacer />
         </div>
 
-        <div class="mt-4">
-            <div style="height: 534px; overflow:auto;">
+        <div class="mt-4 vstack flex-fill">
+            <div class="flex-fill" style="height: 534px; overflow:auto;">
                 <FluentDataGrid ItemsProvider="dataProvider"
                                 @ref=table
                                 ItemSize="100"
                                 Virtualize
+                                EmptyContent="DataGrid_EmptyContent"
                                 GenerateHeader="GenerateHeaderOption.Sticky"
                                 OnRowClick="OnRowClick"
                                 GridTemplateColumns="* 0.1fr 0.1fr"

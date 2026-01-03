@@ -340,6 +340,15 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No data to show.
+        /// </summary>
+        public static string DataGrid__EmptyContent {
+            get {
+                return ResourceManager.GetString("DataGrid__EmptyContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date deleted.
         /// </summary>
         public static string DateDeleted {

@@ -4,7 +4,7 @@
 @inject IStringLocalizer<AppRes> L
 @attribute [Authorize(Roles = "Admin")]
 
-<ContentWrapper Title="@(postType?.Title)">
+<ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
     <SectionActions>
         <XActionsDropDown ContextPart="@POSTTYPE" />
     </SectionActions>

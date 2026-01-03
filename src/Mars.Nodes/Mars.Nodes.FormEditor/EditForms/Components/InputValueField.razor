@@ -1,0 +1,27 @@
+@using Mars.Nodes.Core.Fields
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@typeparam T
+
+<FluentStack Orientation="Orientation.Horizontal" Style="width:100%">
+    <FluentStack Style="flex:1">
+        <FluentTextField Value="_stringValue"
+                         ValueChanged="OnStringValueChanged"
+                         Appearance="FluentInputAppearance.Outline"
+                         Placeholder="@Placeholder"
+                         Immediate="true" />
+
+        @* <FluentText Caption>
+            @StatusText
+        </FluentText> *@
+        <FluentLabel Typo="Typography.Body">
+            @StatusText
+        </FluentLabel>
+    </FluentStack>
+
+    <FluentButton Appearance="Appearance.Outline"
+                  Style="margin-left:4px"
+                  Title="Построение выражения">
+        @RightButtonContent
+    </FluentButton>
+</FluentStack>

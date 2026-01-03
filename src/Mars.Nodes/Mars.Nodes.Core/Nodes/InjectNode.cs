@@ -1,5 +1,9 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Mars.Core.Attributes;
+using Mars.Nodes.Core.Converters;
+using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes;
 
@@ -7,14 +11,17 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "common")]
 public class InjectNode : Node
 {
-    public string Payload { get; set; } = "";
+    [JsonConverter(typeof(InputValueJsonConverter<string>))]
+    [TypeConverter(typeof(InputValueTypeConverter<string>))]
+    public InputValue<string> Payload { get; set; } = "";
+    //public InputValue<int> Payload2 { get; set; } = "333";
+    //public InputValue<object> Payload3 { get; set; } = "333";
 
     [Display(Name = "Run at startup")]
     public bool RunAtStartup { get; set; }
 
     [Display(Name = "Delay millis")]
     public int StartupDelayMillis { get; set; }
-
 
     public bool IsSchedule { get; set; }
     public string ScheduleCronMask { get; set; } = "0 0/10 * * * ?";
@@ -29,7 +36,6 @@ public class InjectNode : Node
 
 }
 
-
 class InputSource<T>
 {
 #pragma warning disable CS0414 // The field 'InputSource<T>.Type' is assigned but its value is never used
@@ -43,7 +49,6 @@ class InputSource<T>
 
     void sdsd()
     {
-
 
         object z = get();
     }
@@ -64,7 +69,6 @@ enum InputType
     DateTime,
     Flow,
     Global,
-
 
 }
 

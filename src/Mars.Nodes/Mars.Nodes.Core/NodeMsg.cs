@@ -36,6 +36,18 @@ public class NodeMsg
         return Context.TryAdd(name, obj);
     }
 
+    public void Set<T>(T obj)
+    {
+        if (Context.ContainsKey(typeof(T).Name))
+        {
+            Context[typeof(T).Name] = obj!;
+        }
+        else
+        {
+            Context.Add(typeof(T).Name, obj!);
+        }
+    }
+
     public Dictionary<string, object> AsFullDict()
     {
         return new(Context)

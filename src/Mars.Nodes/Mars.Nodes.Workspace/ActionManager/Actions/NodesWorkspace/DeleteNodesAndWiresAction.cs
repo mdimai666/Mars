@@ -68,10 +68,7 @@ public class DeleteNodesAndWiresAction : BaseEditorHistoryAction
     {
         foreach (var w in selWires)
         {
-            foreach (var item in _editor.AllNodes[w.Node1].Wires)
-            {
-                item.Remove(w.Node2);
-            }
+            _editor.AllNodes[w.Node1.NodeId].Wires[w.Node1.PortIndex].RemoveAll(s => s.NodeId == w.Node2.NodeId);
         }
     }
 
@@ -79,10 +76,7 @@ public class DeleteNodesAndWiresAction : BaseEditorHistoryAction
     {
         foreach (var w in selWires)
         {
-            foreach (var item in _editor.AllNodes[w.Node1].Wires)
-            {
-                item.Add(w.Node2);
-            }
+            _editor.AllNodes[w.Node1.NodeId].Wires[w.Node1.PortIndex].Add(w.Node2);
         }
     }
 

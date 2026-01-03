@@ -7,15 +7,15 @@
 <div class="form-group compact" style="--fluent-input-label-basis:150px">
     <div class="vstack gap-2">
 
-        <FormItem2 For="()=>Node.Config">
+        <FormItem2 For="() => Node.Config">
             <InputConfigField @bind-Value=@Node.Config TConfig="MqttBrokerConfigNode" />
         </FormItem2>
 
-        <FormItem2 For="()=>Node.Topic">
+        <FormItem2 For="() => Node.Topic">
             <FluentTextField @bind-Value=@Node.Topic Class="flex-fill" />
         </FormItem2>
 
-        <FormItem2 For="()=>Node.QoS">
+        <FormItem2 For="() => Node.QoS">
             <FluentSelect TOption="NodeMqttQualityOfServiceLevel"
                           Items="Enum.GetValues<NodeMqttQualityOfServiceLevel>()"
                           @bind-SelectedOption=@Node.QoS />
@@ -28,4 +28,3 @@
     MqttInNode Node { get => (MqttInNode)Value!; set => Value = value; }
 
 }
-

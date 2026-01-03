@@ -7,6 +7,8 @@ namespace Mars.WebApp.Nodes.Nodes;
 [Display(GroupName = "entity")]
 public class AppEntityCreateNode : Node
 {
+    public override string DisplayName => FormCommand.EntityUri.HasValue ? $"Create {FormCommand.EntityUri}" : Label;
+
     public CreateAppEntityFromFormCommand FormCommand { get; set; } = new() { EntityUri = "", PropertyBindings = [] };
 
     public AppEntityCreateNode()

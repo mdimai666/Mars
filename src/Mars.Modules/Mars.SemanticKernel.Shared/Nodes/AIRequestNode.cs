@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Fields;
 
 namespace Mars.SemanticKernel.Shared.Nodes;
 

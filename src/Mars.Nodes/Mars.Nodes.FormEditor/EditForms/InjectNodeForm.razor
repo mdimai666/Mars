@@ -8,7 +8,9 @@
 
 <div class="form-group d-flex flex-column flex-fill gap-4">
     <FormItem2 For="() => Node.Payload">
-        <FluentTextField @bind-Value=Node.Payload Class="w-100" Placeholder="DateTimeOffset.Now.ToUnixTimeMilliseconds" />
+        @* <FluentTextField @bind-Value=Node.Payload Class="w-100" Placeholder="DateTimeOffset.Now.ToUnixTimeMilliseconds" /> *@
+
+        <InputValueField @bind-Value="Node.Payload" />
     </FormItem2>
 
     <div class="hstack gap-3">

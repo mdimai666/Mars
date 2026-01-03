@@ -45,6 +45,7 @@ public static class MainMarsNodes
                 .Configure<NodesLocator>((options, locator) =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new NodeJsonConverter(locator));
+                    options.JsonSerializerOptions.Converters.Add(new InputValueJsonConverterFactory());
                 });
 
         services.AddNodeWorkspace();

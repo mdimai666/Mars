@@ -1,10 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using AppAdmin.Pages.PostsViews;
 using AppFront.Shared.Components.MetaFieldViews;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
 using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Models.Interfaces;
 using Mars.Shared.Resources;
@@ -43,7 +41,7 @@ public class PostTypeEditModel : IBasicEntity
 
     [Display(Name = nameof(AppRes.Statuses), ResourceType = typeof(AppRes))]
     [ValidateComplexType]
-    public List<PostStatusEditModel> PostStatusList { get; set; } = new();
+    public List<PostStatusEditModel> PostStatusList { get; set; } = [];
 
     public bool Disabled { get; set; }
 
@@ -53,7 +51,6 @@ public class PostTypeEditModel : IBasicEntity
     [Display(Name = nameof(AppRes.MetaFields), ResourceType = typeof(AppRes))]
     [ValidateComplexType]
     public List<MetaFieldEditModel> MetaFields { get; set; } = [];
-
 
     //==========================================
     //Internal

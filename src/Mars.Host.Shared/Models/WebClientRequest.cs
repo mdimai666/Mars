@@ -34,16 +34,29 @@ public class WebClientRequest
     [JsonIgnore]
     public IDictionary<object, object?> Items = new Dictionary<object, object?>();
 
-    public WebClientRequest(HttpRequest req, IReadOnlyDictionary<string, object?>? routeValues = null)
+    public WebClientRequest(HttpRequest req, IReadOnlyDictionary<string, object?>? routeValues = null, string? replaceQueryString = null)
     {
-        Query = DictionaryWithDefaultExtension.ToDictionary(req.Query
-                .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString()))
-                , s => s.Key, s => s.Value, StringComparer.OrdinalIgnoreCase);
-        QueryDict = req.Query;
+        if (replaceQueryString is not null)
+        {
+            var querystringDict = QueryHelpers.ParseQuery(replaceQueryString);
+            QueryString = replaceQueryString;
+            Query = DictionaryWithDefaultExtension.ToDictionary(querystringDict
+                    .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString()))
+                    , s => s.Key, s => s.Value, StringComparer.OrdinalIgnoreCase);
+            QueryDict = new QueryCollection(querystringDict);
+        }
+        else
+        {
+            QueryString = req.QueryString.ToString();
+            Query = DictionaryWithDefaultExtension.ToDictionary(req.Query
+                    .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString()))
+                    , s => s.Key, s => s.Value, StringComparer.OrdinalIgnoreCase);
+            QueryDict = req.Query;
+        }
+
         HasFormContentType = req.HasFormContentType;
         ContentType = req.ContentType;
         //this.RouteValues  = req.RouteValues ;
-        QueryString = req.QueryString.ToString();
         Path = req.Path;
         //this.PathBase = req.PathBase;
         Host = req.Host;

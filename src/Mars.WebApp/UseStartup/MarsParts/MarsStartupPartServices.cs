@@ -1,4 +1,5 @@
 //using Mars.Areas.Identity;
+using Mars.Handlers;
 using Mars.Host;
 using Mars.Host.Services;
 using Mars.Host.Shared.Services;
@@ -41,6 +42,7 @@ internal static class MarsStartupPartServices
 
         // additional components
         services.AddSingleton<IAIToolService, AIToolService>();
+        services.AddScoped<PostTypePresentationRenderHandler>();
 
         //services.AddSingleton<DebugService>();
 

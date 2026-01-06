@@ -19,7 +19,7 @@ namespace Mars.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin")]
 [Produces(MediaTypeNames.Application.Json)]
 [UserActionResultExceptionFilter]
 [NotFoundExceptionFilter]
@@ -150,4 +150,27 @@ public class PostTypeController : ControllerBase
     public async Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>> GetMetaValueRelationModels(string modelName, [FromQuery][MaxLength(100)] Guid[] ids, CancellationToken cancellationToken)
         => (await _postTypeService.GetMetaValueRelationModels(modelName, ids, cancellationToken)).ToDictionary(s => s.Key, s => s.Value.ToResponse());
 
+    [HttpGet("presentation/edit/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public PostTypePresentationEditViewModel GetPresentationEditModel(Guid id, CancellationToken cancellationToken)
+    {
+        return _postTypeService.GetPresentationEditModel(id, cancellationToken) ?? throw new NotFoundException();
+    }
+
+    [HttpPut("presentation/update")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task UpdatePresentation([FromBody] UpdatePostTypePresentationRequest request, CancellationToken cancellationToken)
+    {
+        await _postTypeService.UpdatePresentation(request.ToQuery(), cancellationToken);
+    }
 }

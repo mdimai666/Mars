@@ -42,4 +42,5 @@ public interface IPostTypeRepository
     Task<PagingResult<PostTypeSummary>> ListTable(ListPostTypeQuery query, CancellationToken cancellationToken);
     Task<bool> TypeNameExist(string name, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<PostTypeSummary>> ListAllIds(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
+    Task UpdatePresentation(UpdatePostTypePresentationQuery query, CancellationToken cancellationToken);
 }

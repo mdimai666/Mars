@@ -237,28 +237,6 @@ body.dark {
     }
 }
 
-.btn-orange {
-    background-color: var(--color-orange);
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    color: white;
-
-    &:hover {
-        color: white;
-    }
-}
-
-.btn-blue {
-    background: var(--color-blue);
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
-    color: white;
-
-    &:hover {
-        color: white;
-    }
-}
-
 .form-control {
     &::-webkit-input-placeholder {
         font-style: italic;
@@ -324,4 +302,39 @@ body.dark {
     h6 {
         .fluent-heading(--type-ramp-base-font-size);
     }
+}
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: color-mix(in srgb, var(--bs-primary) 85%, black);
+    --bs-btn-hover-border-color: color-mix(in srgb, var(--bs-primary) 80%, black);
+    --bs-btn-focus-shadow-rgb: color-mix(in srgb, var(--bs-primary) 80%, white);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: color-mix(in srgb, var(--bs-primary) 80%, black);
+    --bs-btn-active-border-color: color-mix(in srgb, var(--bs-primary) 75%, black);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--bs-primary);
+    --bs-btn-disabled-border-color: var(--bs-primary);
+}
+
+.pagination {
+    --bs-pagination-color: var(--bs-primary);
+    --bs-pagination-bg: #fff;
+    --bs-pagination-border-color: #dee2e6;
+    --bs-pagination-hover-color: var(--bs-primary);
+    --bs-pagination-hover-bg: #e9ecef;
+    --bs-pagination-hover-border-color: #dee2e6;
+    --bs-pagination-focus-color: var(--bs-primary);
+    --bs-pagination-focus-bg: #e9ecef;
+    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--bs-primary) 25%, transparent);
+    --bs-pagination-active-color: #fff;
+    --bs-pagination-active-bg: var(--bs-primary);
+    --bs-pagination-active-border-color: var(--bs-primary);
+    --bs-pagination-disabled-color: #6c757d;
+    --bs-pagination-disabled-bg: #fff;
+    --bs-pagination-disabled-border-color: #dee2e6;
 }

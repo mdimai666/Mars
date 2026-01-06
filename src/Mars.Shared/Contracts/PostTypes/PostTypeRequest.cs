@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.Common;
 using Mars.Shared.Contracts.MetaFields;
+using Mars.Shared.Models;
 
 namespace Mars.Shared.Contracts.PostTypes;
 
@@ -77,11 +77,16 @@ public record UpdatePostContentSettingsRequest
     public required string? CodeLang { get; init; }
 }
 
-
 public record ListPostTypeQueryRequest : BasicListQueryRequest
 {
 }
 
 public record TablePostTypeQueryRequest : BasicTableQueryRequest
 {
+}
+
+public record UpdatePostTypePresentationRequest
+{
+    public required Guid Id { get; init; }
+    public required SourceUri ListViewTemplate { get; init; }
 }

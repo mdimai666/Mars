@@ -15,7 +15,7 @@ public class AppInitialViewModel
     public SysOptions SysOptions { get; set; } = new();
     public required UserPrimaryInfo? InitailUserPrimaryInfo { get; set; }
     public List<NavMenuDetailResponse> NavMenus { get; set; } = [];
-    public IReadOnlyCollection<PostTypeSummaryResponse> PostTypes { get; set; } = [];
+    public IReadOnlyCollection<PostTypeAdminPanelItemResponse> PostTypes { get; set; } = [];
 
     [JsonIgnore]
     public RenderActionResult<PostRenderResponse>? IndexPage => LocalPages.FirstOrDefault(s => s.Data?.PostSlug == "index");

@@ -4,10 +4,13 @@ using Mars.Shared.Models;
 
 namespace Mars.Shared.JsonConverters;
 
-public class SourceUriJsonConverter : JsonConverter<SourceUri>
+public class SourceUriJsonConverter : JsonConverter<SourceUri?>
 {
-    public override SourceUri Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override SourceUri? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        if (reader.TokenType == JsonTokenType.Null)
+            return null;
+
         if (reader.TokenType != JsonTokenType.String)
             throw new JsonException($"must be string");//Вероятно вы не добавили в JsonSerializerOptions.Converters
         var value = reader.GetString();
@@ -15,8 +18,13 @@ public class SourceUriJsonConverter : JsonConverter<SourceUri>
         return SourceUri.ConvertFromString(value);
     }
 
-    public override void Write(Utf8JsonWriter writer, SourceUri value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, SourceUri? value, JsonSerializerOptions options)
     {
+        if (value is null || !value.HasValue)
+        {
+            writer.WriteNullValue();
+            return;
+        }
         writer.WriteStringValue(value.ToString());
     }
 }

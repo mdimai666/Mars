@@ -10,6 +10,7 @@ using Mars.Controllers;
 using Mars.Host.Shared.Managers;
 using Mars.Shared.Contracts.XActions;
 using Mars.Shared.Resources;
+using Mars.XActions.ContentRecipes;
 
 namespace Mars.XActions;
 
@@ -37,6 +38,8 @@ internal static class ConfigureActions
             #endif
             ClearCacheAct.XAction,
             CreateMockPostsAct.XAction,
+            CreatePaginatorBlockTemplateAct.XAction,
+            CreatePostTypePresentationTemplateAct.XAction,
         ]).ForEach(actionManager.AddAction);
 
 #if !NOADMIN
@@ -47,8 +50,16 @@ internal static class ConfigureActions
             Label = "App logs",
             LinkValue = "/dev/builder/debug"
         });
+        actionManager.AddXLink(new XActionCommand
+        {
+            Id = "AppAdmin.Posts.page.TemplateViewer",
+            FrontContextId = [typeof(ManagePostPage).FullName! + "-page"],
+            Label = "View static template",
+            LinkValue = "template/view"
+        });
 
 #if DEBUG
+
         actionManager.AddXLink(new XActionCommand
         {
             Id = "empty1",

@@ -1,4 +1,5 @@
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Core.Utils;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
@@ -26,14 +27,18 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
     public async Task<PostTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
         => (await _marsDbContext.PostTypes.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToSummary();
 
+    IQueryable<PostTypeEntity> InternalDetail => _marsDbContext.PostTypes.AsNoTracking()
+                                                                        .Include(s => s.MetaFields)
+                                                                        .Include(s => s.Presentation);
+
     public async Task<PostTypeDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
-        => (await _marsDbContext.PostTypes.AsNoTracking().Include(s => s.MetaFields).FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToDetail();
+        => (await InternalDetail.FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToDetail();
 
     public async Task<PostTypeSummary?> GetByName(string name, CancellationToken cancellationToken)
         => (await _marsDbContext.PostTypes.AsNoTracking().FirstOrDefaultAsync(s => s.TypeName == name, cancellationToken))?.ToSummary();
 
     public async Task<PostTypeDetail?> GetDetailByName(string name, CancellationToken cancellationToken)
-        => (await _marsDbContext.PostTypes.AsNoTracking().Include(s => s.MetaFields).FirstOrDefaultAsync(s => s.TypeName == name, cancellationToken))?.ToDetail();
+        => (await InternalDetail.FirstOrDefaultAsync(s => s.TypeName == name, cancellationToken))?.ToDetail();
 
     public Task<bool> TypeNameExist(string name, CancellationToken cancellationToken)
         => _marsDbContext.PostTypes.AsNoTracking().AnyAsync(s => s.TypeName == name, cancellationToken);
@@ -170,7 +175,7 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
 
-        return (await _listAllQuery.AsNoTracking().Include(s => s.MetaFields).ToListAsync(cancellationToken)).ToDetailList();
+        return (await InternalDetail.ToListAsync(cancellationToken)).ToDetailList();
     }
 
     IQueryable<PostTypeEntity> ListFilterQuery(ListPostTypeQuery query) => _listAllQuery
@@ -203,5 +208,32 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
 
         return list.ToMap(PostTypeMapping.ToSummaryList);
 
+    }
+
+    public async Task UpdatePresentation(UpdatePostTypePresentationQuery query, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(query, nameof(query));
+
+        var entity = await _marsDbContext.PostTypes.Include(s => s.Presentation)
+                                                    .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
+                                                    ?? throw new NotFoundException();
+
+        if (entity.Presentation is null)
+        {
+            entity.Presentation = new()
+            {
+                ListViewTemplateSourceUri = query.ListViewTemplate.ToString().AsNullIfEmpty(),
+            };
+        }
+        else
+        {
+            entity.Presentation.ListViewTemplateSourceUri = query.ListViewTemplate.ToString().AsNullIfEmpty();
+        }
+
+        entity.ModifiedAt = DateTimeOffset.Now;
+
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 }

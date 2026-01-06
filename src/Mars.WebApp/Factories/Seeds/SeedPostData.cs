@@ -61,7 +61,7 @@ public static class SeedPostData
             Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
             Title = "Шаблон",
             TypeName = "template",
-            EnabledFeatures = [Feature.Content],
+            EnabledFeatures = [Feature.Content, Feature.Tags],
             PostContentType = codeSettings.CopyViaJsonConversion<PostContentSettings>(),
         });
 

@@ -18,7 +18,7 @@ public partial class ManagePostView
     [Inject] IDialogService dialogService { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public PostTypeSummaryResponse PostType { get; set; } = default!;
+    public PostTypeAdminPanelItemResponse PostType { get; set; } = default!;
     string previousRequestPostTypeName = "";
 
     string urlEditPage = "/dev/EditPost";

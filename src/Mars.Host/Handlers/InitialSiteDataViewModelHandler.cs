@@ -7,7 +7,6 @@ using Mars.Host.Shared.Mappings.PostTypes;
 using Mars.Host.Shared.Mappings.Renders;
 using Mars.Host.Shared.Mappings.Users;
 using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Renders;
@@ -19,7 +18,7 @@ namespace Mars.Host.Handlers;
 public class InitialSiteDataViewModelHandler(IOptionService optionService,
                                             INavMenuService navMenuService,
                                             IPageRenderService pageRenderService,
-                                            IPostTypeRepository postTypeRepository,
+                                            IMetaModelTypesLocator metaModelTypesLocator,
                                             IRequestContext requestContext,
                                             IActionManager actionManager)
 {
@@ -61,13 +60,15 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
 
         var options = optionService.GetOptionsForInitialSiteData();
 
-        if (options.Count > 30) throw new Exception("too much from options");
+        if (options.Count > 50) throw new Exception("too much from options");
+
+        var postTypes = metaModelTypesLocator.PostTypesDict().Values.Select(PostTypeMapping.ToAdminPanelItemResponse).ToList();
 
         return new InitialSiteDataViewModel
         {
             SysOptions = optionService.SysOption,
             UserPrimaryInfo = requestContext.User!?.ToPrimaryInfo(),
-            PostTypes = (await postTypeRepository.ListAll(default)).Select(s => s.ToResponse()).ToList(),
+            PostTypes = postTypes,
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),
             LocalPages = localPages ?? [],
             Options = options.Select(OptionMapping.ToResponse).ToList(),

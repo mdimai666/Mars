@@ -3,7 +3,7 @@ using AppFront.Main.Extensions;
 using AppFront.Shared.Extensions;
 using Flurl.Http;
 using Mars.Core.Exceptions;
-using Mars.Shared.Models.Interfaces;
+using Mars.Core.Interfaces;
 using Mars.Shared.Resources;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
@@ -13,7 +13,7 @@ using IMessageService = AppFront.Shared.Interfaces.IMessageService;
 namespace AppFront.Shared.Components;
 
 public partial class StandartEditContainer<TModel> : ComponentBase
-        where TModel : IBasicEntity, new()
+        where TModel : IHasId, new()
 {
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;

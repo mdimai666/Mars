@@ -143,10 +143,12 @@ public class SourceUri : IEquatable<SourceUri>
 
     public bool Equals(SourceUri? other, StringComparison comparisonType)
     {
+        if (ReferenceEquals(other, null))
+            return false;
+
         if (!HasValue && !other.HasValue)
-        {
             return true;
-        }
+
         return string.Equals(Value, other.Value, comparisonType);
     }
 
@@ -164,15 +166,19 @@ public class SourceUri : IEquatable<SourceUri>
         return HasValue ? StringComparer.OrdinalIgnoreCase.GetHashCode(Value) : 0;
     }
 
-    public static bool operator ==(SourceUri left, SourceUri right)
+    public static bool operator ==(SourceUri? left, SourceUri? right)
     {
+        if (ReferenceEquals(left, right))
+            return true;
+
+        if (left is null || right is null)
+            return false;
+
         return left.Equals(right);
     }
 
-    public static bool operator !=(SourceUri left, SourceUri right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(SourceUri? left, SourceUri? right)
+        => !(left == right);
 
     public static string operator +(string left, SourceUri right)
     {
@@ -194,7 +200,7 @@ public class SourceUri : IEquatable<SourceUri>
     }
 
     public static implicit operator SourceUri(string? s)
-        => ConvertFromString(s);
+        => s is null ? null! : ConvertFromString(s);
 
     public static implicit operator string(SourceUri? path)
         => path?.ToString()!;

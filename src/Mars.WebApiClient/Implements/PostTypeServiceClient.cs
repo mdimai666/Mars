@@ -78,4 +78,12 @@ internal class PostTypeServiceClient : BasicServiceClient, IPostTypeServiceClien
                     .SetQueryParams(new { ids })
                     .GetJsonAsync<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>>();
 
+    public Task<PostTypePresentationEditViewModel> GetPresentationEditModel(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}/presentation/edit", id)
+                    .OnError(OnStatus404ReturnNull)
+                    .GetJsonAsync<PostTypePresentationEditViewModel>();
+
+    public Task UpdatePresentation(UpdatePostTypePresentationRequest request)
+        => _client.Request($"{_basePath}{_controllerName}/presentation/update")
+                    .PutJsonAsync(request);
 }

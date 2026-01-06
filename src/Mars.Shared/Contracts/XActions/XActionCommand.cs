@@ -36,8 +36,15 @@ public class XActResult : IUserActionResult
 
     public static XActResult ToastSuccess(string message)
         => new() { Ok = true, Message = message, MessageIntent = MessageIntent.Success, NextStep = XActionNextStep.Toast };
+
     public static XActResult ToastError(string message)
         => new() { Message = message, MessageIntent = MessageIntent.Error, NextStep = XActionNextStep.Toast };
+
+    public static XActResult ToastWarning(string message)
+        => new() { Message = message, MessageIntent = MessageIntent.Warning, NextStep = XActionNextStep.Toast };
+
+    public static XActResult ToastInfo(string message)
+        => new() { Message = message, MessageIntent = MessageIntent.Info, NextStep = XActionNextStep.Toast };
 }
 
 public record XActionCommandCall

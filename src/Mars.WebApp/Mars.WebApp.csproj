@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <UserSecretsId>aspnet-Mars-56F29B15-4FE5-4248-9243-0A24943CC689</UserSecretsId>

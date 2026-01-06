@@ -4,7 +4,7 @@ using Mars.Shared.Models;
 namespace Mars.Shared.Validators;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-public class ValidateSourceUri : ValidationAttribute
+public class ValidateSourceUriAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {

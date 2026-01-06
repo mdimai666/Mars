@@ -11,10 +11,7 @@ public class PostTypeNameValidator
 
         if (postType == null)
         {
-            throw new MarsValidationException(new Dictionary<string, string[]>
-            {
-                [nameof(PostDetail.Type)] = [$"post type '{postTypeName}' not exist"]
-            });
+            throw MarsValidationException.FromSingleError(nameof(PostDetail.Type), $"post type '{postTypeName}' not exist");
         }
 
         //RuleFor(x => x)

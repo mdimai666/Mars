@@ -31,8 +31,9 @@ internal static class PostTypeMapping
             Disabled = entity.Disabled,
             PostContentSettings = entity.PostContentType.ToDto(),
             PostStatusList = entity.PostStatusList.ToDto(),
-            MetaFields = entity.MetaFields!.ToDto()
+            MetaFields = entity.MetaFields!.ToDto(),
 
+            Presentation = entity.Presentation.ToDto(),
         };
 
     public static PostContentSettingsDto ToDto(this PostContentSettings entity)
@@ -106,4 +107,13 @@ internal static class PostTypeMapping
         entity.ModifiedAt = DateTimeOffset.Now;
         return entity;
     }
+
+    public static PostTypePresentation ToDto(this PostTypePresentationEntity? entity)
+        => entity is null
+            ? PostTypePresentation.Default()
+            : new()
+            {
+                ListViewTemplate = entity.ListViewTemplateSourceUri,
+            };
+
 }

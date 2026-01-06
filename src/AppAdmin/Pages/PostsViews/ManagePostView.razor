@@ -1,5 +1,6 @@
 @using System.Linq.Expressions
 @using AppAdmin.Pages.PageViews
+@using BlazoredHtmlRender
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Mars.Shared.Contracts.Posts;
@@ -8,20 +9,21 @@
 @inject IStringLocalizer<AppRes> L
 
 <d-manage-post-view class="flex-fill d-flex flex-column">
-    @* if (PostType.ViewSettings?.ListViewTemplateSourceUri.HasValue ?? false)
-{
-    <AppFront.Shared.Pages.OnePage SLUG="@PostType.ViewSettings.ListViewTemplateSourceUri" Wrapper="false" />
-}
-else *@
-    @if (true)
+    @if (PostType.Presentation.ListViewTemplate != null)
     {
-        <div class="hstack">
+        var source = PostType.Presentation.ListViewTemplate;
+        <AppFront.Shared.Pages.RemotePageViewer Url=@($"/vm/ViewModel/PostTypePresentationRender/?sourceUri={source}") />
+    }
+    else
+    {
+        <div class="hstack gap-1">
             <FluentSearch @bind-Value=_searchText
                           @bind-Value:after=HandleSearchInput
                           Immediate
                           ImmediateDelay="300"
                           Appearance="FluentInputAppearance.Filled"
                           AriaLabel="Search" />
+            <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
             <div class="ms-auto">
                 <a href="@urlEditPage/@PostType.TypeName">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>

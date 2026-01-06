@@ -17,4 +17,12 @@ public class MarsValidationException : ValidationException
     {
         Errors = errors;
     }
+
+    public MarsValidationException(Dictionary<string, string[]> errors, Exception? innerException = null) : base("One or more validation errors occurred.", innerException)
+    {
+        Errors = errors;
+    }
+
+    public static MarsValidationException FromSingleError(string key, string message)
+        => new(new Dictionary<string, string[]> { [key] = [message] });
 }

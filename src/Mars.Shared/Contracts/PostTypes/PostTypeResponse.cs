@@ -69,7 +69,6 @@ public record PostContentSettingsResponse
     public required string? CodeLang { get; init; }
 }
 
-
 public record PostStatusResponse
 {
     public required Guid Id { get; init; }
@@ -94,4 +93,10 @@ public record PostTypeListItemResponse : IBasicEntityResponse
     public required string TypeName { get; init; }
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required IReadOnlyCollection<string> Tags { get; init; }
+}
+
+public record PostTypeAdminPanelItemResponse : PostTypeSummaryResponse
+{
+    public required PostTypePresentationResponse Presentation { get; init; }
+
 }

@@ -222,10 +222,7 @@ internal class PostJsonService : IPostJsonService
         {
             if (!string.IsNullOrEmpty(inputStatus))
             {
-                throw new MarsValidationException(new Dictionary<string, string[]>
-                {
-                    [nameof(CreatePostJsonQuery.Status)] = ["status feature is disabled. status must be empty"]
-                });
+                throw MarsValidationException.FromSingleError(nameof(CreatePostJsonQuery.Status), "status feature is disabled. status must be empty");
             }
         }
         return inputStatus;

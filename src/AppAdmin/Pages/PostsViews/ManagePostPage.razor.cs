@@ -10,7 +10,7 @@ public partial class ManagePostPage
     string urlEditPage => "/dev/EditPost";
     string query => $"?posttype={POSTTYPE}";
 
-    PostTypeSummaryResponse postType = Q.Site.PostTypes.First(s => s.TypeName == "post");
+    PostTypeAdminPanelItemResponse postType = Q.Site.PostTypes.First(s => s.TypeName == "post");
 
     [Parameter]
     public string POSTTYPE { get; set; } = "post";

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mars.Host.Data.Entities;
 
-public class PostTypeMetaFieldEntity 
+public class PostTypeMetaFieldEntity
 {
     [ForeignKey(nameof(PostType))]
     public Guid PostTypeId { get; set; }

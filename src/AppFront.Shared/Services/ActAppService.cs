@@ -21,7 +21,7 @@ internal class ActAppService : IActAppService
         _navigationManager = navigationManager;
     }
 
-    public async void Inject(string id, string[]? args = null)
+    public async Task<XActResult> Inject(string id, string[]? args = null)
     {
         var actions = Q.Site.XActions;
 
@@ -32,6 +32,7 @@ internal class ActAppService : IActAppService
             {
                 //_ = messageService.Info($"action '{id}' click");
                 _navigationManager.NavigateTo(act.LinkValue!);
+                return XActResult.ToastSuccess(act.LinkValue ?? "");
             }
             else if (act.Type == XActionType.HostAction)
             {
@@ -43,10 +44,13 @@ internal class ActAppService : IActAppService
                     {
                         _ = _messageService.Show(res.Message, res.MessageIntent);
                     }
+
+                    return res;
                 }
                 catch (Exception ex)
                 {
                     _ = _messageService.Error(ex.Message);
+                    return null!;
                 }
             }
             else
@@ -57,6 +61,7 @@ internal class ActAppService : IActAppService
         else
         {
             Console.WriteLine($"ActService: action '{id}' not found");
+            return null!;
         }
     }
 }

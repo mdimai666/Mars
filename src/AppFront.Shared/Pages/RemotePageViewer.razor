@@ -1,0 +1,142 @@
+@using BlazoredHtmlRender
+@using Mars.Core.Exceptions
+@using Mars.WebApiClient.Interfaces
+@using Flurl.Http;
+@using System.Web
+
+<d-remote-page-viewer>
+    <ErrorBoundary>
+        <ChildContent>
+            @if (Busy)
+            {
+                <div class="xcenter" style="min-height:50vh">
+                    <SharedLoader1 />
+                </div>
+            }
+            else if (_error is not null)
+            {
+                @if (_error is MarsValidationException validationException)
+                {
+                    <div class="alert alert-danger">
+                        <div>@_error.Message</div>
+                        <div class="mt-3">
+                            <JsonDump Model="validationException.Errors" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger">
+                        @_error.Message
+                    </div>
+                }
+            }
+            else if (_html is not null)
+            {
+                <BlazoredHtml Html=@_html />
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    Url <code>@Url</code> return empty
+                </div>
+            }
+
+            @if (Q.IsDevelopment || Q.User.IsDeveloper)
+            {
+                @*<Button Icon="redo" OnClick="e=>Load(true,true)" Class="DEV_btn_page__refresh" />*@
+                <button class="btn DEV_btn_page__refresh" @onclick="e => Load(true, true)">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <HotCheckAni />
+            }
+        </ChildContent>
+        <ErrorContent>
+            <ExceptionMessage Exception="context" />
+        </ErrorContent>
+    </ErrorBoundary>
+</d-remote-page-viewer>
+
+@code {
+    [Inject] NavigationManager _navigationManager { get; set; } = default!;
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] IJSRuntime JSRuntime { get; set; } = default!;
+
+    string? _oldUrl;
+    string? _url;
+
+    [Parameter, EditorRequired]
+    public string? Url
+    {
+        get => _url;
+        set
+        {
+            if (_url == value) return;
+            _oldUrl = _url;
+            _url = value;
+        }
+    }
+
+    bool Busy;
+    Exception? _error;
+    string? _html;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _navigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        Load();
+    }
+
+    private string ReadQueryString() => new Uri(_navigationManager.Uri).Query;
+
+    protected override void OnParametersSet()
+    {
+        Load(true);
+    }
+
+    async void Load(bool force = false, bool hot = false)
+    {
+        if (_url.IsNullOrEmpty() || Busy) return;
+        _error = null;
+
+        if (Q.IsPrerenderProcess)
+        {
+            Busy = true;
+            return;
+        }
+
+        if (!hot) Busy = true;
+        StateHasChanged();
+
+        if (_oldUrl != _url || force)
+        {
+            try
+            {
+                _html = null;
+                _html = (await client.Client.Request(_url).AppendQueryParam("queryString", ReadQueryString()).GetStringAsync()).AsNullIfEmpty();
+            }
+            catch (Exception ex)
+            {
+                _error = ex;
+            }
+        }
+
+        if (hot)
+        {
+            _ = JSRuntime.InvokeVoidAsync("triggerHotCheckAni");
+        }
+
+        Busy = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _navigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}

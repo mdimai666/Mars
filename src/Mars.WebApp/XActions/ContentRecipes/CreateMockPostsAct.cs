@@ -1,8 +1,5 @@
 #if !NOADMIN
-using System.ComponentModel.Design;
 using AppAdmin.Pages.PostsViews;
-using AppAdmin.Pages.Settings;
-
 #endif
 using Bogus;
 using Mars.Host.Shared.Dto.Posts;
@@ -10,7 +7,7 @@ using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.XActions;
 
-namespace Mars.XActions;
+namespace Mars.XActions.ContentRecipes;
 
 [RegisterXActionCommand(CommandId, "Create mock posts")]
 public class CreateMockPostsAct(

@@ -4,13 +4,14 @@
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
-@using NavMenu=Mars.Shared.Contracts.NavMenus.NavMenuDetailResponse
+@using NavMenu = Mars.Shared.Contracts.NavMenus.NavMenuDetailResponse
 
 @attribute [Authorize(Roles = "Admin")]
 @inject IStringLocalizer<AppRes> L
 
 <ContentWrapper>
     <StandartEditContainer ID=@ID
+                           TitleText="@AppRes.NavMenu"
                            TModel=NavMenu
                            GetAction="@(()=>NavMenu.GetAction(client,ID))"
                            SaveAction="@((s,create)=>NavMenu.SaveAction(client,s,create))"
@@ -35,10 +36,10 @@
                     <FluentValidationMessage For="@(() => context.Slug)" />
                 </div>
                 <div class="vstack gap-3">
-                    <FormItem2 For="()=>context.Class" Label="@AppRes.CssClass">
+                    <FormItem2 For="() => context.Class" Label="@AppRes.CssClass">
                         <FluentTextField @bind-Value=@context.Class />
                     </FormItem2>
-                    <FormItem2 For="()=>context.Style" Label="@AppRes.CssStyle">
+                    <FormItem2 For="() => context.Style" Label="@AppRes.CssStyle">
                         <FluentTextField @bind-Value=@context.Style />
                     </FormItem2>
                 </div>
@@ -75,7 +76,7 @@
                                    SelectedItem="@_selNode"
                                    ItemHeight="50px"
                                    Context="item">
-                            <div class="d-nav-menu d-flex 1border px-2 pt-1 @(item.Node.Disabled?"disabled":"")" @onclick="@(()=>OnClickItem(item))">
+                            <div class="d-nav-menu d-flex 1border px-2 pt-1 @(item.Node.Disabled ? "disabled" : "")" @onclick="@(() => OnClickItem(item))">
                                 <div class="d-navmenu-title flex-fill">
                                     @item.Node.Title
                                     <div class="text-secondary">
@@ -90,7 +91,7 @@
                                     </div>
                                 </div>
                                 <div class="d-navmenu-tools d-flex flex-column align-items-end">
-                                    <a class="text-danger" @onclick=@(e=>OnDeleteMenuItem(item.Node))>удалить</a>
+                                    <a class="text-danger" @onclick=@(e => OnDeleteMenuItem(item.Node))>удалить</a>
 
                                     <div class="dropdown">
                                         <a id="@($"navmenu-{item.Node.Id}")" class="menu-dropdown-link fz14px ms-2 dropdown-toggle"
@@ -100,9 +101,9 @@
                                         <ul class="dropdown-menu">
                                             <li>
                                                 <a class="dropdown-item"
-                                                @onclick:stopPropagation
-                                                @onclick:preventDefault
-                                                   @onclick=@(e=>DropdownMenu_Copy(item.Node))>копировать</a>
+                                                   @onclick:stopPropagation
+                                                   @onclick:preventDefault
+                                                   @onclick=@(e => DropdownMenu_Copy(item.Node))>копировать</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -111,7 +112,7 @@
                         </DTreeView>
 
                         <div class="tree-footer-action fz14px p-2 text-end">
-                            <a class="text-accent" @onclick=@(e=>AddNewMenuItem())>+новый</a>
+                            <a class="text-accent" @onclick=@(e => AddNewMenuItem())>+новый</a>
 
                         </div>
                     </div>
@@ -121,7 +122,7 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <h6 class="flex-fill">Свойства</h6>
-                                        <a class="fz14px text-accent" @onclick=@(e=>_selNode=null)>отмена</a>
+                                        <a class="fz14px text-accent" @onclick=@(e => _selNode = null)>отмена</a>
                                     </div>
                                     @if (_selMenu is null)
                                     {
@@ -180,21 +181,21 @@
                                             <hr />
 
                                             <div class="actions">
-                                                <DFluentDeleteButton OnConfirm="e=>OnDeleteMenuItem(_selMenu)" />
+                                                <DFluentDeleteButton OnConfirm="e => OnDeleteMenuItem(_selMenu)" />
 
                                                 <span class="ms-2">
-                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("left"))>
+                                                    <FluentButton OnClick=@(e => NodePropArrowClick("left"))>
                                                         <FluentIcon Value="@(new Icons.Regular.Size16.ArrowLeft())" />
                                                     </FluentButton>
-                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("right"))>
+                                                    <FluentButton OnClick=@(e => NodePropArrowClick("right"))>
                                                         <FluentIcon Value="@(new Icons.Regular.Size16.ArrowRight())" />
                                                     </FluentButton>
                                                 </span>
                                                 <span class="ms-2">
-                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("up"))>
+                                                    <FluentButton OnClick=@(e => NodePropArrowClick("up"))>
                                                         <FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" />
                                                     </FluentButton>
-                                                    <FluentButton OnClick=@(e=>NodePropArrowClick("down"))>
+                                                    <FluentButton OnClick=@(e => NodePropArrowClick("down"))>
                                                         <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
                                                     </FluentButton>
                                                 </span>
@@ -216,7 +217,7 @@
                 <div class="card-body">
                     <FluentSwitch @bind-Value="context.Disabled" Label="@AppRes.Disable" />
                     <div class="spacer-1"></div>
-                    <FormItem2 For="@(()=>context.Tags)">
+                    <FormItem2 For="@(() => context.Tags)">
                         <InputTags2 @bind-Value=context.Tags />
                     </FormItem2>
                 </div>
@@ -237,7 +238,7 @@
 <FluentDialog Hidden="@(!visibleImportModal)"
               aria-label="Import dialog"
               Modal=true
-              @ondialogdismiss=@(()=>visibleImportModal=false)
+              @ondialogdismiss=@(() => visibleImportModal = false)
               PreventScroll=true>
     <FluentDialogHeader Visible="false" />
     <h2>Import</h2>

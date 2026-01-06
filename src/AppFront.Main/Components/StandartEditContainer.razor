@@ -1,6 +1,7 @@
 @using System.Linq.Expressions
 @using Mars.Core.Exceptions
 @using Mars.Shared.Contracts.Posts
+@using Mars.Shared.Models.Interfaces
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @inject IStringLocalizer<AppRes> L
@@ -112,20 +113,20 @@
                                                 <div class="card-body">
                                                     <h4 class="card-title">Публикация</h4>
 
-                                                    @if (!HideDatesSection)
+                                                    @if (!HideDatesSection && model is IBasicEntity basicEntity)
                                                     {
                                                         @if (!_addNewItem)
                                                         {
-                                                            <h6 class="card-subtitle mb-2 text-muted">Создана: @model.CreatedAt.LocalDateTime.ToString("g")</h6>
+                                                            <h6 class="card-subtitle mb-2 text-muted">Создана: @basicEntity.CreatedAt.LocalDateTime.ToString("g")</h6>
                                                         }
                                                         else
                                                         {
                                                             <h6 class="card-subtitle mb-2 text-muted">Создание</h6>
                                                         }
 
-                                                        @if (model.ModifiedAt != null)
+                                                        @if (basicEntity.ModifiedAt != null)
                                                         {
-                                                            <h6 class="card-subtitle mb-2 text-muted">Изменено: @model.ModifiedAt.Value.LocalDateTime.ToString("g")</h6>
+                                                            <h6 class="card-subtitle mb-2 text-muted">Изменено: @basicEntity.ModifiedAt.Value.LocalDateTime.ToString("g")</h6>
                                                         }
                                                     }
 

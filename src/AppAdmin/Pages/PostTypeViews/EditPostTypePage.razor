@@ -10,7 +10,9 @@
 @inject IStringLocalizer<AppRes> L
 
 <ContentWrapper>
+    <NavbarEditPostType ID="ID" />
     <StandartEditContainer ID=@ID
+                           TitleText="@AppRes.PostType"
                            TModel=PostTypeEditModel
                            GetAction="@(()=>PostTypeEditModel.GetAction(client,ID))"
                            SaveAction="@((s,create)=>PostTypeEditModel.SaveAction(client,s,create))"

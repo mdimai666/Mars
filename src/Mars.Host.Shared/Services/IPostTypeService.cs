@@ -20,4 +20,6 @@ public interface IPostTypeService
     Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure();
     Task<ListDataResult<MetaValueRelationModelSummary>> ListMetaValueRelationModels(MetaValueRelationModelsListQuery query, CancellationToken cancellationToken);
     Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetMetaValueRelationModels(string modelName, Guid[] ids, CancellationToken cancellationToken);
+    Task UpdatePresentation(UpdatePostTypePresentationQuery query, CancellationToken cancellationToken);
+    PostTypePresentationEditViewModel? GetPresentationEditModel(Guid id, CancellationToken cancellationToken);
 }

@@ -10,20 +10,20 @@
     </SectionActions>
     <ChildContent>
 
-        @if (POSTTYPE == "page")
+        @if (postType.Presentation.ListViewTemplate == null)
         {
-            <div class="p-2 d-flex position-relative">
-                <AppFrontInfoBadge />
-                <a href="template/view" class="stretched-link"></a>
-            </div>
+            @if (POSTTYPE == "page")
+            {
+                <div class="p-2 d-flex position-relative">
+                    <AppFrontInfoBadge />
+                    <a href="template/view" class="stretched-link"></a>
+                </div>
+            }
         }
-
-        @*<h3>@(L[postType.Title])</h3>*@
-
         @if (POSTTYPE == "gallery")
         {
-            @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
             <div>
+                @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
                 gallery
             </div>
         }

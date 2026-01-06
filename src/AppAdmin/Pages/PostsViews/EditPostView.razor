@@ -10,6 +10,7 @@
 @implements IDisposable
 
 <StandartEditContainer ID=@ID
+                       TitleText="@AppRes.Post"
                        TModel=PostEditModel
                        GetAction="@(()=>PostEditModel.GetAction(client,ID,PostTypeName))"
                        SaveAction="@((s,create)=>PostEditModel.SaveAction(client,s,create))"

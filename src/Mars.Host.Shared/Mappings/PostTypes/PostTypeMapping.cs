@@ -60,7 +60,6 @@ public static class PostTypeMapping
             //EnabledFeatures = entity.EnabledFeatures,
         };
 
-
     public static PostTypeListItemResponse ToItemResponse(this PostTypeSummary entity)
         => new()
         {
@@ -100,4 +99,15 @@ public static class PostTypeMapping
     public static IReadOnlyCollection<PostStatusResponse> ToResponse(this IReadOnlyCollection<PostStatusDto> list)
         => list.Select(ToResponse).ToList();
 
+    public static PostTypeAdminPanelItemResponse ToAdminPanelItemResponse(this PostTypeDetail entity)
+        => new()
+        {
+            Id = entity.Id,
+            CreatedAt = entity.CreatedAt,
+            Title = entity.Title,
+            TypeName = entity.TypeName,
+            Tags = entity.Tags,
+            EnabledFeatures = entity.EnabledFeatures,
+            Presentation = entity.Presentation.ToResponse(),
+        };
 }

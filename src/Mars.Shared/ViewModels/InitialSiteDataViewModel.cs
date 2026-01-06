@@ -13,7 +13,7 @@ public class InitialSiteDataViewModel
 {
     public required SysOptions SysOptions { get; init; }
     public required UserPrimaryInfo? UserPrimaryInfo { get; init; }
-    public required IReadOnlyCollection<PostTypeSummaryResponse> PostTypes { get; init; }
+    public required IReadOnlyCollection<PostTypeAdminPanelItemResponse> PostTypes { get; init; }
     public required IReadOnlyCollection<NavMenuDetailResponse> NavMenus { get; init; }
 
     [JsonIgnore]

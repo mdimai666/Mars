@@ -3102,7 +3102,7 @@
       },
       "Mars.QueryLang/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host": "0.6.15-alpha.3"
+          "mdimai666.Mars.Host.Shared": "0.6.15-alpha.3"
         },
         "runtime": {
           "Mars.QueryLang.dll": {
@@ -3113,6 +3113,7 @@
       },
       "Mars.QueryLang.Host/1.0.0": {
         "dependencies": {
+          "Mars.Host.Infrastructure": "1.0.0",
           "Mars.MetaModelGenerator": "1.0.0",
           "Mars.QueryLang": "1.0.0",
           "mdimai666.Mars.Host.Data": "0.6.15-alpha.3",
@@ -3527,6 +3528,7 @@
       },
       "mdimai666.Mars.Nodes.Front.Shared/0.6.15-alpha.3": {
         "dependencies": {
+          "Flurl.Http": "4.0.2",
           "Microsoft.AspNetCore.Components.Web": "9.0.9",
           "Toolbelt.Blazor.HotKeys2": "6.0.1",
           "mdimai666.Mars.Nodes.Core": "0.6.15-alpha.3",

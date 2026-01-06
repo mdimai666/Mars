@@ -147,4 +147,26 @@ internal class PostTypeService : IPostTypeService
 
         return dataProvider.GetIds(modelName, ids, cancellationToken);
     }
+
+    public async Task UpdatePresentation(UpdatePostTypePresentationQuery query, CancellationToken cancellationToken)
+    {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
+        await _postTypeRepository.UpdatePresentation(query, cancellationToken);
+
+        _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+    }
+
+    public PostTypePresentationEditViewModel? GetPresentationEditModel(Guid id, CancellationToken cancellationToken)
+    {
+        var postType = _metaModelTypesLocator.GetPostTypeById(id);
+        if (postType == null) return null;
+
+        return new()
+        {
+            PostType = postType.ToSummaryResponse(),
+            Presentation = postType.Presentation.ToResponse(),
+        };
+    }
+
 }

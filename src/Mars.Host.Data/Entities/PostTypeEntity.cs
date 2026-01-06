@@ -79,34 +79,5 @@ public class PostTypeEntity : IBasicEntity
     //[Column(TypeName = "jsonb")]
     //public ModelViewSettingsEntity ViewSettings { get; set; } = new();
 
-}
-
-/// <summary>
-/// [jsonb]
-/// </summary>
-public class ModelViewSettingsEntity
-{
-    public string? ListViewTemplateSourceUri { get; set; }
-
-    //public SourceUri ListViewTemplateSourceUri { get; set; } = new(null);
-
-    //[NotMapped]
-    //[JsonIgnore]
-    //[ValidateSourceUri]
-    //public string SourceUriSetter
-    //{
-    //    get => SourceUri;
-    //    set
-    //    {
-    //        try
-    //        {
-    //            SourceUri = new SourceUri(value);
-    //        }
-    //        catch (Exception)
-    //        {
-    //            SourceUri = null;
-    //        }
-    //    }
-    //}
-
+    public PostTypePresentationEntity? Presentation { get; set; }
 }

@@ -158,7 +158,7 @@ Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
 
 commandsApi.GetCommand<MainCommand>().ShowInfoCommand();
 
-app.Services.MarsMigrateIfProducation(builder.Configuration, _logger, out var migrated);
+app.Services.MarsAutoMigrateCheck(builder.Configuration, _logger, out var migrated);
 app.Services.UseMarsHostServices();
 app.Services.UseMarsOptions();
 app.Services.SeedData(builder.Configuration, _logger, migrated);

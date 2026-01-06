@@ -36,18 +36,17 @@ public static class MarsStartupPartMigrations
         return app;
     }
 
-    public static IServiceProvider MarsMigrateIfProducation(this IServiceProvider services, IConfiguration configuration, ILogger logger, out bool migrated)
+    public static IServiceProvider MarsAutoMigrateCheck(this IServiceProvider services, IConfiguration configuration, ILogger logger, out bool migrated)
     {
-        var env = services.GetRequiredService<IWebHostEnvironment>();
+        migrated = false;
+        var migrateOptions = configuration.GetSection(AppDatabaseMigrationOptions.SectionName).Get<AppDatabaseMigrationOptions>();
 
-        if (env.IsProduction())
+        if (migrateOptions.AutoMigrate)
         {
             using var serviceScope = services.CreateScope();
             using var marsDbContext = serviceScope.ServiceProvider.GetRequiredService<MarsDbContext>();
             migrated = MigrateAsync(marsDbContext, logger).ConfigureAwait(false).GetAwaiter().GetResult();
         }
-
-        migrated = false;
         return services;
     }
 
@@ -88,4 +87,11 @@ public static class MarsStartupPartMigrations
         SeedUsers.SeedFirstData(userManager, marsDbContext);
         await SeedPostData.SeedFirstData(marsDbContext, services, configuration);
     }
+}
+
+public class AppDatabaseMigrationOptions
+{
+    public const string SectionName = "AppDatabaseMigrationOptions";
+
+    public bool AutoMigrate { get; set; }
 }

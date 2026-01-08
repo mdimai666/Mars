@@ -77,7 +77,7 @@ public static class PluginHostExtensions
                 var projectPath = assembly.Location.Split("\\bin\\", 2)[0];
                 var frontDir = new DirectoryInfo(Path.Combine(projectPath, "..", frontAssemblyName));
                 var frontWwwRoot = Path.Combine(frontDir.FullName, "wwwroot");
-                var frontBinWwwRoot = Path.Combine(frontDir.FullName, "bin", "Debug", "net9.0", "wwwroot");
+                var frontBinWwwRoot = Path.Combine(frontDir.FullName, "bin", "Debug", "net10.0", "wwwroot");
 
                 if (Directory.Exists(frontBinWwwRoot))
                 {

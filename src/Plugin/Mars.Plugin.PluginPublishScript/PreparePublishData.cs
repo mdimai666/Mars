@@ -34,7 +34,7 @@ internal class PreparePublishData
         var marsReleaseDepsJsonFile = Path.Combine(assemblyFolder, "Mars.deps.json");
         _marsWebAppDependencies = new ProjectDependencies(marsReleaseDepsJsonFile);
 
-        //var releaseArtifactsDepsjsonFile = @"C:\Users\D\Documents\VisualStudio\2025\Mars.TelegramPlugin\Mars.TelegramPlugin\obj\Release\net9.0\Mars.TelegramPlugin.deps.json";
+        //var releaseArtifactsDepsjsonFile = @"C:\Users\D\Documents\VisualStudio\2025\Mars.TelegramPlugin\Mars.TelegramPlugin\obj\Release\net10.0\Mars.TelegramPlugin.deps.json";
         //var releaseArtifactsDepsjsonFile = Path.Combine(ProjectDir, OutDir.Replace("bin\\", "obj\\"), ProjectName + ".deps.json");
         var releaseArtifactsDepsjsonFile = Path.Combine(Settings.ProjectDir, Settings.OutDir, Settings.ProjectName + ".deps.json");
         ProjectDependencies = new ProjectDependencies(releaseArtifactsDepsjsonFile);

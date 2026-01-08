@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
@@ -6,7 +6,7 @@ namespace Mars.Integration.Tests.PostgreSql;
 
 public sealed class PostgreSqlContainerTest : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder().Build();
+    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:14").Build();
 
     public Task InitializeAsync()
     {

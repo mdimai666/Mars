@@ -63,11 +63,11 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         _nodeTaskManager.OnCurrentTasksCountChanged += _nodeTaskManager_OnCurrentTaskCountChanged;
     }
 
-    void Setup()
+    public void Setup()
     {
         List<Node> nodes;
 
-        if (TryLoadFlowFile(out var fileData))
+        if (TryReadFlowFile(out var fileData))
         {
             nodes = fileData!.Nodes.ToList();
         }
@@ -106,7 +106,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         ];
     }
 
-    bool TryLoadFlowFile(out NodesFlowSaveFile? fileData)
+    public bool TryReadFlowFile(out NodesFlowSaveFile? fileData)
     {
         try
         {
@@ -124,7 +124,6 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         }
         catch (Exception ex)
         {
-            _RED.Nodes = [];
             _logger.LogError(ex, "LoadFlowFile");
         }
         fileData = null;

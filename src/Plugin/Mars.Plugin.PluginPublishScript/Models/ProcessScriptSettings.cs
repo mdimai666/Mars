@@ -15,10 +15,10 @@ public class ProcessScriptSettings
     public ProcessScriptSettings(string[] args)
     {
 #if DEBUG
-        //args = "--run-postpublish --ProjectName=Mars.TelegramPlugin --out=bin\\Release\\net9.0\\ --PublishDir=bin\\Release\\net9.0\\publish\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+        //args = "--run-postpublish --ProjectName=Mars.TelegramPlugin --out=bin\\Release\\net10.0\\ --PublishDir=bin\\Release\\net10.0\\publish\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 #endif
 #if DEBUG
-        //args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net9.0\\ --PublishDir=  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+        //args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net10.0\\ --PublishDir=  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 #endif
 
         var argsDict = string.Join(' ', args).Split("--", StringSplitOptions.TrimEntries).Select(arg =>

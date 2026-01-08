@@ -7,18 +7,21 @@ using Npgsql;
 
 namespace Mars.CommandLine;
 
-public class MainCommand : CommandCli
+public class InfoCommand : CommandCli
 {
-    public MainCommand(CommandLineApi cli) : base(cli)
+    public InfoCommand(CommandLineApi cli) : base(cli)
     {
         var infoCommand = new Command("info", "show main info");
-        infoCommand.SetHandler(ShowInfoCommand);
+        infoCommand.SetAction((_) => ShowInfoCommand());
         cli.AddCommand(infoCommand);
 
     }
 
-    public void ShowInfoCommand()
+    public void ShowInfoCommand(bool showHello = true)
     {
+        if (showHello)
+            Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
+
         var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
         string databaseName;
 

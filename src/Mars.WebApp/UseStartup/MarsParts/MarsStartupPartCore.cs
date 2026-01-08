@@ -153,8 +153,7 @@ internal static class MarsStartupPartCore
 
     public static IServiceCollection AddAspNetTools(this IServiceCollection services)
     {
-        services.AddDateOnlyTimeOnlyStringConverters()
-                .AddResponseCaching()
+        services.AddResponseCaching()
                 .AddMemoryCache(options =>
                 {
                     options.TrackStatistics = true;

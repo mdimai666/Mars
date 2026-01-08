@@ -27,8 +27,7 @@ public class KeycloakTestContainerFixture : IAsyncLifetime
         var password = "admin";
         var user = "admin";
 
-        _container = new ContainerBuilder()
-            .WithImage("quay.io/keycloak/keycloak:26.0")
+        _container = new ContainerBuilder("quay.io/keycloak/keycloak:26.0")
             .WithName("test-keycloak")
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_USERNAME", user)
             .WithEnvironment("KC_BOOTSTRAP_ADMIN_PASSWORD", password)

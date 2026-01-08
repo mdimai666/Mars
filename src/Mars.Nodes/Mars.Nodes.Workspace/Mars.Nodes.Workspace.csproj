@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

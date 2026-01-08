@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Mars.Host.Data\Mars.Host.Data.csproj" />

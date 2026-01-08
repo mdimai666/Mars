@@ -27,7 +27,7 @@ public static class NuspecExtension
             [
                 new NuspecDependencyGroup
                 {
-                    TargetFramework = "net9.0",
+                    TargetFramework = "net10.0",
                     Dependencies =
                     [
                         new NuspecDependency

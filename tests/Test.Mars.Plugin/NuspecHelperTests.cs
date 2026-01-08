@@ -22,12 +22,12 @@ public class NuspecHelperTests
             <tags>Mars Plugin</tags>
             <repository type="git" url="https://github.com/mdimai666/Mars" commit="801b5289f4975b6df91188e32374f2cf687752d5" />
             <dependencies>
-              <group targetFramework="net9.0">
+              <group targetFramework="net10.0">
                 <dependency id="mdimai666.Mars.Plugin.Abstractions" version="0.6.5-alpha.1" exclude="Build,Analyzers" />
               </group>
             </dependencies>
             <frameworkReferences>
-              <group targetFramework="net9.0">
+              <group targetFramework="net10.0">
                 <frameworkReference name="Microsoft.AspNetCore.App" />
               </group>
             </frameworkReferences>
@@ -59,7 +59,7 @@ public class NuspecHelperTests
 
         result.Dependencies.Count.Should().Be(1);
         var dependencyGroup = result.Dependencies.First();
-        dependencyGroup.TargetFramework.Should().Be("net9.0");
+        dependencyGroup.TargetFramework.Should().Be("net10.0");
         var dependency = dependencyGroup.Dependencies.First();
         dependency.Id.Should().Be("mdimai666.Mars.Plugin.Abstractions");
         dependency.Version.Should().Be("0.6.5-alpha.1");
@@ -103,7 +103,7 @@ public class NuspecHelperTests
             [
                 new NuspecDependencyGroup
                 {
-                    TargetFramework = "net9.0",
+                    TargetFramework = "net10.0",
                     Dependencies =
                     [
                         new NuspecDependency

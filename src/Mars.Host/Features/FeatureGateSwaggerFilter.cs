@@ -1,6 +1,6 @@
 using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Mars.Host.Features;

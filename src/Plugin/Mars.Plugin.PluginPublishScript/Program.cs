@@ -12,13 +12,13 @@ var marsDepsExist = File.Exists(marsReleaseDepsJsonFile);
 
 #if DEBUG
 // Debug files
-//args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net9.0\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+//args = "--run-postdebugcompile --ProjectName=Mars.TelegramPlugin --out=bin\\Debug\\net10.0\\  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 
-//args = "--run-postpublish --ProjectName=Mars.TelegramPlugin --out=bin\\Release\\net9.0\\publish  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
+//args = "--run-postpublish --ProjectName=Mars.TelegramPlugin --out=bin\\Release\\net10.0\\publish  --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.TelegramPlugin\\Mars.TelegramPlugin\\".Split(' ');
 
-//args = "--run-postdebugcompile --ProjectName=Mars.PlayAudioNodePlugin --out=bin\\Debug\\net9.0\\ --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.PlayAudioNodePlugin\\src\\Mars.PlayAudioNodePlugin\\".Split(' ');
+//args = "--run-postdebugcompile --ProjectName=Mars.PlayAudioNodePlugin --out=bin\\Debug\\net10.0\\ --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.PlayAudioNodePlugin\\src\\Mars.PlayAudioNodePlugin\\".Split(' ');
 
-//args = "--run-postpublish --ProjectName=Mars.PlayAudioNodePlugin --out=bin\\Release\\net9.0\\publish\\ --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.PlayAudioNodePlugin\\src\\Mars.PlayAudioNodePlugin\\".Split(' ');
+//args = "--run-postpublish --ProjectName=Mars.PlayAudioNodePlugin --out=bin\\Release\\net10.0\\publish\\ --ProjectDir=C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars.PlayAudioNodePlugin\\src\\Mars.PlayAudioNodePlugin\\".Split(' ');
 
 #endif
 
@@ -59,7 +59,6 @@ var _otherArtifacts = new HashSet<string>();
 //Заранее надо просчитать чтобы вычислить _frameworkFilesRemove
 var marsDlls = ScriptFilesProcessing.CalculateDlls(data.MarsLibraries, data._marsWebAppDependencies).ToHashSet();
 var selfDlls = ScriptFilesProcessing.CalculateDlls(data.ProjectSelfDepends, data.ProjectDependencies).ToHashSet();
-
 
 foreach (var f in _frameworkFiles.Values)
 {
@@ -150,7 +149,6 @@ foreach (var file in otherFiles)
 }
 Console.ResetColor();
 
-
 //////////////////////////////////////////////////
 //// Prepare Manifest file
 //////////////////////////////////////////////////
@@ -171,7 +169,6 @@ else
 {
     throw new NotImplementedException($"mode = '{mode}' not implement");
 }
-
 
 //////////////////////////////////////////////////
 //// Prepare Manifest file
@@ -208,6 +205,5 @@ else if (mode == ProcessMode.PostPublish)
     }
 
 }
-
 
 Console.WriteLine("FINISH");

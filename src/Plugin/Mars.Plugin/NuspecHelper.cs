@@ -55,7 +55,7 @@ public static class NuspecHelper
                         {dependenciesXml.Trim()}
                     </dependencies>
                     <frameworkReferences>
-                      <group targetFramework="net9.0">
+                      <group targetFramework="net10.0">
                         <frameworkReference name="Microsoft.AspNetCore.App" />
                       </group>
                     </frameworkReferences>
@@ -182,7 +182,7 @@ public static class NuspecHelper
     //        var id = pr.Attribute("Include")?.Value ?? pr.Element(ns + "Include")?.Value ?? "";
     //        var targetFramework = pr.Parent?.Attribute("Condition")?.Value ?? "any";
 
-    //        // Пример: Condition=" '$(TargetFramework)' == 'net9.0' "
+    //        // Пример: Condition=" '$(TargetFramework)' == 'net10.0' "
     //        string tf = "any";
     //        if (!string.IsNullOrWhiteSpace(targetFramework))
     //        {

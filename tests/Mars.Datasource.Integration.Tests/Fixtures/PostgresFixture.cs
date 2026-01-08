@@ -13,12 +13,11 @@ public class PostgresFixture : IAsyncLifetime
 
     public PostgresFixture()
     {
-        _container = new PostgreSqlBuilder()
+        _container = new PostgreSqlBuilder("postgres:14")
             .WithName($"b-test-postgres-{Guid.NewGuid()}")
             .WithUsername("postgres1")
             .WithPassword("postgres1")
             .WithDatabase("test_db_source")
-            .WithImage("postgres:14")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready"))
             .WithCleanUp(true)
             .Build();

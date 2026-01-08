@@ -27,7 +27,7 @@ internal static class TestingScriptCompiler
                         typeof(DisplayAttribute),
                         typeof(IMtoMarker),
                         typeof(MetaFieldVariant),
-                    ]).Select(t=>t.Namespace).Distinct()
+                    ]).Select(t=>t.Namespace!).Distinct()
                     ]
                 )
                 .WithReferences(

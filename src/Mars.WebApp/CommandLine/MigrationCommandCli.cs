@@ -14,11 +14,11 @@ public class MigrationCommandCli : CommandCli
         //var optionMigrate = new Option<bool>("-migrate", "run migrate script");
 
         var migrateCommand = new Command("migrate", "run migrate script");
-        migrateCommand.SetHandler(RunMigrateCommand);
+        migrateCommand.SetAction(RunMigrateCommand);
         cli.AddCommand(migrateCommand);
     }
 
-    void RunMigrateCommand()
+    void RunMigrateCommand(ParseResult _)
     {
         ILogger<Program> _logger = app.Services.GetRequiredService<ILogger<Program>>();
         var connectionString = app.Configuration.GetConnectionString("DefaultConnection");

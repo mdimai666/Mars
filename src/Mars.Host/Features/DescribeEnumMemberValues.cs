@@ -1,12 +1,12 @@
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using System.Text.Json.Nodes;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Mars.Host.Features;
 
 public class DescribeEnumMemberValues : ISchemaFilter
 {
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         if (context.Type.IsEnum)
         {
@@ -24,7 +24,7 @@ public class DescribeEnumMemberValues : ISchemaFilter
                 //if (member.GetType().IsEnum)
                 {
                     object val = Convert.ChangeType(v, Type.GetTypeCode(context.Type));
-                    schema.Enum.Add(new OpenApiString($"{val} = {v}"));
+                    schema.Enum.Add(JsonValue.Create($"{val} = {v}"));
                 }
             }
         }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using Mars.Host.Features;
 using Mars.Host.Shared.Services;
 using Mars.Options.Models;
@@ -7,8 +8,7 @@ using Mars.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Mars.UseStartup.MarsParts;
@@ -23,13 +23,12 @@ internal static class MarsStartupPartSwagger
         services
             .AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "API",
                     Version = "v1",
                 });
 
-                c.UseDateOnlyTimeOnlyStringConverters();
                 c.SchemaFilter<DescribeEnumMemberValues>();
                 c.DocumentFilter<FeatureGateSwaggerFilter>();
                 c.OperationFilter<FeatureGateOperationFilter>();
@@ -45,13 +44,7 @@ internal static class MarsStartupPartSwagger
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
                     Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-
-                    Reference = new OpenApiReference
-                    {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
-                        Type = ReferenceType.SecurityScheme
-                    }
+                    Description = "Put **_ONLY_** your JWT Bearer token on textbox below!"
                 };
 
                 var apiKeySecurityScheme = new OpenApiSecurityScheme
@@ -59,22 +52,16 @@ internal static class MarsStartupPartSwagger
                     Name = "X-API-Key",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
-                    Description = "Put Api key",
-
-                    Reference = new OpenApiReference
-                    {
-                        Id = "ApiKey",
-                        Type = ReferenceType.SecurityScheme
-                    }
+                    Description = "Put Api key"
                 };
 
-                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-                c.AddSecurityDefinition(apiKeySecurityScheme.Reference.Id, apiKeySecurityScheme);
+                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, jwtSecurityScheme);
+                c.AddSecurityDefinition("ApiKey", apiKeySecurityScheme);
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                c.AddSecurityRequirement(openApiDocument => new OpenApiSecurityRequirement
                 {
-                    { jwtSecurityScheme, Array.Empty<string>() },
-                    { apiKeySecurityScheme, Array.Empty<string>() }
+                    [new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, openApiDocument)] = [],
+                    [new OpenApiSecuritySchemeReference("ApiKey", openApiDocument)] = [],
                 });
                 //end allow auth
 
@@ -122,7 +109,10 @@ internal static class MarsStartupPartSwagger
         });
 
         // Enable middleware to serve generated Swagger as a JSON endpoint.
-        app.UseSwagger();
+        app.UseSwagger(options =>
+        {
+            options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
+        });
         // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
         // specifying the Swagger JSON endpoint.
         //https://docs.microsoft.com/ru-ru/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio#add-and-configure-swagger-middleware
@@ -175,28 +165,27 @@ internal static class MarsStartupPartSwagger
     {
         options.MapType<IReadOnlyDictionary<string, object?>>(() => new OpenApiSchema
         {
-            Type = "object",
+            Type = JsonSchemaType.Object,
             AdditionalProperties = new OpenApiSchema
             {
                 OneOf =
             [
-                new OpenApiSchema { Type = "string" },
-                new OpenApiSchema { Type = "number" },
-                new OpenApiSchema { Type = "integer" },
-                new OpenApiSchema { Type = "boolean" },
-                new OpenApiSchema { Type = "object" },
-                new OpenApiSchema { Type = "array" }
+                new OpenApiSchema { Type = JsonSchemaType.String },
+                new OpenApiSchema { Type = JsonSchemaType.Number },
+                new OpenApiSchema { Type = JsonSchemaType.Integer },
+                new OpenApiSchema { Type = JsonSchemaType.Boolean },
+                new OpenApiSchema { Type = JsonSchemaType.Object },
+                new OpenApiSchema { Type = JsonSchemaType.Array }
             ]
             },
-            Example = new OpenApiObject
+            Example = new JsonObject
             {
-                ["key1"] = new OpenApiInteger(123),
-                ["key2"] = new OpenApiString("value"),
-                ["key3"] = new OpenApiBoolean(true)
+                ["key1"] = 123,
+                ["key2"] = "value",
+                ["key3"] = true
             }
         });
 
-        options.SchemaFilter<MetaDictionarySchemaFilter>();
         options.OperationFilter<PostJsonExamplesFilter>();
 
     }
@@ -205,16 +194,14 @@ internal static class MarsStartupPartSwagger
     {
         options.MapType<SourceUri>(() => new OpenApiSchema
         {
-            Type = "string",
+            Type = JsonSchemaType.String,
             Format = null,
 
-            Example = new OpenApiString("/Post/post"),
+            Example = "/Post/post",
 
             Properties = null,
             AdditionalPropertiesAllowed = false,
         });
-
-        options.SchemaFilter<SourceUriSchemaFilter>();
 
     }
 }

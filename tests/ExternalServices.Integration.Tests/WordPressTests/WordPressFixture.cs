@@ -43,9 +43,8 @@ public class WordPressFixture : IAsyncLifetime
 
         await _network.CreateAsync();
 
-        _mysqlContainer = new MySqlBuilder()
+        _mysqlContainer = new MySqlBuilder("mysql:8.0")
             .WithName("b-test-mysql")
-            .WithImage("mysql:8.0")
             .WithDatabase("wordpress")
             .WithUsername("wordpress")
             .WithPassword("wordpress")
@@ -81,15 +80,14 @@ public class WordPressFixture : IAsyncLifetime
         var wp_install = @"wp-install.sh";
         var wp_dest_dir = "/var/www/html/";
 
-        _wordPressContainer = new ContainerBuilder()
-            .WithImage("wordpress:latest")
+        _wordPressContainer = new ContainerBuilder("wordpress:latest")
             .WithName("b-test-wordpress")
             .WithNetwork(_network)
             .WithHostname("wp")
             .WithPortBinding(wp_port, 80)
             .WithEnvironment(wpEnv)
             .DependsOn(_mysqlContainer)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(80))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(80))
             .WithCleanUp(true)
             .WithBindMount(Path.Combine(MountFilesDir, wp_install), wp_dest_dir + wp_install)
             .WithBindMount(Path.Combine(MountFilesDir, wp_myAuth), wp_dest_dir + wp_myAuth)

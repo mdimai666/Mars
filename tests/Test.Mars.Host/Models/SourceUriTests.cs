@@ -28,7 +28,14 @@ public class SourceUriTests
     {
         Action act = () => new SourceUri(value);
 
-        act.Should().Throw<ArgumentException>().WithMessage(exceptionMessage ?? "*");
+        var message = exceptionMessage switch
+        {
+            null => "*",
+            string st when st.Contains("{0}") => string.Format(exceptionMessage, value),
+            string => exceptionMessage
+        };
+
+        act.Should().Throw<ArgumentException>().WithMessage(message);
     }
 
     class TestJson1

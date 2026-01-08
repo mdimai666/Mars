@@ -22,7 +22,6 @@ public class DeleteMediaTests : ApplicationTests
     private readonly FileHostingInfo _fileHostingInfo;
     private readonly MediaOption _mediaOption;
     private readonly string _exampleFilesPath;
-    private readonly string _image_CreationOfSpace1jpg;
 
     public DeleteMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
@@ -33,7 +32,6 @@ public class DeleteMediaTests : ApplicationTests
         _mediaOption.IsAutoResizeUploadImage = true;
         _optionService.SetOptionOnMemory(_mediaOption);
         _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "..\\..\\..", "Controllers\\Medias\\ExampleFiles\\");
-        _image_CreationOfSpace1jpg = "creation of space1.jpg";
 
     }
 

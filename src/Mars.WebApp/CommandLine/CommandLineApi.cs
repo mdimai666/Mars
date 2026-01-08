@@ -18,23 +18,32 @@ public class CommandLineApi : ICommandLineApi
 
     Dictionary<Type, CommandCli> cli = [];
 
-    Type[] initalCommands = [typeof(MainCommand)];
+    Type[] initalCommands = [typeof(InfoCommand)];
 
     static readonly string[] _allowedBaseCommands = ["info", "migrate"];
+    private readonly Option _versionOption;
+    private readonly Option _helpOption;
 
     public CommandLineApi()
     {
         rootCommand = new RootCommand("Mars command line interface");
 
-        var optionAppCfg = new Option<string>("-cfg", "config .json file");
-        rootCommand.AddGlobalOption(optionAppCfg);
+        var optionAppCfg = new Option<string>("-cfg", ["--config"]) { Description = "config .json file" };
+        rootCommand.Add(optionAppCfg);
 
-        var disableLogsOption = new Option<bool>("--disable-logs", "disable logging to /logs/app_{date}.log file");
-        rootCommand.AddGlobalOption(disableLogsOption);
+        var disableLogsOption = new Option<bool>("--disable-logs") { Description = "disable logging to /logs/app_{date}.log file" };
+        rootCommand.Add(disableLogsOption);
 
         InitializeCliTypes(initalCommands);
 
-        rootCommand.SetHandler(() =>
+        var builtInHelpOption = rootCommand.Options.First(s => s.Name == "--help");
+        _helpOption = builtInHelpOption;
+
+        var buildInVersionOption = rootCommand.Options.First(s => s.Name == "--version");
+        buildInVersionOption.Aliases.Add("-v");
+        _versionOption = buildInVersionOption;
+
+        rootCommand.SetAction((parseResult) =>
         {
             IsContinueRun = true;
         });
@@ -76,21 +85,27 @@ public class CommandLineApi : ICommandLineApi
         return objects;
     }
 
-    public async Task<bool> InvokeBaseCommands(string[] args)
+    public async Task<(bool invoked, bool isHelpCmd)> InvokeBaseCommands(string[] args)
     {
         LoadBaseCommandCliTypes();
-        var commandName = rootCommand.Parse(args).CommandResult.Command.Name;
+        var parseResult = rootCommand.Parse(args);
 
-        if (!_allowedBaseCommands.Contains(commandName)) return false;
+        if (parseResult.Action == _helpOption.Action) return (invoked: false, isHelpCmd: true);
 
-        await rootCommand.InvokeAsync(args);
-        return true;
+        if (parseResult.Action == _versionOption.Action || _allowedBaseCommands.Contains(parseResult.CommandResult.Command.Name))
+        {
+            await parseResult.InvokeAsync();
+            return (invoked: true, isHelpCmd: false);
+        }
+
+        return (false, false);
     }
 
     public async Task InvokeCommands(string[] args)
     {
         LoadCommandCliTypes();
-        await rootCommand.InvokeAsync(args);
+
+        await rootCommand.Parse(args).InvokeAsync();
     }
 
     public T GetCommand<T>() where T : CommandCli
@@ -137,10 +152,7 @@ public class CommandLineApi : ICommandLineApi
     public T CheckGlobalOption<T>(string optionName, string[] args)
     {
         var parsed = rootCommand.Parse(args);
-        var option = rootCommand.Options.FirstOrDefault(option => option.Aliases.Contains(optionName))
-            ?? throw new Exception($"option '{optionName} not found'");
-        var value = parsed.GetValueForOption(option);
-
+        var value = parsed.GetValue<T>(optionName);
         return (T)value!;
     }
 

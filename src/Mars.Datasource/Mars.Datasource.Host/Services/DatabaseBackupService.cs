@@ -18,13 +18,13 @@ internal class DatabaseBackupService : IDatabaseBackupService
         };
     }
 
-    public Task Backup(DatasourceConfig datasourceConfig, BackupSettings settings, CancellationToken cancellationToken = default)
+    public Task Backup(DatasourceConfig datasourceConfig, BackupSettings settings, CancellationToken cancellationToken)
     {
         var driver = ResolveEngine(datasourceConfig);
         return driver.Backup(datasourceConfig.ConnectionString, settings, cancellationToken);
     }
 
-    public Task Restore(DatasourceConfig datasourceConfig, RestoreSettings settings, CancellationToken cancellationToken = default)
+    public Task Restore(DatasourceConfig datasourceConfig, RestoreSettings settings, CancellationToken cancellationToken)
     {
         var driver = ResolveEngine(datasourceConfig);
         return driver.Restore(datasourceConfig.ConnectionString, settings, cancellationToken);

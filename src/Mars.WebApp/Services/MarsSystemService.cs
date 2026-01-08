@@ -26,7 +26,7 @@ internal class MarsSystemService : IMarsSystemService
     {
         if (cachedAboutSystem == null)
         {
-            cachedAboutSystem = new();
+            cachedAboutSystem = [];
             var d = cachedAboutSystem;
 
             var assembly = Assembly.GetExecutingAssembly();
@@ -139,14 +139,14 @@ internal class MarsSystemService : IMarsSystemService
 
     public string SystemUptime()
     {
-        TimeSpan ts = TimeSpan.FromMilliseconds(Environment.TickCount64);
-        return ts.Humanize(3, maxUnit: Humanizer.Localisation.TimeUnit.Day);
+        var ts = TimeSpan.FromMilliseconds(Environment.TickCount64);
+        return ts.Humanize(3, maxUnit: TimeUnit.Day);
     }
 
     public long SystemUptimeMillis()
         => Environment.TickCount64;
 
-    Debouncer memoryDebouncer = new Debouncer(1000);
+    Debouncer memoryDebouncer = new(1000);
     long _memoryUsage = 0;
     string _memoryUsageString = "0";
 

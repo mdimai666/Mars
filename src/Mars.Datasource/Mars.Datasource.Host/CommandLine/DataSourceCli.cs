@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using Mars.Datasource.Host.Core.Models;
 using Mars.Datasource.Host.Services;
 using Mars.Host.Shared.CommandLine;
@@ -14,24 +14,24 @@ public class DataSourceCli : CommandCli
         var datasourceCommand = new Command("ds", "datasource subcommand");
 
         //options
-        var optionFile = new Option<FileInfo>(["--file", "-f"], "file path (.sql,.tar,.tar.gz)");
-        var optionFileRequired = new Option<FileInfo>(["--file", "-f"], "file path (.sql,.tar,.tar.gz)") { IsRequired = true };
-        var optionDir = new Option<DirectoryInfo>(["--dir", "-d"], "directory path. File will have template '{database}_{yyyy-MM-dd}.sql'");
+        var optionFile = new Option<FileInfo>("--file", "-f") { Description = "file path (.sql,.tar,.tar.gz)" };
+        var optionFileRequired = new Option<FileInfo>("--file", "-f") { Description = "file path (.sql,.tar,.tar.gz)", Required = true };
+        var optionDir = new Option<DirectoryInfo>("--dir", "-d") { Description = "directory path. File will have template '{database}_{yyyy-MM-dd}.sql'" };
 
         //backup
         var dsBackup = new Command("backup", "backup database") { optionFile, optionDir };
-        dsBackup.SetHandler(BackupCommand, optionFile, optionDir);
-        datasourceCommand.AddCommand(dsBackup);
+        dsBackup.SetAction((p, ct) => BackupCommand(p.GetValue(optionFile), p.GetValue(optionDir), ct));
+        datasourceCommand.Subcommands.Add(dsBackup);
 
         //restore
         var dsRestore = new Command("restore", "restore database") { optionFileRequired };
-        dsRestore.SetHandler(RestoreCommand, optionFileRequired);
-        datasourceCommand.AddCommand(dsRestore);
+        dsRestore.SetAction((p, ct) => RestoreCommand(p.GetRequiredValue(optionFileRequired), ct));
+        datasourceCommand.Subcommands.Add(dsRestore);
 
         cli.AddCommand(datasourceCommand);
     }
 
-    async Task BackupCommand(FileInfo? file, DirectoryInfo? dir)
+    async Task BackupCommand(FileInfo? file, DirectoryInfo? dir, CancellationToken cancellationToken)
     {
         if (file is null && dir is null)
             throw new ArgumentException("require is --file (-f) or --dir (-d) ");
@@ -62,7 +62,7 @@ public class DataSourceCli : CommandCli
 
         try
         {
-            await bs.Backup(ds.DefaultConfig, settings);
+            await bs.Backup(ds.DefaultConfig, settings, cancellationToken);
             Console.WriteLine("file = " + filePath);
             OutResult(UserActionResult.Success());
         }
@@ -72,7 +72,7 @@ public class DataSourceCli : CommandCli
         }
     }
 
-    async Task RestoreCommand(FileInfo file)
+    async Task RestoreCommand(FileInfo file, CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
         var ds = scope.ServiceProvider.GetRequiredService<IDatasourceService>();
@@ -94,7 +94,7 @@ public class DataSourceCli : CommandCli
 
         try
         {
-            await bs.Restore(ds.DefaultConfig, settings);
+            await bs.Restore(ds.DefaultConfig, settings, cancellationToken);
             Console.WriteLine("file = " + filePath);
             OutResult(UserActionResult.Success());
         }

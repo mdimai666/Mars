@@ -17,40 +17,50 @@ public class NodesCli : CommandCli
         var nodeCommand = new Command("node", "Nodes subcommand");
 
         var argumenNodeIdOrName = new Argument<string>("IdOrName");
-        var argumentNameFilter = new Argument<string?>("nameFilter", () => null);
+        var optionNameFilter = new Option<string>("--nameFilter", "-f") { Description = "name filter" };
 
         //list
-        var nodeListCommand = new Command("list", "list nodes") { argumentNameFilter };
-        nodeListCommand.SetHandler(NodeListCommand, argumentNameFilter);
-        nodeCommand.AddCommand(nodeListCommand);
+        var nodeListCommand = new Command("list", "list nodes") { optionNameFilter };
+        nodeListCommand.SetAction(p => NodeListCommand(p.GetValue(optionNameFilter)));
+        nodeCommand.Subcommands.Add(nodeListCommand);
 
         //inject
         var nodeInjectCommand = new Command("inject", "inject node by Id or Name") { argumenNodeIdOrName };
-        nodeInjectCommand.SetHandler(NodeInjectCommand, argumenNodeIdOrName);
-        nodeCommand.AddCommand(nodeInjectCommand);
+        nodeInjectCommand.SetAction((p, ct) => NodeInjectCommand(p.GetRequiredValue(argumenNodeIdOrName), ct));
+        nodeCommand.Subcommands.Add(nodeInjectCommand);
 
         cli.AddCommand(nodeCommand);
     }
 
     public void NodeListCommand(string? filter)
     {
+        //here the service has not yet load flows.json file and has not started
         var nodeService = app.Services.GetRequiredService<INodeService>();
-        var nodesList = nodeService.BaseNodes.Values.Where(node => node is InjectNode)
-                                                    .Where(node => filter == null || node.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
-                                                    .Select(node => (string[])[node.GetType().Name, node.Id, node.Name]);
 
-        var table = new ConsoleTable([
-            ["Type", "NodeId", "Name"],
+        if (nodeService.TryReadFlowFile(out var flowFile))
+        {
+
+            var nodesList = flowFile.Nodes.Where(node => node is InjectNode)
+                                    .Where(node => filter == null || node.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
+                                    .Select(node => (string[])[node.GetType().Name, node.Id, node.Name]);
+
+            var table = new ConsoleTable([
+                ["Type", "NodeId", "Name"],
             ..nodesList
-        ]);
-
-        Console.WriteLine(table);
+            ]);
+            Console.WriteLine(table);
+        }
+        else
+        {
+            Console.Error.WriteLine("Cannot load FlowFile");
+        }
     }
 
-    public async Task NodeInjectCommand(string nodeIdOrName)
+    public async Task NodeInjectCommand(string nodeIdOrName, CancellationToken cancellationToken)
     {
         var nodeTaskManager = app.Services.GetRequiredService<INodeTaskManager>();
         var nodeService = app.Services.GetRequiredService<INodeService>();
+        nodeService.Setup();
         using var scope = app.Services.CreateScope();
         var nodes = nodeService.BaseNodes;
         var node = nodeService.BaseNodes.GetValueOrDefault(nodeIdOrName)

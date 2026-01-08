@@ -21,7 +21,7 @@ public sealed class DataTypesJsonResponseTests : ApplicationTests
         //Arrange
         _ = nameof(TestApi1Controller.TimeOnlyResponse);
         var client = AppFixture.GetClient();
-        var expectResult = "\"08:12:16.0000000\"";
+        var expectResult = "\"08:12:16\"";
 
         //Act
         var result = await client.Request(_apiUrl, "TimeOnlyResponse").GetStringAsync();

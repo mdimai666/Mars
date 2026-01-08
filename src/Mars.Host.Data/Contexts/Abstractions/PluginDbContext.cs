@@ -12,7 +12,7 @@ namespace Mars.Host.Data.Contexts.Abstractions;
  */
 
 public abstract class PluginDbContextBase : IdentityDbContext<UserEntity, RoleEntity, Guid,
-                UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity>//, IMarsDbContext
+                UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity, UserPasskeyEntity>//, IMarsDbContext
 {
     public const string PluginEFMigrationsHistoryTable = "__PluginEFMigrationsHistory";
 
@@ -37,6 +37,7 @@ public abstract class PluginDbContextBase : IdentityDbContext<UserEntity, RoleEn
     public override DbSet<UserLoginEntity> UserLogins { get; set; } = default!;
     public override DbSet<RoleClaimEntity> RoleClaims { get; set; } = default!;
     public override DbSet<UserTokenEntity> UserTokens { get; set; } = default!;
+    public override DbSet<UserPasskeyEntity> UserPasskeys { get; set; } = default!;
 
     //--------CORE----------
     public virtual DbSet<OptionEntity> Options { get; set; } = default!;

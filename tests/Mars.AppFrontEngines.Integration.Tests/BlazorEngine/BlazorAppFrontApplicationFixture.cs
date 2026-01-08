@@ -33,7 +33,7 @@ public class BlazorAppFrontApplicationFixture : ApplicationFixture
         _ = nameof(StartupFront.AddFront);
 
         var testDirPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "..", "..", ".."));
-        var themeRoot = Path.Combine(testDirPath, ".." , "BlazorTemplateExample", "bin", "Debug", "net9.0", "subpath");
+        var themeRoot = Path.Combine(testDirPath, ".." , "BlazorTemplateExample", "bin", "Debug", "net10.0", "subpath");
 
         return [
             new AppFrontSettingsCfg(){

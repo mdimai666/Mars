@@ -15,28 +15,28 @@ public class OptionCommand : CommandCli
 {
     public OptionCommand(CommandLineApi cli) : base(cli)
     {
-        var optionFilter = new Option<string>(["--filter", "-f"], "Reg ex filter result");
+        var optionFilter = new Option<string>("--filter", "-f") { Description = "Reg ex filter result" };
 
         var optionsCommand = new Command("option", "option manage subcommand");
 
         var optionListCommand = new Command("list", "list options") { optionFilter };
-        optionListCommand.SetHandler(OptionListCommand, optionFilter);
-        optionsCommand.AddCommand(optionListCommand);
+        optionListCommand.SetAction((p, ct) => OptionListCommand(p.GetValue(optionFilter), ct));
+        optionsCommand.Subcommands.Add(optionListCommand);
 
-        var optionKey = new Argument<string>("key", "option key");
+        var optionKey = new Argument<string>("key") { Description = "option key" };
         var optionShowCommand = new Command("show", "show option") { optionKey };
-        optionShowCommand.SetHandler(OptionShowCommand, optionKey);
-        optionsCommand.AddCommand(optionShowCommand);
+        optionShowCommand.SetAction((p, ct) => OptionShowCommand(p.GetRequiredValue(optionKey), ct));
+        optionsCommand.Subcommands.Add(optionShowCommand);
 
-        var argumentValue = new Argument<bool?>("value", "set bool <true|false>");
-        var maintenanceModeCommand = new Command("maintenance", "set MaintenanceModeOption") { argumentValue };
-        maintenanceModeCommand.SetHandler(SetMaintenanceModeOptionCommand, argumentValue);
-        optionsCommand.AddCommand(maintenanceModeCommand);
+        var argumentEnable = new Argument<bool>("value") { Description = "set bool <true|false>" };
+        var maintenanceModeCommand = new Command("maintenance", "set MaintenanceModeOption") { argumentEnable };
+        maintenanceModeCommand.SetAction((p) => SetMaintenanceModeOptionCommand(p.GetRequiredValue(argumentEnable)));
+        optionsCommand.Subcommands.Add(maintenanceModeCommand);
 
         cli.AddCommand(optionsCommand);
     }
 
-    public async Task OptionListCommand(string? filter)
+    public async Task OptionListCommand(string? filter, CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
         var optionRepo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
@@ -50,7 +50,7 @@ public class OptionCommand : CommandCli
 
         Func<string, string> outFormatJson = (json) => JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonNode>(json), opt);
 
-        var options = await optionRepo.ListAll(default);
+        var options = await optionRepo.ListAll(cancellationToken);
         var optionsArray = options.Select(s => new string[] { s.Key, outFormatJson(s.Value).TextEllipsis(500) });
 
         if (filter is not null)
@@ -72,7 +72,7 @@ public class OptionCommand : CommandCli
         }
     }
 
-    public async Task OptionShowCommand(string key)
+    public async Task OptionShowCommand(string key, CancellationToken cancellationToken)
     {
         if (key is null)
         {
@@ -94,7 +94,7 @@ public class OptionCommand : CommandCli
         Func<string, string> outFormatJson = (json) => JsonSerializer.Serialize(JsonSerializer.Deserialize<JsonNode>(json), opt);
 
         //var option = ef.Options.FirstOrDefault(s => s.Key == key)
-        var option = (await optionRepo.GetKeyRaw(key, default))
+        var option = (await optionRepo.GetKeyRaw(key, cancellationToken))
             ?? throw new Exception($"Key not found: {key}");
 
         OutValue(option.Key, outFormatJson(option.Value));
@@ -107,18 +107,12 @@ public class OptionCommand : CommandCli
         Console.WriteLine(value);
     }
 
-    public void SetMaintenanceModeOptionCommand(bool? enable)
+    public void SetMaintenanceModeOptionCommand(bool enable)
     {
-        if (enable is null)
-        {
-            Console.WriteLine("value must set");
-            return;
-        }
-
         using var scope = app.Services.CreateScope();
         var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
         var maintenanceModeOption = optionService.GetOption<MaintenanceModeOption>();
-        maintenanceModeOption.Enable = enable.Value;
+        maintenanceModeOption.Enable = enable;
         optionService.SaveOption<MaintenanceModeOption>(maintenanceModeOption);
         OutValue(nameof(MaintenanceModeOption), $"Enable={enable}\n--SUCCESS");
     }

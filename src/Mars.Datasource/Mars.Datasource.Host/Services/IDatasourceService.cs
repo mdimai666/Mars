@@ -14,7 +14,7 @@ public interface IDatasourceService
     public Task<List<QTableSchema>> Tables(string slug);
     public Task<QDatabaseStructure> DatabaseStructure(string slug);
     public Task<SqlQueryResultActionDto> SqlQuery(string slug, string sql);
-    public Task<UserActionResult<string[][]>> ExecuteAction(ExecuteActionRequest action);
+    public Task<UserActionResult<string[][]>> ExecuteAction(ExecuteActionRequest action, CancellationToken cancellationToken);
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource();
 
 }

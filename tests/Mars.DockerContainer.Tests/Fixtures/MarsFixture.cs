@@ -43,12 +43,11 @@ public class MarsFixture : IAsyncLifetime
 
         await _network.CreateAsync();
 
-        _postgresContainer = new PostgreSqlBuilder()
+        _postgresContainer = new PostgreSqlBuilder("postgres:14")
             .WithName("b-test-postgres")
             .WithUsername("postgres")
             .WithPassword("postgres")
             .WithDatabase("test_db_source")
-            .WithImage("postgres:14")
             .WithNetwork(_network)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready"))
             .WithCleanUp(true)
@@ -58,8 +57,7 @@ public class MarsFixture : IAsyncLifetime
 
         var appConnectionString = $"Host=b-test-postgres:5432;Database=test_db_source;Username=postgres;Password=postgres";
 
-        _marsContainer = new ContainerBuilder()
-            .WithImage(marsImage)
+        _marsContainer = new ContainerBuilder(marsImage)
             .WithName("b-test-mars")
             .WithPortBinding(80, assignRandomHostPort: true)
             .WithNetwork(_network)

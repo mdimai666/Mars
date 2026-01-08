@@ -5,8 +5,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="9.0.9" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.1" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -16,7 +16,7 @@
 		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Host.Core\Mars.Datasource.Host.Core.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Host.MsSQL\Mars.Datasource.Host.MsSQL.csproj" />
-		<ProjectReference Include="..\Mars.Datasource.Host.MySQL\Mars.Datasource.Host.MySQL.csproj" />
+		<!--<ProjectReference Include="..\Mars.Datasource.Host.MySQL\Mars.Datasource.Host.MySQL.csproj" />-->
 		<ProjectReference Include="..\Mars.Datasource.Host.PostgreSQL\Mars.Datasource.Host.PostgreSQL.csproj" />
 	</ItemGroup>
 

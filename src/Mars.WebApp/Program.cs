@@ -150,14 +150,16 @@ else
     //app.UseHsts();
 }
 
-var baseCmdInvoked = await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
+var (baseCmdInvoked, isHelpCmd) = await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
 if (baseCmdInvoked) return 0;
 
 //Hello message
 Console.WriteLine(Mars.Core.Extensions.MarsStringExtensions.HelloText());
 
-commandsApi.GetCommand<MainCommand>().ShowInfoCommand();
-
+if (!isHelpCmd)
+{
+    commandsApi.GetCommand<InfoCommand>().ShowInfoCommand(showHello: false);
+}
 app.Services.MarsAutoMigrateCheck(builder.Configuration, _logger, out var migrated);
 app.Services.UseMarsHostServices();
 app.Services.UseMarsOptions();

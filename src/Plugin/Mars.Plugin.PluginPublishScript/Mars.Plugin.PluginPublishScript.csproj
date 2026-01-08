@@ -33,15 +33,15 @@
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <None Include="Mars.deps.json" Pack="true" PackagePath="\lib\net9.0\" />
-        <None Include="$(OutDir)Mars.Plugin.Front.Abstractions.dll" Pack="true" PackagePath="\lib\net9.0\" />
-        <None Include="$(OutDir)Microsoft.AspNetCore.Components.WebAssembly.dll" Pack="true" PackagePath="\lib\net9.0\" />
+        <None Include="Mars.deps.json" Pack="true" PackagePath="\lib\net10.0\" />
+        <None Include="$(OutDir)Mars.Plugin.Front.Abstractions.dll" Pack="true" PackagePath="\lib\net10.0\" />
+        <None Include="$(OutDir)Microsoft.AspNetCore.Components.WebAssembly.dll" Pack="true" PackagePath="\lib\net10.0\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
     <Target Name="RunPostCompileDebugScript" AfterTargets="CoreBuild" Condition="'$(Configuration)' == 'Debug'">
-        <Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net9.0\Mars.deps.json $(ProjectDir)Mars.deps.json" />
-        <!--<Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net9.0\Mars.deps.json $(OutDir)Mars.deps.json" />-->
+        <Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net10.0\Mars.deps.json $(ProjectDir)Mars.deps.json" />
+        <!--<Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net10.0\Mars.deps.json $(OutDir)Mars.deps.json" />-->
     </Target>
 
     <ItemGroup>

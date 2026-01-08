@@ -15,54 +15,66 @@ public class UserCommandCli : CommandCli
 {
     public UserCommandCli(CommandLineApi cli) : base(cli)
     {
-        var optionName = new Option<string>("--name") { IsRequired = true };
-        var argumentUsername = new Argument<string>("username"); ;
+        var argumentUsername = new Argument<string>("username");
+        var optionUsername = new Option<string>("--username") { Required = true };
 
-        var optionFilter = new Option<string>(["--filter", "-f"], "Reg ex filter result");
+        var optionFilter = new Option<string>("--filter", "-f") { Description = "Reg ex filter result" };
 
-        var optionEmail = new Option<string>(["-m", "--email"], "Email");
-        var optionPassword = new Option<string>("-p", "Password");
-        var optionRole = new Option<string>(["--role"], "Role");
+        var optionEmail = new Option<string>("--email", "-m") { Description = "Email" };
+        var optionPassword = new Option<string>("--password", "-p") { Description = "Password" };
+        var optionRole = new Option<string>("--role") { Description = "Role" };
 
-        var optionFirstName = new Option<string>(["--firstName"], "First name");
-        var optionLastName = new Option<string>(["--lastName"], "Last name");
-        var optionUserTypeName = new Option<string>(["--userTypeName"], "User type name");
+        var optionFirstName = new Option<string>("--firstName") { Description = "First name" };
+        var optionLastName = new Option<string>("--lastName") { Description = "Last name" };
+        var optionUserTypeName = new Option<string>("--userTypeName") { Description = "User type name" };
 
-        var showIdArgument = new Option<bool>(["-id"], "Show Id Column");
+        var showIdArgument = new Option<bool>("-id") { Description = "Show Id Column" };
 
         var userCommand = new Command("user", "users manage subcommand");
 
         //add
         var userAddCommand = new Command("add", "add user command")
         {
-            optionName,optionEmail,optionPassword,optionRole,optionFirstName,optionLastName
+            optionUsername,optionEmail,optionPassword,optionRole,optionFirstName,optionLastName
         };
-        userAddCommand.SetHandler(UserAddCommand, optionName, optionEmail, optionPassword, optionRole, optionFirstName, optionLastName, optionUserTypeName);
-        userCommand.AddCommand(userAddCommand);
+        userAddCommand.SetAction((p, ct) =>
+        {
+            return UserAddCommand(p.GetRequiredValue(optionUsername),
+                            p.GetValue(optionEmail),
+                            p.GetValue(optionPassword),
+                            p.GetValue(optionRole),
+                            p.GetValue(optionFirstName),
+                            p.GetValue(optionLastName),
+                            p.GetValue(optionUserTypeName),
+                            ct);
+        });
+        userCommand.Subcommands.Add(userAddCommand);
 
         //list
         var userListCommand = new Command("list", "list users") { optionFilter, showIdArgument };
-        userListCommand.SetHandler(UserListCommand, optionFilter, showIdArgument);
-        userCommand.AddCommand(userListCommand);
+        userListCommand.SetAction((p, ct) => UserListCommand(p.GetValue(optionFilter), p.GetValue(showIdArgument), ct));
+        userCommand.Subcommands.Add(userListCommand);
 
         //delete
         var userDeleteCommand = new Command("delete", "delete user") { argumentUsername };
-        userDeleteCommand.SetHandler(UserDeleteCommand, argumentUsername);
-        userCommand.AddCommand(userDeleteCommand);
+        userDeleteCommand.SetAction((p, ct) => UserDeleteCommand(p.GetRequiredValue(argumentUsername), ct));
+        userCommand.Subcommands.Add(userDeleteCommand);
 
         //password
         var passwordArgument = new Argument<string>("password");
         var userSetPassword = new Command("setpassword") { argumentUsername, passwordArgument };
-        userSetPassword.SetHandler(UserSetPassword, argumentUsername, passwordArgument);
-        userCommand.AddCommand(userSetPassword);
+        userSetPassword.SetAction((p, ct) => UserSetPassword(p.GetRequiredValue(argumentUsername), p.GetRequiredValue(passwordArgument), ct));
+        userCommand.Subcommands.Add(userSetPassword);
+
         var userSetNewPassword = new Command("setnewpassword") { argumentUsername };
-        userSetNewPassword.SetHandler(UserSetNewPassword, argumentUsername);
-        userCommand.AddCommand(userSetNewPassword);
+        userSetNewPassword.SetAction((p, ct) => UserSetNewPassword(p.GetRequiredValue(argumentUsername), ct));
+        userCommand.Subcommands.Add(userSetNewPassword);
 
         cli.AddCommand(userCommand);
     }
 
-    public async Task UserAddCommand(string username, string? email, string? password, string? role, string? firstName, string? lastName, string? userType)
+    public async Task UserAddCommand(string username, string? email, string? password, string? role, string? firstName, string? lastName, string? userType,
+                                    CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
@@ -79,7 +91,7 @@ public class UserCommandCli : CommandCli
                 Console.WriteLine($"Role '{role}' not found");
                 Console.WriteLine($"    avail roles is: ");
                 var roleCommand = cli.GetCommand<RoleCommandCli>();
-                await roleCommand.RoleListCommand(null);
+                await roleCommand.RoleListCommand(null, cancellationToken);
                 throw new InvalidOperationException();
             }
         }
@@ -104,7 +116,7 @@ public class UserCommandCli : CommandCli
 
                 Type = userType ?? UserTypeEntity.DefaultTypeName,
                 MetaValues = [],
-            }, CancellationToken.None);
+            }, cancellationToken);
 
             Console.ForegroundColor = ConsoleColor.Green;
             if (password is null)
@@ -121,12 +133,12 @@ public class UserCommandCli : CommandCli
         }
     }
 
-    public async Task UserListCommand(string? filter, bool showIdColumn)
+    public async Task UserListCommand(string? filter, bool showIdColumn, CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
-        var users = await userRepo.ListDetail(new ListUserQuery { Search = filter }, CancellationToken.None);
+        var users = await userRepo.ListDetail(new ListUserQuery { Search = filter }, cancellationToken);
         var usersArray = users.Items.Select(s => new string[] {
             s.Id.ToString(), s.UserName, s.Email??string.Empty, s.FirstName, s.LastName, string.Join(',', s.Roles)
         }).ToList();
@@ -147,12 +159,12 @@ public class UserCommandCli : CommandCli
         Console.WriteLine(table);
     }
 
-    public async Task UserDeleteCommand(string name)
+    public async Task UserDeleteCommand(string name, CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
-        var user = await userRepo.GetDetailByUserName(name, CancellationToken.None);
+        var user = await userRepo.GetDetailByUserName(name, cancellationToken);
 
         if (user is null)
         {
@@ -171,20 +183,21 @@ public class UserCommandCli : CommandCli
         }
     }
 
-    public async Task UserSetPassword(string username, string password)
+    public async Task UserSetPassword(string username, string password, CancellationToken cancellationToken)
     {
         using var scope = app.Services.CreateScope();
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
-        var result = await userRepo.SetPassword(new SetUserPasswordQuery() { NewPassword = password, Username = username }, CancellationToken.None);
+        var result = await userRepo.SetPassword(new SetUserPasswordQuery() { NewPassword = password, Username = username }, cancellationToken);
 
         OutResult(result);
     }
 
-    public async Task UserSetNewPassword(string username)
+    public async Task UserSetNewPassword(string username, CancellationToken cancellationToken)
     {
         var password = Password.Generate(8, 2);
-        await UserSetPassword(username, password);
+        await UserSetPassword(username, password, cancellationToken);
         Console.WriteLine($"New password: {password}");
     }
+
 }

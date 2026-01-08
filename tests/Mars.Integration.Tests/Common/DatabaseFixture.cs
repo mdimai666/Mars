@@ -29,12 +29,11 @@ public class DatabaseFixture : IDatabaseFixture
             return;
         }
 
-        _container = new PostgreSqlBuilder()
+        _container = new PostgreSqlBuilder("postgres:14")
             .WithName($"mars-test-{Guid.NewGuid()}")
             .WithUsername("postgres1")
             .WithPassword("postgres1")
             .WithDatabase("test_db")
-            .WithImage("postgres:14")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready"))
             .WithCleanUp(true)
             .Build();

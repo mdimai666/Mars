@@ -12,13 +12,12 @@ public class MsSqlFixture : IAsyncLifetime
 
     public MsSqlFixture()
     {
-        _container = new MsSqlBuilder()
+        _container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
             .WithName($"b-test-mssql-{Guid.NewGuid()}")
             //.WithUsername("sa") // SQL Server использует "sa" как пользователя по умолчанию
             .WithPassword("yourStrong(!)Password") // Пароль должен соответствовать требованиям сложности SQL Server
                                                    //.WithDatabase("test_db_source")
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest") // Используйте актуальный образ MSSQL
-                                                                     //.WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;"))
+                                                   //.WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("/opt/mssql-tools/bin/sqlcmd", "-Q", "SELECT 1;"))
             .WithCleanUp(true)
             .Build();
     }

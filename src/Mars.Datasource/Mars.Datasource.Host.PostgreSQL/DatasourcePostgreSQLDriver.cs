@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using Mars.Datasource.Core;
 using Mars.Datasource.Core.Interfaces;
 using Npgsql;
 using Npgsql.Schema;
-using static Npgsql.PostgresTypes.PostgresCompositeType;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace Mars.Datasource.Host.PostgreSQL;
 
@@ -31,9 +29,9 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         await using var cmd = new NpgsqlCommand(sql, conn);
         await using var reader = await cmd.ExecuteReaderAsync();
 
-        var cols = await reader.GetColumnSchemaAsync();
+        var cols = reader.GetColumnSchema();
 
-        Dictionary<string, QTableColumn> dict = new();
+        Dictionary<string, QTableColumn> dict = [];
 
         foreach (var col in cols)
         {
@@ -62,7 +60,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         await using var cmd = new NpgsqlCommand(sql, conn);
         await using var reader = await cmd.ExecuteReaderAsync();
 
-        List<QTableSchema> list = new();
+        List<QTableSchema> list = [];
 
         if (reader.HasRows)
         {
@@ -93,8 +91,10 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         await using var conn = new NpgsqlConnection(_config.ConnectionString);
         await conn.OpenAsync();
 
-        QDatabaseStructure db = new();
-        db.DatabaseName = conn.Database;
+        QDatabaseStructure db = new()
+        {
+            DatabaseName = conn.Database
+        };
 
         List<QTableSchema> list = await Tables(conn);
 
@@ -102,7 +102,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         {
             var columns = await Columns(conn, table.TableName);
 
-            QTable qTable = new QTable
+            QTable qTable = new()
             {
                 TableName = table.TableName,
                 TableSchema = table,
@@ -125,11 +125,11 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
             await using var cmd = new NpgsqlCommand(sql, conn);
             await using var reader = await cmd.ExecuteReaderAsync();
 
-            List<List<string>> rows = new();
+            List<List<string>> rows = [];
 
             var columns = await reader.GetColumnSchemaAsync();
 
-            List<string> _cols = new();
+            List<string> _cols = [];
 
             foreach (var col in columns)
             {
@@ -140,7 +140,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
 
             while (await reader.ReadAsync())
             {
-                List<string> list = new();
+                List<string> list = [];
                 //Console.WriteLine(reader.GetString(0));
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
@@ -168,7 +168,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         string tablesIOdsQuery = $"SELECT oid,relname FROM pg_class WHERE oid IN ({string.Join(',', tablesOIDs)})";
         using var cmd_cols = new NpgsqlCommand(tablesIOdsQuery, conn);
         using var reader_cols = cmd_cols.ExecuteReader();
-        Dictionary<uint, string> oid_table_dict = new();
+        Dictionary<uint, string> oid_table_dict = [];
         while (reader_cols.Read())
         {
             oid_table_dict.Add(uint.Parse(reader_cols.GetValue(0).ToString()!), reader_cols.GetString(1));
@@ -178,7 +178,6 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
 
         return oid_table_dict;
     }
-
 
     public async Task<SqlQueryJsonResultActionDto> SqlQueryJson(string sql)
     {
@@ -193,7 +192,7 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
 
             var jArray = new JsonArray();
 
-            var columns = await reader.GetColumnSchemaAsync();
+            var columns = reader.GetColumnSchema();
 
             //conn.Database.
 
@@ -202,7 +201,6 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
             var tablesOIDs = columns.Select(s => s.TableOID).Distinct();
             var oid_table_dict = f_oid_table_dict(tablesOIDs);
             bool isMultipleTable = tablesOIDs.Count() > 0;
-
 
             List<string> _cols = new(columns.Count);
 
@@ -247,7 +245,6 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         }
     }
 
-
     SqlQueryResultActionDto Result(string message, bool ok = false, string[][]? data = null)
     {
         return new SqlQueryResultActionDto
@@ -277,26 +274,30 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
 
     public static QTableColumn ConvertQTableColumn(NpgsqlDbColumn column)
     {
-        QTableColumn _this = new();
-        _this.ColumnName = column.ColumnName;
-        _this.ColumnOrdinal = column.ColumnOrdinal ?? 0;
-        _this.ColumnSize = column.ColumnSize;
-        _this.IsAutoIncrement = column.IsAutoIncrement;
-        _this.IsKey = column.IsKey;
-        _this.IsLong = column.IsLong;
-        _this.IsUnique = column.IsUnique;
-        _this.DataType = column.DataType!;
-        _this.DataTypeName = column.DataTypeName;
+        QTableColumn _this = new()
+        {
+            ColumnName = column.ColumnName,
+            ColumnOrdinal = column.ColumnOrdinal ?? 0,
+            ColumnSize = column.ColumnSize,
+            IsAutoIncrement = column.IsAutoIncrement,
+            IsKey = column.IsKey,
+            IsLong = column.IsLong,
+            IsUnique = column.IsUnique,
+            DataType = column.DataType!,
+            DataTypeName = column.DataTypeName!
+        };
         return _this;
 
     }
 
     public static QTableSchema ConvertQTableSchema(NpgsqlDataReader reader)
     {
-        QTableSchema _this = new();
-        _this.SchemaName = reader.GetString(0);
-        _this.TableName = reader.GetString(1);
-        _this.TableOwner = reader.GetString(2);
+        QTableSchema _this = new()
+        {
+            SchemaName = reader.GetString(0),
+            TableName = reader.GetString(1),
+            TableOwner = reader.GetString(2)
+        };
         //_this.TableSpace = reader.GetString(3);
         //_this.HasIndexes = reader.GetBoolean(4);
         //_this.HasRules = reader.GetBoolean(5);

@@ -64,5 +64,11 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
             .WithOne(e => e.User)
             .HasForeignKey(ur => ur.UserId)
             .IsRequired();
+
+        // Each User can have many entries in the UserPasskey join table
+        entity.HasMany(e => e.UserPasskeys)
+            .WithOne(e => e.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
     }
 }

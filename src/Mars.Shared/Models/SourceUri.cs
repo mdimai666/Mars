@@ -21,7 +21,7 @@ public class SourceUri : IEquatable<SourceUri>
         SearchValues.Create("!$&'()*+,-./0123456789:;=@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~");
 
     public const string PathMustStartWithSlashMessage = "Path must start with slash";
-    public const string ValueContainNotAllowedCharsMessage = "Value contain not allowed chars";
+    public const string ValueContainNotAllowedCharsMessage = "Value '{0}' contain not allowed chars";
 
     public static readonly SourceUri Empty = new(string.Empty);
 
@@ -36,7 +36,7 @@ public class SourceUri : IEquatable<SourceUri>
             throw new ArgumentException(PathMustStartWithSlashMessage);
         }
         var indexOfInvalidChar = value.AsSpan().IndexOfAnyExcept(s_validPathChars);
-        if (indexOfInvalidChar > -1) throw new ArgumentException(ValueContainNotAllowedCharsMessage);
+        if (indexOfInvalidChar > -1) throw new ArgumentException(string.Format(ValueContainNotAllowedCharsMessage, value));
 
         Value = value;
         _segments = HasValue ? value.Split('/', StringSplitOptions.RemoveEmptyEntries) : [];

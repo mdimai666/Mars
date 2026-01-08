@@ -9,16 +9,16 @@ public static class SystemJsonConverter
 
     public static System.Text.Json.JsonSerializerOptions DefaultJsonSerializerOptions(bool forceNewInstance = false)
     {
-        if (opt == null)
+        if (opt == null || forceNewInstance)
         {
 
-            System.Text.Json.JsonSerializerOptions options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            System.Text.Json.JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
             {
                 WriteIndented = true,
             };
-            options.Converters.Add(new DateOnlyConverter());
-            options.Converters.Add(new DateOnlyNullableConverter());
-            options.Converters.Add(new TimeOnlyConverter());
+            //options.Converters.Add(new DateOnlyConverter());
+            //options.Converters.Add(new DateOnlyNullableConverter());
+            //options.Converters.Add(new TimeOnlyConverter());
             if (forceNewInstance)
             {
                 return options;
@@ -33,16 +33,16 @@ public static class SystemJsonConverter
 
     public static System.Text.Json.JsonSerializerOptions DefaultJsonSerializerOptionsNotFormatted(bool forceNewInstance = false)
     {
-        if (optNotFormatted == null)
+        if (optNotFormatted == null || forceNewInstance)
         {
 
-            System.Text.Json.JsonSerializerOptions options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            System.Text.Json.JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
             {
                 WriteIndented = false
             };
-            options.Converters.Add(new DateOnlyConverter());
-            options.Converters.Add(new DateOnlyNullableConverter());
-            options.Converters.Add(new TimeOnlyConverter());
+            //options.Converters.Add(new DateOnlyConverter());
+            //options.Converters.Add(new DateOnlyNullableConverter());
+            //options.Converters.Add(new TimeOnlyConverter());
             if (forceNewInstance)
             {
                 return options;
@@ -54,6 +54,7 @@ public static class SystemJsonConverter
     }
 }
 
+//Не используется
 public class DateOnlyConverter : JsonConverter<DateOnly>
 {
     private readonly string serializationFormat;
@@ -79,6 +80,7 @@ public class DateOnlyConverter : JsonConverter<DateOnly>
         => writer.WriteStringValue(value.ToString(serializationFormat));
 }
 
+//Не используется
 public class DateOnlyNullableConverter : JsonConverter<DateOnly?>
 {
     private readonly string serializationFormat;
@@ -104,6 +106,7 @@ public class DateOnlyNullableConverter : JsonConverter<DateOnly?>
         => writer.WriteStringValue(value?.ToString(serializationFormat));
 }
 
+//Не используется
 public class TimeOnlyConverter : JsonConverter<TimeOnly>
 {
     private readonly string serializationFormat;

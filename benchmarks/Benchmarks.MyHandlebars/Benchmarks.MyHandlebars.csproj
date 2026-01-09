@@ -12,7 +12,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+	  <ProjectReference Include="..\..\src\Mars.Shared\Mars.Shared.csproj" />
 	</ItemGroup>
-
 </Project>

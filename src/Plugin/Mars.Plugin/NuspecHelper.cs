@@ -75,12 +75,17 @@ public static class NuspecHelper
         var ns = doc.Root!.GetDefaultNamespace();
         var metadata = doc.Root.Element(ns + "metadata");
 
+        var licenseElement = metadata?.Element(ns + "license");
+        var licenseType = licenseElement?.Attribute("type")?.Value;
+
         var manifest = new NuspecManifest
         {
             PackageId = metadata?.Element(ns + "id")?.Value ?? "",
             Version = metadata?.Element(ns + "version")?.Value ?? "",
             Authors = metadata?.Element(ns + "authors")?.Value,
-            License = metadata?.Element(ns + "license")?.Value,
+            License = licenseElement?.Value,
+            LicenseType = licenseType,
+            LicenseTypeIsExpression = string.Equals(licenseType, "expression", StringComparison.OrdinalIgnoreCase),
             LicenseUrl = metadata?.Element(ns + "licenseUrl")?.Value,
             Icon = metadata?.Element(ns + "icon")?.Value,
             ProjectUrl = metadata?.Element(ns + "projectUrl")?.Value,
@@ -227,6 +232,8 @@ public class NuspecManifest
     /// </summary>
     public string? Authors { get; set; } = string.Empty;
     public string? License { get; set; } = string.Empty;
+    public string? LicenseType { get; set; }
+    public bool LicenseTypeIsExpression { get; set; }
     public string? LicenseUrl { get; set; } = string.Empty;
     public string? Icon { get; set; } = string.Empty;
     public string? ProjectUrl { get; set; } = string.Empty;

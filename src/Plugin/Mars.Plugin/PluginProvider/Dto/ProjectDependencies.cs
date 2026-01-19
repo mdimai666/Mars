@@ -13,7 +13,7 @@ public class ProjectDependencies
 
     public TargetFramework Packages => Targets[RuntimeTarget.Name];
 
-    internal ProjectDependencies(string releaseArtifactsDepsjsonFile)
+    public ProjectDependencies(string releaseArtifactsDepsjsonFile)
     {
         DependenciesJsonDto json = JsonSerializer.Deserialize<DependenciesJsonDto>(File.ReadAllText(releaseArtifactsDepsjsonFile))!;
 

@@ -123,7 +123,6 @@
         <ProjectReference Include="..\Mars.Modules\Mars.WebSiteProcessor\Mars.WebSiteProcessor.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
-        <ProjectReference Include="..\Modules\MonacoRoslynCompletionProvider\MonacoRoslynCompletionProvider.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin\Mars.Plugin.csproj" />
 
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />

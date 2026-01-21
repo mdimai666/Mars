@@ -94,7 +94,6 @@
     <Project Path="src/Modules/BlazoredHtmlRender/BlazoredHtmlRender.csproj" />
     <Project Path="src/Modules/MarsCodeEditor2/MarsCodeEditor2.csproj" />
     <Project Path="src/Modules/MarsEditors/MarsEditors.csproj" />
-    <Project Path="src/Modules/MonacoRoslynCompletionProvider/MonacoRoslynCompletionProvider.csproj" />
   </Folder>
   <Folder Name="/Modules/BlockEditor/">
     <Project Path="src/Modules/EditorJsBlazored/EditorJsBlazored/EditorJsBlazored.csproj" />

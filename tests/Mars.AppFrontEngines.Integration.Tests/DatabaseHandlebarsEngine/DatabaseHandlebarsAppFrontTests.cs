@@ -9,6 +9,7 @@ using Mars.Host.WebSite.SourceProviders;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Extensions;
 using Mars.Shared.Contracts.PostTypes;
+using Mars.Shared.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.UseStartup;
 using Mars.WebSiteProcessor.DatabaseHandlebars;
@@ -41,7 +42,14 @@ public class DatabaseHandlebarsAppFrontTests : BaseAppFrontTests<DatabaseHandleb
         var postTypeRepo = AppFixture.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         var pageType = await postTypeRepo.GetDetailByName("page", default);
         var updateQuery = pageType!.CopyViaJsonConversion<UpdatePostTypeQuery>();
-        await postTypeRepo.Update(updateQuery with { PostContentSettings = new PostContentSettingsDto { PostContentType = PostTypeConstants.DefaultPostContentTypes.Code, CodeLang = null } }, default);
+        await postTypeRepo.Update(updateQuery with
+        {
+            PostContentSettings = new PostContentSettingsDto
+            {
+                PostContentType = PostTypeConstants.DefaultPostContentTypes.Code,
+                CodeLang = null
+            }
+        }, default);
 
         var postRepo = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();
 
@@ -57,6 +65,11 @@ public class DatabaseHandlebarsAppFrontTests : BaseAppFrontTests<DatabaseHandleb
         var _404Page = _fixture.CreatePost("<h1>page_404</h1>", postType: "page", slug: "404");
         await postRepo.Create(_404Page, default);
 
+        RefreshPagesStructure();
+    }
+
+    private void RefreshPagesStructure()
+    {
         var app = AppFixture.ServiceProvider.GetRequiredService<IMarsAppProvider>();
         app.FirstApp.Features.Get<IWebTemplateService>().ScanSite();
     }
@@ -99,4 +112,75 @@ public class DatabaseHandlebarsAppFrontTests : BaseAppFrontTests<DatabaseHandleb
         html.Should().Contain("page_404");
         status.Should().Be(StatusCodes.Status404NotFound);
     }
+
+    [IntegrationFact]
+    public async Task ResolveUrl_UseUrlFromPageContentAttribute_ShouldSuccess()
+    {
+        //Arrange
+        var pageContent = """
+            @page "/{SLUG}"
+
+            {{#context}}
+            post = ef.Posts.First(post.Slug.ToLower() == SLUG.ToLower());
+            {{/context}}
+
+            <h1>{{post.Title}}</h1>
+            """;
+        var pageTemplate = _fixture.CreatePost(pageContent, postType: "page", slug: "slug_non_used");
+        var somePost = _fixture.CreatePost("Content", postType: "post", slug: "post1");
+
+        var postRepo = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();
+        await postRepo.Create(pageTemplate, default);
+        await postRepo.Create(somePost, default);
+        RefreshPagesStructure();
+
+        //Act
+        var (html, status) = await RenderRequestPageEx("/" + somePost.Slug);
+
+        //Assert
+        html.Should().Contain(somePost.Title);
+        status.Should().Be(StatusCodes.Status200OK);
+    }
+
+    [IntegrationFact]
+    public async Task RootHtml_UsingDefaultLayout_ShouldSuccess()
+    {
+        //Arrange
+        var hostHtml = """
+            @DefaultLayout base-layout
+            <!DOCTYPE html>
+            <html lang="ru">
+            <head></head>
+            <body>
+                @Body
+            </body>
+            """;
+        var optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
+        var frontOptions = optionService.GetOption<FrontOptions>();
+        frontOptions.HostItems[0].HostHtml = hostHtml;
+        optionService.SaveOption(frontOptions);
+
+        var layoutContent = """
+            @inherits LayoutComponentBase
+
+            <div id="base-layout" class="container">
+                <main>
+                    {{>@partial-block}}
+                </main>
+            </div>
+            """;
+        var layout = _fixture.CreatePost(layoutContent, postType: "template", slug: "base-layout");
+
+        var postRepo = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();
+        await postRepo.Create(layout, default);
+        RefreshPagesStructure();
+
+        //Act
+        var (html, status) = await RenderRequestPageEx("/");
+
+        //Assert
+        html.Should().Contain("id=\"base-layout\"");
+        status.Should().Be(StatusCodes.Status200OK);
+    }
+
 }

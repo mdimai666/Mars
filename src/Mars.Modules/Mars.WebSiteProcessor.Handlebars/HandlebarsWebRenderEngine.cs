@@ -155,7 +155,8 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
             string? layoutBlockName = null;
 
-            if (page?.Layout is not null && (ctx.RenderParam.AllowLayout || !ctx.RenderParam.OnlyBody))
+            if ((ctx.RenderParam.AllowLayout || !ctx.RenderParam.OnlyBody)
+                && (page?.Layout is not null || root.DefaultLayout is not null))
             {
                 layoutBlockName = page.Layout ?? root.DefaultLayout;
             }

@@ -86,9 +86,10 @@ internal class OptionService : IOptionService, IDisposable
         if (onChangeActions.TryGetValue(typeof(T), out Action<object>? action))
         {
             action(option);
-            var eventTopic = _eventManager.Defaults.OptionUpdate(typeof(T).Name);
-            _eventManager.TriggerEvent(new ManagerEventPayload(eventTopic, option));
         }
+
+        var eventTopic = _eventManager.Defaults.OptionUpdate(typeof(T).Name);
+        _eventManager.TriggerEvent(new ManagerEventPayload(eventTopic, option));
 
         if (typeof(T) == typeof(SysOptions)) _fileHostingInfo = null;
         OnOptionUpdate?.Invoke(option);

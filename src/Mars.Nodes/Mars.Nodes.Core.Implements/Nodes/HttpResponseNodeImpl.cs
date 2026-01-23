@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
-using Mars.Host.Shared.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared.HttpModule;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Nodes.Core.Implements.Nodes;

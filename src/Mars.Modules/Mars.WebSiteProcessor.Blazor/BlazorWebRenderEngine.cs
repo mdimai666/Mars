@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 
@@ -23,16 +24,20 @@ namespace Mars.WebSiteProcessor.Blazor;
 
 public class BlazorWebRenderEngine : DatabaseHandlebarsWebRenderEngine, IWebRenderEngine
 {
-    public override void AddFront(WebApplicationBuilder builder, MarsAppFront appFront)
+    public BlazorWebRenderEngine(IMemoryCache memoryCache, MarsAppFront marsAppFront) : base(memoryCache, marsAppFront)
     {
-        AppFront = appFront;
-        var appFrontConfig = appFront.Configuration;
+
+    }
+
+    public override void Setup()
+    {
+        var appFrontConfig = AppFront.Configuration;
         var mode = appFrontConfig.Mode;
 
-        ArgumentException.ThrowIfNullOrEmpty(appFront.Configuration.Path, "configured theme path is null or empty");
+        ArgumentException.ThrowIfNullOrEmpty(AppFront.Configuration.Path, "configured theme path is null or empty");
 
-        if (!Directory.Exists(appFront.Configuration.Path))
-            throw new DirectoryNotFoundException($"configured theme dir not exist '{appFront.Configuration.Path}'");
+        if (!Directory.Exists(AppFront.Configuration.Path))
+            throw new DirectoryNotFoundException($"configured theme dir not exist '{AppFront.Configuration.Path}'");
 
         if (mode == AppFrontMode.ServeStaticBlazor)
         {
@@ -40,9 +45,9 @@ public class BlazorWebRenderEngine : DatabaseHandlebarsWebRenderEngine, IWebRend
         }
         else if (mode == AppFrontMode.BlazorPrerender)
         {
-            var appDll = DetermineAppRuntimeDllName(appFront.Configuration.Path);
-            var dllPath = Path.Combine(appFront.Configuration.Path, appDll);
-            var asm = builder.AddBlazorWebAssemblyRuntime(dllPath);
+            var appDll = DetermineAppRuntimeDllName(AppFront.Configuration.Path);
+            var dllPath = Path.Combine(AppFront.Configuration.Path, appDll);
+            var asm = BlazorRuntimeExtensions.AddBlazorWebAssemblyRuntime(dllPath);
 
             var rootNamespace = asm.GetName().Name!;
 
@@ -52,7 +57,7 @@ public class BlazorWebRenderEngine : DatabaseHandlebarsWebRenderEngine, IWebRend
             //FieldInfo? piShared = appType.GetField("IsPrerender");
             //piShared?.SetValue(null, true);
 
-            appFront.Features.Set<AppFrontBlazorAsm>(new() { AppType = appType, FilesPath = appFront.Configuration.Path });
+            AppFront.Features.Set<AppFrontBlazorAsm>(new() { AppType = appType, FilesPath = AppFront.Configuration.Path });
 
             //AppFrontBlazorInstance.AppType = appType;
             //AppSharedSettings.Program = programType;

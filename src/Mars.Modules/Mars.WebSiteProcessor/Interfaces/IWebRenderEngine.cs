@@ -6,8 +6,7 @@ namespace Mars.WebSiteProcessor.Interfaces;
 
 public interface IWebRenderEngine
 {
-    //void Initialize(MarsAppFront cfg, IServiceProvider rootServices);
-    void AddFront(WebApplicationBuilder builder, MarsAppFront cfg);
+    void Setup();
     void UseFront(IApplicationBuilder app);
     string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken);
 

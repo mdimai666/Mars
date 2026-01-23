@@ -95,7 +95,7 @@ public class RenderEngineRenderTests
         var content = @"{{#if ok}}OK{{else}}NO{{/if}}";
 
         var context = GetRenderContext(content, data);
-        var renderEngine = new HandlebarsWebRenderEngine();
+        var renderEngine = new HandlebarsWebRenderEngine(null, context.AppFront);
 
         // Act
         var html = renderEngine.RenderPage(context, null!, default);
@@ -109,8 +109,8 @@ public class RenderEngineRenderTests
     {
         // Arrange
         var content = @"{{_user.FullName}}|{{_req.Host}}|{{SysOptions.SiteUrl}}";
-        var renderEngine = new HandlebarsWebRenderEngine();
         var context = GetRenderContext(content);
+        var renderEngine = new HandlebarsWebRenderEngine(null, context.AppFront);
 
         _ = nameof(HandlebarsTmpCtxBasicDataContext);
         var dict = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)

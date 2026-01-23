@@ -85,7 +85,7 @@ public class WebPageTests
         var page = GetWebPageWithUrl(pageUrl);
 
         // Assert
-        page.MatchUrl(url).Should().Be(result);
+        page.MatchUrl(url, out _).Should().Be(result);
     }
 
     [Theory]
@@ -108,7 +108,7 @@ public class WebPageTests
         // Assert
         page.UrlIsContainCurlyBracket.Should().BeTrue();
         page.IsRoutePatternHasConstraints.Should().BeFalse();
-        page.MatchUrl(url).Should().Be(result);
+        page.MatchUrl(url, out _).Should().Be(result);
     }
 
     [Theory]
@@ -129,6 +129,6 @@ public class WebPageTests
         // Assert
         page.UrlIsContainCurlyBracket.Should().BeTrue();
         page.IsRoutePatternHasConstraints.Should().BeTrue();
-        page.MatchUrl(url).Should().Be(result);
+        page.MatchUrl(url, out _).Should().Be(result);
     }
 }

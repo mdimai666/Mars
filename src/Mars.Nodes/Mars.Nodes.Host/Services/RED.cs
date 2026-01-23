@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Fields;
@@ -9,6 +8,7 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared.HttpModule;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,6 +44,8 @@ internal class RED
     public IReadOnlyDictionary<string, Node> BasicNodesDict => _basicNodesDict;
 
     private int _assignedCount = 0;
+
+    public CompiledHttpRouteMatcher CompiledHttpRouteMatcher = default!;
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
 
@@ -123,6 +125,8 @@ internal class RED
         if (_assignedCount > 0) RestoreVarNodeValues();
         _assignedCount++;
         _basicNodesDict = Nodes.ToDictionary(s => s.Key, s => s.Value.Node);
+
+        CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
     }
 
     public RED_Context CreateContextForNode(Node node, FlowNodeImpl flow)

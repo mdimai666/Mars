@@ -13,10 +13,15 @@ public static class MainHandlebarsWRE
     {
         builder.Services.AddTransient<IMarsHtmlTemplator, MyHandlebars>();
 
-        foreach (var app in apps.Where(app => app.Configuration.Mode == Core.Models.AppFrontMode.HandlebarsTemplateStatic))
+        return builder;
+    }
+
+    public static WebApplication UseWREHandlebars(this WebApplication app, IReadOnlyCollection<MarsAppFront> apps)
+    {
+        foreach (var appFront in apps.Where(app => app.Configuration.Mode == Core.Models.AppFrontMode.HandlebarsTemplateStatic))
         {
-            var renderEngine = new HandlebarsWebRenderEngine();
-            app.Features.Set<IWebRenderEngine>(renderEngine);
+            var renderEngine = ActivatorUtilities.CreateInstance<HandlebarsWebRenderEngine>(app.Services, appFront);
+            appFront.Features.Set<IWebRenderEngine>(renderEngine);
 
             //string localizeFile = Path.Combine(app.Configuration.Path, "Resources", "AppRes.resx");
 
@@ -26,12 +31,6 @@ public static class MainHandlebarsWRE
             //    builder.Services.AddSingleton<IAppFrontLocalizer>(resLoaderFactory);
             //}
         }
-
-        return builder;
-    }
-
-    public static IApplicationBuilder UseWREHandlebars(this IApplicationBuilder app, IReadOnlyCollection<MarsAppFront> apps)
-    {
 
         return app;
     }

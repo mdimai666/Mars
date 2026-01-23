@@ -6,6 +6,7 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.WebApp.Nodes.Nodes;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Http;

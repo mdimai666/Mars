@@ -26,18 +26,6 @@ public static class StartupFront
         builder.AddWREDatabaseHandlebars(AppProvider.Apps.Values);
         builder.AddWREBlazor(AppProvider.Apps.Values);
 
-        foreach (var appFront in AppProvider.Apps.Values)
-        {
-            var renderEngine = appFront.Features.Get<IWebRenderEngine>();
-
-            if (renderEngine is null)
-            {
-                Console.Error.WriteLine($"RenderEngine '{appFront.Configuration.Mode}' not resolved");
-                continue;
-            }
-
-            renderEngine.AddFront(builder, appFront);
-        }
         return builder;
     }
 
@@ -63,7 +51,10 @@ public static class StartupFront
 
         foreach (var appFront in AppProvider.Apps.Values.Reverse())
         {
-            var renderEngine = appFront.Features.Get<IWebRenderEngine>();
+            var renderEngine = appFront.Features.Get<IWebRenderEngine>()
+                ?? throw new InvalidOperationException($"RenderEngine '{appFront.Configuration.Mode}' not resolved");
+
+            renderEngine.Setup();
 
             app.Map(appFront.Configuration.Url, front =>
             {

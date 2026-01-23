@@ -53,13 +53,13 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
         }
         catch (FlurlHttpException ex)
         {
-            string statusText = $" {((int)ex.StatusCode!)} {ex.Message}";
+            string statusText = $" {(ex.StatusCode ?? 0)} {ex.Message}";
             RED.Status(NodeStatus.Error(statusText));
             RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, ex.Message, MessageIntent.Warning));
         }
         catch (HttpRequestException ex)
         {
-            string statusText = $" {((int)ex.StatusCode!)} {ex.StatusCode.ToString()}";
+            string statusText = $" {(ex.StatusCode ?? 0)} {ex.Message}";
             RED.Status(NodeStatus.Error(statusText));
             RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, ex.Message, MessageIntent.Warning));
         }

@@ -1,11 +1,10 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Builder;
 
 namespace Mars.WebSiteProcessor.Blazor;
 
 internal static class BlazorRuntimeExtensions
 {
-    internal static Assembly AddBlazorWebAssemblyRuntime(this WebApplicationBuilder builder, string dllPath)
+    internal static Assembly AddBlazorWebAssemblyRuntime(string dllPath)
     {
         //https://stackoverflow.com/questions/1137781/correct-way-to-load-assembly-find-class-and-call-run-method
         //////string dd = @"C:\Users\d\Documents\Projects\2022\Mars\AppFront\bin\Debug\net6.0\publish\wwwroot";

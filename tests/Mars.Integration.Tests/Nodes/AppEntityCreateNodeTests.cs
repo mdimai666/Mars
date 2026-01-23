@@ -4,12 +4,12 @@ using Flurl.Http;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
@@ -82,7 +82,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
         var model = new AppEntityCreateFormSchemaEditModel(formsDict, new()
         {
             EntityUri = entityUri,
-            PropertyBindings  = [
+            PropertyBindings = [
                 new(){ PropertyName = nameof(CreatePostQuery.Id), ValueOrExpression = postId.ToString(), IsEvalExpression = false },
                 new(){ PropertyName = nameof(CreatePostQuery.Title), ValueOrExpression = _fixture.Create("Title"), IsEvalExpression = false },
                 new(){ PropertyName = nameof(CreatePostQuery.Content), ValueOrExpression = "X", IsEvalExpression = false },
@@ -135,7 +135,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
         var model = new AppEntityCreateFormSchemaEditModel(formsDict, new()
         {
             EntityUri = entityUri,
-            PropertyBindings  = [
+            PropertyBindings = [
                 new(){ PropertyName = nameof(CreatePostQuery.Id), ValueOrExpression = $"new Guid(\"{postId}\")", IsEvalExpression = true },
                 new(){ PropertyName = nameof(CreatePostQuery.Slug), ValueOrExpression = "" /*auto*/, IsEvalExpression = true },
                 new(){ PropertyName = nameof(CreatePostQuery.Title), ValueOrExpression = "HttpInNodeHttpRequestContext.Request.Path", IsEvalExpression = true },

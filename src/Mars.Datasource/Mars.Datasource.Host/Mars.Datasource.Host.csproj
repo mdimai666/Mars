@@ -5,7 +5,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.1" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.1" />
 	</ItemGroup>
 

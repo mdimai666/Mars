@@ -77,6 +77,12 @@ public class CreatePostTypePresentationTemplateAct(IPostRepository postRepositor
         {{!-- {{{#help}}} --}}
         {{!-- <pre>{{#tojson table }}</div> --}}
 
+        <div class="hstack mb-3">
+            <div class="ms-auto">
+                <a href="EditPost/{{{{postTypeName}}}}" class="btn btn-primary">Create {{{{postTypeName}}}}</a>
+            </div>
+        </div>
+
         {{#if 1}}
         <div class="row row-cols-lg-3 g-3">
             {{#each table.Items}}

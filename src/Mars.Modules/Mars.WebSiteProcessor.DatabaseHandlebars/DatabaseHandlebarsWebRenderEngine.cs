@@ -7,12 +7,18 @@ using Mars.WebSiteProcessor.Handlebars;
 using Mars.WebSiteProcessor.Interfaces;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebSiteProcessor.DatabaseHandlebars;
 
 public class DatabaseHandlebarsWebRenderEngine : HandlebarsWebRenderEngine, IWebRenderEngine
 {
+    public DatabaseHandlebarsWebRenderEngine(IMemoryCache memoryCache, MarsAppFront marsAppFront) : base(memoryCache, marsAppFront)
+    {
+        
+    }
+
     protected override void Initialize(MarsAppFront appFront, IServiceProvider rootServices)
     {
         var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();

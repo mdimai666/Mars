@@ -16,6 +16,7 @@ public class WebPage : WebSitePart
     /// Имеются ли параметры типа /path/<b>{id}</b>
     /// </summary>
     public bool UrlIsContainCurlyBracket { get; private init; }
+    public int UrlSegmentCount;
 
     /// <summary>
     /// Имеются ли фильтры у параметров типа /path/{id<b>:int</b>}
@@ -51,6 +52,7 @@ public class WebPage : WebSitePart
 
         RouteTemplate = TemplateParser.Parse(Url.Value);
         RoutePattern = RouteTemplate.ToRoutePattern();
+        UrlSegmentCount = RouteTemplate.Segments.Count;
 
         TemplateMatcher = new TemplateMatcher(RouteTemplate, _templateMatcherRouteValues ??= []);
         IsRoutePatternHasConstraints = TemplateMatcherUsedConstraints().Length > 0;
@@ -67,21 +69,42 @@ public class WebPage : WebSitePart
         Title ??= title ?? Attributes.GetValueOrDefault("title") ?? Name;
     }
 
-    public bool MatchUrl(PathString path)
+    public bool MatchUrl(PathString path, out RouteValueDictionary? routeValues)
     {
-        if (TemplateMatcher is null) return false;
-
-        var routeValues = new RouteValueDictionary();
-        var match = TemplateMatcher.TryMatch(path, routeValues);
-
-        //Если совподает шаблон, дополнительно проверить типы {id:int:min(5)}. и т.д.
-        if (IsRoutePatternHasConstraints)
+        routeValues = null;
+        if (path.Value.EndsWith('/'))
+            path = path.Value[..^1];
+        if (path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries).Length != UrlSegmentCount)
         {
-            match = RouteConstraintMatch(path, routeValues);
+            return false;
         }
 
-        return match;
+        if (!UrlIsContainCurlyBracket)
+            return path == Url;
+
+        if (TemplateMatcher is null) return false;
+        routeValues = CompiledHttpRouteMatcher.RouteValuePools.Get();
+
+        try
+        {
+            var match = TemplateMatcher.TryMatch(path, routeValues!);
+
+            //Если совподает шаблон, дополнительно проверить типы {id:int:min(5)}. и т.д.
+            if (match && IsRoutePatternHasConstraints)
+            {
+                match = RouteConstraintMatch(path, routeValues!);
+            }
+
+            return match;
+        }
+        catch
+        {
+            // Если что-то пошло не так — возвращаем в пул
+            CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+            throw;
+        }
     }
+
     public string[] TemplateMatcherUsedConstraints()
         => TemplateMatcher.Template.Parameters.SelectMany(s => s.InlineConstraints.Select(s => s.Constraint)).Distinct().ToArray();
 

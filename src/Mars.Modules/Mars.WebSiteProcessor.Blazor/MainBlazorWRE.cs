@@ -2,6 +2,7 @@ using AppFront.Shared.Interfaces;
 using Mars.Core.Models;
 using Mars.Host.Shared.Models;
 using Mars.WebSiteProcessor.Blazor.Services;
+using Mars.WebSiteProcessor.Handlebars;
 using Mars.WebSiteProcessor.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
@@ -17,16 +18,17 @@ public static class MainBlazorWRE
         builder.Services.AddScoped<BlazorRenderer>();
         builder.Services.AddScoped<IMarsHostBlazorPrerenderHttpAccessor, MarsHostBlazorPrerenderHttpAccessor>();
 
-        foreach (var app in apps.Where(app => app.Configuration.Mode is AppFrontMode.ServeStaticBlazor or AppFrontMode.BlazorPrerender))
-        {
-            var renderEngine = new BlazorWebRenderEngine();
-            app.Features.Set<IWebRenderEngine>(renderEngine);
-        }
         return builder;
     }
 
-    public static IApplicationBuilder UseWREBlazor(this IApplicationBuilder app, IReadOnlyCollection<MarsAppFront> apps)
+    public static WebApplication UseWREBlazor(this WebApplication app, IReadOnlyCollection<MarsAppFront> apps)
     {
+        foreach (var appFront in apps.Where(app => app.Configuration.Mode is AppFrontMode.ServeStaticBlazor or AppFrontMode.BlazorPrerender))
+        {
+            var renderEngine = ActivatorUtilities.CreateInstance<BlazorWebRenderEngine>(app.Services, appFront);
+            //var renderEngine = new BlazorWebRenderEngine();
+            appFront.Features.Set<IWebRenderEngine>(renderEngine);
+        }
 
         return app;
     }

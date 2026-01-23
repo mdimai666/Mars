@@ -22,6 +22,7 @@ public static class DatasourceHostExtensions
         services.AddScoped<IDatasourceAIToolSchemaProviderHandler, DatasourceAIToolSchemaProviderHandler>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        _ = nameof(System.Text.Encoding.CodePage); //Используется в sql запросах.
 
         ICommandLineApi.Register<DataSourceCli>();
 

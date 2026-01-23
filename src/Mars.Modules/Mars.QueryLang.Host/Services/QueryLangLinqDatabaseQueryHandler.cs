@@ -26,7 +26,12 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
     }
 
-    public async Task<object?> Handle(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
+    public Task<object?> Handle(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
+    {
+        return Handle(linqExpression, ppt, true, cancellationToken);
+    }
+
+    private async Task<object?> Handle(string linqExpression, XInterpreter ppt, bool autoCompleteWithList, CancellationToken cancellationToken)
     {
         if (linqExpression.StartsWith("Union(")) return await ExecuteUnionExpressions(linqExpression, ppt, cancellationToken);
 
@@ -77,7 +82,8 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
                     throw new NotImplementedException("Union for metaTypes not work yet. Please use 'ef.Union(arr1,arr2) method. \nLike: 'posts = ef.Union(myType.Take(1),posts.Where(post.Slug=123))'");
                 }
 
-                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService).Handle(args, ppt, cancellationToken);
+                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService)
+                                                    .Handle(args, ppt, autoCompleteWithList: false, cancellationToken);
                 var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
 
                 result = instance.InvokeMethodArgs(methodName, [internalQuery]);
@@ -88,6 +94,11 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
             {
                 result = instance.InvokeMethod(methodName, args);
             }
+        }
+
+        if (autoCompleteWithList && result is IQueryable)
+        {
+            result = instance.InvokeMethod(nameof(EfStringQuery<>.ToList), "");
         }
 
         return result;
@@ -163,7 +174,8 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService).Handle(args, ppt, cancellationToken);
+            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService)
+                                            .Handle(args, ppt, autoCompleteWithList: false, cancellationToken);
             var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
 
             //list.Add(internalQuery);

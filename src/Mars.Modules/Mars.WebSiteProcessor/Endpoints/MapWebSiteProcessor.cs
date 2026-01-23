@@ -122,8 +122,9 @@ public class MapWebSiteProcessor : IWebSiteProcessor
     {
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var tsv = af.Features.Get<IWebTemplateService>();
-        var serviceProvider = httpContext.RequestServices;
-        WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
-        return processor.ResolveUrl(path);
+        //var serviceProvider = httpContext.RequestServices;
+        //WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
+        //return processor.ResolveUrl(path);
+        return tsv.Template.CompiledHttpRouteMatcher.Match(path, out _);
     }
 }

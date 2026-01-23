@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
+using Mars.Host.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Mars.Host.Shared.Models;
+namespace Mars.Nodes.Host.Shared.HttpModule;
 
 public class HttpInNodeHttpRequestContext
 {

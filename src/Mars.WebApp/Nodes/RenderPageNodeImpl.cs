@@ -4,6 +4,7 @@ using Mars.Host.Shared.WebSite;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.Nodes;

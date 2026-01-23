@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 using Mars.Core.Models;
 using Mars.Host.Shared.Hubs;
@@ -25,17 +24,16 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 {
     protected MarsAppFront AppFront = default!;
     private IMemoryCache? _memoryCache;
-    //private readonly IMarsHtmlTemplator _marsHtmlTemplator;
+    private IMarsHtmlTemplator? _marsHtmlTemplator;
 
-    public HandlebarsWebRenderEngine()
+    public HandlebarsWebRenderEngine(IMemoryCache? memoryCache, MarsAppFront marsAppFront)
     {
-        //_memoryCache = memoryCache;
+        AppFront = marsAppFront;
+        _memoryCache = memoryCache;
     }
 
-    public virtual void AddFront(WebApplicationBuilder builder, MarsAppFront appFront)
+    public virtual void Setup()
     {
-        AppFront = appFront;
-
         if (AppFront.Configuration.Mode == Mars.Core.Models.AppFrontMode.HandlebarsTemplateStatic && string.IsNullOrEmpty(AppFront.Configuration.Path))
         {
             throw new ArgumentNullException("cfg: AppFront.Path");
@@ -64,7 +62,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
             }
         }
 
-        IWebSiteProcessor webSiteProcessor = app.ApplicationServices.GetRequiredService<IWebSiteProcessor>();
+        var webSiteProcessor = app.ApplicationServices.GetRequiredService<IWebSiteProcessor>();
 
         if (AppFront.Configuration.Mode != AppFrontMode.None)
         {
@@ -113,6 +111,11 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         return RenderPage(renderContext.AppFront, renderContext.PageContext, template.RootPage, renderContext.Page, template.Parts, serviceProvider, cancellationToken);
     }
 
+    string AppCacheKey(MarsAppFront appFront, WebPage? page, RenderParam renderParam)
+    {
+        return $"HandlebarsWebRenderEngine::{appFront.Configuration.Url}::AppCacheKey[{page?.Url},{(renderParam.OnlyBody ? 1 : 0)},{(renderParam.AllowLayout ? 1 : 0)}]";
+    }
+
     public virtual string RenderPage(
         MarsAppFront MarsAppFront,
         PageRenderContext ctx,
@@ -130,13 +133,13 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         //var af = renderContext.HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         //string cacheKey = GetRenderKey(af, renderContext.RenderParam, page, renderContext.WebSiteTemplate);
 
-        IMarsHtmlTemplator.MarsHtmlTemplate<object, object> template_compiled = null!;
+        IMarsHtmlTemplator.MarsHtmlTemplate<object, object>? template_compiled;
 
-        //if (_memoryCache?.TryGetValue(cacheKey, out template_compiled!) ?? false)
-        //{
+        if (!false && _memoryCache?.TryGetValue(AppCacheKey(af, page, ctx.RenderParam), out template_compiled) == true)
+        {
 
-        //}
-        //else
+        }
+        else
         {
 
             StringBuilder combined_html = new();
@@ -177,12 +180,12 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
                 combined_html.AppendLine(afterHtml);
             }
 
-#if DEBUG
+#if DEBUG2
             var z1 = GC.GetTotalMemory(false);
             Stopwatch stopwatch = Stopwatch.StartNew();
 #endif
 
-            using IMarsHtmlTemplator handlebars = new MyHandlebars();
+            IMarsHtmlTemplator handlebars = _marsHtmlTemplator ??= new MyHandlebars();
             handlebars.RegisterContextFunctions();
 
             if (parts is not null)
@@ -193,9 +196,9 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
                 }
             }
             template_compiled = handlebars.Compile(combined_html.ToString());
-            //_memoryCache?.Set(cacheKey, template_compiled, DateTimeOffset.Now.AddMinutes(10));
+            _memoryCache?.Set(AppCacheKey(af, page, ctx.RenderParam), template_compiled, DateTimeOffset.Now.AddMinutes(30));
 
-#if DEBUG
+#if DEBUG2
             stopwatch.Stop();
             Console.WriteLine($"render_finish: {stopwatch.ElapsedMilliseconds}ms. Page:{page?.Url}");
             var z2 = GC.GetTotalMemory(false);

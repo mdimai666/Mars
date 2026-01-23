@@ -1,4 +1,3 @@
-using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
@@ -32,26 +31,35 @@ public class WebSiteRequestProcessor
 
     public async Task<RenderInfo> RenderRequest(HttpContext httpContext, RenderParam param, CancellationToken cancellationToken)
     {
-        var request = new WebClientRequest(httpContext.Request);
         var appFront = (httpContext.Items[nameof(MarsAppFront)] as MarsAppFront)!;
         var maintenanceModeOption = optionService.GetOption<MaintenanceModeOption>();
 
         if (maintenanceModeOption.Enable)
         {
-            return await RenderMaintenancePage(appFront, request, maintenanceModeOption, param, cancellationToken);
+            var request0 = new WebClientRequest(httpContext.Request);
+            return await RenderMaintenancePage(appFront, request0, maintenanceModeOption, param, cancellationToken);
         }
 
-        WebPage? page = ResolveUrl(httpContext.Request.Path);
+        WebPage? page = template.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
+        var request = new WebClientRequest(httpContext.Request, routeValues: routeValues);
 
-        if (page is null) return await RenderPage404(appFront, request, param, cancellationToken);
-
-        return new RenderInfo
+        try
         {
-            Code = 200,
-            html = await RenderPageHtml(appFront, request, page, param, cancellationToken),
-            Title = page.Title ?? page.Name,
-        };
+            if (page is null) return await RenderPage404(appFront, request, param, cancellationToken);
 
+            return new RenderInfo
+            {
+                Code = 200,
+                html = await RenderPageHtml(appFront, request, page, param, cancellationToken),
+                Title = page.Title ?? page.Name,
+            };
+        }
+        finally
+        {
+            // Возвращаем в пул после использования!
+            if (routeValues is not null)
+                CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+        }
     }
 
     public async Task<RenderInfo> RenderPage(MarsAppFront appFront, WebClientRequest request, WebPage page, RenderParam param, CancellationToken cancellationToken)
@@ -103,22 +111,10 @@ public class WebSiteRequestProcessor
         };
     }
 
-    public WebPage? ResolveUrl(PathString path)
-    {
-        string uri = path.ToString().TrimEnd('/');
-        if (string.IsNullOrEmpty(uri)) uri = "/";
-
-        WebPage? page = template.Pages.FirstOrDefault(s => string.Equals(uri, s.Url, StringComparison.OrdinalIgnoreCase));
-
-        if (page is null)
-        {
-            page = template.Pages
-                    .Where(post => post.UrlIsContainCurlyBracket)
-            .FirstOrDefault(page => page.MatchUrl(path));
-        }
-
-        return page;
-    }
+    //public WebPage? ResolveUrl(PathString path)
+    //{
+    //    return template.CompiledHttpRouteMatcher.Match(path);
+    //}
 
     /// <summary>
     /// RenderPageHtml
@@ -133,7 +129,6 @@ public class WebSiteRequestProcessor
     async Task<string> RenderPageHtml(MarsAppFront appFront, WebClientRequest request, WebPage page, RenderParam param, CancellationToken cancellationToken)
     {
         //RenderEngineRenderRequestContext renderContext = null!;
-
         try
         {
             bool isCache = false;
@@ -205,43 +200,6 @@ public class WebSiteRequestProcessor
                         pageRenderContext.TemplateContextVaribles.TryAdd(key, seg!);
                     }
                 }
-
-                //var pars = httpContext.Request.RouteValues;
-
-                #region EXPERIMENTS
-                ////var z = page.TemplateMatcher.Template.Parameters;
-                ////var e = httpContext.Request.RouteValues;
-                ////var d = httpContext.GetRouteData();
-                ////var d2 = httpContext.GetRouteValue("ID");
-
-                //var template = TemplateParser.Parse(page.Url);
-                //var matcher = new Microsoft.AspNetCore.Routing.Template.TemplateMatcher(template, httpContext.Request.RouteValues);
-                ////var values = matcher.TryMatch(httpContext.Request.Path);
-
-                ////RouteConstraintMatcher.Match(
-                ////    WebPage.GetDefaultConstraintMap() as IDictionary<string, IRouteConstraint>,
-                ////    httpContext.Request.RouteValues,
-                ////    httpContext,
-                ////    null,
-                ////    RouteDirection.IncomingRequest,
-                ////    null
-                ////);
-                ///
-
-                //var template = TemplateParser.Parse(page.Url);
-                //var routePattern = template.ToRoutePattern();
-                //var matcher = new Microsoft.AspNetCore.Routing.Template.TemplateMatcher(template, httpContext.Request.RouteValues);
-                //var pp = matcher.Template.Parameters;
-
-                //var f = httpContext.Features;
-
-                //var q = httpContext.Request.Query;
-                //var v = httpContext.Request.RouteValues;
-                //var node = new UrlMatchingNode(0);
-                //node.
-                //var matcher = new TemplateMatcher(entry.RouteTemplate, entry.Defaults);
-                #endregion
-
             }
 
             //=======================================================
@@ -255,7 +213,7 @@ public class WebSiteRequestProcessor
 
             //renderContext = new(httpContext, template, page, ctx, param);
 
-            if(request.Items.TryGetValue(typeof(RenderPageHtmlException), out var ex))
+            if (request.Items.TryGetValue(typeof(RenderPageHtmlException), out var ex))
             {
                 renderContext.PageContext.TemplateContextVaribles.Add("ex", ex);
             }

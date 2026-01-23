@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AppShared.Models;
+using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using HandlebarsDotNet;
+using Mars.Host.Shared.Dto.Posts;
 
 namespace Benchmarks.MyHandlebars;
 
 [MemoryDiagnoser, ShortRunJob]
 public class MyHandlebarsCompileBenchmark
 {
-    Post? post;
+    PostDetail? post;
     int[] list = default!;
 
     object context = new { };
@@ -34,15 +29,11 @@ public class MyHandlebarsCompileBenchmark
     [GlobalSetup]
     public void GlobalSetup()
     {
-        post = new Post()
-        {
-            Id = Guid.Empty,
-            Title = "post title1",
-            Content = "post content",
-        };
+        
+        post = new Fixture().Create<PostDetail>();
         list = Enumerable.Range(0, 100).ToArray();
 
-        var ctx = new ExpandoObject();
+        var ctx = new Dictionary<string, object>();
         ctx.TryAdd("post", post);
         ctx.TryAdd("list", list);
         context = ctx;

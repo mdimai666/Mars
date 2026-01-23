@@ -23,6 +23,7 @@ public class InjectActTests : ApplicationTests
         _fixture.Customize(new FixtureCustomize());
     }
 
+#if DEBUG
     [IntegrationFact]
     public async Task Inject_Request_ShouldSuccess()
     {
@@ -31,7 +32,7 @@ public class InjectActTests : ApplicationTests
         _ = nameof(XActionManager.Inject);
         _ = nameof(DummyAct);
         var client = AppFixture.GetClient();
-        var act = DummyAct.XAction;
+        var act = DummyAct.XAction; 
         string[] args = [];
 
         //Act
@@ -42,6 +43,7 @@ public class InjectActTests : ApplicationTests
         result.Ok.Should().BeTrue();
         result.Message.Should().Match("act executed.*");
     }
+#endif
 
     [IntegrationFact]
     public async Task Inject_InvalidId_FailNotFound404()

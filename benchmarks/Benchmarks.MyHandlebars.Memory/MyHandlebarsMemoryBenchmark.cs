@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using AppShared.Models;
+using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using Mars.Core.Extensions;
 using HandlebarsDotNet;
+using Mars.Core.Extensions;
+using Mars.Host.Shared.Dto.Posts;
 using Newtonsoft.Json.Linq;
 
 namespace Benchmarks.MyHandlebars;
@@ -18,7 +12,7 @@ namespace Benchmarks.MyHandlebars;
 [MemoryDiagnoser, ShortRunJob]
 public class MyHandlebarsMemoryBenchmark
 {
-    List<Post> posts = default!;
+    List<PostDetail> posts = default!;
     int[] list = default!;
     string jsonString = default!;
 
@@ -49,19 +43,8 @@ public class MyHandlebarsMemoryBenchmark
     {
         int COUNT = 100;
         string content = Enumerable.Repeat("post content {i}", 20).JoinStr("\n");
-
-        posts = new List<Post>(COUNT);
-        for (int i = 0; i < COUNT; i++)
-        {
-            var post = new Post()
-            {
-                Id = Guid.Empty,
-                Title = $"post title {i}",
-                Content = content,
-                User = User.GetTest()
-            };
-            posts.Add(post);
-        }
+        var fixture = new Fixture();
+        posts = fixture.CreateMany<PostDetail>(COUNT).ToList();
         list = Enumerable.Range(0, 100).ToArray();
 
         var ctx = new Dictionary<string, object>();

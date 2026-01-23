@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
+        <ProjectReference Include="..\..\tests\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
+    </ItemGroup>
 
 </Project>

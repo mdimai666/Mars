@@ -73,7 +73,7 @@ docker run -d --name mars-app-nocontent -w /app -p 5005:80  -e "ConnectionString
 
 ### 🚀 Dev Installation
 
-Install [NET9 SDK](https://dotnet.microsoft.com/en-us/download) or [Visual Studio 2022](https://visualstudio.microsoft.com/ru/vs/community/)
+Install [NET10 SDK](https://dotnet.microsoft.com/en-us/download) or [Visual Studio 2022](https://visualstudio.microsoft.com/ru/vs/community/)
 
 ```bash
 git clone https://github.com/mdimai666/Mars.git
@@ -92,7 +92,7 @@ dotnet watch run
 
 This command generates a brand new project with the default features.
 
-> DOTNET: Currently **NET 9**
+> DOTNET: Currently **NET 10**
 
 **[Смотрите больше на нашем сайте](https://Mars-dotnet.org/overview)**.
 

@@ -15,10 +15,10 @@ internal class NodeTaskJob : IAsyncDisposable
     internal Node InjectNode => _nodes[InjectNodeId].Node;
     internal Node FlowNode => _nodes[FlowNodeId].Node;
 
-    protected readonly IServiceProvider _serviceProvider;
+    protected IServiceProvider _serviceProvider;
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
     protected Dictionary<string, NodeJob> _jobs = [];
-    protected readonly RED _RED;
+    protected RED _RED;
     private readonly ILogger<NodeTaskJob> _logger;
     int executedCount;
     private readonly int maxExecuteCount = 10_000;
@@ -215,8 +215,9 @@ internal class NodeTaskJob : IAsyncDisposable
     public ValueTask DisposeAsync()
     {
         _cancellationTokenSource.Dispose();
-
         _RED.OnNodeImplDone -= _RED_OnNodeImplDone;
+        _RED = null!;
+        _serviceProvider = null!;
         _logger.LogTrace($"Dispose");
         return ValueTask.CompletedTask;
     }

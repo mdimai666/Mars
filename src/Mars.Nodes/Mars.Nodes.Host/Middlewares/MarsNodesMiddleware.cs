@@ -47,14 +47,18 @@ internal class MarsNodesMiddleware
             {
                 try
                 {
-                    var ctx = new HttpInNodeHttpRequestContext(httpContext, foundRoute, routeValues);
+                    using var ctx = new HttpInNodeHttpRequestContext(httpContext, foundRoute, routeValues);
                     var requestUserInfo = httpContext.RequestServices.GetRequiredService<IRequestContext>().ToRequestUserInfo();
 
                     var msg = new NodeMsg();
                     msg.Add(ctx);
                     msg.Add(requestUserInfo);
 
-                    var taskId = await _nodeTaskManager.CreateJob(httpContext.RequestServices, foundRoute.NodeId, msg);
+                    using var scope = _RED.ServiceProvider.CreateScope();
+
+                    // Тут надо подумать. RED context у нод свой и он по недодоуманности удерживается.
+                    //var taskId = await _nodeTaskManager.CreateJob(httpContext.RequestServices, foundRoute.NodeId, msg);
+                    var taskId = await _nodeTaskManager.CreateJob(scope.ServiceProvider, foundRoute.NodeId, msg);
 
                     var task = _nodeTaskManager.Get(taskId);
 

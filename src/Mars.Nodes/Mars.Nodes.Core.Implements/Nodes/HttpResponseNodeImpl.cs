@@ -27,7 +27,7 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        HttpInNodeHttpRequestContext? http = input.Get<HttpInNodeHttpRequestContext>();
+        var http = input.Get<HttpInNodeHttpRequestContext>();
 
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
 

@@ -51,7 +51,7 @@ public class WebClientRequest
             Query = DictionaryWithDefaultExtension.ToDictionary(req.Query
                     .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString()))
                     , s => s.Key, s => s.Value, StringComparer.OrdinalIgnoreCase);
-            QueryDict = req.Query;
+            QueryDict = new QueryCollection(req.Query.ToDictionary(q => q.Key, q => q.Value));
         }
 
         HasFormContentType = req.HasFormContentType;
@@ -68,7 +68,7 @@ public class WebClientRequest
             Form = DictionaryWithDefaultExtension.ToDictionary(req.Form, s => s.Key, s => s.Value.ToString(), StringComparer.OrdinalIgnoreCase);
         }
 
-        Headers = req.Headers;
+        Headers = new HeaderDictionary(req.Headers.ToDictionary(h => h.Key, h => h.Value));
         Cookies = DictionaryWithDefaultExtension.ToDictionary(req.Cookies, s => s.Key, s => s.Value)!;
 
         if (req.Headers.ContainsKey("User-Agent"))

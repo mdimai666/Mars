@@ -218,6 +218,7 @@ app.UseMarsHost(builder.Services);
 app.UseHostFiles();
 app.UseConfigureActions();
 app.MarsUseTemplator();
+//app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
 app.Services.UseNodeWorkspace()
             .UseDatasourceWorkspace()
             .UseAppFrontMain();

@@ -219,7 +219,8 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
         _ = nameof(HandlebarsHelperFunctionContext.HelperFunctionContextKey);
 
-        var hctx = new HandlebarsHelperFunctionContext(ctx, serviceProvider, cancellationToken);
+        // Без принудительного =null шаблонизатор не отпускает объекты.
+        using var hctx = new HandlebarsHelperFunctionContext(ctx, serviceProvider, cancellationToken);
 
         var result = template_compiled(ctx.TemplateContextVaribles, new { rctx = hctx } /*это необходимо для зарегестированных функций*/);
 

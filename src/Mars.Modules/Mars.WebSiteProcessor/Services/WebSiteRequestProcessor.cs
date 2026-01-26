@@ -47,10 +47,12 @@ public class WebSiteRequestProcessor
         {
             if (page is null) return await RenderPage404(appFront, request, param, cancellationToken);
 
+            var html = await RenderPageHtml(appFront, request, page, param, cancellationToken);
+
             return new RenderInfo
             {
                 Code = 200,
-                html = await RenderPageHtml(appFront, request, page, param, cancellationToken),
+                html = html,
                 Title = page.Title ?? page.Name,
             };
         }

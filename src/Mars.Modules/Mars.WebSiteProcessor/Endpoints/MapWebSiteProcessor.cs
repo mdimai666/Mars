@@ -29,8 +29,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         var request = new WebClientRequest(httpContext.Request);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        WebSiteRequestProcessor processor = new WebSiteRequestProcessor(_serviceProvider, tsv.Template);
-
+        var processor = new WebSiteRequestProcessor(_serviceProvider, tsv.Template);
         try
         {
 

@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace Mars.Host.Templators.HandlebarsFunc;
 
-public class HandlebarsHelperFunctionContext
+public class HandlebarsHelperFunctionContext : IDisposable
 {
     public const string HelperFunctionContextKey = "rctx";
 
-    public PageRenderContext PageContext { get; }
-    public IServiceProvider ServiceProvider { get; }//TODO: after complete remove this, context function use as DI
+    public PageRenderContext PageContext { get; private set; }
+    public IServiceProvider ServiceProvider { get; private set; }//TODO: after complete remove this, context function use as DI
     public CancellationToken CancellationToken { get; }
     public IFeatureCollection Features { get; set; } = new FeatureCollection();
 
@@ -19,4 +19,11 @@ public class HandlebarsHelperFunctionContext
         CancellationToken = cancellationToken;
     }
 
+    public void Dispose()
+    {
+        // Без принудительного =null шаблонизатор не отпускает объекты.
+        PageContext = null!;
+        ServiceProvider = null!;
+        Features = null!;
+    }
 }

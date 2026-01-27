@@ -92,7 +92,7 @@ public class WebClientRequest
         HasFormContentType = formCollection?.Any() ?? false;
         ContentType = contentType;
         QueryString = (new QueryString(url.Query)).ToString();
-        Path = url.LocalPath; // TODO: check has neeq query
+        Path = url.LocalPath;
         Host = new HostString(url.Host);
         IsHttps = url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
         Scheme = url.Scheme;

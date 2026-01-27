@@ -4,7 +4,7 @@
 [ ] - Execute scripts
 [x] - Mainterance mode change
 [ ] - sql execute
-[ ] - inject node
+[x] - inject node
 
 # Admin
 [ ] - style editor
@@ -24,16 +24,16 @@
 [ ] - fix user delete; now on delete all deepends entity will remove
 [x] - Add scheduler
 [x] - EventManager topic template
-[ ] - Add OpenTelemetry
-[.] - dont use one type and create normal controllers like {Type}Request, {Type}Response
+[x] - Add OpenTelemetry
+[x] - dont use one type and create normal controllers like {Type}Request, {Type}Response
 
 [x] - rm AnketaQuestion
 [-] - rm Feedback
 [x] - rm PpmiComment
 [x] - rm PpmiFileEntity
 
-[ ] - on rename postType rename all posts too
-[ ] - check post.Slug conflict
+[-] - on rename postType rename all posts too. Join by Id
+[x] - check post.Slug conflict
 
 [ ] - on remove user check another admin exist
 [ ] - on remove user disable cascading delete
@@ -43,7 +43,7 @@
 
 [ ] - use VersionToken on save
 
-[ ] - edit node as json
+[x] - edit node as json
 [ ] - on deploy nodes use version token
 
 [ ] - copy IOptional function
@@ -59,6 +59,7 @@
 [ ] - add https://learn.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-9.0&tabs=visual-studio
 [ ] - https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-9.0&tabs=windows
 [ ] - add patch https://stackoverflow.com/questions/36767759/using-net-core-web-api-with-jsonpatchdocument
+[ ] - add [scriban/scriban: A fast, powerful, safe and lightweight scripting language and engine for .NET](https://github.com/scriban/scriban)
 
 # Scripting
 [-] - add Microsoft.DiaSymReader

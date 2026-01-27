@@ -180,7 +180,6 @@ public static class Tools
     public static void SetTimeout(Action action, int delayMillis, CancellationToken cancellationToken = default)
         => SetTimeout(action, TimeSpan.FromMilliseconds(delayMillis), cancellationToken);
 
-    //TODO: Not tested with Unity Main thread only functions
     public static void SetTimeout(Action action, TimeSpan delay, CancellationToken cancellationToken = default)
     {
         if (action == null) throw new ArgumentNullException(nameof(action));

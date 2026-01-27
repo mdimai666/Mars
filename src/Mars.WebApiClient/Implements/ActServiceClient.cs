@@ -9,8 +9,6 @@ internal class ActServiceClient : BasicServiceClient, IActServiceClient
     public ActServiceClient(IServiceProvider serviceProvider, IFlurlClient flurlClient) : base(serviceProvider, flurlClient)
     {
         _controllerName = "Act";
-
-        //TODO: implement ActService.Inject
     }
 
     public Task<XActResult> Inject(string actionId, string[] args)

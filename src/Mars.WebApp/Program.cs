@@ -228,7 +228,7 @@ optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
 app.UsePlugins();
 app.UseDevAdmin();
-app.UseMarsNodes() //TODO: запросы на ресурсы тоже ловит AppFront.styles.css appsettings.json, если разрешить Match
+app.UseMarsNodes()
    .UseMarsWebAppNodes();
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();

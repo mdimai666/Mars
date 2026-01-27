@@ -2,7 +2,7 @@ namespace Mars.Shared.Contracts.Renders;
 
 public class PostRenderResponse
 {
-    public required string Html { get; set; } //TODO: исправить
+    public required string Html { get; set; }
     public required string Title { get; init; }
     public required string EditUrl { get; init; }
     public required string PostSlug { get; init; }

@@ -195,7 +195,13 @@ export class EditorJsWrapper {
                 //shortcut: 'CMD+SHIFT+C'
             },
 
-            linkTool: LinkTool,
+            linkTool: {
+                // https://github.com/editor-js/link
+                class: LinkTool,
+                config: {
+                    endpoint: '/api/EditorJsBlazored/LinkTool', // Your backend endpoint for url data fetching,
+                }
+            },
 
             embed: {
                 class: Embed,

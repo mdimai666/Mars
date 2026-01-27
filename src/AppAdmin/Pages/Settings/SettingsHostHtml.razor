@@ -2,6 +2,7 @@
 @using Mars.Shared.Options
 @using MarsCodeEditor2
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
 @attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Настройки Host html")]
 
@@ -56,7 +57,14 @@
                 <CodeEditor2 @ref=editor1
                              Lang="@CodeEditor2.Language.handlebars"
                              OnSave="OnEditorSave"
-                             Value="@selItem.HostHtml" />
+                             Value="@selItem.HostHtml">
+                    <HeaderArea>
+                        <FluentMenuButton Text="@AppRes.Examples"
+                                          Items="RootExampleMenuItems"
+                                          ButtonAppearance="Appearance.Neutral"
+                                          OnMenuChanged="RootHtmlOnMenuChanged" />
+                    </HeaderArea>
+                </CodeEditor2>
 
             </div>
         }
@@ -148,5 +156,29 @@
     bool CanDelete()
     {
         return form.Model.HostItems.Count > 1;
+    }
+
+    Dictionary<string, string> RootExampleMenuItems = new()
+    {
+        { nameof(FrontOptionsHelper.Bootstrap5HandlebarsTemplate1), "Simple"},
+        { nameof(FrontOptionsHelper.Bootstrap5HandlebarsFullTemplate1), "Full" }
+    };
+
+    Dictionary<string, string> RootExampleTemplates = new()
+    {
+        { nameof(FrontOptionsHelper.Bootstrap5HandlebarsTemplate1), FrontOptionsHelper.Bootstrap5HandlebarsTemplate1},
+        { nameof(FrontOptionsHelper.Bootstrap5HandlebarsFullTemplate1), FrontOptionsHelper.Bootstrap5HandlebarsFullTemplate1 }
+    };
+
+    async void RootHtmlOnMenuChanged(MenuChangeEventArgs e)
+    {
+        if (selItem == null) return;
+
+        if (RootExampleTemplates.TryGetValue(e.Id!, out var template))
+        {
+            selItem.HostHtml = template;
+            await editor1.SetValue(template);
+            StateHasChanged();
+        }
     }
 }

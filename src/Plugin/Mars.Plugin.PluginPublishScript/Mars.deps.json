@@ -11,6 +11,7 @@
           "AppAdmin": "0.7.1-alpha.1",
           "Bogus": "35.6.5",
           "Duende.IdentityServer": "7.4.4",
+          "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.1",
           "Mars.Datasource.Front": "1.0.0",
           "Mars.Datasource.Host": "1.0.0",
@@ -2171,6 +2172,17 @@
       "EditorJsBlazored/1.0.0": {
         "runtime": {
           "EditorJsBlazored.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "EditorJsBlazored.Host/1.0.0": {
+        "dependencies": {
+          "HtmlAgilityPack": "1.12.4"
+        },
+        "runtime": {
+          "EditorJsBlazored.Host.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -4397,6 +4409,11 @@
       "sha512": ""
     },
     "EditorJsBlazored/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EditorJsBlazored.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

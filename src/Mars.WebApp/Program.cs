@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using AppFront.Main.OptionEditForms;
 using AppFront.Shared;
+using EditorJsBlazored.Host;
 using Mars.CommandLine;
 using Mars.Datasource.Front;
 using Mars.Datasource.Host;
@@ -101,8 +102,9 @@ builder.Services.MarsAddSwagger()
                 .AddMarsNodes()
                 .AddMarsWebAppNodes()
                 .AddDatasourceHost()
+                .AddMarsScheduler()
                 .AddMarsExcel()
-                .AddMarsScheduler();
+                .AddEditorJsBlazored();
 
 builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker());
 builder.AddIfFeatureEnabled(FeatureFlags.AITool, b => b.Services.AddMarsSemanticKernel());
@@ -233,6 +235,7 @@ app.UseMarsNodes()
 app.UseDatasourceHost();
 app.UseMarsWebSiteProcessor();
 app.UseMarsExcel();
+app.UseEditorJsBlazored();
 app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
 app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
 app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());

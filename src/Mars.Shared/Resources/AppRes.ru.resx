@@ -261,6 +261,9 @@
   <data name="Error" xml:space="preserve">
     <value>Ошибка</value>
   </data>
+  <data name="Examples" xml:space="preserve">
+    <value>Примеры</value>
+  </data>
   <data name="Excerpt" xml:space="preserve">
     <value>Отрывок</value>
   </data>

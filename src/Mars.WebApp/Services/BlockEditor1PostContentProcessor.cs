@@ -27,7 +27,7 @@ internal class BlockEditor1PostContentProcessor(IPostRepository postRepository, 
 
         if (string.IsNullOrEmpty(content)) return Task.FromResult<string?>(null);
 
-        var editorContent = EditorJsContent.FromJsonAutoConvertToRawBlockOnException(content, out var _);
+        var editorContent = EditorJsContent.FromJsonAutoConvertToBlocks(content, out var _);
 
         return Task.FromResult(EditorTools.RenderToHtml(editorContent))!;
     }

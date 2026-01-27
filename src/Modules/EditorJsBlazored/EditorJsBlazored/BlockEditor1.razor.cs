@@ -40,7 +40,7 @@ public partial class BlockEditor1 : BlazorInteropComponent
 
         if (Content is null && ContentJson is not null)
         {
-            Content = EditorJsContent.FromJsonAutoConvertToRawBlockOnException(ContentJson, out var isReplaced);
+            Content = EditorJsContent.FromJsonAutoConvertToBlocks(ContentJson, out var isReplaced);
             ContentJson = Content.ToJson(Config.PrettyJsonOutput);
             if (isReplaced)
             {

@@ -96,6 +96,7 @@
     <Project Path="src/Modules/MarsEditors/MarsEditors.csproj" />
   </Folder>
   <Folder Name="/Modules/BlockEditor/">
+    <Project Path="src/Modules/EditorJsBlazored/EditorJsBlazored.Host/EditorJsBlazored.Host.csproj" Id="dc10f011-a314-49f0-98de-d42e63e68dff" />
     <Project Path="src/Modules/EditorJsBlazored/EditorJsBlazored/EditorJsBlazored.csproj" />
     <Project Path="src/Modules/EditorJsBlazored/EditorJsBlazoredDemo/EditorJsBlazoredDemo.csproj" />
     <Project Path="tests/Modules/Test.EditorJsBlazored/Test.EditorJsBlazored.csproj" />

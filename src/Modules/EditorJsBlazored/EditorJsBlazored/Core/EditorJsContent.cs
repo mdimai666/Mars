@@ -1,5 +1,7 @@
+using System.Net;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using EditorJsBlazored.Blocks;
 
 namespace EditorJsBlazored.Core;
@@ -64,6 +66,30 @@ public class EditorJsContent
         }
     }
 
+    public static EditorJsContent FromJsonAutoConvertToBlocks(string input, out bool isReplaced)
+    {
+        try
+        {
+            isReplaced = false;
+
+            if (string.IsNullOrWhiteSpace(input))
+                return new EditorJsContent();
+
+            return FromJson(input);
+        }
+        catch (JsonException)
+        {
+            isReplaced = true;
+
+            if (LooksLikeHtml(input))
+                return WrapHtmlInRawBlock(input);
+
+            return CreateParagraps(
+                SplitToParagraphs(input)
+            );
+        }
+    }
+
     public static EditorJsContent WrapHtmlInRawBlock(string html)
     {
         return new EditorJsContent
@@ -77,5 +103,44 @@ public class EditorJsContent
                 }
             }]
         };
+    }
+
+    public static EditorJsContent CreateParagraps(string[] paragraps)
+    {
+        return new EditorJsContent
+        {
+            Blocks = paragraps.Select(p => new EditorContentBlock
+            {
+                Type = "paragraph",
+                Data = new BlockParagraph
+                {
+                    Text = WebUtility.HtmlEncode(p)
+                }
+            }).ToArray()
+        };
+    }
+
+    private static bool LooksLikeHtml(string text)
+    {
+        // быстрый cheap-check
+        if (!text.Contains('<') || !text.Contains('>'))
+            return false;
+
+        // нормальные html-теги
+        return Regex.IsMatch(
+            text,
+            @"<\s*(p|div|br|span|a|img|ul|ol|li|h[1-6]|blockquote|pre|code|table|tr|td|th)\b",
+            RegexOptions.IgnoreCase);
+    }
+
+    private static string[] SplitToParagraphs(string text)
+    {
+        return text
+            .Replace("\r\n", "\n")
+            .Replace("\r", "\n")
+            .Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => p.Trim())
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .ToArray();
     }
 }

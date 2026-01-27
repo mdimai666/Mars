@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../../README.md" />
+  </Folder>
+  <Project Path="MarsDocs.DevServer/MarsDocs.DevServer.csproj" />
+  <Project Path="MarsDocs.WebApp/MarsDocs.WebApp.csproj" />
+</Solution>

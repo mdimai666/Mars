@@ -135,7 +135,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
         IMarsHtmlTemplator.MarsHtmlTemplate<object, object>? template_compiled;
 
-        if (!false && _memoryCache?.TryGetValue(AppCacheKey(af, page, ctx.RenderParam), out template_compiled) == true)
+        if (ctx.RenderParam.UseCache && _memoryCache?.TryGetValue(AppCacheKey(af, page, ctx.RenderParam), out template_compiled) == true)
         {
 
         }

@@ -95,7 +95,30 @@
     <app id="app">
         @* <component type="typeof(AppAdmin.App)" render-mode="Static" /> *@
         <div class="flex-fill xcenter">
-            <component type="typeof(AppFront.Shared.Components.SharedLoader1)" render-mode="Static" />
+            @* <component type="typeof(AppFront.Shared.Components.SharedLoader1)" render-mode="WebAssembly" /> *@
+
+            <img src="/mars/img/logo.svg" width="200" class="mb-2" />
+
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+
+            <style>
+                .loading-progress {
+                    position: relative;
+                    display: block;
+                    width: 100px;
+                    height: 4px;
+                    background-color: #e1e1e1;
+                }
+
+                .loading-progress-bar {
+                    height: 100%;
+                    background-color: var(--accent-fill-rest);
+                    width: var(--blazor-load-percentage, 0%);
+                    transition: width 0.2s ease;
+                }
+            </style>
         </div>
 
     </app>

@@ -37,7 +37,7 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
 
         WebPage page = WebPage.Blank(input.Payload?.ToString() ?? "");
 
-        var render = await processor.RenderPage(page, http.HttpContext, null, default);
+        var render = await processor.RenderPage(page, http.HttpContext, new() { UseCache = false }, default);
 
         //var resolvedPage = processor.ResolveUrl("/url", http.HttpContext, RED.ServiceProvider);
 

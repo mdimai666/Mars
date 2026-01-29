@@ -15,11 +15,14 @@ namespace Mars.Host.Services;
 
 public class NavMenuService : INavMenuService
 {
-    const string DevMenuKey = "NavMenu.dev";
     private readonly INavMenuRepository _navMenuRepository;
     private readonly IPostTypeRepository _postTypeRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IEventManager _eventManager;
+
+    private const string DevMenuKey = "NavMenuService::NavMenu.dev";
+    private const string ActiveMenusMenuKey = "NavMenuService::NavMenu.activeMenus";
+    private readonly TimeSpan _cacheTtl = TimeSpan.FromHours(24);
 
     public NavMenuService(IServiceScopeFactory scopeFactory, IMemoryCache memoryCache, IEventManager eventManager)
     {
@@ -53,6 +56,7 @@ public class NavMenuService : INavMenuService
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuAdd(), created!);//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
+        ClearActiveMenusCache();
 
         return id;
     }
@@ -64,6 +68,7 @@ public class NavMenuService : INavMenuService
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuUpdate(), updated);
         _eventManager.TriggerEvent(payload);
+        ClearActiveMenusCache();
     }
 
     public async Task<NavMenuSummary> Delete(Guid id, CancellationToken cancellationToken)
@@ -74,6 +79,7 @@ public class NavMenuService : INavMenuService
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), navMenu);
         _eventManager.TriggerEvent(payload);
+        ClearActiveMenusCache();
 
         return navMenu;
     }
@@ -89,6 +95,8 @@ public class NavMenuService : INavMenuService
             var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), navMenu);
             _eventManager.TriggerEvent(payload);
         }
+        ClearActiveMenusCache();
+
         return navMenus;
     }
 
@@ -124,17 +132,13 @@ public class NavMenuService : INavMenuService
 
     public NavMenuDetail DevMenu()
     {
-        if (_memoryCache.TryGetValue<NavMenuDetail>(DevMenuKey, out var menu))
+        return _memoryCache.GetOrCreate(DevMenuKey, entry =>
         {
-            return menu!;
-        }
-        else
-        {
+            entry.AbsoluteExpirationRelativeToNow = _cacheTtl;
             var postTypes = _postTypeRepository.ListAllActive(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             var devMenu = CreateDevMenu(postTypes);
-            _memoryCache.Set(DevMenuKey, devMenu, TimeSpan.FromHours(6));
             return devMenu;
-        }
+        })!;
     }
 
     NavMenuDetail CreateDevMenu(IEnumerable<PostTypeSummary> postTypes)
@@ -228,8 +232,17 @@ public class NavMenuService : INavMenuService
 
     public IReadOnlyCollection<NavMenuDetail> GetAppInitialDataMenus(bool includeDevMenu = false)
     {
-        var activeMenus = _navMenuRepository.ListAllActiveDetail(new(), CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        var activeMenus = _memoryCache.GetOrCreate(ActiveMenusMenuKey, entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = _cacheTtl;
+            return _navMenuRepository.ListAllActiveDetail(new(), CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        })!;
 
         return includeDevMenu ? [.. activeMenus, DevMenu()] : activeMenus;
+    }
+
+    public void ClearActiveMenusCache()
+    {
+        _memoryCache.Remove(ActiveMenusMenuKey);
     }
 }

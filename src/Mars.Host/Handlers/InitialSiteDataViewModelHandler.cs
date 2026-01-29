@@ -64,10 +64,12 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
 
         var postTypes = metaModelTypesLocator.PostTypesDict().Values.Select(PostTypeMapping.ToAdminPanelItemResponse).ToList();
 
+        var userPrimaryInfo = requestContext.User!?.ToPrimaryInfo();
+
         return new InitialSiteDataViewModel
         {
             SysOptions = optionService.SysOption,
-            UserPrimaryInfo = requestContext.User!?.ToPrimaryInfo(),
+            UserPrimaryInfo = userPrimaryInfo,
             PostTypes = postTypes,
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),
             LocalPages = localPages ?? [],

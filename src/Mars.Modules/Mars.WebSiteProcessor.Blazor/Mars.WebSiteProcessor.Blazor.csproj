@@ -5,10 +5,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\..\AppFront.Shared\AppFront.Shared.csproj" />
         <ProjectReference Include="..\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
         <ProjectReference Include="..\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />

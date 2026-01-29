@@ -31,7 +31,7 @@ public class MarsHostRootLayoutRenderNodeImpl : INodeImplement<MarsHostRootLayou
 
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
 
-        string pageHtml = input.Payload?.ToString()??"";
+        string pageHtml = input.Payload?.ToString() ?? "";
 
         ////var app = await Microsoft.AspNetCore.Html.RenderComponentAsync<App>(RenderMode.Static);
         //IHtmlHelper htmlHelper = RED.ServiceProvider.GetRequiredService<IHtmlHelper>();
@@ -52,12 +52,13 @@ public class MarsHostRootLayoutRenderNodeImpl : INodeImplement<MarsHostRootLayou
         var request = new WebClientRequest(httpContext.Request);
         var userDetail = rq.IsAuthenticated ? await userService.GetDetail(rq.User.Id, default) : null;
 
-        var html = new PrepareHostHtml(af, optionsService, request, userDetail, new RenderParam(), RED.ServiceProvider, default);
+        throw new NotImplementedException();
+        //var html = new PrepareHostHtml(af, optionsService, request, userDetail, new RenderParam(), RED.ServiceProvider, default);
 
-        string rendered = html.BeforeBodyHtml + "\n" + pageHtml + "\n" + html.AfterBodyHtml;
+        //string rendered = html.BeforeBodyHtml + "\n" + pageHtml + "\n" + html.AfterBodyHtml;
 
-        input.Payload = rendered;
-        callback(input);
+        //input.Payload = rendered;
+        //callback(input);
 
     }
 

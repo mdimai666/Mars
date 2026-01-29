@@ -17,6 +17,14 @@ public class InMemoryClientStore : IOAuthClientStore
         _optionService = optionService;
         _tokenService = tokenService;
         RefreshOptions();
+
+        optionService.OnOptionUpdate += OptionService_OnOptionUpdate;
+    }
+
+    private void OptionService_OnOptionUpdate(object obj)
+    {
+        if (obj is OpenIDServerOption)
+            RefreshOptions();
     }
 
     public OAuthClient? FindClientById(string clientId)
@@ -39,7 +47,7 @@ public class InMemoryClientStore : IOAuthClientStore
             ClientId = opt.ClientId,
             ClientSecret = opt.ClientSecret,
             RedirectUris = opt.RedirectUris,
-            AllowedGrantTypes = opt.AllowedGrantTypes,
+            AllowedGrantTypes = opt.AllowedGrantTypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
             RequirePkce = opt.RequirePkce,
             AccessTokenLifetimeSeconds = _tokenService.ExpiryInSeconds,
             RefreshTokenLifetimeDays = 60, //TODO: make configurable

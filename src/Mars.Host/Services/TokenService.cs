@@ -30,10 +30,10 @@ public class TokenService : ITokenService
         _optionService = optionService;
         _validIssuer = _optionService.SysOption.SiteUrl.TrimEnd('/');
 
-        _optionService.OnOptionUpdate += _optionService_OnOptionUpdate;
+        _optionService.OnOptionUpdate += OptionService_OnOptionUpdate;
     }
 
-    private void _optionService_OnOptionUpdate(object obj)
+    private void OptionService_OnOptionUpdate(object obj)
     {
         if (obj is SysOptions sysOptions)
             _validIssuer = sysOptions.SiteUrl;

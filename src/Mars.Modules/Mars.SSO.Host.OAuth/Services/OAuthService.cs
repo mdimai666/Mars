@@ -91,7 +91,11 @@ public class OAuthService : IOAuthService
         if (!string.Equals(auth.RedirectUri, redirectUri, StringComparison.Ordinal)) throw new InvalidOperationException("redirect_uri mismatch");
         if (auth.ExpiresAt <= DateTime.UtcNow) throw new InvalidOperationException("Code expired");
 
-        var client = _clientStore.FindClientById(clientId) ?? throw new InvalidOperationException("Unknown client");
+        var client = _clientStore.FindClientById(clientId)
+            ?? throw new InvalidOperationException("Unknown client");
+        if (!client.AllowedGrantTypes.Contains("authorization_code"))
+            throw new InvalidOperationException($"grant_type 'authorization_code' not allowed");
+
         // if confidential client => verify secret (omitted hashing example)
         //if (!string.IsNullOrEmpty(client.ClientSecretHash))
         if (!string.IsNullOrEmpty(client.ClientSecret))
@@ -153,7 +157,10 @@ public class OAuthService : IOAuthService
         if (rt == null) throw new InvalidOperationException("Invalid refresh token");
         if (!string.Equals(rt.ClientId, clientId, StringComparison.Ordinal)) throw new InvalidOperationException("Client mismatch");
 
-        var client = _clientStore.FindClientById(clientId) ?? throw new InvalidOperationException("Unknown client");
+        var client = _clientStore.FindClientById(clientId)
+            ?? throw new InvalidOperationException("Unknown client");
+        if (!client.AllowedGrantTypes.Contains("refresh_token"))
+            throw new InvalidOperationException($"grant_type 'refresh_token' not allowed");
         //if (!string.IsNullOrEmpty(client.ClientSecretHash))
         if (!string.IsNullOrEmpty(client.ClientSecret))
         {
@@ -189,7 +196,8 @@ public class OAuthService : IOAuthService
     // Какая то мутная муть, кажется лишнее
     public async Task<(string accessToken, int expiresIn)> ClientCredentialsAsync(string clientId, string clientSecret, IEnumerable<string> scopes, CancellationToken cancellationToken)
     {
-        var client = _clientStore.FindClientById(clientId) ?? throw new InvalidOperationException("Unknown client");
+        var client = _clientStore.FindClientById(clientId)
+            ?? throw new InvalidOperationException("Unknown client");
         //if (string.IsNullOrEmpty(client.ClientSecretHash)) throw new InvalidOperationException("Client is not confidential");
         if (string.IsNullOrEmpty(client.ClientSecret)) throw new InvalidOperationException("Client is not confidential");
         //if (!BCrypt.Net.BCrypt.Verify(clientSecret, client.ClientSecretHash)) throw new InvalidOperationException("Invalid secret");
@@ -215,6 +223,8 @@ public class OAuthService : IOAuthService
     {
         var client = _clientStore.FindClientById(clientId)
             ?? throw new InvalidOperationException("Unknown client");
+        if (!client.AllowedGrantTypes.Contains("password"))
+            throw new InvalidOperationException($"grant_type 'password' not allowed");
         if (!client.VerifySecret(clientSecret))
             throw new InvalidOperationException("Invalid secret");
 

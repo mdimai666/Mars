@@ -35,6 +35,6 @@ public class OpenIDServerClientConfig
     [Display(Name = "RequirePkce")]
     public bool RequirePkce { get; set; }
 
-    [Display(Name = "AllowedGrantTypes", Description = "comma list")]
-    public string AllowedGrantTypes { get; set; } = "authorization_code,refresh_token"; // comma list
+    [Display(Name = "AllowedGrantTypes", Description = "comma list; etc= authorization_code,refresh_token,password")]
+    public string AllowedGrantTypes { get; set; } = "authorization_code,refresh_token,password"; // comma list
 }

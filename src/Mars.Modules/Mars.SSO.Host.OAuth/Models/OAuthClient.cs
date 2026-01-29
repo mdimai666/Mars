@@ -12,7 +12,7 @@ public class OAuthClient
     /// ; separated
     /// </summary>
     public string RedirectUris { get; set; } = ""; // newline или ; separated
-    public string AllowedGrantTypes { get; set; } = "authorization_code,refresh_token"; // comma list
+    public string[] AllowedGrantTypes { get; set; } = { "authorization_code", "refresh_token", "password" }; // comma list
     public bool RequirePkce { get; set; } = true;
     public int AccessTokenLifetimeSeconds { get; set; } = 3600;
     public int RefreshTokenLifetimeDays { get; set; } = 30;

@@ -16,7 +16,8 @@ public class CommandLineApi : ICommandLineApi
 
     public bool IsContinueRun = false;
 
-    Dictionary<Type, CommandCli> cli = [];
+    private readonly List<Type> _modules = [];
+    private readonly Dictionary<Type, CommandCli> cli = [];
 
     Type[] initalCommands = [typeof(InfoCommand)];
 
@@ -54,6 +55,9 @@ public class CommandLineApi : ICommandLineApi
         _app = app;
     }
 
+    public void Register<TCommandCli>() where TCommandCli : CommandCli
+        => _modules.Add(typeof(TCommandCli));
+
     void LoadBaseCommandCliTypes()
     {
         var cliTypes = GetEnumerableOfType<CommandCli>(typeof(Program).Assembly).Except(initalCommands);
@@ -62,7 +66,7 @@ public class CommandLineApi : ICommandLineApi
 
     void LoadCommandCliTypes()
     {
-        InitializeCliTypes(ICommandLineApi.GetModulesCommands);
+        InitializeCliTypes(_modules);
     }
 
     void InitializeCliTypes(IEnumerable<Type> cliTypes)

@@ -12,10 +12,5 @@ public interface ICommandLineApi
     void AddCommand(Command command);
     public T GetCommand<T>() where T : CommandCli;
 
-    static List<Type> modulesCommandList = new();
-
-    public static void Register<TCommandCli>() => modulesCommandList.Add(typeof(TCommandCli));
-    public static IReadOnlyCollection<Type> GetModulesCommands => modulesCommandList;
-
-    internal static void Reset() => modulesCommandList.Clear();
+    public void Register<TCommandCli>() where TCommandCli : CommandCli;
 }

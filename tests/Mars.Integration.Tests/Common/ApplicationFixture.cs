@@ -158,7 +158,6 @@ public class ApplicationFixture : IAsyncLifetime
 
     private void ResetStaticFields()
     {
-        ICommandLineApi.Reset();
     }
 
     private void ResetClients()

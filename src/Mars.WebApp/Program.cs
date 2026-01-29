@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Mars;
 using Mars.CommandLine;
+using Mars.Host.Shared.CommandLine;
 using Mars.UseStartup;
 using static Mars.UseStartup.MarsStartupInfo;
 
@@ -17,12 +18,16 @@ _ = nameof(MarsStartupInfo);
 //var wd = Path.GetDirectoryName(MarsAssemblyPath);
 //Directory.SetCurrentDirectory(wd);
 
+#if DEBUG
+FixDebugModeBaseDirectory.SetBaseDirectory();
+#endif
+
 var builder = WebApplication.CreateBuilder(args);
 MarsWebAppStartup.ConfigureBuilder(builder, args);
 
 var app = builder.Build();
 
-var commandsApi = new CommandLineApi();
+var commandsApi = app.Services.GetRequiredService<ICommandLineApi>() as CommandLineApi;
 commandsApi.Setup(app);
 var (baseCmdInvoked, isHelpCmd) = await commandsApi.InvokeBaseCommands(IsTesting ? [] : args);
 if (baseCmdInvoked) return;

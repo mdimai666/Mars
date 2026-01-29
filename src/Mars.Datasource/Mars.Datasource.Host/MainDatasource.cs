@@ -24,8 +24,6 @@ public static class DatasourceHostExtensions
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         _ = nameof(System.Text.Encoding.CodePage); //Используется в sql запросах.
 
-        ICommandLineApi.Register<DataSourceCli>();
-
         return services;
     }
 
@@ -37,6 +35,8 @@ public static class DatasourceHostExtensions
 
         app.ApplicationServices.GetRequiredService<NodeImplementFactory>().RegisterAssembly(typeof(SqlNodeImpl).Assembly);
         app.ApplicationServices.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);
+
+        app.ApplicationServices.GetRequiredService<ICommandLineApi>().Register<DataSourceCli>();
 
         return app;
     }

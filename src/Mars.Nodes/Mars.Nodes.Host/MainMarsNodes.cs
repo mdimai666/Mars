@@ -39,8 +39,6 @@ public static class MainMarsNodes
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        ICommandLineApi.Register<NodesCli>();
-
         services.AddOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
                 .Configure<NodesLocator>((options, locator) =>
                 {
@@ -65,6 +63,8 @@ public static class MainMarsNodes
         var actionManager = app.Services.GetRequiredService<IActionManager>();
         var commandNodesActionProvider = app.Services.GetRequiredService<CommandNodesActionProvider>();
         actionManager.AddActionsProvider(commandNodesActionProvider);
+
+        app.Services.GetRequiredService<ICommandLineApi>().Register<NodesCli>();
 
         app.UseMiddleware<MarsNodesMiddleware>();
 

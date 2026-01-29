@@ -7,6 +7,7 @@ using Mars.Datasource.Host;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
 using Mars.Host;
+using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Hubs;
@@ -38,6 +39,7 @@ public static class MarsWebAppStartup
     public static void ConfigureBuilder(WebApplicationBuilder builder, string[] args)
     {
         var commandsApi = new CommandLineApi();
+        builder.Services.AddSingleton<ICommandLineApi>(commandsApi);
 
         if (!IsTesting && !IsRunningInDocker)
         {

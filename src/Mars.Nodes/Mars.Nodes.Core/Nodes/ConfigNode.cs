@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mars.Core.Features;
 
@@ -17,10 +18,23 @@ public abstract class ConfigNode : Node
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool IsEqualPropertyValues(ConfigNode other)
+    public bool IsEqualRootPropertyValues(ConfigNode other)
     {
         var thisValues = TextTool.GetPropertiesValueAsString(this);
         var otherValues = TextTool.GetPropertiesValueAsString(other);
         return thisValues.Equals(otherValues);
+    }
+
+    public bool IsEqualAsJsonValues(Node configNode)
+    {
+        var existConfigJson = JsonSerializer.SerializeToDocument(this, inputType: GetType());
+        var newConfigJson = JsonSerializer.SerializeToDocument(configNode, inputType: configNode.GetType());
+
+        //var j1 = existConfigJson.RootElement.GetRawText();
+        //var j2 = newConfigJson.RootElement.GetRawText();
+
+        bool areEqual = JsonElement.DeepEquals(existConfigJson.RootElement, newConfigJson.RootElement);
+
+        return areEqual;
     }
 }

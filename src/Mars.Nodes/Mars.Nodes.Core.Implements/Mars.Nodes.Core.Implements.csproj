@@ -46,6 +46,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Host.Shared\Mars.Nodes.Host.Shared.csproj" />
     </ItemGroup>

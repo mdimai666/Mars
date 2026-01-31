@@ -132,7 +132,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public UserActionResult Deploy(IReadOnlyCollection<Node> nodes)
     {
-        _RED.AssignNodes(nodes);
+        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList());
         OnAssignNodes?.Invoke();
         SaveToFile();
         OnDeploy?.Invoke();

@@ -1,5 +1,6 @@
 @using AppFront.Shared.Components
 @using Mars.Core.Utils
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @inherits NodeEditForm
@@ -15,6 +16,10 @@
                           Items="Node.MethodVariants"
                           Appearance="Appearance.Stealth"
                           @bind-SelectedOption=@Node.Method />
+        </FormItem2>
+
+        <FormItem2 For="() => Node.AuthConfig">
+            <InputConfigField @bind-Value=@Node.AuthConfig />
         </FormItem2>
 
         <div class="spacer-1"></div>

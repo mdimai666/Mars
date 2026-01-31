@@ -2,6 +2,7 @@ using System.Text;
 using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
+using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Implements;
@@ -46,6 +47,10 @@ public static class MainMarsNodes
                 });
 
         services.AddNodeWorkspace();
+
+        //Dependies
+        var authClientManager = new AuthClientManager();
+        services.AddSingleton(authClientManager);
 
         return services;
     }

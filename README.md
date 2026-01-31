@@ -21,6 +21,12 @@
   <a href="https://www.nuget.org/packages/mdimai666.Mars.Core">
     <img src="https://img.shields.io/nuget/v/mdimai666.Mars.Core" alt="nuget Version" />
   </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
+  </a>
+  <a href="https://dotnet.microsoft.com/download">
+    <img src="https://img.shields.io/badge/.NET-10.0-blue.svg" alt="nuget Version" />
+  </a>
 </p>
 
 <br>

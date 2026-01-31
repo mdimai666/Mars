@@ -32,7 +32,7 @@ public class MqttClientInstance : IAsyncDisposable
 
     public async Task UpdateConfig(MqttBrokerConfigNode newConfig)
     {
-        var isEqual = ConfigNode.IsEqualPropertyValues(newConfig);
+        var isEqual = ConfigNode.IsEqualRootPropertyValues(newConfig);
         if (isEqual) return;
         ConfigNode = newConfig;
 

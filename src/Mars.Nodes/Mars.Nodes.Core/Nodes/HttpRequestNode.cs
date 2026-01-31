@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
+using Mars.Nodes.Core.Fields;
 
 namespace Mars.Nodes.Core.Nodes;
 
@@ -15,6 +16,8 @@ public class HttpRequestNode : Node
     public string[] MethodVariants = { "GET", "POST", "PUT", "DELETE", "HEAD" };
 
     public HeaderItem[] Headers { get; set; } = [];
+
+    public InputConfig<AuthFlowConfigNode> AuthConfig { get; set; }
 
     public HttpRequestNode()
     {

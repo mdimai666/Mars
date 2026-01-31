@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
+using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Fields;
 using Mars.Nodes.Core.Implements;
@@ -91,6 +92,7 @@ internal class RED
     public void AssignNodes(IReadOnlyCollection<Node> nodes)
     {
         ValidateNodes(nodes);
+        InvalidateConfigNodes(Nodes, nodes);
 
         //if (nodes.Count == 0)
         //{
@@ -127,6 +129,34 @@ internal class RED
         _basicNodesDict = Nodes.ToDictionary(s => s.Key, s => s.Value.Node);
 
         CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
+
+    }
+
+    private void InvalidateConfigNodes(Dictionary<string, INodeImplement> oldNodes, IReadOnlyCollection<Node> newNodes)
+    {
+        var configNodes = newNodes.Where(s => s.IsConfigNode && oldNodes.ContainsKey(s.Id));
+
+        foreach (var node in configNodes)
+        {
+            var configNodeImpl = oldNodes.GetValueOrDefault(node.Id);
+            if (configNodeImpl.Node is ConfigNode configNode)
+            {
+                if (!configNode.IsEqualAsJsonValues(node))
+                {
+                    OnInvalidateConfigNode(configNode);
+                }
+            }
+        }
+    }
+
+    private void OnInvalidateConfigNode(ConfigNode configNode)
+    {
+        if (configNode is AuthFlowConfigNode)
+        {
+            var acm = ServiceProvider.GetRequiredService<AuthClientManager>();
+            acm.InvalidateClient(configNode.Id);
+        }
+
     }
 
     public RED_Context CreateContextForNode(Node node, FlowNodeImpl flow)

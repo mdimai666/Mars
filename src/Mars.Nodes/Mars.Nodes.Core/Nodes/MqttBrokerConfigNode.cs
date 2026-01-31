@@ -34,10 +34,8 @@ public class MqttBrokerConfigNode : ConfigNode
     [Display(Name = "Password")]
     public string Password { get; set; } = "";
 
-
     //client
     public string ClientId { get; set; } = "";
-
 
     public enum NodeMqttProtocolVersion
     {

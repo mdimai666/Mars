@@ -2,9 +2,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using Duende.IdentityServer.Test;
 
-namespace ExternalServices.Integration.Tests.KeycloakTests;
+namespace ExternalServices.TestContainers.Fixtures;
 
 public class KeycloakTestContainerFixture : IAsyncLifetime
 {

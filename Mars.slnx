@@ -28,6 +28,7 @@
   </Folder>
   <Folder Name="/Mars.Modules/">
     <Project Path="src/Mars.Modules/Mars.Excel.Host/Mars.Excel.Host.csproj" />
+    <Project Path="src/Mars.Modules/Mars.HttpSmartAuthFlow/Mars.HttpSmartAuthFlow.csproj" Id="ff6afc3c-ee86-4825-a765-d572829bd8c2" />
     <Project Path="src/Mars.Modules/Mars.MetaModelGenerator/Mars.MetaModelGenerator.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang.Host/Mars.QueryLang.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang/Mars.QueryLang.csproj" />
@@ -124,10 +125,12 @@
     <Project Path="tests/AppFront.Tests/AppFront.Tests.csproj" />
     <Project Path="tests/BlazorTemplateExample/BlazorTemplateExample.csproj" />
     <Project Path="tests/ExternalServices.Integration.Tests/ExternalServices.Integration.Tests.csproj" />
+    <Project Path="tests/ExternalServices.TestContainers/ExternalServices.TestContainers.csproj" Id="1518dc0b-e596-4243-9d6a-f125f44f360c" />
     <Project Path="tests/Mars.AppFrontEngines.Integration.Tests/Mars.AppFrontEngines.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.DockerContainer.Tests/Mars.DockerContainer.Tests.csproj" />
     <Project Path="tests/Mars.E2E.Tests/Mars.E2E.Tests.csproj" Id="c46baa26-4b58-4734-895a-15cf4183f29d" />
+    <Project Path="tests/Mars.HttpSmartAuthFlow.Integration.Tests/Mars.HttpSmartAuthFlow.Integration.Tests.csproj" Id="25ae82d2-c596-4840-a5f0-24539b970fda" />
     <Project Path="tests/Mars.Integration.Tests/Mars.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Nodes.Implements.Test/Mars.Nodes.Implements.Test.csproj" />
     <Project Path="tests/Mars.Plugin.Integration.Tests/Mars.Plugin.Integration.Tests.csproj" />

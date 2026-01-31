@@ -1,0 +1,109 @@
+@using System.Text
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inherits FluentComponentBase
+
+@* <textarea class="form-control"
+          rows="5"
+          placeholder="@($"key{Separator}Value")"
+          @oninput="HandleInput"
+          @bind="TextAreaValue">@TextAreaValue</textarea> *@
+
+<FluentTextArea Id="@Id"
+                Class=@Class
+                Style="@Style"
+                Rows="5"
+                AdditionalAttributes="@AdditionalAttributes"
+                Placeholder="@($"key{Separator}Value")"
+                @bind-Value="TextAreaValue" />
+
+@code {
+    [Parameter]
+    public Dictionary<string, string> Value { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<Dictionary<string, string>> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Separator { get; set; } = "=";
+
+    [Parameter]
+    public bool TrimValues { get; set; } = true;
+
+    private string TextAreaValue
+    {
+        get => DictionaryToString(Value);
+        set
+        {
+            if (value != DictionaryToString(Value))
+            {
+                Value = StringToDictionary(value);
+                ValueChanged.InvokeAsync(Value);
+            }
+        }
+    }
+
+    private string DictionaryToString(Dictionary<string, string> dict)
+    {
+        if (dict == null || dict.Count == 0)
+            return string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var kvp in dict)
+        {
+            var key = TrimValues ? kvp.Key.Trim() : kvp.Key;
+            var value = TrimValues ? kvp.Value.Trim() : kvp.Value;
+            sb.AppendLine($"{key}{Separator}{value}");
+        }
+        return sb.ToString().TrimEnd();
+    }
+
+    private Dictionary<string, string> StringToDictionary(string text)
+    {
+        var result = new Dictionary<string, string>();
+
+        if (string.IsNullOrWhiteSpace(text))
+            return result;
+
+        var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var line in lines)
+        {
+            var separatorIndex = line.IndexOf(Separator);
+            if (separatorIndex >= 0)
+            {
+                var key = line.Substring(0, separatorIndex);
+                var value = separatorIndex < line.Length - Separator.Length
+                    ? line.Substring(separatorIndex + Separator.Length)
+                    : string.Empty;
+
+                if (TrimValues)
+                {
+                    key = key.Trim();
+                    value = value.Trim();
+                }
+
+                if (!string.IsNullOrEmpty(key))
+                {
+                    result[key] = value;
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(line))
+            {
+                // Если разделитель не найден, считаем всю строку ключом, а значение пустым
+                var key = TrimValues ? line.Trim() : line;
+                if (!string.IsNullOrEmpty(key))
+                {
+                    result[key] = string.Empty;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void HandleInput(ChangeEventArgs e)
+    {
+        TextAreaValue = e.Value?.ToString() ?? string.Empty;
+    }
+}

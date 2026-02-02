@@ -70,13 +70,13 @@ public class NavMenuController : ControllerBase
         await _navMenuService.Update(request.ToQuery(), cancellationToken);
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     public async Task<ListDataResult<NavMenuSummaryResponse>> List([FromQuery] ListNavMenuQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _navMenuService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     public async Task<PagingResult<NavMenuSummaryResponse>> ListTable([FromQuery] TableNavMenuQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _navMenuService.ListTable(request.ToQuery(), cancellationToken)).ToResponse();

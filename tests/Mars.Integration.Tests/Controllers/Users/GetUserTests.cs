@@ -80,7 +80,7 @@ public class GetUserTests : ApplicationTests
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().GetAsync();
+        var result = await client.Request(_apiUrl, "list/offset").AllowAnyHttpStatus().GetAsync();
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -103,7 +103,7 @@ public class GetUserTests : ApplicationTests
         var expectCount = ef.Users.Count();
 
         //Act
-        var result = await client.Request(_apiUrl).GetJsonAsync<ListDataResult<UserListItemResponse>>();
+        var result = await client.Request(_apiUrl, "list/offset").GetJsonAsync<ListDataResult<UserListItemResponse>>();
 
         //Assert
         result.Should().NotBeNull();
@@ -133,7 +133,7 @@ public class GetUserTests : ApplicationTests
         var request = new ListUserQueryRequest() { Search = searchString };
 
         //Act
-        var result = await client.Request(_apiUrl)
+        var result = await client.Request(_apiUrl, "list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<UserListItemResponse>>();
 

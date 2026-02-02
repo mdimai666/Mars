@@ -39,22 +39,22 @@ internal class UserServiceClient : BasicServiceClient, IUserServiceClient
                     .DeleteAsync();
 
     public Task<ListDataResult<UserListItemResponse>> List(ListUserQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<UserListItemResponse>>();
 
     public Task<ListDataResult<UserDetailResponse>> ListDetail(ListUserQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}", "ListDetail")
+        => _client.Request($"{_basePath}{_controllerName}", "/list/detail/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<UserDetailResponse>>();
 
     public Task<PagingResult<UserListItemResponse>> ListTable(TableUserQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<UserListItemResponse>>();
 
     public Task<PagingResult<UserDetailResponse>> ListTableDetail(TableUserQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTableDetail")
+        => _client.Request($"{_basePath}{_controllerName}/list/detail/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<UserDetailResponse>>();
 

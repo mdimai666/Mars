@@ -70,13 +70,13 @@ public class RoleController : ControllerBase
         return (await _roleService.Update(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     public async Task<ListDataResult<RoleSummaryResponse>> List([FromQuery] ListRoleQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _roleService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     public async Task<PagingResult<RoleSummaryResponse>> ListTable([FromQuery] TableRoleQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _roleService.ListTable(request.ToQuery(), cancellationToken)).ToResponse();

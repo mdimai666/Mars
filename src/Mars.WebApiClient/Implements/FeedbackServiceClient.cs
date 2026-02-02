@@ -39,12 +39,12 @@ internal class FeedbackServiceClient : BasicServiceClient, IFeedbackServiceClien
                     .DeleteAsync();
 
     public Task<ListDataResult<FeedbackSummaryResponse>> List(ListFeedbackQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<FeedbackSummaryResponse>>();
 
     public Task<PagingResult<FeedbackSummaryResponse>> ListTable(TableFeedbackQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<FeedbackSummaryResponse>>();
 

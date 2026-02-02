@@ -44,13 +44,13 @@ public class MediaController : ControllerBase
         return (await _mediaService.GetDetail(id, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     public async Task<ListDataResult<FileListItemResponse>> List([FromQuery] ListFileQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _mediaService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     public async Task<PagingResult<FileListItemResponse>> ListTable([FromQuery] TableFileQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _mediaService.ListTable(request.ToQuery(), cancellationToken)).ToResponse();

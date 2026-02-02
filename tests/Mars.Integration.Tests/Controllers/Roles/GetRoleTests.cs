@@ -86,7 +86,7 @@ public class GetRoleTests : ApplicationTests
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().GetAsync();
+        var result = await client.Request(_apiUrl, "list/offset").AllowAnyHttpStatus().GetAsync();
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -109,7 +109,7 @@ public class GetRoleTests : ApplicationTests
         var expectCount = ef.Roles.Count();
 
         //Act
-        var result = await client.Request(_apiUrl).GetJsonAsync<ListDataResult<RoleSummaryResponse>>();
+        var result = await client.Request(_apiUrl, "list/offset").GetJsonAsync<ListDataResult<RoleSummaryResponse>>();
 
         //Assert
         result.Should().NotBeNull();
@@ -139,7 +139,7 @@ public class GetRoleTests : ApplicationTests
         var request = new ListRoleQueryRequest() { Search = searchString };
 
         //Act
-        var result = await client.Request(_apiUrl)
+        var result = await client.Request(_apiUrl, "list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<RoleSummaryResponse>>();
 

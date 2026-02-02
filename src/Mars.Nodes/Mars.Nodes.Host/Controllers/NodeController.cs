@@ -74,13 +74,13 @@ public class NodeController : ControllerBase
         return _functionCodeSuggestService.FunctionCodeSuggest(f_action, search);
     }
 
-    [HttpGet("Job/List")]
+    [HttpGet("Job/list/offset")]
     public ListDataResult<NodeTaskResultSummaryResponse> JobList([FromQuery] ListNodeTaskJobQueryRequest request)
     {
         return _nodeTaskManager.List(request.ToQuery()).ToResponse();
     }
 
-    [HttpGet("Job/ListTable")]
+    [HttpGet("Job/list/page")]
     public PagingResult<NodeTaskResultSummaryResponse> JobListTable([FromQuery] TableNodeTaskJobQueryRequest request)
     {
         return _nodeTaskManager.ListTable(request.ToQuery()).ToResponse();

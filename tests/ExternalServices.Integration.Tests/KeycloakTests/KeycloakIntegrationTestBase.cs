@@ -1,3 +1,4 @@
+using ExternalServices.TestContainers.Fixtures;
 using Mars.Integration.Tests;
 using Mars.Integration.Tests.Common;
 using Xunit;

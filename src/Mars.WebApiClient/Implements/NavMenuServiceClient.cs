@@ -38,12 +38,12 @@ internal class NavMenuServiceClient : BasicServiceClient, INavMenuServiceClient
                     .DeleteAsync();
 
     public Task<ListDataResult<NavMenuSummaryResponse>> List(ListNavMenuQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<NavMenuSummaryResponse>>();
 
     public Task<PagingResult<NavMenuSummaryResponse>> ListTable(TableNavMenuQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<NavMenuSummaryResponse>>();
 

@@ -72,13 +72,13 @@ public class FeedbackController : ControllerBase
         return (await _feedbackService.Update(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     public async Task<ListDataResult<FeedbackSummaryResponse>> List([FromQuery] ListFeedbackQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _feedbackService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     public async Task<PagingResult<FeedbackSummaryResponse>> ListTable([FromQuery] TableFeedbackQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _feedbackService.ListTable(request.ToQuery(), cancellationToken)).ToResponse();

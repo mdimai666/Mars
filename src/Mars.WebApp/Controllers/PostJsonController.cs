@@ -47,7 +47,7 @@ public class PostJsonController : ControllerBase
                             ?? throw new NotFoundException();
     }
 
-    [HttpGet("{type}/{slug}")]
+    [HttpGet("by-type/{type}/item/{slug}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,13 +60,13 @@ public class PostJsonController : ControllerBase
                             ?? throw new NotFoundException();
     }
 
-    [HttpGet("{type}")]
+    [HttpGet("by-type/{type}/list/offset")]
     public async Task<ListDataResult<PostJsonResponse>> List([FromQuery] ListPostQueryRequest request, [DefaultValue("post")] string type, CancellationToken cancellationToken)
     {
         return (await _postJsonService.List(request.ToQuery(type), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable/{type}")]
+    [HttpGet("by-type/{type}/list/page")]
     public async Task<PagingResult<PostJsonResponse>> ListTable([FromQuery] TablePostQueryRequest request, [DefaultValue("post")] string type, CancellationToken cancellationToken)
     {
         return (await _postJsonService.ListTable(request.ToQuery(type), cancellationToken)).ToResponse();

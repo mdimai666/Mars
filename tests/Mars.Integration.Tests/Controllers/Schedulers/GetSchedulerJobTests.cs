@@ -34,7 +34,7 @@ public class GetSchedulerJobTests : ApplicationTests
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl, "JobListTable").AllowAnyHttpStatus().GetAsync();
+        var result = await client.Request(_apiUrl, "Job/list/page").AllowAnyHttpStatus().GetAsync();
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -54,7 +54,7 @@ public class GetSchedulerJobTests : ApplicationTests
         var request = new ListSchedulerJobQueryRequest();
 
         //Act
-        var result = await client.Request(_apiUrl, "JobListTable")
+        var result = await client.Request(_apiUrl, "Job/list/page")
             .AppendQueryParam(request)
             .GetJsonAsync<PagingResult<SchedulerJobResponse>>();
 

@@ -34,12 +34,12 @@ internal class RoleServiceClient : BasicServiceClient, IRoleServiceClient
                     .DeleteAsync();
 
     public Task<ListDataResult<RoleSummaryResponse>> List(ListRoleQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<RoleSummaryResponse>>();
 
     public Task<PagingResult<RoleSummaryResponse>> ListTable(TableRoleQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<RoleSummaryResponse>>();
 

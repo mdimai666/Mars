@@ -28,13 +28,13 @@ public class PluginController : ControllerBase
         _pluginService = pluginService;
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     public ListDataResult<PluginInfoResponse> List([FromQuery] ListPluginQueryRequest request)
     {
         return _pluginService.List(request.ToQuery()).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     public PagingResult<PluginInfoResponse> ListTable([FromQuery] TablePluginQueryRequest request)
     {
         return _pluginService.ListTable(request.ToQuery()).ToResponse();

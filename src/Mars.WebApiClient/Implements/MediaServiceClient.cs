@@ -42,12 +42,12 @@ internal class MediaServiceClient : BasicServiceClient, IMediaServiceClient
                     .DeleteAsync();
 
     public Task<ListDataResult<FileListItemResponse>> List(ListFileQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<FileListItemResponse>>();
 
     public Task<PagingResult<FileListItemResponse>> ListTable(TableFileQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<FileListItemResponse>>();
 

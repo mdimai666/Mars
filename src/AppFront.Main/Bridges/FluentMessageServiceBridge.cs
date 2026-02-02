@@ -15,35 +15,35 @@ public class FluentMessageServiceBridge : Interfaces.IMessageService
     {
     }
 
-    public Task Error(string content, double? duration = null, Action? onClose = null)
+    public Task Error(string content, double? durationMs = null, Action? onClose = null)
     {
         EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowError(content, (int?)duration, callback: callback);
+        _toastService.ShowError(content, (int?)durationMs, callback: callback);
         return Task.CompletedTask;
     }
 
-    public Task Info(string content, double? duration = null, Action? onClose = null)
+    public Task Info(string content, double? durationMs = null, Action? onClose = null)
     {
         EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowInfo(content, (int?)duration, callback: callback);
+        _toastService.ShowInfo(content, (int?)durationMs, callback: callback);
         return Task.CompletedTask;
     }
 
-    public Task Success(string content, double? duration = null, Action? onClose = null)
+    public Task Success(string content, double? durationMs = null, Action? onClose = null)
     {
         EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowSuccess(content, (int?)duration, callback: callback);
+        _toastService.ShowSuccess(content, (int?)durationMs, callback: callback);
         return Task.CompletedTask;
     }
 
-    public Task Warning(string content, double? duration = null, Action? onClose = null)
+    public Task Warning(string content, double? durationMs = null, Action? onClose = null)
     {
         EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
-        _toastService.ShowWarning(content, (int?)duration, callback: callback);
+        _toastService.ShowWarning(content, (int?)durationMs, callback: callback);
         return Task.CompletedTask;
     }
 
-    public Task Show(string content, Mars.Core.Models.MessageIntent messageIntent, double? duration = null, Action? onClose = null)
+    public Task Show(string content, Mars.Core.Models.MessageIntent messageIntent, double? durationMs = null, Action? onClose = null)
     {
         EventCallback<ToastResult>? callback = onClose is null ? null : new EventCallbackFactory().Create<ToastResult>(this, onClose);
 
@@ -58,7 +58,7 @@ public class FluentMessageServiceBridge : Interfaces.IMessageService
                 _ => throw new NotImplementedException()
             },
             content,
-            (int?)duration,
+            (int?)durationMs,
             callback: callback
         );
         return Task.CompletedTask;

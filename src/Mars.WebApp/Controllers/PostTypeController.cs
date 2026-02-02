@@ -81,14 +81,14 @@ public class PostTypeController : ControllerBase
         return (await _postTypeService.Update(request.ToQuery(), cancellationToken)).ToSummaryResponse();
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     [AllowAnonymous]
     public async Task<ListDataResult<PostTypeListItemResponse>> List([FromQuery] ListPostTypeQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _postTypeService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostTypeListItemResponse>> ListTable([FromQuery] TablePostTypeQueryRequest request, CancellationToken cancellationToken)
     {

@@ -86,7 +86,7 @@ public class GetNavMenuTests : ApplicationTests
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().GetAsync();
+        var result = await client.Request(_apiUrl, "list/offset").AllowAnyHttpStatus().GetAsync();
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -109,7 +109,7 @@ public class GetNavMenuTests : ApplicationTests
         var expectCount = ef.NavMenus.Count();
 
         //Act
-        var result = await client.Request(_apiUrl).GetJsonAsync<ListDataResult<NavMenuSummaryResponse>>();
+        var result = await client.Request(_apiUrl, "list/offset").GetJsonAsync<ListDataResult<NavMenuSummaryResponse>>();
 
         //Assert
         result.Should().NotBeNull();
@@ -139,7 +139,7 @@ public class GetNavMenuTests : ApplicationTests
         var request = new ListNavMenuQueryRequest() { Search = searchString };
 
         //Act
-        var result = await client.Request(_apiUrl)
+        var result = await client.Request(_apiUrl, "list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<NavMenuSummaryResponse>>();
 

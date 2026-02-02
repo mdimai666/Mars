@@ -13,12 +13,12 @@ internal class PluginServiceClient : BasicServiceClient, IPluginServiceClient
     }
 
     public Task<ListDataResult<PluginInfoResponse>> List(ListPluginQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<PluginInfoResponse>>();
 
     public Task<PagingResult<PluginInfoResponse>> ListTable(TablePluginQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<PluginInfoResponse>>();
 

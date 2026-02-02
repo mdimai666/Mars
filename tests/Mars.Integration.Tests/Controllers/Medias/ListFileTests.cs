@@ -31,7 +31,7 @@ public sealed class ListFileTests : ApplicationTests
         var listFileRequest = new ListFileQueryRequest();
 
         //Act
-        var result = await client.Request(_apiUrl).AppendQueryParam(listFileRequest).AllowAnyHttpStatus().GetAsync();
+        var result = await client.Request(_apiUrl, "list/offset").AppendQueryParam(listFileRequest).AllowAnyHttpStatus().GetAsync();
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -51,7 +51,7 @@ public sealed class ListFileTests : ApplicationTests
         await ef.SaveChangesAsync();
 
         //Act
-        var result = await client.Request(_apiUrl).GetJsonAsync<ListDataResult<FileListItemResponse>>();
+        var result = await client.Request(_apiUrl, "list/offset").GetJsonAsync<ListDataResult<FileListItemResponse>>();
 
         //Assert
         result.Should().NotBeNull();

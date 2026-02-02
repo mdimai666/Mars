@@ -45,12 +45,12 @@ internal class UserTypeServiceClient : BasicServiceClient, IUserTypeServiceClien
                     .GetJsonAsync<UserTypeEditViewModel>();
 
     public Task<ListDataResult<UserTypeListItemResponse>> List(ListUserTypeQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<UserTypeListItemResponse>>();
 
     public Task<PagingResult<UserTypeListItemResponse>> ListTable(TableUserTypeQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<UserTypeListItemResponse>>();
 

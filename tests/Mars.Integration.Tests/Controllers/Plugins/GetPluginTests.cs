@@ -36,7 +36,7 @@ public class GetPluginTests : ApplicationTests
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl, "ListTable").AllowAnyHttpStatus().GetAsync();
+        var result = await client.Request(_apiUrl, "list/page").AllowAnyHttpStatus().GetAsync();
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -55,7 +55,7 @@ public class GetPluginTests : ApplicationTests
         var request = new ListPluginQueryRequest();
 
         //Act
-        var result = await client.Request(_apiUrl, "ListTable")
+        var result = await client.Request(_apiUrl, "list/page")
             .AppendQueryParam(request)
             .GetJsonAsync<PagingResult<PluginInfoResponse>>();
 

@@ -28,13 +28,13 @@ public class SchedulerController : ControllerBase
         _scheduler = scheduler;
     }
 
-    [HttpGet("JobList")]
+    [HttpGet("Job/list/offset")]
     public async Task<ListDataResult<SchedulerJobResponse>> JobList([FromQuery] ListSchedulerJobQueryRequest filter)
     {
         return (await _scheduler.JobList(filter.ToQuery())).ToResponse();
     }
 
-    [HttpGet("JobListTable")]
+    [HttpGet("Job/list/page")]
     public async Task<PagingResult<SchedulerJobResponse>> JobListTable([FromQuery] TableSchedulerJobQueryRequest filter)
     {
         return (await _scheduler.JobListPaging(filter.ToQuery())).ToResponse();

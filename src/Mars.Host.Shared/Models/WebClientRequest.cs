@@ -34,7 +34,7 @@ public class WebClientRequest
     [JsonIgnore]
     public IDictionary<object, object?> Items = new Dictionary<object, object?>();
 
-    public WebClientRequest(HttpRequest req, IReadOnlyDictionary<string, object?>? routeValues = null, string? replaceQueryString = null)
+    public WebClientRequest(HttpRequest req, PathString? replacePath = null, IReadOnlyDictionary<string, object?>? routeValues = null, string? replaceQueryString = null)
     {
         if (replaceQueryString is not null)
         {
@@ -57,7 +57,7 @@ public class WebClientRequest
         HasFormContentType = req.HasFormContentType;
         ContentType = req.ContentType;
         //this.RouteValues  = req.RouteValues ;
-        Path = req.Path;
+        Path = replacePath ?? req.Path;
         //this.PathBase = req.PathBase;
         Host = req.Host;
         IsHttps = req.IsHttps;

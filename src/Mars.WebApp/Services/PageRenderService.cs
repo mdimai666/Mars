@@ -1,4 +1,3 @@
-using System.Web;
 using Mars.Core.Models;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.Renders;
@@ -10,7 +9,6 @@ using Mars.Shared.Common;
 using Mars.Shared.Contracts.WebSite.Models;
 using Mars.WebSiteProcessor.Interfaces;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Primitives;
 
 namespace Mars.Services;
 
@@ -23,35 +21,6 @@ internal class PageRenderService : IPageRenderService
 
     string[] disallowRenderTypes = { "template", "block", "layout" };
     private readonly IServiceProvider _serviceProvider;
-
-    void ModifyRequest(HttpContext httpContext)
-    {
-        //httpContext.Request.Path = httpContext.Request.Path.ToString().Split("/api/Post/Render/", 2)[1];
-
-        if (httpContext.Request.Path.StartsWithSegments("/api") == false) return;
-
-        string replLink = httpContext.Request.Path.ToString().Contains("/api/PageRender/RenderUrl/")
-            ? "/api/PageRender/RenderUrl/"
-            : "/api/PageRender/Render/";
-
-        int su_count = replLink.Length;
-        var su_path = "/" + HttpUtility.UrlDecode(httpContext.Request.Path.ToString().Substring(su_count));
-        if (su_path.StartsWith("//")) su_path = su_path.Substring(1, su_path.Length - 1);
-        httpContext.Request.Path = su_path;
-
-        var _uri = new Uri(httpContext.Request.GetDisplayUrl());
-        httpContext.Request.Path = _uri.AbsolutePath;
-
-        httpContext.Request.QueryString = new QueryString(_uri.Query);
-        var qq = System.Web.HttpUtility.ParseQueryString(_uri.Query);
-
-        var q_dict = new Dictionary<string, StringValues>();
-        foreach (var key in qq.AllKeys!)
-        {
-            q_dict.Add(key!, qq[key]);
-        }
-        httpContext.Request.Query = new QueryCollection(q_dict);
-    }
 
     RenderParam RenderParam(HttpContext context) => new()
     {
@@ -67,12 +36,14 @@ internal class PageRenderService : IPageRenderService
             : false;
     }
 
-    public async Task<RenderActionResult<PostRenderDto>> RenderPage(WebPage page, HttpContext httpContext, CancellationToken cancellationToken)
-    {
-        ModifyRequest(httpContext);
+    public Task<RenderActionResult<PostRenderDto>> RenderPageOr404(WebPage? page, HttpContext httpContext, RenderParam? renderParam, CancellationToken cancellationToken)
+        => page == null ? RenderPage404(httpContext, cancellationToken)
+                        : RenderPage(page, httpContext, renderParam, cancellationToken);
 
+    public async Task<RenderActionResult<PostRenderDto>> RenderPage(WebPage page, HttpContext httpContext, RenderParam? renderParam, CancellationToken cancellationToken)
+    {
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
-        var request = new WebClientRequest(httpContext.Request);
+        var request = new WebClientRequest(httpContext.Request, replacePath: page.Url);
 
         var tsv = af.Features.Get<IWebTemplateService>();
         WebSiteProcessor.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
@@ -83,8 +54,6 @@ internal class PageRenderService : IPageRenderService
 
     public async Task<RenderActionResult<PostRenderDto>> RenderPage404(HttpContext httpContext, CancellationToken cancellationToken)
     {
-        ModifyRequest(httpContext);
-
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var request = new WebClientRequest(httpContext.Request);
 
@@ -129,25 +98,17 @@ internal class PageRenderService : IPageRenderService
 
     public async Task<RenderActionResult<PostRenderDto>> RenderUrl(PathString url, HttpContext httpContext, RenderParam? renderParam = null, CancellationToken cancellationToken = default)
     {
-        //WebClientRequest req = new(httpContext.Request);
-        //if (httpContext.Request.HasFormContentType)
-        //{
-        //    var form = httpContext.Request.Form;
-        //}
-
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         ArgumentNullException.ThrowIfNull(af, nameof(af));
 
         if (IsRenderNotSupport(af)) return RenderNotSupportError();
-        ModifyRequest(httpContext);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        WebSiteProcessor.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
+        WebPage? page = tsv.Template.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
 
-        Host.Shared.WebSite.Models.RenderInfo render = await processor.RenderRequest(httpContext, renderParam ?? RenderParam(httpContext), cancellationToken);
+        var render = await RenderPageOr404(page, httpContext, renderParam, cancellationToken);
 
-        return AsResult(render, httpContext);
-
+        return render;
     }
 
     public Task<RenderActionResult<PostRenderDto>> RenderPageBySlug(string slug, HttpContext httpContext, CancellationToken cancellationToken)
@@ -178,7 +139,7 @@ internal class PageRenderService : IPageRenderService
                 return await RenderPage404(httpContext, cancellationToken);
 
             var page = PostAsWebPage(post);
-            return await RenderPage(page, httpContext, cancellationToken);
+            return await RenderPage(page, httpContext, null, cancellationToken);
         }
         else
         {
@@ -209,7 +170,7 @@ internal class PageRenderService : IPageRenderService
             {
                 return await RenderPage404(httpContext, cancellationToken);
             }
-            return await RenderPage(page, httpContext, cancellationToken);
+            return await RenderPage(page, httpContext, null, cancellationToken);
 
         }
         else

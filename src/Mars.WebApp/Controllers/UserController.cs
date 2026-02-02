@@ -120,25 +120,25 @@ public class UserController : ControllerBase
         return _userService.DeleteMany(new DeleteManyUserQuery { Ids = ids }, cancellationToken);
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     public async Task<ListDataResult<UserListItemResponse>> List([FromQuery] ListUserQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _userService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     public async Task<PagingResult<UserListItemResponse>> ListTable([FromQuery] TableUserQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _userService.ListTable(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListDetail")]
+    [HttpGet("list/detail/offset")]
     public async Task<ListDataResult<UserDetailResponse>> ListDetail([FromQuery] ListUserQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _userService.ListDetail(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTableDetail")]
+    [HttpGet("list/detail/page")]
     public async Task<PagingResult<UserDetailResponse>> ListTableDetail([FromQuery] TableUserQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _userService.ListTableDetail(request.ToQuery(), cancellationToken)).ToResponse();

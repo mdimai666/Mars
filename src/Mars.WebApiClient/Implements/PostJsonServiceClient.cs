@@ -20,18 +20,18 @@ internal class PostJsonServiceClient : BasicServiceClient, IPostJsonServiceClien
                     .GetJsonAsync<PostJsonResponse?>();
 
     public Task<PostJsonResponse?> GetBySlug(string slug, string type, bool renderContent = true)
-        => _client.Request($"{_basePath}{_controllerName}", type, slug)
+        => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/item/{slug}")
                     .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostJsonResponse?>();
 
     public Task<ListDataResult<PostJsonResponse>> List(ListPostQueryRequest filter, string type)
-        => _client.Request($"{_basePath}{_controllerName}", type)
+        => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<PostJsonResponse>>();
 
     public Task<PagingResult<PostJsonResponse>> ListTable(TablePostQueryRequest filter, string type)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable", type)
+        => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<PostJsonResponse>>();
     public Task<PostJsonResponse> Create(CreatePostJsonRequest request)

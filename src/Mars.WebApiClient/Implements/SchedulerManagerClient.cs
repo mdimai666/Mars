@@ -19,12 +19,12 @@ internal class SchedulerManagerClient : BasicServiceClient, ISchedulerManagerCli
                     .PostAsync();
 
     public Task<ListDataResult<SchedulerJobResponse>> JobList(ListSchedulerJobQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/JobList")
+        => _client.Request($"{_basePath}{_controllerName}/Job/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<SchedulerJobResponse>>();
     
     public Task<PagingResult<SchedulerJobResponse>> JobListTable(TableSchedulerJobQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/JobListTable")
+        => _client.Request($"{_basePath}{_controllerName}/Job/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<SchedulerJobResponse>>();
 

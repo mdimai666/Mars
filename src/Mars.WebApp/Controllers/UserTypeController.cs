@@ -81,14 +81,14 @@ public class UserTypeController : ControllerBase
         return (await _userTypeService.Update(request.ToQuery(), cancellationToken)).ToSummaryResponse();
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     [AllowAnonymous]
     public async Task<ListDataResult<UserTypeListItemResponse>> List([FromQuery] ListUserTypeQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _userTypeService.List(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<UserTypeListItemResponse>> ListTable([FromQuery] TableUserTypeQueryRequest request, CancellationToken cancellationToken)
     {

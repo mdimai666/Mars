@@ -81,7 +81,7 @@ public class GetFeedbackTests : ApplicationTests
         var totalCount = ef.Feedbacks.Count();
 
         //Act
-        var result = await client.Request(_apiUrl)
+        var result = await client.Request(_apiUrl, "list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<FeedbackSummaryResponse>>();
 
@@ -114,7 +114,7 @@ public class GetFeedbackTests : ApplicationTests
         var request = new ListFeedbackQueryRequest() { Search = searchString };
 
         //Act
-        var result = await client.Request(_apiUrl)
+        var result = await client.Request(_apiUrl, "list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<FeedbackSummaryResponse>>();
 
@@ -141,7 +141,7 @@ public class GetFeedbackTests : ApplicationTests
         var request = new TableFeedbackQueryRequest() { Page = 1, PageSize = 10 };
 
         //Act
-        var result = await client.Request(_apiUrl, "ListTable")
+        var result = await client.Request(_apiUrl, "list/page")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<PagingResult<FeedbackSummaryResponse>>();
 

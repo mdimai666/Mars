@@ -1,8 +1,7 @@
-using System.Web;
+using Flurl.Http;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Renders;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -14,19 +13,20 @@ internal class PageRenderServiceClient : BasicServiceClient, IPageRenderServiceC
     }
 
     public Task<RenderActionResult<PostRenderResponse>> Render(Guid id)
-        => _client.Request($"{_basePath}{_controllerName}", "Render", id)
+        => _client.Request($"{_basePath}{_controllerName}/by-id", id)
                     .GetJsonAsync<RenderActionResult<PostRenderResponse>>();
     public Task<RenderActionResult<PostRenderResponse>> RenderPost(string type, string slug)
-        => _client.Request($"{_basePath}{_controllerName}", "RenderPost", type, slug)
+        => _client.Request($"{_basePath}{_controllerName}/by-post/{type}/{slug}")
                     .GetJsonAsync<RenderActionResult<PostRenderResponse>>();
     public Task<RenderActionResult<PostRenderResponse>> Render(string slug)
-        => _client.Request($"{_basePath}{_controllerName}", "Render", slug)
+        => _client.Request($"{_basePath}{_controllerName}/by-slug", slug)
                     .GetJsonAsync<RenderActionResult<PostRenderResponse>>();
     public Task<RenderActionResult<PostRenderResponse>> RenderUrl(string url)
     {
         ArgumentNullException.ThrowIfNull(url, nameof(url));
         if (!url.StartsWith('/')) throw new ArgumentException("url must start with '/'(slash)");
-        return _client.Request($"{_basePath}{_controllerName}", "RenderUrl", HttpUtility.UrlEncode(url))
+        return _client.Request($"{_basePath}{_controllerName}", "by-url")
+                    .AppendQueryParam("url", url)
                     .GetJsonAsync<RenderActionResult<PostRenderResponse>>();
     }
 }

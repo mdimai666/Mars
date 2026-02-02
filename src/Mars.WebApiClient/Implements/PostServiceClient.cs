@@ -1,7 +1,7 @@
+using Flurl.Http;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Posts;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -19,7 +19,7 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
                     .GetJsonAsync<PostDetailResponse?>();
 
     public Task<PostDetailResponse?> GetBySlug(string slug, string type, bool renderContent = true)
-        => _client.Request($"{_basePath}{_controllerName}/p", type, slug)
+        => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/item/{slug}")
                     .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostDetailResponse?>();
@@ -46,22 +46,22 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
                     .DeleteAsync();
 
     public Task<ListDataResult<PostListItemResponse>> List(ListPostQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
     public Task<PagingResult<PostListItemResponse>> ListTable(TablePostQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<PostListItemResponse>>();
 
     public Task<ListDataResult<PostListItemResponse>> List(string postType, ListPostQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}", postType)
+        => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
     public Task<PagingResult<PostListItemResponse>> ListTable(string postType, TablePostQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable", postType)
+        => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<PostListItemResponse>>();
 

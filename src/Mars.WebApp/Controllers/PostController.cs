@@ -54,7 +54,7 @@ public class PostController : ControllerBase
                 ?? throw new NotFoundException();
     }
 
-    [HttpGet("p/{type}/{slug}")]
+    [HttpGet("by-type/{type}/item/{slug}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -121,21 +121,21 @@ public class PostController : ControllerBase
         return (await _postService.Update(query, cancellationToken)).ToResponse();
     }
 
-    [HttpGet]
+    [HttpGet("list/offset")]
     [AllowAnonymous]
     public async Task<ListDataResult<PostListItemResponse>> List([FromQuery] ListPostQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _postService.List(request.ToQuery(null), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("ListTable")]
+    [HttpGet("list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request, CancellationToken cancellationToken)
     {
         return (await _postService.ListTable(request.ToQuery(null), cancellationToken)).ToResponse();
     }
 
-    [HttpGet("{type}")]
+    [HttpGet("by-type/{type}/list/offset")]
     [AllowAnonymous]
     public async Task<ListDataResult<PostListItemResponse>> List([FromQuery] ListPostQueryRequest request,
                                                                     [DefaultValue("post")] string type,
@@ -144,7 +144,7 @@ public class PostController : ControllerBase
         return (await _postService.List(request.ToQuery(type), cancellationToken)).ToResponse();
     }
 
-    [HttpPost("ListTable/{type}")]
+    [HttpPost("by-type/{type}/list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request,
                                                                     [DefaultValue("post")] string type,

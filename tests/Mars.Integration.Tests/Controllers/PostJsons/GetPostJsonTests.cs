@@ -61,8 +61,8 @@ public class GetPostJsonTests : ApplicationTests
         await ef.SaveChangesAsync();
 
         //Act
-        var result = await client.Request(_apiUrl)
-                                .AppendPathSegments("post", createdPost.Slug)
+        var typeName = "post";
+        var result = await client.Request(_apiUrl, $"by-type/{typeName}/item/{createdPost.Slug}")
                                 .GetJsonAsync<PostJsonResponse>();
 
         //Assert
@@ -103,7 +103,7 @@ public class GetPostJsonTests : ApplicationTests
         var expectCount = createdPosts.Count();
 
         //Act
-        var result = await client.Request(_apiUrl, "post").GetJsonAsync<ListDataResult<PostJsonResponse>>();
+        var result = await client.Request(_apiUrl, $"by-type/{("post")}/list/offset").GetJsonAsync<ListDataResult<PostJsonResponse>>();
 
         //Assert
         result.Should().NotBeNull();
@@ -133,7 +133,7 @@ public class GetPostJsonTests : ApplicationTests
         var request = new ListPostQueryRequest() { Search = searchString };
 
         //Act
-        var result = await client.Request(_apiUrl, "post")
+        var result = await client.Request(_apiUrl, $"by-type/{("post")}/list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<PostJsonResponse>>();
 

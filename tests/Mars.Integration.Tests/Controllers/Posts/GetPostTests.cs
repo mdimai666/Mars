@@ -64,7 +64,8 @@ public class GetPostTests : ApplicationTests
         await ef.SaveChangesAsync();
 
         //Act
-        var result = await client.Request(_apiUrl, "p/post", createdPost.Slug)
+        var typeName = "post";
+        var result = await client.Request(_apiUrl, $"by-type/{typeName}/item/{createdPost.Slug}")
                                 .GetJsonAsync<PostDetailResponse>();
 
         //Assert
@@ -105,7 +106,7 @@ public class GetPostTests : ApplicationTests
         var expectCount = ef.Posts.Count();
 
         //Act
-        var result = await client.Request(_apiUrl).GetJsonAsync<ListDataResult<PostListItemResponse>>();
+        var result = await client.Request(_apiUrl, "list/offset").GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
         //Assert
         result.Should().NotBeNull();
@@ -129,7 +130,7 @@ public class GetPostTests : ApplicationTests
         var expectCount = ef.Posts.Include(s => s.PostType).Count(s => s.PostType.TypeName == "post");
 
         //Act
-        var result = await client.Request(_apiUrl, "post").GetJsonAsync<ListDataResult<PostListItemResponse>>();
+        var result = await client.Request(_apiUrl, $"by-type/{("post")}/list/offset").GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
         //Assert
         result.Should().NotBeNull();
@@ -159,7 +160,7 @@ public class GetPostTests : ApplicationTests
         var request = new ListPostQueryRequest() { Search = searchString };
 
         //Act
-        var result = await client.Request(_apiUrl, "post")
+        var result = await client.Request(_apiUrl, $"by-type/{("post")}/list/offset")
                                     .AppendQueryParam(request)
                                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 

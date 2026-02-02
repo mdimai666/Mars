@@ -45,12 +45,12 @@ internal class PostTypeServiceClient : BasicServiceClient, IPostTypeServiceClien
                     .GetJsonAsync<PostTypeEditViewModel>();
 
     public Task<ListDataResult<PostTypeListItemResponse>> List(ListPostTypeQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}")
+        => _client.Request($"{_basePath}{_controllerName}/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<PostTypeListItemResponse>>();
 
     public Task<PagingResult<PostTypeListItemResponse>> ListTable(TablePostTypeQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<PostTypeListItemResponse>>();
 

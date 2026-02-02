@@ -1,10 +1,11 @@
+using FluentAssertions;
 using Mars.Host.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
-using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Posts;
 
@@ -30,6 +31,21 @@ public class GetPostTests : BaseWebApiClientTests
     {
         _ = nameof(MarsWebApiClient.Post.Get);
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
+    }
+
+    [IntegrationFact]
+    public async void GetPostBySlug_ValidRequest_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(MarsWebApiClient.Post.GetBySlug);
+        var client = GetWebApiClient();
+        var exist = AppFixture.DbFixture.DbContext.Posts.AsNoTracking().Include(s => s.PostType).First();
+
+        //Act
+        var post = await client.Post.GetBySlug(exist.Slug, exist.PostType.TypeName);
+
+        //Assert
+        post.Id.Should().Be(exist.Id);
     }
 
     [IntegrationFact]

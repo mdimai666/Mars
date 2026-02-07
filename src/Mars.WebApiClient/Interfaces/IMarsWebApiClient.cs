@@ -13,6 +13,8 @@ public interface IMarsWebApiClient
     IPostServiceClient Post { get; }
     IUserServiceClient User { get; }
     IUserTypeServiceClient UserType { get; }
+    IPostCategoryTypeServiceClient PostCategoryType { get; }
+    IPostCategoryServiceClient PostCategory { get; }
     IRoleServiceClient Role { get; }
     INavMenuServiceClient NavMenu { get; }
     IOptionServiceClient Option { get; }

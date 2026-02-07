@@ -161,11 +161,12 @@ public class E2EServerFixture : IAsyncLifetime
 
         EntitiesCustomize.PostTypeDict = await ef.PostTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
         EntitiesCustomize.UserTypeDict = await ef.UserTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        EntitiesCustomize.PostCategoryTypeDict = await ef.PostCategoryTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
         ef.ChangeTracker.Clear();
 
-        if (EntitiesCustomize.PostTypeDict.Count == 0 || EntitiesCustomize.UserTypeDict.Count == 0)
+        if (EntitiesCustomize.PostTypeDict.Count == 0 || EntitiesCustomize.UserTypeDict.Count == 0 || EntitiesCustomize.PostCategoryTypeDict.Count == 0)
         {
-            throw new InvalidOperationException("PostTypeDict or UserTypeDict is empty after seeding data");
+            throw new InvalidOperationException("PostTypeDict or UserTypeDict or PostCategoryTypeDict is empty after seeding data");
         }
 
         ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();

@@ -52,7 +52,7 @@ public class UserTypeEditModel : IBasicEntity
     {
         if (id == Guid.Empty)
         {
-            var metaRelationModels = await client.UserType.AllMetaRelationsStructure();
+            var metaRelationModels = await client.PostType.AllMetaRelationsStructure();
             return new()
             {
                 MetaRelationModels = metaRelationModels,

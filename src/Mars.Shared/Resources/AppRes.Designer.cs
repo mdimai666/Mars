@@ -1015,6 +1015,42 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Post categories.
+        /// </summary>
+        public static string PostCategories {
+            get {
+                return ResourceManager.GetString("PostCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Post category.
+        /// </summary>
+        public static string PostCategory {
+            get {
+                return ResourceManager.GetString("PostCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Post category type.
+        /// </summary>
+        public static string PostCategoryType {
+            get {
+                return ResourceManager.GetString("PostCategoryType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Post category types.
+        /// </summary>
+        public static string PostCategoryTypes {
+            get {
+                return ResourceManager.GetString("PostCategoryTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Posts.
         /// </summary>
         public static string Posts {

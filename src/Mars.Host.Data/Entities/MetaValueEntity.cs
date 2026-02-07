@@ -61,6 +61,11 @@ public class MetaValueEntity : IBasicEntity
     [NotMapped]
     public virtual List<UserEntity>? Users { get; set; }
 
+    public virtual ICollection<PostCategoryMetaValueEntity>? PostCategoryMetaValues { get; set; }
+
+    [NotMapped]
+    public virtual List<PostCategoryEntity>? PostCategories { get; set; }
+
     #region SETTER
 
     //DateTime

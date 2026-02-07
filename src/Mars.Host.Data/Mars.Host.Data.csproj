@@ -30,10 +30,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Entities\HierarchyEntity.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
         <FrameworkReference Include="Microsoft.AspNetCore.App" />

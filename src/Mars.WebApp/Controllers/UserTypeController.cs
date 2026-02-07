@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
@@ -10,7 +9,6 @@ using Mars.Host.Shared.Mappings.Search;
 using Mars.Host.Shared.Mappings.UserTypes;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.UserTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -118,60 +116,5 @@ public class UserTypeController : ControllerBase
     {
         return _userTypeService.DeleteMany(new DeleteManyUserTypeQuery { Ids = ids }, cancellationToken);
     }
-
-    [HttpGet("MetaFieldsTypeEnums")]
-    public Dictionary<int, string> MetaFieldsTypeEnums()
-    {
-
-        var enums = Enum.GetValues<MetaFieldType>();
-        //var dict = enums
-        //       .Cast<EMetaFieldType>()
-        //       .ToDictionary(t => (int)t, t => t.ToString()); вылетает сервер
-
-        Dictionary<int, string> dict = [];
-
-        foreach (var e in enums)
-        {
-            dict.Add((int)e, e.ToString());
-        }
-
-        return dict;
-    }
-
-    //[HttpGet("UserTypeExport/{id:guid}")]
-    //public Task<UserTypeExport> UserTypeExport(Guid id)
-    //{
-    //    return _userTypeExporter.ExportUserType(id);
-    //}
-
-    //[HttpPost("UserTypeImport")]
-    //public Task<UserActionResult> UserTypeImport(UserTypeExport postType, string asUserType = "")
-    //{
-    //    return _userTypeExporter.ImportUserType(postType, asUserType);
-    //}
-
-    //[HttpPost("UserTypeImportFile")]
-    //public Task<UserActionResult> UserTypeImportFile(IFormFile file)
-    //{
-    //    using var reader = new StreamReader(file.OpenReadStream());
-
-    //    string json = reader.ReadToEnd();
-
-    //    UserTypeExport postType = JsonSerializer.Deserialize<UserTypeExport>(json) ?? throw new UserActionException("json not valid");
-
-    //    return _userTypeExporter.ImportUserType(postType);
-    //}
-
-    [HttpGet("AllMetaRelationsStructure")]
-    public async Task<IReadOnlyCollection<MetaRelationModelResponse>> AllMetaRelationsStructure()
-        => (await _userTypeService.AllMetaRelationsStructure()).ToResponse();
-
-    [HttpGet("ListMetaValueRelationModels")]
-    public async Task<ListDataResult<MetaValueRelationModelSummaryResponse>> ListMetaValueRelationModels([FromQuery] MetaValueRelationModelsListQueryRequest request, CancellationToken cancellationToken)
-        => (await _userTypeService.ListMetaValueRelationModels(request.ToQuery(), cancellationToken)).ToResponse();
-
-    [HttpGet("GetMetaValueRelationModels/{modelName}")]
-    public async Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>> GetMetaValueRelationModels(string modelName, [FromQuery][MaxLength(100)] Guid[] ids, CancellationToken cancellationToken)
-        => (await _userTypeService.GetMetaValueRelationModels(modelName, ids, cancellationToken)).ToDictionary(s => s.Key, s => s.Value.ToResponse());
 
 }

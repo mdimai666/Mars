@@ -18,5 +18,7 @@ public static class MainRepositories
             .AddScoped<IPostRepository, PostRepository>()
             .AddScoped<IFileRepository, FileRepository>()
             .AddScoped<IFeedbackRepository, FeedbackRepository>()
+            .AddScoped<IPostCategoryRepository, PostCategoryRepository>()
+            .AddScoped<IPostCategoryTypeRepository, PostCategoryTypeRepository>()
         ;
 }

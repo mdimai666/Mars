@@ -15,7 +15,6 @@ public class MetaValueEntityConfiguration : IEntityTypeConfiguration<MetaValueEn
            .HasDefaultValueSql("now()")
            .IgnorePropertyFromUpdate();
 
-
         entity.HasMany(x => x.Posts)
             .WithMany(x => x.MetaValues)
             .UsingEntity<PostMetaValueEntity>(
@@ -23,12 +22,21 @@ public class MetaValueEntityConfiguration : IEntityTypeConfiguration<MetaValueEn
                 r => r.HasOne(x => x.MetaValue).WithMany(x => x.PostMetaValues),
                 k => k.HasKey(x => new { x.PostId, x.MetaValueId })
             );
+
         entity.HasMany(x => x.Users)
             .WithMany(x => x.MetaValues)
             .UsingEntity<UserMetaValueEntity>(
                 l => l.HasOne(x => x.User).WithMany(x => x.UserMetaValues),
                 r => r.HasOne(x => x.MetaValue).WithMany(x => x.UserMetaValues),
                 k => k.HasKey(x => new { x.UserId, x.MetaValueId })
+            );
+
+        entity.HasMany(x => x.PostCategories)
+            .WithMany(x => x.MetaValues)
+            .UsingEntity<PostCategoryMetaValueEntity>(
+                l => l.HasOne(x => x.PostCategory).WithMany(x => x.PostCategoryMetaValues),
+                r => r.HasOne(x => x.MetaValue).WithMany(x => x.PostCategoryMetaValues),
+                k => k.HasKey(x => new { x.PostCategoryId, x.MetaValueId })
             );
     }
 }

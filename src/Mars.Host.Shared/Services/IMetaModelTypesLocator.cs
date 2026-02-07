@@ -8,6 +8,8 @@ public interface IMetaModelTypesLocator
 {
     PostTypeDetail? GetPostTypeByName(string postTypeName);
     PostTypeDetail? GetPostTypeById(Guid id);
+    bool ExistPostType(Guid id);
+    bool ExistPostType(string postTypeName);
     IReadOnlyDictionary<string, PostTypeDetail> PostTypesDict();
     IReadOnlyCollection<string> ListMetaRelationModelProviderKeys();
     IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName);

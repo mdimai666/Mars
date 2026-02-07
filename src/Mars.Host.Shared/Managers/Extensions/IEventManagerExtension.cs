@@ -92,4 +92,49 @@ public static class EventManagerExtension
     public static string UserAdd(this EventManagerDefaults defaults) => $"entity/user/add";
     public static string UserUpdate(this EventManagerDefaults defaults) => $"entity/user/update";
     public static string UserDelete(this EventManagerDefaults defaults) => $"entity/user/delete";
+
+    /// <summary>
+    /// <code>entity.PostCategoryType/{typeName}/add</code>
+    /// </summary>
+    public static string PostCategoryTypeAdd(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategoryType/{typeName}/add";
+
+    /// <summary>
+    /// <code>entity.PostCategoryType/{typeName}/update</code>
+    /// </summary>
+    public static string PostCategoryTypeUpdate(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategoryType/{typeName}/update";
+
+    /// <summary>
+    /// <code>entity.PostCategoryType/{typeName}/delete</code>
+    /// </summary>
+    public static string PostCategoryTypeDelete(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategoryType/{typeName}/delete";
+
+    /// <summary>
+    /// <code>entity.PostCategoryType/{typeName}/*</code>
+    /// </summary>
+    public static string PostCategoryTypeAnyOperation(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategoryType/{typeName}/*";
+
+    /// <summary>
+    /// <code>entity.PostCategoryType/**</code>
+    /// </summary>
+    public static string PostCategoryTypeAnyOperation(this EventManagerDefaults defaults) => $"entity.PostCategoryType/**";
+
+    /// <summary>
+    /// <code>entity.PostCategory/{typeName}/add</code>
+    /// </summary>
+    public static string PostCategoryAdd(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/add";
+
+    /// <summary>
+    /// <code>entity.PostCategory/{typeName}/update</code>
+    /// </summary>
+    public static string PostCategoryUpdate(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/update";
+
+    /// <summary>
+    /// <code>entity.PostCategory/{typeName}/delete</code>
+    /// </summary>
+    public static string PostCategoryDelete(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/delete";
+
+    /// <summary>
+    /// <code>entity.PostCategory/{typeName}/*</code>
+    /// </summary>
+    public static string PostCategoryAnyOperation(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/*";
 }

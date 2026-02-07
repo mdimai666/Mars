@@ -1,6 +1,5 @@
 using Mars.Core.Exceptions;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.UserTypes;
 
 namespace Mars.WebApiClient.Interfaces;
@@ -24,7 +23,4 @@ public interface IUserTypeServiceClient
     Task DeleteMany(Guid[] ids);
     Task<UserTypeEditViewModel> GetEditModel(Guid id);
 
-    Task<IReadOnlyCollection<MetaRelationModelResponse>> AllMetaRelationsStructure();
-    Task<ListDataResult<MetaValueRelationModelSummaryResponse>> ListMetaValueRelationModels(MetaValueRelationModelsListQueryRequest request);
-    Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>> GetMetaValueRelationModels(string modelName, Guid[] ids);
 }

@@ -86,6 +86,7 @@ public static class MarsStartupPartMigrations
         SeedRoles.SeedFirstData(marsDbContext);
         SeedUsers.SeedFirstData(userManager, marsDbContext);
         await SeedPostData.SeedFirstData(marsDbContext, services, configuration);
+        SeedPostCategories.SeedFirstData(marsDbContext);
     }
 }
 

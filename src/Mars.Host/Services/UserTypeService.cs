@@ -1,5 +1,4 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.UserTypes;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Managers.Extensions;
@@ -10,28 +9,23 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.UserTypes;
-using Mars.Shared.Resources;
-using Microsoft.Extensions.Localization;
 
 namespace Mars.Host.Services;
 
 internal class UserTypeService : IUserTypeService
 {
     private readonly IUserTypeRepository _userTypeRepository;
-    private readonly IStringLocalizer<AppRes> _stringLocalizer;
     private readonly IEventManager _eventManager;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IValidatorFabric _validatorFabric;
 
     public UserTypeService(
         IUserTypeRepository userTypeRepository,
-        IStringLocalizer<AppRes> stringLocalizer,
         IEventManager eventManager,
         IMetaModelTypesLocator metaModelTypesLocator,
         IValidatorFabric validatorFabric)
     {
         _userTypeRepository = userTypeRepository;
-        _stringLocalizer = stringLocalizer;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
         _validatorFabric = validatorFabric;
@@ -56,11 +50,8 @@ internal class UserTypeService : IUserTypeService
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
-        //if (created != null)
-        {
-            var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
-            _eventManager.TriggerEvent(payload);
-        }
+        var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
+        _eventManager.TriggerEvent(payload);
 
         return created;
     }
@@ -123,28 +114,4 @@ internal class UserTypeService : IUserTypeService
         return userTypes;
     }
 
-    public Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure()
-    {
-        return Task.FromResult(_metaModelTypesLocator.AllMetaRelationsStructure());
-    }
-
-    public Task<ListDataResult<MetaValueRelationModelSummary>> ListMetaValueRelationModels(MetaValueRelationModelsListQuery query, CancellationToken cancellationToken)
-    {
-        var rootModelName = query.ModelName.Split('.', 2)[0];
-        //var models = _metaModelTypesLocator.ListMetaRelationModelProvider();
-        ////var userType = _metaModelTypesLocator.GetUserTypeByName(userTypeName) ?? throw new NotFoundException($"post type '{userTypeName}' not found");
-        ////var metaField = userType.MetaFields.FirstOrDefault(s=>s.Id == metaFieldId) ?? throw new NotFoundException($"metaFieldId with id '{metaFieldId}' not found");
-
-        var dataProvider = _metaModelTypesLocator.GetMetaRelationModelProvider(rootModelName) ?? throw new NotFoundException($"Provider for type '{query.ModelName}' not found"); ;
-
-        return dataProvider.ListData(query, cancellationToken);
-    }
-
-    public Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetMetaValueRelationModels(string modelName, Guid[] ids, CancellationToken cancellationToken)
-    {
-        var rootModelName = modelName.Split('.', 2)[0];
-        var dataProvider = _metaModelTypesLocator.GetMetaRelationModelProvider(rootModelName) ?? throw new NotFoundException($"Provider for type '{modelName}' not found"); ;
-
-        return dataProvider.GetIds(modelName, ids, cancellationToken);
-    }
 }

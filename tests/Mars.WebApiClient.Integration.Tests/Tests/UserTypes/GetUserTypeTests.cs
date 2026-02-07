@@ -3,7 +3,6 @@ using Mars.Host.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.UserTypes;
@@ -72,46 +71,4 @@ public class GetUserTypeTests : BaseWebApiClientTests
         result.Should().NotBeNull();
     }
 
-    [IntegrationFact]
-    public async void AllMetaRelationsStructure_ValidRequest_ShouldSuccess()
-    {
-        //Arrange
-        _ = nameof(MarsWebApiClient.UserType.AllMetaRelationsStructure);
-        var client = GetWebApiClient();
-
-        //Act
-        var result = await client.UserType.AllMetaRelationsStructure();
-
-        //Assert
-        result.Should().NotBeNull();
-    }
-
-    [IntegrationFact]
-    public async void ListMetaValueRelationModels_ValidRequest_ShouldSuccess()
-    {
-        //Arrange
-        _ = nameof(MarsWebApiClient.UserType.ListMetaValueRelationModels);
-        var client = GetWebApiClient();
-        var query = new MetaValueRelationModelsListQueryRequest() { ModelName = "User" };
-
-        //Act
-        var result = await client.UserType.ListMetaValueRelationModels(query);
-
-        //Assert
-        result.Should().NotBeNull();
-    }
-
-    [IntegrationFact]
-    public async void GetMetaValueRelationModels_ValidRequest_ShouldSuccess()
-    {
-        //Arrange
-        _ = nameof(MarsWebApiClient.UserType.GetMetaValueRelationModels);
-        var client = GetWebApiClient();
-
-        //Act
-        var result = await client.UserType.GetMetaValueRelationModels("User", []);
-
-        //Assert
-        result.Should().NotBeNull();
-    }
 }

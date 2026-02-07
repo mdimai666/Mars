@@ -102,4 +102,10 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
 
     [Timestamp]
     public uint Version { get; init; }
+
+    //=====================================
+    //Category
+    [NotMapped]
+    public virtual List<PostCategoryEntity>? Categories { get; set; }
+    public virtual ICollection<PostPostCategoriesEntity>? PostPostCategories { get; set; }
 }

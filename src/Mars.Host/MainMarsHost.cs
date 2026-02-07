@@ -35,6 +35,7 @@ public static class MainMarsHost
         services.AddSingleton<IEventManager, EventManager>();
         services.AddSingleton<INavMenuService, NavMenuService>();
         services.AddSingleton<IMetaModelTypesLocator, MetaModelTypesLocator>();
+        services.AddSingleton<IPostCategoryMetaLocator, PostCategoryMetaLocator>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Shared\Tools\ModelInfoService.cs
@@ -56,6 +57,8 @@ public static class MainMarsHost
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IPostTypeService, PostTypeService>();
         services.AddScoped<IPostJsonService, PostJsonService>();
+        services.AddScoped<IPostCategoryService, PostCategoryService>();
+        services.AddScoped<IPostCategoryTypeService, PostCategoryTypeService>();
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IFeedbackService, FeedbackService>();
 

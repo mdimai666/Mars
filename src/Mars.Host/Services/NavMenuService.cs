@@ -175,6 +175,7 @@ public class NavMenuService : INavMenuService
                     //new() { Title = "Анкета", Url = d+"Manage/AnketaManage", ParentId=manage },
                     new() { Title = AppRes.Users, Url = d+"Users", ParentId=manage},
                     new() { Title = AppRes.UserTypes, Url = d+"UserType", ParentId=manage},
+                    new() { Title = AppRes.PostCategoryTypes, Url = d+"PostCategoryType", ParentId=manage},
                     //new() { Title = "Контакты", Url = d+"ContactsManagement", ParentId=manage},
     #if DEBUG
 		            //new() { Title = "Роли", Url = d+"RoleManagement", ParentId=manage},

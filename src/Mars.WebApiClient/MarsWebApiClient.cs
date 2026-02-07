@@ -16,6 +16,8 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IPostServiceClient Post { get; }
     public IUserServiceClient User { get; }
     public IUserTypeServiceClient UserType { get; }
+    public IPostCategoryTypeServiceClient PostCategoryType { get; }
+    public IPostCategoryServiceClient PostCategory { get; }
     public IRoleServiceClient Role { get; }
     public INavMenuServiceClient NavMenu { get; }
     public IOptionServiceClient Option { get; }
@@ -41,6 +43,8 @@ public class MarsWebApiClient : IMarsWebApiClient
         Post = new PostServiceClient(serviceProvider, targetClient);
         User = new UserServiceClient(serviceProvider, targetClient);
         UserType = new UserTypeServiceClient(serviceProvider, targetClient);
+        PostCategoryType = new PostCategoryTypeServiceClient(serviceProvider, targetClient);
+        PostCategory = new PostCategoryServiceClient(serviceProvider, targetClient);
         Role = new RoleServiceClient(serviceProvider, targetClient);
         NavMenu = new NavMenuServiceClient(serviceProvider, targetClient);
         Option = new OptionServiceClient(serviceProvider, targetClient);

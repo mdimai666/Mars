@@ -47,5 +47,13 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
                 k => k.HasKey(x => new { x.UserTypeId, x.MetaFieldId })
             );
 
+        entity.HasMany(x => x.PostCategoryTypes)
+            .WithMany(x => x.MetaFields)
+            .UsingEntity<PostCategoryTypeMetaFieldEntity>(
+                l => l.HasOne(x => x.PostCategoryType).WithMany(x => x.PostCategoryTypeMetaFields),
+                r => r.HasOne(x => x.MetaField).WithMany(x => x.PostCategoryTypeMetaFields),
+                k => k.HasKey(x => new { x.PostCategoryTypeId, x.MetaFieldId })
+            );
+
     }
 }

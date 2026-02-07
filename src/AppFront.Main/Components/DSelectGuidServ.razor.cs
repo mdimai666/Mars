@@ -27,7 +27,7 @@ public partial class DSelectGuidServ<TModel, TListQueryRequest>
     [Parameter] public EventCallback<TModel> OnValueChange { get; set; }
 
     [Parameter] public TListQueryRequest Query { get; set; } = default!;
-    [Parameter] public Func<TListQueryRequest, Task<ListDataResult<TModel>>> ListAction { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<TListQueryRequest, Task<ListDataResult<TModel>>> ListAction { get; set; } = default!;
 
     [Parameter] public Func<TModel, string>? LabelExpression { get; set; }
     [Parameter] public string Placeholder { get; set; } = "-не выбрано-";

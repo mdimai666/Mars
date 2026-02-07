@@ -435,6 +435,18 @@
   <data name="Post.many" xml:space="preserve">
     <value>Записи</value>
   </data>
+  <data name="PostCategories" xml:space="preserve">
+    <value>Категории записей</value>
+  </data>
+  <data name="PostCategory" xml:space="preserve">
+    <value>Категория записи</value>
+  </data>
+  <data name="PostCategoryType" xml:space="preserve">
+    <value>Тип категории</value>
+  </data>
+  <data name="PostCategoryTypes" xml:space="preserve">
+    <value>Типы категорий</value>
+  </data>
   <data name="Posts" xml:space="preserve">
     <value>Записи</value>
   </data>

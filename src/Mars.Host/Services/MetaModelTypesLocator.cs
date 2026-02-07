@@ -18,10 +18,10 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
 
     private readonly IServiceScope _scope;
     private readonly IPostTypeRepository _postTypeRepository;
-    private readonly IServiceCollection _serviceCollection;
     private readonly IMetaEntityTypeProvider _metaEntityTypeProvider;
     private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
-    public SemaphoreSlim _lockPostTypes = new(1, 1);
+    private SemaphoreSlim _lockPostTypes = new(1, 1);
+    private IReadOnlyDictionary<string, Type>? _metaRelationModelProviderDict;
 
     public MetaModelTypesLocator(IServiceScopeFactory serviceScopeFactory,
                                 IServiceCollection serviceCollection,
@@ -30,9 +30,15 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
     {
         _scope = serviceScopeFactory.CreateScope();
         _postTypeRepository = _scope.ServiceProvider.GetRequiredService<IPostTypeRepository>();
-        _serviceCollection = serviceCollection;
         _metaEntityTypeProvider = metaEntityTypeProvider;
         _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
+
+        _metaRelationModelProviderDict ??= serviceCollection.Where(x => x.IsKeyedService
+                                            && x.ServiceType == typeof(IMetaRelationModelProviderHandler)
+                                            //&& typeof(IMetaRelationModelProviderHandler).IsAssignableFrom(x.ServiceType)
+                                            )
+                                .Where(s => s.ServiceKey.GetType() == typeof(string))
+                                .ToDictionary(g => (string)g.ServiceKey!, g => g.ServiceType);
     }
 
     private async Task<FrozenDictionary<string, PostTypeInfo>> GetPostTypes()
@@ -74,6 +80,18 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         return _postTypes.GetValueOrDefault(postTypeName)?.PostType;
     }
 
+    public bool ExistPostType(Guid id)
+    {
+        _postTypes ??= GetPostTypes().ConfigureAwait(false).GetAwaiter().GetResult();
+        return _postTypesById.ContainsKey(id);
+    }
+
+    public bool ExistPostType(string postTypeName)
+    {
+        _postTypes ??= GetPostTypes().ConfigureAwait(false).GetAwaiter().GetResult();
+        return _postTypes.ContainsKey(postTypeName);
+    }
+
     public IReadOnlyDictionary<string, PostTypeDetail> PostTypesDict()
     {
         _postTypes ??= GetPostTypes().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -85,17 +103,8 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         _postTypes ??= await GetPostTypes();
     }
 
-    IReadOnlyDictionary<string, Type>? _metaRelationModelProviderDict;
-
     public IReadOnlyCollection<string> ListMetaRelationModelProviderKeys()
     {
-        _metaRelationModelProviderDict ??= _serviceCollection.Where(x => x.IsKeyedService
-                                            && x.ServiceType == typeof(IMetaRelationModelProviderHandler)
-                                            //&& typeof(IMetaRelationModelProviderHandler).IsAssignableFrom(x.ServiceType)
-                                            )
-                                .Where(s => s.ServiceKey.GetType() == typeof(string))
-                                .ToDictionary(g => (string)g.ServiceKey!, g => g.ServiceType);
-
         return _metaRelationModelProviderDict.Keys is IReadOnlyCollection<string> collection
                     ? collection
                     : _metaRelationModelProviderDict.Keys.ToArray();
@@ -130,8 +139,8 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
         //TODO: для PostType добавить VersionToken. B повесить хук, который инвалидирует при изменении
     }
 
-    IReadOnlyDictionary<string, MtoModelInfo>? _metaMtoModelsCompiledTypeDict;
-    string? _metaMtoModelsCompiledSourceCode = null;
+    private IReadOnlyDictionary<string, MtoModelInfo>? _metaMtoModelsCompiledTypeDict;
+    private string? _metaMtoModelsCompiledSourceCode = null;
 
     public IReadOnlyDictionary<string, MtoModelInfo> MetaMtoModelsCompiledTypeDict => _metaMtoModelsCompiledTypeDict ?? ImmutableDictionary<string, MtoModelInfo>.Empty;
 

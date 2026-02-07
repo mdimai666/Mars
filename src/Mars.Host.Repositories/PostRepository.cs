@@ -205,7 +205,6 @@ internal class PostRepository : IPostRepository, IDisposable
         var list = await queryable.ToListDataResult(query, cancellationToken);
 
         return list.ToMap(PostMapping.ToSummaryList);
-
     }
 
     public async Task<PagingResult<PostSummary>> ListTable(ListPostQuery query, CancellationToken cancellationToken)
@@ -219,7 +218,6 @@ internal class PostRepository : IPostRepository, IDisposable
         var list = await queryable.ToPagingResult(query, cancellationToken);
 
         return list.ToMap(PostMapping.ToSummaryList);
-
     }
 
     public async Task<ListDataResult<PostDetail>> ListDetail(ListPostQuery query, CancellationToken cancellationToken)
@@ -234,7 +232,6 @@ internal class PostRepository : IPostRepository, IDisposable
         var list = await queryable.ToListDataResult(query, cancellationToken);
 
         return list.ToMap(PostMapping.ToDetailList);
-
     }
 
     public async Task<PagingResult<PostDetail>> ListTableDetail(ListPostQuery query, CancellationToken cancellationToken)
@@ -249,7 +246,6 @@ internal class PostRepository : IPostRepository, IDisposable
         var list = await queryable.ToPagingResult(query, cancellationToken);
 
         return list.ToMap(PostMapping.ToDetailList);
-
     }
 
     //============================

@@ -17,6 +17,7 @@ public sealed class EntitiesCustomize : ICustomization
 {
     public static Dictionary<string, PostTypeEntity> PostTypeDict = default!;
     public static Dictionary<string, UserTypeEntity> UserTypeDict = new() { [UserTypeEntity.DefaultTypeName] = UserConstants.TestUserType };
+    public static Dictionary<string, PostCategoryTypeEntity> PostCategoryTypeDict = [];
 
     public void Customize(IFixture fixture)
     {
@@ -177,6 +178,39 @@ public sealed class EntitiesCustomize : ICustomization
                                     .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.Type, EMetaFieldType.String)
                                     .With(s => s.VariantsIds, [])
+                                   );
+
+        fixture.Customize<PostCategoryTypeEntity>(composer => composer
+                                   .OmitAutoProperties()
+                                   .With(s => s.Id)
+                                   .With(s => s.Title)
+                                   .With(s => s.TypeName)
+                                   .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
+                                   );
+
+        fixture.Customize<PostCategoryEntity>(composer => composer
+                                    .FromFactory(() =>
+                                    {
+                                        var id = Guid.NewGuid();
+                                        var slug = TextTool.TranslateToPostSlug("slug-" + id);
+                                        return new()
+                                        {
+                                            Id = id,
+                                            Slug = slug,
+                                            Path = $"/{id}",
+                                            PathIds = [id],
+                                            SlugPath = $"/{slug}",
+                                            RootId = id,
+                                            ParentId = null,
+                                            LevelsCount = 1,
+                                        };
+                                    })
+                                   .OmitAutoProperties()
+                                   .With(s => s.Title, () => fixture.Create("PostCategory - "))
+                                   .With(s => s.PostCategoryTypeId, PostCategoryTypeDict[PostCategoryTypeEntity.DefaultTypeName].Id)
+                                   .With(s => s.PostTypeId, PostTypeDict["post"].Id)
+                                   .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
+                                   .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
                                    );
     }
 

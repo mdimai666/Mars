@@ -8,6 +8,8 @@ using Mars.Host.Shared.Dto.Feedbacks;
 using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.Feedbacks;
 using Mars.Shared.Contracts.NavMenus;
+using Mars.Shared.Contracts.PostCategories;
+using Mars.Shared.Contracts.PostCategoryTypes;
 using Mars.Shared.Contracts.PostJsons;
 using Mars.Shared.Contracts.Posts;
 using Mars.Shared.Contracts.PostTypes;
@@ -110,13 +112,13 @@ public sealed class RequestCustomize : ICustomization
                                 );
 
         var feedback = () => new Faker<CreateFeedbackRequest>("ru")
-            .RuleFor(s => s.FilledUsername, f => f.Person.FullName)
-            .RuleFor(s => s.Title, f => f.Name.JobTitle())
-            .RuleFor(s => s.Content, f => f.Name.JobDescriptor())
-            .RuleFor(s => s.Email, (f, s) => f.PickRandom(null, faker.Internet.Email(s.FilledUsername)))
-            .RuleFor(s => s.Phone, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 914 ### ## ##")), null, null))
-            .RuleFor(s => s.Type, f => f.PickRandom(Enum.GetValues<FeedbackType>().Select(s => s.ToString())))
-            .Generate();
+                                    .RuleFor(s => s.FilledUsername, f => f.Person.FullName)
+                                    .RuleFor(s => s.Title, f => f.Name.JobTitle())
+                                    .RuleFor(s => s.Content, f => f.Name.JobDescriptor())
+                                    .RuleFor(s => s.Email, (f, s) => f.PickRandom(null, faker.Internet.Email(s.FilledUsername)))
+                                    .RuleFor(s => s.Phone, f => f.PickRandom(PhoneUtil.NormalizePhone(f.Phone.PhoneNumber("+7 914 ### ## ##")), null, null))
+                                    .RuleFor(s => s.Type, f => f.PickRandom(Enum.GetValues<FeedbackType>().Select(s => s.ToString())))
+                                    .Generate();
 
         fixture.Customize<CreateFeedbackRequest>(composer => composer
                                     .FromSeed(s => feedback())
@@ -175,6 +177,27 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
                                     .With(s => s.LangCode, Chance(["", "ru"]))
                                     //.With(s => s.Meta, null)
+                                    );
+
+        fixture.Customize<CreatePostCategoryTypeRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Title, fixture.Create("PostCategoryType - "))
+                                    .With(s => s.TypeName)
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.MetaFields)
+                                    );
+
+        fixture.Customize<CreatePostCategoryRequest>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.ParentId, (Guid?)null)
+                                    .With(s => s.Title, fixture.Create("PostCategory - "))
+                                    .With(s => s.Type, PostCategoryTypeEntity.DefaultTypeName)
+                                    .With(s => s.PostType, "post")
+                                    .With(s => s.Disabled, false)
+                                    .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
+                                    .With(s => s.MetaValues)
                                     );
     }
 }

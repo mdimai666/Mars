@@ -80,4 +80,6 @@ public class PostTypeEntity : IBasicEntity
     //public ModelViewSettingsEntity ViewSettings { get; set; } = new();
 
     public PostTypePresentationEntity? Presentation { get; set; }
+
+    public virtual ICollection<PostCategoryEntity>? PostCategories { get; set; }
 }

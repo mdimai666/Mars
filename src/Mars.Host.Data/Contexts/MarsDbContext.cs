@@ -41,6 +41,12 @@ public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, G
     public virtual DbSet<PostMetaValueEntity> PostMetaValues { get; set; } = default!;
     public virtual DbSet<PostTypePresentationEntity> PostTypePresentations { get; set; } = default!;
 
+    //--------POST categories----------
+    public virtual DbSet<PostCategoryEntity> PostCategories { get; set; } = default!;
+    public virtual DbSet<PostCategoryTypeEntity> PostCategoryTypes { get; set; } = default!;
+    public virtual DbSet<PostCategoryTypeMetaFieldEntity> PostCategoryTypeMetaFields { get; set; } = default!;
+    public virtual DbSet<PostCategoryMetaValueEntity> PostCategoryMetaValues { get; set; } = default!;
+
     //--------USER----------
     public virtual DbSet<UserTypeMetaFieldEntity> UserTypeMetaFields { get; set; } = default!;
     public virtual DbSet<UserMetaValueEntity> UserMetaValues { get; set; } = default!;

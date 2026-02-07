@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Mars.Core.Extensions;
 using Mars.Shared.Common;
-using Mars.Shared.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Shared.Dto.Common;
@@ -10,9 +9,9 @@ public static class ListDataExtensions
 {
     public static async Task<ListDataResult<T>> ToListDataResult<T>(this IQueryable<T> source, IBasicListQuery query, CancellationToken cancellationToken)
     {
-        var sort = string.IsNullOrEmpty(query.Sort) ? $"-{nameof(IBasicEntity.CreatedAt)}" : query.Sort;
+        if (!string.IsNullOrEmpty(query.Sort)) source = source.OrderBySortStringParam(query.Sort);
 
-        var items = await source.OrderBySortStringParam(sort).ApplyPaging(query).ToListAsync(cancellationToken);
+        var items = await source.ApplyPaging(query).ToListAsync(cancellationToken);
 
         if (items.Count == 0)
         {
@@ -33,16 +32,16 @@ public static class ListDataExtensions
     public static ListDataResult<T> AsListDataResult<T>(this IEnumerable<T> source, IBasicListQuery query)
     {
         IReadOnlyCollection<T> items;
-        var sort = string.IsNullOrEmpty(query.Sort) ? $"-{nameof(IBasicEntity.CreatedAt)}" : query.Sort;
 
+        if (!string.IsNullOrEmpty(query.Sort)) source = source.OrderBySortStringParam(query.Sort);
 
         if (query.Skip > 0)
         {
-            items = source.OrderBySortStringParam(sort).Skip(query.Skip).Take(query.Take).ToList();
+            items = source.Skip(query.Skip).Take(query.Take).ToList();
         }
         else
         {
-            items = source.OrderBySortStringParam(sort).Take(query.Take).ToList();
+            items = source.Take(query.Take).ToList();
         }
 
         var sourceCount = source.Count();

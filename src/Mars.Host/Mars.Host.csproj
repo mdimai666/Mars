@@ -51,7 +51,6 @@
         <Compile Remove="Services\GeoRegionCenterService.cs" />
         <Compile Remove="Services\GeoRegionService.cs" />
         <Compile Remove="Services\MinimalService.cs" />
-        <Compile Remove="Services\PostCategoryService.cs" />
         <Compile Remove="Services\StandartModelService.cs" />
         <Compile Remove="Services\StoEntityTypeService.cs" />
         <Compile Remove="Services\StorageService.cs" />

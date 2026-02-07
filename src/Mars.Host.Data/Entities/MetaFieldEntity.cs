@@ -94,6 +94,11 @@ public class MetaFieldEntity : IBasicEntity
     [NotMapped]
     public virtual List<UserTypeEntity>? UserTypes { get; set; }
 
+    public virtual ICollection<PostCategoryTypeMetaFieldEntity>? PostCategoryTypeMetaFields { get; set; }
+
+    [NotMapped]
+    public virtual List<PostCategoryTypeEntity>? PostCategoryTypes { get; set; }
+
     #region ENUMS
     public static readonly EMetaFieldType[] ENumbers = MetaValueEntity.ENumbers;
     public static readonly EMetaFieldType[] EStrings = MetaValueEntity.EStrings;

@@ -21,7 +21,7 @@ public sealed class PostTypeConstants
     {
         public static readonly string[] All = [
             Content, Status, ModifyCreatedDate,
-            Language, Tags, Excerpt
+            Language, Tags, Excerpt, Category
         ];
 
         public const string Content = "Content";
@@ -30,6 +30,7 @@ public sealed class PostTypeConstants
         public const string Language = "Language";
         public const string Tags = "Tags";
         public const string Excerpt = "Excerpt";
+        public const string Category = "Category";
     }
 
 }

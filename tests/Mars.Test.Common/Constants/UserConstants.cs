@@ -76,6 +76,14 @@ public static class UserConstants
         PhoneNumber = "+79990000666",
         SecurityStamp = "",
     };
+
+    public static readonly PostCategoryTypeEntity TestPostCategoryType = new()
+    {
+        Id = new Guid("0d991089-50e1-47d0-99c5-ddec74b986ca"),
+        TypeName = PostCategoryTypeEntity.DefaultTypeName,
+        Title = PostCategoryTypeEntity.DefaultTypeName,
+        CreatedAt = DateTimeOffset.Now,
+    };
 }
 
 public record UserDetailTestModel : UserDetail

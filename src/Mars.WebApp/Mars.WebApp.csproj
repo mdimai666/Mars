@@ -173,7 +173,6 @@
         <Compile Remove="Controllers\GeoMunicTypeController.cs" />
         <Compile Remove="Controllers\GeoRegionCenterController.cs" />
         <Compile Remove="Controllers\GeoRegionController.cs" />
-        <Compile Remove="Controllers\PostCategoryController.cs" />
         <Compile Remove="Controllers\StatisticController.cs" />
         <Compile Remove="Controllers\StoEntityTypeController.cs" />
     </ItemGroup>

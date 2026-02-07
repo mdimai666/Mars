@@ -435,6 +435,18 @@
   <data name="Post.many" xml:space="preserve">
     <value>Posts</value>
   </data>
+  <data name="PostCategories" xml:space="preserve">
+    <value>Post categories</value>
+  </data>
+  <data name="PostCategory" xml:space="preserve">
+    <value>Post category</value>
+  </data>
+  <data name="PostCategoryType" xml:space="preserve">
+    <value>Post category type</value>
+  </data>
+  <data name="PostCategoryTypes" xml:space="preserve">
+    <value>Post category types</value>
+  </data>
   <data name="Posts" xml:space="preserve">
     <value>Posts</value>
   </data>

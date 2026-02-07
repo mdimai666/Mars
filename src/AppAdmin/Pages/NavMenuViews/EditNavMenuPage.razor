@@ -122,7 +122,7 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <h6 class="flex-fill">Свойства</h6>
-                                        <a class="fz14px text-accent" @onclick=@(e => _selNode = null)>отмена</a>
+                                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(e => _selNode = null)">@AppRes.Cancel</FluentButton>
                                     </div>
                                     @if (_selMenu is null)
                                     {

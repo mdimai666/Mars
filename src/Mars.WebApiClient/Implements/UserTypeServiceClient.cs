@@ -1,6 +1,5 @@
 using Flurl.Http;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 
@@ -53,19 +52,5 @@ internal class UserTypeServiceClient : BasicServiceClient, IUserTypeServiceClien
         => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<UserTypeListItemResponse>>();
-
-    public Task<IReadOnlyCollection<MetaRelationModelResponse>> AllMetaRelationsStructure()
-        => _client.Request($"{_basePath}{_controllerName}/AllMetaRelationsStructure")
-                    .GetJsonAsync<IReadOnlyCollection<MetaRelationModelResponse>>();
-
-    public Task<ListDataResult<MetaValueRelationModelSummaryResponse>> ListMetaValueRelationModels(MetaValueRelationModelsListQueryRequest request)
-        => _client.Request($"{_basePath}{_controllerName}/ListMetaValueRelationModels")
-                    .AppendQueryParam(request)
-                    .GetJsonAsync<ListDataResult<MetaValueRelationModelSummaryResponse>>();
-
-    public Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>> GetMetaValueRelationModels(string modelName, Guid[] ids)
-        => _client.Request($"{_basePath}{_controllerName}/GetMetaValueRelationModels", modelName)
-                    .SetQueryParams(new { ids })
-                    .GetJsonAsync<IReadOnlyDictionary<Guid, MetaValueRelationModelSummaryResponse>>();
 
 }

@@ -1,0 +1,25 @@
+@page "/EditPostCategory/{POSTTYPE}"
+@page "/EditPostCategory/{POSTTYPE}/{ID:guid}"
+
+@using AppFront.Shared.Tools
+@using Mars.Shared.Contracts.PostCategoryTypes
+@using MarsCodeEditor2
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper>
+
+    <EditPostCategoryView ID=@ID PostCategoryTypeName=@CategoryTypeName PostTypeName="@POSTTYPE" />
+    <div class="spacer-2"></div>
+
+</ContentWrapper>
+
+@code {
+
+    [Parameter] public Guid ID { get; set; }
+    [Parameter] public string POSTTYPE { get; set; } = "default";
+
+    [Parameter, SupplyParameterFromQuery] public string CategoryTypeName { get; set; } = "default";
+}

@@ -109,7 +109,7 @@ internal class PostCategoryRepository : IPostCategoryRepository
             pathIds = [query.Id];
             slugPath = '/' + query.Slug;
         }
-        if (isParentChanged)
+        else if (isParentChanged)
         {
             var parent = await _marsDbContext.PostCategories.FirstAsync(s => s.Id == query.ParentId);
             pathIds = [.. parent.PathIds, query.Id];

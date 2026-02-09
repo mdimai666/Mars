@@ -1,0 +1,106 @@
+@using System.Linq.Expressions
+@using AppAdmin.Pages.PageViews
+@using BlazoredHtmlRender
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Shared.Contracts.PostCategories;
+@using Mars.Shared.Contracts.PostCategoryTypes;
+
+@inject IStringLocalizer<AppRes> L
+
+<d-manage-post-category-view class="flex-fill d-flex flex-column">
+    <div class="hstack gap-1">
+        <FluentSearch @bind-Value=_searchText
+                      @bind-Value:after=HandleSearchInput
+                      Immediate
+                      ImmediateDelay="300"
+                      Appearance="FluentInputAppearance.Filled"
+                      AriaLabel="Search" />
+        <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+        <div class="ms-auto">
+
+            @if (false)
+            {
+                <a href="@urlEditPage/@PostType.TypeName?CategoryTypeName=default">
+                    <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
+                </a>
+            }
+            else
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="ClickCreate"
+                              IconStart="@(new Icons.Regular.Size16.Add())">
+                    @AppRes.Create
+                </FluentButton>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4 flex-fill d-flex flex-column">
+        <div style="height: 534px; overflow:auto; flex: 1 1 auto;">
+            <FluentDataGrid ItemsProvider="dataProvider"
+                            @ref=table
+                            ItemSize="48"
+                            Virtualize
+                            GridTemplateColumns="auto min-content"
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            Class="adaptive-table"
+                            TGridItem="PostCategoryListItemResponse">
+                <TemplateColumn SortBy="@(GridSort<PostCategoryListItemResponse>.ByDescending(f => f.SlugPath))"
+                                Title="@AppRes.Title"
+                                InitialSortDirection="SortDirection.Ascending"
+                                IsDefaultSortColumn="true"
+                                Sortable="true">
+                    @{
+                        var padding = (context.LevelsCount - 1) * 20;
+                        var _style = $"padding-left:{padding}px;";
+                    }
+                    <div class="position-relative d-block d-lg-none" style="@_style">
+                        <a role="button" class="text-accent"
+                           @onclick="@(() => ClickItem(context))"
+                           data-href="@($"{urlEditPage}/{PostType.TypeName}/{context.Id}")">
+                            @context.Title
+                        </a>
+                        <div class="text-secondary small">@context.SlugPath</div>
+                        <div class="hstack gap-4">
+                            <div class="text-secondary small">@context.CreatedAt.ToString("d")</div>
+                            @{
+                                <FluentOverflow Style="width: 100%;">
+                                    @foreach (var tag in context.Tags)
+                                    {
+                                        <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                                    }
+                                </FluentOverflow>
+                            }
+                        </div>
+                    </div>
+                    <div class="position-relative d-none d-lg-block" style="@_style">
+                        <div class="">
+                            <div class="fs-6">
+                                <a role="button" class="text-accent"
+                                   @onclick="@(() => ClickItem(context))"
+                                   data-href="@($"{urlEditPage}/{PostType.TypeName}/{context.Id}")">
+                                    @context.Title
+                                </a>
+                            </div>
+                            <div class="text-secondary small">@context.SlugPath</div>
+                        </div>
+                    </div>
+                </TemplateColumn>
+                <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
+                    <div class="hstack">
+                        <DFluentDeleteButton OnConfirm=@(e => DeleteItem(context))>
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </DFluentDeleteButton>
+                    </div>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+        <br />
+        <div class="hstack">
+            <TotalResultsFound TotalCount="@data.TotalCount" />
+            <div class="ms-auto">
+            </div>
+        </div>
+    </div>
+</d-manage-post-category-view>

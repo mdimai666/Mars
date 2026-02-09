@@ -16,6 +16,7 @@ public static class PostCategoryMapping
             Title = entity.Title,
             TypeName = entity.Type,
             Slug = entity.Slug,
+            Tags = entity.Tags,
 
             PostType = entity.PostType,
             Path = entity.Path,
@@ -32,6 +33,7 @@ public static class PostCategoryMapping
           Title = entity.Title,
           TypeName = entity.Type,
           Slug = entity.Slug,
+          Tags = entity.Tags,
 
           PostType = entity.PostType,
           Path = entity.Path,
@@ -76,7 +78,7 @@ public static class PostCategoryMapping
             PathIds = entity.PathIds,
             Disabled = entity.Disabled,
             MetaValues = entity.MetaValues.ToDetailResponse(),
-            
+
         };
 
     public static ListDataResult<PostCategoryListItemResponse> ToResponse(this ListDataResult<PostCategorySummary> postTypes)

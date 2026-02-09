@@ -2,7 +2,6 @@
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
-
 <d-meta-field class="FormMetaField">
 
     <CascadingValue Value="this">
@@ -20,7 +19,7 @@
                                 <div class="flex-fill fz18px">
                                     @(MetaFieldEditModel.TypeIcons[field.Type])
 
-                                    <span class="@(field.Disabled?"text-secondary text-strike":"") @(field.Hidden?"text-italic":"")">
+                                    <span class="@(field.Disabled ? "text-secondary text-strike" : "") @(field.Hidden ? "text-italic" : "")">
                                         @(string.IsNullOrEmpty(field.Title) ? "<nameless>" : field.Title)
                                     </span>
                                     @*<span class="text-primary fz14px">{@field.Id}</span>*@
@@ -35,7 +34,7 @@
                                     <span class="text-secondary fz12px">
                                         @field.Key
                                     </span>
-                                    <DFluentDeleteButton OnConfirm="()=>OnDelete(field)">
+                                    <DFluentDeleteButton OnConfirm="() => OnDelete(field)">
                                         <span class="text-danger">удалить</span>
                                     </DFluentDeleteButton>
                                 </div>
@@ -53,24 +52,27 @@
                                     <div class="FormMetaField_Row vstack gap-3">
                                         <div class="row row-cols-3 g-4">
                                             <div class="col">
-                                                <FormItem2 For="()=>field.Title">
-                                                    <FluentTextField @bind-Value=@field.Title Style="min-width:200px" Appearance="FluentInputAppearance.Filled" Required />
+                                                <FormItem2 For="() => field.Title">
+                                                    <FluentTextField Value=@field.Title
+                                                                     ValueChanged="@((v)=>OnChangeFieldTitle(v,field))"
+                                                                     Style="min-width:200px"
+                                                                     Appearance="FluentInputAppearance.Filled" Required />
                                                 </FormItem2>
                                             </div>
                                             <div class="col">
-                                                <FormItem2 For="()=>field.Key">
+                                                <FormItem2 For="() => field.Key">
                                                     <FluentTextField @bind-Value=@field.Key Required />
                                                 </FormItem2>
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 g-4">
                                             <div class="col">
-                                                <FormItem2 For="()=>field.Description">
+                                                <FormItem2 For="() => field.Description">
                                                     <FluentTextArea Rows="2" @bind-Value=@field.Description Class="w-100" />
                                                 </FormItem2>
                                             </div>
                                             <div class="col">
-                                                <FormItem2 For="()=>field.Tags">
+                                                <FormItem2 For="() => field.Tags">
                                                     <InputTags2 @bind-Value=field.Tags />
                                                 </FormItem2>
                                             </div>
@@ -78,14 +80,14 @@
 
                                         @if (false)
                                         {
-                                            <FormItem2 For="()=>field.IsNullable">
+                                            <FormItem2 For="() => field.IsNullable">
                                                 <FluentCheckbox @bind-Value=@field.IsNullable />
                                             </FormItem2>
                                         }
 
                                         <div class="d-flex gap-3">
                                             <div>
-                                                <FormItem2 For="()=>field.Type">
+                                                <FormItem2 For="() => field.Type">
 
                                                     <FluentSelect TOption="MetaFieldType"
                                                                   Items="Enum.GetValues<MetaFieldType>()"
@@ -97,7 +99,7 @@
                                             <div>
                                                 @if (field.Type == MetaFieldType.Relation)
                                                 {
-                                                    <FormItem2 For="()=>field.ModelName">
+                                                    <FormItem2 For="() => field.ModelName">
 
                                                         <FluentSelect TOption="string"
                                                                       Width="250px"
@@ -173,7 +175,7 @@
                                                             </div>
                                                         }
                                                         <div class="text-end">
-                                                            <FluentButton OnClick="e=>AddNewField(field.Id)">Добавить</FluentButton>
+                                                            <FluentButton OnClick="e => AddNewField(field.Id)">Добавить</FluentButton>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -181,15 +183,12 @@
 
                                         }
 
-
-
                                         <div class="hstack gap-3">
                                             <FluentSwitch @bind-Value=field.Hidden Label="@AppRes.Hidden" />
                                             <FluentSwitch @bind-Value=field.Disabled Label="@AppRes.Disabled" />
 
                                             <FluentNumberField @bind-Value=field.Order Label="@AppRes.SortingOrder" Style="width:100px" />
                                         </div>
-
 
                                     </div>
                                 </div>

@@ -1,0 +1,51 @@
+@using AppAdmin.Pages.PostCategoriesViews
+@using AppAdmin.Pages.PostCategoryTypeViews
+@using AppFront.Shared.Tools
+@using Mars.Shared.Contracts.PostCategoryTypes
+@using MarsCodeEditor2
+@using Blazored.TextEditor
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<StandartEditForm1 TModel="PostCategoryEditModel"
+                   @ref=_editForm1
+                   IsAddNew="@(ID == Guid.Empty)"
+                   GetAction="@(()=>PostCategoryEditModel.GetAction(client, ID, PostCategoryTypeName, PostTypeName))"
+                   SaveAction="@((model, isCreate)=>PostCategoryEditModel.SaveAction(client, model, isCreate))"
+                   OnLoadData="OnLoadData"
+                   BeforeSave="BeforeSave"
+                   AfterSave="AfterSave">
+
+    <div class="vstack gap-3">
+
+        <div class="vstack">
+            <FluentTextField @bind-Value=@context.Title
+                             @bind-Value:after="OnChangeTitle"
+                             Label="@AppRes.Title"
+                             Appearance="@FluentInputAppearance.Filled"
+                             Required
+                             Style="zoom:1.1" />
+            <FluentValidationMessage For="@(() => context.Title)" />
+        </div>
+        <div class="">
+            <FluentTextField @bind-Value=@context.Slug Label="@AppRes.Slug" />
+            <FluentValidationMessage For="@(() => context.Slug)" />
+        </div>
+
+        <FormItem2 For="@(() => context.ParentId)">
+            <SelectParentPostCategoryDropDown @bind-Value="context.ParentId" OriginalId="context.Id" PostType="post" />
+        </FormItem2>
+
+        <FormItem2 For="@(() => context.Tags)">
+            <InputTags2 @bind-Value=context.Tags />
+        </FormItem2>
+
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@context.PostCategoryType.MetaFields">
+                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue />
+            </CascadingValue>
+        </CascadingValue>
+
+    </div>
+
+</StandartEditForm1>

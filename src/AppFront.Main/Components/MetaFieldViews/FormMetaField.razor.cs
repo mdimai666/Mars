@@ -1,3 +1,4 @@
+using Mars.Core.Features;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -26,7 +27,6 @@ public partial class FormMetaField
 
     [CascadingParameter]
     public IReadOnlyCollection<MetaRelationModelResponse> MetaRelationModels { get; set; } = default!;
-
 
     [Parameter]
     public Guid ParentId { get; set; } = Guid.Empty;
@@ -60,30 +60,13 @@ public partial class FormMetaField
         //}
     }
 
-    public static List<MetaFieldEditModel> TestMetaFieldsTemplates() => new()
+    void OnChangeFieldTitle(string value, MetaFieldEditModel model)
     {
-        new MetaFieldEditModel { Title = "bool1", Description = "desc", Key = "key1", MaxValue = 10, Type = MetaFieldType.Bool },
-        new MetaFieldEditModel { Title = "string1", Description = "desc", Key = "key2", MaxValue = 10, Type = MetaFieldType.String },
-        new MetaFieldEditModel { Title = "text1", Description = "", Key = "key3", MaxValue = 10, Type = MetaFieldType.Text },
-        new MetaFieldEditModel { Title = "int1", Description = "desc", Key = "key4", MaxValue = 10, Type = MetaFieldType.Int },
-        new MetaFieldEditModel { Title = "select1", Description = "desc", Key = "key5",
-        Type = MetaFieldType.Select,
-        Variants = new (){
-            new (){ Title = "val1", Tags=[ "tag1", "tag2" ], Value=5 },
-            new (){ Title = "val2" },
-        } },
-        new MetaFieldEditModel { Title = "selectMany2", Description = "desc", Key = "key5",
-        Type = MetaFieldType.SelectMany,
-        Variants = new(){
-            new (){ Title = "checkbox1" },
-            new (){ Title = "checkbox2" },
-            new (){ Title = "checkbox3" },
-        } },
-    };
-
-    void OnFinish()
-    {
-
+        model.Title = value;
+        if (string.IsNullOrWhiteSpace(model.Key))
+        {
+            model.Key = TextTool.TranslateToPostSlug(model.Title);
+        }
     }
 
     public void UpdateState()

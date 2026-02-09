@@ -1,0 +1,139 @@
+@using Mars.Shared.Contracts.PostCategories
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentAutocomplete TOption="PostCategoryListItemResponse"
+                    Id="@Id"
+                    Class="@Class"
+                    Style="@Style"
+                    Placeholder="@Placeholder"
+                    Disabled="Disabled"
+                    Width=@Width
+                    Multiple="false"
+                    SelectedOption="_selectedItem"
+                    SelectedOptionChanged="SelectedOptionChanged"
+                    OptionValue="@(v=>v.Id.ToString())"
+                    OnOptionsSearch="OnOptionsSearch"
+                    OptionText="@(x => x.Title)"
+                    OptionDisabled="OptionDisabled"
+                    MaximumSelectedOptions="1">
+    <OptionTemplate>
+        <div style=@GetOptionCssStyle(context)>
+            @context.Title
+        </div>
+    </OptionTemplate>
+</FluentAutocomplete>
+
+@code {
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    [Parameter]
+    public Guid Value { get; set; }
+
+    [Parameter, EditorRequired]
+    public Guid OriginalId { get; set; }
+
+    [Parameter, EditorRequired] public string PostType { get; set; } = default!;
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Выберите родительскую категорию...";
+
+    [Parameter]
+    public FluentInputAppearance Appearance { get; set; } = FluentInputAppearance.Outline;
+
+    [Parameter]
+    public string Width { get; set; } = "250px";
+
+    [Parameter]
+    public int IndentSize { get; set; } = 20;
+
+    [Parameter]
+    public EventCallback<Guid> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Id { get; set; } = "SelectParentPostCategoryDropDown-" + Guid.NewGuid();
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Style { get; set; }
+
+    private PostCategoryListItemResponse? _selectedItem;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_selectedItem == null && Value != Guid.Empty)
+        {
+            _ = Load();
+        }
+    }
+
+    void SelectedOptionChanged(PostCategoryListItemResponse? value)
+    {
+        _selectedItem = value;
+        if (Value != value?.Id)
+        {
+            ValueChanged.InvokeAsync(_selectedItem?.Id ?? Guid.Empty);
+        }
+        ;
+    }
+
+    private async Task Load()
+    {
+        var result = await client.PostCategory.Get(Value);
+        if (result != null)
+        {
+            _selectedItem = new()
+            {
+                Id = result.Id,
+                Title = result.Title,
+                Slug = result.Slug,
+                CreatedAt = result.CreatedAt,
+                LevelsCount = result.LevelsCount,
+                Path = result.Path,
+                PathIds = result.PathIds,
+                PostType = result.PostType,
+                SlugPath = result.SlugPath,
+                Type = result.TypeName,
+                Tags = result.Tags,
+            };
+            StateHasChanged();
+        }
+    }
+
+    private async Task<IEnumerable<PostCategoryListItemResponse>> SearchCategoriesAsync(string searchText)
+    {
+        var request = await client.PostCategory.ListForPostType(
+            PostType,
+            new()
+            {
+                Search = searchText,
+                Skip = 0,
+                Take = 20
+            });
+
+        return request.Items;
+    }
+
+    private async Task OnOptionsSearch(OptionsSearchEventArgs<PostCategoryListItemResponse> e)
+    {
+        e.Items = await SearchCategoriesAsync(e.Text);
+    }
+
+    private bool OptionDisabled(PostCategoryListItemResponse option)
+    {
+        return option.Id == OriginalId || option.PathIds.Contains(OriginalId);
+    }
+
+    private string GetOptionCssStyle(PostCategoryListItemResponse option)
+    {
+        var padding = (option.LevelsCount - 1) * IndentSize;
+        var cssStyle = $"padding-left:{padding}px; display:flex; align-items:center;";
+        return cssStyle;
+    }
+}

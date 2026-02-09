@@ -1,0 +1,67 @@
+@page "/PostCategory"
+@page "/PostCategory/{POSTTYPE}"
+@using AppAdmin.Pages.PageViews
+@using Mars.Shared.Contracts.PostCategories
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject IStringLocalizer<AppRes> L
+@attribute [Authorize(Roles = "Admin")]
+
+<ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
+    <SectionActions>
+        <XActionsDropDown ContextPart="@POSTTYPE" />
+    </SectionActions>
+    <ChildContent>
+
+        @if (_busy)
+        {
+            <SharedLoader1 />
+        }
+        else if (postType is null)
+        {
+            <SharedContentNoRecords />
+        }
+        else
+        {
+            <div class="row row-cols-lg-2 gx-5">
+                <div class="col">
+                    <ManagePostCategoryView @ref=_managePostCategoryView
+                                            PostType=@postType
+                                            OnClickItem="OnClickItem"
+                                            OnClickCreate="OnClickCreate"
+                                            OnDeleteItem="OnDeleteItem" />
+                </div>
+                <div class="col">
+                    @if (showEditForm)
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-end">
+                                    <FluentButton Appearance="Appearance.Neutral" OnClick="OnClickCancel">
+                                        @AppRes.Cancel
+                                    </FluentButton>
+                                </div>
+                                <EditPostCategoryView ID="_selId"
+                                                      @ref="_editPostForm"
+                                                      PostTypeName="@postType.TypeName"
+                                                      PostCategoryTypeName="default"
+                                                      AfterSave="AfterSave"
+                                                      AfterDelete="AfterDelete" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card text-center opacity-50 ">
+                            <div class="card-body">
+                                <h4 class="card-title my-2 fw-normal">
+                                    Выберите для редактирования
+                                </h4>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+    </ChildContent>
+</ContentWrapper>

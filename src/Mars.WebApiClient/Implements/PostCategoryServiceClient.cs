@@ -12,15 +12,13 @@ internal class PostCategoryServiceClient : BasicServiceClient, IPostCategoryServ
         _controllerName = "PostCategory";
     }
 
-    public Task<PostCategoryDetailResponse?> Get(Guid id, bool renderContent = true)
+    public Task<PostCategoryDetailResponse?> Get(Guid id)
         => _client.Request($"{_basePath}{_controllerName}", id)
-                    .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostCategoryDetailResponse?>();
 
-    public Task<PostCategoryDetailResponse?> GetBySlug(string slug, string type, bool renderContent = true)
+    public Task<PostCategoryDetailResponse?> GetBySlug(string slug, string type)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/item/{slug}")
-                    .AppendQueryParam("renderContent", renderContent)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostCategoryDetailResponse?>();
 

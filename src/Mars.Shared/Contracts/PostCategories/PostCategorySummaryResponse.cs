@@ -25,6 +25,7 @@ public record PostCategorySummaryResponse : IBasicEntityResponse
 
     [StringLength(100)]
     public required string PostType { get; init; }
+    public required IReadOnlyCollection<string> Tags { get; init; }
 
     /// <summary>
     /// /{rootId}/{parentId}/{id}/

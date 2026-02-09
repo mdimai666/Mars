@@ -6,8 +6,8 @@ namespace Mars.WebApiClient.Interfaces;
 
 public interface IPostCategoryServiceClient
 {
-    Task<PostCategoryDetailResponse?> Get(Guid id, bool renderContent = true);
-    Task<PostCategoryDetailResponse?> GetBySlug(string slug, string type, bool renderContent = true);
+    Task<PostCategoryDetailResponse?> Get(Guid id);
+    Task<PostCategoryDetailResponse?> GetBySlug(string slug, string type);
 
     /// <summary>
     /// Создает

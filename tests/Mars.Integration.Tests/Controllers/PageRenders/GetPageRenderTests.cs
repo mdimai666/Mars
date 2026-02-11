@@ -19,7 +19,6 @@ public class GetPageRenderTests : ApplicationTests
 {
     const string _apiUrl = "/api/PageRender";
 
-
     public GetPageRenderTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
@@ -36,14 +35,14 @@ public class GetPageRenderTests : ApplicationTests
     public async Task RenderPostById_Request_Success()
     {
         //Arrange
-        _ = nameof(PageRenderController.Render);
+        _ = nameof(PageRenderController.RenderById);
         _ = nameof(PageRenderService.RenderPostById);
         var client = AppFixture.GetClient();
 
         var post = await GetPostFirstByType("post");
 
         //Act
-        var res = await client.Request(_apiUrl, "Render", post.Id).AllowAnyHttpStatus().GetAsync();
+        var res = await client.Request(_apiUrl, "by-id", post.Id).AllowAnyHttpStatus().GetAsync();
         var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
 
         //Assert
@@ -62,7 +61,7 @@ public class GetPageRenderTests : ApplicationTests
         var post = await GetPostFirstByType("post");
 
         //Act
-        var res = await client.Request(_apiUrl, "RenderPost", post.Type, post.Slug).AllowAnyHttpStatus().GetAsync();
+        var res = await client.Request(_apiUrl, "by-post", post.Type, post.Slug).AllowAnyHttpStatus().GetAsync();
         var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
 
         //Assert
@@ -74,14 +73,14 @@ public class GetPageRenderTests : ApplicationTests
     public async Task RenderPageBySlug_Request_Success()
     {
         //Arrange
-        _ = nameof(PageRenderController.Render);
+        _ = nameof(PageRenderController.RenderPageBySlug);
         _ = nameof(PageRenderService.RenderPageBySlug);
         var client = AppFixture.GetClient();
 
         var post = await GetPostFirstByType("page");
 
         //Act
-        var res = await client.Request(_apiUrl, "Render", post.Slug).AllowAnyHttpStatus().GetAsync();
+        var res = await client.Request(_apiUrl, "by-slug", post.Slug).AllowAnyHttpStatus().GetAsync();
         var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
 
         //Assert
@@ -100,7 +99,7 @@ public class GetPageRenderTests : ApplicationTests
         var url = HttpUtility.UrlEncode("/admin");
 
         //Act
-        var res = await client.Request(_apiUrl, "RenderUrl", url).AllowAnyHttpStatus().GetAsync();
+        var res = await client.Request(_apiUrl, "by-url").AppendQueryParam(new { url }).AllowAnyHttpStatus().GetAsync();
         var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
 
         //Assert
@@ -119,7 +118,7 @@ public class GetPageRenderTests : ApplicationTests
         var url = HttpUtility.UrlEncode($"/zuzu/{Guid.NewGuid()}");
 
         //Act
-        var res = await client.Request(_apiUrl, "RenderUrl", url).AllowAnyHttpStatus().GetAsync();
+        var res = await client.Request(_apiUrl, "by-url").AppendQueryParam(new { url }).AllowAnyHttpStatus().GetAsync();
         var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
 
         //Assert

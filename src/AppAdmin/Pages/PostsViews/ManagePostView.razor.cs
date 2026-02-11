@@ -5,23 +5,19 @@ using Mars.Shared.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace AppAdmin.Pages.PostsViews;
 
 public partial class ManagePostView
 {
-
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
-    [Inject] IJSRuntime jSRuntime { get; set; } = default!;
-    [Inject] IDialogService dialogService { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public PostTypeAdminPanelItemResponse PostType { get; set; } = default!;
     string previousRequestPostTypeName = "";
 
     string urlEditPage = "/dev/EditPost";
+    string GridTemplateColumns = "3fr 2fr 1fr 1fr";
 
     //table
     FluentDataGrid<PostListItemResponse> table = default!;
@@ -29,10 +25,19 @@ public partial class ManagePostView
     ListDataResult<PostListItemResponse> data = ListDataResult<PostListItemResponse>.Empty();
     GridItemsProvider<PostListItemResponse> dataProvider = default!;
 
+    Guid _filterCategoryId;
     string prevPostTypeName = "";
 
     protected override void OnParametersSet()
     {
+        GridTemplateColumns = "3fr" // Title
+            + (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category) ? " 2fr" : "")
+            //+ (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags) ? " 1.1fr" : "")
+            + (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status) ? " min-content" : "")
+            + " min-content" //Author
+            + " min-content" //CreatedAt
+            + " min-content"; //Actions
+
         if (prevPostTypeName != PostType.TypeName)
         {
             prevPostTypeName = PostType.TypeName;
@@ -55,6 +60,9 @@ public partial class ManagePostView
                         Take = req.Count ?? BasicListQuery.DefaultPageSize,
                         Sort = sort,
                         Search = _searchText,
+                        IncludeCategory = true,
+                        CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
+                        FilterIncludeDescendantsCategories = false
                     });
 
                     var collection = new Collection<PostListItemResponse>(data.Items.ToList());
@@ -91,4 +99,15 @@ public partial class ManagePostView
         table?.RefreshDataAsync();
     }
 
+    void HandleCategoryFilterChanged()
+    {
+        table.RefreshDataAsync();
+    }
+
+    void ClickPostItemCategory(Guid categoryId)
+    {
+        _filterCategoryId = categoryId;
+        StateHasChanged();
+        HandleCategoryFilterChanged();
+    }
 }

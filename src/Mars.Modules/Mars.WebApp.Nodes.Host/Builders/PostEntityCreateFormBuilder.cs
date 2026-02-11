@@ -57,6 +57,7 @@ public class PostEntityCreateFormBuilder : IAppEntityCreateFormBuilder
             create(nameof(CreatePostJsonQuery.Status), title: AppRes.Status, placeholder: "auto default" ),
             create(nameof(CreatePostJsonQuery.Excerpt), title: AppRes.Excerpt),
             create(nameof(CreatePostJsonQuery.LangCode), title: AppRes.Language),
+            create(nameof(CreatePostJsonQuery.CategoryIds), title: AppRes.Categories, placeholder: "id1,id2,..."),
         };
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(subType);
@@ -145,6 +146,9 @@ public class PostEntityCreateFormBuilder : IAppEntityCreateFormBuilder
             Status = valueString(nameof(CreatePostJsonQuery.Status)).AsNullIfEmpty() ?? status,
             //UserId = value<Guid?>(nameof(CreatePostJsonQuery.UserId), v => new Guid(v), asNullIfEmpty: true) ?? await defaultUserId(),
             UserId = await defaultUserId(),
+            CategoryIds = value<Guid[]?>(nameof(CreatePostJsonQuery.CategoryIds),
+                                                v=> v.Split(',', StringSplitOptions.TrimEntries ).Select(v=>Guid.Parse(v)).ToArray(),
+                                                asNullIfEmpty: true) ?? [],
             MetaValues = CreateStringMetaValuesToModifyDto(metaDict, postType.MetaFields, postType.TypeName),
         };
 

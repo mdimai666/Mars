@@ -10,6 +10,8 @@
                     Width=@Width
                     Multiple="false"
                     SelectedOption="_selectedItem"
+                    OptionSelected="@(v=>v.Id == Value)"
+                    Items="_lastRequestItems"
                     SelectedOptionChanged="SelectedOptionChanged"
                     OptionValue="@(v=>v.Id.ToString())"
                     OnOptionsSearch="OnOptionsSearch"
@@ -53,7 +55,7 @@
     public EventCallback<Guid> ValueChanged { get; set; }
 
     [Parameter]
-    public string Id { get; set; } = "SelectParentPostCategoryDropDown-" + Guid.NewGuid();
+    public string Id { get; set; } = "SelectParentCategoryDropDown-" + Guid.NewGuid();
 
     [Parameter]
     public string? Class { get; set; }
@@ -62,6 +64,7 @@
     public string? Style { get; set; }
 
     private PostCategoryListItemResponse? _selectedItem;
+    private IReadOnlyCollection<PostCategoryListItemResponse> _lastRequestItems = [];
 
     protected override void OnParametersSet()
     {
@@ -80,30 +83,13 @@
         {
             ValueChanged.InvokeAsync(_selectedItem?.Id ?? Guid.Empty);
         }
-        ;
     }
 
     private async Task Load()
     {
-        var result = await client.PostCategory.Get(Value);
-        if (result != null)
-        {
-            _selectedItem = new()
-            {
-                Id = result.Id,
-                Title = result.Title,
-                Slug = result.Slug,
-                CreatedAt = result.CreatedAt,
-                LevelsCount = result.LevelsCount,
-                Path = result.Path,
-                PathIds = result.PathIds,
-                PostType = result.PostType,
-                SlugPath = result.SlugPath,
-                Type = result.TypeName,
-                Tags = result.Tags,
-            };
-            StateHasChanged();
-        }
+        if (Value == Guid.Empty) return;
+        _selectedItem = (await client.PostCategory.ListByIds(new() { Ids = [Value] })).FirstOrDefault();
+        StateHasChanged();
     }
 
     private async Task<IEnumerable<PostCategoryListItemResponse>> SearchCategoriesAsync(string searchText)
@@ -117,7 +103,7 @@
                 Take = 20
             });
 
-        return request.Items;
+        return _lastRequestItems = request.Items;
     }
 
     private async Task OnOptionsSearch(OptionsSearchEventArgs<PostCategoryListItemResponse> e)

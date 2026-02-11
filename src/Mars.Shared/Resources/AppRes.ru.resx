@@ -159,6 +159,12 @@
   <data name="Cancel" xml:space="preserve">
     <value>Отмена</value>
   </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Категории</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Категория</value>
+  </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>Изменить пароль</value>
   </data>

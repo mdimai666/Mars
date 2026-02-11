@@ -253,7 +253,8 @@ internal class PostService : IPostService
             Type = postType.TypeName,
 
             Author = author,
-            MetaValues = []
+            MetaValues = [],
+            CategoryIds = [],
         };
     }
     #endregion

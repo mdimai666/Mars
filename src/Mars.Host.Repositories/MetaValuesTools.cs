@@ -6,7 +6,7 @@ using Mars.Host.Shared.Dto.MetaFields;
 
 namespace Mars.Host.Repositories;
 
-public class MetaValuesTools
+public static class MetaValuesTools
 {
     public static void ModifyMetaValues(
         MarsDbContext _marsDbContext,

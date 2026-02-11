@@ -1,3 +1,4 @@
+using Mars.Host.Shared.Dto.PostCategories;
 using Mars.Shared.Models.Interfaces;
 
 namespace Mars.Host.Shared.Dto.Posts;
@@ -14,4 +15,5 @@ public record PostSummary : IBasicEntity
     public required PostAuthor Author { get; init; }
     public required KeyValuePair<string, string>? Status { get; init; }
 
+    public required IReadOnlyCollection<PostCategorySummary>? Categories { get; init; }
 }

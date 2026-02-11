@@ -179,25 +179,6 @@ public class PostController : ControllerBase
         return _postService.DeleteMany(new DeleteManyPostQuery { Ids = ids }, cancellationToken);
     }
 
-    //------------ Extra
-    //------------ Extra
-    //------------ Extra
-    //------------ Extra
-    //--
-    //--
-    //--
-    //--
-    //--
-    //--
-    //--
-
-    //[HttpGet(nameof(GetBlank) + "/{postTypeName}")]
-    //public async Task<Post> GetBlank(string postTypeName)
-    //{
-    //    throw new NotImplementedException();
-    //    //return await modelService.GetBlank(postTypeName);
-    //}
-
     [Authorize]
     [HttpPost(nameof(Upload))]
     [RequestSizeLimit(2_147_483_648)]//2GB
@@ -220,67 +201,5 @@ public class PostController : ControllerBase
 
         return action;
     }
-
-    /*
-    ///////////////////////////////////////
-    //Comments
-    [HttpGet(nameof(Comments) + "/{id:guid}")]
-    public async Task<IEnumerable<CommentDto>> Comments(Guid id)
-    {
-        CheckPostTypeFeature(nameof(AppShared.Models.Post.Comments));
-        var a = await modelService.Comments(id);
-        return a;
-    }
-
-    [Authorize]
-    [HttpPost(nameof(Comments) + "/{id:guid}")]
-    public async Task<UserActionResult<Comment>> AddComment(Guid id, CommentAddDto dto)
-    {
-        CheckPostTypeFeature(nameof(AppShared.Models.Post.Comments));
-        return await modelService.AddComment(dto);
-    }
-
-    [Authorize]
-    [HttpDelete(nameof(Comments) + "/{id:guid}/{commentId:guid}")]
-    public async Task<UserActionResult> RemoveComment(Guid id, Guid commentId)
-    {
-        CheckPostTypeFeature(nameof(AppShared.Models.Post.Comments));
-        return await modelService.RemoveComment(id, commentId);
-    }
-
-    ///////////////////////////////////////
-    //Likes
-    [Authorize]
-    [HttpGet(nameof(LikedUsers) + "/{id:guid}")]
-    public async Task<IEnumerable<UserDto>> LikedUsers(Guid id)
-    {
-        CheckPostTypeFeature(nameof(AppShared.Models.Post.Likes));
-        return await modelService.LikedUsers(id);
-    }
-
-    [Authorize]
-    [HttpPut(nameof(LikePost) + "/{id:guid}")]
-    public async Task<UserLikeResult> LikePost(Guid id)
-    {
-        CheckPostTypeFeature(nameof(AppShared.Models.Post.Likes));
-        return await modelService.LikePost(id);
-    }
-
-    [Authorize]
-    [HttpPut(nameof(UnlikePost) + "/{id:guid}")]
-    public async Task<UserLikeResult> UnlikePost(Guid id)
-    {
-        CheckPostTypeFeature(nameof(AppShared.Models.Post.Likes));
-        return await modelService.UnlikePost(id);
-    }
-
-    //
-    [Authorize(Roles = "Admin")]
-    [HttpPost(nameof(ImportData) + "/json/{postType}")]
-    public async Task<UserActionResult> ImportData(string postType, [FromBody] JArray json)
-    {
-        return modelService.ImportData(postType, json);
-    }
-    */
 
 }

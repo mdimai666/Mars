@@ -13,11 +13,9 @@ internal static class PostCategoryMapping
             CreatedAt = entity.CreatedAt,
             ModifiedAt = entity.ModifiedAt,
             Title = entity.Title,
-            Type = entity.PostCategoryType!.TypeName,
             Tags = entity.Tags,
             Slug = entity.Slug,
 
-            PostType = entity.PostType!.TypeName,
             Path = entity.Path,
             SlugPath = entity.SlugPath,
             PathIds = entity.PathIds,

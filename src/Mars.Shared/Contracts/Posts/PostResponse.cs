@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Shared.Contracts.Common;
+using Mars.Shared.Contracts.PostCategories;
 
 namespace Mars.Shared.Contracts.Posts;
 
@@ -23,6 +24,7 @@ public record PostSummaryResponse : IBasicEntityResponse
     public required string Slug { get; init; }
 
     public required PostAuthorResponse Author { get; init; }
+    public required IReadOnlyCollection<PostCategorySummaryResponse>? Categories { get; init; }
 }
 
 public record PostDetailResponse : PostSummaryResponse
@@ -43,5 +45,6 @@ public record PostListItemResponse : IBasicEntityResponse
     public required IReadOnlyCollection<string> Tags { get; init; }
 
     public required PostAuthorResponse Author { get; init; }
-    public required KeyValuePair<string,string>? Status { get; init; }
+    public required IReadOnlyCollection<PostCategorySummaryResponse>? Categories { get; init; }
+    public required KeyValuePair<string, string>? Status { get; init; }
 }

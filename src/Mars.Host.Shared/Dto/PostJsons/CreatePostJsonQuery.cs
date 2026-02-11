@@ -14,6 +14,6 @@ public record CreatePostJsonQuery
     public required string? Status { get; init; }
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
-
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
     public required IReadOnlyDictionary<string, JsonValue>? Meta { get; init; }
 }

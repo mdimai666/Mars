@@ -25,8 +25,6 @@ internal class PostCategoryRepository : IPostCategoryRepository
 
     public async Task<PostCategorySummary?> Get(Guid id, CancellationToken cancellationToken)
                                 => (await _marsDbContext.PostCategories.AsNoTracking()
-                                        .Include(s => s.PostCategoryType)
-                                        .Include(s => s.PostType)
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
                                         ?.ToSummary();
 
@@ -296,15 +294,20 @@ internal class PostCategoryRepository : IPostCategoryRepository
         return (await list.ToListAsync(cancellationToken)).ToDetailList();
     }
 
-    IQueryable<PostCategoryEntity> ListFilterQuery(ListPostCategoryQuery query) => _listAllQuery
-                                    .AsNoTracking()
-                                    .Include(s => s.PostCategoryType)
-                                    .Include(s => s.PostType)
-                                    .Where(s => (query.Type == null || s.PostCategoryType.TypeName == query.Type)
-                                            || (query.PostTypeName == null || s.PostType.TypeName == query.PostTypeName))
-                                    .Where(s => query.Search == null
-                                    || (EF.Functions.ILike(s.Slug, $"%{query.Search}%")
-                                        || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
+    IQueryable<PostCategoryEntity> ListFilterQuery(ListPostCategoryQuery query)
+    {
+        var q = _listAllQuery.AsNoTracking();
+
+        if (!query.Type.IsNullOrEmpty()) q = q.Include(s => s.PostCategoryType);
+        if (!query.PostTypeName.IsNullOrEmpty()) q = q.Include(s => s.PostType);
+
+        return q.Where(s => (query.Type == null || s.PostCategoryType.TypeName == query.Type)
+                        || (query.PostTypeName == null || s.PostType.TypeName == query.PostTypeName))
+                .Where(s => query.Search == null
+                        || (EF.Functions.ILike(s.Id.ToString(), query.Search)
+                            || EF.Functions.ILike(s.Slug, $"%{query.Search}%")
+                            || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
+    }
 
     public async Task<ListDataResult<PostCategorySummary>> List(ListPostCategoryQuery query, CancellationToken cancellationToken)
     {
@@ -366,5 +369,12 @@ internal class PostCategoryRepository : IPostCategoryRepository
     //Extra methods
     public Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken)
                         => _marsDbContext.PostCategories.AsNoTracking().AnyAsync(s => s.Id == id, cancellationToken);
+
+    public async Task<bool> ExistAllAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        if (ids.None()) return true;
+        var existingCount = await _marsDbContext.PostCategories.AsNoTracking().CountAsync(s => ids.Contains(s.Id), cancellationToken);
+        return existingCount == ids.Count;
+    }
 
 }

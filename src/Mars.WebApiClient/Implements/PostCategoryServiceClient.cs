@@ -1,5 +1,6 @@
 using Flurl.Http;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.Common;
 using Mars.Shared.Contracts.PostCategories;
 using Mars.WebApiClient.Interfaces;
 
@@ -82,4 +83,9 @@ internal class PostCategoryServiceClient : BasicServiceClient, IPostCategoryServ
         => _client.Request($"{_basePath}{_controllerName}/edit/blank", categoryType, postType)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostCategoryEditViewModel>();
+
+    public Task<IReadOnlyCollection<PostCategoryListItemResponse>> ListByIds(ListByIdsRequest request)
+        => _client.Request($"{_basePath}{_controllerName}/list/by-ids")
+                    .PostJsonAsync(request)
+                    .ReceiveJson<IReadOnlyCollection<PostCategoryListItemResponse>>();
 }

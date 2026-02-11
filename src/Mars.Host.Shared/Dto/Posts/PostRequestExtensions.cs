@@ -21,6 +21,7 @@ public static class PostRequestExtensions
             MetaValues = request.MetaValues.ToQuery(metaFields),
             Excerpt = request.Excerpt,
             LangCode = request.LangCode,
+            CategoryIds = request.CategoryIds,
         };
 
     public static UpdatePostQuery ToQuery(this UpdatePostRequest request, Guid userId, IDictionary<Guid, MetaFieldDto> metaFields)
@@ -37,6 +38,7 @@ public static class PostRequestExtensions
             MetaValues = request.MetaValues.ToQuery(metaFields),
             Excerpt = request.Excerpt,
             LangCode = request.LangCode,
+            CategoryIds = request.CategoryIds,
         };
 
     public static ListPostQuery ToQuery(this ListPostQueryRequest request, string? postTypeName)
@@ -48,6 +50,9 @@ public static class PostRequestExtensions
             Sort = request.Sort,
 
             Type = postTypeName,
+            IncludeCategory = request.IncludeCategory,
+            CategoryId = request.CategoryId,
+            FilterIncludeDescendantsCategories = request.FilterIncludeDescendantsCategories,
         };
 
     public static ListPostQuery ToQuery(this TablePostQueryRequest request, string? postTypeName)
@@ -59,6 +64,9 @@ public static class PostRequestExtensions
             Sort = request.Sort,
 
             Type = postTypeName,
+            IncludeCategory = request.IncludeCategory,
+            CategoryId = request.CategoryId,
+            FilterIncludeDescendantsCategories = request.FilterIncludeDescendantsCategories,
         };
 
 }

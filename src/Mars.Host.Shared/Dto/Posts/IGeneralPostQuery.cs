@@ -11,4 +11,6 @@ public interface IGeneralPostQuery
     string? Excerpt { get; }
     string? Content { get; }
     string LangCode { get; }
+    IReadOnlyCollection<Guid> CategoryIds { get; init; }
+
 }

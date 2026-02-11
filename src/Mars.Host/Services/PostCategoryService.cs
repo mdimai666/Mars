@@ -1,4 +1,5 @@
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostCategories;
 using Mars.Host.Shared.Dto.PostCategoryTypes;
@@ -70,14 +71,20 @@ internal class PostCategoryService : IPostCategoryService
         return await _postRepository.ListTable(query, cancellationToken);
     }
 
+    public async Task<IReadOnlyCollection<PostCategorySummary>> ListSummaryByIds(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken)
+    {
+        if (ids.None()) return [];
+        return await _postRepository.ListAll(new() { Type = null, PostTypeName = null, Ids = ids }, cancellationToken);
+    }
+
     public async Task<PostCategoryDetail> Create(CreatePostCategoryQuery query, CancellationToken cancellationToken)
     {
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _postRepository.Create(query, cancellationToken);
-        var created = await GetDetail(id, cancellationToken);
+        var created = (await GetDetail(id, cancellationToken))!;
 
-        var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryAdd(created.Type), created);//TODO: сделать явный тип.
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryAdd(), created);//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
 
         return created;
@@ -88,9 +95,9 @@ internal class PostCategoryService : IPostCategoryService
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
 
         await _postRepository.Update(query, cancellationToken);
-        var updated = await GetDetail(query.Id, cancellationToken);
+        var updated = (await GetDetail(query.Id, cancellationToken))!;
 
-        var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryUpdate(updated.Type), updated);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryUpdate(), updated);
         _eventManager.TriggerEvent(payload);
 
         return updated;
@@ -104,7 +111,7 @@ internal class PostCategoryService : IPostCategoryService
 
         await _postRepository.Delete(id, cancellationToken);
 
-        var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryDelete(post.Type), post);
+        var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryDelete(), post);
         _eventManager.TriggerEvent(payload);
         return post;
     }
@@ -119,7 +126,7 @@ internal class PostCategoryService : IPostCategoryService
 
         foreach (var post in posts)
         {
-            var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryDelete(post.Type), post);
+            var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryDelete(), post);
             _eventManager.TriggerEvent(payload);
         }
         return posts;

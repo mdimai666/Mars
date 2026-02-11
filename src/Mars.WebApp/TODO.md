@@ -1,4 +1,7 @@
-# Markdown File
+# TODO LIST
+
+# Important!
+[ ] - Make a repository mapping as Select(Expression) instead end mapping. (do benchmark before)
 
 # CLI
 [ ] - Execute scripts

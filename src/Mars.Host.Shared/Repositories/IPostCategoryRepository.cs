@@ -25,4 +25,5 @@ public interface IPostCategoryRepository : IDisposable
     Task RecalculateCategoryPathHierarchyFallback(Guid postCategoryTypeId, Guid updatingItemId, bool force, CancellationToken cancellationToken);
     Task RecalculateCategoryTypePathHierarchy(Guid postCategoryTypeId, bool force, CancellationToken cancellationToken);
     Task RecalculateAllCategoryPathsHierarchy(CancellationToken cancellationToken);
+    Task<bool> ExistAllAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 }

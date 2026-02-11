@@ -69,7 +69,7 @@
         }
         else if(e.Code == "Backspace")
         {
-            if(Value.Count()>0) Value = Value[..^1];
+            if(_current.Length == 0 && Value.Count()>0) Value = Value[..^1];
         }
     }
 

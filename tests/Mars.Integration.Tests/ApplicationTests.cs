@@ -4,6 +4,8 @@ using Mars.Host.Data.Contexts;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace Mars.Integration.Tests;
 
 [Collection(TestConstants.App)]

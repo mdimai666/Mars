@@ -11,6 +11,7 @@ public interface IPostCategoryService
     Task<PostCategoryDetail?> GetDetailBySlug(string slug, string type, CancellationToken cancellationToken);
     Task<ListDataResult<PostCategorySummary>> List(ListPostCategoryQuery query, CancellationToken cancellationToken);
     Task<PagingResult<PostCategorySummary>> ListTable(ListPostCategoryQuery query, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostCategorySummary>> ListSummaryByIds(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
 
     Task<PostCategoryDetail> Create(CreatePostCategoryQuery query, CancellationToken cancellationToken);
     Task<PostCategoryEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken);

@@ -60,6 +60,10 @@ public sealed class CreatePostTests : ApplicationTests
         var postType = ef.PostTypes.Include(s => s.MetaFields).First(s => s.TypeName == "post");
         postType.MetaFields = metaFields;
         ef.MetaFields.AddRange(metaFields);
+        var categories = _fixture.CreateMany<PostCategoryEntity>(3).ToList();
+        ef.PostCategories.AddRange(categories);
+        if (!postType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+            postType.EnabledFeatures.Add(PostTypeConstants.Features.Category);
         ef.SaveChanges();
         AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 
@@ -67,7 +71,8 @@ public sealed class CreatePostTests : ApplicationTests
 
         var post = _fixture.Create<CreatePostRequest>() with
         {
-            MetaValues = metaValueCreateList
+            MetaValues = metaValueCreateList,
+            CategoryIds = categories.Take(2).Select(s => s.Id).ToList(),
         };
 
         //Act
@@ -79,7 +84,8 @@ public sealed class CreatePostTests : ApplicationTests
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
         var dbPost = ef.Posts.Include(s => s.MetaValues!)
-                                .ThenInclude(s => s.MetaField)
+                                    .ThenInclude(s => s.MetaField)
+                                .Include(s => s.Categories)
                                 .FirstOrDefault(s => s.Id == post.Id);
         dbPost.Should().NotBeNull();
 
@@ -99,6 +105,7 @@ public sealed class CreatePostTests : ApplicationTests
             //e.DateTime.Date.ToString("g").Should().Be(req.DateTime.Date.ToString("g"));
 
         });
+        dbPost.Categories!.Select(s => s.Id).Should().BeEquivalentTo(post.CategoryIds);
     }
 
     [IntegrationFact]

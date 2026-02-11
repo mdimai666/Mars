@@ -1,4 +1,5 @@
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories.Mappings;
@@ -6,11 +7,12 @@ using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Repositories;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.Posts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Repositories;
 
-internal class PostRepository : IPostRepository, IDisposable
+internal class PostRepository : IPostRepository
 {
     private readonly MarsDbContext _marsDbContext;
     private bool _disposed;
@@ -33,7 +35,8 @@ internal class PostRepository : IPostRepository, IDisposable
                                         .Include(s => s.PostType)
                                         .Include(s => s.User)
                                         .Include(s => s.MetaValues!)
-                                            .ThenInclude(s => s.MetaField);
+                                            .ThenInclude(s => s.MetaField)
+                                        .Include(s => s.Categories);
 
     public async Task<PostDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
                                 => (await InternalDetail
@@ -77,23 +80,15 @@ internal class PostRepository : IPostRepository, IDisposable
         var entity = await _marsDbContext.Posts.Include(s => s.PostType)
                                                 .Include(s => s.MetaValues!)
                                                     .ThenInclude(s => s.MetaField)
+                                                .Include(s => s.PostPostCategories)
                                                 .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                 ?? throw new NotFoundException();
-        var featureActive = (string featureName) => entity.PostType.EnabledFeatures.Contains(featureName);
 
-        entity.Title = query.Title;
-        entity.Slug = query.Slug;
-        //if(featureActive(PostTypeConstants.Features.Tags))
-        entity.Tags = query.Tags.ToList();
-        entity.Content = query.Content;
-        entity.Excerpt = query.Excerpt;
-        entity.Status = query.Status ?? "";
-        entity.LangCode = query.LangCode;
+        entity.UpdateEntity(query);
 
-        entity.ModifiedAt = DateTimeOffset.Now;
         if (query.MetaValues is not null)
         {
-            MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt.Value);
+            MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
         }
 
         if (entity.PostType.TypeName != query.Type)
@@ -168,31 +163,57 @@ internal class PostRepository : IPostRepository, IDisposable
         ThrowIfDisposed();
 
         var list = ListAllInternal(query).Include(s => s.MetaValues!)
-                                            .ThenInclude(s => s.MetaField);
+                                            .ThenInclude(s => s.MetaField)
+                                        .Include(s => s.Categories);
 
         return (await list.ToListAsync(cancellationToken)).ToDetailList();
     }
 
-    //public async Task<IReadOnlyCollection<PostSummary>> ListAllActive(CancellationToken cancellationToken)
-    //{
-    //    cancellationToken.ThrowIfCancellationRequested();
-    //    ThrowIfDisposed();
+    IQueryable<PostEntity> ListFilterQuery(ListPostQuery query)
+    {
+        var q = _listAllQuery.AsNoTracking()
+                            .Include(s => s.PostType)
+                            .Include(s => s.User)
+                            .Where(s => query.Type == null || s.PostType.TypeName == query.Type);
 
-    //    return (await _listAllQuery.AsNoTracking()
-    //                                .Include(s => s.PostType)
-    //                                .Include(s => s.User)
-    //                                .Where(s => s.DeletedAt != null)
-    //                                .ToListAsync(cancellationToken)).ToSummaryList();
-    //}
+        if (query.CategoryId is not null)
+        {
+            q = q.Include(s => s.Categories);
+            if (query.FilterIncludeDescendantsCategories)
+                q = q.Where(s => s.Categories!.Any(x => x.Path.Contains(query.CategoryId.ToString()!)));
+            else
+                q = q.Where(s => s.Categories!.Any(x => x.Id == query.CategoryId));
+        }
+        else if (query.IncludeCategory) q = q.Include(s => s.Categories);
 
-    IQueryable<PostEntity> ListFilterQuery(ListPostQuery query) => _listAllQuery
-                                    .AsNoTracking()
-                                    .Include(s => s.PostType)
-                                    .Include(s => s.User)
-                                    .Where(s => query.Type == null || s.PostType.TypeName == query.Type)
-                                    .Where(s => query.Search == null
-                                    || (EF.Functions.ILike(s.Slug, $"%{query.Search}%")
-                                        || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
+        return q.Where(s => query.Search == null
+                        || (EF.Functions.ILike(s.Id.ToString(), query.Search)
+                            || EF.Functions.ILike(s.Slug, $"%{query.Search}%")
+                            || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
+    }
+
+    ListPostQuery RewriteSorting(ListPostQuery query, ref IQueryable<PostEntity> queryable)
+    {
+        if (query.Sort.IsNullOrEmpty()) return query;
+
+        var sortColumnName = query.Sort.TrimStart('-');
+        var desc = query.Sort.StartsWith('-');
+        if (sortColumnName.Equals(nameof(PostListItemResponse.Categories), StringComparison.OrdinalIgnoreCase))
+        {
+            query = query with { Sort = null };
+            queryable = desc
+                        ? queryable.OrderByDescending(s => s.Categories!.FirstOrDefault().Slug)
+                        : queryable.OrderBy(s => s.Categories!.FirstOrDefault().Slug);
+        }
+        else if (sortColumnName.Equals(nameof(PostListItemResponse.Author), StringComparison.OrdinalIgnoreCase))
+        {
+            query = query with { Sort = null };
+            queryable = desc
+                        ? queryable.OrderByDescending(s => s.User.UserName)
+                        : queryable.OrderBy(s => s.User.UserName);
+        }
+        return query;
+    }
 
     public async Task<ListDataResult<PostSummary>> List(ListPostQuery query, CancellationToken cancellationToken)
     {
@@ -201,6 +222,7 @@ internal class PostRepository : IPostRepository, IDisposable
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
         var queryable = ListFilterQuery(query);
+        query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToListDataResult(query, cancellationToken);
 
@@ -214,6 +236,7 @@ internal class PostRepository : IPostRepository, IDisposable
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
         var queryable = ListFilterQuery(query);
+        query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToPagingResult(query, cancellationToken);
 
@@ -226,8 +249,9 @@ internal class PostRepository : IPostRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var queryable = ListFilterQuery(query).Include(s => s.MetaValues!)
-                                            .ThenInclude(s => s.MetaField);
+        IQueryable<PostEntity> queryable = ListFilterQuery(query).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
+                                                                .Include(s=>s.Categories);
+        query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToListDataResult(query, cancellationToken);
 
@@ -240,8 +264,9 @@ internal class PostRepository : IPostRepository, IDisposable
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var queryable = ListFilterQuery(query).Include(s => s.MetaValues!)
-                                            .ThenInclude(s => s.MetaField);
+        IQueryable<PostEntity> queryable = ListFilterQuery(query).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
+                                                                .Include(s => s.Categories);
+        query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToPagingResult(query, cancellationToken);
 

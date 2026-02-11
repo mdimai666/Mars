@@ -27,7 +27,7 @@ public class PageRenderTests : BaseWebApiClientTests
     public async Task RenderPostById_Request_Success()
     {
         //Arrange
-        _ = nameof(PageRenderController.Render);
+        _ = nameof(PageRenderController.RenderById);
         _ = nameof(PageRenderService.RenderPostById);
         var client = GetWebApiClient();
         var post = await GetPostFirstByType("post");
@@ -63,7 +63,7 @@ public class PageRenderTests : BaseWebApiClientTests
     public async Task RenderPageBySlug_Request_Success()
     {
         //Arrange
-        _ = nameof(PageRenderController.Render);
+        _ = nameof(PageRenderController.RenderById);
         _ = nameof(PageRenderService.RenderPageBySlug);
         var client = GetWebApiClient();
         var post = await GetPostFirstByType("page");

@@ -53,6 +53,7 @@ public class CreateMockPostsAct(
                 Tags = ["mock"],
                 Type = "post",
                 UserId = requestContext.User.Id,
+                CategoryIds = [],
             };
             await postService.Create(post, cancellationToken);
         }

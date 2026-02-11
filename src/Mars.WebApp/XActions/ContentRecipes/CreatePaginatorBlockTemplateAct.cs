@@ -43,7 +43,8 @@ public class CreatePaginatorBlockTemplateAct(IPostRepository postRepository, IRe
             Status = null,
             Tags = [blockKey, "generated"],
             Type = containerTypeName,
-            UserId = requestContext.User.Id
+            UserId = requestContext.User.Id,
+            CategoryIds = [],
         }, cancellationToken);
 
         return XActResult.ToastSuccess($"{containerTypeName} '{blockKey}' is created");

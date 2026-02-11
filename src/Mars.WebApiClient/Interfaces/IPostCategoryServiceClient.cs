@@ -1,5 +1,6 @@
 using Mars.Core.Exceptions;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.Common;
 using Mars.Shared.Contracts.PostCategories;
 
 namespace Mars.WebApiClient.Interfaces;
@@ -29,4 +30,5 @@ public interface IPostCategoryServiceClient
 
     Task<PostCategoryEditViewModel> GetEditModel(Guid id);
     Task<PostCategoryEditViewModel> GetBlankModel(string categoryType, string postType);
+    Task<IReadOnlyCollection<PostCategoryListItemResponse>> ListByIds(ListByIdsRequest request);
 }

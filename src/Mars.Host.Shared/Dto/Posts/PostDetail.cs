@@ -27,6 +27,6 @@ public record PostEditDetail
     public required string? Content { get; init; }
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
-
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
     public required IReadOnlyCollection<MetaValueDetailDto> MetaValues { get; init; }
 }

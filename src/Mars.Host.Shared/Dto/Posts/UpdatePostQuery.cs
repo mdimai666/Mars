@@ -18,5 +18,7 @@ public record UpdatePostQuery : IGeneralPostQuery
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
 
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
+
     public required IReadOnlyCollection<ModifyMetaValueDetailQuery>? MetaValues { get; init; }
 }

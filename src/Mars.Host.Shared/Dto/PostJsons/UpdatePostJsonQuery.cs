@@ -15,6 +15,6 @@ public record UpdatePostJsonQuery
 
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
-
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
     public required IReadOnlyDictionary<string, JsonValue>? Meta { get; init; }
 }

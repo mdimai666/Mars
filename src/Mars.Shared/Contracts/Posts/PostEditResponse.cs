@@ -13,7 +13,6 @@ public record PostEditResponse : IBasicEntityResponse
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset? ModifiedAt { get; init; }
 
-
     [Display(Name = "Название")]
     public required string Title { get; init; }
 
@@ -34,6 +33,7 @@ public record PostEditResponse : IBasicEntityResponse
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
     public required IReadOnlyCollection<string> Tags { get; init; }
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
     public required IReadOnlyCollection<MetaValueDetailResponse> MetaValues { get; init; }
 
 }

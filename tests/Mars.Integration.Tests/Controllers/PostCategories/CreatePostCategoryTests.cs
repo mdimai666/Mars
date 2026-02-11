@@ -157,7 +157,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
             ParentId = catParent.Id,
         };
         Guid[] expectPathIds = [catParent.Id!.Value, catChild.Id!.Value];
-        var expectSlugPath = $"/{catParent.Id}/{catChild.Id}";
+        var expectSlugPath = $"/{catParent.Slug}/{catChild.Slug}";
         var expectPath = '/' + string.Join('/', expectPathIds);
 
         //Act
@@ -168,8 +168,10 @@ public sealed class CreatePostCategoryTests : ApplicationTests
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
 
-        result.PathIds.Should().BeEquivalentTo(expectPathIds);
-        result.Path.Should().Be(expectPath);
-        result.SlugPath.Should().Be(expectSlugPath);
+        ef.ChangeTracker.Clear();
+        var dbCategory = await ef.PostCategories.FirstAsync(s => s.Id == result.Id);
+        dbCategory.PathIds.Should().BeEquivalentTo(expectPathIds);
+        dbCategory.Path.Should().Be(expectPath);
+        dbCategory.SlugPath.Should().Be(expectSlugPath);
     }
 }

@@ -59,7 +59,8 @@ public class CreatePostTypePresentationTemplateAct(IPostRepository postRepositor
             Status = null,
             Tags = [postTypeName, "admin", "page_tempalte", "generated"],
             Type = containerTypeName,
-            UserId = requestContext.User.Id
+            UserId = requestContext.User.Id,
+            CategoryIds = [],
         }, cancellationToken);
 
         return XActResult.ToastSuccess($"{containerTypeName} '{postSlug}' is created");

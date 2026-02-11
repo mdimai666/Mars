@@ -171,7 +171,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
         };
 
         Guid[] expectPathIds = [updatedParent.Id, catChild.Id!.Value];
-        var expectSlugPath = $"/{updatedParent.Id}/{catChild.Id}";
+        var expectSlugPath = $"/{updatedParent.Slug}/{catChild.Slug}";
         var expectPath = '/' + string.Join('/', expectPathIds);
 
         //Act
@@ -182,9 +182,11 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
         res.StatusCode.Should().Be(StatusCodes.Status200OK);
         resultChild.Should().NotBeNull();
 
-        resultChild.PathIds.Should().BeEquivalentTo(expectPathIds);
-        resultChild.Path.Should().Be(expectPath);
-        resultChild.SlugPath.Should().Be(expectSlugPath);
+        ef.ChangeTracker.Clear();
+        var dbCatChild = await ef.PostCategories.FirstAsync(s => s.Id == resultChild.Id);
+        dbCatChild.PathIds.Should().BeEquivalentTo(expectPathIds);
+        dbCatChild.Path.Should().Be(expectPath);
+        dbCatChild.SlugPath.Should().Be(expectSlugPath);
     }
 
     [IntegrationFact]
@@ -266,16 +268,18 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
         res.StatusCode.Should().Be(StatusCodes.Status200OK);
         resultChild.Should().NotBeNull();
 
-        resultChild.PathIds.Should().BeEquivalentTo(expectPathIds);
-        resultChild.Path.Should().Be(expectPath);
-        resultChild.SlugPath.Should().Be(expectSlugPath);
+        ef.ChangeTracker.Clear();
+        var dbCatChild = await ef.PostCategories.FirstAsync(s => s.Id == resultChild.Id);
+        dbCatChild.PathIds.Should().BeEquivalentTo(expectPathIds);
+        dbCatChild.Path.Should().Be(expectPath);
+        dbCatChild.SlugPath.Should().Be(expectSlugPath);
 
         //Проверяем внука
-        var grandson = await client.Request(_apiUrl, catChild3.Id).GetJsonAsync<PostCategoryDetailResponse>();
-        grandson.PathIds.Should().BeEquivalentTo([.. expectPathIds, grandson.Id]);
-        grandson.Path.Should().Be(expectPath + '/' + grandson.Id);
-        grandson.SlugPath.Should().Be(expectSlugPath + '/' + grandson.Slug);
-
+        var grandson = catChild3;
+        var dbGrandson = await ef.PostCategories.FirstAsync(s => s.Id == catChild3.Id);
+        dbGrandson.PathIds.Should().BeEquivalentTo([.. expectPathIds, grandson.Id!.Value]);
+        dbGrandson.Path.Should().Be(expectPath + '/' + grandson.Id);
+        dbGrandson.SlugPath.Should().Be(expectSlugPath + '/' + grandson.Slug);
     }
 
 }

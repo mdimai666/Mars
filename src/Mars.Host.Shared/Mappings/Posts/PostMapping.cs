@@ -1,6 +1,7 @@
 using Mars.Host.Shared.Dto.Common;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Mappings.MetaFields;
+using Mars.Host.Shared.Mappings.PostCategories;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Posts;
 
@@ -17,6 +18,7 @@ public static class PostMapping
             Type = entity.Type,
             Slug = entity.Slug,
             Author = entity.Author.ToResponse(),
+            Categories = entity.Categories?.ToResponse(),
         };
 
     public static PostDetailResponse ToResponse(this PostDetail entity)
@@ -29,6 +31,7 @@ public static class PostMapping
           Slug = entity.Slug,
           Content = entity.Content,
           Author = entity.Author.ToResponse(),
+          Categories = entity.Categories?.ToResponse(),
       };
 
     public static PostListItemResponse ToListItemResponse(this PostSummary entity)
@@ -42,6 +45,7 @@ public static class PostMapping
           Tags = entity.Tags,
           Author = entity.Author.ToResponse(),
           Status = entity.Status,
+          Categories = entity.Categories?.ToResponse(),
       };
 
     public static PostEditResponse ToResponse(this PostEditDetail entity)
@@ -59,6 +63,7 @@ public static class PostMapping
             Content = entity.Content,
             Excerpt = entity.Excerpt,
             LangCode = entity.LangCode,
+            CategoryIds = entity.CategoryIds,
             MetaValues = entity.MetaValues.ToDetailResponse(),
         };
 

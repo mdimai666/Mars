@@ -57,6 +57,7 @@ public class PostEditModel : IBasicEntity
     [Display(Name = nameof(AppRes.Tags), ResourceType = typeof(AppRes))]
     public string[] Tags { get; set; } = [];
     public List<MetaValueEditModel> MetaValues { get; set; } = new();
+    public Guid[] CategoryIds { get; set; } = [];
 
     //==========================================
     //Internal
@@ -121,6 +122,7 @@ public class PostEditModel : IBasicEntity
             Status = Status,
             Type = Type,
             MetaValues = MetaValues.Select(s => s.ToCreateRequest()).ToList(),
+            CategoryIds = CategoryIds,
         };
 
     public UpdatePostRequest ToUpdateRequest()
@@ -136,6 +138,7 @@ public class PostEditModel : IBasicEntity
             Status = Status,
             Type = Type,
             MetaValues = MetaValues.Select(s => s.ToUpdateRequest()).ToList(),
+            CategoryIds = CategoryIds,
         };
 
     public static PostEditModel FromViewModel(PostEditViewModel vm)
@@ -158,6 +161,7 @@ public class PostEditModel : IBasicEntity
             Author = response.Author,
             UserId = response.Author.Id,
             MetaValues = response.MetaValues.Select(MetaValueEditModel.ToModel).ToList(),
+            CategoryIds = response.CategoryIds.ToArray(),
 
             //extra
             PostType = PostTypeEditModel.ToModel(postType, [])

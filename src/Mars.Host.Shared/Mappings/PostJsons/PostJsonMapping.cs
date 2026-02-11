@@ -4,6 +4,7 @@ using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostJsons;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Mappings.MetaFields;
+using Mars.Host.Shared.Mappings.PostCategories;
 using Mars.Host.Shared.Mappings.PostJsons;
 using Mars.Host.Shared.Mappings.Posts;
 using Mars.Shared.Common;
@@ -31,6 +32,7 @@ public static class PostJsonMapping
             ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
             Meta = entity.MetaValues.ToDictionary(s => s.MetaField!.Key, v => ConvertObjectValue(v, fillDict)),
             Status = entity.Status,
+            Categories = entity.Categories,
         };
 
     public static PostJsonDto ToJsonDtoSummary(this PostDetail entity, MetaFieldRelatedFillDict? fillDict)
@@ -50,6 +52,7 @@ public static class PostJsonMapping
             ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
             Meta = entity.MetaValues.ToDictionary(s => s.MetaField!.Key, v => ConvertObjectValue(v, fillDict)),
             Status = entity.Status,
+            Categories = entity.Categories,
         };
 
     public static IReadOnlyCollection<PostJsonDto> ToJsonDtoList(this IEnumerable<PostDetail> entities, MetaFieldRelatedFillDict? fillDict)
@@ -90,6 +93,7 @@ public static class PostJsonMapping
             Content = entity.Content,
             Author = entity.Author.ToResponse(),
             Meta = entity.Meta,
+            Categories = entity.Categories?.ToResponse(),
         };
 
     public static ListDataResult<PostJsonResponse> ToResponse(this ListDataResult<PostJsonDto> list)

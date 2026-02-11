@@ -38,6 +38,7 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
                                     .With(s => s.LangCode, Chance(["", "ru"]))
                                     .With(s => s.MetaValues, [])
+                                    .With(s => s.CategoryIds, [])
                                     );
 
         fixture.Customize<UpdatePostRequest>(composer => composer
@@ -53,6 +54,7 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 6)).ToList())
                                     .With(s => s.LangCode, Chance(["", "ru"]))
                                     .With(s => s.MetaValues, [])
+                                    .With(s => s.CategoryIds, [])
                                     );
 
         fixture.Customize<CreatePostTypeRequest>(composer => composer
@@ -193,6 +195,7 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Id)
                                     .With(s => s.ParentId, (Guid?)null)
                                     .With(s => s.Title, fixture.Create("PostCategory - "))
+                                    .With(s => s.Slug, TextTool.TranslateToPostSlug(fixture.Create("slug")))
                                     .With(s => s.Type, PostCategoryTypeEntity.DefaultTypeName)
                                     .With(s => s.PostType, "post")
                                     .With(s => s.Disabled, false)

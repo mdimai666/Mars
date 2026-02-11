@@ -1,5 +1,6 @@
 @using System.Linq.Expressions
 @using AppAdmin.Pages.PageViews
+@using AppAdmin.Pages.PostCategoryViews
 @using BlazoredHtmlRender
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -24,6 +25,11 @@
                           Appearance="FluentInputAppearance.Filled"
                           AriaLabel="Search" />
             <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+            <SelectCategoryForFilterDropDown @bind-Value="_filterCategoryId"
+                                             @bind-Value:after=HandleCategoryFilterChanged
+                                             PostType="@PostType.TypeName"
+                                             Style="height:32px;"
+                                             Width="150px" />
             <div class="ms-auto">
                 <a href="@urlEditPage/@PostType.TypeName">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
@@ -37,8 +43,9 @@
                                 @ref=table
                                 ItemSize="76"
                                 Virtualize
-                                GridTemplateColumns="3fr 2fr 1fr 1fr"
+                                GridTemplateColumns="@GridTemplateColumns"
                                 GenerateHeader="GenerateHeaderOption.Sticky"
+                                OverscanCount="10"
                                 Class="adaptive-table"
                                 TGridItem="PostListItemResponse">
                     <TemplateColumn SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Title))"
@@ -71,10 +78,38 @@
                                 @* <div class="text-secondary small">@context.Slug</div> *@
                             </div>
                         </div>
+                        @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                        {
+                            <div class="mt-1">
+                                <FluentOverflow Style="width: 100%;">
+                                    @foreach (var tag in context.Tags)
+                                    {
+                                        <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
+                                    }
+                                </FluentOverflow>
+                            </div>
+                        }
                     </TemplateColumn>
-                    @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                    @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
                     {
-                        <TemplateColumn Title="@AppRes.Tags">
+                        <TemplateColumn Title="@AppRes.Categories"
+                                        SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Categories))"
+                                        Sortable="true">
+                            <FluentOverflow Style="width: 100%;">
+                                @foreach (var cat in context.Categories)
+                                {
+                                    <FluentOverflowItem>
+                                        <FluentBadge OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>
+                                    </FluentOverflowItem>
+                                }
+                            </FluentOverflow>
+                        </TemplateColumn>
+                    }
+                    @* @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags))
+                    {
+                        <TemplateColumn Title="@AppRes.Tags"
+                                        SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Tags))"
+                                        Sortable="true">
                             <FluentOverflow Style="width: 100%;">
                                 @foreach (var tag in context.Tags)
                                 {
@@ -82,7 +117,7 @@
                                 }
                             </FluentOverflow>
                         </TemplateColumn>
-                    }
+                    } *@
                     @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
                     {
                         <TemplateColumn Title="@AppRes.Status"

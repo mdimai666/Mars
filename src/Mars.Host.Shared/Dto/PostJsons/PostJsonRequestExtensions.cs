@@ -18,6 +18,7 @@ public static class PostJsonRequestExtensions
             Meta = request.Meta,
             Excerpt = request.Excerpt,
             LangCode = request.LangCode ?? string.Empty,
+            CategoryIds = request.CategoryIds ?? [],
         };
 
     public static UpdatePostJsonQuery ToQuery(this UpdatePostJsonRequest request, Guid userId)
@@ -34,5 +35,6 @@ public static class PostJsonRequestExtensions
             Meta = request.Meta,
             Excerpt = request.Excerpt,
             LangCode = request.LangCode ?? string.Empty,
+            CategoryIds = request.CategoryIds ?? []
         };
 }

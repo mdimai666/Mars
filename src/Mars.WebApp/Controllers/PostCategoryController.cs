@@ -8,6 +8,7 @@ using Mars.Host.Shared.Mappings.PostCategories;
 using Mars.Host.Shared.Mappings.PostCategoryTypes;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.Common;
 using Mars.Shared.Contracts.PostCategories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -184,4 +185,10 @@ public class PostCategoryController : ControllerBase
         return _postCategoryService.DeleteMany(new DeleteManyPostCategoryQuery { Ids = ids }, cancellationToken);
     }
 
+    [HttpPost("list/by-ids")]
+    [AllowAnonymous]
+    public async Task<IEnumerable<PostCategoryListItemResponse>> ListByIds([FromBody] ListByIdsRequest request, CancellationToken cancellationToken)
+    {
+        return (await _postCategoryService.ListSummaryByIds(request.Ids, cancellationToken)).ToResponseItems();
+    }
 }

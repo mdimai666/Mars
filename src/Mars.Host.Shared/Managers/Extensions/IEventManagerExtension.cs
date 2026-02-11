@@ -119,22 +119,22 @@ public static class EventManagerExtension
     public static string PostCategoryTypeAnyOperation(this EventManagerDefaults defaults) => $"entity.PostCategoryType/**";
 
     /// <summary>
-    /// <code>entity.PostCategory/{typeName}/add</code>
+    /// <code>entity.PostCategory/add</code>
     /// </summary>
-    public static string PostCategoryAdd(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/add";
+    public static string PostCategoryAdd(this EventManagerDefaults defaults) => $"entity.PostCategory/add";
 
     /// <summary>
-    /// <code>entity.PostCategory/{typeName}/update</code>
+    /// <code>entity.PostCategory/update</code>
     /// </summary>
-    public static string PostCategoryUpdate(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/update";
+    public static string PostCategoryUpdate(this EventManagerDefaults defaults) => $"entity.PostCategory/update";
 
     /// <summary>
-    /// <code>entity.PostCategory/{typeName}/delete</code>
+    /// <code>entity.PostCategory/delete</code>
     /// </summary>
-    public static string PostCategoryDelete(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/delete";
+    public static string PostCategoryDelete(this EventManagerDefaults defaults) => $"entity.PostCategory/delete";
 
     /// <summary>
-    /// <code>entity.PostCategory/{typeName}/*</code>
+    /// <code>entity.PostCategory/*</code>
     /// </summary>
-    public static string PostCategoryAnyOperation(this EventManagerDefaults defaults, string typeName) => $"entity.PostCategory/{typeName}/*";
+    public static string PostCategoryAnyOperation(this EventManagerDefaults defaults) => $"entity.PostCategory/*";
 }

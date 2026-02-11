@@ -11,6 +11,7 @@ using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Posts;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +49,10 @@ public sealed class UpdatePostTests : ApplicationTests
         }).ToList();
         createdPost.MetaValues = metaValues;
         ef.Posts.Add(createdPost);
+        var categories = _fixture.CreateMany<PostCategoryEntity>(3).ToList();
+        ef.PostCategories.AddRange(categories);
+        if (!postType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+            postType.EnabledFeatures.Add(PostTypeConstants.Features.Category);
         ef.SaveChanges();
         AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 
@@ -57,7 +62,8 @@ public sealed class UpdatePostTests : ApplicationTests
         {
             Id = createdPost.Id,
             Type = "post",
-            MetaValues = metaValueUpdates
+            MetaValues = metaValueUpdates,
+            CategoryIds = categories.Take(2).Select(s => s.Id).ToList(),
         };
 
         //Act
@@ -67,7 +73,9 @@ public sealed class UpdatePostTests : ApplicationTests
         result.Should().NotBeNull();
 
         ef.ChangeTracker.Clear();
-        var dbPost = ef.Posts.Include(s => s.MetaValues).FirstOrDefault(s => s.Id == post.Id);
+        var dbPost = ef.Posts.Include(s => s.MetaValues)
+                                .Include(s => s.Categories)
+                                .FirstOrDefault(s => s.Id == post.Id);
         dbPost.Should().NotBeNull();
 
         dbPost.Should().BeEquivalentTo(post, options => options
@@ -87,6 +95,8 @@ public sealed class UpdatePostTests : ApplicationTests
             //e.DateTime.Date.ToString("g").Should().Be(req.DateTime.Date.ToString("g"));
 
         });
+
+        dbPost.Categories!.Select(s => s.Id).Should().BeEquivalentTo(post.CategoryIds);
     }
 
     [IntegrationFact]
@@ -125,4 +135,5 @@ public sealed class UpdatePostTests : ApplicationTests
             //expectError[x.Key].Should().ContainMatch(x.Value); //order insensetive
         });
     }
+
 }

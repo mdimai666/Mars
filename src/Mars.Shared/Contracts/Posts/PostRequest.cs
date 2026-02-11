@@ -25,6 +25,8 @@ public record CreatePostRequest
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
 
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
+
     public required IReadOnlyCollection<CreateMetaValueRequest> MetaValues { get; init; }
 
 }
@@ -50,15 +52,28 @@ public record UpdatePostRequest
     public required string? Excerpt { get; init; }
     public required string LangCode { get; init; }
 
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
+
     public required IReadOnlyCollection<UpdateMetaValueRequest> MetaValues { get; init; }
 
 }
 
 public record ListPostQueryRequest : BasicListQueryRequest
 {
-
+    public bool IncludeCategory { get; init; }
+    public Guid? CategoryId { get; init; }
+    /// <summary>
+    /// включить дочерние категории (потомков)
+    /// </summary>
+    public bool FilterIncludeDescendantsCategories { get; init; }
 }
 
 public record TablePostQueryRequest : BasicTableQueryRequest
 {
+    public bool IncludeCategory { get; init; }
+    public Guid? CategoryId { get; init; }
+    /// <summary>
+    /// включить дочерние категории (потомков)
+    /// </summary>
+    public bool FilterIncludeDescendantsCategories { get; init; }
 }

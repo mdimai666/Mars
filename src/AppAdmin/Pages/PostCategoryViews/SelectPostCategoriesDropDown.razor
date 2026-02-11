@@ -1,0 +1,117 @@
+@using Mars.Shared.Contracts.PostCategories
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentAutocomplete TOption="PostCategoryListItemResponse"
+                    Id="@Id"
+                    Class="@Class"
+                    Style="@Style"
+                    Placeholder="@Placeholder"
+                    Disabled="Disabled"
+                    Width=@Width
+                    Multiple="true"
+                    SelectedOptions="_selectedItems"
+                    SelectedOptionsChanged="SelectedOptionChanged"
+                    OptionValue="@(v=>v.Id.ToString())"
+                    OnOptionsSearch="OnOptionsSearch"
+                    OptionText="@(x => x.Title)"
+                    MaximumSelectedOptions="20">
+    <OptionTemplate>
+        <div style=@GetOptionCssStyle(context)>
+            @context.Title
+        </div>
+    </OptionTemplate>
+</FluentAutocomplete>
+
+@code {
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    [Parameter]
+    public Guid[] Values { get; set; } = default!;
+
+    [Parameter, EditorRequired] public string PostType { get; set; } = default!;
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Выберите категории...";
+
+    [Parameter]
+    public FluentInputAppearance Appearance { get; set; } = FluentInputAppearance.Outline;
+
+    [Parameter]
+    public string Width { get; set; } = "250px";
+
+    [Parameter]
+    public int IndentSize { get; set; } = 20;
+
+    [Parameter]
+    public EventCallback<Guid[]> ValuesChanged { get; set; }
+
+    [Parameter]
+    public string Id { get; set; } = "SelectPostCategoriesDropDown-" + Guid.NewGuid();
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public string? Style { get; set; }
+
+    private PostCategoryListItemResponse[]? _selectedItems;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_selectedItems == null)
+        {
+            if (Values.Any())
+                _ = Load();
+            else
+                _selectedItems = [];
+        }
+    }
+
+    void SelectedOptionChanged(IEnumerable<PostCategoryListItemResponse> values)
+    {
+        _selectedItems = values.ToArray();
+        bool same = Values.ToHashSet().SetEquals(values.Select(s => s.Id));
+        if (!same)
+        {
+            ValuesChanged.InvokeAsync(_selectedItems.Select(s => s.Id).ToArray());
+        }
+    }
+
+    private async Task Load()
+    {
+        var result = await client.PostCategory.ListByIds(new() { Ids = Values });
+        _selectedItems = result.ToArray();
+        StateHasChanged();
+    }
+
+    private async Task<IEnumerable<PostCategoryListItemResponse>> SearchCategoriesAsync(string searchText)
+    {
+        var request = await client.PostCategory.ListForPostType(
+            PostType,
+            new()
+            {
+                Search = searchText,
+                Skip = 0,
+                Take = 20
+            });
+
+        return request.Items;
+    }
+
+    private async Task OnOptionsSearch(OptionsSearchEventArgs<PostCategoryListItemResponse> e)
+    {
+        e.Items = await SearchCategoriesAsync(e.Text);
+    }
+
+    private string GetOptionCssStyle(PostCategoryListItemResponse option)
+    {
+        var padding = (option.LevelsCount - 1) * IndentSize;
+        var cssStyle = $"padding-left:{padding}px; display:flex; align-items:center;";
+        return cssStyle;
+    }
+}

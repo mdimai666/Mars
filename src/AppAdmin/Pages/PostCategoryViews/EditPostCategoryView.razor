@@ -33,7 +33,7 @@
         </div>
 
         <FormItem2 For="@(() => context.ParentId)">
-            <SelectParentPostCategoryDropDown @bind-Value="context.ParentId" OriginalId="context.Id" PostType="post" />
+            <SelectParentCategoryDropDown @bind-Value="context.ParentId" OriginalId="context.Id" PostType="post" />
         </FormItem2>
 
         <FormItem2 For="@(() => context.Tags)">

@@ -12,14 +12,9 @@ public static class PostCategoryMapping
         => new()
         {
             Id = entity.Id,
-            CreatedAt = entity.CreatedAt,
             Title = entity.Title,
-            TypeName = entity.Type,
             Slug = entity.Slug,
-            Tags = entity.Tags,
 
-            PostType = entity.PostType,
-            Path = entity.Path,
             PathIds = entity.PathIds,
             SlugPath = entity.SlugPath,
             LevelsCount = entity.LevelsCount
@@ -36,7 +31,6 @@ public static class PostCategoryMapping
           Tags = entity.Tags,
 
           PostType = entity.PostType,
-          Path = entity.Path,
           PathIds = entity.PathIds,
           SlugPath = entity.SlugPath,
           LevelsCount = entity.LevelsCount,
@@ -50,13 +44,10 @@ public static class PostCategoryMapping
       {
           Id = entity.Id,
           Title = entity.Title,
-          Type = entity.Type,
           Slug = entity.Slug,
           CreatedAt = entity.CreatedAt,
           Tags = entity.Tags,
 
-          PostType = entity.PostType,
-          Path = entity.Path,
           PathIds = entity.PathIds,
           SlugPath = entity.SlugPath,
           LevelsCount = entity.LevelsCount
@@ -81,10 +72,19 @@ public static class PostCategoryMapping
 
         };
 
-    public static ListDataResult<PostCategoryListItemResponse> ToResponse(this ListDataResult<PostCategorySummary> postTypes)
-        => postTypes.ToMap(ToListItemResponse);
+    public static ListDataResult<PostCategoryListItemResponse> ToResponse(this ListDataResult<PostCategorySummary> list)
+        => list.ToMap(ToListItemResponse);
 
-    public static PagingResult<PostCategoryListItemResponse> ToResponse(this PagingResult<PostCategorySummary> postTypes)
-        => postTypes.ToMap(ToListItemResponse);
+    public static PagingResult<PostCategoryListItemResponse> ToResponse(this PagingResult<PostCategorySummary> list)
+        => list.ToMap(ToListItemResponse);
+
+    public static IReadOnlyCollection<PostCategorySummaryResponse> ToResponse(this IEnumerable<PostCategorySummary> list)
+        => list.Select(ToResponse).ToList();
+
+    public static IReadOnlyCollection<PostCategoryListItemResponse> ToResponseItems(this IEnumerable<PostCategorySummary> list)
+        => list.Select(ToListItemResponse).ToList();
+
+    public static IReadOnlyCollection<PostCategoryDetailResponse> ToResponse(this IEnumerable<PostCategoryDetail> list)
+        => list.Select(ToResponse).ToList();
 
 }

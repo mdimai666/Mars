@@ -40,10 +40,10 @@ public class GetPostTests : ApplicationTests
         await ef.Posts.AddAsync(createdPost);
         await ef.SaveChangesAsync();
 
-        var postTypeId = createdPost.Id;
+        var postId = createdPost.Id;
 
         //Act
-        var result = await client.Request(_apiUrl).AppendPathSegment(postTypeId).GetJsonAsync<PostDetailResponse>();
+        var result = await client.Request(_apiUrl).AppendPathSegment(postId).GetJsonAsync<PostDetailResponse>();
 
         //Assert
         result.Should().NotBeNull();
@@ -229,4 +229,29 @@ public class GetPostTests : ApplicationTests
         result.Post.MetaValues.Should().HaveCount(metaFields.Count);
     }
 
+    [IntegrationFact]
+    public async Task GetPost_WithCategory_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(PostController.Get);
+        _ = nameof(PostService.Get);
+        var client = AppFixture.GetClient();
+
+        var createdPost = _fixture.Create<PostEntity>();
+        var category = _fixture.CreateMany<PostCategoryEntity>(3).ToList();
+        createdPost.Categories = category;
+
+        var ef = AppFixture.MarsDbContext();
+        await ef.Posts.AddAsync(createdPost);
+        await ef.SaveChangesAsync();
+
+        var postId = createdPost.Id;
+
+        //Act
+        var result = await client.Request(_apiUrl).AppendPathSegment(postId).GetJsonAsync<PostDetailResponse>();
+
+        //Assert
+        result.Should().NotBeNull();
+        result.Categories!.Select(s => s.Id).Should().BeEquivalentTo(category.Select(s => s.Id));
+    }
 }

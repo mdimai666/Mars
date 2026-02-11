@@ -127,7 +127,8 @@ internal class PostJsonService : IPostJsonService
             Excerpt = query.Excerpt,
             LangCode = query.LangCode,
             Type = query.Type,
-            MetaValues = meta
+            CategoryIds = query.CategoryIds,
+            MetaValues = meta,
         };
 
     UpdatePostQuery ToUpdateQuery(UpdatePostJsonQuery query, IReadOnlyCollection<ModifyMetaValueDetailQuery>? meta, PostTypeDetail postType)
@@ -143,6 +144,7 @@ internal class PostJsonService : IPostJsonService
             Excerpt = query.Excerpt,
             LangCode = query.LangCode,
             Type = query.Type,
+            CategoryIds = query.CategoryIds,
             MetaValues = meta
         };
 

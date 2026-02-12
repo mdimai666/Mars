@@ -17,6 +17,7 @@
 [ ] - Privacy page
 [ ] - Cookies alert
 [ ] - Builder statusbar - App status add app timezone & db timezone
+[ ] - EditorJs add drag and drop image
 
 # Options
 [ ] - add X-Frame-Options

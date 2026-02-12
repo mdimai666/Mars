@@ -1087,11 +1087,29 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit fields.
+        /// </summary>
+        public static string PostType_EditFields {
+            get {
+                return ResourceManager.GetString("PostType_EditFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PostTypes.
         /// </summary>
         public static string PostType_many {
             get {
                 return ResourceManager.GetString("PostType.many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Presentation.
+        /// </summary>
+        public static string PostType_Presentation {
+            get {
+                return ResourceManager.GetString("PostType_Presentation", resourceCulture);
             }
         }
         

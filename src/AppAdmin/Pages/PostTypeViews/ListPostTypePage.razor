@@ -1,5 +1,6 @@
 @page "/PostType"
 @using System.Linq.Expressions
+@using AppAdmin.Pages.PostCategoryViews
 @using AppFront.Shared.Handlers.PostType
 @using Mars.Shared.Contracts.PostTypes
 @using Microsoft.AspNetCore.Authorization
@@ -65,6 +66,12 @@
                             <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
                         }
                     </FluentOverflow>
+                    <div class="hstack gap-1 mt-1">
+                        @if (context.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+                        {
+                            <a href="@ManagePostCategoryPage.GetPageLink(context.TypeName)">@AppRes.Categories</a>
+                        }
+                    </div>
                 </TemplateColumn>
                 <PropertyColumn Property=@(f => f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">

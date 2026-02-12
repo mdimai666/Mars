@@ -14,6 +14,8 @@ public partial class ManagePostCategoryPage
 
     PostTypeAdminPanelItemResponse postType = Q.Site.PostTypes.First(s => s.TypeName == "post");
 
+    public static string GetPageLink(string postType) => $"PostCategory/{postType}";
+
     string prevPostType = "";
     bool _busy;
     Guid _selId;

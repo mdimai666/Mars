@@ -25,11 +25,14 @@
                           Appearance="FluentInputAppearance.Filled"
                           AriaLabel="Search" />
             <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
-            <SelectCategoryForFilterDropDown @bind-Value="_filterCategoryId"
-                                             @bind-Value:after=HandleCategoryFilterChanged
-                                             PostType="@PostType.TypeName"
-                                             Style="height:32px;"
-                                             Width="150px" />
+            @if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+            {
+                <SelectCategoryForFilterDropDown @bind-Value="_filterCategoryId"
+                                                 @bind-Value:after=HandleCategoryFilterChanged
+                                                 PostType="@PostType.TypeName"
+                                                 Style="height:32px;"
+                                                 Width="150px" />
+            }
             <div class="ms-auto">
                 <a href="@urlEditPage/@PostType.TypeName">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>

@@ -462,8 +462,14 @@
   <data name="PostType.many" xml:space="preserve">
     <value>PostTypes</value>
   </data>
+  <data name="PostType_Presentation" xml:space="preserve">
+    <value>Presentation</value>
+  </data>
   <data name="PostTypes" xml:space="preserve">
     <value>Post types</value>
+  </data>
+  <data name="PostType_EditFields" xml:space="preserve">
+    <value>Edit fields</value>
   </data>
   <data name="ReportCounter" xml:space="preserve">
     <value>ReportCounter</value>

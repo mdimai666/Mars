@@ -24,6 +24,7 @@ public static class PostFixtureCustomizeExtension
                         .With(s => s.Tags, [])
                         .With(s => s.LangCode, "")
                         .With(s => s.MetaValues, [])
+                        .With(s => s.CategoryIds, [])
                         .Create();
     }
 }

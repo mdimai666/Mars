@@ -29,11 +29,11 @@
                             ItemSize="76"
                             Virtualize
                             ResizableColumns
-                            GridTemplateColumns="3fr 2fr 1fr 1fr"
+                            GridTemplateColumns="auto min-content min-content"
                             GenerateHeader="GenerateHeaderOption.Sticky"
                             Class="adaptive-table"
                             TGridItem="PostCategoryTypeListItemResponse">
-                <TemplateColumn SortBy="@(GridSort<PostCategoryTypeListItemResponse>.ByDescending(f=>f.Title))"
+                <TemplateColumn SortBy="@(GridSort<PostCategoryTypeListItemResponse>.ByDescending(f => f.Title))"
                                 Title="@AppRes.Title"
                                 InitialSortDirection="SortDirection.Ascending"
                                 IsDefaultSortColumn="true"
@@ -48,16 +48,9 @@
                     </div>
 
                 </TemplateColumn>
-                @* <TemplateColumn Title="@AppRes.MetaFields">
-                    <FluentOverflow Style="width: 100%;" >
-                        @foreach(var tag in context.EnabledFeatures){
-                            <FluentOverflowItem><FluentBadge>@tag</FluentBadge></FluentOverflowItem>
-                        }
-                    </FluentOverflow>
-                </TemplateColumn> *@
-                <PropertyColumn Property=@(f=>f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
+                <PropertyColumn Property=@(f => f.CreatedAt) Title="@AppRes.CreatedAt" Format="d" Sortable="true" Align="Align.End" />
                 <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                    <DFluentDeleteButton OnConfirm=@(e=>Delete(context.Id)) />
+                    <DFluentDeleteButton OnConfirm=@(e => Delete(context.Id)) />
                 </TemplateColumn>
             </FluentDataGrid>
         </div>

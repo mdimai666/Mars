@@ -302,7 +302,7 @@ internal class PostCategoryRepository : IPostCategoryRepository
         if (!query.PostTypeName.IsNullOrEmpty()) q = q.Include(s => s.PostType);
 
         return q.Where(s => (query.Type == null || s.PostCategoryType.TypeName == query.Type)
-                        || (query.PostTypeName == null || s.PostType.TypeName == query.PostTypeName))
+                        && (query.PostTypeName == null || s.PostType.TypeName == query.PostTypeName))
                 .Where(s => query.Search == null
                         || (EF.Functions.ILike(s.Id.ToString(), query.Search)
                             || EF.Functions.ILike(s.Slug, $"%{query.Search}%")

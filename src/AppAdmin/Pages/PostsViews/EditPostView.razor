@@ -24,7 +24,8 @@
                        @ref=f CanCreate=false>
     <SectionActions>
         <XActionsDropDown ContextPart="@PostTypeName" AlsoShowRootContext>
-            <FluentMenuItem Label="Тип записи" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
+            <FluentMenuItem Label="@AppRes.PostType" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
+            <FluentMenuItem Label="@AppRes.Categories" OnClick=@((e) => navigationManager.NavigateTo(ManagePostCategoryPage.GetPageLink(context.PostType?.TypeName ?? PostTypeName))) />
             @if (PostTypeName == "page")
             {
                 <FluentMenuItem Label="Просмотр" OnClick=@((e) => navigationManager.NavigateTo($"/{(context.Slug == "index" ? "" : f.Model.Slug)}")) />
@@ -236,9 +237,13 @@
                     <div class="card-body vstack gap-3">
                         @if (context.FeatureActivated(Features.Category))
                         {
-                            <FormItem2 For="@(() => context.CategoryIds)" Label="@AppRes.PostCategory">
-                                <SelectPostCategoriesDropDown PostType="@PostTypeName" @bind-Values="context.CategoryIds" />
-                            </FormItem2>
+                            <div class="position-relative">
+                                <a href="@ManagePostCategoryPage.GetPageLink(context.PostType?.TypeName ?? PostTypeName)"
+                                   class="position-absolute" style="top:0; right:0;">@AppRes.Edit</a>
+                                <FormItem2 For="@(() => context.CategoryIds)" Label="@AppRes.PostCategories">
+                                    <SelectPostCategoriesDropDown PostType="@PostTypeName" @bind-Values="context.CategoryIds" />
+                                </FormItem2>
+                            </div>
                         }
                         @if (context.FeatureActivated(Features.Tags))
                         {

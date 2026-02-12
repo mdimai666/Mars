@@ -18,6 +18,10 @@
 
     <div class="vstack gap-3">
 
+        <FormItem2 For="@(() => context.Id)">
+            @context.Id
+        </FormItem2>
+
         <div class="vstack">
             <FluentTextField @bind-Value=@context.Title
                              @bind-Value:after="OnChangeTitle"

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -36,7 +36,7 @@
         <None Include="Mars.deps.json" Pack="true" PackagePath="\lib\net10.0\" />
         <None Include="$(OutDir)Mars.Plugin.Front.Abstractions.dll" Pack="true" PackagePath="\lib\net10.0\" />
         <None Include="$(OutDir)Microsoft.AspNetCore.Components.WebAssembly.dll" Pack="true" PackagePath="\lib\net10.0\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <Target Name="RunPostCompileDebugScript" AfterTargets="CoreBuild" Condition="'$(Configuration)' == 'Debug'">

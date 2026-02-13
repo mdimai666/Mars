@@ -26,4 +26,8 @@
         <DebugSymbols>false</DebugSymbols>
         <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
 </Project>

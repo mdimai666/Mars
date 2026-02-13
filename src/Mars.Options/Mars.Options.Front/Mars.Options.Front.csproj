@@ -1,25 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
-	<ItemGroup>
-		<SupportedPlatform Include="browser" />
-	</ItemGroup>
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    </ItemGroup>
 
-	<PropertyGroup>
+    <PropertyGroup>
         <NoWarn>BL0007</NoWarn>
-	</PropertyGroup>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<Folder Include="wwwroot\" />
-	</ItemGroup>
+    <ItemGroup>
+        <Folder Include="wwwroot\" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
-		<ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
-		<ProjectReference Include="..\Mars.Options\Mars.Options.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+        <ProjectReference Include="..\Mars.Options\Mars.Options.csproj" />
+    </ItemGroup>
 
 </Project>

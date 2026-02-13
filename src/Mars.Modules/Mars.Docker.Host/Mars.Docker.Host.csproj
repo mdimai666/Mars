@@ -5,12 +5,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+        <PackageReference Include="Docker.DotNet" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-      <ProjectReference Include="..\Mars.Docker.Host.Shared\Mars.Docker.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Docker.Host.Shared\Mars.Docker.Host.Shared.csproj" />
     </ItemGroup>
 
 </Project>

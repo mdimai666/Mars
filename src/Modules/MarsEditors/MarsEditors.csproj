@@ -27,16 +27,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="MarsEditorsJsInterop.cs" />
+        <Compile Remove="MarsEditorsJsInterop.cs" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Remove="MarsCodeEditor.razor" />
+        <Content Remove="MarsCodeEditor.razor" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
@@ -44,7 +44,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     </ItemGroup>
 
 </Project>

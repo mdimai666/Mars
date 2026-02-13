@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <!--Project-->
@@ -30,18 +30,18 @@
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AngleSharp" Version="1.4.0" />
-        <PackageReference Include="DynamicExpresso.Core" Version="2.19.3" />
-        <PackageReference Include="Flurl.Http" Version="4.0.2" />
-        <PackageReference Include="Handlebars.Net" Version="2.1.6" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.0.0" />
-        <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
-        <PackageReference Include="MQTTnet.Extensions.TopicTemplate" Version="5.0.1.1416" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" PrivateAssets="all" />
+        <PackageReference Include="AngleSharp" />
+        <PackageReference Include="DynamicExpresso.Core" />
+        <PackageReference Include="Flurl.Http" />
+        <PackageReference Include="Handlebars.Net" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+        <PackageReference Include="MQTTnet" />
+        <PackageReference Include="MQTTnet.Extensions.TopicTemplate" />
+        <PackageReference Include="Newtonsoft.Json" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>

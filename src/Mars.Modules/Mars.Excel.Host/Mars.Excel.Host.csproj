@@ -9,10 +9,10 @@
     </ItemGroup>
 
     <ItemGroup>
-		<PackageReference Include="ClosedXML" Version="0.102.2" PrivateAssets="All" />
-		<PackageReference Include="ClosedXML.Report" Version="0.2.9" PrivateAssets="All" />
-		<PackageReference Include="System.IO.Packaging" Version="10.0.1" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.1" PrivateAssets="all" />
+		<PackageReference Include="ClosedXML" PrivateAssets="All" />
+		<PackageReference Include="ClosedXML.Report" PrivateAssets="All" />
+        <PackageReference Include="System.IO.Packaging" />
+        <PackageReference Include="System.Linq.Dynamic.Core" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>

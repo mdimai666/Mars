@@ -5,12 +5,11 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     </ItemGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\AppAdmin\AppAdmin.csproj" />
     </ItemGroup>
-
 
 </Project>

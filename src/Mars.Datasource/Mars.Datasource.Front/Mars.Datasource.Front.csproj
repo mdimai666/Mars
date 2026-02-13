@@ -9,8 +9,8 @@
     </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
-		<PackageReference Include="BlazorMonaco" Version="3.4.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+		<PackageReference Include="BlazorMonaco" />
 	</ItemGroup>
 
 	<ItemGroup>

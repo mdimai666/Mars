@@ -28,7 +28,7 @@
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -40,9 +40,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="OneOf" Version="3.0.271" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <PackageReference Include="HtmlAgilityPack" />
+        <PackageReference Include="OneOf" />
     </ItemGroup>
 
 </Project>

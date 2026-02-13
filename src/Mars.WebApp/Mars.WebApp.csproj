@@ -59,49 +59,49 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Duende.IdentityServer" Version="7.4.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
+        <PackageReference Include="Duende.IdentityServer" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" Version="35.6.5" />
-        <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.20" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
-        <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.2" />-->
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="10.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
+        <PackageReference Include="Bogus" />
+        <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+        <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" -> -->
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NReco.Logging.File" Version="1.3.1" />
-        <PackageReference Include="OpenTelemetry" Version="1.14.0" />
-        <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.13.0-beta.1" />
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.12.0-beta.2" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Process" Version="1.12.0-beta.1" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0" />
-        <PackageReference Include="OpenTelemetry.Resources.Container" Version="1.12.0-beta.1" />
-        <PackageReference Include="OpenTelemetry.Resources.Host" Version="1.12.0-beta.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
-        <PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.2" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Giflib" Version="5.2.2-preview2" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" Version="1.17.6-preview2" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libjpeg" Version="3.0.2-preview2" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" Version="0.10.2-preview1" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libpng" Version="1.6.43-preview2" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="1.3.2-preview3" />
-        <PackageReference Include="ResXResourceReader.NetStandard" Version="1.3.0" />
-        <PackageReference Include="Humanizer" Version="3.0.1" />
-        <PackageReference Include="System.CommandLine" Version="2.0.1" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.0.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
+        <PackageReference Include="NReco.Logging.File" />
+        <PackageReference Include="OpenTelemetry" />
+        <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Process" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+        <PackageReference Include="OpenTelemetry.Resources.Container" />
+        <PackageReference Include="OpenTelemetry.Resources.Host" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="PhotoSauce.MagicScaler" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Giflib" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjpeg" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libpng" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" />
+        <PackageReference Include="ResXResourceReader.NetStandard" />
+        <PackageReference Include="Humanizer" />
+        <PackageReference Include="System.CommandLine" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
     </ItemGroup>
 
     <ItemGroup Condition="!$(DefineConstants.Contains('NOADMIN'))">

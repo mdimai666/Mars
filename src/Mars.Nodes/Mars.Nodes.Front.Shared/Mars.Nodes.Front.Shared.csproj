@@ -31,7 +31,7 @@
 
     <ItemGroup>
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
@@ -39,9 +39,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
-        <PackageReference Include="Flurl.Http" Version="4.0.2" />
-        <PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="6.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <PackageReference Include="Flurl.Http" />
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" />
     </ItemGroup>
 
     <ItemGroup>

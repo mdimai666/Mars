@@ -1438,6 +1438,15 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string v_name {
+            get {
+                return ResourceManager.GetString("v_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to For field {0} maximum {1}, minimum length {2}.
         /// </summary>
         public static string v_range {
@@ -1461,6 +1470,15 @@ namespace Mars.Shared.Resources {
         public static string ValidationErrorsOccurredTitle {
             get {
                 return ResourceManager.GetString("ValidationErrorsOccurredTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Value {
+            get {
+                return ResourceManager.GetString("Value", resourceCulture);
             }
         }
         

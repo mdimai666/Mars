@@ -24,7 +24,7 @@ internal class PluginZipInstaller
     public async Task<PluginsUploadOperationResultDto> Handle(IFormFileCollection files, CancellationToken cancellationToken)
     {
         CheckRequiredDiskSizeAndPermissions();
-        var pluginsDir = PluginService.PluginsDefaultPath;
+        var pluginsDir = PluginManager.PluginsDefaultPath;
 
         // Проверка, что все файлы — ZIP
         foreach (var file in files)

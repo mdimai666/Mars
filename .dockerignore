@@ -1,34 +1,56 @@
-**/.classpath
-**/.dockerignore
-**/.env
-**/.git
-**/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
-**/.vscode
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/azds.yaml
-**/bin
-**/charts
-**/docker-compose*
-**/Dockerfile*
-**/node_modules
-**/npm-debug.log
-**/obj
+# ---------------------------
+# 1. Игнорируем вообще всё
+# ---------------------------
+**
+
+# ---------------------------
+# 2. Разрешаем только исходники
+# ---------------------------
+!src/**
+
+# ---------------------------
+# 3. Но мусор внутри src всё равно исключаем
+# ---------------------------
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/node_modules/
+
+# ---------------------------
+# 4. Исключаем runtime данные
+# ---------------------------
+src/**/wwwroot/upload/
+src/**/logs/
+
+# ---------------------------
+# 5. Исключаем локальные конфиги
+# ---------------------------
+/**/*.user
 **/secrets.dev.yaml
 **/values.dev.yaml
-LICENSE
-README.md
-!**/.gitignore
-!.git/HEAD
-!.git/config
-!.git/packed-refs
-!.git/refs/heads/**
+**/.env
 
+# ---------------------------
+# 6. Разрешаем Docker файлы
+# ---------------------------
+!Dockerfile
+!.dockerignore
+
+# ---------------------------
+# 7. Разрешаем solution/build props
+# ---------------------------
+!*.sln
+!*.slnx
+!Directory.Build.props
+!Directory.Build.targets
+!Directory.Packages.props
+!NuGet.config
+!global.json
+
+# ---------------------------
+# 8. Исключаем файлы приложения
+# ---------------------------
 **/Mars.WebApp/*.ps1
 
 **/Mars.WebApp/logs

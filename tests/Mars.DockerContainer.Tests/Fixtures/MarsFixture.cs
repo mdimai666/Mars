@@ -3,6 +3,7 @@ using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Flurl.Http;
+using Microsoft.Extensions.Logging;
 using Testcontainers.PostgreSql;
 
 namespace ExternalServices.Integration.Tests.MarsDocker.Fixtures;
@@ -32,7 +33,8 @@ public class MarsFixture : IAsyncLifetime
         var marsImage = new ImageFromDockerfileBuilder()
             .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
             .WithDockerfile("Dockerfile")
-            .WithName("mars-docker-build")
+            .WithName("mars-docker-build:latest")
+            .WithLogger(LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Testcontainers"))// See it VS2022: Outupt -> Tests
             .Build();
 
         await marsImage.CreateAsync().ConfigureAwait(false);

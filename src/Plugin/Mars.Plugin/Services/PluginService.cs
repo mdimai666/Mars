@@ -18,7 +18,7 @@ internal class PluginService : IPluginService
     private readonly IFileStorage _fileStorage;
     private readonly PluginManager _pluginManager;
     private readonly IOptionService _optionService;
-    public const string PluginsDefaultPath = "plugins";
+    
     public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
     internal IReadOnlyCollection<PluginData> Plugins => _pluginManager.Plugins;
 
@@ -27,7 +27,6 @@ internal class PluginService : IPluginService
         _fileStorage = fileStorage;
         _pluginManager = pluginManager;
         _optionService = optionService;
-        if (!_fileStorage.DirectoryExists(PluginsDefaultPath)) _fileStorage.CreateDirectory(PluginsDefaultPath);
     }
 
     public ListDataResult<PluginInfoDto> List(ListPluginQuery query)

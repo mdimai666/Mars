@@ -100,7 +100,7 @@ public class UploadPluginTests : ApplicationTests
         item.FileSize.Should().Be(zip.Length);
         item.ErrorMessage.Should().BeNullOrEmpty();
 
-        var pluginDllFileName = Path.Combine(PluginService.PluginsDefaultPath, Path.GetFileNameWithoutExtension("plugin1.zip"), pluginName + ".dll");
+        var pluginDllFileName = Path.Combine(PluginManager.PluginsDefaultPath, Path.GetFileNameWithoutExtension("plugin1.zip"), pluginName + ".dll");
         _fileStorage.FileExists(pluginDllFileName).Should().BeTrue("Plugin DLL file should be created in the plugins directory");
     }
 

@@ -20,6 +20,7 @@ internal class PluginManager
     private readonly ILogger<PluginManager> _logger;
 
     public IReadOnlyCollection<PluginData> Plugins => _plugins;
+    public const string PluginsDefaultPath = "plugins";
 
     public PluginManager(string contentRootPath)
     {
@@ -37,6 +38,13 @@ internal class PluginManager
         });
         _fileStorage = new FileStorage(dataDirHostingInfo);
         isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Test", StringComparison.OrdinalIgnoreCase) ?? false;
+
+        EnsurePluginsDirExist();
+    }
+
+    void EnsurePluginsDirExist()
+    {
+        if (!_fileStorage.DirectoryExists(PluginsDefaultPath)) _fileStorage.CreateDirectory(PluginsDefaultPath);
     }
 
     internal void ConfigureBuilder(WebApplicationBuilder builder, string pluginSection = "Plugins")
@@ -65,7 +73,7 @@ internal class PluginManager
         // Read from /data/plugins dir
         if (!isTesting)
         {
-            foreach (var pluginConfig in ReadPluginsFromDirectory(_fileStorage, PluginService.PluginsDefaultPath, _logger))
+            foreach (var pluginConfig in ReadPluginsFromDirectory(_fileStorage, PluginsDefaultPath, _logger))
             {
                 var instances = InstatitePlugin(pluginConfig);
                 plugins.AddRange(instances);

@@ -34,7 +34,7 @@
             "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
             "environmentVariables": {
                 "ASPNETCORE_URLS": "https://+:443;http://+:80",
-                "ConnectionStrings__DefaultConnection": "Host=host.docker.internal:5432;Database=mars_v09;Username=postgres;Password=ggxxrr",
+                "ConnectionStrings__DefaultConnection": "Host=host.docker.internal:5432;Database=mars;Username=mars;Password=mars",
                 "Urls": "http://+:80"
             },
             "publishAllPorts": true,

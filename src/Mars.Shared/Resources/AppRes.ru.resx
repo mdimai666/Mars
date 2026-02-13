@@ -597,4 +597,10 @@
   <data name="Zayavka.many" xml:space="preserve">
     <value>Заявки</value>
   </data>
+  <data name="Value" xml:space="preserve">
+    <value>Значение</value>
+  </data>
+  <data name="v_name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
 </root>

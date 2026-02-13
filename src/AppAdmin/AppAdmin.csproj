@@ -1,12 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-	<PropertyGroup>
+    <PropertyGroup>
         <!--Author-->
         <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
-        
-		<StaticWebAssetBasePath>dev</StaticWebAssetBasePath>
+
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+        <StaticWebAssetBasePath>dev</StaticWebAssetBasePath>
 
         <BlazorEnableCompression>true</BlazorEnableCompression>
         <!--for plugins support-->
@@ -90,8 +95,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Pages\PostCategoryViews\ManagePostCategoryViewOld.razor.cs" />
-      <Compile Remove="Pages\UserViews\AdminEditUserPage.razor.cs" />
+        <Compile Remove="Pages\PostCategoryViews\ManagePostCategoryViewOld.razor.cs" />
+        <Compile Remove="Pages\UserViews\AdminEditUserPage.razor.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -122,6 +127,13 @@
         <ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>RepositoryUrl</_Parameter1>
+            <_Parameter2>$(RepositoryUrl)</_Parameter2>
+        </AssemblyAttribute>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

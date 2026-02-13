@@ -14,7 +14,7 @@ internal class MarsSystemService : IMarsSystemService
 {
     private readonly IMemoryCache _memoryCache;
     private readonly IOptionService _optionService;
-    static List<KeyValuePair<string, string>>? cachedAboutSystem;
+    private static List<KeyValuePair<string, string>>? _aboutSystem;
 
     public MarsSystemService(IMemoryCache memoryCache, IOptionService optionService)
     {
@@ -24,41 +24,51 @@ internal class MarsSystemService : IMarsSystemService
 
     public IEnumerable<KeyValuePair<string, string>> AboutSystem()
     {
-        if (cachedAboutSystem == null)
-        {
-            cachedAboutSystem = [];
-            var d = cachedAboutSystem;
+        if (_aboutSystem != null) return _aboutSystem;
 
-            var assembly = Assembly.GetExecutingAssembly();
-            //string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            string version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
-            var os = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
-            var osArch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
-            var RuntimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
-            var FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-            var ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+        _aboutSystem = [];
 
-            Action<string, string> add = (k, v) => d.Add(new KeyValuePair<string, string>(k, v));
+        var assembly = Assembly.GetExecutingAssembly();
+        var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
+        version = version.Split('+')[0];
 
-            add("Mars", version);
-            add("OS", os);
-            add("Arch", osArch.ToString());
-            add("RuntimeIdentifier", RuntimeIdentifier);
-            add("FrameworkDescription", FrameworkDescription);
-            add("ProcessArchitecture", ProcessArchitecture.ToString());
-            add("", "");
-            //add("ParentProcess", ParentProcess());
-            add("Environment", MarsStartupInfo.ASPNETCORE_ENVIRONMENT);
-            add("IsPM2", IsPM2().ToString());
-            add("IsRunningInDocker", MarsStartupInfo.IsRunningInDocker.ToString());
+        var metaAttributes = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
 
-            var timezone = GetTimeZone().ConfigureAwait(false).GetAwaiter().GetResult();
+        var sourceRevisionId = metaAttributes.FirstOrDefault(a => a.Key == "SourceRevisionId")?.Value ?? "unknown";
+        var repositoryUrl = metaAttributes.FirstOrDefault(x => x.Key == "RepositoryUrl")?.Value ?? "unknown";
 
-            add("ServerTimeZone", timezone.ServerTimeZone.DisplayName);
-            add("DatabaseTimeZone", timezone.DatabaseTimeZone.DisplayName);
+        //var commitPageLink = $"{repositoryUrl}/commit/{sourceRevisionId}";
 
-        }
-        return cachedAboutSystem;
+        var os = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+        var osArch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
+        var RuntimeIdentifier = System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier;
+        var FrameworkDescription = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+        var ProcessArchitecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+
+        Action<string, string> add = (k, v) => _aboutSystem.Add(new KeyValuePair<string, string>(k, v));
+
+        add("Mars", version);
+#if !DEBUG
+        add("Git SHA", sourceRevisionId);
+        //add("CommitPageLink", commitPageLink);
+#endif
+        add("OS", os);
+        add("Arch", osArch.ToString());
+        add("RuntimeIdentifier", RuntimeIdentifier);
+        add("FrameworkDescription", FrameworkDescription);
+        add("ProcessArchitecture", ProcessArchitecture.ToString());
+        add("", "");
+        //add("ParentProcess", ParentProcess());
+        add("Environment", MarsStartupInfo.ASPNETCORE_ENVIRONMENT);
+        add("IsPM2", IsPM2().ToString());
+        add("IsRunningInDocker", MarsStartupInfo.IsRunningInDocker.ToString());
+
+        var timezone = GetTimeZone().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        add("ServerTimeZone", timezone.ServerTimeZone.DisplayName);
+        add("DatabaseTimeZone", timezone.DatabaseTimeZone.DisplayName);
+
+        return _aboutSystem;
     }
 
     string ParentProcess()

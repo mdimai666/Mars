@@ -597,4 +597,10 @@
   <data name="Zayavka.many" xml:space="preserve">
     <value>Zayavkas</value>
   </data>
+  <data name="Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="v_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
 </root>

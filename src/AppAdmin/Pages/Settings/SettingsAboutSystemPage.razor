@@ -1,7 +1,8 @@
 @page "/Settings/About"
 @using Microsoft.AspNetCore.Authorization
+@using System.Reflection
 @attribute [Authorize(Roles = "Admin")]
-@attribute [Display(Name = "Настройки Host html")]
+@attribute [Display(Name = "О системе")]
 
 <SettingsPageWrapper>
 
@@ -10,7 +11,7 @@
     <div class="card">
         <div class="card-body text-break">
 
-            @if (info is null)
+            @if (_info is null)
             {
                 <SharedLoader1 />
             }
@@ -20,12 +21,12 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <td>Имя</td>
-                            <td>Информация</td>
+                            <th><strong>@AppRes.v_name</strong></th>
+                            <th><strong>@AppRes.Value</strong></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var d in info)
+                        @foreach (var d in _info)
                         {
                             <tr>
                                 <td style="min-width:200px">@d.Key</td>
@@ -38,11 +39,10 @@
         </div>
     </div>
 
-
 </SettingsPageWrapper>
 
 @code {
-    IReadOnlyCollection<KeyValuePair<string, string>>? info;
+    OrderedDictionary<string, MarkupString>? _info;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
 
     protected override void OnInitialized()
@@ -51,7 +51,26 @@
 
         Task.Run(async () =>
         {
-            info = await client.System.AboutSystem();
+            var aboutInfo = await client.System.AboutSystem();
+
+            _info = new(aboutInfo.ToDictionary(s => s.Key, s => (MarkupString)s.Value));
+            var keyGitSHA = "Git SHA";
+
+            if (_info.TryGetValue(keyGitSHA, out var sourceRevisionId))
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var metaAttributes = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+                var repositoryUrl = metaAttributes.FirstOrDefault(x => x.Key == "RepositoryUrl")?.Value;
+
+                if (repositoryUrl.IsNotNullOrEmpty())
+                {
+                    var commitPageLink = $"{repositoryUrl}/commit/{sourceRevisionId}";
+                    _info[keyGitSHA] = (MarkupString)$"""<a href="{commitPageLink}" target="_blank">{sourceRevisionId}</a>""";
+
+                }
+
+            }
+
             StateHasChanged();
         });
     }

@@ -5,15 +5,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="QueryLang\MetaPostToClassMto.cs" />
-	  <Compile Remove="QueryLang\TestQueryLangFunctionality.cs" />
-	  <Compile Remove="QueryLang\TestQueryLangGetModelAsObject.cs" />
-	  <Compile Remove="RuntimeTypeCompilerTests\RuntimeTypeCompilerTests.cs" />
-	  <Compile Remove="SomeTests\WorkAboutMemoryLeak.cs" />
-	  <Compile Remove="SomeTests\WorkAboutSelectExpression.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Remove="Files\ExampleFiles\file1.txt" />
 	  <None Remove="Files\ExampleFiles\file2.txt" />
 	  <None Remove="Files\ExampleFiles\SubPath\file3.txt" />
@@ -47,13 +38,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
-		<!--<ProjectReference Include="..\..\Mars.Modules\Mars.GenSourceCode\Mars.GenSourceCode.csproj" />-->
 		<ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="QueryLang\" />
-	  <Folder Include="RuntimeTypeCompilerTests\" />
 	</ItemGroup>
 
     <ItemGroup>

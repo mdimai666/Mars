@@ -10,7 +10,7 @@
         "dependencies": {
           "AppAdmin": "0.7.2-alpha.2",
           "Bogus": "35.6.5",
-          "Duende.IdentityServer": "7.4.4",
+          "Duende.IdentityServer": "7.4.6",
           "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.1",
           "Mars.Datasource.Front": "1.0.0",
@@ -35,26 +35,26 @@
           "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
           "Mars.WebSiteProcessor.Handlebars": "1.0.0",
           "Microsoft.AspNetCore.ApiAuthorization.IdentityServer": "7.0.20",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.1",
-          "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.1",
-          "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "10.0.1",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.1",
-          "Microsoft.AspNetCore.JsonPatch": "10.0.1",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.3",
+          "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.3",
+          "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "10.0.3",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.3",
+          "Microsoft.AspNetCore.JsonPatch": "10.0.3",
           "Microsoft.CodeAnalysis.CSharp": "5.0.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "5.0.0",
           "Microsoft.CodeAnalysis.Common": "5.0.0",
           "Microsoft.CodeAnalysis.Workspaces.Common": "5.0.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "5.0.0",
-          "Microsoft.EntityFrameworkCore.Design": "10.0.1",
+          "Microsoft.EntityFrameworkCore.Design": "10.0.3",
           "NReco.Logging.File": "1.3.1",
-          "OpenTelemetry": "1.14.0",
+          "OpenTelemetry": "1.15.0",
           "OpenTelemetry.Exporter.Prometheus.AspNetCore": "1.13.0-beta.1",
-          "OpenTelemetry.Extensions.Hosting": "1.14.0",
-          "OpenTelemetry.Instrumentation.AspNetCore": "1.14.0",
+          "OpenTelemetry.Extensions.Hosting": "1.15.0",
+          "OpenTelemetry.Instrumentation.AspNetCore": "1.15.0",
           "OpenTelemetry.Instrumentation.EntityFrameworkCore": "1.12.0-beta.2",
-          "OpenTelemetry.Instrumentation.Http": "1.14.0",
+          "OpenTelemetry.Instrumentation.Http": "1.15.0",
           "OpenTelemetry.Instrumentation.Process": "1.12.0-beta.1",
-          "OpenTelemetry.Instrumentation.Runtime": "1.14.0",
+          "OpenTelemetry.Instrumentation.Runtime": "1.15.0",
           "OpenTelemetry.Resources.Container": "1.12.0-beta.1",
           "OpenTelemetry.Resources.Host": "1.12.0-beta.1",
           "PhotoSauce.MagicScaler": "0.14.2",
@@ -65,8 +65,8 @@
           "PhotoSauce.NativeCodecs.Libpng": "1.6.43-preview2",
           "PhotoSauce.NativeCodecs.Libwebp": "1.3.2-preview3",
           "ResXResourceReader.NetStandard": "1.3.0",
-          "Swashbuckle.AspNetCore": "10.1.0",
-          "System.CommandLine": "2.0.1",
+          "Swashbuckle.AspNetCore": "10.1.2",
+          "System.CommandLine": "2.0.3",
           "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.2",
           "mdimai666.Mars.Host": "0.7.2-alpha.2",
           "AppFront.Main": "0.7.2.0",
@@ -207,7 +207,7 @@
       },
       "dotless.Core/1.6.7": {
         "dependencies": {
-          "System.Drawing.Common": "10.0.1"
+          "System.Drawing.Common": "10.0.3"
         },
         "runtime": {
           "lib/netstandard2.0/dotless.Core.dll": {
@@ -224,21 +224,21 @@
           }
         }
       },
-      "Duende.IdentityServer/7.4.4": {
+      "Duende.IdentityServer/7.4.6": {
         "dependencies": {
-          "Duende.IdentityServer.Storage": "7.4.4",
+          "Duende.IdentityServer.Storage": "7.4.6",
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "10.0.0"
         },
         "runtime": {
           "lib/net10.0/Duende.IdentityServer.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.4.4.0"
+            "fileVersion": "7.4.6.0"
           }
         }
       },
       "Duende.IdentityServer.AspNetIdentity/6.0.4": {
         "dependencies": {
-          "Duende.IdentityServer": "7.4.4"
+          "Duende.IdentityServer": "7.4.6"
         },
         "runtime": {
           "lib/net6.0/Duende.IdentityServer.AspNetIdentity.dll": {
@@ -249,7 +249,7 @@
       },
       "Duende.IdentityServer.EntityFramework/6.0.4": {
         "dependencies": {
-          "Duende.IdentityServer": "7.4.4",
+          "Duende.IdentityServer": "7.4.6",
           "Duende.IdentityServer.EntityFramework.Storage": "6.0.4"
         },
         "runtime": {
@@ -262,8 +262,8 @@
       "Duende.IdentityServer.EntityFramework.Storage/6.0.4": {
         "dependencies": {
           "AutoMapper": "11.0.0",
-          "Duende.IdentityServer.Storage": "7.4.4",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1"
+          "Duende.IdentityServer.Storage": "7.4.6",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3"
         },
         "runtime": {
           "lib/net6.0/Duende.IdentityServer.EntityFramework.Storage.dll": {
@@ -272,14 +272,14 @@
           }
         }
       },
-      "Duende.IdentityServer.Storage/7.4.4": {
+      "Duende.IdentityServer.Storage/7.4.6": {
         "dependencies": {
           "Duende.IdentityModel": "8.0.0"
         },
         "runtime": {
           "lib/net10.0/Duende.IdentityServer.Storage.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.4.4.0"
+            "fileVersion": "7.4.6.0"
           }
         }
       },
@@ -293,8 +293,8 @@
       },
       "EFCore.NamingConventions/10.0.1": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1"
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/EFCore.NamingConventions.dll": {
@@ -403,19 +403,19 @@
           }
         }
       },
-      "libphonenumber-csharp/9.0.21": {
+      "libphonenumber-csharp/9.0.23": {
         "runtime": {
           "lib/net9.0/PhoneNumbers.dll": {
-            "assemblyVersion": "9.0.21.0",
-            "fileVersion": "9.0.21.0"
+            "assemblyVersion": "9.0.23.0",
+            "fileVersion": "9.0.23.0"
           }
         }
       },
-      "Markdig/0.44.0": {
+      "Markdig/0.45.0": {
         "runtime": {
           "lib/net9.0/Markdig.dll": {
-            "assemblyVersion": "0.44.0.0",
-            "fileVersion": "0.44.0.0"
+            "assemblyVersion": "0.45.0.0",
+            "fileVersion": "0.45.0.0"
           }
         }
       },
@@ -433,13 +433,13 @@
       },
       "Microsoft.AspNetCore.ApiAuthorization.IdentityServer/7.0.20": {
         "dependencies": {
-          "Duende.IdentityServer": "7.4.4",
+          "Duende.IdentityServer": "7.4.6",
           "Duende.IdentityServer.AspNetIdentity": "6.0.4",
           "Duende.IdentityServer.EntityFramework": "6.0.4",
           "Duende.IdentityServer.EntityFramework.Storage": "6.0.4",
-          "Duende.IdentityServer.Storage": "7.4.4",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.1",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.1",
+          "Duende.IdentityServer.Storage": "7.4.6",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.3",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.3",
           "Microsoft.AspNetCore.Identity.UI": "7.0.20",
           "Newtonsoft.Json": "13.0.4"
         },
@@ -450,20 +450,20 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.1": {
+      "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.3": {
         "dependencies": {
-          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.15.0"
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
       "Microsoft.AspNetCore.Authentication.OpenIdConnect/10.0.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.15.0"
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll": {
@@ -480,63 +480,63 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Components.WebAssembly/10.0.1": {
+      "Microsoft.AspNetCore.Components.WebAssembly/10.0.3": {
         "dependencies": {
-          "Microsoft.JSInterop.WebAssembly": "10.0.1"
+          "Microsoft.JSInterop.WebAssembly": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Components.WebAssembly.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.1": {
+      "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Components.WebAssembly.Authentication.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.1": {
+      "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.3": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.1"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Components.WebAssembly.Server.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.1": {
+      "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.3": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.Http.Connections.Client/10.0.1": {
+      "Microsoft.AspNetCore.Http.Connections.Client/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Http.Connections.Client.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.1": {
+      "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.3": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
@@ -548,34 +548,34 @@
           }
         }
       },
-      "Microsoft.AspNetCore.JsonPatch/10.0.1": {
+      "Microsoft.AspNetCore.JsonPatch/10.0.3": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.JsonPatch.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Client/10.0.1": {
+      "Microsoft.AspNetCore.SignalR.Client/10.0.3": {
         "dependencies": {
-          "Microsoft.AspNetCore.Http.Connections.Client": "10.0.1",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.1"
+          "Microsoft.AspNetCore.Http.Connections.Client": "10.0.3",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SignalR.Client.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Client.Core/10.0.1": {
+      "Microsoft.AspNetCore.SignalR.Client.Core/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SignalR.Client.Core.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
@@ -611,43 +611,11 @@
           }
         }
       },
-      "Microsoft.Build.Framework/17.14.28": {
+      "Microsoft.Build.Framework/18.0.2": {
         "runtime": {
-          "lib/net9.0/Microsoft.Build.Framework.dll": {
+          "lib/net10.0/Microsoft.Build.Framework.dll": {
             "assemblyVersion": "15.1.0.0",
-            "fileVersion": "17.14.28.46601"
-          }
-        }
-      },
-      "Microsoft.Build.Tasks.Core/17.14.28": {
-        "dependencies": {
-          "Microsoft.Build.Framework": "17.14.28",
-          "Microsoft.Build.Utilities.Core": "17.14.28",
-          "Microsoft.NET.StringTools": "17.14.28",
-          "System.CodeDom": "9.0.0",
-          "System.Configuration.ConfigurationManager": "9.0.4",
-          "System.Formats.Nrbf": "9.0.0",
-          "System.Resources.Extensions": "9.0.0",
-          "System.Security.Cryptography.ProtectedData": "9.0.4"
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.Build.Tasks.Core.dll": {
-            "assemblyVersion": "15.1.0.0",
-            "fileVersion": "17.14.28.46601"
-          }
-        }
-      },
-      "Microsoft.Build.Utilities.Core/17.14.28": {
-        "dependencies": {
-          "Microsoft.Build.Framework": "17.14.28",
-          "Microsoft.NET.StringTools": "17.14.28",
-          "System.Configuration.ConfigurationManager": "9.0.4",
-          "System.Security.Cryptography.ProtectedData": "9.0.4"
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.Build.Utilities.Core.dll": {
-            "assemblyVersion": "15.1.0.0",
-            "fileVersion": "17.14.28.46601"
+            "fileVersion": "18.0.2.52102"
           }
         }
       },
@@ -755,7 +723,7 @@
       "Microsoft.CodeAnalysis.Workspaces.MSBuild/5.0.0": {
         "dependencies": {
           "Humanizer.Core": "3.0.1",
-          "Microsoft.Build.Framework": "17.14.28",
+          "Microsoft.Build.Framework": "18.0.2",
           "Microsoft.CodeAnalysis.Workspaces.Common": "5.0.0",
           "Microsoft.VisualStudio.SolutionPersistence": "1.0.52",
           "Newtonsoft.Json": "13.0.4",
@@ -783,8 +751,8 @@
           "Azure.Identity": "1.14.2",
           "Microsoft.Bcl.Cryptography": "9.0.4",
           "Microsoft.Data.SqlClient.SNI.runtime": "6.0.2",
-          "Microsoft.IdentityModel.JsonWebTokens": "8.15.0",
-          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.15.0",
+          "Microsoft.IdentityModel.JsonWebTokens": "8.16.0",
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0",
           "Microsoft.SqlServer.Server": "1.0.0",
           "System.Configuration.ConfigurationManager": "9.0.4"
         },
@@ -841,71 +809,69 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore/10.0.1": {
+      "Microsoft.EntityFrameworkCore/10.0.3": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.1"
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions/10.0.1": {
+      "Microsoft.EntityFrameworkCore.Abstractions/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Design/10.0.1": {
+      "Microsoft.EntityFrameworkCore.Design/10.0.3": {
         "dependencies": {
           "Humanizer.Core": "3.0.1",
-          "Microsoft.Build.Framework": "17.14.28",
-          "Microsoft.Build.Tasks.Core": "17.14.28",
-          "Microsoft.Build.Utilities.Core": "17.14.28",
+          "Microsoft.Build.Framework": "18.0.2",
           "Microsoft.CodeAnalysis.CSharp": "5.0.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "5.0.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "5.0.0",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1",
-          "Microsoft.Extensions.DependencyModel": "10.0.1",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
+          "Microsoft.Extensions.DependencyModel": "10.0.3",
           "Mono.TextTemplating": "3.0.0",
           "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.InMemory/10.0.1": {
+      "Microsoft.EntityFrameworkCore.InMemory/10.0.3": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.1"
+          "Microsoft.EntityFrameworkCore": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.InMemory.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational/10.0.1": {
+      "Microsoft.EntityFrameworkCore.Relational/10.0.3": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.1"
+          "Microsoft.EntityFrameworkCore": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
       "Microsoft.EntityFrameworkCore.Relational.Design/1.1.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3"
         },
         "runtime": {
           "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Relational.Design.dll": {
@@ -914,41 +880,41 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.SqlServer/10.0.1": {
+      "Microsoft.EntityFrameworkCore.SqlServer/10.0.3": {
         "dependencies": {
           "Microsoft.Data.SqlClient": "6.1.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.Extensions.AI/10.1.1": {
+      "Microsoft.Extensions.AI/10.3.0": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.1.1",
-          "System.Numerics.Tensors": "10.0.1"
+          "Microsoft.Extensions.AI.Abstractions": "10.3.0",
+          "System.Numerics.Tensors": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.AI.dll": {
-            "assemblyVersion": "10.1.0.0",
-            "fileVersion": "10.100.125.61202"
+            "assemblyVersion": "10.3.0.0",
+            "fileVersion": "10.300.26.10911"
           }
         }
       },
-      "Microsoft.Extensions.AI.Abstractions/10.1.1": {
+      "Microsoft.Extensions.AI.Abstractions/10.3.0": {
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.AI.Abstractions.dll": {
-            "assemblyVersion": "10.1.0.0",
-            "fileVersion": "10.100.125.61202"
+            "assemblyVersion": "10.3.0.0",
+            "fileVersion": "10.300.26.10911"
           }
         }
       },
       "Microsoft.Extensions.AI.Ollama/9.7.0-preview.1.25356.2": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.1.1"
+          "Microsoft.Extensions.AI.Abstractions": "10.3.0"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.AI.Ollama.dll": {
@@ -959,7 +925,7 @@
       },
       "Microsoft.Extensions.AI.OpenAI/10.0.1-preview.1.25571.5": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.1.1",
+          "Microsoft.Extensions.AI.Abstractions": "10.3.0",
           "OpenAI": "2.7.0",
           "System.Memory.Data": "10.0.0"
         },
@@ -970,17 +936,17 @@
           }
         }
       },
-      "Microsoft.Extensions.DependencyModel/10.0.1": {
+      "Microsoft.Extensions.DependencyModel/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.DependencyModel.dll": {
-            "assemblyVersion": "10.0.0.1",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.0.3",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
       "Microsoft.Extensions.VectorData.Abstractions/9.7.0": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.1.1"
+          "Microsoft.Extensions.AI.Abstractions": "10.3.0"
         },
         "runtime": {
           "lib/net8.0/Microsoft.Extensions.VectorData.Abstractions.dll": {
@@ -1048,7 +1014,7 @@
       },
       "Microsoft.Identity.Client/4.73.1": {
         "dependencies": {
-          "Microsoft.IdentityModel.Abstractions": "8.15.0"
+          "Microsoft.IdentityModel.Abstractions": "8.16.0"
         },
         "runtime": {
           "lib/net8.0/Microsoft.Identity.Client.dll": {
@@ -1069,167 +1035,159 @@
           }
         }
       },
-      "Microsoft.IdentityModel.Abstractions/8.15.0": {
+      "Microsoft.IdentityModel.Abstractions/8.16.0": {
         "runtime": {
           "lib/net10.0/Microsoft.IdentityModel.Abstractions.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "Microsoft.IdentityModel.JsonWebTokens/8.15.0": {
+      "Microsoft.IdentityModel.JsonWebTokens/8.16.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "8.15.0"
+          "Microsoft.IdentityModel.Tokens": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "Microsoft.IdentityModel.Logging/8.15.0": {
+      "Microsoft.IdentityModel.Logging/8.16.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Abstractions": "8.15.0"
+          "Microsoft.IdentityModel.Abstractions": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.IdentityModel.Logging.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "Microsoft.IdentityModel.Protocols/8.15.0": {
+      "Microsoft.IdentityModel.Protocols/8.16.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "8.15.0"
+          "Microsoft.IdentityModel.Tokens": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.IdentityModel.Protocols.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "Microsoft.IdentityModel.Protocols.OpenIdConnect/8.15.0": {
+      "Microsoft.IdentityModel.Protocols.OpenIdConnect/8.16.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Protocols": "8.15.0",
-          "System.IdentityModel.Tokens.Jwt": "8.15.0"
+          "Microsoft.IdentityModel.Protocols": "8.16.0",
+          "System.IdentityModel.Tokens.Jwt": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "Microsoft.IdentityModel.Tokens/8.15.0": {
+      "Microsoft.IdentityModel.Tokens/8.16.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Logging": "8.15.0"
+          "Microsoft.IdentityModel.Logging": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.IdentityModel.Tokens.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "Microsoft.JSInterop.WebAssembly/10.0.1": {
+      "Microsoft.JSInterop.WebAssembly/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.JSInterop.WebAssembly.dll": {
-            "assemblyVersion": "10.0.1.0",
-            "fileVersion": "10.0.125.57005"
+            "assemblyVersion": "10.0.3.0",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "Microsoft.NET.StringTools/17.14.28": {
-        "runtime": {
-          "lib/net9.0/Microsoft.NET.StringTools.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "17.14.28.46601"
-          }
-        }
-      },
-      "Microsoft.OpenApi/2.3.0": {
+      "Microsoft.OpenApi/2.4.1": {
         "runtime": {
           "lib/net8.0/Microsoft.OpenApi.dll": {
-            "assemblyVersion": "2.3.0.0",
-            "fileVersion": "2.3.0.0"
+            "assemblyVersion": "2.4.1.0",
+            "fileVersion": "2.4.1.0"
           }
         }
       },
-      "Microsoft.SemanticKernel/1.68.0": {
+      "Microsoft.SemanticKernel/1.70.0": {
         "dependencies": {
-          "Microsoft.SemanticKernel.Connectors.AzureOpenAI": "1.68.0",
-          "Microsoft.SemanticKernel.Core": "1.68.0"
+          "Microsoft.SemanticKernel.Connectors.AzureOpenAI": "1.70.0",
+          "Microsoft.SemanticKernel.Core": "1.70.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.0.0"
+            "assemblyVersion": "1.70.0.0",
+            "fileVersion": "1.70.0.0"
           }
         }
       },
-      "Microsoft.SemanticKernel.Abstractions/1.68.0": {
+      "Microsoft.SemanticKernel.Abstractions/1.70.0": {
         "dependencies": {
           "Microsoft.Bcl.HashCode": "1.1.1",
-          "Microsoft.Extensions.AI": "10.1.1",
+          "Microsoft.Extensions.AI": "10.3.0",
           "Microsoft.Extensions.VectorData.Abstractions": "9.7.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.Abstractions.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.0.0"
+            "assemblyVersion": "1.70.0.0",
+            "fileVersion": "1.70.0.0"
           }
         }
       },
-      "Microsoft.SemanticKernel.Connectors.AzureOpenAI/1.68.0": {
+      "Microsoft.SemanticKernel.Connectors.AzureOpenAI/1.70.0": {
         "dependencies": {
           "Azure.AI.OpenAI": "2.7.0-beta.2",
-          "Microsoft.SemanticKernel.Connectors.OpenAI": "1.68.0",
-          "Microsoft.SemanticKernel.Core": "1.68.0"
+          "Microsoft.SemanticKernel.Connectors.OpenAI": "1.70.0",
+          "Microsoft.SemanticKernel.Core": "1.70.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.Connectors.AzureOpenAI.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.0.0"
+            "assemblyVersion": "1.70.0.0",
+            "fileVersion": "1.70.0.0"
           }
         }
       },
-      "Microsoft.SemanticKernel.Connectors.Ollama/1.68.0-alpha": {
+      "Microsoft.SemanticKernel.Connectors.Ollama/1.70.0-alpha": {
         "dependencies": {
-          "Microsoft.SemanticKernel.Abstractions": "1.68.0",
-          "Microsoft.SemanticKernel.Core": "1.68.0",
-          "OllamaSharp": "5.4.11"
+          "Microsoft.SemanticKernel.Abstractions": "1.70.0",
+          "Microsoft.SemanticKernel.Core": "1.70.0",
+          "OllamaSharp": "5.4.12"
         },
         "runtime": {
           "lib/net8.0/Microsoft.SemanticKernel.Connectors.Ollama.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.0.0"
+            "assemblyVersion": "1.70.0.0",
+            "fileVersion": "1.70.0.0"
           }
         }
       },
-      "Microsoft.SemanticKernel.Connectors.OpenAI/1.68.0": {
+      "Microsoft.SemanticKernel.Connectors.OpenAI/1.70.0": {
         "dependencies": {
           "Microsoft.Extensions.AI.OpenAI": "10.0.1-preview.1.25571.5",
-          "Microsoft.SemanticKernel.Core": "1.68.0",
+          "Microsoft.SemanticKernel.Core": "1.70.0",
           "OpenAI": "2.7.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.Connectors.OpenAI.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.0.0"
+            "assemblyVersion": "1.70.0.0",
+            "fileVersion": "1.70.0.0"
           }
         }
       },
-      "Microsoft.SemanticKernel.Core/1.68.0": {
+      "Microsoft.SemanticKernel.Core/1.70.0": {
         "dependencies": {
-          "Microsoft.SemanticKernel.Abstractions": "1.68.0",
-          "System.Numerics.Tensors": "10.0.1"
+          "Microsoft.SemanticKernel.Abstractions": "1.70.0",
+          "System.Numerics.Tensors": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.Core.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.0.0"
+            "assemblyVersion": "1.70.0.0",
+            "fileVersion": "1.70.0.0"
           }
         }
       },
@@ -1249,11 +1207,11 @@
           }
         }
       },
-      "Microsoft.Win32.SystemEvents/10.0.1": {
+      "Microsoft.Win32.SystemEvents/10.0.3": {
         "runtime": {
           "lib/net10.0/Microsoft.Win32.SystemEvents.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.125.57005"
+            "fileVersion": "10.0.326.7603"
           }
         },
         "runtimeTargets": {
@@ -1261,13 +1219,13 @@
             "rid": "win",
             "assetType": "runtime",
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.125.57005"
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
       "Mono.TextTemplating/3.0.0": {
         "dependencies": {
-          "System.CodeDom": "9.0.0"
+          "System.CodeDom": "6.0.0"
         },
         "runtime": {
           "lib/net6.0/Mono.TextTemplating.dll": {
@@ -1276,22 +1234,22 @@
           }
         }
       },
-      "MQTTnet/5.0.1.1416": {
+      "MQTTnet/5.1.0.1559": {
         "runtime": {
-          "lib/net8.0/MQTTnet.dll": {
-            "assemblyVersion": "5.0.1.1416",
-            "fileVersion": "5.0.1.1416"
+          "lib/net10.0/MQTTnet.dll": {
+            "assemblyVersion": "5.1.0.1559",
+            "fileVersion": "5.1.0.1559"
           }
         }
       },
-      "MQTTnet.Extensions.TopicTemplate/5.0.1.1416": {
+      "MQTTnet.Extensions.TopicTemplate/5.1.0.1559": {
         "dependencies": {
-          "MQTTnet": "5.0.1.1416"
+          "MQTTnet": "5.1.0.1559"
         },
         "runtime": {
-          "lib/net8.0/MQTTnet.Extensions.TopicTemplate.dll": {
-            "assemblyVersion": "5.0.1.1416",
-            "fileVersion": "5.0.1.1416"
+          "lib/net10.0/MQTTnet.Extensions.TopicTemplate.dll": {
+            "assemblyVersion": "5.1.0.1559",
+            "fileVersion": "5.1.0.1559"
           }
         }
       },
@@ -1332,8 +1290,8 @@
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL/10.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1",
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
           "Npgsql": "10.0.1"
         },
         "runtime": {
@@ -1345,8 +1303,8 @@
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL.Design/1.1.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.1",
+          "Microsoft.EntityFrameworkCore": "10.0.3",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
           "Microsoft.EntityFrameworkCore.Relational.Design": "1.1.0",
           "Npgsql": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0"
@@ -1402,14 +1360,14 @@
           }
         }
       },
-      "OllamaSharp/5.4.11": {
+      "OllamaSharp/5.4.12": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.1.1"
+          "Microsoft.Extensions.AI.Abstractions": "10.3.0"
         },
         "runtime": {
           "lib/net10.0/OllamaSharp.dll": {
-            "assemblyVersion": "5.4.11.0",
-            "fileVersion": "5.4.11.0"
+            "assemblyVersion": "5.4.12.0",
+            "fileVersion": "5.4.12.0"
           }
         }
       },
@@ -1432,39 +1390,39 @@
           }
         }
       },
-      "OpenTelemetry/1.14.0": {
+      "OpenTelemetry/1.15.0": {
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.14.0"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.dll": {
             "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.14.0.1849"
+            "fileVersion": "1.15.0.1921"
           }
         }
       },
-      "OpenTelemetry.Api/1.14.0": {
+      "OpenTelemetry.Api/1.15.0": {
         "runtime": {
           "lib/net10.0/OpenTelemetry.Api.dll": {
             "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.14.0.1849"
+            "fileVersion": "1.15.0.1921"
           }
         }
       },
-      "OpenTelemetry.Api.ProviderBuilderExtensions/1.14.0": {
+      "OpenTelemetry.Api.ProviderBuilderExtensions/1.15.0": {
         "dependencies": {
-          "OpenTelemetry.Api": "1.14.0"
+          "OpenTelemetry.Api": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll": {
             "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.14.0.1849"
+            "fileVersion": "1.15.0.1921"
           }
         }
       },
       "OpenTelemetry.Exporter.Prometheus.AspNetCore/1.13.0-beta.1": {
         "dependencies": {
-          "OpenTelemetry": "1.14.0"
+          "OpenTelemetry": "1.15.0"
         },
         "runtime": {
           "lib/net9.0/OpenTelemetry.Exporter.Prometheus.AspNetCore.dll": {
@@ -1473,31 +1431,31 @@
           }
         }
       },
-      "OpenTelemetry.Extensions.Hosting/1.14.0": {
+      "OpenTelemetry.Extensions.Hosting/1.15.0": {
         "dependencies": {
-          "OpenTelemetry": "1.14.0"
+          "OpenTelemetry": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.Extensions.Hosting.dll": {
             "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.14.0.1849"
+            "fileVersion": "1.15.0.1921"
           }
         }
       },
-      "OpenTelemetry.Instrumentation.AspNetCore/1.14.0": {
+      "OpenTelemetry.Instrumentation.AspNetCore/1.15.0": {
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.14.0"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.Instrumentation.AspNetCore.dll": {
-            "assemblyVersion": "1.14.0.761",
-            "fileVersion": "1.14.0.761"
+            "assemblyVersion": "1.15.0.901",
+            "fileVersion": "1.15.0.901"
           }
         }
       },
       "OpenTelemetry.Instrumentation.EntityFrameworkCore/1.12.0-beta.2": {
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.14.0"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         },
         "runtime": {
           "lib/netstandard2.0/OpenTelemetry.Instrumentation.EntityFrameworkCore.dll": {
@@ -1506,20 +1464,20 @@
           }
         }
       },
-      "OpenTelemetry.Instrumentation.Http/1.14.0": {
+      "OpenTelemetry.Instrumentation.Http/1.15.0": {
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.14.0"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.Instrumentation.Http.dll": {
-            "assemblyVersion": "1.14.0.774",
-            "fileVersion": "1.14.0.774"
+            "assemblyVersion": "1.15.0.900",
+            "fileVersion": "1.15.0.900"
           }
         }
       },
       "OpenTelemetry.Instrumentation.Process/1.12.0-beta.1": {
         "dependencies": {
-          "OpenTelemetry.Api": "1.14.0"
+          "OpenTelemetry.Api": "1.15.0"
         },
         "runtime": {
           "lib/netstandard2.0/OpenTelemetry.Instrumentation.Process.dll": {
@@ -1528,20 +1486,20 @@
           }
         }
       },
-      "OpenTelemetry.Instrumentation.Runtime/1.14.0": {
+      "OpenTelemetry.Instrumentation.Runtime/1.15.0": {
         "dependencies": {
-          "OpenTelemetry.Api": "1.14.0"
+          "OpenTelemetry.Api": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.Instrumentation.Runtime.dll": {
-            "assemblyVersion": "1.14.0.775",
-            "fileVersion": "1.14.0.775"
+            "assemblyVersion": "1.15.0.899",
+            "fileVersion": "1.15.0.899"
           }
         }
       },
       "OpenTelemetry.Resources.Container/1.12.0-beta.1": {
         "dependencies": {
-          "OpenTelemetry": "1.14.0"
+          "OpenTelemetry": "1.15.0"
         },
         "runtime": {
           "lib/net8.0/OpenTelemetry.Resources.Container.dll": {
@@ -1552,7 +1510,7 @@
       },
       "OpenTelemetry.Resources.Host/1.12.0-beta.1": {
         "dependencies": {
-          "OpenTelemetry": "1.14.0"
+          "OpenTelemetry": "1.15.0"
         },
         "runtime": {
           "lib/net8.0/OpenTelemetry.Resources.Host.dll": {
@@ -1896,40 +1854,40 @@
           }
         }
       },
-      "Swashbuckle.AspNetCore/10.1.0": {
+      "Swashbuckle.AspNetCore/10.1.2": {
         "dependencies": {
-          "Swashbuckle.AspNetCore.Swagger": "10.1.0",
-          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.0",
-          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.0"
+          "Swashbuckle.AspNetCore.Swagger": "10.1.2",
+          "Swashbuckle.AspNetCore.SwaggerGen": "10.1.2",
+          "Swashbuckle.AspNetCore.SwaggerUI": "10.1.2"
         }
       },
-      "Swashbuckle.AspNetCore.Swagger/10.1.0": {
+      "Swashbuckle.AspNetCore.Swagger/10.1.2": {
         "dependencies": {
-          "Microsoft.OpenApi": "2.3.0"
+          "Microsoft.OpenApi": "2.4.1"
         },
         "runtime": {
           "lib/net10.0/Swashbuckle.AspNetCore.Swagger.dll": {
-            "assemblyVersion": "10.1.0.0",
-            "fileVersion": "10.1.0.2093"
+            "assemblyVersion": "10.1.2.0",
+            "fileVersion": "10.1.2.2188"
           }
         }
       },
-      "Swashbuckle.AspNetCore.SwaggerGen/10.1.0": {
+      "Swashbuckle.AspNetCore.SwaggerGen/10.1.2": {
         "dependencies": {
-          "Swashbuckle.AspNetCore.Swagger": "10.1.0"
+          "Swashbuckle.AspNetCore.Swagger": "10.1.2"
         },
         "runtime": {
           "lib/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll": {
-            "assemblyVersion": "10.1.0.0",
-            "fileVersion": "10.1.0.2093"
+            "assemblyVersion": "10.1.2.0",
+            "fileVersion": "10.1.2.2188"
           }
         }
       },
-      "Swashbuckle.AspNetCore.SwaggerUI/10.1.0": {
+      "Swashbuckle.AspNetCore.SwaggerUI/10.1.2": {
         "runtime": {
           "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
-            "assemblyVersion": "10.1.0.0",
-            "fileVersion": "10.1.0.2093"
+            "assemblyVersion": "10.1.2.0",
+            "fileVersion": "10.1.2.2188"
           }
         }
       },
@@ -1944,19 +1902,19 @@
           }
         }
       },
-      "System.CodeDom/9.0.0": {
+      "System.CodeDom/6.0.0": {
         "runtime": {
-          "lib/net9.0/System.CodeDom.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52809"
+          "lib/net6.0/System.CodeDom.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
           }
         }
       },
-      "System.CommandLine/2.0.1": {
+      "System.CommandLine/2.0.3": {
         "runtime": {
           "lib/net8.0/System.CommandLine.dll": {
-            "assemblyVersion": "2.0.1.0",
-            "fileVersion": "2.0.125.57005"
+            "assemblyVersion": "2.0.3.0",
+            "fileVersion": "2.0.326.7603"
           }
         },
         "resources": {
@@ -2036,50 +1994,42 @@
           }
         }
       },
-      "System.Drawing.Common/10.0.1": {
+      "System.Drawing.Common/10.0.3": {
         "dependencies": {
-          "Microsoft.Win32.SystemEvents": "10.0.1"
+          "Microsoft.Win32.SystemEvents": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/System.Drawing.Common.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.125.57005"
+            "fileVersion": "10.0.326.7603"
           },
           "lib/net10.0/System.Private.Windows.Core.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.125.57005"
+            "fileVersion": "10.0.326.7603"
           },
           "lib/net10.0/System.Private.Windows.GdiPlus.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.125.57005"
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
-      "System.Formats.Nrbf/9.0.0": {
-        "runtime": {
-          "lib/net9.0/System.Formats.Nrbf.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52809"
-          }
-        }
-      },
-      "System.IdentityModel.Tokens.Jwt/8.15.0": {
+      "System.IdentityModel.Tokens.Jwt/8.16.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "8.15.0",
-          "Microsoft.IdentityModel.Tokens": "8.15.0"
+          "Microsoft.IdentityModel.JsonWebTokens": "8.16.0",
+          "Microsoft.IdentityModel.Tokens": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/System.IdentityModel.Tokens.Jwt.dll": {
-            "assemblyVersion": "8.15.0.0",
-            "fileVersion": "8.15.0.61118"
+            "assemblyVersion": "8.16.0.0",
+            "fileVersion": "8.16.0.26043"
           }
         }
       },
-      "System.IO.Packaging/10.0.1": {
+      "System.IO.Packaging/10.0.3": {
         "runtime": {
           "lib/net10.0/System.IO.Packaging.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.125.57005"
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
@@ -2091,22 +2041,11 @@
           }
         }
       },
-      "System.Numerics.Tensors/10.0.1": {
+      "System.Numerics.Tensors/10.0.3": {
         "runtime": {
           "lib/net10.0/System.Numerics.Tensors.dll": {
-            "assemblyVersion": "10.0.0.1",
-            "fileVersion": "10.0.125.57005"
-          }
-        }
-      },
-      "System.Resources.Extensions/9.0.0": {
-        "dependencies": {
-          "System.Formats.Nrbf": "9.0.0"
-        },
-        "runtime": {
-          "lib/net9.0/System.Resources.Extensions.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52809"
+            "assemblyVersion": "10.0.0.3",
+            "fileVersion": "10.0.326.7603"
           }
         }
       },
@@ -2118,17 +2057,17 @@
           }
         }
       },
-      "Toolbelt.Blazor.HotKeys2/6.1.0": {
+      "Toolbelt.Blazor.HotKeys2/6.2.0": {
         "runtime": {
           "lib/net10.0/Toolbelt.Blazor.HotKeys2.dll": {
-            "assemblyVersion": "6.1.0.0",
-            "fileVersion": "6.1.0.0"
+            "assemblyVersion": "6.2.0.0",
+            "fileVersion": "6.2.0.0"
           }
         }
       },
       "Toolbelt.Blazor.HttpClientInterceptor/10.2.0": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.1"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.3"
         },
         "runtime": {
           "lib/netstandard2.1/Toolbelt.Blazor.HttpClientInterceptor.dll": {
@@ -2149,11 +2088,11 @@
           "Mars.Options.Front": "1.0.0",
           "Mars.SemanticKernel.Front": "1.0.0",
           "Mars.WebApp.Nodes.Front": "1.0.0",
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.1",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.1",
-          "Microsoft.AspNetCore.SignalR.Client": "10.0.1",
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.3",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.3",
+          "Microsoft.AspNetCore.SignalR.Client": "10.0.3",
           "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.103",
-          "Toolbelt.Blazor.HotKeys2": "6.1.0",
+          "Toolbelt.Blazor.HotKeys2": "6.2.0",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
           "mdimai666.BlazoredHtmlRender": "0.7.2-alpha.2",
           "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.2",
@@ -2246,7 +2185,7 @@
         "dependencies": {
           "Mars.Datasource.Core": "1.0.0",
           "Mars.Datasource.Host.Core": "1.0.0",
-          "Microsoft.EntityFrameworkCore.SqlServer": "10.0.1"
+          "Microsoft.EntityFrameworkCore.SqlServer": "10.0.3"
         },
         "runtime": {
           "Mars.Datasource.Host.MsSQL.dll": {
@@ -2319,7 +2258,7 @@
       },
       "Mars.Excel.Host/1.0.0": {
         "dependencies": {
-          "System.IO.Packaging": "10.0.1",
+          "System.IO.Packaging": "10.0.3",
           "mdimai666.Mars.Host.Shared": "0.7.2-alpha.2"
         },
         "runtime": {
@@ -2331,7 +2270,7 @@
       },
       "Mars.Host.Data.InMemory/1.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.InMemory": "10.0.1",
+          "Microsoft.EntityFrameworkCore.InMemory": "10.0.3",
           "mdimai666.Mars.Host.Data": "0.7.2-alpha.2"
         },
         "runtime": {
@@ -2521,10 +2460,10 @@
         "dependencies": {
           "Mars.SemanticKernel.Host.Shared": "1.0.0",
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "Microsoft.Extensions.AI": "10.1.1",
+          "Microsoft.Extensions.AI": "10.3.0",
           "Microsoft.Extensions.AI.Ollama": "9.7.0-preview.1.25356.2",
-          "Microsoft.SemanticKernel": "1.68.0",
-          "Microsoft.SemanticKernel.Connectors.Ollama": "1.68.0-alpha",
+          "Microsoft.SemanticKernel": "1.70.0",
+          "Microsoft.SemanticKernel.Connectors.Ollama": "1.70.0-alpha",
           "mdimai666.Mars.Nodes.Core.Implements": "0.7.2-alpha.2"
         },
         "runtime": {
@@ -2537,7 +2476,7 @@
       "Mars.SemanticKernel.Host.Shared/1.0.0": {
         "dependencies": {
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "Microsoft.SemanticKernel": "1.68.0"
+          "Microsoft.SemanticKernel": "1.70.0"
         },
         "runtime": {
           "Mars.SemanticKernel.Host.Shared.dll": {
@@ -2560,8 +2499,8 @@
       },
       "Mars.SSO/1.0.0": {
         "dependencies": {
-          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.15.0",
-          "System.IdentityModel.Tokens.Jwt": "8.15.0",
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0",
+          "System.IdentityModel.Tokens.Jwt": "8.16.0",
           "mdimai666.Mars.Host.Shared": "0.7.2-alpha.2"
         },
         "runtime": {
@@ -2573,10 +2512,10 @@
       },
       "Mars.SSO.Host.OAuth/1.0.0": {
         "dependencies": {
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.1",
-          "Microsoft.EntityFrameworkCore.InMemory": "10.0.1",
-          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.15.0",
-          "System.IdentityModel.Tokens.Jwt": "8.15.0",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.3",
+          "Microsoft.EntityFrameworkCore.InMemory": "10.0.3",
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0",
+          "System.IdentityModel.Tokens.Jwt": "8.16.0",
           "mdimai666.Mars.Host.Shared": "0.7.2-alpha.2"
         },
         "runtime": {
@@ -2615,7 +2554,7 @@
       "Mars.WebApp.Nodes.Host/1.0.0": {
         "dependencies": {
           "Mars.WebApp.Nodes.Front": "1.0.0",
-          "System.Drawing.Common": "10.0.1",
+          "System.Drawing.Common": "10.0.3",
           "dotless.Core": "1.6.7",
           "mdimai666.Mars.Nodes.Core.Implements": "0.7.2-alpha.2"
         },
@@ -2695,9 +2634,9 @@
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
-          "Markdig": "0.44.0",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.1",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.1",
+          "Markdig": "0.45.0",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.3",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.3",
           "Microsoft.FluentUI.AspNetCore.Components": "4.13.2",
           "Microsoft.FluentUI.AspNetCore.Components.Icons": "4.13.2",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
@@ -2721,8 +2660,8 @@
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
           "Flurl.Http": "4.0.2",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.1",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.1",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.3",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.3",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
           "mdimai666.BlazoredHtmlRender": "0.7.2-alpha.2",
           "mdimai666.Mars.Core": "0.7.2-alpha.2",
@@ -2753,9 +2692,9 @@
           "Flurl.Http": "4.0.2",
           "Handlebars.Net": "2.1.6",
           "Mars.Host.Repositories": "1.0.0",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.1",
-          "Swashbuckle.AspNetCore": "10.1.0",
-          "System.IdentityModel.Tokens.Jwt": "8.15.0",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.3",
+          "Swashbuckle.AspNetCore": "10.1.2",
+          "System.IdentityModel.Tokens.Jwt": "8.16.0",
           "mdimai666.Mars.Host.Data": "0.7.2-alpha.2",
           "mdimai666.Mars.Host.Shared": "0.7.2-alpha.2"
         },
@@ -2769,8 +2708,8 @@
       "mdimai666.Mars.Host.Data/0.7.2-alpha.2": {
         "dependencies": {
           "EFCore.NamingConventions": "10.0.1",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.1",
-          "Microsoft.EntityFrameworkCore": "10.0.1",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.3",
+          "Microsoft.EntityFrameworkCore": "10.0.3",
           "mdimai666.Mars.Core": "0.7.2-alpha.2"
         },
         "runtime": {
@@ -2801,12 +2740,12 @@
           "DynamicExpresso.Core": "2.19.3",
           "FluentValidation": "12.1.1",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
-          "Microsoft.EntityFrameworkCore": "10.0.1",
+          "Microsoft.EntityFrameworkCore": "10.0.3",
           "Microsoft.FeatureManagement.AspNetCore": "4.4.0",
           "Quartz": "3.15.1",
-          "System.CommandLine": "2.0.1",
-          "System.IdentityModel.Tokens.Jwt": "8.15.0",
-          "libphonenumber-csharp": "9.0.21",
+          "System.CommandLine": "2.0.3",
+          "System.IdentityModel.Tokens.Jwt": "8.16.0",
+          "libphonenumber-csharp": "9.0.23",
           "mdimai666.Mars.Core": "0.7.2-alpha.2",
           "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.2",
           "mdimai666.Mars.Options": "0.7.2-alpha.2",
@@ -2848,8 +2787,8 @@
           "DynamicExpresso.Core": "2.19.3",
           "Flurl.Http": "4.0.2",
           "Handlebars.Net": "2.1.6",
-          "MQTTnet": "5.0.1.1416",
-          "MQTTnet.Extensions.TopicTemplate": "5.0.1.1416",
+          "MQTTnet": "5.1.0.1559",
+          "MQTTnet.Extensions.TopicTemplate": "5.1.0.1559",
           "Mars.HttpSmartAuthFlow": "1.0.0",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.0.0",
           "mdimai666.Mars.Host.Shared": "0.7.2-alpha.2",
@@ -2881,7 +2820,7 @@
       "mdimai666.Mars.Nodes.Front.Shared/0.7.2-alpha.2": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
-          "Toolbelt.Blazor.HotKeys2": "6.1.0",
+          "Toolbelt.Blazor.HotKeys2": "6.2.0",
           "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.2",
           "mdimai666.Mars.Shared": "0.7.2-alpha.2"
         },
@@ -2925,7 +2864,7 @@
       },
       "mdimai666.Mars.Plugin.Front/0.7.2-alpha.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.1",
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.3",
           "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.2",
           "mdimai666.Mars.Nodes.FormEditor": "0.7.2-alpha.2",
           "mdimai666.Mars.Plugin.Front.Abstractions": "0.7.2-alpha.2"
@@ -2939,7 +2878,7 @@
       },
       "mdimai666.Mars.Plugin.Front.Abstractions/0.7.2-alpha.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.1"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.3"
         },
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
@@ -3344,12 +3283,12 @@
       "path": "duende.identitymodel/8.0.0",
       "hashPath": "duende.identitymodel.8.0.0.nupkg.sha512"
     },
-    "Duende.IdentityServer/7.4.4": {
+    "Duende.IdentityServer/7.4.6": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-zEqb8lTDhcWuXcfC+yK6xmAGE9VeVbWW8HKDc8vegCM4ldmSwMOwt2nImyh0oIIRklQrUtVeihEjsvju0SBgsw==",
-      "path": "duende.identityserver/7.4.4",
-      "hashPath": "duende.identityserver.7.4.4.nupkg.sha512"
+      "sha512": "sha512-Zvri5e+SrOWLz0wmJry0ZaU8gVygv966jzP/CbMSCtV0K/nqK7abL9gQr9aKKmjt5DsONauUMT2E0cK/GbXJAg==",
+      "path": "duende.identityserver/7.4.6",
+      "hashPath": "duende.identityserver.7.4.6.nupkg.sha512"
     },
     "Duende.IdentityServer.AspNetIdentity/6.0.4": {
       "type": "package",
@@ -3372,12 +3311,12 @@
       "path": "duende.identityserver.entityframework.storage/6.0.4",
       "hashPath": "duende.identityserver.entityframework.storage.6.0.4.nupkg.sha512"
     },
-    "Duende.IdentityServer.Storage/7.4.4": {
+    "Duende.IdentityServer.Storage/7.4.6": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-BH+I8UiHu2klpmtD+NVoMS55DES/CSU0VtFsAEyAy9Qi6SkLUmSqs28dwRh1k9zlgTUyBcZ1zXsnrfdRphco8w==",
-      "path": "duende.identityserver.storage/7.4.4",
-      "hashPath": "duende.identityserver.storage.7.4.4.nupkg.sha512"
+      "sha512": "sha512-qPNsoj5H1TaT5gYptA/Z5LZE/UT4PFsgDen8K1DLj4W9O8i1PuEfFiba9CbmwLPs/TUS2xikCbxfiUgBUqn8GQ==",
+      "path": "duende.identityserver.storage/7.4.6",
+      "hashPath": "duende.identityserver.storage.7.4.6.nupkg.sha512"
     },
     "DynamicExpresso.Core/2.19.3": {
       "type": "package",
@@ -3470,19 +3409,19 @@
       "path": "humanizer.core.ru/3.0.1",
       "hashPath": "humanizer.core.ru.3.0.1.nupkg.sha512"
     },
-    "libphonenumber-csharp/9.0.21": {
+    "libphonenumber-csharp/9.0.23": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-JIWzSxu0VVxpvnx/AdXpuy09wASnbcHIiii3Qr8nTCsef49jbDXWeyPFkoTGeCAkqZwJHB1qRPUp/58dtJlieQ==",
-      "path": "libphonenumber-csharp/9.0.21",
-      "hashPath": "libphonenumber-csharp.9.0.21.nupkg.sha512"
+      "sha512": "sha512-gjmmIFJErVpHLdSpEOPaI06rxju6Z25XJJqh3SUaLBzTK4XqIVpVWRpyMXm+IM7rwH+d6brQb3ZsC5GgY5TvWQ==",
+      "path": "libphonenumber-csharp/9.0.23",
+      "hashPath": "libphonenumber-csharp.9.0.23.nupkg.sha512"
     },
-    "Markdig/0.44.0": {
+    "Markdig/0.45.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-X+CYMjcUnh/yO24wOSQxVFLiGqWrrtXJ5M7toHiM1Zk4Fg9UMLN5fkaq6FSOWH+mIprsHHgDMlq3MJhmrXalhg==",
-      "path": "markdig/0.44.0",
-      "hashPath": "markdig.0.44.0.nupkg.sha512"
+      "sha512": "sha512-ObNLcA1b+0lpNNoEg256g9faMeJZi35wZW0AnKJ4nGPJe+5qkwnV26kUvQTHuanFnSX9SdvPzOO41BVJ6XarAg==",
+      "path": "markdig/0.45.0",
+      "hashPath": "markdig.0.45.0.nupkg.sha512"
     },
     "Microsoft.AspNet.WebApi.Client/6.0.0": {
       "type": "package",
@@ -3498,12 +3437,12 @@
       "path": "microsoft.aspnetcore.apiauthorization.identityserver/7.0.20",
       "hashPath": "microsoft.aspnetcore.apiauthorization.identityserver.7.0.20.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.1": {
+    "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lvyUEBVv7V1/UvGxfOV3a0kyaQatPAU+ZHru7xha6WVOpa+7aJtKehbiu9VpAt/G50FR+hUwL4nTY33ijsCXwA==",
-      "path": "microsoft.aspnetcore.authentication.jwtbearer/10.0.1",
-      "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.10.0.1.nupkg.sha512"
+      "sha512": "sha512-TBDs8e9y2vJHp14EwNfnIZUNrm6siw8PAAU5laOrYFuGgRxx8oCdxZyfTgp1Oy/icUk9h/XtpYBHPnXIG0f2/g==",
+      "path": "microsoft.aspnetcore.authentication.jwtbearer/10.0.3",
+      "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.10.0.3.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication.OpenIdConnect/10.0.0": {
       "type": "package",
@@ -3519,47 +3458,47 @@
       "path": "microsoft.aspnetcore.components.dataannotations.validation/3.2.0-rc1.20223.4",
       "hashPath": "microsoft.aspnetcore.components.dataannotations.validation.3.2.0-rc1.20223.4.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Components.WebAssembly/10.0.1": {
+    "Microsoft.AspNetCore.Components.WebAssembly/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qh5mkVhHCv/fxPl8XCIwx+ea9uLeTbbVs2rzgvWkWX0EgYLITEEH3AbX6OuvDW8UQVETjio2UZOh6JDAO2A4Lw==",
-      "path": "microsoft.aspnetcore.components.webassembly/10.0.1",
-      "hashPath": "microsoft.aspnetcore.components.webassembly.10.0.1.nupkg.sha512"
+      "sha512": "sha512-JZqlz8Swc6MYa+Zq52HcCYmgliy6wulJh9Oesv5eghnPFGLAPvVWTBEuTwdx90PKVj2exOY6XAnKpkwFPXvqwg==",
+      "path": "microsoft.aspnetcore.components.webassembly/10.0.3",
+      "hashPath": "microsoft.aspnetcore.components.webassembly.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.1": {
+    "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-JeoDhwJknGeBMRvlwxL+cjh1cDErA9NL/7D8SvvpcWoNBCDE1f40CDaSc063PW6Tn6zopMwS89f/gIZocJUrxQ==",
-      "path": "microsoft.aspnetcore.components.webassembly.authentication/10.0.1",
-      "hashPath": "microsoft.aspnetcore.components.webassembly.authentication.10.0.1.nupkg.sha512"
+      "sha512": "sha512-VfNlmOI9yTIRzwsyJUPomfH9LDpI8GuHV3fecpWNc32JFxrH9vvOtwgms1IBVofSTcS3Gx6D0dIkkqw6KsV3iA==",
+      "path": "microsoft.aspnetcore.components.webassembly.authentication/10.0.3",
+      "hashPath": "microsoft.aspnetcore.components.webassembly.authentication.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.1": {
+    "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fl9r0e2VGWcMgwBlGGVUFv84o8k1X6pxh9X3Ph6f5/hU8feqFpeqC9K9OrBXd7JhMD49GoLOl5jZW3pdp+9Fog==",
-      "path": "microsoft.aspnetcore.components.webassembly.server/10.0.1",
-      "hashPath": "microsoft.aspnetcore.components.webassembly.server.10.0.1.nupkg.sha512"
+      "sha512": "sha512-LPfE2dIfSV+mY3BuRSHim197M0AufG84u/qaFy1s0A/MXqr6kyU/w928wSiEILVRqsQS9TdAFWlo0lDbl/slxg==",
+      "path": "microsoft.aspnetcore.components.webassembly.server/10.0.3",
+      "hashPath": "microsoft.aspnetcore.components.webassembly.server.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.1": {
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1d/r5maWKWO9+zf78KouQ8+y2PpCLl6qZ9vQAPTYtlOLPl9BoLq6+cydpocEENn0xUbdIocaoyRt+ZYbMVhOtw==",
-      "path": "microsoft.aspnetcore.diagnostics.entityframeworkcore/10.0.1",
-      "hashPath": "microsoft.aspnetcore.diagnostics.entityframeworkcore.10.0.1.nupkg.sha512"
+      "sha512": "sha512-EdsNq9yumLHn8V8bstUXNApBhQFQjGYgufwCAp6SOrXm320n9jNXNpvKS6zfith10wAexkGdFAz1ulW50l+9Kw==",
+      "path": "microsoft.aspnetcore.diagnostics.entityframeworkcore/10.0.3",
+      "hashPath": "microsoft.aspnetcore.diagnostics.entityframeworkcore.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Http.Connections.Client/10.0.1": {
+    "Microsoft.AspNetCore.Http.Connections.Client/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+6lrifIZCL1heJtLugtkqEa191BIfUkhyAnBORbHg1eg4Vl+ijsxAzyOZxQTZbVMSJHKQCQFTEKf6H+YpSDWjA==",
-      "path": "microsoft.aspnetcore.http.connections.client/10.0.1",
-      "hashPath": "microsoft.aspnetcore.http.connections.client.10.0.1.nupkg.sha512"
+      "sha512": "sha512-xE5+Uq/XU/8zZjhv0fF30dlKpyg91Een9H1qtrYHETByDVDWN1Njw87K26zUnMsFbAVMlWNmLj0I6psnwy+4SA==",
+      "path": "microsoft.aspnetcore.http.connections.client/10.0.3",
+      "hashPath": "microsoft.aspnetcore.http.connections.client.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.1": {
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Dljm38k9d36gMXvNuhNrevoh2hh9wp7z3wcWN21qesm37GToDhYtdMjyQzw4a2J+rTJ19io0FDb0HQBtQVo7rw==",
-      "path": "microsoft.aspnetcore.identity.entityframeworkcore/10.0.1",
-      "hashPath": "microsoft.aspnetcore.identity.entityframeworkcore.10.0.1.nupkg.sha512"
+      "sha512": "sha512-6SEGWi35DZ9syBqCT8v5vEkm9tWUayWxVkHWLwW2FdyXSwS0zzEpIzGPLVQGeug3VU8d+hK/PFxFwwZnblv/zA==",
+      "path": "microsoft.aspnetcore.identity.entityframeworkcore/10.0.3",
+      "hashPath": "microsoft.aspnetcore.identity.entityframeworkcore.10.0.3.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Identity.UI/7.0.20": {
       "type": "package",
@@ -3568,26 +3507,26 @@
       "path": "microsoft.aspnetcore.identity.ui/7.0.20",
       "hashPath": "microsoft.aspnetcore.identity.ui.7.0.20.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.JsonPatch/10.0.1": {
+    "Microsoft.AspNetCore.JsonPatch/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hCpDeNH6F34YtEfe216RWqdUK2EjrN7O6gORfHjxhPap1z0fJ4fjP298WyIwUsZ8vM56CVOyA6rPW3fMlEz7Fw==",
-      "path": "microsoft.aspnetcore.jsonpatch/10.0.1",
-      "hashPath": "microsoft.aspnetcore.jsonpatch.10.0.1.nupkg.sha512"
+      "sha512": "sha512-IHsqsECi1N2FJ0RmV73Cmp6qusu4vGBhUuWJFyJAC/LekFdwSa5zacZE80Sd8M2fD9ZXgEaA32y5qcj3jh3wlQ==",
+      "path": "microsoft.aspnetcore.jsonpatch/10.0.3",
+      "hashPath": "microsoft.aspnetcore.jsonpatch.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Client/10.0.1": {
+    "Microsoft.AspNetCore.SignalR.Client/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mGlS8W2siQaJVVId2VGQ0I+7Lj49oqFxsb/bIil7GBNeazB6fBP8Ljf5tZUNzUN9WdQU5aI85WXCW9+Fsx2dZQ==",
-      "path": "microsoft.aspnetcore.signalr.client/10.0.1",
-      "hashPath": "microsoft.aspnetcore.signalr.client.10.0.1.nupkg.sha512"
+      "sha512": "sha512-EkcYRB1MXM7PFN4TGjpL8K3X4O5rDu1Ch79TEedNpVusloU/KC/yzocVuG99D0BTkkt+snQdijRejaT7Z4MCcA==",
+      "path": "microsoft.aspnetcore.signalr.client/10.0.3",
+      "hashPath": "microsoft.aspnetcore.signalr.client.10.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Client.Core/10.0.1": {
+    "Microsoft.AspNetCore.SignalR.Client.Core/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lkPaGkCtVibYBzUzO8gTGsX39L5XeZl8KArueePWMYqs6c2G58ch4fmKL0qMRqsFQ84uqd+5uOJ96dClusC+IQ==",
-      "path": "microsoft.aspnetcore.signalr.client.core/10.0.1",
-      "hashPath": "microsoft.aspnetcore.signalr.client.core.10.0.1.nupkg.sha512"
+      "sha512": "sha512-RjMCajDn7pbgumVGZbxDe5z2TxvE+CSuP8Os5Rm9k9crt3X5xGJqZxBujDPdvYFtr4LJzOwmv2TxUjWQCKmy9g==",
+      "path": "microsoft.aspnetcore.signalr.client.core/10.0.3",
+      "hashPath": "microsoft.aspnetcore.signalr.client.core.10.0.3.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
       "type": "package",
@@ -3617,26 +3556,12 @@
       "path": "microsoft.bcl.timeprovider/8.0.1",
       "hashPath": "microsoft.bcl.timeprovider.8.0.1.nupkg.sha512"
     },
-    "Microsoft.Build.Framework/17.14.28": {
+    "Microsoft.Build.Framework/18.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wRcyTzGV0LRAtFdrddtioh59Ky4/zbvyraP0cQkDzRSRkhgAQb0K88D/JNC6VHLIXanRi3mtV1jU0uQkBwmiVg==",
-      "path": "microsoft.build.framework/17.14.28",
-      "hashPath": "microsoft.build.framework.17.14.28.nupkg.sha512"
-    },
-    "Microsoft.Build.Tasks.Core/17.14.28": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-jk3O0tXp9QWPXhLJ7Pl8wm/eGtGgA1++vwHGWEmnwMU6eP//ghtcCUpQh9CQMwEKGDnH0aJf285V1s8yiSlKfQ==",
-      "path": "microsoft.build.tasks.core/17.14.28",
-      "hashPath": "microsoft.build.tasks.core.17.14.28.nupkg.sha512"
-    },
-    "Microsoft.Build.Utilities.Core/17.14.28": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-rhSdPo8QfLXXWM+rY0x0z1G4KK4ZhMoIbHROyDj8MUBFab9nvHR0NaMnjzOgXldhmD2zi2ir8d6xCatNzlhF5g==",
-      "path": "microsoft.build.utilities.core/17.14.28",
-      "hashPath": "microsoft.build.utilities.core.17.14.28.nupkg.sha512"
+      "sha512": "sha512-sOSb+0J4G/jCBW/YqmRuL0eOMXgfw1KQLdC9TkbvfA5xs7uNm+PBQXJCOzSJGXtZcZrtXozcwxPmUiRUbmd7FA==",
+      "path": "microsoft.build.framework/18.0.2",
+      "hashPath": "microsoft.build.framework.18.0.2.nupkg.sha512"
     },
     "Microsoft.CodeAnalysis.Common/5.0.0": {
       "type": "package",
@@ -3708,40 +3633,40 @@
       "path": "microsoft.dotnet.hotreload.webassembly.browser/10.0.103",
       "hashPath": "microsoft.dotnet.hotreload.webassembly.browser.10.0.103.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore/10.0.1": {
+    "Microsoft.EntityFrameworkCore/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-QsXvZ8G7Dl7x09rlq0b2dye7QqfReMq8yGdl7Mffi3Ip+aTa+JUMixBZ4lhCs9Ygjz2e9tiUACstxI+ADkwaFg==",
-      "path": "microsoft.entityframeworkcore/10.0.1",
-      "hashPath": "microsoft.entityframeworkcore.10.0.1.nupkg.sha512"
+      "sha512": "sha512-CDEImwD4A7BseABJMCpLZnhfFjmPY/bHwhhS70elc6gLI/bYUEOhxWt7PmaNGYGhIEzOnStlCy5QcVb+8dod5Q==",
+      "path": "microsoft.entityframeworkcore/10.0.3",
+      "hashPath": "microsoft.entityframeworkcore.10.0.3.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Abstractions/10.0.1": {
+    "Microsoft.EntityFrameworkCore.Abstractions/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sp6Uq8Oc3RVGtmxLS3ZgzVeFHrpLNymsMudoeqRmB9pRTWgvq2S903sF5OnaaZmh4Bz6kpq7FwofE+DOhKJYvg==",
-      "path": "microsoft.entityframeworkcore.abstractions/10.0.1",
-      "hashPath": "microsoft.entityframeworkcore.abstractions.10.0.1.nupkg.sha512"
+      "sha512": "sha512-c7Uoz381xnMHNBRB8eHRhGgzUtXbgddlbODhwZRrTSzZWDharp3RkJsFwhxyESbeXhCqmML7VdvjMQ7uu+HreA==",
+      "path": "microsoft.entityframeworkcore.abstractions/10.0.3",
+      "hashPath": "microsoft.entityframeworkcore.abstractions.10.0.3.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Design/10.0.1": {
+    "Microsoft.EntityFrameworkCore.Design/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0VcVx+hIo7j6bCjTlgPB1D4vHyLdkY3pVmlcsvRR8APEr0vRQ+Nj2Q3qYXTUeHgp8gdBxQFDVCfcAXknevD2KQ==",
-      "path": "microsoft.entityframeworkcore.design/10.0.1",
-      "hashPath": "microsoft.entityframeworkcore.design.10.0.1.nupkg.sha512"
+      "sha512": "sha512-OPZ/u7fONQFmnyUIDB8SeJtKnyFkj1zJsZ0Ke2Cp17q8hYs6jGmYEFd6Ne4Hdcd6auUdFdV7di+uFo2w+L34NA==",
+      "path": "microsoft.entityframeworkcore.design/10.0.3",
+      "hashPath": "microsoft.entityframeworkcore.design.10.0.3.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.InMemory/10.0.1": {
+    "Microsoft.EntityFrameworkCore.InMemory/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-f0HNO4Hp80AJLGkv/gV95q9yrPJ7CPfCjNq5trcLsXH75GurM/62D4m2YyXmkyQfeT4MRFXZSBPdhDBOx1CTQQ==",
-      "path": "microsoft.entityframeworkcore.inmemory/10.0.1",
-      "hashPath": "microsoft.entityframeworkcore.inmemory.10.0.1.nupkg.sha512"
+      "sha512": "sha512-Gw8wef/BAHx59FiFJzgVHpccq/Qwtrghb3NzofgHZwhKxkmc9ePB7bqVhMZzrceQ4wTEwfPwD8y61FaOFPIf7Q==",
+      "path": "microsoft.entityframeworkcore.inmemory/10.0.3",
+      "hashPath": "microsoft.entityframeworkcore.inmemory.10.0.3.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Relational/10.0.1": {
+    "Microsoft.EntityFrameworkCore.Relational/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8/5kYGwKN6wtc89QqcPTOZDAJSMX8MzKCf5OmYjIfAHWTfsUEpGKYrdtfNk4X36rQ0BiU3n57Y4rbtnerzJN0Q==",
-      "path": "microsoft.entityframeworkcore.relational/10.0.1",
-      "hashPath": "microsoft.entityframeworkcore.relational.10.0.1.nupkg.sha512"
+      "sha512": "sha512-Pmh60OK9neVr/M0FJwm9hlzm2bD4Kd65SID8E6SP5c90tExNgXwORrlEWl0oGU/ig9ifpNN4PSpIrnHNozlT5w==",
+      "path": "microsoft.entityframeworkcore.relational/10.0.3",
+      "hashPath": "microsoft.entityframeworkcore.relational.10.0.3.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore.Relational.Design/1.1.0": {
       "type": "package",
@@ -3750,26 +3675,26 @@
       "path": "microsoft.entityframeworkcore.relational.design/1.1.0",
       "hashPath": "microsoft.entityframeworkcore.relational.design.1.1.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.SqlServer/10.0.1": {
+    "Microsoft.EntityFrameworkCore.SqlServer/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Uz/M/Y2UPWJ+wJV8JGb7gp5H6Q8oE+/Fz/YZ5osBNDIxrlT+/I7AraVKxErSlz/nZq5JVy+jL1znnIcgI0G/Hw==",
-      "path": "microsoft.entityframeworkcore.sqlserver/10.0.1",
-      "hashPath": "microsoft.entityframeworkcore.sqlserver.10.0.1.nupkg.sha512"
+      "sha512": "sha512-q0fUFQ4PG4uhKwP+D5dsvlDQbwNpEfWsag3HaoGzkkKj+OQ90ya9W0HuFtwigwEEqc/H1SzDZYUAv7Ya1hh5ow==",
+      "path": "microsoft.entityframeworkcore.sqlserver/10.0.3",
+      "hashPath": "microsoft.entityframeworkcore.sqlserver.10.0.3.nupkg.sha512"
     },
-    "Microsoft.Extensions.AI/10.1.1": {
+    "Microsoft.Extensions.AI/10.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hc2OOFz4edXXWOoNLyMaCAdZvyT9vENKSZKqi8q2meDagPr3iMDVXuQlYf0gnCGBIpGvXwx7Aq9feeLMZewh6g==",
-      "path": "microsoft.extensions.ai/10.1.1",
-      "hashPath": "microsoft.extensions.ai.10.1.1.nupkg.sha512"
+      "sha512": "sha512-zJYAHVM+zA74MNHifAyYE/jnfilI5WOnyQqnYobQZ5JW1VRSMGfQl/oqYdK3p2AdQOX8VcxSW6C+UsZYnpFB+A==",
+      "path": "microsoft.extensions.ai/10.3.0",
+      "hashPath": "microsoft.extensions.ai.10.3.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.AI.Abstractions/10.1.1": {
+    "Microsoft.Extensions.AI.Abstractions/10.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cgj8iHv4JwUpcPANZ0oLILz146Y1Oa+l280b1c1a3DjwZflH9nmYcrX952YUuqftz2sheAC2TPCGcEa6unKQgQ==",
-      "path": "microsoft.extensions.ai.abstractions/10.1.1",
-      "hashPath": "microsoft.extensions.ai.abstractions.10.1.1.nupkg.sha512"
+      "sha512": "sha512-hDjDvUERvUH3HBMs2MDusOcGJBjAHOG5pJIU2x/HZEa4e1UthNKt89cwMi3B+ogJo6skki1XFjfgGN3ksnVqvQ==",
+      "path": "microsoft.extensions.ai.abstractions/10.3.0",
+      "hashPath": "microsoft.extensions.ai.abstractions.10.3.0.nupkg.sha512"
     },
     "Microsoft.Extensions.AI.Ollama/9.7.0-preview.1.25356.2": {
       "type": "package",
@@ -3785,12 +3710,12 @@
       "path": "microsoft.extensions.ai.openai/10.0.1-preview.1.25571.5",
       "hashPath": "microsoft.extensions.ai.openai.10.0.1-preview.1.25571.5.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyModel/10.0.1": {
+    "Microsoft.Extensions.DependencyModel/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-IiWPd4j8JLNjSkyXl5hvJwX2ZENDVQVPDHYgZmYdw8+YkY2xp9iQt0vjdnAQZLpo/ipeW1xgOqfSBEnivKWPYQ==",
-      "path": "microsoft.extensions.dependencymodel/10.0.1",
-      "hashPath": "microsoft.extensions.dependencymodel.10.0.1.nupkg.sha512"
+      "sha512": "sha512-31kRjr1fgdJO1UZ/AsjL2noqwht+juHMQ8c/oh8CEsDhlM2+0zwVZVsZjxSfOFiPtn5+6kRGuvSbLAufAPT0kA==",
+      "path": "microsoft.extensions.dependencymodel/10.0.3",
+      "hashPath": "microsoft.extensions.dependencymodel.10.0.3.nupkg.sha512"
     },
     "Microsoft.Extensions.VectorData.Abstractions/9.7.0": {
       "type": "package",
@@ -3841,110 +3766,103 @@
       "path": "microsoft.identity.client.extensions.msal/4.73.1",
       "hashPath": "microsoft.identity.client.extensions.msal.4.73.1.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.Abstractions/8.15.0": {
+    "Microsoft.IdentityModel.Abstractions/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-e/DApa1GfxUqHSBHcpiQg8yaghKAvFVBQFcWh25jNoRobDZbduTUACY8bZ54eeGWXvimGmEDdF0zkS5Dq16XPQ==",
-      "path": "microsoft.identitymodel.abstractions/8.15.0",
-      "hashPath": "microsoft.identitymodel.abstractions.8.15.0.nupkg.sha512"
+      "sha512": "sha512-gSxKLWRZzBpIsEoeUPkxfywNCCvRvl7hkq146XHPk5vOQc9izSf1I+uL1vh4y2U19QPxd9Z8K/8AdWyxYz2lSg==",
+      "path": "microsoft.identitymodel.abstractions/8.16.0",
+      "hashPath": "microsoft.identitymodel.abstractions.8.16.0.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.JsonWebTokens/8.15.0": {
+    "Microsoft.IdentityModel.JsonWebTokens/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-3513f5VzvOZy3ELd42wGnh1Q3e83tlGAuXFSNbENpgWYoAhLLzgFtd5PiaOPGAU0gqKhYGVzKavghLUGfX3HQg==",
-      "path": "microsoft.identitymodel.jsonwebtokens/8.15.0",
-      "hashPath": "microsoft.identitymodel.jsonwebtokens.8.15.0.nupkg.sha512"
+      "sha512": "sha512-prBU72cIP4V8E9fhN+o/YdskTsLeIcnKPbhZf0X6mD7fdxoZqnS/NdEkSr+9Zp+2q7OZBOMfNBKGbTbhXODO4w==",
+      "path": "microsoft.identitymodel.jsonwebtokens/8.16.0",
+      "hashPath": "microsoft.identitymodel.jsonwebtokens.8.16.0.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.Logging/8.15.0": {
+    "Microsoft.IdentityModel.Logging/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1gJLjhy0LV2RQMJ9NGzi5Tnb2l+c37o8D8Lrk2mrvmb6OQHZ7XJstd/XxvncXgBpad4x9CGXdipbZzJJCXKyAg==",
-      "path": "microsoft.identitymodel.logging/8.15.0",
-      "hashPath": "microsoft.identitymodel.logging.8.15.0.nupkg.sha512"
+      "sha512": "sha512-MTzXmETkNQPACR7/XCXM1OGM6oU9RkyibqeJRtO9Ndew2LnGjMf9Atqj2VSf4XC27X0FQycUAlzxxEgQMWn2xQ==",
+      "path": "microsoft.identitymodel.logging/8.16.0",
+      "hashPath": "microsoft.identitymodel.logging.8.16.0.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.Protocols/8.15.0": {
+    "Microsoft.IdentityModel.Protocols/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-n4t/m/zpd8rx/nqMqnKmbDqDjqy404JQ+3TYrSXEn7Otw5Vfg6Hmk3tK8SyeAlTzLGC1gVrjt9awPFVBE1tUGQ==",
-      "path": "microsoft.identitymodel.protocols/8.15.0",
-      "hashPath": "microsoft.identitymodel.protocols.8.15.0.nupkg.sha512"
+      "sha512": "sha512-UFrU7d46UTsPQTa2HIEIpB9H1uJe1BW9FLw5uhEJ2ZuKdur8bcUA/bO5caq5dlBt5gNJeRIB3QQXYNs5fCQCZA==",
+      "path": "microsoft.identitymodel.protocols/8.16.0",
+      "hashPath": "microsoft.identitymodel.protocols.8.16.0.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.Protocols.OpenIdConnect/8.15.0": {
+    "Microsoft.IdentityModel.Protocols.OpenIdConnect/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-uJ5cHsTHRqx/1W68Gz/7hqUgudai1CXnokIXTQw+ZI1o3hWuhQa1vgSzXX9+IAkOJ/gP+M590Fg3WTwqglJghg==",
-      "path": "microsoft.identitymodel.protocols.openidconnect/8.15.0",
-      "hashPath": "microsoft.identitymodel.protocols.openidconnect.8.15.0.nupkg.sha512"
+      "sha512": "sha512-h4yVXyJsEBBX5lg2G5ftMsi5JzcNEGAzrNphA6DQ6eOd8P0s+cDCOyPwVTYLePZvJL5unbPvYIvzrbTXzFjXnQ==",
+      "path": "microsoft.identitymodel.protocols.openidconnect/8.16.0",
+      "hashPath": "microsoft.identitymodel.protocols.openidconnect.8.16.0.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.Tokens/8.15.0": {
+    "Microsoft.IdentityModel.Tokens/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-zUE9ysJXBtXlHHRtcRK3Sp8NzdCI1z/BRDTXJQ2TvBoI0ENRtnufYIep0O5TSCJRJGDwwuLTUx+l/bEYZUxpCA==",
-      "path": "microsoft.identitymodel.tokens/8.15.0",
-      "hashPath": "microsoft.identitymodel.tokens.8.15.0.nupkg.sha512"
+      "sha512": "sha512-rtViGJcGsN7WcfUNErwNeQgjuU5cJNl6FDQsfi9TncwO+Epzn0FTfBsg3YuFW1Q0Ch/KPxaVdjLw3/+5Z5ceFQ==",
+      "path": "microsoft.identitymodel.tokens/8.16.0",
+      "hashPath": "microsoft.identitymodel.tokens.8.16.0.nupkg.sha512"
     },
-    "Microsoft.JSInterop.WebAssembly/10.0.1": {
+    "Microsoft.JSInterop.WebAssembly/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-oIkAEHUSFduhX7scm0+RXODv7FtA/D0KaGW0dPmO1W6LL//VLHjS+pzhpgsS6fBQ+RZfOEFaTLkZewqi6xt8rw==",
-      "path": "microsoft.jsinterop.webassembly/10.0.1",
-      "hashPath": "microsoft.jsinterop.webassembly.10.0.1.nupkg.sha512"
+      "sha512": "sha512-/8RPiR0Aht+FSreYfoKNijr/m5RVMUPRti1zYt/slR6lz7j6hAjzeVar43MOby4euxXQc/16BZvG4GyVSkGonw==",
+      "path": "microsoft.jsinterop.webassembly/10.0.3",
+      "hashPath": "microsoft.jsinterop.webassembly.10.0.3.nupkg.sha512"
     },
-    "Microsoft.NET.StringTools/17.14.28": {
+    "Microsoft.OpenApi/2.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DMIeWDlxe0Wz0DIhJZ2FMoGQAN2yrGZOi5jjFhRYHWR5ONd0CS6IpAHlRnA7uA/5BF+BADvgsETxW2XrPiFc1A==",
-      "path": "microsoft.net.stringtools/17.14.28",
-      "hashPath": "microsoft.net.stringtools.17.14.28.nupkg.sha512"
+      "sha512": "sha512-u7QhXCISMQuab3flasb1hoaiERmUqyWsW7tmQODyILoQ7mJV5IRGM+2KKZYo0QUfC13evEOcHAb6TPWgqEQtrw==",
+      "path": "microsoft.openapi/2.4.1",
+      "hashPath": "microsoft.openapi.2.4.1.nupkg.sha512"
     },
-    "Microsoft.OpenApi/2.3.0": {
+    "Microsoft.SemanticKernel/1.70.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5RZpjyt0JMmoc/aEgY9c1vE5pusdDGvkPl9qKIy9KFbRiIXD+w7gBJxX+unSjzzOcfgRoYxnO4okZyqDAL2WEw==",
-      "path": "microsoft.openapi/2.3.0",
-      "hashPath": "microsoft.openapi.2.3.0.nupkg.sha512"
+      "sha512": "sha512-7O1ej2f4t3MCF9Hu/2A3oxPgoGH3Jv+99BWrfViPwnfOmuIM8twr29L0Df3PgZynPNeDpbnodS8xIjbnPTbRaQ==",
+      "path": "microsoft.semantickernel/1.70.0",
+      "hashPath": "microsoft.semantickernel.1.70.0.nupkg.sha512"
     },
-    "Microsoft.SemanticKernel/1.68.0": {
+    "Microsoft.SemanticKernel.Abstractions/1.70.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-rbiosePBbcdBPPz/Dszxcmbc2jC0+EB89Kf/NzxI4IaxenvM9+aRWM9kjVUQV/HLANpVMM1NnHrcfS+PL7fldA==",
-      "path": "microsoft.semantickernel/1.68.0",
-      "hashPath": "microsoft.semantickernel.1.68.0.nupkg.sha512"
+      "sha512": "sha512-bHIxvKGPK6C1mT4ynxwLXIuTuhYq6nVrtBEYw/BWK9inaeNCirlronhweM8zB+l5W+pdNbvAd+YPdMUk5Bp5FQ==",
+      "path": "microsoft.semantickernel.abstractions/1.70.0",
+      "hashPath": "microsoft.semantickernel.abstractions.1.70.0.nupkg.sha512"
     },
-    "Microsoft.SemanticKernel.Abstractions/1.68.0": {
+    "Microsoft.SemanticKernel.Connectors.AzureOpenAI/1.70.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SHckYydWmM2C9/CrjjW0os+9sy5i1us35GhDncby6CUw+PbK4APp7Tpy+Pt+zF74a9sFzwHIcVaPorUWlYWI+Q==",
-      "path": "microsoft.semantickernel.abstractions/1.68.0",
-      "hashPath": "microsoft.semantickernel.abstractions.1.68.0.nupkg.sha512"
+      "sha512": "sha512-jneQkufWYasiOhIm4E+XU5W9NbOdWudEmX2wMQDF+OuLkGboB38P0lFrMN7k7nnOkvfVwJrqsTAFloixciqIeg==",
+      "path": "microsoft.semantickernel.connectors.azureopenai/1.70.0",
+      "hashPath": "microsoft.semantickernel.connectors.azureopenai.1.70.0.nupkg.sha512"
     },
-    "Microsoft.SemanticKernel.Connectors.AzureOpenAI/1.68.0": {
+    "Microsoft.SemanticKernel.Connectors.Ollama/1.70.0-alpha": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ennELtALtxoYUE6J3vTJS59vGpuqq/gxDpeYED3nYURjhFn6+0o1EwVzy+8rQZ8IlioW+gdsLZAhzY1DwGV/xw==",
-      "path": "microsoft.semantickernel.connectors.azureopenai/1.68.0",
-      "hashPath": "microsoft.semantickernel.connectors.azureopenai.1.68.0.nupkg.sha512"
+      "sha512": "sha512-noj6WsAXeFRjJyoNTpUzMq0RBb+UPOkYEjeYiPA1Z/R/D7n/quEQqZg1XS30L+Uo5fWGjBf+aRWVn4rU47s/Sw==",
+      "path": "microsoft.semantickernel.connectors.ollama/1.70.0-alpha",
+      "hashPath": "microsoft.semantickernel.connectors.ollama.1.70.0-alpha.nupkg.sha512"
     },
-    "Microsoft.SemanticKernel.Connectors.Ollama/1.68.0-alpha": {
+    "Microsoft.SemanticKernel.Connectors.OpenAI/1.70.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-jGv1jBAcumcmNv+aGXHxobuf/96obMymr5x46qjm2ET+h8bJANHhXdc3nDiOhF8qkaWvyGh/zTmdbG6wWUaLJw==",
-      "path": "microsoft.semantickernel.connectors.ollama/1.68.0-alpha",
-      "hashPath": "microsoft.semantickernel.connectors.ollama.1.68.0-alpha.nupkg.sha512"
+      "sha512": "sha512-NVSoRHlDlGbBVkbA2QSsPjn7sXvodFWI/BpGkp0eSv2DWipm6rqfiEZ3vIREkOBgPRMJy5X4HLhJ/U/CyF1fSQ==",
+      "path": "microsoft.semantickernel.connectors.openai/1.70.0",
+      "hashPath": "microsoft.semantickernel.connectors.openai.1.70.0.nupkg.sha512"
     },
-    "Microsoft.SemanticKernel.Connectors.OpenAI/1.68.0": {
+    "Microsoft.SemanticKernel.Core/1.70.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-q3vmVM+pUGdgX2Dj419wmsf7WYj4GsE7cVCYSX/oUa0+A99wbXNdDsdk9JwgYELfjCjq6TW+GyzzRx0nCn9CSQ==",
-      "path": "microsoft.semantickernel.connectors.openai/1.68.0",
-      "hashPath": "microsoft.semantickernel.connectors.openai.1.68.0.nupkg.sha512"
-    },
-    "Microsoft.SemanticKernel.Core/1.68.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-q/5J4Yg7cPY+Sxto9TGXSQF+TM0c+1u0gVQb5OOKQPWMQg+FQF41sQWv8FYYBzsSkhSq7YupCjOR0tQBDJxcFQ==",
-      "path": "microsoft.semantickernel.core/1.68.0",
-      "hashPath": "microsoft.semantickernel.core.1.68.0.nupkg.sha512"
+      "sha512": "sha512-FRax0YvIfnhPtcQhwqZZWhgqM4cFM8ByfNfo6TfYhBkTBwh+ybvZ2Ga6sjJ4Xa+ZjZEXKS3Mfq8fZKfcwa6MjQ==",
+      "path": "microsoft.semantickernel.core/1.70.0",
+      "hashPath": "microsoft.semantickernel.core.1.70.0.nupkg.sha512"
     },
     "Microsoft.SqlServer.Server/1.0.0": {
       "type": "package",
@@ -3960,12 +3878,12 @@
       "path": "microsoft.visualstudio.solutionpersistence/1.0.52",
       "hashPath": "microsoft.visualstudio.solutionpersistence.1.0.52.nupkg.sha512"
     },
-    "Microsoft.Win32.SystemEvents/10.0.1": {
+    "Microsoft.Win32.SystemEvents/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-trU4LN2C04nj5qnl8HqoX0NJGPCFg9h2f5o+jjp3Xm8c8fQtu6Ga1/fNFMf3AapoHyLP1WlP21XnL2ij/TLKlg==",
-      "path": "microsoft.win32.systemevents/10.0.1",
-      "hashPath": "microsoft.win32.systemevents.10.0.1.nupkg.sha512"
+      "sha512": "sha512-gYpwz5Gl0rs9pEFHBKctLbSi7SUGR4L1uRjXkU488nizWd2hvo2JP2+ATUsv0th7v6LDiXfdlUsnTbvC2MauFA==",
+      "path": "microsoft.win32.systemevents/10.0.3",
+      "hashPath": "microsoft.win32.systemevents.10.0.3.nupkg.sha512"
     },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
@@ -3974,19 +3892,19 @@
       "path": "mono.texttemplating/3.0.0",
       "hashPath": "mono.texttemplating.3.0.0.nupkg.sha512"
     },
-    "MQTTnet/5.0.1.1416": {
+    "MQTTnet/5.1.0.1559": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ONYieEMaHiIei5dAtHXywnfJGhmrd5Av5sNJSQERp6AtZdPk3xxjCR6Cv0C5RUr/XbLeHO4/HQ0Rc2bQ5NF5Mw==",
-      "path": "mqttnet/5.0.1.1416",
-      "hashPath": "mqttnet.5.0.1.1416.nupkg.sha512"
+      "sha512": "sha512-9mkk0H+76CToIzp9ru5Uj5BuC3P5hQdkhvXM+CLmmTDdZWqajjICCHuUMbDd1yVBt9BWL77Rvzt0A+/PA4WMCA==",
+      "path": "mqttnet/5.1.0.1559",
+      "hashPath": "mqttnet.5.1.0.1559.nupkg.sha512"
     },
-    "MQTTnet.Extensions.TopicTemplate/5.0.1.1416": {
+    "MQTTnet.Extensions.TopicTemplate/5.1.0.1559": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Al87wTx0LIu0YZMKEcoqa8IM+dNjNO4eNx6195LxdLqHK7O7SsMLt5LIfgiuTMMkZjjHtgqxltUgymNHbSIquw==",
-      "path": "mqttnet.extensions.topictemplate/5.0.1.1416",
-      "hashPath": "mqttnet.extensions.topictemplate.5.0.1.1416.nupkg.sha512"
+      "sha512": "sha512-oxJKmn/YwTAkx+Gq8UjyYfPJSjYrvBjAeDswJESrDb1r2AO4dp28TJtDLA1zC+7gays9rLKWMm4yFeeydP6QIg==",
+      "path": "mqttnet.extensions.topictemplate/5.1.0.1559",
+      "hashPath": "mqttnet.extensions.topictemplate.5.1.0.1559.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.4": {
       "type": "package",
@@ -4058,12 +3976,12 @@
       "path": "nreco.logging.file/1.3.1",
       "hashPath": "nreco.logging.file.1.3.1.nupkg.sha512"
     },
-    "OllamaSharp/5.4.11": {
+    "OllamaSharp/5.4.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DPjkWbgZOb/y5jv+iNlGdFbJd0pWS3vllXJuttfNZcphfai7BHZBVKfWcN9azs15F7Fgeb4eGjB/CH+WEC/QIw==",
-      "path": "ollamasharp/5.4.11",
-      "hashPath": "ollamasharp.5.4.11.nupkg.sha512"
+      "sha512": "sha512-uUKOgoTV9Fxo9J5syrY4OMZ/2/xlPO83tGG+FjGmY8HqJVJ1iUT5f8EsC9yNEqBBIoth9D8zzN4I5p1oQEMBhQ==",
+      "path": "ollamasharp/5.4.12",
+      "hashPath": "ollamasharp.5.4.12.nupkg.sha512"
     },
     "OneOf/3.0.271": {
       "type": "package",
@@ -4079,26 +3997,26 @@
       "path": "openai/2.7.0",
       "hashPath": "openai.2.7.0.nupkg.sha512"
     },
-    "OpenTelemetry/1.14.0": {
+    "OpenTelemetry/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-aiPBAr1+0dPDItH++MQQr5UgMf4xiybruzNlAoYYMYN3UUk+mGRcoKuZy4Z4rhhWUZIpK2Xhe7wUUXSTM32duQ==",
-      "path": "opentelemetry/1.14.0",
-      "hashPath": "opentelemetry.1.14.0.nupkg.sha512"
+      "sha512": "sha512-7mS/oZFF8S6xyqGQfMU1btp0nXJQUPWV535Vp/XMLYwRAUv36xQN+U4vufWBF1+z4HnRTOwuFHtUSGnHbyN6FQ==",
+      "path": "opentelemetry/1.15.0",
+      "hashPath": "opentelemetry.1.15.0.nupkg.sha512"
     },
-    "OpenTelemetry.Api/1.14.0": {
+    "OpenTelemetry.Api/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-foHci6viUw1f3gUB8qzz3Rk02xZIWMo299X0rxK0MoOWok/3dUVru+KKdY7WIoSHwRGpxGKkmAz9jIk2RFNbsQ==",
-      "path": "opentelemetry.api/1.14.0",
-      "hashPath": "opentelemetry.api.1.14.0.nupkg.sha512"
+      "sha512": "sha512-vk5OGdf6K9kQScCWo3bRjhDWCv6Pqw92IpX4dlARZ8B1WL7/2NGTDtCkkw42eQf7UdwyoHKzVvMH/PtL8d6z7w==",
+      "path": "opentelemetry.api/1.15.0",
+      "hashPath": "opentelemetry.api.1.15.0.nupkg.sha512"
     },
-    "OpenTelemetry.Api.ProviderBuilderExtensions/1.14.0": {
+    "OpenTelemetry.Api.ProviderBuilderExtensions/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-i/lxOM92v+zU5I0rGl5tXAGz6EJtxk2MvzZ0VN6F6L5pMqT6s6RCXnGWXg6fW+vtZJsllBlQaf/VLPTzgefJpg==",
-      "path": "opentelemetry.api.providerbuilderextensions/1.14.0",
-      "hashPath": "opentelemetry.api.providerbuilderextensions.1.14.0.nupkg.sha512"
+      "sha512": "sha512-OnuSUlRpGvowkOzGFQfy+KZFu0cITfKfh2IYJJiZskxVJiOuexwOOuvfDAgpJdmTzVWAHjYdz2shcHZaJ06UjQ==",
+      "path": "opentelemetry.api.providerbuilderextensions/1.15.0",
+      "hashPath": "opentelemetry.api.providerbuilderextensions.1.15.0.nupkg.sha512"
     },
     "OpenTelemetry.Exporter.Prometheus.AspNetCore/1.13.0-beta.1": {
       "type": "package",
@@ -4107,19 +4025,19 @@
       "path": "opentelemetry.exporter.prometheus.aspnetcore/1.13.0-beta.1",
       "hashPath": "opentelemetry.exporter.prometheus.aspnetcore.1.13.0-beta.1.nupkg.sha512"
     },
-    "OpenTelemetry.Extensions.Hosting/1.14.0": {
+    "OpenTelemetry.Extensions.Hosting/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ZAxkCIa3Q3YWZ1sGrolXfkhPqn2PFSz2Cel74em/fATZgY5ixlw6MQp2icmqKCz4C7M1W2G0b92K3rX8mOtFRg==",
-      "path": "opentelemetry.extensions.hosting/1.14.0",
-      "hashPath": "opentelemetry.extensions.hosting.1.14.0.nupkg.sha512"
+      "sha512": "sha512-RixjKyB1pbYGhWdvPto4KJs+exdQknJsnjUO9WszdLles5Vcd0EYzxPNJdwmLjYfP+Jfbr4B5nktM4ZgeHSWtg==",
+      "path": "opentelemetry.extensions.hosting/1.15.0",
+      "hashPath": "opentelemetry.extensions.hosting.1.15.0.nupkg.sha512"
     },
-    "OpenTelemetry.Instrumentation.AspNetCore/1.14.0": {
+    "OpenTelemetry.Instrumentation.AspNetCore/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-NQAQpFa3a4ofPUYwxcwtNPGpuRNwwx1HM7MnLEESYjYkhfhER+PqqGywW65rWd7bJEc1/IaL+xbmHH99pYDE0A==",
-      "path": "opentelemetry.instrumentation.aspnetcore/1.14.0",
-      "hashPath": "opentelemetry.instrumentation.aspnetcore.1.14.0.nupkg.sha512"
+      "sha512": "sha512-mte1nRYefxjed2syXgVWq3UCfMKO7MkebvTZmf0O1aLgVgCktLsVjQ6mftyjIbWGBBCHN0wg+Glxj8BSFS70pQ==",
+      "path": "opentelemetry.instrumentation.aspnetcore/1.15.0",
+      "hashPath": "opentelemetry.instrumentation.aspnetcore.1.15.0.nupkg.sha512"
     },
     "OpenTelemetry.Instrumentation.EntityFrameworkCore/1.12.0-beta.2": {
       "type": "package",
@@ -4128,12 +4046,12 @@
       "path": "opentelemetry.instrumentation.entityframeworkcore/1.12.0-beta.2",
       "hashPath": "opentelemetry.instrumentation.entityframeworkcore.1.12.0-beta.2.nupkg.sha512"
     },
-    "OpenTelemetry.Instrumentation.Http/1.14.0": {
+    "OpenTelemetry.Instrumentation.Http/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-uH8X1fYnywrgaUrSbemKvFiFkBwY7ZbBU7Wh4A/ORQmdpF3G/5STidY4PlK4xYuIv9KkdMXH/vkpvzQcayW70g==",
-      "path": "opentelemetry.instrumentation.http/1.14.0",
-      "hashPath": "opentelemetry.instrumentation.http.1.14.0.nupkg.sha512"
+      "sha512": "sha512-uToc7bUp8IEdb0ny9mKsL6FrrYelINPzxxiSShJgOf4XmQc4Azww6S5RjRj24YhsOn2a1MABOrxfVTZXtDk4Eg==",
+      "path": "opentelemetry.instrumentation.http/1.15.0",
+      "hashPath": "opentelemetry.instrumentation.http.1.15.0.nupkg.sha512"
     },
     "OpenTelemetry.Instrumentation.Process/1.12.0-beta.1": {
       "type": "package",
@@ -4142,12 +4060,12 @@
       "path": "opentelemetry.instrumentation.process/1.12.0-beta.1",
       "hashPath": "opentelemetry.instrumentation.process.1.12.0-beta.1.nupkg.sha512"
     },
-    "OpenTelemetry.Instrumentation.Runtime/1.14.0": {
+    "OpenTelemetry.Instrumentation.Runtime/1.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Z6o4JDOQaKv6bInAYZxuyxxfMKr6hFpwLnKEgQ+q+oBNA9Fm1sysjFCOzRzk7U0WD86LsRPXX+chv1vJIg7cfg==",
-      "path": "opentelemetry.instrumentation.runtime/1.14.0",
-      "hashPath": "opentelemetry.instrumentation.runtime.1.14.0.nupkg.sha512"
+      "sha512": "sha512-OOvpqR/j2Pb6+tWhHNODIbSJ53Or/MDtTiXEyrsWI02K2lLAgvBFcxUOrHggS/8015cYR3AdSaXv6NZrkz5yQA==",
+      "path": "opentelemetry.instrumentation.runtime/1.15.0",
+      "hashPath": "opentelemetry.instrumentation.runtime.1.15.0.nupkg.sha512"
     },
     "OpenTelemetry.Resources.Container/1.12.0-beta.1": {
       "type": "package",
@@ -4247,33 +4165,33 @@
       "path": "resxresourcereader.netstandard/1.3.0",
       "hashPath": "resxresourcereader.netstandard.1.3.0.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore/10.1.0": {
+    "Swashbuckle.AspNetCore/10.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-CvOffaJKStoP0hdfCIX4V/9wuwRkSOJd+PehGo/Y5ALh0WYliLwuMlyh1BbgG7uQtJNe1k5P7QIhIaFfZ/aJAw==",
-      "path": "swashbuckle.aspnetcore/10.1.0",
-      "hashPath": "swashbuckle.aspnetcore.10.1.0.nupkg.sha512"
+      "sha512": "sha512-txDJi7w/didFl/kIlTaA+FfzaJvZaXXZMejfxhJRK/CZdG8PrJcW1xquUuyLN0zNTpU5K0mm0U19B0/P5xiNOA==",
+      "path": "swashbuckle.aspnetcore/10.1.2",
+      "hashPath": "swashbuckle.aspnetcore.10.1.2.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.Swagger/10.1.0": {
+    "Swashbuckle.AspNetCore.Swagger/10.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-9Kp35Jhkzw73UXnvgGWVgRjvfGx5h1V4fdL9JcPZMKoTyO/bnKD/1i86n8u2p+rVTDed0cDSH4PKbX4WicZ/gg==",
-      "path": "swashbuckle.aspnetcore.swagger/10.1.0",
-      "hashPath": "swashbuckle.aspnetcore.swagger.10.1.0.nupkg.sha512"
+      "sha512": "sha512-CvIeWbEJ+pogj601pptQYzz3poZhS8/mk/vFozRQ74JckT3WWLGX1mFjNwNVdJOERf4Lk/clbFqfRG4WEvDGcw==",
+      "path": "swashbuckle.aspnetcore.swagger/10.1.2",
+      "hashPath": "swashbuckle.aspnetcore.swagger.10.1.2.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.SwaggerGen/10.1.0": {
+    "Swashbuckle.AspNetCore.SwaggerGen/10.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-XV2gyKmjWs5K5QaSq9rNYtO/E7vr/RcyBkMbbCVUlUtI5OY0HKj260Wee9zsJ7scJf7kPCxeseBiUMRp67ZWxA==",
-      "path": "swashbuckle.aspnetcore.swaggergen/10.1.0",
-      "hashPath": "swashbuckle.aspnetcore.swaggergen.10.1.0.nupkg.sha512"
+      "sha512": "sha512-/gcOooF1cfmdvYU6wFiPB9On5CMUp2P/jrt2EFEoSG0p0xSALBdWoWy3eNHVmzXUlVHaGAg5PHFC6e8C+tVpWw==",
+      "path": "swashbuckle.aspnetcore.swaggergen/10.1.2",
+      "hashPath": "swashbuckle.aspnetcore.swaggergen.10.1.2.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.SwaggerUI/10.1.0": {
+    "Swashbuckle.AspNetCore.SwaggerUI/10.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ilUsTvGA9hO1ulR7ibdWMWSg3438Iu+pDFcEYUorp+/ClHwaHFdpp/ATfBsFXv2sIRVDbQlEwd5BWBOdMdtKCA==",
-      "path": "swashbuckle.aspnetcore.swaggerui/10.1.0",
-      "hashPath": "swashbuckle.aspnetcore.swaggerui.10.1.0.nupkg.sha512"
+      "sha512": "sha512-Zzam+F/g3jpGvSLhqdtOoBe+GEABk+oi9LJxun1wrz52/254sSGWkz1P+U1dDifsXJWVdZusiRuDWLXkJW+7Eg==",
+      "path": "swashbuckle.aspnetcore.swaggerui/10.1.2",
+      "hashPath": "swashbuckle.aspnetcore.swaggerui.10.1.2.nupkg.sha512"
     },
     "System.ClientModel/1.8.1": {
       "type": "package",
@@ -4282,19 +4200,19 @@
       "path": "system.clientmodel/1.8.1",
       "hashPath": "system.clientmodel.1.8.1.nupkg.sha512"
     },
-    "System.CodeDom/9.0.0": {
+    "System.CodeDom/6.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-oTE5IfuMoET8yaZP/vdvy9xO47guAv/rOhe4DODuFBN3ySprcQOlXqO3j+e/H/YpKKR5sglrxRaZ2HYOhNJrqA==",
-      "path": "system.codedom/9.0.0",
-      "hashPath": "system.codedom.9.0.0.nupkg.sha512"
+      "sha512": "sha512-CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA==",
+      "path": "system.codedom/6.0.0",
+      "hashPath": "system.codedom.6.0.0.nupkg.sha512"
     },
-    "System.CommandLine/2.0.1": {
+    "System.CommandLine/2.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-GLc43eDFq8KbpxIb7UhTwV0vC5CzB0NspJvfFbfhoW4O057xCJXuO18KLpVn9x3JykQn2mRske6+I6JXHwqmDg==",
-      "path": "system.commandline/2.0.1",
-      "hashPath": "system.commandline.2.0.1.nupkg.sha512"
+      "sha512": "sha512-5nY9hlrGGFEmyecNUux58sohD2Q16U6jlFBYwH57b2IVUs+u7LfMFaHwOtw2tuIi8CUl6jKXw5s4FuIt9aLtug==",
+      "path": "system.commandline/2.0.3",
+      "hashPath": "system.commandline.2.0.3.nupkg.sha512"
     },
     "System.Composition/9.0.0": {
       "type": "package",
@@ -4345,33 +4263,26 @@
       "path": "system.configuration.configurationmanager/9.0.4",
       "hashPath": "system.configuration.configurationmanager.9.0.4.nupkg.sha512"
     },
-    "System.Drawing.Common/10.0.1": {
+    "System.Drawing.Common/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cmkIduwyVPfuO8kNehu3xNcjo26nMgUoJyfso9S/zTO85YovvPPG0/AFLjanx1iVgQ80OpJVnLb1jU3aIKNLdg==",
-      "path": "system.drawing.common/10.0.1",
-      "hashPath": "system.drawing.common.10.0.1.nupkg.sha512"
+      "sha512": "sha512-bJlT89G7EqMpiLCvIPmb7BHpcSxjVeFsahRyQk3/mrUt5YgHKiFcEv88db97gKcpRn5opxfBwI0ohUmJlxuGJg==",
+      "path": "system.drawing.common/10.0.3",
+      "hashPath": "system.drawing.common.10.0.3.nupkg.sha512"
     },
-    "System.Formats.Nrbf/9.0.0": {
+    "System.IdentityModel.Tokens.Jwt/8.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-F/6tNE+ckmdFeSQAyQo26bQOqfPFKEfZcuqnp4kBE6/7jP26diP+QTHCJJ6vpEfaY6bLy+hBLiIQUSxSmNwLkA==",
-      "path": "system.formats.nrbf/9.0.0",
-      "hashPath": "system.formats.nrbf.9.0.0.nupkg.sha512"
+      "sha512": "sha512-rrs2u7DRMXQG2yh0oVyF/vLwosfRv20Ld2iEpYcKwQWXHjfV+gFXNQsQ9p008kR9Ou4pxBs68Q6/9zC8Gi1wjg==",
+      "path": "system.identitymodel.tokens.jwt/8.16.0",
+      "hashPath": "system.identitymodel.tokens.jwt.8.16.0.nupkg.sha512"
     },
-    "System.IdentityModel.Tokens.Jwt/8.15.0": {
+    "System.IO.Packaging/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-dpodi7ixz6hxK8YCBYAWzm0IA8JYXoKcz0hbCbNifo519//rjUI0fBD8rfNr+IGqq+2gm4oQoXwHk09LX5SqqQ==",
-      "path": "system.identitymodel.tokens.jwt/8.15.0",
-      "hashPath": "system.identitymodel.tokens.jwt.8.15.0.nupkg.sha512"
-    },
-    "System.IO.Packaging/10.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-KGS+cdplxa0R6cRQdVMRQRdnU8aY5UcUwDLyRJVHgOAstUnpF726xOYeaW3OxtkHcnfsijO0LfDjT4kDgvYn9A==",
-      "path": "system.io.packaging/10.0.1",
-      "hashPath": "system.io.packaging.10.0.1.nupkg.sha512"
+      "sha512": "sha512-/4CRIbxg4yhfUOCUjochR+iZKLUnewZ4gd3y9iQlKnFLzHkVFYEaO/WARPVgSBZ9W3+yCrERxlA2/4FXOm80og==",
+      "path": "system.io.packaging/10.0.3",
+      "hashPath": "system.io.packaging.10.0.3.nupkg.sha512"
     },
     "System.Memory.Data/10.0.0": {
       "type": "package",
@@ -4380,19 +4291,12 @@
       "path": "system.memory.data/10.0.0",
       "hashPath": "system.memory.data.10.0.0.nupkg.sha512"
     },
-    "System.Numerics.Tensors/10.0.1": {
+    "System.Numerics.Tensors/10.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1ERX7TgHGP8Cs3sHWp0Vk6kg9xVQSgLsumb5qw1KNiClUC5cs4lKZ1LzPHI/ZYY3at7EX2nx4uWU6SGSi2V8Kg==",
-      "path": "system.numerics.tensors/10.0.1",
-      "hashPath": "system.numerics.tensors.10.0.1.nupkg.sha512"
-    },
-    "System.Resources.Extensions/9.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-tvhuT1D2OwPROdL1kRWtaTJliQo0WdyhvwDpd8RM997G7m3Hya5nhbYhNTS75x6Vu+ypSOgL5qxDCn8IROtCxw==",
-      "path": "system.resources.extensions/9.0.0",
-      "hashPath": "system.resources.extensions.9.0.0.nupkg.sha512"
+      "sha512": "sha512-calKQ5nqV98lVRSCV7KFrlmw7nE7z6qIBWnMP+f7xAzY9H1cO15zJmkuZYM9RxYXDzQyI60/+dXd65UUY4HZFQ==",
+      "path": "system.numerics.tensors/10.0.3",
+      "hashPath": "system.numerics.tensors.10.0.3.nupkg.sha512"
     },
     "System.Security.Cryptography.ProtectedData/9.0.4": {
       "type": "package",
@@ -4401,12 +4305,12 @@
       "path": "system.security.cryptography.protecteddata/9.0.4",
       "hashPath": "system.security.cryptography.protecteddata.9.0.4.nupkg.sha512"
     },
-    "Toolbelt.Blazor.HotKeys2/6.1.0": {
+    "Toolbelt.Blazor.HotKeys2/6.2.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5JW76vN3MTl/edNIFzD6u3JkoZt8cuqLKAv7GVZX1NUxFDFtO0epvBOF5EK5WukJrbrJpach9tJRLW+dmYCodA==",
-      "path": "toolbelt.blazor.hotkeys2/6.1.0",
-      "hashPath": "toolbelt.blazor.hotkeys2.6.1.0.nupkg.sha512"
+      "sha512": "sha512-AXP/kdOO9Ns8z4Anefc4VW/btFcaclvZCDWE8Sz+Zr8xyfGJx3DbnGQOTfa5FGIJr5p3OsptK3KFWqUmHGzYtQ==",
+      "path": "toolbelt.blazor.hotkeys2/6.2.0",
+      "hashPath": "toolbelt.blazor.hotkeys2.6.2.0.nupkg.sha512"
     },
     "Toolbelt.Blazor.HttpClientInterceptor/10.2.0": {
       "type": "package",

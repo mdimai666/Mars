@@ -165,22 +165,6 @@
         <Content Remove="*-local.json" />
         <None Include="*-local.json" CopyToPublishDirectory="Never" />
     </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="Controllers\ActionHistoryController.cs" />
-        <Compile Remove="Controllers\AnketaAnswerController.cs" />
-        <Compile Remove="Controllers\AnketaQuestionController.cs" />
-        <Compile Remove="Controllers\CommentController.cs" />
-        <Compile Remove="Controllers\ContactPersonController.cs" />
-        <Compile Remove="Controllers\FormController.cs" />
-        <Compile Remove="Controllers\GeoLocationController.cs" />
-        <Compile Remove="Controllers\GeoLocationTypeController.cs" />
-        <Compile Remove="Controllers\GeoMunicipalityController.cs" />
-        <Compile Remove="Controllers\GeoMunicTypeController.cs" />
-        <Compile Remove="Controllers\GeoRegionCenterController.cs" />
-        <Compile Remove="Controllers\GeoRegionController.cs" />
-        <Compile Remove="Controllers\StatisticController.cs" />
-        <Compile Remove="Controllers\StoEntityTypeController.cs" />
-    </ItemGroup>
 
     <ItemGroup>
         <ContainerEnvironmentVariable Include="ASPNETCORE_HTTPS_PORTS">

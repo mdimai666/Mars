@@ -37,30 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="Services\AnketaAnswerService.cs" />
-        <Compile Remove="Services\AnketaQuestionService.cs" />
-        <Compile Remove="Services\BasicModelService.cs" />
-        <Compile Remove="Services\CommentService.cs" />
-        <Compile Remove="Services\ContactPersonService.cs" />
-        <Compile Remove="Services\ExampleDistricts.cs" />
-        <Compile Remove="Services\FormService.cs" />
-        <Compile Remove="Services\GeoLocationService.cs" />
-        <Compile Remove="Services\GeoLocationTypeService.cs" />
-        <Compile Remove="Services\GeoMunicipalityService.cs" />
-        <Compile Remove="Services\GeoMunicTypeService.cs" />
-        <Compile Remove="Services\GeoRegionCenterService.cs" />
-        <Compile Remove="Services\GeoRegionService.cs" />
-        <Compile Remove="Services\MinimalService.cs" />
-        <Compile Remove="Services\StandartModelService.cs" />
-        <Compile Remove="Services\StoEntityTypeService.cs" />
-        <Compile Remove="Services\StorageService.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Remove="Options\BlazorScriptsAppend.html" />
-    </ItemGroup>
-
-    <ItemGroup>
         <EmbeddedResource Include="Options\BlazorScriptsAppend.html" />
     </ItemGroup>
 

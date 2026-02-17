@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Text.Json.Serialization;
 using Bogus;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
@@ -30,12 +32,14 @@ public class WordPressFixture : IAsyncLifetime
         _postFaker = new Faker<WpPost>()
             .RuleFor(p => p.Title, f => f.Lorem.Sentence())
             .RuleFor(p => p.Content, f => f.Lorem.Paragraphs(3))
-            .RuleFor(p => p.Status, "publish");
+            .RuleFor(p => p.Status, "publish")
+            .RuleFor(p => p.Type, "post");
     }
 
     public async Task InitializeAsync()
     {
         await EnsureWpCliInTempPath();
+        await EnsurePluginExistInTempPath();
 
         _network = new NetworkBuilder()
             .WithName(_networkName)
@@ -76,7 +80,6 @@ public class WordPressFixture : IAsyncLifetime
             ["WP_URL"] = wp_url,
         };
 
-        var wp_myAuth = "wp-my-auth.php";
         var wp_install = @"wp-install.sh";
         var wp_dest_dir = "/var/www/html/";
 
@@ -90,8 +93,8 @@ public class WordPressFixture : IAsyncLifetime
             .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(80))
             .WithCleanUp(true)
             .WithBindMount(Path.Combine(MountFilesDir, wp_install), wp_dest_dir + wp_install)
-            .WithBindMount(Path.Combine(MountFilesDir, wp_myAuth), wp_dest_dir + wp_myAuth)
             .WithBindMount(WpCliPath(), "/usr/local/bin/wp")
+            .WithBindMount(WpBasicAuthPluginPath(), wp_dest_dir + "wp-content/plugins/basic-auth")
             .Build();
 
         await _wordPressContainer.StartAsync();
@@ -103,9 +106,9 @@ public class WordPressFixture : IAsyncLifetime
         var installScript = await _wordPressContainer.ExecAsync(["bash", "/var/www/html/wp-install.sh"]);
         if (installScript.ExitCode != 0) throw new InvalidOperationException("INSTALL SCRIPT ERROR: " + installScript.Stdout + "\n\n" + installScript.Stderr);
 
-        _client = new FlurlClient(wordpressUrl);
-        await AuthenticateWithWordPress();
-        //await CreateMockPosts(10);
+        _client = new FlurlClient(wordpressUrl).WithBasicAuth("admin", "admin");
+
+        await CreateMockPosts(10);
     }
 
     public async Task DisposeAsync()
@@ -144,19 +147,6 @@ public class WordPressFixture : IAsyncLifetime
         Console.WriteLine($"Database '{databaseName}' created or already exists.");
     }
 
-    private async Task AuthenticateWithWordPress()
-    {
-        // If your WordPress instance requires authentication, you can authenticate here
-        // Example: Use basic auth or JWT token
-        // For simplicity, this example assumes no authentication is required
-
-        // not work! cookie not writted
-        var req = await _client.Request("/wp-my-auth.php").WithAutoRedirect(true).PostAsync();
-        var status = req.StatusCode;
-        var cookies = req.Cookies;
-        var body = await req.GetStringAsync();
-    }
-
     protected string MountFilesDir => Path.Combine(Path.GetFullPath("../../..", Environment.CurrentDirectory), "WordPressTests", "MountFiles");
 
     protected virtual int GetNextFreePort(int port = 0)
@@ -178,10 +168,11 @@ public class WordPressFixture : IAsyncLifetime
         return openPorts.All(openPort => openPort != port);
     }
 
+    #region WP-Cli
     private const string WpCliTempDir = "t-Mars-wp-cli";
-    private const string wpCliFileName = "wp-cli.phar";
+    private const string WpCliFileName = "wp-cli.phar";
 
-    private string WpCliPath() => Path.Combine(Path.GetTempPath(), WpCliTempDir, wpCliFileName);
+    private string WpCliPath() => Path.Combine(Path.GetTempPath(), WpCliTempDir, WpCliFileName);
 
     private async Task EnsureWpCliInTempPath()
     {
@@ -201,13 +192,65 @@ public class WordPressFixture : IAsyncLifetime
             }
         }
     }
+    #endregion
+
+    #region BasicAuthPlugin
+    private const string WpBasicAuthPluginGitUrl = "https://github.com/WP-API/Basic-Auth";
+    private const string WpBasicAuthPluginDirName = "t-wp-basic-auth";
+    private string WpBasicAuthPluginPath() => Path.Combine(Path.GetTempPath(), WpBasicAuthPluginDirName);
+
+    private async Task EnsurePluginExistInTempPath()
+    {
+        if (!Directory.Exists(WpBasicAuthPluginPath()))
+        {
+            Directory.CreateDirectory(WpBasicAuthPluginPath());
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = $"clone {WpBasicAuthPluginGitUrl} \"{WpBasicAuthPluginPath()}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(startInfo);
+            if (process != null)
+            {
+                var output = await process.StandardOutput.ReadToEndAsync();
+                var error = await process.StandardError.ReadToEndAsync();
+
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException($"Failed to clone repository: {error}");
+                }
+
+                Console.WriteLine($"Successfully cloned {WpBasicAuthPluginGitUrl} to {WpBasicAuthPluginPath()}");
+            }
+        }
+    }
+    #endregion
 }
 
 // Define a Post class to match the WordPress REST API schema
 public class WpPost
 {
     //public int Id { get; set; }
+    [JsonPropertyName("title")]
     public string Title { get; set; } = default!;
+
+    [JsonPropertyName("content")]
     public string Content { get; set; } = default!;
+
+    [JsonPropertyName("status")]
     public string Status { get; set; } = default!;
+
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = "post";
+
+    [JsonPropertyName("slug")]
+    public string Slug { get; set; } = default!;
 }

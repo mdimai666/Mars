@@ -22,7 +22,7 @@
 
         <FluentLabel Typo="Typography.Subject">Creditionals</FluentLabel>
 
-        @if (Node.Mode != AuthFlowNodeMode.ApiKey)
+        @if (Node.Mode != AuthFlowNodeMode.ApiKey && Node.Mode != AuthFlowNodeMode.BearerToken)
         {
             <FormItem2 For="() => Node.Username">
                 <FluentTextField @bind-Value=@Node.Username Class="" Required AutoComplete="new-password" />

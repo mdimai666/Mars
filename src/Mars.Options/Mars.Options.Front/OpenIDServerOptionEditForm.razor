@@ -1,3 +1,4 @@
+@using AppFront.Shared
 @using AppFront.Shared.Services
 @using Mars.Core.Utils
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -23,6 +24,17 @@
                 </FormItem2>
 
                 <FluentDivider />
+
+                <div class="vstack gap-1">
+                    <label>
+                        <div>Authorization</div>
+                        <FluentTextField Value="@Q.ServerUrlJoin("api/oauth/authorize")" ReadOnly Appearance="FluentInputAppearance.Filled" Class="w-100" />
+                    </label>
+                    <label>
+                        <div>Token</div>
+                        <FluentTextField Value="@Q.ServerUrlJoin("api/oauth/token")" ReadOnly Appearance="FluentInputAppearance.Filled" Class="w-100" />
+                    </label>
+                </div>
 
                 <div class="row row-cols-3 g-2">
                     <FormItem2 For="() => sso.ClientId" Class="col">

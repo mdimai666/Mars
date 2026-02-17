@@ -1,5 +1,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
+using AngleSharp;
+using AngleSharp.Html.Dom;
 using Mars.HttpSmartAuthFlow.Dto;
 using Mars.HttpSmartAuthFlow.Exceptions;
 
@@ -166,11 +168,8 @@ public class CookieFormStrategy : AuthStrategyBase
         }
     }
 
-    private LoginFormInfo? ParseLoginForm(string htmlContent, string loginPageUrl)
+    internal LoginFormInfo? ParseLoginForm(string htmlContent, string loginPageUrl)
     {
-        // Простая реализация парсинга без внешних зависимостей
-        // Для полноценного парсинга используйте AngleSharp
-
         var actionMatch = Regex.Match(htmlContent,
             @"<form[^>]+action\s*=\s*[""']([^""']+)[^>]*>",
             RegexOptions.IgnoreCase);
@@ -203,35 +202,42 @@ public class CookieFormStrategy : AuthStrategyBase
 
     private string? FindUsernameField(string html)
     {
-        var usernameKeywords = new[] { "user", "login", "email", "username", "mail" };
+        var usernameKeywords = new[] { "user", "login", "email", "username", "mail", "log" };
 
-        var inputs = Regex.Matches(html,
-            @"<input[^>]+name\s*=\s*[""']([^""']+)[^>]+type\s*=\s*[""'](text|email)[^>]*>",
-            RegexOptions.IgnoreCase);
+        var context = BrowsingContext.New(Configuration.Default);
+        var document = context.OpenAsync(req => req.Content(html)).GetAwaiter().GetResult();
 
-        foreach (Match input in inputs)
+        // Находим все input элементы с типом text или email
+        var inputs = document.QuerySelectorAll("input[type='text'], input[type='email']")
+                             .OfType<IHtmlInputElement>()
+                             .ToList();
+
+        // Сначала ищем по ключевым словам в названии
+        foreach (var input in inputs)
         {
-            var name = input.Groups[1].Value.ToLower();
+            var name = input.Name?.ToLower() ?? string.Empty;
             if (usernameKeywords.Any(kw => name.Contains(kw)))
             {
-                return input.Groups[1].Value;
+                return input.Name;
             }
         }
 
-        // Fallback: первый текстовый инпут
-        if (inputs.Count > 0)
-            return inputs[0].Groups[1].Value;
+        // Fallback: первый подходящий текстовый инпут
+        if (inputs.Any())
+            return inputs.First().Name;
 
         return null;
     }
 
     private string? FindPasswordField(string html)
     {
-        var match = Regex.Match(html,
-            @"<input[^>]+name\s*=\s*[""']([^""']+)[^>]+type\s*=\s*[""']password[^>]*>",
-            RegexOptions.IgnoreCase);
+        var context = BrowsingContext.New(Configuration.Default);
+        var document = context.OpenAsync(req => req.Content(html)).GetAwaiter().GetResult();
 
-        return match.Success ? match.Groups[1].Value : null;
+        // Находим первый input элемент с типом password
+        var passwordInput = document.QuerySelector("input[type='password']") as IHtmlInputElement;
+
+        return passwordInput?.Name;
     }
 
     private Dictionary<string, string> ParseHiddenFields(string html)

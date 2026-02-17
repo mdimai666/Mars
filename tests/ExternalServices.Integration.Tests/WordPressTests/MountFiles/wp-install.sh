@@ -13,4 +13,6 @@ wp --allow-root rewrite structure '/%postname%/'
 wp --allow-root language core install ru_RU
 wp --allow-root site switch-language ru_RU
 
+wp --allow-root plugin activate basic-auth
+
 echo "INSTALL_END"

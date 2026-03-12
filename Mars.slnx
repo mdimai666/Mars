@@ -28,7 +28,6 @@
   </Folder>
   <Folder Name="/Mars.Modules/">
     <Project Path="src/Mars.Modules/Mars.Excel.Host/Mars.Excel.Host.csproj" />
-    <Project Path="src/Mars.Modules/Mars.HttpSmartAuthFlow/Mars.HttpSmartAuthFlow.csproj" Id="ff6afc3c-ee86-4825-a765-d572829bd8c2" />
     <Project Path="src/Mars.Modules/Mars.MetaModelGenerator/Mars.MetaModelGenerator.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang.Host/Mars.QueryLang.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang/Mars.QueryLang.csproj" />
@@ -93,6 +92,7 @@
   <Folder Name="/Modules/">
     <Project Path="src/Mars.WebApiClient/Mars.WebApiClient.csproj" />
     <Project Path="src/Modules/BlazoredHtmlRender/BlazoredHtmlRender.csproj" />
+    <Project Path="src/Modules/Mars.HttpSmartAuthFlow/Mars.HttpSmartAuthFlow.csproj" />
     <Project Path="src/Modules/MarsCodeEditor2/MarsCodeEditor2.csproj" />
     <Project Path="src/Modules/MarsEditors/MarsEditors.csproj" />
   </Folder>

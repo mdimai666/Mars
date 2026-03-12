@@ -1,18 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <!--Project-->
-
         <!--Author-->
-        <PackageId>mdimai666.Mars.Nodes.Core.Implements</PackageId>
+        <PackageId>mdimai666.Mars.HttpSmartAuthFlow</PackageId>
         <PackageVersion>$(MarsAppVersion)</PackageVersion>
         <Version>$(MarsAppVersion)</Version>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
-        <Product>Mars.Nodes.Core.Implements</Product>
-        <PackageTags>Mars;Nodes;</PackageTags>
+        <Product>Mars.HttpSmartAuthFlow</Product>
+        <PackageTags>Mars;</PackageTags>
         <Description>
-            Mars Nodes core Implements;
+            Mars.HttpSmartAuthFlow - automatic authentication for Flurl.Http library.
         </Description>
         <PackageIcon>icon-nuget.png</PackageIcon>
         <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
@@ -32,23 +29,16 @@
         <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="AngleSharp" />
-        <PackageReference Include="DynamicExpresso.Core" />
         <PackageReference Include="Flurl.Http" />
-        <PackageReference Include="Handlebars.Net" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
-        <PackageReference Include="MQTTnet" />
-        <PackageReference Include="MQTTnet.Extensions.TopicTemplate" />
-        <PackageReference Include="Newtonsoft.Json" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>
-
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-        <ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.Host.Shared\Mars.Nodes.Host.Shared.csproj" />
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.HttpSmartAuthFlow.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
     </ItemGroup>
-
 </Project>

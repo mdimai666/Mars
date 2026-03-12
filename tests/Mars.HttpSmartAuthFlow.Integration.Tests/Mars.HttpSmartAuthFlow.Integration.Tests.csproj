@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
+        <ProjectReference Include="..\..\src\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
         <ProjectReference Include="..\ExternalServices.TestContainers\ExternalServices.TestContainers.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
     </ItemGroup>

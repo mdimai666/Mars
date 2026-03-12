@@ -27,6 +27,7 @@ $dirs = @(
     "Modules/MarsCodeEditor2",
     "Mars.WebApiClient",
     "Modules/BlazoredHtmlRender",
+    "Modules/Mars.HttpSmartAuthFlow",
     # plugin
     "Plugin/Mars.Plugin.Abstractions",
     "Plugin/Mars.Plugin.Front",

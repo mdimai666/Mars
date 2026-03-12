@@ -21,8 +21,8 @@ public interface INodeService
     UserActionResult Deploy(IReadOnlyCollection<Node> nodes);
     IEnumerable<Node> GetNodesForResponse();
 
-    Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
-    Task<UserActionResult> Inject(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);
+    Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
+    Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);
     Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null);
 
     void DebugMsg(string nodeId, DebugMessage msg);

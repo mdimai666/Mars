@@ -92,7 +92,6 @@
     display: none;
 }
 
-
 .red-ui-flow-node-label .red-ui-flow-node-label-text {
     dominant-baseline: middle;
 }
@@ -278,25 +277,32 @@ g.red-ui-mic-node-selected .red-ui-flow-node .micr-backplate {
 }
 
 .nodered-debug-message-list__item {
-    &[data-level="Info"] {
+    &[data-level="Info" i] {
         --box-background: unset;
     }
 
-    &[data-level="Warning"] {
+    &[data-level="Warning" i] {
         --box-background: linear-gradient(135deg, #fff1c5, transparent);
     }
 
-    &[data-level="Error"] {
+    &[data-level="Error" i] {
         --box-background: linear-gradient(135deg, #ffc8c8, transparent);
     }
 
-    &[data-level="Success"] {
+    &[data-level="Success" i] {
         --box-background: linear-gradient(135deg, #c8f7d7, transparent);
     }
 
-    &[data-level="Custom"] {
+    &[data-level="Custom" i] {
         --box-background: linear-gradient(135deg, #dcc7f5, transparent);
     }
 
     background: var(--box-background);
+}
+
+.red-ui-flow-node__animation_backdrop {
+    transform-origin: center;
+    transform-box: fill-box;
+    rx: 7px;
+    ry: 7px;
 }

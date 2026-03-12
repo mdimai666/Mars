@@ -5,6 +5,7 @@ using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Shared.Dto.NodeTasks;
+using Mars.Nodes.Host.Shared.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Host.NodeTasks;
@@ -28,6 +29,7 @@ internal class NodeTaskJob : IAsyncDisposable
     public string FlowNodeId { get; }
 
     public event Action? OnComplete;
+    public event NodeExecutionHandler OnNodeExecute;
     public int ExecuteCount => executedCount;
     public int NodesChainCount { get; }
     public IReadOnlyDictionary<string, NodeJob> Jobs => _jobs;
@@ -64,7 +66,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
         _logger.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
 
-        await ExecuteNode(msg, node, new());
+        await ExecuteNode(msg, node, new(), true);
     }
 
     public void Terminate()
@@ -87,12 +89,12 @@ internal class NodeTaskJob : IAsyncDisposable
             if (node.Node.Disabled) continue;
 
             node.RED = CreateContextForNode(node.Id);
-            _ = ExecuteNode(result, node, portIndex);
+            _ = ExecuteNode(result, node, portIndex, false);
         }
 
     }
 
-    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex)
+    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex, bool isInject)
     {
         if (_cancellationTokenSource.IsCancellationRequested) return;
 
@@ -123,6 +125,7 @@ internal class NodeTaskJob : IAsyncDisposable
                 },
                 new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token)
                 );
+            OnNodeExecute.Invoke(node.Id, isInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
 
             if (node is ISelfFinalizingNode) go.Pending();
             else go.Success();
@@ -130,13 +133,13 @@ internal class NodeTaskJob : IAsyncDisposable
         catch (NodeExecuteException ex)
         {
             _logger.LogError(ex, "node execute exception");
-            _RED.DebugMsg(node.Id, ex);
+            _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "node execute exception");
-            _RED.DebugMsg(node.Id, ex);
+            _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
         }
         finally

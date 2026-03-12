@@ -1,7 +1,6 @@
 @using Mars.Core.Extensions
-<g class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node-selected" : "") @(node.Disabled ? "red-ui-flow-node-disabled" : "")"
+<g id="node-@node.Id" class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node-selected" : "") @(node.Disabled ? "red-ui-flow-node-disabled" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))"
-   node-id="@node.Id"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenu"
@@ -52,6 +51,13 @@
                 <feMergeNode in="SourceGraphic" /> <!-- this contains the element that the filter is applied to -->
             </feMerge>
         </filter>
+
+        <rect class="red-ui-flow-node__animation_backdrop"
+              y="4"
+              x="1"
+              fill="@node.Color"
+              width="@(bodyRectWidth - 1f)"
+              height="@bodyRectHeight"></rect>
 
         <filter id="dropshadow-select-backdrop" height="140%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="3" />

@@ -92,5 +92,17 @@ namespace Mars.Nodes.Workspace.EditorParts
             var module = await _moduleTask.Value;
             await module.InvokeVoidAsync("unobserveScroll", element);
         }
+
+        public async void TouchFlashAnimation(ElementReference element)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("touchFlashAnimation", element);
+        }
+
+        public async void TouchFlashAnimationBySelector(string elementSelector)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("touchFlashAnimationBySelector", elementSelector);
+        }
     }
 }

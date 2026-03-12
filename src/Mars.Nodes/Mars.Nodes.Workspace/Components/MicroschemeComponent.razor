@@ -1,6 +1,5 @@
-<g id="Layer_2" data-name="Layer 2" class="user-select-none @(node.selected?"red-ui-mic-node-selected":"")"
+<g id="node-@node.Id" class="user-select-none @(node.selected ? "red-ui-mic-node-selected" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture)) scale(0.9)"
-   node-id="@node.Id"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenu"

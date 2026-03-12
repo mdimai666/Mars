@@ -53,12 +53,12 @@ internal class NodeServiceClient : INodeServiceClient
                     .GetJsonAsync<NodesDataResponse>();
 
     public Task<ListDataResult<NodeTaskResultSummaryResponse>> JobList(ListNodeTaskJobQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/Job/List")
+        => _client.Request($"{_basePath}{_controllerName}/Job/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<NodeTaskResultSummaryResponse>>();
 
     public Task<PagingResult<NodeTaskResultSummaryResponse>> JobListTable(TableNodeTaskJobQueryRequest filter)
-        => _client.Request($"{_basePath}{_controllerName}/Job/ListTable")
+        => _client.Request($"{_basePath}{_controllerName}/Job/list/table")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<NodeTaskResultSummaryResponse>>();
 

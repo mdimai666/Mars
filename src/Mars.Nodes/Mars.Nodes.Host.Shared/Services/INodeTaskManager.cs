@@ -7,7 +7,8 @@ namespace Mars.Nodes.Host.Shared.Services;
 public interface INodeTaskManager
 {
     int CurrentTasksCount { get; }
-    public event Action<int>? OnCurrentTasksCountChanged;
+    event Action<int>? OnCurrentTasksCountChanged;
+    event NodeTaskExecutionHandler OnTaskNodeExecute;
 
     IReadOnlyCollection<NodeTaskResultSummary> CurrentTasks();
     IReadOnlyCollection<NodeTaskResultDetail> CurrentTasksDetails();
@@ -29,3 +30,7 @@ public interface INodeTaskManager
     ListDataResult<NodeTaskResultSummary> List(ListNodeTaskJobQuery query);
     PagingResult<NodeTaskResultSummary> ListTable(ListNodeTaskJobQuery query);
 }
+
+public delegate void NodeExecutionHandler(string nodeId, NodeExecutionTrigger trigger);
+
+public delegate void NodeTaskExecutionHandler(Guid taskId, string nodeId, NodeExecutionTrigger trigger);

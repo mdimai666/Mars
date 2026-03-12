@@ -219,6 +219,15 @@
                                 {
                                     <FluentMenuItem OnClick="@((e) => OnNodeContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
                                 }
+                                <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
+                                    <MenuItems>
+                                        @foreach (var _example in _currentPaletteNodeExamples)
+                                        {
+                                            var example = _example;
+                                            <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
+                                        }
+                                    </MenuItems>
+                                </FluentMenuItem>
                             }
                             else if (_selectContext == typeof(Wire))
                             {

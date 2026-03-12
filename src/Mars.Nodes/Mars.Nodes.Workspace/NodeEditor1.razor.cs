@@ -517,6 +517,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     Task OnNodeContextMenu(NodeClickEventArgs e)
     {
+        PrepareNodeExampleListForContextMenu(e.Node.GetType());
         return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
                                                 (int)e.MouseEvent.ClientX - 48 + _nodeWorkspace1.ScrollInfo.ScrollLeft,
                                                 (int)e.MouseEvent.ClientY - 40 + _nodeWorkspace1.ScrollInfo.ScrollTop);
@@ -537,10 +538,16 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     Task OnPaletteNodeContextMenu(NodeClickEventArgs e)
     {
-        _currentPaletteNodeExamples = _examplesList.Where(s => s.NodeType == e.Node.GetType()).ToList();
+        PrepareNodeExampleListForContextMenu(e.Node.GetType());
         return _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
                                                 (int)e.MouseEvent.ClientX - 48,
                                                 (int)e.MouseEvent.ClientY - 40);
+    }
+
+    void PrepareNodeExampleListForContextMenu(Type nodeType)
+    {
+        _currentPaletteNodeExamples = _examplesList.Where(s => s.NodeType == nodeType).ToList();
+
     }
 
     void UseExample(NodeExampleInfo example)
@@ -549,6 +556,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         var flowId = ActiveFlow?.Id ?? throw new ArgumentNullException("ActiveFlow is null, ActiveFlow should be set");
         foreach (var node in nodes)
             node.Container = flowId;
+        quickNodeAddMenu.Hide();
         _actionManager.ExecuteAction(new CreateNodesAction(this, nodes, startDrag: true));
     }
 
@@ -609,6 +617,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         EnableHotkeys(true);
     }
 
+    public void CallNodeInjectedEffect(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
+    {
+        js.TouchFlashAnimationBySelector($"#node-{nodeId} .red-ui-flow-node__animation_backdrop");
+    }
 }
 
 internal static class NodeEditor1Extension

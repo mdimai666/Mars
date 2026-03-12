@@ -120,3 +120,23 @@ export function unobserveScroll(element) {
     element.removeEventListener("scroll", handler);
     scrollObservers.delete(element);
 }
+
+export function touchFlashAnimation(element) {
+    if (!element) return;
+    element.animate([
+        { transform: 'scale(1)', opacity: 1 },
+        { transform: 'scale(1.5)', opacity: 0.3 },
+        { transform: 'scale(2)', opacity: 0 }
+    ], {
+        duration: 300,
+        easing: 'ease-out'
+    });
+}
+
+export function touchFlashAnimationById(elementId) {
+    touchFlashAnimation(document.getElementById(elementId));
+}
+
+export function touchFlashAnimationBySelector(elementSelector) {
+    touchFlashAnimation(document.querySelector(elementSelector));
+}

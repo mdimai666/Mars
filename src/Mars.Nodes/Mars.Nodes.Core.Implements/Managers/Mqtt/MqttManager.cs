@@ -93,7 +93,7 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
             var input = new NodeMsg { Payload = payload.Payload };
             input.Add(payload);
             //input.Add(message.ApplicationMessage);
-            _ = _nodeService.Inject(_scopeFactory, nodeId, input);
+            _ = _nodeService.InjectAsync(_scopeFactory, nodeId, input);
         }
     }
 

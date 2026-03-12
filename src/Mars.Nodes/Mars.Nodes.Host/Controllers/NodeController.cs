@@ -61,10 +61,12 @@ public class NodeController : ControllerBase
     }
 
     [HttpGet(nameof(Inject) + "/{nodeId}")]
-    public async Task<ActionResult<UserActionResult>> Inject(string nodeId)
+    public UserActionResult Inject(string nodeId)
     {
         InjectCounter.Add(1, new KeyValuePair<string, object?>("nodeId", nodeId));
-        return await _nodeService.Inject(_factory, nodeId);
+        _ = _nodeService.InjectAsync(_factory, nodeId);
+
+        return UserActionResult.Success("Injectend");
     }
 
     [AllowAnonymous]

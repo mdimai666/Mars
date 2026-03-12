@@ -7,6 +7,7 @@ using Mars.Host.Models;
 using Mars.Host.Services;
 using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Features;
+using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
 using Mars.SSO.Services;
@@ -195,6 +196,7 @@ internal static class MarsStartupPartCore
             {
                 options.PayloadSerializerOptions.PropertyNamingPolicy = null;
             });
+        services.AddSingleton<BroadcastHub>();
 
         return services;
     }

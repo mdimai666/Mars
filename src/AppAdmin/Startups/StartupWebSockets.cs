@@ -10,7 +10,7 @@ internal static class StartupWebSockets
     internal static void ConfigureWebSockets(this WebAssemblyHostBuilder builder, string backendUrl)
     {
         var connection = new HubConnectionBuilder()
-            .WithUrl($"{backendUrl}/_ws/ws", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
+            .WithUrl($"{backendUrl}/_ws/admin", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
             .ConfigureLogging(logging =>
             {
                 //logging.SetMinimumLevel(LogLevel.Information);

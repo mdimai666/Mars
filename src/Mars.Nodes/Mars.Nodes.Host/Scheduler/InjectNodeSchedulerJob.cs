@@ -1,4 +1,4 @@
-﻿using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -33,7 +33,7 @@ internal class InjectNodeSchedulerJob : IJob
 
         var scope = serviceProvider.CreateScope(); //TODO: wait complete
 
-        await _nodeService.Inject(scope.ServiceProvider, nodeId);
+        await _nodeService.InjectAsync(scope.ServiceProvider, nodeId);
 
     }
 }

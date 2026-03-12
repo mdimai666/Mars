@@ -13,7 +13,7 @@ public partial class NodeRedPage
 
     [Inject] ClientHub hub { get; set; } = default!;
 
-    NodeEditor1? editor1 = default!;
+    NodeEditor1? _editor1 = default!;
 
     bool Busy = false;
 
@@ -23,18 +23,24 @@ public partial class NodeRedPage
     {
         base.OnInitialized();
 
+        hub.JoinGroup(NodeConstants.WsNodesNotifyGroupName);
+
         hub.OnNodeStatus += OnNodeStatus;
         hub.OnDebugMsg += OnDebugMsg;
         hub.OnNodeRunningTaskCountChanged += OnNodeRunningTaskCountChanged;
+        hub.OnNodeExecuted += OnNodeExecuted;
 
         Load();
     }
 
     public void Dispose()
     {
+        hub.LeaveGroup(NodeConstants.WsNodesNotifyGroupName);
+
         hub.OnNodeStatus -= OnNodeStatus;
         hub.OnDebugMsg -= OnDebugMsg;
         hub.OnNodeRunningTaskCountChanged -= OnNodeRunningTaskCountChanged;
+        hub.OnNodeExecuted -= OnNodeExecuted;
     }
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
@@ -50,12 +56,17 @@ public partial class NodeRedPage
 
     void OnDebugMsg(string nodeId, DebugMessage msg)
     {
-        editor1!.AddDebugMessage(msg);
+        _editor1?.AddDebugMessage(msg);
     }
 
     void OnNodeRunningTaskCountChanged(int currentTaskCount)
     {
-        editor1.SetCurrentTaskCount(currentTaskCount);
+        _editor1?.SetCurrentTaskCount(currentTaskCount);
+    }
+
+    void OnNodeExecuted(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
+    {
+        _editor1?.CallNodeInjectedEffect(taskId, nodeId, trigger);
     }
 
     async void Load()
@@ -94,7 +105,7 @@ public partial class NodeRedPage
             foreach (var node in nodes.Values) node.changed = false;
         }
 
-        editor1!.AddDebugMessage(new DebugMessage
+        _editor1!.AddDebugMessage(new DebugMessage
         {
             // Topic = (res.Ok ? "OK" : "FAIL"),
             Message = res.Message,
@@ -104,22 +115,16 @@ public partial class NodeRedPage
 
     async void OnInjectClick(string nodeId)
     {
-
-        bool useWs = false;
-
-        Console.WriteLine($">Inject:{nodeId}");
+        bool useWs = true;
+        //Console.WriteLine($">Click Inject:{nodeId}");
 
         if (useWs)
         {
-
             hub.Inject(nodeId);
-
-            return;
         }
         else
         {
             var res = await service.Inject(nodeId);
-
             string ok = (res.Ok ? "OK" : "FAIL");
         }
     }

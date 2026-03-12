@@ -1,75 +1,48 @@
+using AppFront.Shared.Interfaces;
 using Mars.Host.Shared.Services;
-using Mars.Nodes.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.Shared.Hubs;
 
-public class ChatHub : Hub
+/// <summary>
+/// Хаб только получает сообщение  от клиента и вызывает метод в сервисе
+/// </summary>
+public class ChatHub : Hub<IClientHub>
 {
-    private readonly INodeService nodeService;
-    private readonly IServiceScopeFactory factory;
-    private readonly IServiceProvider serviceProvider;
+    private readonly INodeService _nodeService;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    //public static ChatHub instance = null;//костыль, потом убрать
-
-    public ChatHub(INodeService nodeService, IServiceScopeFactory factory, IServiceProvider serviceProvider)
+    public ChatHub(INodeService nodeService, IServiceScopeFactory serviceScopeFactory)
     {
-        //instance = this;
-        //Console.WriteLine("ChatHub::ctor");
-        this.nodeService = nodeService;
-        this.factory = factory;
-        this.serviceProvider = serviceProvider;
+        _nodeService = nodeService;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    /*public static void Initialize(NodeService nodeService, IServiceScopeFactory factory)
-    {
-        if ( instance == null)
-            instance = new ChatHub(nodeService, factory);
-    }*/
-
-    public async Task SendMessage(string user, string message)
-    {
-
-        Console.WriteLine($">SendMessage= {user}; message={message}");
-        await Clients.Others.SendAsync("ReceiveMessage", user, message);
-
-    }
+    //public async Task SendMessage(string user, string message)
+    //{
+    //    Console.WriteLine($">SendMessage= {user}; message={message}");
+    //    await Clients.Others.SendAsync("ReceiveMessage", user, message);
+    //}
 
     public async void Inject(string nodeId)
     {
         //await nodeService.Inject(factory, nodeId);
-        await nodeService.Inject(serviceProvider, nodeId);
+        await _nodeService.InjectAsync(_serviceScopeFactory, nodeId);
     }
 
-    public async void DebugMsg(string nodeId, DebugMessage msg)
+    public async Task JoinGroup(string groupName)
     {
-        //this.Clients.All.DebugMsg(nodeId, msg);
-        await Clients.All.SendAsync("DebugMsg", nodeId, msg);
-        //Clients.All.BroadcastMessage(name, message);
+        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        // Опционально: оповестить других в группе
+        //await Clients.Group(groupName).SendAsync("Notify", $"{Context.ConnectionId} joined {groupName}");
     }
 
-    public async void NodeStatus(string nodeId, NodeStatus nodeStatus)
+    public async Task LeaveGroup(string groupName)
     {
-        //this.Clients.All.NodeStatus(nodeId, nodeStatus);
-        await Clients.All.SendAsync("NodeStatus", nodeId, nodeStatus);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        // Опционально: оповестить других в группе
+        //await Clients.Group(groupName).SendAsync("Notify", $"{Context.ConnectionId} joined {groupName}");
     }
-
-    public async void NodeRunningTaskCountChanged(int nodeRunningTaskCount)
-    {
-        await Clients.All.SendAsync("NodeRunningTaskCountChanged", nodeRunningTaskCount);
-    }
-}
-/*
-public interface IChatHub
-{
-    public void DebugMsg(string nodeId, DebugMessage msg);
-    public void NodeStatus(string nodeId, NodeStatus nodeStatus);
 
 }
-*/
-//public interface IChatHub
-//{
-//    void SendMessage(string message);
-//    void Inject(string nodeId);
-//}

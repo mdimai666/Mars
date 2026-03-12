@@ -25,7 +25,7 @@ internal class RED
 {
     public IServiceProvider ServiceProvider { get; }
 
-    public IHubContext<ChatHub> Hub;
+    public BroadcastHub BroadcastHub;
     private readonly NodeImplementFactory _nodeImplementFactory;
 
     public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = [];
@@ -50,10 +50,10 @@ internal class RED
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
 
-    public RED(IHubContext<ChatHub> hub, NodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
+    public RED(BroadcastHub hub, NodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-        Hub = hub;
+        BroadcastHub = hub;
         _nodeImplementFactory = nodeImplementFactory;
     }
 
@@ -212,22 +212,17 @@ internal class RED
 
     public virtual void DebugMsg(string nodeId, DebugMessage msg)
     {
-        Hub.Clients.All.SendAsync("DebugMsg", nodeId, msg);
+        BroadcastHub.DebugMsg(nodeId, msg);
     }
 
     public virtual void DebugMsg(string nodeId, Exception ex)
     {
-        Hub.Clients.All.SendAsync("DebugMsg", nodeId, new DebugMessage
-        {
-            NodeId = nodeId,
-            Message = ex.Message,
-            Level = Mars.Core.Models.MessageIntent.Error,
-        });
+        BroadcastHub.DebugMsg(nodeId, ex);
     }
 
     public virtual void BroadcastStatus(string nodeId, NodeStatus nodeStatus)
     {
-        Hub.Clients.All.SendAsync("NodeStatus", nodeId, nodeStatus);
+        BroadcastHub.NodeStatus(nodeId, nodeStatus);
     }
 
     public void RegisterHttpMiddleware(HttpCatchRegister mw)

@@ -50,7 +50,7 @@ internal class CommandNodesActionProvider : IXActionCommandsProvider, IDisposabl
     {
         if (_nodeService.BaseNodes.TryGetValue(command.Id, out var node))
         {
-            _nodeService.Inject(_serviceScopeFactory, node.Id, new Core.NodeMsg { Payload = args });
+            _nodeService.InjectAsync(_serviceScopeFactory, node.Id, new Core.NodeMsg { Payload = args });
 
             return Task.FromResult(XActResult.ToastSuccess($"command inject '{command.Label}'"));
         }

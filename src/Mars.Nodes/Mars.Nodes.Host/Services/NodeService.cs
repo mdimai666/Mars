@@ -11,7 +11,6 @@ using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static Mars.Host.Shared.Services.INodeService;
@@ -60,7 +59,8 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         if (!_fileStorage.DirectoryExists(nodesDir)) _fileStorage.CreateDirectory(nodesDir);
 
         eventManager.OnTrigger += EventManager_OnTrigger;
-        _nodeTaskManager.OnCurrentTasksCountChanged += _nodeTaskManager_OnCurrentTaskCountChanged;
+        _nodeTaskManager.OnCurrentTasksCountChanged += NodeTaskManager_OnCurrentTaskCountChanged;
+        _nodeTaskManager.OnTaskNodeExecute += TaskNodeTaskManager_OnNodeInjected;
     }
 
     public void Setup()
@@ -247,15 +247,15 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return Nodes.Values.Select(s => s.Node);
     }
 
-    public Task<UserActionResult> Inject(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null)
+    public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null)
     {
         var scope = factory.CreateScope();
 
-        return Inject(scope.ServiceProvider, nodeId, msg);//TODO: wait complete
+        return InjectAsync(scope.ServiceProvider, nodeId, msg);//TODO: wait complete
 
     }
 
-    public Task<UserActionResult> Inject(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null)
+    public async Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null)
     {
         //var fs = serviceProvider.GetService<FlowExecutionBackgroundService>();
         //fs.Setup(nodeId, msg);
@@ -266,14 +266,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         msg ??= new();
         msg.Add(requestUserInfo);
 
-        _nodeTaskManager.CreateJob(serviceProvider, nodeId, msg);
+        var taskId = await _nodeTaskManager.CreateJob(serviceProvider, nodeId, msg);
 
-        return Task.FromResult(new UserActionResult
-        {
-            Ok = true,
-            Message = "scope work, nodes="
-        });
-
+        return taskId;
     }
 
     public async Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null)
@@ -309,7 +304,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         msg.Add(callback);
 
         // запускаем асинхронный процесс
-        _ = Inject(serviceProvider, implNode.Id, msg);
+        _ = InjectAsync(serviceProvider, implNode.Id, msg);
 
         object? data;
 
@@ -365,7 +360,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
                     NodeMsg msg = new();
                     msg.Add(payload);
                     //Console.WriteLine("11="+node.Node.Label);
-                    await Inject(scope.ServiceProvider, node.Node.Id, msg);
+                    await InjectAsync(scope.ServiceProvider, node.Node.Id, msg);
                 }
                 catch (Exception)
                 {
@@ -392,7 +387,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
             using var scope = _serviceProvider.CreateScope();
 
-            await Inject(scope.ServiceProvider, node.Node.Id.ToString());
+            await InjectAsync(scope.ServiceProvider, node.Node.Id.ToString());
 
         }).ToArray();
 
@@ -452,11 +447,17 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     Debouncer _sendTaskCountDebouncer = new(100);
 
-    private void _nodeTaskManager_OnCurrentTaskCountChanged(int currentTaskCount)
+    private void NodeTaskManager_OnCurrentTaskCountChanged(int currentTaskCount)
     {
         _sendTaskCountDebouncer.Debouce(() =>
         {
-            _RED.Hub.Clients.All.SendAsync("NodeRunningTaskCountChanged", currentTaskCount);
+            _RED.BroadcastHub.NodeRunningTaskCountChanged(currentTaskCount);
         });
+    }
+
+    private void TaskNodeTaskManager_OnNodeInjected(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
+    {
+
+        _RED.BroadcastHub.OnNodeExecuted(taskId, nodeId, trigger);
     }
 }

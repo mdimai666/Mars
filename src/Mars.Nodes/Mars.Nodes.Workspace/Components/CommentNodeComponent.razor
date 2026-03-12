@@ -1,7 +1,6 @@
 @using Mars.Core.Extensions
-<g class="red-ui-flow-node red-ui-flow-node-group @(node.selected?"red-ui-flow-node-selected":"") @(node.Disabled?"red-ui-flow-node-disabled":"")"
+<g id="node-@node.Id" class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node-selected" : "") @(node.Disabled ? "red-ui-flow-node-disabled" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))" 
-   node-id="@node.Id"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenu"

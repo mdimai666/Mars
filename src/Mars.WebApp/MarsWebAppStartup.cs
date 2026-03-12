@@ -154,19 +154,9 @@ public static class MarsWebAppStartup
         app.MarsUseSwagger();
         app.MapControllers();
 
-        app.Map("/_ws", ws =>
+        app.MapHub<ChatHub>("/_ws/admin", options =>
         {
-            ws.UseRouting();
-
-            ws.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<ChatHub>("/ws", options =>
-                {
-                    options.Transports =
-                        HttpTransportType.WebSockets |
-                        HttpTransportType.LongPolling;
-                });
-            });
+            options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
         });
 
         app.MarsUseMetrics();

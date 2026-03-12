@@ -1,9 +1,10 @@
+using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace AppFront.Shared.Hub;
 
-public class ClientHub
+public class ClientHub : IClientHub
 {
     public readonly HubConnection ws;
 
@@ -43,6 +44,12 @@ public class ClientHub
             OnNodeRunningTaskCountChanged?.Invoke(taskCount);
         });
 
+        ws.On("OnNodeExecuted", (Guid taskId, string nodeId, NodeExecutionTrigger trigger) =>
+        {
+            Console.WriteLine($"<<= taskId:{taskId}, nodeId:{nodeId}, trigger:{trigger}");
+            OnNodeExecuted?.Invoke(taskId, nodeId, trigger);
+        });
+
         this.ws = ws;
     }
 
@@ -59,6 +66,19 @@ public class ClientHub
     public event Action<string, NodeStatus> OnNodeStatus = default!;
     public event Action<string, DebugMessage> OnDebugMsg = default!;
     public event Action<string, Mars.Core.Models.MessageIntent> OnShowNotifyMessage = default!;
+    public event ClietHubNodeTaskExecutionHandler OnNodeExecuted = default!;
 
     public event Action<int> OnNodeRunningTaskCountChanged = default!;
+
+    public Task JoinGroup(string groupName)
+    {
+        return ws.InvokeAsync("JoinGroup", groupName);
+    }
+
+    public Task LeaveGroup(string groupName)
+    {
+        return ws.InvokeAsync("LeaveGroup", groupName);
+    }
 }
+
+public delegate void ClietHubNodeTaskExecutionHandler(Guid taskId, string nodeId, NodeExecutionTrigger trigger);

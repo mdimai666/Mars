@@ -24,6 +24,7 @@ internal class NodeTaskManager : INodeTaskManager
     public int CurrentTasksCount => _currentTasks.Count;
 
     public event Action<int>? OnCurrentTasksCountChanged;
+    public event NodeTaskExecutionHandler OnTaskNodeExecute = default!;
 
     public IReadOnlyCollection<NodeTaskResultSummary> CurrentTasks() => _currentTasks.Values.ToSummary();
     public IReadOnlyCollection<NodeTaskResultDetail> CurrentTasksDetails() => _currentTasks.Values.ToDetail();
@@ -48,6 +49,7 @@ internal class NodeTaskManager : INodeTaskManager
 
         var tcs = new TaskCompletionSource();
         taskJob.OnComplete += tcs.SetResult;
+        taskJob.OnNodeExecute += (nodeId, trigger) => OnTaskNodeExecute.Invoke(taskJob.TaskId, nodeId, trigger);
         taskJob.Run(msg);
         await tcs.Task;
 

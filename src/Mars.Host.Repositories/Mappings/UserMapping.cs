@@ -37,7 +37,7 @@ internal static class UserMapping
             AvatarUrl = entity.AvatarUrl,
 
             Type = entity.UserType.TypeName,
-            MetaValues = entity.MetaValues!.ToDetailDto(),
+            MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
         };
 
     public static UserEditDetail ToEditDetail(this UserEntity entity)
@@ -84,7 +84,7 @@ internal static class UserMapping
             Gender = entity.Gender.ToMap(),
             Roles = entity.Roles!.Select(s => s.Name).ToArray()!,
             Type = entity.UserType.TypeName,
-            MetaValues = entity.MetaValues!.ToDetailDto(),
+            MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
 
             AvatarUrl = "",
             About = "",
@@ -105,7 +105,7 @@ internal static class UserMapping
             Gender = entity.Gender.ToMap(),
             Phone = entity.PhoneNumber,
             Type = entity.UserType.TypeName,
-            MetaValues = entity.MetaValues!.ToDetailDto(),
+            MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
         };
 
     public static Mars.Shared.Contracts.Users.UserGender ToMap(this Mars.Host.Data.OwnedTypes.Users.UserGender gender)

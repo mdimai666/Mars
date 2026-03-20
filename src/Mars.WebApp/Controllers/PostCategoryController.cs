@@ -126,7 +126,7 @@ public class PostCategoryController : ControllerBase
     [HttpGet("by-type/{type}/list/offset")]
     [AllowAnonymous]
     public async Task<ListDataResult<PostCategoryListItemResponse>> List([FromQuery] ListPostCategoryQueryRequest request,
-                                                                    [DefaultValue("post")] string type,
+                                                                    [DefaultValue("default")] string type,
                                                                     CancellationToken cancellationToken)
     {
         return (await _postCategoryService.List(request.ToQuery(postTypeName: null, categoryType: type), cancellationToken)).ToResponse();
@@ -135,7 +135,7 @@ public class PostCategoryController : ControllerBase
     [HttpPost("by-type/{type}/list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostCategoryListItemResponse>> ListTable([FromQuery] TablePostCategoryQueryRequest request,
-                                                                    [DefaultValue("post")] string type,
+                                                                    [DefaultValue("default")] string type,
                                                                     CancellationToken cancellationToken)
     {
         return (await _postCategoryService.ListTable(request.ToQuery(postTypeName: null, categoryType: type), cancellationToken)).ToResponse();

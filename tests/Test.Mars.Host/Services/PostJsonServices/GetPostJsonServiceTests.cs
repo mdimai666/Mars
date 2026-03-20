@@ -79,14 +79,14 @@ public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 
         //1. sel
         var meta_sel1 = meta["sel1"].Deserialize<MetaFieldVariantValueDto>();
-        var meta1_pure = postDetail.MetaValues.First(s => s.MetaField.Key == "sel1");
+        var meta1_pure = postDetail.MetaValues["sel1"];
         meta_sel1.Should().NotBeNull();
         meta_sel1.Id.Should().Be(meta1_pure.MetaField.Variants!.ElementAt(0).Id);
         meta_sel1.Title.Should().Be((meta1_pure.Value as MetaFieldVariantDto).Title);
 
         //1. many
         var meta_selmany1 = meta["selmany1"].Deserialize<MetaFieldVariantValueDto[]>();
-        var meta2_pure = postDetail.MetaValues.First(s => s.MetaField.Key == "selmany1");
+        var meta2_pure = postDetail.MetaValues["selmany1"];
         meta_selmany1.Should().NotBeNull();
         var variants_selmany1 = meta2_pure.MetaField.Variants!.ToArray();
         meta_selmany1!.Select(s => s.Id).Should().BeEquivalentTo([variants_selmany1[1].Id, variants_selmany1[2].Id]);
@@ -126,14 +126,14 @@ public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 
         //1. textfile
         var meta_file1 = meta["file1"].Deserialize<FileDetail>();
-        var meta1_pure = postDetail.MetaValues.First(s => s.MetaField.Key == "file1");
+        var meta1_pure = postDetail.MetaValues["file1"];
         meta_file1.Should().NotBeNull();
         meta_file1.Id.Should().Be(meta1_pure.ModelId!.Value);
         meta_file1.FilePhysicalPath.Should().Be(textFile1.FilePhysicalPath);
 
         //2. imagefile
         var meta_image1 = meta["image1"].Deserialize<FileDetail>();
-        var meta2_pure = postDetail.MetaValues.First(s => s.MetaField.Key == "image1");
+        var meta2_pure = postDetail.MetaValues["image1"];
         meta_image1.Should().NotBeNull();
         meta_image1.Id.Should().Be(meta2_pure.ModelId!.Value);
         meta_image1.FilePhysicalPath.Should().Be(imageFile1.FilePhysicalPath);
@@ -179,14 +179,14 @@ public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 
         //1. User
         var meta_user1 = meta["user1"].Deserialize<UserDetail>();
-        var meta1_pure = postDetail.MetaValues.First(s => s.MetaField.Key == "user1");
+        var meta1_pure = postDetail.MetaValues["user1"];
         meta_user1.Should().NotBeNull();
         meta_user1.Id.Should().Be(meta1_pure.ModelId!.Value);
         meta_user1.FirstName.Should().Be(UserConstants.TestUserFirstName);
 
         //2. Post.post
         var meta_image1 = meta["post1"].Deserialize<PostDetail>();
-        var meta2_pure = postDetail.MetaValues.First(s => s.MetaField.Key == "post1");
+        var meta2_pure = postDetail.MetaValues["post1"];
         meta_image1.Should().NotBeNull();
         meta_image1.Id.Should().Be(meta2_pure.ModelId!.Value);
         meta_image1.Type.Should().Be(post1.Type);

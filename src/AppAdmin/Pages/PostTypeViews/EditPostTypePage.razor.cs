@@ -1,5 +1,4 @@
 using AppFront.Shared.Components.MetaFieldViews;
-using Mars.Shared.Validators;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -22,15 +21,9 @@ public partial class EditPostTypePage
     string import_json = "";
     bool visibleImportModal;
 
-    //[ValidateSourceUri]
-    //string _FormListSetter = "";
-    //[ValidateSourceUri]
-    //string _FormEditSetter = "";
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        //js = new MyJS(JSRuntime);
 
         url = Q.ServerUrlJoin($"/api/PostType/PostTypeExport/{ID}");
     }

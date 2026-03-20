@@ -5,6 +5,7 @@ using Mars.Controllers;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories;
 using Mars.Host.Services;
+using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
@@ -105,6 +106,7 @@ public sealed class UpdatePostTests : ApplicationTests
         //Arrange
         _ = nameof(PostController.Update);
         _ = nameof(PostService.Update);
+        _ = nameof(UpdatePostQueryValidator);
         var client = AppFixture.GetClient();
 
         var updatePostRequest = _fixture.Create<UpdatePostRequest>();
@@ -114,25 +116,13 @@ public sealed class UpdatePostTests : ApplicationTests
             Type = "invalid_type",
         };
 
-        var expectError = new Dictionary<string, string[]>()
-        {
-            //[nameof(UpdatePostRequest.Title)] = ["*zu*"],
-            [nameof(UpdatePostRequest.Type)] = ["*exist*"],
-        };
-
         //Act
         var result = await client.Request(_apiUrl).PutJsonAsync(updatePostRequest).ReceiveValidationError();
 
         //Assert
-        result.Should().NotBeNull();
-        result.Errors.Should().HaveSameCount(expectError);
-        result.Errors.Should().AllSatisfy(x =>
+        result.Errors.ValidateSatisfy(new()
         {
-            foreach (var pattern in expectError[x.Key])
-            {
-                x.Value.Should().ContainMatch(pattern);
-            }
-            //expectError[x.Key].Should().ContainMatch(x.Value); //order insensetive
+            [nameof(UpdatePostRequest.Type)] = ["*exist*"],
         });
     }
 

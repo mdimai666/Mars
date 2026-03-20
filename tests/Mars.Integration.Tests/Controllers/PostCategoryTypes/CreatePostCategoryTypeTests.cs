@@ -2,7 +2,10 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
+using Mars.Host.Data.Entities;
 using Mars.Host.Services;
+using Mars.Host.Shared.Dto.PostCategoryTypes;
+using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -11,6 +14,7 @@ using Mars.Shared.Contracts.PostCategoryTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.PostCategoryTypes;
 
@@ -94,29 +98,48 @@ public sealed class CreatePostCategoryTypeTests : ApplicationTests
         _ = nameof(PostCategoryTypeService.Create);
         var client = AppFixture.GetClient();
 
-        var postCategoryTypeRequest = _fixture.Create<CreatePostCategoryTypeRequest>();
-        postCategoryTypeRequest = postCategoryTypeRequest with
+        var postCategoryTypeRequest = _fixture.Create<CreatePostCategoryTypeRequest>() with
         {
             Title = string.Empty,
             TypeName = string.Empty,
-        };
-
-        var expectError = new Dictionary<string, string[]>()
-        {
-            [nameof(PostCategoryTypeSummaryResponse.Title)] = ["The Title field is required."],
-            [nameof(PostCategoryTypeSummaryResponse.TypeName)] = ["The TypeName field is required.", "The field TypeName must be a string with a minimum length of 3 and a maximum length of 1000."],
         };
 
         //Act
         var result = await client.Request(_apiUrl).PostJsonAsync(postCategoryTypeRequest).ReceiveValidationError();
 
         //Assert
-        result.Should().NotBeNull();
-        result.Errors.Should().HaveSameCount(expectError);
-        result.Errors.Should().AllSatisfy(x =>
+        result.Errors.ValidateSatisfy(new()
         {
-            expectError[x.Key].Should().BeEquivalentTo(x.Value); //order insensetive
+            [nameof(CreatePostCategoryTypeRequest.Title)] = ["The Title field is required."],
+            [nameof(CreatePostCategoryTypeRequest.TypeName)] = ["The TypeName field is required.",
+                                                                "The field TypeName must be a string with a minimum length of 3 and a maximum length of 1000."],
+        });
+    }
 
+    [IntegrationFact]
+    public async Task CreatePostCategoryType_WithDuplicateName_ShouldReturnValidationError()
+    {
+        //Arrange
+        _ = nameof(PostCategoryTypeController.Create);
+        _ = nameof(PostCategoryTypeService.Create);
+        _ = nameof(CreatePostCategoryTypeQueryValidator);
+        var client = AppFixture.GetClient();
+        AppFixture.ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().ExistType(PostCategoryTypeEntity.DefaultTypeName).Should().BeTrue();
+
+        var postCategoryTypeRequest = _fixture.Create<CreatePostCategoryTypeRequest>();
+        postCategoryTypeRequest = postCategoryTypeRequest with
+        {
+            Title = PostCategoryTypeEntity.DefaultTypeName,
+            TypeName = PostCategoryTypeEntity.DefaultTypeName,
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PostJsonAsync(postCategoryTypeRequest).ReceiveValidationError();
+
+        //Assert
+        result.Errors.ValidateSatisfy(new()
+        {
+            [nameof(CreatePostCategoryTypeRequest.TypeName)] = ["*already exist"],
         });
     }
 }

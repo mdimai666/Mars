@@ -56,6 +56,8 @@ public class PostEditModel : IBasicEntity
 
     [Display(Name = nameof(AppRes.Tags), ResourceType = typeof(AppRes))]
     public string[] Tags { get; set; } = [];
+
+    [ValidateComplexType]
     public List<MetaValueEditModel> MetaValues { get; set; } = new();
     public Guid[] CategoryIds { get; set; } = [];
 

@@ -25,7 +25,6 @@ public class UserEditProfileResponse
     [Display(Name = "Обо мне")]
     public required string? About { get; set; }
 
-    //[Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
     [EmailAddress(ErrorMessageResourceName = nameof(AppRes.v_email), ErrorMessageResourceType = typeof(AppRes))]
     [Display(Name = "Почта")]
     public required string? Email { get; set; }
@@ -47,22 +46,6 @@ public class UserEditProfileResponse
     [Display(Name = "Аватар")]
     public required string? AvatarUrl { get; set; }
 
-    //[Display(Name = "Дополнительные поля")]
-    //public virtual ICollection<MetaValue> MetaValues { get; set; }
-    //public virtual ICollection<MetaField> MetaFields { get; set; }
-
-    //-------------GEO-----------
-
-    //[Display(Name = "Регион")]
-    //public Guid? GeoRegionId { get; set; }
-
-    //[Display(Name = "Муниципалитет")]
-    //public Guid? GeoMunicipalityId { get; set; }
-
-    //[Display(Name = "Поселение")]
-    //public Guid? GeoLocationId { get; set; }
-    //-------------end GEO-----------
-
     public required string Type { get; init; }
-    public required IReadOnlyCollection<MetaValueDetailResponse> MetaValues { get; init; }
+    public required IReadOnlyDictionary<string, MetaValueDetailResponse> MetaValues { get; init; }
 }

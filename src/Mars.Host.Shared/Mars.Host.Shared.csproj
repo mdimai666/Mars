@@ -48,7 +48,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AppFront.Shared\AppFront.Shared.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options\Mars.Options.csproj" />

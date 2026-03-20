@@ -40,7 +40,7 @@ public record PostCategoryDetailResponse : PostCategorySummaryResponse, IBasicEn
 
     public required bool Disabled { get; init; }
 
-    public required IReadOnlyCollection<MetaValueResponse> MetaValues { get; init; }
+    public required IReadOnlyDictionary<string, MetaValueResponse> MetaValues { get; init; }
 
 }
 

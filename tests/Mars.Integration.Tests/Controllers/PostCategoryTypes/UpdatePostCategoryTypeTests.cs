@@ -2,15 +2,21 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
+using Mars.Core.Extensions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories;
+using Mars.Host.Services;
+using Mars.Host.Shared.Dto.PostCategoryTypes;
+using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostCategoryTypes;
 using Mars.Test.Common.FixtureCustomizes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.PostCategoryTypes;
 
@@ -22,6 +28,23 @@ public class UpdatePostCategoryTypeTests : ApplicationTests
     public UpdatePostCategoryTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
+    }
+
+    [IntegrationFact]
+    public async Task UpdatePostCategoryType_Request_Unauthorized()
+    {
+        //Arrange
+        _ = nameof(PostCategoryTypeController.Update);
+        _ = nameof(PostCategoryTypeService.Update);
+        var client = AppFixture.GetClient(true);
+
+        var postCategoryTypeRequest = _fixture.Create<UpdatePostCategoryTypeRequest>();
+
+        //Act
+        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PutJsonAsync(postCategoryTypeRequest);
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
     }
 
     [IntegrationFact]
@@ -86,6 +109,34 @@ public class UpdatePostCategoryTypeTests : ApplicationTests
                     .ComparingByMembers<UpdateMetaFieldVariantRequest>()
                     .ExcludingMissingMembers());
             });
+        });
+    }
+
+    [IntegrationFact]
+    public async Task UpdatePostCategoryType_WithDuplicateName_ShouldReturnValidationError()
+    {
+        //Arrange
+        _ = nameof(PostCategoryTypeController.Update);
+        _ = nameof(PostCategoryTypeService.Update);
+        _ = nameof(UpdatePostCategoryTypeQueryValidator);
+        var client = AppFixture.GetClient();
+        AppFixture.ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().ExistType(PostCategoryTypeEntity.DefaultTypeName).Should().BeTrue();
+
+        var postCategoryTypeRequest = _fixture.Create<CreatePostCategoryTypeRequest>();
+        var created = await client.Request(_apiUrl).PostJsonAsync(postCategoryTypeRequest).ReceiveJson<PostCategoryTypeSummaryResponse>();
+        var updateRequest = postCategoryTypeRequest.CopyViaJsonConversion<UpdatePostCategoryTypeRequest>() with
+        {
+            Id = created.Id,
+            TypeName = PostCategoryTypeEntity.DefaultTypeName
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PutJsonAsync(updateRequest).ReceiveValidationError();
+
+        //Assert
+        result.Errors.ValidateSatisfy(new()
+        {
+            [nameof(CreatePostCategoryTypeRequest.TypeName)] = ["*already exist"],
         });
     }
 }

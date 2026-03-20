@@ -801,11 +801,11 @@
           }
         }
       },
-      "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.104": {
+      "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.201": {
         "runtime": {
           "lib/net10.0/Microsoft.DotNet.HotReload.WebAssembly.Browser.dll": {
-            "assemblyVersion": "10.0.104.0",
-            "fileVersion": "10.1.426.12010"
+            "assemblyVersion": "10.0.201.0",
+            "fileVersion": "10.2.126.15422"
           }
         }
       },
@@ -2090,7 +2090,7 @@
           "Microsoft.AspNetCore.Components.WebAssembly": "10.0.4",
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.4",
           "Microsoft.AspNetCore.SignalR.Client": "10.0.4",
-          "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.104",
+          "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.201",
           "Toolbelt.Blazor.HotKeys2": "6.2.0",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
           "mdimai666.BlazoredHtmlRender": "0.7.2-alpha.5",
@@ -3634,12 +3634,12 @@
       "path": "microsoft.data.sqlclient.sni.runtime/6.0.2",
       "hashPath": "microsoft.data.sqlclient.sni.runtime.6.0.2.nupkg.sha512"
     },
-    "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.104": {
+    "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.201": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-OkWFygvFdm9emwxRW5ahcsU6saKO9EOYCFVNEXWl+23A4ssZy40VCQuqPhyurU7IyaPEhgA4iXh0/o7fhyNngA==",
-      "path": "microsoft.dotnet.hotreload.webassembly.browser/10.0.104",
-      "hashPath": "microsoft.dotnet.hotreload.webassembly.browser.10.0.104.nupkg.sha512"
+      "sha512": "sha512-4EAMH3CqtVwVm7Sx4DnNtZj/J0b+A1YGcTnCL6prhQ8ZHlwbVtZ3RmSyJdi85mSnLl+u94aVr8fElRGkjZkKmw==",
+      "path": "microsoft.dotnet.hotreload.webassembly.browser/10.0.201",
+      "hashPath": "microsoft.dotnet.hotreload.webassembly.browser.10.0.201.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore/10.0.4": {
       "type": "package",

@@ -215,6 +215,7 @@ public class ApplicationFixture : IAsyncLifetime
 
         ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
         ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCompiledMetaMtoModels();
+        ServiceProvider.GetRequiredService<IUserMetaLocator>().InvalidateCompiledMetaMtoModels();
     }
 
 }

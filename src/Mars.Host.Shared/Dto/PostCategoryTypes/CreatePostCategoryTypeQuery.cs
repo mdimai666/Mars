@@ -6,7 +6,7 @@ namespace Mars.Host.Shared.Dto.PostCategoryTypes;
 /// <summary>
 /// <see cref="CreatePostCategoryTypeRequest"/>
 /// </summary>
-public record CreatePostCategoryTypeQuery
+public record CreatePostCategoryTypeQuery : IGeneralMetaFieldsSupportDto
 {
     public Guid? Id { get; init; }
     public required string Title { get; init; }

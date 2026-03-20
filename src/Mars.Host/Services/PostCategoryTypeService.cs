@@ -54,6 +54,8 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
     public async Task<PostCategoryTypeDetail> Create(CreatePostCategoryTypeQuery query, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
         var id = await _postCategoryTypeRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
 
@@ -78,6 +80,8 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
     public async Task<PostCategoryTypeDetail> Update(UpdatePostCategoryTypeQuery query, CancellationToken cancellationToken)
     {
+        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+
         await _postCategoryTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 

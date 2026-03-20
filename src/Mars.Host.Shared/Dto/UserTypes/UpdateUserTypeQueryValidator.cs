@@ -1,0 +1,18 @@
+using FluentValidation;
+using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Services;
+
+namespace Mars.Host.Shared.Dto.UserTypes;
+
+public class UpdateUserTypeQueryValidator : AbstractValidator<UpdateUserTypeQuery>
+{
+    public UpdateUserTypeQueryValidator(IUserMetaLocator userMetaLocator)
+    {
+        RuleFor(x => x.TypeName)
+            .Must(name => !userMetaLocator.ExistType(name))
+            .When((x) => userMetaLocator.GetTypeDetailById(x.Id)?.TypeName != x.TypeName)
+            .WithMessage(x => $"User type '{x.TypeName}' already exist");
+
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
+    }
+}

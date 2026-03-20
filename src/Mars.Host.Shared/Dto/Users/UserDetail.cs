@@ -27,6 +27,6 @@ public record UserDetail : UserSummary
 
     public required IReadOnlyCollection<string> Roles { get; init; }
     public required string Type { get; init; }
-    public required IReadOnlyCollection<MetaValueDetailDto> MetaValues { get; init; }
+    public required IReadOnlyDictionary<string, MetaValueDetailDto> MetaValues { get; init; }
 
 }

@@ -8,5 +8,5 @@ public class PostCategoryDetail : PostCategorySummary
     public required string PostType { get; init; }
     public required bool Disabled { get; init; }
 
-    public required IReadOnlyCollection<MetaValueDto> MetaValues { get; init; }
+    public required IReadOnlyDictionary<string, MetaValueDto> MetaValues { get; init; }
 }

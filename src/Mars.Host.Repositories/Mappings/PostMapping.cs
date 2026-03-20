@@ -35,7 +35,7 @@ internal static class PostMapping
             ModifiedAt = entity.ModifiedAt,
             Content = entity.Content,
             Author = entity.User!.ToPostAuthor(),
-            MetaValues = entity.MetaValues!.ToDto(),
+            MetaValues = entity.MetaValues!.ToDictionaryDto(),
             Status = GetStatus(entity),
             Categories = entity.Categories!.ToSummaryList(),
         };
@@ -165,7 +165,7 @@ internal static class PostMapping
             ModifiedAt = entity.ModifiedAt,
             Content = entity.Content,
             Author = entity.User!.ToPostAuthor(),
-            MetaValues = entity.MetaValues!.ToDto(),
+            MetaValues = entity.MetaValues!.ToDictionaryDto(),
             Status = GetStatus(entity),
             PostType = entity.PostType.ToDetail(),
             Categories = entity.Categories!.ToSummaryList(),

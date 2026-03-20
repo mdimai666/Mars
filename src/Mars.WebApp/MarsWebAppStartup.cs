@@ -11,6 +11,7 @@ using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Hubs;
+using Mars.Host.Shared.JsonConverters;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Mars.Nodes.Host;
@@ -55,7 +56,8 @@ public static class MarsWebAppStartup
         builder.AddFront();
 
         builder.WebHost.UseStaticWebAssets();
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.TypeInfoResolver = new OrderedPropertiesJsonTypeInfoResolver());
 
         builder.Services.AddMarsSignalRConfiguration()
                         .AddRazorPages();

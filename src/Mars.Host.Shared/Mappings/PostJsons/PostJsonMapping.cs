@@ -30,7 +30,7 @@ public static class PostJsonMapping
 
             ///<see cref="MetaValueMapping.ToDto"/>
             ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
-            Meta = entity.MetaValues.ToDictionary(s => s.MetaField!.Key, v => ConvertObjectValue(v, fillDict)),
+            Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertObjectValue(v.Value, fillDict)),
             Status = entity.Status,
             Categories = entity.Categories,
         };
@@ -50,7 +50,7 @@ public static class PostJsonMapping
 
             ///<see cref="MetaValueMapping.ToDto"/>
             ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
-            Meta = entity.MetaValues.ToDictionary(s => s.MetaField!.Key, v => ConvertObjectValue(v, fillDict)),
+            Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertObjectValue(v.Value, fillDict)),
             Status = entity.Status,
             Categories = entity.Categories,
         };

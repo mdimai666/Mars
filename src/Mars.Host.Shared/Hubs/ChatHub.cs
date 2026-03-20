@@ -1,5 +1,5 @@
-using AppFront.Shared.Interfaces;
 using Mars.Host.Shared.Services;
+using Mars.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 

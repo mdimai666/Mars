@@ -7,6 +7,7 @@
     <Project Path="benchmarks/Benchmarks.DatabaseQuery/Benchmarks.DatabaseQuery.csproj" />
     <Project Path="benchmarks/Benchmarks.MyHandlebars.Memory/Benchmarks.MyHandlebars.Memory.csproj" />
     <Project Path="benchmarks/Benchmarks.MyHandlebars/Benchmarks.MyHandlebars.csproj" />
+    <Project Path="benchmarks/Benchmarks.OrderedPropertiesJsonTypeInfoResolver/Benchmarks.OrderedPropertiesJsonTypeInfoResolver.csproj" Id="72dee982-8516-4195-9e11-f16ee6eeb078" />
     <Project Path="benchmarks/Benchmarks.QueryLang/Benchmarks.QueryLang.csproj" />
   </Folder>
   <Folder Name="/Core/">

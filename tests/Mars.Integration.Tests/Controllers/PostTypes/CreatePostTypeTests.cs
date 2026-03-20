@@ -4,6 +4,7 @@ using Flurl.Http;
 using Mars.Controllers;
 using Mars.Host.Data.Entities;
 using Mars.Host.Services;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -115,22 +116,41 @@ public sealed class CreatePostTypeTests : ApplicationTests
             TypeName = string.Empty,
         };
 
-        var expectError = new Dictionary<string, string[]>()
+        //Act
+        var result = await client.Request(_apiUrl).PostJsonAsync(postTypeRequest).ReceiveValidationError();
+
+        //Assert
+        result.Errors.ValidateSatisfy(new()
         {
             [nameof(PostTypeSummaryResponse.Title)] = ["The Title field is required."],
             [nameof(PostTypeSummaryResponse.TypeName)] = ["The TypeName field is required.", "The field TypeName must be a string with a minimum length of 3 and a maximum length of 1000."],
+        });
+    }
+
+    [IntegrationFact]
+    public async Task CreatePostType_WithMetafieldDuplicateKeyName_ShouldReturnValidationError()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.Create);
+        _ = nameof(PostTypeService.Create);
+        _ = nameof(MetaFieldsDuplicateQueryValidator);
+        var client = AppFixture.GetClient();
+
+        var postTypeRequest = _fixture.Create<CreatePostTypeRequest>();
+        var metaFields = postTypeRequest.MetaFields.ToList();
+        metaFields[1] = metaFields[1] with { Key = metaFields[0].Key };
+        postTypeRequest = postTypeRequest with
+        {
+            MetaFields = metaFields
         };
 
         //Act
         var result = await client.Request(_apiUrl).PostJsonAsync(postTypeRequest).ReceiveValidationError();
 
         //Assert
-        result.Should().NotBeNull();
-        result.Errors.Should().HaveSameCount(expectError);
-        result.Errors.Should().AllSatisfy(x =>
+        result.Errors.ValidateSatisfy(new()
         {
-            expectError[x.Key].Should().BeEquivalentTo(x.Value); //order insensetive
-
+            [nameof(CreatePostTypeRequest.MetaFields) + "[1].Key"] = [$"MetaField with key * дублируется*"],
         });
     }
 }

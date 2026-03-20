@@ -115,24 +115,13 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
             Type = "invalid_type",
         };
 
-        var expectError = new Dictionary<string, string[]>()
-        {
-            [nameof(UpdatePostCategoryRequest.Type)] = ["*exist*"],
-        };
-
         //Act
         var result = await client.Request(_apiUrl).PutJsonAsync(updatePostCategoryRequest).ReceiveValidationError();
 
         //Assert
-        result.Should().NotBeNull();
-        result.Errors.Should().HaveSameCount(expectError);
-        result.Errors.Should().AllSatisfy(x =>
+        result.Errors.ValidateSatisfy(new()
         {
-            foreach (var pattern in expectError[x.Key])
-            {
-                x.Value.Should().ContainMatch(pattern);
-            }
-            //expectError[x.Key].Should().ContainMatch(x.Value); //order insensetive
+            [nameof(UpdatePostCategoryRequest.Type)] = ["*exist*"],
         });
     }
 

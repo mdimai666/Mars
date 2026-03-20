@@ -40,7 +40,7 @@ internal static class PostCategoryMapping
             LevelsCount = entity.LevelsCount,
 
             Disabled = entity.Disabled,
-            MetaValues = entity.MetaValues!.ToDto(),
+            MetaValues = entity.MetaValues!.ToDictionaryDto(),
         };
 
     public static PostCategoryEditDetail ToEditDetail(this PostCategoryEntity entity)

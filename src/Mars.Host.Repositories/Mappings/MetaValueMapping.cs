@@ -40,6 +40,9 @@ internal static class MetaValueMapping
     public static IReadOnlyCollection<MetaValueDto> ToDto(this List<MetaValueEntity> entities)
         => entities.Select(ToDto).ToList();
 
+    public static IReadOnlyDictionary<string, MetaValueDto> ToDictionaryDto(this List<MetaValueEntity> entities)
+        => entities.ToDictionary(s => s.MetaField.Key, ToDto);
+
     public static MetaFieldVariantDto ToDto(this MetaFieldVariant entity)
         => new()
         {
@@ -87,6 +90,9 @@ internal static class MetaValueMapping
 
     public static IReadOnlyCollection<MetaValueDetailDto> ToDetailDto(this List<MetaValueEntity> entities)
         => entities.Select(ToDetailDto).ToList();
+
+    public static IReadOnlyDictionary<string, MetaValueDetailDto> ToDictionaryDetailDto(this List<MetaValueEntity> entities)
+        => entities.ToDictionary(s => s.MetaField.Key, ToDetailDto);
 
     public static MetaValueEntity ToEntity(this ModifyMetaValueDetailQuery dto)
         => new()

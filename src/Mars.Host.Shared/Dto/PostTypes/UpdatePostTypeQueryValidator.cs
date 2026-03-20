@@ -1,4 +1,5 @@
 using FluentValidation;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Services;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
@@ -21,5 +22,7 @@ public class UpdatePostTypeQueryValidator : AbstractValidator<UpdatePostTypeQuer
                 }
 
             });
+
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
     }
 }

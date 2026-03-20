@@ -23,7 +23,7 @@ public partial class FormMetaField
     //[Parameter] public EventCallback<ICollection<MetaField>> ModelChanged { get; set; }
 
     [CascadingParameter]
-    public ICollection<MetaFieldEditModel> Model { get; set; } = default!;
+    public List<MetaFieldEditModel> Model { get; set; } = default!;
 
     [CascadingParameter]
     public IReadOnlyCollection<MetaRelationModelResponse> MetaRelationModels { get; set; } = default!;
@@ -77,17 +77,12 @@ public partial class FormMetaField
     void OnDelete(MetaFieldEditModel field)
     {
         Model.Remove(field);
-        //_model = Model.ExceptBy(s=>s.id == field.Id).ToList();
-        //ModelChanged.InvokeAsync(_model);
-        Console.WriteLine("del2");
     }
 
     void AddNewField(Guid parentId)
     {
         int order = CountChilds(parentId) > 0 ? (Childs(parentId).Max(s => s.Order) + 1) : 1;
         Model.Add(NewField(order, parentId));
-        //cascadeStateChanger?.StateChange();
-        //StateHasChanged();
     }
 
     public static MetaFieldEditModel NewField(int order, Guid parentId)

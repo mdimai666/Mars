@@ -1,4 +1,5 @@
 using FluentValidation;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Services;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
@@ -13,5 +14,6 @@ public class CreatePostTypeQueryValidator : AbstractValidator<CreatePostTypeQuer
             .Must(name => metaModelTypesLocator.GetPostTypeByName(name) == null)
             .WithMessage(x => $"Post type '{x.TypeName}' already exist");
 
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
     }
 }

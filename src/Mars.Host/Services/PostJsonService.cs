@@ -63,7 +63,7 @@ internal class PostJsonService : IPostJsonService
     {
         if (renderContent) post = await _postTransformer.Transform(post, cancellationToken);
 
-        var fillDict = await _metaFieldMaterializer.GetFillContext(post.MetaValues, cancellationToken);
+        var fillDict = await _metaFieldMaterializer.GetFillContext(post.MetaValues.Values, cancellationToken);
 
         return post?.ToJsonDto(fillDict);
     }
@@ -72,7 +72,7 @@ internal class PostJsonService : IPostJsonService
     {
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
         var list = await _postRepository.ListDetail(query, cancellationToken);
-        var fillDict = await _metaFieldMaterializer.GetFillContext(list.Items.SelectMany(s => s.MetaValues), cancellationToken);
+        var fillDict = await _metaFieldMaterializer.GetFillContext(list.Items.SelectMany(s => s.MetaValues.Values), cancellationToken);
         return list.ToMap(s => s.ToJsonDtoList(fillDict));
     }
 
@@ -80,7 +80,7 @@ internal class PostJsonService : IPostJsonService
     {
         await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
         var list = await _postRepository.ListTableDetail(query, cancellationToken);
-        var fillDict = await _metaFieldMaterializer.GetFillContext(list.Items.SelectMany(s => s.MetaValues), cancellationToken);
+        var fillDict = await _metaFieldMaterializer.GetFillContext(list.Items.SelectMany(s => s.MetaValues.Values), cancellationToken);
         return list.ToMap(s => s.ToJsonDtoList(fillDict));
     }
 

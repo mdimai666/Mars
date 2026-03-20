@@ -1,4 +1,5 @@
 using Mars.Host.Data.Entities;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Shared.Contracts.Users;
 
@@ -36,7 +37,7 @@ public static class UserConstants
         AvatarUrl = null,
 
         Type = UserTypeEntity.DefaultTypeName,
-        MetaValues = [],
+        MetaValues = new Dictionary<string, MetaValueDetailDto>(),
     };
 
     public static readonly UserTypeEntity TestUserType = new()

@@ -6,7 +6,7 @@ namespace Mars.Host.Shared.Dto.UserTypes;
 /// <summary>
 /// <see cref="CreateUserTypeRequest"/>
 /// </summary>
-public record CreateUserTypeQuery
+public record CreateUserTypeQuery : IGeneralMetaFieldsSupportDto
 {
     public Guid? Id { get; init; }
     public required string Title { get; init; }

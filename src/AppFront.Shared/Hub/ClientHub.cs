@@ -1,5 +1,5 @@
-using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
+using Mars.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace AppFront.Shared.Hub;

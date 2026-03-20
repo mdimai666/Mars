@@ -54,4 +54,10 @@ public static class MetaFieldDetailMapping
     public static IReadOnlyCollection<MetaValueDetailResponse> ToDetailResponse(this IReadOnlyCollection<MetaValueDetailDto> list)
         => list.Select(ToDetailResponse).ToList();
 
+    public static IReadOnlyDictionary<string, MetaFieldDetailResponse> ToDetailResponse(this IReadOnlyDictionary<string, MetaFieldDto> list)
+        => list.ToDictionary(s => s.Key, s => s.Value.ToDetailResponse());
+
+    public static IReadOnlyDictionary<string, MetaValueDetailResponse> ToDetailResponse(this IReadOnlyDictionary<string, MetaValueDetailDto> list)
+        => list.ToDictionary(s => s.Key, s => s.Value.ToDetailResponse());
+
 }

@@ -32,6 +32,7 @@ public static class PostMapping
           Content = entity.Content,
           Author = entity.Author.ToResponse(),
           Categories = entity.Categories?.ToResponse(),
+          MetaValues = entity.MetaValues.ToResponse(),
       };
 
     public static PostListItemResponse ToListItemResponse(this PostSummary entity)

@@ -21,7 +21,7 @@ public class ValidatorFabric : IValidatorFabric
         return services.Where(x => !x.ServiceType.IsInterface && typeof(IValidator).IsAssignableFrom(x.ServiceType))
                                 .Select(x => x.ServiceType)
                                 .GroupBy(GetBaseTypeGenericArgument)
-                                .Where(s => !s.Key.IsPrimitive && s.Key != typeof(string))
+                                .Where(s => !s.Key.IsPrimitive && s.Key != typeof(string) && !s.Key.IsGenericType)
                                 .ToDictionary(g => g.Key, g => g.Where(v => !v.IsAbstract).ToList());
     }
 

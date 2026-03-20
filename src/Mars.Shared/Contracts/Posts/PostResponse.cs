@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Shared.Contracts.Common;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostCategories;
 
 namespace Mars.Shared.Contracts.Posts;
@@ -32,6 +33,7 @@ public record PostDetailResponse : PostSummaryResponse
     [Display(Name = "Текст")]
     public required string? Content { get; init; }
 
+    public required IReadOnlyDictionary<string, MetaValueResponse> MetaValues { get; init; }
 }
 
 public record PostListItemResponse : IBasicEntityResponse

@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Interfaces;
+namespace Mars.Shared.Interfaces;
 
 public interface IClientHub
 {

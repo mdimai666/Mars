@@ -2,7 +2,10 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
+using Mars.Host.Data.Entities;
 using Mars.Host.Services;
+using Mars.Host.Shared.Dto.UserTypes;
+using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -11,6 +14,7 @@ using Mars.Shared.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.UserTypes;
 
@@ -32,10 +36,10 @@ public sealed class CreateUserTypeTests : ApplicationTests
         _ = nameof(UserTypeService.Create);
         var client = AppFixture.GetClient(true);
 
-        var postTypeRequest = _fixture.Create<CreateUserTypeRequest>();
+        var userTypeRequest = _fixture.Create<CreateUserTypeRequest>();
 
         //Act
-        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PostJsonAsync(postTypeRequest);
+        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PostJsonAsync(userTypeRequest);
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -101,22 +105,41 @@ public sealed class CreateUserTypeTests : ApplicationTests
             TypeName = string.Empty,
         };
 
-        var expectError = new Dictionary<string, string[]>()
-        {
-            [nameof(UserTypeSummaryResponse.Title)] = ["The Title field is required."],
-            [nameof(UserTypeSummaryResponse.TypeName)] = ["The TypeName field is required.", "The field TypeName must be a string with a minimum length of 3 and a maximum length of 1000."],
-        };
-
         //Act
         var result = await client.Request(_apiUrl).PostJsonAsync(postTypeRequest).ReceiveValidationError();
 
         //Assert
-        result.Should().NotBeNull();
-        result.Errors.Should().HaveSameCount(expectError);
-        result.Errors.Should().AllSatisfy(x =>
+        result.Errors.ValidateSatisfy(new()
         {
-            expectError[x.Key].Should().BeEquivalentTo(x.Value); //order insensetive
+            [nameof(UserTypeSummaryResponse.Title)] = ["The Title field is required."],
+            [nameof(UserTypeSummaryResponse.TypeName)] = ["The TypeName field is required.", "The field TypeName must be a string with a minimum length of 3 and a maximum length of 1000."],
+        });
+    }
 
+    [IntegrationFact]
+    public async Task CreateUserType_WithDuplicateName_ShouldReturnValidationError()
+    {
+        //Arrange
+        _ = nameof(UserTypeController.Create);
+        _ = nameof(UserTypeService.Create);
+        _ = nameof(CreateUserTypeQueryValidator);
+        var client = AppFixture.GetClient();
+        AppFixture.ServiceProvider.GetRequiredService<IUserMetaLocator>().ExistType(UserTypeEntity.DefaultTypeName).Should().BeTrue();
+
+        var userTypeRequest = _fixture.Create<CreateUserTypeRequest>();
+        userTypeRequest = userTypeRequest with
+        {
+            Title = UserTypeEntity.DefaultTypeName,
+            TypeName = UserTypeEntity.DefaultTypeName,
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl).PostJsonAsync(userTypeRequest).ReceiveValidationError();
+
+        //Assert
+        result.Errors.ValidateSatisfy(new()
+        {
+            [nameof(CreateUserTypeRequest.TypeName)] = ["*already exist"],
         });
     }
 }

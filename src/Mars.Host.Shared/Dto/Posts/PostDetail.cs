@@ -10,7 +10,7 @@ public record PostDetail : PostSummary
 {
     public required string? Content { get; init; }
 
-    public required IReadOnlyCollection<MetaValueDto> MetaValues { get; init; }
+    public required IReadOnlyDictionary<string, MetaValueDto> MetaValues { get; init; }
 }
 
 public record PostEditDetail

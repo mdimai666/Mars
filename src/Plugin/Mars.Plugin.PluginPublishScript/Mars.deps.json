@@ -6,11 +6,11 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "Mars/0.7.2-alpha.5": {
+      "Mars/0.7.3-alpha.7": {
         "dependencies": {
-          "AppAdmin": "0.7.2-alpha.5",
+          "AppAdmin": "0.7.3-alpha.7",
           "Bogus": "35.6.5",
-          "Duende.IdentityServer": "7.4.6",
+          "Duende.IdentityServer": "7.4.7",
           "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.10",
           "Mars.Datasource.Front": "1.0.0",
@@ -35,22 +35,22 @@
           "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
           "Mars.WebSiteProcessor.Handlebars": "1.0.0",
           "Microsoft.AspNetCore.ApiAuthorization.IdentityServer": "7.0.20",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.4",
-          "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.4",
-          "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "10.0.4",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.4",
-          "Microsoft.AspNetCore.JsonPatch": "10.0.4",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.5",
+          "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.5",
+          "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "10.0.5",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.5",
+          "Microsoft.AspNetCore.JsonPatch": "10.0.5",
           "Microsoft.CodeAnalysis.CSharp": "5.3.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "5.3.0",
           "Microsoft.CodeAnalysis.Common": "5.3.0",
           "Microsoft.CodeAnalysis.Workspaces.Common": "5.3.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "5.3.0",
-          "Microsoft.EntityFrameworkCore.Design": "10.0.4",
+          "Microsoft.EntityFrameworkCore.Design": "10.0.5",
           "NReco.Logging.File": "1.3.1",
           "OpenTelemetry": "1.15.0",
           "OpenTelemetry.Exporter.Prometheus.AspNetCore": "1.15.0-beta.1",
           "OpenTelemetry.Extensions.Hosting": "1.15.0",
-          "OpenTelemetry.Instrumentation.AspNetCore": "1.15.0",
+          "OpenTelemetry.Instrumentation.AspNetCore": "1.15.1",
           "OpenTelemetry.Instrumentation.EntityFrameworkCore": "1.15.0-beta.1",
           "OpenTelemetry.Instrumentation.Http": "1.15.0",
           "OpenTelemetry.Instrumentation.Process": "1.15.0-beta.1",
@@ -66,31 +66,31 @@
           "PhotoSauce.NativeCodecs.Libwebp": "1.3.2-preview3",
           "ResXResourceReader.NetStandard": "1.3.0",
           "Swashbuckle.AspNetCore": "10.1.5",
-          "System.CommandLine": "2.0.4",
-          "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host": "0.7.2-alpha.5",
-          "AppFront.Main": "0.7.2.0",
-          "AppFront.Shared": "0.7.2.0",
-          "BlazoredHtmlRender": "0.7.2.0",
-          "Mars.Core": "0.7.2.0",
-          "Mars.Host.Data": "0.7.2.0",
-          "Mars.Host.Data.PostgreSQL": "0.7.2.0",
-          "Mars.Host": "0.7.2.0",
-          "Mars.Host.Shared": "0.7.2.0",
-          "Mars.HttpSmartAuthFlow": "0.7.2.0",
-          "Mars.Nodes.Core": "0.7.2.0",
-          "Mars.Nodes.Core.Implements": "0.7.2.0",
-          "Mars.Nodes.FormEditor": "0.7.2.0",
-          "Mars.Nodes.Front.Shared": "0.7.2.0",
-          "Mars.Nodes.Host.Shared": "0.7.2.0",
-          "Mars.Options": "0.7.2.0",
-          "Mars.Plugin.Abstractions": "0.7.2.0",
-          "Mars.Plugin.Front.Abstractions": "0.7.2.0",
-          "Mars.Plugin.Front": "0.7.2.0",
-          "Mars.Shared": "0.7.2.0",
-          "Mars.WebApiClient": "0.7.2.0",
-          "MarsCodeEditor2": "0.7.2.0",
-          "MarsEditors": "0.7.2.0"
+          "System.CommandLine": "2.0.5",
+          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host": "0.7.3-alpha.7",
+          "AppFront.Main": "0.7.3.0",
+          "AppFront.Shared": "0.7.3.0",
+          "BlazoredHtmlRender": "0.7.3.0",
+          "Mars.Core": "0.7.3.0",
+          "Mars.Host.Data": "0.7.3.0",
+          "Mars.Host.Data.PostgreSQL": "0.7.3.0",
+          "Mars.Host": "0.7.3.0",
+          "Mars.Host.Shared": "0.7.3.0",
+          "Mars.HttpSmartAuthFlow": "0.7.3.0",
+          "Mars.Nodes.Core": "0.7.3.0",
+          "Mars.Nodes.Core.Implements": "0.7.3.0",
+          "Mars.Nodes.FormEditor": "0.7.3.0",
+          "Mars.Nodes.Front.Shared": "0.7.3.0",
+          "Mars.Nodes.Host.Shared": "0.7.3.0",
+          "Mars.Options": "0.7.3.0",
+          "Mars.Plugin.Abstractions": "0.7.3.0",
+          "Mars.Plugin.Front.Abstractions": "0.7.3.0",
+          "Mars.Plugin.Front": "0.7.3.0",
+          "Mars.Shared": "0.7.3.0",
+          "Mars.WebApiClient": "0.7.3.0",
+          "MarsCodeEditor2": "0.7.3.0",
+          "MarsEditors": "0.7.3.0"
         },
         "runtime": {
           "Mars.dll": {}
@@ -208,7 +208,7 @@
       },
       "dotless.Core/1.6.7": {
         "dependencies": {
-          "System.Drawing.Common": "10.0.4"
+          "System.Drawing.Common": "10.0.5"
         },
         "runtime": {
           "lib/netstandard2.0/dotless.Core.dll": {
@@ -217,29 +217,29 @@
           }
         }
       },
-      "Duende.IdentityModel/8.0.0": {
+      "Duende.IdentityModel/8.0.1": {
         "runtime": {
           "lib/net10.0/Duende.IdentityModel.dll": {
             "assemblyVersion": "8.0.0.0",
-            "fileVersion": "8.0.0.0"
+            "fileVersion": "8.0.1.0"
           }
         }
       },
-      "Duende.IdentityServer/7.4.6": {
+      "Duende.IdentityServer/7.4.7": {
         "dependencies": {
-          "Duende.IdentityServer.Storage": "7.4.6",
-          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "10.0.0"
+          "Duende.IdentityServer.Storage": "7.4.7",
+          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "10.0.4"
         },
         "runtime": {
           "lib/net10.0/Duende.IdentityServer.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.4.6.0"
+            "fileVersion": "7.4.7.0"
           }
         }
       },
       "Duende.IdentityServer.AspNetIdentity/6.0.4": {
         "dependencies": {
-          "Duende.IdentityServer": "7.4.6"
+          "Duende.IdentityServer": "7.4.7"
         },
         "runtime": {
           "lib/net6.0/Duende.IdentityServer.AspNetIdentity.dll": {
@@ -250,7 +250,7 @@
       },
       "Duende.IdentityServer.EntityFramework/6.0.4": {
         "dependencies": {
-          "Duende.IdentityServer": "7.4.6",
+          "Duende.IdentityServer": "7.4.7",
           "Duende.IdentityServer.EntityFramework.Storage": "6.0.4"
         },
         "runtime": {
@@ -263,8 +263,8 @@
       "Duende.IdentityServer.EntityFramework.Storage/6.0.4": {
         "dependencies": {
           "AutoMapper": "11.0.0",
-          "Duende.IdentityServer.Storage": "7.4.6",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4"
+          "Duende.IdentityServer.Storage": "7.4.7",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
         },
         "runtime": {
           "lib/net6.0/Duende.IdentityServer.EntityFramework.Storage.dll": {
@@ -273,14 +273,14 @@
           }
         }
       },
-      "Duende.IdentityServer.Storage/7.4.6": {
+      "Duende.IdentityServer.Storage/7.4.7": {
         "dependencies": {
-          "Duende.IdentityModel": "8.0.0"
+          "Duende.IdentityModel": "8.0.1"
         },
         "runtime": {
           "lib/net10.0/Duende.IdentityServer.Storage.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.4.6.0"
+            "fileVersion": "7.4.7.0"
           }
         }
       },
@@ -294,8 +294,8 @@
       },
       "EFCore.NamingConventions/10.0.1": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.4",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4"
+          "Microsoft.EntityFrameworkCore": "10.0.5",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/EFCore.NamingConventions.dll": {
@@ -404,11 +404,11 @@
           }
         }
       },
-      "libphonenumber-csharp/9.0.25": {
+      "libphonenumber-csharp/9.0.26": {
         "runtime": {
           "lib/net9.0/PhoneNumbers.dll": {
-            "assemblyVersion": "9.0.25.0",
-            "fileVersion": "9.0.25.0"
+            "assemblyVersion": "9.0.26.0",
+            "fileVersion": "9.0.26.0"
           }
         }
       },
@@ -434,13 +434,13 @@
       },
       "Microsoft.AspNetCore.ApiAuthorization.IdentityServer/7.0.20": {
         "dependencies": {
-          "Duende.IdentityServer": "7.4.6",
+          "Duende.IdentityServer": "7.4.7",
           "Duende.IdentityServer.AspNetIdentity": "6.0.4",
           "Duende.IdentityServer.EntityFramework": "6.0.4",
           "Duende.IdentityServer.EntityFramework.Storage": "6.0.4",
-          "Duende.IdentityServer.Storage": "7.4.6",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.4",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.4",
+          "Duende.IdentityServer.Storage": "7.4.7",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.5",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.5",
           "Microsoft.AspNetCore.Identity.UI": "7.0.20",
           "Newtonsoft.Json": "13.0.4"
         },
@@ -451,25 +451,25 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.4": {
+      "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.5": {
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.Authentication.OpenIdConnect/10.0.0": {
+      "Microsoft.AspNetCore.Authentication.OpenIdConnect/10.0.4": {
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.25.52411"
+            "assemblyVersion": "10.0.4.0",
+            "fileVersion": "10.0.426.12010"
           }
         }
       },
@@ -481,63 +481,63 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Components.WebAssembly/10.0.4": {
+      "Microsoft.AspNetCore.Components.WebAssembly/10.0.5": {
         "dependencies": {
-          "Microsoft.JSInterop.WebAssembly": "10.0.4"
+          "Microsoft.JSInterop.WebAssembly": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Components.WebAssembly.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.4": {
+      "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Components.WebAssembly.Authentication.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.4": {
+      "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.5": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.4"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Components.WebAssembly.Server.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.4": {
+      "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.5": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.Http.Connections.Client/10.0.4": {
+      "Microsoft.AspNetCore.Http.Connections.Client/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Http.Connections.Client.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.4": {
+      "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.5": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
@@ -549,34 +549,34 @@
           }
         }
       },
-      "Microsoft.AspNetCore.JsonPatch/10.0.4": {
+      "Microsoft.AspNetCore.JsonPatch/10.0.5": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.JsonPatch.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Client/10.0.4": {
+      "Microsoft.AspNetCore.SignalR.Client/10.0.5": {
         "dependencies": {
-          "Microsoft.AspNetCore.Http.Connections.Client": "10.0.4",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.4"
+          "Microsoft.AspNetCore.Http.Connections.Client": "10.0.5",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SignalR.Client.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Client.Core/10.0.4": {
+      "Microsoft.AspNetCore.SignalR.Client.Core/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SignalR.Client.Core.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
@@ -809,69 +809,69 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore/10.0.4": {
+      "Microsoft.EntityFrameworkCore/10.0.5": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.4"
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions/10.0.4": {
+      "Microsoft.EntityFrameworkCore.Abstractions/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Design/10.0.4": {
+      "Microsoft.EntityFrameworkCore.Design/10.0.5": {
         "dependencies": {
           "Humanizer.Core": "3.0.10",
           "Microsoft.Build.Framework": "18.0.2",
           "Microsoft.CodeAnalysis.CSharp": "5.3.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "5.3.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "5.3.0",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4",
-          "Microsoft.Extensions.DependencyModel": "10.0.4",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5",
+          "Microsoft.Extensions.DependencyModel": "10.0.5",
           "Mono.TextTemplating": "3.0.0",
           "Newtonsoft.Json": "13.0.4"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.InMemory/10.0.4": {
+      "Microsoft.EntityFrameworkCore.InMemory/10.0.5": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.4"
+          "Microsoft.EntityFrameworkCore": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.InMemory.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational/10.0.4": {
+      "Microsoft.EntityFrameworkCore.Relational/10.0.5": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.4"
+          "Microsoft.EntityFrameworkCore": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
       "Microsoft.EntityFrameworkCore.Relational.Design/1.1.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
         },
         "runtime": {
           "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Relational.Design.dll": {
@@ -880,41 +880,41 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.SqlServer/10.0.4": {
+      "Microsoft.EntityFrameworkCore.SqlServer/10.0.5": {
         "dependencies": {
           "Microsoft.Data.SqlClient": "6.1.1",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
-      "Microsoft.Extensions.AI/10.4.0": {
+      "Microsoft.Extensions.AI/10.4.1": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.0",
+          "Microsoft.Extensions.AI.Abstractions": "10.4.1",
           "System.Numerics.Tensors": "10.0.4"
         },
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.AI.dll": {
             "assemblyVersion": "10.4.0.0",
-            "fileVersion": "10.400.26.16002"
+            "fileVersion": "10.400.126.16803"
           }
         }
       },
-      "Microsoft.Extensions.AI.Abstractions/10.4.0": {
+      "Microsoft.Extensions.AI.Abstractions/10.4.1": {
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.AI.Abstractions.dll": {
             "assemblyVersion": "10.4.0.0",
-            "fileVersion": "10.400.26.16002"
+            "fileVersion": "10.400.126.16803"
           }
         }
       },
       "Microsoft.Extensions.AI.Ollama/9.7.0-preview.1.25356.2": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.0"
+          "Microsoft.Extensions.AI.Abstractions": "10.4.1"
         },
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.AI.Ollama.dll": {
@@ -925,7 +925,7 @@
       },
       "Microsoft.Extensions.AI.OpenAI/10.3.0": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.0",
+          "Microsoft.Extensions.AI.Abstractions": "10.4.1",
           "OpenAI": "2.8.0"
         },
         "runtime": {
@@ -935,17 +935,17 @@
           }
         }
       },
-      "Microsoft.Extensions.DependencyModel/10.0.4": {
+      "Microsoft.Extensions.DependencyModel/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.DependencyModel.dll": {
-            "assemblyVersion": "10.0.0.4",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.0.5",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
       "Microsoft.Extensions.VectorData.Abstractions/10.0.1": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.0"
+          "Microsoft.Extensions.AI.Abstractions": "10.4.1"
         },
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.VectorData.Abstractions.dll": {
@@ -1098,11 +1098,11 @@
           }
         }
       },
-      "Microsoft.JSInterop.WebAssembly/10.0.4": {
+      "Microsoft.JSInterop.WebAssembly/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.JSInterop.WebAssembly.dll": {
-            "assemblyVersion": "10.0.4.0",
-            "fileVersion": "10.0.426.12010"
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
@@ -1129,7 +1129,7 @@
       "Microsoft.SemanticKernel.Abstractions/1.73.0": {
         "dependencies": {
           "Microsoft.Bcl.HashCode": "1.1.1",
-          "Microsoft.Extensions.AI": "10.4.0",
+          "Microsoft.Extensions.AI": "10.4.1",
           "Microsoft.Extensions.VectorData.Abstractions": "10.0.1"
         },
         "runtime": {
@@ -1206,11 +1206,11 @@
           }
         }
       },
-      "Microsoft.Win32.SystemEvents/10.0.4": {
+      "Microsoft.Win32.SystemEvents/10.0.5": {
         "runtime": {
           "lib/net10.0/Microsoft.Win32.SystemEvents.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.426.12010"
+            "fileVersion": "10.0.526.15411"
           }
         },
         "runtimeTargets": {
@@ -1218,7 +1218,7 @@
             "rid": "win",
             "assetType": "runtime",
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.426.12010"
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
@@ -1279,34 +1279,34 @@
           }
         }
       },
-      "Npgsql/10.0.1": {
+      "Npgsql/10.0.2": {
         "runtime": {
           "lib/net10.0/Npgsql.dll": {
+            "assemblyVersion": "10.0.2.0",
+            "fileVersion": "10.0.2.0"
+          }
+        }
+      },
+      "Npgsql.EntityFrameworkCore.PostgreSQL/10.0.1": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.5",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5",
+          "Npgsql": "10.0.2"
+        },
+        "runtime": {
+          "lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
             "assemblyVersion": "10.0.1.0",
             "fileVersion": "10.0.1.0"
           }
         }
       },
-      "Npgsql.EntityFrameworkCore.PostgreSQL/10.0.0": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.4",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4",
-          "Npgsql": "10.0.1"
-        },
-        "runtime": {
-          "lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.0.0"
-          }
-        }
-      },
       "Npgsql.EntityFrameworkCore.PostgreSQL.Design/1.1.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.4",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.4",
+          "Microsoft.EntityFrameworkCore": "10.0.5",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5",
           "Microsoft.EntityFrameworkCore.Relational.Design": "1.1.0",
-          "Npgsql": "10.0.1",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0"
+          "Npgsql": "10.0.2",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1"
         },
         "runtime": {
           "lib/netstandard1.3/Npgsql.EntityFrameworkCore.PostgreSQL.Design.dll": {
@@ -1315,39 +1315,39 @@
           }
         }
       },
-      "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime/10.0.0": {
+      "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime/10.0.1": {
         "dependencies": {
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
-          "Npgsql.NodaTime": "10.0.0"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1",
+          "Npgsql.NodaTime": "10.0.2"
         },
         "runtime": {
           "lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.0.0"
-          }
-        }
-      },
-      "Npgsql.Json.NET/10.0.1": {
-        "dependencies": {
-          "Newtonsoft.Json": "13.0.4",
-          "Npgsql": "10.0.1"
-        },
-        "runtime": {
-          "lib/net8.0/Npgsql.Json.NET.dll": {
             "assemblyVersion": "10.0.1.0",
             "fileVersion": "10.0.1.0"
           }
         }
       },
-      "Npgsql.NodaTime/10.0.0": {
+      "Npgsql.Json.NET/10.0.2": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.4",
+          "Npgsql": "10.0.2"
+        },
+        "runtime": {
+          "lib/net8.0/Npgsql.Json.NET.dll": {
+            "assemblyVersion": "10.0.2.0",
+            "fileVersion": "10.0.2.0"
+          }
+        }
+      },
+      "Npgsql.NodaTime/10.0.2": {
         "dependencies": {
           "NodaTime": "3.2.2",
-          "Npgsql": "10.0.1"
+          "Npgsql": "10.0.2"
         },
         "runtime": {
           "lib/net8.0/Npgsql.NodaTime.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.0.0"
+            "assemblyVersion": "10.0.2.0",
+            "fileVersion": "10.0.2.0"
           }
         }
       },
@@ -1361,7 +1361,7 @@
       },
       "OllamaSharp/5.4.12": {
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.0"
+          "Microsoft.Extensions.AI.Abstractions": "10.4.1"
         },
         "runtime": {
           "lib/net10.0/OllamaSharp.dll": {
@@ -1441,14 +1441,14 @@
           }
         }
       },
-      "OpenTelemetry.Instrumentation.AspNetCore/1.15.0": {
+      "OpenTelemetry.Instrumentation.AspNetCore/1.15.1": {
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         },
         "runtime": {
           "lib/net10.0/OpenTelemetry.Instrumentation.AspNetCore.dll": {
-            "assemblyVersion": "1.15.0.901",
-            "fileVersion": "1.15.0.901"
+            "assemblyVersion": "1.15.1.965",
+            "fileVersion": "1.15.1.965"
           }
         }
       },
@@ -1909,11 +1909,11 @@
           }
         }
       },
-      "System.CommandLine/2.0.4": {
+      "System.CommandLine/2.0.5": {
         "runtime": {
           "lib/net8.0/System.CommandLine.dll": {
-            "assemblyVersion": "2.0.4.0",
-            "fileVersion": "2.0.426.12010"
+            "assemblyVersion": "2.0.5.0",
+            "fileVersion": "2.0.526.15411"
           }
         },
         "resources": {
@@ -1993,22 +1993,22 @@
           }
         }
       },
-      "System.Drawing.Common/10.0.4": {
+      "System.Drawing.Common/10.0.5": {
         "dependencies": {
-          "Microsoft.Win32.SystemEvents": "10.0.4"
+          "Microsoft.Win32.SystemEvents": "10.0.5"
         },
         "runtime": {
           "lib/net10.0/System.Drawing.Common.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.426.12010"
+            "fileVersion": "10.0.526.15411"
           },
           "lib/net10.0/System.Private.Windows.Core.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.426.12010"
+            "fileVersion": "10.0.526.15411"
           },
           "lib/net10.0/System.Private.Windows.GdiPlus.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.426.12010"
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
@@ -2024,11 +2024,11 @@
           }
         }
       },
-      "System.IO.Packaging/10.0.4": {
+      "System.IO.Packaging/10.0.5": {
         "runtime": {
           "lib/net10.0/System.IO.Packaging.dll": {
             "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.426.12010"
+            "fileVersion": "10.0.526.15411"
           }
         }
       },
@@ -2066,7 +2066,7 @@
       },
       "Toolbelt.Blazor.HttpClientInterceptor/10.2.0": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.4"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.5"
         },
         "runtime": {
           "lib/netstandard2.1/Toolbelt.Blazor.HttpClientInterceptor.dll": {
@@ -2075,7 +2075,7 @@
           }
         }
       },
-      "AppAdmin/0.7.2-alpha.5": {
+      "AppAdmin/0.7.3-alpha.7": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
@@ -2087,23 +2087,23 @@
           "Mars.Options.Front": "1.0.0",
           "Mars.SemanticKernel.Front": "1.0.0",
           "Mars.WebApp.Nodes.Front": "1.0.0",
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.4",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.4",
-          "Microsoft.AspNetCore.SignalR.Client": "10.0.4",
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.5",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.5",
+          "Microsoft.AspNetCore.SignalR.Client": "10.0.5",
           "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.201",
           "Toolbelt.Blazor.HotKeys2": "6.2.0",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
-          "mdimai666.BlazoredHtmlRender": "0.7.2-alpha.5",
-          "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.5",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.2-alpha.5",
-          "mdimai666.Mars.Plugin.Front": "0.7.2-alpha.5",
-          "mdimai666.MarsEditors": "0.7.2-alpha.5"
+          "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
+          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
+          "mdimai666.Mars.Plugin.Front": "0.7.3-alpha.7",
+          "mdimai666.MarsEditors": "0.7.3-alpha.7"
         },
         "runtime": {
           "AppAdmin.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
@@ -2128,8 +2128,8 @@
       },
       "Mars.Datasource.Core/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5"
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Datasource.Core.dll": {
@@ -2142,8 +2142,8 @@
         "dependencies": {
           "BlazorMonaco": "3.4.0",
           "Mars.Datasource.Core": "1.0.0",
-          "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.2-alpha.5"
+          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Datasource.Front.dll": {
@@ -2158,9 +2158,9 @@
           "Mars.Datasource.Host.Core": "1.0.0",
           "Mars.Datasource.Host.MsSQL": "1.0.0",
           "Mars.Datasource.Host.PostgreSQL": "1.0.0",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Datasource.Host.dll": {
@@ -2184,7 +2184,7 @@
         "dependencies": {
           "Mars.Datasource.Core": "1.0.0",
           "Mars.Datasource.Host.Core": "1.0.0",
-          "Microsoft.EntityFrameworkCore.SqlServer": "10.0.4"
+          "Microsoft.EntityFrameworkCore.SqlServer": "10.0.5"
         },
         "runtime": {
           "Mars.Datasource.Host.MsSQL.dll": {
@@ -2197,7 +2197,7 @@
         "dependencies": {
           "Mars.Datasource.Core": "1.0.0",
           "Mars.Datasource.Host.Core": "1.0.0",
-          "Npgsql": "10.0.1"
+          "Npgsql": "10.0.2"
         },
         "runtime": {
           "Mars.Datasource.Host.PostgreSQL.dll": {
@@ -2208,7 +2208,7 @@
       },
       "Mars.Docker/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Docker.dll": {
@@ -2220,8 +2220,8 @@
       "Mars.Docker.Front/1.0.0": {
         "dependencies": {
           "Mars.Docker": "1.0.0",
-          "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.5",
-          "mdimai666.Mars.WebApiClient": "0.7.2-alpha.5"
+          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
+          "mdimai666.Mars.WebApiClient": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Docker.Front.dll": {
@@ -2234,7 +2234,7 @@
         "dependencies": {
           "Docker.DotNet": "3.125.15",
           "Mars.Docker.Host.Shared": "1.0.0",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Docker.Host.dll": {
@@ -2246,7 +2246,7 @@
       "Mars.Docker.Host.Shared/1.0.0": {
         "dependencies": {
           "Mars.Docker": "1.0.0",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Docker.Host.Shared.dll": {
@@ -2257,8 +2257,8 @@
       },
       "Mars.Excel.Host/1.0.0": {
         "dependencies": {
-          "System.IO.Packaging": "10.0.4",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "System.IO.Packaging": "10.0.5",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Excel.Host.dll": {
@@ -2269,8 +2269,8 @@
       },
       "Mars.Host.Data.InMemory/1.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.InMemory": "10.0.4",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5"
+          "Microsoft.EntityFrameworkCore.InMemory": "10.0.5",
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.Data.InMemory.dll": {
@@ -2283,9 +2283,9 @@
         "dependencies": {
           "Mars.Host.Data.InMemory": "1.0.0",
           "Mars.Host.Repositories": "1.0.0",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.Infrastructure.dll": {
@@ -2297,10 +2297,10 @@
       "Mars.Host.Repositories/1.0.0": {
         "dependencies": {
           "Mars.Host.Data.InMemory": "1.0.0",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.Repositories.dll": {
@@ -2312,8 +2312,8 @@
       "Mars.MetaModelGenerator/1.0.0": {
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.MetaModelGenerator.dll": {
@@ -2327,9 +2327,9 @@
           "Mars.Nodes.Workspace": "1.0.0",
           "Mars.QueryLang": "1.0.0",
           "Microsoft.AspNet.WebApi.Client": "6.0.0",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.Host.dll": {
@@ -2341,11 +2341,11 @@
       "Mars.Nodes.Workspace/1.0.0": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
-          "mdimai666.Mars.AppFront.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Front.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.AppFront.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Front.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.Workspace.dll": {
@@ -2356,9 +2356,9 @@
       },
       "Mars.Options.Front/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.5",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.2-alpha.5",
-          "mdimai666.Mars.Options": "0.7.2-alpha.5"
+          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
+          "mdimai666.Mars.Options": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Options.Front.dll": {
@@ -2369,8 +2369,8 @@
       },
       "Mars.Options.Host/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host": "0.7.2-alpha.5",
-          "mdimai666.Mars.Options": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host": "0.7.3-alpha.7",
+          "mdimai666.Mars.Options": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Options.Host.dll": {
@@ -2381,9 +2381,9 @@
       },
       "Mars.Plugin/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.Plugin.Abstractions": "0.7.2-alpha.5",
-          "mdimai666.Mars.Plugin.Front": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.Plugin.Abstractions": "0.7.3-alpha.7",
+          "mdimai666.Mars.Plugin.Front": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Plugin.dll": {
@@ -2394,7 +2394,7 @@
       },
       "Mars.QueryLang/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.QueryLang.dll": {
@@ -2408,8 +2408,8 @@
           "Mars.Host.Infrastructure": "1.0.0",
           "Mars.MetaModelGenerator": "1.0.0",
           "Mars.QueryLang": "1.0.0",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.QueryLang.Host.dll": {
@@ -2422,7 +2422,7 @@
         "dependencies": {
           "CronExpressionDescriptor": "2.45.0",
           "Quartz.AspNetCore": "3.16.1",
-          "mdimai666.Mars.Host": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Scheduler.Host.dll": {
@@ -2435,7 +2435,7 @@
         "dependencies": {
           "Mars.Options.Front": "1.0.0",
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.SemanticKernel.Front.dll": {
@@ -2448,11 +2448,11 @@
         "dependencies": {
           "Mars.SemanticKernel.Host.Shared": "1.0.0",
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "Microsoft.Extensions.AI": "10.4.0",
+          "Microsoft.Extensions.AI": "10.4.1",
           "Microsoft.Extensions.AI.Ollama": "9.7.0-preview.1.25356.2",
           "Microsoft.SemanticKernel": "1.73.0",
           "Microsoft.SemanticKernel.Connectors.Ollama": "1.73.0-alpha",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.SemanticKernel.Host.dll": {
@@ -2475,8 +2475,8 @@
       },
       "Mars.SemanticKernel.Shared/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.SemanticKernel.Shared.dll": {
@@ -2489,7 +2489,7 @@
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0",
           "System.IdentityModel.Tokens.Jwt": "8.16.0",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.SSO.dll": {
@@ -2500,11 +2500,11 @@
       },
       "Mars.SSO.Host.OAuth/1.0.0": {
         "dependencies": {
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.4",
-          "Microsoft.EntityFrameworkCore.InMemory": "10.0.4",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.5",
+          "Microsoft.EntityFrameworkCore.InMemory": "10.0.5",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.16.0",
           "System.IdentityModel.Tokens.Jwt": "8.16.0",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.SSO.Host.OAuth.dll": {
@@ -2515,8 +2515,8 @@
       },
       "Mars.WebApp.Nodes/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.WebApp.Nodes.dll": {
@@ -2528,9 +2528,9 @@
       "Mars.WebApp.Nodes.Front/1.0.0": {
         "dependencies": {
           "Mars.WebApp.Nodes": "1.0.0",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Front.Shared": "0.7.2-alpha.5",
-          "mdimai666.MarsEditors": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Front.Shared": "0.7.3-alpha.7",
+          "mdimai666.MarsEditors": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.WebApp.Nodes.Front.dll": {
@@ -2542,9 +2542,9 @@
       "Mars.WebApp.Nodes.Host/1.0.0": {
         "dependencies": {
           "Mars.WebApp.Nodes.Front": "1.0.0",
-          "System.Drawing.Common": "10.0.4",
+          "System.Drawing.Common": "10.0.5",
           "dotless.Core": "1.6.7",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.WebApp.Nodes.Host.dll": {
@@ -2555,8 +2555,8 @@
       },
       "Mars.WebSiteProcessor/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.WebSiteProcessor.dll": {
@@ -2570,7 +2570,7 @@
           "Mars.WebSiteProcessor": "1.0.0",
           "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
           "Mars.WebSiteProcessor.Handlebars": "1.0.0",
-          "mdimai666.Mars.AppFront.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.AppFront.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.WebSiteProcessor.Blazor.dll": {
@@ -2606,182 +2606,182 @@
           }
         }
       },
-      "mdimai666.BlazoredHtmlRender/0.7.2-alpha.5": {
+      "mdimai666.BlazoredHtmlRender/0.7.3-alpha.7": {
         "dependencies": {
           "HtmlAgilityPack": "1.12.4",
           "OneOf": "3.0.271"
         },
         "runtime": {
           "BlazoredHtmlRender.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.AppFront.Main/0.7.2-alpha.5": {
+      "mdimai666.Mars.AppFront.Main/0.7.3-alpha.7": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
           "Markdig": "1.1.1",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.4",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.4",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.5",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.5",
           "Microsoft.FluentUI.AspNetCore.Components": "4.14.0",
           "Microsoft.FluentUI.AspNetCore.Components.Icons": "4.14.0",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
-          "mdimai666.BlazoredHtmlRender": "0.7.2-alpha.5",
-          "mdimai666.Mars.AppFront.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5",
-          "mdimai666.MarsEditors": "0.7.2-alpha.5"
+          "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
+          "mdimai666.Mars.AppFront.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7",
+          "mdimai666.MarsEditors": "0.7.3-alpha.7"
         },
         "runtime": {
           "AppFront.Main.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.AppFront.Shared/0.7.2-alpha.5": {
+      "mdimai666.Mars.AppFront.Shared/0.7.3-alpha.7": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
           "Flurl.Http": "4.0.2",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.4",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.4",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.5",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.5",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
-          "mdimai666.BlazoredHtmlRender": "0.7.2-alpha.5",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Options": "0.7.2-alpha.5",
-          "mdimai666.Mars.WebApiClient": "0.7.2-alpha.5",
-          "mdimai666.MarsEditors": "0.7.2-alpha.5"
+          "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Options": "0.7.3-alpha.7",
+          "mdimai666.Mars.WebApiClient": "0.7.3-alpha.7",
+          "mdimai666.MarsEditors": "0.7.3-alpha.7"
         },
         "runtime": {
           "AppFront.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Core/0.7.2-alpha.5": {
+      "mdimai666.Mars.Core/0.7.3-alpha.7": {
         "runtime": {
           "Mars.Core.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Host/0.7.2-alpha.5": {
+      "mdimai666.Mars.Host/0.7.3-alpha.7": {
         "dependencies": {
           "AngleSharp": "1.4.0",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "Flurl.Http": "4.0.2",
           "Handlebars.Net": "2.1.6",
           "Mars.Host.Repositories": "1.0.0",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.4",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.5",
           "Swashbuckle.AspNetCore": "10.1.5",
           "System.IdentityModel.Tokens.Jwt": "8.16.0",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Host.Data/0.7.2-alpha.5": {
+      "mdimai666.Mars.Host.Data/0.7.3-alpha.7": {
         "dependencies": {
           "EFCore.NamingConventions": "10.0.1",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.4",
-          "Microsoft.EntityFrameworkCore": "10.0.4",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5"
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.5",
+          "Microsoft.EntityFrameworkCore": "10.0.5",
+          "mdimai666.Mars.Core": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.Data.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Host.Data.PostgreSQL/0.7.2-alpha.5": {
+      "mdimai666.Mars.Host.Data.PostgreSQL/0.7.3-alpha.7": {
         "dependencies": {
-          "Npgsql": "10.0.1",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
+          "Npgsql": "10.0.2",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.1.0",
-          "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime": "10.0.0",
-          "Npgsql.Json.NET": "10.0.1",
-          "mdimai666.Mars.Host.Data": "0.7.2-alpha.5"
+          "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime": "10.0.1",
+          "Npgsql.Json.NET": "10.0.2",
+          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.Data.PostgreSQL.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Host.Shared/0.7.2-alpha.5": {
+      "mdimai666.Mars.Host.Shared/0.7.3-alpha.7": {
         "dependencies": {
           "DynamicExpresso.Core": "2.19.3",
           "FluentValidation": "12.1.1",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
-          "Microsoft.EntityFrameworkCore": "10.0.4",
+          "Microsoft.EntityFrameworkCore": "10.0.5",
           "Microsoft.FeatureManagement.AspNetCore": "4.4.0",
           "Quartz": "3.16.1",
-          "System.CommandLine": "2.0.4",
+          "System.CommandLine": "2.0.5",
           "System.IdentityModel.Tokens.Jwt": "8.16.0",
-          "libphonenumber-csharp": "9.0.25",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Options": "0.7.2-alpha.5",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "libphonenumber-csharp": "9.0.26",
+          "mdimai666.Mars.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Options": "0.7.3-alpha.7",
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Host.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.HttpSmartAuthFlow/0.7.2-alpha.5": {
+      "mdimai666.Mars.HttpSmartAuthFlow/0.7.3-alpha.7": {
         "dependencies": {
           "AngleSharp": "1.4.0",
           "Flurl.Http": "4.0.2"
         },
         "runtime": {
           "Mars.HttpSmartAuthFlow.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.MarsCodeEditor2/0.7.2-alpha.5": {
+      "mdimai666.Mars.MarsCodeEditor2/0.7.3-alpha.7": {
         "dependencies": {
           "BlazorMonaco": "3.4.0"
         },
         "runtime": {
           "MarsCodeEditor2.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Core/0.7.2-alpha.5": {
+      "mdimai666.Mars.Nodes.Core/0.7.3-alpha.7": {
         "dependencies": {
           "Microsoft.AspNetCore.Components.DataAnnotations.Validation": "3.2.0-rc1.20223.4",
-          "mdimai666.Mars.Core": "0.7.2-alpha.5"
+          "mdimai666.Mars.Core": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.Core.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Core.Implements/0.7.2-alpha.5": {
+      "mdimai666.Mars.Nodes.Core.Implements/0.7.3-alpha.7": {
         "dependencies": {
           "AngleSharp": "1.4.0",
           "DynamicExpresso.Core": "2.19.3",
@@ -2790,111 +2790,111 @@
           "MQTTnet": "5.1.0.1559",
           "MQTTnet.Extensions.TopicTemplate": "5.1.0.1559",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.HttpSmartAuthFlow": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Host.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.HttpSmartAuthFlow": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Host.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.Core.Implements.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.FormEditor/0.7.2-alpha.5": {
+      "mdimai666.Mars.Nodes.FormEditor/0.7.3-alpha.7": {
         "dependencies": {
-          "mdimai666.Mars.AppFront.Main": "0.7.2-alpha.5",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Front.Shared": "0.7.2-alpha.5",
-          "mdimai666.MarsEditors": "0.7.2-alpha.5"
+          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Front.Shared": "0.7.3-alpha.7",
+          "mdimai666.MarsEditors": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.FormEditor.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Front.Shared/0.7.2-alpha.5": {
+      "mdimai666.Mars.Nodes.Front.Shared/0.7.3-alpha.7": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
           "Toolbelt.Blazor.HotKeys2": "6.2.0",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.Front.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Host.Shared/0.7.2-alpha.5": {
+      "mdimai666.Mars.Nodes.Host.Shared/0.7.3-alpha.7": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5"
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Nodes.Host.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Options/0.7.2-alpha.5": {
+      "mdimai666.Mars.Options/0.7.3-alpha.7": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.2-alpha.5"
+          "mdimai666.Mars.Core": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Options.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Plugin.Abstractions/0.7.2-alpha.5": {
+      "mdimai666.Mars.Plugin.Abstractions/0.7.3-alpha.7": {
         "runtime": {
           "Mars.Plugin.Abstractions.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Plugin.Front/0.7.2-alpha.5": {
+      "mdimai666.Mars.Plugin.Front/0.7.3-alpha.7": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.4",
-          "mdimai666.Mars.Nodes.Core": "0.7.2-alpha.5",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.2-alpha.5",
-          "mdimai666.Mars.Plugin.Front.Abstractions": "0.7.2-alpha.5"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.5",
+          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7",
+          "mdimai666.Mars.Plugin.Front.Abstractions": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Plugin.Front.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Plugin.Front.Abstractions/0.7.2-alpha.5": {
+      "mdimai666.Mars.Plugin.Front.Abstractions/0.7.3-alpha.7": {
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.4"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.5"
         },
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.Mars.Shared/0.7.2-alpha.5": {
+      "mdimai666.Mars.Shared/0.7.3-alpha.7": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.2-alpha.5"
+          "mdimai666.Mars.Core": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         },
         "resources": {
@@ -2903,175 +2903,175 @@
           }
         }
       },
-      "mdimai666.Mars.WebApiClient/0.7.2-alpha.5": {
+      "mdimai666.Mars.WebApiClient/0.7.3-alpha.7": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
-          "mdimai666.Mars.Shared": "0.7.2-alpha.5"
+          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
         },
         "runtime": {
           "Mars.WebApiClient.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "mdimai666.MarsEditors/0.7.2-alpha.5": {
+      "mdimai666.MarsEditors/0.7.3-alpha.7": {
         "runtime": {
           "MarsEditors.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "AppFront.Main/0.7.2.0": {
+      "AppFront.Main/0.7.3.0": {
         "runtime": {
           "AppFront.Main.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "AppFront.Shared/0.7.2.0": {
+      "AppFront.Shared/0.7.3.0": {
         "runtime": {
           "AppFront.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "BlazoredHtmlRender/0.7.2.0": {
+      "BlazoredHtmlRender/0.7.3.0": {
         "runtime": {
           "BlazoredHtmlRender.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Core/0.7.2.0": {
+      "Mars.Core/0.7.3.0": {
         "runtime": {
           "Mars.Core.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Host.Data/0.7.2.0": {
+      "Mars.Host.Data/0.7.3.0": {
         "runtime": {
           "Mars.Host.Data.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Host.Data.PostgreSQL/0.7.2.0": {
+      "Mars.Host.Data.PostgreSQL/0.7.3.0": {
         "runtime": {
           "Mars.Host.Data.PostgreSQL.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Host/0.7.2.0": {
+      "Mars.Host/0.7.3.0": {
         "runtime": {
           "Mars.Host.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Host.Shared/0.7.2.0": {
+      "Mars.Host.Shared/0.7.3.0": {
         "runtime": {
           "Mars.Host.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.HttpSmartAuthFlow/0.7.2.0": {
+      "Mars.HttpSmartAuthFlow/0.7.3.0": {
         "runtime": {
           "Mars.HttpSmartAuthFlow.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Nodes.Core/0.7.2.0": {
+      "Mars.Nodes.Core/0.7.3.0": {
         "runtime": {
           "Mars.Nodes.Core.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Nodes.Core.Implements/0.7.2.0": {
+      "Mars.Nodes.Core.Implements/0.7.3.0": {
         "runtime": {
           "Mars.Nodes.Core.Implements.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Nodes.FormEditor/0.7.2.0": {
+      "Mars.Nodes.FormEditor/0.7.3.0": {
         "runtime": {
           "Mars.Nodes.FormEditor.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Nodes.Front.Shared/0.7.2.0": {
+      "Mars.Nodes.Front.Shared/0.7.3.0": {
         "runtime": {
           "Mars.Nodes.Front.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Nodes.Host.Shared/0.7.2.0": {
+      "Mars.Nodes.Host.Shared/0.7.3.0": {
         "runtime": {
           "Mars.Nodes.Host.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Options/0.7.2.0": {
+      "Mars.Options/0.7.3.0": {
         "runtime": {
           "Mars.Options.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Plugin.Abstractions/0.7.2.0": {
+      "Mars.Plugin.Abstractions/0.7.3.0": {
         "runtime": {
           "Mars.Plugin.Abstractions.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Plugin.Front.Abstractions/0.7.2.0": {
+      "Mars.Plugin.Front.Abstractions/0.7.3.0": {
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Plugin.Front/0.7.2.0": {
+      "Mars.Plugin.Front/0.7.3.0": {
         "runtime": {
           "Mars.Plugin.Front.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "Mars.Shared/0.7.2.0": {
+      "Mars.Shared/0.7.3.0": {
         "runtime": {
           "Mars.Shared.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         },
         "resources": {
@@ -3080,27 +3080,27 @@
           }
         }
       },
-      "Mars.WebApiClient/0.7.2.0": {
+      "Mars.WebApiClient/0.7.3.0": {
         "runtime": {
           "Mars.WebApiClient.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "MarsCodeEditor2/0.7.2.0": {
+      "MarsCodeEditor2/0.7.3.0": {
         "runtime": {
           "MarsCodeEditor2.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
-      "MarsEditors/0.7.2.0": {
+      "MarsEditors/0.7.3.0": {
         "runtime": {
           "MarsEditors.dll": {
-            "assemblyVersion": "0.7.2.0",
-            "fileVersion": "0.7.2.0"
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
           }
         }
       },
@@ -3195,7 +3195,7 @@
     }
   },
   "libraries": {
-    "Mars/0.7.2-alpha.5": {
+    "Mars/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -3284,19 +3284,19 @@
       "path": "dotless.core/1.6.7",
       "hashPath": "dotless.core.1.6.7.nupkg.sha512"
     },
-    "Duende.IdentityModel/8.0.0": {
+    "Duende.IdentityModel/8.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8i+Tv4c38LgwoTRKbD0+MqtnNNDSVA83G6JkjGHgC4/7jH0nxZBP0RBhH8xTsvNQ5Pv9zrg+TR8rmtWK9HDOPg==",
-      "path": "duende.identitymodel/8.0.0",
-      "hashPath": "duende.identitymodel.8.0.0.nupkg.sha512"
+      "sha512": "sha512-P3bNPAiyYh15VuDZP/xE7Y8ohhQloiW2KdiBzzJh3m26sPQJ3Wuxj4ur6X+A9m0qhdwx2kLeh4so0a2nEslHmw==",
+      "path": "duende.identitymodel/8.0.1",
+      "hashPath": "duende.identitymodel.8.0.1.nupkg.sha512"
     },
-    "Duende.IdentityServer/7.4.6": {
+    "Duende.IdentityServer/7.4.7": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Zvri5e+SrOWLz0wmJry0ZaU8gVygv966jzP/CbMSCtV0K/nqK7abL9gQr9aKKmjt5DsONauUMT2E0cK/GbXJAg==",
-      "path": "duende.identityserver/7.4.6",
-      "hashPath": "duende.identityserver.7.4.6.nupkg.sha512"
+      "sha512": "sha512-9Xfb3UOm//sJTl23j+Xbcpl+81KDMZDs15M78JFrcqAahqzFYCjAM+DejZxjXfvsOORD0+E6snDHbR4WhSVVmg==",
+      "path": "duende.identityserver/7.4.7",
+      "hashPath": "duende.identityserver.7.4.7.nupkg.sha512"
     },
     "Duende.IdentityServer.AspNetIdentity/6.0.4": {
       "type": "package",
@@ -3319,12 +3319,12 @@
       "path": "duende.identityserver.entityframework.storage/6.0.4",
       "hashPath": "duende.identityserver.entityframework.storage.6.0.4.nupkg.sha512"
     },
-    "Duende.IdentityServer.Storage/7.4.6": {
+    "Duende.IdentityServer.Storage/7.4.7": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qPNsoj5H1TaT5gYptA/Z5LZE/UT4PFsgDen8K1DLj4W9O8i1PuEfFiba9CbmwLPs/TUS2xikCbxfiUgBUqn8GQ==",
-      "path": "duende.identityserver.storage/7.4.6",
-      "hashPath": "duende.identityserver.storage.7.4.6.nupkg.sha512"
+      "sha512": "sha512-pP+OKt4f8u532m+nORqwe1y3PFcQAw731EnKLnMt4eBtL1YZTuivs2Oox77Eukl8pnU1JK6zibjH9TJkoeS+bQ==",
+      "path": "duende.identityserver.storage/7.4.7",
+      "hashPath": "duende.identityserver.storage.7.4.7.nupkg.sha512"
     },
     "DynamicExpresso.Core/2.19.3": {
       "type": "package",
@@ -3417,12 +3417,12 @@
       "path": "humanizer.core.ru/3.0.10",
       "hashPath": "humanizer.core.ru.3.0.10.nupkg.sha512"
     },
-    "libphonenumber-csharp/9.0.25": {
+    "libphonenumber-csharp/9.0.26": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-WCHMSq366oy29WXbzgVGPqYLf3sUwnKh/TXr5iaDEH/5ss24yb9NhKwhDwpygX8a15vuSQrZqPGGr0sH0Dtmkw==",
-      "path": "libphonenumber-csharp/9.0.25",
-      "hashPath": "libphonenumber-csharp.9.0.25.nupkg.sha512"
+      "sha512": "sha512-knCYUlf8Sa/kQA4mZ2PSdWpEqdRd/0T0xxSr43QUkBIrDQe3cmxMGNfhJQtPiLqWnU4CGKt4cEuMrQybHc6jfw==",
+      "path": "libphonenumber-csharp/9.0.26",
+      "hashPath": "libphonenumber-csharp.9.0.26.nupkg.sha512"
     },
     "Markdig/1.1.1": {
       "type": "package",
@@ -3445,19 +3445,19 @@
       "path": "microsoft.aspnetcore.apiauthorization.identityserver/7.0.20",
       "hashPath": "microsoft.aspnetcore.apiauthorization.identityserver.7.0.20.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.4": {
+    "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1mUwGyeGrGETdhlU/ZzNZeN2J6ugqf9EztZyG+WQIZwkaH5+lFNza15+cNCXhXNA0MKo1iohr5vj60eqR2J44Q==",
-      "path": "microsoft.aspnetcore.authentication.jwtbearer/10.0.4",
-      "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.10.0.4.nupkg.sha512"
+      "sha512": "sha512-fZzXogChrwQ/SfifQJgeW7AtR8hUv5+LH9oLWjm5OqfnVt3N8MwcMHHMdawvqqdjP79lIZgetnSpj77BLsSI1g==",
+      "path": "microsoft.aspnetcore.authentication.jwtbearer/10.0.5",
+      "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Authentication.OpenIdConnect/10.0.0": {
+    "Microsoft.AspNetCore.Authentication.OpenIdConnect/10.0.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-6ATONu+5A2oh/vzmoFhf3cuQcclMaWGHrb1kvjVsYtml+gzuWD48MmbsItM4xAUQkJZ2t8XFmbGp8pZLPxKneA==",
-      "path": "microsoft.aspnetcore.authentication.openidconnect/10.0.0",
-      "hashPath": "microsoft.aspnetcore.authentication.openidconnect.10.0.0.nupkg.sha512"
+      "sha512": "sha512-S8hPSqhgkR8nLNgQ54K1lRDBv9WM64XWPTNBeJkTN8KTvQ1YX/ol6ue/JCvYtJ7mWU5r2VzdbW/BA8bJlkDEbw==",
+      "path": "microsoft.aspnetcore.authentication.openidconnect/10.0.4",
+      "hashPath": "microsoft.aspnetcore.authentication.openidconnect.10.0.4.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Components.DataAnnotations.Validation/3.2.0-rc1.20223.4": {
       "type": "package",
@@ -3466,47 +3466,47 @@
       "path": "microsoft.aspnetcore.components.dataannotations.validation/3.2.0-rc1.20223.4",
       "hashPath": "microsoft.aspnetcore.components.dataannotations.validation.3.2.0-rc1.20223.4.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Components.WebAssembly/10.0.4": {
+    "Microsoft.AspNetCore.Components.WebAssembly/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-zL6/TfmcmrqN8pn43oCX44bnDs0VdVz174IEMmuBan0wkGVzIO/zAWiOcjP441D2tJJCU+4BadBhWpIo+sH3Og==",
-      "path": "microsoft.aspnetcore.components.webassembly/10.0.4",
-      "hashPath": "microsoft.aspnetcore.components.webassembly.10.0.4.nupkg.sha512"
+      "sha512": "sha512-fjmhjvZpYTJVl/sxpDStP8+fQ6XEG8r9iuhafuTCp2nAAGPcJhsSND58he9BOekbxs6nMv2OECUGwtWqHBGFcg==",
+      "path": "microsoft.aspnetcore.components.webassembly/10.0.5",
+      "hashPath": "microsoft.aspnetcore.components.webassembly.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.4": {
+    "Microsoft.AspNetCore.Components.WebAssembly.Authentication/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cmEkeY5LC3qPhoqHSO2fF5cN2C4a45glRx/gZUkwBQo7HMIcMZ7P+JBX4AuDz6CIwVSUEpoVtnPVeow7Dv/mEA==",
-      "path": "microsoft.aspnetcore.components.webassembly.authentication/10.0.4",
-      "hashPath": "microsoft.aspnetcore.components.webassembly.authentication.10.0.4.nupkg.sha512"
+      "sha512": "sha512-5i+ucTiwCJ7a4chl+1rNxlh15Gn+W9zBXrDYRUeeTdxXLayLO89LJFoxhen9XWTTlwqF+WIRHi48gK1k8H6zhg==",
+      "path": "microsoft.aspnetcore.components.webassembly.authentication/10.0.5",
+      "hashPath": "microsoft.aspnetcore.components.webassembly.authentication.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.4": {
+    "Microsoft.AspNetCore.Components.WebAssembly.Server/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-84pABwfquu0+PNYBlxCRR2eWCFuFU7DXmGSOXCELVNCjxA3b3giHiEPbOdv/6Kvdl4TN0AmX+2sMETkUZ9S4BA==",
-      "path": "microsoft.aspnetcore.components.webassembly.server/10.0.4",
-      "hashPath": "microsoft.aspnetcore.components.webassembly.server.10.0.4.nupkg.sha512"
+      "sha512": "sha512-wDK4Yiuz9oq3LLO8ies4UzpRLGQ56WGHj099h0MzkFyU8YcaZJ9h76ZkBpcgJQPNECjxL0lXg4hQz2fhrt0qHQ==",
+      "path": "microsoft.aspnetcore.components.webassembly.server/10.0.5",
+      "hashPath": "microsoft.aspnetcore.components.webassembly.server.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.4": {
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lQoiaKx6nPe3Ji5T5cxCEcjRpqiPBW82ZFOy+A6E3ygRLmDN+lUiKQwEGREYzW3wfyaaeLvpI1qnnSqTMzTcgQ==",
-      "path": "microsoft.aspnetcore.diagnostics.entityframeworkcore/10.0.4",
-      "hashPath": "microsoft.aspnetcore.diagnostics.entityframeworkcore.10.0.4.nupkg.sha512"
+      "sha512": "sha512-mg5wedToJyrvyyJB88MN2aSuGtzs7x8Jal/o8MlblOj6hZDQZddYt1/cLrmWS5O7/RiykiIZ7PUGyG1mlQSjLQ==",
+      "path": "microsoft.aspnetcore.diagnostics.entityframeworkcore/10.0.5",
+      "hashPath": "microsoft.aspnetcore.diagnostics.entityframeworkcore.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Http.Connections.Client/10.0.4": {
+    "Microsoft.AspNetCore.Http.Connections.Client/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5TdUuhVnT41nsedyzXnREnc41iONhMfU2DAECRJNzoJM5CF/Z4YOVWXO6oak5/SA5lmbXGRH50MjZ6ktaxUrKg==",
-      "path": "microsoft.aspnetcore.http.connections.client/10.0.4",
-      "hashPath": "microsoft.aspnetcore.http.connections.client.10.0.4.nupkg.sha512"
+      "sha512": "sha512-z4Iny9wOi2D3h/YVPELyb2aMakFQIwiAeCHl1T8giCoUHgql+HtvKKldGxQC6/g4niuLBipi7O6zQT34O9/Rcw==",
+      "path": "microsoft.aspnetcore.http.connections.client/10.0.5",
+      "hashPath": "microsoft.aspnetcore.http.connections.client.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.4": {
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-xcuRo8Ubxwf3xay2z7mD3b3TmEnvMhSLzvfx5cqmk3V10oxTDqgIyZ8C5qav+iAc27In/TXteSJ6kS2iZpah7w==",
-      "path": "microsoft.aspnetcore.identity.entityframeworkcore/10.0.4",
-      "hashPath": "microsoft.aspnetcore.identity.entityframeworkcore.10.0.4.nupkg.sha512"
+      "sha512": "sha512-oo1uauTwgcnhYgituZ2nI3wJ8XN9z76ggu2zkOJu1BCfOOsqr+g08Kr4MOiMuXEhwySkpIV+MVoC25hC1288NA==",
+      "path": "microsoft.aspnetcore.identity.entityframeworkcore/10.0.5",
+      "hashPath": "microsoft.aspnetcore.identity.entityframeworkcore.10.0.5.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Identity.UI/7.0.20": {
       "type": "package",
@@ -3515,26 +3515,26 @@
       "path": "microsoft.aspnetcore.identity.ui/7.0.20",
       "hashPath": "microsoft.aspnetcore.identity.ui.7.0.20.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.JsonPatch/10.0.4": {
+    "Microsoft.AspNetCore.JsonPatch/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-u5jdZXA71Idn03Wa57HHGJPGlrLlfCUDO7HubkekdNWlRkhtcUE2QH3yM254DyKdB92y816sVbYvPf/NhTN56A==",
-      "path": "microsoft.aspnetcore.jsonpatch/10.0.4",
-      "hashPath": "microsoft.aspnetcore.jsonpatch.10.0.4.nupkg.sha512"
+      "sha512": "sha512-ODGomRlmt8/mFAqVyD9MgE4fXNkO6qDNeKuvmqNDuKjOL2UOkh/wJK0gEXS5VcViHFs+uQKOXD5xoTg1/ouKtA==",
+      "path": "microsoft.aspnetcore.jsonpatch/10.0.5",
+      "hashPath": "microsoft.aspnetcore.jsonpatch.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Client/10.0.4": {
+    "Microsoft.AspNetCore.SignalR.Client/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-P1uWqNW+1CDPTGDp3Ag4rtJ2JAIKQLMb7n4lPCtkw1CeoqFFSqtOCTuT/phthoDMx4ffgHfwpXVy/a+fAPbnyA==",
-      "path": "microsoft.aspnetcore.signalr.client/10.0.4",
-      "hashPath": "microsoft.aspnetcore.signalr.client.10.0.4.nupkg.sha512"
+      "sha512": "sha512-2v+Qi63UGm8hu9RAAfWeim3H9ovnxDiPx2MyLQI8nsWrgP+76Z7oiKj+kpVCR1N5QU9bF94RV0lZ/7OJH1LXUA==",
+      "path": "microsoft.aspnetcore.signalr.client/10.0.5",
+      "hashPath": "microsoft.aspnetcore.signalr.client.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Client.Core/10.0.4": {
+    "Microsoft.AspNetCore.SignalR.Client.Core/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qlMfCJal6UR8GceSQZRPu7MoruNfYCXyDSVeyR9WhqXRQ/M87oa6JLo5ziHCY3xxeEKqaLhUX0YwdZHsH8hopQ==",
-      "path": "microsoft.aspnetcore.signalr.client.core/10.0.4",
-      "hashPath": "microsoft.aspnetcore.signalr.client.core.10.0.4.nupkg.sha512"
+      "sha512": "sha512-A2+sApRgxWSxzD0Q5eRqElPPzqIqOljYCzt/mtC/KIjlTNLvVWoQn2amNnX3o7BrbaSdI1yeFcyKVal7zVgcSw==",
+      "path": "microsoft.aspnetcore.signalr.client.core/10.0.5",
+      "hashPath": "microsoft.aspnetcore.signalr.client.core.10.0.5.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
       "type": "package",
@@ -3641,40 +3641,40 @@
       "path": "microsoft.dotnet.hotreload.webassembly.browser/10.0.201",
       "hashPath": "microsoft.dotnet.hotreload.webassembly.browser.10.0.201.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore/10.0.4": {
+    "Microsoft.EntityFrameworkCore/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kzTsfFK2GCytp6DDTfQOmxPU4gbGdrIlP7PxrxF3ESNLtfXrC8BoUVZENBN2WORlZPAD7CVX6AYIglgkpXQooA==",
-      "path": "microsoft.entityframeworkcore/10.0.4",
-      "hashPath": "microsoft.entityframeworkcore.10.0.4.nupkg.sha512"
+      "sha512": "sha512-9tNBmK3EpYVGRQLiqP+bqK2m+TD0Gv//4vCzR7ZOgl4FWzCFyOpYdIVka13M4kcBdPdSJcs3wbHr3rmzOqbIMA==",
+      "path": "microsoft.entityframeworkcore/10.0.5",
+      "hashPath": "microsoft.entityframeworkcore.10.0.5.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Abstractions/10.0.4": {
+    "Microsoft.EntityFrameworkCore.Abstractions/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qDcJqCfN1XYyX0ID/Hd9/kQTRvlia8S+Yuwyl9uFhBIKnOCbl9WMdGQCzbZUKbkpkfvf3P9CDdXsnxHyE3O0Aw==",
-      "path": "microsoft.entityframeworkcore.abstractions/10.0.4",
-      "hashPath": "microsoft.entityframeworkcore.abstractions.10.0.4.nupkg.sha512"
+      "sha512": "sha512-32c58Rnm47Qvhimawf67KO9PytgPz3QoWye7Abapt0Yocw/JnzMiSNj/pRoIKyn8Jxypkv86zxKD4Q/zNTc0Ag==",
+      "path": "microsoft.entityframeworkcore.abstractions/10.0.5",
+      "hashPath": "microsoft.entityframeworkcore.abstractions.10.0.5.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Design/10.0.4": {
+    "Microsoft.EntityFrameworkCore.Design/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-FmiUU5xdu1chVxnmsu/mEpCKVQ5+lvIxdP0194lE7HfoU1jO4z/9qnWZpd0kSkVve4gOnRm1lE20kkhlMqJJIg==",
-      "path": "microsoft.entityframeworkcore.design/10.0.4",
-      "hashPath": "microsoft.entityframeworkcore.design.10.0.4.nupkg.sha512"
+      "sha512": "sha512-gm6f0cC2w/2tcd4GeZJqEMruTercpIJfO5sSAFLtqTqblDBHgAFk70xwshUIUVX4I6sZwdEUSd1YxoKFk1AL0w==",
+      "path": "microsoft.entityframeworkcore.design/10.0.5",
+      "hashPath": "microsoft.entityframeworkcore.design.10.0.5.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.InMemory/10.0.4": {
+    "Microsoft.EntityFrameworkCore.InMemory/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5iV0F645m863ccamkNhndJZsFCVVZ/08yTZ8x5uxYp41rbT7z5FFjLm2uM6IP2CBMYGTOBy+QWL/MiDKMc3FPA==",
-      "path": "microsoft.entityframeworkcore.inmemory/10.0.4",
-      "hashPath": "microsoft.entityframeworkcore.inmemory.10.0.4.nupkg.sha512"
+      "sha512": "sha512-zz4THzlDOrJ7fKU2YUOzQFs2LJ9DgOSr5xFXcDdoD59el73MTQLtQQOAJxQ94F4XDegyL9+2sePSQGdcU25ZxQ==",
+      "path": "microsoft.entityframeworkcore.inmemory/10.0.5",
+      "hashPath": "microsoft.entityframeworkcore.inmemory.10.0.5.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Relational/10.0.4": {
+    "Microsoft.EntityFrameworkCore.Relational/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DOTjTHy93W3TwpMLM4SCm0n57Sc0Jj3+m2S6LSTstKyBB34eT1UouaMS19mpWwvtj42+sRiEjA3+rOTNoNzXFQ==",
-      "path": "microsoft.entityframeworkcore.relational/10.0.4",
-      "hashPath": "microsoft.entityframeworkcore.relational.10.0.4.nupkg.sha512"
+      "sha512": "sha512-uxmFjZEAB/KbsgWFSS4lLqkEHCfXxB2x0UcbiO4e5fCRpFFeTMSx/me6009nYJLu5IKlDwO1POh++P6RilFTDw==",
+      "path": "microsoft.entityframeworkcore.relational/10.0.5",
+      "hashPath": "microsoft.entityframeworkcore.relational.10.0.5.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore.Relational.Design/1.1.0": {
       "type": "package",
@@ -3683,26 +3683,26 @@
       "path": "microsoft.entityframeworkcore.relational.design/1.1.0",
       "hashPath": "microsoft.entityframeworkcore.relational.design.1.1.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.SqlServer/10.0.4": {
+    "Microsoft.EntityFrameworkCore.SqlServer/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-10wyoIwxDfF/6AkExeACfIZseTk4hJknBzlzPMCGsmBo+QrdyESwm1Q5YpO/zYjLzhz6aPzYUaXShraovSP3tg==",
-      "path": "microsoft.entityframeworkcore.sqlserver/10.0.4",
-      "hashPath": "microsoft.entityframeworkcore.sqlserver.10.0.4.nupkg.sha512"
+      "sha512": "sha512-/3Ault1Ay6OIEp3ZGGVem4mSWyEOX9e5leUMalGV9aFM57e0xFHAnlhmNaBHYtILkbtkaAErikQuaLqMQb4fww==",
+      "path": "microsoft.entityframeworkcore.sqlserver/10.0.5",
+      "hashPath": "microsoft.entityframeworkcore.sqlserver.10.0.5.nupkg.sha512"
     },
-    "Microsoft.Extensions.AI/10.4.0": {
+    "Microsoft.Extensions.AI/10.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7kKIuaUMFWikveZUjSrs53XfMVV7IDGSDaGp6/y/hV0HXsA7N2oIODZWxtEkEj8Q4cd/Oc/VlsVlg8efof7gFA==",
-      "path": "microsoft.extensions.ai/10.4.0",
-      "hashPath": "microsoft.extensions.ai.10.4.0.nupkg.sha512"
+      "sha512": "sha512-io38o6v3Tpbh++UqIcievOOTRwEyBpbNcudpZDjOo+DnAEQQvc3WqlChPipWLYH65cl9m8jiqH6ahHeasZzmOA==",
+      "path": "microsoft.extensions.ai/10.4.1",
+      "hashPath": "microsoft.extensions.ai.10.4.1.nupkg.sha512"
     },
-    "Microsoft.Extensions.AI.Abstractions/10.4.0": {
+    "Microsoft.Extensions.AI.Abstractions/10.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-t3S2H4do4YeNheIfE3GEl3MnKIrnxpbLu7a88spfApYR3in9ddhIq/GMtxgMaFjn/PUMTCFv5YH7Y6Q91dsDXQ==",
-      "path": "microsoft.extensions.ai.abstractions/10.4.0",
-      "hashPath": "microsoft.extensions.ai.abstractions.10.4.0.nupkg.sha512"
+      "sha512": "sha512-ZxhU/wg9BOc3ohibhLl18toPLWm96ysQoE+3OhCgrZ0TUPZd7bsUmGteeatz08yweyuPIEhtyUzEZTF+3bMWEQ==",
+      "path": "microsoft.extensions.ai.abstractions/10.4.1",
+      "hashPath": "microsoft.extensions.ai.abstractions.10.4.1.nupkg.sha512"
     },
     "Microsoft.Extensions.AI.Ollama/9.7.0-preview.1.25356.2": {
       "type": "package",
@@ -3718,12 +3718,12 @@
       "path": "microsoft.extensions.ai.openai/10.3.0",
       "hashPath": "microsoft.extensions.ai.openai.10.3.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyModel/10.0.4": {
+    "Microsoft.Extensions.DependencyModel/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-LiJXylfk8pk+2zsUsITkou3QTFMJ8RNJ0oKKY0Oyjt6HJctGJwPw//ZgoNO4J29zKaT+dR4/PI2jW/znRcspLg==",
-      "path": "microsoft.extensions.dependencymodel/10.0.4",
-      "hashPath": "microsoft.extensions.dependencymodel.10.0.4.nupkg.sha512"
+      "sha512": "sha512-xA4kkL+QS6KCAOKz/O0oquHs44Ob8J7zpBCNt3wjkBWDg5aCqfwG8rWWLsg5V86AM0sB849g9JjPjIdksTCIKg==",
+      "path": "microsoft.extensions.dependencymodel/10.0.5",
+      "hashPath": "microsoft.extensions.dependencymodel.10.0.5.nupkg.sha512"
     },
     "Microsoft.Extensions.VectorData.Abstractions/10.0.1": {
       "type": "package",
@@ -3816,12 +3816,12 @@
       "path": "microsoft.identitymodel.tokens/8.16.0",
       "hashPath": "microsoft.identitymodel.tokens.8.16.0.nupkg.sha512"
     },
-    "Microsoft.JSInterop.WebAssembly/10.0.4": {
+    "Microsoft.JSInterop.WebAssembly/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-9i1nsLzyh+liVUwpqnz/wyz/10zTdZowFCTL3XQ8U3nJcJb2TUUIJLWz6P97N8g33smPcvLe4Rfxz5+NjyZ7kQ==",
-      "path": "microsoft.jsinterop.webassembly/10.0.4",
-      "hashPath": "microsoft.jsinterop.webassembly.10.0.4.nupkg.sha512"
+      "sha512": "sha512-9iva1I1opPJA1xMSGTNmbyLhyzw383l6StST9gebB/UEBrYuadzwsv7O3eKAhmJVsPUGy6wWo4SVUcfFnPNQXA==",
+      "path": "microsoft.jsinterop.webassembly/10.0.5",
+      "hashPath": "microsoft.jsinterop.webassembly.10.0.5.nupkg.sha512"
     },
     "Microsoft.OpenApi/2.4.1": {
       "type": "package",
@@ -3886,12 +3886,12 @@
       "path": "microsoft.visualstudio.solutionpersistence/1.0.52",
       "hashPath": "microsoft.visualstudio.solutionpersistence.1.0.52.nupkg.sha512"
     },
-    "Microsoft.Win32.SystemEvents/10.0.4": {
+    "Microsoft.Win32.SystemEvents/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-vrZD/q7cibjX1yGULXDnt0G2BXcMqvJ8+ZlggrDIexVjtd0vOJPqW8+I7Y6BwNHDLukge70h3BIZFxD7ccL/eQ==",
-      "path": "microsoft.win32.systemevents/10.0.4",
-      "hashPath": "microsoft.win32.systemevents.10.0.4.nupkg.sha512"
+      "sha512": "sha512-a7rC0Qb5JGiA4f4ooqQjsx17LgYkb9feOcMNGyBXGqYmqC4ZoLbrV98zn7Kr5Z39BIU10Bti80Jwm/QAw+45VA==",
+      "path": "microsoft.win32.systemevents/10.0.5",
+      "hashPath": "microsoft.win32.systemevents.10.0.5.nupkg.sha512"
     },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
@@ -3935,19 +3935,19 @@
       "path": "nodatime/3.2.2",
       "hashPath": "nodatime.3.2.2.nupkg.sha512"
     },
-    "Npgsql/10.0.1": {
+    "Npgsql/10.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-XyUcxEfqlFomhNTG/ZdGlec+uSOQArKz0Mzz8jYKP/Jj9GM2YabU5CVZtp0yiC4f9hRp+tRZTnHMatJeJ3rwgw==",
-      "path": "npgsql/10.0.1",
-      "hashPath": "npgsql.10.0.1.nupkg.sha512"
+      "sha512": "sha512-q5RfBI+wywJSFUNDE1L4ZbHEHCFTblo8Uf6A6oe4feOUFYiUQXyAf9GBh5qEZpvJaHiEbpBPkQumjEhXCJxdrg==",
+      "path": "npgsql/10.0.2",
+      "hashPath": "npgsql.10.0.2.nupkg.sha512"
     },
-    "Npgsql.EntityFrameworkCore.PostgreSQL/10.0.0": {
+    "Npgsql.EntityFrameworkCore.PostgreSQL/10.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-E2+uSWxSB8LdsUVwPaqRWOcGOP92biry2JEwc0KJMdLJF+aZdczeIdEXVwEyv4nSVMQJH0o8tLhyAMiR6VF0lw==",
-      "path": "npgsql.entityframeworkcore.postgresql/10.0.0",
-      "hashPath": "npgsql.entityframeworkcore.postgresql.10.0.0.nupkg.sha512"
+      "sha512": "sha512-P6EwH0Q4xkaA264iNZDqCPhWt8pscfUGxXazDQg4noBfqjoOlk4hKWfvBjF9ZX3R/9JybRmmJfmxr2iBMj0EpA==",
+      "path": "npgsql.entityframeworkcore.postgresql/10.0.1",
+      "hashPath": "npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512"
     },
     "Npgsql.EntityFrameworkCore.PostgreSQL.Design/1.1.0": {
       "type": "package",
@@ -3956,26 +3956,26 @@
       "path": "npgsql.entityframeworkcore.postgresql.design/1.1.0",
       "hashPath": "npgsql.entityframeworkcore.postgresql.design.1.1.0.nupkg.sha512"
     },
-    "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime/10.0.0": {
+    "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime/10.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-rOdtaU3eIJPP+qheKV1JqEy2WuJYuukr+rFVIH6xefcyJ9kGTTw/o7xGLOQMLbbfQBmiWjFv4lDxHSv79g0Fqg==",
-      "path": "npgsql.entityframeworkcore.postgresql.nodatime/10.0.0",
-      "hashPath": "npgsql.entityframeworkcore.postgresql.nodatime.10.0.0.nupkg.sha512"
+      "sha512": "sha512-Bmntbi0ttQg22lJHUnfR1d/tfLf2PNHQwnvkmH4I29yYIqr/yuCini3NocZSxFwzJRONke5qt/CEFuxhI5yVDg==",
+      "path": "npgsql.entityframeworkcore.postgresql.nodatime/10.0.1",
+      "hashPath": "npgsql.entityframeworkcore.postgresql.nodatime.10.0.1.nupkg.sha512"
     },
-    "Npgsql.Json.NET/10.0.1": {
+    "Npgsql.Json.NET/10.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Zz+OK+Bjb9fy+lQUQoIDJNRrZv29gxN4RADgk4vguz5a0K757b+0KH3CRnA18lhIHIQ7NrmfA4Cu5PnQ2xwJFQ==",
-      "path": "npgsql.json.net/10.0.1",
-      "hashPath": "npgsql.json.net.10.0.1.nupkg.sha512"
+      "sha512": "sha512-Sudztg1NxDvR/UBWeLLMZ9CfUzJEkp/WBXmBD6SVKmGdTwaGAOSZbSV3D6OgRhDNBiLl4iI8c0+YFtVFT+dP5Q==",
+      "path": "npgsql.json.net/10.0.2",
+      "hashPath": "npgsql.json.net.10.0.2.nupkg.sha512"
     },
-    "Npgsql.NodaTime/10.0.0": {
+    "Npgsql.NodaTime/10.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wcP0/9bNqwR4DhNXG5aueanHIy65LdXunnDcErUrMk+iA94weAgjA7f3U+5w/LINR005v7pJOwjnlezlftOYbQ==",
-      "path": "npgsql.nodatime/10.0.0",
-      "hashPath": "npgsql.nodatime.10.0.0.nupkg.sha512"
+      "sha512": "sha512-p3SslILn0zdM5YTKr0eZJRuWfA6UIFbxrgu82WL4Fhif+gWLpqhFrwntXweLhl5T7oSN5Tmvd6QNHP/7N8sLtg==",
+      "path": "npgsql.nodatime/10.0.2",
+      "hashPath": "npgsql.nodatime.10.0.2.nupkg.sha512"
     },
     "NReco.Logging.File/1.3.1": {
       "type": "package",
@@ -4040,12 +4040,12 @@
       "path": "opentelemetry.extensions.hosting/1.15.0",
       "hashPath": "opentelemetry.extensions.hosting.1.15.0.nupkg.sha512"
     },
-    "OpenTelemetry.Instrumentation.AspNetCore/1.15.0": {
+    "OpenTelemetry.Instrumentation.AspNetCore/1.15.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mte1nRYefxjed2syXgVWq3UCfMKO7MkebvTZmf0O1aLgVgCktLsVjQ6mftyjIbWGBBCHN0wg+Glxj8BSFS70pQ==",
-      "path": "opentelemetry.instrumentation.aspnetcore/1.15.0",
-      "hashPath": "opentelemetry.instrumentation.aspnetcore.1.15.0.nupkg.sha512"
+      "sha512": "sha512-wXaZTu6LHY8xcbRd6ClcrtjHqGVoGYCcArXEZA3iUjUcYSVYwDGyPU0PdkwTfylxv8JeCCVDQhVb0fT7xBJjGA==",
+      "path": "opentelemetry.instrumentation.aspnetcore/1.15.1",
+      "hashPath": "opentelemetry.instrumentation.aspnetcore.1.15.1.nupkg.sha512"
     },
     "OpenTelemetry.Instrumentation.EntityFrameworkCore/1.15.0-beta.1": {
       "type": "package",
@@ -4215,12 +4215,12 @@
       "path": "system.codedom/6.0.0",
       "hashPath": "system.codedom.6.0.0.nupkg.sha512"
     },
-    "System.CommandLine/2.0.4": {
+    "System.CommandLine/2.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-L5qskg+CB8T40PhVUGFDI9M9GiRhLf9jjQq7UCB1EGGb07oT9/SyS2Q7PCZh7l8yyd41yEnlI6T2ZrkGBxRPkg==",
-      "path": "system.commandline/2.0.4",
-      "hashPath": "system.commandline.2.0.4.nupkg.sha512"
+      "sha512": "sha512-2XtWAPk1G6arpe3OCFNrYYuf6iIboznxs2elJSGgd8e0euou7LfGYFon6hBEfDWNtOLr0M3+oUVgy1a5EGa41A==",
+      "path": "system.commandline/2.0.5",
+      "hashPath": "system.commandline.2.0.5.nupkg.sha512"
     },
     "System.Composition/9.0.0": {
       "type": "package",
@@ -4271,12 +4271,12 @@
       "path": "system.configuration.configurationmanager/9.0.4",
       "hashPath": "system.configuration.configurationmanager.9.0.4.nupkg.sha512"
     },
-    "System.Drawing.Common/10.0.4": {
+    "System.Drawing.Common/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-jaRxGZXTezDxIe18pgnnycQLsZjU6ueZ+lGsODhaX3CXZ13e1T3xbmTnY6CEC+zbsC60TyhRxy+iHk0bXmjMBg==",
-      "path": "system.drawing.common/10.0.4",
-      "hashPath": "system.drawing.common.10.0.4.nupkg.sha512"
+      "sha512": "sha512-FYgPPbii/9Prh7RuY1gaxSyik7Ysw594K0uCHggDxHDgl7mfk8c4UlwluKjQoMquVGLce7Jld4DjjsnuYK3m7g==",
+      "path": "system.drawing.common/10.0.5",
+      "hashPath": "system.drawing.common.10.0.5.nupkg.sha512"
     },
     "System.IdentityModel.Tokens.Jwt/8.16.0": {
       "type": "package",
@@ -4285,12 +4285,12 @@
       "path": "system.identitymodel.tokens.jwt/8.16.0",
       "hashPath": "system.identitymodel.tokens.jwt.8.16.0.nupkg.sha512"
     },
-    "System.IO.Packaging/10.0.4": {
+    "System.IO.Packaging/10.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-RrPZy7IyNb7q4EtQv77rPXREuq6sh1aYLEMlSjda4MYXiF93qXjeAgMFcM+UlcIXEjyTimoHg2h1JrHOghOYyw==",
-      "path": "system.io.packaging/10.0.4",
-      "hashPath": "system.io.packaging.10.0.4.nupkg.sha512"
+      "sha512": "sha512-ygK00KGbFHlZZmcO5ihqdrsMeFQ0liD2qQ+Yz/30G5ZOyeh3aHBEfVIRPBNFBE0epnwjbIrjLdDvLP3iBmsCcg==",
+      "path": "system.io.packaging/10.0.5",
+      "hashPath": "system.io.packaging.10.0.5.nupkg.sha512"
     },
     "System.Memory.Data/8.0.1": {
       "type": "package",
@@ -4327,7 +4327,7 @@
       "path": "toolbelt.blazor.httpclientinterceptor/10.2.0",
       "hashPath": "toolbelt.blazor.httpclientinterceptor.10.2.0.nupkg.sha512"
     },
-    "AppAdmin/0.7.2-alpha.5": {
+    "AppAdmin/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -4522,222 +4522,222 @@
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.BlazoredHtmlRender/0.7.2-alpha.5": {
+    "mdimai666.BlazoredHtmlRender/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.AppFront.Main/0.7.2-alpha.5": {
+    "mdimai666.Mars.AppFront.Main/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.AppFront.Shared/0.7.2-alpha.5": {
+    "mdimai666.Mars.AppFront.Shared/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Core/0.7.2-alpha.5": {
+    "mdimai666.Mars.Core/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host/0.7.2-alpha.5": {
+    "mdimai666.Mars.Host/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host.Data/0.7.2-alpha.5": {
+    "mdimai666.Mars.Host.Data/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host.Data.PostgreSQL/0.7.2-alpha.5": {
+    "mdimai666.Mars.Host.Data.PostgreSQL/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host.Shared/0.7.2-alpha.5": {
+    "mdimai666.Mars.Host.Shared/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.HttpSmartAuthFlow/0.7.2-alpha.5": {
+    "mdimai666.Mars.HttpSmartAuthFlow/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.MarsCodeEditor2/0.7.2-alpha.5": {
+    "mdimai666.Mars.MarsCodeEditor2/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Core/0.7.2-alpha.5": {
+    "mdimai666.Mars.Nodes.Core/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Core.Implements/0.7.2-alpha.5": {
+    "mdimai666.Mars.Nodes.Core.Implements/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.FormEditor/0.7.2-alpha.5": {
+    "mdimai666.Mars.Nodes.FormEditor/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Front.Shared/0.7.2-alpha.5": {
+    "mdimai666.Mars.Nodes.Front.Shared/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Host.Shared/0.7.2-alpha.5": {
+    "mdimai666.Mars.Nodes.Host.Shared/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Options/0.7.2-alpha.5": {
+    "mdimai666.Mars.Options/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Plugin.Abstractions/0.7.2-alpha.5": {
+    "mdimai666.Mars.Plugin.Abstractions/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Plugin.Front/0.7.2-alpha.5": {
+    "mdimai666.Mars.Plugin.Front/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Plugin.Front.Abstractions/0.7.2-alpha.5": {
+    "mdimai666.Mars.Plugin.Front.Abstractions/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Shared/0.7.2-alpha.5": {
+    "mdimai666.Mars.Shared/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.WebApiClient/0.7.2-alpha.5": {
+    "mdimai666.Mars.WebApiClient/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.MarsEditors/0.7.2-alpha.5": {
+    "mdimai666.MarsEditors/0.7.3-alpha.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "AppFront.Main/0.7.2.0": {
+    "AppFront.Main/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "AppFront.Shared/0.7.2.0": {
+    "AppFront.Shared/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BlazoredHtmlRender/0.7.2.0": {
+    "BlazoredHtmlRender/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Core/0.7.2.0": {
+    "Mars.Core/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Data/0.7.2.0": {
+    "Mars.Host.Data/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Data.PostgreSQL/0.7.2.0": {
+    "Mars.Host.Data.PostgreSQL/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host/0.7.2.0": {
+    "Mars.Host/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Shared/0.7.2.0": {
+    "Mars.Host.Shared/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.HttpSmartAuthFlow/0.7.2.0": {
+    "Mars.HttpSmartAuthFlow/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Core/0.7.2.0": {
+    "Mars.Nodes.Core/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Core.Implements/0.7.2.0": {
+    "Mars.Nodes.Core.Implements/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.FormEditor/0.7.2.0": {
+    "Mars.Nodes.FormEditor/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Front.Shared/0.7.2.0": {
+    "Mars.Nodes.Front.Shared/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Host.Shared/0.7.2.0": {
+    "Mars.Nodes.Host.Shared/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Options/0.7.2.0": {
+    "Mars.Options/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Abstractions/0.7.2.0": {
+    "Mars.Plugin.Abstractions/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Front.Abstractions/0.7.2.0": {
+    "Mars.Plugin.Front.Abstractions/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Front/0.7.2.0": {
+    "Mars.Plugin.Front/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Shared/0.7.2.0": {
+    "Mars.Shared/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.WebApiClient/0.7.2.0": {
+    "Mars.WebApiClient/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "MarsCodeEditor2/0.7.2.0": {
+    "MarsCodeEditor2/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "MarsEditors/0.7.2.0": {
+    "MarsEditors/0.7.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

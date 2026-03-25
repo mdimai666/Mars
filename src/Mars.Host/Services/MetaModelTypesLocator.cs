@@ -4,6 +4,7 @@ using FluentValidation;
 using Mars.Core.Extensions;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
@@ -15,9 +16,7 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
 {
     private FrozenDictionary<string, PostTypeInfo>? _postTypes;
     private Dictionary<Guid, string>? _postTypesById;
-
-    private readonly IServiceScope _scope;
-    private readonly IPostTypeRepository _postTypeRepository;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly IMetaEntityTypeProvider _metaEntityTypeProvider;
     private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
     private SemaphoreSlim _lockPostTypes = new(1, 1);
@@ -28,8 +27,7 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
                                 IMetaEntityTypeProvider metaEntityTypeProvider,
                                 IDatabaseEntityTypeCatalogService databaseEntityTypeCatalogService)
     {
-        _scope = serviceScopeFactory.CreateScope();
-        _postTypeRepository = _scope.ServiceProvider.GetRequiredService<IPostTypeRepository>();
+        _scopeFactory = serviceScopeFactory;
         _metaEntityTypeProvider = metaEntityTypeProvider;
         _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
 
@@ -48,7 +46,7 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
             await _lockPostTypes.WaitAsync(1000);
             _postTypesById = [];
 
-            var types = await _postTypeRepository.ListAllDetail(CancellationToken.None);
+            var types = await _scopeFactory.ExecuteScopedAsync((IPostTypeRepository repo) => repo.ListAllDetail(CancellationToken.None));
             return types.ToFrozenDictionary(s => s.TypeName, s =>
             {
                 _postTypesById.Add(s.Id, s.TypeName);
@@ -110,12 +108,12 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
                     : _metaRelationModelProviderDict.Keys.ToArray();
     }
 
-    public IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName)
+    public IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName, IServiceProvider serviceProvider)
     {
-        return _scope.ServiceProvider.GetKeyedService<IMetaRelationModelProviderHandler>(modelName);
+        return serviceProvider.GetKeyedService<IMetaRelationModelProviderHandler>(modelName);
     }
 
-    public IReadOnlyCollection<MetaRelationModel> AllMetaRelationsStructure() //TODO: add cache
+    public IReadOnlyCollection<MetaRelationModel> AllMetaRelationsStructure(IServiceProvider serviceProvider) //TODO: add cache
     {
         var keys = ListMetaRelationModelProviderKeys();
 
@@ -123,7 +121,7 @@ internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeS
 
         foreach (var key in keys)
         {
-            var provider = GetMetaRelationModelProvider(key);
+            var provider = GetMetaRelationModelProvider(key, serviceProvider);
             list.Add(provider.Structure());
         }
 

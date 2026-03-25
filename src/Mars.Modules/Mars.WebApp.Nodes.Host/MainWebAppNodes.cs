@@ -11,7 +11,7 @@ public static class MainWebAppNodes
 {
     public static IServiceCollection AddMarsWebAppNodes(this IServiceCollection services)
         => services.AddMarsWebAppNodesFront()
-                    .AddSingleton<IAppEntityFormBuilderFactory, AppEntityFormBuilderFactory>();
+                    .AddScoped<IAppEntityFormBuilderFactory, AppEntityFormBuilderFactory>();
 
     public static IApplicationBuilder UseMarsWebAppNodes(this IApplicationBuilder app)
     {

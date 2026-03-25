@@ -7,7 +7,7 @@ public interface IPostCategoryMetaLocator
     PostCategoryTypeDetail? GetTypeDetailById(Guid id);
     PostCategoryTypeDetail? GetTypeDetailByName(string postCategoryTypeName);
     IReadOnlyDictionary<string, PostCategoryTypeDetail> GetTypeDict();
-    void InvalidateCompiledMetaMtoModels();
+    void InvalidateCache();
     bool ExistType(Guid id);
     bool ExistType(string postCategoryTypeName);
 }

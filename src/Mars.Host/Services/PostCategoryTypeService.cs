@@ -18,6 +18,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IEventManager _eventManager;
     private readonly IPostCategoryMetaLocator _postCategoryMetaLocator;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IValidatorFabric _validatorFabric;
 
     public PostCategoryTypeService(
@@ -25,12 +26,14 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
         IMetaModelTypesLocator metaModelTypesLocator,
         IEventManager eventManager,
         IPostCategoryMetaLocator postCategoryMetaLocator,
+        IServiceProvider serviceProvider,
         IValidatorFabric validatorFabric)
     {
         _postCategoryTypeRepository = postCategoryTypeRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
         _eventManager = eventManager;
         _postCategoryMetaLocator = postCategoryMetaLocator;
+        _serviceProvider = serviceProvider;
         _validatorFabric = validatorFabric;
     }
 
@@ -59,7 +62,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
         var id = await _postCategoryTypeRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
 
-        _postCategoryMetaLocator.InvalidateCompiledMetaMtoModels();
+        _postCategoryMetaLocator.InvalidateCache();
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
@@ -74,7 +77,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
         return new PostCategoryTypeEditViewModel
         {
             PostCategoryType = postCategoryType.ToResponse(),
-            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure().ToResponse()
+            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure(_serviceProvider).ToResponse()
         };
     }
 
@@ -85,7 +88,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
         await _postCategoryTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 
-        _postCategoryMetaLocator.InvalidateCompiledMetaMtoModels();
+        _postCategoryMetaLocator.InvalidateCache();
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryTypeUpdate(updated.TypeName), updated.ToSummary());
         _eventManager.TriggerEvent(payload);
@@ -101,7 +104,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
         await _postCategoryTypeRepository.Delete(id, cancellationToken);
 
-        _postCategoryMetaLocator.InvalidateCompiledMetaMtoModels();
+        _postCategoryMetaLocator.InvalidateCache();
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostCategoryTypeDelete(postCategoryType.TypeName), postCategoryType);
         _eventManager.TriggerEvent(payload);
@@ -117,7 +120,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
         await _postCategoryTypeRepository.DeleteMany(query, cancellationToken);
 
-        _postCategoryMetaLocator.InvalidateCompiledMetaMtoModels();
+        _postCategoryMetaLocator.InvalidateCache();
 
         foreach (var postCategoryType in postCategoryTypes)
         {

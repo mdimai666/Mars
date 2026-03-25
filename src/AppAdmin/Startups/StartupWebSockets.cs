@@ -7,6 +7,17 @@ namespace AppAdmin.Startups;
 
 internal static class StartupWebSockets
 {
+    static readonly TimeSpan[] reconnectDelays = [
+        TimeSpan.Zero,
+        TimeSpan.FromSeconds(2),
+        TimeSpan.FromSeconds(5),
+        TimeSpan.FromSeconds(10),
+        TimeSpan.FromSeconds(30),
+        TimeSpan.FromMinutes(1),
+        TimeSpan.FromMinutes(2),
+        TimeSpan.FromMinutes(5)
+    ];
+
     internal static void ConfigureWebSockets(this WebAssemblyHostBuilder builder, string backendUrl)
     {
         var connection = new HubConnectionBuilder()
@@ -16,8 +27,11 @@ internal static class StartupWebSockets
                 //logging.SetMinimumLevel(LogLevel.Information);
                 //logging.AddConsole();
             })
-            .WithAutomaticReconnect()
+            .WithAutomaticReconnect(reconnectDelays)
             .Build();
+
+        connection.KeepAliveInterval = TimeSpan.FromSeconds(15);
+        connection.ServerTimeout = TimeSpan.FromSeconds(30);
 
         builder.Services.AddScoped<HubConnection>(sp => connection);
         builder.Services.AddScoped<ClientHub>();

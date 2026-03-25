@@ -59,7 +59,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
         postCategoryType.MetaFields = metaFields;
         ef.MetaFields.AddRange(metaFields);
         ef.SaveChanges();
-        AppFixture.ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCompiledMetaMtoModels();
+        AppFixture.ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCache();
         AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 
         var metaValueCreateList = metaFields.Select(mf => _fixture.CreateSimpleCreateMetaValueRequest(mf.Id, mf.Type)).ToArray();

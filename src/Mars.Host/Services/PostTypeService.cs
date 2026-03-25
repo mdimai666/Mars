@@ -21,6 +21,7 @@ internal class PostTypeService : IPostTypeService
     private readonly IStringLocalizer<AppRes> _stringLocalizer;
     private readonly IEventManager _eventManager;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IValidatorFabric _validatorFabric;
 
     public PostTypeService(
@@ -28,12 +29,14 @@ internal class PostTypeService : IPostTypeService
         IStringLocalizer<AppRes> stringLocalizer,
         IEventManager eventManager,
         IMetaModelTypesLocator metaModelTypesLocator,
+        IServiceProvider serviceProvider,
         IValidatorFabric validatorFabric)
     {
         _postTypeRepository = postTypeRepository;
         _stringLocalizer = stringLocalizer;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
+        _serviceProvider = serviceProvider;
         _validatorFabric = validatorFabric;
     }
 
@@ -71,7 +74,7 @@ internal class PostTypeService : IPostTypeService
         return new PostTypeEditViewModel
         {
             PostType = postType.ToResponse(),
-            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure().ToResponse()
+            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure(_serviceProvider).ToResponse()
         };
     }
 
@@ -125,7 +128,7 @@ internal class PostTypeService : IPostTypeService
 
     public Task<IReadOnlyCollection<MetaRelationModel>> AllMetaRelationsStructure()
     {
-        return Task.FromResult(_metaModelTypesLocator.AllMetaRelationsStructure());
+        return Task.FromResult(_metaModelTypesLocator.AllMetaRelationsStructure(_serviceProvider));
     }
 
     public Task<ListDataResult<MetaValueRelationModelSummary>> ListMetaValueRelationModels(MetaValueRelationModelsListQuery query, CancellationToken cancellationToken)
@@ -135,7 +138,8 @@ internal class PostTypeService : IPostTypeService
         ////var postType = _metaModelTypesLocator.GetPostTypeByName(postTypeName) ?? throw new NotFoundException($"post type '{postTypeName}' not found");
         ////var metaField = postType.MetaFields.FirstOrDefault(s=>s.Id == metaFieldId) ?? throw new NotFoundException($"metaFieldId with id '{metaFieldId}' not found");
 
-        var dataProvider = _metaModelTypesLocator.GetMetaRelationModelProvider(rootModelName) ?? throw new NotFoundException($"Provider for type '{query.ModelName}' not found"); ;
+        var dataProvider = _metaModelTypesLocator.GetMetaRelationModelProvider(rootModelName, _serviceProvider)
+                                ?? throw new NotFoundException($"Provider for type '{query.ModelName}' not found"); ;
 
         return dataProvider.ListData(query, cancellationToken);
     }
@@ -143,7 +147,8 @@ internal class PostTypeService : IPostTypeService
     public Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetMetaValueRelationModels(string modelName, Guid[] ids, CancellationToken cancellationToken)
     {
         var rootModelName = modelName.Split('.', 2)[0];
-        var dataProvider = _metaModelTypesLocator.GetMetaRelationModelProvider(rootModelName) ?? throw new NotFoundException($"Provider for type '{modelName}' not found"); ;
+        var dataProvider = _metaModelTypesLocator.GetMetaRelationModelProvider(rootModelName, _serviceProvider)
+                                ?? throw new NotFoundException($"Provider for type '{modelName}' not found"); ;
 
         return dataProvider.GetIds(modelName, ids, cancellationToken);
     }

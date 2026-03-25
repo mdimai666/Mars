@@ -8,14 +8,12 @@ namespace Mars.Host.Services;
 
 internal class PostContentProcessorsLocator : IPostContentProcessorsLocator
 {
-    private readonly IServiceScope _scope;
     private readonly IServiceCollection _serviceCollection;
     private readonly IMemoryCache _memoryCache;
     public const string CacheKey = "PostContentProcessorsLocator:List";
 
-    public PostContentProcessorsLocator(IServiceScopeFactory serviceScopeFactory, IServiceCollection serviceCollection, IMemoryCache memoryCache)
+    public PostContentProcessorsLocator(IServiceCollection serviceCollection, IMemoryCache memoryCache)
     {
-        _scope = serviceScopeFactory.CreateScope();
         _serviceCollection = serviceCollection;
         _memoryCache = memoryCache;
     }
@@ -48,9 +46,9 @@ internal class PostContentProcessorsLocator : IPostContentProcessorsLocator
         return cachedList!.Select(s => s.Key).ToArray()!;
     }
 
-    public IPostContentProcessor? GetProvider(string postContentType)
+    public IPostContentProcessor? GetProvider(string postContentType, IServiceProvider serviceProvider)
     {
-        return _scope.ServiceProvider.GetKeyedService<IPostContentProcessor>(postContentType);
+        return serviceProvider.GetKeyedService<IPostContentProcessor>(postContentType);
     }
 
 }

@@ -6,26 +6,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApp.Nodes.Host.Builders;
 
-internal class AppEntityFormBuilderFactory : IAppEntityFormBuilderFactory, IDisposable
+internal class AppEntityFormBuilderFactory : IAppEntityFormBuilderFactory
 {
     internal const string FormsBuilderDictionaryCacheKey = "nodes:builders:AppEntityCreateFormsBuilderDictionary";
 
     private readonly IMemoryCache _memoryCache;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IEventManager _eventManager;
-    private readonly IServiceScope _scope;
 
     IReadOnlyDictionary<string, Type> dict = new Dictionary<string, Type>()
     {
         ["Post"] = typeof(PostEntityCreateFormBuilder),
     };
 
-    public AppEntityFormBuilderFactory(IMemoryCache memoryCache, IServiceScopeFactory serviceScopeFactory, IEventManager eventManager)
+    public AppEntityFormBuilderFactory(IMemoryCache memoryCache, IServiceProvider serviceProvider, IEventManager eventManager)
     {
         _memoryCache = memoryCache;
-        _serviceScopeFactory = serviceScopeFactory;
+        _serviceProvider = serviceProvider;
         _eventManager = eventManager;
-        _scope = _serviceScopeFactory.CreateScope();
 
         _eventManager.AddEventListener(_eventManager.Defaults.PostTypeAnyOperation(), (_) =>
         {
@@ -37,7 +35,7 @@ internal class AppEntityFormBuilderFactory : IAppEntityFormBuilderFactory, IDisp
     {
         var type = dict.GetValueOrDefault(name);
         if (type == null) return null;
-        return (IAppEntityCreateFormBuilder)ActivatorUtilities.CreateInstance(_scope.ServiceProvider, type);
+        return (IAppEntityCreateFormBuilder)ActivatorUtilities.CreateInstance(_serviceProvider, type);
     }
 
     public AppEntityCreateFormsBuilderDictionary FormsBuilderDictionary()
@@ -47,11 +45,6 @@ internal class AppEntityFormBuilderFactory : IAppEntityFormBuilderFactory, IDisp
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
             return CreateFormsBuilderDictionary(); ;
         })!;
-    }
-
-    public void Dispose()
-    {
-        _scope.Dispose();
     }
 
     private AppEntityCreateFormsBuilderDictionary CreateFormsBuilderDictionary()

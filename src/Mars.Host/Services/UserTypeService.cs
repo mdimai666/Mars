@@ -18,6 +18,7 @@ internal class UserTypeService : IUserTypeService
     private readonly IEventManager _eventManager;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IUserMetaLocator _userMetaLocator;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IValidatorFabric _validatorFabric;
 
     public UserTypeService(
@@ -25,12 +26,14 @@ internal class UserTypeService : IUserTypeService
         IEventManager eventManager,
         IMetaModelTypesLocator metaModelTypesLocator,
         IUserMetaLocator userMetaLocator,
+        IServiceProvider serviceProvider,
         IValidatorFabric validatorFabric)
     {
         _userTypeRepository = userTypeRepository;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
         _userMetaLocator = userMetaLocator;
+        _serviceProvider = serviceProvider;
         _validatorFabric = validatorFabric;
     }
 
@@ -53,7 +56,7 @@ internal class UserTypeService : IUserTypeService
         var id = await _userTypeRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
 
-        _userMetaLocator.InvalidateCompiledMetaMtoModels();
+        _userMetaLocator.InvalidateCache();
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
@@ -69,7 +72,7 @@ internal class UserTypeService : IUserTypeService
         return new UserTypeEditViewModel
         {
             UserType = userType.ToResponse(),
-            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure().ToResponse()
+            MetaRelationModels = _metaModelTypesLocator.AllMetaRelationsStructure(_serviceProvider).ToResponse()
         };
     }
 
@@ -80,7 +83,7 @@ internal class UserTypeService : IUserTypeService
         await _userTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 
-        _userMetaLocator.InvalidateCompiledMetaMtoModels();
+        _userMetaLocator.InvalidateCache();
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeUpdate(updated.TypeName), updated.ToSummary());
@@ -97,7 +100,7 @@ internal class UserTypeService : IUserTypeService
 
         await _userTypeRepository.Delete(id, cancellationToken);
 
-        _userMetaLocator.InvalidateCompiledMetaMtoModels();
+        _userMetaLocator.InvalidateCache();
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.UserTypeDelete(userType.TypeName), userType);
@@ -114,7 +117,7 @@ internal class UserTypeService : IUserTypeService
 
         await _userTypeRepository.DeleteMany(query, cancellationToken);
 
-        _userMetaLocator.InvalidateCompiledMetaMtoModels();
+        _userMetaLocator.InvalidateCache();
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
 
         foreach (var userType in userTypes)

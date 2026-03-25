@@ -1,6 +1,6 @@
 using System.Collections.Frozen;
-using System.Collections.Immutable;
 using Mars.Host.Shared.Dto.PostCategoryTypes;
+using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
@@ -8,99 +8,85 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.Services;
 
-internal class PostCategoryMetaLocator : IPostCategoryMetaLocator, IMarsAppLifetimeService
+internal sealed class PostCategoryMetaLocator : IPostCategoryMetaLocator, IMarsAppLifetimeService
 {
-    private FrozenDictionary<string, PostCategoryTypeInfo>? _postCategoryTypes;
-    private Dictionary<Guid, string>? _postCategoryTypesById;
+    private sealed record CacheSnapshot(
+        FrozenDictionary<string, PostCategoryTypeInfo> ByName,
+        FrozenDictionary<Guid, string> IdToName
+    );
 
-    private readonly IServiceScope _scope;
-    private readonly IPostCategoryTypeRepository _postCategoryTypeRepository;
-    private SemaphoreSlim _lockPostTypes = new(1, 1);
+    private volatile CacheSnapshot? _cache;
+    private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public PostCategoryMetaLocator(IServiceScopeFactory serviceScopeFactory)
+    public PostCategoryMetaLocator(IServiceScopeFactory scopeFactory)
     {
-        _scope = serviceScopeFactory.CreateScope();
-        _postCategoryTypeRepository = _scope.ServiceProvider.GetRequiredService<IPostCategoryTypeRepository>();
+        _scopeFactory = scopeFactory;
     }
 
-    private async Task<FrozenDictionary<string, PostCategoryTypeInfo>> GetTypeData()
+    private async ValueTask<CacheSnapshot> GetCacheAsync(CancellationToken ct = default)
     {
+        if (_cache is { } snapshot)
+            return snapshot;
+
+        await _lock.WaitAsync(ct);
         try
         {
-            await _lockPostTypes.WaitAsync(1000);
-            _postCategoryTypesById = [];
+            if (_cache is { } cached)
+                return cached;
 
-            var types = await _postCategoryTypeRepository.ListAllDetail(new(), CancellationToken.None);
-            return types.ToFrozenDictionary(s => s.TypeName, s =>
-            {
-                _postCategoryTypesById.Add(s.Id, s.TypeName);
-                return new PostCategoryTypeInfo
-                {
-                    PostCategoryType = s
-                };
-            });
+            var types = await _scopeFactory.ExecuteScopedAsync(
+                (IPostCategoryTypeRepository repo) => repo.ListAllDetail(new(), ct));
+
+            var idToName = types.ToFrozenDictionary(s => s.Id, s => s.TypeName);
+            var byName = types.ToFrozenDictionary(
+                s => s.TypeName,
+                s => new PostCategoryTypeInfo { PostCategoryType = s });
+
+            _cache = new CacheSnapshot(byName, idToName);
+            return _cache;
         }
         finally
         {
-            _lockPostTypes.Release();
+            _lock.Release();
         }
     }
 
+    private CacheSnapshot GetCacheSync()
+        => _cache ?? GetCacheAsync().AsTask().GetAwaiter().GetResult();
+
     public PostCategoryTypeDetail? GetTypeDetailById(Guid id)
     {
-        _postCategoryTypes ??= GetTypeData().ConfigureAwait(false).GetAwaiter().GetResult();
-
-        var name = _postCategoryTypesById!.GetValueOrDefault(id);
-        if (name == null) return null;
-
-        return _postCategoryTypes.GetValueOrDefault(name)?.PostCategoryType;
+        var cache = GetCacheSync();
+        return cache.IdToName.TryGetValue(id, out var name)
+            ? cache.ByName.GetValueOrDefault(name)?.PostCategoryType
+            : null;
     }
 
-    public PostCategoryTypeDetail? GetTypeDetailByName(string postCategoryTypeName)
-    {
-        _postCategoryTypes ??= GetTypeData().ConfigureAwait(false).GetAwaiter().GetResult();
-        return _postCategoryTypes.GetValueOrDefault(postCategoryTypeName)?.PostCategoryType;
-    }
+    public PostCategoryTypeDetail? GetTypeDetailByName(string typeName)
+        => GetCacheSync().ByName.GetValueOrDefault(typeName)?.PostCategoryType;
 
     public bool ExistType(Guid id)
-    {
-        _postCategoryTypes ??= GetTypeData().ConfigureAwait(false).GetAwaiter().GetResult();
-        return _postCategoryTypesById.ContainsKey(id);
-    }
+        => GetCacheSync().IdToName.ContainsKey(id);
 
-    public bool ExistType(string postCategoryTypeName)
-    {
-        _postCategoryTypes ??= GetTypeData().ConfigureAwait(false).GetAwaiter().GetResult();
-        return _postCategoryTypes.ContainsKey(postCategoryTypeName);
-    }
+    public bool ExistType(string typeName)
+        => GetCacheSync().ByName.ContainsKey(typeName);
 
     public IReadOnlyDictionary<string, PostCategoryTypeDetail> GetTypeDict()
-    {
-        _postCategoryTypes ??= GetTypeData().ConfigureAwait(false).GetAwaiter().GetResult();
-        return _postCategoryTypes.ToDictionary(s => s.Key, s => s.Value.PostCategoryType);
-    }
+        => GetCacheSync().ByName.ToDictionary(kv => kv.Key, kv => kv.Value.PostCategoryType);
 
-    private async Task InitializeCache()
-    {
-        _postCategoryTypes ??= await GetTypeData();
-    }
-
-    public void InvalidateCompiledMetaMtoModels()
-    {
-        _postCategoryTypes = null;
-
-    }
+    public void InvalidateCache()
+        => _cache = null;
 
     [StartupOrder(10)]
     public Task OnStartupAsync()
     {
-        _ = InitializeCache();
+        _ = GetCacheAsync();
         return Task.CompletedTask;
     }
 }
 
-public record PostCategoryTypeInfo
+public sealed record PostCategoryTypeInfo
 {
     public required PostCategoryTypeDetail PostCategoryType { get; init; }
-
 }

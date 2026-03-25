@@ -7,12 +7,15 @@ namespace Mars.Host.Services;
 internal class PostTransformer : IPostTransformer
 {
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IPostContentProcessorsLocator _postContentProcessorsLocator;
 
     public PostTransformer(IMetaModelTypesLocator metaModelTypesLocator,
+                            IServiceProvider serviceProvider,
                             IPostContentProcessorsLocator postContentProcessorsLocator)
     {
         _metaModelTypesLocator = metaModelTypesLocator;
+        _serviceProvider = serviceProvider;
         _postContentProcessorsLocator = postContentProcessorsLocator;
     }
 
@@ -20,7 +23,7 @@ internal class PostTransformer : IPostTransformer
     {
         if (string.IsNullOrEmpty(post.Content)) return post;
         var postType = _metaModelTypesLocator.GetPostTypeByName(post.Type) ?? throw new NotFoundException($"PostType '{post.Type}' not found");
-        var postContentProcessor = _postContentProcessorsLocator.GetProvider(postType.PostContentSettings.PostContentType);
+        var postContentProcessor = _postContentProcessorsLocator.GetProvider(postType.PostContentSettings.PostContentType, _serviceProvider);
         if (postContentProcessor is null) return post;
         var content = await postContentProcessor.RenderPostContent(postType, post.Content, cancellationToken);
 

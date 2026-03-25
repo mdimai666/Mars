@@ -21,7 +21,7 @@ public class KillTaskJobNodeExample1 : INodeExample<KillTaskJobNode>
                 NodesWorkflowBuilder.Create().AddNext(new DelayNode { DelayMillis = 500 })
                                                 .AddNext(new KillTaskJobNode())
                                                 .AddNext(new TemplateNode { Name = "new task", Template = "new task" })
-                                                .AddNext(new DelayNode())
+                                                .AddNext(new DebugNode())
             )
             .Build();
     }

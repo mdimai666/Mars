@@ -7,7 +7,7 @@ public interface IUserMetaLocator
     UserTypeDetail? GetTypeDetailById(Guid id);
     UserTypeDetail? GetTypeDetailByName(string userTypeName);
     IReadOnlyDictionary<string, UserTypeDetail> GetTypeDict();
-    void InvalidateCompiledMetaMtoModels();
+    void InvalidateCache();
     bool ExistType(Guid id);
     bool ExistType(string userTypeName);
 }

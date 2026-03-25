@@ -287,7 +287,7 @@ public static class MyHandlebarsBasicFunctions
         }
         var right = args[1] as string;
 
-        if (left is not DateTime or DateTimeOffset && left.ToString() == "now")
+        if (left is string st && st == "now")
             left = DateTime.Now;
 
         var formatString = right;

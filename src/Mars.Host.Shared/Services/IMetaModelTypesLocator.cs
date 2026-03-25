@@ -12,8 +12,8 @@ public interface IMetaModelTypesLocator
     bool ExistPostType(string postTypeName);
     IReadOnlyDictionary<string, PostTypeDetail> PostTypesDict();
     IReadOnlyCollection<string> ListMetaRelationModelProviderKeys();
-    IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName);
-    IReadOnlyCollection<MetaRelationModel> AllMetaRelationsStructure();
+    IMetaRelationModelProviderHandler? GetMetaRelationModelProvider(string modelName, IServiceProvider serviceProvider);
+    IReadOnlyCollection<MetaRelationModel> AllMetaRelationsStructure(IServiceProvider serviceProvider);
 
     void InvalidateCompiledMetaMtoModels();
     IReadOnlyDictionary<string, MtoModelInfo> MetaMtoModelsCompiledTypeDict { get; }

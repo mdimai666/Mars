@@ -51,7 +51,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
         createdPostCategory.MetaValues = metaValues;
         ef.PostCategories.Add(createdPostCategory);
         ef.SaveChanges();
-        AppFixture.ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCompiledMetaMtoModels();
+        AppFixture.ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCache();
         AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 
         var metaValueUpdates = metaValues.Select((mv, i) => _fixture.UpdateSimpleCreateMetaValueRequest(i != 0 ? mv.Id : Guid.NewGuid(), mv.MetaField.Id, mv.MetaField.Type)).ToArray();

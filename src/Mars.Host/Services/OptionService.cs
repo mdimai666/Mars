@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -20,9 +21,9 @@ using Microsoft.Extensions.Hosting;
 namespace Mars.Host.Services;
 
 // Singletone
-internal class OptionService : IOptionService, IDisposable
+internal class OptionService : IOptionService
 {
-    internal Dictionary<Type, object> localCache = [];
+    internal ConcurrentDictionary<Type, object> localCache = [];
     internal static JsonSerializerOptions serializerOptions = new();
 
     public SysOptions SysOption => ((SysOptions)localCache[typeof(SysOptions)]) ?? new();
@@ -34,12 +35,11 @@ internal class OptionService : IOptionService, IDisposable
 
     internal Dictionary<Type, object> ConstOptions { get; set; } = [];
 
-    private readonly IOptionRepository _optionRepository;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly IEventManager _eventManager;
     private readonly IMemoryCache _memoryCache;
     private readonly IHostEnvironment _environment;
     private Dictionary<Type, Action<object>> onChangeActions = [];
-    private IServiceScope _scope;
 
     private FileHostingInfo? _fileHostingInfo;
 
@@ -49,13 +49,25 @@ internal class OptionService : IOptionService, IDisposable
         IMemoryCache memoryCache,
         IHostEnvironment environment)
     {
-        _scope = scopeFactory.CreateScope();
         IsDevelopment = environment.IsDevelopment();
-
-        _optionRepository = _scope.ServiceProvider.GetRequiredService<IOptionRepository>();
+        _scopeFactory = scopeFactory;
         _eventManager = eventManager;
         _memoryCache = memoryCache;
         _environment = environment;
+    }
+
+    private async Task<TResult> WithRepository<TResult>(Func<IOptionRepository, Task<TResult>> action)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var repo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
+        return await action(repo);
+    }
+
+    private async Task WithRepository(Func<IOptionRepository, Task> action)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var repo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
+        await action(repo);
     }
 
     public void SaveOption<T>(T option) where T : class
@@ -74,11 +86,13 @@ internal class OptionService : IOptionService, IDisposable
 
         if (exist is null)
         {
-            await _optionRepository.Create(new CreateOptionQuery<T> { Key = key, Value = option }, cancellationToken);
+            await WithRepository(optionRepository =>
+                optionRepository.Create(new CreateOptionQuery<T> { Key = key, Value = option }, cancellationToken));
         }
         else
         {
-            await _optionRepository.Update(new UpdateOptionQuery<T> { Key = key, Value = option }, cancellationToken);
+            await WithRepository(optionRepository =>
+                optionRepository.Update(new UpdateOptionQuery<T> { Key = key, Value = option }, cancellationToken));
         }
 
         SetOptionOnMemory(option);
@@ -100,7 +114,8 @@ internal class OptionService : IOptionService, IDisposable
         Type t = typeof(T);
         string key = t.Name;
 
-        var exist = _optionRepository.GetKey<T>(key).ConfigureAwait(false).GetAwaiter().GetResult();
+        var exist = WithRepository(optionRepository =>
+                optionRepository.GetKey<T>(key)).ConfigureAwait(false).GetAwaiter().GetResult();
 
         if (exist is not null)
         {
@@ -122,7 +137,7 @@ internal class OptionService : IOptionService, IDisposable
         {
             T _opt = GetOptionFromRepo<T>() ?? new();
             opt = _opt;
-            localCache.Add(t, opt);
+            localCache.TryAdd(t, opt);
         }
 
         return (T)opt;
@@ -246,7 +261,7 @@ internal class OptionService : IOptionService, IDisposable
 
         if (diff.Count() == 0) return;
 
-        var fromDb = _optionRepository.ListAll(CancellationToken.None)
+        var fromDb = WithRepository(optionRepository => optionRepository.ListAll(CancellationToken.None))
                             .ConfigureAwait(false).GetAwaiter().GetResult()
                             .Where(opt => keys.Contains(opt.Key))
                             .ToList();
@@ -258,14 +273,7 @@ internal class OptionService : IOptionService, IDisposable
             {
                 var val = JsonSerializer.Deserialize(opt.Value, t, serializerOptions)!;
                 if (val is INormalizableAfterReadValue normalizableAfterRead) normalizableAfterRead.NormalizeAfterRead();
-                if (localCache.ContainsKey(t))
-                {
-                    localCache[t] = val;
-                }
-                else
-                {
-                    localCache.Add(t, val);
-                }
+                localCache.AddOrUpdate(t, val, (_, _) => val);
             }
         }
 
@@ -279,15 +287,7 @@ internal class OptionService : IOptionService, IDisposable
             {
                 var val = Activator.CreateInstance(t)!;
                 if (val is INormalizableAfterReadValue normalizableAfterRead) normalizableAfterRead.NormalizeAfterRead();
-
-                if (localCache.ContainsKey(t))
-                {
-                    localCache[t] = val;
-                }
-                else
-                {
-                    localCache.Add(t, val);
-                }
+                localCache.AddOrUpdate(t, val, (_, _) => val);
             }
         }
 
@@ -351,8 +351,4 @@ internal class OptionService : IOptionService, IDisposable
 
     public string GetDefaultDatabaseConnectionString() => IOptionService.Configuration.GetConnectionString("DefaultConnection")!;
 
-    public void Dispose()
-    {
-        _scope?.Dispose();
-    }
 }

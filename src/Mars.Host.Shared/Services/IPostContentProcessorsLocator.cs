@@ -14,5 +14,5 @@ public interface IPostContentProcessorsLocator
     /// <see cref="PostContentSettingsDto.PostContentType"/>
     /// </param>
     /// <returns></returns>
-    IPostContentProcessor? GetProvider(string postContentType);
+    IPostContentProcessor? GetProvider(string postContentType, IServiceProvider serviceProvider);
 }

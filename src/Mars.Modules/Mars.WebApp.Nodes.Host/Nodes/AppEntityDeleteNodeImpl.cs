@@ -4,22 +4,20 @@ using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
 public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INodeImplement
 {
-    private readonly IAppEntityFormBuilderFactory _formBuilderFactory;
-
     public AppEntityDeleteNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public AppEntityDeleteNodeImpl(AppEntityDeleteNode node, IRED _RED, IAppEntityFormBuilderFactory appEntityFormBuilderFactory)
+    public AppEntityDeleteNodeImpl(AppEntityDeleteNode node, IRED _RED)
     {
         Node = node;
         RED = _RED;
-        _formBuilderFactory = appEntityFormBuilderFactory;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -37,7 +35,8 @@ public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INod
 
         if (ids.Any())
         {
-            var builder = _formBuilderFactory.GetBuilder(requestInfo.EntityUri.Root!);
+            var formBuilderFactory = RED.ServiceProvider.GetRequiredService<IAppEntityFormBuilderFactory>();
+            var builder = formBuilderFactory.GetBuilder(requestInfo.EntityUri.Root!);
 
             if (builder is null)
                 throw new NodeExecuteException(Node, $"Cannot find form builder for entity '{requestInfo.EntityUri.Root}'.");

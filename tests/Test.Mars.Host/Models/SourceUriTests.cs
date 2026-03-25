@@ -163,7 +163,9 @@ public class SourceUriTests
         var uri = SourceUri.FromUriComponent("/test");
 
         // Act
+#pragma warning disable CS1718 // Comparison made to same variable
         var result = uri == uri;
+#pragma warning restore CS1718 // Comparison made to same variable
 
         // Assert
         Assert.True(result);

@@ -102,6 +102,7 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
         <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
         <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" />
     </ItemGroup>
 
     <ItemGroup Condition="!$(DefineConstants.Contains('NOADMIN'))">

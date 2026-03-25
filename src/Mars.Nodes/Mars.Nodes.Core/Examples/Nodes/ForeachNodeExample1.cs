@@ -25,16 +25,16 @@ public class ForeachNodeExample1 : INodeExample<ForeachNode>
             .AddNext(new DebugNode())
             .AddIndependent(templateNode, templateDebugNode);
 
-        var fen1 = builder.BuilderItem[foreachNode.Id];
+        var fen1 = builder.BuilderItems[foreachNode.Id];
         fen1.Node.Wires.ElementAt(1).Add(templateNode.Id);
 
-        var t1 = builder.BuilderItem[templateNode.Id];
+        var t1 = builder.BuilderItems[templateNode.Id];
         t1.Generation = fen1.Generation;
-        t1.ElementIndex = 1;
+        t1.ElementRowIndex = 1;
 
-        var d1 = builder.BuilderItem[templateDebugNode.Id];
+        var d1 = builder.BuilderItems[templateDebugNode.Id];
         d1.Generation = t1.Generation + 1;
-        d1.ElementIndex = 1;
+        d1.ElementRowIndex = 1;
 
         return builder.Build();
     }

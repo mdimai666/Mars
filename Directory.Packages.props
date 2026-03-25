@@ -128,5 +128,6 @@
     <PackageVersion Include="libphonenumber-csharp" Version="9.0.26" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.5" />
   </ItemGroup>
 </Project>

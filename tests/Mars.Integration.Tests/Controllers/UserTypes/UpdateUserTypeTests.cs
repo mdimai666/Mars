@@ -13,7 +13,6 @@ using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.UserTypes;
-using Mars.Shared.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

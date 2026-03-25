@@ -54,4 +54,49 @@ public class NodesWorkflowBuilderTests
         //Assert
         action.Should().Throw<InvalidOperationException>();
     }
+
+    [Fact]
+    public void AddNext_UsingBuilderArgument_ShouldAddNodesCorrectly()
+    {
+        //Assert
+        var injectNode = new InjectNode();
+        var template1 = new TemplateNode();
+        var debugNode1 = new DebugNode();
+        var functionNode1 = new FunctionNode();
+        var template22 = new TemplateNode() { Name = "template22" };
+        var debug22 = new DebugNode() { Name = "debug22" };
+        var debugNode3 = new DebugNode();
+
+        //Act
+        var builder = NodesWorkflowBuilder.Create()
+                                        .AddNext(injectNode)
+                                        .AddNext(NodesWorkflowBuilder.Create()
+                                                                    .AddNext(template1)
+                                                                    .AddNext(debugNode1, functionNode1),
+                                                    NodesWorkflowBuilder.Create()
+                                                                    .AddNext(template22)
+                                                                    .AddNext(debug22)
+                                                )
+                                        .AddNext(debugNode3);
+
+        //Assert
+        builder.BuilderItems[template1.Id].Generation.Should().Be(1);
+        builder.BuilderItems[debugNode1.Id].Generation.Should().Be(2);
+        builder.BuilderItems[functionNode1.Id].Generation.Should().Be(2);
+        builder.BuilderItems[template22.Id].Generation.Should().Be(1);
+        builder.BuilderItems[debug22.Id].Generation.Should().Be(2);
+        builder.BuilderItems[debugNode3.Id].Generation.Should().Be(3);
+
+        builder.BuilderItems[injectNode.Id].Node.Wires[0][0].NodeId.Should().Be(template1.Id);
+        builder.BuilderItems[functionNode1.Id].Node.Wires[0][0].NodeId.Should().Be(debugNode3.Id);
+
+        builder.BuilderItems[template1.Id].ElementRowIndex.Should().Be(0);
+        builder.BuilderItems[debugNode1.Id].ElementRowIndex.Should().Be(0);
+        builder.BuilderItems[functionNode1.Id].ElementRowIndex.Should().Be(1);
+        builder.BuilderItems[template22.Id].ElementRowIndex.Should().Be(1);
+        builder.BuilderItems[debug22.Id].ElementRowIndex.Should().Be(1);
+        builder.BuilderItems[debugNode3.Id].ElementRowIndex.Should().Be(0);
+
+    }
+
 }

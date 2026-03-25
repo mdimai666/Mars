@@ -70,7 +70,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 "System.Text",
                 "System.Threading.Tasks",
                 "Mars.Nodes.Core",
-                typeof(Mars.Nodes.Core.Node).Namespace,
+                typeof(Mars.Nodes.Core.Node).Namespace!,
                 "Microsoft.Extensions.DependencyInjection"
                 //"Mars.Shared.Models",
                 //"Mars.Shared.Services",

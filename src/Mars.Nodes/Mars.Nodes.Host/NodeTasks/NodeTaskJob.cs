@@ -29,7 +29,7 @@ internal class NodeTaskJob : IAsyncDisposable
     public string FlowNodeId { get; }
 
     public event Action? OnComplete;
-    public event NodeExecutionHandler OnNodeExecute;
+    public event NodeExecutionHandler OnNodeExecute = default!;
     public int ExecuteCount => executedCount;
     public int NodesChainCount { get; }
     public IReadOnlyDictionary<string, NodeJob> Jobs => _jobs;

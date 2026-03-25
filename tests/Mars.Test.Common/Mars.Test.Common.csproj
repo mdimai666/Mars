@@ -9,7 +9,6 @@
         <PackageReference Include="AutoFixture.SeedExtensions" />
         <PackageReference Include="Bogus" />
         <PackageReference Include="FluentAssertions" />
-        <PackageReference Include="System.ComponentModel.TypeConverter" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\Mars.Host.Data\Mars.Host.Data.csproj" />

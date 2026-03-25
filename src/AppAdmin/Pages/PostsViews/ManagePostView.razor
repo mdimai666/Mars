@@ -99,7 +99,7 @@
                                         SortBy="@(GridSort<PostListItemResponse>.ByDescending(f => f.Categories))"
                                         Sortable="true">
                             <FluentOverflow Style="width: 100%;">
-                                @foreach (var cat in context.Categories)
+                                @foreach (var cat in context.Categories ?? [])
                                 {
                                     <FluentOverflowItem>
                                         <FluentBadge OnClick="@(() => ClickPostItemCategory(cat.Id))">@cat.Title</FluentBadge>

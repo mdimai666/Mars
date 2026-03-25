@@ -7,7 +7,7 @@ public class NodesWorkflowBuilder
     public IEnumerable<Node> Nodes => _nodes.Values.Select(s => s.Node);
     Dictionary<string, BuilderNodeItem> _nodes { get; set; } = [];
     public int LastCreatedGeneration { get; private set; } = -1;
-    public IReadOnlyDictionary<string, BuilderNodeItem> BuilderItem => _nodes;
+    public IReadOnlyDictionary<string, BuilderNodeItem> BuilderItems => _nodes;
 
     private NodesWorkflowBuilder() { }
 
@@ -49,7 +49,7 @@ public class NodesWorkflowBuilder
         var nextNodes = GetLastGenerationOutputables();
         if (!allowUnlink && nextNodes.Count() == 0) throw new InvalidOperationException("not have any nodes with output");
 
-        var index = 0;
+        var index = _nodes.Values.Count(s => s.Generation == LastCreatedGeneration + 1);
         foreach (var newNode in nodes)
         {
             _nodes.Add(newNode.Id, new(newNode, LastCreatedGeneration + 1, index));
@@ -66,6 +66,43 @@ public class NodesWorkflowBuilder
     }
 
     public NodesWorkflowBuilder AddNext() => AddNext(new TemplateNode());
+
+    public NodesWorkflowBuilder AddNext(params NodesWorkflowBuilder[] builders)
+    {
+        if (_nodes.Count == 0)
+        {
+            LastCreatedGeneration = 0;
+        }
+
+        var nextNodes = GetLastGenerationOutputables();
+
+        var line = 0;
+        foreach (var builder in builders)
+        {
+            int startElementIndex = line;
+
+            foreach (var item in builder.BuilderItems.Values)
+            {
+                var gen = item.Generation + LastCreatedGeneration + 1;
+                var elementRowIndex = item.ElementRowIndex + startElementIndex;
+                _nodes.Add(item.Node.Id, new BuilderNodeItem(item.Node, gen, elementRowIndex));
+
+                if (item.Generation == 0)
+                {
+                    foreach (var node in nextNodes)
+                    {
+                        if (node.Outputs.Any())
+                            node.Wires.First().Add(new(item.Node.Id));
+                    }
+                }
+            }
+            line += Math.Max(_nodes.Values.Max(s => s.ElementRowIndex), 1);
+        }
+
+        LastCreatedGeneration = _nodes.Values.Max(s => s.Generation);
+
+        return this;
+    }
 
     public NodesWorkflowBuilder AddIndependent(Node firstNode, params Node[] otherNodes)
     {
@@ -96,7 +133,7 @@ public class NodesWorkflowBuilder
             foreach (var nodeBuilder in _nodes.Values)
             {
                 nodeBuilder.Node.X = (prevGenerationMaxWidth + wireWidth) * nodeBuilder.Generation;
-                nodeBuilder.Node.Y = (heightOffset) * nodeBuilder.ElementIndex;
+                nodeBuilder.Node.Y = (heightOffset) * nodeBuilder.ElementRowIndex;
             }
 
             var generationMaxWidth = nodes.Max(s => CalcBodyWidth(s.Node));
@@ -125,13 +162,13 @@ public class NodesWorkflowBuilder
     {
         public Node Node { get; init; }
         public int Generation { get; set; }
-        public int ElementIndex { get; set; }
+        public int ElementRowIndex { get; set; }
 
-        public BuilderNodeItem(Node node, int generation, int elementIndex)
+        public BuilderNodeItem(Node node, int generation, int elementRowIndex)
         {
             Node = node;
             Generation = generation;
-            ElementIndex = elementIndex;
+            ElementRowIndex = elementRowIndex;
         }
     };
 

@@ -324,6 +324,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         if (node is FlowNode flow)
         {
+            CalcTabs();
             ChangeFlow(flow);
         }
         else

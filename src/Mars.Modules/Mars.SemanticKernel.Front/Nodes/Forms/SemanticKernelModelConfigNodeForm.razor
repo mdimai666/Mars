@@ -78,7 +78,10 @@
         {
             if (Node.ModelType != value)
             {
-                _config = ResolveConfigObject(value, _config);
+                if (_config is ILLMOptions opt && string.IsNullOrEmpty(opt.ModelId))
+                    _config = ResolveConfigByName(value);
+                else
+                    _config = ResolveConfigObject(value, _config);
                 Node.ModelConfig = JsonSerializer.SerializeToNode(_config, jsonSerializerOptions)!;
             }
             Node.ModelType = value;
@@ -98,7 +101,18 @@
             OllamaOptions.SectionName => jsonNode.Deserialize<OllamaOptions>(jsonSerializerOptions)!,
             OpenAIOptions.SectionName => jsonNode.Deserialize<OpenAIOptions>(jsonSerializerOptions)!,
             AzureOpenAIOptions.SectionName => jsonNode.Deserialize<AzureOpenAIOptions>(jsonSerializerOptions)!,
-            _ => new OllamaOptions() // Default to Ollama if unknown
+            _ => new OllamaOptions()
+        };
+    }
+
+    object ResolveConfigByName(string modelType)
+    {
+        return modelType switch
+        {
+            OllamaOptions.SectionName => new OllamaOptions(),
+            OpenAIOptions.SectionName => new OpenAIOptions(),
+            AzureOpenAIOptions.SectionName => new AzureOpenAIOptions(),
+            _ => new OllamaOptions()
         };
     }
 

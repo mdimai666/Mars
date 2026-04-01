@@ -128,6 +128,7 @@
     <Project Path="tests/BlazorTemplateExample/BlazorTemplateExample.csproj" />
     <Project Path="tests/ExternalServices.Integration.Tests/ExternalServices.Integration.Tests.csproj" />
     <Project Path="tests/ExternalServices.TestContainers/ExternalServices.TestContainers.csproj" Id="1518dc0b-e596-4243-9d6a-f125f44f360c" />
+    <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />
     <Project Path="tests/Mars.AppFrontEngines.Integration.Tests/Mars.AppFrontEngines.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.DockerContainer.Tests/Mars.DockerContainer.Tests.csproj" />

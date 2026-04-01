@@ -92,6 +92,8 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
             throw new ArgumentException("cycle not found in Msg");
         }
 
+        parameters.CancellationToken.ThrowIfCancellationRequested();
+
         if (cycle.index < cycle.count)
         {
             NodeMsg _input = input.Copy(cycle.arr.ElementAt(cycle.index));

@@ -6,4 +6,5 @@ public enum NodeJobExecutionResultResponse
     Success = 1,
     Pending = 2,
     Fail = -1,
+    Terminated = -2
 }

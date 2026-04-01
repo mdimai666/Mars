@@ -25,6 +25,13 @@ internal class NodeJobExecutionTime
         Result = NodeJobExecutionResult.Fail;
     }
 
+    public void Terminate()
+    {
+        if (End is not null) throw new InvalidOperationException("task already ended");
+        End = DateTimeOffset.Now;
+        Result = NodeJobExecutionResult.Terminated;
+    }
+
     public void Pending()
     {
         Result = NodeJobExecutionResult.Pending;

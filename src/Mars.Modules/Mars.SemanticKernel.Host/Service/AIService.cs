@@ -108,9 +108,10 @@ internal class MarsAIService : IMarsAIService
                 uriString: ollamaOptions.Endpoint,
                 defaultModel: ollamaOptions.ModelId).AsChatCompletionService(),
             OpenAIOptions openAIOptions => new OpenAIChatCompletionService(
-                openAIOptions.ModelId,
-                openAIOptions.ApiKey,
-                openAIOptions.OrgId),
+                modelId: openAIOptions.ModelId,
+                endpoint: new Uri(openAIOptions.Endpoint),
+                apiKey: openAIOptions.ApiKey,
+                organization: openAIOptions.OrgId),
             _ => throw new UserActionException($"Unknown model type '{configNode.ModelType}'")
         };
 

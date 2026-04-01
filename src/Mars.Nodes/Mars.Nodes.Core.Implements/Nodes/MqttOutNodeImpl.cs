@@ -50,6 +50,6 @@ public class MqttOutNodeImpl : INodeImplement<MqttOutNode>, INodeImplement
             .WithQualityOfServiceLevel(MqttClientInstance.ConvertQoS(Node.QoS))
             .Build();
 
-        await mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
+        await mqttClient.PublishAsync(applicationMessage, parameters.CancellationToken);
     }
 }

@@ -45,7 +45,7 @@ public class AIRequestNodeImpl : INodeImplement<AIRequestNode>, INodeImplement
 
             var ai = RED.ServiceProvider.GetRequiredService<IMarsAIService>();
 
-            var reply = await ai.Reply(userPrompt, systemPrompt, Node.Config.Value, executionSettings);
+            var reply = await ai.Reply(userPrompt, systemPrompt, Node.Config.Value, executionSettings, parameters.CancellationToken);
 
             input.Payload = reply;
 

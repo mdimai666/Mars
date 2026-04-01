@@ -90,7 +90,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 callback = callback
             };
 
-            using var result = compiled.Invoke(ctx);
+            using var result = compiled.Invoke(ctx, parameters.CancellationToken);
 
             if (result.IsCompleted)
             {

@@ -6,6 +6,9 @@
 <FormItem2 For="() => Value.ModelId">
     <FluentTextField @bind-Value=Value.ModelId />
 </FormItem2>
+<FormItem2 For="() => Value.Endpoint">
+    <FluentTextField @bind-Value=Value.Endpoint Placeholder="@OpenAIOptions.DefaultEndpoint" />
+</FormItem2>
 <FormItem2 For="() => Value.ApiKey">
     <FluentTextField @bind-Value=Value.ApiKey Class="w-100" />
 </FormItem2>

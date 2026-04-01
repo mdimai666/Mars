@@ -206,7 +206,19 @@ internal class NodeTaskJob : IAsyncDisposable
     void Finish()
     {
         if (IsTerminated)
+        {
             _logger.LogInformation($"🔴 Terminated! executedCount={executedCount}");
+            foreach(var job in _jobs.Values)
+            {
+                foreach(var execution in job.Executions)
+                {
+                    if(execution.End == null)
+                    {
+                        execution.Terminate();
+                    }
+                }
+            }
+        }
         else
             _logger.LogInformation($"✅ Finish! executedCount={executedCount}");
 

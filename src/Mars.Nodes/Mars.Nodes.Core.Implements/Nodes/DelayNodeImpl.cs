@@ -8,15 +8,15 @@ public class DelayNodeImpl : INodeImplement<DelayNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public DelayNodeImpl(DelayNode node, IRED RED)
+    public DelayNodeImpl(DelayNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        await Task.Delay(Node.DelayMillis);
+        await Task.Delay(Node.DelayMillis, cancellationToken: parameters.CancellationToken);
 
         callback(input);
 

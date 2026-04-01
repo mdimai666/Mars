@@ -57,10 +57,10 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
 
             response = method switch
             {
-                "GET" => await client.Request(Node.Url).GetStringAsync(),
-                "POST" => await client.Request(Node.Url).PostJsonAsync(input.Payload!).ReceiveString(),
-                "PUT" => await client.Request(Node.Url).PutJsonAsync(input.Payload!).ReceiveString(),
-                "DELETE" => await client.Request(Node.Url).DeleteAsync().ReceiveString(),
+                "GET" => await client.Request(Node.Url).GetStringAsync(cancellationToken: parameters.CancellationToken),
+                "POST" => await client.Request(Node.Url).PostJsonAsync(input.Payload!, cancellationToken: parameters.CancellationToken).ReceiveString(),
+                "PUT" => await client.Request(Node.Url).PutJsonAsync(input.Payload!, cancellationToken: parameters.CancellationToken).ReceiveString(),
+                "DELETE" => await client.Request(Node.Url).DeleteAsync(cancellationToken: parameters.CancellationToken).ReceiveString(),
                 _ => throw new NotImplementedException()
             };
 

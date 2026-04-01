@@ -9,6 +9,8 @@ public sealed class AzureOpenAIOptions : ILLMOptions
 {
     public const string SectionName = "AzureOpenAI";
 
+    public string ModelId { get; set; } = string.Empty;
+
     [Required]
     public string ChatDeploymentName { get; set; } = string.Empty;
 

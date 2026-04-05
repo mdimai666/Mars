@@ -1,40 +1,69 @@
 @using AppFront.Shared.Components
+@using Mars.Core.Utils
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SwitchNode))]
 
-<div class="form-group compact" style="--fluent-input-label-basis:150px">
-    <div class="vstack gap-3">
+<div class="vstack">
+    <div class="form-group compact" style="--fluent-input-label-basis:150px">
+        <div class="vstack gap-3">
 
-        <FormItem2 For="() => Node.BreakAfterFirst" Label="Break">
-            <FluentCheckbox @bind-Value="Node.BreakAfterFirst" Class="">
-                <AutoInputLabel For="() => Node.BreakAfterFirst" />
-            </FluentCheckbox>
-        </FormItem2>
+            <FormItem2 For="() => Node.BreakAfterFirst" Label="Break">
+                <FluentCheckbox @bind-Value="Node.BreakAfterFirst" Class="">
+                    <AutoInputLabel For="() => Node.BreakAfterFirst" />
+                </FluentCheckbox>
+            </FormItem2>
 
-        <!-- Variable notice -->
-        <div class="text-secondary" style="margin-left: 4px;">
-            <b>variable is "Payload"</b>
+            <!-- Variable notice -->
+            <div class="text-secondary" style="margin-left: 4px;">
+                <b>use "msg.Payload"</b>
+            </div>
+            
+        </div>
+        <div class="__BUILDER">
+            @{
+                int index = -1;
+            }
+            <FluentSortableList Id="dragHandles"
+                                Handle="true"
+                                Items="Node.Conditions"
+                                OnUpdate="@SortList"
+                                Context="item">
+                <ItemTemplate>
+                    <div class="sortable-grab">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                    </div>
+                    @{
+                        index++;
+                    }
+                    <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                        <div class="d-grid align-items-center" style="grid-template-columns: auto 33px;column-gap: 10px; ">
+                            <FormItem2 For="() => Node.Conditions" Label=@($"Condition {index + 1}")>
+                                <FluentTextField @bind-Value="item.Value" Class="w-100" />
+                            </FormItem2>
+                            <FluentButton OnClick=@(() => ClickRemoveItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                        </div>
+                    </div>
+                </ItemTemplate>
+            </FluentSortableList>
         </div>
 
-        <!-- Conditions list -->
-        @{
-            int index = -1;
-        }
-        @foreach (var _a in Node.Conditions)
-        {
-            var a = _a;
-            index++;
-
-            <FormItem2 For="() => Node.Conditions" Label=@($"Condition {index + 1}")>
-                <FluentTextField @bind-Value="a.Value" Class="w-100" />
-            </FormItem2>
-        }
+        <div class="mt-4 hstack gap-2">
+            <FluentButton OnClick="ClickAddNew" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
+            <FluentButton OnClick="ClickAddElse" Disabled="@(Node.Conditions.Any(s => s.Value == SwitchNode.ElseConditionValue))">@AppRes.Add else</FluentButton>
+        </div>
     </div>
 </div>
 
 @code {
     [CascadingParameter] Node? Value { get; set; }
     SwitchNode Node { get => (SwitchNode)Value!; set => Value = value; }
+
+    void SortList(FluentSortableListEventArgs args) => Node.Conditions = Node.Conditions.MoveItem(args.OldIndex, args.NewIndex);
+
+    void ClickAddNew() => Node.Conditions = [.. Node.Conditions, new()];
+    void ClickRemoveItem(SwitchNode.Condition cond) => Node.Conditions = Node.Conditions.Where(s => s != cond).ToArray();
+
+    void ClickAddElse() => Node.Conditions = [.. Node.Conditions, new() { Value = SwitchNode.ElseConditionValue }];
 
 }

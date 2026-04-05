@@ -50,7 +50,7 @@ public class EventNodeTests : NodeServiceUnitTestBase
         var callbackNode = new TestCallBackNode()
         {
             Container = flowNode.Id,
-            Callback = (_) => touchedFlag = true,
+            Callback = (_, _) => touchedFlag = true,
         };
         var node = new EventNode
         {

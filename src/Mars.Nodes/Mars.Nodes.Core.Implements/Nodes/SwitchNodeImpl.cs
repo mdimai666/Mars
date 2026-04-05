@@ -1,11 +1,9 @@
-using DynamicExpresso;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class SwitchNodeImpl : INodeImplement<SwitchNode>, INodeImplement
 {
-
     public SwitchNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
@@ -19,25 +17,43 @@ public class SwitchNodeImpl : INodeImplement<SwitchNode>, INodeImplement
 #if !DynamicExpresso
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var interpreter = new Interpreter();//https://github.com/dynamicexpresso/DynamicExpresso
+        var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
+        var someConditionIsTrue = false;
 
-        for (int i = 0; i < Node.Conditions.Count; i++)
+        for (int i = 0; i < Node.Conditions.Length; i++)
         {
             var a = Node.Conditions[i];
 
             if (string.IsNullOrEmpty(a.Value)) continue;
 
-            var result = interpreter.Eval<bool>(a.Value,
-                input.AsFullDict()!.Select(kv => new Parameter(kv.Key, kv.Value)).ToArray()
-            );
+            bool result;
+
+            if (a.Value == "true" || a.Value == "1") result = true;
+            else if (a.Value == "false" || a.Value == "0") result = false;
+            else if (a.Value == SwitchNode.ElseConditionValue) continue;
+            else
+            {
+                result = ppt.Get.Eval<bool>(a.Value);
+            }
 
             if (result == true)
             {
+                someConditionIsTrue = true;
                 callback(input, i);
                 if (Node.BreakAfterFirst)
                 {
                     break;
                 }
+            }
+        }
+
+        if (!someConditionIsTrue)
+        {
+            var @else = Node.Conditions.FirstOrDefault(s => s.Value == SwitchNode.ElseConditionValue);
+            if (@else != null)
+            {
+                var elseIndex = Node.Conditions.IndexOf(@else);
+                callback(input, elseIndex);
             }
         }
 

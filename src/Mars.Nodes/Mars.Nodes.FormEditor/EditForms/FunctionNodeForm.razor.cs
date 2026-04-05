@@ -4,7 +4,6 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace Mars.Nodes.FormEditor.EditForms;
 
@@ -15,42 +14,20 @@ public partial class FunctionNodeForm
 
     CodeEditor2 editor1 = default!;
 
-    [Inject]
-    IJSRuntime jsRuntime { get; set; } = default!;
-
-    NodeFormEditorJsInterop js = default!;
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        js = new NodeFormEditorJsInterop(jsRuntime);
     }
 
     public override async Task OnEditSave()
     {
-        //Console.WriteLine("X>1111");
         Node.Code = await editor1.GetValue();
-        //Console.WriteLine("X>2222");
-        //await Task.Delay(100);
-
     }
 
     void OnSave(string value)
     {
-        //Console.WriteLine("save action");
-        //_ = nodeEditContainer1.FormSaveClick();
         _ = NodeEditContainer.FormSaveClick();
     }
-
-    void OnEditorSave(string val)
-    {
-        //_ = form.OnFinish();
-    }
-
-    //private async Task EditorOnDidInit()
-    //{
-    //    await EditorOnDidInit(editor1!, js, NodeEditContainer);
-    //}
 
     public static async Task EditorOnDidInit(StandaloneCodeEditor editor1, NodeFormEditorJsInterop js, NodeEditContainer1 nodeEditContainer1)
     {

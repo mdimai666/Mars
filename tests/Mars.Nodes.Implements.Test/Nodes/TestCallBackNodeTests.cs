@@ -1,6 +1,6 @@
+using FluentAssertions;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using Mars.Nodes.Implements.Test.Services;
-using FluentAssertions;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
 
@@ -15,7 +15,7 @@ public class TestCallBackNodeTests : NodeServiceUnitTestBase
         int x = 0;
         var node = new TestCallBackNode()
         {
-            Callback = (_) => x = 2
+            Callback = (_, _) => x = 2
         };
 
         //Act

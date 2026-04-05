@@ -118,18 +118,20 @@ public class PostEntityCreateFormBuilder : IAppEntityCreateFormBuilder
         async Task<Guid> defaultUserId() => _requestContext.User?.Id
                                         ?? (await _userRepository.List(new() { Roles = ["Admin"] }, cancellationToken)).Items.First().Id;
 
-        var metaDict = form.PropertyBindings.Where(s => s.PropertyName.StartsWith("meta."))
-                                            .ToDictionary(s => s.PropertyName.Split("meta.", 2)[1],
-                                                                s =>
+        var metaDict = form.PropertyBindings.Where(bind => bind.PropertyName.StartsWith("meta."))
+                                            .Select(bind => new { bind, metaKey = bind.PropertyName.Split("meta.", 2)[1] })
+                                            .Where(d => postTypeMetaFieldsDict.ContainsKey(d.metaKey))
+                                            .ToDictionary(d => d.metaKey,
+                                                                d =>
                                                                 {
-                                                                    var metaFieldKey = s.PropertyName.Split("meta.", 2)[1];
+                                                                    var metaFieldKey = d.metaKey;
                                                                     var mft = postTypeMetaFieldsDict[metaFieldKey].Type;
                                                                     var valueType = MetaFieldUtils.MetaFieldTypeToType(mft);
 
-                                                                    if (s.IsEvalExpression)
-                                                                        return ppt.Get.Eval(s.ValueOrExpression, valueType);
+                                                                    if (d.bind.IsEvalExpression)
+                                                                        return ppt.Get.Eval(d.bind.ValueOrExpression, valueType);
                                                                     else
-                                                                        return MetaFieldUtils.ConvertStringValueToMetaTypeObject(mft, s.ValueOrExpression);
+                                                                        return MetaFieldUtils.ConvertStringValueToMetaTypeObject(mft, d.bind.ValueOrExpression);
                                                                 });
         var guid = Guid.NewGuid();
 
@@ -147,7 +149,7 @@ public class PostEntityCreateFormBuilder : IAppEntityCreateFormBuilder
             //UserId = value<Guid?>(nameof(CreatePostJsonQuery.UserId), v => new Guid(v), asNullIfEmpty: true) ?? await defaultUserId(),
             UserId = await defaultUserId(),
             CategoryIds = value<Guid[]?>(nameof(CreatePostJsonQuery.CategoryIds),
-                                                v=> v.Split(',', StringSplitOptions.TrimEntries ).Select(v=>Guid.Parse(v)).ToArray(),
+                                                v => v.Split(',', StringSplitOptions.TrimEntries).Select(v => Guid.Parse(v)).ToArray(),
                                                 asNullIfEmpty: true) ?? [],
             MetaValues = CreateStringMetaValuesToModifyDto(metaDict, postType.MetaFields, postType.TypeName),
         };

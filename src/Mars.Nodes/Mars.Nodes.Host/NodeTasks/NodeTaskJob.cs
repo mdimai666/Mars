@@ -66,7 +66,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
         _logger.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
 
-        await ExecuteNode(msg, node, new(), isInject: true, throwOnError: throwOnError);
+        await ExecuteNode(msg, node, new(), isInject: true, sourceOutputPortIndex: 0, throwOnError: throwOnError);
     }
 
     public void Terminate()
@@ -91,14 +91,14 @@ internal class NodeTaskJob : IAsyncDisposable
 
             node.RED = CreateContextForNode(node.Id);
             //_ = ExecuteNode(result, node, portIndex, isInject: false, throwOnError: throwOnError);
-            tasks.Add(ExecuteNode(result, node, portIndex, isInject: false, throwOnError: throwOnError));
+            tasks.Add(ExecuteNode(result, node, portIndex, isInject: false, sourceOutputPortIndex: output, throwOnError: throwOnError));
 
         }
         return Task.WhenEach(tasks);
 
     }
 
-    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex, bool isInject, bool throwOnError)
+    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex, bool isInject, int sourceOutputPortIndex, bool throwOnError)
     {
         if (_cancellationTokenSource.IsCancellationRequested) return;
 
@@ -127,7 +127,7 @@ internal class NodeTaskJob : IAsyncDisposable
                     //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
                     await foreach (var wireTask in CallbackNext(node.Id, e, _output, throwOnError)) await wireTask;
                 },
-                new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token)
+                new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token, SourceOutputPort: sourceOutputPortIndex)
                 );
             OnNodeExecute.Invoke(node.Id, isInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
 

@@ -116,7 +116,7 @@ public class NodeServiceUnitTestBase
             outputPort = output;
         };
 
-        await node.Execute(input, exa, new(default, default));
+        await node.Execute(input, exa, new(default, default, 0, default, 0));
 
         return new NodeExecutionResult(resultCatcher!, outputPort);
     }
@@ -189,17 +189,21 @@ public class NodeServiceUnitTestBase
     }
 
     public async Task<NodeMsg?> RunUsingTaskManager(NodesWorkflowBuilder builder, NodeMsg? msg = null)
+        => (await RunUsingTaskManagerEx(builder, msg))?.Msg;
+
+    public async Task<NodeExecutionResult?> RunUsingTaskManagerEx(NodesWorkflowBuilder builder, NodeMsg? msg = null)
     {
         NodeMsg? result = null;
-        var callbackNode = new TestCallBackNode() { Callback = input => result = input };
+        ExecutionParameters? executionParameters = null;
+        var callbackNode = new TestCallBackNode() { Callback = (input, param) => { result = input; executionParameters = param; } };
         var nodes = NodesWorkflowBuilder.Create()
                 .AddNext(builder)
-                .AddNext(callbackNode)
+                .AddNext([callbackNode], catchAllWires: true)
                 .BuildWithFlowNode();
         var injectNode = nodes.First(node => node is not FlowNode);
         _nodeService.Deploy(nodes);
         await _nodeTaskManager.CreateJob(_serviceProvider, injectNode.Id, msg, throwOnError: true);
-        return result;
+        return executionParameters is null ? null : new(result!, executionParameters.SourceOutputPort);
     }
 
     private class RequestContextImpl : IRequestContext

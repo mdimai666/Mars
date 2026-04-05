@@ -17,10 +17,9 @@ public class EvalNodeImpl : INodeImplement<EvalNode>, INodeImplement
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
+        var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
 
-        var interpreter = new Interpreter();//https://github.com/dynamicexpresso/DynamicExpresso
-
-        var result = interpreter.Eval(Node.Input, new Parameter("msg", input));
+        var result = ppt.Get.Eval(Node.Input);
 
         input.Payload = result;
 

@@ -164,7 +164,9 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
         {
             //var value = calcValue(input.Payload?.GetType());
             var value = calcValue(null);
-            SetProperty(input, targetPropertyPath, value);
+            //SetProperty(input, targetPropertyPath, value);
+            var dmsg = ppt.parameters["msg"].Value as DynamicNodeMsgWrapper;
+            dmsg.SetValueByPath(targetPropertyPath, value);
             return value;
         }
         else if (valuePathRoot == nameof(IRED.GlobalContext))

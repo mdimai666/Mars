@@ -22,7 +22,9 @@ public class NodesWorkflowBuilder
     /// <param name="nodes"></param>
     /// <returns></returns>
     public NodesWorkflowBuilder AddNext(params Node[] nodes)
-        => AddNext(nodes, false);
+        => AddNext(nodes, false, false);
+    public NodesWorkflowBuilder AddNext(Node[] nodes, bool catchAllWires)
+        => AddNext(nodes, false, catchAllWires);
 
     /// <summary>
     /// add without wiring
@@ -30,9 +32,17 @@ public class NodesWorkflowBuilder
     /// <param name="nodes"></param>
     /// <returns></returns>
     public NodesWorkflowBuilder Add(params Node[] nodes)
-        => AddNext(nodes, true);
+        => AddNext(nodes, true, false);
 
-    private NodesWorkflowBuilder AddNext(Node[] nodes, bool allowUnlink)
+    /// <summary>
+    /// Добавляет ноду в конец потока и связает с предыдущими нодами
+    /// </summary>
+    /// <param name="nodes">Nodes</param>
+    /// <param name="allowUnlink">Разрешать добавлять ноды без Inputs</param>
+    /// <param name="catchAllWires">Связывать ли все выходы последних нод. По умолчанию первый.</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    private NodesWorkflowBuilder AddNext(Node[] nodes, bool allowUnlink, bool catchAllWires)
     {
         if (_nodes.Count == 0)
         {
@@ -56,7 +66,16 @@ public class NodesWorkflowBuilder
             foreach (var node in nextNodes)
             {
                 if (node.Outputs.Any())
-                    node.Wires.First().Add(new(newNode.Id));
+                {
+                    if (catchAllWires)
+                    {
+                        node.Wires.ForEach(wire => wire.Add(new(newNode.Id)));
+                    }
+                    else
+                    {
+                        node.Wires.First().Add(new(newNode.Id));
+                    }
+                }
             }
             index++;
         }

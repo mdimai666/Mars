@@ -189,8 +189,6 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
 
     VariableSetNode SetupNode(string path, string expression)
     {
-        var input = new NodeMsg() { Payload = 1 };
-
         var node = new VariableSetNode
         {
             Setters = [
@@ -238,4 +236,41 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         ((SubFieldedItem)x.Payload).Field1.Should().Be(1);
     }
     #endregion
+
+    [Fact]
+    public async Task Execute_SetExtraField_FieldShouldWriteInNodeMsg()
+    {
+        //Arrange
+        _ = nameof(VariableSetNodeImpl.Execute);
+        var node = SetupNode("msg.Extra1", "1+1");
+
+        //Act
+        var msg = await ExecuteNode(node);
+
+        //Assert
+        msg.Context.Should().ContainKey("Extra1");
+        msg.Context["Extra1"].Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Execute_SetExtraFieldByPropertyPath_FieldShouldWriteInNodeMsg()
+    {
+        //Arrange
+        _ = nameof(VariableSetNodeImpl.Execute);
+        var input = new NodeMsg { Context = { ["obj1"] = new TextSubObj1 { prop1 = 33 } } };
+        var node = SetupNode("msg.obj1.prop1", "44");
+
+        //Act
+        var msg = await ExecuteNode(node, input);
+
+        //Assert
+        msg.Context.Should().ContainKey("obj1");
+        dynamic obj1 = msg.Context["obj1"];
+        ((int)obj1.prop1).Should().Be(44);
+    }
+
+    class TextSubObj1
+    {
+        public int prop1 { get; set; }
+    }
 }

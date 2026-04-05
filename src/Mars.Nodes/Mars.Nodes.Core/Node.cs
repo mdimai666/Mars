@@ -112,22 +112,27 @@ public class Node : INodeBasic
         get => Outputs.Count;
         set
         {
-            var Node = this;
-            if (value < 0 || value == Node.Outputs.Count) return;
-            // Node.Outputs.Capacity = value;
-            do
+            if (value < 0 || value == Outputs.Count) return;
+
+            while (Wires.Count < Outputs.Count)
+                Wires.Add([]);
+
+            while (Wires.Count > Outputs.Count)
+                Wires.RemoveAt(Wires.Count - 1);
+
+            while (Outputs.Count < value)
             {
-                if (Node.Outputs.Count < value)
-                {
-                    Node.Outputs.Add(new NodeOutput());
-                    Node.Wires.Add([]);
-                }
-                else
-                {
-                    Node.Outputs.RemoveAt(Node.Outputs.Count - 1);
-                    Node.Wires.RemoveAt(Node.Outputs.Count - 1);
-                }
-            } while (Node.Outputs.Count != value);
+                Outputs.Add(new NodeOutput());
+                if (Wires.Count <= Outputs.Count - 1)
+                    Wires.Add([]);
+            }
+
+            while (Outputs.Count > value)
+            {
+                int lastIndex = Outputs.Count - 1;
+                Outputs.RemoveAt(lastIndex);
+                Wires.RemoveAt(lastIndex);
+            }
         }
     }
 }

@@ -16,8 +16,8 @@ public class SwitchNodeCalculatedComparerExample : INodeExample<SwitchNode>
             .AddNext(new SwitchNode()
             {
                 BreakAfterFirst = true,
-                Conditions = [  new SwitchNode.Condition{ Key = "contdition1", Value = "Payload * 2 > 10" },
-                                new SwitchNode.Condition{ Key = "contdition2", Value = "true" }],
+                Conditions = [  new SwitchNode.Condition{ Value = "msg.Payload * 2 > 10" },
+                                new SwitchNode.Condition{ Value = "true" }],
                 Outputs = [new(), new()]
             })
             .AddNext(new DebugNode(), new DebugNode());

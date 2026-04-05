@@ -320,19 +320,21 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         AllNodes[node.Id] = EditNode;
         EditNode.changed = changed;
 
-        AllNodesChanged.InvokeAsync(AllNodes);
-
-        if (node is FlowNode flow)
+        AllNodesChanged.InvokeAsync(AllNodes).ContinueWith(async t =>
         {
-            CalcTabs();
-            ChangeFlow(flow);
-        }
-        else
-        {
-            CalcVarNodes();
-            CalcFlowNodes();
-        }
-        StateHasChanged();
+            if (node is FlowNode flow)
+            {
+                CalcTabs();
+                ChangeFlow(flow);
+            }
+            else
+            {
+                CalcVarNodes();
+                CalcFlowNodes();
+            }
+            _nodeWorkspace1.RedrawWires();
+            StateHasChanged();
+        });
     }
 
     void DeleteNode(string nodeId)

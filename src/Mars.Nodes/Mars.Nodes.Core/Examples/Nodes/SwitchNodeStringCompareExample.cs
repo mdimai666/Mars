@@ -15,9 +15,9 @@ public class SwitchNodeStringCompareExample : INodeExample<SwitchNode>
             .AddNext(new SwitchNode()
             {
                 BreakAfterFirst = false,
-                Conditions = [  new SwitchNode.Condition{ Key = "contdition1", Value = "Payload != \"good\"" },
-                                new SwitchNode.Condition{ Key = "contdition2", Value = "Payload == \"good\"" },
-                                new SwitchNode.Condition{ Key = "contdition2", Value = "Payload.ToString().Length == 4" }],
+                Conditions = [  new SwitchNode.Condition{ Value = "msg.Payload != \"good\"" },
+                                new SwitchNode.Condition{ Value = "msg.Payload == \"good\"" },
+                                new SwitchNode.Condition{ Value = "msg.Payload.ToString().Length == 4" }],
                 Outputs = [new(), new(), new()]
             })
             .AddNext(new DebugNode(), new DebugNode(), new DebugNode());

@@ -4,7 +4,7 @@ public class NodeMsg
 {
     public object? Payload { get; set; }
 
-    Dictionary<string, object> Context { get; set; } = [];
+    public Dictionary<string, object> Context { get; set; } = [];
 
     public T? Get<T>() where T : class
     {
@@ -38,21 +38,19 @@ public class NodeMsg
 
     public void Set<T>(T obj)
     {
-        if (Context.ContainsKey(typeof(T).Name))
-        {
-            Context[typeof(T).Name] = obj!;
-        }
-        else
-        {
-            Context.Add(typeof(T).Name, obj!);
-        }
+        Context[typeof(T).Name] = obj!;
+    }
+
+    public void Set(string name, object obj)
+    {
+        Context[name] = obj;
     }
 
     public Dictionary<string, object> AsFullDict()
     {
-        return new(Context)
+        return new Dictionary<string, object>(Context)
         {
-            { nameof(Payload), Payload! }
+            [nameof(Payload)] = Payload!
         };
     }
 
@@ -65,12 +63,3 @@ public class NodeMsg
         };
     }
 }
-
-public record ExecutionParameters(
-    Guid TaskId,
-    Guid JobGuid,
-    int InputPort = 0,
-    CancellationToken CancellationToken = default,
-    bool IsDebugMode = false
-//TimeSpan Timeout
-);

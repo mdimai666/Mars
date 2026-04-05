@@ -15,7 +15,6 @@ public class InjectNode : Node
     [Display(Name = "Delay millis")]
     public int StartupDelayMillis { get; set; }
 
-
     public bool IsSchedule { get; set; }
     public string ScheduleCronMask { get; set; } = "0 0/10 * * * ?";
 
@@ -23,12 +22,11 @@ public class InjectNode : Node
     {
         isInjectable = true;
         Color = "#A9BBCF";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
     }
 
 }
-
 
 class InputSource<T>
 {
@@ -43,7 +41,6 @@ class InputSource<T>
 
     void sdsd()
     {
-
 
         object z = get();
     }
@@ -64,7 +61,6 @@ enum InputType
     DateTime,
     Flow,
     Global,
-
 
 }
 

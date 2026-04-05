@@ -17,13 +17,13 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public FunctionNodeImpl(FunctionNode node, IRED RED)
+    public FunctionNodeImpl(FunctionNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         try
@@ -41,17 +41,17 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
             var definedAssemblies = new[] {
 
                     typeof(Node).Assembly,
-                    //typeof(IMarsDbContext).Assembly,
+                    typeof(DynamicNodeMsgWrapper).Assembly,
                     typeof(UserDetail).Assembly,
                     typeof(IPostService).Assembly,
                     typeof(EntityFrameworkQueryableExtensions).Assembly,
                     typeof(ServiceProviderServiceExtensions).Assembly
             };
 
-            var sc = RED.ServiceProvider.GetRequiredService< IServiceCollection>();
+            var sc = RED.ServiceProvider.GetRequiredService<IServiceCollection>();
             //var assemblies = sc.Select(s => s.ServiceType.Assembly).Concat(definedAssemblies).Distinct().ToArray();
 
-            Regex re = new Regex("RED\\.GetService<(.*?)>");
+            var re = new Regex("RED\\.GetService<(.*?)>");
 
             var detectAssemblied = re.Matches(script).Select(s => s.Groups[1].Value).ToList();
 
@@ -69,6 +69,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 "System.Linq",
                 "System.Text",
                 "System.Threading.Tasks",
+                "System.Threading",
                 "Mars.Nodes.Core",
                 typeof(Mars.Nodes.Core.Node).Namespace!,
                 "Microsoft.Extensions.DependencyInjection"
@@ -85,45 +86,35 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
             var ctx = new ScriptExecuteContext
             {
-                msg = input,
+                msg = new DynamicNodeMsgWrapper(input),
                 RED = RED,
                 callback = callback
             };
 
-            using var result = compiled.Invoke(ctx, parameters.CancellationToken);
+            var result = await compiled.Invoke(ctx, parameters.CancellationToken);
 
-            if (result.IsCompleted)
-            {
-                input.Payload = result.Result;
-                if (input.Payload != null)
-                {
-                    callback(input);
-                }
-            }
+            input.Payload = result;
+            callback(input);
 
         }
 
         catch (CompilationErrorException ex)
         {
-            //Error(ex);
             RED.Status(NodeStatus.Error("compile error"));
             RED.DebugMsg(ex);
             throw;
         }
         catch (Exception ex)
         {
-            //Error(ex);
             RED.Status(NodeStatus.Error("error"));
             RED.DebugMsg(ex);
             throw;
         }
-
-        return Task.CompletedTask;
     }
 
     public class ScriptExecuteContext
     {
-        public NodeMsg msg = default!;
+        public dynamic msg = default!;
         public IRED RED = default!;
         public ExecuteAction callback = default!;
         public FlowNodeImpl Flow => RED.Flow;

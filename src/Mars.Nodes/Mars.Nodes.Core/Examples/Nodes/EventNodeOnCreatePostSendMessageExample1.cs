@@ -8,7 +8,7 @@ public class EventNodeOnCreatePostSendMessageExample1 : INodeExample<EventNode>
     public string Name => "on create post send message";
     public string Description => "Create text message when create post event";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
             .AddNext(new EventNode

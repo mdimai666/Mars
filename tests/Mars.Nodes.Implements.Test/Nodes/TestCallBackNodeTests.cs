@@ -15,7 +15,7 @@ public class TestCallBackNodeTests : NodeServiceUnitTestBase
         int x = 0;
         var node = new TestCallBackNode()
         {
-            Callback = () => x = 2
+            Callback = (_) => x = 2
         };
 
         //Act

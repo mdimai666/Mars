@@ -3,25 +3,26 @@ using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;
 
-public class ForeachNodeExample1 : INodeExample<ForeachNode>
+public class ForeachNodeIterateStringLettersExample1 : INodeExample<ForeachNode>
 {
-    public string Name => "Foreach example 1";
-    public string Description => "Foreach example 1";
+    public string Name => "Foreach iterate string letters";
+    public string Description => "Foreach iterate string letters";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         var foreachNode = new ForeachNode() { Kind = EForeachKind.PayloadArray };
         var templateDebugNode = new DebugNode();
         var templateNode = new TemplateNode()
         {
             Template = "Value: {{Payload}}",
+            Name = "Iterate",
             Wires = [[new NodeWire(templateDebugNode.Id), new NodeWire(foreachNode.Id, 1)]]
         };
 
         var builder = NodesWorkflowBuilder.Create()
-            .AddNext(new InjectNode() { Payload = "1234" })
+            .AddNext(new InjectNode() { Payload = "1234", Name = "1234" })
             .AddNext(foreachNode)
-            .AddNext(new TemplateNode() { Template = "Finish" })
+            .AddNext(new TemplateNode() { Template = "Finish", Name = "Finish" })
             .AddNext(new DebugNode())
             .AddIndependent(templateNode, templateDebugNode);
 

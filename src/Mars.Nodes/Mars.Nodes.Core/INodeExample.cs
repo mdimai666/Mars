@@ -4,5 +4,10 @@ public interface INodeExample<out TNode> where TNode : Node
 {
     string Name { get; }
     string Description { get; }
-    public IReadOnlyCollection<Node> Handle();
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState);
+}
+
+public interface IEditorState
+{
+    public Node[] Nodes { get; }
 }

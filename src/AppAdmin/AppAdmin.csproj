@@ -36,7 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\Mars.WebApp\wwwroot\mars\vendor\bootstrap\bootstrap5.min.css" Link="wwwroot\css\bootstrap5.min.css"  />
+        <None Include="..\Mars.WebApp\wwwroot\mars\vendor\bootstrap\bootstrap5.min.css" Link="wwwroot\css\bootstrap5.min.css" />
     </ItemGroup>
 
     <ItemGroup>

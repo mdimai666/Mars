@@ -30,6 +30,8 @@ internal static class MarsStartupPartLocalization
         Thread.CurrentThread.CurrentCulture = cultureInfo;
         Thread.CurrentThread.CurrentUICulture = cultureInfo;
 
+        services.AddLocalization();
+
         return services;
     }
 

@@ -8,13 +8,13 @@ public class HttpInNodeSimpleExample1 : INodeExample<HttpInNode>
     public string Name => "Simple HttpIn";
     public string Description => "A simple example of an HTTP In Node that responds to GET requests.";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
             .AddNext(new HttpInNode
             {
                 Method = "GET",
-                UrlPattern = "/example1"
+                UrlPattern = "/example" + editorState.Nodes.Length
             })
             .AddNext(new TemplateNode
             {

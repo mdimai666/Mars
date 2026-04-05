@@ -31,6 +31,10 @@
         {
             <FluentLabel>@(L["cron mask"])</FluentLabel>
             <SchedulerMaskInput @bind-Value=Node.ScheduleCronMask />
+            <div class="hstack gap-1 ms-2">
+                <FluentButton Appearance="Appearance.Lightweight" OnClick="@(() => Node.ScheduleCronMask = "0/5 * * * * ?")">every 5 seconds</FluentButton>
+                <FluentButton Appearance="Appearance.Lightweight" OnClick="@(() => Node.ScheduleCronMask = "0 0/5 * * * ?")">every 5 minutes</FluentButton>
+            </div>
         }
     </div>
 </div>

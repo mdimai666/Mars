@@ -3,18 +3,18 @@ using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;
 
-public class EndpointNodeSimpleExample1 : INodeExample<EndpointNode>
+public class EndpointNodeSimplePostEndpointExample1 : INodeExample<EndpointNode>
 {
-    public string Name => "EndpointNode example1";
+    public string Name => "POST endpoint";
     public string Description => "A smart EndpointNode of an HTTP that responds to POST requests.";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
             .AddNext(new EndpointNode
             {
                 Method = "POST",
-                UrlPattern = "/example1",
+                UrlPattern = "/example" + editorState.Nodes.Length,
                 IsRequireAuthorize = false,
                 EndpointInputModel = EndpointInputModelType.JsonSchema,
             })

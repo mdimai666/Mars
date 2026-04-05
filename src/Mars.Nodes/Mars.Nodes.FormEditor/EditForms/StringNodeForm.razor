@@ -1,5 +1,9 @@
 @using Mars.Core.Utils
+@using Mars.Nodes.Core.Resources
+@using Mars.Nodes.Core.StringFunctions
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using MarsCodeEditor2
+@using Microsoft.Extensions.Localization
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(StringNode))]
@@ -7,78 +11,121 @@
 <div class="vstack">
     <label>Operations</label>
 
-    @if (availOperations.Length > 0)
+    @if (EditModel == null)
+    {
+        <FluentProgressRing />
+    }
+    else
     {
         <div style="max-width:800px;">
 
-            <FluentSortableList Id="dragHandles" Handle="true" Items="Node.Operations" OnUpdate="@SortList" Context="item">
+            <FluentSortableList Id="dragHandles"
+                                Handle="true"
+                                ListItemHeight="58px"
+                                Items="EditModel.Operations"
+                                OnUpdate="@SortList"
+                                Context="item">
                 <ItemTemplate>
                     <div class="sortable-grab">
-                        @* <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" /> *@
-                        <i class="bi bi-arrow-down-up p-1"></i>
+                        <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
                     </div>
-                    <div class="sortable-item-content hstack" style="flex-grow: 1;">
-                        <div class="op-content hstack">
-                            <FluentSelect TOption="string"
-                                          Items="@availOperations"
-                                          Width="200px"
-                                          Placeholder="op"
-                                          OptionValue=@(s => s)
-                                          OptionText=@(s => s)
-                                          Position="SelectPosition.Below"
-                                          @bind-Value="@item.Name"
-                                          SelectedOption="@item.Name"
-                                          SelectedOptionChanged="@item.NameChanged" />
-
-                            @for (var i = 0; i < item.Args.Length; i++)
-                            {
-                                var index = i;
-                                var f = item.Inputs().ElementAt(i);
-                                @if (f.Type == OperationInputType.Input)
-                                {
-                                    <FluentTextField Label=@f.Label Placeholder=@f.Label Value=@item.Args[i] ValueChanged=@(v => item.Args[index] = v) />
-                                }
-                            }
-                        </div>
-                        <div class="ms-auto hstack">
-                            <FluentButton OnClick=@(e => DelOp(item))>
-                                <i class="bi bi-x"></i>
-                            </FluentButton>
+                    <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                        <div class="vstack">
+                            <div class="d-grid align-items-center" style="grid-template-columns: 210px auto 33px;">
+                                <div>
+                                    <GroupedSelectDropDown TOption="StringNodeMethodInfo"
+                                                           Items="EditModel.AvailFunctions"
+                                                           Value="@item.Method"
+                                                           ButtonStyle="min-width:200px"
+                                                           SelectedOptionChanged="@((mi) => item.MethodChanged(mi))"
+                                                           OptionText=@(s => s.Name)
+                                                           OptionValue=@(s => s.Name) />
+                                </div>
+                                <div class="__Params hstack gap-1 flex-fill">
+                                    @for (var i = 0; i < item.ParameterValues.Length; i++)
+                                    {
+                                        var index = i;
+                                        var f = item.ParameterValues[index];
+                                        @if (f.Type == TypeCode.String)
+                                        {
+                                            <FluentTextField Label="@f.Name" Placeholder=@f.Placeholder Value=@f.Value ValueChanged=@(v => f.Value = v) Style="min-width:50px;" />
+                                        }
+                                        else if (f.Type == TypeCode.Char)
+                                        {
+                                            <FluentTextField Label="@f.Name" Placeholder=@f.Placeholder Value=@f.Value ValueChanged=@(v => f.Value = v) Style="min-width:50px;" Maxlength="1" />
+                                        }
+                                        else if (f.Type == TypeCode.Boolean)
+                                        {
+                                            <FluentCheckbox Label=@f.Name" Value=@f.ValueBoolSetter ValueChanged=@(v => f.ValueBoolSetter = v) Style="min-width:50px;" />
+                                        }
+                                        else if (f.Type >= TypeCode.Int32 && f.Type <= TypeCode.UInt64)
+                                        {
+                                            <FluentNumberField Label="@f.Name" Placeholder=@f.Placeholder
+                                                               TValue="int"
+                                                               Value=@f.ValueIntSetter ValueChanged=@(v => f.ValueIntSetter = v) Style="min-width:50px;" />
+                                        }
+                                        else
+                                        {
+                                            <span>not implement: @f.Type</span>
+                                        }
+                                    }
+                                </div>
+                                <FluentButton OnClick=@(() => ClickRemoveOp(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                            </div>
+                            <div class="text-secondary hstack gap-1">
+                                @item.DisplayName <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.HelpText" />
+                            </div>
                         </div>
                     </div>
                 </ItemTemplate>
             </FluentSortableList>
 
             <div>
-                <FluentButton OnClick="AddOp">
-                    <i class="bi bi-plus"></i> add
-                </FluentButton>
+                <FluentButton OnClick="ClickAddNewOp" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
             </div>
         </div>
     }
 </div>
 
+<h3>Текущая культура: @System.Globalization.CultureInfo.CurrentUICulture.Name</h3>
+<p>StringOperationGroupName_add: @L["StringOperationGroupName_add"]</p>
+<p>StringOperationGroupName_add: @NodeRes.ResourceManager.GetString("StringOperationGroupName_add")</p>
+<p>Test: @L["Test_Key"]</p>
+@NodeRes.StringOperationGroupName_add
+
+<p>@L2[nameof(AppRes.Delete)]</p>
+@AppRes.Delete
+
 @code {
     [CascadingParameter] Node? Value { get; set; }
     StringNode Node { get => (StringNode)Value!; set => Value = value; }
 
-    string[] availOperations = [];
+    [Inject] public IStringLocalizer<NodeRes> L { get; set; } = default!;
+    [Inject] public IStringLocalizer<AppRes> L2 { get; set; } = default!;
+
+    StringNodeEditModel? EditModel;
 
     protected override void OnParametersSet()
     {
-        base.OnParametersSet();
-        availOperations = Enum.GetValues<BaseOperation>().Select(s => s.ToString()).ToArray();
+        if (EditModel is null)
+            Load();
     }
 
-    protected void AddOp() => Node.Operations = [.. Node.Operations, new() { Name = availOperations[0] }];
-
-    protected void DelOp(StringNodeOperation op) => Node.Operations = Node.Operations.Where(s => s.Equals(op)).ToArray();
-
-    private void SortList(FluentSortableListEventArgs args) => Node.Operations = Node.Operations.MoveItem(args.OldIndex, args.NewIndex);
-
-    private Task OnSearchAsync(OptionsSearchEventArgs<string> e)
+    void Load()
     {
-        e.Items = availOperations.Where(s => s.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase));
+        EditModel = new(Node);
+    }
+
+    public override Task OnEditSave()
+    {
+        Node.Operations = EditModel!.ItemsToRequest();
         return Task.CompletedTask;
     }
+
+    void SortList(FluentSortableListEventArgs args) => EditModel!.Operations = EditModel.Operations.MoveItem(args.OldIndex, args.NewIndex);
+
+    void ClickAddNewOp() => EditModel!.AddNewOp(nameof(StringNodeOperationUtils.ToUpper));
+    void ClickAddOp(string methodName) => EditModel!.AddNewOp(methodName);
+    void ClickRemoveOp(StringNodeOperationEditModel op) => EditModel!.RemoveOp(op);
+
 }

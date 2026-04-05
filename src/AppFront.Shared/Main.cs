@@ -65,32 +65,13 @@ public static class AppFrontSharedExtensions
 
         services.TryAddSingleton<IFlurlClient>(sp => new FlurlClient(client));
 
-        //LocaleProvider.SetLocale("en-US");
-        //LocaleProvider.SetLocale("ru-RU", ruRU);
-        //services.AddLocalization(options => options.ResourcesPath = "Resources");
-        //services.AddLocalization(options => options.ResourcesPath = "Resources");
-        services.AddLocalization();
-        services.TryAddSingleton<IStringLocalizer, StringLocalizer<AppRes>>();
-        services.TryAddSingleton<IStringLocalizer<AppRes>, StringLocalizer<AppRes>>();
+        services.ConfigureLocalizer();
 
         services.TryAddScoped<ViewModelService>();
-
-        //services.TryAddScoped<GeoLocationService>();
-        //services.TryAddScoped<GeoLocationTypeService>();
-        //services.TryAddScoped<GeoMunicipalityService>();
-        //services.TryAddScoped<GeoMunicTypeService>();
-        //services.TryAddScoped<GeoRegionService>();
-        //services.TryAddScoped<GeoRegionCenterService>();
 
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddScoped<DeveloperControlService>();
         //services.TryAddScoped<GalleryService>();
-
-        //ANKETA
-        //services.TryAddScoped<AnketaQuestionService>();
-        //services.TryAddScoped<AnketaAnswerService>();
-        //services.TryAddScoped<StoEntityTypeService>();
-        //services.TryAddScoped<AppDebugService>();
         services.TryAddScoped<IActAppService, ActAppService>();
         services.TryAddScoped<IAIToolAppService, AIToolAppService>();
 
@@ -100,5 +81,13 @@ public static class AppFrontSharedExtensions
 
         BlazoredHtml.AddComponentsFromAssembly(Q.Program.Assembly, true);
         BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.LikeButton).Assembly, true);
+    }
+
+    private static void ConfigureLocalizer(this IServiceCollection services)
+    {
+        services.AddLocalization();
+        //Такое писать не требуется. Оставлено для внимания.
+        //services.TryAddSingleton<IStringLocalizer, StringLocalizer<AppRes>>();
+        //services.TryAddSingleton<IStringLocalizer<AppRes>, StringLocalizer<AppRes>>();
     }
 }

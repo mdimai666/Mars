@@ -8,7 +8,7 @@ public class KillTaskJobNodeExample1 : INodeExample<KillTaskJobNode>
     public string Name => "KillTaskJobNode example";
     public string Description => "Kill task and start new";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
             .AddNext(new InjectNode())

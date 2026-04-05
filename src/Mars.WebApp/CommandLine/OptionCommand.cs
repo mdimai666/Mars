@@ -7,7 +7,6 @@ using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Options.Models;
-using Microsoft.Extensions.Localization;
 
 namespace Mars.CommandLine;
 
@@ -40,7 +39,6 @@ public class OptionCommand : CommandCli
     {
         using var scope = app.Services.CreateScope();
         var optionRepo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
-        var L = scope.ServiceProvider.GetRequiredService<IStringLocalizer>();
 
         JsonSerializerOptions opt = new()
         {
@@ -82,8 +80,6 @@ public class OptionCommand : CommandCli
 
         using var scope = app.Services.CreateScope();
         var optionRepo = scope.ServiceProvider.GetRequiredService<IOptionRepository>();
-
-        var L = scope.ServiceProvider.GetRequiredService<IStringLocalizer>();
 
         JsonSerializerOptions opt = new()
         {

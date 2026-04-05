@@ -38,7 +38,7 @@ internal class NodeTaskManager : INodeTaskManager
         _logger = logger;
     }
 
-    public async Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null)
+    public async Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null, bool throwOnError = false)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
         var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId, logger);
@@ -50,7 +50,7 @@ internal class NodeTaskManager : INodeTaskManager
         var tcs = new TaskCompletionSource();
         taskJob.OnComplete += tcs.SetResult;
         taskJob.OnNodeExecute += (nodeId, trigger) => OnTaskNodeExecute.Invoke(taskJob.TaskId, nodeId, trigger);
-        taskJob.Run(msg);
+        taskJob.Run(msg, throwOnError: throwOnError);
         await tcs.Task;
 
         _currentTasks.TryRemove(taskJob.TaskId, out _);

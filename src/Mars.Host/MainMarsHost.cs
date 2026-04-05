@@ -15,12 +15,10 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
 using Mars.Host.Shared.WebSite.Scripts;
 using Mars.Host.WebSite.Scripts;
-using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using MOptions = Microsoft.Extensions.Options.Options;
 
@@ -40,10 +38,6 @@ public static class MainMarsHost
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Shared\Tools\ModelInfoService.cs
-
-        services.AddLocalization();
-        services.AddSingleton<IStringLocalizer<AppRes>, StringLocalizer<AppRes>>();
-        services.AddSingleton(sp => sp.GetRequiredService<StringLocalizer<AppRes>>());
 
         services.AddTransient<IMarsEmailSender, EmailSender>();
         services.AddTransient<IEmailSender, EmailSender>();

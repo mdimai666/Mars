@@ -11,6 +11,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Shared.Dto;
@@ -23,6 +24,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)] //TODO: Убрать и пофиксить парраллелизацию
+
 namespace Mars.Nodes.Implements.Test.Services;
 
 public class NodeServiceUnitTestBase
@@ -30,6 +33,7 @@ public class NodeServiceUnitTestBase
     internal IFixture _fixture = new Fixture();
     internal readonly IServiceProvider _serviceProvider;
     internal readonly IHubContext<ChatHub> _hub;
+    internal readonly BroadcastHub _broadcastHub;
     internal readonly IFileStorage _fileStorage;
     internal readonly IEventManager _eventManager;
     internal readonly ILogger<NodeService> _loggerNodeService;
@@ -41,55 +45,52 @@ public class NodeServiceUnitTestBase
     internal NodeTaskManager _nodeTaskManager;
     internal JsonSerializerOptions _jsonSerializerOptions;
 
-    static object _lock = new { };
-
     public NodeServiceUnitTestBase()
     {
-        lock (_lock)
-        {
-            // minimal setup
-            _serviceProvider = Substitute.For<IServiceProvider>();
-            MarsLogger.Initialize(Substitute.For<ILoggerFactory>());
-            _loggerNodeService = MarsLogger.GetStaticLogger<NodeService>();
-            _loggerManager = MarsLogger.GetStaticLogger<NodeTaskManager>();
-            _loggerJob = MarsLogger.GetStaticLogger<NodeTaskJob>();
-            _serviceProvider.GetService(typeof(ILogger<NodeService>)).Returns(_loggerNodeService);
-            _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_loggerManager);
-            _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
+        // minimal setup
+        _serviceProvider = Substitute.For<IServiceProvider>();
+        MarsLogger.Initialize(Substitute.For<ILoggerFactory>());
+        _loggerNodeService = MarsLogger.GetStaticLogger<NodeService>();
+        _loggerManager = MarsLogger.GetStaticLogger<NodeTaskManager>();
+        _loggerJob = MarsLogger.GetStaticLogger<NodeTaskJob>();
+        _serviceProvider.GetService(typeof(ILogger<NodeService>)).Returns(_loggerNodeService);
+        _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_loggerManager);
+        _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
 
-            // add locators and fabric
-            _nodesLocator = new NodesLocator();
-            _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
-            _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
-            _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
-            _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
-            var nodeImplementFactory = new NodeImplementFactory();
-            nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
-            nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
-            nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
+        // add locators and fabric
+        _nodesLocator = new NodesLocator();
+        _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
+        _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
+        _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
+        _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
+        var nodeImplementFactory = new NodeImplementFactory();
+        nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+        nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
+        nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
 
-            // dependies
-            _hub = Substitute.For<IHubContext<ChatHub>>();
-            RED = Substitute.ForPartsOf<RED>(_hub, nodeImplementFactory, _serviceProvider);
-            _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
-            _serviceProvider.GetService(typeof(RED)).Returns(RED);
-            _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
-            IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
-            _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
+        // dependies
+        _hub = Substitute.For<IHubContext<ChatHub>>();
+        _broadcastHub = Substitute.For<BroadcastHub>(_hub);
+        RED = Substitute.ForPartsOf<RED>(_broadcastHub, nodeImplementFactory, _serviceProvider);
+        _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
+        _serviceProvider.GetService(typeof(RED)).Returns(RED);
+        _serviceProvider.GetService(typeof(BroadcastHub)).Returns(_broadcastHub);
+        _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
+        IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
+        _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
 
-            var scope = Substitute.For<IServiceScope>();
-            scope.ServiceProvider.Returns(_serviceProvider);
-            var scopeFactory = Substitute.For<IServiceScopeFactory>();
-            scopeFactory.CreateScope().Returns(scope);
-            _serviceProvider.GetService(typeof(IServiceScopeFactory)).Returns(scopeFactory);
+        var scope = Substitute.For<IServiceScope>();
+        scope.ServiceProvider.Returns(_serviceProvider);
+        var scopeFactory = Substitute.For<IServiceScopeFactory>();
+        scopeFactory.CreateScope().Returns(scope);
+        _serviceProvider.GetService(typeof(IServiceScopeFactory)).Returns(scopeFactory);
 
-            _fileStorage = Substitute.For<IFileStorage>();
-            _eventManager = Substitute.For<IEventManager>();
-            //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
+        _fileStorage = Substitute.For<IFileStorage>();
+        _eventManager = Substitute.For<IEventManager>();
+        //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
-            _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, _loggerNodeService, _eventManager);
-            //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
-        }
+        _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, _loggerNodeService, _eventManager);
+        //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
     }
 
     public async Task<NodeMsg> ExecuteNodeImplement(INodeImplement node, NodeMsg? msg = null)
@@ -172,8 +173,7 @@ public class NodeServiceUnitTestBase
         return result;
     }
 
-    public Task RunUsingTaskManager<T>(T node, NodeMsg? msg = null, FlowNode? flowNode = null, VarNode? varNode = null)
-        where T : Node
+    public Task RunUsingTaskManager(Node node, NodeMsg? msg = null, FlowNode? flowNode = null, VarNode? varNode = null)
     {
         flowNode ??= new FlowNode();
         node.Container = flowNode.Id;
@@ -185,7 +185,21 @@ public class NodeServiceUnitTestBase
         }
         _nodeService.Deploy(nodes);
 
-        return _nodeTaskManager.CreateJob(_serviceProvider, node.Id);
+        return _nodeTaskManager.CreateJob(_serviceProvider, node.Id, throwOnError: true);
+    }
+
+    public async Task<NodeMsg?> RunUsingTaskManager(NodesWorkflowBuilder builder, NodeMsg? msg = null)
+    {
+        NodeMsg? result = null;
+        var callbackNode = new TestCallBackNode() { Callback = input => result = input };
+        var nodes = NodesWorkflowBuilder.Create()
+                .AddNext(builder)
+                .AddNext(callbackNode)
+                .BuildWithFlowNode();
+        var injectNode = nodes.First(node => node is not FlowNode);
+        _nodeService.Deploy(nodes);
+        await _nodeTaskManager.CreateJob(_serviceProvider, injectNode.Id, msg, throwOnError: true);
+        return result;
     }
 
     private class RequestContextImpl : IRequestContext

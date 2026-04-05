@@ -96,7 +96,7 @@ public class NodesWorkflowBuilder
                     }
                 }
             }
-            line += Math.Max(_nodes.Values.Max(s => s.ElementRowIndex), 1);
+            line += builder.BuilderItems.Values.Max(s => s.ElementRowIndex) + 1;
         }
 
         LastCreatedGeneration = _nodes.Values.Max(s => s.Generation);
@@ -136,7 +136,7 @@ public class NodesWorkflowBuilder
                 nodeBuilder.Node.Y = (heightOffset) * nodeBuilder.ElementRowIndex;
             }
 
-            var generationMaxWidth = nodes.Max(s => CalcBodyWidth(s.Node));
+            var generationMaxWidth = nodes.Any() ? nodes.Max(s => CalcBodyWidth(s.Node)) : 120;
             prevGenerationMaxWidth = generationMaxWidth;
         }
 

@@ -124,7 +124,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
             [nameof(RED.GlobalContext)] = globalContext,
             [nameof(RED.FlowContext)] = flowContext,
             [nameof(VarNode)] = varNodexContext,
-            ["msg"] = input,
+            ["msg"] = new DynamicNodeMsgWrapper(input),
         };
 
         return new XInterpreter(null, executionContext);

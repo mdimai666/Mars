@@ -329,6 +329,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         }
         else
         {
+            CalcVarNodes();
             CalcFlowNodes();
         }
         StateHasChanged();
@@ -553,7 +554,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void UseExample(NodeExampleInfo example)
     {
-        var nodes = example.ExampleHandlerInstance.Handle();
+        var editorState = new EditorStateForExampleCreator(this);
+        var nodes = example.ExampleHandlerInstance.Handle(editorState);
         var flowId = ActiveFlow?.Id ?? throw new ArgumentNullException("ActiveFlow is null, ActiveFlow should be set");
         foreach (var node in nodes)
             node.Container = flowId;

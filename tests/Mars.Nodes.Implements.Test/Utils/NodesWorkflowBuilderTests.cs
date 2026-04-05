@@ -93,8 +93,8 @@ public class NodesWorkflowBuilderTests
         builder.BuilderItems[template1.Id].ElementRowIndex.Should().Be(0);
         builder.BuilderItems[debugNode1.Id].ElementRowIndex.Should().Be(0);
         builder.BuilderItems[functionNode1.Id].ElementRowIndex.Should().Be(1);
-        builder.BuilderItems[template22.Id].ElementRowIndex.Should().Be(1);
-        builder.BuilderItems[debug22.Id].ElementRowIndex.Should().Be(1);
+        builder.BuilderItems[template22.Id].ElementRowIndex.Should().Be(2);
+        builder.BuilderItems[debug22.Id].ElementRowIndex.Should().Be(2);
         builder.BuilderItems[debugNode3.Id].ElementRowIndex.Should().Be(0);
 
     }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
+using Mars.Nodes.Core.StringFunctions;
 
 namespace Mars.Nodes.Core.Nodes;
 
@@ -7,98 +8,68 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "function")]
 public class StringNode : Node
 {
-    public StringNodeOperation[] Operations { get; set; } = [new() { Name = BaseOperation.ToUpper.ToString() }];
+    public StringNodeOperation[] Operations { get; set; } = [new() { Method = nameof(StringNodeOperationUtils.ToUpper) }];
 
     public StringNode()
     {
         Inputs = [new()];
         Color = "#b2b2b2";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/string.svg";
     }
 }
 
-public class StringNodeOperation
+public record StringNodeOperation
 {
-    public string Name { get; set; } = default!;
-
-    public string[] Args { get; set; } = [];
-
-    public void NameChanged(string name)
-    {
-        if (Name.Equals(name)) return;
-        this.Name = name;
-        this._inputs = null;
-        if (Enum.TryParse<BaseOperation>(name, out BaseOperation op))
-        {
-            int newArgsCount = op switch
-            {
-                BaseOperation.Replace => 2,
-                //BaseOperation.Encode => 2,
-                _ => 0
-            };
-            if (Args.Length < newArgsCount)
-            {
-                Args = [.. Args, .. Enumerable.Repeat("", newArgsCount - Args.Length)];
-            }
-        }
-    }
-
-    OperationInput[]? _inputs;
-
-    public IEnumerable<OperationInput> Inputs()
-    {
-        if (_inputs is not null) return _inputs;
-
-        if (Args.Length == 0)
-        {
-            _inputs = [];
-        }
-        else if (Name == nameof(BaseOperation.Replace))
-        {
-            _inputs = [
-                new (){
-                    Type = OperationInputType.Input,
-                    Label = "old value",
-                    Placeholder = "old value",
-                    DefaultValue = ""
-                },
-                new(){
-                    Type = OperationInputType.Input,
-                    Label = "new value",
-                    Placeholder = "new value",
-                    DefaultValue = ""
-                }
-            ];
-        }
-        return _inputs ?? [];
-    }
-
+    public string Method { get; init; } = nameof(StringNodeOperationUtils.ToUpper);
+    public string[] ParameterValues { get; init; } = [];
 }
 
-public enum BaseOperation
+public record StringNodeMethodInfo
 {
-    ToUpper,
-    ToLower,
-    Trim,
-    TrimStart,
-    TrimEnd,
-    Replace,
-    Split,
-    Join,
-    Format,
-    //Encode,
+    public required string Name { get; init; }
+    public required string DisplayName { get; init; }
+    public required string GroupName { get; init; }
+    public required StringNodeMethodParameterInfo[] Parameters { get; init; }
+    public required string? Description { get; init; }
 }
 
-public class OperationInput
+public class StringNodeMethodParameterInfo
 {
-    public OperationInputType Type { get; set; }
-    public string? Placeholder { get; set; }
-    public string Label { get; set; } = default!;
-    public string? DefaultValue { get; set; }
+    public required string Name { get; init; }
+    public required TypeCode Type { get; init; }
+    public required string DefaultValue { get; init; } = "";
+    public required bool IsRequired { get; init; }
+    public required string Description { get; init; }
+    public required bool IsArray { get; init; }
+    public required TypeCode? ArrayElementType { get; init; }
 }
 
-public enum OperationInputType
+public static class StringNodeOperationExtensions
 {
-    Input
+    public static StringNodeMethodParameterInfo ToDto(this MethodParameter entity)
+        => new()
+        {
+            Name = entity.Name,
+            Type = StringValueParser.TypeToTypeCode(entity.Type),
+            DefaultValue = entity.DefaultValue?.ToString() ?? string.Empty,
+            IsRequired = entity.IsRequired,
+            Description = entity.Description,
+            IsArray = entity.IsArray,
+            ArrayElementType = entity.ArrayElementType == null ? null : StringValueParser.TypeToTypeCode(entity.ArrayElementType)
+        };
+
+    public static StringNodeMethodInfo ToDto(this StringMethod entity)
+        => new()
+        {
+            Name = entity.Name,
+            DisplayName = entity.DisplayName,
+            GroupName = entity.GroupName,
+            Parameters = entity.Parameters.Select(p => p.ToDto()).ToArray(),
+            Description = entity.Description,
+        };
+
+    public static IReadOnlyDictionary<string, StringNodeMethodInfo> ToDtoDictionary(this IEnumerable<StringMethod> list)
+        => list.ToDictionary(s => s.Name, s => s.ToDto());
+
 }

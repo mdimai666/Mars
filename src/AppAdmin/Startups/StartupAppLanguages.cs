@@ -7,7 +7,7 @@ internal static class StartupAppLanguages
 {
     internal static void ConfigureAppLanguage(this WebAssemblyHostBuilder builder)
     {
-        var defaultCulture = new CultureInfo("ru");
+        var defaultCulture = new CultureInfo("ru-RU");
         var cultureInfo = defaultCulture;
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;

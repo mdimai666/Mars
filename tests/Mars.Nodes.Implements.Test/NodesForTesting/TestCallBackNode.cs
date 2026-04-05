@@ -5,15 +5,21 @@ namespace Mars.Nodes.Implements.Test.NodesForTesting;
 
 public class TestCallBackNode : Node
 {
-    public Action? Callback;
+    public Action<NodeMsg>? Callback;
+
+    public TestCallBackNode()
+    {
+        Inputs = [new()];
+        Outputs = [new()];
+    }
 }
 
 public class TestCallBackNodeImpl : INodeImplement<TestCallBackNode>, INodeImplement
 {
-    public TestCallBackNodeImpl(TestCallBackNode node, IRED RED)
+    public TestCallBackNodeImpl(TestCallBackNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public TestCallBackNode Node { get; }
@@ -22,7 +28,7 @@ public class TestCallBackNodeImpl : INodeImplement<TestCallBackNode>, INodeImple
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        Node.Callback?.Invoke();
+        Node.Callback?.Invoke(input);
 
         return Task.CompletedTask;
     }

@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Mars.Nodes.Core;
+using NSubstitute;
 
 namespace Mars.Nodes.Implements.Test.Services;
 
@@ -19,7 +21,7 @@ public class NodesLocatorTests : NodeServiceUnitTestBase
         item.NodeType.Should().NotBeNull();
         item.ExampleHandlerInstance.Should().NotBeNull();
 
-        var examples = item.ExampleHandlerInstance.Handle();
+        var examples = item.ExampleHandlerInstance.Handle(Substitute.For<IEditorState>());
         examples.Should().HaveCountGreaterThan(0);
     }
 }

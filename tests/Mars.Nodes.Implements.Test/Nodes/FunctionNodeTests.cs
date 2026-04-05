@@ -1,7 +1,10 @@
-using Mars.Nodes.Core.Implements.Nodes;
-using Mars.Nodes.Core.Implements;
-using Mars.Nodes.Implements.Test.Services;
 using FluentAssertions;
+using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Core.Implements.Models;
+using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Implements.Test.Services;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
 
@@ -60,5 +63,32 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
         //Assert
         RED.GlobalContext.GetValue<int>("v").Should().Be(123);
         msg.Payload.Should().Be(123);
+    }
+
+    [Fact]
+    public async Task Execute_AcceptJsonNodeOutput_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(FunctionNodeImpl.Execute);
+        _ = nameof(DynamicJson);
+        _ = nameof(IRED.GlobalContext);
+        var json = """
+                {
+                    "name":"Dima",
+                    "age":35
+                }
+                """;
+        var code = """
+            return msg.Payload.age * 2;
+            """;
+
+        //Act
+        var msg = await RunUsingTaskManager(NodesWorkflowBuilder.Create()
+                                                .AddNext(new Core.Nodes.JsonNode())
+                                                .AddNext(new FunctionNode { Code = code })
+                                            , new Core.NodeMsg { Payload = json });
+
+        //Assert
+        msg.Payload.Should().Be(70);
     }
 }

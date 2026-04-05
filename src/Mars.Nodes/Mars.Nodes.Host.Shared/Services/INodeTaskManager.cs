@@ -22,7 +22,7 @@ public interface INodeTaskManager
     /// <param name="injectNodeId"></param>
     /// <param name="msg"></param>
     /// <returns>TaskId</returns>
-    Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null);
+    Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null, bool throwOnError = false);
     NodeTaskResultSummary? Get(Guid taskId);
     NodeTaskResultDetail? GetDetail(Guid taskId);
     void TryKillTaskJob(Guid taskId);

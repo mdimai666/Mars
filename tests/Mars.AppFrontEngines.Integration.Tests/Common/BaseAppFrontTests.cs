@@ -3,6 +3,8 @@ using Flurl.Http;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace Mars.AppFrontEngines.Integration.Tests.Common;
 
 public abstract class BaseAppFrontTests<TAppFixture> : IClassFixture<TAppFixture> where TAppFixture : ApplicationFixture

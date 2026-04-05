@@ -58,7 +58,7 @@ internal class NodeTaskJob : IAsyncDisposable
         NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _RED.BasicNodesDict).Count;
     }
 
-    public async void Run(NodeMsg msg)
+    public async void Run(NodeMsg msg, bool throwOnError = false)
     {
         var node = _nodes[InjectNodeId];
         node.RED = CreateContextForNode(InjectNodeId);
@@ -66,7 +66,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
         _logger.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
 
-        await ExecuteNode(msg, node, new(), true);
+        await ExecuteNode(msg, node, new(), isInject: true, throwOnError: throwOnError);
     }
 
     public void Terminate()
@@ -78,9 +78,10 @@ internal class NodeTaskJob : IAsyncDisposable
         Finish();
     }
 
-    void CallbackNext(string completedNodeId, NodeMsg result, int output)
+    IAsyncEnumerable<Task> CallbackNext(string completedNodeId, NodeMsg result, int output, bool throwOnError)
     {
         var nextNodes = GetNextWires(completedNodeId, output);
+        var tasks = new List<Task>();
 
         foreach (var _wire in nextNodes)
         {
@@ -89,12 +90,15 @@ internal class NodeTaskJob : IAsyncDisposable
             if (node.Node.Disabled) continue;
 
             node.RED = CreateContextForNode(node.Id);
-            _ = ExecuteNode(result, node, portIndex, false);
+            //_ = ExecuteNode(result, node, portIndex, isInject: false, throwOnError: throwOnError);
+            tasks.Add(ExecuteNode(result, node, portIndex, isInject: false, throwOnError: throwOnError));
+
         }
+        return Task.WhenEach(tasks);
 
     }
 
-    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex, bool isInject)
+    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex, bool isInject, bool throwOnError)
     {
         if (_cancellationTokenSource.IsCancellationRequested) return;
 
@@ -118,10 +122,10 @@ internal class NodeTaskJob : IAsyncDisposable
         try
         {
             await node.Execute(input,
-                (e, _output) =>
+                async (e, _output) =>
                 {
                     //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
-                    CallbackNext(node.Id, e, _output);
+                    await foreach (var wireTask in CallbackNext(node.Id, e, _output, throwOnError)) await wireTask;
                 },
                 new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token)
                 );
@@ -135,12 +139,14 @@ internal class NodeTaskJob : IAsyncDisposable
             _logger.LogError(ex, "node execute exception");
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
+            if (throwOnError) throw;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "node execute exception");
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
+            if (throwOnError) throw;
         }
         finally
         {
@@ -208,11 +214,11 @@ internal class NodeTaskJob : IAsyncDisposable
         if (IsTerminated)
         {
             _logger.LogInformation($"🔴 Terminated! executedCount={executedCount}");
-            foreach(var job in _jobs.Values)
+            foreach (var job in _jobs.Values)
             {
-                foreach(var execution in job.Executions)
+                foreach (var execution in job.Executions)
                 {
-                    if(execution.End == null)
+                    if (execution.End == null)
                     {
                         execution.Terminate();
                     }

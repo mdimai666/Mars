@@ -11,7 +11,7 @@ internal class AppEntityDeleteNodeAfterReadNodeSimpleExample : INodeExample<AppE
     public string Name => "Delete readed data";
     public string Description => "";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         var forDeleteTag = "deleteTag";
 

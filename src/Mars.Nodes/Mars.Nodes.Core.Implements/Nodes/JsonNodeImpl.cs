@@ -1,6 +1,5 @@
-using System.Dynamic;
-using System.Text.Json;
 using Mars.Core.Features.JsonConverter;
+using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
 using Newtonsoft.Json;
 
@@ -8,10 +7,10 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
 {
-    public JsonNodeImpl(JsonNode node, IRED RED)
+    public JsonNodeImpl(JsonNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public JsonNode Node { get; }
@@ -35,19 +34,15 @@ public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
         }
         else if (Node.Action == JsonNode.JsonNodeAction.ToObject)
         {
-            var v = JsonNodeImpl.ParseString(payload.ToString()!);
-            var obj = v.Deserialize<ExpandoObject>()!;
-            input.Payload = obj;
+            var v = ParseString(payload.ToString()!);
+            input.Payload = new DynamicJson(v);
         }
         else
         {
-            bool isString = payload is string;
-            if (isString)
+            if (payload is string jsonPayload)
             {
-                //var v = JsonNodeImpl.ParseString(payload.ToString()!);
-                //var obj = v.Deserialize<ExpandoObject>()!;
-                var v = JsonNodeImpl.ParseString(payload.ToString()!);
-                input.Payload = v;
+                var v = ParseString(jsonPayload);
+                input.Payload = new DynamicJson(v);
             }
             else
             {
@@ -61,13 +56,13 @@ public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
         return Task.CompletedTask;
     }
 
-    static JsonSerializerSettings _defaultConvertSetting = new JsonSerializerSettings
+    static JsonSerializerSettings _defaultConvertSetting = new()
     {
         Formatting = Formatting.None,
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
     };
 
-    static JsonSerializerSettings _defaultConvertSettingNotFormatted = new JsonSerializerSettings
+    static JsonSerializerSettings _defaultConvertSettingNotFormatted = new()
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
         Formatting = Formatting.None

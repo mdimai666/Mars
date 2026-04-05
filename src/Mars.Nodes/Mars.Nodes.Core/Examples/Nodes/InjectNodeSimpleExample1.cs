@@ -8,7 +8,7 @@ public class InjectNodeSimpleExample1 : INodeExample<InjectNode>
     public string Name => "Inject->Debug";
     public string Description => "Using Inject call.";
 
-    public IReadOnlyCollection<Node> Handle()
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
         return NodesWorkflowBuilder.Create()
             .AddNext(new InjectNode())

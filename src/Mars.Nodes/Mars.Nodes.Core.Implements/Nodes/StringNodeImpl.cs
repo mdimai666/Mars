@@ -1,87 +1,100 @@
-using System.Collections;
-using System.Text;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.StringFunctions;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class StringNodeImpl : INodeImplement<StringNode>, INodeImplement
 {
-    public StringNodeImpl(StringNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public StringNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
+    IReadOnlyDictionary<string, StringMethod> _functions;
+
+    public StringNodeImpl(StringNode node, IRED red)
+    {
+        Node = node;
+        RED = red;
+        _functions = StringNodeOperationUtilsMethodParser.ParseMethods(typeof(StringNodeOperationUtils)).ToDictionary(s => s.Name);
+    }
+
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        if (input.Payload is null)
+        object? inputValue = input.Payload switch
         {
-            callback(input);
-            return Task.CompletedTask;
-        }
+            null => null,
+            string str => str,
+            string[] arrayString => arrayString,
+            IEnumerable<string> enumString => enumString.ToArray(),
+            _ => input.Payload.ToString()
+        };
 
-        string payload;
+        var operations = Node.Operations.Select(op => new StringOperation { Method = op.Method, ParameterValues = ConvertStringParamsToTypedParams(op, _functions[op.Method]) }).ToList();
 
-        /*if (input.Payload is IEnumerable enumerable)
-        {
-            payload = enumerable.Cast<string>().ToArray();
-        }
-        else */if (input.Payload is not string && !input.GetType().IsPrimitive)
-        {
-            throw new ArgumentException("input must be string or primitive");
-        }
-        else
-        {
-            //payload = [input.Payload.ToString()!];
-            payload = input.Payload is string st ? st : input.Payload.ToString()!;
-        }
+        var result = ExecuteOperations(inputValue!, operations, _functions);
 
-        foreach (var op in Node.Operations)
-        {
-            var result = Operate(Enum.Parse<BaseOperation>(op.Name), payload, op.Args);
-            payload = result;
-        }
-
-        input.Payload = payload;
-        //input.Payload = Encode(input.Payload, ;
-
-        //Encoding.GetEncodings();
-
+        input.Payload = result;
         callback(input);
 
         return Task.CompletedTask;
     }
 
-    public static string Encode(string input, string sourceEncode, string destEncode)
+    public static object[] ConvertStringParamsToTypedParams(StringNodeOperation nodeOperation, StringMethod function)
     {
-        Encoding source = Encoding.GetEncoding(sourceEncode);
-        Encoding dest = Encoding.GetEncoding(destEncode);
-
-        return dest.GetString(source.GetBytes(input));
+        return ConvertStringParamsToTypedParams(nodeOperation.ParameterValues, function);
     }
 
-    public static string[] GetEncodings()
+    public static object[] ConvertStringParamsToTypedParams(string[] nodeOperationParameters, StringMethod function)
     {
-        return Encoding.GetEncodings().Select(s => $"{s.DisplayName} ({s.CodePage})").ToArray();
-    }
-
-    public string Operate(BaseOperation operation, string input, string[] args)
-        => operation switch
+        return function.Parameters.Skip(1).Select((f, i) =>
         {
-            BaseOperation.ToUpper => input.ToUpper(),
-            BaseOperation.ToLower => input.ToLower(),
-            BaseOperation.Trim => input.Trim(),
-            BaseOperation.TrimStart => input.TrimStart(),
-            BaseOperation.TrimEnd => input.TrimEnd(),
-            BaseOperation.Replace => input.Replace(args[0], args[1]),
-            //BaseOperation.Split => input.Split(args[0]),
-            //BaseOperation.Join => input.Join(args[0]),
-            //BaseOperation.Format => string.Format(args[0]),
-            //BaseOperation.Encode => Encode(input, args[0], args[1]),
-            _ => throw new NotImplementedException()
-        };
+            var stringValue = nodeOperationParameters.ElementAtOrDefault(i);
+            return StringValueParser.TryParseByTypeOrDefault(f.Type, stringValue!);
+        }).ToArray();
+    }
+
+    /// <summary>
+    /// Calc operations results
+    /// </summary>
+    /// <param name="inputValue"></param>
+    /// <param name="stringOperations"></param>
+    /// <param name="availableMethods"></param>
+    /// <returns>string or string[]</returns>
+    public static object? ExecuteOperations(object? inputValue, IReadOnlyCollection<StringOperation> stringOperations, IReadOnlyDictionary<string, StringMethod> availableMethods)
+    {
+        object? value = inputValue;
+
+        foreach (var op in stringOperations)
+        {
+            var method = availableMethods[op.Method];
+
+            var parameters = new List<object?>(method.Parameters.Length) { value };
+
+            // Добавление остальных параметров
+            foreach (var param in method.Parameters.Skip(1))
+            {
+                var argument = op.ParameterValues.ElementAtOrDefault(parameters.Count - 1);
+                parameters.Add(argument ?? GetDefaultValue(param.Type)!);
+            }
+
+            var result = method.MethodInfo.Invoke(null, parameters.ToArray());
+
+            value = result;
+        }
+
+        return value;
+    }
+
+    public static object? GetDefaultValue(Type type)
+    {
+        //if (type == typeof(string)) return "";
+        //if (type == typeof(bool)) return false;
+        //if (type == typeof(int)) return 0;
+        //if (type == typeof(StringSplitOptions)) return StringSplitOptions.None;
+        //if (type.IsArray && type.GetElementType() == typeof(string)) return Array.Empty<string>();
+        //if (type.IsArray) return Array.CreateInstance(type.GetElementType()!, 0);
+        //return null;
+        return StringValueParser.GetDefaultValue(type);
+    }
+
 }

@@ -13,8 +13,7 @@ public class MySqlFixture : IAsyncLifetime
 
     public MySqlFixture()
     {
-        _container = new MySqlBuilder()
-            .WithName($"b-test-mysql-{Guid.NewGuid()}")
+        _container = new MySqlBuilder($"b-test-mysql-{Guid.NewGuid()}")
             .WithUsername("root")
             .WithPassword("password")
             .WithDatabase("test_db_source")

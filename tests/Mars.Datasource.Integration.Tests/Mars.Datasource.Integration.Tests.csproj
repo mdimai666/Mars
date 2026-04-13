@@ -6,11 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Engines\MySqlDatasourceTests.cs" />
-      <Compile Remove="Fixtures\MySqlFixture.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Testcontainers" />
         <PackageReference Include="Testcontainers.MsSql" />
         <PackageReference Include="Testcontainers.MySql" />

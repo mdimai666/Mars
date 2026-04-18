@@ -24,7 +24,7 @@ internal class PostCategoryService : IPostCategoryService
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IEventManager _eventManager;
     private readonly IRequestContext _requestContext;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
 
     public PostCategoryService(
         IPostCategoryRepository postRepository,
@@ -32,14 +32,14 @@ internal class PostCategoryService : IPostCategoryService
         IMetaModelTypesLocator metaModelTypesLocator,
         IEventManager eventManager,
         IRequestContext requestContext,
-        IValidatorFabric validatorFabric)
+        IValidatorFactory validatorFactory)
     {
         _postRepository = postRepository;
         _postCategoryMetaLocator = postCategoryMetaLocator;
         _metaModelTypesLocator = metaModelTypesLocator;
         _eventManager = eventManager;
         _requestContext = requestContext;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
     }
 
     public Task<PostCategorySummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -61,13 +61,13 @@ internal class PostCategoryService : IPostCategoryService
 
     public async Task<ListDataResult<PostCategorySummary>> List(ListPostCategoryQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _postRepository.List(query, cancellationToken);
     }
 
     public async Task<PagingResult<PostCategorySummary>> ListTable(ListPostCategoryQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _postRepository.ListTable(query, cancellationToken);
     }
 
@@ -79,7 +79,7 @@ internal class PostCategoryService : IPostCategoryService
 
     public async Task<PostCategoryDetail> Create(CreatePostCategoryQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _postRepository.Create(query, cancellationToken);
         var created = (await GetDetail(id, cancellationToken))!;
@@ -92,7 +92,7 @@ internal class PostCategoryService : IPostCategoryService
 
     public async Task<PostCategoryDetail> Update(UpdatePostCategoryQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         await _postRepository.Update(query, cancellationToken);
         var updated = (await GetDetail(query.Id, cancellationToken))!;
@@ -105,7 +105,7 @@ internal class PostCategoryService : IPostCategoryService
 
     public async Task<PostCategorySummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync<Guid, DeletePostCategoryQueryValidator>(id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeletePostCategoryQueryValidator>(id, cancellationToken);
 
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
@@ -118,7 +118,7 @@ internal class PostCategoryService : IPostCategoryService
 
     public async Task<IReadOnlyCollection<PostCategorySummary>> DeleteMany(DeleteManyPostCategoryQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var posts = await _postRepository.ListAll(new() { Type = null, PostTypeName = null, Ids = query.Ids }, cancellationToken);
 

@@ -41,7 +41,7 @@ public class PostJsonServiceTestBase
         _fileRepository = Substitute.For<IFileRepository>();
         _metaFieldMaterializerService = Substitute.For<IMetaFieldMaterializerService>();
         _hostingInfo = FileFixtureCustomizeExtension.FileHostingInfo;
-        IValidatorFabric validatorFabric = Substitute.For<IValidatorFabric>();
+        var validatorFactory = Substitute.For<IValidatorFactory>();
         var postTransformer = Substitute.For<IPostTransformer>();
         postTransformer.Transform(Arg.Any<PostDetail>(), default).Returns(callInfo => callInfo.Arg<PostDetail>());
 
@@ -49,7 +49,7 @@ public class PostJsonServiceTestBase
         _metaModelTypesLocator = Substitute.For<IMetaModelTypesLocator>();
 
         _postJsonService = new PostJsonService(_postRepository,
-                                            validatorFabric,
+                                            validatorFactory,
                                             _metaFieldMaterializerService,
                                             _postService,
                                             _metaModelTypesLocator,

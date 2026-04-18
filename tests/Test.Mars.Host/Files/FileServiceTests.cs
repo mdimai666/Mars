@@ -18,7 +18,7 @@ public class FileServiceTests
     private readonly IOptionService _optionService;
     private readonly IFileRepository _fileRepository;
     private readonly IImageProcessor _imageProcessor;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
     private readonly FileHostingInfo _fileHostingInfo;
     private readonly FileService _fileService;
 
@@ -28,7 +28,7 @@ public class FileServiceTests
         _optionService = Substitute.For<IOptionService>();
         _fileRepository = Substitute.For<IFileRepository>();
         _imageProcessor = Substitute.For<IImageProcessor>();
-        _validatorFabric = Substitute.For<IValidatorFabric>();
+        _validatorFactory = Substitute.For<IValidatorFactory>();
 
         _fileHostingInfo = new FileHostingInfo
         {
@@ -39,7 +39,7 @@ public class FileServiceTests
 
         _optionService.FileHostingInfo().Returns(_fileHostingInfo);
 
-        _fileService = new FileService(_inMemoryFileStorage, _optionService, _fileRepository, _imageProcessor, _validatorFabric);
+        _fileService = new FileService(_inMemoryFileStorage, _optionService, _fileRepository, _imageProcessor, _validatorFactory);
     }
 
     [Fact]

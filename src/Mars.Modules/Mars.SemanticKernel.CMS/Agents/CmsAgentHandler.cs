@@ -11,13 +11,13 @@ namespace Mars.SemanticKernel.CMS.Agents;
 
 internal class CmsAgentHandler
 {
-    private readonly IKernelFactory _kernelFabric;
+    private readonly IKernelFactory _kernelFactory;
     private readonly IServiceProvider _serviceProvider;
     private readonly InstructionPlugin _instructions;
 
-    public CmsAgentHandler(IKernelFactory kernelFabric, IServiceProvider serviceProvider, InstructionPlugin instructionPlugin)
+    public CmsAgentHandler(IKernelFactory kernelFactory, IServiceProvider serviceProvider, InstructionPlugin instructionPlugin)
     {
-        _kernelFabric = kernelFabric;
+        _kernelFactory = kernelFactory;
         _serviceProvider = serviceProvider;
         _instructions = instructionPlugin;
     }
@@ -52,15 +52,15 @@ internal class CmsAgentHandler
 
     public async Task<AgentOutput> Handle(ChatHistory chatMessages, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
     {
-        var kernel = _kernelFabric.Create();
+        var kernel = _kernelFactory.Create();
 
         // Регистрируем плагины
         kernel.Plugins.AddFromObject(_instructions, pluginName: "Instruction");
         kernel.Plugins.AddFromType<PostPlugin>(serviceProvider: _serviceProvider);
 
-        var executionSettings = promptExecutionSettings ?? _kernelFabric.ResolvePromptExecutionSettings();
+        var executionSettings = promptExecutionSettings ?? _kernelFactory.ResolvePromptExecutionSettings();
         //var chat = kernel.GetRequiredService<IChatCompletionService>();
-        var chat = _kernelFabric.CreateChatCompletionService();
+        var chat = _kernelFactory.CreateChatCompletionService();
 
         var response = await chat.GetChatMessageContentAsync(chatMessages, executionSettings, kernel, cancellationToken: cancellationToken);
 

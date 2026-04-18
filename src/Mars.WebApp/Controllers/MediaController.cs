@@ -26,13 +26,13 @@ public class MediaController : ControllerBase
 {
     private readonly IMediaService _mediaService;
     private readonly IRequestContext _requestContext;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public MediaController(IMediaService mediaService, IRequestContext requestContext, IValidatorFabric validatorFabric)
+    public MediaController(IMediaService mediaService, IRequestContext requestContext, IValidatorFactory validatorFactory)
     {
         _mediaService = mediaService;
         _requestContext = requestContext;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
     }
 
     [HttpGet("{id:guid}")]
@@ -109,7 +109,7 @@ public class MediaController : ControllerBase
             //[FromQuery] string file_group = "Files",
             CancellationToken cancellationToken = default)
     {
-        await _validatorFabric.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
 
         var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken);
         return (await _mediaService.GetDetail(fileId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();

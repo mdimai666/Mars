@@ -26,15 +26,15 @@ internal class KernelFactory : IKernelFactory
         _serviceProvider = serviceProvider;
     }
 
-    public static IServiceCollection RegisterKernelFabric(IServiceCollection services)
+    public static IServiceCollection RegisterKernelFactory(IServiceCollection services)
     {
         services.AddSingleton<IFunctionInvocationFilter, ToolLoggingFilter>();
         services.AddTransient<IKernelFactory, KernelFactory>();
 
         services.AddTransient<Kernel>((sp) =>
         {
-            var fabric = new KernelFactory(sp);
-            return fabric.Create();
+            var factory = new KernelFactory(sp);
+            return factory.Create();
         });
         return services;
     }

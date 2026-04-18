@@ -21,7 +21,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
     protected readonly IOptionService _optionService;
     protected readonly IFileRepository _fileRepository;
     protected readonly IImageProcessor _imageProcessor;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
     protected readonly FileHostingInfo _hostingInfo;
 
     public FileService(
@@ -29,13 +29,13 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         IOptionService optionService,
         IFileRepository fileRepository,
         IImageProcessor imageProcessor,
-        IValidatorFabric validatorFabric)
+        IValidatorFactory validatorFactory)
     {
         _fileStorage = fileStorage;
         _optionService = optionService;
         _fileRepository = fileRepository;
         _imageProcessor = imageProcessor;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
         _hostingInfo = _optionService.FileHostingInfo();
     }
 
@@ -65,7 +65,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
 
     public async Task<FileSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync<Guid, DeleteFileQueryValidator>(id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeleteFileQueryValidator>(id, cancellationToken);
 
         //delete file
         //delete thumbnails
@@ -98,7 +98,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
 
     public async Task<IReadOnlyCollection<FileSummary>> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var files = await _fileRepository.ListAllDetail(new() { Ids = query.Ids }, _hostingInfo, cancellationToken);
 

@@ -65,7 +65,7 @@ public static class MainMarsHost
         services.AddScoped<SiteFaviconConfiguratorHandler>();
         services.AddSingleton<IDatabaseEntityTypeCatalogService, DatabaseEntityTypeCatalogService>();
 
-        ValidatorFabric.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
+        ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
 
         UseFileStorages(services, wenv);
 
@@ -73,7 +73,7 @@ public static class MainMarsHost
         // Microsoft.AspNetCore.Identity.IEmailSender
 
         services.AddValidatorsFromAssemblyContaining<UpdatePostQueryValidator>();
-        services.AddScoped<IValidatorFabric, ValidatorFabric>();
+        services.AddScoped<Shared.Validators.IValidatorFactory, ValidatorFactory>();
 
         UseIMetaRelationModelProviderHandler(services);
         RegisterAIToolScenarioProviders(services);

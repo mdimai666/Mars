@@ -30,7 +30,7 @@ public static class PluginHostHelperExtensions
                 nodeImplementFactory.RegisterAssembly(assembly);
             }
 
-            //ValidatorFabric
+            //ValidatorFactory
         }
 
         return serviceProvider;

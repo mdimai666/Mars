@@ -21,7 +21,7 @@ namespace Mars.Host.Services;
 internal class PostJsonService : IPostJsonService
 {
     private readonly IPostRepository _postRepository;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
     private readonly IMetaFieldMaterializerService _metaFieldMaterializer;
     private readonly IPostService _postService;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
@@ -29,14 +29,14 @@ internal class PostJsonService : IPostJsonService
 
     public PostJsonService(
         IPostRepository postRepository,
-        IValidatorFabric validatorFabric,
+        IValidatorFactory validatorFactory,
         IMetaFieldMaterializerService metaFieldMaterializer,
         IPostService postService,
         IMetaModelTypesLocator metaModelTypesLocator,
         IPostTransformer postTransformer)
     {
         _postRepository = postRepository;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
         _metaFieldMaterializer = metaFieldMaterializer;
         _postService = postService;
         _metaModelTypesLocator = metaModelTypesLocator;
@@ -70,7 +70,7 @@ internal class PostJsonService : IPostJsonService
 
     public async Task<ListDataResult<PostJsonDto>> List(ListPostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         var list = await _postRepository.ListDetail(query, cancellationToken);
         var fillDict = await _metaFieldMaterializer.GetFillContext(list.Items.SelectMany(s => s.MetaValues.Values), cancellationToken);
         return list.ToMap(s => s.ToJsonDtoList(fillDict));
@@ -78,7 +78,7 @@ internal class PostJsonService : IPostJsonService
 
     public async Task<PagingResult<PostJsonDto>> ListTable(ListPostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         var list = await _postRepository.ListTableDetail(query, cancellationToken);
         var fillDict = await _metaFieldMaterializer.GetFillContext(list.Items.SelectMany(s => s.MetaValues.Values), cancellationToken);
         return list.ToMap(s => s.ToJsonDtoList(fillDict));
@@ -86,7 +86,7 @@ internal class PostJsonService : IPostJsonService
 
     public async Task<PostJsonDto> Create(CreatePostJsonQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type)
                             ?? throw new NotFoundException($"Post type '{query.Type}' not found");
@@ -100,7 +100,7 @@ internal class PostJsonService : IPostJsonService
 
     public async Task<PostJsonDto> Update(UpdatePostJsonQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type)
                             ?? throw new NotFoundException($"Post type '{query.Type}' not found");

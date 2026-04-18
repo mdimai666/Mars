@@ -19,7 +19,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
     private readonly IEventManager _eventManager;
     private readonly IPostCategoryMetaLocator _postCategoryMetaLocator;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
 
     public PostCategoryTypeService(
         IPostCategoryTypeRepository postCategoryTypeRepository,
@@ -27,14 +27,14 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
         IEventManager eventManager,
         IPostCategoryMetaLocator postCategoryMetaLocator,
         IServiceProvider serviceProvider,
-        IValidatorFabric validatorFabric)
+        IValidatorFactory validatorFactory)
     {
         _postCategoryTypeRepository = postCategoryTypeRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
         _eventManager = eventManager;
         _postCategoryMetaLocator = postCategoryMetaLocator;
         _serviceProvider = serviceProvider;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
     }
 
     public Task<PostCategoryTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -57,7 +57,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
     public async Task<PostCategoryTypeDetail> Create(CreatePostCategoryTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _postCategoryTypeRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
@@ -83,7 +83,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
     public async Task<PostCategoryTypeDetail> Update(UpdatePostCategoryTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         await _postCategoryTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
@@ -98,7 +98,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
     public async Task<PostCategoryTypeSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync<Guid, DeletePostCategoryTypeQueryValidator>(id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeletePostCategoryTypeQueryValidator>(id, cancellationToken);
 
         var postCategoryType = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
@@ -114,7 +114,7 @@ internal class PostCategoryTypeService : IPostCategoryTypeService
 
     public async Task<IReadOnlyCollection<PostCategoryTypeSummary>> DeleteMany(DeleteManyPostCategoryTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var postCategoryTypes = await _postCategoryTypeRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
 

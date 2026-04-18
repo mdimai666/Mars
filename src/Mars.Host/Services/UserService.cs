@@ -23,7 +23,7 @@ internal class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly IUserTypeRepository _userTypeRepository;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
     private readonly IOptionService _optionService;
     private readonly IEventManager _eventManager;
     private readonly INotifyService _notifyService;
@@ -31,7 +31,7 @@ internal class UserService : IUserService
     public UserService(IUserRepository userRepository,
                         IRoleRepository roleRepository,
                         IUserTypeRepository userTypeRepository,
-                        IValidatorFabric validatorFabric,
+                        IValidatorFactory validatorFactory,
                         IOptionService optionService,
                         IEventManager eventManager,
                         INotifyService notifyService)
@@ -39,7 +39,7 @@ internal class UserService : IUserService
         _userRepository = userRepository;
         _roleRepository = roleRepository;
         _userTypeRepository = userTypeRepository;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
         _optionService = optionService;
         _eventManager = eventManager;
         _notifyService = notifyService;
@@ -85,7 +85,7 @@ internal class UserService : IUserService
 
     public async Task<UserDetail> Create(CreateUserQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var createdId = await _userRepository.Create(query, cancellationToken);
         var user = (await _userRepository.GetDetail(createdId, cancellationToken))!;
@@ -100,8 +100,8 @@ internal class UserService : IUserService
 
     public async Task<UserDetail> Update(UpdateUserQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
-        //await _validatorFabric.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+        //await _validatorFactory.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
         await _userRepository.Update(query, cancellationToken);
         var updated = (await GetDetail(query.Id, cancellationToken))!;
@@ -114,7 +114,7 @@ internal class UserService : IUserService
 
     public async Task<UserSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync<Guid, DeleteUserQueryValidator>(id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeleteUserQueryValidator>(id, cancellationToken);
 
         var user = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
@@ -128,7 +128,7 @@ internal class UserService : IUserService
 
     public async Task<IReadOnlyCollection<UserSummary>> DeleteMany(DeleteManyUserQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var users = await _userRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
 
@@ -300,13 +300,13 @@ internal class UserService : IUserService
 
     public async Task<UserActionResult> SetPassword(SetUserPasswordQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _userRepository.SetPassword(query, cancellationToken);
     }
 
     public async Task<UserActionResult> SetPassword(SetUserPasswordByIdQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _userRepository.SetPassword(query, cancellationToken);
     }
 
@@ -322,7 +322,7 @@ internal class UserService : IUserService
 
     public async Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _userRepository.RemoteUserUpsert(query, cancellationToken);
     }
 }

@@ -5,7 +5,6 @@ using Mars.Core.Exceptions;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Mappings.Files;
 using Mars.Host.Shared.Mappings.Posts;
 using Mars.Host.Shared.Mappings.PostTypes;
@@ -30,18 +29,15 @@ public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
     private readonly IFileService _fileService;
-    private readonly IRequestContext _requestContext;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
 
     public PostController(IPostService postService,
                             IFileService fileService,
-                            IRequestContext requestContext,
-                            IValidatorFabric validatorFabric)
+                            IValidatorFactory validatorFactory)
     {
         _postService = postService;
         _fileService = fileService;
-        _requestContext = requestContext;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
     }
 
     [HttpGet("{id:guid}")]
@@ -189,7 +185,7 @@ public class PostController : ControllerBase
                 CancellationToken cancellationToken)
     {
         if (id == Guid.Empty) throw new ArgumentException("ID is empty");
-        await _validatorFabric.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
 
         //FileEntity fileEntity = _fileService.WriteUpload(file, EFileType.PostAttachment, file_group);
         Guid userId = Guid.Empty;

@@ -12,17 +12,17 @@ internal class MarsAIService : IMarsAIService
     private readonly IOptionService _optionService;
     private readonly INodesReader _nodesReader;
     private readonly IAIToolScenarioProvidersLocator _aiToolScenarioProvidersLocator;
-    private readonly IKernelFactory _kernelFabric;
+    private readonly IKernelFactory _kernelFactory;
 
     public MarsAIService(IOptionService optionService,
                         INodesReader nodesReader,
                         IAIToolScenarioProvidersLocator aiToolScenarioProvidersLocator,
-                        IKernelFactory kernelFabric)
+                        IKernelFactory kernelFactory)
     {
         _optionService = optionService;
         _nodesReader = nodesReader;
         _aiToolScenarioProvidersLocator = aiToolScenarioProvidersLocator;
-        _kernelFabric = kernelFabric;
+        _kernelFactory = kernelFactory;
     }
 
     public async Task<string> Reply(string prompt, string? systemPrompt = null, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
@@ -32,7 +32,7 @@ internal class MarsAIService : IMarsAIService
         //history.AddSystemMessage(_instructions.ReadBasicConcepts());
         //history.AddUserMessage(prompt);
 
-        var handler = new GeneralAiRequestHandler(_kernelFabric);
+        var handler = new GeneralAiRequestHandler(_kernelFactory);
         var result = await handler.Handle(prompt, systemPrompt: systemPrompt, promptExecutionSettings: promptExecutionSettings, cancellationToken);
         return result.Content;
     }
@@ -47,8 +47,8 @@ internal class MarsAIService : IMarsAIService
             return await provider.Handle(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        var configNode = _kernelFabric.GetConfigNode().CopyAsTool();
-        var promptExecutionSettings = _kernelFabric.ResolvePromptExecutionSettings(configNode);
+        var configNode = _kernelFactory.GetConfigNode().CopyAsTool();
+        var promptExecutionSettings = _kernelFactory.ResolvePromptExecutionSettings(configNode);
 
         return await Reply(prompt, systemPrompt: configNode.SystemPrompt, promptExecutionSettings: promptExecutionSettings, cancellationToken: cancellationToken);
     }

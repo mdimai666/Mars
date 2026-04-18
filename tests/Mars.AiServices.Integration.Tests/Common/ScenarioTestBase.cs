@@ -46,9 +46,9 @@ public abstract class ScenarioTestBase
         _serviceProvider.GetService(typeof(IOptionService)).Returns(optionService);
         _serviceProvider.GetService(typeof(INodesReader)).Returns(nodesReader);
 
-        var kernelFabric = new KernelFactory(_serviceProvider);
+        var kernelFactory = new KernelFactory(_serviceProvider);
 
-        AIService = new MarsAIService(optionService, nodesReader, aiToolScenarioProvidersLocator, kernelFabric);
+        AIService = new MarsAIService(optionService, nodesReader, aiToolScenarioProvidersLocator, kernelFactory);
 
         AIToolService = Substitute.For<IAIToolService>();
 

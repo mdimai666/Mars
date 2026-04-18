@@ -23,7 +23,7 @@ public static class MainOAuth
         services.AddControllersWithViews()
                 .AddApplicationPart(typeof(OAuthPageController).Assembly);
 
-        ValidatorFabric.AddValidatorsFromAssembly(services, typeof(AuthorizeRequestValidator).Assembly);
+        ValidatorFactory.AddValidatorsFromAssembly(services, typeof(AuthorizeRequestValidator).Assembly);
 
         return services;
     }

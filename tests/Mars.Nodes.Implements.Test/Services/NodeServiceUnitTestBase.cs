@@ -57,7 +57,7 @@ public class NodeServiceUnitTestBase
         _serviceProvider.GetService(typeof(ILogger<NodeTaskManager>)).Returns(_loggerManager);
         _serviceProvider.GetService(typeof(ILogger<NodeTaskJob>)).Returns(_loggerJob);
 
-        // add locators and fabric
+        // add locators and factory
         _nodesLocator = new NodesLocator();
         _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
         _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);

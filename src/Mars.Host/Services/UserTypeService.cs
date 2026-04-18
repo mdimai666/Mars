@@ -19,7 +19,7 @@ internal class UserTypeService : IUserTypeService
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IUserMetaLocator _userMetaLocator;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
 
     public UserTypeService(
         IUserTypeRepository userTypeRepository,
@@ -27,14 +27,14 @@ internal class UserTypeService : IUserTypeService
         IMetaModelTypesLocator metaModelTypesLocator,
         IUserMetaLocator userMetaLocator,
         IServiceProvider serviceProvider,
-        IValidatorFabric validatorFabric)
+        IValidatorFactory validatorFactory)
     {
         _userTypeRepository = userTypeRepository;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
         _userMetaLocator = userMetaLocator;
         _serviceProvider = serviceProvider;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
     }
 
     public Task<UserTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -51,7 +51,7 @@ internal class UserTypeService : IUserTypeService
 
     public async Task<UserTypeDetail> Create(CreateUserTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _userTypeRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, cancellationToken);
@@ -78,7 +78,7 @@ internal class UserTypeService : IUserTypeService
 
     public async Task<UserTypeDetail> Update(UpdateUserTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         await _userTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
@@ -94,7 +94,7 @@ internal class UserTypeService : IUserTypeService
 
     public async Task<UserTypeSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync<Guid, DeleteUserTypeQueryValidator>(id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeleteUserTypeQueryValidator>(id, cancellationToken);
 
         var userType = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
@@ -111,7 +111,7 @@ internal class UserTypeService : IUserTypeService
 
     public async Task<IReadOnlyCollection<UserTypeSummary>> DeleteMany(DeleteManyUserTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var userTypes = await _userTypeRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
 

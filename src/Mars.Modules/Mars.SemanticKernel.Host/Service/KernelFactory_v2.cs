@@ -34,7 +34,7 @@ internal class KernelFactory_v2 : IKernelFactory
         _services = services;
     }
 
-    public static IServiceCollection RegisterKernelFabric(IServiceCollection services)
+    public static IServiceCollection RegisterKernelFactory(IServiceCollection services)
     {
         services.AddSingleton<IFunctionInvocationFilter, ToolLoggingFilter>();
         services.AddTransient<IKernelFactory, KernelFactory>();
@@ -43,8 +43,8 @@ internal class KernelFactory_v2 : IKernelFactory
 
         services.AddTransient<Kernel>((sp) =>
         {
-            var fabric = new KernelFactory_v2(sp, services);
-            return fabric.Create();
+            var factory = new KernelFactory_v2(sp, services);
+            return factory.Create();
         });
         services.AddKernel();
         services.AddTransient<KernelPluginCollection>();

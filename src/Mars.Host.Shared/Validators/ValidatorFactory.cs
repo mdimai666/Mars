@@ -5,12 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.Shared.Validators;
 
-public class ValidatorFabric : IValidatorFabric
+public class ValidatorFactory : IValidatorFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private static Dictionary<Type, List<Type>> _validators = [];
 
-    public ValidatorFabric(IServiceProvider serviceProvider)
+    public ValidatorFactory(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
@@ -83,7 +83,7 @@ public class ValidatorFabric : IValidatorFabric
     }
 }
 
-public interface IValidatorFabric
+public interface IValidatorFactory
 {
     Task ValidateAndThrowAsync<TQuery>(TQuery query, CancellationToken cancellationToken = default);
     Task ValidateAndThrowAsync<TQuery, TValidator>(TQuery query, CancellationToken cancellationToken = default)

@@ -8,11 +8,11 @@ namespace Mars.SemanticKernel.Host.Service;
 
 internal class GeneralAiRequestHandler
 {
-    private readonly IKernelFactory _kernelFabric;
+    private readonly IKernelFactory _kernelFactory;
 
-    public GeneralAiRequestHandler(IKernelFactory kernelFabric)
+    public GeneralAiRequestHandler(IKernelFactory kernelFactory)
     {
-        _kernelFabric = kernelFabric;
+        _kernelFactory = kernelFactory;
     }
 
     public Task<AgentOutput> Handle(string prompt, string? systemPrompt = null, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
@@ -28,9 +28,9 @@ internal class GeneralAiRequestHandler
 
     public async Task<AgentOutput> Handle(ChatHistory chatMessages, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)
     {
-        var kernel = _kernelFabric.Create();
+        var kernel = _kernelFactory.Create();
 
-        var executionSettings = promptExecutionSettings ?? _kernelFabric.ResolvePromptExecutionSettings();
+        var executionSettings = promptExecutionSettings ?? _kernelFactory.ResolvePromptExecutionSettings();
         var chat = kernel.GetRequiredService<IChatCompletionService>();
         var response = await chat.GetChatMessageContentAsync(chatMessages, executionSettings, kernel, cancellationToken: cancellationToken);
 

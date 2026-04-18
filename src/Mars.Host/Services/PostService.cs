@@ -24,7 +24,7 @@ internal class PostService : IPostService
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IEventManager _eventManager;
     private readonly IRequestContext _requestContext;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
     private readonly IPostTransformer _postTransformer;
 
     public PostService(
@@ -32,14 +32,14 @@ internal class PostService : IPostService
         IMetaModelTypesLocator metaModelTypesLocator,
         IEventManager eventManager,
         IRequestContext requestContext,
-        IValidatorFabric validatorFabric,
+        IValidatorFactory validatorFactory,
         IPostTransformer postTransformer)
     {
         _postRepository = postRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
         _eventManager = eventManager;
         _requestContext = requestContext;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
         _postTransformer = postTransformer;
     }
 
@@ -65,19 +65,19 @@ internal class PostService : IPostService
 
     public async Task<ListDataResult<PostSummary>> List(ListPostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _postRepository.List(query, cancellationToken);
     }
 
     public async Task<PagingResult<PostSummary>> ListTable(ListPostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _postRepository.ListTable(query, cancellationToken);
     }
 
     public async Task<PostDetail> Create(CreatePostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _postRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, renderContent: false, cancellationToken);
@@ -90,8 +90,8 @@ internal class PostService : IPostService
 
     public async Task<PostDetail> Update(UpdatePostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
-        //await _validatorFabric.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+        //await _validatorFactory.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
         await _postRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, renderContent: false, cancellationToken);
@@ -104,7 +104,7 @@ internal class PostService : IPostService
 
     public async Task<PostSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync<Guid, DeletePostQueryValidator>(id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync<Guid, DeletePostQueryValidator>(id, cancellationToken);
 
         var post = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
@@ -117,7 +117,7 @@ internal class PostService : IPostService
 
     public async Task<IReadOnlyCollection<PostSummary>> DeleteMany(DeleteManyPostQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var posts = await _postRepository.ListAll(new () { Type = null, Ids = query.Ids  }, cancellationToken);
 

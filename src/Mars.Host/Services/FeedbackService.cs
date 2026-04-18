@@ -14,18 +14,18 @@ internal class FeedbackService : IFeedbackService
     private readonly IFeedbackRepository _feedbackRepository;
     private readonly IEventManager _eventManager;
     private readonly IExcelService _excelService;
-    private readonly IValidatorFabric _validatorFabric;
+    private readonly IValidatorFactory _validatorFactory;
 
     public FeedbackService(
         IFeedbackRepository feedbackRepository,
         IEventManager eventManager,
         IExcelService excelService,
-        IValidatorFabric validatorFabric)
+        IValidatorFactory validatorFactory)
     {
         _feedbackRepository = feedbackRepository;
         _eventManager = eventManager;
         _excelService = excelService;
-        _validatorFabric = validatorFabric;
+        _validatorFactory = validatorFactory;
     }
 
     public Task<FeedbackSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ internal class FeedbackService : IFeedbackService
 
     public async Task<FeedbackDetail> Create(CreateFeedbackQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         var id = await _feedbackRepository.Create(query, cancellationToken);
         var created = (await GetDetail(id, cancellationToken))!;
@@ -55,7 +55,7 @@ internal class FeedbackService : IFeedbackService
 
     public async Task<FeedbackDetail> Update(UpdateFeedbackQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFabric.ValidateAndThrowAsync(query, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         await _feedbackRepository.Update(query, cancellationToken);
         var updated = (await GetDetail(query.Id, cancellationToken))!;

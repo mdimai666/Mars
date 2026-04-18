@@ -21,14 +21,14 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         IOptionService optionService,
         IFileRepository fileRepository,
         IImageProcessor imageProcessor,
-        IValidatorFabric validatorFabric,
+        IValidatorFactory validatorFactory,
         ILogger<MediaService> logger)
         : base(
             fileStorage,
             optionService,
             fileRepository,
             imageProcessor,
-            validatorFabric)
+            validatorFactory)
     {
         _logger = logger;
     }

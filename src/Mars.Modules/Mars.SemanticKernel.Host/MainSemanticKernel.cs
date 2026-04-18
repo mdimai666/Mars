@@ -15,7 +15,7 @@ public static class MainSemanticKernel
 {
     public static IServiceCollection AddMarsSemanticKernel(this IServiceCollection services)
     {
-        KernelFactory.RegisterKernelFabric(services);
+        KernelFactory.RegisterKernelFactory(services);
 
         services.AddTransient<GeneralAiRequestHandler>();
         services.AddTransient<NodesAiRequestHandler>();

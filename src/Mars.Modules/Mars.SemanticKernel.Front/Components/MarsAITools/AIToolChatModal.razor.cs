@@ -55,7 +55,7 @@ public partial class AIToolChatModal : IAIToolModal
         {
             response = await _client.AITool.ToolPrompt(new AIServiceToolRequest { Prompt = ChatInput, ToolName = ScenarioName.AsNullIfEmpty() });
         }
-        catch (NotFoundException ex)
+        catch (Exception ex)
         {
             _ = _messageService.Error(ex.Message);
         }

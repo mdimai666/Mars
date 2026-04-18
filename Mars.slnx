@@ -50,6 +50,7 @@
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host/Mars.Datasource.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/SemanticKernel/">
+    <Project Path="src/Mars.Modules/Mars.SemanticKernel.CMS/Mars.SemanticKernel.CMS.csproj" Id="fba0b589-88cb-4c6c-8352-78d27f2e0840" />
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.Front/Mars.SemanticKernel.Front.csproj" />
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.Host.Shared/Mars.SemanticKernel.Host.Shared.csproj" />
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.Host/Mars.SemanticKernel.Host.csproj" />

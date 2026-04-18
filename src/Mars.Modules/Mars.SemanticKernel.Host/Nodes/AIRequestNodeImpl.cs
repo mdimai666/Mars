@@ -3,11 +3,9 @@ using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
+using Mars.SemanticKernel.Host.Service;
 using Mars.SemanticKernel.Shared.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Connectors.Ollama;
 
 namespace Mars.SemanticKernel.Host.Nodes;
 
@@ -38,16 +36,13 @@ public class AIRequestNodeImpl : INodeImplement<AIRequestNode>, INodeImplement
 
         try
         {
-            var executionSettings = GetExecutionSettings();
-
-            var systemPrompt = Node.Config.Value.SystemPrompt;
             var userPrompt = Node.Prompt.AsNullIfEmptyOrWhiteSpace() ?? input.Payload?.ToString()!;
 
-            var ai = RED.ServiceProvider.GetRequiredService<IMarsAIService>();
+            var aiHandler = RED.ServiceProvider.GetRequiredService<NodesAiRequestHandler>();
 
-            var reply = await ai.Reply(userPrompt, systemPrompt, Node.Config.Value, executionSettings, parameters.CancellationToken);
+            var reply = await aiHandler.Handle(userPrompt, Node.Config.Value, parameters.CancellationToken);
 
-            input.Payload = reply;
+            input.Payload = reply.Content;
 
             callback(input);
         }
@@ -61,15 +56,4 @@ public class AIRequestNodeImpl : INodeImplement<AIRequestNode>, INodeImplement
         RED.Status(new NodeStatus(totalTime));
     }
 
-    PromptExecutionSettings GetExecutionSettings()
-    {
-        var executionSettings = new OllamaPromptExecutionSettings
-        {
-            Temperature = Node.Temperature ?? Node.Config.Value.Temperature,
-            TopK = Node.TopK ?? Node.Config.Value.TopK,
-            TopP = Node.TopP ?? Node.Config.Value.TopP,
-        };
-
-        return executionSettings;
-    }
 }

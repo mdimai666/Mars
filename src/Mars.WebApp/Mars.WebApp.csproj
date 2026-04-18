@@ -119,6 +119,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.CMS\Mars.SemanticKernel.CMS.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host.OAuth\Mars.SSO.Host.OAuth.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SSO\Mars.SSO.csproj" />

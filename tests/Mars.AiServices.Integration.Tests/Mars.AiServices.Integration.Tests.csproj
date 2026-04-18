@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.CMS\Mars.SemanticKernel.CMS.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.Host.Shared\Mars.SemanticKernel.Host.Shared.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />

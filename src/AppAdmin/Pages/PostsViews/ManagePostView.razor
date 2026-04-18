@@ -2,12 +2,13 @@
 @using AppAdmin.Pages.PageViews
 @using AppAdmin.Pages.PostCategoryViews
 @using BlazoredHtmlRender
+@using Mars.Shared.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Mars.Shared.Contracts.Posts;
 @using Mars.Shared.Contracts.PostTypes;
 
-@inject IStringLocalizer<AppRes> L
+@inject IAIToolAppService _aiTool
 
 <d-manage-post-view class="flex-fill d-flex flex-column">
     @if (PostType.Presentation.ListViewTemplate != null)
@@ -33,7 +34,11 @@
                                                  Style="height:32px;"
                                                  Width="150px" />
             }
-            <div class="ms-auto">
+            <div class="ms-auto hstack gap-2">
+                <FluentButton OnClick="@(e => _aiTool.Open(text: "покажи список доступных инструментов", scenarioName: "cms_agent"))">
+                    <i class="bi bi-stars"></i>
+                    AI help
+                </FluentButton>
                 <a href="@urlEditPage/@PostType.TypeName">
                     <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
                 </a>

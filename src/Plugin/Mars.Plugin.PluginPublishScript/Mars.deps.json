@@ -28,6 +28,7 @@
           "Mars.SSO": "1.0.0",
           "Mars.SSO.Host.OAuth": "1.0.0",
           "Mars.Scheduler.Host": "1.0.0",
+          "Mars.SemanticKernel.CMS": "1.0.0",
           "Mars.SemanticKernel.Host": "1.0.0",
           "Mars.WebApp.Nodes.Host": "1.0.0",
           "Mars.WebSiteProcessor": "1.0.0",
@@ -801,11 +802,11 @@
           }
         }
       },
-      "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.201": {
+      "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.202": {
         "runtime": {
           "lib/net10.0/Microsoft.DotNet.HotReload.WebAssembly.Browser.dll": {
-            "assemblyVersion": "10.0.201.0",
-            "fileVersion": "10.2.126.15422"
+            "assemblyVersion": "10.0.202.0",
+            "fileVersion": "10.2.226.18118"
           }
         }
       },
@@ -1222,6 +1223,18 @@
           }
         }
       },
+      "Microting.EntityFrameworkCore.MySql/10.0.5": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.5",
+          "MySqlConnector": "2.5.0"
+        },
+        "runtime": {
+          "lib/net10.0/Pomelo.EntityFrameworkCore.MySql.dll": {
+            "assemblyVersion": "10.0.5.0",
+            "fileVersion": "10.0.5.0"
+          }
+        }
+      },
       "Mono.TextTemplating/3.0.0": {
         "dependencies": {
           "System.CodeDom": "6.0.0"
@@ -1249,6 +1262,14 @@
           "lib/net10.0/MQTTnet.Extensions.TopicTemplate.dll": {
             "assemblyVersion": "5.1.0.1559",
             "fileVersion": "5.1.0.1559"
+          }
+        }
+      },
+      "MySqlConnector/2.5.0": {
+        "runtime": {
+          "lib/net10.0/MySqlConnector.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.5.0.0"
           }
         }
       },
@@ -2090,7 +2111,7 @@
           "Microsoft.AspNetCore.Components.WebAssembly": "10.0.5",
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.5",
           "Microsoft.AspNetCore.SignalR.Client": "10.0.5",
-          "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.201",
+          "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.202",
           "Toolbelt.Blazor.HotKeys2": "6.2.0",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
           "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
@@ -2157,6 +2178,7 @@
           "Mars.Datasource.Core": "1.0.0",
           "Mars.Datasource.Host.Core": "1.0.0",
           "Mars.Datasource.Host.MsSQL": "1.0.0",
+          "Mars.Datasource.Host.MySQL": "1.0.0",
           "Mars.Datasource.Host.PostgreSQL": "1.0.0",
           "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
           "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
@@ -2188,6 +2210,19 @@
         },
         "runtime": {
           "Mars.Datasource.Host.MsSQL.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Datasource.Host.MySQL/1.0.0": {
+        "dependencies": {
+          "Mars.Datasource.Core": "1.0.0",
+          "Mars.Datasource.Host.Core": "1.0.0",
+          "Microting.EntityFrameworkCore.MySql": "10.0.5"
+        },
+        "runtime": {
+          "Mars.Datasource.Host.MySQL.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2431,6 +2466,18 @@
           }
         }
       },
+      "Mars.SemanticKernel.CMS/1.0.0": {
+        "dependencies": {
+          "Mars.SemanticKernel.Host.Shared": "1.0.0",
+          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+        },
+        "runtime": {
+          "Mars.SemanticKernel.CMS.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.SemanticKernel.Front/1.0.0": {
         "dependencies": {
           "Mars.Options.Front": "1.0.0",
@@ -2448,10 +2495,6 @@
         "dependencies": {
           "Mars.SemanticKernel.Host.Shared": "1.0.0",
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "Microsoft.Extensions.AI": "10.4.1",
-          "Microsoft.Extensions.AI.Ollama": "9.7.0-preview.1.25356.2",
-          "Microsoft.SemanticKernel": "1.74.0",
-          "Microsoft.SemanticKernel.Connectors.Ollama": "1.74.0-alpha",
           "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
         },
         "runtime": {
@@ -2464,7 +2507,10 @@
       "Mars.SemanticKernel.Host.Shared/1.0.0": {
         "dependencies": {
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "Microsoft.SemanticKernel": "1.74.0"
+          "Microsoft.Extensions.AI": "10.4.1",
+          "Microsoft.Extensions.AI.Ollama": "9.7.0-preview.1.25356.2",
+          "Microsoft.SemanticKernel": "1.74.0",
+          "Microsoft.SemanticKernel.Connectors.Ollama": "1.74.0-alpha"
         },
         "runtime": {
           "Mars.SemanticKernel.Host.Shared.dll": {
@@ -2779,6 +2825,11 @@
             "assemblyVersion": "0.7.3.0",
             "fileVersion": "0.7.3.0"
           }
+        },
+        "resources": {
+          "ru/Mars.Nodes.Core.resources.dll": {
+            "locale": "ru"
+          }
         }
       },
       "mdimai666.Mars.Nodes.Core.Implements/0.7.3-alpha.7": {
@@ -3000,6 +3051,11 @@
           "Mars.Nodes.Core.dll": {
             "assemblyVersion": "0.7.3.0",
             "fileVersion": "0.7.3.0"
+          }
+        },
+        "resources": {
+          "ru/Mars.Nodes.Core.resources.dll": {
+            "locale": "ru"
           }
         }
       },
@@ -3634,12 +3690,12 @@
       "path": "microsoft.data.sqlclient.sni.runtime/6.0.2",
       "hashPath": "microsoft.data.sqlclient.sni.runtime.6.0.2.nupkg.sha512"
     },
-    "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.201": {
+    "Microsoft.DotNet.HotReload.WebAssembly.Browser/10.0.202": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-4EAMH3CqtVwVm7Sx4DnNtZj/J0b+A1YGcTnCL6prhQ8ZHlwbVtZ3RmSyJdi85mSnLl+u94aVr8fElRGkjZkKmw==",
-      "path": "microsoft.dotnet.hotreload.webassembly.browser/10.0.201",
-      "hashPath": "microsoft.dotnet.hotreload.webassembly.browser.10.0.201.nupkg.sha512"
+      "sha512": "sha512-//aZ/qUD7sc2gcUlraZe4yD0jzxRv7uwUMuuDe7Wdlz404vgLpsdt5xD2l44VHjyUuOgH27ulK3MdJgQVjofzA==",
+      "path": "microsoft.dotnet.hotreload.webassembly.browser/10.0.202",
+      "hashPath": "microsoft.dotnet.hotreload.webassembly.browser.10.0.202.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore/10.0.5": {
       "type": "package",
@@ -3893,6 +3949,13 @@
       "path": "microsoft.win32.systemevents/10.0.5",
       "hashPath": "microsoft.win32.systemevents.10.0.5.nupkg.sha512"
     },
+    "Microting.EntityFrameworkCore.MySql/10.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-j7Ar17KmBMaPecBDDM3eh5wMny0EqyD+cWdOExdfv1AHHBMv9M7nZdoqy1ZPbShs/L6f7hfYs8i2ahTNfL6XcA==",
+      "path": "microting.entityframeworkcore.mysql/10.0.5",
+      "hashPath": "microting.entityframeworkcore.mysql.10.0.5.nupkg.sha512"
+    },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
       "serviceable": true,
@@ -3913,6 +3976,13 @@
       "sha512": "sha512-oxJKmn/YwTAkx+Gq8UjyYfPJSjYrvBjAeDswJESrDb1r2AO4dp28TJtDLA1zC+7gays9rLKWMm4yFeeydP6QIg==",
       "path": "mqttnet.extensions.topictemplate/5.1.0.1559",
       "hashPath": "mqttnet.extensions.topictemplate.5.1.0.1559.nupkg.sha512"
+    },
+    "MySqlConnector/2.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hoAwfHHF8DlRRqwHOhN3u1KLi+XbX/4LPS7Anfa+SYC97vRyIfdEOEEfj1L50q01Ik8aDNvmDrNmu/VPFiAiaQ==",
+      "path": "mysqlconnector/2.5.0",
+      "hashPath": "mysqlconnector.2.5.0.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.4": {
       "type": "package",
@@ -4367,6 +4437,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Mars.Datasource.Host.MySQL/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mars.Datasource.Host.PostgreSQL/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -4453,6 +4528,11 @@
       "sha512": ""
     },
     "Mars.Scheduler.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.SemanticKernel.CMS/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

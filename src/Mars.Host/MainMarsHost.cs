@@ -123,7 +123,7 @@ public static class MainMarsHost
 
     static IServiceCollection RegisterAIToolScenarioProviders(this IServiceCollection services)
     {
-        services.AddSingleton<IAIToolScenarioProvidersLocator, AIToolScenarioProvidersLocator>();
+        services.AddSingleton<IAIToolScenarioProvidersLocator, AIToolScenarioProvidersLocator>();//Надо изменить логику хранений сценариев.
         //var toolMap = new Dictionary<string, Type>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies()

@@ -51,4 +51,30 @@ public class SemanticKernelModelConfigNode : ConfigNode
     }
 
     static string? AsKeyValueIfNotEmpty(string key, string? value) => value == null ? null : $"{key}={value}";
+
+    public SemanticKernelModelConfigNode Copy()
+        => new()
+        {
+            Id = Id,
+            Name = Name,
+            Container = Container,
+
+            SystemPrompt = SystemPrompt,
+            Temperature = Temperature,
+            TopK = TopK,
+            TopP = TopP,
+        };
+
+    public SemanticKernelModelConfigNode CopyAsTool()
+        => new()
+        {
+            Id = Id,
+            Name = Name,
+            Container = Container,
+
+            SystemPrompt = SystemPrompt,
+            Temperature = 0.1f,
+            TopK = 10,
+            TopP = 20,
+        };
 }

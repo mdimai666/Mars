@@ -20,6 +20,7 @@ using Mars.Options.Front;
 using Mars.Options.Host;
 using Mars.Plugin;
 using Mars.Scheduler.Host;
+using Mars.SemanticKernel.CMS;
 using Mars.SemanticKernel.Host;
 using Mars.SSO;
 using Mars.SSO.Host.OAuth;
@@ -86,7 +87,11 @@ public static class MarsWebAppStartup
                         .AddEditorJsBlazored();
 
         builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker());
-        builder.AddIfFeatureEnabled(FeatureFlags.AITool, b => b.Services.AddMarsSemanticKernel());
+        builder.AddIfFeatureEnabled(FeatureFlags.AITool, builder =>
+        {
+            builder.Services.AddMarsSemanticKernel();
+            builder.AddAiCmsHost();
+        });
         builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuthHost());
 
         //------------------------------------------
@@ -183,7 +188,7 @@ public static class MarsWebAppStartup
         app.UseMarsExcel();
         app.UseEditorJsBlazored();
         app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
-        app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
+        app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel().UseAiCmsHost());
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());
 
         app.UseMarsScheduler();

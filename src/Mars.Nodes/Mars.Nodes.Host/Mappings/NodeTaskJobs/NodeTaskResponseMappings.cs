@@ -71,6 +71,7 @@ public static class NodeTaskResponseMappings
         {
             Message = entity.Message,
             StackTrace = entity.StackTrace,
+            ExceptionType = entity.ExceptionType,
         };
 
     public static NodeJobExecutionResultResponse ToResponse(this NodeJobExecutionResultDto entity)

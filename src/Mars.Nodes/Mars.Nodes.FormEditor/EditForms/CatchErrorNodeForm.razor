@@ -1,0 +1,22 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(CatchErrorNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+    <FormItem2 For="() => Node.Scope">
+        <FluentRadioGroup @bind-Value=Node.Scope Orientation="Orientation.Vertical">
+            @foreach (var item in Enum.GetValues<NodesErrorCatchScope>())
+            {
+                <FluentRadio Value="@item" Label="@item.ToString()" />
+            }
+        </FluentRadioGroup>
+    </FormItem2>
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    CatchErrorNode Node { get => (CatchErrorNode)Value; set => Value = value; }
+
+}

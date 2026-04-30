@@ -28,6 +28,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         TypeInfoResolver = new IgnoreReadOnlySpanPropertiesResolver(),
+        Converters = { new ExceptionConverterFactory() }
     };
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -35,7 +36,10 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         try
         {
             int jsonSymbolsLimit = 1000;
-
+            var intentLevel = Node.Level ??
+                               (input.Payload is Exception
+                                    ? Mars.Core.Models.MessageIntent.Error
+                                    : Mars.Core.Models.MessageIntent.Info);
             DebugMessage msg;
 
             if (Node.CompleteInputMessage)
@@ -47,7 +51,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                     NodeId = Node.Id,
                     Message = "DebugNode (complete):",
                     Json = json.TextEllipsis(jsonSymbolsLimit),
-                    Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
+                    Level = intentLevel,
                 };
             }
             else if (input.Payload is not string && input.Payload is object)
@@ -59,7 +63,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                     NodeId = Node.Id,
                     Message = $"DebugNode (serialized)\nType=({input.Payload?.GetType().Name}):",
                     Json = json.TextEllipsis(jsonSymbolsLimit),
-                    Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
+                    Level = intentLevel,
                 };
             }
             else
@@ -68,7 +72,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 {
                     NodeId = Node.Id,
                     Message = input.Payload?.ToString()?.TextEllipsis(500) ?? "null",
-                    Level = Node.Level ?? Mars.Core.Models.MessageIntent.Info,
+                    Level = intentLevel,
                 };
             }
 

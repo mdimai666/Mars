@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
@@ -8,29 +9,46 @@ namespace Mars.Nodes.Core.Implements.JsonConverters;
 /// </summary>
 public class IgnoreReadOnlySpanPropertiesResolver : DefaultJsonTypeInfoResolver
 {
+    // Типы ref struct, которые нужно игнорировать
+    private static readonly HashSet<string> RefStructTypeNames =
+    [
+        "ReadOnlySpan`1",
+        "Span`1",
+        "ReadOnlySequence`1"
+    ];
+
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        if (type.IsGenericType && (type.Name == "ReadOnlySequence`1"))
+        // Если тип уже известен как проблемный - возвращаем пустой контракт
+        if (IsRefStruct(type) || typeof(Encoding).IsAssignableFrom(type))
         {
-            var jt = JsonTypeInfo.CreateJsonTypeInfo(type, options);
-            jt.CreateObject = Array.Empty<int>;
-            return jt;
+            return JsonTypeInfo.CreateJsonTypeInfo(type, options);
         }
 
         JsonTypeInfo typeInfo = base.GetTypeInfo(type, options);
 
-        foreach (JsonPropertyInfo property in typeInfo.Properties)
+        // Удаляем проблемные свойства из нормальных типов
+        var propertiesToRemove = typeInfo.Properties
+            .Where(p => IsRefStruct(p.PropertyType))
+            .ToList();
+
+        foreach (var prop in propertiesToRemove)
         {
-            if (property.PropertyType.IsGenericType
-                //&& property.PropertyType.GetGenericTypeDefinition() == typeof(ReadOnlySpan<>)
-                && property.PropertyType.Name == "ReadOnlySequence`1"
-                )
-            {
-                //property.Name = "xxx";
-                //property.ShouldSerialize = (_, _) => false;
-            }
+            typeInfo.Properties.Remove(prop);
         }
 
         return typeInfo;
+    }
+
+    private static bool IsRefStruct(Type type)
+    {
+        if (!type.IsValueType) return false;
+
+        // Проверяем по имени (учитывая generic)
+        string typeName = type.IsGenericType
+            ? type.GetGenericTypeDefinition().Name
+            : type.Name;
+
+        return RefStructTypeNames.Contains(typeName);
     }
 }

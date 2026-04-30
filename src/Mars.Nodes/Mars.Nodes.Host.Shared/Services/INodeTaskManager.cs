@@ -9,6 +9,7 @@ public interface INodeTaskManager
     int CurrentTasksCount { get; }
     event Action<int>? OnCurrentTasksCountChanged;
     event NodeTaskExecutionHandler OnTaskNodeExecute;
+    event NodeTaskExceptionHandler OnError;
 
     IReadOnlyCollection<NodeTaskResultSummary> CurrentTasks();
     IReadOnlyCollection<NodeTaskResultDetail> CurrentTasksDetails();
@@ -32,5 +33,8 @@ public interface INodeTaskManager
 }
 
 public delegate void NodeExecutionHandler(string nodeId, NodeExecutionTrigger trigger);
+public delegate void NodeExceptionHandler(string nodeId, string flowId, Exception exception);
 
 public delegate void NodeTaskExecutionHandler(Guid taskId, string nodeId, NodeExecutionTrigger trigger);
+
+public delegate void NodeTaskExceptionHandler(Guid taskId, string nodeId, string flowId, Exception exception);

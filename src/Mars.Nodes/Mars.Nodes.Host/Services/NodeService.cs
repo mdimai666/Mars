@@ -25,6 +25,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     private readonly IFileStorage _fileStorage;
     protected readonly RED _RED;
     private readonly NodesLocator _nodesLocator;
+    private readonly IServiceScopeFactory _factory;
     protected readonly IServiceProvider _serviceProvider;
     private readonly INodeTaskManager _nodeTaskManager;
     readonly ILogger<NodeService> _logger;
@@ -43,12 +44,14 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
                         IServiceProvider serviceProvider,
                         INodeTaskManager nodeTaskManager,
                         NodesLocator nodesLocator,
+                        IServiceScopeFactory factory,
                         ILogger<NodeService> logger,
                         IEventManager eventManager)
     {
         _fileStorage = fileStorage;
         _RED = RED;
         _nodesLocator = nodesLocator;
+        _factory = factory;
         _serviceProvider = serviceProvider;
         _nodeTaskManager = nodeTaskManager;
         _logger = logger;
@@ -61,6 +64,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         eventManager.OnTrigger += EventManager_OnTrigger;
         _nodeTaskManager.OnCurrentTasksCountChanged += NodeTaskManager_OnCurrentTaskCountChanged;
         _nodeTaskManager.OnTaskNodeExecute += TaskNodeTaskManager_OnNodeInjected;
+        _nodeTaskManager.OnError += TaskNodeTaskManager_OnError;
     }
 
     public void Setup()
@@ -457,7 +461,14 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     private void TaskNodeTaskManager_OnNodeInjected(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
     {
-
         _RED.BroadcastHub.OnNodeExecuted(taskId, nodeId, trigger);
+    }
+
+    private void TaskNodeTaskManager_OnError(Guid taskId, string nodeId, string flowId, Exception exception)
+    {
+        var nodesIds = _RED.ErrorHandlerRegistry.GetHandlersFor(flowId: flowId, nodeId: nodeId);
+        var tasks = nodesIds.Select(nodeId => InjectAsync(_factory, nodeId, new() { Payload = exception })).ToList();
+
+        _ = Task.WhenAll(tasks);
     }
 }

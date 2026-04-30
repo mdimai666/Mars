@@ -9,8 +9,8 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared.ExceptionModule;
 using Mars.Nodes.Host.Shared.HttpModule;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -49,6 +49,8 @@ internal class RED
     public CompiledHttpRouteMatcher CompiledHttpRouteMatcher = default!;
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
+
+    public NodesErrorHandlerRegistry ErrorHandlerRegistry = default!;
 
     public RED(BroadcastHub hub, NodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {
@@ -107,7 +109,7 @@ internal class RED
         Nodes.EnsureCapacity(nodes.Count());
         HttpRegisterdCatchers.Clear();
 
-        var flowNodes = nodes.Where(node => node is FlowNode).Select(node => (FlowNode)node);
+        var flowNodes = nodes.OfType<FlowNode>();
         var flows = flowNodes.Select(node => new FlowNodeImpl(node, null!)).ToDictionary(s => s.Node.Id);
         foreach (var (key, flow) in flows)
         {
@@ -129,6 +131,7 @@ internal class RED
         _basicNodesDict = Nodes.ToDictionary(s => s.Key, s => s.Value.Node);
 
         CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
+        ErrorHandlerRegistry = new NodesErrorHandlerRegistry(_basicNodesDict.Values.OfType<CatchErrorNode>().Where(node => !node.Disabled));
 
     }
 

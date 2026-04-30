@@ -11,11 +11,11 @@ namespace Mars.Nodes.Core.Implements.Managers.Mqtt;
 
 public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
 {
-    Dictionary<string, MqttClientInstance> _clientInstances = new();
+    Dictionary<string, MqttClientInstance> _clientInstances = [];
     private readonly INodeService _nodeService;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<MqttManager> _logger;
-    private Dictionary<string, string[]> _recepientsConfigIdAndNodeIds = new();
+    private Dictionary<string, string[]> _recepientsConfigIdAndNodeIds = [];
 
     public MqttManager(INodeService nodeService, IServiceScopeFactory scopeFactory, ILogger<MqttManager> logger)
     {
@@ -27,7 +27,7 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
 
     private void _nodeService_OnAssignNodes()
     {
-        var configNodes = _nodeService.BaseNodes.Values.Where(node => node is MqttBrokerConfigNode).Select(node => (node as MqttBrokerConfigNode)!).ToArray();
+        var configNodes = _nodeService.BaseNodes.Values.Where(node => !node.Disabled).OfType<MqttBrokerConfigNode>().ToArray();
         RefreshConfigs(configNodes);
         UpdateRecepientsDict();
     }

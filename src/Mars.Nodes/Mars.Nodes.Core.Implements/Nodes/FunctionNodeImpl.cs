@@ -101,13 +101,13 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
         catch (CompilationErrorException ex)
         {
             RED.Status(NodeStatus.Error("compile error"));
-            RED.DebugMsg(ex);
+            //RED.DebugMsg(ex);
             throw;
         }
         catch (Exception ex)
         {
             RED.Status(NodeStatus.Error("error"));
-            RED.DebugMsg(ex);
+            //RED.DebugMsg(ex);
             throw;
         }
     }

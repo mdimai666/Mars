@@ -30,6 +30,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
     public event Action? OnComplete;
     public event NodeExecutionHandler OnNodeExecute = default!;
+    public event NodeExceptionHandler OnNodeException = default!;
     public int ExecuteCount => executedCount;
     public int NodesChainCount { get; }
     public IReadOnlyDictionary<string, NodeJob> Jobs => _jobs;
@@ -149,6 +150,7 @@ internal class NodeTaskJob : IAsyncDisposable
             _logger.LogError(ex, "node execute exception");
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
+            OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
             if (throwOnError) throw;
         }
         catch (Exception ex)
@@ -156,6 +158,7 @@ internal class NodeTaskJob : IAsyncDisposable
             _logger.LogError(ex, "node execute exception");
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
+            OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
             if (throwOnError) throw;
         }
         finally

@@ -4,6 +4,7 @@ public record NodeJobExecutionProblemDetailDto
 {
     public string Message { get; init; } = string.Empty;
     public string? StackTrace { get; init; }
+    public string? ExceptionType { get; init; }
 
     public NodeJobExecutionProblemDetailDto()
     {
@@ -14,5 +15,6 @@ public record NodeJobExecutionProblemDetailDto
     {
         Message = exception.Message;
         StackTrace = exception.StackTrace;
+        ExceptionType = exception.GetType().Name;
     }
 }

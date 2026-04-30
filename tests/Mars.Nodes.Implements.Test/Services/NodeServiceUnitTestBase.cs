@@ -15,6 +15,7 @@ using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Shared.Dto;
+using Mars.Nodes.Host.Shared.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using Mars.Test.Common.Constants;
 using Mars.WebApp.Nodes.Host.Nodes;
@@ -76,6 +77,7 @@ public class NodeServiceUnitTestBase
         _serviceProvider.GetService(typeof(RED)).Returns(RED);
         _serviceProvider.GetService(typeof(BroadcastHub)).Returns(_broadcastHub);
         _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
+        _serviceProvider.GetService(typeof(INodeTaskManager)).Returns(_nodeTaskManager);
         IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
         _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
 
@@ -89,7 +91,7 @@ public class NodeServiceUnitTestBase
         _eventManager = Substitute.For<IEventManager>();
         //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
-        _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, _loggerNodeService, _eventManager);
+        _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, factory: null!, _loggerNodeService, _eventManager);
         //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
     }
 

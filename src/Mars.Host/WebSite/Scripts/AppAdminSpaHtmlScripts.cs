@@ -71,6 +71,7 @@ public class AppAdminSpaHtmlScripts
             new(new Uri(@"/mars/js/language-log.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"/mars/vendor/spotlight/spotlight.bundle.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"_content/mdimai666.Mars.AppFront.Main/js/highlight-extensions.js", UriKind.Relative), order: defaultOrder),
+            new(new Uri(@"/mars/vendor/json-viewer/index.js", UriKind.Relative), order: defaultOrder),
 
             new(new Uri(@"js/scripts.js", UriKind.Relative), version:appVersion, order: interactScriptsOrder),
         ];

@@ -87,15 +87,6 @@
     }
 </div>
 
-<h3>Текущая культура: @System.Globalization.CultureInfo.CurrentUICulture.Name</h3>
-<p>StringOperationGroupName_add: @L["StringOperationGroupName_add"]</p>
-<p>StringOperationGroupName_add: @NodeRes.ResourceManager.GetString("StringOperationGroupName_add")</p>
-<p>Test: @L["Test_Key"]</p>
-@NodeRes.StringOperationGroupName_add
-
-<p>@L2[nameof(AppRes.Delete)]</p>
-@AppRes.Delete
-
 @code {
     [CascadingParameter] Node? Value { get; set; }
     StringNode Node { get => (StringNode)Value!; set => Value = value; }

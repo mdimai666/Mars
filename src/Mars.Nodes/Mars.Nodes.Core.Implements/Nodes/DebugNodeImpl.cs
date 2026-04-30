@@ -35,7 +35,7 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
     {
         try
         {
-            int jsonSymbolsLimit = 1000;
+            int jsonSymbolsLimit = 20_000;
             var intentLevel = Node.Level ??
                                (input.Payload is Exception
                                     ? Mars.Core.Models.MessageIntent.Error

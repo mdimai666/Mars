@@ -1,0 +1,17 @@
+<andypf-json-viewer indent="2"
+                    expanded="1"
+                    theme="default-light"
+                    show-data-types="false"
+                    show-toolbar="false"
+                    expand-icon-type="arrow"
+                    show-copy="true"
+                    show-size="true"
+                    preserve-expanded="false"
+                    data="@Json"
+                    expand-empty="false">
+</andypf-json-viewer>
+
+@code {
+    [Parameter]
+    public string Json { get; set; } = "";
+}

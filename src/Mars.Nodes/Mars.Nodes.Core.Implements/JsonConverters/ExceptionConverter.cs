@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Mars.Core.Extensions;
 
 namespace Mars.Nodes.Core.Implements.JsonConverters;
 
@@ -97,8 +98,7 @@ public class ExceptionConverter<TExceptionType> : JsonConverter<TExceptionType>
         writer.WriteStartObject();
 
         writer.WriteString("Message", value.Message);
-        if(false)
-            writer.WriteString("StackTrace", value.StackTrace);
+        writer.WriteString("StackTrace", value.StackTrace?.TextEllipsis(1000));
 
         if (value.InnerException != null)
         {

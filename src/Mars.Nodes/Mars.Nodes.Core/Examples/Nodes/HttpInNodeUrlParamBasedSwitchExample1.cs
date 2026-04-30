@@ -3,10 +3,10 @@ using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;
 
-public class HttpInNodeQueryBasedSwitchExample1 : INodeExample<HttpInNode>
+public class HttpInNodeUrlParamBasedSwitchExample1 : INodeExample<HttpInNode>
 {
-    public string Name => "Query based switch";
-    public string Description => "Query based switch response";
+    public string Name => "Param based switch";
+    public string Description => "Param based switch response";
 
     public IReadOnlyCollection<Node> Handle(IEditorState editorState)
     {
@@ -14,16 +14,17 @@ public class HttpInNodeQueryBasedSwitchExample1 : INodeExample<HttpInNode>
             .AddNext(new HttpInNode
             {
                 Method = "GET",
-                UrlPattern = "/example" + editorState.Nodes.Length
+                UrlPattern = "/example" + editorState.Nodes.Length + "/{param1}"
             })
             .AddNext(new SwitchNode
             {
                 Conditions = [
-                    new(){ Value = "msg.HttpInNodeHttpRequestContext.Request.Query[\"s\"]==\"777\"" },
+                    new(){ Value = "msg.HttpInNodeHttpRequestContext.Request.RouteValues[\"param1\"]==\"123\"" },
                     new(){ Value = SwitchNode.ElseConditionValue }
                 ]
             })
-            .AddNext(new TemplateNode { Name = "Ok", Template = "Ok" }, new TemplateNode { Name = "No", Template = "No" })
+            .AddNext(new TemplateNode { Name = "Ok", Template = "(Ok) param1: {{HttpInNodeHttpRequestContext.Request.RouteValues.param1}}" },
+                    new TemplateNode { Name = "No", Template = "(No) param1: {{HttpInNodeHttpRequestContext.Request.RouteValues.param1}}" })
             .AddNext([new HttpResponseNode()])
             .Build();
 

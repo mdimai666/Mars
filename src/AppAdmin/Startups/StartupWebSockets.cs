@@ -12,6 +12,7 @@ internal static class StartupWebSockets
         TimeSpan.FromSeconds(2),
         TimeSpan.FromSeconds(5),
         TimeSpan.FromSeconds(10),
+        TimeSpan.FromSeconds(15),
         TimeSpan.FromSeconds(30),
         TimeSpan.FromMinutes(1),
         TimeSpan.FromMinutes(2),

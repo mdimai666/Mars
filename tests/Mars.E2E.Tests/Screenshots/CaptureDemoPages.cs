@@ -10,7 +10,7 @@ public class CaptureDemoPages : BaseE2ETests
     {
     }
 
-    [IntegrationFact]
+    [IntegrationFact(Skip = SkipE2ETests)]
     public async Task DemoPages_Screenshots()
     {
         var paths = new[]

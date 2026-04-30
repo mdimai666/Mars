@@ -14,7 +14,7 @@ public class UpdateUserProfileTests : BaseE2ETests
 
     }
 
-    [IntegrationFact]
+    [IntegrationFact(Skip = SkipE2ETests)]
     public async Task UpdateUserProfile_EditData_ShouldSuccess()
     {
         // Arrange

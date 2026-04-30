@@ -241,7 +241,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
         var marsClient = AppFixture.GetClient(true);
         var extClient = new FlurlClient();
         var keycloakResponse = await KeycloackAccessToken(extClient);
-        var navMenuListUrl = "/api/NavMenu";
+        var navMenuListUrl = "/api/NavMenu/list/offset";
         var request = new ListNavMenuQueryRequest();
 
         //Act

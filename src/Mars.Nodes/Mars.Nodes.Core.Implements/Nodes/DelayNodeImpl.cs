@@ -18,6 +18,7 @@ public class DelayNodeImpl : INodeImplement<DelayNode>, INodeImplement
     {
         await Task.Delay(Node.DelayMillis, cancellationToken: parameters.CancellationToken);
 
+        parameters.CancellationToken.ThrowIfCancellationRequested();
         callback(input);
 
     }

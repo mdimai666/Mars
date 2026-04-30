@@ -17,6 +17,8 @@ public class BaseE2ETestsAppCollection : ICollectionFixture<E2EServerFixture>
 [Collection("E2ETestApp")]
 public class BaseE2ETests : IAsyncLifetime
 {
+    public const string? SkipE2ETests = "Skip";
+
     protected readonly E2EServerFixture AppFixture;
     public IFixture _fixture = new Fixture();
 

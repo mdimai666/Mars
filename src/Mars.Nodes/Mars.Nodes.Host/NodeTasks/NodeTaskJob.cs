@@ -125,7 +125,12 @@ internal class NodeTaskJob : IAsyncDisposable
                 async (e, _output) =>
                 {
                     //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
-                    await foreach (var wireTask in CallbackNext(node.Id, e, _output, throwOnError)) await wireTask;
+                    if (_cancellationTokenSource.IsCancellationRequested) return;
+                    await foreach (var wireTask in CallbackNext(node.Id, e, _output, throwOnError))
+                    {
+                        if (_cancellationTokenSource.IsCancellationRequested) return;
+                        await wireTask;
+                    }
                 },
                 new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token, SourceOutputPort: sourceOutputPortIndex)
                 );
@@ -134,6 +139,11 @@ internal class NodeTaskJob : IAsyncDisposable
             if (node is ISelfFinalizingNode) go.Pending();
             else go.Success();
         }
+        //catch (OperationCanceledException ex)
+        //{
+        //    _logger.LogError(ex, "node TaskCanceledException");
+        //    go.Terminate();
+        //}
         catch (NodeExecuteException ex)
         {
             _logger.LogError(ex, "node execute exception");

@@ -29,7 +29,6 @@ internal static class MarsStartupPartSwagger
                     Version = "v1",
                 });
 
-                c.SchemaFilter<DescribeEnumMemberValues>();
                 c.DocumentFilter<FeatureGateSwaggerFilter>();
                 c.OperationFilter<FeatureGateOperationFilter>();
                 c.UseCustomizeMetaDictionarySchemaFilter();

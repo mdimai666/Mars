@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mars.Datasource.Core;
 
@@ -28,19 +22,16 @@ public class DatasourceConfig
     [Display(Name = "Disabled")]
     public bool Disabled { get; set; }
 
-    public static List<string> DriverList = new() { "psql", "mssql", "mysql" };
+    public static List<string> DriverList = ["psql", "mssql", "mysql"];
 
     //[Display(Name = "Database")]
     //public string Database { get; set; } = "";
 
     public string Label => string.IsNullOrEmpty(Title) ? Slug : Title;
 
-
-
     Dictionary<string, string> ConnStringParts() => ConnectionString.Split(';')
             .Select(t => t.Split(new char[] { '=' }, 2))
             .ToDictionary(t => t[0].Trim(), t => t[1].Trim(), StringComparer.InvariantCultureIgnoreCase);
-
 
     public string GetDatabaseName() => ConnStringParts()["database"];
 
@@ -50,7 +41,7 @@ public class DatasourceConfig
         {
             "psql" => "Host=127.0.0.1;Database=database;Username=postgres;Password=123456;Port=5432",
             "mssql" => "\"Server=.\\\\SQLEXPRESS;Database=database;User ID=sa;Password=123456;Trusted_Connection=True;TrustServerCertificate=True",
-            "mysql" => "server=127.0.0.1;database=database;uid=user;pwd=123456;port=3306;Connection Timeout=2;persistsecurityinfo=True;SslMode=none",
+            "mysql" => "server=127.0.0.1;database=database;uid=user;pwd=123456;port=3306;Connection Timeout=2;persistsecurityinfo=True;SslMode=none;AllowZeroDateTime=True",
             _ => ""
         };
     }

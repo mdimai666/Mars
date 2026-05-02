@@ -1,6 +1,6 @@
-using Mars.Datasource.Core.Interfaces;
-using Mars.Datasource.Core;
 using System.Data.Common;
+using Mars.Datasource.Core;
+using Mars.Datasource.Core.Interfaces;
 using MySqlConnector;
 
 namespace Mars.Datasource.Host.MySQL;
@@ -25,7 +25,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
 
         var cols = await reader.GetColumnSchemaAsync();
 
-        Dictionary<string, QTableColumn> dict = new();
+        Dictionary<string, QTableColumn> dict = [];
 
         foreach (var col in cols)
         {
@@ -54,7 +54,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         await using var cmd = new MySqlCommand(sql, conn);
         using var reader = cmd.ExecuteReader();
 
-        List<QTableSchema> list = new();
+        List<QTableSchema> list = [];
 
         if (reader.HasRows)
         {
@@ -85,8 +85,10 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         await using var conn = new MySqlConnection(_config.ConnectionString);
         await conn.OpenAsync();
 
-        QDatabaseStructure db = new();
-        db.DatabaseName = conn.Database;
+        QDatabaseStructure db = new()
+        {
+            DatabaseName = conn.Database
+        };
 
         List<QTableSchema> list = await Tables(conn);
 
@@ -94,7 +96,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         {
             var columns = await Columns(conn, table.TableName);
 
-            QTable qTable = new QTable
+            QTable qTable = new()
             {
                 TableName = table.TableName,
                 TableSchema = table,
@@ -117,11 +119,11 @@ public class DatasourceMySQLDriver : IDatasourceDriver
             await using var cmd = new MySqlCommand(sql, conn);
             await using var reader = await cmd.ExecuteReaderAsync();
 
-            List<List<string>> rows = new();
+            List<List<string>> rows = [];
 
             var columns = await reader.GetColumnSchemaAsync();
 
-            List<string> _cols = new();
+            List<string> _cols = [];
 
             foreach (var col in columns)
             {
@@ -132,7 +134,7 @@ public class DatasourceMySQLDriver : IDatasourceDriver
 
             while (await reader.ReadAsync())
             {
-                List<string> list = new();
+                List<string> list = [];
                 //Console.WriteLine(reader.GetString(0));
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
@@ -166,26 +168,30 @@ public class DatasourceMySQLDriver : IDatasourceDriver
     public static QTableColumn ConvertQTableColumn(DbColumn column)
     {
 
-        QTableColumn _this = new();
-        _this.ColumnName = column.ColumnName;
-        _this.ColumnOrdinal = column.ColumnOrdinal ?? 0;
-        _this.ColumnSize = column.ColumnSize;
-        _this.IsAutoIncrement = column.IsAutoIncrement;
-        _this.IsKey = column.IsKey;
-        _this.IsLong = column.IsLong;
-        _this.IsUnique = column.IsUnique;
-        _this.DataType = column.DataType!;
-        _this.DataTypeName = column.DataTypeName!;
+        QTableColumn _this = new()
+        {
+            ColumnName = column.ColumnName,
+            ColumnOrdinal = column.ColumnOrdinal ?? 0,
+            ColumnSize = column.ColumnSize,
+            IsAutoIncrement = column.IsAutoIncrement,
+            IsKey = column.IsKey,
+            IsLong = column.IsLong,
+            IsUnique = column.IsUnique,
+            DataType = column.DataType!,
+            DataTypeName = column.DataTypeName!
+        };
         return _this;
 
     }
 
     public static QTableSchema ConvertQTableSchema(MySqlDataReader reader)
     {
-        QTableSchema _this = new();
-        _this.SchemaName = reader.GetString(0);
-        _this.TableName = reader.GetString(1);
-        _this.TableOwner = reader.GetString(2);
+        QTableSchema _this = new()
+        {
+            SchemaName = reader.GetString(0),
+            TableName = reader.GetString(1),
+            TableOwner = reader.GetString(2)
+        };
         //_this.TableSpace = reader.GetString(3);
         //_this.HasIndexes = reader.GetBoolean(4);
         //_this.HasRules = reader.GetBoolean(5);

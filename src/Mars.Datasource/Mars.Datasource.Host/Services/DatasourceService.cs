@@ -3,7 +3,7 @@ using Mars.Datasource.Core.Dto;
 using Mars.Datasource.Core.Interfaces;
 using Mars.Datasource.Host.Core.Models;
 using Mars.Datasource.Host.MsSQL;
-//using Mars.Datasource.Host.MySQL;
+using Mars.Datasource.Host.MySQL;
 using Mars.Datasource.Host.PostgreSQL;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
@@ -90,7 +90,7 @@ internal class DatasourceService : IDatasourceService
         {
             "psql" => new DatasourcePostgreSQLDriver(config),
             "mssql" => new DatasourceMsSQLDriver(config),
-            //"mysql" => new DatasourceMySQLDriver(config),
+            "mysql" => new DatasourceMySQLDriver(config),
             _ => throw new NotImplementedException($"Driver \"{config.Driver}\" not found")
         };
     }

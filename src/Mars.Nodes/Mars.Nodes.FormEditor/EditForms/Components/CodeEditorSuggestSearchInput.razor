@@ -11,7 +11,7 @@
                     OnOptionsSearch="@OnSearchSnippetAsync"
                     MaximumSelectedOptions="1"
                     @bind-SelectedOptions=selectedSnippets
-                    OptionText="@(item => item.Key)" />
+                    OptionText="@(item => item.Value)" />
 
 @code {
     [Inject] IFlurlClient client { get; set; } = default!;

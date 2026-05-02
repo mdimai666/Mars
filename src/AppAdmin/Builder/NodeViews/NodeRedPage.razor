@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Mars.Nodes.Workspace
 @using Mars.Nodes.Workspace.Services
+@using Microsoft.FluentUI.AspNetCore.Components
 
 @if (Busy)
 {
@@ -29,7 +30,9 @@ else
                      OnCmdClick="OnCmdClick"
                      @ref=_editor1 @bind-AllNodes=@nodes>
             <SectionActions>
-                <XActionsDropDown />
+                <XActionsDropDown>
+                    <FluentMenuItem Label="@AppRes.Settings" OnClick=@((e) => _editor1!.ShowSettingsDialog()) />
+                </XActionsDropDown>
             </SectionActions>
         </NodeEditor1>
     }

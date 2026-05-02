@@ -71,9 +71,10 @@ public class NodeController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet(nameof(FunctionCodeSuggest) + "/{f_action}")]
-    public Task<List<KeyValuePair<string, string>>> FunctionCodeSuggest(string f_action, [FromQuery] string? search)
+    public async Task<List<KeyValuePair<string, string>>> FunctionCodeSuggest(string f_action, [FromQuery] string? search)
     {
-        return _functionCodeSuggestService.FunctionCodeSuggest(f_action, search);
+        return (await _functionCodeSuggestService.FunctionCodeSuggest(f_action, search))
+                ?? throw new NotFoundException();
     }
 
     [HttpGet("Job/list/offset")]

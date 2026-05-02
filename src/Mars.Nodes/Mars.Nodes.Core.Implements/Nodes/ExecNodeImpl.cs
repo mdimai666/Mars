@@ -12,10 +12,10 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public ExecNodeImpl(ExecNode node, IRED RED)
+    public ExecNodeImpl(ExecNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

@@ -1,3 +1,4 @@
+using Mars.Core.Extensions;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,9 +21,9 @@ public class FunctionCodeSuggestService
         _devAdminConnectionService = devAdminConnectionService;
     }
 
-    public Task<List<KeyValuePair<string, string>>> FunctionCodeSuggest(string f_action, string? search)
+    public Task<List<KeyValuePair<string, string>>?> FunctionCodeSuggest(string f_action, string? search)
     {
-        List<KeyValuePair<string, string>> list = [];
+        List<KeyValuePair<string, string>> list;
 
         if (f_action == "di:services")
         {
@@ -57,8 +58,23 @@ public class FunctionCodeSuggestService
                         .Select(x => new KeyValuePair<string, string>(x.PageTypeName, x.DisplayName))
                         .ToList();
         }
+        else if (f_action == "XActions.dict")
+        {
+            var actionManager = _serviceProvider.GetRequiredService<IActionManager>();
+            list = actionManager.XActions.Where(s => s.Value.Type == Mars.Shared.Contracts.XActions.XActionType.HostAction
+                                                    && (string.IsNullOrEmpty(search)
+                                                        || s.Key.Contains(search, StringComparison.OrdinalIgnoreCase)
+                                                        || s.Value.Label.Contains(search, StringComparison.OrdinalIgnoreCase)))
+                                        .Take(TAKE_COUNT)
+                                        .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.Label))
+                                        .ToList();
+        }
+        else
+        {
+            return Task.FromResult<List<KeyValuePair<string, string>>?>(null!);
+        }
 
-        return Task.FromResult(list);
+        return Task.FromResult(list)!;
     }
 
     static string? FirstCharToLowerCaseAndVarName(string? str)

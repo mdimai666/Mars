@@ -1,0 +1,25 @@
+@using AppFront.Shared.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(ExecXActionNode))]
+
+<div class="form-group d-flex flex-column flex-fill">
+
+    <CodeEditorSuggestSearchInput SearchApiUrl="/api/Node/FunctionCodeSuggest/XActions.dict?search=" OnSnippetSelect="OnSelectSnippet" />
+
+    <FormItem2 For="@(() => Node.CommandId)">
+        <FluentTextArea class="w-100 textarea-code" @bind-Value=Node.CommandId Rows="2" />
+    </FormItem2>
+
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    ExecXActionNode Node { get => (ExecXActionNode)Value!; set => Value = value; }
+
+    private void OnSelectSnippet(KeyValuePair<string, string> val)
+    {
+        Node.CommandId = val.Key;
+    }
+}

@@ -585,6 +585,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnSettingsButtonClick()
     {
+        ShowSettingsDialog();
+    }
+
+    public void ShowSettingsDialog()
+    {
         NodeEditorSettingsDialog.ShowDialog(_dialogService);
         EnableHotkeys(false);
     }

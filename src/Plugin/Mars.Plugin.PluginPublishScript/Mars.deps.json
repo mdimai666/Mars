@@ -6,9 +6,9 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "Mars/0.7.3-alpha.7": {
+      "Mars/0.7.4-alpha.10": {
         "dependencies": {
-          "AppAdmin": "0.7.3-alpha.7",
+          "AppAdmin": "0.7.4-alpha.10",
           "Bogus": "35.6.5",
           "Duende.IdentityServer": "7.4.7",
           "EditorJsBlazored.Host": "1.0.0",
@@ -68,30 +68,30 @@
           "ResXResourceReader.NetStandard": "1.3.0",
           "Swashbuckle.AspNetCore": "10.1.7",
           "System.CommandLine": "2.0.7",
-          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host": "0.7.3-alpha.7",
-          "AppFront.Main": "0.7.3.0",
-          "AppFront.Shared": "0.7.3.0",
-          "BlazoredHtmlRender": "0.7.3.0",
-          "Mars.Core": "0.7.3.0",
-          "Mars.Host.Data": "0.7.3.0",
-          "Mars.Host.Data.PostgreSQL": "0.7.3.0",
-          "Mars.Host": "0.7.3.0",
-          "Mars.Host.Shared": "0.7.3.0",
-          "Mars.HttpSmartAuthFlow": "0.7.3.0",
-          "Mars.Nodes.Core": "0.7.3.0",
-          "Mars.Nodes.Core.Implements": "0.7.3.0",
-          "Mars.Nodes.FormEditor": "0.7.3.0",
-          "Mars.Nodes.Front.Shared": "0.7.3.0",
-          "Mars.Nodes.Host.Shared": "0.7.3.0",
-          "Mars.Options": "0.7.3.0",
-          "Mars.Plugin.Abstractions": "0.7.3.0",
-          "Mars.Plugin.Front.Abstractions": "0.7.3.0",
-          "Mars.Plugin.Front": "0.7.3.0",
-          "Mars.Shared": "0.7.3.0",
-          "Mars.WebApiClient": "0.7.3.0",
-          "MarsCodeEditor2": "0.7.3.0",
-          "MarsEditors": "0.7.3.0"
+          "mdimai666.Mars.AppFront.Main": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host": "0.7.4-alpha.10",
+          "AppFront.Main": "0.7.4.0",
+          "AppFront.Shared": "0.7.4.0",
+          "BlazoredHtmlRender": "0.7.4.0",
+          "Mars.Core": "0.7.4.0",
+          "Mars.Host.Data": "0.7.4.0",
+          "Mars.Host.Data.PostgreSQL": "0.7.4.0",
+          "Mars.Host": "0.7.4.0",
+          "Mars.Host.Shared": "0.7.4.0",
+          "Mars.HttpSmartAuthFlow": "0.7.4.0",
+          "Mars.Nodes.Core": "0.7.4.0",
+          "Mars.Nodes.Core.Implements": "0.7.4.0",
+          "Mars.Nodes.FormEditor": "0.7.4.0",
+          "Mars.Nodes.Front.Shared": "0.7.4.0",
+          "Mars.Nodes.Host.Shared": "0.7.4.0",
+          "Mars.Options": "0.7.4.0",
+          "Mars.Plugin.Abstractions": "0.7.4.0",
+          "Mars.Plugin.Front.Abstractions": "0.7.4.0",
+          "Mars.Plugin.Front": "0.7.4.0",
+          "Mars.Shared": "0.7.4.0",
+          "Mars.WebApiClient": "0.7.4.0",
+          "MarsCodeEditor2": "0.7.4.0",
+          "MarsEditors": "0.7.4.0"
         },
         "runtime": {
           "Mars.dll": {}
@@ -2096,7 +2096,7 @@
           }
         }
       },
-      "AppAdmin/0.7.3-alpha.7": {
+      "AppAdmin/0.7.4-alpha.10": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
@@ -2114,17 +2114,17 @@
           "Microsoft.DotNet.HotReload.WebAssembly.Browser": "10.0.203",
           "Toolbelt.Blazor.HotKeys2": "6.2.1",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
-          "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
-          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
-          "mdimai666.Mars.Plugin.Front": "0.7.3-alpha.7",
-          "mdimai666.MarsEditors": "0.7.3-alpha.7"
+          "mdimai666.BlazoredHtmlRender": "0.7.4-alpha.10",
+          "mdimai666.Mars.AppFront.Main": "0.7.4-alpha.10",
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.4-alpha.10",
+          "mdimai666.Mars.Plugin.Front": "0.7.4-alpha.10",
+          "mdimai666.MarsEditors": "0.7.4-alpha.10"
         },
         "runtime": {
           "AppAdmin.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
@@ -2149,8 +2149,8 @@
       },
       "Mars.Datasource.Core/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Datasource.Core.dll": {
@@ -2163,8 +2163,8 @@
         "dependencies": {
           "BlazorMonaco": "3.4.0",
           "Mars.Datasource.Core": "1.0.0",
-          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7"
+          "mdimai666.Mars.AppFront.Main": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Datasource.Front.dll": {
@@ -2180,9 +2180,9 @@
           "Mars.Datasource.Host.MsSQL": "1.0.0",
           "Mars.Datasource.Host.MySQL": "1.0.0",
           "Mars.Datasource.Host.PostgreSQL": "1.0.0",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Datasource.Host.dll": {
@@ -2243,7 +2243,7 @@
       },
       "Mars.Docker/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Docker.dll": {
@@ -2255,8 +2255,8 @@
       "Mars.Docker.Front/1.0.0": {
         "dependencies": {
           "Mars.Docker": "1.0.0",
-          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
-          "mdimai666.Mars.WebApiClient": "0.7.3-alpha.7"
+          "mdimai666.Mars.AppFront.Main": "0.7.4-alpha.10",
+          "mdimai666.Mars.WebApiClient": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Docker.Front.dll": {
@@ -2269,7 +2269,7 @@
         "dependencies": {
           "Docker.DotNet": "3.125.15",
           "Mars.Docker.Host.Shared": "1.0.0",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Docker.Host.dll": {
@@ -2281,7 +2281,7 @@
       "Mars.Docker.Host.Shared/1.0.0": {
         "dependencies": {
           "Mars.Docker": "1.0.0",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Docker.Host.Shared.dll": {
@@ -2293,7 +2293,7 @@
       "Mars.Excel.Host/1.0.0": {
         "dependencies": {
           "System.IO.Packaging": "10.0.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Excel.Host.dll": {
@@ -2305,7 +2305,7 @@
       "Mars.Host.Data.InMemory/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.7",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.Data.InMemory.dll": {
@@ -2318,9 +2318,9 @@
         "dependencies": {
           "Mars.Host.Data.InMemory": "1.0.0",
           "Mars.Host.Repositories": "1.0.0",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.Infrastructure.dll": {
@@ -2332,10 +2332,10 @@
       "Mars.Host.Repositories/1.0.0": {
         "dependencies": {
           "Mars.Host.Data.InMemory": "1.0.0",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.Repositories.dll": {
@@ -2347,8 +2347,8 @@
       "Mars.MetaModelGenerator/1.0.0": {
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.MetaModelGenerator.dll": {
@@ -2362,9 +2362,9 @@
           "Mars.Nodes.Workspace": "1.0.0",
           "Mars.QueryLang": "1.0.0",
           "Microsoft.AspNet.WebApi.Client": "6.0.0",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.Host.dll": {
@@ -2376,11 +2376,11 @@
       "Mars.Nodes.Workspace/1.0.0": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
-          "mdimai666.Mars.AppFront.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Front.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.AppFront.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Front.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.Workspace.dll": {
@@ -2391,9 +2391,9 @@
       },
       "Mars.Options.Front/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
-          "mdimai666.Mars.Options": "0.7.3-alpha.7"
+          "mdimai666.Mars.AppFront.Main": "0.7.4-alpha.10",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.4-alpha.10",
+          "mdimai666.Mars.Options": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Options.Front.dll": {
@@ -2404,8 +2404,8 @@
       },
       "Mars.Options.Host/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host": "0.7.3-alpha.7",
-          "mdimai666.Mars.Options": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host": "0.7.4-alpha.10",
+          "mdimai666.Mars.Options": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Options.Host.dll": {
@@ -2416,9 +2416,9 @@
       },
       "Mars.Plugin/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.Plugin.Abstractions": "0.7.3-alpha.7",
-          "mdimai666.Mars.Plugin.Front": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.Plugin.Abstractions": "0.7.4-alpha.10",
+          "mdimai666.Mars.Plugin.Front": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Plugin.dll": {
@@ -2429,7 +2429,7 @@
       },
       "Mars.QueryLang/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.QueryLang.dll": {
@@ -2443,8 +2443,8 @@
           "Mars.Host.Infrastructure": "1.0.0",
           "Mars.MetaModelGenerator": "1.0.0",
           "Mars.QueryLang": "1.0.0",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.QueryLang.Host.dll": {
@@ -2457,7 +2457,7 @@
         "dependencies": {
           "CronExpressionDescriptor": "2.45.0",
           "Quartz.AspNetCore": "3.18.1",
-          "mdimai666.Mars.Host": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Scheduler.Host.dll": {
@@ -2469,7 +2469,7 @@
       "Mars.SemanticKernel.CMS/1.0.0": {
         "dependencies": {
           "Mars.SemanticKernel.Host.Shared": "1.0.0",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.SemanticKernel.CMS.dll": {
@@ -2482,7 +2482,7 @@
         "dependencies": {
           "Mars.Options.Front": "1.0.0",
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.SemanticKernel.Front.dll": {
@@ -2495,7 +2495,7 @@
         "dependencies": {
           "Mars.SemanticKernel.Host.Shared": "1.0.0",
           "Mars.SemanticKernel.Shared": "1.0.0",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.SemanticKernel.Host.dll": {
@@ -2521,8 +2521,8 @@
       },
       "Mars.SemanticKernel.Shared/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.SemanticKernel.Shared.dll": {
@@ -2535,7 +2535,7 @@
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.17.0",
           "System.IdentityModel.Tokens.Jwt": "8.17.0",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.SSO.dll": {
@@ -2550,7 +2550,7 @@
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.7",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.17.0",
           "System.IdentityModel.Tokens.Jwt": "8.17.0",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.SSO.Host.OAuth.dll": {
@@ -2561,8 +2561,8 @@
       },
       "Mars.WebApp.Nodes/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.WebApp.Nodes.dll": {
@@ -2574,9 +2574,9 @@
       "Mars.WebApp.Nodes.Front/1.0.0": {
         "dependencies": {
           "Mars.WebApp.Nodes": "1.0.0",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Front.Shared": "0.7.3-alpha.7",
-          "mdimai666.MarsEditors": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Front.Shared": "0.7.4-alpha.10",
+          "mdimai666.MarsEditors": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.WebApp.Nodes.Front.dll": {
@@ -2590,7 +2590,7 @@
           "Mars.WebApp.Nodes.Front": "1.0.0",
           "System.Drawing.Common": "10.0.7",
           "dotless.Core": "1.6.7",
-          "mdimai666.Mars.Nodes.Core.Implements": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.Core.Implements": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.WebApp.Nodes.Host.dll": {
@@ -2601,8 +2601,8 @@
       },
       "Mars.WebSiteProcessor/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.WebSiteProcessor.dll": {
@@ -2616,7 +2616,7 @@
           "Mars.WebSiteProcessor": "1.0.0",
           "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
           "Mars.WebSiteProcessor.Handlebars": "1.0.0",
-          "mdimai666.Mars.AppFront.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.AppFront.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.WebSiteProcessor.Blazor.dll": {
@@ -2652,19 +2652,19 @@
           }
         }
       },
-      "mdimai666.BlazoredHtmlRender/0.7.3-alpha.7": {
+      "mdimai666.BlazoredHtmlRender/0.7.4-alpha.10": {
         "dependencies": {
           "HtmlAgilityPack": "1.12.4",
           "OneOf": "3.0.271"
         },
         "runtime": {
           "BlazoredHtmlRender.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.AppFront.Main/0.7.3-alpha.7": {
+      "mdimai666.Mars.AppFront.Main/0.7.4-alpha.10": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
@@ -2674,22 +2674,22 @@
           "Microsoft.FluentUI.AspNetCore.Components": "4.14.1",
           "Microsoft.FluentUI.AspNetCore.Components.Icons": "4.14.1",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
-          "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
-          "mdimai666.Mars.AppFront.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7",
-          "mdimai666.MarsEditors": "0.7.3-alpha.7"
+          "mdimai666.BlazoredHtmlRender": "0.7.4-alpha.10",
+          "mdimai666.Mars.AppFront.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10",
+          "mdimai666.MarsEditors": "0.7.4-alpha.10"
         },
         "runtime": {
           "AppFront.Main.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.AppFront.Shared/0.7.3-alpha.7": {
+      "mdimai666.Mars.AppFront.Shared/0.7.4-alpha.10": {
         "dependencies": {
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
@@ -2697,29 +2697,29 @@
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.7",
           "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.7",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
-          "mdimai666.BlazoredHtmlRender": "0.7.3-alpha.7",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Options": "0.7.3-alpha.7",
-          "mdimai666.Mars.WebApiClient": "0.7.3-alpha.7",
-          "mdimai666.MarsEditors": "0.7.3-alpha.7"
+          "mdimai666.BlazoredHtmlRender": "0.7.4-alpha.10",
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Options": "0.7.4-alpha.10",
+          "mdimai666.Mars.WebApiClient": "0.7.4-alpha.10",
+          "mdimai666.MarsEditors": "0.7.4-alpha.10"
         },
         "runtime": {
           "AppFront.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Core/0.7.3-alpha.7": {
+      "mdimai666.Mars.Core/0.7.4-alpha.10": {
         "runtime": {
           "Mars.Core.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Host/0.7.3-alpha.7": {
+      "mdimai666.Mars.Host/0.7.4-alpha.10": {
         "dependencies": {
           "AngleSharp": "1.4.0",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
@@ -2729,47 +2729,47 @@
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.7",
           "Swashbuckle.AspNetCore": "10.1.7",
           "System.IdentityModel.Tokens.Jwt": "8.17.0",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10",
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Host.Data/0.7.3-alpha.7": {
+      "mdimai666.Mars.Host.Data/0.7.4-alpha.10": {
         "dependencies": {
           "EFCore.NamingConventions": "10.0.1",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.7",
           "Microsoft.EntityFrameworkCore": "10.0.7",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.Data.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Host.Data.PostgreSQL/0.7.3-alpha.7": {
+      "mdimai666.Mars.Host.Data.PostgreSQL/0.7.4-alpha.10": {
         "dependencies": {
           "Npgsql": "10.0.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.1.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime": "10.0.1",
           "Npgsql.Json.NET": "10.0.2",
-          "mdimai666.Mars.Host.Data": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Data": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.Data.PostgreSQL.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Host.Shared/0.7.3-alpha.7": {
+      "mdimai666.Mars.Host.Shared/0.7.4-alpha.10": {
         "dependencies": {
           "DynamicExpresso.Core": "2.19.3",
           "FluentValidation": "12.1.1",
@@ -2780,50 +2780,50 @@
           "System.CommandLine": "2.0.7",
           "System.IdentityModel.Tokens.Jwt": "8.17.0",
           "libphonenumber-csharp": "9.0.29",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Options": "0.7.3-alpha.7",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Options": "0.7.4-alpha.10",
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Host.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.HttpSmartAuthFlow/0.7.3-alpha.7": {
+      "mdimai666.Mars.HttpSmartAuthFlow/0.7.4-alpha.10": {
         "dependencies": {
           "AngleSharp": "1.4.0",
           "Flurl.Http": "4.0.2"
         },
         "runtime": {
           "Mars.HttpSmartAuthFlow.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.MarsCodeEditor2/0.7.3-alpha.7": {
+      "mdimai666.Mars.MarsCodeEditor2/0.7.4-alpha.10": {
         "dependencies": {
           "BlazorMonaco": "3.4.0"
         },
         "runtime": {
           "MarsCodeEditor2.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Core/0.7.3-alpha.7": {
+      "mdimai666.Mars.Nodes.Core/0.7.4-alpha.10": {
         "dependencies": {
           "Microsoft.AspNetCore.Components.DataAnnotations.Validation": "3.2.0-rc1.20223.4",
-          "mdimai666.Mars.Core": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.Core.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         },
         "resources": {
@@ -2832,7 +2832,7 @@
           }
         }
       },
-      "mdimai666.Mars.Nodes.Core.Implements/0.7.3-alpha.7": {
+      "mdimai666.Mars.Nodes.Core.Implements/0.7.4-alpha.10": {
         "dependencies": {
           "AngleSharp": "1.4.0",
           "DynamicExpresso.Core": "2.19.3",
@@ -2841,111 +2841,111 @@
           "MQTTnet": "5.1.0.1559",
           "MQTTnet.Extensions.TopicTemplate": "5.1.0.1559",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.HttpSmartAuthFlow": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Host.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.HttpSmartAuthFlow": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Host.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.Core.Implements.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.FormEditor/0.7.3-alpha.7": {
+      "mdimai666.Mars.Nodes.FormEditor/0.7.4-alpha.10": {
         "dependencies": {
-          "mdimai666.Mars.AppFront.Main": "0.7.3-alpha.7",
-          "mdimai666.Mars.MarsCodeEditor2": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Front.Shared": "0.7.3-alpha.7",
-          "mdimai666.MarsEditors": "0.7.3-alpha.7"
+          "mdimai666.Mars.AppFront.Main": "0.7.4-alpha.10",
+          "mdimai666.Mars.MarsCodeEditor2": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Front.Shared": "0.7.4-alpha.10",
+          "mdimai666.MarsEditors": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.FormEditor.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Front.Shared/0.7.3-alpha.7": {
+      "mdimai666.Mars.Nodes.Front.Shared/0.7.4-alpha.10": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
           "Toolbelt.Blazor.HotKeys2": "6.2.1",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.Front.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Nodes.Host.Shared/0.7.3-alpha.7": {
+      "mdimai666.Mars.Nodes.Host.Shared/0.7.4-alpha.10": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7"
+          "mdimai666.Mars.Host.Shared": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Nodes.Host.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Options/0.7.3-alpha.7": {
+      "mdimai666.Mars.Options/0.7.4-alpha.10": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Options.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Plugin.Abstractions/0.7.3-alpha.7": {
+      "mdimai666.Mars.Plugin.Abstractions/0.7.4-alpha.10": {
         "runtime": {
           "Mars.Plugin.Abstractions.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Plugin.Front/0.7.3-alpha.7": {
+      "mdimai666.Mars.Plugin.Front/0.7.4-alpha.10": {
         "dependencies": {
           "Microsoft.AspNetCore.Components.WebAssembly": "10.0.7",
-          "mdimai666.Mars.Nodes.Core": "0.7.3-alpha.7",
-          "mdimai666.Mars.Nodes.FormEditor": "0.7.3-alpha.7",
-          "mdimai666.Mars.Plugin.Front.Abstractions": "0.7.3-alpha.7"
+          "mdimai666.Mars.Nodes.Core": "0.7.4-alpha.10",
+          "mdimai666.Mars.Nodes.FormEditor": "0.7.4-alpha.10",
+          "mdimai666.Mars.Plugin.Front.Abstractions": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Plugin.Front.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Plugin.Front.Abstractions/0.7.3-alpha.7": {
+      "mdimai666.Mars.Plugin.Front.Abstractions/0.7.4-alpha.10": {
         "dependencies": {
           "Microsoft.AspNetCore.Components.WebAssembly": "10.0.7"
         },
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.Mars.Shared/0.7.3-alpha.7": {
+      "mdimai666.Mars.Shared/0.7.4-alpha.10": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.3-alpha.7"
+          "mdimai666.Mars.Core": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         },
         "resources": {
@@ -2954,103 +2954,103 @@
           }
         }
       },
-      "mdimai666.Mars.WebApiClient/0.7.3-alpha.7": {
+      "mdimai666.Mars.WebApiClient/0.7.4-alpha.10": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
-          "mdimai666.Mars.Shared": "0.7.3-alpha.7"
+          "mdimai666.Mars.Shared": "0.7.4-alpha.10"
         },
         "runtime": {
           "Mars.WebApiClient.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "mdimai666.MarsEditors/0.7.3-alpha.7": {
+      "mdimai666.MarsEditors/0.7.4-alpha.10": {
         "runtime": {
           "MarsEditors.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "AppFront.Main/0.7.3.0": {
+      "AppFront.Main/0.7.4.0": {
         "runtime": {
           "AppFront.Main.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "AppFront.Shared/0.7.3.0": {
+      "AppFront.Shared/0.7.4.0": {
         "runtime": {
           "AppFront.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "BlazoredHtmlRender/0.7.3.0": {
+      "BlazoredHtmlRender/0.7.4.0": {
         "runtime": {
           "BlazoredHtmlRender.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Core/0.7.3.0": {
+      "Mars.Core/0.7.4.0": {
         "runtime": {
           "Mars.Core.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Host.Data/0.7.3.0": {
+      "Mars.Host.Data/0.7.4.0": {
         "runtime": {
           "Mars.Host.Data.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Host.Data.PostgreSQL/0.7.3.0": {
+      "Mars.Host.Data.PostgreSQL/0.7.4.0": {
         "runtime": {
           "Mars.Host.Data.PostgreSQL.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Host/0.7.3.0": {
+      "Mars.Host/0.7.4.0": {
         "runtime": {
           "Mars.Host.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Host.Shared/0.7.3.0": {
+      "Mars.Host.Shared/0.7.4.0": {
         "runtime": {
           "Mars.Host.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.HttpSmartAuthFlow/0.7.3.0": {
+      "Mars.HttpSmartAuthFlow/0.7.4.0": {
         "runtime": {
           "Mars.HttpSmartAuthFlow.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Nodes.Core/0.7.3.0": {
+      "Mars.Nodes.Core/0.7.4.0": {
         "runtime": {
           "Mars.Nodes.Core.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         },
         "resources": {
@@ -3059,75 +3059,75 @@
           }
         }
       },
-      "Mars.Nodes.Core.Implements/0.7.3.0": {
+      "Mars.Nodes.Core.Implements/0.7.4.0": {
         "runtime": {
           "Mars.Nodes.Core.Implements.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Nodes.FormEditor/0.7.3.0": {
+      "Mars.Nodes.FormEditor/0.7.4.0": {
         "runtime": {
           "Mars.Nodes.FormEditor.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Nodes.Front.Shared/0.7.3.0": {
+      "Mars.Nodes.Front.Shared/0.7.4.0": {
         "runtime": {
           "Mars.Nodes.Front.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Nodes.Host.Shared/0.7.3.0": {
+      "Mars.Nodes.Host.Shared/0.7.4.0": {
         "runtime": {
           "Mars.Nodes.Host.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Options/0.7.3.0": {
+      "Mars.Options/0.7.4.0": {
         "runtime": {
           "Mars.Options.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Plugin.Abstractions/0.7.3.0": {
+      "Mars.Plugin.Abstractions/0.7.4.0": {
         "runtime": {
           "Mars.Plugin.Abstractions.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Plugin.Front.Abstractions/0.7.3.0": {
+      "Mars.Plugin.Front.Abstractions/0.7.4.0": {
         "runtime": {
           "Mars.Plugin.Front.Abstractions.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Plugin.Front/0.7.3.0": {
+      "Mars.Plugin.Front/0.7.4.0": {
         "runtime": {
           "Mars.Plugin.Front.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "Mars.Shared/0.7.3.0": {
+      "Mars.Shared/0.7.4.0": {
         "runtime": {
           "Mars.Shared.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         },
         "resources": {
@@ -3136,27 +3136,27 @@
           }
         }
       },
-      "Mars.WebApiClient/0.7.3.0": {
+      "Mars.WebApiClient/0.7.4.0": {
         "runtime": {
           "Mars.WebApiClient.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "MarsCodeEditor2/0.7.3.0": {
+      "MarsCodeEditor2/0.7.4.0": {
         "runtime": {
           "MarsCodeEditor2.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
-      "MarsEditors/0.7.3.0": {
+      "MarsEditors/0.7.4.0": {
         "runtime": {
           "MarsEditors.dll": {
-            "assemblyVersion": "0.7.3.0",
-            "fileVersion": "0.7.3.0"
+            "assemblyVersion": "0.7.4.0",
+            "fileVersion": "0.7.4.0"
           }
         }
       },
@@ -3251,7 +3251,7 @@
     }
   },
   "libraries": {
-    "Mars/0.7.3-alpha.7": {
+    "Mars/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -4397,7 +4397,7 @@
       "path": "toolbelt.blazor.httpclientinterceptor/10.2.0",
       "hashPath": "toolbelt.blazor.httpclientinterceptor.10.2.0.nupkg.sha512"
     },
-    "AppAdmin/0.7.3-alpha.7": {
+    "AppAdmin/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -4602,222 +4602,222 @@
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.BlazoredHtmlRender/0.7.3-alpha.7": {
+    "mdimai666.BlazoredHtmlRender/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.AppFront.Main/0.7.3-alpha.7": {
+    "mdimai666.Mars.AppFront.Main/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.AppFront.Shared/0.7.3-alpha.7": {
+    "mdimai666.Mars.AppFront.Shared/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Core/0.7.3-alpha.7": {
+    "mdimai666.Mars.Core/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host/0.7.3-alpha.7": {
+    "mdimai666.Mars.Host/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host.Data/0.7.3-alpha.7": {
+    "mdimai666.Mars.Host.Data/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host.Data.PostgreSQL/0.7.3-alpha.7": {
+    "mdimai666.Mars.Host.Data.PostgreSQL/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Host.Shared/0.7.3-alpha.7": {
+    "mdimai666.Mars.Host.Shared/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.HttpSmartAuthFlow/0.7.3-alpha.7": {
+    "mdimai666.Mars.HttpSmartAuthFlow/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.MarsCodeEditor2/0.7.3-alpha.7": {
+    "mdimai666.Mars.MarsCodeEditor2/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Core/0.7.3-alpha.7": {
+    "mdimai666.Mars.Nodes.Core/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Core.Implements/0.7.3-alpha.7": {
+    "mdimai666.Mars.Nodes.Core.Implements/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.FormEditor/0.7.3-alpha.7": {
+    "mdimai666.Mars.Nodes.FormEditor/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Front.Shared/0.7.3-alpha.7": {
+    "mdimai666.Mars.Nodes.Front.Shared/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Nodes.Host.Shared/0.7.3-alpha.7": {
+    "mdimai666.Mars.Nodes.Host.Shared/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Options/0.7.3-alpha.7": {
+    "mdimai666.Mars.Options/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Plugin.Abstractions/0.7.3-alpha.7": {
+    "mdimai666.Mars.Plugin.Abstractions/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Plugin.Front/0.7.3-alpha.7": {
+    "mdimai666.Mars.Plugin.Front/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Plugin.Front.Abstractions/0.7.3-alpha.7": {
+    "mdimai666.Mars.Plugin.Front.Abstractions/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.Shared/0.7.3-alpha.7": {
+    "mdimai666.Mars.Shared/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.Mars.WebApiClient/0.7.3-alpha.7": {
+    "mdimai666.Mars.WebApiClient/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "mdimai666.MarsEditors/0.7.3-alpha.7": {
+    "mdimai666.MarsEditors/0.7.4-alpha.10": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "AppFront.Main/0.7.3.0": {
+    "AppFront.Main/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "AppFront.Shared/0.7.3.0": {
+    "AppFront.Shared/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "BlazoredHtmlRender/0.7.3.0": {
+    "BlazoredHtmlRender/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Core/0.7.3.0": {
+    "Mars.Core/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Data/0.7.3.0": {
+    "Mars.Host.Data/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Data.PostgreSQL/0.7.3.0": {
+    "Mars.Host.Data.PostgreSQL/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host/0.7.3.0": {
+    "Mars.Host/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Host.Shared/0.7.3.0": {
+    "Mars.Host.Shared/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.HttpSmartAuthFlow/0.7.3.0": {
+    "Mars.HttpSmartAuthFlow/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Core/0.7.3.0": {
+    "Mars.Nodes.Core/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Core.Implements/0.7.3.0": {
+    "Mars.Nodes.Core.Implements/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.FormEditor/0.7.3.0": {
+    "Mars.Nodes.FormEditor/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Front.Shared/0.7.3.0": {
+    "Mars.Nodes.Front.Shared/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Nodes.Host.Shared/0.7.3.0": {
+    "Mars.Nodes.Host.Shared/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Options/0.7.3.0": {
+    "Mars.Options/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Abstractions/0.7.3.0": {
+    "Mars.Plugin.Abstractions/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Front.Abstractions/0.7.3.0": {
+    "Mars.Plugin.Front.Abstractions/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Plugin.Front/0.7.3.0": {
+    "Mars.Plugin.Front/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.Shared/0.7.3.0": {
+    "Mars.Shared/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.WebApiClient/0.7.3.0": {
+    "Mars.WebApiClient/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "MarsCodeEditor2/0.7.3.0": {
+    "MarsCodeEditor2/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "MarsEditors/0.7.3.0": {
+    "MarsEditors/0.7.4.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

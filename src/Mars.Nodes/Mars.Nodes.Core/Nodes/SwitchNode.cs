@@ -10,8 +10,8 @@ public class SwitchNode : Node
     public const string ElseConditionValue = "$else";
 
     public Condition[] Conditions { get => field; set { field = value; OutputCount = value.Length; } } = [
-        new Condition() { Value = "Payload == 123" },
-        new Condition() { Value = "Payload.ToString() == \"ok\""},
+        new Condition() { Value = "msg.Payload == 123" },
+        new Condition() { Value = "msg.Payload.ToString() == \"ok\""},
     ];
 
     public bool BreakAfterFirst { get; set; } = true;

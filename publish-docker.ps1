@@ -30,7 +30,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # Тег latest
 Write-Host "Тегируем образ как latest..."
-docker tag "${imageName}:${version}" "$imageName:latest"
+docker tag "${imageName}:${version}" "${imageName}:latest"
 
 if (0) {
     # Публикуем образ с тегом версии

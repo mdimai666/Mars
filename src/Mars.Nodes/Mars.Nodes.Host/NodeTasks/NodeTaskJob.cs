@@ -122,6 +122,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
         try
         {
+            OnNodeExecute.Invoke(node.Id, isInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
             await node.Execute(input,
                 async (e, _output) =>
                 {
@@ -135,7 +136,6 @@ internal class NodeTaskJob : IAsyncDisposable
                 },
                 new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token, SourceOutputPort: sourceOutputPortIndex)
                 );
-            OnNodeExecute.Invoke(node.Id, isInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
 
             if (node is ISelfFinalizingNode) go.Pending();
             else go.Success();

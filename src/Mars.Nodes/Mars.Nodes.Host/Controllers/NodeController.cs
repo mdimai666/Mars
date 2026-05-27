@@ -5,7 +5,7 @@ using Mars.Host.Shared.Constants;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Front.Shared.Contracts.Nodes;
+using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
 using Mars.Nodes.Host.Mappings.Nodes;
 using Mars.Nodes.Host.Mappings.NodeTaskJobs;
@@ -57,7 +57,7 @@ public class NodeController : ControllerBase
     [HttpGet(nameof(Load))]
     public NodesDataResponse Load()
     {
-        return _nodeService.GetNodesForResponse().ToResponse();
+        return _nodeService.GetNodesData().ToResponse();
     }
 
     [HttpGet(nameof(Inject) + "/{nodeId}")]

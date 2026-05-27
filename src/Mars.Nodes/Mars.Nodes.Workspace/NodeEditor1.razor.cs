@@ -60,6 +60,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Parameter] public EventCallback<IEnumerable<Node>> OnDeploy { get; set; }
     [Parameter] public EventCallback<string> OnCmdClick { get; set; }
     [Parameter] public RenderFragment? SectionActions { get; set; } = null;
+    [Parameter] public IReadOnlyDictionary<string, InlineFunctionNodeSchema> InlineFunctionNodeSchemas { get; set; } = default!;
 
     public JsonSerializerOptions NodesJsonSerializerOptions => _jsonSerializerOptions;
 
@@ -163,6 +164,18 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         }
 
+        foreach (var inlineNodeDef in InlineFunctionNodeSchemas.Values)
+        {
+            var node = InlineFunctionNode.CreateInlineFunctionNode(inlineNodeDef);
+            var item = new PaletteNode
+            {
+                Instance = node,
+                DisplayName = node.Label,
+                GroupName = inlineNodeDef.GroupName
+            };
+            _palette.Add(item);
+        }
+
         _examplesList = _nodesLocator.CreateExamplesList();
     }
 
@@ -197,7 +210,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void CreateNewNodeFromPalette(MouseEventArgs e, Node paletteNode)
     {
-        Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
+        var instance = paletteNode.Copy(_jsonSerializerOptions);
+        //Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
+        instance.Id = Guid.NewGuid().ToString();
         instance.Container = _activeFlow.Id;
         AllNodes.Add(instance);
         CalcFlowNodes();

@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Front.Shared.Contracts.Nodes;
+using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
 using Mars.Shared.Common;
 

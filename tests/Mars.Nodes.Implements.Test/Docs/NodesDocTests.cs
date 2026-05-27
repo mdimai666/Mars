@@ -38,6 +38,7 @@ public class NodesDocTests
 
         nodes.Should().AllSatisfy(node =>
         {
+            if (node.NodeType == typeof(InlineFunctionNode)) return;
             node.Attribute.Should().NotBeNull($"node '{node.NodeType}' should have attr");
         });
     }
@@ -70,7 +71,7 @@ public class NodesDocTests
         //Uncomment fo create blank
         //CreateDocsForNodesIfNotExist();
 
-        existFilesList.Count().Should().Be(expectDocCount, "\nSome doc files missing: \n" + string.Join(",", nonExistDocuments.Select(f => Path.GetFileName(f))));
+        existFilesList.Count().Should().Be(expectDocCount, "\nSome doc files missing: \n" + string.Join("\n", nonExistDocuments.Select(f => "- " + Path.GetFileName(f))) + "\n");
     }
 
     private void CreateDocsForNodesIfNotExist()

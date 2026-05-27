@@ -1,6 +1,6 @@
 @using AppFront.Shared.Components
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Mars.Nodes.FormEditor.EditForms.Components
+
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(SmtpConfigNode))]
 
@@ -40,4 +40,3 @@
     SmtpConfigNode Node { get => (SmtpConfigNode)Value!; set => Value = value; }
 
 }
-

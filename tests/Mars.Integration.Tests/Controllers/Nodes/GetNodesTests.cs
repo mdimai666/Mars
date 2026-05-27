@@ -4,10 +4,10 @@ using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Controllers;
-using Mars.Nodes.Host.Shared.Dto;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Nodes;
@@ -26,7 +26,7 @@ public class GetNodesTests : ApplicationTests
     {
         //Arrange
         _ = nameof(NodeController.Load);
-        _ = nameof(INodeService.GetNodesForResponse);
+        _ = nameof(INodeService.GetNodesData);
         _ = nameof(NodeJsonConverter);
 
         var client = AppFixture.GetClient();
@@ -34,7 +34,7 @@ public class GetNodesTests : ApplicationTests
         nodeService.Deploy([new FlowNode() { Id = "flow1" }, new InjectNode() { Container = "flow1" }]);
 
         //Act
-        var result = await client.Request(_apiUrl, "Load").GetAsync().CatchUserActionError().ReceiveJson<NodesDataDto>();
+        var result = await client.Request(_apiUrl, "Load").GetAsync().CatchUserActionError().ReceiveJson<NodesDataResponse>();
 
         //Assert
         result.Nodes.Count.Should().BeGreaterThan(0);

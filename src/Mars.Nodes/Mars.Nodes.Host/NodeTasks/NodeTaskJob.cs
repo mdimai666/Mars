@@ -79,7 +79,7 @@ internal class NodeTaskJob : IAsyncDisposable
         Finish();
     }
 
-    IAsyncEnumerable<Task> CallbackNext(string completedNodeId, NodeMsg result, int output, bool throwOnError)
+    IAsyncEnumerable<Task> NextWires(string completedNodeId, NodeMsg result, int output, bool throwOnError)
     {
         var nextNodes = GetNextWires(completedNodeId, output);
         var tasks = new List<Task>();
@@ -123,19 +123,26 @@ internal class NodeTaskJob : IAsyncDisposable
         try
         {
             OnNodeExecute.Invoke(node.Id, isInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
-            await node.Execute(input,
-                async (e, _output) =>
+
+            async void callbackNext(NodeMsg e, int _output = 0)
+            {
+                //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
+                if (_cancellationTokenSource.IsCancellationRequested) return;
+                await foreach (var wireTask in NextWires(node.Id, e, _output, throwOnError))
                 {
-                    //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
                     if (_cancellationTokenSource.IsCancellationRequested) return;
-                    await foreach (var wireTask in CallbackNext(node.Id, e, _output, throwOnError))
-                    {
-                        if (_cancellationTokenSource.IsCancellationRequested) return;
-                        await wireTask;
-                    }
-                },
-                new ExecutionParameters(TaskId, go.JobGuid, InputPort: inputPortIndex, CancellationToken: _cancellationTokenSource.Token, SourceOutputPort: sourceOutputPortIndex)
-                );
+                    await wireTask;
+                }
+            }
+
+            var executionParameters = new ExecutionParameters(
+                            TaskId: TaskId,
+                            JobGuid: go.JobGuid,
+                            InputPort: inputPortIndex,
+                            CancellationToken: _cancellationTokenSource.Token,
+                            SourceOutputPort: sourceOutputPortIndex);
+
+            await node.Execute(input, callbackNext, executionParameters);
 
             if (node is ISelfFinalizingNode) go.Pending();
             else go.Success();

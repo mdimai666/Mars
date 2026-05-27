@@ -14,6 +14,7 @@ public interface INodeEditorApi
     INodeWorkspaceApi NodeWorkspace { get; }
     IEditorActionManager ActionManager { get; }
     JsonSerializerOptions NodesJsonSerializerOptions { get; }
+    IReadOnlyDictionary<string, InlineFunctionNodeSchema> InlineFunctionNodeSchemas { get; }
 
     void CallStateHasChanged();
     void SetNodes(IDictionary<string, Node> nodes);

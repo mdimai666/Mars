@@ -57,6 +57,7 @@ public class NodesLocator
     public void RegisterAssembly(Assembly assembly)
     {
         if (assemblies.Contains(assembly)) return;
+        invalid = true;
         assemblies.Add(assembly);
     }
 

@@ -1,0 +1,102 @@
+@using AppFront.Shared.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
+@using Mars.Nodes.Front.Shared.Editor.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(InlineFunctionNode))]
+
+<div class="vstack gap-3">
+    <div class="form-group compact" style="--fluent-input-label-basis:150px">
+        <div class="vstack gap-2">
+
+            <FormItem2 For="() => Node.FunctionId">
+                <FluentTextField @bind-Value=@Node.FunctionId Class="flex-fill" ReadOnly Appearance="FluentInputAppearance.Filled" />
+            </FormItem2>
+
+            <div class="__Params d-fields-container vstack0gap-2 flex-fill">
+
+                @for (var i = 0; i < EditModel!.ParameterValues.Length; i++)
+                {
+                    var index = i;
+                    var f = EditModel.ParameterValues[index];
+
+                    <div class="form-item__content">
+
+                        <FluentInputLabel ForId="@f.HtmlElementId"
+                                          Label="@f.Name"
+                                          Required="f.IsRequired">
+                            @f.Name
+                        </FluentInputLabel>
+                        <div class="__input_content ">
+
+                            @if (f.Type == TypeCode.String)
+                            {
+                                <FluentTextField Id="@f.HtmlElementId"
+                                                 Label="@f.Name"
+                                                 Placeholder=@f.Placeholder
+                                                 Value=@f.Value
+                                                 ValueChanged=@(v => f.Value = v)
+                                                 Style="min-width:50px;" />
+                            }
+                            else if (f.Type == TypeCode.Char)
+                            {
+                                <FluentTextField Id="@f.HtmlElementId"
+                                                 Label="@f.Name"
+                                                 Placeholder=@f.Placeholder
+                                                 Value=@f.Value
+                                                 ValueChanged=@(v => f.Value = v)
+                                                 Style="min-width:50px;"
+                                                 Maxlength="1" />
+                            }
+                            else if (f.Type == TypeCode.Boolean)
+                            {
+                                <FluentCheckbox Id="@f.HtmlElementId"
+                                                Label=@f.Name"
+                                                Value=@f.ValueBoolSetter
+                                                ValueChanged=@(v => f.ValueBoolSetter = v)
+                                                Style="min-width:50px;" />
+                            }
+                            else if (f.Type >= TypeCode.Int32 && f.Type <= TypeCode.UInt64)
+                            {
+                                <FluentNumberField Id="@f.HtmlElementId"
+                                                   Placeholder=@f.Placeholder
+                                                   TValue="int"
+                                                   Value=@f.ValueIntSetter ValueChanged=@(v => f.ValueIntSetter = v) Style="min-width:50px;" />
+                            }
+                            else
+                            {
+                                <span>not implement: @f.Type</span>
+                            }
+                        </div>
+
+                    </div>
+                    <div class="__description form-item__ValidationMessage">
+                        <label for="@f.HtmlElementId" class="text-secondary fw-normal">@f.Description</label>
+                        <FluentValidationMessage For="@(() => f.Value)" />
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    InlineFunctionNode Node { get => (InlineFunctionNode)Value!; set => Value = value; }
+
+    InlineFunctionNodeEditModel? EditModel;
+    [CascadingParameter] INodeEditorApi _editorApi { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        EditModel = new(Node, _editorApi.InlineFunctionNodeSchemas);
+    }
+
+    public override Task OnEditSave()
+    {
+        Node.Arguments = EditModel!.ToArgumentsRequest();
+        return Task.CompletedTask;
+    }
+
+}

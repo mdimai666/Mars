@@ -9,6 +9,7 @@ using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Mappings;
+using Mars.Nodes.Host.Mappings.Nodes;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -246,9 +247,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         }).ToDictionary();
     }
 
-    public IEnumerable<Node> GetNodesForResponse()
+    public NodesData GetNodesData()
     {
-        return Nodes.Values.Select(s => s.Node);
+        return new()
+        {
+            Nodes = Nodes.Values.Select(s => s.Node).ToArray(),
+            InlineFunctionNodeSchemas = _RED.NodeImplementFactory.InlineFunctionNodeList.ToSchema()
+        };
     }
 
     public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null)

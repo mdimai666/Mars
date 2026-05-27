@@ -1,4 +1,7 @@
+using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Mars.Core.Attributes;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Microsoft.Extensions.DependencyInjection;
@@ -107,12 +110,54 @@ public class NodeImplementFactory
     //    Type type = typeof(Node).Assembly.GetType(typeFullname)!;
     //    return type;
     //}
+
+    //========== INLINE FUNCTIONS
+    ConcurrentDictionary<string, InlineNodeDictItem> _inlineNodesDict = [];
+
+    //public ConcurrentDictionary<string, InlineNodeDictItem> InlineNodesDict => _inlineNodesDict;
+
+    public void RegisterInlineFunctionNode(InlineFunctionNodeDefinition definition)
+    {
+        _inlineNodesDict.TryAdd(definition.TypeId, new()
+        {
+            NodeDefinition = definition,
+            DisplayAttribute = definition.Delegate.GetType().GetCustomAttribute<DisplayAttribute>() ?? new(),
+            FunctionApiDocument = definition.Delegate.GetType().GetCustomAttribute<FunctionApiDocumentAttribute>() ?? new("")
+        });
+    }
+
+    public InlineFunctionNode CreateInlineFunctionNode(InlineFunctionNodeDefinition def, string[] args)
+    {
+        return new()
+        {
+            Name = def.Name,
+            Inputs = def.Inputs.ToList(),
+            Outputs = def.Outputs.ToList(),
+            Color = def.Color ?? InlineFunctionNode.DefaultColor,
+            Icon = def.Icon ?? InlineFunctionNode.DefaultIcon,
+
+            FunctionId = def.TypeId,
+            Arguments = args
+        };
+    }
+
+    public InlineFunctionNodeDefinition? GetInlineFunctionNodeDefinition(string typeId)
+        => _inlineNodesDict.GetValueOrDefault(typeId)?.NodeDefinition;
+
+    public InlineFunctionNodeDefinition[] InlineFunctionNodeList => _inlineNodesDict.Values.Select(x => x.NodeDefinition).ToArray();
 }
 
 public record NodeImplementItem
 {
     public required Type NodeBaseType;
     public required Type NodeImplementType;
+}
+
+public record InlineNodeDictItem
+{
+    public required InlineFunctionNodeDefinition NodeDefinition;
+    public required DisplayAttribute DisplayAttribute;
+    public required FunctionApiDocumentAttribute? FunctionApiDocument;
 }
 
 //public abstract class NodeImplement<TNode>: INodeImplement<TNode> where TNode : Node

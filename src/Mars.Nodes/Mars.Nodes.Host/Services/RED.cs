@@ -28,6 +28,8 @@ internal class RED
     public BroadcastHub BroadcastHub;
     private readonly NodeImplementFactory _nodeImplementFactory;
 
+    public NodeImplementFactory NodeImplementFactory => _nodeImplementFactory;
+
     public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = [];
     public VariablesContextDictionary GlobalContext { get; } = new();
 

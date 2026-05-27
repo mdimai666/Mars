@@ -100,7 +100,8 @@ public class StringNodeOperationEditModel
                     new OperationInputEditModel(p.Name,
                                                 existParameterValues.ElementAtOrDefault(i)?.Value ?? p.DefaultValue,
                                                 type: p.Type,
-                                                placeholder: p.Description))
+                                                placeholder: p.Description,
+                                                isRequired: p.IsRequired))
                 .ToArray();
     }
 
@@ -111,28 +112,8 @@ public class StringNodeOperationEditModel
                                                 //operation.ParameterValues.ElementAtOrDefault(i).Value ?? p.DefaultValue,
                                                 operation.ParameterValues.ElementAtOrDefault(i) ?? p.DefaultValue,
                                                 type: p.Type,
-                                                placeholder: p.Description))
+                                                placeholder: p.Description,
+                                                isRequired: p.IsRequired))
                 .ToArray();
-    }
-}
-
-public class OperationInputEditModel
-{
-    private Guid Id = Guid.NewGuid();
-    public string Name { get; init; }
-    public string Value { get; set; }
-    public TypeCode Type { get; init; }
-    public string? Placeholder { get; init; }
-
-    public bool ValueBoolSetter { get => bool.TryParse(Value, out var b) ? b : false; set => Value = value.ToString(); }
-
-    public int ValueIntSetter { get => int.TryParse(Value, out var i) ? i : 0; set => Value = value.ToString(); }
-
-    public OperationInputEditModel(string name, string value, TypeCode type, string? placeholder = null)
-    {
-        Name = name;
-        Value = value;
-        Type = type;
-        Placeholder = placeholder;
     }
 }

@@ -41,6 +41,7 @@ public class NodeServiceUnitTestBase
     internal readonly ILogger<NodeTaskManager> _loggerManager;
     internal readonly ILogger<NodeTaskJob> _loggerJob;
     internal readonly NodesLocator _nodesLocator;
+    internal readonly NodeImplementFactory _nodeImplementFactory;
     internal NodeService? _nodeService;
     internal RED RED;
     internal NodeTaskManager _nodeTaskManager;
@@ -64,20 +65,21 @@ public class NodeServiceUnitTestBase
         _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
         _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
         _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
-        var nodeImplementFactory = new NodeImplementFactory();
-        nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
-        nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
-        nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
+        _nodeImplementFactory = new NodeImplementFactory();
+        _nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+        _nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
+        _nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
 
         // dependies
         _hub = Substitute.For<IHubContext<ChatHub>>();
         _broadcastHub = Substitute.For<BroadcastHub>(_hub);
-        RED = Substitute.ForPartsOf<RED>(_broadcastHub, nodeImplementFactory, _serviceProvider);
+        RED = Substitute.ForPartsOf<RED>(_broadcastHub, _nodeImplementFactory, _serviceProvider);
         _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
         _serviceProvider.GetService(typeof(RED)).Returns(RED);
         _serviceProvider.GetService(typeof(BroadcastHub)).Returns(_broadcastHub);
         _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
         _serviceProvider.GetService(typeof(INodeTaskManager)).Returns(_nodeTaskManager);
+        _serviceProvider.GetService(typeof(NodeImplementFactory)).Returns(_nodeImplementFactory);
         IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
         _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
 
@@ -175,19 +177,9 @@ public class NodeServiceUnitTestBase
         return result;
     }
 
-    public Task RunUsingTaskManager(Node node, NodeMsg? msg = null, FlowNode? flowNode = null, VarNode? varNode = null)
+    public Task<NodeMsg?> RunUsingTaskManager(Node node, NodeMsg? msg = null)
     {
-        flowNode ??= new FlowNode();
-        node.Container = flowNode.Id;
-        var nodes = new List<Node> { flowNode, node };
-        if (varNode != null)
-        {
-            varNode.Container = flowNode.Id;
-            nodes.Add(varNode);
-        }
-        _nodeService.Deploy(nodes);
-
-        return _nodeTaskManager.CreateJob(_serviceProvider, node.Id, throwOnError: true);
+        return RunUsingTaskManager(NodesWorkflowBuilder.Create().AddNext(node), msg);
     }
 
     public async Task<NodeMsg?> RunUsingTaskManager(NodesWorkflowBuilder builder, NodeMsg? msg = null)

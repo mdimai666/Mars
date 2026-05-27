@@ -8,6 +8,7 @@ using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
 using Mars.Nodes.Host.CommandLine;
 using Mars.Nodes.Host.Middlewares;
 using Mars.Nodes.Host.NodeTasks;
@@ -61,6 +62,9 @@ public static class MainMarsNodes
 
         var nodeImplementFactory = app.Services.GetRequiredService<NodeImplementFactory>();
         nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
+
+        foreach (var def in InlineFunctionsUtilsMethodParser.ParseMethods(typeof(InlineFunctionsUtils)))
+            nodeImplementFactory.RegisterInlineFunctionNode(def);
 
         var templatorFeaturesLocator = app.Services.GetRequiredService<ITemplatorFeaturesLocator>();
         templatorFeaturesLocator.Functions.Add(nameof(RegisterNodeTemplatorFunction.Node), RegisterNodeTemplatorFunction.Node!);

@@ -19,7 +19,7 @@ public interface INodeService
     bool TryReadFlowFile(out NodesFlowSaveFile? fileData);
     void Setup();
     UserActionResult Deploy(IReadOnlyCollection<Node> nodes);
-    IEnumerable<Node> GetNodesForResponse();
+    NodesData GetNodesData();
 
     Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
     Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);

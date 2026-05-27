@@ -1,11 +1,6 @@
 @page "/nodered"
 @implements IDisposable
-@using AppFront.Shared.Hub
-@using Mars.Core.Models
-@using Mars.Nodes.Core
-@using Microsoft.AspNetCore.SignalR.Client
 @using Mars.Nodes.Workspace
-@using Mars.Nodes.Workspace.Services
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @if (Busy)
@@ -19,7 +14,7 @@
 }
 else
 {
-    if (nodes is null)
+    if (_nodes is null)
     {
         <h1>is null</h1>
     }
@@ -28,7 +23,9 @@ else
         <NodeEditor1 OnDeploy="OnDeploy"
                      OnInject="OnInjectClick"
                      OnCmdClick="OnCmdClick"
-                     @ref=_editor1 @bind-AllNodes=@nodes>
+                     @ref=_editor1
+                     @bind-AllNodes=@_nodes
+                     InlineFunctionNodeSchemas="_inlineFunctionNodeSchemas">
             <SectionActions>
                 <XActionsDropDown>
                     <FluentMenuItem Label="@AppRes.Settings" OnClick=@((e) => _editor1!.ShowSettingsDialog()) />

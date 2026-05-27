@@ -1,21 +1,40 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Front.Shared.Contracts.Nodes;
+using Mars.Nodes.Core.Contracts.Nodes;
+using Mars.Nodes.Core.Models;
+using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Host.Mappings.Nodes;
 
 public static class NodeResponseMappings
 {
-    public static NodesDataResponse ToResponse(this IEnumerable<Node> nodes)
+    public static NodesDataResponse ToResponse(this NodesData entity)
         => new()
         {
-            Nodes = nodes.ToArray(),
-            NodesState = nodes.Where(s => s.status != null).ToDictionary(node => node.Id, node => node.ToResponse())
+            Nodes = entity.Nodes.ToArray(),
+            NodesState = entity.Nodes.Where(s => s.status != null).ToDictionary(node => node.Id, node => node.ToResponse()),
+            InlineFunctionNodeSchemas = entity.InlineFunctionNodeSchemas.ToResponse()
         };
 
-    public static NodeStateInfoResponse ToResponse(this Node node)
+    public static NodeStateInfoResponse ToResponse(this Node entity)
         => new()
         {
-            Status = node.status
+            Status = entity.status
         };
+
+    public static InlineFunctionNodeSchemaResponse ToResponse(this InlineFunctionNodeSchema entity)
+        => new()
+        {
+            TypeId = entity.TypeId,
+            Name = entity.Name,
+            Color = entity.Color,
+            Icon = entity.Icon,
+            GroupName = entity.GroupName,
+            Inputs = entity.Inputs,
+            Outputs = entity.Outputs,
+            Parameters = entity.Parameters,
+        };
+
+    public static IReadOnlyCollection<InlineFunctionNodeSchemaResponse> ToResponse(this IEnumerable<InlineFunctionNodeSchema> list)
+        => list.Select(ToResponse).ToArray();
 
 }

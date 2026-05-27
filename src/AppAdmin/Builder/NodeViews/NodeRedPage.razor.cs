@@ -1,6 +1,8 @@
 using AppFront.Shared.Hub;
 using Mars.Core.Models;
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Mappings.Nodes;
 using Mars.Nodes.Front.Shared.Services;
 using Mars.Nodes.Workspace;
 using Microsoft.AspNetCore.Components;
@@ -17,7 +19,9 @@ public partial class NodeRedPage
 
     bool Busy = false;
 
-    IDictionary<string, Node>? nodes;
+    IDictionary<string, Node>? _nodes;
+
+    IReadOnlyDictionary<string, InlineFunctionNodeSchema> _inlineFunctionNodeSchemas = default!;
 
     protected override void OnInitialized()
     {
@@ -55,7 +59,7 @@ public partial class NodeRedPage
 
     void OnNodeStatus(string nodeId, NodeStatus nodeStatus)
     {
-        var node = nodes.TryGetValue(nodeId, out var n) ? n : null;
+        var node = _nodes.TryGetValue(nodeId, out var n) ? n : null;
         if (node is not null)
         {
             node.enable_status = string.IsNullOrEmpty(nodeStatus.Text) == false;
@@ -94,7 +98,8 @@ public partial class NodeRedPage
                 node.status = state.Value.Status;
                 node.enable_status = true;
             }
-            nodes = recivedNodes.Values.ToDictionary(s => s.Id);
+            _nodes = recivedNodes.Values.ToDictionary(s => s.Id);
+            _inlineFunctionNodeSchemas = data.InlineFunctionNodeSchemas.ToDictionary(s => s.TypeId, s => s.ToModel());
         }
         catch (Exception ex)
         {
@@ -112,7 +117,7 @@ public partial class NodeRedPage
 
         if (res.Ok)
         {
-            foreach (var node in nodes.Values) node.changed = false;
+            foreach (var node in _nodes.Values) node.changed = false;
         }
 
         _editor1!.AddDebugMessage(new DebugMessage

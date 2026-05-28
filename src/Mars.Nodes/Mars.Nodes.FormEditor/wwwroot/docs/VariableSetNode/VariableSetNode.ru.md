@@ -14,3 +14,4 @@
 | GlobalContext.x | "222"       | "222"     |
 | FlowContext.z | GlobalContext.val + 2 | 4 |
 | VarNode.z | 1 + 2 | 3 |
+| msg.Payload | env("ENV_KEY") | ENV_VALUE |

@@ -8,7 +8,7 @@ namespace Mars.Nodes.Core.Nodes;
 public class VariableSetNode : Node
 {
     [ValidateComplexType]
-    public List<VariableSetExpression> Setters { get; set; } = [
+    public VariableSetExpression[] Setters { get; set; } = [
         new VariableSetExpression { ValuePath = "msg.Payload", Expression = "1+1", Operation = VariableSetOperation.Set }
     ];
 

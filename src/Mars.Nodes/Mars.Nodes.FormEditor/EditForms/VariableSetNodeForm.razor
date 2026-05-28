@@ -1,3 +1,5 @@
+@using Mars.Core.Extensions
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(VariableSetNode))]
@@ -21,14 +23,23 @@
                 <InputText @bind-Value=@setter.ValuePath class="form-control" placeholder="ValuePath" aria-label="ValuePath" />
                 <span class="input-group-text">=</span>
                 <InputText @bind-Value=@setter.Expression class="form-control" placeholder="Expression" aria-label="Expression" />
+                <div class="input-group-text py-0">
+                    <FluentButton OnClick=@(() => DeleteItem(setter)) IconStart="@(new Icons.Regular.Size16.Delete())" Appearance="Appearance.Stealth" />
+                </div>
             </div>
-            <FluentValidationMessage For=@(()=>setter.ValuePath) />
-            <FluentValidationMessage For=@(()=>setter.Expression) />
+            <FluentValidationMessage For=@(() => setter.ValuePath) />
+            <FluentValidationMessage For=@(() => setter.Expression) />
         </div>
 
     }
-    <div class="mt-4">
+    <div class="mt-4 hstack gap-2">
         <FluentButton OnClick="AppendSetter" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Add</FluentButton>
+        <GroupedSelectDropDown TOption="string"
+                               Items="GroupedExampleItems"
+                               Value="@AppRes.Add__Ellipsis"
+                               OptionValue="v => v"
+                               OptionText="v => v.TextEllipsis(40)"
+                               SelectedOptionChanged="v => AddNewFromExample(v)" />
     </div>
 </div>
 
@@ -36,9 +47,39 @@
     [CascadingParameter] Node? Value { get; set; }
     VariableSetNode Node { get => (VariableSetNode)Value!; set => Value = value; }
 
+    IEnumerable<IGrouping<string?, string>> GroupedExampleItems = [];
+
+    protected override void OnParametersSet()
+    {
+        GroupedExampleItems = ExampleList.GroupBy(x => x.Split(['=', '-'], 2)[0]).ToList();
+    }
+
     void AppendSetter()
     {
         var v = new VariableSetExpression { ValuePath = "msg.Payload", Expression = "1+1", Operation = VariableSetOperation.Set };
-        Node.Setters.Add(v);
+        Node.Setters = [.. Node.Setters, v];
     }
+
+    void AddNewFromExample(string value)
+    {
+        var sp = value.Split('=', 2);
+        var v = new VariableSetExpression { ValuePath = sp[0], Expression = sp[1], Operation = VariableSetOperation.Set };
+
+        Node.Setters = [.. Node.Setters, v];
+    }
+
+    void DeleteItem(VariableSetExpression item)
+    {
+        var list = Node.Setters.ToList();
+        list.Remove(item);
+        Node.Setters = list.ToArray();
+    }
+
+    static IReadOnlyCollection<string> ExampleList = [
+        "msg.Payload=msg.Payload.subprop",
+        "msg.Payload=GlobalContext.x",
+        "msg.Payload=VarNode.x",
+        "VarNode.x=msg.Payload",
+        "msg.Payload=env(\"ENV_KEY\")",
+    ];
 }

@@ -273,4 +273,19 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     {
         public int prop1 { get; set; }
     }
+
+    [Fact]
+    public async Task Env_GetEnvironmentVariable_ShouldSuccess()
+    {
+        //Arrange
+        Environment.SetEnvironmentVariable("X_VALUE", "123");
+        _ = nameof(VariableSetNodeImpl.Execute);
+        var node = SetupNode("msg.Payload", "env(\"X_VALUE\")");
+
+        //Act
+        var msg = await ExecuteNode(node);
+
+        //Assert
+        msg.Payload.Should().Be("123");
+    }
 }

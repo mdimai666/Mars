@@ -108,7 +108,7 @@
                                 @foreach (var _palette in group)
                                 {
                                     Node node = _palette.Instance;
-                                    <div class="list-group-item px-2 py-0 border-0" @key=_palette>
+                                    <div class="list-group-item px-2 py-0 border-0" @key=_palette title="@node.Label">
                                         <svg width="170" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
                                             @if (node is MicroschemeNode)
                                             {

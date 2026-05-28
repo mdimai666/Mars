@@ -1,9 +1,10 @@
 @using AppFront.Shared.Components
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(HttpResponseNode))]
 
-<div class="form-group compact" style="--fluent-input-label-basis:150px">
+<div class="form-group compact" style="--fluent-input-label-basis:250px">
     <div class="vstack gap-2">
 
         <FormItem2 For="() => Node.ResponseStatusCode">
@@ -25,6 +26,8 @@
                 <FluentMenuItem OnClick="@(() => Node.ResponseStatusCode = key)">@value</FluentMenuItem>
             }
         </FluentMenu>
+
+        <SelectHeadersField @bind-Value=Node.Headers For="@(() => Node.Headers)" ExampleList="HttpResponseNode.ExampleResponseHeaders" />
     </div>
 </div>
 

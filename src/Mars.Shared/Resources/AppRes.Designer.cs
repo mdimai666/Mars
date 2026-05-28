@@ -97,6 +97,15 @@ namespace Mars.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add....
+        /// </summary>
+        public static string Add__Ellipsis {
+            get {
+                return ResourceManager.GetString("Add__Ellipsis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Admin.
         /// </summary>
         public static string Admin {

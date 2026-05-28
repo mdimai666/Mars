@@ -31,22 +31,32 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
 
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
 
-        string? response;
+        string response;
 
-        if (input.Payload is null) response = null;
-        else if (input.Payload is string)
+        if (input.Payload is null) response = string.Empty;
+        else if (input.Payload is string str)
         {
-            response = input.Payload as string;
+            response = str;
+            http.HttpContext.Response.ContentType = "text/html; charset=utf-8";
         }
-        else if (input.Payload is object)
+        else if (input.Payload?.GetType().IsPrimitive == true)
         {
-            http.HttpContext.Response.ContentType = "application/json";
+            response = input.Payload?.ToString() ?? string.Empty;
+            http.HttpContext.Response.ContentType = "text/html; charset=utf-8";
+        }
+        else
+        {
+            http.HttpContext.Response.ContentType = "application/json; charset=utf-8";
             response = JsonSerializer.Serialize(input.Payload, _jsonSerializerOptions);
-            //response = System.Text.Json.JsonSerializer.Serialize(input.Payload, opt);
         }
-        else response = input.Payload?.ToString();
 
-        response ??= "";
+        if (Node.Headers.Any())
+        {
+            foreach (var header in Node.Headers)
+            {
+                http.HttpContext.Response.Headers[header.Name] = header.Value;
+            }
+        }
 
         http.HttpContext.Response.StatusCode = Node.ResponseStatusCode;
         await http.HttpContext.Response.WriteAsync(response, encoding: Encoding.UTF8); //on async body already has disposed

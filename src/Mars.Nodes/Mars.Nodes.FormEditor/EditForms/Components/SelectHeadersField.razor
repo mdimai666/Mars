@@ -1,0 +1,86 @@
+@using System.Linq.Expressions
+@using AppFront.Shared.Components
+@using Mars.Core.Extensions
+@using Mars.Core.Utils
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="SelectHeadersField">
+    <AutoInputLabel For="@For" />
+    <FluentSortableList Id="dragHandles" Handle="true" Items="Headers" OnUpdate="@SortList" Context="item">
+        <ItemTemplate>
+            <div class="sortable-grab">
+                <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+            </div>
+            <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                <div class="hstack">
+                    <FluentTextField @bind-Value=item.Name Placeholder="Key" />
+                    <FluentTextField @bind-Value=item.Value Placeholder="Value" />
+                    <FluentButton OnClick=@(() => DeleteItem(item)) IconStart="@(new Icons.Regular.Size16.Delete())" />
+                </div>
+            </div>
+        </ItemTemplate>
+    </FluentSortableList>
+    <div class="mt-1 hstack gap-1">
+        <FluentButton OnClick="AddNewBlank" IconStart="@(new Icons.Regular.Size16.Add())">Add blank</FluentButton>
+        <GroupedSelectDropDown TOption="string"
+                               Items="GroupedItems"
+                               Value="@AppRes.Add__Ellipsis"
+                               OptionValue="v => v"
+                               OptionText="v => v.TextEllipsis(40)"
+                               SelectedOptionChanged="v => AddNewFromExample(v)" />
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public HeaderItem[] Value
+    {
+        get => field;
+        set
+        {
+            if (value == field) return;
+            field = value;
+            ValueChanged.InvokeAsync(field);
+        }
+    } = [];
+
+    [Parameter]
+    public EventCallback<HeaderItem[]> ValueChanged { get; set; }
+
+    [Parameter]
+    public Expression<Func<HeaderItem[]>>? For { get; set; }
+
+    [Parameter]
+    public IReadOnlyCollection<string> ExampleList { get; set; } = HttpRequestNode.ExampleHeaders;
+
+    HeaderItem[] Headers { get => Value; set => Value = value; }
+
+    IEnumerable<IGrouping<string?, string>> GroupedItems = [];
+
+    protected override void OnParametersSet()
+    {
+        GroupedItems = ExampleList.GroupBy(x => x.Split(['=', '-'], 2)[0]).ToList();
+    }
+
+    void SortList(FluentSortableListEventArgs args) => Headers = Headers.MoveItem(args.OldIndex, args.NewIndex);
+
+    void AddNewBlank()
+    {
+        Headers = [.. Headers, new()];
+    }
+    void AddNewFromExample(string value)
+    {
+        var sp = value.Split('=', 2);
+        Headers = [.. Headers, new() { Name = sp[0], Value = sp[1] }];
+    }
+
+    void DeleteItem(HeaderItem item)
+    {
+        var list = Headers.ToList();
+        list.Remove(item);
+        Headers = list.ToArray();
+    }
+
+}

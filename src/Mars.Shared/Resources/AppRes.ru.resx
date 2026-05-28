@@ -603,4 +603,7 @@
   <data name="v_name" xml:space="preserve">
     <value>Имя</value>
   </data>
+  <data name="Add__Ellipsis" xml:space="preserve">
+    <value>Добавить...</value>
+  </data>
 </root>

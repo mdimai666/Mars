@@ -4,9 +4,11 @@
 
 <FluentInputLabel AdditionalAttributes="@AdditionalAttributes" Label="@_displayName" Required=_required />
 
-@ChildContent
+<div class="AutoInputLabel__Content">
+    @ChildContent
 
-@if (_description is not null)
-{
-    <div class="d-fluent-input-description">@_description</div>
-}
+    @if (_description is not null)
+    {
+        <div class="d-fluent-input-description">@_description</div>
+    }
+</div>

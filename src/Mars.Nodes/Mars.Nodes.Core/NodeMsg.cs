@@ -54,11 +54,20 @@ public class NodeMsg
         };
     }
 
+    public NodeMsg Copy()
+    {
+        return new NodeMsg
+        {
+            Payload = Payload,
+            Context = new Dictionary<string, object>(Context)
+        };
+    }
+
     public NodeMsg Copy(object? payload = null)
     {
         return new NodeMsg
         {
-            Payload = payload ?? Payload,
+            Payload = payload,
             Context = new Dictionary<string, object>(Context)
         };
     }

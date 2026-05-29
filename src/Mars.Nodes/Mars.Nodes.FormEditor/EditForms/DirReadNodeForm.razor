@@ -1,0 +1,38 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(DirReadNode))]
+
+<div class="form-group compact vstack gap-3" style="--fluent-input-label-basis:200px">
+
+    <FormItem2 For="() => Node.DirPath" Class="">
+        <FluentTextField @bind-Value="@Node.DirPath" Class="w-100" />
+    </FormItem2>
+    <FormItem2 For="() => Node.Pattern" Class="">
+        <FluentTextField @bind-Value="@Node.Pattern" Class="w-100" />
+    </FormItem2>
+    <FormItem2 For="() => Node.MaxDepth" Class="">
+        <FluentNumberField @bind-Value="@Node.MaxDepth" Class="" Min="0" />
+    </FormItem2>
+    <FormItem2 For="() => Node.ReturnRelativePath">
+        <FluentCheckbox @bind-Value=@Node.ReturnRelativePath Class="" />
+    </FormItem2>
+    <FormItem2 For="() => Node.UseRootGitIgnore">
+        <FluentCheckbox @bind-Value=@Node.UseRootGitIgnore Class="" />
+    </FormItem2>
+
+    <div class="mt-3">
+        <div class="alert alert-warning">
+            Tip: The filename should be an absolute path, otherwise it will be relative to the working directory of the process.
+        </div>
+        <div class="alert alert-warning">
+            При использовании ReturnRelativePath=false, файлы будут возвращены в виде абсолютного пути и браузер заблокирует ссылки. Вывод Debug Console Message будет пустой.
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    DirReadNode Node { get => (DirReadNode)Value; set => Value = value; }
+
+}

@@ -198,7 +198,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         CancellationToken cancellationToken)
     {
         Stream stream = new MemoryStream(bytes);
-        return WriteUpload(originalFileNameWithExt, subpath, stream, userId, cancellationToken);
+        return WriteUpload(originalFileNameWithExt, subpath, stream, userId, generateUniqueName: true, cancellationToken);
     }
 
     public Task<Guid> WriteUpload(
@@ -208,7 +208,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         CancellationToken cancellationToken)
     {
         var originalFileNameWithExt = string.IsNullOrEmpty(formFile.FileName) ? Guid.NewGuid().ToString() : formFile.FileName;
-        return WriteUpload(originalFileNameWithExt, subpath, formFile.OpenReadStream(), userId, cancellationToken);
+        return WriteUpload(originalFileNameWithExt, subpath, formFile.OpenReadStream(), userId, generateUniqueName: true, cancellationToken);
     }
 
     /// <summary>
@@ -222,6 +222,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         Stream fileStream,
         Guid userId,
         //string fileGroup,
+        bool generateUniqueName,
         CancellationToken cancellationToken)
     {
         if (userId == Guid.Empty) throw new ArgumentException("UserId cannot be empty");
@@ -238,7 +239,9 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         string ext = hostingInfo.GetExtension(originalFileNameWithExt);
         var isImage = hostingInfo.ExtIsImage(ext);
         var isSvg = hostingInfo.ExtIsSvg(ext);
-        var newfilename = RetrieveNewFileName(fileNameWithoutExtension, ext);
+        var newfilename = generateUniqueName
+                            ? GenerateUniqueName(fileNameWithoutExtension, ext)
+                            : TextTool.TranslateToPostSlug(originalFileNameWithExt);
 
         string filepathFromUpload = filedir + '/' + newfilename;
         string fileAbsolutePath = hostingInfo.FileAbsolutePath(filepathFromUpload);
@@ -320,23 +323,22 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         }
     }
 
-    internal string RetrieveNewFileName(string fileNameWithoutExtension, string ext)
+    public static string GenerateUniqueName(string fileNameWithoutExtension, string ext)
     {
         if (string.IsNullOrWhiteSpace(fileNameWithoutExtension))
             throw new ArgumentException(nameof(fileNameWithoutExtension));
 
         ext = ext.TrimStart('.');
         string slug = TextTool.TranslateToPostSlug(fileNameWithoutExtension);
-        string dateStamp = DateTime.UtcNow.ToString("yyyyMMdd");
-        string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 8);
+        string uniqueSuffix = TextTool.GenerateUniqueSuffix();
 
-        int postfixLength = 1 /*_*/ + dateStamp.Length + 1 /*_*/ + uniqueSuffix.Length + 1 /*dot*/ + ext.Length;
+        int postfixLength = 1 /*_*/ + uniqueSuffix.Length + 1 /*dot*/ + ext.Length;
         int maxSlugLength = Math.Max(1, MaxFileNameSize - postfixLength);
 
         if (slug.Length > maxSlugLength)
             slug = slug.Substring(0, maxSlugLength);
 
-        string newFileName = $"{slug}_{dateStamp}_{uniqueSuffix}.{ext}";
+        string newFileName = $"{slug}_{uniqueSuffix}.{ext}";
         return newFileName;
     }
 

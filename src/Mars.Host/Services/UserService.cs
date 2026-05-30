@@ -325,4 +325,9 @@ internal class UserService : IUserService
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         return await _userRepository.RemoteUserUpsert(query, cancellationToken);
     }
+
+    public async Task<UserSummary> DefaultContentUserAsync(CancellationToken cancellationToken)
+    {
+        return (await _userRepository.List(new() { Take = 1, Sort = nameof(UserDetail.CreatedAt) }, cancellationToken)).Items.First();
+    }
 }

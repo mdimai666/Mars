@@ -15,7 +15,7 @@ public class EndpointNode : Node
     public string[] MethodVariants = { "GET", "POST", "PUT", "DELETE" };
 
     public bool IsRequireAuthorize { get; set; }
-    public IReadOnlyCollection<string> AllowedRoles { get; set; } = [];
+    public string[] AllowedRoles { get; set; } = [];
 
     public EndpointInputModelType EndpointInputModel { get; set; }
     public string JsonSchema { get; set; } = JsonSchemaExample;

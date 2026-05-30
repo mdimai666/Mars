@@ -20,8 +20,8 @@ public static class TextTool
         return str;
     }
 
-    static readonly Regex reg_whitespace = new Regex(@"\s+");
-    static readonly Regex reg_nonValidSymbols = new Regex(@"[^\d\w-_.]");
+    static readonly Regex reg_whitespace = new(@"\s+");
+    static readonly Regex reg_nonValidSymbols = new(@"[^\d\w-_.]");
 
     public static string TranslateToPostSlug(string str)
     {
@@ -30,8 +30,8 @@ public static class TextTool
         return reg_nonValidSymbols.Replace(reg_whitespace.Replace(translited, "_"), "");
     }
 
-    static readonly Regex slugReg = new Regex(@"^[a-z\d_](?:[a-z\d-_.]*[a-z\d_])?$");
-    static readonly Regex slugWithUpperReg = new Regex(@"^[A-Za-z\d_](?:[A-Za-z\d-_.]*[A-Za-z\d_])?$");
+    static readonly Regex slugReg = new(@"^[a-z\d_](?:[a-z\d-_.]*[a-z\d_])?$");
+    static readonly Regex slugWithUpperReg = new(@"^[A-Za-z\d_](?:[A-Za-z\d-_.]*[A-Za-z\d_])?$");
 
     public static bool IsValidSlug(string slug)
     {
@@ -65,5 +65,16 @@ public static class TextTool
         var values = properties.Select(p => p.GetValue(obj)?.ToString() ?? "null");
 
         return string.Join(",", values);
+    }
+
+    /// <summary>
+    /// example: <b>20260529_206c1bc9</b>
+    /// </summary>
+    /// <returns></returns>
+    public static string GenerateUniqueSuffix()
+    {
+        string dateStamp = DateTime.UtcNow.ToString("yyyyMMdd");
+        string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 8);
+        return $"{dateStamp}_{uniqueSuffix}";
     }
 }

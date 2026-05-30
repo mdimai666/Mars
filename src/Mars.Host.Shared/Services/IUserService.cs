@@ -37,4 +37,5 @@ public interface IUserService
     Task<UserEditViewModel> GetEditModelBlank(string type, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto?> FindByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AuthorizedUserInformationDto> RemoteUserUpsert(UpsertUserRemoteDataQuery query, CancellationToken cancellationToken);
+    Task<UserSummary> DefaultContentUserAsync(CancellationToken cancellationToken);
 }

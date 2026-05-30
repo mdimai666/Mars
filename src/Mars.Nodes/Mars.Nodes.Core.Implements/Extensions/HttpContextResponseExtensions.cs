@@ -77,7 +77,7 @@ public static class HttpContextResponseExtensions
         }
     }
 
-    public static async Task<string> GetRequestBodyAsStringAsync(this HttpContext context, Encoding? encoding = null)
+    public static async Task<string> GetRequestBodyAsStringAsync(this HttpContext context, Encoding? encoding = null, CancellationToken cancellationToken = default)
     {
         var request = context.Request;
         encoding ??= Encoding.UTF8;
@@ -92,7 +92,7 @@ public static class HttpContextResponseExtensions
             detectEncodingFromByteOrderMarks: false,
             leaveOpen: true);
 
-        var body = await reader.ReadToEndAsync();
+        var body = await reader.ReadToEndAsync(cancellationToken);
 
         request.Body.Position = 0;
 

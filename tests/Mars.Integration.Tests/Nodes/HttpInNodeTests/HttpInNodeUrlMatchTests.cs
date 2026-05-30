@@ -11,14 +11,14 @@ using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Integration.Tests.Nodes;
+namespace Mars.Integration.Tests.Nodes.HttpInNodeTests;
 
-public class HttpInNodeTests : ApplicationTests
+public class HttpInNodeUrlMatchTests : ApplicationTests
 {
     const string _apiUrl = "";
     private readonly INodeService _nodeService;
 
-    public HttpInNodeTests(ApplicationFixture appFixture) : base(appFixture)
+    public HttpInNodeUrlMatchTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
@@ -143,4 +143,5 @@ public class HttpInNodeTests : ApplicationTests
         //Assert
         result.Should().NotBe("OK");
     }
+    
 }

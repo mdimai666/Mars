@@ -1,27 +1,76 @@
 # HttpInNode
 
-Создает endpoint и ловит http запрос.
+Нода создаёт HTTP-эндпоинт и принимает входящие запросы. Используется как точка входа в сценарий.
 
-В конце надо ответить добавив HttpResponseNode
+> **Важно:** после обработки запроса обязательно используйте `HttpResponseNode` для формирования ответа.
+
+## Настройки
+
+| Параметр | Описание |
+|----------|----------|
+| `Method` | HTTP-метод, который будет обрабатывать нода (GET, POST, PUT, DELETE, HEAD) |
+| `UrlPattern` | Шаблон URL, по которому нода будет принимать запросы |
+| `IsRequireAuthorize` | Требовать ли авторизацию для доступа к эндпоинту |
+| `AllowedRoles` | Список ролей, которым разрешён доступ (работает только если `IsRequireAuthorize = true`) |
+| `AllowMultipart` | Разрешить загрузку файлов через `multipart/form-data` |
+| `MaxFileSize` | Максимальный размер загружаемого файла (например, `10mb`, `5gb`, `1024kb`) |
 
 ## Паттерны URL
- - `/static`
- - `/{pattern}`
- - `/{typedPattern:int}`
- - `/{typedPatternConstraints:int:min(20)}`
- - `/{typedPatternConstraints:maxlength(10)}`
 
-### IRouteConstraint
+Вы можете использовать параметризованные пути:
+
+| Пример | Описание |
+|--------|----------|
+| `/static` | Фиксированный путь |
+| `/{name}` | Любой текст |
+| `/{id:int}` | Только целое число |
+| `/sub/{age:int:min(20)}` | Целое число не меньше 20 |
+| `/{code:maxlength(10)}` | Строка не длиннее 10 символов |
+
+### Доступные ограничения (constraints)
+
+- `minlength(N)` — минимальная длина строки
+- `maxlength(N)` — максимальная длина строки
+- `length(N)` — точная длина строки
+- `min(N)` — минимальное числовое значение
+- `max(N)` — максимальное числовое значение
+- `range(A,B)` — число в диапазоне от A до B
+- `regex(выражение)` — соответствие регулярному выражению
+
+## Как получить параметры из URL
+
+Внутри сценария вы можете обратиться к параметрам пути через контекст запроса:
+
 ```
-"minlength" => new MinLengthRouteConstraint(_int),
-"maxlength" => new MaxLengthRouteConstraint(_int),
-"length" => new LengthRouteConstraint(_int),
-"min" => new MinRouteConstraint(_int),
-"max" => new MaxRouteConstraint(_int),
-"range" => new RangeRouteConstraint(_ints[0], _ints[1]),
-
-"regex" => new RegexInlineRouteConstraint(argString!),
+HttpInNodeHttpRequestContext.Request.RouteValues["имя_параметра"]
 ```
 
-### Property access
-- `HttpInNodeHttpRequestContext.Request.RouteValues["myUrlParam"]?.ToString()=="777"`
+Например, чтобы проверить, что параметр `id` равен 777:
+
+```
+HttpInNodeHttpRequestContext.Request.RouteValues["id"]?.ToString() == "777"
+```
+
+## Что попадает в `input.Payload`
+
+В зависимости от типа запроса, в `Payload` автоматически подставляется:
+
+| Content-Type | Что получает сценарий |
+|--------------|----------------------|
+| `multipart/form-data` | Объект формы с файлами |
+| `application/x-www-form-urlencoded` | Объект формы |
+| `application/json` | Десериализованный JSON (объект, массив или значение) |
+| Остальные | Тело запроса как строка |
+
+## Обработка ошибок
+
+Нода сама возвращает ошибки в следующих случаях:
+
+| Ситуация | Код ответа |
+|----------|-------------|
+| Не пройдена авторизация | `401 Unauthorized` |
+| Нет доступа (роль не разрешена) | `403 Forbidden` |
+| `AllowMultipart = false`, но пришёл multipart-запрос | `415 Unsupported Media Type` |
+| Файл больше `MaxFileSize` | `413 Payload Too Large` |
+
+---

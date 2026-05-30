@@ -15,6 +15,15 @@ public class HttpInNode : Node
 
     public string[] MethodVariants = { "GET", "POST", "PUT", "DELETE", "HEAD" };
 
+    public bool IsRequireAuthorize { get; set; }
+    public string[] AllowedRoles { get; set; } = [];
+
+    [Display(Description = "Поддержка multipart-данных. Разрешить загрузку файлов.")]
+    public bool AllowMultipart { get; set; }
+
+    [Display(Description = "строковое представление размера")]
+    public string MaxFileSize { get; set; } = "10mb";
+
     public HttpInNode()
     {
         isInjectable = false;

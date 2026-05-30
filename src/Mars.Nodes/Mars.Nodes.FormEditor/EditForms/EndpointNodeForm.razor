@@ -1,7 +1,6 @@
 @using AppFront.Shared
 @using AppFront.Shared.Components
-@using Mars.Shared.Contracts.Roles
-@using Mars.WebApiClient.Interfaces
+@using Mars.Nodes.FormEditor.EditForms.Components
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
@@ -17,11 +16,12 @@
         <FormItem2 For="() => Node.UrlPattern">
             <div class="vstack gap-2">
                 <FluentTextField @bind-Value=@Node.UrlPattern Class="w-100" Placeholder="/path/{id}" />
-                <div class="">
+                <div class="vstack gap-2 align-items-start">
                     <a href="@Q.ServerUrlJoin(Node.UrlPattern)" role="button" class="" target="_blank">
                         @Q.ServerUrlJoin(Node.UrlPattern)
                         <i class="bi bi-box-arrow-up-right" style="font-size:10px;"></i>
                     </a>
+                    <a role="button" @onclick="@(() => Node.UrlPattern = $"/{Guid.NewGuid()}")">generate guid</a>
                 </div>
             </div>
         </FormItem2>
@@ -34,16 +34,7 @@
 
         @if (Node.IsRequireAuthorize)
         {
-            <FormItem2 For="() => Node.AllowedRoles">
-                <FluentAutocomplete TOption="string"
-                                    AutoComplete="off"
-                                    Width="300px"
-                                    Items="@_availRoles.Select(s=>s.Name)"
-                                    Placeholder="Select"
-                                    IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
-                                    KeepOpen
-                                    @bind-SelectedOptions="@SetRoles" />
-            </FormItem2>
+            <SelectRolesField For="() => Node.AllowedRoles" @bind-Value="Node.AllowedRoles" />
         }
 
         <FormItem2 For="() => Node.EndpointInputModel">
@@ -76,24 +67,7 @@
     [CascadingParameter] Node Value { get; set; } = default!;
     EndpointNode Node { get => (EndpointNode)Value; set => Value = value; }
 
-    [Inject] IMarsWebApiClient _client { get; set; } = default!;
-
     CodeEditor2? editor1;
-
-    IEnumerable<string> SetRoles { get => Node.AllowedRoles; set => Node.AllowedRoles = value.ToList(); }
-
-    IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Task.Run(async () =>
-            {
-                _availRoles = (await _client.Role.List(new())).Items;
-            });
-        }
-    }
 
     public override async Task OnEditSave()
     {

@@ -44,6 +44,11 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
             response = input.Payload?.ToString() ?? string.Empty;
             http.HttpContext.Response.ContentType = "text/html; charset=utf-8";
         }
+        else if (input.Payload is IFormCollection form)
+        {
+            http.HttpContext.Response.ContentType = "application/json; charset=utf-8";
+            response = JsonSerializer.Serialize(form.ToDictionary(x => x.Key, x => x.Value.ToString()), _jsonSerializerOptions);
+        }
         else
         {
             http.HttpContext.Response.ContentType = "application/json; charset=utf-8";
@@ -59,6 +64,6 @@ public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImple
         }
 
         http.HttpContext.Response.StatusCode = Node.ResponseStatusCode;
-        await http.HttpContext.Response.WriteAsync(response, encoding: Encoding.UTF8); //on async body already has disposed
+        await http.HttpContext.Response.WriteAsync(response, encoding: Encoding.UTF8, cancellationToken: parameters.CancellationToken);
     }
 }

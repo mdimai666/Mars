@@ -1,0 +1,67 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(HttpInFormSaveFilesNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For="() => Node.FilePathTemplate">
+            <FluentTextField @bind-Value=@Node.FilePathTemplate Class="w-100" />
+            <FluentButton Id="@_btnId" OnClick="@(() => open1 = !open1)">@AppRes.Add__Ellipsis</FluentButton>
+        </FormItem2>
+
+        <FluentMenu UseMenuService="true"
+                    Anchor="@_btnId"
+                    @bind-Open="open1"
+                    Style="max-width: 500px;"
+                    VerticalThreshold="170">
+            <style>
+                            fluent-menu {
+                                max-width: unset;
+                            }
+            </style>
+
+            @foreach (var d in _examples)
+            {
+                <FluentMenuItem OnClick="@(() => AddNewFromExample(d.Key))">@d.Value</FluentMenuItem>
+            }
+        </FluentMenu>
+
+        <FormItem2 For="() => Node.SaveInMediaFiles" Label="&nbsp;">
+            <FluentCheckbox @bind-Value="@Node.SaveInMediaFiles">
+                <AutoInputLabel For="() => Node.SaveInMediaFiles" />
+            </FluentCheckbox>
+        </FormItem2>
+
+        @if (!Node.SaveInMediaFiles)
+        {
+            <FormItem2 For="() => Node.AllowSaveFileOutsideUploads" Label="&nbsp;">
+                <FluentCheckbox @bind-Value="@Node.AllowSaveFileOutsideUploads">
+                    <AutoInputLabel For="() => Node.AllowSaveFileOutsideUploads" />
+                </FluentCheckbox>
+            </FormItem2>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    HttpInFormSaveFilesNode Node { get => (HttpInFormSaveFilesNode)Value; set => Value = value; }
+
+    bool open1 = false;
+    string _btnId = $"{nameof(HttpInFormSaveFilesNode)}-ExampleBtn-{Guid.NewGuid()}";
+
+    Dictionary<string, string> _examples = [];
+
+    protected override void OnParametersSet()
+    {
+        _examples = HttpInFormSaveFilesNode.ExampleTemplates.Select(s => s.Split('=', 2)).ToDictionary(s => s[0], s => s[1]);
+    }
+
+    void AddNewFromExample(string value)
+    {
+        var sp = value.Split('=', 2);
+        Node.FilePathTemplate = sp[0];
+    }
+}

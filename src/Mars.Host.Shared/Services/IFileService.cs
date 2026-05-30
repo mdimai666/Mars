@@ -19,5 +19,5 @@ public interface IFileService
     Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, byte[] bytes, Guid userId, CancellationToken cancellationToken);
 
     Task<Guid> WriteUpload(IFormFile formFile, string subpath, Guid userId, CancellationToken cancellationToken);
-    Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, Stream fileStream, Guid userId, CancellationToken cancellationToken);
+    Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, Stream fileStream, Guid userId, bool generateUniqueName, CancellationToken cancellationToken);
 }

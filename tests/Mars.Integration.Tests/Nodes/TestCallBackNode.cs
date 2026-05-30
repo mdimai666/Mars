@@ -1,7 +1,7 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 
-namespace Mars.Nodes.Implements.Test.NodesForTesting;
+namespace Mars.Integration.Tests.Nodes;
 
 public class TestCallBackNode : Node
 {

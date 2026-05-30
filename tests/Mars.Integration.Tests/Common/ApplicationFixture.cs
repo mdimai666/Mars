@@ -2,13 +2,15 @@ using System.Net.Http.Headers;
 using Flurl.Http;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Repositories.Mappings;
-using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Controllers.Schedulers;
 using Mars.Integration.Tests.Interfaces;
+using Mars.Integration.Tests.Nodes;
 using Mars.Integration.Tests.TestControllers;
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Implements;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.UseStartup.MarsParts;
@@ -124,6 +126,14 @@ public class ApplicationFixture : IAsyncLifetime
                 //{
                 //});
             });
+
+        var app = ApplicationFactory;
+
+        var nodesLocator = app.Services.GetRequiredService<NodesLocator>();
+        nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
+
+        var nodeImplementFactory = app.Services.GetRequiredService<NodeImplementFactory>();
+        nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
     }
 
     protected virtual void ModifyConfigurationBuilder(IConfigurationBuilder builder) { }

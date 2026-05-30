@@ -1,0 +1,66 @@
+@using System.Linq.Expressions
+@using AppFront.Shared.Components
+@using Mars.Shared.Contracts.Roles
+@using Mars.WebApiClient.Interfaces
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.Extensions.Caching.Memory
+
+<FormItem2 For="For">
+    <FluentAutocomplete TOption="string"
+                        AutoComplete="off"
+                        Width="300px"
+                        Items="@_availRoles.Select(s=>s.Name)"
+                        Placeholder="Select"
+                        IconSearch="@(new Icons.Regular.Size16.PersonQuestionMark())"
+                        KeepOpen
+                        @bind-SelectedOptions="@SetRoles" />
+</FormItem2>
+
+@code {
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
+    [Inject] IMemoryCache _cache { get; set; } = default!;
+
+    IEnumerable<string> SetRoles { get => Value; set => Value = value.ToArray(); }
+
+    IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
+
+    private const string CACHE_KEY = "SelectRolesField-Roles";
+
+    [Parameter]
+    public string[] Value
+    {
+        get => field;
+        set
+        {
+            if (value == field) return;
+            field = value;
+            ValueChanged.InvokeAsync(field);
+        }
+    } = [];
+
+    [Parameter]
+    public EventCallback<string[]> ValueChanged { get; set; }
+
+    [Parameter]
+    public Expression<Func<string[]>>? For { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            UpdateList();
+        }
+    }
+
+    async void UpdateList()
+    {
+        var list = await _cache.GetOrCreateAsync(CACHE_KEY, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            return (await _client.Role.List(new())).Items;
+        });
+        _availRoles = list!;
+        StateHasChanged();
+    }
+
+}

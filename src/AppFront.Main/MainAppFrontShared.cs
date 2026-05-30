@@ -26,6 +26,11 @@ public static class MainAppFrontShared
         BlazoredHtml.AddComponentsFromAssembly(typeof(FluentButton).Assembly, true);
 
         services.AddSingleton<OptionsFormsLocator>();
+
+        if (OperatingSystem.IsBrowser())
+        {
+            services.AddMemoryCache();
+        }
     }
 
     public static IServiceProvider UseAppFrontMain(this IServiceProvider services)

@@ -135,4 +135,35 @@ public class Node : INodeBasic
             }
         }
     }
+
+    [JsonIgnore]
+    public int InputCount
+    {
+
+        get => Inputs.Count;
+        set
+        {
+            if (value < 0 || value == Inputs.Count) return;
+
+            while (Wires.Count < Inputs.Count)
+                Wires.Add([]);
+
+            while (Wires.Count > Inputs.Count)
+                Wires.RemoveAt(Wires.Count - 1);
+
+            while (Inputs.Count < value)
+            {
+                Inputs.Add(new NodeInput());
+                if (Wires.Count <= Inputs.Count - 1)
+                    Wires.Add([]);
+            }
+
+            while (Inputs.Count > value)
+            {
+                int lastIndex = Inputs.Count - 1;
+                Inputs.RemoveAt(lastIndex);
+                Wires.RemoveAt(lastIndex);
+            }
+        }
+    }
 }

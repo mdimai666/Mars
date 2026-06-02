@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Mars.Core.Extensions;
+namespace Mars.Core.Features;
 
 public static class DataSizeParser
 {

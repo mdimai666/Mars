@@ -1,0 +1,83 @@
+@using AppFront.Shared.Components
+@using Mars.Core.Features
+@using Mars.Nodes.FormEditor.EditForms.Part
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(JoinNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+    <div class="vstack gap-2">
+
+        <FormItem2 For=@(() => Node.Mode)>
+            <FluentSelect @bind-SelectedOption="@ModeSetter"
+                          TOption="JoinNode.JoinMode"
+                          Items="Enum.GetValues<JoinNode.JoinMode>()"
+                          Style="width: 250px;">
+            </FluentSelect>
+        </FormItem2>
+
+        @if (Node.Mode == JoinNode.JoinMode.CountAggregation)
+        {
+            <FormItem2 For="() => Node.MessageCount">
+                <FluentNumberField @bind-Value=Node.MessageCount Class="" Min="1" />
+            </FormItem2>
+        }
+        else if (Node.Mode == JoinNode.JoinMode.TimeAggregation)
+        {
+            <FormItem2 For="() => Node.AggregationTimeSeconds">
+                <FluentTextField @bind-Value="@AggregationTimeSecondsSetter" Class="" />
+            </FormItem2>
+        }
+        else if (Node.Mode == JoinNode.JoinMode.InputAggregation)
+        {
+            <FormItem2 For="() => Node.InputAggregationTimeoutSeconds">
+                <FluentTextField @bind-Value="@InputAggregationTimeoutSecondsSetter" Class="" />
+            </FormItem2>
+
+            <FormItem2 For="() => Node.Inputs">
+                <CascadingValue Value="this">
+                    <NodePartInputSet />
+                </CascadingValue>
+            </FormItem2>
+        }
+        else
+        {
+            <div>@Node.Mode not implement</div>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    JoinNode Node { get => (JoinNode)Value; set => Value = value; }
+
+    int _oldInputCount = 1;
+
+    protected override void OnParametersSet()
+    {
+        _oldInputCount = Node.Inputs.Count;
+        base.OnParametersSet();
+    }
+
+    public string AggregationTimeSecondsSetter
+    {
+        get => TimeSpanParser.Format(TimeSpan.FromSeconds(Node.AggregationTimeSeconds));
+        set => Node.AggregationTimeSeconds = TimeSpanParser.TryParse(value, out var ts) ? (int)ts.TotalSeconds : (15 * 1000);
+    }
+
+    public string InputAggregationTimeoutSecondsSetter
+    {
+        get => TimeSpanParser.Format(TimeSpan.FromSeconds(Node.InputAggregationTimeoutSeconds));
+        set => Node.InputAggregationTimeoutSeconds = TimeSpanParser.TryParse(value, out var ts) ? (int)ts.TotalSeconds : (15 * 1000);
+    }
+
+    public JoinNode.JoinMode ModeSetter
+    {
+        get => Node.Mode;
+        set
+        {
+            Node.Mode = value;
+            Node.InputCount = Math.Max(_oldInputCount, 2);
+        }
+    }
+}

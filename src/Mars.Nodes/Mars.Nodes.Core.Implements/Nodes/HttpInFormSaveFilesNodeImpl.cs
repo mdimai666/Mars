@@ -5,7 +5,6 @@ using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Implements.Utils;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Shared.HttpModule;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -27,13 +26,6 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
     {
         var http = input.Get<HttpInNodeHttpRequestContext>();
         var request = http.HttpContext.Request;
-
-        if (Node.SaveInMediaFiles && Node.AllowSaveFileOutsideUploads)
-        {
-            http.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await http.HttpContext.Response.WriteAsync("Status400BadRequest");
-            throw new InvalidOperationException("Configuration conflict: Cannot set both SaveInMediaFiles and AllowSaveFileOutsideUploads to true simultaneously.");
-        }
 
         if (request.Form.Files.None()) goto Out;
 

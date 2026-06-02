@@ -39,10 +39,10 @@ internal class NodeTaskManager : INodeTaskManager
         _logger = logger;
     }
 
-    public async Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null, bool throwOnError = false)
+    public async Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null, int injectPortIndex = 0, bool throwOnError = false)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
-        var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId, logger);
+        var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId: injectNodeId, logger, injectPortIndex: injectPortIndex);
         msg ??= new();
 
         _currentTasks.TryAdd(taskJob.TaskId, taskJob);

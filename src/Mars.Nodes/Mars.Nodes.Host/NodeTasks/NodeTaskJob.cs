@@ -20,12 +20,13 @@ internal class NodeTaskJob : IAsyncDisposable
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
     protected Dictionary<string, NodeJob> _jobs = [];
     protected RED _RED;
-    private readonly ILogger<NodeTaskJob> _logger;
+    private readonly ILogger<NodeTaskJob>? _logger;
     int executedCount;
     private readonly int maxExecuteCount = 10_000;
     bool isAllDone => _jobs.Values.All(s => s.IsDone);
 
     public string InjectNodeId { get; }
+    public int InjectPortIndex { get; }
     public string FlowNodeId { get; }
 
     public event Action? OnComplete;
@@ -45,7 +46,8 @@ internal class NodeTaskJob : IAsyncDisposable
     internal NodeTaskJob(IServiceProvider serviceProvider,
         RED RED,
         string injectNodeId,
-        ILogger<NodeTaskJob> logger)
+        ILogger<NodeTaskJob>? logger,
+        int injectPortIndex = 0)
     {
         _nodes = RED.Nodes;
         _RED = RED;
@@ -54,6 +56,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
         StartDate = DateTimeOffset.Now;
         InjectNodeId = injectNodeId;
+        InjectPortIndex = injectPortIndex;
         var injectNode = _nodes[injectNodeId].Node;
         FlowNodeId = _nodes[injectNode.Container].Id;
         NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _RED.BasicNodesDict).Count;
@@ -65,14 +68,14 @@ internal class NodeTaskJob : IAsyncDisposable
         node.RED = CreateContextForNode(InjectNodeId);
         _RED.OnNodeImplDone += _RED_OnNodeImplDone;
 
-        _logger.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
+        _logger?.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
 
-        await ExecuteNode(msg, node, new(), isInject: true, sourceOutputPortIndex: 0, throwOnError: throwOnError);
+        await ExecuteNode(msg, node, InjectPortIndex, isInject: true, sourceOutputPortIndex: 0, throwOnError: throwOnError);
     }
 
     public void Terminate()
     {
-        _logger.LogTrace($"Terminate (TaskId={TaskId})");
+        _logger?.LogTrace($"Terminate (TaskId={TaskId})");
         _cancellationTokenSource.Cancel();
 
         IsTerminated = true;
@@ -106,7 +109,7 @@ internal class NodeTaskJob : IAsyncDisposable
         executedCount++;
         if (executedCount > maxExecuteCount)
         {
-            _logger.LogError($"MAX_EXECUTE_COUNT={maxExecuteCount}");
+            _logger?.LogError($"MAX_EXECUTE_COUNT={maxExecuteCount}");
             throw new Exception($"MAX_EXECUTE_COUNT={maxExecuteCount}");
         }
 
@@ -118,7 +121,7 @@ internal class NodeTaskJob : IAsyncDisposable
                         : (new string('>', 10) + $"({executedCount})");
 
         if (executedCount > 1)
-            _logger.LogTrace($"🚃 {left} (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
+            _logger?.LogTrace($"🚃 {left} (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
 
         try
         {
@@ -126,7 +129,7 @@ internal class NodeTaskJob : IAsyncDisposable
 
             async void callbackNext(NodeMsg e, int _output = 0)
             {
-                //_logger.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
+                //_logger?.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
                 if (_cancellationTokenSource.IsCancellationRequested) return;
                 await foreach (var wireTask in NextWires(node.Id, e, _output, throwOnError))
                 {
@@ -149,12 +152,12 @@ internal class NodeTaskJob : IAsyncDisposable
         }
         //catch (OperationCanceledException ex)
         //{
-        //    _logger.LogError(ex, "node TaskCanceledException");
+        //    _logger?.LogError(ex, "node TaskCanceledException");
         //    go.Terminate();
         //}
         catch (NodeExecuteException ex)
         {
-            _logger.LogError(ex, "node execute exception");
+            _logger?.LogError(ex, "node execute exception");
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
             OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
@@ -162,7 +165,7 @@ internal class NodeTaskJob : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "node execute exception");
+            _logger?.LogError(ex, "node execute exception");
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
             OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
@@ -221,7 +224,7 @@ internal class NodeTaskJob : IAsyncDisposable
         var go = job.Executions.FirstOrDefault(s => s.JobGuid == jobGuid);
         if (go is null)
         {
-            _logger.LogError("RED.Done() - job guid not found");
+            _logger?.LogError("RED.Done() - job guid not found");
             throw new InvalidOperationException("RED.Done() - job guid not found");
         }
 
@@ -233,7 +236,7 @@ internal class NodeTaskJob : IAsyncDisposable
     {
         if (IsTerminated)
         {
-            _logger.LogInformation($"🔴 Terminated! executedCount={executedCount}");
+            _logger?.LogInformation($"🔴 Terminated! executedCount={executedCount}");
             foreach (var job in _jobs.Values)
             {
                 foreach (var execution in job.Executions)
@@ -246,7 +249,7 @@ internal class NodeTaskJob : IAsyncDisposable
             }
         }
         else
-            _logger.LogInformation($"✅ Finish! executedCount={executedCount}");
+            _logger?.LogInformation($"✅ Finish! executedCount={executedCount}");
 
         EndDate = DateTimeOffset.Now;
 
@@ -259,7 +262,7 @@ internal class NodeTaskJob : IAsyncDisposable
         _RED.OnNodeImplDone -= _RED_OnNodeImplDone;
         _RED = null!;
         _serviceProvider = null!;
-        _logger.LogTrace($"Dispose");
+        _logger?.LogTrace($"Dispose");
         return ValueTask.CompletedTask;
     }
 

@@ -24,15 +24,30 @@ public class KillTaskJobNodeImpl : INodeImplement<KillTaskJobNode>, INodeImpleme
         nodeTaskManager.TryKillTaskJob(parameters.TaskId);
         RED.DebugMsg(DebugMessage.NodeWarnMessage(Node.Id, "Task killed"));
 
-        var outputNodes = Node.Wires.First();
+        CreateNewTaskForNextWires(this);
+
+        return Task.CompletedTask;
+    }
+
+    public static void CreateNewTaskForNextWires(INodeImplement nodeImpl, NodeMsg? msg = null, int outputPortIndex = 0)
+    {
+        var nodeTaskManager = nodeImpl.RED.ServiceProvider.GetRequiredService<INodeTaskManager>();
+        var node = nodeImpl.Node;
+
+        var outputNodes = node.Wires.ElementAt(outputPortIndex);
         if (outputNodes.Any())
         {
             foreach (var outputNode in outputNodes)
             {
-                nodeTaskManager.CreateJob(RED.ServiceProvider, outputNode.NodeId, new());
+                nodeTaskManager.CreateJob(nodeImpl.RED.ServiceProvider, outputNode.NodeId, msg);
             }
         }
+    }
 
-        return Task.CompletedTask;
+    public static void CreateNewTask(INodeImplement nodeImpl, string nodeId, NodeMsg? msg = null)
+    {
+        var nodeTaskManager = nodeImpl.RED.ServiceProvider.GetRequiredService<INodeTaskManager>();
+
+        nodeTaskManager.CreateJob(nodeImpl.RED.ServiceProvider, nodeId, msg);
     }
 }

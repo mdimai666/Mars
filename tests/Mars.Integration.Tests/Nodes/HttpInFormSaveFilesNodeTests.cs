@@ -76,33 +76,6 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_ConfigurationConflict_ShouldFail()
-    {
-        //Arrange
-        _ = nameof(HttpInNodeImpl.Execute);
-        _ = nameof(HttpInFormSaveFilesNodeImpl.Execute);
-        var client = AppFixture.GetClient();
-
-        var fileContent = "TEST-text";
-        var fileName = "file1.txt";
-        SetupNodesForUpload(new()
-        {
-            SaveInMediaFiles = true,
-            AllowSaveFileOutsideUploads = true,
-        });
-
-        //Act
-        var result = await client.Request(_apiUrl)
-                                .AllowAnyHttpStatus()
-                                .PostMultipartAsync(mp => mp
-                                    .AddFile("filefield", GenerateStreamFromString(fileContent), fileName)
-                                );
-
-        //Assert
-        result.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
-    }
-
-    [IntegrationFact]
     public async Task Execute_AllowSaveFileOutsideUploads_ShouldSaveFile()
     {
         //Arrange

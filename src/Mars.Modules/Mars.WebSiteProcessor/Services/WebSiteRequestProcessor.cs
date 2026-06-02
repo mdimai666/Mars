@@ -1,3 +1,4 @@
+using Mars.Core.Features;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
@@ -224,8 +225,8 @@ public class WebSiteRequestProcessor
 
             if (isCache)
             {
-                var tsCache = ParseStringTimespan(cachevalue ?? "10m");
-                memoryCache?.Set(cacheKey, result, tsCache ?? TimeSpan.FromMinutes(5));
+                var tsCache = TimeSpanParser.ParseOrNull(cachevalue) ?? TimeSpan.FromMinutes(5);
+                memoryCache?.Set(cacheKey, result, tsCache);
             }
 
             return result;
@@ -241,20 +242,6 @@ public class WebSiteRequestProcessor
     }
 
     string GetPageCacheKey(WebPage page, WebClientRequest request) => $"{page.Name}+{request.Path}";
-
-    TimeSpan? ParseStringTimespan(string simespanString)
-    {
-        string[] formats = { @"m\m", @"h\h\m\m", @"s\s" };
-        TimeSpan ts;
-        if (TimeSpan.TryParseExact(simespanString, formats, null, out ts))
-        {
-            return ts;
-        }
-        else
-        {
-            return null;
-        }
-    }
 
 }
 

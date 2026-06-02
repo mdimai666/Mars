@@ -1,4 +1,4 @@
-using Mars.Core.Extensions;
+using Mars.Core.Features;
 
 namespace Test.Mars.Core;
 

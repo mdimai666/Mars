@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using Mars.Nodes.Core.Nodes;
 
@@ -15,7 +14,7 @@ public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<No
 
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeToConvert == typeof(Node) || typeToConvert == typeof(UnknownNode);// || typeof(Node).IsAssignableFrom(typeToConvert);
+        return typeToConvert == typeof(Node) || typeToConvert == typeof(UnknownNode);
     }
 
     public override Node Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -43,13 +42,6 @@ public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<No
 
         return model;
     }
-
-    //static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    //{
-    //    WriteIndented = true,
-    //    PropertyNameCaseInsensitive = true,
-    //    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-    //};
 
     public override void Write(Utf8JsonWriter writer, Node node, JsonSerializerOptions options)
     {

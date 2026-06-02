@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Mars.Nodes.Core.Nodes;
 using Mars.Core.Extensions;
+using Mars.Nodes.Core.Nodes;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -10,11 +10,13 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
     public LoggerNode Node { get; }
     Node INodeImplement<Node>.Node => Node;
     public IRED RED { get; set; }
+    private readonly ILogger<IRED> _logger;
 
-    public LoggerNodeImpl(LoggerNode node, IRED RED)
+    public LoggerNodeImpl(LoggerNode node, IRED red, ILogger<IRED> logger)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
+        _logger = logger;
     }
 
     static readonly JsonSerializerOptions _jsonSerializerOptions = new()
@@ -45,13 +47,13 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
                 loggerContent = input.Payload?.ToString()?.TextEllipsis(500) ?? "null";
             }
 
-            RED.Logger.Log((Microsoft.Extensions.Logging.LogLevel)Node.Level, loggerContent);
+            _logger.Log((Microsoft.Extensions.Logging.LogLevel)Node.Level, loggerContent);
 
             RED.Status(new NodeStatus(DateTime.Now.ToString("HH:mm:ss.fff")));
         }
         catch (Exception ex)
         {
-            RED.Logger.LogError(ex, "LoggerNode:ERROR " + ex.Message);
+            _logger.LogError(ex, "LoggerNode:ERROR " + ex.Message);
         }
 
         return Task.CompletedTask;

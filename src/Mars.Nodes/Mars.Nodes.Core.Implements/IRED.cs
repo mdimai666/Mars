@@ -13,7 +13,6 @@ public interface IRED
     void Start();
     void Stop();*/
 
-    ILogger<IRED> Logger { get; }
     /*int units { get; set; }
     int events { get; set; }
     int hooks { get; set; }
@@ -25,7 +24,7 @@ public interface IRED
     int runtime { get; set; }
     int auth { get; set; }*/
 
-    FlowNodeImpl Flow { get; }
+    FlowNodeImpl? Flow { get; }
 
     void Status(NodeStatus nodeStatus);
     void DebugMsg(DebugMessage msg);
@@ -40,7 +39,7 @@ public interface IRED
 
     public IServiceProvider ServiceProvider { get; }
     public VariablesContextDictionary GlobalContext { get; }
-    public VariablesContextDictionary FlowContext { get; }
+    public VariablesContextDictionary? FlowContext { get; }
 
     public VarNodeVaribleDto? GetVarNodeVarible(string varName);
     public void SetVarNodeVarible(string varName, object? value);

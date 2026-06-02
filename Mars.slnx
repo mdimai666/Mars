@@ -4,6 +4,9 @@
     <Project Path="src/AppFront.Shared/AppFront.Shared.csproj" />
   </Folder>
   <Folder Name="/Benchmarks/">
+    <Project Path="benchmarks/Benchmark.NodeImplementFactory/Benchmark.NodeImplementFactory.csproj" Id="3a13a07e-b375-4c48-9ee9-246515a69a40">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
     <Project Path="benchmarks/Benchmarks.DatabaseQuery/Benchmarks.DatabaseQuery.csproj" />
     <Project Path="benchmarks/Benchmarks.MyHandlebars.Memory/Benchmarks.MyHandlebars.Memory.csproj" />
     <Project Path="benchmarks/Benchmarks.MyHandlebars/Benchmarks.MyHandlebars.csproj" />

@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Text.Json;
+using Mars.Core.Features;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
@@ -137,15 +139,18 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public UserActionResult Deploy(IReadOnlyCollection<Node> nodes)
     {
+        var sw = new Stopwatch();
+        sw.Start();
         _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList());
         OnAssignNodes?.Invoke();
         SaveToFile();
         OnDeploy?.Invoke();
+        sw.Stop();
 
         return new UserActionResult
         {
             Ok = true,
-            Message = "saved: nodes " + nodes.Count
+            Message = $"saved: nodes {nodes.Count}, ts: {TimeSpanParser.Format(sw.Elapsed)}",
         };
     }
 
@@ -405,11 +410,11 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     internal void VarNodesSetDefaultValues()
     {
-        var varNodesImpl = Nodes.Values.Where(node => node.Node is VarNode).Select(s => (VarNodeImpl)s).ToList();
+        var varNodesImpl = Nodes.Values.OfType<VarNodeImpl>().ToList();
+        var ppt = VariableSetNodeImpl.CreateInterpreter(_RED.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
+
         foreach (var flowGroup in varNodesImpl.GroupBy(s => s.RED.Flow))
         {
-            var ppt = VariableSetNodeImpl.CreateInterpreter(flowGroup.Key.RED, new NodeMsg());
-
             foreach (var nodeImpl in flowGroup)
             {
                 var valueExpression = nodeImpl.Node.DefaultValue;
@@ -419,21 +424,6 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             }
         }
     }
-
-    //public RED_Context CreateContextForNode(string nodeId)
-    //{
-    //    var node = Nodes[nodeId];
-    //    var flow = node is FlowNodeImpl ? node : Nodes[node.Node.Container];
-    //    return new RED_Context(nodeId, (FlowNodeImpl)flow, _serviceProvider);
-    //}
-
-    //public RED_Context CreateContextForNode(Node node, FlowNodeImpl flow)
-    //{
-    //    ArgumentNullException.ThrowIfNull(flow, nameof(flow));
-    //    if (node is FlowNode && flow.Node.Id != node.Id) throw new ArgumentException("For FlowNode flow must be self");
-    //    //var flow = Nodes[node.Container] as FlowNodeImpl;
-    //    return new RED_Context(node.Id, flow!, _serviceProvider);
-    //}
 
     [StartupOrder(10)]
     public Task OnStartupAsync()

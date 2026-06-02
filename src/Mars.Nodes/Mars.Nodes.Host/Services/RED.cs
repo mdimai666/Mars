@@ -1,7 +1,8 @@
 using System.Runtime.CompilerServices;
+using HandlebarsDotNet;
 using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Fields;
@@ -12,7 +13,6 @@ using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Shared.ExceptionModule;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //for NSubstitute
 
@@ -73,9 +73,10 @@ internal class RED
             if (node.GetType() == typeof(Node))
                 nodeErrors.Add("All nodes must be of derived types.");
 
-            var hasContainer = node.Type == typeof(FlowNode).FullName
-                                || node.Type == typeof(UnknownNode).FullName
-                                || !string.IsNullOrEmpty(node.Container) && dict.ContainsKey(node.Container);
+            if (node.IsContainerless) node.Container = string.Empty;
+
+            var hasContainer = node.IsContainerless || !node.Container.IsNullOrEmpty() && dict.ContainsKey(node.Container);
+
             if (!hasContainer)
             {
                 nodeErrors.Add($"node(id='{node.Id}', name='{node.Label}') has no container");
@@ -98,32 +99,29 @@ internal class RED
         ValidateNodes(nodes);
         InvalidateConfigNodes(Nodes, nodes);
 
-        //if (nodes.Count == 0)
-        //{
-        //    nodes.Add(new FlowNode
-        //    {
-        //        Name = "Flow 0",
-        //    });
-        //}
-
         if (_assignedCount > 0) SaveVarNodeValuesAndClear();
         Nodes.Clear();
-        Nodes.EnsureCapacity(nodes.Count());
+        Nodes.EnsureCapacity(nodes.Count);
         HttpRegisterdCatchers.Clear();
 
-        var flowNodes = nodes.OfType<FlowNode>();
+        var flowNodes = nodes.OfType<FlowNode>().ToHashSet();
+
         var flows = flowNodes.Select(node => new FlowNodeImpl(node, null!)).ToDictionary(s => s.Node.Id);
-        foreach (var (key, flow) in flows)
+        foreach (var (nodeId, flow) in flows)
         {
             flow.RED = CreateContextForNode(flow.Node, flow);
-            Nodes.Add(key, flow);
+            Nodes.Add(nodeId, flow);
+
+            if (!FlowContexts.ContainsKey(nodeId))
+                FlowContexts.Add(nodeId, new());
         }
 
         _configNodesDict = nodes.Where(s => s.IsConfigNode).ToDictionary(s => s.Id, s => (s as ConfigNode)!);
 
-        foreach (var node in nodes.Except(flowNodes))
+        var nonFlowNodes = nodes.Where(n => !flowNodes.Contains(n)).ToArray();
+        foreach (var node in nonFlowNodes)
         {
-            var flow = node is FlowNode ? flows[node.Id] : flows[node.Container];
+            var flow = node.IsContainerless ? null : flows[node.Container];
             Nodes.Add(node.Id, _nodeImplementFactory.Create(node, CreateContextForNode(node, flow)));
         }
 
@@ -134,7 +132,6 @@ internal class RED
 
         CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
         ErrorHandlerRegistry = new NodesErrorHandlerRegistry(_basicNodesDict.Values.OfType<CatchErrorNode>().Where(node => !node.Disabled));
-
     }
 
     private void InvalidateConfigNodes(Dictionary<string, INodeImplement> oldNodes, IReadOnlyCollection<Node> newNodes)
@@ -164,12 +161,12 @@ internal class RED
 
     }
 
-    public RED_Context CreateContextForNode(Node node, FlowNodeImpl flow)
+    public RED_Context CreateContextForNode(Node node, FlowNodeImpl? flow)
     {
-        ArgumentNullException.ThrowIfNull(flow, nameof(flow));
+        if (!node.IsContainerless)
+            ArgumentNullException.ThrowIfNull(flow, nameof(flow));
         if (node is FlowNode && flow.Node.Id != node.Id) throw new ArgumentException("For FlowNode flow must be self");
-        //var flow = Nodes[node.Container] as FlowNodeImpl;
-        return new RED_Context(node.Id, flow!, ServiceProvider);
+        return new RED_Context(node.Id, flow, this, ServiceProvider);
     }
 
     public IEnumerable<HttpCatchRegister> GetHttpCatchRegistersForMethod(string method)
@@ -250,26 +247,21 @@ internal delegate void NodeImplDoneEvent(string nodeId, Guid jobGuid);
 internal class RED_Context : IRED
 {
     public string NodeId { get; set; }
-    public FlowNodeImpl Flow { get; }
-    public ILogger<IRED> Logger { get; }
+    public FlowNodeImpl? Flow { get; }
     public List<HttpCatchRegister> HttpRegisterdCatchers => RED.HttpRegisterdCatchers;
     public IServiceProvider ServiceProvider { get; }
 
     public VariablesContextDictionary GlobalContext => RED.GlobalContext;
-    public VariablesContextDictionary FlowContext => RED.FlowContexts[Flow.Node.Id];
+    public VariablesContextDictionary? FlowContext => Flow is null ? null : RED.FlowContexts[Flow!.Node.Id];
 
     RED RED;
 
-    public RED_Context(string nodeId, FlowNodeImpl flow, IServiceProvider serviceProvider)
+    public RED_Context(string nodeId, FlowNodeImpl? flow, RED red, IServiceProvider serviceProvider)
     {
         NodeId = nodeId;
         Flow = flow;
+        RED = red;
         ServiceProvider = serviceProvider;
-
-        Logger = MarsLogger.GetStaticLogger<IRED>();
-        RED = serviceProvider.GetRequiredService<RED>();
-
-        if (!RED.FlowContexts.ContainsKey(Flow.Node.Id)) RED.FlowContexts.Add(Flow.Node.Id, new());
     }
 
     public void DebugMsg(DebugMessage msg)

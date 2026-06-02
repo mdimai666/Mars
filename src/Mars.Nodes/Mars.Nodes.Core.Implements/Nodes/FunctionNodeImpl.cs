@@ -117,7 +117,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
         public dynamic msg = default!;
         public IRED RED = default!;
         public ExecuteAction callback = default!;
-        public FlowNodeImpl Flow => RED.Flow;
+        public FlowNodeImpl Flow => RED.Flow!;
         public VariablesContextDictionary GlobalContext => RED.GlobalContext;
 
         public void Send(object msgOrPayload, int output = 0)

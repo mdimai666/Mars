@@ -23,7 +23,9 @@ public class NodesCopyBufferItem : ICopyBufferItem
         var nodesCopy = CreateNodesCopies(_nodesJson, _editor.NodesJsonSerializerOptions);
         var flowId = _editor.ActiveFlow?.Id ?? throw new ArgumentNullException("ActiveFlow is null, ActiveFlow should be set");
         foreach (var node in nodesCopy)
-            node.Container = flowId;
+        {
+            node.Container = node.IsContainerless ? string.Empty : flowId;
+        }
 
         var existNodesIds = _editor.AllNodes.Values.Select(s => s.Id).ToList();
         _editor.ActionManager.ExecuteAction(new CreateNodesAction(_editor, nodesCopy));

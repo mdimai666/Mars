@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Mars.Nodes.Core.Helpers;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core;
@@ -95,15 +96,21 @@ public class Node : INodeBasic
         return node;
     }
 
-    public static Type[] NonVisualNodes = { typeof(FlowNode), typeof(ConfigNode), typeof(VarNode) };
+    public static Type[] NonVisualNodes = [typeof(FlowNode), typeof(ConfigNode), typeof(VarNode)];
+    public static bool IsVisualNode(Type nodeType) => NodeTypeCache.IsVisualNode(nodeType);
 
-    public static bool IsVisualNode(Type nodeType) => !NonVisualNodes.Any(t => t == nodeType || t.IsAssignableFrom(nodeType));
+    public static Type[] ContainerlessNodes = [typeof(FlowNode), typeof(ConfigNode), typeof(VarNode)];
+    public static bool IsContainerlessNode(Node node) => NodeTypeCache.IsContainerlessNode(node.GetType())
+                                                            || node is UnknownNode unknownNode && unknownNode.IsDefinedAsConfig;
 
     [JsonIgnore]
     public virtual bool IsVisual => IsVisualNode(GetType());
 
     [JsonIgnore]
-    public virtual bool IsConfigNode => typeof(ConfigNode).IsAssignableFrom(GetType());
+    public virtual bool IsContainerless => IsContainerlessNode(this);
+
+    [JsonIgnore]
+    public virtual bool IsConfigNode => NodeTypeCache.IsConfigNode(GetType());
 
     [JsonIgnore]
     public int OutputCount

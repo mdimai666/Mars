@@ -181,7 +181,7 @@ internal class NodeTaskJob : IAsyncDisposable
     {
         var node = _nodes[nodeId];
         var flow = node is FlowNodeImpl ? node : _nodes[node.Node.Container];
-        return new RED_Context(nodeId, (FlowNodeImpl)flow, _serviceProvider);
+        return new RED_Context(nodeId, (FlowNodeImpl)flow, _RED, _serviceProvider);
     }
 
     IEnumerable<NodeWire> GetNextWires(string nodeId, int outputIndex)

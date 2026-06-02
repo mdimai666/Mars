@@ -223,7 +223,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         ConfigNode instance = (ConfigNode)Activator.CreateInstance(nodeType)!;
         var thisTypeCount = AllNodes.Values.Count(s => s.Type == instance.Type);
-        instance.Container = _activeFlow.Id;
+        instance.Container = string.Empty;
         instance.Name = instance.Label + (thisTypeCount + 1);
         AllNodes.Add(instance);
         RecalcNodes();
@@ -420,7 +420,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             ? []
             : AllNodes.Values.Where(s => s.IsVisual
                                     && s.Container == flowId
-                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig))).ToDictionary(s => s.Id);
+                                    && (s is not UnknownNode || (s is UnknownNode un && !un.IsDefinedAsConfig)))
+                                .ToDictionary(s => s.Id);
 
     void CalcFlowNodes()
     {

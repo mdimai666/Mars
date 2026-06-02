@@ -14,10 +14,10 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    public VariableSetNodeImpl(VariableSetNode node, IRED RED)
+    public VariableSetNodeImpl(VariableSetNode node, IRED red)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RED = red;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -108,25 +108,27 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
 
     public static XInterpreter CreateInterpreter(IRED RED, NodeMsg input)
     {
-        //var globalContext = new ExpandoObject();
-        //foreach(var key in RED.GlobalContext.Keys)
-        //{
-        //    globalContext.
-        //}
-        var globalContext = new ContextPropertyAccesableObject(RED.GlobalContext);
-        var flowContext = new ContextPropertyAccesableObject(RED.FlowContext);
-        var varNodexContext = new ContextVarNodesAccesableObject(RED.VarNodesDict);
+        return CreateInterpreter(RED.GlobalContext, RED.FlowContext, RED.VarNodesDict, input);
+    }
+
+    public static XInterpreter CreateInterpreter(VariablesContextDictionary globalContext,
+                                                VariablesContextDictionary? flowContext,
+                                                IReadOnlyDictionary<string, VarNode> varNodesDict,
+                                                NodeMsg? input = null)
+    {
+        var globalContextAO = new ContextPropertyAccesableObject(globalContext);
+        var flowContextAO = new ContextPropertyAccesableObject(flowContext ?? new());
+        var varNodexContext = new ContextVarNodesAccesableObject(varNodesDict);
 
         var executionContext = new Dictionary<string, object>()
         {
-            //[nameof(RED.GlobalContext)] = RED.GlobalContext,
-            //[nameof(RED.FlowContext)] = RED.FlowContext,
-            [nameof(RED.GlobalContext)] = globalContext,
-            [nameof(RED.FlowContext)] = flowContext,
+            [nameof(RED.GlobalContext)] = globalContextAO,
+            [nameof(RED.FlowContext)] = flowContextAO,
             [nameof(VarNode)] = varNodexContext,
-            ["msg"] = new DynamicNodeMsgWrapper(input),
             ["env"] = (string key) => Environment.GetEnvironmentVariable(key),
         };
+        if (input != null)
+            executionContext["msg"] = new DynamicNodeMsgWrapper(input);
 
         return new XInterpreter(null, executionContext);
     }
@@ -233,7 +235,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
             var prop = segments[1];
             VarNodeVaribleDto? varDto = RED.GetVarNodeVarible(prop);
 
-            if (varDto is null) throw new ArgumentNullException($"VarNode '{prop}' not exist");         
+            if (varDto is null) throw new ArgumentNullException($"VarNode '{prop}' not exist");
 
             //var value = calcValue(varDto.ArrayValue ? null : varDto.Value?.GetType());
             //var value = calcValue(varDto.Value?.GetType());

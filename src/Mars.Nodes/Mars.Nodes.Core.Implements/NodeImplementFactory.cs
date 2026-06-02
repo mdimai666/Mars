@@ -13,11 +13,11 @@ public class NodeImplementFactory
     Dictionary<Type, NodeImplementItem> _dict = [];
     public IReadOnlyDictionary<Type, NodeImplementItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
 
-    bool invalid;
+    private bool invalid;
+    private HashSet<Assembly> assemblies = [];
 
-    HashSet<Assembly> assemblies = [];
-
-    object _lock = new { };
+    private readonly object _lock = new { };
+    private readonly ConcurrentDictionary<Type, ObjectFactory> _factoryCache = new();
 
     private void RefreshDict(bool force = false)
     {
@@ -61,7 +61,6 @@ public class NodeImplementFactory
             )
             .Select(t =>
             {
-                // находим интерфейс с конкретным generic типом
                 var implInterface = t.GetInterfaces()
                     .First(i => i.IsGenericType &&
                                 i.GetGenericTypeDefinition() == interfaceType.GetGenericTypeDefinition());
@@ -85,17 +84,12 @@ public class NodeImplementFactory
         if (node is ConfigNode) instantiateType = typeof(ConfigNodeImpl);
         else instantiateType = Dict[node.GetType()].NodeImplementType;
 
-        try
-        {
-            //TODO: тут есть загвоздка. Он будет искать конструкторы для который требуется [node, _RED] иначе исключение
-            var instance = (INodeImplement)ActivatorUtilities.CreateInstance(_RED.ServiceProvider, instantiateType, [node, _RED]);
-            return instance;
+        var factory = _factoryCache.GetOrAdd(instantiateType, type =>
+                        ActivatorUtilities.CreateFactory(type, [node.GetType(), typeof(IRED)]));
 
-        }
-        catch (InvalidOperationException ex)
-        {
-            throw new InvalidOperationException($"type '{instantiateType}' should require ctor with [({node.GetType().Name} node, IRED red, ...)]", ex);
-        }
+        var instance = (INodeImplement)factory(_RED.ServiceProvider, [node, _RED]);
+
+        return instance;
     }
 
     public void RegisterAssembly(Assembly assembly)
@@ -104,12 +98,6 @@ public class NodeImplementFactory
         assemblies.Add(assembly);
         invalid = true;
     }
-
-    //public  Type GetTypeByFullName(string typeFullname)
-    //{
-    //    Type type = typeof(Node).Assembly.GetType(typeFullname)!;
-    //    return type;
-    //}
 
     //========== INLINE FUNCTIONS
     ConcurrentDictionary<string, InlineNodeDictItem> _inlineNodesDict = [];
@@ -159,65 +147,3 @@ public record InlineNodeDictItem
     public required DisplayAttribute DisplayAttribute;
     public required FunctionApiDocumentAttribute? FunctionApiDocument;
 }
-
-//public abstract class NodeImplement<TNode>: INodeImplement<TNode> where TNode : Node
-//{
-//    public TNode Node => node;
-
-//    public string Id => Node.Id;
-
-//    public IRED RED { get; set; }
-//    protected TNode node;
-
-//    //public virtual INodeImplement<TNode> Create(TNode node)
-//    //{
-//    //    this.node = node;
-//    //    return (INodeImplement<TNode>)this;
-//    //}
-
-//    public NodeImplement(TNode node)
-//    {
-//        this.node = Node;
-//    }
-
-//        public Task Execute(NodeMsg input, ExecuteAction callback)
-
-//#if asas
-
-//    public virtual async Task Execute(InputMsg input, Action<object> callback, Action<Exception> Error, bool ErrorTolerance)
-//    {
-
-//        try
-//        {
-//            User user = input.Get<User>();
-
-//            Applica app = input.Get("app") as Applica;
-
-//            int age = 21;
-
-//            input.Add("age", age);
-
-//            int getAge = (int)input.Get("age");
-
-//            if (user is not null)
-//            {
-
-//            }
-
-//            input.Payload = user;
-
-//            if (!ErrorTolerance) callback.Invoke(input);
-//        }
-//        catch (Exception e)
-//        {
-//            Error(e);
-//        }
-//        finally
-//        {
-//            if (ErrorTolerance)
-//                callback.Invoke(input);
-//        }
-
-//    }
-//#endif
-//}

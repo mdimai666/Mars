@@ -14,4 +14,5 @@ public interface INodeServiceClient
     Task<PagingResult<NodeTaskResultSummaryResponse>> JobListTable(TableNodeTaskJobQueryRequest request);
     Task<NodeTaskResultDetailResponse?> JobDetail(Guid id);
     Task TerminateAllJobs();
+    Task<KeyValuePair<string, string>[]> FunctionCodeSuggest(string f_action, string? search = null);
 }

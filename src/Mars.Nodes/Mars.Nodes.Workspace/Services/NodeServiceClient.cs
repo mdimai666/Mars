@@ -71,6 +71,10 @@ internal class NodeServiceClient : INodeServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "Jobs/TerminateAll")
                     .PostAsync();
 
+    public Task<KeyValuePair<string, string>[]> FunctionCodeSuggest(string f_action, string? search = null)
+        => _client.Request($"{_basePath}{_controllerName}", "FunctionCodeSuggest", f_action)
+                    .AppendQueryParam("search", search)
+                    .GetJsonAsync<KeyValuePair<string, string>[]>();
 }
 
 public class CustomFlurlJsonSerializer : DefaultJsonSerializer

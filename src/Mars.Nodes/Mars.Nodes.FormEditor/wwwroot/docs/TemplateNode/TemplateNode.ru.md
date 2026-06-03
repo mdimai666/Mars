@@ -2,29 +2,78 @@
 
 Шаблонизированный вывод
 
-Varible
-```html
-//input (Payload = 123)
-{{Payload}}
+---
 
-//output
-123
-```
-
-Each
+## Handlebars
+[Handlebars.Net](https://github.com/Handlebars-Net/Handlebars.Net)
 ```html
-//input ([1,2,3])
-{{#each Payload}}
-    <div>{{.}}</div>
+<!-- Переменная -->
+Привет, {{ name }}!
+
+<!-- Условие -->
+{{#if isAdmin}}
+    Вы администратор.
+{{else}}
+    Вы пользователь.
+{{/if}}
+
+<!-- Цикл -->
+<ul>
+{{#each items}}
+    <li>{{this}}</li>
 {{/each}}
-{{Payload}}
-
-//output
-<div>1</div>
-<div>2</div>
-<div>3</div>
+</ul>
 ```
 
-See also
+---
 
-[https://github.com/Handlebars-Net/Handlebars.Net](https://github.com/Handlebars-Net/Handlebars.Net)
+## Scriban
+[Scriban](https://scriban.github.io/)
+```html
+<!-- Переменная -->
+Привет, {{ name }}!
+
+<!-- Условие -->
+{{ if is_admin }}
+    Вы администратор.
+{{ else }}
+    Вы пользователь.
+{{ end }}
+
+<!-- Цикл -->
+<ul>
+{{ for item in items }}
+    <li>{{ item }}</li>
+{{ end }}
+</ul>
+```
+
+---
+
+## ScribanRazorStyleTemplateEngine
+```html
+<!-- Переменная -->
+Привет, @Name!
+
+<!-- Условие -->
+@if(IsAdmin) {
+    Вы администратор.
+} else {
+    Вы пользователь.
+}
+
+<!-- Цикл -->
+<ul>
+@for(item in Items) {
+    <li>@item</li>
+}
+</ul>
+```
+
+---
+
+## TextReplaceTemplateEngine
+```html
+<!-- Переменная -->
+Привет, {Name}!
+```

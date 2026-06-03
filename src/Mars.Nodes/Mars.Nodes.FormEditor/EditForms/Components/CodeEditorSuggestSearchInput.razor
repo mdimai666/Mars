@@ -1,5 +1,4 @@
 @using Flurl.Http
-@using Mars.Core.Features
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits FluentComponentBase
 
@@ -14,7 +13,7 @@
                     OptionText="@(item => item.Value)" />
 
 @code {
-    [Inject] IFlurlClient client { get; set; } = default!;
+    [Inject] IFlurlClient _client { get; set; } = default!;
 
     /// <summary>
     /// must return KeyValuePair<string, string>
@@ -33,7 +32,7 @@
     private async Task OnSearchSnippetAsync(OptionsSearchEventArgs<KeyValuePair<string, string>> e)
     {
         // var allSnippets = await qserver.GET<List<KeyValuePair<string, string>>>($"/api/Node/FunctionCodeSuggest/di:services?search={e.Text}");
-        var allSnippets = await client.Request($"{SearchApiUrl}{e.Text}").GetJsonAsync<List<KeyValuePair<string, string>>>();
+        var allSnippets = await _client.Request($"{SearchApiUrl}{e.Text}").GetJsonAsync<List<KeyValuePair<string, string>>>();
         e.Items = allSnippets;
     }
 

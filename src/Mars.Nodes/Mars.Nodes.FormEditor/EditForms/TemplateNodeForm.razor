@@ -1,26 +1,43 @@
+@using AppFront.Shared.Components
+@using Mars.Core.Extensions
+@using Mars.Core.Models
+@using Mars.Nodes.Front.Shared.Services
 @using MarsCodeEditor2
+@using Microsoft.Extensions.Caching.Memory
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits NodeEditForm
 @attribute [NodeEditFormForNode(typeof(TemplateNode))]
 
-<div class="form-group d-flex flex-column flex-fill">
-    <label>Template</label>
-    @*<InputTextArea class="form-control flex-fill textarea-code f-on-tabpress-write-tab" @bind-Value=Node.Template />*@
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
 
-    <div class="text-end mb-1">
-        <FluentSelect Items="CodeEditor2.Language.Array"
-                      Appearance="Appearance.Stealth"
-                      Position="SelectPosition.Below"
-                      Value="@(Node.Language ?? TemplateNode.DefaultLanguage)"
-                      ValueChanged="@(v => { Node.Language = v; editor1?.SetModelLanguage(v); })" />
-
+    <div class="vstack gap-2">
+        <FormItem2 For="() => Node.Property">
+            <FluentTextField @bind-Value=@Node.Property />
+        </FormItem2>
+        <FormItem2 For="() => Node.TemplateEngineId">
+            <FluentSelect Items="_templateEngines"
+                          OptionText="v=>v.Title"
+                          OptionValue="v=>v.Key"
+                          @bind-SelectedOption="@_templateEngineIdSetter" />
+        </FormItem2>
     </div>
-    <div class="d-flex flex-column" style="height:50vh">
 
+    <div class="d-flex flex-column mt-2" style="height:50vh">
         <MarsCodeEditor2.CodeEditor2 @ref=editor1
-                                     Lang="@CodeEditor2.Language.handlebars"
+                                     Lang="@Node.SyntaxLanguage"
                                      OnSave="OnEditorSave"
-                                     Value="@Node.Template" />
+                                     Value="@Node.Template">
+            <HeaderArea>
+                <div class="hstack px-2">
+                    <span>Syntax</span>
+                    <FluentSelect Items="CodeEditor2.Language.Array"
+                                  Class="ms-2"
+                                  Width="160px"
+                                  Value="@(Node.SyntaxLanguage ?? TemplateNode.DefaultSyntaxLanguage)"
+                                  ValueChanged="@(v => { Node.SyntaxLanguage = v; editor1?.SetModelLanguage(v); })" />
+                </div>
+            </HeaderArea>
+        </MarsCodeEditor2.CodeEditor2>
     </div>
 </div>
 
@@ -28,19 +45,46 @@
     [CascadingParameter] Node? Value { get; set; }
     TemplateNode Node { get => (TemplateNode)Value!; set => Value = value; }
 
+    [Inject] INodeServiceClient _client { get; set; } = default!;
+    [Inject] IMemoryCache _cache { get; set; } = default!;
+    private const string CACHE_KEY = "TemplateNode-TemplateEngines";
+
     CodeEditor2? editor1;
+
+    TitleItem<string>[] _templateEngines = [new("Core.PlainText", "Plain Text")];
+
+    TitleItem<string> _templateEngineIdSetter
+    {
+        get => _templateEngines.FirstOrDefault(s => s.Key == Node.TemplateEngineId) ?? _templateEngines[0];
+        set => Node.TemplateEngineId = value.Key;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            UpdateList();
+        }
+    }
+
+    async void UpdateList()
+    {
+        var list = await _cache.GetOrCreateAsync(CACHE_KEY, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            return await _client.FunctionCodeSuggest("TemplateEngines.dict");
+        });
+        _templateEngines = list!.ToTitleItems().ToArray();
+        StateHasChanged();
+    }
 
     public override async Task OnEditSave()
     {
-        //Console.WriteLine("X>1111");
         Node.Template = await editor1!.GetValue();
-        //Console.WriteLine("X>2222");
-        //await Task.Delay(100);
     }
 
     void OnEditorSave(string val)
     {
-        //_ = form.OnFinish();
         _ = NodeEditContainer.FormSaveClick();
     }
 }

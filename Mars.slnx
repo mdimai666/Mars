@@ -12,6 +12,7 @@
     <Project Path="benchmarks/Benchmarks.MyHandlebars/Benchmarks.MyHandlebars.csproj" />
     <Project Path="benchmarks/Benchmarks.OrderedPropertiesJsonTypeInfoResolver/Benchmarks.OrderedPropertiesJsonTypeInfoResolver.csproj" Id="72dee982-8516-4195-9e11-f16ee6eeb078" />
     <Project Path="benchmarks/Benchmarks.QueryLang/Benchmarks.QueryLang.csproj" />
+    <Project Path="benchmarks/Benchmarks.TemplateEngines/Benchmarks.TemplateEngines.csproj" Id="c4e8d0d2-dbdd-4848-b621-1f4240847150" />
   </Folder>
   <Folder Name="/Core/">
     <Project Path="src/Mars.Core/Mars.Core.csproj" />
@@ -62,6 +63,11 @@
   <Folder Name="/Mars.Modules/SSO/">
     <Project Path="src/Mars.Modules/Mars.SSO.Host.OAuth/Mars.SSO.Host.OAuth.csproj" />
     <Project Path="src/Mars.Modules/Mars.SSO/Mars.SSO.csproj" />
+  </Folder>
+  <Folder Name="/Mars.Modules/TemplateEngines/">
+    <Project Path="src/Mars.Modules/Mars.TemplateEngine.Host/Mars.TemplateEngine.Host.csproj" Id="d31af368-bdca-420b-b1e7-c0e1083061ff" />
+    <Project Path="src/Mars.Modules/Mars.TemplateEngine.Providers.Handlebars/Mars.TemplateEngine.Providers.Handlebars.csproj" Id="07eb6e2e-91a2-42b9-85f3-17e351bf9806" />
+    <Project Path="src/Mars.Modules/Mars.TemplateEngine.Providers.Scriban/Mars.TemplateEngine.Providers.Scriban.csproj" Id="7de4fbbd-2ea3-44d6-bcaa-8e0ce4534996" />
   </Folder>
   <Folder Name="/Mars.Modules/WebAppNodes/">
     <Project Path="src/Mars.Modules/Mars.WebApp.Nodes.Front/Mars.WebApp.Nodes.Front.csproj" />

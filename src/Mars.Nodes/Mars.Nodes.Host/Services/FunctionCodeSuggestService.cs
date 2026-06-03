@@ -1,6 +1,6 @@
-using Mars.Core.Extensions;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.TemplateEngine;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Host.Services;
@@ -67,6 +67,16 @@ public class FunctionCodeSuggestService
                                                         || s.Value.Label.Contains(search, StringComparison.OrdinalIgnoreCase)))
                                         .Take(TAKE_COUNT)
                                         .Select(s => new KeyValuePair<string, string>(s.Key, s.Value.Label))
+                                        .ToList();
+        }
+        else if (f_action == "TemplateEngines.dict")
+        {
+            var templateManager = _serviceProvider.GetRequiredService<ITemplateManager>();
+            list = templateManager.GetAvailableEngines().Where(s => string.IsNullOrEmpty(search)
+                                                        || s.Id.Contains(search, StringComparison.OrdinalIgnoreCase)
+                                                        || s.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                                        //.Take(TAKE_COUNT)
+                                        .Select(s => new KeyValuePair<string, string>(s.Id, s.Name))
                                         .ToList();
         }
         else

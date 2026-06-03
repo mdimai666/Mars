@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
+	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.WebApp.Nodes.Host\Mars.WebApp.Nodes.Host.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.Modules\Mars.WebApp.Nodes\Mars.WebApp.Nodes.csproj" />
 	  <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />

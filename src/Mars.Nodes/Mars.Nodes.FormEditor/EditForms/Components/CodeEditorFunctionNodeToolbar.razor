@@ -1,15 +1,13 @@
 @using AppFront.Shared.Services
 @using Flurl.Http
-@using Mars.Core.Features
 @using Microsoft.FluentUI.AspNetCore.Components
 @using BlazorMonaco.Editor
-@using System.Collections.Immutable;
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
 <FluentToolbar Class="flex-fill">
     <CodeEditorSuggestSearchInput SearchApiUrl="/api/Node/FunctionCodeSuggest/di:services?search=" OnSnippetSelect="OnSelectSnippet" Style="max-width: 250px;" />
 
-    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e=>open=!open) slot="end">
+    <FluentButton Id="editor2-actionmenu-button" @ref=@actionMenuButton1 OnClick=@(e => open = !open) slot="end">
         Tools
         <FluentIcon Slot="end" Value="@(new Icons.Regular.Size16.ChevronDown())" />
     </FluentButton>

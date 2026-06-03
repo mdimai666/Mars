@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>Mars.TemplateEngine.Providers.ScribanProvider</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Scriban" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

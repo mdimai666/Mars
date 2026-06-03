@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
+    </ItemGroup>
+
+</Project>

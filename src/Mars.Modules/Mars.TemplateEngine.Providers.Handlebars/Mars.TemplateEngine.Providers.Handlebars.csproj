@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Mars.TemplateEngine.Providers.HandlebarsProvider</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Handlebars.Net" />
+        <PackageReference Include="Handlebars.Net.Extension.Json" />
+        <PackageReference Include="Handlebars.Net.Extension.NewtonsoftJson" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

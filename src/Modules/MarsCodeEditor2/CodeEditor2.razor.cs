@@ -14,7 +14,7 @@ public partial class CodeEditor2 : IDisposable
 
     public StandaloneCodeEditor Monaco => editor1!;
 
-    public class Language
+    public static class Language
     {
         public static readonly string handlebars = "handlebars";
         public static readonly string html = "html";

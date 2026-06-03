@@ -38,6 +38,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
+		<ProjectReference Include="..\..\src\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
 		<ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
 	</ItemGroup>
 

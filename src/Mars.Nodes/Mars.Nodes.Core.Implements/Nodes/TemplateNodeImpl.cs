@@ -1,36 +1,39 @@
-using HandlebarsDotNet;
+using Mars.Core.Extensions;
+using Mars.Core.Features;
+using Mars.Host.Shared.TemplateEngine;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
 {
-    public TemplateNodeImpl(TemplateNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public TemplateNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
-    HandlebarsTemplate<object, object>? template;
-    string? compiled_template;
+    private readonly ITemplateManager _templateManager;
+
+    public TemplateNodeImpl(TemplateNode node, IRED red, ITemplateManager templateManager)
+    {
+        Node = node;
+        RED = red;
+        _templateManager = templateManager;
+    }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-
-        //https://github.com/Handlebars-Net/Handlebars.Net
-        if (template is null || compiled_template is null || !Node.Template.Equals(compiled_template))
-        {
-            template = Handlebars.Compile(Node.Template);
-            compiled_template = Node.Template;
-        }
-
         var data = input.AsFullDict();
 
-        input.Payload = template(data);
+        var render = _templateManager.RenderCached(Node.TemplateEngineId, "node-" + Node.Id, Node.Template, data);
+
+#if DEBUG
+        RED.Status(new() { Text = $"ts: {TimeSpanParser.Format(render.Elapsed)}, allocated: {render.AllocatedBytes.ToHumanizedSize()}" });
+#endif
+
+        if (Node.Property == "Payload")
+            input = input.Copy(render.Content);
+        else
+            input.Set(Node.Property, render.Content);
 
         callback(input);
 

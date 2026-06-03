@@ -7,10 +7,14 @@ namespace Mars.Nodes.Core.Nodes;
 [Display(GroupName = "function")]
 public class TemplateNode : Node
 {
-    public const string DefaultLanguage = "handlebars";
+    public const string DefaultSyntaxLanguage = "handlebars";
+    public const string DefaultTemplateEngineId = "Core.Handlebars";
 
-    public string Language { get; set; } = DefaultLanguage;
+    public string TemplateEngineId { get; set; } = DefaultTemplateEngineId;
+    public string SyntaxLanguage { get; set; } = DefaultSyntaxLanguage;
+
     public string Template { get; set; } = "<div> Template: {{Payload}} </div>";
+    public string Property { get; set; } = "Payload";
 
     public TemplateNode()
     {

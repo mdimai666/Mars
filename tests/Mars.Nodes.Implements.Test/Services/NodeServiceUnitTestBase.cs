@@ -7,6 +7,7 @@ using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.TemplateEngine;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
@@ -17,6 +18,9 @@ using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Shared.Dto;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
+using Mars.TemplateEngine.Host;
+using Mars.TemplateEngine.Host.InternalProviders;
+using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Mars.Test.Common.Constants;
 using Mars.WebApp.Nodes.Host.Nodes;
 using Mars.WebApp.Nodes.Nodes;
@@ -95,6 +99,10 @@ public class NodeServiceUnitTestBase
 
         _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, factory: null!, _loggerNodeService, _eventManager);
         //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
+
+        var templateManager = new TemplateManager([new PlainTextTemplateEngine(), new HandlebarsTemplateEngine()]);
+        _serviceProvider.GetService(typeof(ITemplateManager)).Returns(templateManager);
+
     }
 
     public async Task<NodeMsg> ExecuteNodeImplement(INodeImplement node, NodeMsg? msg = null)

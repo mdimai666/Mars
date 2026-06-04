@@ -5,13 +5,14 @@ using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
+public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement, IDisposable
 {
     public TemplateNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
 
     private readonly ITemplateManager _templateManager;
+    private bool _onceExecuted;
 
     public TemplateNodeImpl(TemplateNode node, IRED red, ITemplateManager templateManager)
     {
@@ -22,9 +23,11 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var data = input.AsFullDict();
+        if (!_onceExecuted) _onceExecuted = true;
 
-        var render = _templateManager.RenderCached(Node.TemplateEngineId, "node-" + Node.Id, Node.Template, data);
+        var data = input.AsFullDict();
+        var key = "node-" + Node.Id;
+        var render = _templateManager.RenderCached(Node.TemplateEngineId, key, Node.Template, data);
 
 #if DEBUG
         RED.Status(new() { Text = $"ts: {TimeSpanParser.Format(render.Elapsed)}, allocated: {render.AllocatedBytes.ToHumanizedSize()}" });
@@ -38,5 +41,14 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement
         callback(input);
 
         return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        if (_onceExecuted)
+        {
+            var key = "node-" + Node.Id;
+            _templateManager.ClearCacheForEngineItem(Node.TemplateEngineId, key);
+        }
     }
 }

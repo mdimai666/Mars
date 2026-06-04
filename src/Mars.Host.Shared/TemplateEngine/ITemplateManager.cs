@@ -4,6 +4,7 @@ public interface ITemplateManager
 {
     void ClearAllCache();
     void ClearCacheFor(string engineId);
+    void ClearCacheForEngineItem(string engineId, string itemId);
     IEnumerable<EngineMetadata> GetAvailableEngines();
 
     /// <summary>

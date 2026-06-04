@@ -27,7 +27,8 @@
                             data-id=@m.Id
                             data-node-id=@m.NodeId
                             data-level=@m.Level
-                            @onclick=@(() => _editor.OnClickConsoleDebugMessage(m))>
+                            @onclick=@(() => _editor.OnClickConsoleDebugMessage(m))
+                            @ondblclick=@(() => _editor.OnDblClickConsoleDebugMessage(m))>
 
                             <div class="debug-msg-id text-nowrap">@m.NodeId</div>
                             <div>

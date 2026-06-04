@@ -1,0 +1,27 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(QueueNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+
+    <FormItem2 For="() => Node.Mode">
+        <FluentRadioGroup @bind-Value=Node.Mode Orientation="Orientation.Vertical">
+            @foreach (var item in Enum.GetValues<QueueNode.EQueueMode>())
+            {
+                <FluentRadio Value="@item" Label="@item.ToString()" />
+            }
+        </FluentRadioGroup>
+    </FormItem2>
+
+    <FormItem2 For="() => Node.MaxTask">
+        <FluentNumberField @bind-Value=Node.MaxTask Min="1" />
+    </FormItem2>
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    QueueNode Node { get => (QueueNode)Value; set => Value = value; }
+
+}

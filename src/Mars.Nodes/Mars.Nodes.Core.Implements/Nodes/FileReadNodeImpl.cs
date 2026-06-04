@@ -1,8 +1,6 @@
 using System.Text;
-using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -18,37 +16,109 @@ public class FileReadNodeImpl : INodeImplement<FileReadNode>, INodeImplement
         RED = red;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        if (Node.OutputMode == FileReadNode.FileOutputMode.SingleBuffer)
-        {
-            var buffer = File.ReadAllBytes(Node.FilePath);
-            input.Payload = buffer;
-            callback(input);
-        }
-        else if (Node.OutputMode == FileReadNode.FileOutputMode.SingleString)
-        {
-            var text = File.ReadAllText(Node.FilePath);
-            input.Payload = text;
-            callback(input);
-        }
-        else if (Node.OutputMode == FileReadNode.FileOutputMode.MsgPerLine)
-        {
-            const int bufferSize = 2048;
-            using var fileStream = File.OpenRead(Node.FilePath);
-            using var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, bufferSize);
+        var ct = parameters.CancellationToken;
+        var filepath = Node.FilePath;
 
-            string? line;
-            while ((line = streamReader.ReadLine()) != null)
-            {
-                input.Payload = line;
-                callback(input);
-            }
-        }
-        else
+        // 1. Валидация пути
+        if (string.IsNullOrWhiteSpace(filepath))
+            throw new NodeExecuteException(Node, "FilePath is empty");
+
+        // 2. Проверка существования файла
+        if (!File.Exists(filepath))
+            throw new NodeExecuteException(Node, $"File '{filepath}' not found");
+
+        // 3. Чтение в зависимости от режима
+        switch (Node.OutputMode)
         {
-            throw new NotImplementedException();
+            case FileReadNode.FileOutputMode.SingleBuffer:
+                await ReadAsBufferAsync(filepath, input, callback, ct);
+                break;
+
+            case FileReadNode.FileOutputMode.SingleString:
+                await ReadAsStringAsync(filepath, input, callback, ct);
+                break;
+
+            case FileReadNode.FileOutputMode.MsgPerLine:
+                await ReadLineByLineAsync(filepath, input, callback, ct);
+                break;
+
+            //case FileReadNode.FileOutputMode.SingleStream:
+            //    ReadAsStream(filepath, input, callback);
+            //    break;
+
+            default:
+                throw new NodeExecuteException(Node, $"Unsupported output mode: {Node.OutputMode}");
         }
-        return Task.CompletedTask;
     }
+
+    private static async Task ReadAsBufferAsync(
+        string filepath,
+        NodeMsg input,
+        ExecuteAction callback,
+        CancellationToken ct)
+    {
+        var buffer = await File.ReadAllBytesAsync(filepath, ct);
+        input.Payload = buffer;
+        callback(input);
+    }
+
+    private static async Task ReadAsStringAsync(
+        string filepath,
+        NodeMsg input,
+        ExecuteAction callback,
+        CancellationToken ct)
+    {
+        var text = await File.ReadAllTextAsync(filepath, ct);
+        input.Payload = text;
+        callback(input);
+    }
+
+    private static async Task ReadLineByLineAsync(
+        string filepath,
+        NodeMsg input,
+        ExecuteAction callback,
+        CancellationToken ct)
+    {
+        const int bufferSize = 8192;
+
+        using var fileStream = new FileStream(
+            filepath,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            bufferSize,
+            useAsync: true);
+
+        using var streamReader = new StreamReader(
+            fileStream,
+            Encoding.UTF8,
+            detectEncodingFromByteOrderMarks: true,
+            bufferSize: bufferSize);
+
+        string? line;
+        while ((line = await streamReader.ReadLineAsync(ct)) != null)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            input.Payload = line;
+            callback(input);
+        }
+    }
+
+    //private static void ReadAsStream(string filepath, NodeMsg input, ExecuteAction callback)
+    //{
+    //    // useAsync: true важен, чтобы следующие ноды могли использовать асинхронные методы (CopyToAsync и т.д.)
+    //    var stream = new FileStream(
+    //        filepath,
+    //        FileMode.Open,
+    //        FileAccess.Read,
+    //        FileShare.Read,
+    //        bufferSize: 8192,
+    //        useAsync: true);
+
+    //    input.Payload = stream;
+    //    callback(input);
+    //}
 }

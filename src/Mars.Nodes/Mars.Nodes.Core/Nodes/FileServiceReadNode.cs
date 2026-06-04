@@ -27,7 +27,9 @@ public class FileServiceReadNode : Node
         SingleString,
         MsgPerLine,
         SingleBuffer,
+        //SingleStream
     }
+
     public const string MediaProviderName = "Media";
     public static readonly string[] FileStorageProvidersList = [MediaProviderName];
 }

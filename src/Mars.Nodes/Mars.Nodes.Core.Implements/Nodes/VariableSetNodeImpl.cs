@@ -343,4 +343,26 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
         }
     }
 #endif
+
+    public static string ReadFieldAsExpression(string value, IRED RED, NodeMsg input)
+    {
+        if (value.IsNullOrEmpty()) return value;
+
+        if (value.StartsWith('@'))
+        {
+            var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
+            return ppt.Get.Eval<string>(value[1..]);
+        }
+        return value;
+    }
+    public static string ReadFieldAsExpression(string value, XInterpreter ppt)
+    {
+        if (value.IsNullOrEmpty()) return value;
+
+        if (value.StartsWith('@'))
+        {
+            return ppt.Get.Eval<string>(value[1..]);
+        }
+        return value;
+    }
 }

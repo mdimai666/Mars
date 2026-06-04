@@ -2,7 +2,7 @@
 // functions, and may import other JavaScript modules if required.
 
 export function showPrompt(message) {
-  return prompt(message, 'Type anything here');
+    return prompt(message, 'Type anything here');
 }
 
 export function InitModule() {
@@ -36,7 +36,7 @@ export function ScrollDownElement(selector) {
     var objDiv = document.querySelector(selector);
     setTimeout(() => {
         objDiv.scrollTop = objDiv.scrollHeight;
-    },1)
+    }, 1)
 }
 
 export function ShowOffcanvas(htmlId, open) {
@@ -44,7 +44,7 @@ export function ShowOffcanvas(htmlId, open) {
     var myOffcanvas = document.getElementById(htmlId)
 
     var bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(myOffcanvas)
-    
+
     if (open) {
         bsOffcanvas.show();
     } else {
@@ -139,4 +139,36 @@ export function touchFlashAnimationById(elementId) {
 
 export function touchFlashAnimationBySelector(elementSelector) {
     touchFlashAnimation(document.querySelector(elementSelector));
+}
+
+export function scrollToCoordinates(element, x, y) {
+    element.scrollTo({
+        left: x,
+        top: y,
+        behavior: 'smooth'
+    });
+}
+
+export function scrollToCoordinatesBySelector(elementSelector, x, y) {
+    document.querySelector(elementSelector).scrollTo({
+        left: x,
+        top: y,
+        behavior: 'smooth'
+    });
+}
+
+export function scrollToElement(element) {
+    element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
+}
+
+export function scrollToElementBySelector(elementSelector) {
+    document.querySelector(elementSelector).scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
 }

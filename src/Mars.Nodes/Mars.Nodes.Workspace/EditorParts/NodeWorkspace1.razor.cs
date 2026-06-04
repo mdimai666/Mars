@@ -449,6 +449,11 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         _nodeEditor?.SetSelectContext(node.GetType());
     }
 
+    public void ScrollTo(float x, float y)
+    {
+        js.ScrollToCoordinates(_containerRef, x, y);
+    }
+
     /// <summary>
     /// on click palette new node
     /// </summary>

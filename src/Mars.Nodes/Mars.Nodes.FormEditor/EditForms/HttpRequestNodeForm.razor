@@ -7,17 +7,25 @@
 <div class="form-group compact" style="--fluent-input-label-basis:150px">
     <div class="vstack gap-2">
         <FormItem2 For="() => Node.Url">
-            <FluentTextField TextFieldType="TextFieldType.Url" @bind-Value=@Node.Url Appearance="FluentInputAppearance.Filled" Class="flex-fill" />
+            <FluentTextField TextFieldType="TextFieldType.Url" @bind-Value=@Node.Url Appearance="FluentInputAppearance.Filled" Class="w-100" />
         </FormItem2>
         <FormItem2 For="() => Node.Method">
             <FluentSelect TOption="string"
-                          Items="Node.MethodVariants"
+                          Items="HttpRequestNode.MethodVariants"
                           Appearance="Appearance.Stealth"
                           @bind-SelectedOption=@Node.Method />
         </FormItem2>
 
         <FormItem2 For="() => Node.AuthConfig">
             <InputConfigField @bind-Value=@Node.AuthConfig />
+        </FormItem2>
+
+        <hr />
+
+        <FormItem2 For="() => Node.ReturnResponse">
+            <FluentSelect TOption="HttpRequestNode.ReturnResponseType"
+                          Items="Enum.GetValues<HttpRequestNode.ReturnResponseType>()"
+                          @bind-SelectedOption=@Node.ReturnResponse />
         </FormItem2>
 
         <div class="spacer-1"></div>

@@ -24,5 +24,6 @@ public class FileReadNode : Node
         SingleString,
         MsgPerLine,
         SingleBuffer,
+        //SingleStream
     }
 }

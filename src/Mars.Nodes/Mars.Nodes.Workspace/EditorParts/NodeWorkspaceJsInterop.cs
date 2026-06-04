@@ -104,5 +104,29 @@ namespace Mars.Nodes.Workspace.EditorParts
             var module = await _moduleTask.Value;
             await module.InvokeVoidAsync("touchFlashAnimationBySelector", elementSelector);
         }
+
+        public async void ScrollToCoordinates(ElementReference element, float x, float y)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("scrollToCoordinates", element, x, y);
+        }
+
+        public async void ScrollToCoordinatesBySelector(string elementSelector, float x, float y)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("scrollToCoordinatesBySelector", elementSelector, x, y);
+        }
+
+        public async void ScrollToElement(ElementReference element)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("scrollToElement", element);
+        }
+
+        public async void ScrollToElementBySelector(string elementSelector)
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("scrollToElementBySelector", elementSelector);
+        }
     }
 }

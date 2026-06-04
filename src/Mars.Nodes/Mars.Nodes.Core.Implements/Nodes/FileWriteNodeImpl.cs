@@ -17,71 +17,101 @@ public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        bool exist = File.Exists(Node.FilePath);
+        var filePath = VariableSetNodeImpl.ReadFieldAsExpression(Node.FilePath, RED, input);
 
-        if (Node.WriteMode == FileWriteNode.FileWriteMode.Delete)
+        switch (Node.WriteMode)
         {
-            if (exist)
-                File.Delete(Node.FilePath);
-            else
-                throw new NodeExecuteException(Node, $"File '{Node.FilePath}' not found");
-        }
-        else
-        {
-            bool isString = input.Payload is string;
-            bool isAppend = Node.WriteMode == FileWriteNode.FileWriteMode.Append;
+            case FileWriteNode.FileWriteMode.Delete:
+                if (!File.Exists(filePath))
+                    throw new NodeExecuteException(Node, $"File '{filePath}' not found");
+                File.Delete(filePath);
+                break;
 
-            bool isBuffer = input.Payload is byte[];
+            case FileWriteNode.FileWriteMode.Append:
+                EnsureDirectoryExists(filePath);
+                AppendToFile(filePath, input.Payload);
+                break;
 
-            if (!isBuffer)
-            {
-                string payload;
-
-                if (isString)
-                {
-                    payload = (input.Payload is null) ? "null" : (input.Payload as string)!;
-                }
-                else
-                {
-                    string? json = JsonNodeImpl.ToJsonString(input.Payload!);
-                    payload = json;
-                }
-
-                if (isAppend)
-                {
-                    using var sw = File.AppendText(Node.FilePath);
-                    if (Node.AddAsNewLine)
-                        sw.WriteLine(payload);
-                    else
-                        sw.Write(payload);
-                }
-                else
-                {
-                    File.WriteAllText(Node.FilePath, payload);
-                }
-            }
-            else
-            {
-
-                if (isAppend)
-                {
-                    using var sw = File.OpenWrite(Node.FilePath);
-
-                    var buffer = input.Payload as byte[];
-
-                    //byte[] bytes = new byte[buffer.Length];
-                    sw.Write(buffer);
-                }
-                else
-                {
-                    File.WriteAllBytes(Node.FilePath, (input.Payload as byte[])!);
-                }
-            }
-
+            default: // Overwrite
+                EnsureDirectoryExists(filePath);
+                WriteToFile(filePath, input.Payload);
+                break;
         }
 
         callback(input);
-
         return Task.CompletedTask;
+    }
+
+    private void AppendToFile(string filePath, object? payload)
+    {
+        switch (payload)
+        {
+            case null:
+                AppendText(filePath, "null");
+                break;
+
+            case Stream stream:
+                using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                    stream.CopyTo(fs);
+                break;
+
+            case byte[] bytes:
+                using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                    fs.Write(bytes, 0, bytes.Length);
+                break;
+
+            case string text:
+                AppendText(filePath, text);
+                break;
+
+            default:
+                AppendText(filePath, JsonNodeImpl.ToJsonString(payload));
+                break;
+        }
+    }
+
+    private void WriteToFile(string filePath, object? payload)
+    {
+        switch (payload)
+        {
+            case null:
+                File.WriteAllText(filePath, "null");
+                break;
+
+            case Stream stream:
+                using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    stream.CopyTo(fs);
+                break;
+
+            case byte[] bytes:
+                File.WriteAllBytes(filePath, bytes);
+                break;
+
+            case string text:
+                File.WriteAllText(filePath, text);
+                break;
+
+            default:
+                File.WriteAllText(filePath, JsonNodeImpl.ToJsonString(payload));
+                break;
+        }
+    }
+
+    private void AppendText(string filePath, string text)
+    {
+        using var sw = File.AppendText(filePath);
+        if (Node.AddAsNewLine)
+            sw.WriteLine(text);
+        else
+            sw.Write(text);
+    }
+
+    private void EnsureDirectoryExists(string filePath)
+    {
+        var directory = Path.GetDirectoryName(filePath);
+        if (directory != null && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
     }
 }

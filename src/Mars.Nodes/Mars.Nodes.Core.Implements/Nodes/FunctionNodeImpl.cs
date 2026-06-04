@@ -3,6 +3,7 @@ using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
@@ -25,22 +26,13 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-
         try
         {
-            //IPostService ps = RED.GetService<IPostService>();
-            ////IFileService fs = RED.GetService<IFileService>();
-            //IMarsDbContext ef = RED.GetService<IMarsDbContext>();
-            //var p1 = ef.Posts.First();
-            //RED.DebugMsg(new DebugMessage() { message = p1.Title });
-
             string script = Node.Code;
             //https://github.com/dotnet/roslyn/blob/main/docs/wiki/Scripting-API-Samples.md
             //var result = CSharpScript.EvaluateAsync<int>(script, ScriptOptions.Default, input).Result;
 
             var definedAssemblies = new[] {
-
-                    typeof(Node).Assembly,
                     typeof(DynamicNodeMsgWrapper).Assembly,
                     typeof(UserDetail).Assembly,
                     typeof(IPostService).Assembly,
@@ -63,6 +55,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 .ToArray();
 
             ScriptOptions scriptOptions = ScriptOptions.Default
+                .WithLanguageVersion(LanguageVersion.Latest)
                 .WithImports(
                 "System",
                 "System.Collections.Generic",
@@ -73,10 +66,6 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 "Mars.Nodes.Core",
                 typeof(Mars.Nodes.Core.Node).Namespace!,
                 "Microsoft.Extensions.DependencyInjection"
-                //"Mars.Shared.Models",
-                //"Mars.Shared.Services",
-                //"AppShared.Models",
-                //"Microsoft.EntityFrameworkCore",
                 )
                 .WithReferences(
                     comparedAssemblies
@@ -93,8 +82,12 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
             var result = await compiled.Invoke(ctx, parameters.CancellationToken);
 
-            input.Payload = result;
-            callback(input);
+            if (result is DynamicNodeMsgWrapper dyn)
+                callback(dyn.ToNodeMsg());
+            else if (result is NodeMsg msg)
+                callback(msg);
+            else
+                callback(input.Copy(result));
 
         }
 

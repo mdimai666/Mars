@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using System.Web;
+using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
@@ -459,8 +460,17 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     internal void OnClickConsoleDebugMessage(DebugMessage msg)
     {
         if (string.IsNullOrEmpty(msg.NodeId)) return;
+        if (AllNodes.TryGetValue(msg.NodeId, out var node))
+        {
+            if (_activeFlow.Id == node.Container)
+                _nodeWorkspace1.SelectNode(msg.NodeId);
+        }
+    }
 
-        _nodeWorkspace1.SelectNode(msg.NodeId);
+    internal void OnDblClickConsoleDebugMessage(DebugMessage msg)
+    {
+        if (string.IsNullOrEmpty(msg.NodeId)) return;
+        FocusNode(msg.NodeId);
     }
 
     public void SetNodes(IDictionary<string, Node> nodes)
@@ -509,6 +519,28 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             _allNodes.Remove(node.Id);
         AllNodes = _allNodes;
         RecalcNodes();
+    }
+
+    public void FocusNode(string nodeId)
+    {
+        if (AllNodes.TryGetValue(nodeId, out var node))
+        {
+            FocusNode(node);
+        }
+    }
+
+    public void FocusNode(Node node)
+    {
+        if (_activeFlow.Id != node.Container && node.Container.IsNotNullOrEmpty())
+        {
+            ChangeFlow((FlowNode)AllNodes[node.Container]);
+        }
+        var wh = _nodeWorkspace1.Width / 2;
+        var hh = _nodeWorkspace1.Height / 2;
+        var x = Math.Clamp(node.X - wh, 0f, node.X);
+        var y = Math.Clamp(node.Y - hh, 0f, node.Y);
+        _nodeWorkspace1.ScrollTo(x,y );
+        _nodeWorkspace1.SelectNode(node);
     }
 
     Type? _selectContext;

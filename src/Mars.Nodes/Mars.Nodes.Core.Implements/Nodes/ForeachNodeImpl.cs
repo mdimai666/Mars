@@ -5,15 +5,15 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 
 public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
 {
-    public ForeachNodeImpl(ForeachNode node, IRED RED)
-    {
-        Node = node;
-        this.RED = RED;
-    }
-
     public ForeachNode Node { get; }
     public IRED RED { get; set; }
     Node INodeImplement<Node>.Node => Node;
+
+    public ForeachNodeImpl(ForeachNode node, IRED red)
+    {
+        Node = node;
+        RED = red;
+    }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
@@ -75,10 +75,6 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
             input.Add(foreachCycle);
         }
         else throw new NotImplementedException();
-
-        //callback(input, 1);
-
-        //return Task.CompletedTask;
 
         return IterateStep(input, callback, parameters);
     }

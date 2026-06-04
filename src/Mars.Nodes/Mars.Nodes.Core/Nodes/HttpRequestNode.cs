@@ -13,7 +13,9 @@ public class HttpRequestNode : Node
     public string Method { get; set; } = "GET";
     public string Url { get; set; } = "http://localhost";
 
-    public string[] MethodVariants = { "GET", "POST", "PUT", "DELETE", "HEAD" };
+    public static readonly string[] MethodVariants = ["GET", "POST", "PUT", "DELETE", "HEAD", "PATCH", "PATCH"];
+
+    public ReturnResponseType ReturnResponse { get; set; } = ReturnResponseType.Auto;
 
     public HeaderItem[] Headers { get; set; } = [];
 
@@ -25,6 +27,15 @@ public class HttpRequestNode : Node
         Color = "#e7e6af";
         Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/web2-48.png";
+    }
+
+    public enum ReturnResponseType
+    {
+        Auto,
+        String,
+        Object,
+        Bytes,
+        Stream
     }
 
     public static IReadOnlyCollection<string> ExampleHeaders =

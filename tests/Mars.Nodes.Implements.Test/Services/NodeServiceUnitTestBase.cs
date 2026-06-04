@@ -8,6 +8,7 @@ using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.TemplateEngine;
+using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
@@ -102,6 +103,8 @@ public class NodeServiceUnitTestBase
 
         var templateManager = new TemplateManager([new PlainTextTemplateEngine(), new HandlebarsTemplateEngine()]);
         _serviceProvider.GetService(typeof(ITemplateManager)).Returns(templateManager);
+        var authClientManager = Substitute.ForPartsOf<AuthClientManager>((IAuthStrategyFactory?)null);
+        _serviceProvider.GetService(typeof(AuthClientManager)).Returns(authClientManager);
 
     }
 
@@ -135,13 +138,13 @@ public class NodeServiceUnitTestBase
 
     public record NodeExecutionResult(NodeMsg Msg, int OutputPort);
 
-    public async Task<NodeMsg> ExecuteFunctionNode(string code)
+    public async Task<NodeMsg> ExecuteFunctionNode(string code, NodeMsg? msg = null)
     {
-        var (flow, fn, msg) = await ExecuteFunctionNodeEx(code);
-        return msg;
+        var (flow, result) = await ExecuteFunctionNodeEx(code, msg);
+        return result;
     }
 
-    public async Task<(FlowNodeImpl flowNode, FunctionNodeImpl functionNode, NodeMsg msg)> ExecuteFunctionNodeEx(string code)
+    public async Task<(FlowNodeImpl flowNode, NodeMsg msg)> ExecuteFunctionNodeEx(string code, NodeMsg? msg = null)
     {
         var flowNode = new FlowNode();
         var functionSetValueNode = new FunctionNode()
@@ -153,10 +156,10 @@ public class NodeServiceUnitTestBase
         _nodeService.Deploy(nodes);
 
         var fn = (FunctionNodeImpl)_nodeService.Nodes[functionSetValueNode.Id];
-        var result = await ExecuteNodeImplement(fn);
+        var result = await ExecuteNodeImplement(fn, msg);
         var flowNodeImpl = (FlowNodeImpl)_nodeService.Nodes[flowNode.Id];
 
-        return (flowNodeImpl, fn, result);
+        return (flowNodeImpl, result);
     }
 
     public async Task<NodeMsg> ExecuteNode<T>(T node, NodeMsg? msg = null)

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes;
@@ -20,6 +21,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
         var msg = await ExecuteFunctionNode(code);
 
         //Assert
+        msg.Payload.Should().BeOfType<int>();
         msg.Payload.Should().Be(2);
     }
 
@@ -37,10 +39,11 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
             """;
 
         //Act
-        var (flowNode, _, msg) = await ExecuteFunctionNodeEx(code);
+        var (flowNode, msg) = await ExecuteFunctionNodeEx(code);
 
         //Assert
         flowNode.Context.GetValue<int>("v").Should().Be(123);
+        msg.Payload.Should().BeOfType<int>();
         msg.Payload.Should().Be(123);
     }
 
@@ -90,5 +93,78 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
 
         //Assert
         msg.Payload.Should().Be(70);
+    }
+
+    [Fact]
+    public async Task Execute_ChangeDictionaryField_ShouldSuccessReturnCorrentDictionaryType()
+    {
+        //Arrange
+        _ = nameof(FunctionNodeImpl.Execute);
+        _ = nameof(DynamicJson);
+        _ = nameof(IRED.GlobalContext);
+
+        var dict = new Dictionary<string, string>
+        {
+            ["f"] = "f-1"
+        };
+
+        var code = """
+            var d = (Dictionary<string, string>)msg.Payload;
+            d["v"] = "x";
+            //msg["sub"] = 2;
+            msg.sub = 2;
+            return d;
+            """;
+
+        //Act
+        var msg = await RunUsingTaskManager(NodesWorkflowBuilder.Create()
+                                                .AddNext(new FunctionNode { Code = code })
+                                            , new Core.NodeMsg { Payload = dict });
+
+        //Assert
+        msg.Payload.Should().BeOfType<Dictionary<string, string>>();
+        var d = (Dictionary<string, string>)msg.Payload;
+        d["f"].Should().Be("f-1");
+        d["v"].Should().Be("x");
+        msg.Context.Should().ContainKey("sub");
+        msg.Context["sub"].Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Execute_LinqWork_ShouldWork()
+    {
+        //Arrange
+        _ = nameof(FunctionNodeImpl.Execute);
+
+        var input = new NodeMsg { Payload = "/x123/y432/required/" };
+
+        var code = """
+            return ((string)msg.Payload).Trim('/').Split('/').Last();
+            """;
+
+        //Act
+        var msg = await ExecuteFunctionNode(code, input);
+
+        //Assert
+        msg.Payload.Should().Be("required");
+    }
+
+    [Fact]
+    public async Task Execute_ArrayIndexWork_ShouldWork()
+    {
+        //Arrange
+        _ = nameof(FunctionNodeImpl.Execute);
+
+        var input = new NodeMsg { Payload = "/x123/y432/required/" };
+
+        var code = """
+            return ((string)msg.Payload).Trim('/').Split('/')[^1];
+            """;
+
+        //Act
+        var msg = await ExecuteFunctionNode(code, input);
+
+        //Assert
+        msg.Payload.Should().Be("required");
     }
 }

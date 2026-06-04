@@ -100,6 +100,7 @@ internal class RED
         InvalidateConfigNodes(Nodes, nodes);
 
         if (_assignedCount > 0) SaveVarNodeValuesAndClear();
+        DisposeNodes(Nodes);
         Nodes.Clear();
         Nodes.EnsureCapacity(nodes.Count);
         HttpRegisterdCatchers.Clear();
@@ -148,6 +149,15 @@ internal class RED
                     OnInvalidateConfigNode(configNode);
                 }
             }
+        }
+    }
+
+    private void DisposeNodes(Dictionary<string, INodeImplement> oldNodes)
+    {
+        foreach (var node in oldNodes.Values)
+        {
+            if (node is IDisposable disposable)
+                disposable.Dispose();
         }
     }
 
@@ -232,7 +242,7 @@ internal class RED
         HttpRegisterdCatchers.Add(mw);
     }
 
-    public HttpClient GetHttpClient()
+    public virtual HttpClient GetHttpClient()
     {
         var httpClient = HttpClientFactory.Create();
         return httpClient;

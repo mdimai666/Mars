@@ -20,47 +20,111 @@ public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>, INod
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        if (Node.ByFileId && !Guid.TryParse(Node.StorageFileId, out var storageFileId))
-            throw new NodeExecuteException(Node, $"Node.StorageFileId is not valid Guid '{Node.StorageFileId}'");
-        else storageFileId = Guid.Empty;
-        if (!Node.ByFileId && string.IsNullOrEmpty(Node.FilePath))
-            throw new NodeExecuteException(Node, $"Node.FilePath is empty");
+        var ct = parameters.CancellationToken;
+
+        // 1. Получаем физический путь к файлу
+        var filepath = await ResolveFilePathAsync(ct);
 
         var fs = RED.ServiceProvider.GetRequiredService<IFileStorage>();
+
+        // 2. Проверяем существование файла
+        if (!fs.FileExists(filepath))
+            throw new NodeExecuteException(Node, $"File '{filepath}' not found");
+
+        // 3. Читаем файл в зависимости от режима
+        switch (Node.OutputMode)
+        {
+            case FileServiceReadNode.FileOutputMode.SingleBuffer:
+                ReadAsBuffer(fs, filepath, input, callback);
+                break;
+
+            case FileServiceReadNode.FileOutputMode.SingleString:
+                ReadAsString(fs, filepath, input, callback);
+                break;
+
+            case FileServiceReadNode.FileOutputMode.MsgPerLine:
+                await ReadLineByLineAsync(fs, filepath, input, callback, ct);
+                break;
+
+            //case FileServiceReadNode.FileOutputMode.SingleStream:
+            //    ReadAsStream(fs, filepath, input, callback);
+            //    break;
+
+            default:
+                throw new NodeExecuteException(Node, $"Unsupported output mode: {Node.OutputMode}");
+        }
+    }
+
+    private async Task<string> ResolveFilePathAsync(CancellationToken ct)
+    {
         var fileService = RED.ServiceProvider.GetRequiredService<IMediaService>();
 
-        var fileDetail = Node.ByFileId ? await fileService.GetDetail(storageFileId, parameters.CancellationToken) : null;
-        var filepath = fileDetail?.FilePhysicalPath ?? Node.FilePath;
+        if (Node.ByFileId)
+        {
+            if (!Guid.TryParse(Node.StorageFileId, out var fileId))
+                throw new NodeExecuteException(Node, $"StorageFileId is not a valid Guid: '{Node.StorageFileId}'");
 
-        if (Node.OutputMode == FileServiceReadNode.FileOutputMode.SingleBuffer)
-        {
-            var buffer = fs.Read(filepath);
-            input.Payload = buffer;
-            callback(input);
+            var detail = await fileService.GetDetail(fileId, ct);
+            return detail?.FilePhysicalPath
+                ?? throw new NodeExecuteException(Node, $"File with ID {fileId} not found in database");
         }
-        else if (Node.OutputMode == FileServiceReadNode.FileOutputMode.SingleString)
+        else
         {
-            var text = fs.ReadAllText(filepath);
-            input.Payload = text;
-            callback(input);
-        }
-        else if (Node.OutputMode == FileServiceReadNode.FileOutputMode.MsgPerLine)
-        {
-            const int bufferSize = 2048;
-            fs.Read(filepath, out var fileStream);
-            using var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, bufferSize);
+            if (string.IsNullOrWhiteSpace(Node.FilePath))
+                throw new NodeExecuteException(Node, "FilePath is empty");
 
+            return Node.FilePath;
+        }
+    }
+
+    private void ReadAsBuffer(IFileStorage fs, string filepath, NodeMsg input, ExecuteAction callback)
+    {
+        var buffer = fs.Read(filepath);
+        input.Payload = buffer;
+        callback(input);
+    }
+
+    private void ReadAsString(IFileStorage fs, string filepath, NodeMsg input, ExecuteAction callback)
+    {
+        var text = fs.ReadAllText(filepath);
+        input.Payload = text;
+        callback(input);
+    }
+
+    private async Task ReadLineByLineAsync(
+        IFileStorage fs,
+        string filepath,
+        NodeMsg input,
+        ExecuteAction callback,
+        CancellationToken ct)
+    {
+        const int bufferSize = 8192;
+
+        fs.Read(filepath, out var fileStream);
+        using (fileStream)
+        using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize))
+        {
             string? line;
-            while ((line = streamReader.ReadLine()) != null)
+            while ((line = await streamReader.ReadLineAsync(ct)) != null)
             {
+                ct.ThrowIfCancellationRequested();
+
                 input.Payload = line;
                 callback(input);
             }
         }
-        else
-        {
-            throw new NotImplementedException();
-        }
     }
+
+    //private void ReadAsStream(IFileStorage fs, string filepath, NodeMsg input, ExecuteAction callback)
+    //{
+    //    // Вариант А: Если в IFileStorage есть метод OpenRead (рекомендуемый)
+    //    // var stream = fs.OpenRead(filepath);
+
+    //    // Вариант Б: Если используется ваш текущий API с out параметром
+    //    fs.Read(filepath, out var stream);
+
+    //    input.Payload = stream;
+    //    callback(input);
+    //}
 
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Dynamic;
 using System.Reflection;
 
@@ -123,10 +124,38 @@ public class DynamicNodeMsgWrapper : DynamicObject
         // Если были изменения в свойствах Payload, нужно обновить их
         if (_payload != null && _payloadProperties.Any())
         {
-            foreach (var prop in _payloadProperties)
+            // 1. Если сам объект _payload является словарем (или реализует IDictionary)
+            // Это правильный способ копирования данных словаря, а не через рефлексию свойств
+            if (_payload is IDictionary sourceDict && newNodeMsg.Payload is IDictionary targetDict)
             {
-                var currentValue = prop.Value.GetValue(_payload);
-                prop.Value.SetValue(newNodeMsg.Payload, currentValue);
+                foreach (DictionaryEntry entry in sourceDict)
+                {
+                    targetDict[entry.Key] = entry.Value;
+                }
+            }
+            else
+            {
+                // 2. Стандартная логика для обычных объектов (POCO-классы)
+                foreach (var prop in _payloadProperties)
+                {
+                    var propInfo = prop.Value; // Предполагаем, что это PropertyInfo
+
+                    // БЕЗОПАСНОСТЬ: Пропускаем индексаторы (свойства с параметрами).
+                    // У них GetIndexParameters().Length > 0, и GetValue без ключей вызовет ошибку.
+                    if (propInfo.GetIndexParameters().Length > 0)
+                    {
+                        continue;
+                    }
+
+                    var currentValue = propInfo.GetValue(_payload);
+
+                    if (currentValue != null && propInfo.SetMethod is not null)
+                    {
+                        // Если свойство само является словарем, здесь копируется ссылка на него.
+                        // Если нужна глубокая копия (deep copy), потребуется дополнительная логика.
+                        propInfo.SetValue(newNodeMsg.Payload, currentValue);
+                    }
+                }
             }
         }
 

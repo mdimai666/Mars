@@ -86,4 +86,12 @@ public class TemplateManager : ITemplateManager
             engine.ClearCache();
         }
     }
+
+    public void ClearCacheForEngineItem(string engineId, string templateId)
+    {
+        if (_engines.TryGetValue(engineId, out var engine))
+        {
+            engine.RemoveFromCache(templateId);
+        }
+    }
 }

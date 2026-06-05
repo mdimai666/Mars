@@ -73,11 +73,12 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
 
             // Преобразуем Stream в нужный тип на основе Content-Type и/или настроек ноды
             var payload = await ConvertResponseStreamAsync(responseStream, contentType, Node.ReturnResponse, parameters.CancellationToken);
+            input.Payload = payload;
 
             var requestInfo = new HttpRequestInfo(request, response, Node.ReturnResponse);
             input.Set(requestInfo);
 
-            callback(input.Copy(payload));
+            callback(input);
         }
         catch (FlurlHttpException ex)
         {

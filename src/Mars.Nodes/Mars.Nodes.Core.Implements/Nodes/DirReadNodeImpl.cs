@@ -23,7 +23,8 @@ public class DirReadNodeImpl : INodeImplement<DirReadNode>, INodeImplement
                                             maxDepth: Node.MaxDepth,
                                             returnRelativePaths: Node.ReturnRelativePath);
 
-        callback(input.Copy(files));
+        input.Payload = files;
+        callback(input);
         return Task.CompletedTask;
     }
 }

@@ -27,7 +27,7 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
         var http = input.Get<HttpInNodeHttpRequestContext>();
         var request = http.HttpContext.Request;
 
-        if (request.Form.Files.None()) goto Out;
+        if (!request.HasFormContentType || request.Form.Files.None()) goto Out;
 
         var requestContext = RED.ServiceProvider.GetRequiredService<IRequestContext>();
         var defaultUserId = async () => (await RED.ServiceProvider.GetRequiredService<IUserService>().DefaultContentUserAsync(parameters.CancellationToken)).Id;
@@ -49,7 +49,7 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
             }
             var fileRepository = RED.ServiceProvider.GetRequiredService<IFileRepository>();
             var files = await fileRepository.ListAll(new() { Ids = writtenFileIds }, optionsService.FileHostingInfo(), parameters.CancellationToken);
-            input = input.Copy(files);
+            input.Payload = files;
             goto Out;
         }
         else if (Node.AllowSaveFileOutsideUploads)
@@ -70,7 +70,7 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
                 }
                 fileNames.Add(filepath);
             }
-            input = input.Copy(fileNames);
+            input.Payload = fileNames;
             goto Out;
         }
         else
@@ -83,7 +83,7 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
                 await fs.WriteAsync(filepath, file.OpenReadStream(), parameters.CancellationToken);
                 fileNames.Add(filepath);
             }
-            input = input.Copy(fileNames);
+            input.Payload = fileNames;
             goto Out;
         }
 

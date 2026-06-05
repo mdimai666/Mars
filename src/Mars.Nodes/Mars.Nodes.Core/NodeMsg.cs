@@ -71,4 +71,14 @@ public class NodeMsg
             Context = new Dictionary<string, object>(Context)
         };
     }
+
+}
+
+public static class NodeMsgExtensions
+{
+    public static NodeMsg SetPayload(this NodeMsg msg, object? payload = null)
+    {
+        msg.Payload = payload;
+        return msg;
+    }
 }

@@ -15,7 +15,7 @@ public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
         //Arrange
         _ = nameof(InlineFunctionNodeImpl.Execute);
         var functions = InlineFunctionsUtilsMethodParser.ParseMethods(typeof(InlineFunctionsUtils));
-        var def = functions.First(f => f.Name == nameof(InlineFunctionsUtils.RandomNumber));
+        var def = functions.First(f => f.Name.EndsWith(nameof(InlineFunctionsUtils.RandomNumber)));
 
         var input = new NodeMsg() { Payload = 44 };
         _nodeImplementFactory.RegisterInlineFunctionNode(def);
@@ -74,7 +74,7 @@ public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
         //Arrange
         _ = nameof(InlineFunctionNodeImpl.Execute);
         var functions = InlineFunctionsUtilsMethodParser.ParseMethods(typeof(TestUtilsClass), throwOnError: false);
-        var def = functions.First(f => f.Name == nameof(TestUtilsClass.SumFunc));
+        var def = functions.First(f => f.Name.EndsWith(nameof(TestUtilsClass.SumFunc)));
 
         _nodeImplementFactory.RegisterInlineFunctionNode(def);
         var node = _nodeImplementFactory.CreateInlineFunctionNode(def, ["3"]); // second argument default is 2

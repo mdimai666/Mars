@@ -34,7 +34,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement, ID
 #endif
 
         if (Node.Property == "Payload")
-            input = input.Copy(render.Content);
+            input.Payload = render.Content;
         else
             input.Set(Node.Property, render.Content);
 

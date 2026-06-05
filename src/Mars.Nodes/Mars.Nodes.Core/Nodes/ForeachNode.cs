@@ -30,7 +30,7 @@ public class ForeachNode : Node
     {
         public int index;
         public int count;
-        public IEnumerable<object> arr = Array.Empty<object>();
+        public object[] arr = Array.Empty<object>();
     }
 }
 

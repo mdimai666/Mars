@@ -47,7 +47,8 @@ public class JoinNodeImpl : INodeImplement<JoinNode>, INodeImplement
                     list.Add(item.Payload!);
             }
 
-            callback(input.Copy(list.ToArray()));
+            input.Payload = list.ToArray();
+            callback(input);
         }
 
         return Task.CompletedTask;
@@ -57,7 +58,8 @@ public class JoinNodeImpl : INodeImplement<JoinNode>, INodeImplement
     {
         if (input.Payload is JoinNodeTimeAggregationPackState packState)
         {
-            callback(input.Copy(packState.Payload));
+            input.Payload = packState.Payload;
+            callback(input);
             return Task.CompletedTask;
         }
 
@@ -123,7 +125,8 @@ public class JoinNodeImpl : INodeImplement<JoinNode>, INodeImplement
 
         if (input.Payload is JoinNodeTimeoutState timeoutState)
         {
-            callback(input.Copy(timeoutState.Payload), output: 1);
+            input.Payload = timeoutState.Payload;
+            callback(input, output: 1);
             return Task.CompletedTask;
         }
 
@@ -137,15 +140,14 @@ public class JoinNodeImpl : INodeImplement<JoinNode>, INodeImplement
             {
                 completed.TimeoutCts?.Cancel();
 
-                var payload = input.Copy(
-                                    completed.Ports
+                input.Payload = completed.Ports
                                         .OrderBy(x => x.Key)
                                         .Select(x => x.Value)
-                                        .ToArray());
+                                        .ToArray();
 
                 completed.Dispose();
 
-                callback(payload);
+                callback(input);
             }
         }
 

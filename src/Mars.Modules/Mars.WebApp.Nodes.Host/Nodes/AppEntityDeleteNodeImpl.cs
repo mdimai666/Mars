@@ -50,9 +50,7 @@ public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INod
             input.Payload = 0;
         }
 
-        callback(input);
-
-        var input2 = input.Copy(ids);
-        callback(input2, 1);
+        callback(input, output: 0);
+        callback(input.Copy(ids), output: 1);
     }
 }

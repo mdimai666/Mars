@@ -95,7 +95,8 @@ internal class NodeTaskJob : IAsyncDisposable
 
             node.RED = CreateContextForNode(node.Id);
             //_ = ExecuteNode(result, node, portIndex, isInject: false, throwOnError: throwOnError);
-            tasks.Add(ExecuteNode(result, node, portIndex, isInject: false, sourceOutputPortIndex: output, throwOnError: throwOnError));
+            var resultCopy = result.Copy();
+            tasks.Add(ExecuteNode(resultCopy, node, portIndex, isInject: false, sourceOutputPortIndex: output, throwOnError: throwOnError));
 
         }
         return Task.WhenEach(tasks);

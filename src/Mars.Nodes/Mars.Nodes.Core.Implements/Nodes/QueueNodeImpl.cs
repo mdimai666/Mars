@@ -70,7 +70,7 @@ public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
     /// <summary>
     /// Логика извлечения следующего элемента с учетом FIFO/LIFO и MaxTask
     /// </summary>
-    private Task TryDispatchNext(NodeMsg originalInput, ExecuteAction callback, ExecutionParameters parameters)
+    private Task TryDispatchNext(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         lock (_state)
         {
@@ -87,10 +87,10 @@ public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
                     RED.Status(new NodeStatus($"Complete. Total: {_state.TotalProcessed}"));
 
                     // Создаем сообщение о завершении и сбрасываем счетчик для следующей волны
-                    NodeMsg completeMsg = originalInput.Copy(_state.TotalProcessed);
+                    input.Payload = _state.TotalProcessed;
                     _state.TotalProcessed = 0;
 
-                    callback(completeMsg, 0);
+                    callback(input, 0);
                 }
                 return Task.CompletedTask;
             }
@@ -117,7 +117,7 @@ public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
 
             _state.ActiveTasks++;
 
-            NodeMsg outMsg = originalInput.Copy(nextItem);
+            NodeMsg outMsg = input.Copy(nextItem);
 
             RED.Status(new NodeStatus($"In queue: {_state.Items.Count}, active: {_state.ActiveTasks}/{Node.MaxTask}"));
 

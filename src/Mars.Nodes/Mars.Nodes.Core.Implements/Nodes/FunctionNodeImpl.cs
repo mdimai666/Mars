@@ -88,17 +88,17 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
             else if (result is NodeMsg msg)
                 callback(msg);
             else
-                callback(input.Copy(result));
+                callback(input.SetPayload(result));
 
         }
 
-        catch (CompilationErrorException ex)
+        catch (CompilationErrorException)
         {
             RED.Status(NodeStatus.Error("compile error"));
             //RED.DebugMsg(ex);
             throw;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             RED.Status(NodeStatus.Error("error"));
             //RED.DebugMsg(ex);

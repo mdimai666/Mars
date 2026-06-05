@@ -119,7 +119,7 @@ public class SwitchNodeTests : NodeServiceUnitTestBase
         //Assert
         result.Should().NotBeNull();
         result.OutputPort.Should().Be(1);
-        result.Msg.Should().Be(input);
+        result.Msg.Should().BeEquivalentTo(input);
     }
 
 }

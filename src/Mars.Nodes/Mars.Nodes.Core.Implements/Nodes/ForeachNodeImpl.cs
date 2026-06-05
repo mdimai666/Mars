@@ -37,7 +37,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
                 ForeachNode.ForeachCycle foreachCycle = new()
                 {
                     index = 0,
-                    arr = arr,
+                    arr = arr.ToArray(),
                     count = arr.Count(),
                 };
                 input.Add(foreachCycle);
@@ -69,7 +69,7 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
             ForeachNode.ForeachCycle foreachCycle = new()
             {
                 index = 0,
-                arr = Enumerable.Range(0, count).Cast<object>(),
+                arr = [.. Enumerable.Range(0, count)],
                 count = count,
             };
             input.Add(foreachCycle);
@@ -92,18 +92,18 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
 
         if (cycle.index < cycle.count)
         {
-            NodeMsg _input = input.Copy(cycle.arr.ElementAt(cycle.index));
+            input.Payload = cycle.arr[cycle.index];
             cycle.index++;
-            _input.Set(cycle);
+            input.Set(cycle);
             RED.Status(new NodeStatus($"{cycle.index}/{cycle.count}"));
-            callback(_input, 1);
+            callback(input, 1);
         }
         else
         {
             RED.Status(new NodeStatus($"{cycle.index}/{cycle.count} complete"));
 
-            NodeMsg _input = input.Copy(cycle.count);
-            callback(_input, 0);
+            input.Payload = cycle.count;
+            callback(input, 0);
         }
 
         return Task.CompletedTask;

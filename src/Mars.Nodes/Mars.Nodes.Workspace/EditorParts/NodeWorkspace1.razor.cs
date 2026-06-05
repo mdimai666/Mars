@@ -1,10 +1,11 @@
 using System.Drawing;
+using AppFront.Shared.Interfaces;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
-using Mars.Nodes.Workspace.Interfaces;
+using Mars.Shared.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -88,10 +89,14 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     Lasso lasso = new();
 
     MouseEventArgs _lastMouseWorkspaceState = new();
+
+    public MouseEventArgs LastMouseWorkspaceState => _lastMouseWorkspaceState;
+
     NodeWirePointResolver _nodeWirePointResolver = new();
     private DotNetObjectReference<IResizeObserver> _dotNetRef = default!;
     private DotNetObjectReference<IScrollObserver> _dotNetRef2 = default!;
-
+    float containerOffsetX = 48;
+    float containerOffsetY = 40;
     //--------------------------------------
 
     protected override void OnInitialized()
@@ -121,8 +126,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         {
             foreach (var d in dragElements)
             {
-                d.node.X = (float)(e.ClientX + d.nodeX - d.clickX);
-                d.node.Y = (float)(e.ClientY + d.nodeY - d.clickY);
+                d.node.X = (float)(e.ClientX + d.nodeX - d.clickX + ScrollInfo.ScrollLeft);
+                d.node.Y = (float)(e.ClientY + d.nodeY - d.clickY + ScrollInfo.ScrollTop);
+
+                //Console.WriteLine($"e.ClientY={e.ClientY}, d.nodeY={d.nodeY}, d.clickY={d.clickY}, ScrollInfo.ScrollTop={ScrollInfo.ScrollTop}");
 
                 if (!d.node.changed) d.node.changed = true;
 
@@ -146,8 +153,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         var moves = new Dictionary<string, MovePoints>(dragElements.Count);
         dragElements.ForEach(d =>
         {
-            var x2 = (float)(e.ClientX + d.nodeX - d.clickX);
-            var y2 = (float)(e.ClientY + d.nodeY - d.clickY);
+            var x2 = (float)(e.ClientX + d.nodeX - d.clickX + ScrollInfo.ScrollLeft);
+            var y2 = (float)(e.ClientY + d.nodeY - d.clickY + ScrollInfo.ScrollTop);
 
             if (d.nodeX == x2 && d.nodeY == y2) return;
 
@@ -166,14 +173,16 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         StartDragNodes(FlowNodes.Values.Where(s => s.selected), e, false);
     }
 
-    public void StartDragNodes(IEnumerable<Node> nodes, bool startMoveUnderCursor = true)
-        => StartDragNodes(nodes, _lastMouseWorkspaceState, startMoveUnderCursor);
+    public void StartDragNodes(IEnumerable<Node> nodes, bool startMoveUnderCursor = false, float offsetX = 0, float offsetY = 0)
+        => StartDragNodes(nodes, _lastMouseWorkspaceState, startMoveUnderCursor, offsetX, offsetY);
 
-    void StartDragNodes(IEnumerable<Node> nodes, MouseEventArgs e, bool startMoveUnderCursor)
+    /// <summary>
+    /// Начать тащить ноды
+    /// </summary>
+    /// <param name="startMoveUnderCursor">Это если истина перемещается под мышку, если нет относительно где был</param>
+    void StartDragNodes(IEnumerable<Node> nodes, MouseEventArgs e, bool startMoveUnderCursor, float offsetX = 0, float offsetY = 0)
     {
         dragElements.Clear();
-        float w = 50;
-        float h = 40;
 
         var minX = nodes.Min(s => s.X);
         var minY = nodes.Min(s => s.Y);
@@ -185,10 +194,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             var drag = new DragElement
             {
                 node = _node,
-                nodeX = startMoveUnderCursor ? (float)(-w + _node.X - minX) : _node.X,
-                nodeY = startMoveUnderCursor ? (float)(-h + _node.Y - minY) : _node.Y,
-                clickX = startMoveUnderCursor ? 0 : e.ClientX,
-                clickY = startMoveUnderCursor ? 0 : e.ClientY,
+                nodeX = startMoveUnderCursor ? (float)(-containerOffsetX + _node.X - minX + ScrollInfo.ScrollLeft) : _node.X,
+                nodeY = startMoveUnderCursor ? (float)(-containerOffsetY + _node.Y - minY + ScrollInfo.ScrollTop) : _node.Y,
+                clickX = (startMoveUnderCursor ? offsetX : e.ClientX + offsetX) + ScrollInfo.ScrollLeft,
+                clickY = (startMoveUnderCursor ? offsetY : e.ClientY + offsetY) + ScrollInfo.ScrollTop,
             };
 
             dragElements.Add(drag);
@@ -458,39 +467,23 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     /// on click palette new node
     /// </summary>
     /// <param name="e"></param>
-    /// <param name="node">palette clicked node</param>
+    /// <param name="clickedPaletteNode">palette clicked node</param>
     /// <param name="instance">new instance</param>
-    public async void OnClickPaletteNewNode(MouseEventArgs e, Node node, Node instance)
+    public void OnClickPaletteNewNode(MouseEventArgs e, Node clickedPaletteNode, Node instance)
     {
         DeselectAll();
         isProcessPasteNewNode = true;
-        float w = 250;
-        float h = 40;
 
-        var scr = await js.HtmlGetElementScroll("#red-ui-workspace-chart");
+        //_logger.LogTrace($"SCR={ScrollInfo.ScrollLeft},{ScrollInfo.ScrollTop}");
 
-        _logger.LogTrace($"SCR={scr.X},{scr.Y}");
+        //_containerRef.getBoundingClientRect().x = 48
+        //_containerRef.getBoundingClientRect().y = 40
 
-        instance.X = (float)(-w + node.X + e.ClientX + 120) + scr.X;
-        instance.Y = (float)(node.Y + e.ClientY - h - 30) + scr.Y;
+        instance.X = (float)(e.PageX - containerOffsetX - e.OffsetX + ScrollInfo.ScrollLeft);
+        instance.Y = (float)(e.PageY - containerOffsetY - e.OffsetY + ScrollInfo.ScrollTop);
 
-        MouseEventArgs m2 = new()
-        {
-            Type = e.Type,
-            AltKey = e.AltKey,
-            Button = e.Button,
-            Buttons = e.Buttons,
-            Detail = e.Detail,
-            ShiftKey = e.ShiftKey,
-
-            CtrlKey = e.CtrlKey,
-            ClientX = e.ClientX,
-            ClientY = e.ClientY,
-            OffsetX = e.OffsetX,
-            OffsetY = e.OffsetY,
-        };
-
-        onNodeMouseDown(m2, instance);
+        _nodeEditor?.SetSelectContext(typeof(Node));
+        StartDragNodes([instance], startMoveUnderCursor: true, offsetX: (float)e.OffsetX - 8, offsetY: (float)e.OffsetY);
     }
 
     void onClickNodeEvent(MouseEventArgs e, Node node)

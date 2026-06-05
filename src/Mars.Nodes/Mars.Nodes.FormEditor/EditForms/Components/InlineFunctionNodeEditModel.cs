@@ -7,6 +7,7 @@ internal class InlineFunctionNodeEditModel
     IReadOnlyDictionary<string, InlineFunctionNodeSchema> _functionSchemas;
 
     public string FunctionId { get; private set; }
+    public bool IsUnknownFunction { get; private set; }
 
     public OperationInputEditModel[] ParameterValues { get; private set; } = [];
 
@@ -14,7 +15,9 @@ internal class InlineFunctionNodeEditModel
     {
         _functionSchemas = functionSchemas;
         FunctionId = node.FunctionId;
-        MethodChanged(_functionSchemas[FunctionId], node.Arguments);
+        IsUnknownFunction = !_functionSchemas.TryGetValue(FunctionId, out var func);
+        if (!IsUnknownFunction)
+            MethodChanged(func!, node.Arguments);
     }
 
     public void MethodChanged(InlineFunctionNodeSchema methodInfo, string[] arguments)

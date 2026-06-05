@@ -2,6 +2,7 @@ using System.Text.Json;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 
@@ -9,11 +10,13 @@ public class NodesCopyBufferItem : ICopyBufferItem
 {
     private string _nodesJson;
     private readonly INodeEditorApi _editor;
+    private readonly MouseEventArgs _onCopyMousePos;
 
     public NodesCopyBufferItem(INodeEditorApi editor, IEnumerable<Node> nodes)
     {
         _editor = editor;
         _nodesJson = NodesToJson(nodes);
+        _onCopyMousePos = editor.NodeWorkspace.LastMouseWorkspaceState;
     }
 
     public bool CanPaste() => true;
@@ -32,7 +35,8 @@ public class NodesCopyBufferItem : ICopyBufferItem
 
         var createdNodesIds = _editor.AllNodes.Values.Select(s => s.Id).Except(existNodesIds).ToList();
         var createdNodes = createdNodesIds.Select(id => _editor.AllNodes[id]);
-        _editor.NodeWorkspace.StartDragNodes(createdNodes);
+        (float offsetX, float offsetY) = CalcOffset(createdNodes);
+        _editor.NodeWorkspace.StartDragNodes(createdNodes, startMoveUnderCursor: true, offsetX, offsetY);
 
     }
 
@@ -62,6 +66,15 @@ public class NodesCopyBufferItem : ICopyBufferItem
             }
         }
         return nodes;
+    }
+
+    private (float offsetX, float offsetY) CalcOffset(IEnumerable<Node> nodes)
+    {
+        var minX = nodes.Min(s => s.X);
+        var minY = nodes.Min(s => s.Y);
+        var offsetX = (float)_onCopyMousePos.OffsetX - minX;
+        var offsetY = (float)_onCopyMousePos.OffsetY - minY;
+        return (offsetX, offsetY);
     }
 
     public string NodesToJson(IEnumerable<Node> nodes)

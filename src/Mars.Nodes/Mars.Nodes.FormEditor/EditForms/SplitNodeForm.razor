@@ -1,0 +1,18 @@
+@using AppFront.Shared.Components
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(SplitNode))]
+
+<div class="form-group compact" style="--fluent-input-label-basis:150px">
+
+    <FormItem2 For="() => Node.Delimiter">
+        <FluentTextField @bind-Value=Node.Delimiter />
+    </FormItem2>
+
+</div>
+
+@code {
+    [CascadingParameter] Node Value { get; set; } = default!;
+    SplitNode Node { get => (SplitNode)Value; set => Value = value; }
+
+}

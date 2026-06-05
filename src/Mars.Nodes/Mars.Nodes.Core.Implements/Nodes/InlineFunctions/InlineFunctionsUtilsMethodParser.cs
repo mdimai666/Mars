@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Reflection;
+using Mars.Core.Extensions;
 using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
@@ -17,6 +18,8 @@ public static class InlineFunctionsUtilsMethodParser
         {
             var displayAttr = methodInfo.GetCustomAttribute<DisplayAttribute>();
             var nodeAttr = methodInfo.GetCustomAttribute<MethodInlineFunctionNodeDefineAttribute>();
+
+            var nodeTypeId = nodeAttr.NodeTypeId?.AsNullIfEmpty() ?? $"parsed.{nameof(InlineFunctionNode)}.{type.Name}.{methodInfo.Name}";
 
             // Получаем типы всех параметров метода
             var paramTypes = methodInfo.GetParameters()
@@ -50,7 +53,7 @@ public static class InlineFunctionsUtilsMethodParser
 
             var inlineFunctionDefMethod = new InlineFunctionNodeDefinition()
             {
-                TypeId = $"core.{nameof(InlineFunctionNode)}.{type.Name}.{methodInfo.Name}",
+                TypeId = nodeTypeId,
                 Name = methodInfo.Name,
                 GroupName = displayAttr?.GroupName ?? "other",
                 Delegate = generatedDelegate,

@@ -1,3 +1,5 @@
+using Mars.Nodes.Core.Nodes;
+
 namespace Mars.Nodes.Core;
 
 public interface INodeExample<out TNode> where TNode : Node
@@ -10,4 +12,6 @@ public interface INodeExample<out TNode> where TNode : Node
 public interface IEditorState
 {
     public Node[] Nodes { get; }
+
+    InlineFunctionNode? CreateInlineFunctionNodeById(string nodeTypeId);
 }

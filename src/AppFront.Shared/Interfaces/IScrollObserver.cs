@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace Mars.Nodes.Workspace.Interfaces;
+namespace AppFront.Shared.Interfaces;
 
 public interface IScrollObserver
 {
@@ -11,17 +11,4 @@ public interface IScrollObserver
                                 int clientHeight,
                                 int scrollWidth,
                                 int clientWidth);
-}
-
-public readonly record struct ScrollInfo(
-    int ScrollTop,
-    int ScrollLeft,
-    int ScrollHeight,
-    int ClientHeight,
-    int ScrollWidth,
-    int ClientWidth
-)
-{
-    public bool IsAtBottom =>
-        ScrollTop + ClientHeight >= ScrollHeight - 1;
 }

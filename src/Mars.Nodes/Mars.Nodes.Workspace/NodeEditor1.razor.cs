@@ -200,6 +200,14 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         StateHasChanged();
     }
 
+    public InlineFunctionNode? CreateInlineFunctionNodeById(string nodeTypeId)
+    {
+        var inlineNodeDef = InlineFunctionNodeSchemas.GetValueOrDefault(nodeTypeId);
+        if (inlineNodeDef is null) return null;
+        var node = InlineFunctionNode.CreateInlineFunctionNode(inlineNodeDef);
+        return node;
+    }
+
     void OnMouseDownPaletteNode(MouseEventArgs e, Node paletteNode)
     {
         if (e.Button != (long)MouseButton.Left) return;
@@ -539,7 +547,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         var hh = _nodeWorkspace1.Height / 2;
         var x = Math.Clamp(node.X - wh, 0f, node.X);
         var y = Math.Clamp(node.Y - hh, 0f, node.Y);
-        _nodeWorkspace1.ScrollTo(x,y );
+        _nodeWorkspace1.ScrollTo(x, y);
         _nodeWorkspace1.SelectNode(node);
     }
 

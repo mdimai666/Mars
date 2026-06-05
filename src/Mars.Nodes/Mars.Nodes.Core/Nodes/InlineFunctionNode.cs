@@ -80,4 +80,5 @@ public sealed class MethodInlineFunctionNodeDefineAttribute : Attribute
 {
     public string? Color { get; init; }
     public string? Icon { get; init; }
+    public string? NodeTypeId { get; init; }
 }

@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace Mars.Nodes.Workspace.Interfaces;
+namespace AppFront.Shared.Interfaces;
 
 public interface IResizeObserver
 {

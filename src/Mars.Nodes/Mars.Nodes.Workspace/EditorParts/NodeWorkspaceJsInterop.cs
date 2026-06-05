@@ -1,5 +1,5 @@
 using System.Drawing;
-using Mars.Nodes.Workspace.Interfaces;
+using AppFront.Shared.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 

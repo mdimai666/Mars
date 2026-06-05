@@ -197,10 +197,12 @@ internal class NodeTaskJob : IAsyncDisposable
 
     NodeJob UpsertJob(INodeImplement node)
     {
-        var job = _jobs.TryGetValue(node.Id, out var _job) ? _job : new(node);
-        if (_job is null) _jobs.Add(node.Id, job);
-
-        return job;
+        lock (_jobs)
+        {
+            var job = _jobs.TryGetValue(node.Id, out var _job) ? _job : new(node);
+            if (_job is null) _jobs.Add(node.Id, job);
+            return job;
+        }
     }
 
     void Finalizer()

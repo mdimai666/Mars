@@ -75,6 +75,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
             var ctx = new ScriptExecuteContext
             {
+                NodeId = Node.Id,
                 msg = new DynamicNodeMsgWrapper(input),
                 RED = RED,
                 callback = callback
@@ -107,6 +108,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
     public class ScriptExecuteContext
     {
+        public string NodeId = "";
         public dynamic msg = default!;
         public IRED RED = default!;
         public ExecuteAction callback = default!;
@@ -124,5 +126,13 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                 callback(new NodeMsg { Payload = msgOrPayload }, output);
             }
         }
+
+        public void Debug(object? obj)
+            => RED.DebugMsg(new DebugMessage
+            {
+                NodeId = NodeId,
+                Message = $"Function Debug: ({obj?.GetType().Name})",
+                Json = JsonNodeImpl.ToJsonString(obj!, formatted: true)
+            });
     }
 }

@@ -11,14 +11,16 @@ return 1+1;
 ```csharp
 public class ScriptExecuteContext
 {
-    public NodeMsg msg = default!;
-    public IRED RED = default!;
-    public ExecuteAction callback = default!;
+    public string NodeId;
+    public NodeMsg msg;
+    public IRED RED;
+    public ExecuteAction callback;
     public FlowNodeImpl Flow => RED.Flow;
     //public VariablesContextDictionary Flow.FlowContext;
     public VariablesContextDictionary GlobalContext => RED.GlobalContext;
 
     public void Send(object msgOrPayload, int output = 0);
+    public void Debug(object? obj);
 }
 ```
 

@@ -33,3 +33,14 @@ public class HtmlParseNodeParseHabrPostsTitleExample1 : INodeExample<HtmlParseNo
             .Build();
     }
 }
+
+public class HtmlParseNodeDownloadImagesFromWebsiteExample : INodeExample<HtmlParseNode>
+{
+    public string Name => "Download images from website";
+    public string Description => "";
+
+    public IReadOnlyCollection<Node> Handle(IEditorState editorState)
+    {
+        return new HttpRequestNodeDownloadImagesFromWebsiteExample().Handle(editorState);
+    }
+}

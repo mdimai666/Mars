@@ -32,7 +32,7 @@ public static class InlineFunctionsUtils
     [MethodInlineFunctionNodeDefine(NodeTypeId = $"core.InlineFunctionNode.Utils.{nameof(GenerateSequentialArray)}", Color = "#dcdc9b")]
     [Display(Name = "Generate sequential array", Description = "Generates an array with sequential numbers from start to end", GroupName = "math")]
     public static int[] GenerateSequentialArray(
-        [Display(Description = "Starting number"), Required] int start = 0,
+        [Display(Description = "Starting number"), Required] int start = 1,
         [Display(Description = "Ending number (inclusive)"), Required] int end = 10)
     {
         int length = end - start + 1;

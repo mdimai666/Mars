@@ -54,6 +54,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
         {
             Inject(i);
         }
+        await Task.Delay(10);
 
         void callback(object payload)
         {

@@ -1,5 +1,6 @@
+using System.Collections.Concurrent;
+using System.Threading.Channels;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Utils;
@@ -18,27 +19,34 @@ internal class NodeTaskJob : IAsyncDisposable
 
     protected IServiceProvider _serviceProvider;
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
-    protected Dictionary<string, NodeJob> _jobs = [];
+    protected ConcurrentDictionary<string, NodeJob> _jobs = new();
     protected RED _RED;
     private readonly ILogger<NodeTaskJob>? _logger;
-    int executedCount;
-    private readonly int maxExecuteCount = 10_000;
-    bool isAllDone => _jobs.Values.All(s => s.IsDone);
+
+    private int executedCount;
+    public int MaxExecuteCount { get; init; } = 2_000;
+
+    private readonly Channel<NodeExecutionTask> _executionQueue;
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly List<Task> _workerTasks = [];
+    private readonly int _maxDegreeOfParallelism;
+    private int _activeTasksCount = 0;
+    private int _finishCalled = 0;
 
     public string InjectNodeId { get; }
     public int InjectPortIndex { get; }
     public string FlowNodeId { get; }
 
     public event Action? OnComplete;
-    public event NodeExecutionHandler OnNodeExecute = default!;
-    public event NodeExceptionHandler OnNodeException = default!;
+    public event NodeExecutionHandler? OnNodeExecute;
+    public event NodeExceptionHandler? OnNodeException;
+
     public int ExecuteCount => executedCount;
     public int NodesChainCount { get; }
     public IReadOnlyDictionary<string, NodeJob> Jobs => _jobs;
-    public bool IsDone => isAllDone;
+    public bool IsDone => _jobs.Values.All(s => s.IsDone) && _activeTasksCount == 0;
     public bool IsTerminated { get; private set; }
     public int ErrorCount => _jobs.Values.Sum(s => s.Executions.Count(x => x.Result == NodeJobExecutionResult.Fail));
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     public DateTimeOffset StartDate { get; init; }
     public DateTimeOffset? EndDate { get; private set; }
@@ -47,12 +55,14 @@ internal class NodeTaskJob : IAsyncDisposable
         RED RED,
         string injectNodeId,
         ILogger<NodeTaskJob>? logger,
-        int injectPortIndex = 0)
+        int injectPortIndex = 0,
+        int maxDegreeOfParallelism = 10)
     {
         _nodes = RED.Nodes;
         _RED = RED;
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _maxDegreeOfParallelism = maxDegreeOfParallelism;
 
         StartDate = DateTimeOffset.Now;
         InjectNodeId = injectNodeId;
@@ -60,113 +70,136 @@ internal class NodeTaskJob : IAsyncDisposable
         var injectNode = _nodes[injectNodeId].Node;
         FlowNodeId = _nodes[injectNode.Container].Id;
         NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _RED.BasicNodesDict).Count;
+
+        _executionQueue = Channel.CreateBounded<NodeExecutionTask>(new BoundedChannelOptions(1000)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = false,
+            SingleWriter = false
+        });
     }
 
-    public async void Run(NodeMsg msg, bool throwOnError = false)
+    public async Task Run(NodeMsg msg, bool throwOnError = false)
     {
         var node = _nodes[InjectNodeId];
         node.RED = CreateContextForNode(InjectNodeId);
         _RED.OnNodeImplDone += _RED_OnNodeImplDone;
 
-        _logger?.LogInformation($"🔷 Run (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
+        _logger?.LogInformation("🔷 Run (TaskId={TaskId}) ExecuteNode: {NodeName}({NodeType}/{NodeId}) [Parallel={Parallel}]",
+            TaskId, node.Node.DisplayName, node.Node.Type, node.Id, _maxDegreeOfParallelism);
 
-        await ExecuteNode(msg, node, InjectPortIndex, isInject: true, sourceOutputPortIndex: 0, throwOnError: throwOnError);
-    }
-
-    public void Terminate()
-    {
-        _logger?.LogTrace($"Terminate (TaskId={TaskId})");
-        _cancellationTokenSource.Cancel();
-
-        IsTerminated = true;
-        Finish();
-    }
-
-    IAsyncEnumerable<Task> NextWires(string completedNodeId, NodeMsg result, int output, bool throwOnError)
-    {
-        var nextNodes = GetNextWires(completedNodeId, output);
-        var tasks = new List<Task>();
-
-        foreach (var _wire in nextNodes)
+        // Запускаем воркеры
+        for (int i = 0; i < _maxDegreeOfParallelism; i++)
         {
-            var node = _nodes[_wire.NodeId];
-            var portIndex = _wire.PortIndex;
-            if (node.Node.Disabled) continue;
-
-            node.RED = CreateContextForNode(node.Id);
-            //_ = ExecuteNode(result, node, portIndex, isInject: false, throwOnError: throwOnError);
-            var resultCopy = result.Copy();
-            tasks.Add(ExecuteNode(resultCopy, node, portIndex, isInject: false, sourceOutputPortIndex: output, throwOnError: throwOnError));
-
+            _workerTasks.Add(WorkerAsync(i, throwOnError));
         }
-        return Task.WhenEach(tasks);
 
+        // Добавляем начальную задачу
+        await EnqueueExecutionAsync(msg, node, InjectPortIndex, isInject: true, sourceOutputPortIndex: 0);
+
+        // Ждем завершения всех воркеров
+        await Task.WhenAll(_workerTasks);
     }
 
-    private async Task ExecuteNode(NodeMsg input, INodeImplement node, int inputPortIndex, bool isInject, int sourceOutputPortIndex, bool throwOnError)
+    private async Task WorkerAsync(int workerId, bool throwOnError)
+    {
+        try
+        {
+            await foreach (var task in _executionQueue.Reader.ReadAllAsync(_cancellationTokenSource.Token))
+            {
+                if (_cancellationTokenSource.IsCancellationRequested) break;
+
+                _logger?.LogTrace("Worker {WorkerId} processing node {NodeId} (TaskId={TaskId})",
+                    workerId, task.Node.Id, TaskId);
+
+                await ExecuteNodeIterative(task, throwOnError);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger?.LogTrace("Worker {WorkerId} cancelled (TaskId={TaskId})", workerId, TaskId);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Worker {WorkerId} error (TaskId={TaskId})", workerId, TaskId);
+            throw;
+        }
+    }
+
+    private async Task EnqueueExecutionAsync(NodeMsg input, INodeImplement node, int inputPortIndex,
+        bool isInject, int sourceOutputPortIndex)
+    {
+        var task = new NodeExecutionTask
+        {
+            Input = input,
+            Node = node,
+            InputPortIndex = inputPortIndex,
+            IsInject = isInject,
+            SourceOutputPortIndex = sourceOutputPortIndex
+        };
+
+        Interlocked.Increment(ref _activeTasksCount);
+        await _executionQueue.Writer.WriteAsync(task, _cancellationTokenSource.Token);
+    }
+
+    private async Task ExecuteNodeIterative(NodeExecutionTask task, bool throwOnError)
     {
         if (_cancellationTokenSource.IsCancellationRequested) return;
 
-        executedCount++;
-        if (executedCount > maxExecuteCount)
-        {
-            _logger?.LogError($"MAX_EXECUTE_COUNT={maxExecuteCount}");
-            throw new Exception($"MAX_EXECUTE_COUNT={maxExecuteCount}");
-        }
-
-        var job = UpsertJob(node);
+        var node = task.Node;
+        var job = _jobs.GetOrAdd(node.Id, id => new NodeJob(_nodes[id]));
         var go = job.CreateExecutionStart();
-        var isShort = executedCount <= 10;
-        var left = isShort
-                        ? new string('>', executedCount)
-                        : (new string('>', 10) + $"({executedCount})");
-
-        if (executedCount > 1)
-            _logger?.LogTrace($"🚃 {left} (TaskId={TaskId}) \n\tExecuteNode: {node.Node.DisplayName}({node.Node.Type}/{node.Id}");
+        var isSelfFinalizing = node is ISelfFinalizingNode;
 
         try
         {
-            OnNodeExecute.Invoke(node.Id, isInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
-
-            async void callbackNext(NodeMsg e, int _output = 0)
+            var count = Interlocked.Increment(ref executedCount);
+            if (count >= MaxExecuteCount)
             {
-                //_logger?.LogTrace($"call next wire = {node.Node.DisplayName}({node.Node.Type}/{node.Id})");
+                _logger?.LogError("MAX_EXECUTE_COUNT={MaxCount} (TaskId={TaskId})", MaxExecuteCount, TaskId);
+                throw new Exception($"MAX_EXECUTE_COUNT={MaxExecuteCount}");
+            }
+
+            OnNodeExecute?.Invoke(node.Id, task.IsInject ? NodeExecutionTrigger.Inject : NodeExecutionTrigger.CallChain);
+
+            async Task callbackNext(NodeMsg e, int output = 0)
+            {
                 if (_cancellationTokenSource.IsCancellationRequested) return;
-                await foreach (var wireTask in NextWires(node.Id, e, _output, throwOnError))
+
+                var nextNodes = GetNextWires(node.Id, output);
+                foreach (var wire in nextNodes)
                 {
-                    if (_cancellationTokenSource.IsCancellationRequested) return;
-                    await wireTask;
+                    var nextNode = _nodes[wire.NodeId];
+                    if (nextNode.Node.Disabled) continue;
+
+                    nextNode.RED = CreateContextForNode(nextNode.Id);
+                    var resultCopy = e.Copy();
+
+                    await EnqueueExecutionAsync(resultCopy, nextNode, wire.PortIndex,
+                        isInject: false, sourceOutputPortIndex: output);
                 }
             }
 
             var executionParameters = new ExecutionParameters(
-                            TaskId: TaskId,
-                            JobGuid: go.JobGuid,
-                            InputPort: inputPortIndex,
-                            CancellationToken: _cancellationTokenSource.Token,
-                            SourceOutputPort: sourceOutputPortIndex);
+                TaskId: TaskId,
+                JobGuid: go.JobGuid,
+                InputPort: task.InputPortIndex,
+                CancellationToken: _cancellationTokenSource.Token,
+                SourceOutputPort: task.SourceOutputPortIndex);
 
-            await node.Execute(input, callbackNext, executionParameters);
+            if (isSelfFinalizing)
+                go.Pending();
 
-            if (node is ISelfFinalizingNode) go.Pending();
-            else go.Success();
-        }
-        //catch (OperationCanceledException ex)
-        //{
-        //    _logger?.LogError(ex, "node TaskCanceledException");
-        //    go.Terminate();
-        //}
-        catch (NodeExecuteException ex)
-        {
-            _logger?.LogError(ex, "node execute exception");
-            _RED?.DebugMsg(node.Id, ex);
-            go.Fail(ex);
-            OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
-            if (throwOnError) throw;
+            await node.Execute(task.Input,
+                                async (e, output) => await callbackNext(e, output),
+                                executionParameters);
+
+            if (!isSelfFinalizing)
+                go.Success();
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "node execute exception");
+            _logger?.LogError(ex, "Node execute exception (TaskId={TaskId}, NodeId={NodeId})", TaskId, node.Id);
             _RED?.DebugMsg(node.Id, ex);
             go.Fail(ex);
             OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
@@ -174,52 +207,48 @@ internal class NodeTaskJob : IAsyncDisposable
         }
         finally
         {
-            Finalizer();
+            var remaining = Interlocked.Decrement(ref _activeTasksCount);
+
+            if (remaining == 0 && IsDone)
+            {
+                Finish();
+                _executionQueue.Writer.Complete();
+            }
         }
+    }
+
+    public void Terminate()
+    {
+        _logger?.LogTrace("Terminate (TaskId={TaskId})", TaskId);
+        _cancellationTokenSource.Cancel();
+        _executionQueue.Writer.Complete();
+
+        IsTerminated = true;
+        Finish();
     }
 
     public RED_Context CreateContextForNode(string nodeId)
     {
         var node = _nodes[nodeId];
         var flow = node is FlowNodeImpl ? node : _nodes[node.Node.Container];
-        return new RED_Context(nodeId, (FlowNodeImpl)flow, _RED, _serviceProvider);
+
+        if (flow is not FlowNodeImpl flowImpl)
+            throw new InvalidOperationException($"Node {node.Id} or its container {node.Node.Container} is not a FlowNodeImpl");
+
+        return new RED_Context(nodeId, flowImpl, _RED, _serviceProvider);
     }
 
     IEnumerable<NodeWire> GetNextWires(string nodeId, int outputIndex)
     {
         var node = _nodes[nodeId];
-
         var outsWires = node.Node.Wires.ElementAtOrDefault(outputIndex);
-
-        if (outsWires == null) return Enumerable.Empty<NodeWire>();
-
-        return outsWires;
+        return outsWires ?? Enumerable.Empty<NodeWire>();
     }
 
-    NodeJob UpsertJob(INodeImplement node)
+    private async void _RED_OnNodeImplDone(string nodeId, Guid jobGuid)
     {
-        lock (_jobs)
-        {
-            var job = _jobs.TryGetValue(node.Id, out var _job) ? _job : new(node);
-            if (_job is null) _jobs.Add(node.Id, job);
-            return job;
-        }
-    }
-
-    void Finalizer()
-    {
-        if (!isAllDone) return;
-
-        Finish();
-    }
-
-    private void _RED_OnNodeImplDone(string nodeId, Guid jobGuid)
-    {
-        //TODO: тут есть проблема, event прячет exception,
-        //  и если у NodeImpl будет Больше одного RED.Done() то должно возникать исключение, но этого не происходит
-
         if (_nodes[nodeId] is not ISelfFinalizingNode)
-            throw new InvalidOperationException("RED.Done() - may use only :ISelfFinalizingNode ");
+            throw new InvalidOperationException("RED.Done() - may use only :ISelfFinalizingNode");
 
         var job = _jobs.GetValueOrDefault(nodeId)
                         ?? throw new InvalidOperationException("RED.Done() - job not found");
@@ -227,19 +256,26 @@ internal class NodeTaskJob : IAsyncDisposable
         var go = job.Executions.FirstOrDefault(s => s.JobGuid == jobGuid);
         if (go is null)
         {
-            _logger?.LogError("RED.Done() - job guid not found");
+            _logger?.LogError("RED.Done() - job guid not found (TaskId={TaskId})", TaskId);
             throw new InvalidOperationException("RED.Done() - job guid not found");
         }
 
         go.Success();
-        Finalizer();
+
+        if (IsDone)
+        {
+            Finish();
+            _executionQueue.Writer.Complete();
+        }
     }
 
-    void Finish()
+    private void Finish()
     {
+        if (Interlocked.Exchange(ref _finishCalled, 1) == 1) return;
+
         if (IsTerminated)
         {
-            _logger?.LogInformation($"🔴 Terminated! executedCount={executedCount}");
+            _logger?.LogInformation("🔴 Terminated! executedCount={Count} (TaskId={TaskId})", executedCount, TaskId);
             foreach (var job in _jobs.Values)
             {
                 foreach (var execution in job.Executions)
@@ -252,10 +288,11 @@ internal class NodeTaskJob : IAsyncDisposable
             }
         }
         else
-            _logger?.LogInformation($"✅ Finish! executedCount={executedCount}");
+        {
+            _logger?.LogInformation("✅ Finish! executedCount={Count} (TaskId={TaskId})", executedCount, TaskId);
+        }
 
         EndDate = DateTimeOffset.Now;
-
         OnComplete?.Invoke();
     }
 
@@ -263,10 +300,16 @@ internal class NodeTaskJob : IAsyncDisposable
     {
         _cancellationTokenSource.Dispose();
         _RED.OnNodeImplDone -= _RED_OnNodeImplDone;
-        _RED = null!;
-        _serviceProvider = null!;
-        _logger?.LogTrace($"Dispose");
+        _logger?.LogTrace("Dispose (TaskId={TaskId})", TaskId);
         return ValueTask.CompletedTask;
     }
+}
 
+internal class NodeExecutionTask
+{
+    public required NodeMsg Input { get; init; }
+    public required INodeImplement Node { get; init; }
+    public required int InputPortIndex { get; init; }
+    public required bool IsInject { get; init; }
+    public required int SourceOutputPortIndex { get; init; }
 }

@@ -124,6 +124,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     IReadOnlyCollection<NodeExampleInfo> _examplesList = [];
     IReadOnlyCollection<NodeExampleInfo> _currentPaletteNodeExamples = [];
+    Orientation? _editorSpaceOrientation;
 
     protected override void OnInitialized()
     {
@@ -178,6 +179,15 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         _examplesList = _nodesLocator.CreateExamplesList();
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_editorSpaceOrientation is null)
+        {
+            var viewPort = await js.GetViewportMetricsAsync();
+            _editorSpaceOrientation = viewPort.Orientation == ScreenOrientationType.PortraitPrimary ? Orientation.Vertical : Orientation.Horizontal;
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         Instance = null;
@@ -230,7 +240,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     #region DEBUGGER
     const string noderedDebugMessageList = "#nodered-debug-message-list";
 
-    List<DebugMessage> messages = [new()];
+    List<DebugMessage> messages = [];
 
     public void AddDebugMessage(string text) => AddDebugMessage(DebugMessage.ConsoleMessage(text));
     public void AddDebugMessage(DebugMessage msg)
@@ -242,6 +252,11 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     internal void ClearDebugMessages()
     {
         messages.Clear();
+    }
+
+    internal void ToggleConsolePosition()
+    {
+        _editorSpaceOrientation = _editorSpaceOrientation == Orientation.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
     }
     #endregion
 

@@ -1,11 +1,11 @@
 @using Mars.Nodes.Core
 <section class="DebugMessagesConsole h-100" @onclick="OnClick" @onclick:stopPropagation="true" style="">
     <div class="bg-light border-bottom p-1 d-flex align-items-center" style="height: 40px;">
-        Debug
+        Debug console
         <div class="ms-auto d-flex gap-1">
-            <button class="btn btn-sm bg-light"
-                    title="Add test messages">
-                <i class="bi bi-plus-lg"></i>
+            <button class="btn btn-sm bg-light" @onclick="_editor.ToggleConsolePosition"
+                    title="toggle console position">
+                <i class="bi bi-layout-text-window"></i>
             </button>
             <button class="btn btn-sm bg-light xcenter" @onclick=_editor.ClearDebugMessages
                     title="Clear debug window">
@@ -17,7 +17,7 @@
         <div id="nodered-debug-message-list"
              class="text-wrap text-break custom-scroll1 w-100 p-1"
              style="overflow-y:scroll;scroll-behavior: auto;">
-            <div class="debug-message-cnt border-bottom">
+            <div class="debug-message-cnt">
 
                 <ul class="list-group list-group-flush" style="font-size: 12px;">
                     @foreach (var m in Messages)

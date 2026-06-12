@@ -186,7 +186,7 @@
                     </FluentMenu>
                 </div>
             </div>
-            <FluentSplitter Orientation="Orientation.Horizontal" BarSize="6" Class="w-100" Panel1MinSize="15%" Panel2MinSize="200px" Panel2Size="20%">
+            <FluentSplitter Orientation="_editorSpaceOrientation ?? Orientation.Horizontal" BarSize="6" Class="w-100" Panel1MinSize="15%" Panel2MinSize="200px" Panel2Size="20%">
                 <Panel1>
                     <div class="h-100 w-100" style="position:relative">
                         <NodeWorkspace1 @ref=_nodeWorkspace1

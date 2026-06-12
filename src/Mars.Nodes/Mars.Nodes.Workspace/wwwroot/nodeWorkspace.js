@@ -172,3 +172,36 @@ export function scrollToElementBySelector(elementSelector) {
         inline: 'center'
     });
 }
+
+export function getElementBounds(element) {
+    if (!element) return null;
+    return element.getBoundingClientRect();
+}
+
+export function getElementBoundsBySelector(selector) {
+    const element = document.querySelector(selector);
+    if (!element) return null;
+    return element.getBoundingClientRect();
+}
+
+export function getViewportMetrics() {
+    const orientation = window.screen.orientation || {};
+    const fallbackType = window.innerHeight >= window.innerWidth ? 'portrait-primary' : 'landscape-primary';
+
+    return {
+        clientWidth: document.documentElement.clientWidth || window.innerWidth,
+        clientHeight: document.documentElement.clientHeight || window.innerHeight,
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        scrollWidth: document.documentElement.scrollWidth,
+        scrollHeight: document.documentElement.scrollHeight,
+        pageXOffset: window.scrollX || window.pageXOffset,
+        pageYOffset: window.scrollY || window.pageYOffset,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        devicePixelRatio: window.devicePixelRatio || 1,
+
+        orientationType: orientation.type || fallbackType,
+        orientationAngle: orientation.angle !== undefined ? orientation.angle : (window.orientation || 0)
+    };
+}

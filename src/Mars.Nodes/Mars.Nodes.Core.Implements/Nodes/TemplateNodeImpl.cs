@@ -1,3 +1,4 @@
+//#define DEBUG_TEMPLATOR_PERFOMANCE
 using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Host.Shared.TemplateEngine;
@@ -29,7 +30,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement, ID
         var key = "node-" + Node.Id;
         var render = _templateManager.RenderCached(Node.TemplateEngineId, key, Node.Template, data);
 
-#if DEBUG
+#if DEBUG_TEMPLATOR_PERFOMANCE
         RED.Status(new() { Text = $"ts: {TimeSpanParser.Format(render.Elapsed)}, allocated: {render.AllocatedBytes.ToHumanizedSize()}" });
 #endif
 

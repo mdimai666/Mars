@@ -10,6 +10,7 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Helpers;
 using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Mappings.Nodes;
 using Mars.Nodes.Host.Shared.Services;
@@ -42,6 +43,8 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public IReadOnlyDictionary<string, INodeImplement> Nodes => _RED.Nodes;
     public IReadOnlyDictionary<string, Node> BaseNodes => _RED.BasicNodesDict;
 
+    ThrottleByKey _executeAnimationThrottler;
+
     public NodeService([FromKeyedServices("data")] IFileStorage fileStorage,
                         RED RED,
                         IServiceProvider serviceProvider,
@@ -68,6 +71,8 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         _nodeTaskManager.OnCurrentTasksCountChanged += NodeTaskManager_OnCurrentTaskCountChanged;
         _nodeTaskManager.OnTaskNodeExecute += TaskNodeTaskManager_OnNodeInjected;
         _nodeTaskManager.OnError += TaskNodeTaskManager_OnError;
+
+        _executeAnimationThrottler = new(TimeSpan.FromMilliseconds(300));
     }
 
     public void Setup()
@@ -456,7 +461,10 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     private void TaskNodeTaskManager_OnNodeInjected(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
     {
-        _RED.BroadcastHub.OnNodeExecuted(taskId, nodeId, trigger);
+        _executeAnimationThrottler.TryExecute(nodeId, () =>
+        {
+            _RED.BroadcastHub.OnNodeExecuted(taskId, nodeId, trigger);
+        });
     }
 
     private void TaskNodeTaskManager_OnError(Guid taskId, string nodeId, string flowId, Exception exception)

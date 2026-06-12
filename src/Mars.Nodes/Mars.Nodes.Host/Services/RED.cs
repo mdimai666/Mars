@@ -10,6 +10,7 @@ using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Helpers;
 using Mars.Nodes.Host.Shared.ExceptionModule;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,11 +55,14 @@ internal class RED
 
     public NodesErrorHandlerRegistry ErrorHandlerRegistry = default!;
 
+    ThrottleByKey _broadcastStatusThrottler;
+
     public RED(BroadcastHub hub, NodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         BroadcastHub = hub;
         _nodeImplementFactory = nodeImplementFactory;
+        _broadcastStatusThrottler = new(TimeSpan.FromMilliseconds(300));
     }
 
     void ValidateNodes(IEnumerable<Node> nodes)
@@ -234,7 +238,10 @@ internal class RED
 
     public virtual void BroadcastStatus(string nodeId, NodeStatus nodeStatus)
     {
-        BroadcastHub.NodeStatus(nodeId, nodeStatus);
+        _broadcastStatusThrottler.TryExecute(nodeId, () =>
+        {
+            BroadcastHub.NodeStatus(nodeId, nodeStatus);
+        });
     }
 
     public void RegisterHttpMiddleware(HttpCatchRegister mw)

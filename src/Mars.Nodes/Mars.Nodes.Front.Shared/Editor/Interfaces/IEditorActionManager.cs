@@ -18,4 +18,5 @@ public interface IEditorActionManager
     bool IsHaveCopyBuffer { get; }
     void SetCopyBuffer(ICopyBufferItem copyBufferItem);
     void PasteCopiedBuffer();
+    void ReplaceLastAction(IEditorHistoryAction actionInstance);
 }

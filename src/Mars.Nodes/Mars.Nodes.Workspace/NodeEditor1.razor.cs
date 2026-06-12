@@ -83,9 +83,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     FlowNode? _activeFlow;
     public FlowNode? ActiveFlow => _activeFlow;
 
-    public IReadOnlyDictionary<string, Node> FlowNodes => GetFlowNodes(_activeFlow?.Id);
-    //[Parameter, SupplyParameterFromQuery(Name = "flow")] supplu not work in non route components
-    //public string InitialFlowId { get; set; } 
+    public IReadOnlyDictionary<string, Node> FlowNodes { get; private set; } = new Dictionary<string, Node>();
     #endregion
 
     EditorActionManager _actionManager = default!;
@@ -190,16 +188,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void OnChildComponentPropertyChangedRepaint() => StateHasChanged();
 
-    async void OpenOffcanvasEditor()
-    {
-        await js.ShowOffcanvas("node-editor-offcanvas", true);
-    }
-
-    public void CallStateHasChanged()
-    {
-        StateHasChanged();
-    }
-
     public InlineFunctionNode? CreateInlineFunctionNodeById(string nodeTypeId)
     {
         var inlineNodeDef = InlineFunctionNodeSchemas.GetValueOrDefault(nodeTypeId);
@@ -244,19 +232,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     List<DebugMessage> messages = [new()];
 
+    public void AddDebugMessage(string text) => AddDebugMessage(DebugMessage.ConsoleMessage(text));
     public void AddDebugMessage(DebugMessage msg)
     {
         messages.Add(msg);
-        StateHasChanged();
-        _ = js.ScrollDownElement(noderedDebugMessageList);
-    }
-
-    void AddDebugMessageTest()
-    {
-        messages.Add(DebugMessage.Test());
-        messages.Add(DebugMessage.Test());
-        messages.Add(DebugMessage.Test());
-        messages.Add(DebugMessage.Test());
         _ = js.ScrollDownElement(noderedDebugMessageList);
     }
 
@@ -434,7 +413,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     void CalcFlowNodes()
     {
-        //FlowNodes = Nodes.Where(s => s.IsVisual && s.Container == activeFlow.Id).ToList();
+        FlowNodes = GetFlowNodes(_activeFlow?.Id);
     }
 
     void ClickAddFlow()
@@ -459,6 +438,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void RecalcNodes()
     {
+        CalcFlowNodes();
         CalcTabs();
         CalcVarNodes();
         CheckActiveTab();
@@ -489,17 +469,35 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void SetNodes(IEnumerable<Node> nodes)
     {
-        AllNodes = nodes.ToDictionary(s => s.Id);
+        SetNodes(nodes.ToDictionary(s => s.Id));
     }
+
     public void AddNodes(IEnumerable<Node> nodes)
+    {
+        AddNodesAndWires(nodes, []);
+    }
+
+    public void AddNodesAndWires(IEnumerable<Node> nodes, IEnumerable<NodeConnect> connects)
     {
         foreach (var node in nodes)
             _allNodes.Add(node);
+
+        //add Wires
+        foreach (var w in connects)
+        {
+            _allNodes[w.Node1.NodeId].Wires[w.Node1.PortIndex].Add(w.Node2);
+        }
+
         AllNodes = _allNodes;
         RecalcNodes();
     }
 
     public void DeleteNodes(IEnumerable<Node> nodes)
+    {
+        DeleteNodesAndWires(nodes, []);
+    }
+
+    public void DeleteNodesAndWires(IEnumerable<Node> nodes, IEnumerable<NodeConnect> connects)
     {
         var nodeIds = nodes.Select(s => s.Id).ToHashSet();
 
@@ -525,8 +523,20 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         foreach (var node in nodes)
             _allNodes.Remove(node.Id);
+
+        //RemoveWires
+        foreach (var w in connects)
+        {
+            _allNodes[w.Node1.NodeId].Wires[w.Node1.PortIndex].RemoveAll(s => s == w.Node2);
+        }
+
         AllNodes = _allNodes;
         RecalcNodes();
+    }
+
+    public void RedrawWires()
+    {
+        _nodeWorkspace1.RedrawWires();
     }
 
     public void FocusNode(string nodeId)

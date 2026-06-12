@@ -132,7 +132,7 @@ public static class NodeWireUtil
 
                     var newWire = new Wire
                     {
-                        Id = $"{node.Id}->{wire}", // уникальный ID провода
+                        Id = $"{node.Id}#{outputIndex}->{wire}", // уникальный ID провода
                         Node1 = new NodeWire(node.Id, outputIndex),
                         Node2 = wire,
 
@@ -148,5 +148,31 @@ public static class NodeWireUtil
         }
 
         return wires.ToArray();
+    }
+
+    public static void UpdateWiresPosition(Node node, Dictionary<(NodeWire, NodeWire), Wire> wiresDict, IReadOnlyDictionary<string, Node> nodes, INodeWirePointResolver nodeWirePointResolver)
+    {
+        for (int outputIndex = 0; outputIndex < node.Wires.Count; outputIndex++)
+        {
+            var outputWires = node.Wires[outputIndex];
+            var startWire = new NodeWire(node.Id, outputIndex);
+
+            foreach (var outWire in outputWires)
+            {
+                if (!nodes.TryGetValue(outWire.NodeId, out var targetNode))
+                    continue;
+
+                var points = nodeWirePointResolver.GetPoints(node, outputIndex, targetNode, outWire.PortIndex);
+
+                if (wiresDict.TryGetValue((startWire, outWire), out var wireEl))
+                {
+                    wireEl.X1 = points.Start.X;
+                    wireEl.Y1 = points.Start.Y;
+                    wireEl.X2 = points.End.X;
+                    wireEl.Y2 = points.End.Y;
+                }
+            }
+        }
+
     }
 }

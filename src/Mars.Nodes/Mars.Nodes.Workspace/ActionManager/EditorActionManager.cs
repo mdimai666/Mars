@@ -146,6 +146,8 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                 if (_undoStack.Count > MaxHistory)
                     _undoStack.TrimExcessHistory(MaxHistory);
 
+                foreach (var a in _redoStack)
+                    if (a is IDisposable disposable) disposable.Dispose();
                 _redoStack.Clear();
 
                 Notify(nameof(CanUndo));
@@ -153,6 +155,13 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
                 //Tools.SetTimeout(_nodeEditor.CallStateHasChanged, 1);
             }
         }
+    }
+
+    public void ReplaceLastAction(IEditorHistoryAction actionInstance)
+    {
+        var last = _undoStack.Pop();
+        if (last is IDisposable disposable) disposable.Dispose();
+        _undoStack.Push(actionInstance);
     }
 
     public void Undo()
@@ -187,7 +196,10 @@ public class EditorActionManager : IEditorActionManager, INotifyPropertyChanged
     public bool CanRedo => _redoStack.Count > 0;
 
     public void SetCopyBuffer(ICopyBufferItem copyBufferItem)
-        => _copyBuffer = copyBufferItem;
+    {
+        if (_copyBuffer is IDisposable disposable) disposable.Dispose();
+        _copyBuffer = copyBufferItem;
+    }
     public bool IsHaveCopyBuffer => _copyBuffer != null;
     public void PasteCopiedBuffer()
     {

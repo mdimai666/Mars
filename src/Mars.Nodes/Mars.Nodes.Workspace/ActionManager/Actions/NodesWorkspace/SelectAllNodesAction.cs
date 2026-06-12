@@ -16,13 +16,11 @@ public class SelectAllNodesAction : BaseEditorHistoryAction
     {
         foreach (var node in _editor.NodeWorkspace.FlowNodes.Values)
             node.selected = true;
-        _editor.NodeWorkspace.CallStateHasChanged();
     }
 
     public override void Undo()
     {
         foreach (var node in _editor.NodeWorkspace.FlowNodes.Values)
             node.selected = _selNodesIds.Contains(node.Id);
-        _editor.NodeWorkspace.CallStateHasChanged();
     }
 }

@@ -18,3 +18,5 @@ public class NewWire : Wire
 {
     public bool IsOutput { get; set; }
 }
+
+public record NodeConnect(NodeWire Node1, NodeWire Node2);

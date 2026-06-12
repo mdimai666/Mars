@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 
@@ -7,15 +6,14 @@ namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 public class DeleteNodesAndWiresAction : BaseEditorHistoryAction
 {
     private string _deletedNodesJson = default!;
-    private string _deletedWiresJson = default!;
-    IReadOnlyDictionary<string, List<(int outIndex, NodeWire[] wires)>> _dependWires = default!;
+    List<NodeConnect> _selectedConnectsToRemove = default!;
+    List<NodeConnect> _dependConnectsToRemove = default!;
 
     public DeleteNodesAndWiresAction(INodeEditorApi editor, IEnumerable<Node> deleteNodes) : base(editor)
     {
         _deletedNodesJson = NodesToJson(deleteNodes);
-        _dependWires = GetDependWires(deleteNodes);
-        var selWires = _editor.NodeWorkspace.Wires.Where(s => s.Selected).ToList();
-        _deletedWiresJson = JsonSerializer.Serialize(selWires);
+        _dependConnectsToRemove = GetDependWires(deleteNodes);
+        _selectedConnectsToRemove = _editor.NodeWorkspace.Wires.Where(s => s.Selected).Select(s => new NodeConnect(s.Node1, s.Node2)).ToList();
     }
 
     public override bool CanExecute() => true;
@@ -23,17 +21,12 @@ public class DeleteNodesAndWiresAction : BaseEditorHistoryAction
     public override void Execute()
     {
         var selected = NodesFromJson(_deletedNodesJson);
-        var selWires = JsonSerializer.Deserialize<Wire[]>(_deletedWiresJson)!;
-
-        _editor.DeleteNodes(selected);
-        RemoveWires(selWires);
-        _editor.NodeWorkspace.RedrawWires();
-        Tools.SetTimeout(_editor.NodeWorkspace.RedrawWires, 1);//хак, не сразу обновляется
+        _editor.DeleteNodesAndWires(selected, _selectedConnectsToRemove);
     }
 
-    IReadOnlyDictionary<string, List<(int outIndex, NodeWire[] wires)>> GetDependWires(IEnumerable<Node> nodes)
+    List<NodeConnect> GetDependWires(IEnumerable<Node> nodes)
     {
-        var dict = new Dictionary<string, List<(int outIndex, NodeWire[])>>();
+        var list = new List<NodeConnect>();
         var nodeIds = nodes.Select(s => s.Id).ToHashSet();
 
         var linkNodesIds = _editor.NodeWorkspace.Wires.Where(w => nodeIds.Contains(w.Node1.NodeId) || nodeIds.Contains(w.Node2.NodeId))
@@ -46,56 +39,23 @@ public class DeleteNodesAndWiresAction : BaseEditorHistoryAction
         {
             var node = _editor.AllNodes[id];
             int outIndex = 0;
-            var outs = new List<(int outIndex, NodeWire[])>();
             foreach (var wireOuts in node.Wires)
             {
                 var outsToRemove = wireOuts.Where(s => nodeIds.Contains(s.NodeId)).ToList();
                 if (outsToRemove.Any())
                 {
-                    outs.Add((outIndex, outsToRemove.ToArray()));
+                    foreach (var wire in outsToRemove)
+                        list.Add(new NodeConnect(new(id, outIndex), wire));
                 }
                 outIndex++;
             }
-            if (outs.Any())
-            {
-                dict.Add(id, outs);
-            }
         }
-        return dict;
-    }
-
-    void RemoveWires(IEnumerable<Wire> selWires)
-    {
-        foreach (var w in selWires)
-        {
-            _editor.AllNodes[w.Node1.NodeId].Wires[w.Node1.PortIndex].RemoveAll(s => s.NodeId == w.Node2.NodeId);
-        }
-    }
-
-    void RestoreWires(IEnumerable<Wire> selWires)
-    {
-        foreach (var w in selWires)
-        {
-            _editor.AllNodes[w.Node1.NodeId].Wires[w.Node1.PortIndex].Add(w.Node2);
-        }
+        return list;
     }
 
     public override void Undo()
     {
         var deletedNodes = NodesFromJson(_deletedNodesJson);
-
-        foreach (var (nodeId, wires) in _dependWires)
-        {
-            var node = _editor.AllNodes[nodeId];
-            foreach (var w in wires)
-            {
-                node.Wires.ElementAt(w.outIndex).AddRange(w.wires);
-            }
-        }
-        _editor.AddNodes(deletedNodes);
-        var deletedWires = JsonSerializer.Deserialize<Wire[]>(_deletedWiresJson)!;
-        RestoreWires(deletedWires);
-        _editor.NodeWorkspace.RedrawWires();
-        Tools.SetTimeout(_editor.NodeWorkspace.RedrawWires, 1);//хак, не сразу обновляется
+        _editor.AddNodesAndWires(deletedNodes, [.. _selectedConnectsToRemove, .. _dependConnectsToRemove]);
     }
 }

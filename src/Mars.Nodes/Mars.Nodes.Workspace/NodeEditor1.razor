@@ -41,7 +41,7 @@
 
                 <div class="d-flex gap-2 me-2">
                     <FluentButton Appearance="Appearance.Stealth" OnClick="OnJobListHistoryButtonClick" Title="task history">
-                        <FluentIcon Value="@(new Icons.Regular.Size24.History())" Color="Color.Neutral" />
+                        <FluentIcon Value="@(new Icons.Regular.Size24.History().WithColor(Color.Neutral))" />
                     </FluentButton>
                     <FluentButton OnClick="@(_actionManager.ExecuteAction<TerminateAllJobsAction>)"
                                   IconStart="@(new Icons16R.DismissSquareMultiple().WithColor(Color.Neutral))"
@@ -186,59 +186,63 @@
                     </FluentMenu>
                 </div>
             </div>
-            <div class="w-100">
-                <div class="h-100" style="position:relative">
-                    <NodeWorkspace1 @ref=_nodeWorkspace1
-                                    Style=""
-                                    Class="h-100"
-                                    OnInject="OnInject"
-                                    FlowNodes=FlowNodes
-                                    OnMouseEnter="OnWorkspaceMouseEnter"
-                                    OnClickNode="OnClickNode"
-                                    OnDblClickNode="OnDblClickNode"
-                                    OnNodeContextMenu="OnNodeContextMenu"
-                                    OnWireContextMenu="OnWireContextMenu"
-                                    OnWorkspaceClick="OnWorkspaceClick"
-                                    OnWorkspaceDblClick="OnWorkspaceDblClick">
-                        <QuickNodeAddMenu Palette="Palette"
-                                          @ref=quickNodeAddMenu
-                                          OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))"
-                                          OnNodeContextMenu="OnPaletteNodeContextMenu" />
-                        <FluentMenu UseMenuService="!true"
-                                    @ref="_workspaceContextMenu"
-                                    @bind-Open="_showWorkspaceContextMenu"
-                                    Style="position:absolute !important;"
-                                    VerticalThreshold="170">
-                            @if (_selectContext == typeof(Node))
-                            {
-                                foreach (var item in NodeContextMenuItems)
+            <FluentSplitter Orientation="Orientation.Horizontal" BarSize="6" Class="w-100" Panel1MinSize="15%" Panel2MinSize="200px" Panel2Size="20%">
+                <Panel1>
+                    <div class="h-100 w-100" style="position:relative">
+                        <NodeWorkspace1 @ref=_nodeWorkspace1
+                                        Style=""
+                                        Class="h-100"
+                                        OnInject="OnInject"
+                                        FlowNodes=FlowNodes
+                                        OnMouseEnter="OnWorkspaceMouseEnter"
+                                        OnClickNode="OnClickNode"
+                                        OnDblClickNode="OnDblClickNode"
+                                        OnNodeContextMenu="OnNodeContextMenu"
+                                        OnWireContextMenu="OnWireContextMenu"
+                                        OnWorkspaceClick="OnWorkspaceClick"
+                                        OnWorkspaceDblClick="OnWorkspaceDblClick">
+                            <QuickNodeAddMenu Palette="Palette"
+                                              @ref=quickNodeAddMenu
+                                              OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))"
+                                              OnNodeContextMenu="OnPaletteNodeContextMenu" />
+                            <FluentMenu UseMenuService="!true"
+                                        @ref="_workspaceContextMenu"
+                                        @bind-Open="_showWorkspaceContextMenu"
+                                        Style="position:absolute !important;"
+                                        VerticalThreshold="170">
+                                @if (_selectContext == typeof(Node))
                                 {
-                                    <FluentMenuItem OnClick="@((e) => OnNodeContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                    foreach (var item in NodeContextMenuItems)
+                                    {
+                                        <FluentMenuItem OnClick="@((e) => OnNodeContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                    }
+                                    <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
+                                        <MenuItems>
+                                            @foreach (var _example in _currentPaletteNodeExamples)
+                                            {
+                                                var example = _example;
+                                                <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
+                                            }
+                                        </MenuItems>
+                                    </FluentMenuItem>
                                 }
-                                <FluentMenuItem Label="Examples" Disabled="!_currentPaletteNodeExamples.Any()">
-                                    <MenuItems>
-                                        @foreach (var _example in _currentPaletteNodeExamples)
-                                        {
-                                            var example = _example;
-                                            <FluentMenuItem Label="@example.Name" OnClick="@(() => UseExample(example))" />
-                                        }
-                                    </MenuItems>
-                                </FluentMenuItem>
-                            }
-                            else if (_selectContext == typeof(Wire))
-                            {
-                                foreach (var item in WireContextMenuItems)
+                                else if (_selectContext == typeof(Wire))
                                 {
-                                    <FluentMenuItem OnClick="@((e) => OnWireContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                    foreach (var item in WireContextMenuItems)
+                                    {
+                                        <FluentMenuItem OnClick="@((e) => OnWireContextMenuItemClick(e, item.Key))">@item.Value</FluentMenuItem>
+                                    }
                                 }
-                            }
-                        </FluentMenu>
-                    </NodeWorkspace1>
-                </div>
-            </div>
-            <div class="flex-shrink-0 bg-white d-flex flex-column" style="width: clamp(250px, 23vw, 1000px);height:100%;">
-                <DebugMessagesConsole Messages="messages" />
-            </div>
+                            </FluentMenu>
+                        </NodeWorkspace1>
+                    </div>
+                </Panel1>
+                <Panel2>
+                    <div class="demopanel">
+                        <DebugMessagesConsole Messages="messages" />
+                    </div>
+                </Panel2>
+            </FluentSplitter>
             <NodeEditContainer1 @ref=nodeEditContainer1
                                 OnSave="OnEditFormSaveNodeClick"
                                 OnDelete="DeleteNode"
@@ -249,42 +253,6 @@
 </div>
 
 <style>
-
-    .debug-text {
-        font-size: 14px;
-    }
-
-    .debug-msg-id {
-        font-size: 10px;
-        color: #AC4D4D;
-    }
-
-    .debug-msg-footer {
-        font-size: 10px;
-    }
-
-    .debug-json-pre {
-        display: block;
-        padding: 5px;
-        word-break: break-all;
-        word-wrap: break-word;
-        white-space: pre-wrap;
-        background-color: #f7f7f7;
-        border: 1px solid #ccc;
-        border-radius: 2px;
-        /*pre*/
-        font-family: Menlo,Consolas,"DejaVu Sans Mono",Courier,monospace;
-        font-size: 13px;
-        line-height: 1.2em;
-        color: #b72828;
-    }
-
-    .bicon {
-        width: 1em;
-        height: 1em;
-        display: inline-block;
-    }
-
     .btn-terminate-all-tasks:hover {
         --neutral-foreground-rest: red;
     }

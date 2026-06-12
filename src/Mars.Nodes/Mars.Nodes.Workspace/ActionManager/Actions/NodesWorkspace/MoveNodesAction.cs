@@ -24,7 +24,7 @@ public class MoveNodesAction : BaseEditorHistoryAction
             node.X = p.End.X;
             node.Y = p.End.Y;
         }
-        _editor.NodeWorkspace.RedrawWires();
+        _editor.RedrawWires();
     }
 
     public override void Undo()
@@ -35,6 +35,6 @@ public class MoveNodesAction : BaseEditorHistoryAction
             node.X = p.Start.X;
             node.Y = p.Start.Y;
         }
-        _editor.NodeWorkspace.RedrawWires();
+        _editor.RedrawWires();
     }
 }

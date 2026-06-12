@@ -16,11 +16,11 @@ public interface INodeEditorApi
     JsonSerializerOptions NodesJsonSerializerOptions { get; }
     IReadOnlyDictionary<string, InlineFunctionNodeSchema> InlineFunctionNodeSchemas { get; }
 
-    void CallStateHasChanged();
     void SetNodes(IDictionary<string, Node> nodes);
     void SetNodes(IEnumerable<Node> nodes);
     void AddNodes(IEnumerable<Node> nodes);
     void DeleteNodes(IEnumerable<Node> nodes);
+    void DeleteNodesAndWires(IEnumerable<Node> nodes, IEnumerable<NodeConnect> connects);
 
     void SetSelectContext(Type? type);
     void DeployClick();
@@ -32,6 +32,10 @@ public interface INodeEditorApi
     void StartEditNode(Node node);
     void StartCreateNewConfigNode(AppendNewConfigNodeEvent appendNewConfigNodeEvent);
     void EnableHotkeys(bool enable);
+    void RedrawWires();
+    void AddDebugMessage(DebugMessage msg);
+    void AddNodesAndWires(IEnumerable<Node> nodes, IEnumerable<NodeConnect> connects);
+    void AddDebugMessage(string text);
 }
 
 public class AppendNewConfigNodeEvent

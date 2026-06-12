@@ -3,9 +3,10 @@ using Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 
 [EditorActionCommand("DuplicateSelectedNodes", "Ctrl+Shift+KeyD")]
-public class DuplicateSelectedNodesAction : BaseEditorHistoryAction
+public class DuplicateSelectedNodesAction : BaseEditorHistoryAction, IDisposable
 {
-    private readonly string _selectNodesJson;
+    private string _selectNodesJson;
+    private bool _dragEndPositionWritted;
 
     public DuplicateSelectedNodesAction(INodeEditorApi editor) : base(editor)
     {
@@ -13,6 +14,7 @@ public class DuplicateSelectedNodesAction : BaseEditorHistoryAction
         var selectNodesJson = NodesToJson(selectNodes);
         var nodesCopy = NodesCopyBufferItem.CreateNodesCopies(selectNodesJson, _editor.NodesJsonSerializerOptions);
         _selectNodesJson = NodesToJson(nodesCopy);
+        _editor.NodeWorkspace.OnDragNodesEnded += CatchDragNodesEnded;
     }
 
     public override bool CanExecute() => _editor.NodeWorkspace.SelectedNodes().Any();
@@ -23,7 +25,9 @@ public class DuplicateSelectedNodesAction : BaseEditorHistoryAction
         _editor.ActionManager.ExecuteAction(new CreateNodesAction(_editor, nodes));
 
         var createdNodes = nodes.Select(node => _editor.AllNodes[node.Id]);
-        _editor.NodeWorkspace.StartDragNodes(createdNodes);
+
+        if (!_dragEndPositionWritted)
+            _editor.NodeWorkspace.StartDragNodes(createdNodes);
     }
 
     public override void Undo()
@@ -32,6 +36,26 @@ public class DuplicateSelectedNodesAction : BaseEditorHistoryAction
         var targetNodes = nodesCopy.Select(s => _editor.AllNodes[s.Id]).ToList();
 
         _editor.DeleteNodes(targetNodes);
-        _editor.NodeWorkspace.RedrawWires();
+    }
+
+    void CatchDragNodesEnded(IEnumerable<string> nodeIds)
+    {
+        if (!_dragEndPositionWritted)
+        {
+            var nodes = NodesFromJson(_selectNodesJson);
+            foreach (var node in nodes)
+            {
+                node.X = _editor.AllNodes[node.Id].X;
+                node.Y = _editor.AllNodes[node.Id].Y;
+            }
+            _selectNodesJson = NodesToJson(nodes);
+            _dragEndPositionWritted = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        _editor.AddDebugMessage("DuplicateSelectedNodesAction disposed");
+        _editor.NodeWorkspace.OnDragNodesEnded -= CatchDragNodesEnded;
     }
 }

@@ -11,10 +11,11 @@ public interface INodeWorkspaceApi
     ScrollInfo ScrollInfo { get; }
     MouseEventArgs LastMouseWorkspaceState { get; }
 
+    event Action<IEnumerable<string>> OnDragNodesStarted;
+    event Action<IEnumerable<string>> OnDragNodesEnded;
+
     IReadOnlyCollection<Node> SelectedNodes();
     IReadOnlyCollection<Wire> SelectedWires();
 
-    void RedrawWires();
-    void CallStateHasChanged();
     void StartDragNodes(IEnumerable<Node> nodes, bool startMoveUnderCursor = true, float offsetX = 0, float offsetY = 0);
 }

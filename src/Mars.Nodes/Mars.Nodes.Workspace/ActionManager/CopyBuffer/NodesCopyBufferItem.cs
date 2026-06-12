@@ -8,22 +8,25 @@ namespace Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 
 public class NodesCopyBufferItem : ICopyBufferItem
 {
-    private string _nodesJson;
+    private string _copiedNodesJson;
     private readonly INodeEditorApi _editor;
     private readonly MouseEventArgs _onCopyMousePos;
+    private bool _dragEndPositionWritted;
+    private string? _pastedNodesJson;
 
     public NodesCopyBufferItem(INodeEditorApi editor, IEnumerable<Node> nodes)
     {
         _editor = editor;
-        _nodesJson = NodesToJson(nodes);
+        _copiedNodesJson = NodesToJson(nodes);
         _onCopyMousePos = editor.NodeWorkspace.LastMouseWorkspaceState;
+        _editor.NodeWorkspace.OnDragNodesEnded += CatchDragNodesEnded;
     }
 
     public bool CanPaste() => true;
 
     public void Paste()
     {
-        var nodesCopy = CreateNodesCopies(_nodesJson, _editor.NodesJsonSerializerOptions);
+        var nodesCopy = CreateNodesCopies(_copiedNodesJson, _editor.NodesJsonSerializerOptions);
         var flowId = _editor.ActiveFlow?.Id ?? throw new ArgumentNullException("ActiveFlow is null, ActiveFlow should be set");
         foreach (var node in nodesCopy)
         {
@@ -32,12 +35,13 @@ public class NodesCopyBufferItem : ICopyBufferItem
 
         var existNodesIds = _editor.AllNodes.Values.Select(s => s.Id).ToList();
         _editor.ActionManager.ExecuteAction(new CreateNodesAction(_editor, nodesCopy));
+        _pastedNodesJson = NodesToJson(nodesCopy);
 
+        _dragEndPositionWritted = false;
         var createdNodesIds = _editor.AllNodes.Values.Select(s => s.Id).Except(existNodesIds).ToList();
         var createdNodes = createdNodesIds.Select(id => _editor.AllNodes[id]);
         (float offsetX, float offsetY) = CalcOffset(createdNodes);
         _editor.NodeWorkspace.StartDragNodes(createdNodes, startMoveUnderCursor: true, offsetX, offsetY);
-
     }
 
     public static Node[] CreateNodesCopies(string nodesJson, JsonSerializerOptions jsonSerializerOptionsWithNodesConverter)
@@ -75,6 +79,27 @@ public class NodesCopyBufferItem : ICopyBufferItem
         var offsetX = (float)_onCopyMousePos.OffsetX - minX;
         var offsetY = (float)_onCopyMousePos.OffsetY - minY;
         return (offsetX, offsetY);
+    }
+
+    void CatchDragNodesEnded(IEnumerable<string> nodeIds)
+    {
+        if (!_dragEndPositionWritted && _pastedNodesJson != null)
+        {
+            var nodes = NodesFromJson(_pastedNodesJson);
+            foreach (var node in nodes)
+            {
+                node.X = _editor.AllNodes[node.Id].X;
+                node.Y = _editor.AllNodes[node.Id].Y;
+            }
+            _pastedNodesJson = NodesToJson(nodes);
+            _editor.ActionManager.ReplaceLastAction(new CreateNodesAction(_editor, nodes));
+            _dragEndPositionWritted = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        _editor.NodeWorkspace.OnDragNodesEnded -= CatchDragNodesEnded;
     }
 
     public string NodesToJson(IEnumerable<Node> nodes)

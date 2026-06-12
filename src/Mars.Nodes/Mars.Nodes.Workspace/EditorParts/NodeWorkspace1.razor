@@ -29,7 +29,7 @@
             <!-- <rect class="red-ui-workspace-chart-background" width="5000" height="5000"></rect> -->
             <rect class="1red-ui-workspace-chart-background"
                   fill="url(#img1)"
-                  @oncontextmenu=@(e=>{ })
+                  @oncontextmenu=@(e => { })
                   @oncontextmenu:preventDefault="true"
                   width="5000"
                   height="5000"></rect>
@@ -44,20 +44,21 @@
                                OnMouseUp="e=>onWireMouseUp(e,new_wire)" />
             }
 
-            @foreach (var _wire in _wires)
+            @foreach (var _nodeWires in _nodeWires.Values)
             {
-                var wire = _wire;
-                @*key="'wire-' + wire.Id"*@
-                <WireComponent @key=wire
-                               selected="wire.Selected"
-                               disable="wire.Disable"
-                               x1="wire.X1"
-                               y1="wire.Y1"
-                               x2="wire.X2"
-                               y2="wire.Y2"
-                               OnMouseDown="e=>onWireMouseDown(e,wire)"
-                               OnContextMenu="e=>OnWireContextMenuEvent(e, wire)"/>
-                @*@mousedown.native.stop="(e) => onWireMouseDown(e, wire)"*@
+                foreach (var _wire in _nodeWires.wires.Values)
+                {
+                    var wire = _wire;
+                    <WireComponent @key=wire.Id
+                                   selected="wire.Selected"
+                                   disable="wire.Disable"
+                                   x1="wire.X1"
+                                   y1="wire.Y1"
+                                   x2="wire.X2"
+                                   y2="wire.Y2"
+                                   OnMouseDown="e=>onWireMouseDown(e,wire)"
+                                   OnContextMenu="e=>OnWireContextMenuEvent(e, wire)" />
+                }
             }
 
             @foreach (var _node in FlowNodes.Values)
@@ -67,7 +68,7 @@
                 if (node is MicroschemeNode)
                 {
                     <MicroschemeComponent node="node"
-                                          @key=node
+                                          @key=node.Id
                                           x="node.X"
                                           y="node.Y"
                                           OnMouseDown="(e) => onNodeMouseDown(e, node)"
@@ -76,23 +77,23 @@
                                           wireStartNewEnd="wire_StartNewEnd"
                                           OnInject="OnInject"
                                           OnClick=@(e=>onClickNodeEvent(e,node))
-                    OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                                          OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
                 }
-                else if(node is CommentNode commentNode)
+                else if (node is CommentNode commentNode)
                 {
                     <CommentNodeComponent node="commentNode"
-                                   @key=node
-                                   x="node.X"
-                                   y="node.Y"
-                                   OnMouseDown="(e) => onNodeMouseDown(e, node)"
-                                   OnMouseUp="(e) => onNodeMouseUp(e, node)"
-                                   OnClick=@(e=>onClickNodeEvent(e,node))
-                                   OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                                          @key=node.Id
+                                          x="node.X"
+                                          y="node.Y"
+                                          OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                                          OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                          OnClick=@(e=>onClickNodeEvent(e,node))
+                                          OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
                 }
                 else
                 {
                     <NodeComponent node="node"
-                                   @key=node
+                                   @key=node.Id
                                    x="node.X"
                                    y="node.Y"
                                    OnMouseDown="(e) => onNodeMouseDown(e, node)"

@@ -21,11 +21,11 @@ public class CreateNodesAction : BaseEditorHistoryAction
         // поэтому добавляем их если только их уже нет
         var nodes = NodesFromJson(_newNodesJson);
         var nonExistNodes = nodes.Where(node => !_editor.AllNodes.ContainsKey(node.Id)).ToList();
+        foreach (var node in nodes) node.changed = true;
 
         if (nonExistNodes.Any())
         {
             _editor.AddNodes(nonExistNodes);
-            _editor.NodeWorkspace.RedrawWires();
         }
 
         if (_startDrag)
@@ -41,6 +41,5 @@ public class CreateNodesAction : BaseEditorHistoryAction
         var targetNodes = nodesCopy.Select(s => _editor.AllNodes[s.Id]).ToList();
 
         _editor.DeleteNodes(targetNodes);
-        _editor.NodeWorkspace.RedrawWires();
     }
 }

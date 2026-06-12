@@ -1,5 +1,6 @@
 using System.Drawing;
 using AppFront.Shared.Interfaces;
+using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Workspace.ActionManager;
@@ -22,6 +23,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     [Inject] IJSRuntime JSRuntime { get; set; } = default!;
     NodeWorkspaceJsInterop js = default!;
 
+    public event Action<IEnumerable<string>> OnDragNodesStarted = default!;
+    public event Action<IEnumerable<string>> OnDragNodesEnded = default!;
+
     [CascadingParameter] INodeEditorApi _nodeEditor { get; set; } = default!;
 
     ElementReference _containerRef = default!;
@@ -34,10 +38,11 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
     IReadOnlyDictionary<string, Node> _flowNodes { get; set; } = new Dictionary<string, Node>();
 
-    Node? sel_node;
-    List<DragElement> dragElements { get; set; } = [];
-    bool drag = false;
-    bool isProcessPasteNewNode;
+    Node? _sel_node;
+    List<DragElement> _dragElements { get; set; } = [];
+    HashSet<Node> _allNodesInTheDragBundle = [];
+    bool _drag;
+    bool _isProcessPasteNewNode;
 
     [Parameter]
     public IReadOnlyDictionary<string, Node> FlowNodes
@@ -46,28 +51,21 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         set
         {
             if (_flowNodes == value) return;
-
-            string? oldFlowId = _flowNodes.Values.FirstOrDefault()?.Container;
-            string? newFlowId = value.Values.FirstOrDefault()?.Container;
-
             _flowNodes = value;
-
-            if (oldFlowId != newFlowId)
-            {
-                RefreshWires();
-            }
-
-            //_logger.LogTrace("Workspace set: FlowNodes");
             FlowNodesChanged.InvokeAsync(value);
+            RecreateWires();
         }
     }
 
     public NewWire? new_wire;
 
-    List<Wire> _wires { get; set; } = [];
-    public IEnumerable<Wire> Wires => _wires;
+    /// <summary>
+    /// Wires[NodeId, NodeWires]
+    /// </summary>
+    Dictionary<string, NodeWiresInfo> _nodeWires { get; set; } = [];
+    public IEnumerable<Wire> Wires => _nodeWires.Values.SelectMany(s => s.wires.Values);
     public IReadOnlyCollection<Node> SelectedNodes() => _flowNodes.Values.Where(s => s.selected).ToList();
-    public IReadOnlyCollection<Wire> SelectedWires() => _wires.Where(s => s.Selected).ToList();
+    public IReadOnlyCollection<Wire> SelectedWires() => _nodeWires.Values.SelectMany(s => s.wires.Values).Where(s => s.Selected).ToList();
 
     [Parameter] public EventCallback<IReadOnlyDictionary<string, Node>> FlowNodesChanged { get; set; }
 
@@ -122,9 +120,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     void onMouseMove(MouseEventArgs e)
     {
         _lastMouseWorkspaceState = e;
-        if (drag)
+        if (_drag)
         {
-            foreach (var d in dragElements)
+            foreach (var d in _dragElements)
             {
                 d.node.X = (float)(e.ClientX + d.nodeX - d.clickX + ScrollInfo.ScrollLeft);
                 d.node.Y = (float)(e.ClientY + d.nodeY - d.clickY + ScrollInfo.ScrollTop);
@@ -132,11 +130,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
                 //Console.WriteLine($"e.ClientY={e.ClientY}, d.nodeY={d.nodeY}, d.clickY={d.clickY}, ScrollInfo.ScrollTop={ScrollInfo.ScrollTop}");
 
                 if (!d.node.changed) d.node.changed = true;
-
-                //OnNodeMoved();
             }
 
-            wire_drawWires();
+            MoveWiresForDragElements();
         }
         wire_dragWire(e);//new wiew
 
@@ -150,8 +146,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
     void CreateNodeMoveAction(MouseEventArgs e)
     {
-        var moves = new Dictionary<string, MovePoints>(dragElements.Count);
-        dragElements.ForEach(d =>
+        var moves = new Dictionary<string, MovePoints>(_dragElements.Count);
+        _dragElements.ForEach(d =>
         {
             var x2 = (float)(e.ClientX + d.nodeX - d.clickX + ScrollInfo.ScrollLeft);
             var y2 = (float)(e.ClientY + d.nodeY - d.clickY + ScrollInfo.ScrollTop);
@@ -182,7 +178,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     /// <param name="startMoveUnderCursor">Это если истина перемещается под мышку, если нет относительно где был</param>
     void StartDragNodes(IEnumerable<Node> nodes, MouseEventArgs e, bool startMoveUnderCursor, float offsetX = 0, float offsetY = 0)
     {
-        dragElements.Clear();
+        _dragElements.Clear();
+        _allNodesInTheDragBundle.Clear();
 
         var minX = nodes.Min(s => s.X);
         var minY = nodes.Min(s => s.Y);
@@ -200,30 +197,33 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
                 clickY = (startMoveUnderCursor ? offsetY : e.ClientY + offsetY) + ScrollInfo.ScrollTop,
             };
 
-            dragElements.Add(drag);
+            _dragElements.Add(drag);
         }
 
-        drag = true;
+        _allNodesInTheDragBundle = nodes.SelectMany(s => NodeWireUtil.GetInputNodes(s, FlowNodes)).ToHashSet();
+        _drag = true;
+        OnDragNodesStarted?.Invoke(_dragElements.Select(s => s.node.Id));
     }
 
     void onMouseUp(MouseEventArgs e)
     {
         _logger.LogTrace("onMouseUp");
-        if (isProcessPasteNewNode)
+        if (_isProcessPasteNewNode)
         {
-            _nodeEditor.ActionManager.ExecuteAction(new CreateNodesAction(_nodeEditor, dragElements.Select(s => s.node).ToList()));
-            isProcessPasteNewNode = false;
+            _nodeEditor.ActionManager.ExecuteAction(new CreateNodesAction(_nodeEditor, _dragElements.Select(s => s.node).ToList()));
+            _isProcessPasteNewNode = false;
         }
-        else if (drag)
+        else if (_drag)
         {
             CreateNodeMoveAction(e);
+            OnDragNodesEnded?.Invoke(_dragElements.Select(s => s.node.Id));
         }
-        drag = false;
+        _drag = false;
 
         new_wire = null;
-        if (sel_node != null)
+        if (_sel_node != null)
         {
-            OnNodeMoved(sel_node);
+            OnNodeMoved(_sel_node);
         }
         if (lasso.drag)
         {
@@ -235,7 +235,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     void onWorkspaceMouseDown(MouseEventArgs e)
     {
         _logger.LogTrace("onWorkspaceMouseDown");
-        dragElements.Clear();
+        _dragElements.Clear();
         DeselectAll();
 
         lasso.startX = e.OffsetX;
@@ -251,15 +251,15 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
         bool isCtrlPress = e.CtrlKey;
 
-        if (!isCtrlPress && sel_node is not null)
+        if (!isCtrlPress && _sel_node is not null)
         {
-            sel_node.selected = false;
+            _sel_node.selected = false;
 
         }
 
         if (!isCtrlPress)
         {
-            dragElements.Clear();
+            _dragElements.Clear();
         }
 
         if (e.ShiftKey)
@@ -268,7 +268,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
             SelectAllNodesInFlow(node);
         }
 
-        sel_node = node;
+        _sel_node = node;
         node.selected = true;
 
         StartDragSelectedNodes(e);
@@ -373,27 +373,64 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     }
     void wire_deselect()
     {
-        _wires.ForEach(s => s.Selected = false);
+        foreach (var n in _nodeWires.Values)
+        {
+            foreach (var w in n.wires.Values)
+            {
+                w.Selected = false;
+            }
+        }
     }
     void OnNodeMoved(Node node)
     {
-        wire_drawWires(node.Id);
     }
 
-    void wire_drawWires(string? nodeId = null)
+    void RecreateWires()
     {
-        _wires = NodeWireUtil.DrawWires(FlowNodes, _nodeWirePointResolver).ToList();
+        //_nodeEditor?.AddDebugMessage(DebugMessage.ConsoleMessage(">RecreateWires"));
+        _logger.LogTrace(">RecreateWires");
+        if (FlowNodes is null || FlowNodes.None())
+        {
+            _nodeWires = [];
+            return;
+        }
+
+        _nodeWires = NodeWireUtil.DrawWires(FlowNodes, _nodeWirePointResolver)
+                                    .GroupBy(s => s.Node1.NodeId)
+                                    .ToDictionary(s => s.Key, s => new NodeWiresInfo
+                                    {
+                                        node = FlowNodes[s.Key],
+                                        wires = s.ToDictionary(w => (w.Node1, w.Node2), w => w)
+                                    });
+    }
+
+    void MoveWiresForDragElements()
+    {
+        foreach (var d in _dragElements)
+        {
+            if (_nodeWires.TryGetValue(d.node.Id, out var nodeWires))
+            {
+                NodeWireUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
+            }
+        }
+
+        foreach (var d in _allNodesInTheDragBundle)
+        {
+            if (_nodeWires.TryGetValue(d.Id, out var nodeWires))
+            {
+                NodeWireUtil.UpdateWiresPosition(nodeWires.node, nodeWires.wires, FlowNodes, _nodeWirePointResolver);
+            }
+        }
     }
 
     public void RedrawWires()
     {
-        wire_drawWires();
-        StateHasChanged();
+        RecreateWires();
     }
 
     void CreateWireAction(Wire new_wire)
     {
-        var isExist = _wires.Exists(s => s.Node1 == new_wire.Node1 && s.Node2 == new_wire.Node2);
+        var isExist = _nodeWires.GetValueOrDefault(new_wire.Node1.NodeId)?.wires.ContainsKey((new_wire.Node1, new_wire.Node2)) ?? false;
         if (!isExist)
         {
             _nodeEditor.ActionManager.ExecuteAction(new CreateWireAction(_nodeEditor, [new(new_wire.Node1, new_wire.Node2)]));
@@ -438,7 +475,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         wire_deselect();
         nodes_deselectAll();
         new_wire = null;
-        sel_node = null;
+        _sel_node = null;
         _nodeEditor?.SetSelectContext(null);
     }
 
@@ -453,7 +490,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     public void SelectNode(Node node)
     {
         DeselectAll();
-        sel_node = node;
+        _sel_node = node;
         node.selected = true;
         _nodeEditor?.SetSelectContext(node.GetType());
     }
@@ -472,7 +509,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     public void OnClickPaletteNewNode(MouseEventArgs e, Node clickedPaletteNode, Node instance)
     {
         DeselectAll();
-        isProcessPasteNewNode = true;
+        _isProcessPasteNewNode = true;
 
         //_logger.LogTrace($"SCR={ScrollInfo.ScrollLeft},{ScrollInfo.ScrollTop}");
 
@@ -554,17 +591,6 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         OnWorkspaceDblClick.InvokeAsync(e);
     }
 
-    public void RefreshWires()
-    {
-        _wires.Clear();
-        wire_drawWires();
-    }
-
-    public void CallStateHasChanged()
-    {
-        StateHasChanged();
-    }
-
     [JSInvokable]
     public void OnElementResize(double width, double height)
     {
@@ -596,4 +622,10 @@ class DragElement
     public double clickY;
     public float nodeX;
     public float nodeY;
+}
+
+class NodeWiresInfo
+{
+    public required Node node;
+    public required Dictionary<(NodeWire, NodeWire), Wire> wires;
 }

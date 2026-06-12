@@ -4,9 +4,9 @@ namespace Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 
 public class CreateWireAction : BaseEditorHistoryAction
 {
-    readonly NodeWireConnect[] _wiresConnect;
+    readonly NodeConnect[] _wiresConnect;
 
-    public CreateWireAction(INodeEditorApi editor, NodeWireConnect[] wiresConnect) : base(editor)
+    public CreateWireAction(INodeEditorApi editor, NodeConnect[] wiresConnect) : base(editor)
     {
         _wiresConnect = wiresConnect;
     }
@@ -15,21 +15,11 @@ public class CreateWireAction : BaseEditorHistoryAction
 
     public override void Execute()
     {
-        foreach (var connect in _wiresConnect)
-        {
-            _editor.AllNodes[connect.Node1.NodeId].Wires.ElementAt(connect.Node1.PortIndex).Add(connect.Node2);
-        }
-        _editor.NodeWorkspace.RedrawWires();
+        _editor.AddNodesAndWires([], _wiresConnect);
     }
 
     public override void Undo()
     {
-        foreach (var connect in _wiresConnect)
-        {
-            _editor.AllNodes[connect.Node1.NodeId].Wires.ElementAt(connect.Node1.PortIndex).Remove(connect.Node2);
-        }
-        _editor.NodeWorkspace.RedrawWires();
+        _editor.DeleteNodesAndWires([], _wiresConnect);
     }
 }
-
-public record NodeWireConnect(NodeWire Node1, NodeWire Node2);

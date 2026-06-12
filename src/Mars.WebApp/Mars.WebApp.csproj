@@ -59,12 +59,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Duende.IdentityServer" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Bogus" />
+        <PackageReference Include="Duende.IdentityServer" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />

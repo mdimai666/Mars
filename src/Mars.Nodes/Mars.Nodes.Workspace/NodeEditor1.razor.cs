@@ -241,11 +241,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     const string noderedDebugMessageList = "#nodered-debug-message-list";
 
     List<DebugMessage> messages = [];
+    DebugMessagesConsole _debugMessagesConsole = default!;
 
     public void AddDebugMessage(string text) => AddDebugMessage(DebugMessage.ConsoleMessage(text));
     public void AddDebugMessage(DebugMessage msg)
     {
         messages.Add(msg);
+        _debugMessagesConsole.CallStateHasChanged(); //fix: у List.Add не вызывается OnChange для вложенного DebugMessagesConsole
         _ = js.ScrollDownElement(noderedDebugMessageList);
     }
 

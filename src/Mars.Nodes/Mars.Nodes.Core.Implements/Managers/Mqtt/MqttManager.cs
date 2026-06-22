@@ -15,13 +15,15 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
     private readonly INodeService _nodeService;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<MqttManager> _logger;
+    private readonly ILogger<MqttClientInstance> _clientLogger;
     private Dictionary<string, string[]> _recepientsConfigIdAndNodeIds = [];
 
-    public MqttManager(INodeService nodeService, IServiceScopeFactory scopeFactory, ILogger<MqttManager> logger)
+    public MqttManager(INodeService nodeService, IServiceScopeFactory scopeFactory, ILogger<MqttManager> logger, ILogger<MqttClientInstance> clientLogger)
     {
         _nodeService = nodeService;
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _clientLogger = clientLogger;
         _nodeService.OnAssignNodes += _nodeService_OnAssignNodes;
     }
 
@@ -55,7 +57,7 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
             }
             else
             {
-                var instance = new MqttClientInstance(config, this);
+                var instance = new MqttClientInstance(config, this, _clientLogger);
                 _clientInstances.Add(config.Id, instance);
                 if (config.ConnectAutomatically)
                     _ = instance.UpdateSubscribtions(GetSubscribers(config.Id));
@@ -89,11 +91,15 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
         foreach (var _nodeId in nodes)
         {
             var nodeId = _nodeId;
-            var payload = new MqttNodeMessagePaylad(message.ApplicationMessage);
-            var input = new NodeMsg { Payload = payload.Payload };
-            input.Add(payload);
-            //input.Add(message.ApplicationMessage);
-            _ = _nodeService.InjectAsync(_scopeFactory, nodeId, input);
+            var node = (MqttInNode)_nodeService.BaseNodes[_nodeId];
+
+            if (MqttTopicFilterComparer.Compare(msg.Topic, node.Topic) == MqttTopicFilterCompareResult.IsMatch)
+            {
+                var payload = new MqttNodeMessagePaylad(message.ApplicationMessage);
+                var input = new NodeMsg { Payload = payload.Payload };
+                input.Add(payload);
+                _ = _nodeService.InjectAsync(_scopeFactory, nodeId, input);
+            }
         }
     }
 

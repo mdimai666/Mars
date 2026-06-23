@@ -31,6 +31,16 @@ public interface ISelfFinalizingNode
 
 //}
 
+public interface INodeLifecycleOnAssigned
+{
+    Task OnNodeAssigned(CancellationToken cancellationToken);
+}
+
+public interface INodeLifecycleOnDelete
+{
+    Task OnNodeDelete();
+}
+
 public delegate void ExecuteAction(NodeMsg msg, int output = 0);
 
 //public abstract class NodeImplement<TNode>: INodeImplement<TNode> where TNode : Node

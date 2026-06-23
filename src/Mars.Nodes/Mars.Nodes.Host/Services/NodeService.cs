@@ -90,7 +90,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         if (!nodes.Any()) nodes = GetBlank();
 
-        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList());
+        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList(), default);
         OnAssignNodes?.Invoke();
 
         VarNodesSetDefaultValues();
@@ -146,7 +146,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         var sw = new Stopwatch();
         sw.Start();
-        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList());
+        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList(), default);
         OnAssignNodes?.Invoke();
         SaveToFile();
         OnDeploy?.Invoke();

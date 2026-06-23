@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using HandlebarsDotNet;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
+using Mars.Core.Utils;
 using Mars.Host.Shared.Hubs;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
@@ -98,10 +99,14 @@ internal class RED
         }
     }
 
-    public void AssignNodes(IReadOnlyCollection<Node> nodes)
+    public void AssignNodes(IReadOnlyCollection<Node> nodes, CancellationToken cancellationToken)
     {
         ValidateNodes(nodes);
         InvalidateConfigNodes(Nodes, nodes);
+
+        var diff = DiffList.FindDifferencesBy(_basicNodesDict.Values, nodes, s => s.Id);
+
+        NodeLifecycleOnDelete(diff.ToRemove.Select(s => Nodes[s.Id]).ToArray());
 
         if (_assignedCount > 0) SaveVarNodeValuesAndClear();
         DisposeNodes(Nodes);
@@ -137,6 +142,8 @@ internal class RED
 
         CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
         ErrorHandlerRegistry = new NodesErrorHandlerRegistry(_basicNodesDict.Values.OfType<CatchErrorNode>().Where(node => !node.Disabled));
+
+        NodeLifecycleOnAssigned(Nodes, cancellationToken);
     }
 
     private void InvalidateConfigNodes(Dictionary<string, INodeImplement> oldNodes, IReadOnlyCollection<Node> newNodes)
@@ -162,6 +169,24 @@ internal class RED
         {
             if (node is IDisposable disposable)
                 disposable.Dispose();
+        }
+    }
+
+    private void NodeLifecycleOnAssigned(Dictionary<string, INodeImplement> nodes, CancellationToken cancellationToken)
+    {
+        foreach (var node in nodes.Values)
+        {
+            if (node is INodeLifecycleOnAssigned assign)
+                assign.OnNodeAssigned(cancellationToken);
+        }
+    }
+
+    private void NodeLifecycleOnDelete(INodeImplement[] nodes)
+    {
+        foreach (var node in nodes)
+        {
+            if (node is INodeLifecycleOnDelete delete)
+                delete.OnNodeDelete();
         }
     }
 

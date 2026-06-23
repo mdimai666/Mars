@@ -1,5 +1,8 @@
 # TODO LIST
 
+# 2026
+[x] - [High-Performance Distributed Caching with .NET and Postgres on Azure - .NET Blog](https://devblogs.microsoft.com/dotnet/high-performance-distributed-caching-dotnet-postgres-azure/)
+
 # Important!
 [ ] - Make a repository mapping as Select(Expression) instead end mapping. (do benchmark before)
 

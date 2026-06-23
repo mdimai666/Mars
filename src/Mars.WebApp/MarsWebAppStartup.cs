@@ -78,6 +78,7 @@ public static class MarsWebAppStartup
                         .AddMarsOptions()
                         .AddMarsHostServices(builder.Environment)
                         .MarsAddTemplator()
+                        .AddPostgresDistributedCache(builder.Configuration)
                         .AddDevAdmin()
                         .AddMarsNodes()
                         .AddMarsWebAppNodes()

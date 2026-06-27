@@ -5,9 +5,9 @@ namespace Mars.Nodes.Core.Converters;
 
 public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<Node>
 {
-    private readonly NodesLocator _nodesLocator;
+    private readonly INodesLocator _nodesLocator;
 
-    public NodeJsonConverter(NodesLocator nodesLocator)
+    public NodeJsonConverter(INodesLocator nodesLocator)
     {
         _nodesLocator = nodesLocator;
     }

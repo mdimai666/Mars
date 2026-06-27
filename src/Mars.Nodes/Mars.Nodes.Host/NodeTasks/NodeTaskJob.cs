@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.Dto.NodeTasks;
 using Mars.Nodes.Host.Shared.Services;
 using Microsoft.Extensions.Logging;
@@ -20,7 +20,7 @@ internal class NodeTaskJob : IAsyncDisposable
     protected IServiceProvider _serviceProvider;
     protected readonly IReadOnlyDictionary<string, INodeImplement> _nodes;
     protected ConcurrentDictionary<string, NodeJob> _jobs = new();
-    protected RED _RED;
+    protected INodeRuntime _runtime;
     private readonly ILogger<NodeTaskJob>? _logger;
 
     private int executedCount;
@@ -52,14 +52,14 @@ internal class NodeTaskJob : IAsyncDisposable
     public DateTimeOffset? EndDate { get; private set; }
 
     internal NodeTaskJob(IServiceProvider serviceProvider,
-        RED RED,
+        INodeRuntime runtime,
         string injectNodeId,
         ILogger<NodeTaskJob>? logger,
         int injectPortIndex = 0,
         int maxDegreeOfParallelism = 10)
     {
-        _nodes = RED.Nodes;
-        _RED = RED;
+        _nodes = runtime.Nodes;
+        _runtime = runtime;
         _logger = logger;
         _serviceProvider = serviceProvider;
         _maxDegreeOfParallelism = maxDegreeOfParallelism;
@@ -69,7 +69,7 @@ internal class NodeTaskJob : IAsyncDisposable
         InjectPortIndex = injectPortIndex;
         var injectNode = _nodes[injectNodeId].Node;
         FlowNodeId = _nodes[injectNode.Container].Id;
-        NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _RED.BasicNodesDict).Count;
+        NodesChainCount = NodeWireUtil.GetLinkedNodes(injectNode, _runtime.BasicNodesDict).Count;
 
         _executionQueue = Channel.CreateBounded<NodeExecutionTask>(new BoundedChannelOptions(1000)
         {
@@ -82,8 +82,8 @@ internal class NodeTaskJob : IAsyncDisposable
     public async Task Run(NodeMsg msg, bool throwOnError = false)
     {
         var node = _nodes[InjectNodeId];
-        node.RED = CreateContextForNode(InjectNodeId);
-        _RED.OnNodeImplDone += _RED_OnNodeImplDone;
+        node.RNS = CreateContextForNode(InjectNodeId);
+        _runtime.OnNodeImplDone += _RNS_OnNodeImplDone;
 
         _logger?.LogInformation("🔷 Run (TaskId={TaskId}) ExecuteNode: {NodeName}({NodeType}/{NodeId}) [Parallel={Parallel}]",
             TaskId, node.Node.DisplayName, node.Node.Type, node.Id, _maxDegreeOfParallelism);
@@ -172,7 +172,7 @@ internal class NodeTaskJob : IAsyncDisposable
                     var nextNode = _nodes[wire.NodeId];
                     if (nextNode.Node.Disabled) continue;
 
-                    nextNode.RED = CreateContextForNode(nextNode.Id);
+                    nextNode.RNS = CreateContextForNode(nextNode.Id);
                     var resultCopy = e.Copy();
 
                     await EnqueueExecutionAsync(resultCopy, nextNode, wire.PortIndex,
@@ -200,7 +200,7 @@ internal class NodeTaskJob : IAsyncDisposable
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Node execute exception (TaskId={TaskId}, NodeId={NodeId})", TaskId, node.Id);
-            _RED?.DebugMsg(node.Id, ex);
+            _runtime?.DebugMsg(node.Id, ex);
             go.Fail(ex);
             OnNodeException?.Invoke(node.Id, FlowNodeId, ex);
             if (throwOnError) throw;
@@ -227,7 +227,7 @@ internal class NodeTaskJob : IAsyncDisposable
         Finish();
     }
 
-    public RED_Context CreateContextForNode(string nodeId)
+    public IRuntimeNodeScope CreateContextForNode(string nodeId)
     {
         var node = _nodes[nodeId];
         var flow = node is FlowNodeImpl ? node : _nodes[node.Node.Container];
@@ -235,7 +235,7 @@ internal class NodeTaskJob : IAsyncDisposable
         if (flow is not FlowNodeImpl flowImpl)
             throw new InvalidOperationException($"Node {node.Id} or its container {node.Node.Container} is not a FlowNodeImpl");
 
-        return new RED_Context(nodeId, flowImpl, _RED, _serviceProvider);
+        return new RuntimeNodeScope(nodeId, flowImpl, _runtime, _serviceProvider);
     }
 
     IEnumerable<NodeWire> GetNextWires(string nodeId, int outputIndex)
@@ -245,19 +245,19 @@ internal class NodeTaskJob : IAsyncDisposable
         return outsWires ?? Enumerable.Empty<NodeWire>();
     }
 
-    private async void _RED_OnNodeImplDone(string nodeId, Guid jobGuid)
+    private async void _RNS_OnNodeImplDone(string nodeId, Guid jobGuid)
     {
         if (_nodes[nodeId] is not ISelfFinalizingNode)
-            throw new InvalidOperationException("RED.Done() - may use only :ISelfFinalizingNode");
+            throw new InvalidOperationException("RNS.Done() - may use only :ISelfFinalizingNode");
 
         var job = _jobs.GetValueOrDefault(nodeId)
-                        ?? throw new InvalidOperationException("RED.Done() - job not found");
+                        ?? throw new InvalidOperationException("RNS.Done() - job not found");
 
         var go = job.Executions.FirstOrDefault(s => s.JobGuid == jobGuid);
         if (go is null)
         {
-            _logger?.LogError("RED.Done() - job guid not found (TaskId={TaskId})", TaskId);
-            throw new InvalidOperationException("RED.Done() - job guid not found");
+            _logger?.LogError("RNS.Done() - job guid not found (TaskId={TaskId})", TaskId);
+            throw new InvalidOperationException("RNS.Done() - job guid not found");
         }
 
         go.Success();
@@ -299,7 +299,7 @@ internal class NodeTaskJob : IAsyncDisposable
     public ValueTask DisposeAsync()
     {
         _cancellationTokenSource.Dispose();
-        _RED.OnNodeImplDone -= _RED_OnNodeImplDone;
+        _runtime.OnNodeImplDone -= _RNS_OnNodeImplDone;
         _logger?.LogTrace("Dispose (TaskId={TaskId})", TaskId);
         return ValueTask.CompletedTask;
     }

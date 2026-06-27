@@ -1,18 +1,19 @@
 using AngleSharp.Html.Parser;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class HtmlParseNodeImpl : INodeImplement<HtmlParseNode>, INodeImplement
+public class HtmlParseNodeImpl : INodeImplement<HtmlParseNode>
 {
     public HtmlParseNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public HtmlParseNodeImpl(HtmlParseNode node, IRED red)
+    public HtmlParseNodeImpl(HtmlParseNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

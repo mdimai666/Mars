@@ -8,5 +8,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
     </ItemGroup>
 </Project>

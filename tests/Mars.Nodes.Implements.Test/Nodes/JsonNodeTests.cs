@@ -31,7 +31,7 @@ public class JsonNodeTests : NodeServiceUnitTestBase
                                             , input);
         msg.Payload.GetType().Should().Be<DynamicJson>();
 
-        var redContext = RED.CreateContextForNode(RED.Nodes.Values.First(node => node.Node is JsonNode).Node, (FlowNodeImpl)RED.Nodes.Values.First(node => node is FlowNodeImpl));
+        var redContext = Runtime.CreateContextForNode(Runtime.Nodes.Values.First(node => node.Node is JsonNode).Node, (FlowNodeImpl)Runtime.Nodes.Values.First(node => node is FlowNodeImpl));
         var setter = new VariableSetExpression { ValuePath = "msg.Payload", Expression = "msg.Payload.age", Operation = VariableSetOperation.Set };
 
         var ppt = VariableSetNodeImpl.CreateInterpreter(redContext, msg!);

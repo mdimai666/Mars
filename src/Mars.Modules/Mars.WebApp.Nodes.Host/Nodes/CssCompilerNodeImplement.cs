@@ -1,19 +1,19 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
-public class CssCompilerNodeImplement : INodeImplement<CssCompilerNode>, INodeImplement
+public class CssCompilerNodeImplement : INodeImplement<CssCompilerNode>
 {
     public CssCompilerNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public CssCompilerNodeImplement(CssCompilerNode node, IRED _RED)
+    public CssCompilerNodeImplement(CssCompilerNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

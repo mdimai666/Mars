@@ -69,7 +69,7 @@ app.Services.UseAppFrontMain()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront();
 
-var optionsFormsLocator = app.Services.GetRequiredService<OptionsFormsLocator>();
+var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
 optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
 SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());

@@ -30,7 +30,7 @@ public class FunctionCodeSuggestService
             var sc = _services;
 
             Func<ServiceDescriptor, KeyValuePair<string, string>> sget =
-                (s) => new(s.ServiceType.Name, $"var {FirstCharToLowerCaseAndVarName(s.ServiceType.Name)} = RED.GetService<{s.ServiceType.Name}>();");
+                (s) => new(s.ServiceType.Name, $"var {FirstCharToLowerCaseAndVarName(s.ServiceType.Name)} = RNS.GetService<{s.ServiceType.Name}>();");
 
             list = sc.Where(s => s.ServiceType.FullName.StartsWith("Mars"))
                             .Select(sget)

@@ -1,4 +1,4 @@
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.WebApp.Nodes.Front;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Host.Nodes;
@@ -17,7 +17,7 @@ public static class MainWebAppNodes
     {
         app.ApplicationServices.UseMarsWebAppNodesFront();
 
-        var nodeImplementFactory = app.ApplicationServices.GetRequiredService<NodeImplementFactory>();
+        var nodeImplementFactory = app.ApplicationServices.GetRequiredService<INodeImplementFactory>();
         nodeImplementFactory.RegisterAssembly(typeof(ExcelNodeImplement).Assembly);
         return app;
     }

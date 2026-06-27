@@ -31,7 +31,8 @@ public class DebugNodeTests : NodeServiceUnitTestBase
 
         //Assert
         await action.Should().NotThrowAsync();
-        RED.Received().DebugMsg(node.Id, Arg.Is<DebugMessage>(
+        await Task.Delay(100);
+        Runtime.Received(1).DebugMsg(node.Id, Arg.Is<DebugMessage>(
             msg => !msg.Message.Contains("error", StringComparison.OrdinalIgnoreCase)
                     && !string.IsNullOrEmpty(msg.Json)
             ));

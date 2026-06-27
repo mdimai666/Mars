@@ -2,29 +2,30 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
+public class ExecNodeImpl : INodeImplement<ExecNode>
 {
-
     public ExecNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public ExecNodeImpl(ExecNode node, IRED red)
+    public ExecNodeImpl(ExecNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
-    public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
+    public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
         var processInfo = new ProcessStartInfo
         {
             FileName = Node.Command,
             //Arguments = "-Command \"Get-ChildItem\"",
+            Arguments = Node.Append ? input.Payload.ToString() : string.Empty,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -36,21 +37,21 @@ public class ExecNodeImpl : INodeImplement<ExecNode>, INodeImplement
 
         var cmd = Process.Start(processInfo);
 
-        if (Node.Append && input.Payload is not null)
-        {
-            cmd.StandardInput.WriteLine(input.Payload.ToString());
-        }
+        //if (Node.Append && input.Payload is not null)
+        //{
+        //    cmd.StandardInput.WriteLine(input.Payload.ToString());
+        //}
         cmd.StandardInput.Flush();
         cmd.StandardInput.Close();
-        cmd.WaitForExit();
+        await cmd.WaitForExitAsync(parameters.CancellationToken);
 
-        var output = cmd.StandardOutput.ReadToEnd();
+        var output = await cmd.StandardOutput.ReadToEndAsync();
+        var error = await cmd.StandardError.ReadToEndAsync();
+
         var cleanOutput = RemoveAnsiEscapeCodes(output);
         input.Payload = cleanOutput;
 
         callback(input);
-
-        return Task.CompletedTask;
     }
 
     public static string RemoveAnsiEscapeCodes(string text)

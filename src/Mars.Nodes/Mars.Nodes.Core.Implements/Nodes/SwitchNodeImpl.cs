@@ -1,23 +1,24 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class SwitchNodeImpl : INodeImplement<SwitchNode>, INodeImplement
+public class SwitchNodeImpl : INodeImplement<SwitchNode>
 {
     public SwitchNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public SwitchNodeImpl(SwitchNode node, IRED _RED)
+    public SwitchNodeImpl(SwitchNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
 #if !DynamicExpresso
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
+        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
         var someConditionIsTrue = false;
 
         for (int i = 0; i < Node.Conditions.Length; i++)

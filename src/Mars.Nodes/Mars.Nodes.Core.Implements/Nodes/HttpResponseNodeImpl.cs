@@ -1,21 +1,22 @@
 using System.Text;
 using System.Text.Json;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>, INodeImplement
+public class HttpResponseNodeImpl : INodeImplement<HttpResponseNode>
 {
     public HttpResponseNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public HttpResponseNodeImpl(HttpResponseNode node, IRED _RED)
+    public HttpResponseNodeImpl(HttpResponseNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     static readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web)

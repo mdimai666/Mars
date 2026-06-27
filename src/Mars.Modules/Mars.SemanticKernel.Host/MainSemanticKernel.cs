@@ -1,6 +1,6 @@
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.SemanticKernel.Host.Nodes;
 using Mars.SemanticKernel.Host.Service;
 using Mars.SemanticKernel.Host.Shared.Interfaces;
@@ -29,8 +29,8 @@ public static class MainSemanticKernel
         var op = app.ApplicationServices.GetRequiredService<IOptionService>();
         op.RegisterOption<AIToolOption>();
 
-        app.ApplicationServices.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
-        app.ApplicationServices.GetRequiredService<NodeImplementFactory>().RegisterAssembly(typeof(AIRequestNodeImpl).Assembly);
+        app.ApplicationServices.GetRequiredService<INodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
+        app.ApplicationServices.GetRequiredService<INodeImplementFactory>().RegisterAssembly(typeof(AIRequestNodeImpl).Assembly);
 
         return app;
     }

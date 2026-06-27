@@ -1,23 +1,23 @@
-using DynamicExpresso;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class EvalNodeImpl : INodeImplement<EvalNode>, INodeImplement
+public class EvalNodeImpl : INodeImplement<EvalNode>
 {
-    public EvalNodeImpl(EvalNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public EvalNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
+
+    public EvalNodeImpl(EvalNode node, IRuntimeNodeScope rns)
+    {
+        Node = node;
+        RNS = rns;
+    }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
+        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
 
         var result = ppt.Get.Eval(Node.Input);
 

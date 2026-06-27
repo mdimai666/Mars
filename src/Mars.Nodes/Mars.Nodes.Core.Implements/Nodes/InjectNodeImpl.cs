@@ -1,17 +1,18 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class InjectNodeImpl : INodeImplement<InjectNode>, INodeImplement
+public class InjectNodeImpl : INodeImplement<InjectNode>
 {
     public InjectNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public InjectNodeImpl(InjectNode node, IRED red)
+    public InjectNodeImpl(InjectNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

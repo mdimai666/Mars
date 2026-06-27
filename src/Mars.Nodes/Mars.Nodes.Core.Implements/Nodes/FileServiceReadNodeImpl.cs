@@ -2,20 +2,21 @@ using System.Text;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>, INodeImplement
+public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>
 {
     public FileServiceReadNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public FileServiceReadNodeImpl(FileServiceReadNode node, IRED red)
+    public FileServiceReadNodeImpl(FileServiceReadNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -25,7 +26,7 @@ public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>, INod
         // 1. Получаем физический путь к файлу
         var filepath = await ResolveFilePathAsync(ct);
 
-        var fs = RED.ServiceProvider.GetRequiredService<IFileStorage>();
+        var fs = RNS.ServiceProvider.GetRequiredService<IFileStorage>();
 
         // 2. Проверяем существование файла
         if (!fs.FileExists(filepath))
@@ -57,7 +58,7 @@ public class FileServiceReadNodeImpl : INodeImplement<FileServiceReadNode>, INod
 
     private async Task<string> ResolveFilePathAsync(CancellationToken ct)
     {
-        var fileService = RED.ServiceProvider.GetRequiredService<IMediaService>();
+        var fileService = RNS.ServiceProvider.GetRequiredService<IMediaService>();
 
         if (Node.ByFileId)
         {

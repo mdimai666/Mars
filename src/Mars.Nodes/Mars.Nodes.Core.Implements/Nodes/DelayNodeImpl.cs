@@ -1,17 +1,18 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class DelayNodeImpl : INodeImplement<DelayNode>, INodeImplement
+public class DelayNodeImpl : INodeImplement<DelayNode>
 {
     public DelayNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public DelayNodeImpl(DelayNode node, IRED red)
+    public DelayNodeImpl(DelayNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

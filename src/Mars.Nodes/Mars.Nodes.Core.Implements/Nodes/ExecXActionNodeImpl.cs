@@ -1,20 +1,21 @@
 using Mars.Host.Shared.Managers;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class ExecXActionNodeImpl : INodeImplement<ExecXActionNode>, INodeImplement
+public class ExecXActionNodeImpl : INodeImplement<ExecXActionNode>
 {
     private readonly IActionManager _actionManager;
 
     public ExecXActionNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public ExecXActionNodeImpl(ExecXActionNode node, IRED red, IActionManager actionManager)
+    public ExecXActionNodeImpl(ExecXActionNode node, IRuntimeNodeScope rns, IActionManager actionManager)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _actionManager = actionManager;
     }
 

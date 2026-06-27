@@ -7,26 +7,27 @@ using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Mapping;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using static Mars.Nodes.Core.Nodes.HttpRequestNode;
 using JsonNode = System.Text.Json.Nodes.JsonNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImplement
+public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>
 {
     private readonly AuthClientManager _authClientManager;
 
     public HttpRequestNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
     //-----------------------------
-    public HttpRequestNodeImpl(HttpRequestNode node, IRED red, AuthClientManager authClientManager)
+    public HttpRequestNodeImpl(HttpRequestNode node, IRuntimeNodeScope rns, AuthClientManager authClientManager)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _authClientManager = authClientManager;
-        Node.AuthConfig = RED.GetConfig(node.AuthConfig);
+        Node.AuthConfig = RNS.GetConfig(node.AuthConfig);
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -38,9 +39,9 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
 
         var client = isExistAuthFlow
             ? _authClientManager.GetOrCreateClient(MapConfig())
-            : new FlurlClient(RED.GetHttpClient());
+            : new FlurlClient(RNS.GetHttpClient());
 
-        var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
+        var ppt = VariableSetNodeImpl.CreateInterpreter(RNS, input);
 
         var method = Node.Method?.Trim().ToUpperInvariant() ?? "GET";
         var requestUrl = VariableSetNodeImpl.ReadFieldAsExpression(Node.Url, ppt);
@@ -50,7 +51,7 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
 
         try
         {
-            RED.Status(new NodeStatus { Text = "request...", Color = "blue" });
+            RNS.Status(new NodeStatus { Text = "request...", Color = "blue" });
 
             var request = client.Request(requestUrl);
 
@@ -66,7 +67,7 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
 
             // Устанавливаем статус по коду ответа
             bool isSuccess = response.StatusCode >= 200 && response.StatusCode <= 299;
-            RED.Status(new NodeStatus { Text = response.StatusCode.ToString(), Color = isSuccess ? "green" : "red" });
+            RNS.Status(new NodeStatus { Text = response.StatusCode.ToString(), Color = isSuccess ? "green" : "red" });
 
             var responseStream = await response.GetStreamAsync();
             var contentType = response.ResponseMessage.Content.Headers.ContentType?.MediaType;
@@ -83,13 +84,13 @@ public class HttpRequestNodeImpl : INodeImplement<HttpRequestNode>, INodeImpleme
         catch (FlurlHttpException ex)
         {
             string statusText = $"{ex.StatusCode} {ex.Message}";
-            RED.Status(NodeStatus.Error(statusText));
+            RNS.Status(NodeStatus.Error(statusText));
             throw;
         }
         catch (HttpRequestException ex)
         {
             string statusText = $"{ex.StatusCode} {ex.Message}";
-            RED.Status(NodeStatus.Error(statusText));
+            RNS.Status(NodeStatus.Error(statusText));
             throw;
         }
         finally

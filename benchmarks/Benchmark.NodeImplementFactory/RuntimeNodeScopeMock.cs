@@ -1,14 +1,13 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Fields;
-using Mars.Nodes.Core.Implements;
-using Mars.Nodes.Core.Implements.Models;
-using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
+using Mars.Nodes.Host.Shared.Models;
 
-public class REDMock : IRED
+public class RuntimeNodeScopeMock : IRuntimeNodeScope
 {
-    public FlowNodeImpl? Flow { get; }
+    public IFlowNodeImpl? Flow { get; }
     public List<HttpCatchRegister> HttpRegisterdCatchers { get; } = [];
     public IServiceProvider ServiceProvider { get; }
     public VariablesContextDictionary GlobalContext { get; } = new();
@@ -16,7 +15,7 @@ public class REDMock : IRED
     public IReadOnlyDictionary<string, VarNode> VarNodesDict { get; } = new Dictionary<string, VarNode>();
     public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict { get; } = new Dictionary<string, ConfigNode>();
 
-    public REDMock(IServiceProvider serviceProvider)
+    public RuntimeNodeScopeMock(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }

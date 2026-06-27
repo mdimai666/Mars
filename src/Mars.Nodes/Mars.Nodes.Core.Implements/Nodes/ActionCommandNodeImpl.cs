@@ -1,5 +1,6 @@
 using Mars.Host.Shared.Managers;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
@@ -7,17 +8,17 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 /// <see cref="IActionManager"/>
 /// <see cref="CommandNodesActionProvider"/>
 /// </summary>
-public class ActionCommandNodeImpl : INodeImplement<ActionCommandNode>, INodeImplement
+public class ActionCommandNodeImpl : INodeImplement<ActionCommandNode>
 {
     public ActionCommandNode Node { get; }
-    public IRED RED { get; set; }
+    public IRuntimeNodeScope RNS { get; set; }
 
-    Node INodeImplement<Node>.Node => Node;
+    Node INodeImplement.Node => Node;
 
-    public ActionCommandNodeImpl(ActionCommandNode node, IRED red)
+    public ActionCommandNodeImpl(ActionCommandNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

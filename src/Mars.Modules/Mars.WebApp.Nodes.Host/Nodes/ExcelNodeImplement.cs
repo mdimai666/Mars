@@ -4,31 +4,31 @@ using System.Text.Json.Nodes;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.JsonConverters;
+using Mars.Nodes.Host.Shared;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
-public class ExcelNodeImplement : INodeImplement<ExcelNode>, INodeImplement
+public class ExcelNodeImplement : INodeImplement<ExcelNode>
 {
     public ExcelNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public ExcelNodeImplement(ExcelNode node, IRED _RED)
+    public ExcelNodeImplement(ExcelNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (input.Payload is null)
         {
-            //RED.DebugMsg(new DebugMessage { Level = Mars.Core.Models.MessageIntent.Warning, message = "payload is null" });
+            //RNS.DebugMsg(new DebugMessage { Level = Mars.Core.Models.MessageIntent.Warning, message = "payload is null" });
             throw new ArgumentException("Payload is null");
         }
         else if (input.Payload.GetType().IsPrimitive || input.Payload is string)
@@ -38,9 +38,9 @@ public class ExcelNodeImplement : INodeImplement<ExcelNode>, INodeImplement
 
         ArgumentException.ThrowIfNullOrEmpty(Node.TemplateFile, nameof(Node.TemplateFile));
 
-        var excelService = RED.ServiceProvider.GetRequiredService<IExcelService>();
-        //var storageService = RED.ServiceProvider.GetRequiredService<IStorageService>();
-        var hostingInfo = RED.ServiceProvider.GetRequiredService<IOptions<FileHostingInfo>>().Value;
+        var excelService = RNS.ServiceProvider.GetRequiredService<IExcelService>();
+        //var storageService = RNS.ServiceProvider.GetRequiredService<IStorageService>();
+        var hostingInfo = RNS.ServiceProvider.GetRequiredService<IOptions<FileHostingInfo>>().Value;
 
         var templateFullPath = Node.TemplateFile;
 

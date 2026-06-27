@@ -1,21 +1,22 @@
 using System.Text.Json;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
+public class LoggerNodeImpl : INodeImplement<LoggerNode>
 {
     public LoggerNode Node { get; }
-    Node INodeImplement<Node>.Node => Node;
-    public IRED RED { get; set; }
-    private readonly ILogger<IRED> _logger;
+    Node INodeImplement.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    private readonly ILogger<IRuntimeNodeScope> _logger;
 
-    public LoggerNodeImpl(LoggerNode node, IRED red, ILogger<IRED> logger)
+    public LoggerNodeImpl(LoggerNode node, IRuntimeNodeScope rns, ILogger<IRuntimeNodeScope> logger)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _logger = logger;
     }
 
@@ -49,7 +50,7 @@ public class LoggerNodeImpl : INodeImplement<LoggerNode>, INodeImplement
 
             _logger.Log((Microsoft.Extensions.Logging.LogLevel)Node.Level, loggerContent);
 
-            RED.Status(new NodeStatus(DateTime.Now.ToString("HH:mm:ss.fff")));
+            RNS.Status(new NodeStatus(DateTime.Now.ToString("HH:mm:ss.fff")));
         }
         catch (Exception ex)
         {

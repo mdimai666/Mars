@@ -1,24 +1,25 @@
 using System.Collections.Concurrent;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using static Mars.Nodes.Core.Nodes.JoinNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class JoinNodeImpl : INodeImplement<JoinNode>, INodeImplement
+public class JoinNodeImpl : INodeImplement<JoinNode>
 {
     public JoinNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
     private readonly ConcurrentDictionary<Guid, JoinState> _taskIdGroupedMessages = new();
     private readonly ConcurrentQueue<JoinInputMessage> _inputMessages = new();
     private readonly object _syncRoot = new();
     private CancellationTokenSource? _timeAggregationCts;
 
-    public JoinNodeImpl(JoinNode node, IRED _RED)
+    public JoinNodeImpl(JoinNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -196,7 +197,7 @@ public class JoinNodeImpl : INodeImplement<JoinNode>, INodeImplement
 
                 removed.Dispose();
                 KillTaskJobNodeImpl.CreateNewTask(this, Node.Id, new() { Payload = new JoinNodeTimeoutState { TaskId = taskId, Payload = payload } });
-                RED.DebugMsg(DebugMessage.NodeWarnMessage(Node.Id, $"timeout taskId:{taskId}"));
+                RNS.DebugMsg(DebugMessage.NodeWarnMessage(Node.Id, $"timeout taskId:{taskId}"));
             }
         }
         catch (OperationCanceledException)

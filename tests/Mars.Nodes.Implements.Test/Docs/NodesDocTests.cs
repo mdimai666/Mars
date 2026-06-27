@@ -3,6 +3,7 @@ using FluentAssertions;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Workspace.Locators;
 
 namespace Mars.Nodes.Implements.Test.Docs;
 
@@ -12,7 +13,7 @@ public class NodesDocTests
 
     record NodeInfo(Type NodeType, FunctionApiDocumentAttribute? Attribute);
 
-    private NodesLocator _nodesLocator;
+    private INodesLocator _nodesLocator;
 
     public NodesDocTests()
     {

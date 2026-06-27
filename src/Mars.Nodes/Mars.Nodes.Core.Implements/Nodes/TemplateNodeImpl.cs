@@ -3,22 +3,23 @@ using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Host.Shared.TemplateEngine;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement, IDisposable
+public class TemplateNodeImpl : INodeImplement<TemplateNode>, IDisposable
 {
     public TemplateNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
     private readonly ITemplateManager _templateManager;
     private bool _onceExecuted;
 
-    public TemplateNodeImpl(TemplateNode node, IRED red, ITemplateManager templateManager)
+    public TemplateNodeImpl(TemplateNode node, IRuntimeNodeScope rns, ITemplateManager templateManager)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _templateManager = templateManager;
     }
 
@@ -31,7 +32,7 @@ public class TemplateNodeImpl : INodeImplement<TemplateNode>, INodeImplement, ID
         var render = _templateManager.RenderCached(Node.TemplateEngineId, key, Node.Template, data);
 
 #if DEBUG_TEMPLATOR_PERFOMANCE
-        RED.Status(new() { Text = $"ts: {TimeSpanParser.Format(render.Elapsed)}, allocated: {render.AllocatedBytes.ToHumanizedSize()}" });
+        RNS.Status(new() { Text = $"ts: {TimeSpanParser.Format(render.Elapsed)}, allocated: {render.AllocatedBytes.ToHumanizedSize()}" });
 #endif
 
         if (Node.Property == "Payload")

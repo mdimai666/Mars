@@ -1,19 +1,20 @@
 using System.Text;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class FileReadNodeImpl : INodeImplement<FileReadNode>, INodeImplement
+public class FileReadNodeImpl : INodeImplement<FileReadNode>
 {
     public FileReadNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public FileReadNodeImpl(FileReadNode node, IRED red)
+    public FileReadNodeImpl(FileReadNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

@@ -1,23 +1,23 @@
 using Mars.Core.Exceptions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
-public class AppEntityCreateNodeImpl : INodeImplement<AppEntityCreateNode>, INodeImplement
+public class AppEntityCreateNodeImpl : INodeImplement<AppEntityCreateNode>
 {
     public AppEntityCreateNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public AppEntityCreateNodeImpl(AppEntityCreateNode node, IRED _RED)
+    public AppEntityCreateNodeImpl(AppEntityCreateNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -25,7 +25,7 @@ public class AppEntityCreateNodeImpl : INodeImplement<AppEntityCreateNode>, INod
         if (!Node.FormCommand.EntityUri.HasValue)
             throw new NodeExecuteException(Node, "EntityUri is not set.");
 
-        var formBuilderFactory = RED.ServiceProvider.GetRequiredService<IAppEntityFormBuilderFactory>();
+        var formBuilderFactory = RNS.ServiceProvider.GetRequiredService<IAppEntityFormBuilderFactory>();
         var builder = formBuilderFactory.GetBuilder(Node.FormCommand.EntityUri.Root!);
 
         if (builder is null)

@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Core.Implements.Models;
+namespace Mars.Nodes.Host.Shared.Models;
 
 public class VariablesContextDictionary
 {

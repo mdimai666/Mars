@@ -4,22 +4,23 @@ using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using static Mars.Nodes.Core.Nodes.FileWriteNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>, INodeImplement
+public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
 {
     public FileServiceWriteNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public FileServiceWriteNodeImpl(FileServiceWriteNode node, IRED red)
+    public FileServiceWriteNodeImpl(FileServiceWriteNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -29,8 +30,8 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>, IN
         // 1. Валидация и получение физического пути
         var (physicalPath, fileDetail) = await ResolveFilePathAsync(ct);
 
-        var fs = RED.ServiceProvider.GetRequiredService<IFileStorage>();
-        var fileService = RED.ServiceProvider.GetRequiredService<IMediaService>();
+        var fs = RNS.ServiceProvider.GetRequiredService<IFileStorage>();
+        var fileService = RNS.ServiceProvider.GetRequiredService<IMediaService>();
 
         // 2. Выполнение операции
         if (Node.WriteMode == FileWriteMode.Delete)
@@ -48,7 +49,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>, IN
 
     private async Task<(string PhysicalPath, FileDetail? FileDetail)> ResolveFilePathAsync(CancellationToken ct)
     {
-        var fileService = RED.ServiceProvider.GetRequiredService<IMediaService>();
+        var fileService = RNS.ServiceProvider.GetRequiredService<IMediaService>();
 
         if (Node.ByFileId)
         {
@@ -197,8 +198,8 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>, IN
         if (!Node.CreateDatabaseRecord || fileDetail != null)
             return;
 
-        var fileRepository = RED.ServiceProvider.GetRequiredService<IFileRepository>();
-        var hostingInfo = RED.ServiceProvider.GetRequiredService<IOptionService>().FileHostingInfo();
+        var fileRepository = RNS.ServiceProvider.GetRequiredService<IFileRepository>();
+        var hostingInfo = RNS.ServiceProvider.GetRequiredService<IOptionService>().FileHostingInfo();
 
         var fileName = Path.GetFileName(physicalPath);
         var userId = input.Get<RequestUserInfo>()?.UserId ?? throw new NotFoundException("userInfo not found");

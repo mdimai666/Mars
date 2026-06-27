@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Mars.Host.Shared.Interfaces;
 using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings;
-using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Nodes.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
@@ -13,15 +13,15 @@ namespace Mars.Nodes.Host.Middlewares;
 internal class MarsNodesMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly RED _RED;
+    private readonly INodeRuntime _runtime;
     private readonly INodeTaskManager _nodeTaskManager;
 
     public MarsNodesMiddleware(RequestDelegate next,
-                    RED red,
+                    INodeRuntime runtime,
                     INodeTaskManager nodeTaskManager)
     {
         _next = next;
-        _RED = red;
+        _runtime = runtime;
         _nodeTaskManager = nodeTaskManager;
     }
 
@@ -39,9 +39,9 @@ internal class MarsNodesMiddleware
         //Console.WriteLine("MarsNodesMiddleware: " + httpContext.Request.Path);
 #endif
 
-        if (_RED.HttpRegisterdCatchers.Count > 0)
+        if (_runtime.HttpRegisterdCatchers.Count > 0)
         {
-            var foundRoute = _RED.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
+            var foundRoute = _runtime.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
 
             if (foundRoute is not null)
             {
@@ -54,9 +54,9 @@ internal class MarsNodesMiddleware
                     msg.Add(ctx);
                     msg.Add(requestUserInfo);
 
-                    using var scope = _RED.ServiceProvider.CreateScope();
+                    using var scope = _runtime.ServiceProvider.CreateScope();
 
-                    // Тут надо подумать. RED context у нод свой и он по недодоуманности удерживается.
+                    // Тут надо подумать. RNS context у нод свой и он по недодоуманности удерживается.
                     //var taskId = await _nodeTaskManager.CreateJob(httpContext.RequestServices, foundRoute.NodeId, msg);
                     var taskId = await _nodeTaskManager.CreateJob(scope.ServiceProvider, foundRoute.NodeId, msg);
 

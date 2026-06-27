@@ -1,18 +1,19 @@
 using Mars.Nodes.Core.Implements.Utils;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class DirReadNodeImpl : INodeImplement<DirReadNode>, INodeImplement
+public class DirReadNodeImpl : INodeImplement<DirReadNode>
 {
     public DirReadNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public DirReadNodeImpl(DirReadNode node, IRED red)
+    public DirReadNodeImpl(DirReadNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

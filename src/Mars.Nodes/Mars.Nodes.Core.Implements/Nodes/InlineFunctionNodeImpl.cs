@@ -1,21 +1,22 @@
 using System.Reflection;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.StringFunctions;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>, INodeImplement
+public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>
 {
-    private readonly NodeImplementFactory _implementFactory;
+    private readonly INodeImplementFactory _implementFactory;
 
     public InlineFunctionNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public InlineFunctionNodeImpl(InlineFunctionNode node, IRED red, NodeImplementFactory implementFactory)
+    public InlineFunctionNodeImpl(InlineFunctionNode node, IRuntimeNodeScope rns, INodeImplementFactory implementFactory)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _implementFactory = implementFactory;
     }
 
@@ -46,7 +47,7 @@ public class InlineFunctionNodeImpl : INodeImplement<InlineFunctionNode>, INodeI
 
         var nodeArgumentsList = node.Arguments.ToList();
 
-        var ppt = paramsWithoutExecutionParams.Any() ? VariableSetNodeImpl.CreateInterpreter(RED, input) : null;
+        var ppt = paramsWithoutExecutionParams.Any() ? VariableSetNodeImpl.CreateInterpreter(RNS, input) : null;
 
         for (int i = 0; i < parametersInfo.Length; i++)
         {

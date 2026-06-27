@@ -4,21 +4,22 @@ using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Implements.Utils;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNode>, INodeImplement
+public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNode>
 {
     public HttpInFormSaveFilesNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public HttpInFormSaveFilesNodeImpl(HttpInFormSaveFilesNode node, IRED _RED)
+    public HttpInFormSaveFilesNodeImpl(HttpInFormSaveFilesNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
 
     }
 
@@ -29,15 +30,15 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
 
         if (!request.HasFormContentType || request.Form.Files.None()) goto Out;
 
-        var requestContext = RED.ServiceProvider.GetRequiredService<IRequestContext>();
-        var defaultUserId = async () => (await RED.ServiceProvider.GetRequiredService<IUserService>().DefaultContentUserAsync(parameters.CancellationToken)).Id;
+        var requestContext = RNS.ServiceProvider.GetRequiredService<IRequestContext>();
+        var defaultUserId = async () => (await RNS.ServiceProvider.GetRequiredService<IUserService>().DefaultContentUserAsync(parameters.CancellationToken)).Id;
         Guid userId = requestContext.User?.Id ?? await defaultUserId();
 
-        var optionsService = RED.ServiceProvider.GetRequiredService<IOptionService>();
+        var optionsService = RNS.ServiceProvider.GetRequiredService<IOptionService>();
 
         if (Node.SaveInMediaFiles)
         {
-            var mediaService = RED.ServiceProvider.GetRequiredService<IMediaService>();
+            var mediaService = RNS.ServiceProvider.GetRequiredService<IMediaService>();
             List<Guid> writtenFileIds = [];
             foreach (var file in request.Form.Files)
             {
@@ -47,7 +48,7 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
                 var writtenFileId = await mediaService.WriteUpload(fileName, fileDir, file.OpenReadStream(), userId, generateUniqueName: false, parameters.CancellationToken);
                 writtenFileIds.Add(writtenFileId);
             }
-            var fileRepository = RED.ServiceProvider.GetRequiredService<IFileRepository>();
+            var fileRepository = RNS.ServiceProvider.GetRequiredService<IFileRepository>();
             var files = await fileRepository.ListAll(new() { Ids = writtenFileIds }, optionsService.FileHostingInfo(), parameters.CancellationToken);
             input.Payload = files;
             goto Out;
@@ -79,7 +80,7 @@ public class HttpInFormSaveFilesNodeImpl : INodeImplement<HttpInFormSaveFilesNod
             foreach (var file in request.Form.Files)
             {
                 var filepath = FilePathGenerator.Generate(Node.FilePathTemplate, file, file.Name);
-                var fs = RED.ServiceProvider.GetRequiredService<IFileStorage>();
+                var fs = RNS.ServiceProvider.GetRequiredService<IFileStorage>();
                 await fs.WriteAsync(filepath, file.OpenReadStream(), parameters.CancellationToken);
                 fileNames.Add(filepath);
             }

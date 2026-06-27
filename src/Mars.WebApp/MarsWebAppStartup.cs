@@ -177,7 +177,7 @@ public static class MarsWebAppStartup
                     .UseDatasourceWorkspace()
                     .UseAppFrontMain();
 
-        var optionsFormsLocator = app.Services.GetRequiredService<OptionsFormsLocator>();
+        var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
         optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
         app.UsePlugins();

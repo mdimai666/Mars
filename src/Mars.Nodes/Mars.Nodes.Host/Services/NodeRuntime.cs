@@ -6,14 +6,13 @@ using Mars.Core.Utils;
 using Mars.Host.Shared.Hubs;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Fields;
-using Mars.Nodes.Core.Implements;
-using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Helpers;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.ExceptionModule;
 using Mars.Nodes.Host.Shared.HttpModule;
+using Mars.Nodes.Host.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //for NSubstitute
@@ -21,16 +20,17 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Mars.Nodes.Host.Services;
 
 /// <summary>
-/// Node-red runtime context
+/// Nodes runtime process
 /// </summary>
-internal class RED
+internal class NodeRuntime : INodeRuntime
 {
     public IServiceProvider ServiceProvider { get; }
 
-    public BroadcastHub BroadcastHub;
-    private readonly NodeImplementFactory _nodeImplementFactory;
+    public BroadcastHub BroadcastHub { get; }
 
-    public NodeImplementFactory NodeImplementFactory => _nodeImplementFactory;
+    private readonly INodeImplementFactory _nodeImplementFactory;
+
+    public INodeImplementFactory NodeImplementFactory => _nodeImplementFactory;
 
     public List<HttpCatchRegister> HttpRegisterdCatchers { get; set; } = [];
     public VariablesContextDictionary GlobalContext { get; } = new();
@@ -50,15 +50,15 @@ internal class RED
 
     private int _assignedCount = 0;
 
-    public CompiledHttpRouteMatcher CompiledHttpRouteMatcher = default!;
+    public CompiledHttpRouteMatcher CompiledHttpRouteMatcher { get; private set; } = default!;
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
 
-    public NodesErrorHandlerRegistry ErrorHandlerRegistry = default!;
+    public NodesErrorHandlerRegistry ErrorHandlerRegistry { get; private set; } = default!;
 
     ThrottleByKey _broadcastStatusThrottler;
 
-    public RED(BroadcastHub hub, NodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
+    public NodeRuntime(BroadcastHub hub, INodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         BroadcastHub = hub;
@@ -119,7 +119,7 @@ internal class RED
         var flows = flowNodes.Select(node => new FlowNodeImpl(node, null!)).ToDictionary(s => s.Node.Id);
         foreach (var (nodeId, flow) in flows)
         {
-            flow.RED = CreateContextForNode(flow.Node, flow);
+            flow.RNS = CreateContextForNode(flow.Node, flow);
             Nodes.Add(nodeId, flow);
 
             if (!FlowContexts.ContainsKey(nodeId))
@@ -169,6 +169,8 @@ internal class RED
         {
             if (node is IDisposable disposable)
                 disposable.Dispose();
+            if (node is IAsyncDisposable asyncDisposable)
+                asyncDisposable.DisposeAsync();
         }
     }
 
@@ -200,12 +202,12 @@ internal class RED
 
     }
 
-    public RED_Context CreateContextForNode(Node node, FlowNodeImpl? flow)
+    public IRuntimeNodeScope CreateContextForNode(Node node, IFlowNodeImpl? flow)
     {
         if (!node.IsContainerless)
             ArgumentNullException.ThrowIfNull(flow, nameof(flow));
         if (node is FlowNode && flow.Node.Id != node.Id) throw new ArgumentException("For FlowNode flow must be self");
-        return new RED_Context(node.Id, flow, this, ServiceProvider);
+        return new RuntimeNodeScope(node.Id, flow, this, ServiceProvider);
     }
 
     public IEnumerable<HttpCatchRegister> GetHttpCatchRegistersForMethod(string method)
@@ -282,63 +284,4 @@ internal class RED
 
     public void Done(string nodeId, Guid jobGuid)
         => OnNodeImplDone?.Invoke(nodeId, jobGuid);
-}
-
-internal delegate void NodeImplDoneEvent(string nodeId, Guid jobGuid);
-
-internal class RED_Context : IRED
-{
-    public string NodeId { get; set; }
-    public FlowNodeImpl? Flow { get; }
-    public List<HttpCatchRegister> HttpRegisterdCatchers => RED.HttpRegisterdCatchers;
-    public IServiceProvider ServiceProvider { get; }
-
-    public VariablesContextDictionary GlobalContext => RED.GlobalContext;
-    public VariablesContextDictionary? FlowContext => Flow is null ? null : RED.FlowContexts[Flow!.Node.Id];
-
-    RED RED;
-
-    public RED_Context(string nodeId, FlowNodeImpl? flow, RED red, IServiceProvider serviceProvider)
-    {
-        NodeId = nodeId;
-        Flow = flow;
-        RED = red;
-        ServiceProvider = serviceProvider;
-    }
-
-    public void DebugMsg(DebugMessage msg)
-        => RED.DebugMsg(NodeId, msg);
-
-    public void DebugMsg(Exception ex)
-        => RED.DebugMsg(NodeId, ex);
-
-    public void Status(NodeStatus nodeStatus)
-        => RED.BroadcastStatus(NodeId, nodeStatus);
-
-    public void RegisterHttpMiddleware(HttpCatchRegister mw)
-        => RED.RegisterHttpMiddleware(mw);
-
-    public IEnumerable<HttpCatchRegister> GetHttpCatchRegistersForMethod(string method)
-        => RED.GetHttpCatchRegistersForMethod(method);
-
-    public HttpClient GetHttpClient()
-        => RED.GetHttpClient();
-
-    public VarNodeVaribleDto? GetVarNodeVarible(string varName)
-        => RED.GetVarNodeVarible(varName);
-
-    public void SetVarNodeVarible(string varName, object? value)
-        => RED.SetVarNodeVarible(varName, value);
-
-    public IReadOnlyDictionary<string, VarNode> VarNodesDict => RED.VarNodesDict;
-    public IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict => RED.ConfigNodesDict;
-
-    public InputConfig<TConfigNode> GetConfig<TConfigNode>(string id) where TConfigNode : ConfigNode
-        => new() { Id = id, Value = RED.ConfigNodesDict.GetValueOrDefault(id ?? "") as TConfigNode };
-
-    public InputConfig<TConfigNode> GetConfig<TConfigNode>(InputConfig<TConfigNode> config) where TConfigNode : ConfigNode
-        => new() { Id = config.Id, Value = RED.ConfigNodesDict.GetValueOrDefault(config.Id ?? "") as TConfigNode };
-
-    public void Done(ExecutionParameters parameters)
-        => RED.Done(NodeId, parameters.JobGuid);
 }

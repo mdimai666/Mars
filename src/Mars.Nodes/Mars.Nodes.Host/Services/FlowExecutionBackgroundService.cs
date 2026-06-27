@@ -1,8 +1,8 @@
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
+using Mars.Nodes.Host.Shared;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Mars.Nodes.Host.Services;
@@ -10,21 +10,21 @@ namespace Mars.Nodes.Host.Services;
 //Not used
 internal class FlowExecutionBackgroundService : BackgroundService
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly IHubContext<ChatHub> hub;
-    private readonly INodeService nodeService;
-    private readonly RED _RED;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IHubContext<ChatHub> _hub;
+    private readonly INodeService _nodeService;
+    private readonly INodeRuntime _runtime;
 
     string nodeId = default!;
     NodeMsg? msg;
 
     public FlowExecutionBackgroundService(IServiceProvider serviceProvider,
-        IHubContext<ChatHub> hub, INodeService nodeService, RED _RED)
+        IHubContext<ChatHub> hub, INodeService nodeService, INodeRuntime runtime)
     {
-        this.serviceProvider = serviceProvider;
-        this.hub = hub;
-        this.nodeService = nodeService;
-        this._RED = _RED;
+        _serviceProvider = serviceProvider;
+        _hub = hub;
+        _nodeService = nodeService;
+        _runtime = runtime;
     }
 
     public void Setup(string nodeId, NodeMsg? msg = null)
@@ -44,7 +44,7 @@ internal class FlowExecutionBackgroundService : BackgroundService
     {
         throw new NotImplementedException();
         //using var scope = serviceProvider.CreateScope();
-        //NodeTaskManager manager = new NodeTaskManager(scope.ServiceProvider, hub, (nodeService as NodeService).Nodes, _RED);
+        //NodeTaskManager manager = new NodeTaskManager(scope.ServiceProvider, hub, (nodeService as NodeService).Nodes, rns);
 
         //manager.Run(nodeId, msg);
 

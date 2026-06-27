@@ -25,7 +25,7 @@ public static class MainAppFrontShared
         BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.Affix).Assembly, true);
         BlazoredHtml.AddComponentsFromAssembly(typeof(FluentButton).Assembly, true);
 
-        services.AddSingleton<OptionsFormsLocator>();
+        services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
 
         if (OperatingSystem.IsBrowser())
         {
@@ -35,7 +35,7 @@ public static class MainAppFrontShared
 
     public static IServiceProvider UseAppFrontMain(this IServiceProvider services)
     {
-        var optionsFormsLocator = services.GetRequiredService<OptionsFormsLocator>();
+        var optionsFormsLocator = services.GetRequiredService<IOptionsFormsLocator>();
         optionsFormsLocator.RegisterAssembly(typeof(SmtpSettingsEditForm).Assembly);
 
         return services;

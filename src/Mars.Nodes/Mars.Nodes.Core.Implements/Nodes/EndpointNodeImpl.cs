@@ -6,6 +6,7 @@ using Mars.Host.Shared.Interfaces;
 using Mars.Nodes.Core.Implements.Extensions;
 using Mars.Nodes.Core.Implements.Utils;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Http;
@@ -14,20 +15,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class EndpointNodeImpl : INodeImplement<EndpointNode>, INodeImplement
+public class EndpointNodeImpl : INodeImplement<EndpointNode>
 {
     public EndpointNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public EndpointNodeImpl(EndpointNode node, IRED _RED)
+    public EndpointNodeImpl(EndpointNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
 
         var mw = new HttpCatchRegister(Node.Method, node.UrlPattern, node.Id);
 
-        _RED.RegisterHttpMiddleware(mw);
+        rns.RegisterHttpMiddleware(mw);
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -89,7 +90,7 @@ public class EndpointNodeImpl : INodeImplement<EndpointNode>, INodeImplement
     {
         if (Node.IsRequireAuthorize)
         {
-            var requestContext = RED.ServiceProvider.GetRequiredService<IRequestContext>();
+            var requestContext = RNS.ServiceProvider.GetRequiredService<IRequestContext>();
 
             if (!requestContext.IsAuthenticated || requestContext.User is null)
             {

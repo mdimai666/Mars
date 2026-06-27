@@ -1,18 +1,19 @@
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class UnknownNodeImpl : INodeImplement<UnknownNode>, INodeImplement
+public class UnknownNodeImpl : INodeImplement<UnknownNode>
 {
     public UnknownNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public UnknownNodeImpl(UnknownNode node, IRED red)
+    public UnknownNodeImpl(UnknownNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg _, ExecuteAction callback, ExecutionParameters parameters)

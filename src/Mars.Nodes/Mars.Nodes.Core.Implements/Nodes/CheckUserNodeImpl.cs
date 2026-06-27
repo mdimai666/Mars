@@ -1,26 +1,27 @@
 using Mars.Host.Shared.Interfaces;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class CheckUserNodeImpl : INodeImplement<CheckUserNode>, INodeImplement
+public class CheckUserNodeImpl : INodeImplement<CheckUserNode>
 {
 
     public CheckUserNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public CheckUserNodeImpl(CheckUserNode node, IRED _RED)
+    public CheckUserNodeImpl(CheckUserNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
 
-        var requestContext = RED.ServiceProvider.GetRequiredService<IRequestContext>();
+        var requestContext = RNS.ServiceProvider.GetRequiredService<IRequestContext>();
 
         bool isAuth = requestContext.IsAuthenticated;
 

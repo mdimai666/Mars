@@ -42,7 +42,7 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         var msg = await ExecuteNode(node);
 
         //Assert
-        RED.GlobalContext.GetValue(valuePath.Split('.', 2)[1]).Should().Be(expectValue);
+        Runtime.GlobalContext.GetValue(valuePath.Split('.', 2)[1]).Should().Be(expectValue);
     }
 
     [Fact]
@@ -51,13 +51,13 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         //Arrange
         _ = nameof(VariableSetNodeImpl.Execute);
         var node = SetupNode("GlobalContext.q.Payload", "25");
-        RED.GlobalContext.SetValue("q", new NodeMsg { Payload = 1 });
+        Runtime.GlobalContext.SetValue("q", new NodeMsg { Payload = 1 });
 
         //Act
         var msg = await ExecuteNode(node);
 
         //Assert
-        RED.GlobalContext.GetValue<NodeMsg>("q").Payload.Should().Be(25);
+        Runtime.GlobalContext.GetValue<NodeMsg>("q").Payload.Should().Be(25);
     }
 
     [Theory]
@@ -70,8 +70,8 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         _ = nameof(VariableSetNodeImpl.Execute);
         var node = SetupNode(valuePath, expression);
         var flowNode = new FlowNode();
-        RED.FlowContexts.Add(flowNode.Id, new());
-        var flowContext = RED.FlowContexts[flowNode.Id];
+        Runtime.FlowContexts.Add(flowNode.Id, new());
+        var flowContext = Runtime.FlowContexts[flowNode.Id];
 
         //Act
         var msg = await ExecuteNodeEx(node, flowNode: flowNode);
@@ -87,8 +87,8 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         _ = nameof(VariableSetNodeImpl.Execute);
         var node = SetupNode("FlowContext.q.Payload", "25");
         var flowNode = new FlowNode();
-        RED.FlowContexts.Add(flowNode.Id, new());
-        var flowContext = RED.FlowContexts[flowNode.Id];
+        Runtime.FlowContexts.Add(flowNode.Id, new());
+        var flowContext = Runtime.FlowContexts[flowNode.Id];
         flowContext.SetValue("q", new NodeMsg { Payload = 1 });
 
         //Act
@@ -161,13 +161,13 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         _ = nameof(VariableSetNodeImpl.CreateInterpreter);
 
         var flowNode = new FlowNode();
-        RED.FlowContexts.Add(flowNode.Id, new());
-        var flowContext = RED.FlowContexts[flowNode.Id];
+        Runtime.FlowContexts.Add(flowNode.Id, new());
+        var flowContext = Runtime.FlowContexts[flowNode.Id];
         flowContext.SetValue("f1", "hi, ");
 
         var varNode = new VarNode() { VarType = "string", Name = "var1", Value = ", _end!" };
 
-        RED.GlobalContext.SetValue("v1", 1);
+        Runtime.GlobalContext.SetValue("v1", 1);
         //var node = SetupNode("msg.Payload", "GlobalContext.v1 + 2");
         var node = new VariableSetNode
         {
@@ -182,9 +182,9 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
         var result = await ExecuteNodeEx(node, flowNode: flowNode, varNode: varNode);
 
         //Assert
-        RED.GlobalContext.GetValue<int>("v1").Should().Be(4);
+        Runtime.GlobalContext.GetValue<int>("v1").Should().Be(4);
         result.Msg.Payload.Should().Be(7);
-        RED.FlowContexts[flowNode.Id].GetValue<string>("f1").Should().BeEquivalentTo("hi, xx, _end!");
+        Runtime.FlowContexts[flowNode.Id].GetValue<string>("f1").Should().BeEquivalentTo("hi, xx, _end!");
     }
 
     VariableSetNode SetupNode(string path, string expression)

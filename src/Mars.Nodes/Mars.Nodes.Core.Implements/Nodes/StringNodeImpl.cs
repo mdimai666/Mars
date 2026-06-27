@@ -1,20 +1,21 @@
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.StringFunctions;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class StringNodeImpl : INodeImplement<StringNode>, INodeImplement
+public class StringNodeImpl : INodeImplement<StringNode>
 {
     public StringNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
     IReadOnlyDictionary<string, StringMethod> _functions;
 
-    public StringNodeImpl(StringNode node, IRED red)
+    public StringNodeImpl(StringNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _functions = StringNodeOperationUtilsMethodParser.ParseMethods(typeof(StringNodeOperationUtils)).ToDictionary(s => s.Name);
     }
 

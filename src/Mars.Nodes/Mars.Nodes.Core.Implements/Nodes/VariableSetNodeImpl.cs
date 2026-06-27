@@ -4,31 +4,33 @@ using Mars.Core.Extensions;
 using Mars.Host.Shared.Templators;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Host.Shared.Models;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImplement
+public class VariableSetNodeImpl : INodeImplement<VariableSetNode>
 {
 
     public VariableSetNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public VariableSetNodeImpl(VariableSetNode node, IRED red)
+    public VariableSetNodeImpl(VariableSetNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (!Node.Setters.Any()) return Task.CompletedTask;
 
-        var ppt = CreateInterpreter(RED, input);
+        var ppt = CreateInterpreter(RNS, input);
 
         foreach (var setter in Node.Setters)
         {
-            _ = SetExpression(setter, ppt, RED, input);
+            _ = SetExpression(setter, ppt, RNS, input);
         }
 
         callback(input);
@@ -106,9 +108,9 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
         }
     }
 
-    public static XInterpreter CreateInterpreter(IRED RED, NodeMsg input)
+    public static XInterpreter CreateInterpreter(IRuntimeNodeScope RNS, NodeMsg input)
     {
-        return CreateInterpreter(RED.GlobalContext, RED.FlowContext, RED.VarNodesDict, input);
+        return CreateInterpreter(RNS.GlobalContext, RNS.FlowContext, RNS.VarNodesDict, input);
     }
 
     public static XInterpreter CreateInterpreter(VariablesContextDictionary globalContext,
@@ -122,8 +124,8 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
 
         var executionContext = new Dictionary<string, object>()
         {
-            [nameof(RED.GlobalContext)] = globalContextAO,
-            [nameof(RED.FlowContext)] = flowContextAO,
+            [nameof(RNS.GlobalContext)] = globalContextAO,
+            [nameof(RNS.FlowContext)] = flowContextAO,
             [nameof(VarNode)] = varNodexContext,
             ["env"] = (string key) => Environment.GetEnvironmentVariable(key),
         };
@@ -141,7 +143,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
         return value;
     }
 
-    public static object? SetExpression(VariableSetExpression setter, XInterpreter ppt, IRED RED, NodeMsg input)
+    public static object? SetExpression(VariableSetExpression setter, XInterpreter ppt, IRuntimeNodeScope RNS, NodeMsg input)
     {
         var segments = setter.ValuePath.Split(".");
         var valuePathRoot = segments[0];
@@ -172,25 +174,25 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
             dmsg.SetValueByPath(targetPropertyPath, value);
             return value;
         }
-        else if (valuePathRoot == nameof(IRED.GlobalContext))
+        else if (valuePathRoot == nameof(IRuntimeNodeScope.GlobalContext))
         {
             var value = calcValue(null); //TODO: вычислить какой исходный тип
             var prop = segments[1];
             if (segments.Length == 2)
             {
-                if (RED.GlobalContext.TryGetValue(prop, out var gVal))
+                if (RNS.GlobalContext.TryGetValue(prop, out var gVal))
                 {
                     //gVal = value;
-                    RED.GlobalContext.SetValue(prop, value);
+                    RNS.GlobalContext.SetValue(prop, value);
                 }
                 else
                 {
-                    RED.GlobalContext.SetValue(prop, value);
+                    RNS.GlobalContext.SetValue(prop, value);
                 }
             }
             else
             {
-                if (RED.GlobalContext.TryGetValue(prop, out var gVal))
+                if (RNS.GlobalContext.TryGetValue(prop, out var gVal))
                 {
                     SetProperty(gVal!, segments.Skip(2).JoinStr("."), value);
                 }
@@ -201,25 +203,25 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
             }
             return value;
         }
-        else if (valuePathRoot == nameof(IRED.FlowContext))
+        else if (valuePathRoot == nameof(IRuntimeNodeScope.FlowContext))
         {
             var value = calcValue(null); //TODO: вычислить какой исходный тип
             var prop = segments[1];
             if (segments.Length == 2)
             {
-                if (RED.FlowContext.TryGetValue(prop, out var fVal))
+                if (RNS.FlowContext.TryGetValue(prop, out var fVal))
                 {
                     //fVal = value;
-                    RED.FlowContext.SetValue(prop, value);
+                    RNS.FlowContext.SetValue(prop, value);
                 }
                 else
                 {
-                    RED.FlowContext.SetValue(prop, value);
+                    RNS.FlowContext.SetValue(prop, value);
                 }
             }
             else
             {
-                if (RED.FlowContext.TryGetValue(prop, out var fVal))
+                if (RNS.FlowContext.TryGetValue(prop, out var fVal))
                 {
                     SetProperty(fVal!, segments.Skip(2).JoinStr("."), value);
                 }
@@ -233,7 +235,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
         else if (valuePathRoot == nameof(VarNode))
         {
             var prop = segments[1];
-            VarNodeVaribleDto? varDto = RED.GetVarNodeVarible(prop);
+            VarNodeVaribleDto? varDto = RNS.GetVarNodeVarible(prop);
 
             if (varDto is null) throw new ArgumentNullException($"VarNode '{prop}' not exist");
 
@@ -248,7 +250,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
                 {
                     if (segments.Length == 2)
                     {
-                        RED.SetVarNodeVarible(prop, value);
+                        RNS.SetVarNodeVarible(prop, value);
                     }
                     else
                     {
@@ -263,7 +265,7 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
             }
             else
             {
-                if (RED.FlowContext.TryGetValue(prop, out var fVal))
+                if (RNS.FlowContext.TryGetValue(prop, out var fVal))
                 {
                     SetProperty(fVal!, segments.Skip(2).JoinStr("."), value);
                 }
@@ -344,13 +346,13 @@ public class VariableSetNodeImpl : INodeImplement<VariableSetNode>, INodeImpleme
     }
 #endif
 
-    public static string ReadFieldAsExpression(string value, IRED RED, NodeMsg input)
+    public static string ReadFieldAsExpression(string value, IRuntimeNodeScope rns, NodeMsg input)
     {
         if (value.IsNullOrEmpty()) return value;
 
         if (value.StartsWith('@'))
         {
-            var ppt = VariableSetNodeImpl.CreateInterpreter(RED, input);
+            var ppt = VariableSetNodeImpl.CreateInterpreter(rns, input);
             return ppt.Get.Eval<string>(value[1..]);
         }
         return value;

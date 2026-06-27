@@ -1,6 +1,6 @@
 using System.Reflection;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Plugin.Kit.Host;
@@ -9,10 +9,10 @@ public static class PluginHostHelperExtensions
 {
     public static IServiceProvider AutoHostRegisterHelper(this IServiceProvider serviceProvider, Assembly[] assemblies)
     {
-        var nodesLocator = serviceProvider.GetRequiredService<NodesLocator>();
-        //var nodeFormsLocator = serviceProvider.GetRequiredService<NodeFormsLocator>();
-        var nodeImplementFactory = serviceProvider.GetRequiredService<NodeImplementFactory>();
-        //var optionsFormsLocator = serviceProvider.GetRequiredService<OptionsFormsLocator>();
+        var nodesLocator = serviceProvider.GetRequiredService<INodesLocator>();
+        //var nodeFormsLocator = serviceProvider.GetRequiredService<INodeFormsLocator>();
+        var nodeImplementFactory = serviceProvider.GetRequiredService<INodeImplementFactory>();
+        //var optionsFormsLocator = serviceProvider.GetRequiredService<IOptionsFormsLocator>();
 
         foreach (var assembly in assemblies)
         {

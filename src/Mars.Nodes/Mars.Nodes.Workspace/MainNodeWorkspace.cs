@@ -7,6 +7,7 @@ using Mars.Nodes.FormEditor.EditForms;
 using Mars.Nodes.Front.Shared.Services;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
+using Mars.Nodes.Workspace.Locators;
 using Mars.Nodes.Workspace.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,12 +18,12 @@ public static class MainNodeWorkspace
     public static IServiceCollection AddNodeWorkspace(this IServiceCollection services)
     {
         var nodesLocator = new NodesLocator();
-        services.AddSingleton<NodesLocator>(nodesLocator);
+        services.AddSingleton<INodesLocator>(nodesLocator);
 
-        var jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(nodesLocator);
+        var jsonSerializerOptions = nodesLocator.CreateJsonSerializerOptions();
         services.AddKeyedSingleton<JsonSerializerOptions>(typeof(NodeJsonConverter), jsonSerializerOptions);
 
-        services.AddSingleton<NodeFormsLocator>();
+        services.AddSingleton<INodeFormsLocator, NodeFormsLocator>();
         services.AddSingleton<EditorActionLocator>();
 
         services.AddScoped<INodeServiceClient, NodeServiceClient>();
@@ -33,11 +34,11 @@ public static class MainNodeWorkspace
 
     public static IServiceProvider UseNodeWorkspace(this IServiceProvider services)
     {
-        var nodesLocator = services.GetRequiredService<NodesLocator>();
+        var nodesLocator = services.GetRequiredService<INodesLocator>();
 
         nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
 
-        var nodeFormsLocator = services.GetRequiredService<NodeFormsLocator>();
+        var nodeFormsLocator = services.GetRequiredService<INodeFormsLocator>();
         nodeFormsLocator.RegisterAssembly(typeof(InjectNodeForm).Assembly);
 
         var editorActionLocator = services.GetRequiredService<EditorActionLocator>();

@@ -10,15 +10,17 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.TemplateEngine;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Host.Factories;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.Dto;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Nodes.Implements.Test.NodesForTesting;
+using Mars.Nodes.Workspace.Locators;
 using Mars.TemplateEngine.Host;
 using Mars.TemplateEngine.Host.InternalProviders;
 using Mars.TemplateEngine.Providers.HandlebarsProvider;
@@ -45,10 +47,10 @@ public class NodeServiceUnitTestBase
     internal readonly ILogger<NodeService> _loggerNodeService;
     internal readonly ILogger<NodeTaskManager> _loggerManager;
     internal readonly ILogger<NodeTaskJob> _loggerJob;
-    internal readonly NodesLocator _nodesLocator;
-    internal readonly NodeImplementFactory _nodeImplementFactory;
+    internal readonly INodesLocator _nodesLocator;
+    internal readonly INodeImplementFactory _nodeImplementFactory;
     internal NodeService? _nodeService;
-    internal RED RED;
+    internal INodeRuntime Runtime;
     internal NodeTaskManager _nodeTaskManager;
     internal JsonSerializerOptions _jsonSerializerOptions;
 
@@ -69,8 +71,8 @@ public class NodeServiceUnitTestBase
         _nodesLocator.RegisterAssembly(typeof(InjectNode).Assembly);
         _nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
         _nodesLocator.RegisterAssembly(typeof(CssCompilerNode).Assembly);
-        _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
-        _nodeImplementFactory = new NodeImplementFactory();
+        _jsonSerializerOptions = _nodesLocator.CreateJsonSerializerOptions();
+        _nodeImplementFactory = Substitute.ForPartsOf<NodeImplementFactory>();
         _nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
         _nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
         _nodeImplementFactory.RegisterAssembly(typeof(CssCompilerNodeImplement).Assembly);
@@ -78,13 +80,13 @@ public class NodeServiceUnitTestBase
         // dependies
         _hub = Substitute.For<IHubContext<ChatHub>>();
         _broadcastHub = Substitute.For<BroadcastHub>(_hub);
-        RED = Substitute.ForPartsOf<RED>(_broadcastHub, _nodeImplementFactory, _serviceProvider);
-        _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(RED, _loggerManager);
-        _serviceProvider.GetService(typeof(RED)).Returns(RED);
+        Runtime = Substitute.ForPartsOf<NodeRuntime>(_broadcastHub, _nodeImplementFactory, _serviceProvider);
+        _nodeTaskManager = Substitute.ForPartsOf<NodeTaskManager>(Runtime, _loggerManager);
+        _serviceProvider.GetService(typeof(INodeRuntime)).Returns(Runtime);
         _serviceProvider.GetService(typeof(BroadcastHub)).Returns(_broadcastHub);
         _serviceProvider.GetService(typeof(IServiceCollection)).Returns(new ServiceCollection());
         _serviceProvider.GetService(typeof(INodeTaskManager)).Returns(_nodeTaskManager);
-        _serviceProvider.GetService(typeof(NodeImplementFactory)).Returns(_nodeImplementFactory);
+        _serviceProvider.GetService(typeof(INodeImplementFactory)).Returns(_nodeImplementFactory);
         IRequestContext requestContext = new RequestContextImpl { User = _fixture.Create<RequestContextUser>() };
         _serviceProvider.GetService(typeof(IRequestContext)).Returns(requestContext);
 
@@ -96,9 +98,9 @@ public class NodeServiceUnitTestBase
 
         _fileStorage = Substitute.For<IFileStorage>();
         _eventManager = Substitute.For<IEventManager>();
-        //_nodeService = Substitute.For<NodeService>(_fileStorage, RED, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
+        //_nodeService = Substitute.For<NodeService>(_fileStorage, Runtime, _serviceProvider, (IHubContext<ChatHub>)_hub, _eventManager);
 
-        _nodeService = new NodeService(_fileStorage, RED, _serviceProvider, _nodeTaskManager, _nodesLocator, factory: null!, _loggerNodeService, _eventManager);
+        _nodeService = new NodeService(_fileStorage, Runtime, _serviceProvider, _nodeTaskManager, _nodesLocator, factory: null!, _loggerNodeService, _eventManager);
         //_nodesLocator.Dict.Add(typeof(TestCallBackNode).FullName!, new NodeDictItem { DisplayAttribute = new(), NodeType = typeof(TestCallBackNode) });
 
         var templateManager = new TemplateManager([new PlainTextTemplateEngine(), new HandlebarsTemplateEngine()]);

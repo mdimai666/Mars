@@ -13,10 +13,10 @@ public static class MainMarsWebAppNodesFront
 
     public static IServiceProvider UseMarsWebAppNodesFront(this IServiceProvider services)
     {
-        var nodesLocator = services.GetRequiredService<NodesLocator>();
+        var nodesLocator = services.GetRequiredService<INodesLocator>();
         nodesLocator.RegisterAssembly(typeof(ExcelNode).Assembly);
 
-        var nodeFormsLocator = services.GetRequiredService<NodeFormsLocator>();
+        var nodeFormsLocator = services.GetRequiredService<INodeFormsLocator>();
         nodeFormsLocator.RegisterAssembly(typeof(ExcelNodeForm).Assembly);
 
         return services;

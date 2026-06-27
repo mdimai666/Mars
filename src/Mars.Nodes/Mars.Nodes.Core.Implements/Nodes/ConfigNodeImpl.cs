@@ -1,18 +1,19 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class ConfigNodeImpl : INodeImplement<ConfigNode>, INodeImplement
+public class ConfigNodeImpl : INodeImplement<ConfigNode>
 {
 
     public ConfigNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public ConfigNodeImpl(ConfigNode node, IRED red)
+    public ConfigNodeImpl(ConfigNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

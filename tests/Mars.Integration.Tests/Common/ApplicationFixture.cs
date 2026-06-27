@@ -10,7 +10,7 @@ using Mars.Integration.Tests.Interfaces;
 using Mars.Integration.Tests.Nodes;
 using Mars.Integration.Tests.TestControllers;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.UseStartup.MarsParts;
@@ -129,10 +129,10 @@ public class ApplicationFixture : IAsyncLifetime
 
         var app = ApplicationFactory;
 
-        var nodesLocator = app.Services.GetRequiredService<NodesLocator>();
+        var nodesLocator = app.Services.GetRequiredService<INodesLocator>();
         nodesLocator.RegisterAssembly(typeof(TestCallBackNode).Assembly);
 
-        var nodeImplementFactory = app.Services.GetRequiredService<NodeImplementFactory>();
+        var nodeImplementFactory = app.Services.GetRequiredService<INodeImplementFactory>();
         nodeImplementFactory.RegisterAssembly(typeof(TestCallBackNodeImpl).Assembly);
     }
 

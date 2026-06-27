@@ -41,7 +41,7 @@
 
 @code {
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
-    [Inject] OptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
+    [Inject] IOptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
 
     static List<OptionsFormsLocatorItem> OptionFormList = default!;
 

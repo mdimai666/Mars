@@ -1,19 +1,20 @@
 using Mars.Host.Shared.Managers;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class EventNodeImpl : INodeImplement<EventNode>, INodeImplement
+public class EventNodeImpl : INodeImplement<EventNode>
 {
-    public EventNodeImpl(EventNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public EventNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
+
+    public EventNodeImpl(EventNode node, IRuntimeNodeScope rns)
+    {
+        Node = node;
+        RNS = rns;
+    }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {

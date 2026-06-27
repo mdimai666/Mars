@@ -3,6 +3,8 @@ using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Host.Shared.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -11,17 +13,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
+public class FunctionNodeImpl : INodeImplement<FunctionNode>
 {
 
     public FunctionNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public FunctionNodeImpl(FunctionNode node, IRED red)
+    public FunctionNodeImpl(FunctionNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -40,10 +42,10 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
                     typeof(ServiceProviderServiceExtensions).Assembly
             };
 
-            var sc = RED.ServiceProvider.GetRequiredService<IServiceCollection>();
+            var sc = RNS.ServiceProvider.GetRequiredService<IServiceCollection>();
             //var assemblies = sc.Select(s => s.ServiceType.Assembly).Concat(definedAssemblies).Distinct().ToArray();
 
-            var re = new Regex("RED\\.GetService<(.*?)>");
+            var re = new Regex("RNS\\.GetService<(.*?)>");
 
             var detectAssemblied = re.Matches(script).Select(s => s.Groups[1].Value).ToList();
 
@@ -77,7 +79,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
             {
                 NodeId = Node.Id,
                 msg = new DynamicNodeMsgWrapper(input),
-                RED = RED,
+                RNS = RNS,
                 callback = callback
             };
 
@@ -94,14 +96,14 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
 
         catch (CompilationErrorException)
         {
-            RED.Status(NodeStatus.Error("compile error"));
-            //RED.DebugMsg(ex);
+            RNS.Status(NodeStatus.Error("compile error"));
+            //RNS.DebugMsg(ex);
             throw;
         }
         catch (Exception)
         {
-            RED.Status(NodeStatus.Error("error"));
-            //RED.DebugMsg(ex);
+            RNS.Status(NodeStatus.Error("error"));
+            //RNS.DebugMsg(ex);
             throw;
         }
     }
@@ -110,10 +112,10 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
     {
         public string NodeId = "";
         public dynamic msg = default!;
-        public IRED RED = default!;
+        public IRuntimeNodeScope RNS = default!;
         public ExecuteAction callback = default!;
-        public FlowNodeImpl Flow => RED.Flow!;
-        public VariablesContextDictionary GlobalContext => RED.GlobalContext;
+        public IFlowNodeImpl Flow => RNS.Flow!;
+        public VariablesContextDictionary GlobalContext => RNS.GlobalContext;
 
         public void Send(object msgOrPayload, int output = 0)
         {
@@ -128,7 +130,7 @@ public class FunctionNodeImpl : INodeImplement<FunctionNode>, INodeImplement
         }
 
         public void Debug(object? obj)
-            => RED.DebugMsg(new DebugMessage
+            => RNS.DebugMsg(new DebugMessage
             {
                 NodeId = NodeId,
                 Message = $"Function Debug: ({obj?.GetType().Name})",

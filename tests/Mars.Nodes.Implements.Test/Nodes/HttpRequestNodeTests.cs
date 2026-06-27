@@ -24,8 +24,8 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
         _httpHandler = new MockHttpMessageHandler();
 
         var httpClient = new HttpClient(_httpHandler);
-        RED.GetHttpClient().Returns(httpClient);
-        //_red.GetConfig(Arg.Any<AuthConfig>()).Returns(new AuthConfig());
+        Runtime.GetHttpClient().Returns(httpClient);
+        //rns.GetConfig(Arg.Any<AuthConfig>()).Returns(new AuthConfig());
     }
 
     void SetupNodes(HttpRequestNode node, Action<object> callback)
@@ -196,8 +196,8 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
         var act = () => ExecuteNode(node, input);
 
         // Assert
-        //RED.Received().BroadcastStatus(Arg.Is<string>(s => s == node.Id), Arg.Is<NodeStatus>(s => s.Color == "red"));
-        //RED.Received().DebugMsg(Arg.Is<string>(s => s == node.Id), Arg.Any<DebugMessage>());
+        //RNS.Received().BroadcastStatus(Arg.Is<string>(s => s == node.Id), Arg.Is<NodeStatus>(s => s.Color == "red"));
+        //RNS.Received().DebugMsg(Arg.Is<string>(s => s == node.Id), Arg.Any<DebugMessage>());
         await act.Should().ThrowAsync<FlurlHttpException>();
     }
 

@@ -3,22 +3,22 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.Nodes;
 
-public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
+public class RenderPageNodeImpl : INodeImplement<RenderPageNode>
 {
     public RenderPageNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public RenderPageNodeImpl(RenderPageNode node, IRED _RED)
+    public RenderPageNodeImpl(RenderPageNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -27,8 +27,8 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
 
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
 
-        var processor = RED.ServiceProvider.GetRequiredService<IWebSiteProcessor>();
-        var appProvider = RED.ServiceProvider.GetRequiredService<IMarsAppProvider>();
+        var processor = RNS.ServiceProvider.GetRequiredService<IWebSiteProcessor>();
+        var appProvider = RNS.ServiceProvider.GetRequiredService<IMarsAppProvider>();
 
         //MarsAppFront app = appProvider.GetAppForUrl(context.Request.Path);
         MarsAppFront af = appProvider.GetAppForUrl("/");
@@ -39,7 +39,7 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>, INodeImplement
 
         var render = await processor.RenderPage(page, http.HttpContext, new() { UseCache = false }, default);
 
-        //var resolvedPage = processor.ResolveUrl("/url", http.HttpContext, RED.ServiceProvider);
+        //var resolvedPage = processor.ResolveUrl("/url", http.HttpContext, RNS.ServiceProvider);
 
         input.Payload = render.html;
         callback(input);

@@ -2,13 +2,15 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mars.Core.Attributes;
+using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Nodes.Core.Implements;
+namespace Mars.Nodes.Host.Factories;
 
-public class NodeImplementFactory
+internal class NodeImplementFactory : INodeImplementFactory
 {
     Dictionary<Type, NodeImplementItem> _dict = [];
     public IReadOnlyDictionary<Type, NodeImplementItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
@@ -77,7 +79,7 @@ public class NodeImplementFactory
             .ToDictionary(g => g.Key, g => g.First());
     }
 
-    public INodeImplement Create(INodeBasic node, IRED _RED)
+    public virtual INodeImplement Create(INodeBasic node, IRuntimeNodeScope rns)
     {
         Type instantiateType;
 
@@ -85,9 +87,9 @@ public class NodeImplementFactory
         else instantiateType = Dict[node.GetType()].NodeImplementType;
 
         var factory = _factoryCache.GetOrAdd(instantiateType, type =>
-                        ActivatorUtilities.CreateFactory(type, [node.GetType(), typeof(IRED)]));
+                        ActivatorUtilities.CreateFactory(type, [node.GetType(), typeof(IRuntimeNodeScope)]));
 
-        var instance = (INodeImplement)factory(_RED.ServiceProvider, [node, _RED]);
+        var instance = (INodeImplement)factory(rns.ServiceProvider, [node, rns]);
 
         return instance;
     }
@@ -133,17 +135,5 @@ public class NodeImplementFactory
         => _inlineNodesDict.GetValueOrDefault(typeId)?.NodeDefinition;
 
     public InlineFunctionNodeDefinition[] InlineFunctionNodeList => _inlineNodesDict.Values.Select(x => x.NodeDefinition).ToArray();
-}
 
-public record NodeImplementItem
-{
-    public required Type NodeBaseType;
-    public required Type NodeImplementType;
-}
-
-public record InlineNodeDictItem
-{
-    public required InlineFunctionNodeDefinition NodeDefinition;
-    public required DisplayAttribute DisplayAttribute;
-    public required FunctionApiDocumentAttribute? FunctionApiDocument;
 }

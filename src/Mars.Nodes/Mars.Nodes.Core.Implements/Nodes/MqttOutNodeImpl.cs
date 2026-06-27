@@ -1,29 +1,30 @@
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class MqttOutNodeImpl : INodeImplement<MqttOutNode>, INodeImplement
+public class MqttOutNodeImpl : INodeImplement<MqttOutNode>
 {
     private MqttManager _mqttManager = default!;
 
     public MqttOutNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public MqttOutNodeImpl(MqttOutNode node, IRED red)
+    public MqttOutNodeImpl(MqttOutNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
 
-        Node.Config = RED.GetConfig(node.Config);
+        Node.Config = RNS.GetConfig(node.Config);
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        _mqttManager ??= RED.ServiceProvider.GetRequiredService<MqttManager>();
+        _mqttManager ??= RNS.ServiceProvider.GetRequiredService<MqttManager>();
 
         if (Node.Config.Value == null) throw new Exception("not configured");
 

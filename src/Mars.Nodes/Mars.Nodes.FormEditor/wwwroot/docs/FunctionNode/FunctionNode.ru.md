@@ -13,11 +13,11 @@ public class ScriptExecuteContext
 {
     public string NodeId;
     public NodeMsg msg;
-    public IRED RED;
+    public IRuntimeNodeScope RNS;
     public ExecuteAction callback;
-    public FlowNodeImpl Flow => RED.Flow;
+    public FlowNodeImpl Flow => RNS.Flow;
     //public VariablesContextDictionary Flow.FlowContext;
-    public VariablesContextDictionary GlobalContext => RED.GlobalContext;
+    public VariablesContextDictionary GlobalContext => RNS.GlobalContext;
 
     public void Send(object msgOrPayload, int output = 0);
     public void Debug(object? obj);
@@ -28,7 +28,7 @@ public class ScriptExecuteContext
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 
-RED.ServiceProvider.GetRequiredService<IRequestContext>();
+RNS.ServiceProvider.GetRequiredService<IRequestContext>();
 
 msg.Payload = 1;
 GlobalContext.x = 2;
@@ -42,7 +42,7 @@ public VarNodeVaribleDto? GetVarNodeVarible(string varName);
 public void SetVarNodeVarible(string varName, object? value);
 public IReadOnlyDictionary<string, VarNode> VarNodesDict { get; }
 
-RED.GetVarNodeVarible("x")
+RNS.GetVarNodeVarible("x")
 ```
 
 ### Services

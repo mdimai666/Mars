@@ -1,18 +1,19 @@
 using System.Collections;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
+public class ForeachNodeImpl : INodeImplement<ForeachNode>
 {
     public ForeachNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public ForeachNodeImpl(ForeachNode node, IRED red)
+    public ForeachNodeImpl(ForeachNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -95,12 +96,12 @@ public class ForeachNodeImpl : INodeImplement<ForeachNode>, INodeImplement
             input.Payload = cycle.arr[cycle.index];
             cycle.index++;
             input.Set(cycle);
-            RED.Status(new NodeStatus($"{cycle.index}/{cycle.count}"));
+            RNS.Status(new NodeStatus($"{cycle.index}/{cycle.count}"));
             callback(input, 1);
         }
         else
         {
-            RED.Status(new NodeStatus($"{cycle.index}/{cycle.count} complete"));
+            RNS.Status(new NodeStatus($"{cycle.index}/{cycle.count} complete"));
 
             input.Payload = cycle.count;
             callback(input, 0);

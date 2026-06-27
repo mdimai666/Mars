@@ -1,25 +1,26 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class TerminateAllJobsNodeImpl : INodeImplement<TerminateAllJobsNode>, INodeImplement
+public class TerminateAllJobsNodeImpl : INodeImplement<TerminateAllJobsNode>
 {
 
     public TerminateAllJobsNode Node { get; }
-    Node INodeImplement<Node>.Node => Node;
-    public IRED RED { get; set; }
+    Node INodeImplement.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
 
-    public TerminateAllJobsNodeImpl(TerminateAllJobsNode node, IRED red)
+    public TerminateAllJobsNodeImpl(TerminateAllJobsNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var nodeTaskManager = RED.ServiceProvider.GetRequiredService<INodeTaskManager>();
+        var nodeTaskManager = RNS.ServiceProvider.GetRequiredService<INodeTaskManager>();
 
         if (Node.Scope == TerminateNodesScope.All)
         {

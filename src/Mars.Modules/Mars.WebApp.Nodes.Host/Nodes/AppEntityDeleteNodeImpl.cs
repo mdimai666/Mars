@@ -1,23 +1,23 @@
 using Mars.Core.Interfaces;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
-public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INodeImplement
+public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>
 {
     public AppEntityDeleteNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public AppEntityDeleteNodeImpl(AppEntityDeleteNode node, IRED _RED)
+    public AppEntityDeleteNodeImpl(AppEntityDeleteNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -35,7 +35,7 @@ public class AppEntityDeleteNodeImpl : INodeImplement<AppEntityDeleteNode>, INod
 
         if (ids.Any())
         {
-            var formBuilderFactory = RED.ServiceProvider.GetRequiredService<IAppEntityFormBuilderFactory>();
+            var formBuilderFactory = RNS.ServiceProvider.GetRequiredService<IAppEntityFormBuilderFactory>();
             var builder = formBuilderFactory.GetBuilder(requestInfo.EntityUri.Root!);
 
             if (builder is null)

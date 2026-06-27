@@ -2,10 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using Mars.Core.Attributes;
+using Mars.Nodes.Core;
+using Mars.Nodes.Core.Converters;
 
-namespace Mars.Nodes.Core;
+namespace Mars.Nodes.Workspace.Locators;
 
-public class NodesLocator
+internal class NodesLocator : INodesLocator
 {
     Dictionary<string, NodeDictItem> _dict = [];
     bool invalid = true;
@@ -77,7 +79,7 @@ public class NodesLocator
         return Dict.Select(s => s.Value).ToList();
     }
 
-    public static JsonSerializerOptions CreateJsonSerializerOptions(NodesLocator nodesLocator, bool writeIndented = false)
+    public JsonSerializerOptions CreateJsonSerializerOptions(bool writeIndented = false)
     {
         var jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -86,7 +88,7 @@ public class NodesLocator
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             IgnoreReadOnlyProperties = true,
 
-            Converters = { new Converters.NodeJsonConverter(nodesLocator) }
+            Converters = { new NodeJsonConverter(this) }
         };
         return jsonSerializerOptions;
     }
@@ -133,19 +135,4 @@ public class NodesLocator
         return list;
     }
 
-}
-
-public record NodeDictItem
-{
-    public required Type NodeType;
-    public required DisplayAttribute DisplayAttribute;
-    public required FunctionApiDocumentAttribute? FunctionApiDocument;
-}
-
-public record NodeExampleInfo
-{
-    public required string Name;
-    public required string Description;
-    public required Type NodeType;
-    public required INodeExample<Node> ExampleHandlerInstance;
 }

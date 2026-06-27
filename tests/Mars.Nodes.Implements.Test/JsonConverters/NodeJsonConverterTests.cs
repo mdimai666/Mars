@@ -3,13 +3,14 @@ using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Workspace.Locators;
 using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.Nodes.Implements.Test.JsonConverters;
 
 public class NodeJsonConverterTests
 {
-    private readonly NodesLocator _nodesLocator;
+    private readonly INodesLocator _nodesLocator;
 
     public NodeJsonConverterTests()
     {
@@ -34,7 +35,7 @@ public class NodeJsonConverterTests
             new TemplateNode(),
         ];
 
-        var jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator);
+        var jsonSerializerOptions = _nodesLocator.CreateJsonSerializerOptions();
         var nodesJson = JsonSerializer.Serialize(nodes, jsonSerializerOptions);
 
         //Act

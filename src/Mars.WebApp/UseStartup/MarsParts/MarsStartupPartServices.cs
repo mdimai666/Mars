@@ -6,7 +6,7 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite;
 using Mars.MetaModelGenerator;
 using Mars.Nodes;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.QueryLang.Host;
 using Mars.Services;
 using Mars.WebSiteProcessor.Endpoints;
@@ -53,7 +53,7 @@ internal static class MarsStartupPartServices
 
     public static IServiceProvider UseMarsHostServices(this IServiceProvider services)
     {
-        var nodeImplementFactory = services.GetRequiredService<NodeImplementFactory>();
+        var nodeImplementFactory = services.GetRequiredService<INodeImplementFactory>();
         nodeImplementFactory.RegisterAssembly(typeof(MarsHostRootLayoutRenderNodeImpl).Assembly);
 
         return services;

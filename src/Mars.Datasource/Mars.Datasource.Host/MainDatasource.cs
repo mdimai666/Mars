@@ -7,7 +7,7 @@ using Mars.Datasource.Host.Services;
 using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,8 +33,8 @@ public static class DatasourceHostExtensions
         IOptionService optionService = app.ApplicationServices.GetRequiredService<IOptionService>()!;
         optionService.RegisterOption<DatasourceOption>();
 
-        app.ApplicationServices.GetRequiredService<NodeImplementFactory>().RegisterAssembly(typeof(SqlNodeImpl).Assembly);
-        app.ApplicationServices.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);
+        app.ApplicationServices.GetRequiredService<INodeImplementFactory>().RegisterAssembly(typeof(SqlNodeImpl).Assembly);
+        app.ApplicationServices.GetRequiredService<INodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);
 
         app.ApplicationServices.GetRequiredService<ICommandLineApi>().Register<DataSourceCli>();
 

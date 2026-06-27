@@ -1,26 +1,26 @@
 using Mars.Datasource.Core.Nodes;
 using Mars.Datasource.Host.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Datasource.Host.Nodes;
 
-public class SqlNodeImpl : INodeImplement<SqlNode>, INodeImplement
+public class SqlNodeImpl : INodeImplement<SqlNode>
 {
-    public SqlNodeImpl(SqlNode node, IRED RED)
-    {
-        this.Node = node;
-        this.RED = RED;
-    }
-
     public SqlNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
+
+    public SqlNodeImpl(SqlNode node, IRuntimeNodeScope rns)
+    {
+        Node = node;
+        RNS = rns;
+    }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        IDatasourceService ds = RED.ServiceProvider.GetRequiredService<IDatasourceService>();
+        IDatasourceService ds = RNS.ServiceProvider.GetRequiredService<IDatasourceService>();
 
         string query = "";
 
@@ -47,8 +47,8 @@ public class SqlNodeImpl : INodeImplement<SqlNode>, INodeImplement
         else
         {
             input.Payload = null;
-            RED.Status(NodeStatus.Error("error: " + result.Message));
-            RED.DebugMsg(DebugMessage.NodeErrorMessage(Node.Id, result.Message));
+            RNS.Status(NodeStatus.Error("error: " + result.Message));
+            RNS.DebugMsg(DebugMessage.NodeErrorMessage(Node.Id, result.Message));
         }
 
         callback(input);

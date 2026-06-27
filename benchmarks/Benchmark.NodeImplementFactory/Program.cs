@@ -1,9 +1,10 @@
 using System.Collections.Concurrent;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Factories;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 BenchmarkRunner.Run<InstantiationBenchmark>();
@@ -13,11 +14,11 @@ BenchmarkRunner.Run<InstantiationBenchmark>();
 public class InstantiationBenchmark
 {
     private const int NodeCount = 800;
-    private IRED _red = null!;
+    private IRuntimeNodeScope _rns = null!;
     private Type _instantiateType = default!;
     private InjectNode _injectNode = default!;
     private IServiceProvider _serviceProvider = default!;
-    private NodeImplementFactory _nodeImplementFactory = default!;
+    private INodeImplementFactory _nodeImplementFactory = default!;
     private readonly ConcurrentDictionary<Type, ObjectFactory> _factoryCache = new();
 
     // === ARRANGE (Подготовка данных) ===
@@ -27,10 +28,10 @@ public class InstantiationBenchmark
         _instantiateType = typeof(InjectNodeImpl);
         _injectNode = new InjectNode();
         _serviceProvider = new ServiceCollection().BuildServiceProvider();
-        _red = new REDMock(_serviceProvider);
+        _rns = new RuntimeNodeScopeMock(_serviceProvider);
 
         var factory = _factoryCache.GetOrAdd(_instantiateType, type =>
-                            ActivatorUtilities.CreateFactory(type, [_injectNode.GetType(), typeof(IRED)]));
+                            ActivatorUtilities.CreateFactory(type, [_injectNode.GetType(), typeof(IRuntimeNodeScope)]));
 
         _nodeImplementFactory = new NodeImplementFactory();
         _nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);
@@ -47,7 +48,7 @@ public class InstantiationBenchmark
 
         for (int i = 0; i < NodeCount; i++)
         {
-            results[i] = new InjectNodeImpl(_injectNode, _red);
+            results[i] = new InjectNodeImpl(_injectNode, _rns);
         }
 
         return results;
@@ -62,7 +63,7 @@ public class InstantiationBenchmark
         for (int i = 0; i < NodeCount; i++)
         {
             // Эмуляция вашей логики с проверкой ctorArgumentsCount == 2
-            results[i] = (INodeImplement)Activator.CreateInstance(_instantiateType, [_injectNode, _red])!;
+            results[i] = (INodeImplement)Activator.CreateInstance(_instantiateType, [_injectNode, _rns])!;
         }
 
         return results;
@@ -77,7 +78,7 @@ public class InstantiationBenchmark
         for (int i = 0; i < NodeCount; i++)
         {
             // Эмуляция вашей логики с проверкой ctorArgumentsCount == 2
-            results[i] = (INodeImplement)ActivatorUtilities.CreateInstance(_serviceProvider, instanceType: _instantiateType, parameters: [_injectNode, _red])!;
+            results[i] = (INodeImplement)ActivatorUtilities.CreateInstance(_serviceProvider, instanceType: _instantiateType, parameters: [_injectNode, _rns])!;
         }
 
         return results;
@@ -94,7 +95,7 @@ public class InstantiationBenchmark
             // Эмуляция вашей логики с проверкой ctorArgumentsCount == 2
             try
             {
-                results[i] = (INodeImplement)ActivatorUtilities.CreateInstance(_serviceProvider, instanceType: _instantiateType, parameters: [_injectNode, _red])!;
+                results[i] = (INodeImplement)ActivatorUtilities.CreateInstance(_serviceProvider, instanceType: _instantiateType, parameters: [_injectNode, _rns])!;
             }
             catch (Exception ex)
             {
@@ -114,9 +115,9 @@ public class InstantiationBenchmark
         for (int i = 0; i < NodeCount; i++)
         {
             var factory = _factoryCache.GetOrAdd(_instantiateType, type =>
-                            ActivatorUtilities.CreateFactory(type, [_injectNode.GetType(), typeof(IRED)]));
+                            ActivatorUtilities.CreateFactory(type, [_injectNode.GetType(), typeof(IRuntimeNodeScope)]));
 
-            results[i] = (INodeImplement)factory(_serviceProvider, [_injectNode, _red])!;
+            results[i] = (INodeImplement)factory(_serviceProvider, [_injectNode, _rns])!;
         }
 
         return results;
@@ -131,7 +132,7 @@ public class InstantiationBenchmark
         for (int i = 0; i < NodeCount; i++)
         {
 
-            results[i] = _nodeImplementFactory.Create(_injectNode, _red);
+            results[i] = _nodeImplementFactory.Create(_injectNode, _rns);
         }
 
         return results;

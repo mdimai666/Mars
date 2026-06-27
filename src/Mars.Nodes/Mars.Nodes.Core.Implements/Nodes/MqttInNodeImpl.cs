@@ -2,26 +2,27 @@ using System.Buffers;
 using System.Text;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class MqttInNodeImpl : INodeImplement<MqttInNode>, INodeImplement
+public class MqttInNodeImpl : INodeImplement<MqttInNode>
 {
     public MqttInNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
     private readonly ILogger<MqttInNodeImpl> _logger;
 
-    public MqttInNodeImpl(MqttInNode node, IRED red)
+    public MqttInNodeImpl(MqttInNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
 
-        Node.Config = RED.GetConfig(node.Config);
-        _logger = RED.ServiceProvider.GetRequiredService<ILogger<MqttInNodeImpl>>();
+        Node.Config = RNS.GetConfig(node.Config);
+        _logger = RNS.ServiceProvider.GetRequiredService<ILogger<MqttInNodeImpl>>();
 
     }
 

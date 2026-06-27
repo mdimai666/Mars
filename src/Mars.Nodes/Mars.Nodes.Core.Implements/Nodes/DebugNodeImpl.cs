@@ -4,20 +4,21 @@ using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core.Implements.JsonConverters;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
+public class DebugNodeImpl : INodeImplement<DebugNode>
 {
 
     public DebugNode Node { get; }
-    Node INodeImplement<Node>.Node => Node;
-    public IRED RED { get; set; }
+    Node INodeImplement.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
 
-    public DebugNodeImpl(DebugNode node, IRED red)
+    public DebugNodeImpl(DebugNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     static readonly JsonSerializerOptions _jsonSerializerOptions = new()
@@ -76,23 +77,23 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
                 };
             }
 
-            RED.DebugMsg(msg);
+            RNS.DebugMsg(msg);
 
 #if DEBUG
-            //RED.logger.LogWarning("DebugNode", msg);
+            //RNS.logger.LogWarning("DebugNode", msg);
 #endif
 
-            //RED.DebugMsg(new DebugMessage { message = "dealayed" });
+            //RNS.DebugMsg(new DebugMessage { message = "dealayed" });
             //Random r = new Random();
-            //RED.Status(new NodeStatus { Text = "Yee " + r.Next(1, 99) });
+            //RNS.Status(new NodeStatus { Text = "Yee " + r.Next(1, 99) });
 
             if (Node.ShowPayloadTypeInStatus)
             {
-                RED.Status(new NodeStatus(input.Payload?.GetType().Name + " | " + DateTime.Now.ToString("HH:mm:ss.fff")));
+                RNS.Status(new NodeStatus(input.Payload?.GetType().Name + " | " + DateTime.Now.ToString("HH:mm:ss.fff")));
             }
             else
             {
-                RED.Status(new NodeStatus(DateTime.Now.ToString("HH:mm:ss.fff")));
+                RNS.Status(new NodeStatus(DateTime.Now.ToString("HH:mm:ss.fff")));
             }
 
             if (Node.WriteToConsole)
@@ -103,14 +104,14 @@ public class DebugNodeImpl : INodeImplement<DebugNode>, INodeImplement
         }
         catch (Exception ex)
         {
-            RED.DebugMsg(new DebugMessage
+            RNS.DebugMsg(new DebugMessage
             {
                 NodeId = Node.Id,
                 Message = "DebugNode:ERROR = " + ex.Message,
                 Level = Mars.Core.Models.MessageIntent.Error,
             });
 #if DEBUG
-            //RED.logger.LogError(ex, "DebugNode:ERROR" + ex.Message);
+            //RNS.logger.LogError(ex, "DebugNode:ERROR" + ex.Message);
 #endif
         }
 

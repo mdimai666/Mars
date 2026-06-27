@@ -1,18 +1,19 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using static Mars.Nodes.Core.Nodes.CallNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class CallNodeImpl : INodeImplement<CallNode>, INodeImplement
+public class CallNodeImpl : INodeImplement<CallNode>
 {
     public CallNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public CallNodeImpl(CallNode node, IRED RED)
+    public CallNodeImpl(CallNode node, IRuntimeNodeScope rns)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
@@ -24,16 +25,16 @@ public class CallNodeImpl : INodeImplement<CallNode>, INodeImplement
     }
 }
 
-public class CallResponseNodeImpl : INodeImplement<CallResponseNode>, INodeImplement
+public class CallResponseNodeImpl : INodeImplement<CallResponseNode>
 {
     public CallResponseNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public CallResponseNodeImpl(CallResponseNode node, IRED RED)
+    public CallResponseNodeImpl(CallResponseNode node, IRuntimeNodeScope rns)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

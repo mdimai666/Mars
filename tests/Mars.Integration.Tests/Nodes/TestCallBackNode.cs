@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Integration.Tests.Nodes;
 
@@ -16,17 +16,17 @@ public class TestCallBackNode : Node
     }
 }
 
-public class TestCallBackNodeImpl : INodeImplement<TestCallBackNode>, INodeImplement
+public class TestCallBackNodeImpl : INodeImplement<TestCallBackNode>
 {
-    public TestCallBackNodeImpl(TestCallBackNode node, IRED red)
+    public TestCallBackNode Node { get; }
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
+
+    public TestCallBackNodeImpl(TestCallBackNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
-
-    public TestCallBackNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {

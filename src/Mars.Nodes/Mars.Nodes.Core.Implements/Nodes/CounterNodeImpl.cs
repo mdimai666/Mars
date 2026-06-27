@@ -1,9 +1,10 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class CounterNodeImpl : INodeImplement<CounterNode>, INodeImplement, INodeLifecycleOnAssigned, INodeLifecycleOnDelete
+public class CounterNodeImpl : INodeImplement<CounterNode>, INodeLifecycleOnAssigned, INodeLifecycleOnDelete
 {
     private readonly HybridCache _cache;
     private readonly HybridCacheEntryOptions _entryOptions = new()
@@ -16,13 +17,13 @@ public class CounterNodeImpl : INodeImplement<CounterNode>, INodeImplement, INod
     public int Count { get; set; }
 
     public CounterNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public CounterNodeImpl(CounterNode node, IRED red, HybridCache hybridCache)
+    public CounterNodeImpl(CounterNode node, IRuntimeNodeScope rns, HybridCache hybridCache)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
         _cache = hybridCache;
     }
 
@@ -31,9 +32,9 @@ public class CounterNodeImpl : INodeImplement<CounterNode>, INodeImplement, INod
         Count += parameters.InputPort == 0 ? +1 : -1;
         input.Payload = Count;
 
-        //RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, $"input port = {parameters.InputPort}"));
+        //RNS.DebugMsg(DebugMessage.NodeMessage(Node.Id, $"input port = {parameters.InputPort}"));
         Node.status = $"count = {Count}";
-        RED.Status(new NodeStatus(Node.status));
+        RNS.Status(new NodeStatus(Node.status));
 
         _debouncer.Debouce(() =>
         {

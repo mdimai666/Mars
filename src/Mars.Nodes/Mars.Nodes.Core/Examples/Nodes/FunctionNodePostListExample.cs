@@ -17,7 +17,7 @@ public class FunctionNodePostListExample : INodeExample<FunctionNode>
                 Code = """
                         using Mars.Host.Shared.Services;
 
-                        var ps = RED.ServiceProvider.GetRequiredService<IPostService>();
+                        var ps = RNS.ServiceProvider.GetRequiredService<IPostService>();
                         var posts = await ps.List(new () { Type = "post", Skip = 0, Take = 2 }, default);
 
                         return posts;

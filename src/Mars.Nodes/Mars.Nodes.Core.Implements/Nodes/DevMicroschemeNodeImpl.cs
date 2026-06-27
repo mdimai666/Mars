@@ -1,6 +1,7 @@
 using Mars.Core.Extensions;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
@@ -9,23 +10,23 @@ namespace Mars.Nodes.Core.Implements.Nodes;
 /// <summary>
 /// For experiments object
 /// </summary>
-public class DevMicroschemeNodeImpl : INodeImplement<DevMicroschemeNode>, INodeImplement, ISelfFinalizingNode
+public class DevMicroschemeNodeImpl : INodeImplement<DevMicroschemeNode>, ISelfFinalizingNode
 {
     public DevMicroschemeNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public DevMicroschemeNodeImpl(DevMicroschemeNode node, IRED red)
+    public DevMicroschemeNodeImpl(DevMicroschemeNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        //RED.DebugMsg(DebugMessage.NodeMessage(Node.Id, $"input port = {parameters.InputPort}"));
+        //RNS.DebugMsg(DebugMessage.NodeMessage(Node.Id, $"input port = {parameters.InputPort}"));
         Node.status = $"input port = {parameters.InputPort}";
-        RED.Status(new NodeStatus(Node.status));
+        RNS.Status(new NodeStatus(Node.status));
 
         var logger = MarsLogger.GetStaticLogger<DevMicroschemeNodeImpl>();
 
@@ -37,14 +38,14 @@ public class DevMicroschemeNodeImpl : INodeImplement<DevMicroschemeNode>, INodeI
                 //parameters.CancellationToken.ThrowIfCancellationRequested();
                 logger.LogWarning("GOOD!");
                 callback(input);
-                RED.Done(parameters);
+                RNS.Done(parameters);
             }, 4000, parameters.CancellationToken);
 
             Tools.SetTimeout(() =>
             {
                 logger.LogWarning("GOOD!");
                 callback(input);
-                RED.Done(parameters);
+                RNS.Done(parameters);
             }, 7000, parameters.CancellationToken);
         }
         else if (parameters.InputPort == 1)
@@ -56,11 +57,11 @@ public class DevMicroschemeNodeImpl : INodeImplement<DevMicroschemeNode>, INodeI
                 input.Payload = $"{x + 1}/10";
                 callback(input);
             }
-            RED.Done(parameters);
+            RNS.Done(parameters);
         }
         else
         {
-            RED.Done(parameters);
+            RNS.Done(parameters);
             throw new NotImplementedException();
         }
     }

@@ -12,9 +12,9 @@ public static class PluginFrontHelperExtensions
 {
     public static IServiceProvider AutoFrontRegisterHelper(this IServiceProvider serviceProvider, Assembly[] assemblies)
     {
-        var nodesLocator = serviceProvider.GetRequiredService<NodesLocator>();
-        var nodeFormsLocator = serviceProvider.GetRequiredService<NodeFormsLocator>();
-        var optionsFormsLocator = serviceProvider.GetRequiredService<OptionsFormsLocator>();
+        var nodesLocator = serviceProvider.GetRequiredService<INodesLocator>();
+        var nodeFormsLocator = serviceProvider.GetRequiredService<INodeFormsLocator>();
+        var optionsFormsLocator = serviceProvider.GetRequiredService<IOptionsFormsLocator>();
 
         foreach (var assembly in assemblies)
         {

@@ -1,10 +1,11 @@
 using System.Reflection;
 using Mars.Nodes.Core.Attributes;
+using Mars.Nodes.FormEditor;
 using Microsoft.AspNetCore.Components;
 
-namespace Mars.Nodes.FormEditor;
+namespace Mars.Nodes.Workspace.Locators;
 
-public class NodeFormsLocator
+internal class NodeFormsLocator : INodeFormsLocator
 {
     Dictionary<Type, Type> _dict = [];
     IDictionary<Type, Type> Dict { get { if (invalid) RefreshDict(); return _dict; } }

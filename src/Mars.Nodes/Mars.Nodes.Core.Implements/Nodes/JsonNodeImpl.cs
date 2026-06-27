@@ -1,21 +1,22 @@
 using Mars.Core.Features.JsonConverter;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Newtonsoft.Json;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class JsonNodeImpl : INodeImplement<JsonNode>, INodeImplement
+public class JsonNodeImpl : INodeImplement<JsonNode>
 {
-    public JsonNodeImpl(JsonNode node, IRED red)
+    public JsonNode Node { get; }
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
+
+    public JsonNodeImpl(JsonNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
-
-    public JsonNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {

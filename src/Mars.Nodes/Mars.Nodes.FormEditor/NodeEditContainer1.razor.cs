@@ -14,7 +14,7 @@ public partial class NodeEditContainer1
 {
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILogger<NodeEditContainer1> _logger { get; set; } = default!;
-    [Inject] NodesLocator _nodesLocator { get; set; } = default!;
+    [Inject] INodesLocator _nodesLocator { get; set; } = default!;
 
     [CascadingParameter] public INodeEditorApi _nodeEditorApi { get; set; } = default!;
 

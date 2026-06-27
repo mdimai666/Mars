@@ -2,30 +2,31 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Host.Shared.Dto.Emails;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Shared.Options;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
+public class EmailSendNodeImpl : INodeImplement<EmailSendNode>
 {
 
     public EmailSendNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public EmailSendNodeImpl(EmailSendNode node, IRED RED)
+    public EmailSendNodeImpl(EmailSendNode node, IRuntimeNodeScope rns)
     {
-        this.Node = node;
-        this.RED = RED;
+        Node = node;
+        RNS = rns;
 
-        Node.Config = RED.GetConfig(node.Config);
+        Node.Config = RNS.GetConfig(node.Config);
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var mailSender = RED.ServiceProvider.GetRequiredService<IMarsEmailSender>();
-        var opt = RED.ServiceProvider.GetRequiredService<IOptionService>();
+        var mailSender = RNS.ServiceProvider.GetRequiredService<IMarsEmailSender>();
+        var opt = RNS.ServiceProvider.GetRequiredService<IOptionService>();
 
         //var smtp = opt.GetOption<SmtpSettingsModel>();
 
@@ -61,20 +62,20 @@ public class EmailSendNodeImpl : INodeImplement<EmailSendNode>, INodeImplement
 
         if (valid.Any())
         {
-            //RED.DebugMsg(new DebugMessage
+            //RNS.DebugMsg(new DebugMessage
             //{
             //    message = valid
             //});
             throw new Exception(string.Join("; ", valid));
         }
 
-        RED.Status(new NodeStatus { Text = "request...", Color = "blue" });
+        RNS.Status(new NodeStatus { Text = "request...", Color = "blue" });
 
         //var info = input.Get<EmailSendInfo>();
 
         mailSender.SendEmailForce(info.ToEmail, smtp.Username, info.Subject, info.Message, html: true, Convert(smtp));
 
-        RED.Status(new NodeStatus { Text = "complete", Color = "blue" });
+        RNS.Status(new NodeStatus { Text = "complete", Color = "blue" });
 
         callback(input);
         return Task.CompletedTask;

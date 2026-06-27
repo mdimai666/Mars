@@ -1,19 +1,20 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
+public class QueueNodeImpl : INodeImplement<QueueNode>
 {
     public QueueNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
     private readonly QueueState _state = new();
 
-    public QueueNodeImpl(QueueNode node, IRED red)
+    public QueueNodeImpl(QueueNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public class QueueState
@@ -42,7 +43,7 @@ public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
         lock (_state)
         {
             _state.Items.Add(input.Payload!);
-            RED.Status(new NodeStatus($"In queue: {_state.Items.Count}, active: {_state.ActiveTasks}/{Node.MaxTask}"));
+            RNS.Status(new NodeStatus($"In queue: {_state.Items.Count}, active: {_state.ActiveTasks}/{Node.MaxTask}"));
         }
 
         // Пытаемся немедленно отдать элемент на обработку, если есть свободные слоты
@@ -84,7 +85,7 @@ public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
             {
                 if (_state.ActiveTasks == 0 && _state.TotalProcessed > 0)
                 {
-                    RED.Status(new NodeStatus($"Complete. Total: {_state.TotalProcessed}"));
+                    RNS.Status(new NodeStatus($"Complete. Total: {_state.TotalProcessed}"));
 
                     // Создаем сообщение о завершении и сбрасываем счетчик для следующей волны
                     input.Payload = _state.TotalProcessed;
@@ -119,7 +120,7 @@ public class QueueNodeImpl : INodeImplement<QueueNode>, INodeImplement
 
             NodeMsg outMsg = input.Copy(nextItem);
 
-            RED.Status(new NodeStatus($"In queue: {_state.Items.Count}, active: {_state.ActiveTasks}/{Node.MaxTask}"));
+            RNS.Status(new NodeStatus($"In queue: {_state.Items.Count}, active: {_state.ActiveTasks}/{Node.MaxTask}"));
 
             // Отправляем на Выход 1 (основной поток данных)
             callback(outMsg, 1);

@@ -3,6 +3,7 @@ using Mars.Host.Shared.Dto.Common;
 using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings.NodeTaskJobs;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.Dto.NodeTasks;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
@@ -16,7 +17,7 @@ namespace Mars.Nodes.Host.NodeTasks;
 /// </summary>
 internal class NodeTaskManager : INodeTaskManager
 {
-    private readonly RED _red;
+    private readonly INodeRuntime _runtime;
     private readonly ILogger<NodeTaskManager> _logger;
     private ConcurrentDictionary<Guid, NodeTaskJob> _currentTasks = [];
     private ConcurrentDictionary<Guid, NodeTaskResultDetail> _completedTasks = [];
@@ -33,16 +34,16 @@ internal class NodeTaskManager : INodeTaskManager
     public IReadOnlyCollection<NodeTaskResultSummary> CompletedTasks() => _completedTasks.Values.ToList();
     public IReadOnlyCollection<NodeTaskResultDetail> CompletedTasksDetails() => _completedTasks.Values.ToList();
 
-    public NodeTaskManager(RED red, ILogger<NodeTaskManager> logger)
+    public NodeTaskManager(INodeRuntime runtime, ILogger<NodeTaskManager> logger)
     {
-        _red = red;
+        _runtime = runtime;
         _logger = logger;
     }
 
     public async Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null, int injectPortIndex = 0, bool throwOnError = false)
     {
         var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
-        var taskJob = new NodeTaskJob(serviceProvider, _red, injectNodeId: injectNodeId, logger, injectPortIndex: injectPortIndex);
+        var taskJob = new NodeTaskJob(serviceProvider, _runtime, injectNodeId: injectNodeId, logger, injectPortIndex: injectPortIndex);
         msg ??= new();
 
         _currentTasks.TryAdd(taskJob.TaskId, taskJob);
@@ -85,7 +86,7 @@ internal class NodeTaskManager : INodeTaskManager
     public void TerminateAllJobs()
     {
         _logger.LogTrace("🔴 TerminateAllJobs");
-        _red.DebugMsg("", DebugMessage.NodeErrorMessage("", "TerminateAllJobs"));
+        _runtime.DebugMsg("", DebugMessage.NodeErrorMessage("", "TerminateAllJobs"));
         foreach (var taskJob in _currentTasks.Values)
         {
             taskJob.Terminate();

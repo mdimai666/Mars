@@ -19,7 +19,7 @@
 </SettingsPageWrapper>
 
     @code {
-    [Inject] OptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
+    [Inject] IOptionsFormsLocator _optionsFormsLocator { get; set; } = default!;
 
     static List<OptionsFormsLocatorItem>? OptionFormList;
     string _optionTypeFullName = default!;

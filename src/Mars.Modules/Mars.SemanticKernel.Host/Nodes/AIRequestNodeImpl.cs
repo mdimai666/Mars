@@ -2,43 +2,43 @@ using System.Diagnostics;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.SemanticKernel.Host.Service;
 using Mars.SemanticKernel.Shared.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SemanticKernel.Host.Nodes;
 
-public class AIRequestNodeImpl : INodeImplement<AIRequestNode>, INodeImplement
+public class AIRequestNodeImpl : INodeImplement<AIRequestNode>
 {
     public AIRequestNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
-    public AIRequestNodeImpl(AIRequestNode node, IRED red)
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
+    public AIRequestNodeImpl(AIRequestNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
 
-        Node.Config = RED.GetConfig(node.Config);
+        Node.Config = RNS.GetConfig(node.Config);
     }
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
         if (Node.Config.Value is null)
         {
-            RED.Status(new NodeStatus("not configured"));
+            RNS.Status(new NodeStatus("not configured"));
             throw new NodeExecuteException(Node, "model not configured");
         }
 
         var sw = new Stopwatch();
         sw.Start();
-        RED.Status(new NodeStatus("think.."));
+        RNS.Status(new NodeStatus("think.."));
 
         try
         {
             var userPrompt = Node.Prompt.AsNullIfEmptyOrWhiteSpace() ?? input.Payload?.ToString()!;
 
-            var aiHandler = RED.ServiceProvider.GetRequiredService<NodesAiRequestHandler>();
+            var aiHandler = RNS.ServiceProvider.GetRequiredService<NodesAiRequestHandler>();
 
             var reply = await aiHandler.Handle(userPrompt, Node.Config.Value, parameters.CancellationToken);
 
@@ -48,12 +48,12 @@ public class AIRequestNodeImpl : INodeImplement<AIRequestNode>, INodeImplement
         }
         catch (Exception ex)
         {
-            RED.DebugMsg(ex);
+            RNS.DebugMsg(ex);
         }
 
         sw.Stop();
         var totalTime = sw.ElapsedMilliseconds > 1000 ? $"{sw.Elapsed.TotalSeconds:0.0}s" : $"{sw.ElapsedMilliseconds / 1000:0.00}ms";
-        RED.Status(new NodeStatus(totalTime));
+        RNS.Status(new NodeStatus(totalTime));
     }
 
 }

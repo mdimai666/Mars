@@ -1,17 +1,18 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class VarNodeImpl : INodeImplement<VarNode>, INodeImplement
+public class VarNodeImpl : INodeImplement<VarNode>
 {
     public VarNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public VarNodeImpl(VarNode node, IRED RED)
+    public VarNodeImpl(VarNode node, IRuntimeNodeScope rns)
     {
         this.Node = node;
-        this.RED = RED;
+        this.RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

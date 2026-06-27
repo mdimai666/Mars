@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Implements.Test.Services;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
@@ -53,7 +53,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
         //Arrange
         _ = nameof(FunctionNodeImpl.Execute);
         _ = nameof(FunctionNodeImpl.ScriptExecuteContext.GlobalContext);
-        _ = nameof(IRED.GlobalContext);
+        _ = nameof(IRuntimeNodeScope.GlobalContext);
         var code = """
             int v = 123;
             GlobalContext.SetValue("v", v);
@@ -64,7 +64,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
         var msg = await ExecuteFunctionNode(code);
 
         //Assert
-        RED.GlobalContext.GetValue<int>("v").Should().Be(123);
+        Runtime.GlobalContext.GetValue<int>("v").Should().Be(123);
         msg.Payload.Should().Be(123);
     }
 
@@ -74,7 +74,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
         //Arrange
         _ = nameof(FunctionNodeImpl.Execute);
         _ = nameof(DynamicJson);
-        _ = nameof(IRED.GlobalContext);
+        _ = nameof(IRuntimeNodeScope.GlobalContext);
         var json = """
                 {
                     "name":"Dima",
@@ -101,7 +101,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
         //Arrange
         _ = nameof(FunctionNodeImpl.Execute);
         _ = nameof(DynamicJson);
-        _ = nameof(IRED.GlobalContext);
+        _ = nameof(IRuntimeNodeScope.GlobalContext);
 
         var dict = new Dictionary<string, string>
         {

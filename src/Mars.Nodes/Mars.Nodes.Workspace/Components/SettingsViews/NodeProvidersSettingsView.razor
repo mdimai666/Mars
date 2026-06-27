@@ -17,7 +17,7 @@
 @code {
     IQueryable<string> _assemblies = Array.Empty<string>().AsQueryable();
 
-    [Inject] NodesLocator _nodesLocator { get; set; } = default!;
+    [Inject] INodesLocator _nodesLocator { get; set; } = default!;
 
     protected override void OnInitialized()
     {

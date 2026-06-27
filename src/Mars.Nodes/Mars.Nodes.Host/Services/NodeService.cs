@@ -6,13 +6,13 @@ using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements;
 using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Helpers;
 using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Mappings.Nodes;
+using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +27,8 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public static readonly string flowFileName = "flows.json";
     public readonly string flowFilePath = Path.Combine("nodes", flowFileName);
     private readonly IFileStorage _fileStorage;
-    protected readonly RED _RED;
-    private readonly NodesLocator _nodesLocator;
+    protected readonly INodeRuntime _runtime;
+    private readonly INodesLocator _nodesLocator;
     private readonly IServiceScopeFactory _factory;
     protected readonly IServiceProvider _serviceProvider;
     private readonly INodeTaskManager _nodeTaskManager;
@@ -40,29 +40,29 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public event NodeServiceVoidHandler OnAssignNodes = default!;
     public event NodeServiceVoidHandler OnStart = default!;
 
-    public IReadOnlyDictionary<string, INodeImplement> Nodes => _RED.Nodes;
-    public IReadOnlyDictionary<string, Node> BaseNodes => _RED.BasicNodesDict;
+    public IReadOnlyDictionary<string, INodeImplement> Nodes => _runtime.Nodes;
+    public IReadOnlyDictionary<string, Node> BaseNodes => _runtime.BasicNodesDict;
 
     ThrottleByKey _executeAnimationThrottler;
 
     public NodeService([FromKeyedServices("data")] IFileStorage fileStorage,
-                        RED RED,
+                        INodeRuntime runtime,
                         IServiceProvider serviceProvider,
                         INodeTaskManager nodeTaskManager,
-                        NodesLocator nodesLocator,
+                        INodesLocator nodesLocator,
                         IServiceScopeFactory factory,
                         ILogger<NodeService> logger,
                         IEventManager eventManager)
     {
         _fileStorage = fileStorage;
-        _RED = RED;
+        _runtime = runtime;
         _nodesLocator = nodesLocator;
         _factory = factory;
         _serviceProvider = serviceProvider;
         _nodeTaskManager = nodeTaskManager;
         _logger = logger;
 
-        _jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(_nodesLocator, writeIndented: true);
+        _jsonSerializerOptions = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
 
         var nodesDir = Path.GetDirectoryName(flowFilePath)!;
         if (!_fileStorage.DirectoryExists(nodesDir)) _fileStorage.CreateDirectory(nodesDir);
@@ -90,7 +90,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         if (!nodes.Any()) nodes = GetBlank();
 
-        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList(), default);
+        _runtime.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList(), default);
         OnAssignNodes?.Invoke();
 
         VarNodesSetDefaultValues();
@@ -146,7 +146,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         var sw = new Stopwatch();
         sw.Start();
-        _RED.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList(), default);
+        _runtime.AssignNodes(ReplaceEmptyStringToDefaultFields(nodes).ToList(), default);
         OnAssignNodes?.Invoke();
         SaveToFile();
         OnDeploy?.Invoke();
@@ -161,7 +161,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public void SaveToFile()
     {
-        var nodes = ReplaceDefaultFieldsToEmptyString(_RED.BasicNodesDict.Values.ToArray()).ToArray();
+        var nodes = ReplaceDefaultFieldsToEmptyString(_runtime.BasicNodesDict.Values.ToArray()).ToArray();
 
         var saveFile = new NodesFlowSaveFile
         {
@@ -262,7 +262,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return new()
         {
             Nodes = Nodes.Values.Select(s => s.Node).ToArray(),
-            InlineFunctionNodeSchemas = _RED.NodeImplementFactory.InlineFunctionNodeList.ToSchema()
+            InlineFunctionNodeSchemas = _runtime.NodeImplementFactory.InlineFunctionNodeList.ToSchema()
         };
     }
 
@@ -276,11 +276,6 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public async Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null)
     {
-        //var fs = serviceProvider.GetService<FlowExecutionBackgroundService>();
-        //fs.Setup(nodeId, msg);
-        //fs.StartAsync(new CancellationToken());
-        //var logger = serviceProvider.GetRequiredService<ILogger<NodeTaskJob>>();
-
         var requestUserInfo = serviceProvider.GetRequiredService<IRequestContext>().ToRequestUserInfo();
         msg ??= new();
         msg.Add(requestUserInfo);
@@ -416,9 +411,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     internal void VarNodesSetDefaultValues()
     {
         var varNodesImpl = Nodes.Values.OfType<VarNodeImpl>().ToList();
-        var ppt = VariableSetNodeImpl.CreateInterpreter(_RED.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
+        var ppt = VariableSetNodeImpl.CreateInterpreter(_runtime.GlobalContext, flowContext: null, varNodesDict: new Dictionary<string, VarNode>());
 
-        foreach (var flowGroup in varNodesImpl.GroupBy(s => s.RED.Flow))
+        foreach (var flowGroup in varNodesImpl.GroupBy(s => s.RNS.Flow))
         {
             foreach (var nodeImpl in flowGroup)
             {
@@ -439,14 +434,14 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         return Task.CompletedTask;
     }
 
-    public void DebugMsg(string nodeId, DebugMessage msg) => _RED.DebugMsg(nodeId, msg);
-    public void DebugMsg(string nodeId, Exception ex) => _RED.DebugMsg(nodeId, ex);
+    public void DebugMsg(string nodeId, DebugMessage msg) => _runtime.DebugMsg(nodeId, msg);
+    public void DebugMsg(string nodeId, Exception ex) => _runtime.DebugMsg(nodeId, ex);
     public void BroadcastStatus(string nodeId, NodeStatus nodeStatus)
     {
         var node = Nodes.GetValueOrDefault(nodeId)?.Node;
         if (node == null) return;
         node.status = nodeStatus.Text;
-        _RED.BroadcastStatus(nodeId, nodeStatus);
+        _runtime.BroadcastStatus(nodeId, nodeStatus);
     }
 
     Debouncer _sendTaskCountDebouncer = new(100);
@@ -455,7 +450,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         _sendTaskCountDebouncer.Debouce(() =>
         {
-            _RED.BroadcastHub.NodeRunningTaskCountChanged(currentTaskCount);
+            _runtime.BroadcastHub.NodeRunningTaskCountChanged(currentTaskCount);
         });
     }
 
@@ -463,13 +458,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     {
         _executeAnimationThrottler.TryExecute(nodeId, () =>
         {
-            _RED.BroadcastHub.OnNodeExecuted(taskId, nodeId, trigger);
+            _runtime.BroadcastHub.OnNodeExecuted(taskId, nodeId, trigger);
         });
     }
 
     private void TaskNodeTaskManager_OnError(Guid taskId, string nodeId, string flowId, Exception exception)
     {
-        var nodesIds = _RED.ErrorHandlerRegistry.GetHandlersFor(flowId: flowId, nodeId: nodeId);
+        var nodesIds = _runtime.ErrorHandlerRegistry.GetHandlersFor(flowId: flowId, nodeId: nodeId);
         var tasks = nodesIds.Select(nodeId => InjectAsync(_factory, nodeId, new() { Payload = exception })).ToList();
 
         _ = Task.WhenAll(tasks);

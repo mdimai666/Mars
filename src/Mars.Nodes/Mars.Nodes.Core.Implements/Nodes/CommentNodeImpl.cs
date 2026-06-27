@@ -1,24 +1,25 @@
-using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Host.Shared.Models;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class CommentNodeImpl : INodeImplement<CommentNode>, INodeImplement
+public class CommentNodeImpl : INodeImplement<CommentNode>
 {
     public CommentNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public VariablesContextDictionary Context => RED.FlowContext;
+    public VariablesContextDictionary Context => RNS.FlowContext;
 
-    public CommentNodeImpl(CommentNode node, IRED red)
+    public CommentNodeImpl(CommentNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

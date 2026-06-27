@@ -4,6 +4,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Host.Services;
+using Mars.Nodes.Workspace.Locators;
 
 namespace Mars.Nodes.Implements.Test.Services;
 
@@ -46,7 +47,7 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
         var nodesLocator__WithoutSomeNonExistNode = new NodesLocator();
         nodesLocator__WithoutSomeNonExistNode.RegisterAssembly(typeof(InjectNode).Assembly);
 
-        var jsonSerializerOptions2 = NodesLocator.CreateJsonSerializerOptions(nodesLocator__WithoutSomeNonExistNode);
+        var jsonSerializerOptions2 = nodesLocator__WithoutSomeNonExistNode.CreateJsonSerializerOptions();
 
         //Act
         var nodesFromJson = JsonSerializer.Deserialize<List<Node>>(json, jsonSerializerOptions2)!;

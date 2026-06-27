@@ -21,10 +21,11 @@
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.Nodes.Implements.Test</_Parameter1>
         </AssemblyAttribute>
-    </ItemGroup>
-    <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Benchmark.NodeImplementFactory</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

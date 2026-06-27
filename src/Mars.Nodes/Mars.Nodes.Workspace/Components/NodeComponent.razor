@@ -5,7 +5,6 @@
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenu"
    @oncontextmenu:preventDefault="true">
-    @*transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))">*@
     <!-- push btn -->
     @if (node.isInjectable)
     {
@@ -232,8 +231,6 @@
                   @onmousedown:stopPropagation=true
                   @onmouseup="(e => OnOutputWirePointUp(e, index))"
                   @onmouseup:stopPropagation=true>
-                @*@mousedown.stop="(e) => wireStartNew(e, i, true)"
-            @mouseup.stop="(e) => wireStartNewEnd(e, i, true)"*@
                 <title>@(node.Outputs[i].Label)</title>
             </rect>
         }

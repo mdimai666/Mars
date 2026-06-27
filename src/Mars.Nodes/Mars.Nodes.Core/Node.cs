@@ -87,9 +87,9 @@ public class Node : INodeBasic
         return node;
     }
 
-    public virtual Node Copy(NodesLocator nodesLocator)
+    public virtual Node Copy(INodesLocator nodesLocator)
     {
-        var jsonSerializerOptions = NodesLocator.CreateJsonSerializerOptions(nodesLocator);
+        var jsonSerializerOptions = nodesLocator.CreateJsonSerializerOptions();
 
         string json = JsonSerializer.Serialize(this, jsonSerializerOptions);
         Node node = (JsonSerializer.Deserialize(json, GetType(), jsonSerializerOptions) as Node)!;

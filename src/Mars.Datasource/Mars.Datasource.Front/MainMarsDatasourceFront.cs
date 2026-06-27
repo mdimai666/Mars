@@ -19,9 +19,9 @@ public static class MainMarsDatasourceFront
 
     public static IServiceProvider UseDatasourceWorkspace(this IServiceProvider services)
     {
-        var _nodeFormsLocator = services.GetRequiredService<NodeFormsLocator>();
+        var _nodeFormsLocator = services.GetRequiredService<INodeFormsLocator>();
 
-        services.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);
+        services.GetRequiredService<INodesLocator>().RegisterAssembly(typeof(SqlNode).Assembly);
         _nodeFormsLocator.RegisterAssembly(typeof(SqlNodeForm).Assembly);
 
         return services;

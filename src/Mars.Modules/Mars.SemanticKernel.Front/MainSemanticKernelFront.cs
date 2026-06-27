@@ -17,9 +17,9 @@ public static class MainSemanticKernelFront
 
     public static IServiceProvider UseSemanticKernelFront(this IServiceProvider services)
     {
-        services.GetRequiredService<NodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
-        services.GetRequiredService<NodeFormsLocator>().RegisterAssembly(typeof(AIRequestNodeForm).Assembly);
-        services.GetRequiredService<OptionsFormsLocator>().RegisterAssembly(typeof(AIToolOptionEditForm).Assembly);
+        services.GetRequiredService<INodesLocator>().RegisterAssembly(typeof(AIRequestNode).Assembly);
+        services.GetRequiredService<INodeFormsLocator>().RegisterAssembly(typeof(AIRequestNodeForm).Assembly);
+        services.GetRequiredService<IOptionsFormsLocator>().RegisterAssembly(typeof(AIToolOptionEditForm).Assembly);
 
         return services;
     }

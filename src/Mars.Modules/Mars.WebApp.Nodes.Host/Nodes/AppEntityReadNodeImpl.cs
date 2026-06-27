@@ -3,25 +3,25 @@ using Mars.Host.Shared.QueryLang.Services;
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Core.Implements;
+using Mars.Nodes.Host.Shared;
 using Mars.Shared.Models;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApp.Nodes.Host.Nodes;
 
-public class AppEntityReadNodeImpl : INodeImplement<AppEntityReadNode>, INodeImplement
+public class AppEntityReadNodeImpl : INodeImplement<AppEntityReadNode>
 {
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
 
     public AppEntityReadNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public AppEntityReadNodeImpl(AppEntityReadNode node, IRED _RED, IMetaModelTypesLocator metaModelTypesLocator)
+    public AppEntityReadNodeImpl(AppEntityReadNode node, IRuntimeNodeScope rns, IMetaModelTypesLocator metaModelTypesLocator)
     {
         Node = node;
-        RED = _RED;
+        RNS = rns;
         _metaModelTypesLocator = metaModelTypesLocator;
     }
 
@@ -32,7 +32,7 @@ public class AppEntityReadNodeImpl : INodeImplement<AppEntityReadNode>, INodeImp
             if (string.IsNullOrEmpty(Node.Expression))
                 throw new NodeExecuteException(Node, "Node.Expression is empty");
             var expression = Node.Expression;
-            var queryLang = RED.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
+            var queryLang = RNS.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
             var result = await queryLang.Handle(expression, new(), parameters.CancellationToken);
 
             input.Payload = result;
@@ -48,7 +48,7 @@ public class AppEntityReadNodeImpl : INodeImplement<AppEntityReadNode>, INodeImp
             if (Node.Query.CallChains.None())
                 throw new NodeExecuteException(Node, "Node.Query is empty");
             var expression = Node.Query.BuildString();
-            var queryLang = RED.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
+            var queryLang = RNS.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
             var result = await queryLang.Handle(expression, new(), parameters.CancellationToken);
 
             input.Payload = result;

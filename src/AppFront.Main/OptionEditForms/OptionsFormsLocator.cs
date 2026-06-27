@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace AppFront.Main.OptionEditForms;
 
-public class OptionsFormsLocator
+internal class OptionsFormsLocator : IOptionsFormsLocator
 {
     Dictionary<Type, OptionsFormsLocatorItem> _dict = [];
     public IReadOnlyDictionary<Type, OptionsFormsLocatorItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
@@ -102,13 +102,4 @@ public class OptionsFormsLocator
         return dict;
     }
 
-}
-
-public record OptionsFormsLocatorItem
-{
-    public required Type FormType;
-    public required Type OptionType;
-    public required OptionEditFormForOptionAttribute attribute1;
-    public bool IsAutoShowFormOnSettingsPageAttribute;
-    public required string DisplayName;
 }

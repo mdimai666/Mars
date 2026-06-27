@@ -1,23 +1,24 @@
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Host.Shared;
 
 namespace Mars.Nodes.Core.Implements.Nodes;
 
-public class FileWriteNodeImpl : INodeImplement<FileWriteNode>, INodeImplement
+public class FileWriteNodeImpl : INodeImplement<FileWriteNode>
 {
     public FileWriteNode Node { get; }
-    public IRED RED { get; set; }
-    Node INodeImplement<Node>.Node => Node;
+    public IRuntimeNodeScope RNS { get; set; }
+    Node INodeImplement.Node => Node;
 
-    public FileWriteNodeImpl(FileWriteNode node, IRED red)
+    public FileWriteNodeImpl(FileWriteNode node, IRuntimeNodeScope rns)
     {
         Node = node;
-        RED = red;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var filePath = VariableSetNodeImpl.ReadFieldAsExpression(Node.FilePath, RED, input);
+        var filePath = VariableSetNodeImpl.ReadFieldAsExpression(Node.FilePath, RNS, input);
 
         switch (Node.WriteMode)
         {

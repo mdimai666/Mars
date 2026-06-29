@@ -4,8 +4,11 @@
 @using Mars.Nodes.Core.Nodes
 @using Mars.Nodes.FormEditor
 @using Mars.Nodes.Workspace.ActionManager.Actions.Globals
+@using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace
 @using Mars.Nodes.Workspace.Components
+@using Mars.Nodes.Workspace.Components.NodeViews
 @using Mars.Nodes.Workspace.EditorParts
+@using Mars.Shared.Resources
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <div class="NodeEditor1 red-ui-editor container-fluid p-0 flex-fill d-flex flex-column main-fill use-fluent-typo">
@@ -257,3 +260,10 @@
         --neutral-foreground-rest: red;
     }
 </style>
+
+@code {
+    public RenderFragment MainActionMenuItems => @<text>
+        <FluentMenuItem Label="@AppRes.Import" OnClick="ActionManager.ExecuteAction<OpenImportWindowAction>" />
+        <FluentMenuItem Label="@AppRes.Export" OnClick="ActionManager.ExecuteAction<OpenExportWindowAction>" />
+    </text>;
+}

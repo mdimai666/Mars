@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using System.Web;
+using AppFront.Shared;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
@@ -36,6 +37,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject] INodesLocator _nodesLocator { get; set; } = default!;
     [Inject] EditorActionLocator _edittorActionLocator { get; set; } = default!;
     [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
+    [Inject] AppFrontJs _appFrontJs { get; set; } = default!;
 
     [Inject] HotKeys HotKeys { get; set; } = default!;
     HotKeysContext _hotKeysContext = default!;
@@ -64,6 +66,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Parameter] public IReadOnlyDictionary<string, InlineFunctionNodeSchema> InlineFunctionNodeSchemas { get; set; } = default!;
 
     public JsonSerializerOptions NodesJsonSerializerOptions => _jsonSerializerOptions;
+    public JsonSerializerOptions NodesJsonSerializerOptionsFormatted { get; private set; } = default!;
 
     NodeWorkspaceJsInterop js = default!;
     Dictionary<string, Node> _allNodes = [];
@@ -136,7 +139,9 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         js = new(JS);
         _ = js.InitModule();
 
-        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator);
+        NodesJsonSerializerOptionsFormatted = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
+
+        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _appFrontJs);
         _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
 
         RegisteredNodes = _nodesLocator.RegisteredNodes();
@@ -614,12 +619,14 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         ["DuplicateSelectedNodes"] = "Дублировать",
         ["DeleteSelectedNodes"] = AppRes.Delete,
+        ["CopySelectedNodesAsJsonAction"] = "Копировать JSON",
     };
 
     void OnNodeContextMenuItemClick(MouseEventArgs e, string actionId)
     {
         if (actionId == "DeleteSelectedNodes") _actionManager.ExecuteAction<DeleteSelectedNodesAndWiresAction>();
         else if (actionId == "DuplicateSelectedNodes") _actionManager.ExecuteAction<DuplicateSelectedNodesAction>();
+        else if (actionId == "CopySelectedNodesAsJsonAction") _actionManager.ExecuteAction<CopySelectedNodesAsJsonAction>();
         else throw new NotImplementedException();
     }
 
@@ -714,6 +721,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         js.TouchFlashAnimationBySelector($"#node-{nodeId} .red-ui-flow-node__animation_backdrop");
     }
+
 }
 
 internal static class NodeEditor1Extension

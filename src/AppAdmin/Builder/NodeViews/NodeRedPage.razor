@@ -29,6 +29,7 @@ else
             <SectionActions>
                 <XActionsDropDown>
                     <FluentMenuItem Label="@AppRes.Settings" OnClick=@((e) => _editor1!.ShowSettingsDialog()) />
+                    @_editor1?.MainActionMenuItems
                 </XActionsDropDown>
             </SectionActions>
         </NodeEditor1>

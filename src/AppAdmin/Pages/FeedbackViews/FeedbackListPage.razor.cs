@@ -4,7 +4,6 @@ using Mars.Shared.Contracts.Feedbacks;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace AppAdmin.Pages.FeedbackViews;
 
@@ -12,9 +11,8 @@ public partial class FeedbackListPage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
-    [Inject] IJSRuntime jSRuntime { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
-
+    [Inject] AppFrontJs _appjs { get; set; } = default!;
 
     FluentDataGrid<FeedbackSummaryResponse> table = default!;
     string _searchText = "";
@@ -99,8 +97,8 @@ public partial class FeedbackListPage
     async void DownloadExcel()
     {
         string url = Q.ServerUrlJoin("api/Feedback/DownloadExcel");
-        string fileName = "";
-        await jSRuntime.InvokeVoidAsync("MarsTriggerFileDownload", fileName, url);
+        //string fileName = $"feedbacks-{DateTime.Now.ToString("yyyy-MM-dd")}.xlsx";
 
+        await _appjs.DownloadFileFromUrl(url);
     }
 }

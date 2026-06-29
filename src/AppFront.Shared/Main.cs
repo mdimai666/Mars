@@ -68,6 +68,7 @@ public static class AppFrontSharedExtensions
         services.ConfigureLocalizer();
 
         services.TryAddScoped<ViewModelService>();
+        services.TryAddScoped<AppFrontJs>();
 
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddScoped<DeveloperControlService>();

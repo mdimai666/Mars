@@ -41,7 +41,7 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
         <PackageReference Include="MQTTnet" />
         <PackageReference Include="MQTTnet.Extensions.TopicTemplate" />
-        <PackageReference Include="Newtonsoft.Json" PrivateAssets="all" />
+        <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 
     <ItemGroup>

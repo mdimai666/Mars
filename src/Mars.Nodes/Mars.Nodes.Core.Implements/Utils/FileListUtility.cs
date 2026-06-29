@@ -8,6 +8,21 @@ public class FileListUtility
     private string _repositoryRoot = default!;
     public bool EnableDebugOutput { get; set; } = false;
 
+    /// <summary>
+    /// Retrive file list by path
+    /// </summary>
+    /// <param name="path">dir</param>
+    /// <param name="includeFilter">
+    /// <list type="bullet">
+    /// <item>* - all</item>
+    /// <item>.mp3,.wav - some extensions</item>
+    /// </list>
+    /// </param>
+    /// <param name="maxDepth">0=all, 1=one level, 3=three levels</param>
+    /// <param name="returnRelativePaths"></param>
+    /// <param name="useRootGitIgnore"></param>
+    /// <returns></returns>
+    /// <exception cref="DirectoryNotFoundException"></exception>
     public string[] GetFiles(string path,
                                 string includeFilter = "*",
                                 int maxDepth = 0,

@@ -606,4 +606,16 @@
   <data name="Add__Ellipsis" xml:space="preserve">
     <value>Добавить...</value>
   </data>
+  <data name="Import" xml:space="preserve">
+    <value>Импорт</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Экспорт</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Скачать</value>
+  </data>
+  <data name="CopyToClipboard" xml:space="preserve">
+    <value>Скопировать в буфер обмена</value>
+  </data>
 </root>

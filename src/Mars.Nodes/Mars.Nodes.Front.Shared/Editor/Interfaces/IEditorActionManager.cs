@@ -19,4 +19,5 @@ public interface IEditorActionManager
     void SetCopyBuffer(ICopyBufferItem copyBufferItem);
     void PasteCopiedBuffer();
     void ReplaceLastAction(IEditorHistoryAction actionInstance);
+    ValueTask CopyToClipboard(string text);
 }

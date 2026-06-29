@@ -55,7 +55,6 @@ public class DuplicateSelectedNodesAction : BaseEditorHistoryAction, IDisposable
 
     public void Dispose()
     {
-        _editor.AddDebugMessage("DuplicateSelectedNodesAction disposed");
         _editor.NodeWorkspace.OnDragNodesEnded -= CatchDragNodesEnded;
     }
 }

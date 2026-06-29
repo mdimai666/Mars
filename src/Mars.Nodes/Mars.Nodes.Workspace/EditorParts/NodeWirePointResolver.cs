@@ -1,6 +1,6 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Workspace.Components;
+using Mars.Nodes.Workspace.Components.NodeViews;
 
 namespace Mars.Nodes.Workspace.EditorParts;
 

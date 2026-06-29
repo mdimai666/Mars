@@ -2,6 +2,9 @@ using System.Collections.Concurrent;
 
 namespace Mars.Nodes.Host.Helpers;
 
+/// <summary>
+/// Ограничивает частоту выполнения. Гарантирует, что действие выполнится не чаще чем раз в N времени.
+/// </summary>
 public class ThrottleByKey
 {
     private readonly ConcurrentDictionary<string, ThrottleInfo> _throttleInfos = new();

@@ -56,7 +56,7 @@ internal class NodeRuntime : INodeRuntime
 
     public NodesErrorHandlerRegistry ErrorHandlerRegistry { get; private set; } = default!;
 
-    ThrottleByKey _broadcastStatusThrottler;
+    SmartThrottleByKey _broadcastStatusThrottler;
 
     public NodeRuntime(BroadcastHub hub, INodeImplementFactory nodeImplementFactory, IServiceProvider serviceProvider)
     {

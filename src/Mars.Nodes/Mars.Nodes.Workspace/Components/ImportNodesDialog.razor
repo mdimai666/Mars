@@ -1,0 +1,56 @@
+@using AppFront.Shared.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Mars.Shared.Resources
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<string>
+
+<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
+    <div class="hstack">
+        <FluentIcon Value="@(new Icons.Regular.Size24.ArrowImport())" Color="Color.Info" Class="me-2" />
+        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Import nodes")</FluentLabel>
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-row gap-4" style="_min-height:50vh;">
+        <EditForm Model="@_json" class="flex-fill vstack">
+            <FormItem2 Label="JSON" For="() => _json">
+                <FluentTextArea Rows="10" @bind-Value="@_json" Class="w-100 h-100" />
+            </FormItem2>
+        </EditForm>
+    </div>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">@AppRes.Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@OkAsync">@AppRes.Import</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    string _json = "";
+
+    private Task OkAsync() => Dialog.CloseAsync(DialogResult.Ok(_json));
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    public static Task<IDialogReference> ShowDialog(IDialogService _dialogService)
+    {
+        DialogParameters parameters = new()
+        {
+            Width = "900px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        return _dialogService.ShowDialogAsync<ImportNodesDialog>("", parameters);
+    }
+
+}

@@ -43,7 +43,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     public IReadOnlyDictionary<string, INodeImplement> Nodes => _runtime.Nodes;
     public IReadOnlyDictionary<string, Node> BaseNodes => _runtime.BasicNodesDict;
 
-    ThrottleByKey _executeAnimationThrottler;
+    SmartThrottleByKey _executeAnimationThrottler;
 
     public NodeService([FromKeyedServices("data")] IFileStorage fileStorage,
                         INodeRuntime runtime,

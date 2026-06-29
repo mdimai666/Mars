@@ -12,7 +12,6 @@
 		<PackageReference Include="ClosedXML" PrivateAssets="All" />
 		<PackageReference Include="ClosedXML.Report" PrivateAssets="All" />
         <PackageReference Include="System.IO.Packaging" />
-        <PackageReference Include="System.Linq.Dynamic.Core" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>

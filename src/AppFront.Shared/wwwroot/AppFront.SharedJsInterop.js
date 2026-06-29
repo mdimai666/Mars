@@ -1,6 +1,23 @@
-// This is a JavaScript module that is loaded on demand. It can export any number of
-// functions, and may import other JavaScript modules if required.
-
 export function showPrompt(message) {
-  return prompt(message, 'Type anything here');
+    return prompt(message, 'Type anything here');
+}
+
+export async function downloadFileFromStream(fileName, contentStreamReference) {
+    const arrayBuffer = await contentStreamReference.arrayBuffer();
+    const blob = new Blob([arrayBuffer]);
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+}
+
+export async function downloadFileFromUrl(fileName, url) {
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName ?? '';
+    anchor.click();
+    anchor.remove();
 }

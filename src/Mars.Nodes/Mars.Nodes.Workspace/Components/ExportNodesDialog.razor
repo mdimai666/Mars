@@ -1,0 +1,137 @@
+@using System.Text.Json
+@using AppFront.Shared
+@using AppFront.Shared.Components
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Mars.Shared.Resources
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<string>
+@implements IDisposable
+
+<FluentDialogHeader ShowDismiss="true" ShowDismissTooltip="false">
+    <div class="hstack">
+        <FluentIcon Value="@(new Icons.Regular.Size24.ArrowExport())" Color="Color.Info" Class="me-2" />
+        <FluentLabel Typo="Typography.Header">@(Dialog.Instance.Parameters.Title ?? "Export nodes")</FluentLabel>
+    </div>
+</FluentDialogHeader>
+<FluentDialogBody Class="text-start">
+    <div class="d-flex flex-row gap-4" style="_min-height:50vh;">
+        <EditForm Model="@_json" class="flex-fill vstack">
+            <div class="hstack gap-4">
+                <FluentRadioGroup @bind-Value=_scope Orientation="Orientation.Horizontal" @bind-Value:after="OnModeChanged">
+                    @foreach (var item in Enum.GetValues<ExportNodesScope>())
+                    {
+                        <FluentRadio Value="@item" Label="@item.ToString()" />
+                    }
+                </FluentRadioGroup>
+                <FluentCheckbox @bind-Value="@_formatted" @bind-Value:after="OnModeChanged">
+                    Formatted
+                </FluentCheckbox>
+            </div>
+            <hr />
+            <FormItem2 Label="JSON" For="() => _json">
+                <FluentTextArea Rows="10" @bind-Value="@_json" Class="w-100 h-100" />
+            </FormItem2>
+        </EditForm>
+    </div>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <div class="flex-fill vstack gap-2 me-3">Nodes: @_nodesCount</div>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">@AppRes.Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@DownloadFile">@AppRes.Download</FluentButton>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@CopyToClipboard">@AppRes.CopyToClipboard</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter]
+    public string Content { get; set; } = default!;
+
+    INodeEditorApi _editor => NodeEditor1.Instance!;
+    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] AppFrontJs _appjs { get; set; } = default!;
+
+    string _json = "";
+    ExportNodesScope _scope;
+    bool _formatted = true;
+    int _nodesCount = 0;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            OnModeChanged();
+            StateHasChanged();
+        }
+    }
+
+    private Task OkAsync() => Dialog.CloseAsync(DialogResult.Ok(_json));
+
+    private Task CancelAsync() => Dialog.CancelAsync();
+
+    public static void ShowDialog(IDialogService _dialogService)
+    {
+        DialogParameters parameters = new()
+        {
+            Width = "900px",
+            TrapFocus = false,
+            Modal = true,
+            PreventScroll = true
+        };
+
+        _dialogService.ShowDialogAsync<ExportNodesDialog>("", parameters);
+    }
+
+    void OnModeChanged()
+    {
+        var nodes = _scope switch
+        {
+            ExportNodesScope.SelectedNodes => _editor.NodeWorkspace.SelectedNodes(),
+            ExportNodesScope.Flow => _editor.NodeWorkspace.FlowNodes.Values,
+            ExportNodesScope.All => _editor.AllNodes.Values,
+            _ => throw new NotImplementedException()
+        };
+
+        _nodesCount = nodes.Count();
+        _json = JsonSerializer.Serialize(nodes, _formatted ? _editor.NodesJsonSerializerOptionsFormatted : _editor.NodesJsonSerializerOptions);
+    }
+
+    async Task DownloadFile()
+    {
+        string suffix = _scope switch
+        {
+            ExportNodesScope.SelectedNodes => "-selected",
+            ExportNodesScope.Flow => $"-flow-{_editor.ActiveFlow?.Name}",
+            ExportNodesScope.All => "-all",
+            _ => throw new NotImplementedException()
+        };
+        string fileName = $"nodes-{DateTime.Now.ToString("yyyy-MM-dd")}{suffix}.json";
+
+        await OkAsync();
+        await _appjs.DownloadContentAsFile(_json, fileName);
+    }
+
+    async Task CopyToClipboard()
+    {
+        await _editor.ActionManager.CopyToClipboard(_json);
+        await OkAsync();
+
+        _ = _messageService.Success("copied to clipboard");
+    }
+
+    public void Dispose()
+    {
+        _ = _appjs.DisposeAsync();
+    }
+
+    enum ExportNodesScope
+    {
+        SelectedNodes,
+        Flow,
+        All
+    }
+}

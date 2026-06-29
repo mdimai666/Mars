@@ -48,8 +48,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-        <PackageReference Include="MailKit" PrivateAssets="All" />
-        <PackageReference Include="MimeKit" PrivateAssets="All" />
+        <PackageReference Include="MailKit" />
+        <PackageReference Include="MimeKit" />
         <PackageReference Include="Handlebars.Net" />
         <PackageReference Include="AngleSharp" />
         <PackageReference Include="Humanizer">

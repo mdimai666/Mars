@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+        <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
     </ItemGroup>
 

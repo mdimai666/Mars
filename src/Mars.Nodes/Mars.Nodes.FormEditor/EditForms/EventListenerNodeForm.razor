@@ -1,7 +1,7 @@
+@using Mars.Nodes.Core.Nodes.Events
 @using Mars.Nodes.FormEditor.EditForms.Components
 @inherits NodeEditForm
-@attribute [NodeEditFormForNode(typeof(EventNode))]
-
+@attribute [NodeEditFormForNode(typeof(EventListenerNode))]
 
 <div class="form-group d-flex flex-column flex-fill">
 
@@ -30,10 +30,9 @@
 
 </div>
 
-
 @code {
     [CascadingParameter] Node? Value { get; set; }
-    EventNode Node { get => (EventNode)Value!; set => Value = value; }
+    EventListenerNode Node { get => (EventListenerNode)Value!; set => Value = value; }
 
     void OnChangeExampleType(string val)
     {
@@ -50,4 +49,3 @@
         InsertText(val.Value + "\n");
     }
 }
-

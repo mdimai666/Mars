@@ -22,6 +22,7 @@ internal class MetaEntityTypeProvider : IMetaEntityTypeProvider
         var postTypeList = await ef.PostTypes
                                 .Include(s => s.MetaFields)
                                 .AsNoTracking()
+                                .Where(s => !s.Disabled)
                                 .ToListAsync();
 
         var dict = new Dictionary<string, MetaTypeInfo>();

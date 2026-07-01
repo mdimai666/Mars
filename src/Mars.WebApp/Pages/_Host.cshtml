@@ -49,7 +49,7 @@
 
 @* <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" /> *@
 
-@if (false)
+@* @if (false)
 {
     var renderEngine = appFront.Features.Get<IWebRenderEngine>() as BlazorWebRenderEngine;
     var html = await renderEngine.RenderBlazorPageWithHbsRoot(appFront, "", HttpContext, serviceProvider, default);
@@ -60,7 +60,7 @@
         // Этот код должен быть здесь. Присваивание статуса после отрисовки страницы.
         HttpContext.Response.StatusCode = _blazorPrerenderHttpAccessor.StatusCode.Value;
     }
-}
+} *@
 @* else if (true)
 {
     <app id="app">
@@ -85,7 +85,7 @@
         }
     </app>
 } *@
-else
+@if(true)
 {
     var renderEngine = (BlazorWebRenderEngine)appFront.Features.Get<IWebRenderEngine>()!;
     var html = await renderEngine.RenderBlazorPageWithHbsRoot(appFront, "@Body", HttpContext, serviceProvider, default);

@@ -15,7 +15,8 @@ internal static class PostTypeMapping
             Title = entity.Title,
             TypeName = entity.TypeName,
             Tags = entity.Tags,
-            EnabledFeatures = entity.EnabledFeatures
+            EnabledFeatures = entity.EnabledFeatures,
+            Disabled = entity.Disabled,
         };
 
     public static PostTypeDetail ToDetail(this PostTypeEntity entity)

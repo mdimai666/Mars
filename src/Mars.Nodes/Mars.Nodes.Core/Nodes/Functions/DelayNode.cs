@@ -4,7 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes.Functions;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/DelayNode/DelayNode{.lang}.md")]
-[Display(GroupName = "function")]
+[Display(GroupName = "functions")]
 public class DelayNode : Node
 {
     public override string TypeId => "core.DelayNode";

@@ -1,7 +1,7 @@
 using Flurl.Http;
 using Mars.Nodes.Core.Models.EntityQuery;
 
-namespace Mars.Nodes.Front.Shared.Services;
+namespace Mars.WebApp.Nodes.Front.Services;
 
 public interface INodeEditorToolServiceClient
 {

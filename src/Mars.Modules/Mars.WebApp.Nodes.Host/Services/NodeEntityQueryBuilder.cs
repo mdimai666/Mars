@@ -2,7 +2,7 @@ using Mars.Host.Shared.Services;
 using Mars.Nodes.Core.Models.EntityQuery;
 using Mars.QueryLang;
 
-namespace Mars.Nodes.Host.Services;
+namespace Mars.WebApp.Nodes.Host.Services;
 
 public class NodeEntityQueryBuilder
 {

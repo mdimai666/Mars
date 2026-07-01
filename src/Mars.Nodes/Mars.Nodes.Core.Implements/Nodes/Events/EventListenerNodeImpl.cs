@@ -1,16 +1,16 @@
 using Mars.Host.Shared.Managers;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Events;
 using Mars.Nodes.Host.Shared;
 
-namespace Mars.Nodes.Core.Implements.Nodes;
+namespace Mars.Nodes.Core.Implements.Nodes.Events;
 
-public class EventNodeImpl : INodeImplement<EventNode>
+public class EventListenerNodeImpl : INodeImplement<EventListenerNode>
 {
-    public EventNode Node { get; }
+    public EventListenerNode Node { get; }
     public IRuntimeNodeScope RNS { get; set; }
     Node INodeImplement.Node => Node;
 
-    public EventNodeImpl(EventNode node, IRuntimeNodeScope rns)
+    public EventListenerNodeImpl(EventListenerNode node, IRuntimeNodeScope rns)
     {
         Node = node;
         RNS = rns;

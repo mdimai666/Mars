@@ -1,6 +1,7 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.FormEditor;
 using Mars.WebApp.Nodes.Front.Forms;
+using Mars.WebApp.Nodes.Front.Services;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +10,7 @@ namespace Mars.WebApp.Nodes.Front;
 public static class MainMarsWebAppNodesFront
 {
     public static IServiceCollection AddMarsWebAppNodesFront(this IServiceCollection services)
-        => services;
+        => services.AddScoped<INodeEditorToolServiceClient, NodeEditorToolServiceClient>();
 
     public static IServiceProvider UseMarsWebAppNodesFront(this IServiceProvider services)
     {

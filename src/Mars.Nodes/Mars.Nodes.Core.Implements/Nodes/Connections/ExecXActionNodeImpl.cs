@@ -1,8 +1,8 @@
 using Mars.Host.Shared.Managers;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Connections;
 using Mars.Nodes.Host.Shared;
 
-namespace Mars.Nodes.Core.Implements.Nodes;
+namespace Mars.Nodes.Core.Implements.Nodes.Connections;
 
 public class ExecXActionNodeImpl : INodeImplement<ExecXActionNode>
 {

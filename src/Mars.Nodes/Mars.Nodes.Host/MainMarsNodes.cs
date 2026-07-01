@@ -39,7 +39,6 @@ public static class MainMarsNodes
         services.AddSingleton<MqttManager>();
         services.AddScoped<FunctionCodeSuggestService>();
         services.AddSingleton<CommandNodesActionProvider>();
-        services.AddSingleton<NodeEditorToolServce>();
         //services.AddHostedService<FlowExecutionBackgroundService>();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

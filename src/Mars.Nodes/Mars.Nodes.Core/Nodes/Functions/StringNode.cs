@@ -5,7 +5,7 @@ using Mars.Nodes.Core.StringFunctions;
 namespace Mars.Nodes.Core.Nodes.Functions;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/StringNode/StringNode{.lang}.md")]
-[Display(GroupName = "function")]
+[Display(GroupName = "functions")]
 public class StringNode : Node
 {
     public override string TypeId => "core.StringNode";

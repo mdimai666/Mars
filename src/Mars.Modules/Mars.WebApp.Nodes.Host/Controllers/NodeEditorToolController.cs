@@ -1,11 +1,11 @@
 using System.Net.Mime;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Nodes.Core.Models.EntityQuery;
-using Mars.Nodes.Host.Services;
+using Mars.WebApp.Nodes.Host.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Nodes.Host.Controllers;
+namespace Mars.WebApp.Nodes.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

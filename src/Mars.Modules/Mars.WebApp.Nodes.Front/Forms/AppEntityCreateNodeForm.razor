@@ -1,17 +1,10 @@
 @using AppFront.Shared.Components
-@using AppFront.Shared.Services
 @using Flurl.Http
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Core.Utils
-@using Mars.Nodes.Core.Models.EntityQuery
-@using Mars.Nodes.Front.Shared.Services
-@using Mars.Shared.Contracts.Files
 @using Mars.Shared.Models
-@using Mars.Shared.Resources
-@using Mars.WebApiClient.Interfaces
-@using Mars.WebApp.Nodes.Front.Forms.Components
 @using Mars.WebApp.Nodes.Front.Models.AppEntityForms
-@using Mars.WebApp.Nodes.Front.Models.NodeEntityQuery
+@using Mars.WebApp.Nodes.Front.Services
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inherits NodeEditForm
@@ -29,58 +22,50 @@
     }
     else
     {
+        <div class="d-flex flex-column gap-2">
 
-        @if (true)
-        {
-            <div class="d-flex flex-column gap-2">
+            <FormItem2 For="() => EditModel.EntityUri">
+                <FluentSelect @bind-SelectedOption="@EditModel.EntityUri" Items="EditModel.FormsSchemaDict.Keys" TOption="SourceUri" />
+            </FormItem2>
 
-                <FormItem2 For="() => EditModel.EntityUri">
-                    <FluentSelect @bind-SelectedOption="@EditModel.EntityUri" Items="EditModel.FormsSchemaDict.Keys" TOption="SourceUri" />
-                </FormItem2>
-
-                <FluentSortableList Class="AppEntityCreateNode__SortableList"
-                                    Handle="true"
-                                    ListItemHeight="48px"
-                                    Items="EditModel.PropertyBindings"
-                                    OnUpdate="@SortList"
-                                    Context="item">
-                    <ItemTemplate>
-                        <div class="sortable-grab">
-                            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
-                        </div>
-                        <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
-                            <div class="d-grid align-items-center" style="grid-template-columns: 200px 33px 60px max-content;">
-                                <div class="@(true ? $"AppEntityCreateNode__SortableList__item--disabled" : "")">
-                                    <div>
-                                        <FluentInputLabel Label="@item.Title" Required=item.IsRequired />
-                                    </div>
-                                    <div class="text-secondary">
-                                        @item.PropertyName
-                                    </div>
-                                </div>
+            <FluentSortableList Class="AppEntityCreateNode__SortableList"
+                                Handle="true"
+                                ListItemHeight="48px"
+                                Items="EditModel.PropertyBindings"
+                                OnUpdate="@SortList"
+                                Context="item">
+                <ItemTemplate>
+                    <div class="sortable-grab">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" />
+                    </div>
+                    <div class="sortable-item-content p-1" style="flex-grow: 1;" @key=item>
+                        <div class="d-grid align-items-center" style="grid-template-columns: 200px 33px 60px max-content;">
+                            <div class="@(true ? $"AppEntityCreateNode__SortableList__item--disabled" : "")">
                                 <div>
-                                    <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.PropertyName" />
+                                    <FluentInputLabel Label="@item.Title" Required=item.IsRequired />
                                 </div>
-                                <FluentCheckbox @bind-Value="@item.IsEvalExpression" Label="X" title="IsExpression" />
-                                <div class="w-100">
-                                    <FluentTextField Placeholder="@item.Placeholder"
-                                                     @bind-Value="item.ValueOrExpression"
-                                                     Class="w-100"
-                                                     Required="@item.IsRequired" />
+                                <div class="text-secondary">
+                                    @item.PropertyName
                                 </div>
                             </div>
+                            <div>
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Title="@item.PropertyName" />
+                            </div>
+                            <FluentCheckbox @bind-Value="@item.IsEvalExpression" Label="X" title="IsExpression" />
+                            <div class="w-100">
+                                <FluentTextField Placeholder="@item.Placeholder"
+                                                 @bind-Value="item.ValueOrExpression"
+                                                 Class="w-100"
+                                                 Required="@item.IsRequired" />
+                            </div>
                         </div>
-                    </ItemTemplate>
-                </FluentSortableList>
-                <div class="mt-1 hstack gap-1">
-                    footer
-                </div>
+                    </div>
+                </ItemTemplate>
+            </FluentSortableList>
+            <div class="mt-1 hstack gap-1">
+                footer
             </div>
-        }
-        else
-        {
-            <div>Not implement</div>
-        }
+        </div>
     }
 </div>
 

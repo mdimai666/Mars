@@ -6,8 +6,8 @@ using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Implements.Nodes.Events;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Models;
 using Mars.Nodes.Core.Nodes.Common;
@@ -328,15 +328,15 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     private void EventManager_OnTrigger(ManagerEventPayload payload)
     {
-        var findList = Nodes.Values.Where(node => node is EventNodeImpl).ToList();
+        var findList = Nodes.Values.Where(node => node is EventListenerNodeImpl).ToList();
 
         if (findList.Any())
         {
-            List<EventNodeImpl> activateNodeList = [];
+            List<EventListenerNodeImpl> activateNodeList = [];
 
             foreach (var _node in findList)
             {
-                var node = (EventNodeImpl)_node;
+                var node = (EventListenerNodeImpl)_node;
                 if (node.TestTopic(payload.Topic))
                 {
                     activateNodeList.Add(node);
@@ -350,7 +350,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         }
     }
 
-    void TriggerEventNodes(IEnumerable<EventNodeImpl> nodes, ManagerEventPayload payload)
+    void TriggerEventNodes(IEnumerable<EventListenerNodeImpl> nodes, ManagerEventPayload payload)
     {
         List<Task> nodesTask = [];
 

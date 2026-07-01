@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Mars.Host.Shared.Managers;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Events;
+using Mars.Nodes.Core.Nodes.Events;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using Mars.Nodes.Implements.Test.Services;
 using NSubstitute;
@@ -10,17 +10,17 @@ using static Mars.Host.Shared.Managers.IEventManager;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
 
-public class EventNodeTests : NodeServiceUnitTestBase
+public class EventListenerNodeTests : NodeServiceUnitTestBase
 {
     [Fact]
     public async Task Execute_Notify_Success()
     {
         //Arrange
-        _ = nameof(EventNodeImpl.Execute);
+        _ = nameof(EventListenerNodeImpl.Execute);
         var input = new NodeMsg();
         var eventPayload = new ManagerEventPayload("*", 222);
         input.Add(eventPayload);
-        var node = new EventNode { Topics = "*" };
+        var node = new EventListenerNode { Topics = "*" };
 
         //Act
         var msg = await ExecuteNode(node, input);
@@ -35,10 +35,10 @@ public class EventNodeTests : NodeServiceUnitTestBase
     [InlineData("xxx", "entity.post/add", false)]
     [InlineData("entity.post/add", "*", true)]
     [InlineData("entity.post/add", "entity.post/*", true)]
-    public async Task TriggerEventNodes_RaiseEventFromNodeService_Success(string triggerTopic, string subscribedTopic, bool expectTouched)
+    public async Task TriggerEventListenerNodes_RaiseEventFromNodeService_Success(string triggerTopic, string subscribedTopic, bool expectTouched)
     {
         //Arrange
-        _ = nameof(EventNodeImpl.Execute);
+        _ = nameof(EventListenerNodeImpl.Execute);
         _ = nameof(IEventManager.OnTrigger);
 
         var input = new NodeMsg();
@@ -52,7 +52,7 @@ public class EventNodeTests : NodeServiceUnitTestBase
             Container = flowNode.Id,
             Callback = (_, _) => touchedFlag = true,
         };
-        var node = new EventNode
+        var node = new EventListenerNode
         {
             Container = flowNode.Id,
             Topics = subscribedTopic,

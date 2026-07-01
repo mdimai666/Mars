@@ -4,7 +4,7 @@ using Mars.Nodes.Core.Models.EntityQuery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Nodes.Host.Services;
+namespace Mars.WebApp.Nodes.Host.Services;
 
 public class NodeEditorToolServce
 {

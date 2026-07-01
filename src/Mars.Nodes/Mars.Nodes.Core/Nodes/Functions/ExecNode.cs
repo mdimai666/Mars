@@ -4,7 +4,7 @@ using Mars.Core.Attributes;
 namespace Mars.Nodes.Core.Nodes.Functions;
 
 [FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/ExecNode/ExecNode{.lang}.md")]
-[Display(GroupName = "function")]
+[Display(GroupName = "functions")]
 public class ExecNode : Node
 {
     public override string TypeId => "core.ExecNode";

@@ -46,6 +46,7 @@ public static class PostTypeMapping
             TypeName = entity.TypeName,
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
+            Disabled = entity.Disabled,
         };
 
     public static PostTypeSummaryResponse ToSummaryResponse(this PostTypeDetail entity)
@@ -57,7 +58,6 @@ public static class PostTypeMapping
             TypeName = entity.TypeName,
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
-            //EnabledFeatures = entity.EnabledFeatures,
         };
 
     public static PostTypeListItemResponse ToItemResponse(this PostTypeSummary entity)
@@ -69,6 +69,7 @@ public static class PostTypeMapping
             CreatedAt = entity.CreatedAt,
             EnabledFeatures = entity.EnabledFeatures,
             Tags = entity.Tags,
+            Disabled = entity.Disabled,
         };
 
     public static PostStatusResponse ToResponse(this PostStatusDto entity)

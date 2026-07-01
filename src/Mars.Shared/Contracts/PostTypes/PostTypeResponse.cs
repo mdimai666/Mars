@@ -93,6 +93,7 @@ public record PostTypeListItemResponse : IBasicEntityResponse
     public required string TypeName { get; init; }
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required IReadOnlyCollection<string> Tags { get; init; }
+    public required bool Disabled { get; init; }
 }
 
 public record PostTypeAdminPanelItemResponse : PostTypeSummaryResponse

@@ -28,7 +28,6 @@ public static class MainNodeWorkspace
         services.AddSingleton<EditorActionLocator>();
 
         services.AddScoped<INodeServiceClient, NodeServiceClient>();
-        services.AddScoped<INodeEditorToolServiceClient, NodeEditorToolServiceClient>();
 
         if (!OperatingSystem.IsBrowser()) return services;
 

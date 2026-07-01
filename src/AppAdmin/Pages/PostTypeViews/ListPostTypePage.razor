@@ -44,7 +44,7 @@
                     <div class="d-none d-lg-block">
                         <div class="card-body py-1 px-3">
                             <div class="fs-6">
-                                <a href="@urlEditPage/@context.Id">
+                                <a href="@urlEditPage/@context.Id" class="@(context.Disabled ? "text-secondary" : "text-primary")">
                                     @context.Title
                                 </a>
                             </div>
@@ -60,6 +60,10 @@
                     </div>
                 </TemplateColumn>
                 <TemplateColumn Title="@AppRes.EnabledFeatures">
+                    @if (context.Disabled)
+                    {
+                        <FluentBadge Fill="black">@AppRes.Disabled</FluentBadge>
+                    }
                     <FluentOverflow Style="width: 100%;">
                         @foreach (var tag in context.EnabledFeatures)
                         {

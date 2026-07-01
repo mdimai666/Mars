@@ -2,6 +2,7 @@ using Mars.Nodes.Host.Shared;
 using Mars.WebApp.Nodes.Front;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Host.Nodes;
+using Mars.WebApp.Nodes.Host.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class MainWebAppNodes
 {
     public static IServiceCollection AddMarsWebAppNodes(this IServiceCollection services)
         => services.AddMarsWebAppNodesFront()
+                    .AddSingleton<NodeEditorToolServce>()
                     .AddScoped<IAppEntityFormBuilderFactory, AppEntityFormBuilderFactory>();
 
     public static IApplicationBuilder UseMarsWebAppNodes(this IApplicationBuilder app)

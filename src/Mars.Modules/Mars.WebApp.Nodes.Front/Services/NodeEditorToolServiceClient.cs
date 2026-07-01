@@ -2,7 +2,7 @@ using Flurl.Http;
 using Mars.Nodes.Core.Models.EntityQuery;
 using Mars.Nodes.Front.Shared.Services;
 
-namespace Mars.Nodes.Workspace.Services;
+namespace Mars.WebApp.Nodes.Front.Services;
 
 internal class NodeEditorToolServiceClient : INodeEditorToolServiceClient
 {

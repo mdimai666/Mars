@@ -11,6 +11,7 @@ public class TemplateNode : Node
 
     public const string DefaultSyntaxLanguage = "handlebars";
     public const string DefaultTemplateEngineId = "Core.Handlebars";
+    public const string PlainTextTemplateEngineId = "Core.PlainText";
 
     public string TemplateEngineId { get; set; } = DefaultTemplateEngineId;
     public string SyntaxLanguage { get; set; } = DefaultSyntaxLanguage;
@@ -26,4 +27,6 @@ public class TemplateNode : Node
         Icon = "_content/Mars.Nodes.Workspace/nodes/scenario-48.png";
     }
 
+    public static TemplateNode PlainTextVariant(string template)
+        => new() { TemplateEngineId = PlainTextTemplateEngineId, Template = template };
 }

@@ -259,73 +259,71 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         };
     }
 
-    public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null)
+    public Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null, bool throwOnError = false)
     {
         var scope = factory.CreateScope();
 
-        return InjectAsync(scope.ServiceProvider, nodeId, msg);//TODO: wait complete
+        return InjectAsync(scope.ServiceProvider, nodeId, msg, throwOnError: throwOnError);//TODO: wait complete
 
     }
 
-    public async Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null)
+    public async Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null, bool throwOnError = false)
     {
         var requestUserInfo = serviceProvider.GetRequiredService<IRequestContext>().ToRequestUserInfo();
         msg ??= new();
         msg.Add(requestUserInfo);
 
-        var taskId = await _nodeTaskManager.CreateJob(serviceProvider, nodeId, msg);
+        var taskId = await _nodeTaskManager.CreateJob(serviceProvider, nodeId, msg, throwOnError: throwOnError);
 
         return taskId;
     }
 
-    public async Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null)
+    public async Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null, bool throwOnError = false)
     {
-        if (string.IsNullOrEmpty(callNodeName))
+        try
         {
-            throw new ArgumentNullException(nameof(callNodeName));
+            ArgumentException.ThrowIfNullOrEmpty(callNodeName, nameof(callNodeName));
+
+            var implNode = Nodes.Values.FirstOrDefault(s => s.Node is CallNode && s.Node.Name == callNodeName);
+
+            if (implNode is null)
+            {
+                return new UserActionResult<object?>
+                {
+                    Message = $"callNodeName Name = {callNodeName} not found",
+                    Data = null,
+                };
+            }
+            var maxWaitTime = TimeSpan.FromMinutes(5);
+            var node = (implNode.Node as CallNode)!;
+            var msg = new NodeMsg() { Payload = payload };
+
+            var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var callback = new Core.Nodes.Common.CallNode.CallNodeCallbackAction(payload =>
+            {
+                tcs.TrySetResult(payload); // завершает задачу
+            }, implNode.Id);
+
+            msg.Add(callback);
+
+            // запускаем асинхронный процесс
+            _ = InjectAsync(serviceProvider, implNode.Id, msg, throwOnError: throwOnError);
+
+            var data = await tcs.Task.WaitAsync(node.Timeout == TimeSpan.Zero ? maxWaitTime : node.Timeout);
+
+            return UserActionResult<object?>.Success(data);
         }
-
-        var implNode = Nodes.Values.FirstOrDefault(s => s.Node is CallNode && s.Node.Name == callNodeName);
-
-        //TODO: Add tests
-        if (implNode is null)
+        catch (TimeoutException)
         {
+            if (throwOnError) throw;
             return new UserActionResult<object?>
             {
-                Message = $"callNodeName Name = {callNodeName} not found",
+                Ok = false,
+                Message = $"Timeout while calling node {callNodeName}",
                 Data = null,
             };
         }
-
-        CallNode node = (implNode.Node as CallNode)!;
-
-        var msg = new NodeMsg() { Payload = payload };
-
-        var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        var callback = new Core.Nodes.Common.CallNode.CallNodeCallbackAction(payload =>
-        {
-            tcs.TrySetResult(payload); // завершает задачу
-        }, implNode.Id);
-
-        msg.Add(callback);
-
-        // запускаем асинхронный процесс
-        _ = InjectAsync(serviceProvider, implNode.Id, msg);
-
-        object? data;
-
-        if (node.Timeout == TimeSpan.Zero)
-            data = await tcs.Task;
-        else
-            data = await tcs.Task.WaitAsync(node.Timeout);
-
-        return new UserActionResult<object?>
-        {
-            Ok = true,
-            Data = data,
-        };
-
     }
 
     private void EventManager_OnTrigger(ManagerEventPayload payload)

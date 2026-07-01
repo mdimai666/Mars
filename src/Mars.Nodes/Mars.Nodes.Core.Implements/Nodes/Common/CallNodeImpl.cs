@@ -38,7 +38,7 @@ public class CallResponseNodeImpl : INodeImplement<CallResponseNode>
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        CallNodeCallbackAction action = input.Get<CallNodeCallbackAction>()!;
+        var action = input.Get<CallNodeCallbackAction>()!;
 
         action.callback(input.Payload);
 

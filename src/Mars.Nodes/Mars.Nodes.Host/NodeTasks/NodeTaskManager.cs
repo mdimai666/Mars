@@ -53,7 +53,7 @@ internal class NodeTaskManager : INodeTaskManager
         taskJob.OnComplete += tcs.SetResult;
         taskJob.OnNodeExecute += (nodeId, trigger) => OnTaskNodeExecute.Invoke(taskJob.TaskId, nodeId, trigger);
         taskJob.OnNodeException += (nodeId, flowId, ex) => OnError.Invoke(taskJob.TaskId, nodeId, flowId, ex);
-        taskJob.Run(msg, throwOnError: throwOnError);
+        _ = taskJob.Run(msg, throwOnError: throwOnError);
         await tcs.Task;
 
         _currentTasks.TryRemove(taskJob.TaskId, out _);

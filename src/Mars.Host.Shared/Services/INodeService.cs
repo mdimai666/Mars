@@ -21,9 +21,9 @@ public interface INodeService
     UserActionResult Deploy(IReadOnlyCollection<Node> nodes);
     NodesData GetNodesData();
 
-    Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null);
-    Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null);
-    Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null);
+    Task<Guid> InjectAsync(IServiceScopeFactory factory, string nodeId, NodeMsg? msg = null, bool throwOnError = false);
+    Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null, bool throwOnError = false);
+    Task<UserActionResult<object?>> CallNode(IServiceProvider serviceProvider, string callNodeName, object? payload = null, bool throwOnError = false);
 
     void DebugMsg(string nodeId, DebugMessage msg);
     void DebugMsg(string nodeId, Exception ex);

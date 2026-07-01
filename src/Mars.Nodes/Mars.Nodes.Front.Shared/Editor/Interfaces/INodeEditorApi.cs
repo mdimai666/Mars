@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
+using Mars.Nodes.Core.Nodes.Functions;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Front.Shared.Editor.Interfaces;
@@ -16,6 +17,7 @@ public interface INodeEditorApi
     JsonSerializerOptions NodesJsonSerializerOptions { get; }
     JsonSerializerOptions NodesJsonSerializerOptionsFormatted { get; }
     IReadOnlyDictionary<string, InlineFunctionNodeSchema> InlineFunctionNodeSchemas { get; }
+    IReadOnlyDictionary<string, LinkInNode[]> InboundLinkOutNodesDict { get; }
 
     void SetNodes(IDictionary<string, Node> nodes);
     void SetNodes(IEnumerable<Node> nodes);

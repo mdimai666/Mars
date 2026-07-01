@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mars.Nodes.Core.Helpers;
-using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core;
 
@@ -15,8 +14,9 @@ public class Node : INodeBasic
     public virtual string Name { get; set; } = "";
 
     [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
-    public string Type => GetType().FullName!;
+    public virtual string TypeId => GetType().FullName!;
 
+    [JsonIgnore]
     public virtual string Label
     {
         get
@@ -111,6 +111,9 @@ public class Node : INodeBasic
 
     [JsonIgnore]
     public virtual bool IsConfigNode => NodeTypeCache.IsConfigNode(GetType());
+
+    [JsonIgnore]
+    public virtual bool IsLinkNode => this is LinkInNode or LinkOutNode;
 
     [JsonIgnore]
     public int OutputCount

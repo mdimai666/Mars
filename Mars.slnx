@@ -22,6 +22,10 @@
     <Project Path="devstands/DevAdmin.DevServer/DevAdmin.DevServer.csproj" />
     <Project Path="devstands/TestModules/TestModules.csproj" />
   </Folder>
+  <Folder Name="/DevStands/NodesApp/">
+    <Project Path="devstands/StandNodesApp/StandNodesApp.Client/StandNodesApp.Client.csproj" Id="066f97d1-e81a-4403-bb53-95c66d7ad382" />
+    <Project Path="devstands/StandNodesApp/StandNodesApp/StandNodesApp.csproj" Id="a82544eb-8493-462c-81ce-a27d0d38f4e3" />
+  </Folder>
   <Folder Name="/Host/">
     <Project Path="src/Mars.Host.Data.InMemory/Mars.Host.Data.InMemory.csproj" />
     <Project Path="src/Mars.Host.Data.PostgreSQL/Mars.Host.Data.PostgreSQL.csproj" />

@@ -9,7 +9,9 @@ using Mars.Nodes;
 using Mars.Nodes.Host.Shared;
 using Mars.QueryLang.Host;
 using Mars.Services;
+using Mars.Shared.Tools;
 using Mars.WebSiteProcessor.Endpoints;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Mars.UseStartup.MarsParts;
 
@@ -45,6 +47,7 @@ internal static class MarsStartupPartServices
         services.AddScoped<PostTypePresentationRenderHandler>();
 
         //services.AddSingleton<DebugService>();
+        services.TryAddSingleton<ModelInfoService>();
 
         services.AddSingleton<IServiceCollection>(services);
 

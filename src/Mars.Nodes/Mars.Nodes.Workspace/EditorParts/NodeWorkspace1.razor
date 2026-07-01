@@ -1,5 +1,6 @@
 @using Mars.Nodes.Core
-@using Mars.Nodes.Core.Nodes
+@using Mars.Nodes.Core.Nodes.Common
+@using Mars.Nodes.Core.Nodes.DevNodes
 @using Mars.Nodes.Workspace.Components.NodeViews
 
 <div @ref="_containerRef" class="@Class" id="red-ui-workspace-chart" tabindex="1" style="@Style" @onmouseenter="OnMouseEnter">
@@ -87,6 +88,21 @@
                                           OnMouseUp="(e) => onNodeMouseUp(e, node)"
                                           OnClick=@(e=>onClickNodeEvent(e,node))
                                           OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
+                }
+                else if (node is LinkInNode or LinkOutNode)
+                {
+                    <LinkNodeComponent node="node"
+                                       @key=node.Id
+                                       x="node.X"
+                                       y="node.Y"
+                                       OnMouseDown="(e) => onNodeMouseDown(e, node)"
+                                       OnMouseUp="(e) => onNodeMouseUp(e, node)"
+                                       OnContextMenu="(e) => OnNodeContextMenuEvent(e, node)"
+                                       wireStartNew="wire_StartNew"
+                                       wireStartNewEnd="wire_StartNewEnd"
+                                       OnInject="OnInject"
+                                       OnClick=@(e=>onClickNodeEvent(e,node))
+                                       OnDblClick=@(e=>onDblClickNodeEvent(e,node)) />
                 }
                 else
                 {

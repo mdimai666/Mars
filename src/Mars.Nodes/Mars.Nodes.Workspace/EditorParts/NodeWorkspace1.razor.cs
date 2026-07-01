@@ -354,8 +354,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         //wire with self
         bool is_self = new_wire.Node1 == new_wire.Node2;
         bool same_slot = is_node1_set == output;
+        bool is_together_linkNodes = _flowNodes[new_wire.Node1.NodeId].IsLinkNode && _flowNodes[new_wire.Node2.NodeId].IsLinkNode;
 
-        if (!is_self && !same_slot)
+        if (!is_self && !same_slot && !is_together_linkNodes)
         {
             CreateWireAction(new_wire);
         }

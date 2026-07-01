@@ -1,4 +1,4 @@
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Nodes.Host.Shared.ExceptionModule;
 

@@ -7,8 +7,10 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Models;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Helpers;
 using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Mappings.Nodes;
@@ -18,7 +20,6 @@ using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using static Mars.Host.Shared.Services.INodeService;
-using static Mars.Nodes.Core.Nodes.CallNode;
 
 namespace Mars.Nodes.Host.Services;
 
@@ -128,6 +129,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
                 return false;
             }
             string json = _fileStorage.ReadAllText(flowFilePath);
+            json = OldNodesNameMigratorHelper.ConvertOldFileToNew(json);
             var flowsFile = JsonSerializer.Deserialize<NodesFlowSaveFile>(json, _jsonSerializerOptions)!;
             {
                 fileData = flowsFile;
@@ -180,14 +182,14 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     /// </summary>
     internal IEnumerable<Node> ReplaceDefaultFieldsToEmptyString(IEnumerable<Node> nodes)
     {
-        var defaultDict = NodeDefaultInstanceDict();
-
         return nodes.Select(node =>
         {
             if (node is UnknownNode) return node;
             var copy = node.Copy(_jsonSerializerOptions);
-            if (defaultDict.TryGetValue(node.GetType(), out var def))
+            if (_nodesLocator.Dict.TryGetValue(node.TypeId, out var defItem))
             {
+                var def = defItem.DefaultInstance;
+
                 if (copy.Color == def.Color) copy.Color = "";
                 if (copy.Icon == def.Icon) copy.Icon = "";
                 // Inputs
@@ -217,13 +219,13 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
     /// </summary>
     internal IEnumerable<Node> ReplaceEmptyStringToDefaultFields(IEnumerable<Node> nodes)
     {
-        var defaultDict = NodeDefaultInstanceDict();
-
         return nodes.Select(node =>
         {
             if (node is UnknownNode) return node;
-            if (defaultDict.TryGetValue(node.GetType(), out var def))
+            if (_nodesLocator.Dict.TryGetValue(node.TypeId, out var defItem))
             {
+                var def = defItem.DefaultInstance;
+
                 if (string.IsNullOrEmpty(node.Color)) node.Color = def.Color;
                 if (string.IsNullOrEmpty(node.Icon)) node.Icon = def.Icon;
                 // Inputs
@@ -246,15 +248,6 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             }
             return node;
         });
-    }
-
-    private IDictionary<Type, Node> NodeDefaultInstanceDict()
-    {
-        return _nodesLocator.RegisteredNodes().Select(type =>
-        {
-            Node instance = (Node)Activator.CreateInstance(type)!;
-            return new KeyValuePair<Type, Node>(type, instance);
-        }).ToDictionary();
     }
 
     public NodesData GetNodesData()
@@ -292,9 +285,9 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
             throw new ArgumentNullException(nameof(callNodeName));
         }
 
-        string typeName = typeof(CallNode).FullName!;
-        var implNode = Nodes.Values.FirstOrDefault(s => s.Node.Type == typeName && s.Node.Name == callNodeName);
+        var implNode = Nodes.Values.FirstOrDefault(s => s.Node is CallNode && s.Node.Name == callNodeName);
 
+        //TODO: Add tests
         if (implNode is null)
         {
             return new UserActionResult<object?>
@@ -310,7 +303,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
         var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        var callback = new CallNodeCallbackAction(payload =>
+        var callback = new Core.Nodes.Common.CallNode.CallNodeCallbackAction(payload =>
         {
             tcs.TrySetResult(payload); // завершает задачу
         }, implNode.Id);

@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Shared.Models;
 
 namespace Mars.Nodes.Host.Shared;

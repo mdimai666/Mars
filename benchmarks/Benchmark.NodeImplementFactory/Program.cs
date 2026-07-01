@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using Mars.Nodes.Core.Implements.Nodes;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Factories;
 using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;

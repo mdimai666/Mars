@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Core.StringFunctions;
 using Mars.Nodes.Host.Shared.Dto;
 

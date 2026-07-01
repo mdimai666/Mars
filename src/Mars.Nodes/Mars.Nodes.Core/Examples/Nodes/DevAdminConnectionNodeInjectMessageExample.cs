@@ -1,4 +1,4 @@
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Connections;
 using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;

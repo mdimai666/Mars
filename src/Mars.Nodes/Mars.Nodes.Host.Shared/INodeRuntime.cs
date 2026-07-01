@@ -1,6 +1,6 @@
 using Mars.Host.Shared.Hubs;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Shared.ExceptionModule;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Nodes.Host.Shared.Models;

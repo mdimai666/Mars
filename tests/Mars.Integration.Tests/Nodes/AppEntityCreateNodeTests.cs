@@ -7,7 +7,7 @@ using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Shared.Contracts.MetaFields;

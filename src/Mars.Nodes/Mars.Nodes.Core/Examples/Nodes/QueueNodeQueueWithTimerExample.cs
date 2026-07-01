@@ -1,4 +1,6 @@
 using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
+using Mars.Nodes.Core.Nodes.Sequences;
 using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;

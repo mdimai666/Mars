@@ -6,7 +6,8 @@ using AppFront.Shared;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
+using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.FormEditor;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
@@ -54,6 +55,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             CalcTabs();
             CalcVarNodes();
             CheckActiveTab();
+            CalcLinkNodesGraph();
             AllNodesChanged.InvokeAsync(_allNodes);
         }
     }
@@ -105,6 +107,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     bool _showPaletteNodeContextMenu;
     FluentMenu _paletteNodeContextMenu = default!;
+
+    IReadOnlyDictionary<string, LinkInNode[]> _inboundLinkOutNodesDict = new Dictionary<string, LinkInNode[]>();
+
+    public IReadOnlyDictionary<string, LinkInNode[]> InboundLinkOutNodesDict => _inboundLinkOutNodesDict;
 
     #region MenuTabs
     string activeMasterTab = "tabs";
@@ -226,6 +232,10 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         //Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
         instance.Id = Guid.NewGuid().ToString();
         instance.Container = _activeFlow.Id;
+
+        if (instance is LinkInNode) instance.Name = "link in " + AllNodes.Values.Count(s => s is LinkInNode);
+        else if (instance is LinkOutNode) instance.Name = "link out " + AllNodes.Values.Count(s => s is LinkOutNode);
+
         AllNodes.Add(instance);
         CalcFlowNodes();
         _nodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
@@ -234,7 +244,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     ConfigNode CreateConfigNodeFromType(Type nodeType)
     {
         ConfigNode instance = (ConfigNode)Activator.CreateInstance(nodeType)!;
-        var thisTypeCount = AllNodes.Values.Count(s => s.Type == instance.Type);
+        var thisTypeCount = AllNodes.Values.Count(s => s.TypeId == instance.TypeId);
         instance.Container = string.Empty;
         instance.Name = instance.Label + (thisTypeCount + 1);
         AllNodes.Add(instance);
@@ -356,6 +366,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             {
                 CalcVarNodes();
                 CalcFlowNodes();
+                if (node is LinkInNode or LinkOutNode) CalcLinkNodesGraph();
             }
             _nodeWorkspace1.RedrawWires();
             StateHasChanged();
@@ -450,6 +461,25 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         varNodes = AllNodes.Values.Where(s => s is VarNode).Select(s => (VarNode)s).OrderBy(s => s.Name).ToList();
     }
 
+    void CalcLinkNodesGraph()
+    {
+        var inboundLinkOutNodesDict = new Dictionary<string, List<LinkInNode>>();
+        var linkInNodes = _allNodes.Values.OfType<LinkInNode>();
+        foreach (var linkInNode in linkInNodes)
+        {
+            foreach (var outId in linkInNode.OutLinksIds)
+            {
+                if (!inboundLinkOutNodesDict.TryGetValue(outId, out var list))
+                {
+                    list = new List<LinkInNode>();
+                    inboundLinkOutNodesDict[outId] = list;
+                }
+                list.Add(linkInNode);
+            }
+        }
+        _inboundLinkOutNodesDict = inboundLinkOutNodesDict.ToDictionary(s => s.Key, s => s.Value.ToArray());
+    }
+
     void OnClickAddVarNode()
     {
         var vname = "var" + Random.Shared.Next(10, 99);
@@ -464,6 +494,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         CalcTabs();
         CalcVarNodes();
         CheckActiveTab();
+        CalcLinkNodesGraph();
         AllNodesChanged.InvokeAsync(_allNodes);
     }
 

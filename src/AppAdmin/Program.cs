@@ -5,6 +5,7 @@ using AppFront.Main.Extensions;
 using AppFront.Main.OptionEditForms;
 using AppFront.Shared.Features;
 using AppFront.Shared.Interfaces;
+using Flurl.Http;
 using Mars.Datasource.Front;
 using Mars.Nodes.Workspace;
 using Mars.Options.Front;
@@ -39,6 +40,13 @@ if (string.IsNullOrEmpty(backendUrl))
 }
 
 builder.ConfigureAppLanguage();
+
+var httpClient = new HttpClient() { BaseAddress = new Uri(backendUrl) };
+builder.Services.AddScoped(sp => httpClient.EnableIntercept(sp));
+builder.Services.AddScoped<IFlurlClient>(sp => new FlurlClient(httpClient));
+
+builder.Services.AddHttpClientInterceptor();
+
 builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
 
 Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";

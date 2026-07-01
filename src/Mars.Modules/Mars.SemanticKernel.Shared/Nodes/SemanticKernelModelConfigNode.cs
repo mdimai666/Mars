@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.SemanticKernel.Shared.Options;
 using JsonNode = System.Text.Json.Nodes.JsonNode;
 

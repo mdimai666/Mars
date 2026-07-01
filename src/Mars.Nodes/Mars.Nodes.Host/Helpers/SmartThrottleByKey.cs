@@ -13,7 +13,7 @@ public class SmartThrottleByKey
 
     public SmartThrottleByKey(TimeSpan throttleDelay, TimeSpan? initialDelay = null)
     {
-        _initialDelay = initialDelay ?? TimeSpan.FromMilliseconds(50);
+        _initialDelay = initialDelay ?? TimeSpan.FromMilliseconds(20);
         _throttleDelay = throttleDelay;
     }
 

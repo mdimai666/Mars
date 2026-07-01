@@ -90,7 +90,7 @@
             if (_node != null)
             {
                 UpdateEditFormType();
-                Console.WriteLine($"EditStart Node={_node.DisplayName}, Type={Node.Type}, Form={NodeEditFormType?.Name}");
+                Console.WriteLine($"EditStart Node={_node.DisplayName}, Type={Node.TypeId}, Form={NodeEditFormType?.Name}");
             }
             NodeChanged.InvokeAsync(_node);
         }

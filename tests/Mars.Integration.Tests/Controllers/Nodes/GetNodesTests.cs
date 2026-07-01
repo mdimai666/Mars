@@ -6,7 +6,7 @@ using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 

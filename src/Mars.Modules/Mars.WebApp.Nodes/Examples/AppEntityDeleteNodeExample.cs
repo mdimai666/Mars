@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Utils;
 using Mars.WebApp.Nodes.Models.NodeEntityQuery;
 using Mars.WebApp.Nodes.Nodes;

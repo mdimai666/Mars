@@ -1,0 +1,36 @@
+@using AppFront.Shared.Components
+@using Mars.Nodes.Workspace
+@using Mars.Shared.Resources
+
+@if (Busy || !OperatingSystem.IsBrowser())
+{
+    <div class="p-5 main-fill xcenter">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+    </div>
+}
+else
+{
+    if (_nodes is null)
+    {
+        <h1>is null</h1>
+    }
+    else
+    {
+        <NodeEditor1 OnDeploy="OnDeploy"
+                     OnInject="OnInjectClick"
+                     OnCmdClick="OnCmdClick"
+                     @ref=_editor1
+                     @bind-AllNodes=@_nodes
+                     InlineFunctionNodeSchemas="_inlineFunctionNodeSchemas">
+            <SectionActions>
+                <XActionsDropDown>
+                    <FluentMenuItem Label="@AppRes.Settings" OnClick=@((e) => _editor1!.ShowSettingsDialog()) />
+                    @_editor1?.MainActionMenuItems
+                </XActionsDropDown>
+            </SectionActions>
+        </NodeEditor1>
+    }
+}

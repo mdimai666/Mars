@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using NSubstitute;

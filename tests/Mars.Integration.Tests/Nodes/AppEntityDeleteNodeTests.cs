@@ -5,7 +5,7 @@ using Mars.Host.Data.Entities;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApp.Nodes.Host.Nodes;

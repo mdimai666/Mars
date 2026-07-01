@@ -3,7 +3,7 @@ using Flurl.Http;
 using Mars.Core.Extensions;
 using Mars.Host.Shared.JsonConverters;
 using Microsoft.AspNetCore.Http;
-using static Mars.Nodes.Core.Nodes.HttpRequestNode;
+using static Mars.Nodes.Core.Nodes.Network.HttpRequestNode;
 
 namespace Mars.Nodes.Core.Implements.Models;
 

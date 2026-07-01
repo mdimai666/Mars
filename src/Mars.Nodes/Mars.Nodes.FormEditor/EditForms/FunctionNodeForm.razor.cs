@@ -1,7 +1,7 @@
 using BlazorMonaco;
 using BlazorMonaco.Editor;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 

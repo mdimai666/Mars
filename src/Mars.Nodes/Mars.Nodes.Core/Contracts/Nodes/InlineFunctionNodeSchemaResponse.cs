@@ -1,4 +1,4 @@
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 
 namespace Mars.Nodes.Core.Contracts.Nodes;
 

@@ -1,7 +1,7 @@
 using Mars.Host.Shared.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Connections;
+using Mars.Nodes.Core.Nodes.Connections;
 using Mars.Nodes.Implements.Test.Services;
 using NSubstitute;
 

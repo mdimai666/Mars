@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
@@ -36,9 +37,10 @@ internal class NodesLocator : INodesLocator
                     {
                         NodeType = type,
                         DisplayAttribute = type.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(),
-                        FunctionApiDocument = type.GetCustomAttribute<FunctionApiDocumentAttribute>()
+                        FunctionApiDocument = type.GetCustomAttribute<FunctionApiDocumentAttribute>(),
+                        DefaultInstance = (Node)Activator.CreateInstance(type)!
                     };
-                    _dict.Add(type.FullName!, item);
+                    _dict.Add(item.DefaultInstance.TypeId, item);
                 }
             }
             invalid = false;
@@ -63,10 +65,9 @@ internal class NodesLocator : INodesLocator
         assemblies.Add(assembly);
     }
 
-    public Type? GetTypeByFullName(string typeFullname)
+    public Type? GetTypeByTypeId(string nodeTypeId)
     {
-        return Dict.GetValueOrDefault(typeFullname)?.NodeType;
-        //throw new NullReferenceException($"node with type {typeFullname} not found in NodesLocator");
+        return Dict.GetValueOrDefault(nodeTypeId)?.NodeType;
     }
 
     public IReadOnlyCollection<Type> RegisteredNodes()
@@ -88,7 +89,27 @@ internal class NodesLocator : INodesLocator
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             IgnoreReadOnlyProperties = true,
 
-            Converters = { new NodeJsonConverter(this) }
+            Converters = { new NodeJsonConverter(this) },
+
+            /* 
+             * Решает проблему при IgnoreReadOnlyProperties = true
+             * унаследованные и перегруженные свойства Type требует атрибут [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
+             * и перегруженное поле не записывается.
+             */
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = {
+                    static typeInfo => {
+                        // Проверяем, что это тип Node или его наследник
+                        if (typeof(Node).IsAssignableFrom(typeInfo.Type))
+                        {
+                            var prop = typeInfo.Properties.FirstOrDefault(p => p.Name == nameof(Node.TypeId));
+                            if (prop != null)
+                                prop.ShouldSerialize = static (_, _) => true;
+                        }
+                    }
+                }
+            }
         };
         return jsonSerializerOptions;
     }

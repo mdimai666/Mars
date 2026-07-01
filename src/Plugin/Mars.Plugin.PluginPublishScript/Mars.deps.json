@@ -186,6 +186,14 @@
           }
         }
       },
+      "BouncyCastle.Cryptography/2.6.2": {
+        "runtime": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.6.2.46322"
+          }
+        }
+      },
       "CronExpressionDescriptor/2.50.0": {
         "runtime": {
           "lib/net6.0/CronExpressionDescriptor.dll": {
@@ -413,6 +421,17 @@
           "lib/net10.0/PhoneNumbers.dll": {
             "assemblyVersion": "9.0.32.0",
             "fileVersion": "9.0.32.0"
+          }
+        }
+      },
+      "MailKit/4.17.0": {
+        "dependencies": {
+          "MimeKit": "4.17.0"
+        },
+        "runtime": {
+          "lib/net10.0/MailKit.dll": {
+            "assemblyVersion": "4.17.0.0",
+            "fileVersion": "4.17.0.0"
           }
         }
       },
@@ -1248,6 +1267,17 @@
           "lib/net10.0/Microting.EntityFrameworkCore.MySql.dll": {
             "assemblyVersion": "10.0.8.0",
             "fileVersion": "10.0.8.0"
+          }
+        }
+      },
+      "MimeKit/4.17.0": {
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.2"
+        },
+        "runtime": {
+          "lib/net10.0/MimeKit.dll": {
+            "assemblyVersion": "4.17.0.0",
+            "fileVersion": "4.17.0.0"
           }
         }
       },
@@ -2787,8 +2817,10 @@
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "Flurl.Http": "4.0.2",
           "Handlebars.Net": "2.1.6",
+          "MailKit": "4.17.0",
           "Mars.Host.Repositories": "1.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.9",
+          "MimeKit": "4.17.0",
           "Swashbuckle.AspNetCore": "10.2.1",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
           "mdimai666.Mars.Host.Data": "0.7.6-alpha.17",
@@ -2903,6 +2935,7 @@
           "MQTTnet": "5.1.0.1559",
           "MQTTnet.Extensions.TopicTemplate": "5.1.0.1559",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
+          "Newtonsoft.Json": "13.0.4",
           "mdimai666.Mars.Host.Shared": "0.7.6-alpha.17",
           "mdimai666.Mars.HttpSmartAuthFlow": "0.7.6-alpha.17",
           "mdimai666.Mars.Nodes.Core": "0.7.6-alpha.17",
@@ -3222,22 +3255,6 @@
           }
         }
       },
-      "MimeKit/4.17.0.0": {
-        "runtime": {
-          "MimeKit.dll": {
-            "assemblyVersion": "4.17.0.0",
-            "fileVersion": "4.17.0.0"
-          }
-        }
-      },
-      "MailKit/4.17.0.0": {
-        "runtime": {
-          "MailKit.dll": {
-            "assemblyVersion": "4.17.0.0",
-            "fileVersion": "4.17.0.0"
-          }
-        }
-      },
       "ClosedXML/0.102.2.0": {
         "runtime": {
           "ClosedXML.dll": {
@@ -3251,14 +3268,6 @@
           "ClosedXML.Report.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "BouncyCastle.Cryptography/2.0.0.0": {
-        "runtime": {
-          "BouncyCastle.Cryptography.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.6.2.46322"
           }
         }
       },
@@ -3299,6 +3308,14 @@
           "XLParser.dll": {
             "assemblyVersion": "1.5.2.0",
             "fileVersion": "1.5.2.0"
+          }
+        }
+      },
+      "System.Linq.Dynamic.Core/1.3.8.0": {
+        "runtime": {
+          "System.Linq.Dynamic.Core.dll": {
+            "assemblyVersion": "1.3.8.0",
+            "fileVersion": "1.3.8.0"
           }
         }
       },
@@ -3380,6 +3397,13 @@
       "sha512": "sha512-2FGZn+aAVHjmCgClgmGkTDBVZk0zkLvAKGaxEf5JL6b3i9JbHTE4wnuY4vHCuzlCmJdU6VZjgDfHwmYkQF8VAA==",
       "path": "bogus/35.6.5",
       "hashPath": "bogus.35.6.5.nupkg.sha512"
+    },
+    "BouncyCastle.Cryptography/2.6.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w==",
+      "path": "bouncycastle.cryptography/2.6.2",
+      "hashPath": "bouncycastle.cryptography.2.6.2.nupkg.sha512"
     },
     "CronExpressionDescriptor/2.50.0": {
       "type": "package",
@@ -3541,6 +3565,13 @@
       "sha512": "sha512-Ro1/CG2ONXaKDpcS7Ay9lRuAvfnPqrHTE2MrXDepuznM4i52ae/uoAamLmYRoPPiTIyVWTU1rDkplbjeH/tR1Q==",
       "path": "libphonenumber-csharp/9.0.32",
       "hashPath": "libphonenumber-csharp.9.0.32.nupkg.sha512"
+    },
+    "MailKit/4.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1nUAVLxM9fhT/78we6/AGsCesnpn5dRNLLeRqOfr52Wnk87pzVwo5YMTMyqnmoXrYc7piGhmayiMA/OgDluIjg==",
+      "path": "mailkit/4.17.0",
+      "hashPath": "mailkit.4.17.0.nupkg.sha512"
     },
     "Markdig/1.2.0": {
       "type": "package",
@@ -4024,6 +4055,13 @@
       "sha512": "sha512-vaxt+8dU7WODnxl5/2k4VH+LNgbQHk+yGIqWum619+6lICCmbLHyYyzqgJRGzic+Aeyh212TeH5fHklfXAjWVw==",
       "path": "microting.entityframeworkcore.mysql/10.0.8",
       "hashPath": "microting.entityframeworkcore.mysql.10.0.8.nupkg.sha512"
+    },
+    "MimeKit/4.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-h/KXsCreJf8RpR/PSAtlbvYtZFndp9N8Wn1Bs248AL7ITyhn+AiIY5bLTvt60tbN2mu6g8KadtBNWygTji2lqg==",
+      "path": "mimekit/4.17.0",
+      "hashPath": "mimekit.4.17.0.nupkg.sha512"
     },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
@@ -4913,27 +4951,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "MimeKit/4.17.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "MailKit/4.17.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
     "ClosedXML/0.102.2.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
     "ClosedXML.Report/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "BouncyCastle.Cryptography/2.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -4959,6 +4982,11 @@
       "sha512": ""
     },
     "XLParser/1.5.2.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.Linq.Dynamic.Core/1.3.8.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

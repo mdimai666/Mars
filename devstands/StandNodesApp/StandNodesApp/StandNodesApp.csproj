@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
+        <ProjectReference Include="..\..\..\src\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
+        <ProjectReference Include="..\StandNodesApp.Client\StandNodesApp.Client.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    </ItemGroup>
+
+</Project>

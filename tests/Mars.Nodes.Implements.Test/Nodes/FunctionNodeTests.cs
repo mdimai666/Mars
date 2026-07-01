@@ -1,7 +1,8 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Models;
-using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Shared;
@@ -87,7 +88,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
 
         //Act
         var msg = await RunUsingTaskManager(NodesWorkflowBuilder.Create()
-                                                .AddNext(new Core.Nodes.JsonNode())
+                                                .AddNext(new Core.Nodes.Parsers.JsonNode())
                                                 .AddNext(new FunctionNode { Code = code })
                                             , new Core.NodeMsg { Payload = json });
 

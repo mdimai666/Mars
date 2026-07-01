@@ -1,17 +1,13 @@
 @page "/EditPost/{POSTTYPE}"
 @page "/EditPost/{POSTTYPE}/{ID:guid}"
 
-@using AppFront.Shared.Tools
-@using Mars.Shared.Contracts.PostTypes
-@using MarsCodeEditor2
-@using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize(Roles = "Admin")]
 
 <ContentWrapper>
 
-    @if (POSTTYPE == "gallery")
+    @if (POSTTYPE == "NONE-gallery")
     {
         @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryEditView ID=@ID QueryPostType=@QueryPostType /> *@
     }

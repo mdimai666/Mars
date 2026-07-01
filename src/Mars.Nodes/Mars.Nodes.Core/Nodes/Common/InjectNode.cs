@@ -1,0 +1,72 @@
+using System.ComponentModel.DataAnnotations;
+using Mars.Core.Attributes;
+
+namespace Mars.Nodes.Core.Nodes.Common;
+
+[FunctionApiDocument("./_content/mdimai666.Mars.Nodes.FormEditor/Docs/InjectNode/InjectNode{.lang}.md")]
+[Display(GroupName = "common")]
+public class InjectNode : Node
+{
+    public override string TypeId => "core.InjectNode";
+
+    public string Payload { get; set; } = "";
+
+    [Display(Name = "Run at startup")]
+    public bool RunAtStartup { get; set; }
+
+    [Display(Name = "Delay millis")]
+    public int StartupDelayMillis { get; set; }
+
+    public bool IsSchedule { get; set; }
+    public string ScheduleCronMask { get; set; } = "0 0/10 * * * ?";
+
+    public InjectNode()
+    {
+        isInjectable = true;
+        Color = "#A9BBCF";
+        Outputs = [new()];
+        Icon = "_content/Mars.Nodes.Workspace/nodes/box-arrow-in-right.svg";
+    }
+
+}
+
+class InputSource<T>
+{
+#pragma warning disable CS0414 // The field 'InputSource<T>.Type' is assigned but its value is never used
+    string Type = default!;
+    T Value = default!;
+#pragma warning restore CS0414 // The field 'InputSource<T>.Type' is assigned but its value is never used
+    object get()
+    {
+        throw new NotImplementedException();
+    }
+
+    void sdsd()
+    {
+
+        object z = get();
+    }
+
+}
+
+class InputSource
+{
+    //string Name;
+
+}
+
+enum InputType
+{
+    String,
+    Number,
+    Boolean,
+    DateTime,
+    Flow,
+    Global,
+
+}
+
+public class DrawNode
+{
+
+}

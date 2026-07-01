@@ -1,0 +1,128 @@
+@using System.Collections.Immutable
+@using Mars.Core.Extensions
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inherits NodeEditForm
+@attribute [NodeEditFormForNode(typeof(LinkInNode))]
+
+<div class="vstack gap-2 flex-fill">
+
+    @* <FluentAccordion>
+        @foreach (var group in _groups)
+        {
+            <FluentAccordionItem Heading="@NameOrId(group.Key)" Expanded>
+                <ChildContent>
+                    <FluentStack Style="margin: 10px;" Orientation="Orientation.Vertical">
+                        @foreach (var item in group)
+                        {
+                            bool isChecked = _selectLinkIds.Contains(item.Id);
+                            <FluentCheckbox Label="@NameOrId(item)"
+                                            @bind-Value:get="isChecked"
+                                            @bind-Value:set="c => OnResourceTypeVisibilityChanged(item.Id, c)" />
+                        }
+                    </FluentStack>
+                </ChildContent>
+            </FluentAccordionItem>
+        }
+    </FluentAccordion> *@
+
+    <label>Out links: </label>
+
+    <div class="card">
+        <div class="card-body">
+            <FluentCheckbox Label="All"
+                            ThreeState="true"
+                            ShowIndeterminate="false"
+                            @bind-CheckState="AreAllTypesVisible" />
+            <hr />
+            @foreach (var group in _groups)
+            {
+                <details open>
+                    <summary title="@($"Id={group.Key.Id}")">
+                        Flow: @NameOrId(group.Key)
+                    </summary>
+                    <FluentStack Style="margin: 10px;" Orientation="Orientation.Vertical">
+                        @foreach (var item in group)
+                        {
+                            bool isChecked = _selectLinkIds.Contains(item.Id);
+                            <FluentCheckbox Label="@NameOrId(item)"
+                                            title="@($"Id={group.Key.Id}")"
+                                            @bind-Value:get="isChecked"
+                                            @bind-Value:set="c => OnResourceTypeVisibilityChanged(item.Id, c)" />
+                        }
+                    </FluentStack>
+                </details>
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [CascadingParameter] Node? Value { get; set; }
+    LinkInNode Node { get => (LinkInNode)Value!; set => Value = value; }
+
+    IEnumerable<IGrouping<FlowNode, LinkOutNode>> _groups = [];
+    ImmutableArray<string> _allLinkIds = default!;
+    HashSet<string> _selectLinkIds = default!;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _selectLinkIds = Node.OutLinksIds.ToHashSet();
+            var nodes = NodeEditContainer._nodeEditorApi.AllNodes;
+            _allLinkIds = nodes.Values.OfType<LinkOutNode>().Select(x => x.Id).ToImmutableArray();
+            _groups = nodes.Values.OfType<LinkOutNode>()
+                                    .Select(x => (key: (FlowNode)nodes[x.Container], value: x))
+                                    .GroupBy(x => x.key, x => x.value);
+            Console.WriteLine("Load: " + _selectLinkIds.JoinStr(";"));
+            StateHasChanged();
+        }
+    }
+
+    public override Task OnEditSave()
+    {
+        Console.WriteLine("OnEditSave: " + _selectLinkIds.JoinStr(";"));
+        Node.OutLinksIds = _selectLinkIds.ToArray();
+        Console.WriteLine("Node.OutLinksIds: " + Node.OutLinksIds.JoinStr(";"));
+        return Task.CompletedTask;
+    }
+
+    private string NameOrId(Node node) => node.Name.AsNullIfEmpty() ?? node.Id;
+
+    protected void OnResourceTypeVisibilityChanged(string id, bool isVisible)
+    {
+        if (isVisible)
+        {
+            _selectLinkIds.Add(id);
+        }
+        else
+        {
+            _selectLinkIds.Remove(id);
+        }
+    }
+
+    private bool? AreAllTypesVisible
+    {
+        get
+        {
+            return (_selectLinkIds?.SetEquals(_allLinkIds) == true)
+                ? true
+                : _selectLinkIds?.Count == 0
+                    ? false
+                    : null;
+        }
+        set
+        {
+            if (value is true)
+            {
+                _selectLinkIds.UnionWith(_allLinkIds);
+            }
+            else if (value is false)
+            {
+                _selectLinkIds.Clear();
+            }
+        }
+    }
+}

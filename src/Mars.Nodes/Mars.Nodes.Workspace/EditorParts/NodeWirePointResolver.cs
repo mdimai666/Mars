@@ -11,7 +11,11 @@ public class NodeWirePointResolver : INodeWirePointResolver
 {
     public WirePoints GetPoints(Node node1, int node1outPort, Node node2, int node2InputPort)
     {
-        float x1 = node1.X + NodeComponent.CalcBodyWidth(node1) + 15f;
+        var bodyWidth = node1.IsLinkNode
+                            ? LinkNodeComponent.CalcBodyWidth(node1)
+                            : NodeComponent.CalcBodyWidth(node1);
+
+        float x1 = node1.X + bodyWidth + 15f;
         float y1 = node1.Outputs.Count <= 1 ? node1.Y + 23 : node1.Y + 16 + node1outPort * 16;
 
         float x2 = node2.X + 8;

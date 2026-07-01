@@ -2,7 +2,7 @@ using Mars.Host.Shared.Scheduler;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

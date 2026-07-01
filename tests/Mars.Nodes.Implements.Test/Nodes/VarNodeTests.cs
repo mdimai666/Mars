@@ -1,5 +1,5 @@
-using Mars.Nodes.Core.Nodes;
 using FluentAssertions;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
 

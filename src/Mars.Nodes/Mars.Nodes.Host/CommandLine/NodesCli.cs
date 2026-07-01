@@ -3,7 +3,7 @@ using Mars.Core.Exceptions;
 using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Utils;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Shared.Services;
 using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,7 +88,7 @@ public class NodesCli : CommandCli
             {
                 foreach (var execution in job.Executions.Where(s => s.Exception != null))
                 {
-                    Console.WriteLine($"{nodes[job.NodeId].Type} [{job.NodeId}]");
+                    Console.WriteLine($"{nodes[job.NodeId].TypeId} [{job.NodeId}]");
                     Console.WriteLine(execution.Exception?.Message);
                 }
             }

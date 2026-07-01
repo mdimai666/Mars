@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Implements.Test.Services;
 
 namespace Mars.Nodes.Implements.Test.Nodes;

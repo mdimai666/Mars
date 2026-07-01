@@ -17,6 +17,10 @@ public static class MainAppFrontShared
         services.AddAppFront(configuration, program);
         services.AddFluentUIComponents();
 
+        services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
+
+        if (!OperatingSystem.IsBrowser()) return;
+
         services.InstallHandlers();
 
         services.TryAddScoped<IAppMediaService, AppMediaService>();
@@ -24,8 +28,6 @@ public static class MainAppFrontShared
 
         BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.Affix).Assembly, true);
         BlazoredHtml.AddComponentsFromAssembly(typeof(FluentButton).Assembly, true);
-
-        services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
 
         if (OperatingSystem.IsBrowser())
         {

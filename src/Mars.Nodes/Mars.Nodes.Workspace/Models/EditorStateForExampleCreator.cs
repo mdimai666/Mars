@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Workspace.ActionManager.CopyBuffer;
 
 namespace Mars.Nodes.Workspace.Models;

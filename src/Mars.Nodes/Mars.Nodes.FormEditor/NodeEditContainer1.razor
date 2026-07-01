@@ -1,7 +1,7 @@
 @using AppFront.Shared.Components
+@using Mars.Nodes.Core.Nodes.Common
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Microsoft.JSInterop
 
 <d-node-edit-container class="NodeEditContainer1">
 
@@ -20,7 +20,7 @@
                 }
                 else
                 {
-                    <h3>@_node?.Type</h3>
+                    <h3>@_node?.TypeId</h3>
                 }
             </div>
 

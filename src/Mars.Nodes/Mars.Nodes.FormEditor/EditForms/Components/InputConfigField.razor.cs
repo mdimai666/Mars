@@ -1,5 +1,5 @@
 using Mars.Nodes.Core.Fields;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Front.Shared.Editor.Interfaces;
 using Microsoft.AspNetCore.Components;
 

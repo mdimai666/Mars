@@ -1,5 +1,3 @@
-using Mars.Nodes.Core.Nodes;
-
 namespace Mars.Nodes.Core.Models;
 
 public class NodesFlowSaveFile

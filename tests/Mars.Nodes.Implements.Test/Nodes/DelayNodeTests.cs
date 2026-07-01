@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Implements.Test.Services;
 using FluentAssertions;
+using Mars.Nodes.Core.Implements.Nodes.Functions;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
 

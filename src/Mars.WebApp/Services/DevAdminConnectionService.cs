@@ -8,23 +8,23 @@ namespace Mars.Services;
 
 internal class DevAdminConnectionService : IDevAdminConnectionService
 {
-    readonly IHubContext<ChatHub> hub;
+    readonly IHubContext<ChatHub> _hub;
     private readonly ModelInfoService _modelInfoService;
 
     public DevAdminConnectionService(IHubContext<ChatHub> hub, ModelInfoService modelInfoService)
     {
-        this.hub = hub;
+        _hub = hub;
         _modelInfoService = modelInfoService;
     }
 
     public Task ShowNotifyMessage(string message, string userId, MessageIntent? messageIntent = MessageIntent.Info)
     {
-        return hub.Clients.User(userId).SendAsync("ShowNotifyMessage", message, messageIntent);
+        return _hub.Clients.User(userId).SendAsync("ShowNotifyMessage", message, messageIntent);
     }
 
     public Task ShowNotifyMessageForAll(string message, MessageIntent? messageIntent = MessageIntent.Info)
     {
-        return hub.Clients.All.SendAsync("ShowNotifyMessage", message, messageIntent);
+        return _hub.Clients.All.SendAsync("ShowNotifyMessage", message, messageIntent);
     }
 
     public IReadOnlyCollection<PageContextInfo> GetPageContexts()

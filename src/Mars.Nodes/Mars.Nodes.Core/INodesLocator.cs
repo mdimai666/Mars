@@ -10,7 +10,8 @@ public interface INodesLocator
     IReadOnlyDictionary<string, NodeDictItem> Dict { get; }
     IReadOnlyCollection<Assembly> Assemblies { get; }
     void RegisterAssembly(Assembly assembly);
-    Type? GetTypeByFullName(string typeFullname);
+    Type? GetTypeByTypeId(string nodeTypeId);
+
     IReadOnlyCollection<Type> RegisteredNodes();
     JsonSerializerOptions CreateJsonSerializerOptions(bool writeIndented = false);
     IReadOnlyCollection<NodeExampleInfo> CreateExamplesList();
@@ -22,6 +23,7 @@ public record NodeDictItem
     public required Type NodeType;
     public required DisplayAttribute DisplayAttribute;
     public required FunctionApiDocumentAttribute? FunctionApiDocument;
+    public required Node DefaultInstance;
 }
 
 public record NodeExampleInfo

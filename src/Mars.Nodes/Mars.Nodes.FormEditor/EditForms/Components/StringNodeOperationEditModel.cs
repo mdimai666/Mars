@@ -1,5 +1,5 @@
 using Mars.Core.Extensions;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Core.Resources;
 using Mars.Nodes.Core.StringFunctions;
 

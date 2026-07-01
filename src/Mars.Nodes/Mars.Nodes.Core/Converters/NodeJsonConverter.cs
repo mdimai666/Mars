@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Common;
 
 namespace Mars.Nodes.Core.Converters;
 
@@ -22,20 +22,22 @@ public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<No
         using var doc = JsonDocument.ParseValue(ref reader);
         var jObj = doc.RootElement;
 
-        if (!jObj.TryGetProperty(nameof(Node.Type), out var typeProp) &&
-            !jObj.TryGetProperty("type", out typeProp))
+        if (!jObj.TryGetProperty(nameof(Node.TypeId), out var typeIdProp)
+            && !jObj.TryGetProperty("typeId", out typeIdProp)
+            && !jObj.TryGetProperty("Type", out typeIdProp))
         {
-            throw new JsonException("Property 'Type' is missing in Node JSON.");
+            //var ju = jObj.ToString();
+            throw new JsonException("Property 'TypeId' is missing in Node JSON.");
         }
 
-        var nodeType = typeProp.GetString();
-        if (string.IsNullOrWhiteSpace(nodeType))
-            throw new JsonException("Node.Type is null or empty.");
+        var nodeTypeId = typeIdProp.GetString();
+        if (string.IsNullOrWhiteSpace(nodeTypeId))
+            throw new JsonException("Node.TypeId is null or empty.");
 
-        var type = _nodesLocator.GetTypeByFullName(nodeType!);
+        var type = _nodesLocator.GetTypeByTypeId(nodeTypeId!);
         if (type is null)
         {
-            var basic = jObj.Deserialize<NodeBasicImplement>(options)!;
+            var basic = jObj.Deserialize<NodeBasicObj>(options)!;
             return new UnknownNode(basic, jObj.ToString() ?? "");
         }
         var model = (Node)jObj.Deserialize(type, options)!;
@@ -52,9 +54,8 @@ public class NodeJsonConverter : System.Text.Json.Serialization.JsonConverter<No
             doc.RootElement.WriteTo(writer);
             return;
         }
-        var fullName = node.GetType().FullName!;
-        var type = _nodesLocator.GetTypeByFullName(fullName)
-                        ?? throw new JsonException($"Node.Type '{fullName}' not found.");
+        var type = _nodesLocator.GetTypeByTypeId(node.TypeId)
+                        ?? throw new JsonException($"Node.TypeId '{node.TypeId}' not found.");
         JsonSerializer.Serialize(writer, node, type, options);
     }
 }

@@ -1,7 +1,8 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Shared;
@@ -86,7 +87,7 @@ internal class NodeTaskJob : IAsyncDisposable
         _runtime.OnNodeImplDone += _RNS_OnNodeImplDone;
 
         _logger?.LogInformation("🔷 Run (TaskId={TaskId}) ExecuteNode: {NodeName}({NodeType}/{NodeId}) [Parallel={Parallel}]",
-            TaskId, node.Node.DisplayName, node.Node.Type, node.Id, _maxDegreeOfParallelism);
+            TaskId, node.Node.DisplayName, node.Node.TypeId, node.Id, _maxDegreeOfParallelism);
 
         // Запускаем воркеры
         for (int i = 0; i < _maxDegreeOfParallelism; i++)
@@ -167,16 +168,33 @@ internal class NodeTaskJob : IAsyncDisposable
                 if (_cancellationTokenSource.IsCancellationRequested) return;
 
                 var nextNodes = GetNextWires(node.Id, output);
+
                 foreach (var wire in nextNodes)
                 {
                     var nextNode = _nodes[wire.NodeId];
                     if (nextNode.Node.Disabled) continue;
 
-                    nextNode.RNS = CreateContextForNode(nextNode.Id);
                     var resultCopy = e.Copy();
 
-                    await EnqueueExecutionAsync(resultCopy, nextNode, wire.PortIndex,
-                        isInject: false, sourceOutputPortIndex: output);
+                    if (nextNode.Node is LinkInNode linkInNode)
+                    {
+                        OnNodeExecute?.Invoke(nextNode.Id, NodeExecutionTrigger.CallChain);
+                        foreach (var linkOutNodeId in linkInNode.OutLinksIds)
+                        {
+                            var nextLinkOutNode = _nodes[linkOutNodeId];
+                            nextLinkOutNode.RNS = CreateContextForNode(nextLinkOutNode.Id);
+
+                            await EnqueueExecutionAsync(resultCopy, nextLinkOutNode, wire.PortIndex,
+                                isInject: false, sourceOutputPortIndex: output);
+                        }
+                    }
+                    else
+                    {
+                        nextNode.RNS = CreateContextForNode(nextNode.Id);
+
+                        await EnqueueExecutionAsync(resultCopy, nextNode, wire.PortIndex,
+                            isInject: false, sourceOutputPortIndex: output);
+                    }
                 }
             }
 

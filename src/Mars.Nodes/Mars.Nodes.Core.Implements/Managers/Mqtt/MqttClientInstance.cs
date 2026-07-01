@@ -1,6 +1,6 @@
 using Mars.Core.Extensions;
 using Mars.Core.Utils;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Network;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Protocol;

@@ -6,7 +6,7 @@ using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
-using Mars.Nodes.Core.Implements.Nodes;
+using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
 using Mars.Nodes.Host.CommandLine;
 using Mars.Nodes.Host.Factories;
@@ -27,6 +27,8 @@ public static class MainMarsNodes
 {
     public static IServiceCollection AddMarsNodes(this IServiceCollection services)
     {
+        services.AddMemoryCache();
+
         services.AddSingleton<INodeImplementFactory, NodeImplementFactory>();
 
         services.AddSingleton<INodeService, NodeService>();
@@ -67,14 +69,14 @@ public static class MainMarsNodes
         foreach (var def in InlineFunctionsUtilsMethodParser.ParseMethods(typeof(InlineFunctionsUtils)))
             nodeImplementFactory.RegisterInlineFunctionNode(def);
 
-        var templatorFeaturesLocator = app.Services.GetRequiredService<ITemplatorFeaturesLocator>();
-        templatorFeaturesLocator.Functions.Add(nameof(RegisterNodeTemplatorFunction.Node), RegisterNodeTemplatorFunction.Node!);
+        app.Services.GetService<ITemplatorFeaturesLocator>()
+            ?.Functions.Add(nameof(RegisterNodeTemplatorFunction.Node), RegisterNodeTemplatorFunction.Node!);
 
         var actionManager = app.Services.GetRequiredService<IActionManager>();
         var commandNodesActionProvider = app.Services.GetRequiredService<CommandNodesActionProvider>();
         actionManager.AddActionsProvider(commandNodesActionProvider);
 
-        app.Services.GetRequiredService<ICommandLineApi>().Register<NodesCli>();
+        app.Services.GetService<ICommandLineApi>()?.Register<NodesCli>();
 
         app.UseMiddleware<MarsNodesMiddleware>();
 

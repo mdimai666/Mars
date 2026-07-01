@@ -1,6 +1,6 @@
 using Mars.HttpSmartAuthFlow;
 using Mars.HttpSmartAuthFlow.Strategies;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Network;
 
 namespace Mars.Nodes.Core.Implements.Mapping;
 

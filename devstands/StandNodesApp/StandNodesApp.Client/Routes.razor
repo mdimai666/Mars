@@ -1,0 +1,18 @@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
+
+@if (OperatingSystem.IsBrowser())
+{
+    <AppFront.Shared.AppFrontSharedContainer />
+}
+@* <Mars.SemanticKernel.Front.Components.MarsAITools.AIToolsContainer /> *@
+
+<FluentToastProvider Position="ToastPosition.TopCenter" />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+<FluentMenuProvider />

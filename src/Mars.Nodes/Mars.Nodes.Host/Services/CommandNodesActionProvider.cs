@@ -1,7 +1,7 @@
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Connections;
 using Mars.Shared.Contracts.XActions;
 using Microsoft.Extensions.DependencyInjection;
 

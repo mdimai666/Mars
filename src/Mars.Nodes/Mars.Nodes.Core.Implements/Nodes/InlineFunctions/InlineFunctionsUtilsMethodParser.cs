@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Reflection;
 using Mars.Core.Extensions;
-using Mars.Nodes.Core.Nodes;
+using Mars.Nodes.Core.Nodes.Functions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
 

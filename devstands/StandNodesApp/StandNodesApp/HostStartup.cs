@@ -4,6 +4,7 @@ using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Tools;
+using Mars.TemplateEngine.Host;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using StandNodesApp.Mocks;
@@ -38,9 +39,11 @@ public static class HostStartup
         builder.Services.AddSingleton(builder.Services);
         builder.Services.TryAddSingleton<ModelInfoService>();
         builder.Services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
+
+        builder.Services.MarsAddTemplateEngines();
     }
 
-    public static void HostConfigure(this IApplicationBuilder app)
+    public static void HostConfigure(this WebApplication app)
     {
         //app.UseStaticFiles();
     }

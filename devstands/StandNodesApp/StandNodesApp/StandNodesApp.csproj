@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
         <ProjectReference Include="..\..\..\src\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
         <ProjectReference Include="..\..\..\src\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
         <ProjectReference Include="..\StandNodesApp.Client\StandNodesApp.Client.csproj" />

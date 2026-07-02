@@ -748,9 +748,14 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         EnableHotkeys(true);
     }
 
-    public void CallNodeInjectedEffect(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
+    public void TouchNodeInjectedEffect(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
     {
-        js.TouchFlashAnimationBySelector($"#node-{nodeId} .red-ui-flow-node__animation_backdrop");
+        js.TouchFlashAnimationBySelector($"#node-{nodeId} .red-ui-flow-node__body__animation_backdrop");
+    }
+
+    public void TouchNodeHighlightEffect(string nodeId)
+    {
+        js.TouchHighlightBySelector($"#node-{nodeId}", "red-ui-flow-node--highlight", 1000);
     }
 
 }

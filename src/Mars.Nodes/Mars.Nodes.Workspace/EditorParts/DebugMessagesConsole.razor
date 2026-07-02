@@ -1,3 +1,4 @@
+@using Mars.Core.Extensions
 @using Mars.Nodes.Core
 <section class="DebugMessagesConsole h-100" @onclick="OnClick" @onclick:stopPropagation="true" style="">
     <div class="bg-light border-bottom p-1 d-flex align-items-center" style="height: 40px;">
@@ -27,6 +28,7 @@
                             data-id=@m.Id
                             data-node-id=@m.NodeId
                             data-level=@m.Level
+                            @onmouseenter="@(() => OnMouseEnterMessage(m))"
                             @onclick=@(() => _editor.OnClickConsoleDebugMessage(m))
                             @ondblclick=@(() => _editor.OnDblClickConsoleDebugMessage(m))>
 
@@ -64,6 +66,12 @@
     public void CallStateHasChanged()
     {
         StateHasChanged();
+    }
+
+    void OnMouseEnterMessage(DebugMessage message)
+    {
+        if (message.NodeId.IsNotNullOrEmpty())
+            _editor.TouchNodeHighlightEffect(message.NodeId!);
     }
 }
 

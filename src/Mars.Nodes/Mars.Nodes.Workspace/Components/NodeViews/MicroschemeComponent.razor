@@ -1,4 +1,4 @@
-<g id="node-@node.Id" class="user-select-none @(node.selected ? "red-ui-mic-node-selected" : "")"
+<g id="node-@node.Id" class="user-select-none @(node.selected ? "red-ui-mic-node--selected" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture)) scale(0.9)"
    data-node-type-id="@node.TypeId"
    @onclick:stopPropagation=true
@@ -7,7 +7,7 @@
    @oncontextmenu:preventDefault="true">
     <g id="Layer_1-2" data-name="Layer 1">
         @*body*@
-        <g class="red-ui-flow-node"
+        <g class="red-ui-flow-node__body"
            @onmousedown=OnMouseDownMethod
            @onmousedown:stopPropagation=true
            @onmouseup=OnMouseUpMethod

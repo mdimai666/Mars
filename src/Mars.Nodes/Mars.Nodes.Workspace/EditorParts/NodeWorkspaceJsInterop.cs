@@ -105,6 +105,12 @@ public class NodeWorkspaceJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("touchFlashAnimationBySelector", elementSelector);
     }
 
+    public async void TouchHighlightBySelector(string elementSelector, string classString, int durationMilliss)
+    {
+        var module = await _moduleTask.Value;
+        await module.InvokeVoidAsync("touchHighlightBySelector", elementSelector, classString, durationMilliss);
+    }
+
     public async void ScrollToCoordinates(ElementReference element, float x, float y)
     {
         var module = await _moduleTask.Value;

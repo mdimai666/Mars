@@ -205,3 +205,19 @@ export function getViewportMetrics() {
         orientationAngle: orientation.angle !== undefined ? orientation.angle : (window.orientation || 0)
     };
 }
+
+export function touchHighlightBySelector(elementSelector, classString, durationMillis) {
+    const elements = document.querySelectorAll(elementSelector);
+    if (elements.length === 0) {
+        console.warn(`No elements found: ${elementSelector}`);
+        return;
+    }
+
+    elements.forEach(element => {
+        element.classList.add(classString);
+
+        setTimeout(() => {
+            element.classList.remove(classString);
+        }, durationMillis);
+    });
+}

@@ -1,6 +1,7 @@
 @using Mars.Core.Extensions
-<g id="node-@node.Id" class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node-selected" : "") @(node.Disabled ? "red-ui-flow-node-disabled" : "")"
-   transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))" 
+<g id="node-@node.Id" class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow--node-selected" : "") @(node.Disabled ? "red-ui-flow-node--disabled" : "")"
+   transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))"
+   data-node-type-id="@node.TypeId"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenu"
@@ -36,25 +37,23 @@
             <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
         </filter>
 
-        <rect class="red-ui-flow-node--select-backdrop"
+        <rect class="red-ui-flow-node__body--select-backdrop"
               y="-3"
               x="-4"
               width="@(bodyRectWidth+9f)"
-              rx="12px"
-              ry="12px"
               fill="#64b1d9"
               filter="url(#dropshadow-select-backdrop)"
               fill-opacity="0.5"
               height="@(bodyRectHeight+11)"></rect>
 
-        <rect class="red-ui-flow-node-backdrop"
+        <rect class="red-ui-flow-node__body-backdrop"
               y="4"
               x="1"
               fill="@node.Color"
               width="@(bodyRectWidth-1f)"
               height="@bodyRectHeight"></rect>
 
-        <rect class="red-ui-flow-node"
+        <rect class="red-ui-flow-node__body"
               @onmousedown=OnMouseDownMethod
               @onmousedown:stopPropagation=true
               @onmouseup=OnMouseUpMethod
@@ -95,22 +94,8 @@
         <path d="M 30 1 l 0 @(bodyRectHeight - 2)"
               class="red-ui-flow-node-icon-shade-border"></path>
     </g>
-    <!-- right icon -->
-    <!-- <g class="red-ui-flow-node-icon-group red-ui-flow-node-icon-group-right" x="0" y="0"
-                    transform="translate(110,0)" style="pointer-events: none;">
-                    <rect x="0" y="0" class="red-ui-flow-node-icon-shade" width="30" height="30"></rect>
-                    <image xlink:href="/img/function.svg" class="red-ui-flow-node-icon" x="0" width="30" height="30"
-                        y="0" style=""></image>
-                    <path d="M 0 1 l 0 28" class="red-ui-flow-node-icon-shade-border"></path>
-                </g> -->
-    <!--  -->
     <g class="red-ui-flow-node-label 1node_label_italic"
        transform="translate(38,6)">
-        @* <text class="red-ui-flow-node-label-text"
-              x="0"
-              y="@(((bodyRectHeight - 30) / 2))">
-            @node.Text.TextEllipsis(MaxTextLength)
-        </text> *@
         <foreignObject width="@(bodyRectWidth - 45)" height="@(bodyRectHeight - 10)">
             <p class="red-ui-flow-node-label-text" xmlns="http://www.w3.org/1999/xhtml">@node.Text.TextEllipsis(MaxTextLength)</p>
         </foreignObject>

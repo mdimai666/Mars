@@ -82,7 +82,7 @@ public partial class NodeRedPageContent
 
     void OnNodeExecuted(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
     {
-        _editor1?.CallNodeInjectedEffect(taskId, nodeId, trigger);
+        _editor1?.TouchNodeInjectedEffect(taskId, nodeId, trigger);
     }
 
     async void Load()

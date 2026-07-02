@@ -24,126 +24,154 @@
 
 /* NODES */
 .red-ui-flow-node {
-    stroke: #999;
-    cursor: move;
-    stroke-width: 0;
-    rx: 7px;
-    ry: 7px;
-}
 
-.red-ui-flow-node-backdrop {
-    -webkit-filter: brightness(0.85) url(#dropshadow);
-    -moz-filter: brightness(0.85) url(#dropshadow);
-    -ms-filter: brightness(0.85) url(#dropshadow);
-    filter: brightness(0.85) url(#dropshadow);
-    rx: 7px;
-    ry: 7px;
-}
-
-.red-ui-flow-node-disabled {
-    opacity: 0.5;
-}
-
-    .red-ui-flow-node-disabled .red-ui-flow-node {
-        stroke-dasharray: 10 5;
-        stroke-width: 2;
+    &.red-ui-flow-node--disabled {
+        opacity: 0.5;
     }
 
-    .red-ui-flow-node-disabled .red-ui-flow-node-backdrop {
+        &.red-ui-flow-node--disabled .red-ui-flow-node {
+            /*stroke-dasharray: 10 5;*/
+            stroke-width: 2;
+        }
+
+        &.red-ui-flow-node--disabled .red-ui-flow-node-backdrop {
+            display: none;
+        }
+
+    .red-ui-flow-node__body {
+        stroke: #999;
+        cursor: move;
+        stroke-width: 0;
+        rx: 7px;
+        ry: 7px;
+    }
+
+    .red-ui-flow-node__body-backdrop {
+        -webkit-filter: brightness(0.85) url(#dropshadow);
+        -moz-filter: brightness(0.85) url(#dropshadow);
+        -ms-filter: brightness(0.85) url(#dropshadow);
+        filter: brightness(0.85) url(#dropshadow);
+        rx: 7px;
+        ry: 7px;
+    }
+
+    &.red-ui-flow-node--highlight {
+        .red-ui-flow-node__body {
+            stroke-width: 2;
+            stroke: #ff7f0e;
+            stroke-dasharray: 10 5;
+        }
+
+        .red-ui-flow-node__body-backdrop {
+            fill: #ff7f0e;
+        }
+    }
+
+    &[data-node-type-id="core.CommentNode" i] {
+        .red-ui-flow-node__body {
+            rx: 2px;
+            ry: 2px;
+        }
+
+        .red-ui-flow-node__body-backdrop {
+            rx: 2px;
+            ry: 2px;
+            /*fill: red !important;*/
+        }
+    }
+
+    .red-ui-flow-node__body__animation_backdrop {
+        transform-origin: center;
+        transform-box: fill-box;
+        rx: 7px;
+        ry: 7px;
+    }
+
+    .red-ui-flow-port {
+        stroke: #999;
+        stroke-width: 1;
+        fill: #d9d9d9;
+        cursor: crosshair;
+    }
+
+    .red-ui-flow-port-hovered {
+        stroke: #ff7f0e !important;
+        fill: #ff7f0e !important;
+    }
+
+    .red-ui-flow-node-error {
+        fill: #f60;
+        stroke: #911002;
+        stroke-width: 1px;
+        cursor: default;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    .red-ui-flow-node-changed {
+        fill: #00bcff;
+        stroke: #1c668c;
+        cursor: default;
+        stroke-width: 1px;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    .red-ui-flow-node-label .red-ui-flow-node-label-text {
+        dominant-baseline: middle;
+    }
+
+    .node_label_italic,
+    .red-ui-flow-node-label-italic {
+        font-style: italic;
+    }
+
+    .red-ui-flow-node-label {
+        stroke-width: 0;
+        fill: #333;
+        font-size: 14px;
+        pointer-events: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        /*-khtml-user-select: none;*/
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    .red-ui-flow-node-icon-shade {
+        stroke: none;
+        fill: #000;
+        fill-opacity: .05;
+    }
+
+    .red-ui-flow-node-button {
+        stroke: #999;
+    }
+
+    .red-ui-flow-node-button-background {
+        fill: #eee;
+        stroke-width: 0.7px;
+    }
+
+    .red-ui-flow-node-button-button {
+        cursor: pointer;
+    }
+    /*g.red-ui-flow-node--selected .red-ui-flow-node,*/
+    &.red-ui-flow-node--selected .red-ui-flow-subflow-port {
+        stroke-width: 2;
+        stroke: #2f71fc !important;
+        /*filter: url(#dropshadow-select);*/
+    }
+
+    .red-ui-flow-node__body--select-backdrop {
         display: none;
     }
 
-.red-ui-flow-port {
-    stroke: #999;
-    stroke-width: 1;
-    fill: #d9d9d9;
-    cursor: crosshair;
+    &.red-ui-flow-node--selected .red-ui-flow-node__body--select-backdrop {
+        display: block;
+    }
 }
-
-.red-ui-flow-port-hovered {
-    stroke: #ff7f0e !important;
-    fill: #ff7f0e !important;
-}
-
-.red-ui-flow-node-error {
-    fill: #f60;
-    stroke: #911002;
-    stroke-width: 1px;
-    cursor: default;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-}
-
-.red-ui-flow-node-changed {
-    fill: #00bcff;
-    stroke: #1c668c;
-    cursor: default;
-    stroke-width: 1px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-}
-
-.red-ui-editor .hide,
-.red-ui-editor-dialog .hide,
-.red-ui-menu .hide,
-.red-ui-popover .hide,
-.red-ui-typedInput-options .hide,
-.red-ui-icon-picker .hide {
-    display: none;
-}
-
-.red-ui-flow-node-label .red-ui-flow-node-label-text {
-    dominant-baseline: middle;
-}
-
-.node_label_italic,
-.red-ui-flow-node-label-italic {
-    font-style: italic;
-}
-
-.red-ui-flow-node-label {
-    stroke-width: 0;
-    fill: #333;
-    font-size: 14px;
-    pointer-events: none;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    /*-khtml-user-select: none;*/
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.red-ui-flow-node-icon-shade {
-    stroke: none;
-    fill: #000;
-    fill-opacity: .05;
-}
-
-.red-ui-flow-node-button-background {
-    fill: #eee;
-    stroke-width: 0.7;
-}
-
-.red-ui-flow-node-button-button {
-    cursor: pointer;
-}
-
-/*g.red-ui-flow-node-selected .red-ui-flow-node,*/
-g.red-ui-flow-node-selected .red-ui-flow-subflow-port {
-    stroke-width: 2;
-    stroke: #2f71fc !important;
-    /*filter: url(#dropshadow-select);*/
-}
-
-.red-ui-flow-node--select-backdrop {
-    display: none;
-}
-
-g.red-ui-flow-node-selected .red-ui-flow-node--select-backdrop {
-    display: block;
-}
-
 /* line */
 
 .red-ui-flow-link-background {
@@ -169,23 +197,16 @@ g.red-ui-flow-node-selected .red-ui-flow-node--select-backdrop {
     fill: none;
     pointer-events: none;
 }
-
 /* LASSO */
 g.red-ui-flow-link-selected path.red-ui-flow-link-line {
     stroke: #ff7f0e;
 }
 
-.red-ui-flow-node-disabled.red-ui-flow-link-line {
+.red-ui-flow-node--disabled.red-ui-flow-link-line {
     stroke-dasharray: 10,8 !important;
     stroke-width: 2 !important;
     stroke: #ccc;
 }
-
-/* utils */
-.red-ui-editor .hide, .red-ui-editor-dialog .hide, .red-ui-menu .hide, .red-ui-popover .hide, .red-ui-typedInput-options .hide, .red-ui-icon-picker .hide {
-    display: none;
-}
-
 /* status */
 
 .red-ui-flow-node-status-dot-grey {
@@ -209,7 +230,6 @@ g.red-ui-flow-link-selected path.red-ui-flow-link-line {
     fill: #fff;
     stroke: #d3d3d3;
 }
-
 /*lasso*/
 .nr-ui-view-lasso {
     stroke-width: 1px;
@@ -217,7 +237,6 @@ g.red-ui-flow-link-selected path.red-ui-flow-link-line {
     fill: rgba(20,125,255,.1);
     stroke-dasharray: 10 5;
 }
-
 /*MICROSCHEME*/
 .micr-cls-1 {
     fill: #040000;
@@ -271,7 +290,7 @@ g.red-ui-flow-link-selected path.red-ui-flow-link-line {
     fill: #ecedef;
 }
 
-g.red-ui-mic-node-selected .red-ui-flow-node .micr-backplate {
+g.red-ui-mic-node--selected .red-ui-flow-node .micr-backplate {
     stroke-width: 4;
     stroke: #ff7f0e !important;
 }
@@ -300,17 +319,9 @@ g.red-ui-mic-node-selected .red-ui-flow-node .micr-backplate {
     background: var(--box-background);
 }
 
-.red-ui-flow-node__animation_backdrop {
-    transform-origin: center;
-    transform-box: fill-box;
-    rx: 7px;
-    ry: 7px;
-}
-
 andypf-json-viewer {
     --ff-code: 'SF Mono', 'Monaco', 'Consolas', monospace;
 }
-
 /*link nodes*/
 .red-ui-flow-link-line {
     stroke: var(--red-ui-link-color);

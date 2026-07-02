@@ -71,6 +71,8 @@
         .red-ui-flow-node__body {
             rx: 2px;
             ry: 2px;
+            stroke-width: 1;
+            stroke: #999;
         }
 
         .red-ui-flow-node__body-backdrop {
@@ -85,6 +87,8 @@
         transform-box: fill-box;
         rx: 7px;
         ry: 7px;
+        /*защищает соседние элементы внутри ноды от графического перерендера (Repaint).*/
+        will-change: transform, opacity;
     }
 
     .red-ui-flow-port {
@@ -147,15 +151,35 @@
 
     .red-ui-flow-node-button {
         stroke: #999;
-    }
-
-    .red-ui-flow-node-button-background {
-        fill: #eee;
-        stroke-width: 0.7px;
-    }
-
-    .red-ui-flow-node-button-button {
         cursor: pointer;
+        /*transition: transform 0.1s ease;*/
+        transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        will-change: transform;
+
+        .red-ui-flow-node-button__backdrop {
+            fill: rgb(181 175 175);
+            stroke: none;
+        }
+
+        .red-ui-flow-node-button-background {
+            fill: #eee;
+            stroke-width: 0.7px;
+        }
+
+        .red-ui-flow-node-button-button {
+            /*cursor: pointer;*/
+        }
+
+        &:hover {
+            /*transform: scale(1, 1.05) translate(0, -1px);*/
+            /*transform: translate(0px, -0.5px);*/
+        }
+
+        &:active {
+            /*transform: scale(1, 0.95) translate(0, 2px);*/
+            transform: translate(0px, 2px);
+            transition: transform 0s;
+        }
     }
     /*g.red-ui-flow-node--selected .red-ui-flow-node,*/
     &.red-ui-flow-node--selected .red-ui-flow-subflow-port {
@@ -166,6 +190,7 @@
 
     .red-ui-flow-node__body--select-backdrop {
         display: none;
+        /*filter: url(#dropshadow-select-backdrop);*/
     }
 
     &.red-ui-flow-node--selected .red-ui-flow-node__body--select-backdrop {

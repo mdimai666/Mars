@@ -29,40 +29,12 @@
     }
     <!-- body -->
     <g>
-        <filter id="dropshadow" height="140%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="3" /> <!-- stdDeviation is how much to blur -->
-            <feOffset dx="2" dy="2" result="offsetblur" /> <!-- how much to offset -->
-            <feComponentTransfer>
-                <feFuncA type="linear" slope="0.2" /> <!-- slope is the opacity of the shadow -->
-            </feComponentTransfer>
-            <feMerge>
-                <feMergeNode /> <!-- this contains the offset blurred image -->
-                <feMergeNode in="SourceGraphic" /> <!-- this contains the element that the filter is applied to -->
-            </feMerge>
-        </filter>
-
-        <filter id="dropshadow-select" height="140%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="3" /> <!-- stdDeviation is how much to blur -->
-            <feOffset dx="-1" dy="2" result="offsetblur" /> <!-- how much to offset -->
-            <feComponentTransfer>
-                <feFuncA type="linear" slope="0.9" /> <!-- slope is the opacity of the shadow -->
-            </feComponentTransfer>
-            <feMerge>
-                <feMergeNode /> <!-- this contains the offset blurred image -->
-                <feMergeNode in="SourceGraphic" /> <!-- this contains the element that the filter is applied to -->
-            </feMerge>
-        </filter>
-
         <rect class="red-ui-flow-node__body__animation_backdrop"
               y="4"
               x="1"
               fill="@node.Color"
               width="@(bodyRectWidth - 1f)"
               height="@bodyRectHeight"></rect>
-
-        <filter id="dropshadow-select-backdrop" height="140%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
-        </filter>
 
         <rect class="red-ui-flow-node__body--select-backdrop"
               y="-3"
@@ -71,7 +43,6 @@
               rx="12px"
               ry="12px"
               fill="#64b1d9"
-              filter="url(#dropshadow-select-backdrop)"
               fill-opacity="0.5"
               height="@(bodyRectHeight + 11)"></rect>
 

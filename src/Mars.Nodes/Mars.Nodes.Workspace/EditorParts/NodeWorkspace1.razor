@@ -23,6 +23,34 @@
                        width="20"
                        height="20" />
             </pattern>
+
+            <filter id="dropshadow" height="140%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                <feOffset dx="2" dy="2" result="offsetblur" />
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.2" />
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+
+            <filter id="dropshadow-select" height="140%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                <feOffset dx="-1" dy="2" result="offsetblur" />
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.9" />
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+
+            <filter id="dropshadow-select-backdrop" height="140%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+            </filter>
         </defs>
 
         <g class="red-ui-workspace-chart-event-layer" transform="scale(1)">

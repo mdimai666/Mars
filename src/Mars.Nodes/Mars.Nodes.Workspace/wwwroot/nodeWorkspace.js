@@ -123,7 +123,8 @@ export function unobserveScroll(element) {
 
 export function touchFlashAnimation(element) {
     if (!element) return;
-    element.animate([
+
+    const animation = element.animate([
         { transform: 'scale(1)', opacity: 1 },
         { transform: 'scale(1.5)', opacity: 0.3 },
         { transform: 'scale(2)', opacity: 0 }

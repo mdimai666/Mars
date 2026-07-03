@@ -117,14 +117,21 @@
                                             @if (node is MicroschemeNode)
                                             {
                                                 <MicroschemeComponent Node="@node"
-                                                                      OnMouseDown=@(e => OnMouseDownPaletteNode(e, node))
-                                                                      OnContextMenu="@(e=>OnPaletteNodeContextMenu(new(){ MouseEvent = e, Node = node }))" />
+                                                                      OnMouseDown=OnMouseDownPaletteNode
+                                                                      OnContextMenu=OnPaletteNodeContextMenu />
+                                            }
+                                            else if (node is CommentNode commentNode)
+                                            {
+                                                <CommentNodeComponent Node="@commentNode"
+                                                                      OnMouseDown=OnMouseDownPaletteNode
+                                                                      OnContextMenu=OnPaletteNodeContextMenu
+                                                                      FixedWidth="120" />
                                             }
                                             else
                                             {
                                                 <NodeComponent Node="@node"
-                                                               OnMouseDown=@(e => OnMouseDownPaletteNode(e, node))
-                                                               OnContextMenu="@(e=>OnPaletteNodeContextMenu(new(){ MouseEvent = e, Node = node }))"
+                                                               OnMouseDown=OnMouseDownPaletteNode
+                                                               OnContextMenu=OnPaletteNodeContextMenu
                                                                ShowLabelInsteadDisplayName="true"
                                                                FixedWidth="120" />
                                             }
@@ -207,7 +214,7 @@
                                         OnWorkspaceDblClick="OnWorkspaceDblClick">
                             <QuickNodeAddMenu Palette="Palette"
                                               @ref=quickNodeAddMenu
-                                              OnSelectNode="@(e=>CreateNewNodeFromPalette(e.MouseEventArgs, e.Node))"
+                                              OnSelectNode="QuickNodeAddMenuOnSelectNode"
                                               OnNodeContextMenu="OnPaletteNodeContextMenu" />
                             <FluentMenu UseMenuService="!true"
                                         @ref="_workspaceContextMenu"

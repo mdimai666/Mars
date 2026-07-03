@@ -73,9 +73,9 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
     [Parameter] public EventCallback<string> OnInject { get; set; }
 
-    [Parameter] public EventCallback<NodeClickEventArgs> OnClickNode { get; set; }
-    [Parameter] public EventCallback<NodeClickEventArgs> OnDblClickNode { get; set; }
-    [Parameter] public EventCallback<NodeClickEventArgs> OnNodeContextMenu { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnClickNode { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnDblClickNode { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnNodeContextMenu { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceClick { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnWorkspaceDblClick { get; set; }
     [Parameter] public EventCallback<SelWireEventArgs> OnWireContextMenu { get; set; }
@@ -245,8 +245,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         lasso.drag = true;
     }
 
-    void onNodeMouseDown(MouseEventArgs e, Node node)
+    void onNodeMouseDown(NodeComponentMouseEventArgs @event)
     {
+        var e = @event.MouseEvent;
+        var node = @event.Node;
         _logger.LogTrace("onNodeMouseDown");
 
         bool isCtrlPress = e.CtrlKey;
@@ -275,8 +277,11 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         _nodeEditor?.SetSelectContext(typeof(Node));
     }
 
-    void onNodeMouseUp(MouseEventArgs e, Node node)
+    void onNodeMouseUp(NodeComponentMouseEventArgs @event)
     {
+        var e = @event.MouseEvent;
+        var node = @event.Node;
+
         _logger.LogTrace("onNodeMouseUp");
 
         if (new_wire is not null)
@@ -294,11 +299,10 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         onMouseUp(e);
     }
 
-    void OnNodeContextMenuEvent(MouseEventArgs e, Node node)
+    void OnNodeContextMenuEvent(NodeComponentMouseEventArgs e)
     {
-        _logger.LogTrace($"OnNodeContextMenu={e.Button}");
-        var a = new NodeClickEventArgs { MouseEvent = e, Node = node };
-        OnNodeContextMenu.InvokeAsync(a);
+        _logger.LogTrace($"OnNodeContextMenu={e.MouseEvent.Button}");
+        OnNodeContextMenu.InvokeAsync(e);
     }
 
     void OnWireContextMenuEvent(MouseEventArgs e, Wire wire)
@@ -330,6 +334,8 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     }
     void wire_StartNewEnd(NodeWirePointEventArgs arg)
     {
+        if (new_wire == null) return;
+
         _logger.LogTrace("wire_StartNewEnd");
 
         var e = arg.MouseEvent;
@@ -524,16 +530,14 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
         StartDragNodes([instance], startMoveUnderCursor: true, offsetX: (float)e.OffsetX - 8, offsetY: (float)e.OffsetY);
     }
 
-    void onClickNodeEvent(MouseEventArgs e, Node node)
+    void onClickNodeEvent(NodeComponentMouseEventArgs e)
     {
-        var a = new NodeClickEventArgs { MouseEvent = e, Node = node };
-        OnClickNode.InvokeAsync(a);
+        OnClickNode.InvokeAsync(e);
     }
 
-    void onDblClickNodeEvent(MouseEventArgs e, Node node)
+    void onDblClickNodeEvent(NodeComponentMouseEventArgs e)
     {
-        var a = new NodeClickEventArgs { MouseEvent = e, Node = node };
-        OnDblClickNode.InvokeAsync(a);
+        OnDblClickNode.InvokeAsync(e);
     }
 
     void SelectAllNodesInFlow(Node node)

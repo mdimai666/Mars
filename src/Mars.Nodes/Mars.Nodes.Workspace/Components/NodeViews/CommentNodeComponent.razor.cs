@@ -1,4 +1,5 @@
 using Mars.Nodes.Core.Nodes.Common;
+using Mars.Nodes.Workspace.EditorParts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -20,14 +21,14 @@ public partial class CommentNodeComponent
     //public float bodyRectWidth => 120;
     public float bodyRectWidth => FixedWidth ?? CalcBodyWidth(node);
 
-    [Parameter] public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
-    [Parameter] public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnMouseDown { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnMouseUp { get; set; }
 
-    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
-    [Parameter] public EventCallback<MouseEventArgs> OnDblClick { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnClick { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnDblClick { get; set; }
 
     [Parameter] public float? FixedWidth { get; set; }
-    [Parameter] public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnContextMenu { get; set; }
 
     string IconUrl
     {
@@ -44,23 +45,33 @@ public partial class CommentNodeComponent
 
     void OnMouseDownMethod(MouseEventArgs e)
     {
-        OnMouseDown.InvokeAsync(e);
+        var a = new NodeComponentMouseEventArgs(e, node);
+        OnMouseDown.InvokeAsync(a);
     }
     void OnMouseUpMethod(MouseEventArgs e)
     {
         //OnInputWirePointUp(e);
         //OnOutputWirePointUp(e, 0);
-        OnMouseUp.InvokeAsync(e);
+        var a = new NodeComponentMouseEventArgs(e, node);
+        OnMouseUp.InvokeAsync(a);
     }
 
     // Simple events ============================
     void OnClickEvent(MouseEventArgs e)
     {
-        OnClick.InvokeAsync(e);
+        var a = new NodeComponentMouseEventArgs(e, node);
+        OnClick.InvokeAsync(a);
     }
     void OnDblClickEvent(MouseEventArgs e)
     {
-        OnDblClick.InvokeAsync(e);
+        var a = new NodeComponentMouseEventArgs(e, node);
+        OnDblClick.InvokeAsync(a);
+    }
+
+    void OnContextMenuEvent(MouseEventArgs e)
+    {
+        var a = new NodeComponentMouseEventArgs(e, node);
+        OnContextMenu.InvokeAsync(a);
     }
 
     public static float CalcBodyWidth(CommentNode node) => Math.Min(360, Math.Max(120, node.Text.Length * 9 + 40));

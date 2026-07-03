@@ -1,5 +1,6 @@
 @using Mars.Nodes.Core
 @using Mars.Nodes.Workspace.Components.NodeViews
+@using Mars.Nodes.Workspace.EditorParts
 @using Mars.Nodes.Workspace.Models
 @using Microsoft.FluentUI.AspNetCore.Components
 
@@ -23,8 +24,8 @@
                     <li class="list-group-item px-1 py-0" :key="'pnode' + node.id">
                         <svg width="190" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
                             <NodeComponent Node="@f.Node"
-                                           OnMouseDown=@(e => SelectNode(e, f.Node))
-                                           OnContextMenu="@(e=>OnNodeContextMenu.InvokeAsync(new(){ MouseEvent = e, Node = f.Node }))"
+                                           OnMouseDown=@(e => SelectNode(e.MouseEvent, f.Node))
+                                           OnContextMenu="OnNodeContextMenu"
                                            ShowLabelInsteadDisplayName="true"
                                            FixedWidth="150" />
                         </svg>
@@ -42,7 +43,7 @@
     [Parameter] public IEnumerable<PaletteNode> Palette { get; set; } = default!;
 
     [Parameter] public EventCallback<SelectNodeEvent> OnSelectNode { get; set; }
-    [Parameter] public EventCallback<NodeClickEventArgs> OnNodeContextMenu { get; set; }
+    [Parameter] public EventCallback<NodeComponentMouseEventArgs> OnNodeContextMenu { get; set; }
 
     FluentSearch inputSearch = default!;
 

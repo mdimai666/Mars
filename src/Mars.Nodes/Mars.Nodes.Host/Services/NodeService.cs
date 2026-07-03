@@ -269,6 +269,18 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
 
     public async Task<Guid> InjectAsync(IServiceProvider serviceProvider, string nodeId, NodeMsg? msg = null, bool throwOnError = false)
     {
+        if (!BaseNodes.TryGetValue(nodeId, out var node))
+        {
+            DebugMsg(nodeId, DebugMessage.NodeErrorMessage(nodeId, $"node '{nodeId}' not found"));
+            return Guid.Empty;
+        }
+
+        if (node.Disabled)
+        {
+            DebugMsg(nodeId, DebugMessage.NodeErrorMessage(nodeId, "Disabled node can't be inject"));
+            return Guid.Empty;
+        }
+
         var requestUserInfo = serviceProvider.GetRequiredService<IRequestContext>().ToRequestUserInfo();
         msg ??= new();
         msg.Add(requestUserInfo);

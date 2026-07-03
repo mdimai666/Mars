@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.HotKeys2;
+using static Mars.Nodes.Workspace.Components.QuickNodeAddMenu;
 
 namespace Mars.Nodes.Workspace;
 
@@ -217,17 +218,24 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         return node;
     }
 
-    void OnMouseDownPaletteNode(MouseEventArgs e, Node paletteNode)
+    void OnMouseDownPaletteNode(NodeComponentMouseEventArgs e)
     {
-        if (e.Button != (long)MouseButton.Left) return;
+        if (e.MouseEvent.Button != (long)MouseButton.Left) return;
 
         if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
 
-        CreateNewNodeFromPalette(e, paletteNode);
+        CreateNewNodeFromPalette(e);
     }
 
-    void CreateNewNodeFromPalette(MouseEventArgs e, Node paletteNode)
+    void QuickNodeAddMenuOnSelectNode(SelectNodeEvent e)
     {
+        CreateNewNodeFromPalette(new(e.MouseEventArgs, e.Node));
+    }
+
+    void CreateNewNodeFromPalette(NodeComponentMouseEventArgs e)
+    {
+        var paletteNode = e.Node;
+
         var instance = paletteNode.Copy(_jsonSerializerOptions);
         //Node instance = (Node)Activator.CreateInstance(paletteNode.GetType())!;
         instance.Id = Guid.NewGuid().ToString();
@@ -238,7 +246,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         AllNodes.Add(instance);
         CalcFlowNodes();
-        _nodeWorkspace1?.OnClickPaletteNewNode(e, paletteNode, instance);
+        _nodeWorkspace1?.OnClickPaletteNewNode(e.MouseEvent, paletteNode, instance);
     }
 
     ConfigNode CreateConfigNodeFromType(Type nodeType)
@@ -288,13 +296,13 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         OnDeploy.InvokeAsync(AllNodes.Values);
     }
 
-    void OnClickNode(NodeClickEventArgs e)
+    void OnClickNode(NodeComponentMouseEventArgs e)
     {
         if (_showWorkspaceContextMenu) _showWorkspaceContextMenu = false;
         if (_showPaletteNodeContextMenu) _showPaletteNodeContextMenu = false;
     }
 
-    void OnDblClickNode(NodeClickEventArgs e)
+    void OnDblClickNode(NodeComponentMouseEventArgs e)
     {
         StartEditNode(e.Node);
     }
@@ -638,7 +646,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         });
     }
 
-    Task OnNodeContextMenu(NodeClickEventArgs e)
+    Task OnNodeContextMenu(NodeComponentMouseEventArgs e)
     {
         PrepareNodeExampleListForContextMenu(e.Node.GetType());
         return _workspaceContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,
@@ -661,7 +669,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
         else throw new NotImplementedException();
     }
 
-    Task OnPaletteNodeContextMenu(NodeClickEventArgs e)
+    Task OnPaletteNodeContextMenu(NodeComponentMouseEventArgs e)
     {
         PrepareNodeExampleListForContextMenu(e.Node.GetType());
         return _paletteNodeContextMenu.OpenAsync(_nodeWorkspace1.Width, _nodeWorkspace1.Height,

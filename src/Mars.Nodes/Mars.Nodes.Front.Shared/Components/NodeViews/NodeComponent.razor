@@ -92,9 +92,15 @@
     <!--  -->
     <g class="red-ui-flow-node-label 1node_label_italic"
        transform="translate(38,6)">
+        <defs>
+            <clipPath id="node-@Node.Id-text-clip">
+                <rect x="0" y="0" width="@(_bodyRectWidth - 38 - 10)" height="@_bodyRectHeight" />
+            </clipPath>
+        </defs>
         <text class="red-ui-flow-node-label-text"
               x="0"
-              y="11">
+              y="11"
+              clip-path="url(#node-@Node.Id-text-clip)">
             @DisplayTitle
         </text>
     </g>

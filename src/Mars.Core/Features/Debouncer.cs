@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 public class Debouncer
 {
     private List<CancellationTokenSource> StepperCancelTokens = [];
@@ -31,6 +33,7 @@ public class Debouncer
         });
     }
 
+    [DebuggerStepThrough]
     private void CancelAllStepperTokens()
     {
         try

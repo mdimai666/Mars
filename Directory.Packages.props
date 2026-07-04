@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <MarsAppVersion>0.7.6-alpha.17</MarsAppVersion>
+    <MarsAppVersion>0.7.7-alpha.19</MarsAppVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.5.0" />

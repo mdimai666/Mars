@@ -1,0 +1,39 @@
+@using Mars.Nodes.Core.Nodes.Common
+@using Mars.Nodes.Front.Shared.Components.NodeViews
+
+@inherits NodeComponentExtendBase
+@attribute [NodeEditFormForNode(typeof(InjectNode))]
+
+@if (_node is InjectNode injectNode)
+{
+    <g transform="translate(10, 30)">
+
+        @if (injectNode.RunAtStartup)
+        {
+            <g>
+                <svg xmlns="http://w3.org" viewBox="0 0 16 16" width="16" height="16">
+                    <rect x="1.5" y="3" width="12" height="12" rx="3" fill="none" stroke="#000" stroke-width="1.5" />
+                    <path d="M6 6v6l4.5-3-4.5-3z" fill="#000" />
+                </svg>
+            </g>
+        }
+        @if (injectNode.IsSchedule)
+        {
+            <g transform="translate(16)">
+                <svg xmlns="http://w3.org" viewBox="0 0 16 16" width="16" height="16">
+                    <rect x="2" y="3" width="12" height="12" rx="2" fill="none" stroke="#000" stroke-width="1.5" />
+
+                    <line x1="2" y1="6.5" x2="14" y2="6.5" stroke="#000" stroke-width="1.5" />
+
+                    <circle cx="5.5" cy="9.5" r="1" fill="#000" />
+                    <circle cx="10.5" cy="9.5" r="1" fill="#000" />
+                    <circle cx="5.5" cy="12.5" r="1" fill="#000" />
+
+                    <circle cx="11.5" cy="11.5" r="3.25" fill="#ffffff" stroke="#000" stroke-width="1.25" />
+                    <path d="M11.5 10v1.5h1" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+
+            </g>
+        }
+    </g>
+}

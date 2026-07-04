@@ -1,6 +1,6 @@
-<g id="node-@node.Id" class="user-select-none @(node.selected ? "red-ui-mic-node--selected" : "")"
+<g id="node-@Node.Id" class="user-select-none @(Node.selected ? "red-ui-mic-node--selected" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture)) scale(0.9)"
-   data-node-type-id="@node.TypeId"
+   data-node-type-id="@Node.TypeId"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenuEvent"
@@ -135,10 +135,10 @@
                   fill="#ecedef"
                   font-size="20px"
                   transform="translate(70 18) rotate(90)">
-                @node.DisplayName
+                @Node.DisplayName
             </text>
         </g>
-        @if (node.changed)
+        @if (Node.changed)
         {
             <g class="red-ui-flow-node-changed 1hide"
            transform="translate(90, -2)">

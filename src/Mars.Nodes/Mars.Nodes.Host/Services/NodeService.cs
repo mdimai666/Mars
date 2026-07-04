@@ -73,7 +73,7 @@ internal class NodeService : INodeService, IMarsAppLifetimeService
         _nodeTaskManager.OnTaskNodeExecute += TaskNodeTaskManager_OnNodeInjected;
         _nodeTaskManager.OnError += TaskNodeTaskManager_OnError;
 
-        _executeAnimationThrottler = new(TimeSpan.FromMilliseconds(300));
+        _executeAnimationThrottler = new(TimeSpan.FromMilliseconds(300), TimeSpan.FromMilliseconds(2));
     }
 
     public void Setup()

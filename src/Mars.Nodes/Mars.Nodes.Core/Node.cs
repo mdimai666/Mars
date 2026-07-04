@@ -79,6 +79,17 @@ public class Node : INodeBasic
     public bool isInjectable;
     public bool hasTailButton;
 
+    protected int InputOrOutputsMax => Math.Max(Inputs.Count, Outputs.Count);
+
+    [JsonIgnore]
+    public virtual float BodyRectWidth => Math.Min(360, Math.Max(120, DisplayName.Length * 9 + 40));
+
+    [JsonIgnore]
+    public virtual float BodyRectHeight => InputOrOutputsMax < 2 ? 30 : InputOrOutputsMax * 16f;
+
+    [JsonIgnore]
+    public virtual float BodyWirePortsGap { get; } = 16f;
+
     // use : NodeJsonConverter
     public virtual Node Copy(JsonSerializerOptions jsonSerializerOptions)
     {

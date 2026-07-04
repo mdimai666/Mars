@@ -29,7 +29,13 @@ public class CounterNodeImpl : INodeImplement<CounterNode>, INodeLifecycleOnAssi
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        Count += parameters.InputPort == 0 ? +1 : -1;
+        Count = parameters.InputPort switch
+        {
+            0 => ++Count,
+            1 => --Count,
+            2 => 0,
+            _ => throw new NotImplementedException()
+        };
         input.Payload = Count;
 
         //RNS.DebugMsg(DebugMessage.NodeMessage(Node.Id, $"input port = {parameters.InputPort}"));

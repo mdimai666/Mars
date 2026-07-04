@@ -65,7 +65,7 @@ internal class NodeRuntime : INodeRuntime
         ServiceProvider = serviceProvider;
         BroadcastHub = hub;
         _nodeImplementFactory = nodeImplementFactory;
-        _broadcastStatusThrottler = new(TimeSpan.FromMilliseconds(300));
+        _broadcastStatusThrottler = new(TimeSpan.FromMilliseconds(300), TimeSpan.FromMilliseconds(2));
     }
 
     void ValidateNodes(IEnumerable<Node> nodes)

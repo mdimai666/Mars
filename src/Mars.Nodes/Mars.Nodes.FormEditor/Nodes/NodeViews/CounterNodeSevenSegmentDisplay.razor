@@ -1,0 +1,93 @@
+@using Mars.Nodes.Front.Shared.Components.NodeViews
+@inherits NodeComponentExtendBase
+@attribute [NodeEditFormForNode(typeof(CounterNode))]
+
+<g transform="translate(10, 30) scale(0.25)">
+    <defs>
+        <linearGradient id="segOn" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ff2222" />
+            <stop offset="100%" stop-color="#ff6666" />
+        </linearGradient>
+        <linearGradient id="segOff" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1a0303" />
+            <stop offset="100%" stop-color="#220505" />
+        </linearGradient>
+
+        <polygon id="h-seg" points="16,6 64,6 70,12 64,18 16,18 10,12" />
+        <polygon id="v-seg" points="6,16 12,10 18,16 18,60 12,66 6,60" />
+    </defs>
+
+    <style>
+            .on {
+                fill: url(#segOn);
+                filter: drop-shadow(0px 0px 3px #ff2222);
+            }
+
+            .off {
+                fill: url(#segOff);
+            }
+
+            .bg {
+                fill: #050505;
+            }
+    </style>
+
+    <rect class="bg" width="380" height="150" rx="6" />
+
+    @{
+        string displayStr = GetDisplayString();
+        for (int i = 0; i < 4; i++)
+        {
+            char digitChar = displayStr[i];
+            bool[] seg = DigitMap.TryGetValue(digitChar, out var value) ? value : EmptySegments;
+            int xOffset = 12 + (i * 90); // Смещение скорректировано под новые зазоры
+
+            <g transform="translate(@xOffset, 5)">
+                <!-- Сегмент A -->
+                <use href="#h-seg" class="@(seg[0] ? "on" : "off")" transform="translate(0, 0)" />
+                <!-- Сегмент B -->
+                <use href="#v-seg" class="@(seg[1] ? "on" : "off")" transform="translate(54, 0)" />
+                <!-- Сегмент C -->
+                <use href="#v-seg" class="@(seg[2] ? "on" : "off")" transform="translate(54, 58)" />
+                <!-- Сегмент D -->
+                <use href="#h-seg" class="@(seg[3] ? "on" : "off")" transform="translate(0, 116)" />
+                <!-- Сегмент E -->
+                <use href="#v-seg" class="@(seg[4] ? "on" : "off")" transform="translate(0, 58)" />
+                <!-- Сегмент F -->
+                <use href="#v-seg" class="@(seg[5] ? "on" : "off")" transform="translate(0, 0)" />
+                <!-- Сегмент G -->
+                <use href="#h-seg" class="@(seg[6] ? "on" : "off")" transform="translate(0, 58)" />
+            </g>
+        }
+    }
+</g>
+
+@code {
+    public int Count => int.TryParse(NodeComponent.Node.status?.Split('=', 2)[^1], out var count) ? count : -1000;
+
+    // Карта сегментов для цифр от 0 до 9.
+    // Порядок сегментов в массиве bool: [A, B, C, D, E, F, G]
+    private static readonly Dictionary<char, bool[]> DigitMap = new()
+    {
+        { '0', [true,  true,  true,  true,  true,  true,  false] },
+        { '1', [false, true,  true,  false, false, false, false] },
+        { '2', [true,  true,  false, true,  true,  false, true]  },
+        { '3', [true,  true,  true,  true,  false, false, true]  },
+        { '4', [false, true,  true,  false, false, true,  true]  },
+        { '5', [true,  false, true,  true,  false, true,  true]  },
+        { '6', [true,  false, true,  true,  true,  true,  true]  },
+        { '7', [true,  true,  true,  false, false, false, false] },
+        { '8', [true,  true,  true,  true,  true,  true,  true]  },
+        { '9', [true,  true,  true,  true,  false, true,  true]  },
+        { '-', [false, false, false, false, false, false, true]  }
+    };
+
+    private static readonly bool[] EmptySegments = [false, false, false, false, false, false, false];
+
+    private string GetDisplayString()
+    {
+        if (Count < -999) return "----";
+        if (Count > 9999) return "9999";
+        return Count.ToString("D4");
+    }
+}

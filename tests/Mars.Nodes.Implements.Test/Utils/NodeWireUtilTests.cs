@@ -1,8 +1,6 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Workspace.Components.NodeViews;
 using Mars.Nodes.Workspace.EditorParts;
 
 namespace Mars.Nodes.Implements.Test.Utils;
@@ -234,14 +232,14 @@ public class NodeWireUtilTests
 
         // проверяем A -> B
         var wireAB = wires.First(wr => wr.Node1.NodeId == "A" && wr.Node2.NodeId == "B");
-        wireAB.X1.Should().Be(nodeA.X + NodeComponent.CalcBodyWidth(nodeA) + 15f);
+        wireAB.X1.Should().Be(nodeA.X + nodeA.BodyRectWidth + 15f);
         wireAB.Y1.Should().Be(nodeA.Y + 23);
         wireAB.X2.Should().Be(nodeB.X + 8);
         wireAB.Y2.Should().Be(nodeB.Y + 23);
 
         // проверяем B -> C (port 1)
         var wireBC = wires.First(wr => wr.Node1.NodeId == "B" && wr.Node2.NodeId == "C");
-        wireBC.X1.Should().Be(nodeB.X + NodeComponent.CalcBodyWidth(nodeB) + 15f);
+        wireBC.X1.Should().Be(nodeB.X + nodeB.BodyRectWidth + 15f);
         wireBC.Y1.Should().Be(nodeB.Y + 23);
         wireBC.X2.Should().Be(nodeC.X + 8);
         wireBC.Y2.Should().Be(nodeC.Y + 23);

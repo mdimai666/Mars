@@ -7,6 +7,7 @@ using Mars.Nodes.FormEditor.EditForms;
 using Mars.Nodes.Front.Shared.Services;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
+using Mars.Nodes.Workspace.EditorParts;
 using Mars.Nodes.Workspace.Locators;
 using Mars.Nodes.Workspace.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,8 @@ public static class MainNodeWorkspace
         if (!OperatingSystem.IsBrowser()) return services;
 
         if (!services.Any(d => d.ServiceType == typeof(HotKeys))) services.AddHotKeys2();
+
+        services.AddScoped<NodeWorkspaceJsInterop>();
 
         return services;
     }

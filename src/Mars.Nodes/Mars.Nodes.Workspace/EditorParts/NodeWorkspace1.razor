@@ -1,7 +1,7 @@
 @using Mars.Nodes.Core
 @using Mars.Nodes.Core.Nodes.Common
 @using Mars.Nodes.Core.Nodes.DevNodes
-@using Mars.Nodes.Workspace.Components.NodeViews
+@using Mars.Nodes.Front.Shared.Components.NodeViews
 
 <div @ref="_containerRef" class="@Class" id="red-ui-workspace-chart" tabindex="1" style="@Style" @onmouseenter="OnMouseEnter">
     <svg width="5000"
@@ -96,8 +96,6 @@
                 {
                     <MicroschemeComponent node="node"
                                           @key=node.Id
-                                          x="node.X"
-                                          y="node.Y"
                                           OnMouseDown="onNodeMouseDown"
                                           OnMouseUp="onNodeMouseUp"
                                           wireStartNew="wire_StartNew"
@@ -110,34 +108,15 @@
                 {
                     <CommentNodeComponent node="commentNode"
                                           @key=node.Id
-                                          x="node.X"
-                                          y="node.Y"
                                           OnMouseDown="onNodeMouseDown"
                                           OnMouseUp="onNodeMouseUp"
                                           OnClick="onClickNodeEvent"
                                           OnDblClick="onDblClickNodeEvent" />
                 }
-                else if (node is LinkInNode or LinkOutNode)
-                {
-                    <LinkNodeComponent node="node"
-                                       @key=node.Id
-                                       x="node.X"
-                                       y="node.Y"
-                                       OnMouseDown="onNodeMouseDown"
-                                       OnMouseUp="onNodeMouseUp"
-                                       OnContextMenu="OnNodeContextMenuEvent"
-                                       wireStartNew="wire_StartNew"
-                                       wireStartNewEnd="wire_StartNewEnd"
-                                       OnInject="OnInject"
-                                       OnClick="onClickNodeEvent"
-                                       OnDblClick="onDblClickNodeEvent" />
-                }
                 else
                 {
                     <NodeComponent node="node"
                                    @key=node.Id
-                                   x="node.X"
-                                   y="node.Y"
                                    OnMouseDown="onNodeMouseDown"
                                    OnMouseUp="onNodeMouseUp"
                                    OnContextMenu="OnNodeContextMenuEvent"
@@ -145,18 +124,11 @@
                                    wireStartNewEnd="wire_StartNewEnd"
                                    OnInject="OnInject"
                                    OnClick="onClickNodeEvent"
-                                   OnDblClick="onDblClickNodeEvent">
-                    </NodeComponent>
+                                   OnDblClick="onDblClickNodeEvent"
+                                   ExtendType="@_nodeEditor.GetNodeComponentExtender(node)" />
                 }
 
             }
-
-            @*@if (new_node != null)
-            {
-            <NodeComponent node="new_node" x="new_node.X" y="new_node.Y"
-            OnMouseDown="(e) => onNodeMouseDown(e, new_node)"
-            OnMouseUp="(e) => onNodeMouseUp(e, new_node)" />
-            }*@
 
             @*LASSO*@
             @if (lasso.drag)
@@ -171,7 +143,6 @@
                       class="nr-ui-view-lasso"></rect>
             }
 
-            <!-- <Wire :x1="0" :y1="0" :x2="100" :y2="100" selected disable /> -->
         </g>
     </svg>
     @ChildContent

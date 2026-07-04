@@ -11,6 +11,9 @@ public class CommentNode : Node
 
     public string Text { get; set; } = "";
 
+    public override float BodyRectWidth => Math.Min(360, Math.Max(120, Text.Length * 9 + 40));
+    public override float BodyRectHeight => Math.Max(30, Math.Min(200, (Text.Length * 120) / 190));
+
     public CommentNode()
     {
         Color = "#f5f4f4";

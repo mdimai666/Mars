@@ -1,0 +1,69 @@
+@using Mars.Nodes.Core.Nodes.Common
+@using Mars.Nodes.Front.Shared.Components.NodeViews
+
+@inherits NodeComponentExtendBase
+@attribute [NodeEditFormForNode(typeof(LinkInNode))]
+@attribute [NodeEditFormForNode(typeof(LinkOutNode))]
+
+@if (_node is LinkInNode linkInNode && linkInNode.OutLinksIds.Any())
+{
+    int index = 0;
+    int count = linkInNode.OutLinksIds.Length;
+    int hGap = 30;
+    int allHeight = count * hGap - 5;
+    int allHeightHalf = allHeight / 2;
+
+    <g class="red-ui-flow-link-off-flow" transform="translate(@(_node.BodyRectWidth + 10),15)">
+        <path class="red-ui-flow-link-link" d="M 0 0 h 30"></path>
+
+        @foreach (var outId in linkInNode.OutLinksIds)
+        {
+            if (_editor.AllNodes.TryGetValue(outId, out var outNode))
+            {
+                var yy = index * hGap - allHeightHalf;
+
+                <g class="red-ui-flow-link-group" @onclick="@(() => _editor.FocusNode(outId))">
+                    <path class="red-ui-flow-link-link" d="M 30 0 C 64 0 32 @(yy + 12) 60 @(yy + 12) "></path>
+                    <path class="red-ui-flow-link-port" d="M 77 @yy h -10 a 3 3 45 0 0 -3 3 v 18 a 3 3 45 0 0 3 3 h 10"></path>
+                    <path class="red-ui-flow-link-port" d="M 80 @yy h 30 M 80 @(yy + 24) h 30" style="stroke-dasharray: 12, 3, 8, 4, 3;"></path>
+                    <rect class="red-ui-flow-port red-ui-flow-link-port" x="60" y="@(yy + 8)" rx="2" ry="2" width="8" height="8"></rect>
+                    <rect x="60" y="@yy" width="100" height="24" style="stroke: none; fill: transparent;"></rect>
+                    <text class="red-ui-flow-port-label" x="75" y="@(yy + 13)" style="font-size: 10px; text-anchor: start;">@outNode.DisplayName</text>
+                </g>
+
+                index++;
+            }
+        }
+    </g>
+}
+else if (_node is LinkOutNode linkOutNode)
+{
+    if (_editor.InboundLinkOutNodesDict.TryGetValue(linkOutNode.Id, out var inboundLinkOutNodes))
+    {
+        int index = 0;
+        int count = inboundLinkOutNodes.Length;
+        int hGap = 30;
+        int allHeight = count * hGap - 5;
+        int allHeightHalf = allHeight / 2;
+
+        <g class="red-ui-flow-link-off-flow" transform="translate(-4,15)">
+            <path class="red-ui-flow-link-link" d="M 0 0 h -30"></path>
+            @foreach (var inNode in inboundLinkOutNodes)
+            {
+                var yy = index * hGap - allHeightHalf;
+
+                <g class="red-ui-flow-link-group" @onclick="@(() => _editor.FocusNode(inNode.Id))">
+                    <path class="red-ui-flow-link-link" d="M -30 0 C -64 0 -32 @(yy + 12) -60 @(yy + 12) "></path>
+                    <path class="red-ui-flow-link-port" d="M -77 @yy h 10 a 3 3 45 0 1 3 3 v 18 a 3 3 45 0 1 -3 3 h -10"></path>
+                    <path class="red-ui-flow-link-port" d="M -80 @yy h -30 M -80 @(yy + 24) h -30" style="stroke-dasharray: 12, 3, 8, 4, 3;"></path>
+                    <rect class="red-ui-flow-port red-ui-flow-link-port" x="-68" y="@(yy + 8)" rx="2" ry="2" width="8" height="8"></rect>
+                    <rect x="-160" y="@yy" width="100" height="24" style="stroke: none; fill: transparent;"></rect>
+                    <text class="red-ui-flow-port-label" x="-75" y="@(yy + 13)" style="font-size: 10px; text-anchor: end;">@inNode.DisplayName</text>
+                </g>
+
+                index++;
+            }
+        </g>
+    }
+
+}

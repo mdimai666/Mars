@@ -5,6 +5,8 @@ using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Tools;
 using Mars.TemplateEngine.Host;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using StandNodesApp.Mocks;
@@ -41,6 +43,16 @@ public static class HostStartup
         builder.Services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
         builder.Services.MarsAddTemplateEngines();
+
+        builder.Services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
+        builder.Services.AddHybridCache(options =>
+        {
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                Expiration = TimeSpan.FromMinutes(150),
+                LocalCacheExpiration = TimeSpan.FromMinutes(15)
+            };
+        });
     }
 
     public static void HostConfigure(this WebApplication app)

@@ -1,7 +1,7 @@
 @using Mars.Core.Extensions
-<g id="node-@node.Id" class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node--selected" : "") @(node.Disabled ? "red-ui-flow-node--disabled" : "")"
+<g id="node-@Node.Id" class="red-ui-flow-node red-ui-flow-node-group @(Node.selected ? "red-ui-flow-node--selected" : "") @(Node.Disabled ? "red-ui-flow-node--disabled" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))"
-   data-node-type-id="@node.TypeId"
+   data-node-type-id="@Node.TypeId"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenuEvent"
@@ -12,19 +12,19 @@
         <rect class="red-ui-flow-node__body--select-backdrop"
               y="-4"
               x="-4"
-              width="@(bodyRectWidth + 8f)"
+              width="@(_bodyRectWidth + 8f)"
               rx="2px"
               ry="2px"
               fill="#64b1d9"
               fill-opacity="0.5"
-              height="@(bodyRectHeight + 8)"></rect>
+              height="@(_bodyRectHeight + 8)"></rect>
 
         @* <rect class="red-ui-flow-node__body-backdrop"
               y="4"
               x="1"
-              fill="@node.Color"
-              width="@(bodyRectWidth - 1f)"
-              height="@bodyRectHeight"></rect> *@
+              fill="@Node.Color"
+              width="@(_bodyRectWidth - 1f)"
+              height="@_bodyRectHeight"></rect> *@
 
         <rect class="red-ui-flow-node__body"
               @onmousedown=OnMouseDownMethod
@@ -35,10 +35,10 @@
               @onclick:stopPropagation=true
               @ondblclick=OnDblClickEvent
               @ondblclick:stopPropagation=true
-              fill="@node.Color"
+              fill="@Node.Color"
               style="filter:url(#fePointLight1)"
-              width="@bodyRectWidth"
-              height="@bodyRectHeight"></rect>
+              width="@_bodyRectWidth"
+              height="@_bodyRectHeight"></rect>
 
     </g>
 
@@ -52,29 +52,31 @@
               y="0"
               class="red-ui-flow-node-icon-shade"
               width="30"
-              height="@bodyRectHeight"></rect>
+              height="@_bodyRectHeight"></rect>
         <image href="@IconUrl"
                class="red-ui-flow-node-icon"
                x="5"
                width="26"
                height="26"
                style=""
-               y="@((((bodyRectHeight - 30) / 2) + 2).ToString(CultureInfo.InvariantCulture))">
+               y="2">
         </image>
 
-        <path d="M 30 1 l 0 @(bodyRectHeight - 2)"
+        <path d="M 30 1 l 0 @(_bodyRectHeight - 2)"
               class="red-ui-flow-node-icon-shade-border"></path>
     </g>
     <g class="red-ui-flow-node-label 1node_label_italic"
        transform="translate(38,6)">
-        <foreignObject width="@(bodyRectWidth - 45)" height="@(bodyRectHeight - 10)">
-            <p class="red-ui-flow-node-label-text" xmlns="http://www.w3.org/1999/xhtml">@node.Text.TextEllipsis(MaxTextLength)</p>
+        <foreignObject width="@(_bodyRectWidth - 45)" height="@(_bodyRectHeight - 10)">
+            <p class="red-ui-flow-node-label-text" xmlns="http://www.w3.org/1999/xhtml">
+                @Node.Text.TextEllipsis(MaxTextLength)
+            </p>
         </foreignObject>
     </g>
-    @if (node.changed)
+    @if (Node.changed)
     {
         <g class="red-ui-flow-node-changed 1hide"
-           transform="translate(@(bodyRectWidth - 10f), -2)">
+           transform="translate(@(_bodyRectWidth - 10f), -2)">
             <circle r="5"></circle>
         </g>
     }

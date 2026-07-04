@@ -1,14 +1,14 @@
 using System.Reflection;
 using Mars.Nodes.Core.Attributes;
 using Mars.Nodes.FormEditor;
-using Microsoft.AspNetCore.Components;
+using Mars.Nodes.Front.Shared.Components.NodeViews;
 
 namespace Mars.Nodes.Workspace.Locators;
 
 internal class NodeFormsLocator : INodeFormsLocator
 {
-    Dictionary<Type, Type> _dict = [];
-    IDictionary<Type, Type> Dict { get { if (invalid) RefreshDict(); return _dict; } }
+    Dictionary<Type, NodeFormItem> _dict = [];
+    IDictionary<Type, NodeFormItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
     bool invalid = true;
     HashSet<Assembly> assemblies = [];
 
@@ -24,11 +24,19 @@ internal class NodeFormsLocator : INodeFormsLocator
 
             foreach (var assembly in assemblies)
             {
-                var types = GetNodeEditForms(assembly);
+                var formTypes = GetNodeEditForms(assembly);
+                var nodeComponentExtends = GetNodeComponentExtends(assembly);
 
-                foreach (var a in types)
+                foreach (var nodeType in formTypes.Keys.Concat(nodeComponentExtends.Keys).ToHashSet())
                 {
-                    _dict.Add(a.Key, a.Value);
+                    var x = new NodeFormItem
+                    {
+                        NodeType = nodeType,
+                        FormType = formTypes.GetValueOrDefault(nodeType),
+                        NodeComponent = null,
+                        NodeComponentExtender = nodeComponentExtends.GetValueOrDefault(nodeType)
+                    };
+                    _dict.Add(nodeType, x);
                 }
             }
             invalid = false;
@@ -42,29 +50,22 @@ internal class NodeFormsLocator : INodeFormsLocator
         invalid = true;
     }
 
-    public Type GetForNodeType(Type nodeType)
+    public Type? GetForNodeType(Type nodeType)
     {
-        if (Dict.ContainsKey(nodeType))
-        {
-            return Dict[nodeType];
-        }
-        throw new NullReferenceException($"node with type {nodeType.FullName} not found in NodeFormsLocator");
+        return Dict.GetValueOrDefault(nodeType).FormType;
     }
 
-    public Type? TryGetForNodeType(Type nodeType)
+    public IEnumerable<Type> RegisteredForms()
     {
-        if (Dict.ContainsKey(nodeType))
-        {
-            return Dict[nodeType];
-        }
-        return null;
+        return Dict.Values.Where(s => s.FormType is not null).Select(s => s.FormType)!;
     }
 
-    public List<Type> RegisteredForms()
+    public Type? GetNodeComponentExtender(Type nodeType)
     {
-        return Dict.Select(s => s.Value).ToList();
+        return Dict.GetValueOrDefault(nodeType)?.NodeComponentExtender;
     }
 
+    #region Extractors
     /// <summary>
     /// find NodeEditFormForNodeAttribute in assembly
     /// </summary>
@@ -72,14 +73,9 @@ internal class NodeFormsLocator : INodeFormsLocator
     /// <returns>Key NodeType; Valye FormType</returns>
     public Dictionary<Type, Type> GetNodeEditForms(Assembly assembly)
     {
-        var type = typeof(ComponentBase);
+        var type = typeof(NodeEditForm);
 
-        var types =
-            //AppDomain.CurrentDomain.GetAssemblies()
-            //.SelectMany(s => s.GetTypes())
-            //Assembly.GetAssembly(typeof(Program)).GetTypes()
-            //Assembly.GetAssembly(program).GetTypes()
-            assembly.GetTypes()
+        var types = assembly.GetTypes()
             .Where(p =>
                 type.IsAssignableFrom(p)
                 && p.IsPublic
@@ -92,17 +88,54 @@ internal class NodeFormsLocator : INodeFormsLocator
 
         foreach (var formType in types)
         {
-            NodeEditFormForNodeAttribute? attribute = formType.GetCustomAttribute<NodeEditFormForNodeAttribute>();
-
-            if (attribute is not null)
+            var attributes = formType.GetCustomAttributes<NodeEditFormForNodeAttribute>();
+            foreach (var attribute in attributes)
             {
-                Type nodeType = attribute.ForNodeType;
 
-                dict.Add(nodeType, formType);
+                if (attribute is not null)
+                {
+                    Type nodeType = attribute.ForNodeType;
+
+                    dict.Add(nodeType, formType);
+                }
             }
-
         }
 
         return dict;
     }
+
+    public Dictionary<Type, Type> GetNodeComponentExtends(Assembly assembly)
+    {
+        var type = typeof(NodeComponentExtendBase);
+
+        var types = assembly.GetTypes()
+            .Where(p =>
+                type.IsAssignableFrom(p)
+                && p.IsPublic
+                && p.IsClass
+                && !p.IsAbstract
+            //&& p.Assembly ==
+            );
+
+        Dictionary<Type, Type> dict = [];
+
+        foreach (var formType in types)
+        {
+            var attributes = formType.GetCustomAttributes<NodeEditFormForNodeAttribute>();
+            foreach (var attribute in attributes)
+            {
+
+                if (attribute is not null)
+                {
+                    Type nodeType = attribute.ForNodeType;
+
+                    dict.Add(nodeType, formType);
+                }
+            }
+        }
+
+        return dict;
+    }
+    #endregion
+
 }

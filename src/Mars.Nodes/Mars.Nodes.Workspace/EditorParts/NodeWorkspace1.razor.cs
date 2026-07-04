@@ -3,9 +3,9 @@ using AppFront.Shared.Interfaces;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
+using Mars.Nodes.Front.Shared.Editor.Models;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
-using Mars.Nodes.Workspace.Components;
 using Mars.Shared.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -17,16 +17,15 @@ namespace Mars.Nodes.Workspace.EditorParts;
 public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrollObserver
 {
     [Inject] ILogger<NodeWorkspace1> _logger { get; set; } = default!;
+    [Inject] NodeWorkspaceJsInterop _js { get; set; } = default!;
 
     [Parameter] public string Style { get; set; } = "";
     [Parameter] public string Class { get; set; } = "";
-    [Inject] IJSRuntime JSRuntime { get; set; } = default!;
-    NodeWorkspaceJsInterop js = default!;
 
     public event Action<IEnumerable<string>> OnDragNodesStarted = default!;
     public event Action<IEnumerable<string>> OnDragNodesEnded = default!;
 
-    [CascadingParameter] INodeEditorApi _nodeEditor { get; set; } = default!;
+    [CascadingParameter] NodeEditor1 _nodeEditor { get; set; } = default!;
 
     ElementReference _containerRef = default!;
     ElementReference _svgContainerRef = default!;
@@ -97,23 +96,15 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
     float containerOffsetY = 40;
     //--------------------------------------
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        js = new NodeWorkspaceJsInterop(JSRuntime);
-
-        //wire_drawWires();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _dotNetRef = DotNetObjectReference.Create<IResizeObserver>(this);
-            await js.ObserveSizeAsync(_containerRef, _dotNetRef);
+            await _js.ObserveSizeAsync(_containerRef, _dotNetRef);
 
             _dotNetRef2 = DotNetObjectReference.Create<IScrollObserver>(this);
-            await js.ObserveScrollAsync(_containerRef, _dotNetRef2);
+            await _js.ObserveScrollAsync(_containerRef, _dotNetRef2);
         }
     }
 
@@ -504,7 +495,7 @@ public partial class NodeWorkspace1 : INodeWorkspaceApi, IResizeObserver, IScrol
 
     public void ScrollTo(float x, float y)
     {
-        js.ScrollToCoordinates(_containerRef, x, y);
+        _js.ScrollToCoordinates(_containerRef, x, y);
     }
 
     /// <summary>

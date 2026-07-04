@@ -9,6 +9,7 @@ using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.FormEditor;
+using Mars.Nodes.Front.Shared.Editor.Models;
 using Mars.Nodes.Workspace.ActionManager;
 using Mars.Nodes.Workspace.ActionManager.Actions.NodesWorkspace;
 using Mars.Nodes.Workspace.Components;
@@ -19,7 +20,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Toolbelt.Blazor.HotKeys2;
 using static Mars.Nodes.Workspace.Components.QuickNodeAddMenu;
 
@@ -31,7 +31,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     [Inject] IServiceProvider _serviceProvider { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
-    [Inject] IJSRuntime JS { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] ILoggerFactory _loggerFactory { get; set; } = default!;
@@ -40,6 +39,8 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject] EditorActionLocator _edittorActionLocator { get; set; } = default!;
     [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
     [Inject] AppFrontJs _appFrontJs { get; set; } = default!;
+    [Inject] NodeWorkspaceJsInterop _js { get; set; } = default!;
+    [Inject] INodeFormsLocator _nodeFormsLocator { get; set; } = default!;
 
     [Inject] HotKeys HotKeys { get; set; } = default!;
     HotKeysContext _hotKeysContext = default!;
@@ -71,7 +72,6 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     public JsonSerializerOptions NodesJsonSerializerOptions => _jsonSerializerOptions;
     public JsonSerializerOptions NodesJsonSerializerOptionsFormatted { get; private set; } = default!;
 
-    NodeWorkspaceJsInterop js = default!;
     Dictionary<string, Node> _allNodes = [];
     string runningTaskCountDisplayText = "-";
 
@@ -143,8 +143,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         _hotKeysContext = HotKeys.CreateContext()
             .Add(ModCode.Ctrl, Code.S, SaveFormClick, "Save Form");
-        js = new(JS);
-        _ = js.InitModule();
+        _ = _js.InitModule();
 
         NodesJsonSerializerOptionsFormatted = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
 
@@ -195,7 +194,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         if (_editorSpaceOrientation is null)
         {
-            var viewPort = await js.GetViewportMetricsAsync();
+            var viewPort = await _js.GetViewportMetricsAsync();
             _editorSpaceOrientation = viewPort.Orientation == ScreenOrientationType.PortraitPrimary ? Orientation.Vertical : Orientation.Horizontal;
         }
     }
@@ -271,7 +270,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     {
         messages.Add(msg);
         _debugMessagesConsole.CallStateHasChanged(); //fix: у List.Add не вызывается OnChange для вложенного DebugMessagesConsole
-        _ = js.ScrollDownElement(noderedDebugMessageList);
+        _ = _js.ScrollDownElement(noderedDebugMessageList);
     }
 
     internal void ClearDebugMessages()
@@ -479,7 +478,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
             {
                 if (!inboundLinkOutNodesDict.TryGetValue(outId, out var list))
                 {
-                    list = new List<LinkInNode>();
+                    list = [];
                     inboundLinkOutNodesDict[outId] = list;
                 }
                 list.Add(linkInNode);
@@ -758,14 +757,18 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
     public void TouchNodeInjectedEffect(Guid taskId, string nodeId, NodeExecutionTrigger trigger)
     {
-        js.TouchFlashAnimationBySelector($"#node-{nodeId} .red-ui-flow-node__body__animation_backdrop");
+        _js.TouchFlashAnimationBySelector($"#node-{nodeId} .red-ui-flow-node__body__animation_backdrop");
     }
 
     public void TouchNodeHighlightEffect(string nodeId)
     {
-        js.TouchHighlightBySelector($"#node-{nodeId}", "red-ui-flow-node--highlight", 1000);
+        _js.TouchHighlightBySelector($"#node-{nodeId}", "red-ui-flow-node--highlight", 1000);
     }
 
+    internal Type? GetNodeComponentExtender(Node node)
+    {
+        return _nodeFormsLocator.GetNodeComponentExtender(node.GetType());
+    }
 }
 
 internal static class NodeEditor1Extension

@@ -1,6 +1,6 @@
 namespace Mars.Nodes.Core.Attributes;
 
-[System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+[System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public sealed class NodeEditFormForNodeAttribute : Attribute
 {
     // See the attribute guidelines at 
@@ -20,4 +20,3 @@ public sealed class NodeEditFormForNodeAttribute : Attribute
     }
 
 }
-

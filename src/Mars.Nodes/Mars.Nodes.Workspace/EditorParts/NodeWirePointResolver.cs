@@ -1,6 +1,5 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Workspace.Components.NodeViews;
 
 namespace Mars.Nodes.Workspace.EditorParts;
 
@@ -11,9 +10,7 @@ public class NodeWirePointResolver : INodeWirePointResolver
 {
     public WirePoints GetPoints(Node node1, int node1outPort, Node node2, int node2InputPort)
     {
-        var bodyWidth = node1.IsLinkNode
-                            ? LinkNodeComponent.CalcBodyWidth(node1)
-                            : NodeComponent.CalcBodyWidth(node1);
+        var bodyWidth = node1.BodyRectWidth;
 
         float x1 = node1.X + bodyWidth + 15f;
         float y1 = node1.Outputs.Count <= 1 ? node1.Y + 23 : node1.Y + 16 + node1outPort * 16;

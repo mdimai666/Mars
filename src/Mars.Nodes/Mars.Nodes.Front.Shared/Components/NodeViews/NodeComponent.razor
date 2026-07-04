@@ -1,15 +1,15 @@
 @using Mars.Core.Extensions
-<g id="node-@node.Id" class="red-ui-flow-node red-ui-flow-node-group @(node.selected ? "red-ui-flow-node--selected" : "") @(node.Disabled ? "red-ui-flow-node--disabled" : "")"
+<g id="node-@Node.Id" class="red-ui-flow-node red-ui-flow-node-group @(Node.selected ? "red-ui-flow-node--selected" : "") @(Node.Disabled ? "red-ui-flow-node--disabled" : "")"
    transform="translate(@X.ToString(CultureInfo.InvariantCulture),@Y.ToString(CultureInfo.InvariantCulture))"
-   data-node-type-id="@node.TypeId"
+   data-node-type-id="@Node.TypeId"
    @onclick:stopPropagation=true
    @ondblclick:stopPropagation=true
    @oncontextmenu="OnContextMenuEvent"
    @oncontextmenu:preventDefault="true">
     <!-- tail -->
-    @* @if (node.hasTailButton)
+    @* @if (Node.hasTailButton)
     {
-        <g transform="translate(@(bodyRectWidth - 7),2)" class="red-ui-flow-node-button" style="display: inherit;">
+        <g transform="translate(@(_bodyRectWidth - 7),2)" class="red-ui-flow-node-button" style="display: inherit;">
             <rect class="red-ui-flow-node-button-background" rx="5" ry="5" width="32" height="26"
                   fill-opacity="1"></rect>
             <rect class="red-ui-flow-node-button-button" x="11" y="4" rx="4" ry="4" width="16" height="18"
@@ -21,26 +21,26 @@
         <rect class="red-ui-flow-node__body__animation_backdrop"
               y="4"
               x="1"
-              fill="@node.Color"
-              width="@(bodyRectWidth - 1f)"
-              height="@bodyRectHeight"></rect>
+              fill="@Node.Color"
+              width="@(_bodyRectWidth - 1f)"
+              height="@_bodyRectHeight"></rect>
 
         <rect class="red-ui-flow-node__body--select-backdrop"
               y="-3"
               x="-4"
-              width="@(bodyRectWidth + 9f)"
+              width="@(_bodyRectWidth + 9f)"
               rx="12px"
               ry="12px"
               fill="#64b1d9"
               fill-opacity="0.5"
-              height="@(bodyRectHeight + 11)"></rect>
+              height="@(_bodyRectHeight + 11)"></rect>
 
         <rect class="red-ui-flow-node__body-backdrop"
               y="4"
               x="1"
-              fill="@node.Color"
-              width="@(bodyRectWidth - 1f)"
-              height="@bodyRectHeight"></rect>
+              fill="@Node.Color"
+              width="@(_bodyRectWidth - 1f)"
+              height="@_bodyRectHeight"></rect>
 
         <rect class="red-ui-flow-node__body"
               @onmousedown=OnMouseDownMethod
@@ -51,10 +51,10 @@
               @onclick:stopPropagation=true
               @ondblclick=OnDblClickEvent
               @ondblclick:stopPropagation=true
-              fill="@node.Color"
+              fill="@Node.Color"
               style="filter:url(#fePointLight1)"
-              width="@bodyRectWidth"
-              height="@bodyRectHeight"></rect>
+              width="@_bodyRectWidth"
+              height="@_bodyRectHeight"></rect>
 
     </g>
 
@@ -68,17 +68,17 @@
               y="0"
               class="red-ui-flow-node-icon-shade"
               width="30"
-              height="@bodyRectHeight"></rect>
+              height="@_bodyRectHeight"></rect>
         <image href="@IconUrl"
                class="red-ui-flow-node-icon"
                x="5"
                width="26"
                height="26"
                style=""
-               y="@(((bodyRectHeight - 30) / 2) + 2)">
+               y="2">
         </image>
 
-        <path d="M 30 1 l 0 @(bodyRectHeight - 2)"
+        <path d="M 30 1 l 0 @(_bodyRectHeight - 2)"
               class="red-ui-flow-node-icon-shade-border"></path>
     </g>
     <!-- right icon -->
@@ -92,20 +92,14 @@
     <!--  -->
     <g class="red-ui-flow-node-label 1node_label_italic"
        transform="translate(38,6)">
-        @* <text class="red-ui-flow-node-label-text"
+        <text class="red-ui-flow-node-label-text"
               x="0"
-              y="@(((bodyRectHeight - 30) / 2))">
+              y="11">
             @DisplayTitle
-        </text> *@
-        <foreignObject x="0" y="@(((bodyRectHeight - 30) / 2))"
-                       width="@(bodyRectWidth - 45)" height="@(bodyRectHeight - 10)">
-            <p class="red-ui-flow-node-label-text" xmlns="http://www.w3.org/1999/xhtml">
-                @DisplayTitle
-            </p>
-        </foreignObject>
+        </text>
     </g>
 
-    @if (node.isInjectable)
+    @if (Node.isInjectable)
     {
         @* <g transform="translate(-25,2)" class="red-ui-flow-node-button"
            @onclick=OnInjectClick @onclick:stopPropagation=true>
@@ -137,10 +131,10 @@
         </g>
     }
 
-    @if (node.enable_status && node.status is not null)
+    @if (Node.enable_status && Node.status is not null)
     {
         <g class="red-ui-flow-node-status-group"
-           transform="translate(3,@((bodyRectHeight + 3)))">
+           transform="translate(3,@((_bodyRectHeight + 3)))">
             <rect class="red-ui-flow-node-status red-ui-flow-node-status-dot-grey"
                   x="6"
                   y="1"
@@ -151,7 +145,7 @@
                   stroke-width="3">
             </rect>
             <text class="red-ui-flow-node-status-label" x="20" y="10">
-                @node.status.TextEllipsis(30)
+                @Node.status.TextEllipsis(30)
             </text>
         </g>
 
@@ -168,31 +162,31 @@
         </rect>
         <text class="red-ui-flow-node-status-label" x="20" y="10">text</text></g>*@
     }
-    @if (node.changed)
+    @if (Node.changed)
     {
         <g class="red-ui-flow-node-changed 1hide"
-           transform="translate(@(bodyRectWidth - 10f), -2)">
+           transform="translate(@(_bodyRectWidth - 10f), -2)">
             <circle r="5"></circle>
         </g>
     }
-    @if (node.error)
+    @if (Node.error)
     {
         <g class="red-ui-flow-node-error 1hide"
-           transform="translate(@(bodyRectWidth - 10f), -2)">
+           transform="translate(@(_bodyRectWidth - 10f), -2)">
             <path d="M -5,4 l 10,0 -5,-8 z"></path>
         </g>
     }
 
-    @if (node.Inputs.Count > 0)
+    @if (Node.Inputs.Count > 0)
     {
-        <g class="red-ui-flow-port-input" transform="translate(-5, @(node.Inputs.Count < 2 ? 10 : 2))">
-            @for (int i = 0; i < node.Inputs.Count; i++)
+        <g class="red-ui-flow-port-input" transform="translate(-5, @(Node.Inputs.Count < 2 ? 10 : 2))">
+            @for (int i = 0; i < Node.Inputs.Count; i++)
             {
                 int index = i;
 
                 <rect rx="3"
                       ry="3"
-                      y="@(i * 16)"
+                      y="@(i * Node.BodyWirePortsGap)"
                       width="10"
                       height="10"
                       class="red-ui-flow-port"
@@ -201,23 +195,23 @@
                       @onmousedown:stopPropagation=true
                       @onmouseup="(e => OnInputWirePointUp(e, index))"
                       @onmouseup:stopPropagation=true>
-                    <title>@(node.Inputs[i].Label)</title>
+                    <title>@(Node.Inputs[i].Label)</title>
                 </rect>
             }
         </g>
     }
 
     <g class="red-ui-flow-port-output"
-       transform="translate(@(bodyRectWidth - 5),@(node.Outputs.Count < 2 ? 10 : 2))">
-        @for (int i = 0; i < node.Outputs.Count; i++)
+       transform="translate(@(_bodyRectWidth - 5),@(Node.Outputs.Count < 2 ? 10 : 2))">
+        @for (int i = 0; i < Node.Outputs.Count; i++)
         {
             int index = i;
 
-            <rect :key="'node_outputs-' + @node.Id + '.' + @i"
+            <rect :key="'node_outputs-' + @Node.Id + '.' + @i"
                   rx="3"
                   ry="3"
                   x="0"
-                  y="@(i * 16)"
+                  y="@(i * Node.BodyWirePortsGap)"
                   width="10"
                   height="10"
                   class="red-ui-flow-port"
@@ -226,9 +220,18 @@
                   @onmousedown:stopPropagation=true
                   @onmouseup="(e => OnOutputWirePointUp(e, index))"
                   @onmouseup:stopPropagation=true>
-                <title>@(node.Outputs[i].Label)</title>
+                <title>@(Node.Outputs[i].Label)</title>
             </rect>
         }
 
     </g>
+
+    @if (ExtendType != null)
+    {
+        <CascadingValue Value="this">
+            <DynamicComponent Type="ExtendType" />
+        </CascadingValue>
+    }
+
+    @ChildContent?.Invoke(this)
 </g>

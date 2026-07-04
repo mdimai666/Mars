@@ -39,6 +39,8 @@ public interface INodeEditorApi
     void AddDebugMessage(DebugMessage msg);
     void AddNodesAndWires(IEnumerable<Node> nodes, IEnumerable<NodeConnect> connects);
     void AddDebugMessage(string text);
+    void FocusNode(string nodeId);
+    void FocusNode(Node node);
 }
 
 public class AppendNewConfigNodeEvent

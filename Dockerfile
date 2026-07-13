@@ -36,7 +36,7 @@ LABEL org.opencontainers.image.vendor="mdimai666"
 # ---------------------------
 COPY *.slnx Directory.Build.props Directory.Packages.props ./
 COPY src/ /tmp/src/
-COPY *.slnx Directory.Build.props Directory.Packages.props /tmp/src
+COPY *.slnx Directory.Build.props Directory.Packages.props /tmp/src/
 # Скопировать только *.csproj с сохранением структуры
 RUN cd /tmp/src && \
     find . -name "*.csproj" -exec mkdir -p $(dirname {}) \; && \

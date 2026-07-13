@@ -86,9 +86,12 @@ public class MarsFixture : IAsyncLifetime
         if (SkipTest is not null) return;
 #pragma warning restore CS8793 // The given expression always matches the provided pattern.
 
-        await _postgresContainer.DisposeAsync();
-        await _marsContainer.DisposeAsync();
-        await _network.DisposeAsync();
+        if (_postgresContainer is not null)
+            await _postgresContainer.DisposeAsync();
+        if (_marsContainer is not null)
+            await _marsContainer.DisposeAsync();
+        if (_network is not null)
+            await _network.DisposeAsync();
     }
 
     // Custom wait strategy implementation

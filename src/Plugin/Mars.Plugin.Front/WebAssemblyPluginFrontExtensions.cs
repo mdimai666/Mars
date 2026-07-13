@@ -1,12 +1,11 @@
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Runtime.Loader;
-using AppFront.Main.OptionEditForms;
 using Mars.Core.Extensions;
-using Mars.Nodes.Core;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Shared.Contracts.Plugins;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.Front;
 
@@ -16,13 +15,13 @@ public static class WebAssemblyPluginFrontExtensions
 
     public static List<Assembly> PluginLoadAssemblies = [];
 
-    public static async Task AddRemotePluginAssemblies(this WebAssemblyHostBuilder builder, string backendUrl)
+    public static async Task AddRemotePluginAssemblies(this WebAssemblyHostBuilder builder, string backendUrl, ILogger logger)
     {
         var http = new HttpClient() { BaseAddress = new Uri(backendUrl) };
 
         var loadAssemblies = new List<Assembly>();
 
-        await LoadManifest(loadAssemblies, http);
+        await LoadManifest(loadAssemblies, http, logger);
 
         foreach (var assembly in loadAssemblies)
         {
@@ -50,51 +49,68 @@ public static class WebAssemblyPluginFrontExtensions
         }
     }
 
-    private static async Task LoadManifest(List<Assembly> loadAssemblies, HttpClient http)
+    private static async Task LoadManifest(List<Assembly> loadAssemblies, HttpClient http, ILogger logger)
     {
         var runtimeManifests = (await http.GetFromJsonAsync<PluginManifestInfoResponse[]>("/api/Plugin/RuntimePluginManifests"))!;
 
-        Console.WriteLine($"LoadPluginRemoteAssemblies: [{string.Join(',', runtimeManifests.Select(s => s.Name))}]");
+        logger.LogInformation("LoadPluginRemoteAssemblies: [{0}]", string.Join(',', runtimeManifests.Select(s => s.Name)));
+
+        string? processingPluginName = null;
+        bool somePluginLoadFailed = false; ;
 
         // манифест файлы
         foreach (var manifestInfo in runtimeManifests)
         {
-            //var pluginEndpointsFile = $"/_plugin/Mars.TelegramPlugin/{MarsFrontPluginManifest.DefaultManifestFileName}";
-            var pluginEndpointsFile = manifestInfo.Uri;
-            var manifest = await http.GetFromJsonAsync<MarsFrontPluginManifest>(pluginEndpointsFile);
-
-            // каждый плагин объявляет какие компоненты загружать
-            foreach (var pluginDefinition in manifest.Plugins.Values)
+            try
             {
-                //var enpoints = manifest.Plugins["Mars.TelegramPlugin.Nodes"].StaticWebassets.Endpoints;
-                var enpoints = pluginDefinition.StaticWebassets.Endpoints;
-                var pluginDlls = enpoints!.Where(s => s.AssetFile.EndsWith(".wasm")).DistinctBy(s => s.AssetFile).OrderByDescending(s => s.AssetFile.Length).ToList();
+                //var pluginEndpointsFile = $"/_plugin/Mars.TelegramPlugin/{MarsFrontPluginManifest.DefaultManifestFileName}";
+                var pluginEndpointsFile = manifestInfo.Uri;
+                processingPluginName = manifestInfo.Name;
+                var manifest = await http.GetFromJsonAsync<MarsFrontPluginManifest>(pluginEndpointsFile);
 
-                //var pluginDllFullUrls = pluginDlls.Select(s => $"/_plugin/Mars.TelegramPlugin/{s.AssetFile}").ToList();
-
-                foreach (var pluginDll in pluginDlls)
+                // каждый плагин объявляет какие компоненты загружать
+                foreach (var pluginDefinition in manifest.Plugins.Values)
                 {
-                    var pluginDllFull = $"/_plugin/{manifestInfo.Name}/" + pluginDll.AssetFile;
+                    //var enpoints = manifest.Plugins["Mars.TelegramPlugin.Nodes"].StaticWebassets.Endpoints;
+                    var enpoints = pluginDefinition.StaticWebassets.Endpoints;
+                    var pluginDlls = enpoints!.Where(s => s.AssetFile.EndsWith(".wasm")).DistinctBy(s => s.AssetFile).OrderByDescending(s => s.AssetFile.Length).ToList();
 
-                    try
+                    //var pluginDllFullUrls = pluginDlls.Select(s => $"/_plugin/Mars.TelegramPlugin/{s.AssetFile}").ToList();
+
+                    foreach (var pluginDll in pluginDlls)
                     {
-                        Console.Write($"Start load: {pluginDll.AssetFile} -> ");
+                        var pluginDllFull = $"/_plugin/{manifestInfo.Name}/" + pluginDll.AssetFile;
 
-                        var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
-                        Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
-                        var assembly = Assembly.Load(dllBytes);
+                        try
+                        {
+                            Console.Write($"Start load: {pluginDll.AssetFile} -> ");
 
-                        loadAssemblies.Add(assembly);
-                        using Stream stream = new MemoryStream(dllBytes);
-                        AssemblyLoadContext.Default.LoadFromStream(stream);
+                            var dllBytes = await http.GetByteArrayAsync(pluginDllFull);
+                            Console.WriteLine($"Bytes load: {dllBytes.Length.ToHumanizedSize()}");
+                            var assembly = Assembly.Load(dllBytes);
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Ошибка загрузки: {ex.Message}");
+                            loadAssemblies.Add(assembly);
+                            using Stream stream = new MemoryStream(dllBytes);
+                            AssemblyLoadContext.Default.LoadFromStream(stream);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Ошибка загрузки: {ex.Message}");
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                somePluginLoadFailed = true;
+                logger.LogError(ex, "Load plugin error: '{0}'", processingPluginName);
+            }
+        }
+
+        if (somePluginLoadFailed)
+        {
+            logger.LogWarning("One or more plugins failed to load. To start the application without loading plugins, append ?safe=1 to the URL and reload the page.");
         }
     }
 }

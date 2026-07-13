@@ -47,6 +47,8 @@ builder.Services.AddScoped<IFlurlClient>(sp => new FlurlClient(httpClient));
 
 builder.Services.AddHttpClientInterceptor();
 
+var safeMode = await builder.DetectIsSafeMode(logger);
+
 builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
 
 Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
@@ -64,8 +66,15 @@ builder.Services.AddNodeWorkspace()
 if (!App.IsPrerenderProcess)
     builder.ConfigureWebSockets(backendUrl);
 
-logger.LogTrace("Loading remote plugin assemblies");
-await builder.AddRemotePluginAssemblies(Q.BackendUrl);
+if (safeMode)
+{
+    logger.LogTrace("Loading remote plugin assemblies disabled on safe mode");
+}
+else
+{
+    logger.LogTrace("Loading remote plugin assemblies...");
+    await builder.AddRemotePluginAssemblies(Q.BackendUrl, logger);
+}
 
 logger.LogTrace("Building application...");
 var app = builder.Build();
@@ -82,8 +91,11 @@ optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
 SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
 
-logger.LogTrace("Using remote plugin assemblies...");
-app.UseRemotePluginAssemblies();
+if (!safeMode)
+{
+    logger.LogTrace("Using remote plugin assemblies...");
+    app.UseRemotePluginAssemblies();
+}
 
 logger.LogTrace("=== Application startup complete, running... ===");
 await app.RunAsync();

@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <MarsAppVersion>0.7.7-alpha.19</MarsAppVersion>
+    <MarsAppVersion>0.7.7-alpha.20</MarsAppVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.5.0" />
@@ -31,6 +31,7 @@
     <PackageVersion Include="Humanizer" Version="3.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="10.7.0" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Postgres" Version="1.2.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.9" />
     <PackageVersion Include="MQTTnet" Version="5.1.0.1559" />
     <PackageVersion Include="MQTTnet.Extensions.TopicTemplate" Version="5.1.0.1559" />
     <PackageVersion Include="MailKit" Version="4.17.0" />

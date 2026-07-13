@@ -1,10 +1,11 @@
 using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginProvider.Dto;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.PluginProvider.Providers;
 
@@ -28,30 +29,70 @@ public class PluginManifestProvider
             return;
         }
 
-        var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath));
+        var pluginStaticwebassetsEndpoints = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;
+        var marsDevAdminEndpoints = MarsDevAdminEndpoints();
 
-        //var mars_deps = MarsDeps();
+        Files = FilterFiles(marsDevAdminEndpoints, pluginStaticwebassetsEndpoints);
+    }
 
-        static string? EndpointFileLabel(EndpointJsonDto endpoint) => endpoint.EndpointProperties.FirstOrDefault(p => p.Name == "label")?.Value;
+    // Пример: .t9o416ijcu.wasm -> .wasm, .kyineex1gm.js -> .js
+    // Ищет точку и от 8 до 16 символов хэша, после которых идет либо одно расширение (.wasm), либо два (.wasm.gz)
+    private static readonly Regex FingerprintRegex = new(
+        @"\.[a-z0-9]{8,16}(?=\.[a-zA-Z0-9]+(?:\.(gz|br))?$)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        var marsEndpoints = MarsDevAdminEndpoints();
+    public static IReadOnlyCollection<EndpointJsonDto> FilterFiles(StaticwebassetsEndpointsManifestJson marsDevAdminEndpoints,
+                                                                    StaticwebassetsEndpointsManifestJson pluginStaticwebassetsEndpoints)
+    {
+        static string NormalizePath(EndpointJsonDto endpoint)
+        {
+            var originalFile = endpoint.EndpointProperties
+                .FirstOrDefault(p => p.Name == "original-file" || p.Name == "label")?.Value;
 
-        var marsEndpointsMap = marsEndpoints.Endpoints.Select(s => s.AssetFile).ToHashSet();
-        var marsEndpointsFilesLabel = marsEndpoints.Endpoints.Select(s => EndpointFileLabel(s)).ToHashSet();
+            var pathToClean = originalFile ?? endpoint.AssetFile;
 
-        //var without_fingerprint
+            var gf = FingerprintRegex.Match(endpoint.AssetFile);
 
-        var pluginEndpoints = manifest.Endpoints.Where(s => !marsEndpointsMap.Contains(s.AssetFile))
-                                                .Where(s => !s.AssetFile.StartsWith("_framework/Mars.Plugin.Kit"))
-                                                .Where(s => !s.AssetFile.StartsWith("_framework/icudt_"))
-                                                .Where(s => !s.AssetFile.StartsWith("_framework/System.")) //TODO: если fingerprint отличается, то начинает поподать мусор
-                                                .Where(f => !f.AssetFile.EndsWith(".pdb") && !f.AssetFile.EndsWith(".pdb.gz"))
-                                                //.Where(f => !f.AssetFile.EndsWith(".modules.json"))
-                                                .Where(f => !marsEndpointsFilesLabel.Contains(EndpointFileLabel(f)))
-                                                .DistinctBy(s => s.AssetFile)
-                                                .ToList();
+            return FingerprintRegex.Replace(pathToClean, "");
+        }
 
-        Files = pluginEndpoints;
+        /*
+         Предыдущие проблемы
+        - original file name может у некоторых не быть
+        - почему то сжатых файлов .br нет у marsDevAdminEndpoints
+         */
+
+        var marsOriginalFilesMap = marsDevAdminEndpoints.Endpoints
+            .Select(NormalizePath)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var gzFiles = marsOriginalFilesMap.Where(s => s.EndsWith(".gz")).ToList();
+        var brFiles = marsOriginalFilesMap.Where(s => s.EndsWith(".br")).ToList();
+        if (brFiles.Count == 0)
+        {
+            marsOriginalFilesMap = marsOriginalFilesMap.Concat(gzFiles.Select(f => f[..^3] + ".br")).ToHashSet();
+        }
+
+        var pluginEndpoints = pluginStaticwebassetsEndpoints.Endpoints
+            // 1. Отсекаем отладочный мусор
+            .Where(f => !f.AssetFile.EndsWith(".pdb") && !f.AssetFile.EndsWith(".pdb.gz"))
+            // 2. Исключаем специфичные файлы самого плагина (если они не нужны)
+            .Where(s => !s.AssetFile.StartsWith("_framework/Mars.Plugin.Kit", StringComparison.OrdinalIgnoreCase)
+                        // 3. Исключаем файлы ICU
+                        && !s.AssetFile.StartsWith("_framework/icudt_")
+                        && !s.AssetFile.StartsWith("_framework/Microsoft.DotNet.HotReload"))
+            // 4. Исключаем все файлы, которые уже есть в основном приложении (сравнение идет без фингерпринтов!)
+            //.Where(s => !marsOriginalFilesMap.Contains(NormalizePath(s)))
+            .Where(s =>
+            {
+                //s.AssetFile.Contains("AppFront.Main") && s.AssetFile.EndsWith(".wasm")
+                string v = NormalizePath(s);
+                return !marsOriginalFilesMap.Contains(v);
+            })
+            .DistinctBy(s => s.AssetFile)
+            .ToList();
+
+        return pluginEndpoints;
     }
 
     private ProjectDependencies MarsDeps()
@@ -62,11 +103,12 @@ public class PluginManifestProvider
         return marsWebAppDependencies;
     }
 
-    StaticwebassetsEndpointsManifestJson MarsEndpoints()
+    StaticwebassetsEndpointsManifestJson? MarsEndpoints()
     {
         var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var manifestFileName = "Mars.staticwebassets.endpoints.json";
         var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
+        if (!File.Exists(manifestFilePath)) return null;
         var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;
         return manifest;
     }
@@ -76,14 +118,13 @@ public class PluginManifestProvider
         var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         var manifestFileName = "AppAdmin.staticwebassets.endpoints.json";
         var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
+        if (!File.Exists(manifestFilePath)) throw new FileNotFoundException($"{manifestFileName} not found. File is Required!");
         var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;
         return manifest;
     }
 
-    public void ProvideManifest(WebApplication app, PluginData pluginData)
+    public MarsFrontPluginManifest GenerateManifest(WebApplication app, PluginData pluginData, ILogger logger)
     {
-        if (Files.Count == 0) return;
-
         var pluginUrl = $"/_plugin/{pluginData.Info.KeyName}";
         pluginData.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";
 
@@ -111,14 +152,6 @@ public class PluginManifestProvider
         };
         manifest.Plugins[pluginData.Info.KeyName] = pluginInfo;
 
-        //var manifestJson = JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = isDebug });
-        //File.WriteAllText(manifest, manifestJson);
-
-        var pluginManifestUrl = $"/_plugin/{pluginData.Info.KeyName}/{MarsFrontPluginManifest.DefaultManifestFileName}";
-        app.MapGet(pluginManifestUrl, () =>
-        {
-            return Results.Json(manifest);
-            //await context.Response.WriteAsJsonAsync(manifestJson);
-        });
+        return manifest;
     }
 }

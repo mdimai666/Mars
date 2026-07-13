@@ -238,6 +238,23 @@
         <RemoveDir Directories="$(PublishUrl.Remove($(PublishDir.LastIndexOf('$([System.IO.Path]::DirectorySeparatorChar)'))))"></RemoveDir>
     </Target>
 
+    <Target Name="CopyAppAdminStaticWebAssets" AfterTargets="Publish">
+        <PropertyGroup>
+            <AppAdminEndpointsPath>$(OutputPath)AppAdmin.staticwebassets.endpoints.json</AppAdminEndpointsPath>
+        </PropertyGroup>
+
+        <Copy SourceFiles="$(AppAdminEndpointsPath)"
+              DestinationFolder="$(PublishDir)"
+              Condition="Exists('$(AppAdminEndpointsPath)')" />
+
+        <Message Text="Copied AppAdmin.staticwebassets.endpoints.json to $(PublishDir)"
+                 Importance="high"
+                 Condition="Exists('$(AppAdminEndpointsPath)')" />
+
+        <Warning Text="AppAdmin.staticwebassets.endpoints.json not found at $(AppAdminEndpointsPath)"
+                 Condition="!Exists('$(AppAdminEndpointsPath)')" />
+    </Target>
+
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>$(MSBuildProjectName).Test</_Parameter1>

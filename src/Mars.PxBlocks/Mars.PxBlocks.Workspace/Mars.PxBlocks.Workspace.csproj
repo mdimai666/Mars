@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <NoWarn>BL0007</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.PxBlocks.Shared\Mars.PxBlocks.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

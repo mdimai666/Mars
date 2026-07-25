@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\StandPxBlocksApp.Client\StandPxBlocksApp.Client.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    </ItemGroup>
+
+</Project>

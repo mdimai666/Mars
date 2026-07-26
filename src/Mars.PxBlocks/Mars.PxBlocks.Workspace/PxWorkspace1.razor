@@ -96,21 +96,11 @@
 
         <rect width="100%" height="100%" fill="url(#px-grid)" />
 
-        @* Blocks — zoomed and scrolled *@
+        @* Blocks — zoomed and scrolled. Only root blocks; children render inside parents *@
         <g transform="translate(@_scrollX, @_scrollY) scale(@_zoom)">
-            @* Connection indicators *@
-            @foreach (var (parent, child) in GetConnections())
+            @foreach (var block in GetRootBlocks())
             {
-                var pHeight = BlockTotalHeight(parent);
-                <rect x="@(parent.X + 4)" y="@(parent.Y + pHeight - PxBlockSvgHelper.NotchHeight)"
-                      width="8" height="@(PxBlockSvgHelper.NotchHeight * 2)"
-                      fill="@parent.Color" opacity="0.6" rx="1" />
-            }
-
-            @* Blocks rendered in chain order *@
-            @foreach (var (block, rx, ry) in GetRenderChain())
-            {
-                <PxBlockComponent Block="@block" RenderX="@rx" RenderY="@ry" @key="block.Id" />
+                <PxBlockComponent Block="@block" @key="block.Id" TryGetBlock="LookupBlock" />
             }
         </g>
     </svg>
@@ -184,13 +174,33 @@
 
     // --- Chain helpers ---
 
-    /// <summary>Total visual height including notches.</summary>
-    public static float BlockTotalHeight(PxBlock b)
+    /// <summary>Block lookup for nested rendering.</summary>
+    private PxBlock? LookupBlock(string id) => _blocks.FirstOrDefault(b => b.Id == id);
+
+    /// <summary>Returns blocks that are not children of any other block.</summary>
+    private List<PxBlock> GetRootBlocks()
     {
-        var body = PxBlockSvgHelper.MeasureBlock(b.DisplayName, b.Fields.Count, b.Inputs.Count);
-        return b is PxBlockValue
-            ? body.Height
-            : body.Height + PxBlockSvgHelper.NotchHeight;
+        var children = new HashSet<string>();
+        foreach (var b in _blocks)
+        {
+            if (b is PxBlockCommand cmd && cmd.PreviousBlockId != null)
+                children.Add(b.Id);
+            if (b is PxBlockHat hat && hat.NextBlockId != null)
+            {
+                var next = _blocks.FirstOrDefault(x => x.Id == hat.NextBlockId);
+                if (next != null) children.Add(next.Id);
+            }
+            foreach (var input in b.Inputs)
+                if (input.ConnectedBlockId != null)
+                    children.Add(input.ConnectedBlockId);
+        }
+        // Also add blocks connected to someone's NextBlockId
+        foreach (var b in _blocks)
+        {
+            if (b is PxBlockCommand cmd && cmd.NextBlockId != null)
+                children.Add(cmd.NextBlockId);
+        }
+        return _blocks.Where(b => !children.Contains(b.Id)).ToList();
     }
 
     /// <summary>Get all descendants in chain (via NextBlockId), including this block.</summary>
@@ -214,62 +224,6 @@
             current = next;
         }
         return chain;
-    }
-
-    /// <summary>Returns blocks in render order with computed positions (chains stacked, value blocks placed in inputs).</summary>
-    private List<(PxBlock Block, float X, float Y)> GetRenderChain()
-    {
-        var result = new List<(PxBlock, float, float)>();
-        var rendered = new HashSet<string>();
-
-        var ordered = _blocks
-            .OrderBy(b => GetChainDepth(b))
-            .ThenBy(b => b.Y)
-            .ToList();
-
-        foreach (var block in ordered)
-        {
-            if (rendered.Contains(block.Id)) continue;
-            if (TryGetOwnerInput(block) != null) continue; // Rendered inside parent
-
-            // Walk up to find root
-            var root = block;
-            while (TryGetParent(root) is { } parent && !rendered.Contains(parent.Id))
-                root = parent;
-
-            // Render chain from root
-            float x = root.X;
-            float y = root.Y;
-            foreach (var b in GetChain(root))
-            {
-                if (!rendered.Add(b.Id)) break;
-                result.Add((b, x, y));
-
-                // Render value blocks attached to this block's inputs
-                int inputIdx = 0;
-                foreach (var input in b.Inputs)
-                {
-                    if (input.Type == PxInputType.Value && input.ConnectedBlockId != null)
-                    {
-                        var valBlock = _blocks.FirstOrDefault(vb => vb.Id == input.ConnectedBlockId);
-                        if (valBlock != null && !rendered.Contains(valBlock.Id))
-                        {
-                            rendered.Add(valBlock.Id);
-                            // Position value block inside the input slot
-                            float vx = x + PxBlockSvgHelper.MeasureBlock(b.DisplayName, b.Fields.Count, b.Inputs.Count).Width
-                                        - PxBlockSvgHelper.FieldPadding - 10;
-                            float vy = y + PxBlockSvgHelper.RowHeight + inputIdx * PxBlockSvgHelper.RowHeight
-                                        + PxBlockSvgHelper.RowHeight / 2 - PxBlockSvgHelper.ValueOutputHeight / 2;
-                            result.Add((valBlock, vx, vy));
-                        }
-                    }
-                    inputIdx++;
-                }
-
-                y += BlockTotalHeight(b);
-            }
-        }
-        return result;
     }
 
     private int GetChainDepth(PxBlock block)
@@ -458,6 +412,9 @@
 
     // --- Snapping ---
 
+    private static float BlockTotalHeight(PxBlock b) =>
+        b is PxBlockValue ? PxBlockSvgHelper.ValueH : PxBlockSvgHelper.TotalH(PxBlockSvgHelper.BodyH(b.Inputs.Count));
+
     private void TrySnapConnections(PxBlock draggedHead)
     {
         const float snapDist = 20f;
@@ -507,9 +464,11 @@
                 if (input.Type != PxInputType.Value) { inputIdx++; continue; }
 
                 // Compute the input slot's screen position
-                float inputX = target.X + PxBlockSvgHelper.MeasureBlock(target.DisplayName, target.Fields.Count, target.Inputs.Count).Width - 10;
-                float inputY = target.Y + PxBlockSvgHelper.RowHeight + inputIdx * PxBlockSvgHelper.RowHeight
-                               + PxBlockSvgHelper.RowHeight / 2;
+                float inputX = target.X + PxBlockSvgHelper.StatementWidth(PxBlockSvgHelper.TotalFieldWidth(target.Fields)) - 10;
+                float inputY = target.Y + (target is PxBlockHat
+                    ? PxBlockSvgHelper.InputRowTopHat(inputIdx)
+                    : PxBlockSvgHelper.InputRowTopStmt(inputIdx))
+                    + PxBlockSvgHelper.RowH / 2;
 
                 float dx = Math.Abs(valBlock.X - inputX);
                 float dy = Math.Abs(valBlock.Y - inputY);

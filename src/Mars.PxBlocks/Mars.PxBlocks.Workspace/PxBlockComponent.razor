@@ -7,18 +7,43 @@
 
     bool isHat = Block is PxBlockHat;
     bool isValue = Block is PxBlockValue;
-    bool hasStmtInput = Block.Inputs.Any(i => i.Type == PxInputType.Statement);
+    bool isChild = !float.IsNaN(RenderX); // Rendered as child inside parent block
+
+    // Separate inputs by type
+    var stmtInputs = Block.Inputs.Where(i => i.Type == PxInputType.Statement).ToList();
+    var valInputs = Block.Inputs.Where(i => i.Type == PxInputType.Value).ToList();
+    int stmtCount = stmtInputs.Count;
 
     float totalFieldW = PxBlockSvgHelper.TotalFieldWidth(Block.Fields);
-    float bodyH = PxBlockSvgHelper.BodyH(Block.Inputs.Count);
+
+    // Calculate extra width needed for connected value blocks
+    // Standard slot width is MAX_DYNAMIC_SHAPE_WIDTH (48px)
+    // Only add extra width if connected block is wider than slot
+    float maxValInputWidth = 0;
+    foreach (var input in valInputs)
+    {
+        if (input.ConnectedBlockId != null && TryGetBlock != null)
+        {
+            var child = TryGetBlock(input.ConnectedBlockId);
+            if (child != null)
+            {
+                float childW = PxBlockSvgHelper.ValueWidth(PxBlockSvgHelper.TotalFieldWidth(child.Fields));
+                // Only count extra width beyond standard slot
+                float extraW = Math.Max(0, childW - PxBlockSvgHelper.MAX_DYNAMIC_SHAPE_WIDTH);
+                maxValInputWidth = Math.Max(maxValInputWidth, extraW);
+            }
+        }
+    }
+
+    float bodyH = PxBlockSvgHelper.BodyH(stmtCount);
     float width;
     string bodyPath;
 
     if (isHat)
     {
-        width = PxBlockSvgHelper.StatementWidth(totalFieldW);
-        if (hasStmtInput) width = Math.Max(width, PxBlockSvgHelper.StatementIndent * 2 + PxBlockSvgHelper.R * 2 + PxBlockSvgHelper.TabW * 4);
-        bodyPath = PxBlockSvgHelper.HatPath(width, bodyH, hasStmtInput);
+        width = PxBlockSvgHelper.StatementWidth(totalFieldW + maxValInputWidth);
+        if (stmtCount > 0) width = Math.Max(width, PxBlockSvgHelper.STATEMENT_INPUT_NOTCH_OFFSET * 2 + PxBlockSvgHelper.NOTCH_WIDTH);
+        bodyPath = PxBlockSvgHelper.HatPath(width, bodyH, stmtCount > 0);
     }
     else if (isValue)
     {
@@ -27,18 +52,19 @@
     }
     else
     {
-        width = PxBlockSvgHelper.StatementWidth(totalFieldW);
-        if (hasStmtInput) width = Math.Max(width, PxBlockSvgHelper.StatementIndent * 2 + PxBlockSvgHelper.R * 2 + PxBlockSvgHelper.TabW * 4);
-        bodyPath = PxBlockSvgHelper.StatementPath(width, bodyH, hasStmtInput);
+        width = PxBlockSvgHelper.StatementWidth(totalFieldW + maxValInputWidth);
+        if (stmtCount > 0) width = Math.Max(width, PxBlockSvgHelper.STATEMENT_INPUT_NOTCH_OFFSET * 2 + PxBlockSvgHelper.NOTCH_WIDTH);
+        bodyPath = PxBlockSvgHelper.StatementPath(width, bodyH, stmtCount > 0);
     }
 
     string darker = Darken(Block.Color, 0.15f);
 
-    float tx = x + (isValue ? PxBlockSvgHelper.ValueConnR : 0);
+    // Value blocks offset by MAX_DYNAMIC_SHAPE_WIDTH only when rendered as root (not child)
+    float tx = x + (isValue && !isChild ? PxBlockSvgHelper.MAX_DYNAMIC_SHAPE_WIDTH : 0);
     float ty = y;
 
     float labelY = isHat ? PxBlockSvgHelper.LabelYHat : PxBlockSvgHelper.LabelYStmt;
-    float fx = PxBlockSvgHelper.FieldPadX;
+    float fx = PxBlockSvgHelper.MEDIUM_PADDING;
 }
 
 <g class="px-block @(Block.IsDragging ? "dragging" : "")"
@@ -51,26 +77,26 @@
     @if (Block.Fields.Count == 0)
     {
         <text><text x="@(fx.ToString("F1", Inv))" y="@(labelY.ToString("F1", Inv))"
-              fill="white" font-size="13" font-weight="600"
+              fill="white" font-size="12" font-weight="600"
               font-family="Segoe UI, sans-serif" dominant-baseline="central">@Block.DisplayName</text></text>
     }
     else @foreach (var _field in Block.Fields)
     {
         var field = _field;
         float fw = PxBlockSvgHelper.EstimateFieldWidth(field);
-        float fcy = labelY - PxBlockSvgHelper.RowH / 2;
+        float fcy = labelY - PxBlockSvgHelper.ROW_HEIGHT / 2;
 
         @if (field is PxLabelField lab)
         {
             <text><text x="@(fx.ToString("F1", Inv))" y="@(labelY.ToString("F1", Inv))"
-                  fill="white" font-size="13" font-weight="600"
+                  fill="white" font-size="12" font-weight="600"
                   font-family="Segoe UI, sans-serif" dominant-baseline="central">@lab.Text</text></text>
         }
         else
         {
             <g data-block-id="@Block.Id" data-field-name="@field.Name" data-field-type="@field.GetType().Name">
                 <rect x="@((fx - 1).ToString("F1", Inv))" y="@(fcy.ToString("F1", Inv))"
-                      width="@((fw + 2).ToString("F1", Inv))" height="@(PxBlockSvgHelper.RowH.ToString("F0"))"
+                      width="@((fw + 2).ToString("F1", Inv))" height="@(PxBlockSvgHelper.ROW_HEIGHT.ToString("F0"))"
                       fill="transparent" style="cursor:text;" />
                 @{
                     string dd = Darken(Block.Color, 0.2f);
@@ -79,7 +105,7 @@
                 {
                     case PxTextField tf:
                         <rect x="@((fx - 1).ToString("F1", Inv))" y="@(fcy.ToString("F1", Inv))"
-                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.RowH.ToString("F0"))"
+                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.ROW_HEIGHT.ToString("F0"))"
                               fill="white" stroke="@dd" stroke-width="1" rx="3" />
                         <text><text x="@((fx + 5).ToString("F1", Inv))" y="@(labelY.ToString("F1", Inv))"
                               fill="#333" font-size="12" font-weight="400"
@@ -89,7 +115,7 @@
                         break;
                     case PxNumberField nf:
                         <rect x="@((fx - 1).ToString("F1", Inv))" y="@(fcy.ToString("F1", Inv))"
-                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.RowH.ToString("F0"))"
+                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.ROW_HEIGHT.ToString("F0"))"
                               fill="white" stroke="@dd" stroke-width="1" rx="3" />
                         <text><text x="@((fx + 5).ToString("F1", Inv))" y="@(labelY.ToString("F1", Inv))"
                               fill="#333" font-size="12" font-weight="400"
@@ -97,7 +123,7 @@
                         break;
                     case PxDropdownField df:
                         <rect x="@((fx - 1).ToString("F1", Inv))" y="@(fcy.ToString("F1", Inv))"
-                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.RowH.ToString("F0"))"
+                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.ROW_HEIGHT.ToString("F0"))"
                               fill="white" stroke="@dd" stroke-width="1" rx="3" />
                         <text><text x="@((fx + 5).ToString("F1", Inv))" y="@(labelY.ToString("F1", Inv))"
                               fill="#333" font-size="12" font-weight="400"
@@ -120,7 +146,7 @@
                         break;
                     case PxVariableField vf:
                         <rect x="@((fx - 1).ToString("F1", Inv))" y="@(fcy.ToString("F1", Inv))"
-                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.RowH.ToString("F0"))"
+                              width="@(fw.ToString("F1", Inv))" height="@(PxBlockSvgHelper.ROW_HEIGHT.ToString("F0"))"
                               fill="white" stroke="@dd" stroke-width="1" rx="3" />
                         <text><text x="@((fx + 5).ToString("F1", Inv))" y="@(labelY.ToString("F1", Inv))"
                               fill="#333" font-size="12" font-weight="400"
@@ -134,36 +160,34 @@
                 }
             </g>
         }
-        fx += fw + 4;
+        fx += fw + 6;
     }
 
-    @for (int i = 0; i < Block.Inputs.Count; i++)
+    @* Render value inputs INLINE in the first row (after fields) *@
+    @if (!isValue && valInputs.Count > 0)
     {
-        var input = Block.Inputs[i];
-        float rowTop = isHat
-            ? PxBlockSvgHelper.InputRowTopHat(i)
-            : PxBlockSvgHelper.InputRowTopStmt(i);
-        float rowMid = rowTop + PxBlockSvgHelper.RowH / 2;
-
-        if (input.Type == PxInputType.Statement)
-        {
-            float connX = PxBlockSvgHelper.StatementIndent + PxBlockSvgHelper.R;
-            float connW = width - PxBlockSvgHelper.StatementIndent * 2 - PxBlockSvgHelper.R * 2;
-            <path d="@PxBlockSvgHelper.StatementConnectorPath(connW)"
-                  fill="@Block.Color" stroke="@darker" stroke-width="1"
-                  transform="translate(@(connX.ToString("F1", Inv)), @(rowTop.ToString("F1", Inv)))" />
-        }
-        else
+        @foreach (var input in valInputs)
         {
             float slotX = PxBlockSvgHelper.ValueSlotX(width);
             <path d="@PxBlockSvgHelper.ValueConnectorPath(40)"
                   fill="white" opacity="0.85" stroke="@darker" stroke-width="1"
-                  transform="translate(@(slotX.ToString("F1", Inv)), @(rowMid.ToString("F1", Inv)))" />
+                  transform="translate(@(slotX.ToString("F1", Inv)), @(labelY.ToString("F1", Inv)))" />
         }
+    }
+    @* Render statement inputs as separate rows with C-gap *@
+    @for (int i = 0; i < stmtInputs.Count; i++)
+    {
+        var input = stmtInputs[i];
+        float rowTop = isHat
+            ? PxBlockSvgHelper.StatementInputRowTopHat(i)
+            : PxBlockSvgHelper.StatementInputRowTop(i);
+        float rowMid = rowTop + PxBlockSvgHelper.ROW_HEIGHT / 2;
+
+        @* Statement connector removed — decorative only, causes visual artifacts *@
 
         @if (!string.IsNullOrEmpty(input.Name))
         {
-            <text><text x="@(PxBlockSvgHelper.FieldPadX.ToString("F1", Inv))" y="@(rowMid.ToString("F1", Inv))"
+            <text><text x="@(PxBlockSvgHelper.MEDIUM_PADDING.ToString("F1", Inv))" y="@(rowMid.ToString("F1", Inv))"
                   fill="rgba(255,255,255,0.75)" font-size="11" font-weight="500"
                   font-family="Segoe UI, sans-serif" dominant-baseline="central">@input.Name</text></text>
         }
@@ -185,23 +209,18 @@
         }
     }
 
-    @* Value children (connected to value inputs) *@
-    @for (int i = 0; i < Block.Inputs.Count; i++)
+    @* Value children (connected to value inputs) — left connector aligned to slot *@
+    @foreach (var input in valInputs)
     {
-        var input = Block.Inputs[i];
-        if (input.Type == PxInputType.Value && input.ConnectedBlockId != null && TryGetBlock != null)
+        if (input.ConnectedBlockId != null && TryGetBlock != null)
         {
             var child = TryGetBlock(input.ConnectedBlockId);
             if (child != null)
             {
-                float cRowTop = isHat
-                    ? PxBlockSvgHelper.InputRowTopHat(i)
-                    : PxBlockSvgHelper.InputRowTopStmt(i);
-                float cRowMid = cRowTop + PxBlockSvgHelper.RowH / 2;
                 float cSlotX = PxBlockSvgHelper.ValueSlotX(width);
                 <PxBlockComponent Block="child"
-                                  RenderX="@(cSlotX + PxBlockSvgHelper.ValueConnR)"
-                                  RenderY="@(cRowMid - PxBlockSvgHelper.ValueH / 2)"
+                                  RenderX="@cSlotX"
+                                  RenderY="@(labelY - PxBlockSvgHelper.VALUE_INPUT_HEIGHT / 2)"
                                   TryGetBlock="TryGetBlock" />
             }
         }

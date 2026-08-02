@@ -307,7 +307,7 @@ public partial class PxWorkspace1
     // --- Snapping ---
 
     private static float BlockTotalHeight(PxBlock b) =>
-        b is PxBlockValue ? PxBlockSvgHelper.ValueH : PxBlockSvgHelper.TotalH(PxBlockSvgHelper.BodyH(b.Inputs.Count));
+        b is PxBlockValue ? PxBlockSvgHelper.VALUE_INPUT_HEIGHT : PxBlockSvgHelper.TotalH(PxBlockSvgHelper.BodyH(PxBlockSvgHelper.CountStatementInputs(b.Inputs)));
 
     private void TrySnapConnections(PxBlock draggedHead)
     {
@@ -357,12 +357,12 @@ public partial class PxWorkspace1
             {
                 if (input.Type != PxInputType.Value) { inputIdx++; continue; }
 
-                // Compute the input slot's screen position
+                // Value inputs are inline in the first (label) row
                 float inputX = target.X + PxBlockSvgHelper.StatementWidth(PxBlockSvgHelper.TotalFieldWidth(target.Fields)) - 10;
-                float inputY = target.Y + (target is PxBlockHat
-                    ? PxBlockSvgHelper.InputRowTopHat(inputIdx)
-                    : PxBlockSvgHelper.InputRowTopStmt(inputIdx))
-                    + PxBlockSvgHelper.RowH / 2;
+                float labelY = target is PxBlockHat
+                    ? PxBlockSvgHelper.LabelYHat
+                    : PxBlockSvgHelper.LabelYStmt;
+                float inputY = target.Y + labelY;
 
                 float dx = Math.Abs(valBlock.X - inputX);
                 float dy = Math.Abs(valBlock.Y - inputY);

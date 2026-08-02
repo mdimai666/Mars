@@ -36,7 +36,6 @@
 
 @code {
     [Parameter] public List<PxToolboxCategory> Categories { get; set; } = [];
-
     [Parameter] public EventCallback<PxBlockDefinition> OnBlockDragStart { get; set; }
 
     private async Task OnDragStart(DragEventArgs e, PxBlockDefinition def)

@@ -9,7 +9,6 @@ export function findFieldInfo(clientX, clientY) {
     const el = document.elementFromPoint(clientX, clientY);
     if (!el) return null;
 
-    // Check if we hit a field (element inside a <g> with data-field-name)
     const fieldGroup = el.closest('[data-field-name]');
     if (!fieldGroup) return null;
 

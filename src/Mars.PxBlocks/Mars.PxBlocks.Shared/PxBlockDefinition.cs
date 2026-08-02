@@ -4,7 +4,6 @@ public class PxBlockDefinition
 {
     public string TypeId { get; set; } = "";
     public string Message { get; set; } = "";
-    public List<string> Args { get; set; } = [];
     public string Colour { get; set; } = "#A8A8A8";
     public string Tooltip { get; set; } = "";
 

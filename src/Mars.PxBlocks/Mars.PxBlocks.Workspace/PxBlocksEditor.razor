@@ -2,32 +2,45 @@
 @namespace Mars.PxBlocks.Workspace
 
 <div class="d-flex" style="height:100vh; width:100vw; font-family:'Segoe UI',sans-serif;">
-    @* Toolbox *@
     <div style="min-width:160px; max-width:160px; height:100%;">
-        <PxToolbox Categories="_categories"
-                   OnBlockDragStart="OnBlockDragStart" />
+        <PxToolbox Categories="_categories" OnBlockDragStart="OnBlockDragStart" />
     </div>
-
-    @* Workspace *@
     <div style="flex:1; height:100%; position:relative;">
-        <PxWorkspace1 @ref="_workspace"
-                      Blocks="_blocks"
-                      BlocksChanged="OnBlocksChanged" />
+        <PxWorkspace @ref="_workspace" Blocks="_blocks" BlocksChanged="OnBlocksChanged" />
     </div>
 </div>
 
 @code {
-    private PxWorkspace1 _workspace = default!;
+    private PxWorkspace _workspace = default!;
     private List<PxBlock> _blocks = [];
     private List<PxToolboxCategory> _categories = [];
 
     protected override void OnInitialized()
     {
-        _categories = CreateMakeCodeToolbox();
+        _categories = CreateToolbox();
 
-        var ifBlock = _categories.First(s => s.Name == "Логика").Blocks.First(s => s.Message == "if true then");
-        _blocks = [ifBlock.CreateBlock()];
+        // Create initial blocks for debugging
+        var onStart = new PxBlockHat { Color = C_Events, X = 100, Y = 50 };
+        onStart.Fields.Add(new PxLabelField { Text = "on start" });
 
+        var forever = new PxBlockCommand { Color = C_Events, X = 100, Y = 110 };
+        forever.Fields.Add(new PxLabelField { Text = "forever" });
+        forever.Inputs.Add(new PxInput { Name = "do", Type = PxInputType.Statement });
+
+        var setItem = new PxBlockCommand { Color = C_Vars, X = 164, Y = 166 };
+        setItem.Fields.Add(new PxLabelField { Text = "set" });
+        setItem.Fields.Add(new PxVariableField { Name = "var", VariableName = "item" });
+        setItem.Fields.Add(new PxLabelField { Text = "to" });
+        setItem.Inputs.Add(new PxInput { Name = "val", Type = PxInputType.Value });
+
+        var numBlock = new PxBlockValue { Color = C_Math, OutputType = "number" };
+        numBlock.Fields.Add(new PxNumberField { Name = "NUM", Value = 42 });
+
+        setItem.Inputs[0].ConnectedBlockId = numBlock.Id;
+        forever.Inputs[0].ConnectedBlockId = setItem.Id;
+        onStart.NextBlockId = forever.Id;
+
+        _blocks = [onStart, forever, setItem, numBlock];
     }
 
     private void OnBlockDragStart(PxBlockDefinition def)
@@ -40,9 +53,7 @@
         _blocks = blocks;
     }
 
-    // --- MakeCode-style toolbox (https://makecode.microbit.org) ---
-
-    // MakeCode brand colors
+    // --- MakeCode-style colors ---
     private const string C_Loops = "#107C10";
     private const string C_Logic = "#006C9E";
     private const string C_Math = "#712672";
@@ -52,14 +63,13 @@
     private const string C_Text = "#996600";
     private const string C_Arrays = "#5C2D91";
 
-    private static List<PxToolboxCategory> CreateMakeCodeToolbox()
+    private static List<PxToolboxCategory> CreateToolbox()
     {
-        return new List<PxToolboxCategory>
-        {
+        return
+        [
             new()
             {
-                Name = "Основное",
-                Colour = C_Events,
+                Name = "Основное", Colour = C_Events,
                 Blocks =
                 {
                     Def("on start", C_Events, () => new PxBlockHat { Color = C_Events, Fields = { Lbl("on start") } }),
@@ -68,8 +78,7 @@
             },
             new()
             {
-                Name = "Циклы",
-                Colour = C_Loops,
+                Name = "Циклы", Colour = C_Loops,
                 Blocks =
                 {
                     Def("repeat 4 times do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
@@ -78,15 +87,14 @@
                     Def("while true do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
                         Fields = { Lbl("while") },
                         Inputs = { Val(""), Stmt("do") } }),
-                    Def("for index from 0 to 4 do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
+                    Def("for from 0 to 4 do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
                         Fields = { Lbl("for"), Var("index"), Lbl("from"), Num("from", 0), Lbl("to"), Num("to", 4) },
                         Inputs = { Stmt("do") } })
                 }
             },
             new()
             {
-                Name = "Логика",
-                Colour = C_Logic,
+                Name = "Логика", Colour = C_Logic,
                 Blocks =
                 {
                     Def("if true then", C_Logic, () => new PxBlockCommand { Color = C_Logic,
@@ -100,15 +108,12 @@
                     Def("\u2713 / \u2717", C_Logic, true, "bool", () => new PxBlockValue { Color = C_Logic,
                         Fields = { Drop("BOOL", "true", "false") } }),
                     Def("not", C_Logic, true, "bool", () => new PxBlockValue { Color = C_Logic,
-                        Fields = { Lbl("not") }, Inputs = { Val("") } }),
-                    Def("\u00AC\u00AC\u00AC and \u00AC\u00AC\u00AC", C_Logic, true, "bool", () => new PxBlockValue { Color = C_Logic,
-                        Inputs = { Val("A"), Val("B") }, Fields = {} })
+                        Fields = { Lbl("not") }, Inputs = { Val("") } })
                 }
             },
             new()
             {
-                Name = "Математика",
-                Colour = C_Math,
+                Name = "Математика", Colour = C_Math,
                 Blocks =
                 {
                     Def("0 + 0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
@@ -121,18 +126,13 @@
                         Fields = { Num("A", 0), Lbl("\u00F7"), Num("B", 0) } }),
                     Def("0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
                         Fields = { Num("NUM", 0) } }),
-                    Def("remainder of \u00AC \u00F7 \u00AC", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Inputs = { Val("A"), Val("B") } }),
-                    Def("round \u00AC", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Lbl("round") }, Inputs = { Val("") } }),
                     Def("pick random 0 to 10", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
                         Fields = { Lbl("pick random"), Num("min", 0), Lbl("to"), Num("max", 10) } })
                 }
             },
             new()
             {
-                Name = "Переменные",
-                Colour = C_Vars,
+                Name = "Переменные", Colour = C_Vars,
                 Blocks =
                 {
                     Def("set item to 0", C_Vars, () => new PxBlockCommand { Color = C_Vars,
@@ -146,20 +146,16 @@
             },
             new()
             {
-                Name = "Функции",
-                Colour = C_Funcs,
+                Name = "Функции", Colour = C_Funcs,
                 Blocks =
                 {
                     Def("call doSomething", C_Funcs, () => new PxBlockCommand { Color = C_Funcs,
-                        Fields = { Lbl("call"), Var("doSomething") } }),
-                    Def("call doSomething", C_Funcs, true, "any", () => new PxBlockValue { Color = C_Funcs,
                         Fields = { Lbl("call"), Var("doSomething") } })
                 }
             },
             new()
             {
-                Name = "Текст",
-                Colour = C_Text,
+                Name = "Текст", Colour = C_Text,
                 Blocks =
                 {
                     Def("\"Hello\"", C_Text, true, "string", () => new PxBlockValue { Color = C_Text,
@@ -170,8 +166,7 @@
             },
             new()
             {
-                Name = "Массивы",
-                Colour = C_Arrays,
+                Name = "Массивы", Colour = C_Arrays,
                 Blocks =
                 {
                     Def("empty list", C_Arrays, true, "array", () => new PxBlockValue { Color = C_Arrays,
@@ -180,17 +175,15 @@
                         Fields = { Lbl("length of") }, Inputs = { Val("") } })
                 }
             }
-        };
+        ];
     }
 
     // --- Helpers ---
 
-    private static PxBlockDefinition Def(string msg, string colour,
-        Func<PxBlock> factory) =>
+    private static PxBlockDefinition Def(string msg, string colour, Func<PxBlock> factory) =>
         new() { Message = msg, Colour = colour, Factory = factory };
 
-    private static PxBlockDefinition Def(string msg, string colour, bool output, string outputType,
-        Func<PxBlock> factory) =>
+    private static PxBlockDefinition Def(string msg, string colour, bool output, string outputType, Func<PxBlock> factory) =>
         new() { Message = msg, Colour = colour, Output = output, OutputType = outputType, Factory = factory };
 
     private static PxLabelField Lbl(string text) => new() { Text = text };

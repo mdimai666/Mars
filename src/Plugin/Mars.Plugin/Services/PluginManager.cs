@@ -181,10 +181,12 @@ internal class PluginManager
 
                     pluginAppBuilder.UseEndpoints(endpoints =>
                     {
-                        endpoints.MapGet("/" + MarsFrontPluginManifest.DefaultManifestFileName, () => Results.Json(manifest));
+                        endpoints.MapGet("/" + MarsFrontPluginManifest.DefaultManifestFileName, () => Results.Json(manifest))
+                            .ExcludeFromDescription();
                         _logger.LogInformation("Serving ManifestFile for {PluginName} at {Url}, Files={Files}", pluginData.Info.KeyName, pluginManifestUrl, manifestProvider.Files.Count);
 
-                        endpoints.MapGet("/health", () => TypedResults.Text("OK"));
+                        endpoints.MapGet("/health", () => TypedResults.Text("OK"))
+                            .ExcludeFromDescription();
                     });
                 }
 

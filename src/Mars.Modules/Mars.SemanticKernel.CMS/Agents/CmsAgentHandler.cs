@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.Core.Extensions;
 using Mars.SemanticKernel.CMS.Plugins;
 using Mars.SemanticKernel.Host.Shared.Dto;
@@ -26,15 +27,14 @@ internal class CmsAgentHandler
     {
         services.AddTransient<CmsAgentHandler>();
 
-        var instructionRoot = Path.Combine(hostEnvironment.ContentRootPath, "Skills");
-#if DEBUG
-        instructionRoot = Path.GetFullPath(Path.Combine(hostEnvironment.ContentRootPath, "..", "Mars.Modules", "Mars.SemanticKernel.CMS", "Skills"));
+        var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        var instructionRoot = Path.Combine(assemblyDir, "Skills");
+
         if (!Directory.Exists(instructionRoot))
             throw new DirectoryNotFoundException($"Instruction root directory not found: {instructionRoot}");
-#endif
+
         var instructionPlugin = new InstructionPlugin(instructionRoot);
         services.AddSingleton(instructionPlugin);
-
     }
 
     public Task<AgentOutput> Handle(string prompt, string? systemPrompt = null, PromptExecutionSettings? promptExecutionSettings = null, CancellationToken cancellationToken = default)

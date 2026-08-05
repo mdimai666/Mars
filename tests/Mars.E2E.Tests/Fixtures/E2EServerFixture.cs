@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Sockets;
-using FluentAssertions.Common;
 using Flurl.Http;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Dto.Users;
@@ -17,13 +16,11 @@ using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
 
 namespace Mars.E2E.Tests.Fixtures;
 
@@ -36,7 +33,7 @@ public class E2EServerFixture : IAsyncLifetime
     public IConfigurationRoot Configuration => (IConfigurationRoot)_app.Configuration;
 
     private WebApplication _app = default!;
-    private TokenGenerator _tokenGenerator = new();
+    private TokenGenerator _tokenGenerator;
     private string? _bearerTokenValue;
     public string BearerTokenValue => _bearerTokenValue ??= _tokenGenerator.GenerateTokenWithClaims();
     public string BearerToken => $"{JwtBearerDefaults.AuthenticationScheme} {BearerTokenValue}";
@@ -53,6 +50,7 @@ public class E2EServerFixture : IAsyncLifetime
     {
         var port = GetFreePort();
         BaseUrl = $"http://localhost:{port}";
+        _tokenGenerator = new(BaseUrl);
     }
 
     private async Task SetupAppFactory()
@@ -140,6 +138,10 @@ public class E2EServerFixture : IAsyncLifetime
         ef.ChangeTracker.Clear();
         var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
         MarsStartupPartMigrations.SeedData(ServiceProvider, Configuration, logger, true);
+
+        var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
+        optionService.SysOption.SiteUrl = BaseUrl;
+        optionService.SaveOption(optionService.SysOption);
 
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 

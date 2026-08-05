@@ -18,10 +18,11 @@ public class TokenGenerator
         ValidAudience = "mars-app",
     };
 
-    private string _validIssuer = "http://localhost";
+    private string _validIssuer;
 
-    public TokenGenerator()
+    public TokenGenerator(string validIssuer)
     {
+        _validIssuer = validIssuer;
         KeyMaterialService = new TestKeyMaterialService();
     }
 

@@ -30,22 +30,22 @@
                            ImageSize="50px" />
             <div class="spacer-1"></div>
             <FormItem2 For="@(() => model.UserName)">
-                <FluentTextField @bind-Value=@model.UserName />
+                <FluentTextField Name="@nameof(model.UserName)" @bind-Value=@model.UserName />
             </FormItem2>
             <FormItem2 For="@(() => model.LastName)">
-                <FluentTextField @bind-Value=@model.LastName />
+                <FluentTextField Name="@nameof(model.LastName)" @bind-Value=@model.LastName />
             </FormItem2>
             <FormItem2 For="@(() => model.FirstName)">
-                <FluentTextField @bind-Value=@model.FirstName />
+                <FluentTextField Name="@nameof(model.FirstName)" @bind-Value=@model.FirstName />
             </FormItem2>
             <FormItem2 For="@(() => model.MiddleName)">
-                <FluentTextField @bind-Value=@model.MiddleName />
+                <FluentTextField Name="@nameof(model.MiddleName)" @bind-Value=@model.MiddleName />
             </FormItem2>
             <FormItem2 For="@(() => model.Email)">
-                <FluentTextField TextFieldType="TextFieldType.Email" @bind-Value=@model.Email />
+                <FluentTextField Name="@nameof(model.Email)" TextFieldType="TextFieldType.Email" @bind-Value=@model.Email />
             </FormItem2>
             <FormItem2 For="@(() => model.PhoneNumber)">
-                <FluentTextField @bind-Value=@model.PhoneNumber Pattern="/^+91(7\d|8\d|9\d)\d{9}$/" />
+                <FluentTextField Name="@nameof(model.PhoneNumber)" @bind-Value=@model.PhoneNumber />
             </FormItem2>
             <FormItem2 For="@(() => model.Gender)">
                 <FluentRadioGroup @bind-Value=model.Gender>

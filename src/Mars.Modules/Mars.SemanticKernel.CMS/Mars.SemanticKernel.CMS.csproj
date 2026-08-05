@@ -4,6 +4,11 @@
         <ProjectReference Include="..\Mars.SemanticKernel.Host.Shared\Mars.SemanticKernel.Host.Shared.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <Content Include="Skills\**\*.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.AiServices.Integration.Tests</_Parameter1>
         </AssemblyAttribute>

@@ -42,7 +42,7 @@ public class ApplicationFixture : IAsyncLifetime
 
     public IConfigurationRoot Configuration = default!;
 
-    private static TokenGenerator _tokenGenerator = new();
+    private static TokenGenerator _tokenGenerator = new("http://localhost");
 
     private static string? s_bearerToken;
     public static string BearerToken => s_bearerToken ??= $"{JwtBearerDefaults.AuthenticationScheme} {_tokenGenerator.GenerateTokenWithClaims()}";

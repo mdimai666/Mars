@@ -14,15 +14,33 @@ $newPluginName = "MyNewPlugin"; git clone https://github.com/mdimai666/MyMarsPlu
 
 ```
 MyNewPlugin/
-    MyMarsPlugin - основной проект плагина
-    MyMarsPlugin.Shared - общий код для backend и frontend
-    MyMarsPlugin.Front - код для frontend-части
+    src/
+        MyMarsPlugin/           # Backend (SDK: Microsoft.NET.Sdk.Razor)
+        MyMarsPlugin.Shared/    # Общие DTO, настройки, ресурсы
+        MyMarsPlugin.Front/     # Frontend (SDK: Microsoft.NET.Sdk.BlazorWebAssembly)
 ```
 
-## Примеры
-Примеры реализованных плагинов:
+## NuGet пакеты
 
-| Название                                              |  Описание |
-|---|---|
-| https://github.com/mdimai666/Mars.PlayAudioNodePlugin | Для проигрывание звука из ресурса.
-| https://github.com/mdimai666/Mars.TelegramPlugin      | Интеграция Телеграм бота
+**Backend:**
+- `mdimai666.Mars.Plugin.Kit.Host`
+- `mdimai666.Mars.Plugin.PluginPublishScript`
+
+**Frontend:**
+- `mdimai666.Mars.Plugin.Kit.Front`
+
+## Примеры плагинов
+
+| Плагин | Описание | Сложность |
+|--------|----------|-----------|
+| [MyMarsPlugin](https://github.com/mdimai666/MyMarsPlugin) | Шаблон плагина | Базовый |
+| [Mars.TelegramPlugin](https://github.com/mdimai666/Mars.TelegramPlugin) | Интеграция Telegram бота | Средний |
+| [Mars.PlayAudioNodePlugin](https://github.com/mdimai666/Mars.PlayAudioNodePlugin) | Воспроизведение аудио | Сложный (host services) |
+| [Mars.SberDevApiPlugin](https://github.com/mdimai666/Mars.SberDevApiPlugin) | GigaChat, SaluteSpeech | Сложный (AI интеграция) |
+
+## Инструкция для AI-агента
+
+Если вы используете AI-агента для создания плагина, передайте ему файл:
+> [ai/PluginCreationGuide.md](../../../ai/PluginCreationGuide.md)
+
+Этот файл содержит краткую инструкцию с примерами кода для генерации плагина.

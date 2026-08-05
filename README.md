@@ -2,30 +2,27 @@
   <a href="https://Mars-dotnet.org/#gh-light-mode-only">
     <img src="assets/mars-logo.svg" width="318px" alt="Mars logo" />
   </a>
-  <!-- <a href="https://Mars-dotnet.org/#gh-dark-mode-only">
-    <img src="assets/mars-logo.svg" width="318px" alt="Mars logo" />
-  </a> -->
 </p>
 
-<h3 align="center">CMS с открытым исходным кодом, self-hosted или облако — все под вашим контролем.</h3>
+<h3 align="center">Open-source visual programming platform. Build websites, automate tasks, connect anything — all without code.</h3>
 
-<p align="center">The dotnet C# open-source CMS, asp net core based and Blazor.</p>
-<p align="center"><a href="https://cloud.Mars-dotnet.org/signups?source=github1">Cloud</a> · <a href="https://Mars-dotnet.org/demo">Try live demo</a></p>
+<p align="center">Self-hosted or cloud. You stay in control.</p>
+
+<p align="center"><a href="https://cloud.Mars-dotnet.org/signups?source=github1">Cloud</a> · <a href="https://Mars-dotnet.org/demo">Live Demo</a></p>
 
 <p align="center">
-  <span href="">RU</span> · 
-  <a href="https://cloud.Mars-dotnet.org/signups?source=github1">EN</a>
+  <a href="README.ru.md">Русский</a> · <span>English</span>
 </p>
 
 <p align="center">
   <a href="https://www.nuget.org/packages/mdimai666.Mars.Core">
-    <img src="https://img.shields.io/nuget/v/mdimai666.Mars.Core" alt="nuget Version" />
+    <img src="https://img.shields.io/nuget/v/mdimai666.Mars.Core" alt="NuGet Version" />
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
   </a>
   <a href="https://dotnet.microsoft.com/download">
-    <img src="https://img.shields.io/badge/.NET-10.0-blue.svg" alt="nuget Version" />
+    <img src="https://img.shields.io/badge/.NET-10.0-blue.svg" alt=".NET Version" />
   </a>
 </p>
 
@@ -33,103 +30,133 @@
 
 <p align="center">
   <a href="https://Mars-dotnet.org">
-    <img src="assets/Mars_gif.gif" alt="Administration panel" />
+    <img src="assets/Mars_gif.gif" alt="Mars Platform" />
   </a>
 </p>
 
 <br>
 
-Mars — это бесплатная CMS с открытым исходным кодом, позволяющая вам управлять любым контентом как угодно.
+## What is Mars?
 
-- **Self-hosted или Cloud**: Вы можете размещать и масштабировать проекты Mars по своему усмотрению. Вы можете сэкономить время, выполнив развертывание в [Mars Cloud](https://cloud.Mars-dotnet.org/signups?source=github1) или на желаемой хостинговой платформе\*\*: AWS, Azure, Google Cloud, DigitalOcean.
-- **Современная панель администратора**: элегантная, полностью настраиваемая и полностью расширяемая панель администратора. Так же есть готовые компоненты для построения своей.
-- **Поддержка нескольких баз данных**: вы можете выбрать предпочитаемую базу данных: PostgreSQL, MSSQL, MySQL, MariaDB и SQLite.
-- **Расширяемость**: вы можете быстро построить свою модель данных; логику в визуальном редакторе; маршруты или установить плагины.
-- **Быстрый и надежный**: Созданный на основе кроссплатформенного asp net core и С#. 
-- **Мультифронт**: приложение может запускать несколько фронт-интерфейсов: SPA, статический HTML, шаблон, Blazor.
-- **Любой внеший интерфейс**: используйте любую интерфейсную среду SPA (React, Next.js, Vue, Angular и т. д.), мобильные приложения или даже IoT.
+Mars is a platform that combines **visual programming** with a **flexible content engine**. Connect nodes on a canvas to build websites, APIs, automations, IoT workflows, and data pipelines — no coding required. When you need more power, drop into C# right inside the visual editor.
 
-## 😀 Начало
+Inspired by Node-RED and WordPress, Mars gives you the visual simplicity of flow-based programming with the depth of a full-stack platform.
 
-Прочитайте [руководство по началу работы](https://mdimai666.github.io/Mars/md/QuickStart.md) или следуйте инструкциям ниже:
+## Key Features
 
-### Запуск в Docker
-[docker hub](https://hub.docker.com/r/mdimai666/mars/)
+### Visual Programming
+- **55+ node types** — HTTP, MQTT, SQL, files, C# code, templates, loops, events, email, and more
+- **Flow-based editor** — drag, connect, debug. See your logic as a diagram
+- **No-code and low-code** — visual blocks for common tasks, C# when you need full control
 
+### Content Management
+- **Custom content types** — create any entity (articles, products, orders, custom data)
+- **15 field types** — text, numbers, dates, selects, relations, files, images, nested groups, lists
+- **Multi-language content** with categories and taxonomies
+
+### Data Sources
+- Connect to **PostgreSQL, MsSQL, MySQL** databases
+- Query remote databases visually with SQL nodes
+- Introspect schemas, run backups, explore data
+
+### Plugins
+- Extend Mars with **.NET assemblies** loaded at runtime
+- Backend and frontend (Blazor WebAssembly) plugins
+- Upload via admin panel or install from marketplace
+
+### Docker & Automation
+- Manage **Docker containers**, images, and volumes from the admin panel
+- Built-in **job scheduler** (Quartz.NET) — cron, intervals, daily tasks
+- Run external tools and services as part of your workflows
+
+### AI Integration
+- **Semantic Kernel** for LLM-powered features
+- AI tools available inside visual flows
+- Database schema introspection with AI assistance
+
+### Multi-Front
+- Serve content as **SPA, static HTML, Blazor, or templates**
+- Use any frontend framework (React, Vue, Angular) via API
+- Mobile apps and IoT devices connect directly
+
+### Admin Panel
+- **Blazor Wasm** single-page application
+- Manage everything: content, users, media, plugins, navigation, settings
+- Visual node editor integrated into the admin interface
+
+### Observability
+- **OpenTelemetry** with Prometheus endpoint
+- Structured logging and tracing
+
+## Use Cases
+
+| Use Case | Description |
+|----------|-------------|
+| **Websites** | CMS with visual logic — build pages, manage content, customize behavior |
+| **APIs** | Create REST endpoints visually, connect to databases, transform data |
+| **Automation** | Scheduled tasks, data processing, file handling, email notifications |
+| **IoT** | MQTT nodes for device communication, smart home workflows |
+| **Data Pipelines** | Connect databases, ETL processes, export to any format |
+| **Internal Tools** | Admin panels, dashboards, approval workflows |
+
+## Quick Start
+
+### Docker
+
+```bash
+docker run -d --name mars-app \
+  -w /app -p 5005:80 \
+  -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal:5432;Database=mars_app;Username=postgres;Password=your_password" \
+  mdimai666/mars:latest
 ```
-docker run -d --name mars-app-nocontent -w /app -p 5005:80  -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal:5432;Database=mars_docker_app2;Username=postgres;Password=ggxxrr" mdimai666/mars:latest
-```
 
-### Docker-composer
-файл [docker-compose.yml](https://mdimai666.github.io/Mars/files/docker/docker-compose.yml) и конфиг файл [appsettings.Production.json](https://mdimai666.github.io/Mars/files/docker/appsettings.Production.json)
+Or use **docker-compose** — see [docker-compose.yml](https://mdimai666.github.io/Mars/files/docker/docker-compose.yml) and [appsettings.Production.json](https://mdimai666.github.io/Mars/files/docker/appsettings.Production.json).
 
-### Начните с разработки собственного плагина
-> Вы работаете с Mars 'из коробки', не меняя его код, а настраивая и расширяя его через node-code и плагины.
-[Разработка плагина](https://github.com/mdimai666/MyMarsPlugin)
+### Development
 
-### Требования
- - OS: Windows, Linux, MacOS
- - Database: postgres 
-
-## Installation
-
-Скачайте и запустите [последнюю версию](https://github.com/mdimai666/Mars/releases) тут
-
-> Mars.exe
-
-### 🚀 Dev Installation
-
-Install [NET10 SDK](https://dotnet.microsoft.com/en-us/download) or [Visual Studio 2022](https://visualstudio.microsoft.com/ru/vs/community/)
+Requirements: [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download) or [Visual Studio 2022](https://visualstudio.microsoft.com/vs/community/)
 
 ```bash
 git clone https://github.com/mdimai666/Mars.git
-cd Mars/Mars
+cd Mars
 cp appsettings.json appsettings.Local.json
-code appsettings.json #edit config
-dotnet watch run
+# Edit appsettings.Local.json with your database connection
+dotnet watch run --project src/Mars.WebApp
 ```
 
-**or**
+### Download
 
-```bash
-#winget install mdimai666.Mars
-#docker Mars
-```
-
-This command generates a brand new project with the default features.
-
-> DOTNET: Currently **NET 10**
-
-**[Смотрите больше на нашем сайте](https://Mars-dotnet.org/overview)**.
-
-## Совместная разработка
-
-Пожалуйста, прочтите наше [Руководство для участников](./CONTRIBUTING.md), прежде чем отправлять pull-request в проект.
-
-## Community support
-
-Общую справку по использованию Mars можно найти в [официальной документации Mars](https://docs.Mars-dotnet.org). Для получения дополнительной помощи вы можете использовать один из этих каналов, чтобы задать вопрос:
-
-- [GitHub](https://github.com/mdimai666/Mars) (Bug reports, Contributions)
-<!-- - [Community Forum](https://forum.Mars-dotnet.org) (Questions and Discussions) -->
-<!-- - [Feedback section](https://feedback.Mars-dotnet.org) (Roadmap, Feature requests) -->
-<!-- - [YouTube Channel](https://www.youtube.com/Mars) (Learn from Video Tutorials) -->
-
-## Roadmap
-
-Ознакомьтесь с нашей [дорожной картой](https://Mars-dotnet.org/roadmap), чтобы быть в курсе последних выпущенных и предстоящих функций. Вы также можете поделиться с нами своим мнением и проголосовать за конкретную функцию.
+Download the latest release from [GitHub Releases](https://github.com/mdimai666/Mars/releases) and run `Mars.exe`.
 
 ## Documentation
 
-Документацию по Марс можно найти в нашем специальном [репозитории](https://github.com/mdimai666/Mars/documentation) или просмотреть нашу документацию в реальном времени:
+- [Developer Documentation](https://mdimai666.github.io/Mars/)
+- [Quick Start Guide](https://mdimai666.github.io/Mars/md/QuickStart.md)
+- [Plugin Development](https://github.com/mdimai666/MyMarsPlugin)
 
-- [Документация для разработчиков](https://mdimai666.github.io/Mars/)
-- [Руководство пользователя](https://mdimai666.github.io/Mars/)
+## Deployment
 
-## Попробуйте живую демо-версию
+- **OS**: Windows, Linux, macOS
+- **Database**: PostgreSQL (recommended), MsSQL, MySQL, SQLite (development)
+- **Cloud**: AWS, Azure, Google Cloud, DigitalOcean
+- **Docker Hub**: [mdimai666/mars](https://hub.docker.com/r/mdimai666/mars/)
 
-Посмотрите сами, что скрывается под капотом, получив доступ к [размещенному проекту Mars](https://Mars-dotnet.orgnn/demo) с примерами данных.
+## Community & Support
+
+- [GitHub](https://github.com/mdimai666/Mars) — Bug reports, contributions
+- [Website](https://Mars-dotnet.org) — Overview and news
+- [Documentation](https://mdimai666.github.io/Mars/) — Guides and API reference
+
+## Tech Stack
+
+- **.NET 10** / ASP.NET Core
+- **Blazor** (Server + WebAssembly)
+- **Entity Framework Core** — PostgreSQL, MsSQL, MySQL
+- **Quartz.NET** — Job scheduling
+- **Semantic Kernel** — AI integration
+- **Docker.DotNet** — Container management
+- **OpenTelemetry** — Observability
 
 ## License
 
-Информацию о лицензировании см. в файле [LICENSE](./LICENSE).
+MIT License — see [LICENSE](./LICENSE)

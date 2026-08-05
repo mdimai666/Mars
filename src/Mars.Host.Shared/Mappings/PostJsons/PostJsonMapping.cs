@@ -90,6 +90,7 @@ public static class PostJsonMapping
             Slug = entity.Slug,
             Title = entity.Title,
             Type = entity.Type,
+            Tags = entity.Tags,
             Content = entity.Content,
             Author = entity.Author.ToResponse(),
             Meta = entity.Meta,

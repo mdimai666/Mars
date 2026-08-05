@@ -24,6 +24,8 @@ public record PostSummaryResponse : IBasicEntityResponse
     [Display(Name = "Slug")]
     public required string Slug { get; init; }
 
+    public required IReadOnlyCollection<string> Tags { get; init; }
+
     public required PostAuthorResponse Author { get; init; }
     public required IReadOnlyCollection<PostCategorySummaryResponse>? Categories { get; init; }
 }

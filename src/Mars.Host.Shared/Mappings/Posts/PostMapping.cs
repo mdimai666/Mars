@@ -17,6 +17,7 @@ public static class PostMapping
             Title = entity.Title,
             Type = entity.Type,
             Slug = entity.Slug,
+            Tags = entity.Tags,
             Author = entity.Author.ToResponse(),
             Categories = entity.Categories?.ToResponse(),
         };
@@ -29,6 +30,7 @@ public static class PostMapping
           Title = entity.Title,
           Type = entity.Type,
           Slug = entity.Slug,
+          Tags = entity.Tags,
           Content = entity.Content,
           Author = entity.Author.ToResponse(),
           Categories = entity.Categories?.ToResponse(),

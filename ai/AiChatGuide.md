@@ -65,6 +65,43 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 - Сервер настроен на `PropertyNamingPolicy = null` (`AddMarsSignalRConfiguration`) —
   клиент обязан делать так же (в `AiChatHubClient.AddJsonProtocol` уже задано).
 
+### Мост «агент → открытая страница» (page bridge)
+
+Агент работает на сервере, а поля формы живут в клиентском Blazor. Инструменты открытой страницы
+(`GetOpenPageInfo` / `GetOpenPageFields` / `SetOpenPageField` / `SaveOpenPage` в `Mars.AiChat.Host/Tools/MarsOpenPageTools.cs`)
+выполняются через SignalR round-trip:
+
+```
+Серверный инструмент (MarsOpenPageTools, экземпляр создаётся на запуск с chatId)
+  → AiChatPageBridge.CallPageAsync          (pending-запрос по requestId, таймаут 20 c)
+  → событие AiChatPageToolRequest в группу чата
+  → AiChatTerminal.HubOnPageToolRequest     (фронт, фильтр по chatId)
+  → AiChatPageHandlerHolder.Current         (IAiChatPageHandler открытой страницы)
+  → AiChatHubClient.SendPageToolResultAsync → метод хаба PageToolResult
+  → AiChatPageBridge.Complete               (TaskCompletionSource → результат возвращается агенту)
+```
+
+Страница подключается к мосту так (пример — `EditPostView`):
+
+1. Реализует `IAiChatPageHandler` (`Mars.AiChat.Front/Services/IAiChatPageHandler.cs`):
+   `GetInfo()`, `GetFields()`, `SetField(field, value)`, `Save()`.
+2. В `OnAfterRender(firstRender)` кладёт себя в `AiChatPageHandlerHolder.Current`,
+   в `Dispose()` — снимает (паттерн тот же, что у `AiChatAppService.Setup`).
+
+Нюансы `EditPostView`:
+
+- Контент читается из активного редактора (`blockEditor1.ContentJson` / `codeEditor1.GetValue()` /
+  `editor1.GetHTML()`), для ИИ дополнительно отдаётся `contentText` (plain-text извлечение).
+- Запись контента — через экземпляр редактора, не через модель: BlockEditor получает Editor.js JSON
+  (текст бьётся на абзацы, `BuildBlockEditorJson`), Code — `SetValue`, PlainText — в модель.
+  WYSIWYG пока не поддерживается на запись (нет публичного сеттера).
+- `SetOpenPageField` меняет форму БЕЗ сохранения (пользователь проверяет и жмёт «Сохранить»);
+  `SaveOpenPage` — только по явной просьбе (правило задано в промпте).
+- Контекст «какая страница открыта» передаётся в send-запросе (`PageContext` = относительный URL)
+  и попадает в инструкции агента.
+
+Чтобы подключить новую страницу к мосту — реализуй `IAiChatPageHandler` и зарегистрируй его так же.
+
 ## Как добавить новый скилл (инструмент агента)
 
 Скилл = C#-метод, который агент вызывает через function calling. Пример: инструменты настроек сайта
@@ -145,6 +182,24 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 окружение, `IsRunningInDocker` и `IsPM2`, часовые поясы, аптайм и память. Реализация ничего не детектит сама —
 использует `IMarsSystemService` (`AboutSystem()`), поэтому источник данных тот же, что у страницы «Настройки → О системе».
 
+### Посты (создание без страницы)
+
+`Mars.AiChat.Host/Tools/MarsPostTools.cs` — инструменты `CreatePost` / `GetPost` / `ListPosts`, работают через
+`IPostService` напрямую (страница не нужна). Экземпляр создаётся на каждый запуск с `userId` владельца чата —
+он становится автором поста.
+
+- `CreatePost(type, title, contentText, tagsCsv, excerpt)`:
+  - тип контента берётся из `IPostService.GetEditModelBlank(type)` (`PostType.PostContentSettings.PostContentType`);
+  - текст адаптируется под редактор: BlockEditor → Editor.js JSON (абзацы, `BuildBlockEditorJson`),
+    WYSIWYG → `<p>…</p>`, PlainText/Code → как есть;
+  - slug генерируется `TextTool.TranslateToPostSlug(title)`, статус — черновик;
+  - в ответе агенту возвращается ссылка на страницу редактирования `/EditPost/{type}/{id}`.
+- `GetPost(id)` и `ListPosts(type, take)` — чтение; контент отдаётся и «как хранится», и plain-text (`ExtractPlainText`).
+
+Обновление существующего поста сознательно не делается серверным инструментом (полный `UpdatePostQuery`
+затирал бы метаполя): редактирование идёт через мост открытой страницы (`SetOpenPageField`),
+а «создать» и «прочитать» — серверными инструментами.
+
 ## Как добавить новое событие сервер → клиент
 
 1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
@@ -156,10 +211,14 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 
 ## Как развивать агента (roadmap-идеи)
 
-- **Сценарий «создай пост»**: инструменты на `IPostService`/`IPostTypeService` + промпт-инженеринг;
-  для «пишет прямо в форме» нужен мост UI-автоматизации (JS-события/директивы в страницы админки).
-- **Контекст текущей страницы**: фронт знает URL (`NavigationManager`) — передавать в `send`-запросе
-  и добавлять в инструкции агента («ты находишься на странице …»).
+Реализовано: настройки сайта и любые опции, информация о системе, создание/чтение постов,
+мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу).
+
+- **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
+  (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.
+- **WYSIWYG-контент**: запись пока не поддерживается (нет публичного сеттера у `WysiwygEditor`);
+  добавить `SetHTML` и подключить в `SetContentValue`.
+- **Мост для других страниц**: реализовать `IAiChatPageHandler` для новых страниц (пользователи, настройки).
 - **Подтверждения опасных действий**: расширить `AskUserTool` до `confirm_action(action)` с ответом да/нет.
 - **Другие скиллы**: пользователи (`IUserService`), медиа (`IMediaService`), ноды-флоу, плагины, Docker.
 - **Выбор подключения на чат**: сейчас берётся `DefaultConnectionName`; можно хранить подключение в `AiChatSessionState`.

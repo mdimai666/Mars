@@ -10,6 +10,24 @@ namespace Mars.Setup;
 
 public class SetupService
 {
+    // Intermediate data collected during wizard steps
+    public string DbHost { get; set; } = "127.0.0.1";
+    public int DbPort { get; set; } = 5432;
+    public string DbName { get; set; } = "mars";
+    public string DbUser { get; set; } = "mars";
+    public string DbPassword { get; set; } = "mars";
+
+    public string SiteUrl { get; set; } = "";
+    public string SiteName { get; set; } = "Mars";
+    public string SiteDescription { get; set; } = "";
+    public string LoggingLevel { get; set; } = "Information";
+    public string AppFrontMode { get; set; } = "HandlebarsTemplate";
+    public string AppFrontStaticPath { get; set; } = "../client";
+
+    public string AdminEmail { get; set; } = "admin@example.com";
+    public string AdminPassword { get; set; } = "";
+    public string AdminFirstName { get; set; } = "Admin";
+
     public async Task<(bool Success, string Message)> TestDatabaseConnectionAsync(
         string host, int port, string database, string username, string password)
     {
@@ -32,9 +50,7 @@ public class SetupService
         }
     }
 
-    public void WriteLocalConfig(
-        string host, int port, string database, string username, string password,
-        string adminEmail, string adminPassword, string adminFirstName)
+    public void WriteLocalConfig()
     {
         var configPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Local.json");
 
@@ -42,13 +58,32 @@ public class SetupService
         {
             ["ConnectionStrings"] = new Dictionary<string, string>
             {
-                ["DefaultConnection"] = $"Host={host};Port={port};Database={database};Username={username};Password={password}"
+                ["DefaultConnection"] = $"Host={DbHost};Port={DbPort};Database={DbName};Username={DbUser};Password={DbPassword}"
             },
             ["Setup"] = new Dictionary<string, string>
             {
-                ["AdminEmail"] = adminEmail,
-                ["AdminPassword"] = adminPassword,
-                ["AdminFirstName"] = adminFirstName
+                ["AdminEmail"] = AdminEmail,
+                ["AdminPassword"] = AdminPassword,
+                ["AdminFirstName"] = AdminFirstName,
+                ["SiteUrl"] = SiteUrl,
+                ["SiteName"] = SiteName,
+                ["SiteDescription"] = SiteDescription
+            },
+            ["Logging"] = new Dictionary<string, object>
+            {
+                ["LogLevel"] = new Dictionary<string, string>
+                {
+                    ["Default"] = LoggingLevel
+                }
+            },
+            ["AppFront"] = new[]
+            {
+                new Dictionary<string, string>
+                {
+                    ["Mode"] = AppFrontMode,
+                    ["Path"] = AppFrontStaticPath,
+                    ["Url"] = ""
+                }
             }
         };
 

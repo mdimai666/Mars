@@ -52,6 +52,7 @@
         <Content Remove="compilerconfig.json" />
         <Content Remove="Pages\DisplayFF1.razor" />
         <Content Remove="Pages\EditFF1.razor" />
+        <Content Remove="Pages\_Host.cshtml" />
     </ItemGroup>
     <ItemGroup>
         <None Include="compilerconfig.json" />
@@ -243,16 +244,11 @@
             <AppAdminEndpointsPath>$(OutputPath)AppAdmin.staticwebassets.endpoints.json</AppAdminEndpointsPath>
         </PropertyGroup>
 
-        <Copy SourceFiles="$(AppAdminEndpointsPath)"
-              DestinationFolder="$(PublishDir)"
-              Condition="Exists('$(AppAdminEndpointsPath)')" />
+        <Copy SourceFiles="$(AppAdminEndpointsPath)" DestinationFolder="$(PublishDir)" Condition="Exists('$(AppAdminEndpointsPath)')" />
 
-        <Message Text="Copied AppAdmin.staticwebassets.endpoints.json to $(PublishDir)"
-                 Importance="high"
-                 Condition="Exists('$(AppAdminEndpointsPath)')" />
+        <Message Text="Copied AppAdmin.staticwebassets.endpoints.json to $(PublishDir)" Importance="high" Condition="Exists('$(AppAdminEndpointsPath)')" />
 
-        <Warning Text="AppAdmin.staticwebassets.endpoints.json not found at $(AppAdminEndpointsPath)"
-                 Condition="!Exists('$(AppAdminEndpointsPath)')" />
+        <Warning Text="AppAdmin.staticwebassets.endpoints.json not found at $(AppAdminEndpointsPath)" Condition="!Exists('$(AppAdminEndpointsPath)')" />
     </Target>
 
     <ItemGroup>

@@ -9,7 +9,7 @@ WordPress-style мастер первоначальной настройки Mar
 Пользователь не должен редактировать JSON-конфиги вручную. При первом запуске:
 1. Приложение обнаруживает отсутствие `appsettings.Local.json`
 2. Запускается отдельный минимальный хост с wizard'ом (НЕ основное приложение)
-3. Пользователь проходит 3 шага: БД → админ → готово
+3. Пользователь проходит 4 шага: БД → настройки сайта → админ → готово
 4. Wizard записывает `appsettings.Local.json` и останавливается
 5. Основное приложение стартует с новой конфигурацией
 
@@ -30,7 +30,7 @@ Program.cs
 ├─ File.Exists("appsettings.Local.json")?
 │   ├─ НЕТ → SetupWizardHost.RunAsync(args)
 │   │        ├─ Отдельный WebApplication (Razor Pages + Bootstrap 5)
-│   │        ├─ /setup → Welcome → Database → User → Complete
+│   │        ├─ /setup → Welcome → Database → Site → User → Complete
 │   │        └─ SignalComplete() → хост останавливается
 │   └─ ДА → продолжаем
 ├─ WebApplication.CreateBuilder(args)
@@ -39,22 +39,31 @@ Program.cs
 └─ app.Run()
 ```
 
+## Шаги wizard
+
+1. **Welcome** (`/setup`) — приветствие
+2. **Database** (`/setup/database`) — подключение к PostgreSQL, авто-валидация
+3. **Site** (`/setup/site`) — SiteUrl (авто-заполнение из браузера), SiteName, SiteDescription, Logging level, AppFront mode
+4. **User** (`/setup/user`) — создание администратора
+5. **Complete** (`/setup/complete`) — запись конфига, запуск основного приложения
+
 ## Файлы
 
 | Файл | Роль |
 |------|------|
 | `src/Mars.WebApp/Setup/SetupWizardHost.cs` | Отдельный хост. `StartAsync()` → ждёт `SignalComplete()` → `StopAsync()` |
-| `src/Mars.WebApp/Setup/SetupService.cs` | Тест подключения к БД (Npgsql), запись `appsettings.Local.json` |
-| `src/Mars.WebApp/Pages/Setup/` | Razor Pages: Welcome, Database, User, Complete |
+| `src/Mars.WebApp/Setup/SetupService.cs` | Хранит промежуточные данные wizard'а, тест БД (Npgsql), запись `appsettings.Local.json` |
+| `src/Mars.WebApp/Pages/Setup/` | Razor Pages: Welcome, Database, Site, User, Complete |
 | `src/Mars.WebApp/Pages/Setup/_Layout.cshtml` | Layout wizard'а (Bootstrap 5, марсианские цвета #C1440E) |
 
 ## Flow после wizard
 
-1. Complete page: JS вызывает `fetch('/setup/complete?handler=Finish')` → `SignalComplete()`
-2. Wizard host останавливается
-3. `Program.cs` продолжается → `CreateBuilder` → `ConfigureApp`
-4. Основное приложение стартует (миграции, seed с admin из конфига)
-5. JS в Complete page polling'ит `/` каждые 2 сек → redirect на `/dev/Login`
+1. Complete page OnGet: вызывает `SetupService.WriteLocalConfig()` — записывает конфиг
+2. JS вызывает `fetch('/setup/complete?handler=Finish')` → `SignalComplete()`
+3. Wizard host останавливается
+4. `Program.cs` продолжается → `CreateBuilder` → `ConfigureApp`
+5. Основное приложение стартует (миграции, seed с admin из конфига)
+6. JS в Complete page polling'ит `/` каждые 2 сек → redirect на `/dev/Login`
 
 ## Seed после wizard
 
@@ -70,10 +79,33 @@ Program.cs
   "Setup": {
     "AdminEmail": "admin@example.com",
     "AdminPassword": "password",
-    "AdminFirstName": "Admin"
-  }
+    "AdminFirstName": "Admin",
+    "SiteUrl": "https://example.com",
+    "SiteName": "My Site",
+    "SiteDescription": "Site description"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
+  },
+  "AppFront": [
+    {
+      "Mode": "HandlebarsTemplate",
+      "Path": "../client",
+      "Url": ""
+    }
+  ]
 }
 ```
+
+**SysOptions** (SiteUrl, SiteName, SiteDescription) записываются в БД через `OptionService.SaveOption()` в `AppDbContextSeedData.SeedFirstOption()`, а не в конфиг. Данные берутся из секции `Setup` конфига.
+
+### AppFront Mode
+
+- `HandlebarsTemplate` — отрисовка из базы (по умолчанию), путь к шаблону не нужен
+- `HandlebarsTemplateStatic` — статические файлы, нужен `StaticPath` (по умолчанию `../client`)
+- `None` — фронтенд отключён
 
 ## Ограничения
 
@@ -86,7 +118,7 @@ Wizard **не запускается** когда:
 `tests/Mars.E2E.Tests/Tests/SetupWizardTests.cs`:
 - `InvalidConnection_ShouldShowError` — авто-валидация БД при «Далее»
 - `TestConnection_ShouldShowError` — кнопка «Проверить подключение»
-- `FullFlow_ShouldReachCompletePage` — полный flow: wizard → login → users page
+- `FullFlow_ShouldReachCompletePage` — полный flow: wizard (БД → Site → User) → login → users page
 
 ## Документация для пользователей
 

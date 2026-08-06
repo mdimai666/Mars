@@ -80,11 +80,21 @@ public class SetupWizardTests : BaseE2ETests
         await Page.FillAsync("input[name='Username']", dbConfig.Username);
         await Page.FillAsync("input[name='Password']", dbConfig.Password);
 
-        // Click "Далее" — should pass validation and redirect to user page
+        // Click "Далее" — should pass validation and redirect to site page
+        await Page.ClickAsync("button:has-text('Далее')");
+        await Page.WaitForURLAsync("**/setup/site", new() { Timeout = 15000 });
+
+        // Step 2: Site page — fill site settings
+        await Page.FillAsync("input[name='SiteUrl']", "http://localhost:5000");
+        await Page.FillAsync("input[name='SiteName']", "Test Mars");
+        await Page.FillAsync("textarea[name='SiteDescription']", "Test site description");
+        // Leave defaults for LoggingLevel and AppFrontMode
+
+        // Click "Далее" — redirect to user page
         await Page.ClickAsync("button:has-text('Далее')");
         await Page.WaitForURLAsync("**/setup/user", new() { Timeout = 15000 });
 
-        // Step 2: User page — fill admin credentials
+        // Step 3: User page — fill admin credentials
         await Page.FillAsync("input[name='FirstName']", "TestAdmin");
         await Page.FillAsync("input[name='Email']", "testadmin@example.com");
         await Page.FillAsync("input[name='Password']", "TestPassword123!");
@@ -93,22 +103,22 @@ public class SetupWizardTests : BaseE2ETests
         await Page.ClickAsync("button:has-text('Завершить установку')");
         await Page.WaitForURLAsync("**/setup/complete", new() { Timeout = 15000 });
 
-        // Step 3: Complete page — verify it shows
+        // Step 4: Complete page — verify it shows
         var content = await Page.ContentAsync();
         content.Should().Contain("Установка завершена");
 
-        // Step 4: Navigate to Login page
+        // Step 5: Navigate to Login page
         await Page.GotoAsync($"{BaseUrl}/dev/Login");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        // Step 5: Authorize with test user (already seeded in test DB)
+        // Step 6: Authorize with test user (already seeded in test DB)
         await Page.FillAsync("[name='login-email'] input", UserConstants.TestUserUsername);
         await Page.FillAsync("[name='password'] input", UserConstants.TestUserPassword);
         await Page.ClickAsync("[type='submit'] button");
         await Page.WaitForURLAsync("**/dev", new() { Timeout = 15000 });
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        // Step 6: Navigate to Users page
+        // Step 7: Navigate to Users page
         await Page.GotoAsync($"{BaseUrl}/dev/Users");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 

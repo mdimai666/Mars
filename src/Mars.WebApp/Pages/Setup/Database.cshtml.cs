@@ -31,9 +31,16 @@ public class DatabaseModel : PageModel
         _setupService = setupService;
     }
 
-    public void OnGet()
+    public IActionResult OnGet()
     {
+        // Restore from service if going back
+        Host = _setupService.DbHost;
+        Port = _setupService.DbPort;
+        Database = _setupService.DbName;
+        Username = _setupService.DbUser;
+        Password = _setupService.DbPassword;
         TestResult = null;
+        return Page();
     }
 
     public async Task<IActionResult> OnPostTestDbAsync()
@@ -59,13 +66,13 @@ public class DatabaseModel : PageModel
             return Page();
         }
 
-        // Store DB config in TempData for the next step
-        TempData["DbHost"] = Host;
-        TempData["DbPort"] = Port.ToString();
-        TempData["DbName"] = Database;
-        TempData["DbUser"] = Username;
-        TempData["DbPass"] = Password;
+        // Save to service
+        _setupService.DbHost = Host;
+        _setupService.DbPort = Port;
+        _setupService.DbName = Database;
+        _setupService.DbUser = Username;
+        _setupService.DbPassword = Password;
 
-        return RedirectToPage("/setup/user");
+        return RedirectToPage("/setup/site");
     }
 }

@@ -26,11 +26,15 @@ public class UserModel : PageModel
 
     public IActionResult OnGet()
     {
-        // If DB config was lost (direct access), go back
-        if (string.IsNullOrEmpty(TempData.Peek("DbHost")?.ToString()))
+        // If DB config was not set (direct access), go back
+        if (string.IsNullOrEmpty(_setupService.DbHost))
         {
             return RedirectToPage("/setup/database");
         }
+
+        // Restore from service if going back
+        FirstName = _setupService.AdminFirstName;
+        Email = _setupService.AdminEmail;
 
         return Page();
     }
@@ -49,17 +53,11 @@ public class UserModel : PageModel
             return Page();
         }
 
-        var dbHost = TempData["DbHost"]?.ToString()!;
-        var dbPort = int.Parse(TempData["DbPort"]?.ToString()!);
-        var dbName = TempData["DbName"]?.ToString()!;
-        var dbUser = TempData["DbUser"]?.ToString()!;
-        var dbPass = TempData["DbPass"]?.ToString()!;
+        // Save to service
+        _setupService.AdminEmail = Email;
+        _setupService.AdminPassword = Password;
+        _setupService.AdminFirstName = FirstName;
 
-        _setupService.WriteLocalConfig(
-            dbHost, dbPort, dbName, dbUser, dbPass,
-            Email, Password, FirstName);
-
-        // Redirect to complete page, then stop the wizard host
         return RedirectToPage("/setup/complete");
     }
 }

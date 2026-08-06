@@ -18,16 +18,25 @@ public static class AppDbContextSeedData
 
         if (string.IsNullOrEmpty(existNewSysOption.SiteUrl))
         {
-            var urls = string.IsNullOrEmpty(configuration["urls"]) ? "http://localhost" : configuration["urls"]!;
-            var isValidUrl = OptionReaderTool.NormalizeUrl(urls, out var siteUrl);
+            // Read from wizard Setup config, fallback to defaults
+            var siteUrl = configuration["Setup:SiteUrl"];
+            var siteName = configuration["Setup:SiteName"] ?? "Mars";
+            var siteDescription = configuration["Setup:SiteDescription"] ?? "New Mars website description";
+            var adminEmail = configuration["Setup:AdminEmail"] ?? "admin@mail.localhost";
+
+            if (string.IsNullOrEmpty(siteUrl))
+            {
+                var urls = string.IsNullOrEmpty(configuration["urls"]) ? "http://localhost" : configuration["urls"]!;
+                OptionReaderTool.NormalizeUrl(urls, out siteUrl);
+            }
 
             var sysOptions = new SysOptions
             {
                 SiteUrl = siteUrl,
-                AdminEmail = "admin@mail.localhost",
+                AdminEmail = adminEmail,
                 AllowUsersSelfRegister = false,
-                SiteDescription = "New Mars website description",
-                SiteName = "Mars",
+                SiteDescription = siteDescription,
+                SiteName = siteName,
             };
             optionService.SaveOption(sysOptions);
         }

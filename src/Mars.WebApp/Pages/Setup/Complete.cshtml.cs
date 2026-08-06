@@ -6,13 +6,24 @@ namespace Mars.Pages.Setup;
 
 public class CompleteModel : PageModel
 {
+    private readonly SetupService _setupService;
+
+    public CompleteModel(SetupService setupService)
+    {
+        _setupService = setupService;
+    }
+
     public IActionResult OnGet()
     {
-        var configPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Local.json");
-        if (!System.IO.File.Exists(configPath))
+        // If admin was not set (direct access), go back
+        if (string.IsNullOrEmpty(_setupService.AdminEmail))
         {
-            return RedirectToPage("/setup/database");
+            return RedirectToPage("/setup/user");
         }
+
+        // Write config file with all collected data
+        _setupService.WriteLocalConfig();
+
         return Page();
     }
 

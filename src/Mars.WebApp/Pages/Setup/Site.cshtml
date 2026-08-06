@@ -1,0 +1,76 @@
+@page "/setup/site"
+@model Mars.Pages.Setup.SiteModel
+@{
+    ViewData["Title"] = "Настройки сайта";
+    ViewData["CurrentStep"] = 3;
+}
+
+<h3 class="mb-1">Настройки сайта</h3>
+<p class="text-muted mb-4">Основные параметры вашего сайта</p>
+
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Адрес сайта (URL)</label>
+        <input asp-for="SiteUrl" class="form-control" placeholder="https://example.com" />
+        <div class="form-text">Адрес по которому будет доступен сайт. Используется для генерации ссылок.</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Имя сайта</label>
+        <input asp-for="SiteName" class="form-control" placeholder="Мой сайт" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Описание</label>
+        <textarea asp-for="SiteDescription" class="form-control" rows="2" placeholder="Краткое описание сайта"></textarea>
+    </div>
+
+    <hr class="my-4" />
+    <h5 class="mb-3">Технические настройки</h5>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Уровень логирования</label>
+        <select asp-for="LoggingLevel" class="form-select">
+            <option value="Trace">Trace</option>
+            <option value="Debug">Debug</option>
+            <option value="Information">Information</option>
+            <option value="Warning">Warning</option>
+            <option value="Error">Error</option>
+            <option value="Critical">Critical</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Режим фронтенда (AppFront)</label>
+        <select asp-for="AppFrontMode" class="form-select" id="appFrontMode">
+            <option value="HandlebarsTemplate">HandlebarsTemplate — отрисовка из базы</option>
+            <option value="HandlebarsTemplateStatic">HandlebarsTemplateStatic — статические файлы</option>
+            <option value="None">None — отключён</option>
+        </select>
+    </div>
+
+    <div class="mb-3" id="staticPathGroup">
+        <label class="form-label fw-semibold">Путь к статическим файлам</label>
+        <input asp-for="AppFrontStaticPath" class="form-control" placeholder="../client" />
+        <div class="form-text">Путь к папке с клиентским приложением (для HandlebarsTemplateStatic).</div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="/setup/database" class="btn btn-mars-outline">
+            <i class="bi bi-arrow-left me-1"></i> Назад
+        </a>
+        <button type="submit" class="btn btn-mars ms-auto">
+            Далее <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    function toggleStaticPath() {
+        var mode = document.getElementById('appFrontMode').value;
+        var group = document.getElementById('staticPathGroup');
+        group.style.display = mode === 'HandlebarsTemplateStatic' ? 'block' : 'none';
+    }
+    document.getElementById('appFrontMode').addEventListener('change', toggleStaticPath);
+    toggleStaticPath();
+</script>
+}

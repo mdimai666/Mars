@@ -34,6 +34,7 @@ public class AiChatAgentService
     private readonly MarsSiteTools _siteTools;
     private readonly MarsOptionsTools _optionsTools;
     private readonly MarsSystemTools _systemTools;
+    private readonly MarsSqlTools _sqlTools;
     private readonly ILogger<AiChatAgentService> _logger;
 
     public AiChatAgentService(
@@ -47,6 +48,7 @@ public class AiChatAgentService
         MarsSiteTools siteTools,
         MarsOptionsTools optionsTools,
         MarsSystemTools systemTools,
+        MarsSqlTools sqlTools,
         ILogger<AiChatAgentService> logger)
     {
         _hub = hub;
@@ -59,6 +61,7 @@ public class AiChatAgentService
         _siteTools = siteTools;
         _optionsTools = optionsTools;
         _systemTools = systemTools;
+        _sqlTools = sqlTools;
         _logger = logger;
     }
 
@@ -93,7 +96,7 @@ public class AiChatAgentService
             var askUser = new AskUserTool();
             var pageTools = new MarsOpenPageTools(_pageBridge, chatId);
             var postTools = new MarsPostTools(_postService, _chatHub, userId);
-            var tools = new AIFunction[]
+            var tools = new List<AIFunction>
             {
                 AIFunctionFactory.Create(_siteTools.GetSiteSettings),
                 AIFunctionFactory.Create(_siteTools.UpdateSiteSettings),
@@ -110,6 +113,15 @@ public class AiChatAgentService
                 AIFunctionFactory.Create(pageTools.SaveOpenPage),
                 AIFunctionFactory.Create(askUser.AskUser),
             };
+
+            if (option.EnableSqlAccess)
+            {
+                tools.Add(AIFunctionFactory.Create(_sqlTools.ListDataSources));
+                tools.Add(AIFunctionFactory.Create(_sqlTools.GetDatabaseSchema));
+                tools.Add(AIFunctionFactory.Create(_sqlTools.ExecuteSql));
+
+                _logger.LogDebug("AiChat: chat {ChatId} SQL tools enabled", chatId);
+            }
 
             var client = _clientFactory.CreateClient(connection);
             agent = client.AsHarnessAgent(new HarnessAgentOptions

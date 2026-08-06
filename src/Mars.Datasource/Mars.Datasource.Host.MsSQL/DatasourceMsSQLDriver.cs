@@ -121,6 +121,35 @@ public class DatasourceMsSQLDriver : IDatasourceDriver
         }
     }
 
+    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string sql)
+    {
+        try
+        {
+            await using var conn = new SqlConnection(_config.ConnectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new SqlCommand(sql, conn);
+            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = true,
+                Message = "success",
+                DatabaseDriver = _config.Driver,
+                RowsAffected = rowsAffected,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = false,
+                Message = ex.Message,
+                DatabaseDriver = _config.Driver,
+            };
+        }
+    }
+
     public async Task<List<QTableSchema>> Tables(SqlConnection conn)
     {
         //string sql = @"SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'";

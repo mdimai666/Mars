@@ -23,6 +23,7 @@ public static class MainAiChat
         services.AddScoped<MarsSiteTools>();
         services.AddScoped<MarsOptionsTools>();
         services.AddScoped<MarsSystemTools>();
+        services.AddScoped<MarsSqlTools>();
 
         return services;
     }

@@ -22,6 +22,13 @@ public sealed class AiChatOption
     [Display(Name = "Дополнительные инструкции агенту")]
     public string Instructions { get; set; } = "";
 
+    /// <summary>
+    /// Разрешить агенту доступ к SQL-базам: основная БД Mars (slug "default")
+    /// и настроенные data sources — схема, чтение и запись.
+    /// </summary>
+    [Display(Name = "Разрешить агенту доступ к SQL-базам")]
+    public bool EnableSqlAccess { get; set; } = true;
+
     public AiProviderConnection? GetDefaultConnection()
     {
         if (Connections.Count == 0) return null;

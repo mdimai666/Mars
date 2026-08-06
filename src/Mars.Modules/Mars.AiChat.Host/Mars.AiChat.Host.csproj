@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
     <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
     <ProjectReference Include="..\Mars.AiChat.Host.Shared\Mars.AiChat.Host.Shared.csproj" />
   </ItemGroup>

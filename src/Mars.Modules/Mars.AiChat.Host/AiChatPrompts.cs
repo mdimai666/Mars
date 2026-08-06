@@ -9,6 +9,13 @@ internal static class AiChatPrompts
     {
         var sb = new StringBuilder(BaseInstructions);
 
+        if (option.EnableSqlAccess)
+        {
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.Append(SqlAccessInstructions);
+        }
+
         if (!string.IsNullOrWhiteSpace(pageContext))
         {
             sb.AppendLine();
@@ -63,5 +70,19 @@ internal static class AiChatPrompts
         8. Выполнив задачу, коротко сообщи результат: что изменилось (старое значение -> новое значение).
         9. Если задача пока не поддерживается твоими инструментами — честно скажи об этом и предложи альтернативу.
         10. Никогда не выдумывай результат действия: если инструмент не вызывался, действие не выполнено.
+        """;
+
+    public const string SqlAccessInstructions = """
+        11. SQL-доступ к базам данных:
+           - list_data_sources — список доступных баз; slug "default" — основная база самого сайта Mars
+             (посты, пользователи, настройки, метаданные); остальные slug — настроенные внешние базы;
+           - перед запросами изучи структуру: get_database_schema (для больших баз передавай tablesFilter —
+             имя или часть имени нужных таблиц);
+           - запросы выполняй через execute_sql, один запрос за вызов; для SELECT всегда добавляй LIMIT (начни с 50);
+           - перед любым записывающим запросом (INSERT/UPDATE/DELETE/DROP/TRUNCATE/ALTER/CREATE) обязательно покажи
+             пользователю точный SQL и получи подтверждение через ask_user; исключение — пользователь явно разрешил
+             выполнять запись без подтверждений в рамках текущей задачи;
+           - после записи проверь результат запросом на чтение и сообщи число затронутых строк;
+           - никогда не выводи и не запрашивай connection strings.
         """;
 }

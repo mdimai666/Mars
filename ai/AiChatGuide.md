@@ -171,7 +171,7 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 - Десериализация в `SetOptionByClass` чувствительна к регистру — в промпте задано правило
   передавать полный JSON с точным регистром имён полей (сначала прочитать, потом править).
 - Списки защиты в `MarsOptionsTools`: `ReadDenied` (секреты: `SmtpSettingsModel`, `AiChatOption`,
-  favicon-опции) и `WriteDenied` (плюс `PluginManagerSettingsOption`).
+  `DatasourceOption` — connection strings, favicon-опции) и `WriteDenied` (плюс `PluginManagerSettingsOption`).
   Появилась новая опция с секретами — добавь её имя в списки.
 - Список доступных классов даёт `IOptionService.GetRegisteredOptionClasses()`;
   опции, зарегистрированные другими модулями/плагинами, доступны агенту автоматически.
@@ -200,6 +200,36 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 затирал бы метаполя): редактирование идёт через мост открытой страницы (`SetOpenPageField`),
 а «создать» и «прочитать» — серверными инструментами.
 
+### SQL-базы (MarsSqlTools)
+
+`Mars.AiChat.Host/Tools/MarsSqlTools.cs` — доступ к SQL через каноничный слой данных Mars
+`IDatasourceService` (singleton, `src/Mars.Datasource/Mars.Datasource.Host/Services`): тот же путь,
+что у SQL-нод и страницы `/datasource/query`. Инструменты:
+
+- `list_data_sources` — список баз (slug/название/драйвер). Виртуальный slug `"default"` —
+  основная БД самого Mars (connection string `DefaultConnection`); остальные — из `DatasourceOption`;
+- `get_database_schema(slug, tablesFilter)` — `DatabaseStructure(slug)` в компактном тексте
+  «схема.таблица: колонки», с фильтром по подстроке и обрезкой по размеру;
+- `execute_sql(slug, sql)` — один запрос за вызов. Маршрутизация по первому ключевому слову:
+  SELECT/WITH/SHOW/… → `SqlQuery` (строки как JSON-объекты, максимум 50 строк / ~30 КБ,
+  рекомендация LIMIT при обрезке); остальное (INSERT/UPDATE/DELETE/DDL) → `SqlNonQuery`
+  с ответом «затронуто строк: N».
+
+Подключение к агенту — только при `AiChatOption.EnableSqlAccess` (по умолчанию true; чекбокс в форме
+настроек). Правила безопасности заданы в промпте (`AiChatPrompts.SqlAccessInstructions`): подтверждение
+через `ask_user` перед записывающими запросами, проверка чтения после записи, LIMIT на SELECT,
+connection strings не выводить. Connection strings также защищены в `MarsOptionsTools.ReadDenied`
+(`DatasourceOption`).
+
+Нюансы слоя данных (учтены/доработаны):
+
+- `SqlNonQuery` добавлен в `IDatasourceDriver` default-реализацией (плагины со своими драйверами
+  не ломаются) + реализации `ExecuteNonQueryAsync` в трёх драйверах (psql/mssql/mysql)
+  + pass-through `IDatasourceService.SqlNonQuery(slug, sql)`.
+- Параметризации в драйверах нет — SQL передаётся сырой строкой (как в SQL-нодах); вся защита
+  на уровне правил промпта и подтверждения пользователем.
+- Ошибки драйверы возвращают как `Ok=false + Message` (не исключениями) — инструменты отдают их модели строкой.
+
 ## Как добавить новое событие сервер → клиент
 
 1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
@@ -212,7 +242,8 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 ## Как развивать агента (roadmap-идеи)
 
 Реализовано: настройки сайта и любые опции, информация о системе, создание/чтение постов,
-мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу).
+мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу),
+SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`).
 
 - **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
   (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.

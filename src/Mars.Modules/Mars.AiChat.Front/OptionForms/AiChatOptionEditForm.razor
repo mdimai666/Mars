@@ -86,6 +86,12 @@
                             Placeholder="Дополнительные инструкции агенту (необязательно)" />
         </FormItem2>
 
+        <FormItem2 For="() => context.EnableSqlAccess">
+            <FluentCheckbox @bind-Value=context.EnableSqlAccess>
+                Разрешить агенту доступ к SQL-базам (основная БД Mars и data sources: схема, чтение, запись)
+            </FluentCheckbox>
+        </FormItem2>
+
     </div>
 
 </EditOptionForm>

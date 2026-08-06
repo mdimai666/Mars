@@ -154,6 +154,35 @@ public class DatasourceMySQLDriver : IDatasourceDriver
         }
     }
 
+    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string sql)
+    {
+        try
+        {
+            await using var conn = new MySqlConnection(_config.ConnectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new MySqlCommand(sql, conn);
+            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = true,
+                Message = "success",
+                DatabaseDriver = _config.Driver,
+                RowsAffected = rowsAffected,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = false,
+                Message = ex.Message,
+                DatabaseDriver = _config.Driver,
+            };
+        }
+    }
+
     SqlQueryResultActionDto Result(string message, bool ok = false, string[][]? data = null)
     {
         return new SqlQueryResultActionDto

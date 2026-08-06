@@ -160,6 +160,35 @@ public class DatasourcePostgreSQLDriver : IDatasourceDriver
         }
     }
 
+    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string sql)
+    {
+        try
+        {
+            await using var conn = new NpgsqlConnection(_config.ConnectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = true,
+                Message = "success",
+                DatabaseDriver = _config.Driver,
+                RowsAffected = rowsAffected,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new SqlNonQueryResultActionDto
+            {
+                Ok = false,
+                Message = ex.Message,
+                DatabaseDriver = _config.Driver,
+            };
+        }
+    }
+
     Dictionary<uint, string> f_oid_table_dict(IEnumerable<uint> tablesOIDs)
     {
         using var conn = new NpgsqlConnection(_config.ConnectionString);

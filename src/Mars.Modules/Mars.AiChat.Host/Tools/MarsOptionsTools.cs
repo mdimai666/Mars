@@ -13,13 +13,14 @@ public class MarsOptionsTools
     private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = false };
 
     /// <summary>
-    /// Запрещены к чтению: содержат секреты (пароль SMTP, API-ключи ИИ-сервисов)
-    /// или технические данные, которые не должны попадать в модель.
+    /// Запрещены к чтению: содержат секреты (пароль SMTP, API-ключи ИИ-сервисов,
+    /// connection strings баз данных) или технические данные, которые не должны попадать в модель.
     /// </summary>
     private static readonly HashSet<string> ReadDenied =
     [
         "SmtpSettingsModel",
         "AiChatOption",
+        "DatasourceOption",
         "FaviconOption",
         "FaviconOptionGenaratedValues",
     ];

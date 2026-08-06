@@ -153,6 +153,13 @@ internal class DatasourceService : IDatasourceService
         return result;
     }
 
+    public async Task<SqlNonQueryResultActionDto> SqlNonQuery(string slug, string sql)
+    {
+        var se = ResolveEngine(slug);
+        var result = await se.SqlNonQuery(sql);
+        return result;
+    }
+
     public async Task<UserActionResult<string[][]>> ExecuteAction(ExecuteActionRequest action, CancellationToken cancellationToken)
     {
         try

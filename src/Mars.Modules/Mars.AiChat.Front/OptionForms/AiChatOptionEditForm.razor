@@ -1,0 +1,127 @@
+@using AppFront.Shared.Components
+@using Mars.AiChat.Shared.Options
+@using Mars.Options.Attributes
+@using Mars.Shared.Options.Attributes
+@using System.ComponentModel.DataAnnotations
+@attribute [OptionEditFormForOptionAttribute(typeof(AiChatOption))]
+@attribute [Display(Name = "ИИ-чат (агент)")]
+@attribute [AutoShowFormOnSettingsPage]
+
+<EditOptionForm @ref=_form TModel="AiChatOption"
+                FormClass="col-12 col-lg-8 mx-lg-5 compact">
+
+    <h3>ИИ-чат (агент)</h3>
+
+    <div class="vstack gap-3">
+
+        <div>
+            <h4>Подключения к ИИ-сервисам</h4>
+            <div class="text-fade fz12px mb-2">
+                OpenAI, Qwen (DashScope), DeepSeek, Ollama и любой OpenAI-совместимый сервис.
+                Если endpoint не указан — используется значение по умолчанию для провайдера.
+            </div>
+
+            <div class="vstack gap-3">
+                @for (var i = 0; i < context.Connections.Count; i++)
+                {
+                    var index = i;
+                    var conn = context.Connections[i];
+
+                    <div class="border rounded p-3 vstack gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <strong>@(string.IsNullOrEmpty(conn.Name) ? $"Подключение #{index + 1}" : conn.Name)</strong>
+                            <div class="ms-auto d-flex gap-2">
+                                <FluentButton Appearance="@(context.DefaultConnectionName == conn.Name ? Appearance.Accent : Appearance.Neutral)"
+                                              OnClick="() => SetDefaultConnection(conn)">
+                                    По умолчанию
+                                </FluentButton>
+                                <FluentButton Appearance="Appearance.Stealth"
+                                              Color="var(--bs-danger)"
+                                              OnClick="() => RemoveConnection(conn)">
+                                    Удалить
+                                </FluentButton>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="fz12px text-fade">Название</label>
+                                <FluentTextField @bind-Value=conn.Name Class="w-100" Placeholder="например, Qwen-Max" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fz12px text-fade">Провайдер</label>
+                                <FluentSelect TOption="AiProviderType"
+                                              Items="_providerTypes"
+                                              OptionText="t => t.ToString()"
+                                              @bind-SelectedOption=conn.ProviderType
+                                              Class="w-100" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fz12px text-fade">Модель</label>
+                                <FluentTextField @bind-Value=conn.ModelId Class="w-100" Placeholder="например, qwen-max / gpt-4o / llama3.1" />
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="fz12px text-fade">Endpoint (пусто = по умолчанию: @conn.ProviderType.GetDefaultEndpoint())</label>
+                                <FluentTextField @bind-Value=conn.Endpoint Class="w-100" Placeholder="@conn.ProviderType.GetDefaultEndpoint()" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fz12px text-fade">API ключ</label>
+                                <FluentTextField @bind-Value=conn.ApiKey TextFieldType="TextFieldType.Password" Class="w-100" AutoComplete="off" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <FluentButton class="mt-2" Appearance="Appearance.Outline" OnClick="AddConnection">
+                ＋ Добавить подключение
+            </FluentButton>
+        </div>
+
+        <FormItem2 For="() => context.Instructions">
+            <FluentTextArea @bind-Value=context.Instructions Rows="3" Class="w-100"
+                            Placeholder="Дополнительные инструкции агенту (необязательно)" />
+        </FormItem2>
+
+    </div>
+
+</EditOptionForm>
+
+@code {
+    EditOptionForm<AiChatOption>? _form;
+
+    static readonly AiProviderType[] _providerTypes = Enum.GetValues<AiProviderType>();
+
+    void AddConnection()
+    {
+        if (_form?.Model is not { } model) return;
+
+        var conn = new AiProviderConnection
+        {
+            Name = $"Подключение #{model.Connections.Count + 1}",
+            ProviderType = AiProviderType.OpenAI,
+        };
+        model.Connections.Add(conn);
+
+        if (string.IsNullOrEmpty(model.DefaultConnectionName))
+            model.DefaultConnectionName = conn.Name;
+    }
+
+    void RemoveConnection(AiProviderConnection conn)
+    {
+        if (_form?.Model is not { } model) return;
+
+        model.Connections.Remove(conn);
+        if (model.DefaultConnectionName == conn.Name)
+            model.DefaultConnectionName = model.Connections.FirstOrDefault()?.Name ?? "";
+    }
+
+    void SetDefaultConnection(AiProviderConnection conn)
+    {
+        if (_form?.Model is { } model)
+            model.DefaultConnectionName = conn.Name;
+    }
+}

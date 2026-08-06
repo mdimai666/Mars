@@ -1,0 +1,15 @@
+@using Mars.AiChat.Front.Services
+
+<AiChatTerminal @ref=_terminal />
+
+@code {
+    AiChatTerminal _terminal = default!;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AiChatAppService.Setup(_terminal);
+        }
+    }
+}

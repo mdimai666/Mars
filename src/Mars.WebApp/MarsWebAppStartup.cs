@@ -1,6 +1,7 @@
 using AppFront.Main.OptionEditForms;
 using AppFront.Shared;
 using EditorJsBlazored.Host;
+using Mars.AiChat.Host;
 using Mars.CommandLine;
 using Mars.Datasource.Front;
 using Mars.Datasource.Host;
@@ -95,6 +96,7 @@ public static class MarsWebAppStartup
             builder.Services.AddMarsSemanticKernel();
             builder.AddAiCmsHost();
         });
+        builder.AddIfFeatureEnabled(FeatureFlags.AiChat, b => b.Services.AddMarsAiChat());
         builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuthHost());
 
         //------------------------------------------
@@ -199,6 +201,7 @@ public static class MarsWebAppStartup
         app.UseEditorJsBlazored();
         app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
         app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel().UseAiCmsHost());
+        app.UseIfFeatureEnabled(FeatureFlags.AiChat, app => app.UseMarsAiChat());
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());
 
         app.UseMarsScheduler();

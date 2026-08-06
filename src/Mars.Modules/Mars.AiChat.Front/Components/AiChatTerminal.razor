@@ -1,0 +1,98 @@
+@using Mars.AiChat.Front.Services
+@using Mars.AiChat.Shared.Dto
+@implements IDisposable
+
+<link href="_content/Mars.AiChat.Front/css/mars-aichat.css" rel="stylesheet" />
+
+<div class="aichat-root">
+    @if (!_visible)
+    {
+        <div class="aichat-fab" style="@FabStyle"
+             @ref=_fabEl
+             @onpointerdown="OnFabPointerDown"
+             @onpointerdown:stopPropagation="true"
+             title="ИИ агент: нажмите — открыть; зажмите и тяните — переместить">
+            <span class="aichat-fab-icon">✦</span>
+            <span class="aichat-fab-label">ИИ агент</span>
+        </div>
+    }
+    else
+    {
+        <div class="aichat-modal">
+            <div class="aichat-header">
+                <span class="aichat-title">mars-ai</span>
+                <span class="aichat-status">@StatusText</span>
+                <div class="aichat-header-actions">
+                    <select class="aichat-sessions" @onchange="OnSessionSelectChanged" title="Сменить чат">
+                        @foreach (var s in _sessions)
+                        {
+                            <option value="@s.Id" selected="@(s.Id == _chatId)">@Truncate(s.Title, 22)</option>
+                        }
+                    </select>
+                    <button class="aichat-btn" @onclick="NewChatAsync" title="Новый чат">＋</button>
+                    <button class="aichat-btn danger" @onclick="StopAsync" disabled="@(!_running)" title="Остановить выполнение">■</button>
+                    <button class="aichat-btn" @onclick="Close" title="Свернуть">✕</button>
+                </div>
+            </div>
+
+            <div class="aichat-messages" @ref=_messagesEl>
+                @if (_loading)
+                {
+                    <div class="aichat-line aichat-line-info">загрузка…</div>
+                }
+                else if (_startupError is not null)
+                {
+                    <div class="aichat-line aichat-line-error">ошибка: @_startupError</div>
+                }
+                else
+                {
+                    @foreach (var m in _messages)
+                    {
+                        @switch (m.Role)
+                        {
+                            case AiChatMessageRole.User:
+                                <div class="aichat-line aichat-line-user"><span class="aichat-prompt">user@mars:~$</span> @m.Content</div>
+                                break;
+                            case AiChatMessageRole.Assistant:
+                                <div class="aichat-line aichat-line-assistant">@m.Content</div>
+                                break;
+                            case AiChatMessageRole.Tool when !m.IsToolResult:
+                                <div class="aichat-line aichat-line-tool">⚙ <span class="tool-name">@m.ToolName</span> @Truncate(m.Content?.Replace("\n", " "), 160)</div>
+                                break;
+                            case AiChatMessageRole.Tool:
+                                <div class="aichat-line aichat-line-tool-result">← @Truncate(m.Content, 300)</div>
+                                break;
+                            case AiChatMessageRole.Error:
+                                <div class="aichat-line aichat-line-error">✗ @m.Content</div>
+                                break;
+                            case AiChatMessageRole.Info:
+                                <div class="aichat-line aichat-line-info">@m.Content</div>
+                                break;
+                        }
+                    }
+
+                    @if (_running)
+                    {
+                        <div class="aichat-line aichat-line-assistant">@_stream<span class="aichat-cursor"></span></div>
+                    }
+
+                    @if (_pendingQuestion is not null)
+                    {
+                        <div class="aichat-line aichat-line-question">❓ @_pendingQuestion</div>
+                    }
+                }
+            </div>
+
+            <div class="aichat-inputline">
+                <span class="aichat-input-prompt">❯</span>
+                <input class="aichat-input"
+                       @ref=_inputEl
+                       @bind="_input"
+                       @onkeydown="OnInputKeyDown"
+                       placeholder="@InputPlaceholder"
+                       disabled="@(_sending || _startupError is not null)"
+                       maxlength="4000" />
+            </div>
+        </div>
+    }
+</div>

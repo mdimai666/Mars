@@ -116,6 +116,7 @@
         <ProjectReference Include="..\AppFront.Main\AppFront.Main.csproj" />
         <ProjectReference Include="..\Mars.Host.Infrastructure\Mars.Host.Infrastructure.csproj" />
         <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Host\Mars.AiChat.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />

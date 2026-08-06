@@ -42,6 +42,12 @@
     <Project Path="src/Mars.Modules/Mars.QueryLang/Mars.QueryLang.csproj" />
     <Project Path="src/Mars.Modules/Mars.Scheduler.Host/Mars.Scheduler.Host.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/AiChat/">
+    <Project Path="src/Mars.Modules/Mars.AiChat.Front/Mars.AiChat.Front.csproj" />
+    <Project Path="src/Mars.Modules/Mars.AiChat.Host.Shared/Mars.AiChat.Host.Shared.csproj" />
+    <Project Path="src/Mars.Modules/Mars.AiChat.Host/Mars.AiChat.Host.csproj" />
+    <Project Path="src/Mars.Modules/Mars.AiChat.Shared/Mars.AiChat.Shared.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/Docker/">
     <Project Path="src/Mars.Modules/Mars.Docker.Front/Mars.Docker.Front.csproj" />
     <Project Path="src/Mars.Modules/Mars.Docker.Host.Shared/Mars.Docker.Host.Shared.csproj" />

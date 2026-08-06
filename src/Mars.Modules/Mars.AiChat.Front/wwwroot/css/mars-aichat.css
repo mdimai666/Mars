@@ -1,0 +1,235 @@
+/* Mars AiChat — терминальный стиль в духе Qwen Code CLI */
+
+.aichat-root {
+    font-family: 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+    font-size: 13px;
+}
+
+/* ---------- плавающая кнопка ---------- */
+.aichat-fab {
+    position: fixed;
+    z-index: 1090;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #6d28d9, #4f46e5);
+    color: #fff;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, .45);
+    transition: box-shadow .15s ease;
+}
+
+    .aichat-fab:hover {
+        box-shadow: 0 6px 22px rgba(79, 70, 229, .6);
+    }
+
+    .aichat-fab:active {
+        cursor: grabbing;
+    }
+
+.aichat-fab-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.aichat-fab-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .3px;
+}
+
+/* ---------- модальный терминал ---------- */
+.aichat-modal {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    z-index: 1091;
+    display: flex;
+    flex-direction: column;
+    width: min(720px, 94vw);
+    height: min(46vh, 480px);
+    min-height: 260px;
+    background: #0d1117;
+    color: #d6deeb;
+    border: 1px solid #2b3442;
+    border-radius: 10px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, .55);
+    overflow: hidden;
+}
+
+.aichat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #161b22;
+    border-bottom: 1px solid #2b3442;
+}
+
+.aichat-title {
+    color: #7ee787;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.aichat-status {
+    color: #8b949e;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.aichat-header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.aichat-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #8b949e;
+    cursor: pointer;
+    padding: 3px 8px;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+    .aichat-btn:hover {
+        background: #21262d;
+        color: #d6deeb;
+    }
+
+    .aichat-btn.danger:hover {
+        color: #f85149;
+    }
+
+    .aichat-btn:disabled {
+        opacity: .4;
+        cursor: default;
+    }
+
+.aichat-sessions {
+    background: #0d1117;
+    color: #d6deeb;
+    border: 1px solid #2b3442;
+    border-radius: 6px;
+    max-width: 180px;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 2px 4px;
+}
+
+/* ---------- лента сообщений ---------- */
+.aichat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.aichat-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.45;
+}
+
+.aichat-line-user {
+    color: #79c0ff;
+}
+
+    .aichat-line-user .aichat-prompt {
+        color: #7ee787;
+        font-weight: 700;
+    }
+
+.aichat-line-assistant {
+    color: #d6deeb;
+}
+
+.aichat-line-tool {
+    color: #8b949e;
+    font-size: 12px;
+}
+
+    .aichat-line-tool .tool-name {
+        color: #d2a8ff;
+    }
+
+.aichat-line-tool-result {
+    color: #6e7681;
+    font-size: 12px;
+    padding-left: 18px;
+}
+
+.aichat-line-error {
+    color: #f85149;
+}
+
+.aichat-line-info {
+    color: #6e7681;
+    font-style: italic;
+}
+
+.aichat-line-question {
+    color: #e3b341;
+    background: rgba(227, 179, 65, .08);
+    border-left: 3px solid #e3b341;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.aichat-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: #7ee787;
+    vertical-align: text-bottom;
+    animation: aichat-blink 1s steps(1) infinite;
+}
+
+@keyframes aichat-blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ---------- строка ввода ---------- */
+.aichat-inputline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-top: 1px solid #2b3442;
+    background: #161b22;
+}
+
+.aichat-input-prompt {
+    color: #7ee787;
+    font-weight: 700;
+    user-select: none;
+}
+
+.aichat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #d6deeb;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+    .aichat-input::placeholder {
+        color: #484f58;
+    }

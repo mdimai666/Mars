@@ -7,6 +7,7 @@ using AppFront.Shared.Features;
 using AppFront.Shared.Interfaces;
 using Flurl.Http;
 using Mars.Datasource.Front;
+using Mars.AiChat.Front;
 using Mars.Nodes.Workspace;
 using Mars.Options.Front;
 using Mars.Plugin.Front;
@@ -61,7 +62,8 @@ builder.Services.AddHotKeys2();
 builder.Services.AddNodeWorkspace()
                 .AddMarsWebAppNodesFront()
                 .AddDatasourceWorkspace()
-                .AddSemanticKernelFront();
+                .AddSemanticKernelFront()
+                .AddAiChatFront();
 
 if (!App.IsPrerenderProcess)
     builder.ConfigureWebSockets(backendUrl);
@@ -84,7 +86,8 @@ app.Services.UseAppFrontMain()
             .UseNodeWorkspace()
             .UseMarsWebAppNodesFront()
             .UseDatasourceWorkspace()
-            .UseSemanticKernelFront();
+            .UseSemanticKernelFront()
+            .UseAiChatFront();
 
 var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
 optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);

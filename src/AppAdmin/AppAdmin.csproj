@@ -75,6 +75,7 @@
         <ProjectReference Include="..\AppFront.Main\AppFront.Main.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Front\Mars.AiChat.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Front\Mars.Docker.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Front\Mars.SemanticKernel.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />

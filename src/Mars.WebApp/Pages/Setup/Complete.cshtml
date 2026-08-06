@@ -1,0 +1,76 @@
+@page "/setup/complete"
+@model Mars.Pages.Setup.CompleteModel
+@{
+    ViewData["Title"] = "Установка завершена";
+    ViewData["CurrentStep"] = 3;
+}
+
+<div class="text-center" id="setupComplete">
+    <i class="bi bi-check-circle" style="font-size: 3.5rem; color: #00b894;"></i>
+    <h2 class="mt-3 mb-2">Установка завершена!</h2>
+    <p class="text-muted mb-4">
+        Конфигурация сохранена. Приложение запускается...
+    </p>
+
+    <div class="bg-light rounded-3 p-3 mb-4 text-start">
+        <h6 class="mb-2">Что будет дальше:</h6>
+        <ul class="mb-0 small">
+            <li>Выполнится миграция базы данных</li>
+            <li>Создадутся учётная запись администратора и начальные данные</li>
+            <li>Откроется страница входа в панель управления</li>
+        </ul>
+    </div>
+
+    <button type="button" id="finishBtn" class="btn btn-mars btn-lg" onclick="finishSetup()">
+        <i class="bi bi-rocket-takeoff me-2"></i> Запустить Mars
+    </button>
+</div>
+
+<div class="text-center" id="waitingBlock" style="display:none;">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Загрузка...</span>
+    </div>
+    <h3>Приложение запускается...</h3>
+    <p class="text-muted">Пожалуйста, подождите. Выполняется миграция базы данных и создание начальных данных.</p>
+    <p class="text-muted small" id="waitStatus">Ожидание...</p>
+</div>
+
+@section Scripts {
+<script>
+    async function finishSetup() {
+        document.getElementById('setupComplete').style.display = 'none';
+        document.getElementById('waitingBlock').style.display = 'block';
+        var statusEl = document.getElementById('waitStatus');
+
+        // Signal server to stop wizard host
+        statusEl.textContent = 'Остановка мастера настройки...';
+        await fetch('/setup/complete?handler=Finish');
+
+        // Poll for main application to be ready
+        statusEl.textContent = 'Ожидание запуска приложения...';
+        var attempts = 0;
+        var maxAttempts = 20;
+
+        while (attempts < maxAttempts) {
+            await new Promise(r => setTimeout(r, 2000));
+            attempts++;
+            statusEl.textContent = 'Попытка ' + attempts + ' из ' + maxAttempts + '...';
+
+            try {
+                var resp = await fetch('/', { method: 'HEAD', redirect: 'manual' });
+                // If we get here, the main app is responding
+                statusEl.textContent = 'Приложение запущено! Перенаправление...';
+                window.location.href = '/dev/Login';
+                return;
+            } catch (e) {
+                // Main app not ready yet, keep waiting
+            }
+        }
+
+        statusEl.textContent = 'Превышено время ожидания. Перезапустите приложение вручную.';
+        document.getElementById('finishBtn').style.display = 'inline-block';
+        document.getElementById('finishBtn').textContent = 'Перезагрузить страницу';
+        document.getElementById('finishBtn').onclick = function() { window.location.href = '/'; };
+    }
+</script>
+}

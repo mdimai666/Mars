@@ -22,6 +22,7 @@ using Mars.Plugin;
 using Mars.Scheduler.Host;
 using Mars.SemanticKernel.CMS;
 using Mars.SemanticKernel.Host;
+using Mars.Setup;
 using Mars.SSO;
 using Mars.SSO.Host.OAuth;
 using Mars.UseStartup;
@@ -62,6 +63,7 @@ public static class MarsWebAppStartup
 
         builder.Services.AddMarsSignalRConfiguration()
                         .AddRazorPages();
+        builder.Services.AddSingleton<SetupService>();
         //builder.Services.AddServerSideBlazor();
 
         //------------------------------------------
@@ -116,12 +118,18 @@ public static class MarsWebAppStartup
         var env = app.Environment;
         //var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
+        // Normal startup — config must exist (wizard runs before main app)
+        var configPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Local.json");
+        if (!IsTesting && !IsRunningInDocker && !File.Exists(configPath))
+        {
+            throw new InvalidOperationException("appsettings.Local.json not found. Setup wizard should have run before main application.");
+        }
+
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
             app.UseMigrationsEndPoint();
             app.UseWebAssemblyDebugging();
-
         }
         else
         {
@@ -161,6 +169,7 @@ public static class MarsWebAppStartup
 
         app.MarsUseSwagger();
         app.MapControllers();
+        app.MapRazorPages();
 
         app.MapHub<ChatHub>("/_ws/admin", options =>
         {

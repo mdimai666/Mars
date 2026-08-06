@@ -7,7 +7,7 @@ namespace Mars.Factories.Seeds;
 
 public static class SeedUsers
 {
-    public static void SeedFirstData(UserManager<UserEntity> userManager, MarsDbContext ef)
+    public static void SeedFirstData(UserManager<UserEntity> userManager, MarsDbContext ef, IConfiguration? configuration = null)
     {
         if (ef.UserTypes.Count() == 0)
         {
@@ -22,7 +22,11 @@ public static class SeedUsers
             ef.SaveChanges();
         }
 
-        if (!ef.Users.Any(s => s.Email == "admin@mail.ru"))
+        var adminEmail = configuration?.GetSection("Setup")["AdminEmail"] ?? "admin@mail.ru";
+        var adminPassword = configuration?.GetSection("Setup")["AdminPassword"] ?? "Admin123!";
+        var adminFirstName = configuration?.GetSection("Setup")["AdminFirstName"] ?? "Admin";
+
+        if (!ef.Users.Any(s => s.Email == adminEmail))
         {
             var userTypeId = ef.UserTypes.AsNoTracking().FirstOrDefault(s => s.TypeName == UserTypeEntity.DefaultTypeName)?.Id
                                 ?? ef.UserTypes.AsNoTracking().First().Id;
@@ -30,22 +34,21 @@ public static class SeedUsers
             var user = new UserEntity
             {
                 //Basic
-                UserName = "admin",
-                NormalizedUserName = "ADMIN@MAIL.RU",
-                Email = "admin@mail.ru",
-                NormalizedEmail = "ADMIN@MAIL.RU",
+                UserName = adminEmail,
+                NormalizedUserName = adminEmail.ToUpper(),
+                Email = adminEmail,
+                NormalizedEmail = adminEmail.ToUpper(),
                 EmailConfirmed = true,
                 LockoutEnabled = true,
 
                 //User
-                FirstName = "Admin",
+                FirstName = adminFirstName,
                 LastName = "Adminov",
-                MiddleName = "A",
 
                 UserTypeId = userTypeId,
             };
 
-            IdentityResult result = userManager.CreateAsync(user, "Admin123!").Result;
+            IdentityResult result = userManager.CreateAsync(user, adminPassword).Result;
 
             if (result.Succeeded)
             {

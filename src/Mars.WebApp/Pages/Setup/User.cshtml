@@ -1,0 +1,42 @@
+@page "/setup/user"
+@model Mars.Pages.Setup.UserModel
+@{
+    ViewData["Title"] = "Создание администратора";
+    ViewData["CurrentStep"] = 3;
+}
+
+<h3 class="mb-1">Создание администратора</h3>
+<p class="text-muted mb-4">Учётная запись для входа в панель управления</p>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-mars d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <small>@Model.ErrorMessage</small>
+    </div>
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Имя</label>
+        <input asp-for="FirstName" class="form-control" placeholder="Admin" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Email</label>
+        <input asp-for="Email" class="form-control" type="email" placeholder="admin@example.com" />
+        <div class="form-text">Используется для входа в систему</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Пароль</label>
+        <input asp-for="Password" class="form-control" type="password" placeholder="Не менее 6 символов" />
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="/setup/database" class="btn btn-mars-outline">
+            <i class="bi bi-arrow-left me-1"></i> Назад
+        </a>
+        <button type="submit" class="btn btn-mars ms-auto">
+            Завершить установку <i class="bi bi-check-lg ms-1"></i>
+        </button>
+    </div>
+</form>

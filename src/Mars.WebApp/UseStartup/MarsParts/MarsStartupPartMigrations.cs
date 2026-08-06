@@ -84,7 +84,7 @@ public static class MarsStartupPartMigrations
         UserManager<UserEntity> userManager = services.GetRequiredService<UserManager<UserEntity>>();
 
         SeedRoles.SeedFirstData(marsDbContext);
-        SeedUsers.SeedFirstData(userManager, marsDbContext);
+        SeedUsers.SeedFirstData(userManager, marsDbContext, configuration);
         await SeedPostData.SeedFirstData(marsDbContext, services, configuration);
         SeedPostCategories.SeedFirstData(marsDbContext);
     }

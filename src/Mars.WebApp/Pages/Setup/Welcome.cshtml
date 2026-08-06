@@ -1,0 +1,30 @@
+@page "/setup"
+@{
+    ViewData["Title"] = "Добро пожаловать";
+    ViewData["CurrentStep"] = 1;
+}
+
+<div class="text-center">
+    <i class="bi bi-rocket-takeoff" style="font-size: 3rem; color: var(--mars-primary);"></i>
+    <h2 class="mt-3 mb-2">Добро пожаловать в Mars!</h2>
+    <p class="text-muted mb-4">
+        Mars — это open-source платформа для визуального программирования и управления контентом.
+        Создавайте сайты, автоматизируйте задачи, подключайте API — всё через визуальный редактор, без написания кода.
+    </p>
+
+    <div class="text-start bg-light rounded-3 p-3 mb-4">
+        <h6 class="mb-2">Мастер установки поможет:</h6>
+        <ul class="mb-0 small">
+            <li>Настроить подключение к базе данных PostgreSQL</li>
+            <li>Создать учётную запись администратора</li>
+        </ul>
+    </div>
+
+    <p class="text-muted small mb-4">
+        Перед началом убедитесь, что у вас есть доступ к серверу PostgreSQL.
+    </p>
+
+    <a href="/setup/database" class="btn btn-mars btn-lg">
+        Начать установку <i class="bi bi-arrow-right ms-2"></i>
+    </a>
+</div>

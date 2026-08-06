@@ -3,6 +3,7 @@ using System.Text;
 using Mars;
 using Mars.CommandLine;
 using Mars.Host.Shared.CommandLine;
+using Mars.Setup;
 using Mars.UseStartup;
 using static Mars.UseStartup.MarsStartupInfo;
 
@@ -21,6 +22,12 @@ _ = nameof(MarsStartupInfo);
 #if DEBUG
 FixDebugModeBaseDirectory.SetBaseDirectory();
 #endif
+
+// Setup wizard — runs BEFORE the main application if no local config exists
+if (!IsTesting && !IsRunningInDocker && !File.Exists("appsettings.Local.json"))
+{
+    await SetupWizardHost.RunAsync(args);
+}
 
 var builder = WebApplication.CreateBuilder(args);
 MarsWebAppStartup.ConfigureBuilder(builder, args);

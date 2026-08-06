@@ -1,0 +1,132 @@
+@{
+    var currentStep = (int)(ViewData["CurrentStep"] ?? 1);
+    var totalSteps = 3;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Mars Setup</title>
+    <link href="/mars/vendor/bootstrap/bootstrap5.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+          integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --mars-primary: #C1440E;
+            --mars-dark: #8B2500;
+        }
+        body {
+            background: linear-gradient(135deg, #C1440E 0%, #8B2500 50%, #5C1A0A 100%);
+            min-height: 100vh;
+        }
+        .setup-container {
+            max-width: 560px;
+            margin: 2rem auto;
+        }
+        .setup-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.15);
+            padding: 2.5rem;
+        }
+        .setup-logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .setup-logo img {
+            height: 40px;
+            filter: brightness(0) invert(1);
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: .5rem;
+            margin-bottom: 2rem;
+        }
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.3);
+        }
+        .step-dot.active {
+            background: #fff;
+            width: 32px;
+            border-radius: 6px;
+        }
+        .step-dot.done {
+            background: #E77D4B;
+        }
+        .btn-mars {
+            background: var(--mars-primary);
+            color: #fff;
+            border: none;
+            padding: .75rem 2rem;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        .btn-mars:hover,
+        .btn-mars:focus,
+        .btn-mars:active {
+            background: var(--mars-dark);
+            color: #fff;
+        }
+        .btn-mars-outline {
+            border: 2px solid var(--mars-primary);
+            color: var(--mars-primary);
+            background: transparent;
+            padding: .75rem 2rem;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        .btn-mars-outline:hover,
+        .btn-mars-outline:focus,
+        .btn-mars-outline:active {
+            border: 2px solid var(--mars-dark);
+            color: var(--mars-dark);
+            background: rgba(193,68,14,.08);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--mars-primary);
+            box-shadow: 0 0 0 0.2rem rgba(193,68,14,.25);
+        }
+        .alert-mars {
+            border-radius: 8px;
+        }
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-logo">
+            <img src="/mars/img/logo.svg" alt="Mars" />
+            <p class="text-white-50 mt-2">Визуальная платформа программирования</p>
+        </div>
+
+        <div class="step-indicator">
+            @for (int i = 1; i <= totalSteps; i++)
+            {
+                var cls = i < currentStep ? "done" : i == currentStep ? "active" : "";
+                <div class="step-dot @cls"></div>
+            }
+        </div>
+
+        <div class="setup-card">
+            @RenderBody()
+        </div>
+
+        <p class="text-center text-white-50 mt-3" style="font-size: .85rem;">
+            Mars — Open Source. <a href="https://github.com/mdimai666/Mars" target="_blank" class="text-white-50">GitHub</a>
+        </p>
+    </div>
+
+    <script src="/mars/vendor/bootstrap/bootstrap5.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

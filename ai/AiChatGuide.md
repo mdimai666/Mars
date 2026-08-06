@@ -120,6 +120,31 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 показывает вопрос и ждёт следующего сообщения пользователя. Так же можно реализовать
 любые human-in-the-loop подтверждения.
 
+### Инструменты настроек сайта
+
+Помимо `MarsSiteTools` (быстрые инструменты для базовых настроек сайта), есть универсальный
+`MarsOptionsTools` — управление любой зарегистрированной опцией по имени класса (`IOptionService`):
+
+- `list_site_options` — имена классов опций + флаги `readable`/`writable`;
+- `get_site_option(className)` — JSON настройки;
+- `update_site_option(className, json)` — полное замещение значения.
+
+Важные детали:
+
+- Десериализация в `SetOptionByClass` чувствительна к регистру — в промпте задано правило
+  передавать полный JSON с точным регистром имён полей (сначала прочитать, потом править).
+- Списки защиты в `MarsOptionsTools`: `ReadDenied` (секреты: `SmtpSettingsModel`, `AiChatOption`,
+  favicon-опции) и `WriteDenied` (плюс `PluginManagerSettingsOption`).
+  Появилась новая опция с секретами — добавь её имя в списки.
+- Список доступных классов даёт `IOptionService.GetRegisteredOptionClasses()`;
+  опции, зарегистрированные другими модулями/плагинами, доступны агенту автоматически.
+
+### Информация о системе
+
+`MarsSystemTools.GetSystemInfo` — инструмент `get_system_info`: версия Mars и git-коммит, ОС/архитектура,
+окружение, `IsRunningInDocker` и `IsPM2`, часовые поясы, аптайм и память. Реализация ничего не детектит сама —
+использует `IMarsSystemService` (`AboutSystem()`), поэтому источник данных тот же, что у страницы «Настройки → О системе».
+
 ## Как добавить новое событие сервер → клиент
 
 1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).

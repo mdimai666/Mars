@@ -27,6 +27,8 @@ public class AiChatAgentService
     private readonly IAiChatClientFactory _clientFactory;
     private readonly IOptionService _optionService;
     private readonly MarsSiteTools _siteTools;
+    private readonly MarsOptionsTools _optionsTools;
+    private readonly MarsSystemTools _systemTools;
     private readonly ILogger<AiChatAgentService> _logger;
 
     public AiChatAgentService(
@@ -35,6 +37,8 @@ public class AiChatAgentService
         IAiChatClientFactory clientFactory,
         IOptionService optionService,
         MarsSiteTools siteTools,
+        MarsOptionsTools optionsTools,
+        MarsSystemTools systemTools,
         ILogger<AiChatAgentService> logger)
     {
         _hub = hub;
@@ -42,6 +46,8 @@ public class AiChatAgentService
         _clientFactory = clientFactory;
         _optionService = optionService;
         _siteTools = siteTools;
+        _optionsTools = optionsTools;
+        _systemTools = systemTools;
         _logger = logger;
     }
 
@@ -71,6 +77,10 @@ public class AiChatAgentService
             {
                 AIFunctionFactory.Create(_siteTools.GetSiteSettings),
                 AIFunctionFactory.Create(_siteTools.UpdateSiteSettings),
+                AIFunctionFactory.Create(_optionsTools.ListSiteOptions),
+                AIFunctionFactory.Create(_optionsTools.GetSiteOption),
+                AIFunctionFactory.Create(_optionsTools.UpdateSiteOption),
+                AIFunctionFactory.Create(_systemTools.GetSystemInfo),
                 AIFunctionFactory.Create(askUser.AskUser),
             };
 

@@ -41,6 +41,12 @@ public interface IOptionService
     T GetOption<T>() where T : class, new();
     object GetOption(Type type);
     object GetOptionByClass(string className);
+
+    /// <summary>
+    /// Имена классов зарегистрированных опций, доступных через GetOptionByClass/SetOptionByClass.
+    /// </summary>
+    IReadOnlyList<string> GetRegisteredOptionClasses();
+
     void SetOptionOnMemory<T>(T option) where T : class;
     void RegisterOption<T>(Action<T>? onChangeHook = null, bool appendToInitialSiteData = false);
     void SetConstOption<T>(T value, bool appendToInitialSiteData = false) where T : class;

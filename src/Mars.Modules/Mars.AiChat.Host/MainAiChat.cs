@@ -20,6 +20,8 @@ public static class MainAiChat
         services.AddSingleton<IAiChatRunCoordinator, AiChatRunCoordinator>();
         services.AddScoped<AiChatAgentService>();
         services.AddScoped<MarsSiteTools>();
+        services.AddScoped<MarsOptionsTools>();
+        services.AddScoped<MarsSystemTools>();
 
         return services;
     }

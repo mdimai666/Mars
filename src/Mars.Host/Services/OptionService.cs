@@ -168,6 +168,11 @@ internal class OptionService : IOptionService
         throw new OptionNotRegisteredException(className);
     }
 
+    public IReadOnlyList<string> GetRegisteredOptionClasses()
+    {
+        return [.. RegisteredOptions.Keys.OrderBy(k => k)];
+    }
+
     public void SetOptionOnMemory<T>(T option) where T : class
     {
         Type t = typeof(T);

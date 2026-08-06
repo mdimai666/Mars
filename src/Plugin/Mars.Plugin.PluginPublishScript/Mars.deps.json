@@ -13,6 +13,7 @@
           "Duende.IdentityServer": "7.4.7",
           "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.10",
+          "Mars.AiChat.Host": "1.0.0",
           "Mars.Datasource.Front": "1.0.0",
           "Mars.Datasource.Host": "1.0.0",
           "Mars.Docker.Host": "1.0.0",
@@ -119,7 +120,7 @@
       "Azure.AI.OpenAI/2.9.0-beta.1": {
         "dependencies": {
           "Azure.Core": "1.51.1",
-          "OpenAI": "2.10.0"
+          "OpenAI": "2.12.0"
         },
         "runtime": {
           "lib/net10.0/Azure.AI.OpenAI.dll": {
@@ -131,7 +132,7 @@
       "Azure.Core/1.51.1": {
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "10.0.2",
-          "System.ClientModel": "1.10.0",
+          "System.ClientModel": "1.14.0",
           "System.Memory.Data": "10.0.3"
         },
         "runtime": {
@@ -354,6 +355,14 @@
           }
         }
       },
+      "Google.Protobuf/3.30.2": {
+        "runtime": {
+          "lib/net5.0/Google.Protobuf.dll": {
+            "assemblyVersion": "3.30.2.0",
+            "fileVersion": "3.30.2.0"
+          }
+        }
+      },
       "Handlebars.Net/2.1.6": {
         "runtime": {
           "lib/net6.0/Handlebars.dll": {
@@ -440,6 +449,51 @@
           "lib/net10.0/Markdig.dll": {
             "assemblyVersion": "1.2.0.0",
             "fileVersion": "1.2.0.0"
+          }
+        }
+      },
+      "Microsoft.Agents.AI/1.17.0": {
+        "dependencies": {
+          "Microsoft.Agents.AI.Abstractions": "1.17.0",
+          "Microsoft.Extensions.AI": "10.7.0",
+          "Microsoft.Extensions.AI.Abstractions": "10.7.0",
+          "Microsoft.Extensions.AI.Evaluation": "10.7.0",
+          "Microsoft.Extensions.Compliance.Abstractions": "10.5.0",
+          "Microsoft.Extensions.VectorData.Abstractions": "10.7.0",
+          "Microsoft.ML.Tokenizers": "2.0.0"
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Agents.AI.dll": {
+            "assemblyVersion": "1.17.0.0",
+            "fileVersion": "1.17.0.0"
+          }
+        }
+      },
+      "Microsoft.Agents.AI.Abstractions/1.17.0": {
+        "dependencies": {
+          "Microsoft.Extensions.AI.Abstractions": "10.7.0"
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Agents.AI.Abstractions.dll": {
+            "assemblyVersion": "1.17.0.0",
+            "fileVersion": "1.17.0.0"
+          }
+        }
+      },
+      "Microsoft.Agents.AI.Harness/1.17.0": {
+        "dependencies": {
+          "Microsoft.Agents.AI": "1.17.0",
+          "Microsoft.Extensions.AI": "10.7.0",
+          "Microsoft.Extensions.AI.Abstractions": "10.7.0",
+          "Microsoft.Extensions.AI.Evaluation": "10.7.0",
+          "Microsoft.Extensions.Compliance.Abstractions": "10.5.0",
+          "Microsoft.Extensions.VectorData.Abstractions": "10.7.0",
+          "Microsoft.ML.Tokenizers": "2.0.0"
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Agents.AI.Harness.dll": {
+            "assemblyVersion": "1.17.0.0",
+            "fileVersion": "1.17.0.0"
           }
         }
       },
@@ -927,6 +981,17 @@
           }
         }
       },
+      "Microsoft.Extensions.AI.Evaluation/10.7.0": {
+        "dependencies": {
+          "Microsoft.Extensions.AI.Abstractions": "10.7.0"
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Extensions.AI.Evaluation.dll": {
+            "assemblyVersion": "10.7.0.0",
+            "fileVersion": "10.700.26.30905"
+          }
+        }
+      },
       "Microsoft.Extensions.AI.Ollama/9.7.0-preview.1.25356.2": {
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.7.0"
@@ -938,15 +1003,15 @@
           }
         }
       },
-      "Microsoft.Extensions.AI.OpenAI/10.5.0": {
+      "Microsoft.Extensions.AI.OpenAI/10.7.0": {
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.7.0",
-          "OpenAI": "2.10.0"
+          "OpenAI": "2.12.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.AI.OpenAI.dll": {
-            "assemblyVersion": "10.5.0.0",
-            "fileVersion": "10.500.26.21304"
+            "assemblyVersion": "10.7.0.0",
+            "fileVersion": "10.700.26.30905"
           }
         }
       },
@@ -970,6 +1035,14 @@
           }
         }
       },
+      "Microsoft.Extensions.Compliance.Abstractions/10.5.0": {
+        "runtime": {
+          "lib/net10.0/Microsoft.Extensions.Compliance.Abstractions.dll": {
+            "assemblyVersion": "10.5.0.0",
+            "fileVersion": "10.500.26.21304"
+          }
+        }
+      },
       "Microsoft.Extensions.DependencyModel/10.0.9": {
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.DependencyModel.dll": {
@@ -978,14 +1051,14 @@
           }
         }
       },
-      "Microsoft.Extensions.VectorData.Abstractions/10.1.0": {
+      "Microsoft.Extensions.VectorData.Abstractions/10.7.0": {
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.7.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.VectorData.Abstractions.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.0.0"
+            "assemblyVersion": "10.7.0.0",
+            "fileVersion": "10.700.26.30905"
           }
         }
       },
@@ -1142,6 +1215,17 @@
           }
         }
       },
+      "Microsoft.ML.Tokenizers/2.0.0": {
+        "dependencies": {
+          "Google.Protobuf": "3.30.2"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.ML.Tokenizers.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "2.0.25.55704"
+          }
+        }
+      },
       "Microsoft.OpenApi/2.7.5": {
         "runtime": {
           "lib/net8.0/Microsoft.OpenApi.dll": {
@@ -1166,7 +1250,7 @@
         "dependencies": {
           "Microsoft.Bcl.HashCode": "1.1.1",
           "Microsoft.Extensions.AI": "10.7.0",
-          "Microsoft.Extensions.VectorData.Abstractions": "10.1.0"
+          "Microsoft.Extensions.VectorData.Abstractions": "10.7.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.Abstractions.dll": {
@@ -1203,9 +1287,9 @@
       },
       "Microsoft.SemanticKernel.Connectors.OpenAI/1.77.0": {
         "dependencies": {
-          "Microsoft.Extensions.AI.OpenAI": "10.5.0",
+          "Microsoft.Extensions.AI.OpenAI": "10.7.0",
           "Microsoft.SemanticKernel.Core": "1.77.0",
-          "OpenAI": "2.10.0"
+          "OpenAI": "2.12.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.SemanticKernel.Connectors.OpenAI.dll": {
@@ -1445,14 +1529,14 @@
           }
         }
       },
-      "OpenAI/2.10.0": {
+      "OpenAI/2.12.0": {
         "dependencies": {
-          "System.ClientModel": "1.10.0"
+          "System.ClientModel": "1.14.0"
         },
         "runtime": {
           "lib/net10.0/OpenAI.dll": {
-            "assemblyVersion": "2.10.0.0",
-            "fileVersion": "2.10.0.0"
+            "assemblyVersion": "2.12.0.0",
+            "fileVersion": "2.12.0.0"
           }
         }
       },
@@ -1965,14 +2049,14 @@
           }
         }
       },
-      "System.ClientModel/1.10.0": {
+      "System.ClientModel/1.14.0": {
         "dependencies": {
           "System.Memory.Data": "10.0.3"
         },
         "runtime": {
           "lib/net10.0/System.ClientModel.dll": {
-            "assemblyVersion": "1.10.0.0",
-            "fileVersion": "1.1000.26.16607"
+            "assemblyVersion": "1.14.0.0",
+            "fileVersion": "1.1400.26.30307"
           }
         }
       },
@@ -2155,6 +2239,7 @@
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
           "EditorJsBlazored": "1.0.0",
+          "Mars.AiChat.Front": "1.0.0",
           "Mars.Datasource.Core": "1.0.0",
           "Mars.Datasource.Front": "1.0.0",
           "Mars.Docker.Front": "1.0.0",
@@ -2195,6 +2280,58 @@
         },
         "runtime": {
           "EditorJsBlazored.Host.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.AiChat.Front/1.0.0": {
+        "dependencies": {
+          "Mars.AiChat.Shared": "1.0.0",
+          "Microsoft.AspNetCore.SignalR.Client": "10.0.9",
+          "mdimai666.Mars.AppFront.Main": "0.7.7-alpha.20",
+          "mdimai666.Mars.WebApiClient": "0.7.7-alpha.20"
+        },
+        "runtime": {
+          "Mars.AiChat.Front.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.AiChat.Host/1.0.0": {
+        "dependencies": {
+          "Mars.AiChat.Host.Shared": "1.0.0",
+          "Microsoft.Agents.AI": "1.17.0",
+          "Microsoft.Agents.AI.Harness": "1.17.0",
+          "Microsoft.Extensions.AI.Ollama": "9.7.0-preview.1.25356.2",
+          "Microsoft.Extensions.AI.OpenAI": "10.7.0",
+          "Microsoft.Extensions.Caching.Hybrid": "10.7.0",
+          "OpenAI": "2.12.0",
+          "mdimai666.Mars.Host.Shared": "0.7.7-alpha.20"
+        },
+        "runtime": {
+          "Mars.AiChat.Host.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.AiChat.Host.Shared/1.0.0": {
+        "dependencies": {
+          "Mars.AiChat.Shared": "1.0.0",
+          "Microsoft.Extensions.AI": "10.7.0"
+        },
+        "runtime": {
+          "Mars.AiChat.Host.Shared.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.AiChat.Shared/1.0.0": {
+        "runtime": {
+          "Mars.AiChat.Shared.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -3053,6 +3190,7 @@
       "mdimai666.Mars.WebApiClient/0.7.7-alpha.20": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
+          "Mars.AiChat.Shared": "1.0.0",
           "mdimai666.Mars.Shared": "0.7.7-alpha.20"
         },
         "runtime": {
@@ -3511,6 +3649,13 @@
       "path": "flurl.http/4.0.2",
       "hashPath": "flurl.http.4.0.2.nupkg.sha512"
     },
+    "Google.Protobuf/3.30.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Y2aOVLIt75yeeEWigg9V9YnjsEm53sADtLGq0gLhwaXpk3iu8tYSoauolyhenagA2sWno2TQ2WujI0HQd6s1Vw==",
+      "path": "google.protobuf/3.30.2",
+      "hashPath": "google.protobuf.3.30.2.nupkg.sha512"
+    },
     "Handlebars.Net/2.1.6": {
       "type": "package",
       "serviceable": true,
@@ -3580,6 +3725,27 @@
       "sha512": "sha512-LoBVOgeDWfHthWTPzQJkjDkxImqBXRA5XpuTyjdM4SAURyWQGG1CbEEbfPbmvAavggnAZPaTYpbhIPUurWvIXA==",
       "path": "markdig/1.2.0",
       "hashPath": "markdig.1.2.0.nupkg.sha512"
+    },
+    "Microsoft.Agents.AI/1.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yBX6ujNMX24tda1b3w6RF2gq0kDdIH1Gn0rrvqwltcR0p7fMbcYQoDd7G8mXH0V143n1/KrHi5ggATji41nJIQ==",
+      "path": "microsoft.agents.ai/1.17.0",
+      "hashPath": "microsoft.agents.ai.1.17.0.nupkg.sha512"
+    },
+    "Microsoft.Agents.AI.Abstractions/1.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FoVGnguJhZa95xOgRrGueoZpL8Tz9eQCycwxpiLjiq1SSryu4WaYuryaRKnnaCavJ3tvJBMnWKsHzGO0wyhv0w==",
+      "path": "microsoft.agents.ai.abstractions/1.17.0",
+      "hashPath": "microsoft.agents.ai.abstractions.1.17.0.nupkg.sha512"
+    },
+    "Microsoft.Agents.AI.Harness/1.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ICJuDC2ZJsCgD4nUYG4y1cCRQ/8JgiTfMWhqZMDs+xFIZknpBbuN4rU9s8KKjsjhQgxjjtW3Sw0IrncbcIITCQ==",
+      "path": "microsoft.agents.ai.harness/1.17.0",
+      "hashPath": "microsoft.agents.ai.harness.1.17.0.nupkg.sha512"
     },
     "Microsoft.AspNet.WebApi.Client/6.0.0": {
       "type": "package",
@@ -3847,6 +4013,13 @@
       "path": "microsoft.extensions.ai.abstractions/10.7.0",
       "hashPath": "microsoft.extensions.ai.abstractions.10.7.0.nupkg.sha512"
     },
+    "Microsoft.Extensions.AI.Evaluation/10.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BdbJNfhc/pb3RkD19Sm/XuLK3x5AdU+AB+0HC8Nlu7WZTrVLnA8lpqIx1BB4k+KIKy5ZSH5RVH5HHfT+gwL9yg==",
+      "path": "microsoft.extensions.ai.evaluation/10.7.0",
+      "hashPath": "microsoft.extensions.ai.evaluation.10.7.0.nupkg.sha512"
+    },
     "Microsoft.Extensions.AI.Ollama/9.7.0-preview.1.25356.2": {
       "type": "package",
       "serviceable": true,
@@ -3854,12 +4027,12 @@
       "path": "microsoft.extensions.ai.ollama/9.7.0-preview.1.25356.2",
       "hashPath": "microsoft.extensions.ai.ollama.9.7.0-preview.1.25356.2.nupkg.sha512"
     },
-    "Microsoft.Extensions.AI.OpenAI/10.5.0": {
+    "Microsoft.Extensions.AI.OpenAI/10.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-K1ZTH8waff1pnnDG6kPN07ce2oq4AJKFds4MGmE+EX+f0QYMO316HKSAcCZjrhnisAj+rJ4nSkrG9FjgjTA9nw==",
-      "path": "microsoft.extensions.ai.openai/10.5.0",
-      "hashPath": "microsoft.extensions.ai.openai.10.5.0.nupkg.sha512"
+      "sha512": "sha512-K/xC0SRJeQiHJNNx+ZIYq9liAB5Uy/wUGjHPljEtRW63TCyGWEBkNVU7/UwizTxQk0Tm9pclDEoNmKTw7xtKfg==",
+      "path": "microsoft.extensions.ai.openai/10.7.0",
+      "hashPath": "microsoft.extensions.ai.openai.10.7.0.nupkg.sha512"
     },
     "Microsoft.Extensions.Caching.Hybrid/10.7.0": {
       "type": "package",
@@ -3875,6 +4048,13 @@
       "path": "microsoft.extensions.caching.postgres/1.2.2",
       "hashPath": "microsoft.extensions.caching.postgres.1.2.2.nupkg.sha512"
     },
+    "Microsoft.Extensions.Compliance.Abstractions/10.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xbWZji13Vb2jDJNtwVrKpI09jd8x3n3fL+GzhiLK+8O5Wc2A+GyqCZalST2fV46Pf0QfCwkXf83y+3/rDkCd7A==",
+      "path": "microsoft.extensions.compliance.abstractions/10.5.0",
+      "hashPath": "microsoft.extensions.compliance.abstractions.10.5.0.nupkg.sha512"
+    },
     "Microsoft.Extensions.DependencyModel/10.0.9": {
       "type": "package",
       "serviceable": true,
@@ -3882,12 +4062,12 @@
       "path": "microsoft.extensions.dependencymodel/10.0.9",
       "hashPath": "microsoft.extensions.dependencymodel.10.0.9.nupkg.sha512"
     },
-    "Microsoft.Extensions.VectorData.Abstractions/10.1.0": {
+    "Microsoft.Extensions.VectorData.Abstractions/10.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-I2XfmqEOWOq0Esbo0eWQ6WE5MAJkGyIs057F8ncmPCLJFw9b1IB7Jj5WiFlH6C5YXCAG9Z91QMBD/SkcMLhE7w==",
-      "path": "microsoft.extensions.vectordata.abstractions/10.1.0",
-      "hashPath": "microsoft.extensions.vectordata.abstractions.10.1.0.nupkg.sha512"
+      "sha512": "sha512-eh0JLxoztc9Wz7TrFVRQyotMY9CBh2t22lMPvzy61yaBDDFBsrisrFOD4NId2z/ujwsHVKDtyfDb9tkXwSV5Vw==",
+      "path": "microsoft.extensions.vectordata.abstractions/10.7.0",
+      "hashPath": "microsoft.extensions.vectordata.abstractions.10.7.0.nupkg.sha512"
     },
     "Microsoft.FeatureManagement/4.5.0": {
       "type": "package",
@@ -3979,6 +4159,13 @@
       "sha512": "sha512-4G0A7GuQrtCAes8PuJPTDUcy+lCrxHWjr8ZlkDOa4h8a2Txj1XdhbXKLnld2vMY5EyZNC5jZXxa1xTD/AOCUlw==",
       "path": "microsoft.jsinterop.webassembly/10.0.9",
       "hashPath": "microsoft.jsinterop.webassembly.10.0.9.nupkg.sha512"
+    },
+    "Microsoft.ML.Tokenizers/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+b8lT4cLLO/sBR2hjvE/qG6qrZG15h7/PBvnIrzTh4xDaAxdHUY6449rC+1pHzQUsBiCHZVbj+VMn+xS0sL7TA==",
+      "path": "microsoft.ml.tokenizers/2.0.0",
+      "hashPath": "microsoft.ml.tokenizers.2.0.0.nupkg.sha512"
     },
     "Microsoft.OpenApi/2.7.5": {
       "type": "package",
@@ -4176,12 +4363,12 @@
       "path": "oneof/3.0.271",
       "hashPath": "oneof.3.0.271.nupkg.sha512"
     },
-    "OpenAI/2.10.0": {
+    "OpenAI/2.12.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-e5gAhMDcX5bFmmtR+lT6qZxJoaGb0SkIplPUUdKwcC4xerCh471hTIsrvfkou7scfZD9YQk6C06dP3NwBqHw1A==",
-      "path": "openai/2.10.0",
-      "hashPath": "openai.2.10.0.nupkg.sha512"
+      "sha512": "sha512-rKyVV0sJPo7pn0Ya5dgRs5ggGbjvnKcYSvYV2jITKgFIfeo2XHjgyi6UqNT/OnF0YBqjsNpPdgM6QjzYczWplg==",
+      "path": "openai/2.12.0",
+      "hashPath": "openai.2.12.0.nupkg.sha512"
     },
     "OpenTelemetry/1.16.0": {
       "type": "package",
@@ -4386,12 +4573,12 @@
       "path": "swashbuckle.aspnetcore.swaggerui/10.2.1",
       "hashPath": "swashbuckle.aspnetcore.swaggerui.10.2.1.nupkg.sha512"
     },
-    "System.ClientModel/1.10.0": {
+    "System.ClientModel/1.14.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-lBEWs54F5Y5pZ9hC+8z4S/X76957ex+DPk7WecRHlbIHtrPfbRMMlOgI3iDn4Jpb3bSxvBnKaaHoD59auFjlBA==",
-      "path": "system.clientmodel/1.10.0",
-      "hashPath": "system.clientmodel.1.10.0.nupkg.sha512"
+      "sha512": "sha512-yhIJHDW3Hh5kcvhHv3ww1T8qvya06Nlwo/SR/rke4/fHXtyKiqQV/9b/VDhnVI7QUcMnpfvh4pIEFhNsTDLeKQ==",
+      "path": "system.clientmodel/1.14.0",
+      "hashPath": "system.clientmodel.1.14.0.nupkg.sha512"
     },
     "System.CodeDom/6.0.0": {
       "type": "package",
@@ -4523,6 +4710,26 @@
       "sha512": ""
     },
     "EditorJsBlazored.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.AiChat.Front/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.AiChat.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.AiChat.Host.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.AiChat.Shared/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

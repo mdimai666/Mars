@@ -88,7 +88,10 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             }
         }
 
-        if (_scrollRequested && _module is not null)
+        // Скроллим только когда лента реально отрисована: пока _loading = true,
+        // вместо сообщений рендерится заглушка, и запрос скролла исчез бы впустую —
+        // тогда при открытии чата с историей лента оставалась бы сверху.
+        if (_scrollRequested && !_loading && _module is not null)
         {
             _scrollRequested = false;
             try { await _module.InvokeVoidAsync("scrollToBottom", _messagesEl); } catch { }

@@ -1,4 +1,5 @@
 using AppFront.Shared;
+using Mars.AiChat.Shared.Dto;
 using Mars.AiChat.Shared.SignalR;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -25,6 +26,7 @@ public class AiChatHubClient : IAsyncDisposable
     public event Action<Guid, Guid, string>? OnDone;
     public event Action<Guid, Guid>? OnStopped;
     public event Action<Guid, Guid, string>? OnError;
+    public event Action<Guid, AiPageToolRequest>? OnPageToolRequest;
 
     public AiChatHubClient(IJSRuntime js)
     {
@@ -81,6 +83,19 @@ public class AiChatHubClient : IAsyncDisposable
         }
     }
 
+    public async Task SendPageToolResultAsync(Guid chatId, AiPageToolResult result)
+    {
+        if (_connection is null) return;
+        try
+        {
+            await _connection.InvokeAsync("PageToolResult", chatId, result);
+        }
+        catch
+        {
+            // соединение могло оборваться — сервер отвалится по таймауту
+        }
+    }
+
     private async Task<string?> GetAccessTokenAsync()
     {
         try
@@ -115,6 +130,9 @@ public class AiChatHubClient : IAsyncDisposable
 
         connection.On<Guid, Guid, string>(AiChatHubEvents.Error,
             (chatId, runId, message) => OnError?.Invoke(chatId, runId, message));
+
+        connection.On<Guid, AiPageToolRequest>(AiChatHubEvents.PageToolRequest,
+            (chatId, request) => OnPageToolRequest?.Invoke(chatId, request));
     }
 
     public async ValueTask DisposeAsync()

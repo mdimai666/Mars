@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using AppFront.Main.Extensions;
+using AppFront.Shared.Hub;
 using Mars.Shared.Contracts.Posts;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
@@ -8,9 +9,10 @@ using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace AppAdmin.Pages.PostsViews;
 
-public partial class ManagePostView
+public partial class ManagePostView : IDisposable
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
+    [Inject] ClientHub clientHub { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public PostTypeAdminPanelItemResponse PostType { get; set; } = default!;
@@ -27,6 +29,11 @@ public partial class ManagePostView
 
     Guid _filterCategoryId;
     string prevPostTypeName = "";
+
+    protected override void OnInitialized()
+    {
+        clientHub.OnPostListChanged += OnPostListChanged;
+    }
 
     protected override void OnParametersSet()
     {
@@ -109,5 +116,20 @@ public partial class ManagePostView
         _filterCategoryId = categoryId;
         StateHasChanged();
         HandleCategoryFilterChanged();
+    }
+
+    void OnPostListChanged(string postType)
+    {
+        if (PostType is null) return;
+        if (!string.IsNullOrEmpty(postType)
+            && !string.Equals(postType, PostType.TypeName, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        Refresh();
+    }
+
+    public void Dispose()
+    {
+        clientHub.OnPostListChanged -= OnPostListChanged;
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Mars.AiChat.Host.Hubs;
@@ -8,6 +9,7 @@ using Mars.AiChat.Shared.Dto;
 using Mars.AiChat.Shared.Options;
 using Mars.AiChat.Shared.SignalR;
 using Mars.Core.Exceptions;
+using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
 using Microsoft.Agents.AI;
 using Microsoft.AspNetCore.SignalR;
@@ -26,6 +28,9 @@ public class AiChatAgentService
     private readonly IAiChatSessionStore _store;
     private readonly IAiChatClientFactory _clientFactory;
     private readonly IOptionService _optionService;
+    private readonly AiChatPageBridge _pageBridge;
+    private readonly IPostService _postService;
+    private readonly IHubContext<ChatHub> _chatHub;
     private readonly MarsSiteTools _siteTools;
     private readonly MarsOptionsTools _optionsTools;
     private readonly MarsSystemTools _systemTools;
@@ -36,6 +41,9 @@ public class AiChatAgentService
         IAiChatSessionStore store,
         IAiChatClientFactory clientFactory,
         IOptionService optionService,
+        AiChatPageBridge pageBridge,
+        IPostService postService,
+        IHubContext<ChatHub> chatHub,
         MarsSiteTools siteTools,
         MarsOptionsTools optionsTools,
         MarsSystemTools systemTools,
@@ -45,19 +53,26 @@ public class AiChatAgentService
         _store = store;
         _clientFactory = clientFactory;
         _optionService = optionService;
+        _pageBridge = pageBridge;
+        _postService = postService;
+        _chatHub = chatHub;
         _siteTools = siteTools;
         _optionsTools = optionsTools;
         _systemTools = systemTools;
         _logger = logger;
     }
 
-    public async Task RunChatAsync(Guid chatId, Guid userId, string userMessage, CancellationToken ct)
+    public async Task RunChatAsync(Guid chatId, Guid userId, string userMessage, string? pageContext, CancellationToken ct)
     {
         var state = await _store.GetAsync(chatId, userId, ct)
             ?? throw new NotFoundException($"AiChat session '{chatId}' not found");
 
         var runId = Guid.NewGuid();
         var group = AiChatHub.GroupName(chatId);
+        var stopwatch = Stopwatch.StartNew();
+
+        _logger.LogDebug("AiChat: run {RunId} started in chat {ChatId} (user {UserId}), page: {PageContext}, message: {Message}",
+            runId, chatId, userId, pageContext ?? "-", userMessage);
 
         if (state.Title is "" or "Новый чат")
             state.Title = userMessage.Length <= 40 ? userMessage : userMessage[..40] + "…";
@@ -72,7 +87,12 @@ public class AiChatAgentService
             var connection = option.GetDefaultConnection()
                 ?? throw new UserActionException("Подключение к ИИ-сервису не настроено. Добавьте его в Настройки → ИИ-чат.");
 
+            _logger.LogDebug("AiChat: chat {ChatId} uses connection '{ConnectionName}' ({ProviderType}, model '{ModelId}')",
+                chatId, connection.Name, connection.ProviderType, connection.ModelId);
+
             var askUser = new AskUserTool();
+            var pageTools = new MarsOpenPageTools(_pageBridge, chatId);
+            var postTools = new MarsPostTools(_postService, _chatHub, userId);
             var tools = new AIFunction[]
             {
                 AIFunctionFactory.Create(_siteTools.GetSiteSettings),
@@ -81,6 +101,13 @@ public class AiChatAgentService
                 AIFunctionFactory.Create(_optionsTools.GetSiteOption),
                 AIFunctionFactory.Create(_optionsTools.UpdateSiteOption),
                 AIFunctionFactory.Create(_systemTools.GetSystemInfo),
+                AIFunctionFactory.Create(postTools.CreatePost),
+                AIFunctionFactory.Create(postTools.GetPost),
+                AIFunctionFactory.Create(postTools.ListPosts),
+                AIFunctionFactory.Create(pageTools.GetOpenPageInfo),
+                AIFunctionFactory.Create(pageTools.GetOpenPageFields),
+                AIFunctionFactory.Create(pageTools.SetOpenPageField),
+                AIFunctionFactory.Create(pageTools.SaveOpenPage),
                 AIFunctionFactory.Create(askUser.AskUser),
             };
 
@@ -90,7 +117,7 @@ public class AiChatAgentService
                 Name = "mars-site-agent",
                 ChatOptions = new ChatOptions
                 {
-                    Instructions = AiChatPrompts.BuildInstructions(option),
+                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext),
                     Tools = [.. tools],
                 },
                 MaximumIterationsPerRequest = 15,
@@ -102,22 +129,28 @@ public class AiChatAgentService
                 DisableOpenTelemetry = true,
             });
 
-            await RunAgentAsync(agent, state, askUser, userMessage, chatId, runId, group, ct);
+            await RunAgentAsync(agent, state, askUser, userMessage, chatId, runId, group, stopwatch, ct);
+
+            _logger.LogDebug("AiChat: run {RunId} in chat {ChatId} done in {ElapsedMs} ms, history {Messages} messages",
+                runId, chatId, stopwatch.ElapsedMilliseconds, state.Messages.Count);
         }
         catch (OperationCanceledException)
         {
+            _logger.LogDebug("AiChat: run {RunId} in chat {ChatId} stopped by user after {ElapsedMs} ms",
+                runId, chatId, stopwatch.ElapsedMilliseconds);
             await OnStoppedAsync(state, chatId, runId, group);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AiChat: run of chat {ChatId} failed", chatId);
+            _logger.LogError(ex, "AiChat: run {RunId} of chat {ChatId} failed after {ElapsedMs} ms",
+                runId, chatId, stopwatch.ElapsedMilliseconds);
             await OnFailedAsync(state, chatId, runId, group, ex.GetBaseException().Message);
         }
     }
 
     private async Task RunAgentAsync(
         AIAgent agent, AiChatSessionState state, AskUserTool askUser,
-        string userMessage, Guid chatId, Guid runId, string group, CancellationToken ct)
+        string userMessage, Guid chatId, Guid runId, string group, Stopwatch stopwatch, CancellationToken ct)
     {
         var session = await RestoreSessionAsync(agent, state, ct);
 
@@ -149,12 +182,17 @@ public class AiChatAgentService
                         state.Messages.Add(NewMessage(AiChatMessageRole.Tool, argsJson, toolName: call.Name));
                         await SendCoreAsync(group, AiChatHubEvents.ToolCall, [chatId, runId, call.Name, argsJson]);
 
+                        _logger.LogDebug("AiChat: chat {ChatId} tool call {ToolName}, args: {Args} ({ElapsedMs} ms)",
+                            chatId, call.Name, Truncate(argsJson), stopwatch.ElapsedMilliseconds);
+
                         if (call.Name == AskUserTool.FunctionName)
                         {
                             var question = callArgs is not null && callArgs.TryGetValue("question", out var q)
                                 ? q?.ToString() ?? ""
                                 : "";
                             await SendCoreAsync(group, AiChatHubEvents.Question, [chatId, runId, question]);
+
+                            _logger.LogDebug("AiChat: chat {ChatId} asks user: {Question}", chatId, question);
                         }
                         break;
 
@@ -162,12 +200,18 @@ public class AiChatAgentService
                         var resultText = result.Result?.ToString() ?? "";
                         state.Messages.Add(NewMessage(AiChatMessageRole.Tool, resultText, toolName: currentCallName, isToolResult: true));
                         await SendCoreAsync(group, AiChatHubEvents.ToolResult, [chatId, runId, currentCallName, resultText]);
+
+                        _logger.LogDebug("AiChat: chat {ChatId} tool result {ToolName}: {Result} ({ElapsedMs} ms)",
+                            chatId, currentCallName, Truncate(resultText), stopwatch.ElapsedMilliseconds);
                         break;
                 }
             }
         }
 
+        var answerLength = finalText.Length;
         FlushText(state, finalText);
+        _logger.LogDebug("AiChat: chat {ChatId} assistant answer {Length} chars ({ElapsedMs} ms)",
+            chatId, answerLength, stopwatch.ElapsedMilliseconds);
 
         // Сохраняем сессию агента только после успешного завершения —
         // при остановке в истории мог остаться незакрытый вызов инструмента.
@@ -195,7 +239,9 @@ public class AiChatAgentService
             try
             {
                 var json = JsonSerializer.Deserialize<JsonElement>(state.SerializedAgentSession);
-                return await agent.DeserializeSessionAsync(json, null, ct);
+                var session = await agent.DeserializeSessionAsync(json, null, ct);
+                _logger.LogDebug("AiChat: chat {ChatId} agent session restored", state.Id);
+                return session;
             }
             catch (Exception ex)
             {
@@ -203,6 +249,7 @@ public class AiChatAgentService
             }
         }
 
+        _logger.LogDebug("AiChat: chat {ChatId} new agent session created", state.Id);
         return await agent.CreateSessionAsync(ct);
     }
 
@@ -222,6 +269,12 @@ public class AiChatAgentService
         IsToolResult = isToolResult,
         CreatedAtUtc = DateTime.UtcNow,
     };
+
+    static string Truncate(string? text, int max = 300)
+    {
+        if (string.IsNullOrEmpty(text)) return "";
+        return text.Length <= max ? text : text[..max] + "…";
+    }
 
     private async Task OnStoppedAsync(AiChatSessionState state, Guid chatId, Guid runId, string group)
     {

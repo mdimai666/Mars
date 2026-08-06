@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using AppFront.Shared.Interfaces;
 using Mars.AiChat.Front.Services;
@@ -18,6 +19,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     [Inject] AiChatHubClient _hub { get; set; } = default!;
     [Inject] IJSRuntime _js { get; set; } = default!;
     [Inject] IMessageService _messageService { get; set; } = default!;
+    [Inject] NavigationManager _navigation { get; set; } = default!;
 
     private IJSObjectReference? _module;
     private DotNetObjectReference<AiChatTerminal>? _dotnetRef;
@@ -209,6 +211,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _hub.OnDone += HubOnDone;
         _hub.OnStopped += HubOnStopped;
         _hub.OnError += HubOnError;
+        _hub.OnPageToolRequest += HubOnPageToolRequest;
     }
 
     private void HubOnChunk(Guid chatId, Guid runId, string text)
@@ -262,6 +265,56 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _ = ReloadSessionAsync();
     }
 
+    // ---------- инструменты на открытой странице ----------
+
+    private async void HubOnPageToolRequest(Guid chatId, AiPageToolRequest request)
+    {
+        if (chatId != _chatId) return;
+
+        var result = await ExecutePageToolAsync(request);
+        await _hub.SendPageToolResultAsync(chatId, result);
+    }
+
+    private static async Task<AiPageToolResult> ExecutePageToolAsync(AiPageToolRequest request)
+    {
+        var handler = AiChatPageHandlerHolder.Current;
+        if (handler is null)
+        {
+            return new AiPageToolResult
+            {
+                RequestId = request.RequestId,
+                Ok = false,
+                Result = "Сейчас не открыта страница редактирования поста.",
+            };
+        }
+
+        try
+        {
+            var resultText = request.Tool switch
+            {
+                "get_open_page_info" => handler.GetInfo(),
+                "get_open_page_fields" => await handler.GetFields(),
+                "set_open_page_field" => await HandleSetFieldAsync(handler, request.ArgsJson),
+                "save_open_page" => await handler.Save(),
+                _ => throw new InvalidOperationException($"Неизвестный инструмент страницы '{request.Tool}'"),
+            };
+
+            return new AiPageToolResult { RequestId = request.RequestId, Ok = true, Result = resultText };
+        }
+        catch (Exception ex)
+        {
+            return new AiPageToolResult { RequestId = request.RequestId, Ok = false, Result = ex.GetBaseException().Message };
+        }
+    }
+
+    private static async Task<string> HandleSetFieldAsync(IAiChatPageHandler handler, string argsJson)
+    {
+        using var doc = JsonDocument.Parse(argsJson);
+        var field = doc.RootElement.TryGetProperty("field", out var f) ? f.GetString() ?? "" : "";
+        var value = doc.RootElement.TryGetProperty("value", out var v) ? v.GetString() ?? "" : "";
+        return await handler.SetField(field, value);
+    }
+
     private void FlushStreamToMessages()
     {
         if (_stream.Length == 0) return;
@@ -289,7 +342,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _sending = true;
         try
         {
-            await _client.AiChat.Send(chatId, text);
+            await _client.AiChat.Send(chatId, text, GetCurrentPageContext());
 
             _input = "";
             _pendingQuestion = null;
@@ -306,6 +359,19 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         {
             _sending = false;
             StateHasChanged();
+        }
+    }
+
+    private string? GetCurrentPageContext()
+    {
+        try
+        {
+            var relative = _navigation.ToBaseRelativePath(_navigation.Uri);
+            return string.IsNullOrEmpty(relative) ? null : "/" + relative;
+        }
+        catch
+        {
+            return null;
         }
     }
 
@@ -449,6 +515,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _hub.OnDone -= HubOnDone;
             _hub.OnStopped -= HubOnStopped;
             _hub.OnError -= HubOnError;
+            _hub.OnPageToolRequest -= HubOnPageToolRequest;
         }
 
         _dotnetRef?.Dispose();

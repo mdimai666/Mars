@@ -104,7 +104,7 @@ public class AiChatController
         _ = await _store.GetAsync(chatId, userId, cancellationToken)
             ?? throw new NotFoundException($"AiChat session '{chatId}' not found");
 
-        _coordinator.Enqueue(chatId, userId, request.Message.Trim());
+        _coordinator.Enqueue(chatId, userId, request.Message.Trim(), request.PageContext);
 
         return new AcceptedResult();
     }

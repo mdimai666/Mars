@@ -2,6 +2,7 @@ using System.ClientModel;
 using Mars.AiChat.Host.Shared.Interfaces;
 using Mars.AiChat.Shared.Options;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 using OpenAI;
 
 namespace Mars.AiChat.Host.Services;
@@ -13,13 +14,24 @@ namespace Mars.AiChat.Host.Services;
 public class AiChatClientFactory : IAiChatClientFactory
 {
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, IChatClient> _clients = new();
+    private readonly ILogger<AiChatClientFactory> _logger;
+
+    public AiChatClientFactory(ILogger<AiChatClientFactory> logger)
+    {
+        _logger = logger;
+    }
 
     public IChatClient CreateClient(AiProviderConnection connection)
     {
         ArgumentException.ThrowIfNullOrEmpty(connection.ModelId, nameof(connection.ModelId));
 
         var key = $"{connection.ProviderType}|{connection.ResolveEndpoint()}|{connection.ApiKey}|{connection.ModelId}";
-        return _clients.GetOrAdd(key, _ => Build(connection));
+        return _clients.GetOrAdd(key, _ =>
+        {
+            _logger.LogDebug("AiChat: creating {ProviderType} client, endpoint {Endpoint}, model '{ModelId}'",
+                connection.ProviderType, connection.ResolveEndpoint(), connection.ModelId);
+            return Build(connection);
+        });
     }
 
     static IChatClient Build(AiProviderConnection connection)

@@ -29,10 +29,10 @@ internal class AiChatServiceClient : BasicServiceClient, IAiChatServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "sessions", chatId)
                     .DeleteAsync();
 
-    public Task Send(Guid chatId, string message)
+    public Task Send(Guid chatId, string message, string? pageContext = null)
         => _client.Request($"{_basePath}{_controllerName}", "sessions", chatId, "send")
                     .OnError(OnStatus404ThrowException)
-                    .PostJsonAsync(new AiChatSendRequest { Message = message });
+                    .PostJsonAsync(new AiChatSendRequest { Message = message, PageContext = pageContext });
 
     public async Task<bool> Stop(Guid chatId)
     {

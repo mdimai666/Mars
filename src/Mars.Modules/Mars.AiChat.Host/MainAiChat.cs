@@ -18,6 +18,7 @@ public static class MainAiChat
         services.AddSingleton<IAiChatClientFactory, AiChatClientFactory>();
         services.AddSingleton<IAiChatSessionStore, AiChatSessionStore>();
         services.AddSingleton<IAiChatRunCoordinator, AiChatRunCoordinator>();
+        services.AddSingleton<AiChatPageBridge>();
         services.AddScoped<AiChatAgentService>();
         services.AddScoped<MarsSiteTools>();
         services.AddScoped<MarsOptionsTools>();

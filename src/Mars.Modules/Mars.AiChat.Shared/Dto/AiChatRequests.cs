@@ -6,6 +6,11 @@ public class AiChatSendRequest
 {
     [Required]
     public string Message { get; set; } = "";
+
+    /// <summary>
+    /// Контекст текущей страницы админки (URL), если открыта страница редактирования.
+    /// </summary>
+    public string? PageContext { get; set; }
 }
 
 public class AiChatCreateSessionRequest

@@ -12,7 +12,7 @@ public interface IAiChatServiceClient
     /// <summary>
     /// Отправляет сообщение агенту (202). Ответ приходит событиями SignalR.
     /// </summary>
-    Task Send(Guid chatId, string message);
+    Task Send(Guid chatId, string message, string? pageContext = null);
 
     Task<bool> Stop(Guid chatId);
 }

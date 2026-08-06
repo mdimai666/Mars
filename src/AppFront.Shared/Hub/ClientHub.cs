@@ -1,4 +1,5 @@
 using Mars.Nodes.Core;
+using Mars.Shared.Hubs;
 using Mars.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -50,6 +51,12 @@ public class ClientHub : IClientHub
             OnNodeExecuted?.Invoke(taskId, nodeId, trigger);
         });
 
+        ws.On(AdminHubEvents.PostListChanged, (string postType) =>
+        {
+            Console.WriteLine($"<<= PostListChanged:{postType}");
+            OnPostListChanged?.Invoke(postType);
+        });
+
         this.ws = ws;
     }
 
@@ -69,6 +76,11 @@ public class ClientHub : IClientHub
     public event ClietHubNodeTaskExecutionHandler OnNodeExecuted = default!;
 
     public event Action<int> OnNodeRunningTaskCountChanged = default!;
+
+    /// <summary>
+    /// Список постов изменился. Payload: имя типа поста.
+    /// </summary>
+    public event Action<string> OnPostListChanged = default!;
 
     public Task JoinGroup(string groupName)
     {

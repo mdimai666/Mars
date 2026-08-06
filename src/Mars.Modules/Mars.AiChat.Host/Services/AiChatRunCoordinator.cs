@@ -30,19 +30,23 @@ public class AiChatRunCoordinator : IAiChatRunCoordinator
 
     public bool IsRunning(Guid chatId) => _runs.ContainsKey(chatId);
 
-    public void Enqueue(Guid chatId, Guid userId, string userMessage)
+    public void Enqueue(Guid chatId, Guid userId, string userMessage, string? pageContext = null)
     {
         var run = new Run { ChatId = chatId, Cts = new CancellationTokenSource() };
         if (!_runs.TryAdd(chatId, run))
             throw new UserActionException("Этот чат уже обрабатывается. Дождитесь завершения или нажмите «Стоп».");
 
-        run.Task = Task.Run(() => ExecuteRunAsync(run, userId, userMessage));
+        _logger.LogDebug("AiChat: chat {ChatId} enqueued (user {UserId}, message {Length} chars)",
+            chatId, userId, userMessage.Length);
+
+        run.Task = Task.Run(() => ExecuteRunAsync(run, userId, userMessage, pageContext));
     }
 
     public bool Stop(Guid chatId)
     {
         if (_runs.TryGetValue(chatId, out var run))
         {
+            _logger.LogDebug("AiChat: chat {ChatId} stop requested", chatId);
             run.Cts.Cancel();
             return true;
         }
@@ -50,17 +54,17 @@ public class AiChatRunCoordinator : IAiChatRunCoordinator
         return false;
     }
 
-    private async Task ExecuteRunAsync(Run run, Guid userId, string userMessage)
+    private async Task ExecuteRunAsync(Run run, Guid userId, string userMessage, string? pageContext)
     {
         try
         {
             await using var scope = _serviceScopeFactory.CreateAsyncScope();
             var agentService = scope.ServiceProvider.GetRequiredService<AiChatAgentService>();
-            await agentService.RunChatAsync(run.ChatId, userId, userMessage, run.Cts.Token);
+            await agentService.RunChatAsync(run.ChatId, userId, userMessage, pageContext, run.Cts.Token);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("AiChat: run of chat {ChatId} was stopped", run.ChatId);
+            _logger.LogDebug("AiChat: run of chat {ChatId} was stopped", run.ChatId);
         }
         catch (Exception ex)
         {
@@ -70,6 +74,7 @@ public class AiChatRunCoordinator : IAiChatRunCoordinator
         {
             _runs.TryRemove(run.ChatId, out _);
             run.Cts.Dispose();
+            _logger.LogDebug("AiChat: chat {ChatId} run finished, active runs: {ActiveRuns}", run.ChatId, _runs.Count);
         }
     }
 }

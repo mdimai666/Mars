@@ -2,7 +2,7 @@ namespace Mars.AiChat.Shared.SignalR;
 
 /// <summary>
 /// Имена событий SignalR хаба /_ws/aichat (сервер -> клиент).
-/// Клиент -> сервер: JoinChat(chatId), LeaveChat(chatId).
+/// Клиент -> сервер: JoinChat(chatId), LeaveChat(chatId), PageToolResult(chatId, result).
 /// </summary>
 public static class AiChatHubEvents
 {
@@ -28,4 +28,7 @@ public static class AiChatHubEvents
 
     /// <summary>Ошибка запуска: (Guid chatId, Guid runId, string message)</summary>
     public const string Error = "AiChatError";
+
+    /// <summary>Выполнить инструмент на открытой странице клиента: (Guid chatId, AiPageToolRequest request)</summary>
+    public const string PageToolRequest = "AiChatPageToolRequest";
 }

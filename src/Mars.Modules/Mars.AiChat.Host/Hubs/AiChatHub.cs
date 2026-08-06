@@ -1,3 +1,5 @@
+using Mars.AiChat.Host.Services;
+using Mars.AiChat.Shared.Dto;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.AiChat.Host.Hubs;
@@ -13,6 +15,13 @@ namespace Mars.AiChat.Host.Hubs;
 /// </summary>
 public class AiChatHub : Hub
 {
+    private readonly AiChatPageBridge _pageBridge;
+
+    public AiChatHub(AiChatPageBridge pageBridge)
+    {
+        _pageBridge = pageBridge;
+    }
+
     public static string GroupName(Guid chatId) => $"aichat-{chatId}";
 
     public Task JoinChat(Guid chatId)
@@ -20,4 +29,12 @@ public class AiChatHub : Hub
 
     public Task LeaveChat(Guid chatId)
         => Groups.RemoveFromGroupAsync(Context.ConnectionId, GroupName(chatId));
+
+    /// <summary>
+    /// Результат инструмента, выполненного клиентом на открытой странице.
+    /// </summary>
+    public void PageToolResult(Guid chatId, AiPageToolResult result)
+    {
+        _pageBridge.Complete(result);
+    }
 }

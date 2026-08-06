@@ -2302,6 +2302,7 @@
       "Mars.AiChat.Host/1.0.0": {
         "dependencies": {
           "Mars.AiChat.Host.Shared": "1.0.0",
+          "Mars.Datasource.Host": "1.0.0",
           "Microsoft.Agents.AI": "1.17.0",
           "Microsoft.Agents.AI.Harness": "1.17.0",
           "Microsoft.Extensions.AI.Ollama": "9.7.0-preview.1.25356.2",

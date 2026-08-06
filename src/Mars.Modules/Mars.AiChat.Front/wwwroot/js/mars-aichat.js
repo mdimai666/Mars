@@ -20,35 +20,69 @@ export function getViewport() {
     return { w: window.innerWidth, h: window.innerHeight };
 }
 
-export function getFabRect(el) {
-    if (!el) return { x: 0, y: 0, w: 120, h: 40 };
-    const r = el.getBoundingClientRect();
-    return { x: r.left, y: r.top, w: r.width, h: r.height };
-}
+// Клик/перетаскивание кнопки. Вся логика различения — здесь, в JS:
+// если указатель не сдвинулся дальше порога — это клик (OnFabClick),
+// иначе — перетаскивание (OnFabDragMove/OnFabDragEnd с финальной позицией).
+// dotnetRef должен иметь методы: OnFabClick(), OnFabDragMove(x, y), OnFabDragEnd(x, y).
+// Возвращает стартовый rect кнопки { x, y, w, h }.
+let dragCleanup = null;
+const DRAG_THRESHOLD = 5;
 
-// Перетаскивание кнопки: события вешаем на window, чтобы не терять указатель.
-// dotnetRef должен иметь методы OnFabDragMove(x, y) и OnFabDragEnd(x, y).
-export function startFabDrag(dotnetRef, pointerId, offsetX, offsetY) {
-    let lastX = 0, lastY = 0;
+export function startFabDrag(dotnetRef, el, pointerId, clientX, clientY) {
+    // защита от слушателей, оставшихся от незавершённого предыдущего жеста
+    if (dragCleanup) {
+        dragCleanup();
+        dragCleanup = null;
+    }
+
+    const rect = el.getBoundingClientRect();
+    const startX = rect.left;
+    const startY = rect.top;
+    const offsetX = clientX - startX;
+    const offsetY = clientY - startY;
+    let moved = false;
+    let lastX = startX;
+    let lastY = startY;
 
     function onMove(e) {
         if (e.pointerId !== pointerId) return;
         lastX = e.clientX - offsetX;
         lastY = e.clientY - offsetY;
-        dotnetRef.invokeMethodAsync('OnFabDragMove', lastX, lastY);
+        if (!moved && (Math.abs(lastX - startX) > DRAG_THRESHOLD || Math.abs(lastY - startY) > DRAG_THRESHOLD)) {
+            moved = true;
+        }
+        if (moved) {
+            dotnetRef.invokeMethodAsync('OnFabDragMove', lastX, lastY);
+        }
     }
 
-    function onUp(e) {
+    function finish(e, cancelled) {
         if (e.pointerId !== pointerId) return;
+        cleanup();
+        if (cancelled) return;
+        if (moved) {
+            dotnetRef.invokeMethodAsync('OnFabDragEnd', lastX, lastY);
+        } else {
+            dotnetRef.invokeMethodAsync('OnFabClick');
+        }
+    }
+
+    function onUp(e) { finish(e, false); }
+    function onCancel(e) { finish(e, true); }
+
+    function cleanup() {
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
-        window.removeEventListener('pointercancel', onUp);
-        dotnetRef.invokeMethodAsync('OnFabDragEnd', lastX, lastY);
+        window.removeEventListener('pointercancel', onCancel);
+        if (dragCleanup === cleanup) dragCleanup = null;
     }
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
+    window.addEventListener('pointercancel', onCancel);
+    dragCleanup = cleanup;
+
+    return { x: startX, y: startY, w: rect.width, h: rect.height };
 }
 
 export function scrollToBottom(el) {

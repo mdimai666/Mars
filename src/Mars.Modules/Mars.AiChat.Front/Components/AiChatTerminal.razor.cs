@@ -46,8 +46,6 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     private double _fabY = double.NaN;
     private double _fabW = 120;
     private double _fabH = 40;
-    private double _dragStartX;
-    private double _dragStartY;
 
     private string FabStyle => double.IsNaN(_fabX)
         ? "left: calc(50% - 60px); bottom: 18px;"
@@ -366,25 +364,30 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
 
         try
         {
-            var rect = await _module.InvokeAsync<FabRect>("getFabRect", _fabEl);
-            _fabW = rect.W;
-            _fabH = rect.H;
-            _dragStartX = rect.X;
-            _dragStartY = rect.Y;
+            _dotnetRef ??= DotNetObjectReference.Create(this);
+
+            // один вызов: JS сам берёт rect и сразу вешает слушатели на window,
+            // различая клик и перетаскивание по порогу смещения
+            var start = await _module.InvokeAsync<FabRect>("startFabDrag", _dotnetRef, _fabEl, e.PointerId, e.ClientX, e.ClientY);
+            _fabW = start.W;
+            _fabH = start.H;
 
             if (double.IsNaN(_fabX))
             {
-                _fabX = rect.X;
-                _fabY = rect.Y;
+                _fabX = start.X;
+                _fabY = start.Y;
             }
-
-            _dotnetRef ??= DotNetObjectReference.Create(this);
-            await _module.InvokeVoidAsync("startFabDrag", _dotnetRef, e.PointerId, e.ClientX - rect.X, e.ClientY - rect.Y);
         }
         catch
         {
             // drag недоступен — кнопка работает как обычная
         }
+    }
+
+    [JSInvokable]
+    public void OnFabClick()
+    {
+        Open();
     }
 
     [JSInvokable]
@@ -398,13 +401,6 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     [JSInvokable]
     public async void OnFabDragEnd(double x, double y)
     {
-        var moved = Math.Abs(x - _dragStartX) > 5 || Math.Abs(y - _dragStartY) > 5;
-        if (!moved)
-        {
-            Open();
-            return;
-        }
-
         try
         {
             var viewport = await _module!.InvokeAsync<Viewport>("getViewport");

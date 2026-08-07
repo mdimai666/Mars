@@ -88,5 +88,10 @@ public record TablePostTypeQueryRequest : BasicTableQueryRequest
 public record UpdatePostTypePresentationRequest
 {
     public required Guid Id { get; init; }
-    public required SourceUri ListViewTemplate { get; init; }
+
+    /// <summary>
+    /// Относительный путь к шаблону списка во фронте админки (data/admin/front),
+    /// например postTypes/article/listView.hbs. Пусто — стандартный вывод.
+    /// </summary>
+    public required string ListViewTemplate { get; init; }
 }

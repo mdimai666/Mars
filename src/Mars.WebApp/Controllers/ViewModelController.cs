@@ -28,18 +28,15 @@ public class ViewModelController : ControllerBase //MinimalControllerBase, IView
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly InitialSiteDataViewModelHandler _initialSiteDataViewModelHandler;
-    private readonly PostTypePresentationRenderHandler _postTypePresentationRenderHandler;
     private readonly ICentralSearchService _centralSearchService;
 
     public ViewModelController(
         IServiceProvider serviceProvider,
         InitialSiteDataViewModelHandler initialSiteDataViewModelHandler,
-        PostTypePresentationRenderHandler postTypePresentationRenderHandler,
         ICentralSearchService centralSearchService)
     {
         _serviceProvider = serviceProvider;
         _initialSiteDataViewModelHandler = initialSiteDataViewModelHandler;
-        _postTypePresentationRenderHandler = postTypePresentationRenderHandler;
         _centralSearchService = centralSearchService;
     }
 
@@ -58,14 +55,5 @@ public class ViewModelController : ControllerBase //MinimalControllerBase, IView
         if (string.IsNullOrWhiteSpace(text) || text.Trim().Length < 2) return [];
         var results = await _centralSearchService.ActionBarSearch(text, maxCount, cancellationToken);
         return results.ToResponse();
-    }
-
-    [HttpGet]
-    [Authorize]
-    [Produces(MediaTypeNames.Text.Html)]
-    public async Task<IActionResult> PostTypePresentationRender(SourceUri sourceUri, string? queryString, CancellationToken cancellationToken)
-    {
-        var html = (await _postTypePresentationRenderHandler.Handle(sourceUri, queryString, HttpContext, cancellationToken)) ?? throw new NotFoundException();
-        return Content(html);
     }
 }

@@ -224,12 +224,12 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         {
             entity.Presentation = new()
             {
-                ListViewTemplateSourceUri = query.ListViewTemplate.ToString().AsNullIfEmpty(),
+                ListViewTemplateSourceUri = query.ListViewTemplate.AsNullIfEmpty(),
             };
         }
         else
         {
-            entity.Presentation.ListViewTemplateSourceUri = query.ListViewTemplate.ToString().AsNullIfEmpty();
+            entity.Presentation.ListViewTemplateSourceUri = query.ListViewTemplate.AsNullIfEmpty();
         }
 
         entity.ModifiedAt = DateTimeOffset.Now;

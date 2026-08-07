@@ -1,4 +1,4 @@
-using Mars.Shared.Models;
+using Mars.Shared.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -11,6 +11,7 @@ public partial class EditPostTypePresentationPage
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
     [Inject] ViewModelService _viewModelService { get; set; } = default!;
+    [Inject] IActAppService _actAppService { get; set; } = default!;
 
     [Parameter] public Guid ID { get; set; }
 
@@ -25,21 +26,33 @@ public partial class EditPostTypePresentationPage
     {
         if (args.Id == "open_presentation_template")
         {
-            try
-            {
-                SourceUri sourceUri = f.Model.ListViewTemplate;
-                var readPost = await _client.Post.GetBySlug(sourceUri[1], sourceUri[0], renderContent: false);
-                var link = $"EditPost/{sourceUri[0]}/{readPost.Id}";
-                _navigationManager.NavigateTo(link);
-            }
-            catch
-            {
-                _ = _messageService.Error("invalid sourceUri");
-            }
+            // шаблон списка живёт в специальном фронте админки (data/admin/front)
+            _navigationManager.NavigateTo("front/editor/admin");
+            return;
         }
-        else
+        else if (args.Id == "create_presentation_template")
         {
-            throw new NotImplementedException($"id '{args.Id}' is not implement");
+            var commandId = "Mars.XActions.Content.Templates.CreatePostTypePresentationTemplateAct";
+            var xresult = await _actAppService.Inject(commandId, [f.Model.PostType.TypeName]);
+            //TODO: как то коряво, пересмотреть XActions
+
+            if (xresult.Ok)
+            {
+                var postTypeName = f.Model.PostType.TypeName;
+                var fileRelPath = $"postTypes/{postTypeName}/listView.hbs";
+
+                f.Model.ListViewTemplate = fileRelPath;
+                var saved = await f.Save();
+
+                if (!saved)
+                {
+                    _ = _messageService.Warning("Не удалось сохранить");
+                }
+
+                _navigationManager.NavigateTo("front/editor/admin");
+            }
+            return;
         }
+        throw new NotImplementedException($"id '{args.Id}' is not implement");
     }
 }

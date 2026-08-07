@@ -28,12 +28,13 @@ public class AdminFrontController : ControllerBase
 
     /// <summary>
     /// Рендер страницы админ-фронта по относительному пути файла (например admin_index.hbs).
+    /// queryString пробрасывается в шаблон как _req.Query (используется RemotePageViewer).
     /// </summary>
     [HttpGet]
     [Produces(MediaTypeNames.Text.Html)]
-    public async Task<IActionResult> Render(string file, CancellationToken cancellationToken)
+    public async Task<IActionResult> Render(string file, string? queryString, CancellationToken cancellationToken)
     {
-        var html = await _adminFrontRenderHandler.RenderByFile(file, HttpContext, cancellationToken)
+        var html = await _adminFrontRenderHandler.RenderByFile(file, queryString, HttpContext, cancellationToken)
             ?? throw new NotFoundException($"Страница админ-фронта '{file}' не найдена");
 
         return Content(html, MediaTypeNames.Text.Html);

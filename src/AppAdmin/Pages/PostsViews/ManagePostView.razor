@@ -7,10 +7,10 @@
 @inject IAIToolAppService _aiTool
 
 <d-manage-post-view class="flex-fill d-flex flex-column">
-    @if (PostType.Presentation.ListViewTemplate != null)
+    @if (!string.IsNullOrEmpty(PostType.Presentation.ListViewTemplate))
     {
         var source = PostType.Presentation.ListViewTemplate;
-        <AppFront.Shared.Pages.RemotePageViewer Url=@($"/vm/ViewModel/PostTypePresentationRender/?sourceUri={source}") />
+        <AppFront.Shared.Pages.RemotePageViewer Url=@($"/api/AdminFront/Render?file={Uri.EscapeDataString(source)}") />
     }
     else
     {

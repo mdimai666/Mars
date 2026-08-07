@@ -1,6 +1,5 @@
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
-using Mars.Shared.Models;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
 
@@ -17,7 +16,11 @@ public record PostTypeDetail : PostTypeSummary
 
 public record PostTypePresentation
 {
-    public required SourceUri? ListViewTemplate { get; init; }
+    /// <summary>
+    /// Относительный путь к шаблону списка в специальном фронте админки
+    /// (data/admin/front), например postTypes/article/listView.hbs. null — стандартный вывод.
+    /// </summary>
+    public required string? ListViewTemplate { get; init; }
 
     public static PostTypePresentation Default()
         => new()

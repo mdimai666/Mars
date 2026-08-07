@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mars.Host.Shared.WebSite.Models;
+using Mars.XActions.ContentRecipes;
 
 namespace Mars.Integration.Tests.Services;
 
@@ -31,5 +32,12 @@ public class AdminFrontTemplateTests
 
         template.IndexPage.Should().NotBeNull();
         template.IndexPage.Url.Value.Should().Be("/");
+    }
+
+    [Fact]
+    public void ListViewTemplate_NamingConvention()
+    {
+        CreatePostTypePresentationTemplateAct.ListViewRelPath("article")
+            .Should().Be("postTypes/article/listView.hbs");
     }
 }

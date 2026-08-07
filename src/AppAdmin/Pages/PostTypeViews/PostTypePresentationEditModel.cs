@@ -3,7 +3,6 @@ using Mars.Core.Exceptions;
 using Mars.Core.Interfaces;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Resources;
-using Mars.Shared.Validators;
 using Mars.WebApiClient.Interfaces;
 
 namespace AppAdmin.Pages.PostTypeViews;
@@ -16,8 +15,7 @@ public class PostTypePresentationEditModel : IHasId
     [Display(Name = nameof(AppRes.Id), ResourceType = typeof(AppRes))]
     public Guid Id { get; init; }
 
-    [ValidateSourceUri]
-    [Display(Name = "ListViewTemplate", Description = "путь к странице отрисовки")]
+    [Display(Name = "ListViewTemplate", Description = "относительный путь шаблона во фронте админки, напр. postTypes/article/listView.hbs")]
     public string ListViewTemplate { get; set; } = "";
 
     public PostTypeSummaryResponse PostType { get; init; } = default!;
@@ -38,7 +36,7 @@ public class PostTypePresentationEditModel : IHasId
         => new()
         {
             Id = Id,
-            ListViewTemplate = ListViewTemplate.ToString(),
+            ListViewTemplate = ListViewTemplate,
         };
 
     public static PostTypePresentationEditModel ToModel(PostTypePresentationEditViewModel viewModel)

@@ -10,9 +10,10 @@
             Эти шаблоны отображаются только в админ-панели и не роутятся публично.
             </summary>
         </member>
-        <member name="M:Mars.Controllers.AdminFrontController.Render(System.String,System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.AdminFrontController.Render(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Рендер страницы админ-фронта по относительному пути файла (например admin_index.hbs).
+            queryString пробрасывается в шаблон как _req.Query (используется RemotePageViewer).
             </summary>
         </member>
         <member name="M:Mars.Controllers.FileReaderExtensions.Tail(System.IO.TextReader,System.Int32)">
@@ -137,6 +138,23 @@
             <summary>
             Статика wwwroot фронтов. До endpoints — как UseStaticFiles в старой схеме.
             (Fallback-запросы с точкой в пути — файлы — пропускаются и тут, и в FrontRenderFallbackMiddleware)
+            </summary>
+        </member>
+        <member name="T:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct">
+            <summary>
+            Создаёт шаблон представления списка записей в специальном фронте админки
+            (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
+            </summary>
+        </member>
+        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.#ctor(Mars.Services.FrontFilesService)">
+            <summary>
+            Создаёт шаблон представления списка записей в специальном фронте админки
+            (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
+            </summary>
+        </member>
+        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.ListViewRelPath(System.String)">
+            <summary>
+            Правило именования шаблона списка: postTypes/&lt;typeName&gt;/listView.hbs
             </summary>
         </member>
         <member name="T:Program">

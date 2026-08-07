@@ -34,6 +34,36 @@ public class MainXxxPlugin : WebApplicationPlugin
 }
 ```
 
+## Custom Front Render Engine
+
+A plugin can add its own front render engine by registering an `IWebRenderEngineFactory` in DI
+(inside `ConfigureWebApplicationBuilder` — it runs before the container is built, so the factory
+lands in the `IEnumerable<IWebRenderEngineFactory>` that `WebRenderEngineLocator` consumes).
+Admins then pick the engine per front (`FrontsOption.EngineId`, editable at runtime — no restart).
+
+```csharp
+[Display(Name = "MyEngine", Description = "My custom front renderer")]
+public class MyRenderEngineFactory : IWebRenderEngineFactory
+{
+    public string Id => "my-engine"; // value for FrontItem.EngineId
+
+    public IWebRenderEngine Create(MarsAppFront appFront, IServiceProvider services)
+    {
+        var engine = ActivatorUtilities.CreateInstance<MyRenderEngine>(services, appFront);
+        engine.Setup();
+        // initialize template source (files from appFront.Configuration.Path), then:
+        return engine;
+    }
+}
+
+// in ConfigureWebApplicationBuilder:
+builder.Services.AddSingleton<IWebRenderEngineFactory, MyRenderEngineFactory>();
+```
+
+`IWebRenderEngine` contract: `Setup()` (validation) and `RenderPage(RenderEngineRenderRequestContext, ...)`.
+The pipeline resolves the front by URL, serves `<front>/wwwroot` statics itself, and calls the engine
+only for page rendering. See `HandlebarsRenderEngineFactory`/`HandlebarsWebRenderEngine` as reference.
+
 ## Frontend: Startup.cs
 
 ```csharp

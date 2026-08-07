@@ -1,15 +1,10 @@
-using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Host.Shared.WebSite.SourceProviders;
-using Mars.Host.WebSite.SourceProviders;
-using Mars.Shared.Options;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +19,6 @@ public class WebTemplateService : IWebTemplateService
     FileSystemWatcher? _watcher;
     WebSiteTemplate _template = default!;
     Debouncer _debouncer;
-    MarsAppFront _appFront;
 
     public event EventHandler? OnFileUpdated;
 
@@ -50,9 +44,7 @@ public class WebTemplateService : IWebTemplateService
     public WebTemplateService(IServiceProvider rootServiceProvider,
         IHubContext<ChatHub> hub, MarsAppFront appFront)
     {
-        //var af = configuration.GetRequiredSection("AppFront").Get<AppFrontSettingsCfg>();
         var af = appFront.Configuration;
-        _appFront = appFront;
         Path = af.Path;
         bool enableWatcher = true;
 
@@ -66,7 +58,7 @@ public class WebTemplateService : IWebTemplateService
         env = rootServiceProvider.GetRequiredService<IHostEnvironment>();
         IsDevelopment = env.IsDevelopment();
 
-        if (enableWatcher)
+        if (enableWatcher && false)
         {
             _watcher = new FileSystemWatcher(Path)
             {
@@ -92,41 +84,6 @@ public class WebTemplateService : IWebTemplateService
             //Console.WriteLine("SetWatcher");
         }
 
-        {
-            var eventManager = rootServiceProvider.GetRequiredService<IEventManager>();
-
-            string[] eventTypes = WebTemplateDatabaseSource.activeTypeNames;
-
-            foreach (var eventType in eventTypes)
-            {
-                eventManager.AddEventListener(eventManager.Defaults.PostAdd(eventType), payload =>
-                {
-                    UpdateFile("x", WatcherChangeTypes.Created);
-                    OnFileUpdated?.Invoke(this, payload);
-                    //hub.Clients.All.SendAsync("reload");//refreshcss
-                });
-                eventManager.AddEventListener(eventManager.Defaults.PostUpdate(eventType), payload =>
-                {
-                    UpdateFile("x", WatcherChangeTypes.Changed);
-                    OnFileUpdated?.Invoke(this, payload);
-                    //hub.Clients.All.SendAsync("reload");//refreshcss
-                });
-                eventManager.AddEventListener(eventManager.Defaults.PostDelete(eventType), payload =>
-                {
-                    UpdateFile("x", WatcherChangeTypes.Deleted);
-                    OnFileUpdated?.Invoke(this, payload);
-                    //hub.Clients.All.SendAsync("reload");//refreshcss
-                });
-            }
-            eventManager.AddEventListener(eventManager.Defaults.OptionUpdate(nameof(FrontOptions)), payload =>
-            {
-                UpdateFile("x", WatcherChangeTypes.Changed);
-                OnFileUpdated?.Invoke(this, payload);
-                //hub.Clients.All.SendAsync("reload");//refreshcss
-
-            });
-        }
-
         _debouncer = new Debouncer(200);
 
         TryScanSite();
@@ -136,23 +93,8 @@ public class WebTemplateService : IWebTemplateService
     {
         var wfs = new WebFilesReadFilesystemService();
         var templateSource = new WebTemplateFilesystemSource(Path, wfs);
-        var optionService = _rootServiceProvider.GetRequiredService<IOptionService>();
-        var eff = _rootServiceProvider.GetRequiredService<IMarsDbContextFactory>();
 
-        if (eff is not null)
-        {
-
-            var dbTemplateSource = new WebTemplateDatabaseSource(optionService, _appFront, () => eff?.CreateInstance() ?? null!);
-
-            var dbParts = dbTemplateSource.ReadParts();
-            dbParts = dbParts.Where(x => x.Name != "_root.hbs");
-
-            _template = new WebSiteTemplate(templateSource.ReadParts().Concat(dbParts));
-        }
-        else
-        {
-            _template = new WebSiteTemplate(templateSource.ReadParts());
-        }
+        _template = new WebSiteTemplate(templateSource.ReadParts());
     }
 
     void TryScanSite()

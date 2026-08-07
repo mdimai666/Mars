@@ -6,7 +6,6 @@ using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Renders;
-using Mars.UseStartup;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Controllers;
@@ -21,10 +20,12 @@ namespace Mars.Controllers;
 public class PageRenderController : ControllerBase
 {
     private readonly IPageRenderService _pageRenderService;
+    private readonly IMarsAppProvider _marsAppProvider;
 
-    public PageRenderController(IPageRenderService pageRenderService)
+    public PageRenderController(IPageRenderService pageRenderService, IMarsAppProvider marsAppProvider)
     {
         _pageRenderService = pageRenderService;
+        _marsAppProvider = marsAppProvider;
     }
 
     [HttpGet("by-id/{id:guid}")]
@@ -64,8 +65,7 @@ public class PageRenderController : ControllerBase
 
     private void SetupAppFront()
     {
-        //MarsAppFront app = StartupFront.AppProvider.GetAppForUrl(url);
-        MarsAppFront app = StartupFront.AppProvider.FirstApp;
+        MarsAppFront app = _marsAppProvider.FirstApp;
         HttpContext.Items.TryAdd(nameof(MarsAppFront), app);
     }
 }

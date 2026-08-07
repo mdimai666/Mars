@@ -10,9 +10,76 @@
             <param name="lineCount">The number of lines to return.</param>
             <returns>The last lneCount lines from the reader.</returns>
         </member>
+        <member name="M:Mars.Controllers.FrontController.FrontPages(System.String)">
+            <summary>
+            Страницы фронта: файл → URL из атрибута @page (для «открыть в предпросмотре» в редакторе).
+            Root-файлы (_root.hbs) тоже попадают сюда — их URL это StartPath.
+            </summary>
+        </member>
+        <member name="T:Mars.Services.AppFrontMigration">
+            <summary>
+            Разовая миграция фронтов из секции "AppFront" (appsettings) в опцию FrontsOption
+            и бутстрап дефолтного фронта при чистом старте.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.AppFrontMigration.EnsureDefaultFront(System.IServiceProvider)">
+            <summary>
+            Чистый старт: если фронтов нет совсем — создаёт дефолтный фронт из стартового шаблона
+            </summary>
+        </member>
+        <member name="T:Mars.Services.FrontFilesService">
+            <summary>
+            Файловые операции над папкой фронта. Используется REST-контроллером (админка)
+            и ИИ-инструментами. Все пути — только относительные, с проверкой выхода за корень фронта.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontFilesService.ResolveSafePath(System.String,System.String)">
+            <summary>
+            Резолвит относительный путь внутри корня фронта; бросается при выходе за его пределы.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontFilesService.IsHiddenDirectory(System.String)">
+            <summary>
+            Стандартные папки (.git, .vscode, node_modules, bin/obj и любые скрытые),
+            которые не показываются в дереве файлов фронта.
+            </summary>
+        </member>
+        <member name="F:Mars.Services.FrontManager.FrontsDirName">
+            <summary>
+            Папка фронтов по умолчанию: data/fronts/&lt;slug&gt;
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontManager.IsValidSlug(System.String)">
+            <summary>
+            Валидный slug для папки фронта: буквы/цифры/_/- , не пустой
+            </summary>
+        </member>
+        <member name="T:Mars.Services.FrontTemplateService">
+            <summary>
+            Создание фронтов из стартовых шаблонов (Res/front_templates/&lt;name&gt; → data/fronts/&lt;slug&gt;)
+            </summary>
+        </member>
+        <member name="P:Mars.Services.FrontTemplateService.FrontsBasePath">
+            <summary>
+            Базовая папка фронтов: data/fronts
+            </summary>
+        </member>
         <member name="T:Mars.Services.ImageProcessor">
             <summary>
             Singletone.
+            </summary>
+        </member>
+        <member name="T:Mars.Services.MarsAppProvider">
+            <summary>
+            Фасад над IFrontManager/IWebRenderEngineLocator для старых потребителей IMarsAppProvider.
+            Раньше читал секцию AppFront из appsettings один раз при старте; теперь список фронтов
+            живёт в опции FrontsOption и применяется в рантайме.
+            </summary>
+        </member>
+        <member name="M:Mars.UseStartup.StartupFront.FrontStaticFilesMiddleware(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Статика wwwroot фронтов. До endpoints — как UseStaticFiles в старой схеме.
+            (Fallback-запросы с точкой в пути — файлы — пропускаются и тут, и в FrontRenderFallbackMiddleware)
             </summary>
         </member>
         <member name="T:Program">

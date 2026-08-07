@@ -47,8 +47,4 @@ internal class OptionServiceClient : BasicServiceClient, IOptionServiceClient
                     .PostJsonAsync(request)
                     .ReceiveJson<UserActionResult>();
 
-    public Task<IReadOnlyCollection<AppFrontSettingsCfg>> AppFrontSettings()
-        => _client.Request($"{_basePath}{_controllerName}", "AppFrontSettings")
-                    .GetJsonAsync<IReadOnlyCollection<AppFrontSettingsCfg>>();
-
 }

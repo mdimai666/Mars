@@ -87,4 +87,16 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
         html.Should().Contain("page_404");
         status.Should().Be(StatusCodes.Status404NotFound);
     }
+
+    [IntegrationFact]
+    public async Task Basic_DevAdmin_ShouldNotBeInterceptedByFrontFallback()
+    {
+        //Act
+        var (html, status) = await RenderRequestPageEx("/dev/settings");
+
+        //Assert — отдаётся админка (_AdminHost), а не фронт
+        status.Should().NotBe(StatusCodes.Status404NotFound);
+        html.Should().NotContain("Front not found");
+        html.Should().Contain("<base href=\"/dev/\" />");
+    }
 }

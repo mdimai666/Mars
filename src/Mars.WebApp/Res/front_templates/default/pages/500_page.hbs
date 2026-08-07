@@ -1,0 +1,41 @@
+@page "/500"
+@layout "layout/centered"
+
+<h1 class="" style="font-size: 200px;">500</h1>
+
+{{#*inline "exTemplate"}}
+{{#with ex}}
+<h2 class="text-danger">{{Message}}</h2>
+
+<div class="mw-100">
+    file:
+    <strong>
+        <pre>{{Page.FileRelPath}}</pre>
+    </strong>
+</div>
+
+<div class="mw-100 fs-6 alert alert-secondary">
+    <strong>StackTrace:</strong>
+    <pre class="wrap">{{StackTrace}}</pre>
+</div>
+{{/with}}
+{{/inline}}
+
+{{#unless _dev}}
+<h3 class="text-muted">Внутренняя ошибка</h3>
+{{else}}
+
+{{>exTemplate ex=ex.InnerException.InnerException.InnerException.InnerException.InnerException}}
+{{>exTemplate ex=ex.InnerException.InnerException.InnerException.InnerException}}
+{{>exTemplate ex=ex.InnerException.InnerException.InnerException}}
+{{>exTemplate ex=ex.InnerException.InnerException}}
+{{>exTemplate ex=ex}}
+{{/unless}}
+
+
+<div class="text-center mt-5">
+    <a href="/" class="btn btn-outline-primary rounded-0 position-relative">
+        <i class="bi bi-house"></i>
+        <span>На главную</span>
+    </a>
+</div>

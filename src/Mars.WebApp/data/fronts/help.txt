@@ -1,2 +1,3 @@
-- place here application frontends
-- the application will place downloaded themes here
+- recommended folder for placing the fronts
+- each front lives in its own subfolder named by slug (data/fronts/<slug>)
+- a front is created from a starter template (Res/front_templates/default) or attached from an external folder via FrontsOption.Path

@@ -198,6 +198,29 @@ dotnet test tests/Test.Mars.Core --verbosity minimal     # быстрые юни
 
 E2E — `tests/Mars.E2E.Tests` (Playwright + Testcontainers), см. `ai/E2ETestingGuide.md`.
 
+## Фронты и движки рендера (если фича связана с фронтом)
+
+С 2026-08 фронт — это папка с файлами, а не настройки в appsettings и не посты в БД
+(план рефакторинга: `ai/FrontReworkPlan.md`, пользовательская документация: `docs/dev_docs/AppFront/Fronts.md`).
+
+- **Источник истины** — опция `FrontsOption` (`List<FrontItem>`: Slug/Title/Url/Path/EngineId/Enabled)
+  в таблице Options; читается через `IOptionService`, изменения применяются в рантайме без рестарта.
+- **`IFrontManager`** (singleton, `Mars.WebApp/Services/FrontManager.cs`) — актуальный список фронтов,
+  `GetFrontForUrl(url)`, `ResolvePhysicalPath(front)` (`data/fronts/<slug>` либо внешний `Path`),
+  событие `Changed` при сохранении опции.
+- **Файлы фронта** — только через `FrontFilesService` (защита от path traversal: нормализация +
+  проверка выхода за корень фронта). Его же используют REST `FrontController` и ИИ-инструменты.
+- **Движки рендера** — реестр `IWebRenderEngineFactory` в DI (`IEnumerable<>`); кэш созданных движков
+  per-front — `IWebRenderEngineLocator` (инвалидируется по `FrontManager.Changed`). Плагин добавляет
+  свой движок регистрацией фабрики — см. `ai/PluginCreationGuide.md` (раздел «Custom Front Render Engine»).
+- **`IMarsAppProvider`** — легаси-фасад над `IFrontManager`/`IWebRenderEngineLocator` для старых
+  потребителей (ноды RenderPage, PageRenderController, CLI). Новому коду использовать
+  `IFrontManager`/`IWebRenderEngineLocator` напрямую.
+- Пайплайн: статика `<front>/wwwroot` раздаётся middleware в `StartupFront` (MapFallback имеет
+  ограничение `:nonfile`), рендер — `app.MapFallback` → `IWebSiteProcessor.Response`.
+- Шаблоны фронта — файлы с атрибутами `@page`/`@layout`/`@cache`; стартовый шаблон —
+  `src/Mars.WebApp/Res/front_templates/default/` (копия MyMarsHandlebarsSiteTemplate).
+
 ## Типичные грабли
 
 - **Версии пакетов в csproj** → ошибка CPM; только `Directory.Packages.props`.

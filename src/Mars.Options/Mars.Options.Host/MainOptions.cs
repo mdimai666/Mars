@@ -24,8 +24,7 @@ public static class MainOptions
         optionService.RegisterOption<SysOptions>(ChangeSysOptions);
         optionService.RegisterOption<SmtpSettingsModel>(ChangeMailSettings);
 
-        optionService.RegisterOption<FrontOptions>();
-        optionService.RegisterOption<FrontRoutingOption>();
+        optionService.RegisterOption<FrontsOption>();
         optionService.RegisterOption<DevAdminStyleOption>(appendToInitialSiteData: true);
 
         optionService.RegisterOption<ApiOption>();

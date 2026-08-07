@@ -1,28 +1,22 @@
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Host.Shared.WebSite.Models;
-using Mars.WebSiteProcessor.DatabaseHandlebars;
+using Mars.WebSiteProcessor.Handlebars;
 using Mars.WebSiteProcessor.Interfaces;
-using Mars.WebSiteProcessor.Services;
 using Mars.WebSiteProcessor.WebSite;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 
 namespace Mars.WebSiteProcessor.Blazor;
 
-public class BlazorWebRenderEngine : DatabaseHandlebarsWebRenderEngine, IWebRenderEngine
+public class BlazorWebRenderEngine : HandlebarsWebRenderEngine, IWebRenderEngine
 {
     public BlazorWebRenderEngine(IMemoryCache memoryCache, MarsAppFront marsAppFront) : base(memoryCache, marsAppFront)
     {
@@ -68,51 +62,6 @@ public class BlazorWebRenderEngine : DatabaseHandlebarsWebRenderEngine, IWebRend
         }
     }
 
-    public override void UseFront(IApplicationBuilder app)
-    {
-        Initialize(AppFront, app.ApplicationServices);
-
-        var front = app;
-        var appFrontConfig = AppFront.Configuration;
-        var APP_wwwroot = Path.Combine(appFrontConfig.Path, "wwwroot");
-
-        if (Directory.Exists(APP_wwwroot))
-        {
-            front.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(APP_wwwroot),
-                //RequestPath = new PathString("/app"),
-                ServeUnknownFileTypes = true
-            });
-        }
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapFallbackToPage("/_Host");
-        });
-    }
-
-    protected override void Initialize(MarsAppFront appFront, IServiceProvider rootServices)
-    {
-        var hub = rootServices.GetRequiredService<IHubContext<ChatHub>>();
-
-        //var scope = rootServices.CreateScope();
-        var eventManager = rootServices.GetRequiredService<IEventManager>();
-
-        //WebDatabaseTemplateService wts = new WebDatabaseTemplateService(rootServices, hub, appFront);
-        var wts = new WebDatabaseTemplateService(rootServices, hub, appFront, eventManager);
-        appFront.Features.Set<IWebTemplateService>(wts);
-
-        //var wts = appFront.Features.Get<IWebTemplateService>();
-
-        wts.OnFileUpdated += (s, e) =>
-        {
-            //wts.ScanSite();
-            wts.ClearCache();
-        };
-
-    }
-
     public override string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         return base.RenderPage(renderContext, serviceProvider, cancellationToken);
@@ -134,10 +83,6 @@ public class BlazorWebRenderEngine : DatabaseHandlebarsWebRenderEngine, IWebRend
             RenderParam = renderParam,
             IsDevelopment = optionService.IsDevelopment,
         };
-
-        //FrontOptions frontOpt = optionService.GetOption<FrontOptions>();
-        //var hostHtml = frontOpt.HostItems.FirstOrDefault(s => s.Url == appFront.Configuration.Url)?.HostHtml!;
-        //var webRoot = new WebRoot(new WebSitePart(WebSitePartType.Root, "PrepareHostHtml", "PrepareHostHtml.cs", "", hostHtml, new Dictionary<string, string>(), "PrepareHostHtml"));
 
         var wts = appFront.Features.Get<IWebTemplateService>();
         var webRoot = wts.Template.Roots.GetValueOrDefault(AppFront.Configuration.Url) ?? wts.Template.Roots.First().Value;

@@ -6,7 +6,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\AppFront.Shared\AppFront.Shared.csproj" />
-        <ProjectReference Include="..\Mars.WebSiteProcessor.DatabaseHandlebars\Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
         <ProjectReference Include="..\Mars.WebSiteProcessor.Handlebars\Mars.WebSiteProcessor.Handlebars.csproj" />
         <ProjectReference Include="..\Mars.WebSiteProcessor\Mars.WebSiteProcessor.csproj" />
     </ItemGroup>

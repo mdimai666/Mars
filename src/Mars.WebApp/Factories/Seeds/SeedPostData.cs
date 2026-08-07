@@ -30,12 +30,6 @@ public static class SeedPostData
 
         List<PostTypeEntity> list = new();
 
-        var codeSettings = new PostContentSettings
-        {
-            CodeLang = PostTypeConstants.DefaultPostContentTypes.DefaultCodeTemplate,
-            PostContentType = PostTypeConstants.DefaultPostContentTypes.Code,
-        };
-
         list.Add(new PostTypeEntity
         {
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
@@ -44,34 +38,6 @@ public static class SeedPostData
             PostStatusList = PostStatusEntity.DefaultStatuses(),
             EnabledFeatures = [Feature.Content, Feature.Status, Feature.Tags],
             PostContentType = new PostContentSettings { PostContentType = PostTypeConstants.DefaultPostContentTypes.BlockEditor },
-        });
-
-        list.Add(new PostTypeEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Title = "Страница",
-            TypeName = "page",
-            PostStatusList = PostStatusEntity.DefaultStatuses(),
-            EnabledFeatures = [Feature.Content, Feature.Status, Feature.Tags],
-            PostContentType = codeSettings.CopyViaJsonConversion<PostContentSettings>(),
-        });
-
-        list.Add(new PostTypeEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
-            Title = "Шаблон",
-            TypeName = "template",
-            EnabledFeatures = [Feature.Content, Feature.Tags],
-            PostContentType = codeSettings.CopyViaJsonConversion<PostContentSettings>(),
-        });
-
-        list.Add(new PostTypeEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
-            Title = "Blocks",
-            TypeName = "block",
-            EnabledFeatures = [Feature.Content, Feature.Tags],
-            PostContentType = codeSettings.CopyViaJsonConversion<PostContentSettings>(),
         });
 
         await ef.PostTypes.AddRangeAsync(list);
@@ -124,46 +90,6 @@ public static class SeedPostData
 
         var postTypesDict = await ef.PostTypes.ToDictionaryAsync(s => s.TypeName);
         var postTypesDictId = await ef.PostTypes.ToDictionaryAsync(s => s.Id);
-
-        //general pages 
-        list.Add(new PostEntity
-        {
-            Id = Guid.NewGuid(),
-            Title = "Index",
-            //Type = "page",
-            PostTypeId = postTypesDict["page"].Id,
-            Slug = "index",
-            Content = "<h1>Index page</h1>"
-        });
-        list.Add(new PostEntity
-        {
-            Id = Guid.NewGuid(),
-            Title = "Admin Index",
-            //Type = "page",
-            PostTypeId = postTypesDict["page"].Id,
-            Slug = "admin",
-            Content = "<h1>Admin index page</h1>"
-        });
-
-        //required templates
-        list.Add(new PostEntity
-        {
-            Id = Guid.NewGuid(),
-            Title = "pageDetail",
-            Slug = "pageDetail",
-            //Type = "template",
-            PostTypeId = postTypesDict["template"].Id,
-            Content = "{{{content}}}"
-        });
-        list.Add(new PostEntity
-        {
-            Id = Guid.NewGuid(),
-            Title = "postDetail",
-            Slug = "postDetail",
-            //Type = "template",
-            PostTypeId = postTypesDict["template"].Id,
-            Content = "<ContentWrapper Title=\"{{title}}\">\n\t{{{content}}}\n</ContentWrapper>"
-        });
 
         //hello post
         list.Add(new PostEntity

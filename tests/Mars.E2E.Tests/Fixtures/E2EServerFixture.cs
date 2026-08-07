@@ -176,11 +176,7 @@ public class E2EServerFixture : IAsyncLifetime
 
     public async Task WarmupRenderer()
     {
-        var af = StartupFront.AppProvider.FirstApp;
-        //var renderEngine = af.Features.Get<IWebRenderEngine>();
-        //renderEngine.RenderPage()
-        //var pageRenderService = ServiceProvider.GetRequiredService<IPageRenderService>();
-        //pageRenderService.RenderUrl("/")
+        var af = ServiceProvider.GetRequiredService<IMarsAppProvider>().FirstApp;
         var tsv = af.Features.Get<IWebTemplateService>();
         var processor = new WebSiteRequestProcessor(ServiceProvider, tsv.Template);
         await processor.RenderPage(af, new WebClientRequest(new Uri(BaseUrl)), tsv.Template.IndexPage, new(), default);

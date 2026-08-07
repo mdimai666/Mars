@@ -26,6 +26,7 @@ using Mars.SemanticKernel.Host;
 using Mars.Setup;
 using Mars.SSO;
 using Mars.SSO.Host.OAuth;
+using Mars.Services;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
@@ -144,6 +145,9 @@ public static class MarsWebAppStartup
         app.Services.UseMarsHostServices();
         app.Services.UseMarsOptions();
         app.Services.SeedData(builder.Configuration, _logger, migrated);
+        app.Services.MigrateAppFrontToOption(builder.Configuration);
+        app.Services.EnsureDefaultFront();
+        app.Services.GetRequiredService<IFrontManager>();
         app.ApplyPluginMigrations();
 
         app.UseForwardedHeaders(new ForwardedHeadersOptions

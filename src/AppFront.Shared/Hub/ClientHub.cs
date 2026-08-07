@@ -57,6 +57,18 @@ public class ClientHub : IClientHub
             OnPostListChanged?.Invoke(postType);
         });
 
+        ws.On("reload", () =>
+        {
+            Console.WriteLine("<<= reload");
+            OnFrontReload?.Invoke();
+        });
+
+        ws.On("refreshcss", (string filename) =>
+        {
+            Console.WriteLine($"<<= refreshcss:{filename}");
+            OnFrontReload?.Invoke();
+        });
+
         this.ws = ws;
     }
 
@@ -81,6 +93,11 @@ public class ClientHub : IClientHub
     /// Список постов изменился. Payload: имя типа поста.
     /// </summary>
     public event Action<string> OnPostListChanged = default!;
+
+    /// <summary>
+    /// Файлы фронта изменились (FileSystemWatcher) — нужно перезагрузить предпросмотр.
+    /// </summary>
+    public event Action? OnFrontReload = default!;
 
     public Task JoinGroup(string groupName)
     {

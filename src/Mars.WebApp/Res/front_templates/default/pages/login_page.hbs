@@ -1,0 +1,61 @@
+@page "/login"
+@layout "layout/centered"
+
+<div class="card my-5">
+    {{#if _user}}
+    <script>
+        app.domReady(() => location = '/')
+    </script>
+    {{else}}
+    <div class="card-body">
+        <section>
+            <!-- ========================================= -->
+
+            <h1 class="text-center">ВХОД</h1>
+
+            <form class="form-login" method="post" style="min-width: 300px;" onsubmit="return Submit(event)">
+
+                <div class="spacer-2"></div>
+
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control rounded-0" name="user_login" id="floatingInput"
+                        placeholder="" value="" required="">
+                    <label for="floatingInput">Логин</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control rounded-0" name="user_pass" id="floatingPassword"
+                        placeholder="" value="" required="">
+                    <label for="floatingPassword">Пароль</label>
+                </div>
+
+                <div class="mt-4">
+                    <button class="btn btn-primary w-100 rounded-0" type="submit">Вход</button>
+                </div>
+
+                <div class="form_errors alert alert-danger mt-3" style="display: none;"></div>
+
+            </form>
+            <!-- ========================================= -->
+        </section>
+    </div>
+    {{/if}}
+</div>
+
+<script>
+    async function Submit(e) {
+        e.preventDefault();
+
+        let form = document.querySelector("form.form-login")
+        let formData = new FormData(form);
+        let data = Object.fromEntries(formData.entries());
+
+        let res = await app.Login(data.user_login, data.user_pass);
+
+        let form_errors = form.querySelector(".form_errors")
+
+        form_errors.style.display = res.ok ? 'none' : 'block';
+        form_errors.innerHTML = res.message;
+
+        if (res.ok) location = "/"
+    }
+</script>

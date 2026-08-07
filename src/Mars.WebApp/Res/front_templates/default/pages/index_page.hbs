@@ -1,0 +1,70 @@
+@page "/"
+
+<div class="container">
+    <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <i class="bi bi-bootstrap-fill" style="font-size:100px;"></i>
+        <h1 class="text-body-emphasis">Welcome to Mars Handlebars Site</h1>
+        <p class="col-lg-8 mx-auto fs-5 text-muted">
+            Это шаблон для быстрого старта нового сайта на Handlebars с использованием Bootstrap.
+            Здесь уже настроены стили, компоненты и структура страниц для удобного и быстрого начала разработки.
+        </p>
+        <div class="d-inline-flex gap-2 mb-5">
+            <a href="https://github.com/mdimai666/Mars" target="_blank"
+                class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill icon-link"
+                role="button">
+                Документация
+                <i class="bi bi-arrow-right-short"></i>
+            </a>
+            <a href="/posts" class="btn btn-outline-secondary btn-lg px-4 rounded-pill" role="button">
+                Posts page
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <div class="feature col">
+            <div
+                class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3 rounded px-2">
+                <i class="bi bi-collection"></i>
+            </div>
+            <h3 class="fs-2 text-body-emphasis">Список постов</h3>
+            <p>
+                Здесь вы можете посмотреть пример вывода данных из базы данных и их отображения на странице.
+            </p>
+            <a href="/posts" class="icon-link">
+                Posts page
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+        <div class="feature col">
+            <div
+                class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3 rounded px-2">
+                <i class="bi bi-tools"></i>
+            </div>
+            <h3 class="fs-2 text-body-emphasis">
+                Инструменты
+            </h3>
+            <p>
+                Посмотрите страницу помощи, чтобы узнать, как использовать Handlebars и его возможности.
+            </p>
+            <a href="/help" class="icon-link">
+                Help page
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+        <div class="feature col">
+            <div
+                class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3 rounded px-2">
+                <i class="bi bi-toggles2"></i>
+            </div>
+            <h3 class="fs-2 text-body-emphasis">Админка</h3>
+            <p>
+                Добавьте данные через административную панель и выполните настройку сайта.
+            </p>
+            <a href="/dev" class="icon-link">
+                Admin page
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+</div>

@@ -38,8 +38,6 @@ internal static class ConfigureActions
             #endif
             ClearCacheAct.XAction,
             CreateMockPostsAct.XAction,
-            CreatePaginatorBlockTemplateAct.XAction,
-            CreatePostTypePresentationTemplateAct.XAction,
         ]).ForEach(actionManager.AddAction);
 
 #if !NOADMIN

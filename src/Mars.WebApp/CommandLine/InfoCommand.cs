@@ -46,17 +46,25 @@ public class InfoCommand : CommandCli
         Console.WriteLine("upload = " + uploadPath);
         Console.WriteLine("Database = " + databaseName);
         Console.WriteLine("EnvMode = " + env.EnvironmentName);
-        if (StartupFront.AppProvider.SetupMultiApps)
+        try
         {
-            Console.WriteLine("App fronts:");
-            foreach (var af in StartupFront.AppProvider.Apps.Values)
+            var appProvider = sp.GetRequiredService<IMarsAppProvider>();
+            if (appProvider.SetupMultiApps)
             {
-                Console.WriteLine($"[\"{af.Configuration.Url}\", {af.Configuration.Mode}] {af.Configuration.Path}");
+                Console.WriteLine("App fronts:");
+                foreach (var af in appProvider.Apps.Values)
+                {
+                    Console.WriteLine($"[\"{af.Configuration.Url}\", {af.Configuration.Mode}] {af.Configuration.Path}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Mode = " + appProvider.FirstApp.Configuration.Mode);
             }
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("Mode = " + StartupFront.AppProvider.FirstApp.Configuration.Mode);
+            Console.WriteLine("App fronts: недоступны (" + ex.Message + ")");
         }
     }
 }

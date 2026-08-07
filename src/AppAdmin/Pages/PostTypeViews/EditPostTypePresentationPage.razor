@@ -51,7 +51,6 @@
                                 <FluentTextField @bind-Value=@context.ListViewTemplate Placeholder="/templatePostType/slug" Class="w-50" />
                                 <FluentMenuButton Text="..." OnMenuChanged="HandleOnMenuListViewTemplateChanged" ButtonAppearance="Appearance.Neutral" >
                                     <FluentMenuItem Id="open_presentation_template" Disabled="@context.ListViewTemplate.IsNullOrEmpty()">open</FluentMenuItem>
-                                    <FluentMenuItem Id="create_presentation_template">create example</FluentMenuItem>
                                 </FluentMenuButton>
                             </div>
                         </FormItem2>

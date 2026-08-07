@@ -1,0 +1,26 @@
+<div class="container">
+    <header id="main_menu_top"
+        class="d-flex flex-wrap justify-content-center align-items-center justify-content-md-between py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 link-body-emphasis text-decoration-none">
+            <img src="/img/image_placeholder.svg" height="36" alt="" class="me-3">
+            <span class="fs-4">{{SysOptions.SiteName}}</span>
+        </a>
+        <ul class="nav nav-pills mx-md-auto">
+            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Home</a></li>
+            <li class="nav-item"><a href="/posts" class="nav-link">Posts</a></li>
+            <li class="nav-item"><a href="/help" class="nav-link">Help</a></li>
+        </ul>
+        <div class="text-end">
+            {{#if _user}}
+            <string>{{_user.Username}}</string>
+            <a href="/logout" class="text-secondary ms-3">logout</a>
+            {{else}}
+            <a href="/login">Login</a>
+            {{/if}}
+        </div>
+    </header>
+</div>
+
+<script>
+    navlinks_detect_active('#main_menu_top .nav-link')
+</script>

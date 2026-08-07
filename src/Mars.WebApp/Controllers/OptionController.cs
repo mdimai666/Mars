@@ -28,20 +28,17 @@ public class OptionController : ControllerBase
     private readonly IMarsEmailSender _emailSender;
     private readonly ISmsSender _smsSender;
     private readonly IActionHistoryService _actionHistoryService;
-    private readonly IMarsAppProvider _marsAppProvider;
 
     public OptionController(
         IOptionService optionService,
         IMarsEmailSender emailSender,
         ISmsSender smsSender,
-        IActionHistoryService actionHistoryService,
-        IMarsAppProvider MarsAppProvider)
+        IActionHistoryService actionHistoryService)
     {
         _optionService = optionService;
         _emailSender = emailSender;
         _smsSender = smsSender;
         _actionHistoryService = actionHistoryService;
-        _marsAppProvider = MarsAppProvider;
     }
 
     [AllowAnonymous]
@@ -139,15 +136,5 @@ public class OptionController : ControllerBase
         );
 
         return LocalRedirect(returnUrl);
-    }
-
-    [HttpGet("AppFrontSettings")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesErrorResponseType(typeof(void))]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public ActionResult<IEnumerable<AppFrontSettingsCfg>> AppFrontSettings()
-    {
-        return Ok(_marsAppProvider.Apps.Values.Select(s => s.Configuration));
     }
 }

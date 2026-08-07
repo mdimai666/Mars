@@ -3,7 +3,6 @@ using Mars.Core.Models;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Host.Templators.HandlebarsFunc;
@@ -11,12 +10,9 @@ using Mars.Shared.Contracts.WebSite.Models;
 using Mars.WebSiteProcessor.Handlebars.TemplateData;
 using Mars.WebSiteProcessor.Interfaces;
 using Mars.WebSiteProcessor.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 
 namespace Mars.WebSiteProcessor.Handlebars;
 
@@ -40,49 +36,12 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         }
     }
 
-    public virtual void UseFront(IApplicationBuilder app)
+    /// <summary>
+    /// Инициализация движка вне пайплайна (создание через IWebRenderEngineFactory)
+    /// </summary>
+    public void InitializeEngine(IServiceProvider rootServices)
     {
-        Initialize(AppFront, app.ApplicationServices);
-        _memoryCache = app.ApplicationServices.GetRequiredService<IMemoryCache>();
-
-        var front = app;
-
-        if (AppFront.Configuration.Mode == AppFrontMode.HandlebarsTemplateStatic)
-        {
-            bool hasWwwRoot = Directory.Exists(Path.Join(AppFront.Configuration.Path, "wwwroot"));
-            if (hasWwwRoot)
-            {
-                string path = Path.Join(AppFront.Configuration.Path, "wwwroot");
-                front.UseStaticFiles(new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(path),
-                    //RequestPath = appFront.Configuration.Url,
-                    ServeUnknownFileTypes = true,
-                });
-            }
-        }
-
-        var webSiteProcessor = app.ApplicationServices.GetRequiredService<IWebSiteProcessor>();
-
-        if (AppFront.Configuration.Mode != AppFrontMode.None)
-        {
-            front.UseEndpoints(endpoints =>
-            {
-                endpoints.MapFallback(webSiteProcessor.Response);
-            });
-        }
-        else
-        {
-            front.UseEndpoints(endpoints =>
-            {
-                endpoints.MapFallback(async req =>
-                {
-                    req.Response.StatusCode = StatusCodes.Status404NotFound;
-                    await req.Response.WriteAsync("None");
-                }).ShortCircuit();
-            });
-        }
-
+        Initialize(AppFront, rootServices);
     }
 
     protected virtual void Initialize(MarsAppFront appFront, IServiceProvider rootServices)
@@ -93,16 +52,9 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
         wts.OnFileUpdated += (s, e) =>
         {
-            //wts.ScanSite();
             wts.ClearCache();
         };
 
-    }
-
-    string GetRenderKey(MarsAppFront appFront, RenderParam renderParam, WebPage page, WebSiteTemplate template)
-    {
-        string key = $"{appFront.Configuration.Url}::{template.Hash}::{page.FileRelPath}_{(renderParam.AllowLayout ? "1" : "0")}-{(renderParam.OnlyBody ? "1" : "0")}";
-        return key;
     }
 
     public virtual string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken)
@@ -126,12 +78,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         CancellationToken cancellationToken)
     {
         var af = MarsAppFront;
-
-        //IHandlebars handlebars = MyHandlebars.GetMyHandlebars();
-        //IMemoryCache memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-
-        //var af = renderContext.HttpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
-        //string cacheKey = GetRenderKey(af, renderContext.RenderParam, page, renderContext.WebSiteTemplate);
 
         IMarsHtmlTemplator.MarsHtmlTemplate<object, object>? template_compiled;
 
@@ -223,28 +169,6 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         using var hctx = new HandlebarsHelperFunctionContext(ctx, serviceProvider, cancellationToken);
 
         var result = template_compiled(ctx.TemplateContextVaribles, new { rctx = hctx } /*это необходимо для зарегестированных функций*/);
-
-        //var z3 = GC.GetTotalMemory(false);
-
-        //var a0 = (z1 - z0).ToHumanizedSize();
-        //var a1 = (z2 - z1).ToHumanizedSize();
-        //var a2 = (z3 - z2).ToHumanizedSize();
-
-        //if (renderContext.RenderParam.LegacyBody)
-        //{
-        //    result = result.Split("</head>", 2)[1].Split("</body>", 2)[0];
-        //    result = result.Split('>', 2)[1];
-        //}
-
-        //if (renderContext.RenderParam.OnlyBody)
-        //{
-
-        //    if (result.Contains("<endmaui>"))
-        //    {
-        //        result = result.Split("<endmaui>", 2)[0] + "</body></html>";
-
-        //    }
-        //}
 
         return result;
     }

@@ -1,0 +1,609 @@
+@page "/front/editor/{Slug}"
+@layout BuilderLayout
+@using AppFront.Main.Extensions
+@using AppFront.Shared.Features
+@using AppFront.Shared.Hub
+@using Mars.Shared.Contracts.WebSite.Dto
+@using Mars.Shared.Options
+@using MarsCodeEditor2
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Редактор фронта")]
+@implements IDisposable
+
+@inject IMarsWebApiClient client
+@inject ClientHub clientHub
+@inject AppFront.Shared.Interfaces.IMessageService messageService
+@inject NavigationManager nav
+@inject IDialogService dialogService
+
+<div class="FrontEditorPage d-flex flex-column flex-fill" style="height: calc(100vh - 32px);">
+
+    <div class="hstack gap-2 p-2 border-bottom flex-wrap">
+        <FluentButton Appearance="Appearance.Stealth" OnClick=@(() => nav.NavigateTo("Settings/Front"))>
+            <FluentIcon Value=@(new Icons.Regular.Size24.ArrowLeft()) />
+        </FluentButton>
+        <span class="fw-semibold">Фронт: @Slug</span>
+        @if (frontItem is not null)
+        {
+            <span class="text-secondary small">@(string.IsNullOrEmpty(frontItem.Url) ? "/" : frontItem.Url)</span>
+        }
+
+        <div class="ms-auto hstack gap-2">
+            <FluentButton Appearance="Appearance.Accent" OnClick="ToggleFullPreview">
+                @(fullPreview ? "Редактор" : "Предпросмотр на всю страницу")
+            </FluentButton>
+        </div>
+    </div>
+
+    <div class="d-flex flex-fill" style="min-height:0;">
+
+        @if (!fullPreview)
+        {
+            <div class="front-editor-tree border-end d-flex flex-column" style="width:300px; min-width:240px;">
+
+                <div class="p-2 border-bottom vstack gap-1">
+                    <input class="form-control form-control-sm" placeholder="pages/new_page.hbs" @bind="newPath" autocomplete="off" />
+                    <div class="hstack gap-1">
+                        <FluentButton Appearance="Appearance.Neutral" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: false))>+ файл</FluentButton>
+                        <FluentButton Appearance="Appearance.Neutral" Class="flex-fill" OnClick=@(() => CreateNew(isFolder: true))>+ папка</FluentButton>
+                    </div>
+                </div>
+
+                <div class="overflow-auto flex-fill p-1" @onclick="CloseNodeMenu">
+                    @if (treeBusy)
+                    {
+                        <SkeletonContent />
+                    }
+                    else if (treeLoadFailed)
+                    {
+                        <div class="alert alert-warning m-2">Не удалось загрузить файлы фронта</div>
+                    }
+                    else if (treeItems is not null)
+                    {
+                        <FluentTreeView Items="treeItems"
+                                        SelectedItem="selectedTreeItem"
+                                        SelectedItemChanged="OnTreeSelected">
+                            <ItemTemplate>
+                                @{
+                                    var item = (FrontTreeItem)context;
+                                    var node = item.Node;
+                                }
+                                <div class="tree-item-content"
+                                     @onclick="@(() => OnNodeClicked(node))"
+                                     @oncontextmenu="e => OpenNodeMenu(node, e)" @oncontextmenu:preventDefault>
+                                    <FluentIcon Value=@((Icon)(node.IsDirectory ? new Icons.Regular.Size16.Folder() : new Icons.Regular.Size16.Document())) />
+                                    @if (renamingPath == node.Path)
+                                    {
+                                        <input class="form-control form-control-sm" @bind="renameValue"
+                                               @onkeydown="OnRenameKeyDown" @onclick:stopPropagation @oncontextmenu:stopPropagation />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-truncate">@node.Name</span>
+                                        <span class="ms-auto"></span>
+                                        @if (IsPage(node))
+                                        {
+                                            <FluentButton Class="tree-hover-btn" Appearance="Appearance.Stealth"
+                                                          Title="Открыть в предпросмотре"
+                                                          StopPropagation="true"
+                                                          OnClick=@(() => OpenNodeInPreview(node))>
+                                                <FluentIcon Value=@(new Icons.Regular.Size16.Play()) />
+                                            </FluentButton>
+                                        }
+                                    }
+                                </div>
+                            </ItemTemplate>
+                        </FluentTreeView>
+                    }
+                </div>
+
+                <FluentMenu @ref="nodeMenu" @bind-Open="showNodeMenu" VerticalThreshold="170">
+                    @if (menuNode is not null && IsPage(menuNode))
+                    {
+                        <FluentMenuItem Label="Открыть в предпросмотре" OnClick="MenuOpenInPreview" />
+                    }
+                    <FluentMenuItem Label="Переименовать" OnClick="MenuRename" />
+                    <FluentMenuItem Label="Удалить" OnClick="MenuDelete" />
+                </FluentMenu>
+            </div>
+
+            <div class="flex-fill d-flex flex-column" style="min-width:0;">
+                @if (selectedFile is not null)
+                {
+                    <div class="px-2 py-1 border-bottom text-secondary small text-truncate">@selectedFile</div>
+                    <CodeEditor2 @ref=editor
+                                 Lang=@editorLang
+                                 OnSave="OnEditorSave"
+                                 ContainerCssStyle="height:100%;border:none;overflow:hidden;" />
+                }
+                else
+                {
+                    <div class="flex-fill d-flex align-items-center justify-content-center text-secondary">
+                        Выберите файл в дереве слева
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="border-start d-flex flex-column" style="flex:@(fullPreview ? "1" : "0 0 42%"); min-width:0;">
+            <div class="px-2 py-1 border-bottom hstack gap-1 align-items-center">
+                <FluentButton Appearance="Appearance.Stealth" Title="Назад" Disabled="!CanGoBack" OnClick="NavBack"
+                              IconStart="@(new Icons.Regular.Size16.ArrowLeft())" />
+                <FluentButton Appearance="Appearance.Stealth" Title="Вперёд" Disabled="!CanGoForward" OnClick="NavForward"
+                              IconStart="@(new Icons.Regular.Size16.ArrowRight())" />
+                <FluentButton Appearance="Appearance.Stealth" Title="Обновить" OnClick="ReloadPreview"
+                              IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" />
+                <input class="form-control form-control-sm preview-address" @bind="addressInput"
+                       @onkeydown="OnAddressKeyDown" autocomplete="off" spellcheck="false" />
+                <a href="@previewSrc" target="_blank" class="text-secondary" title="Открыть в новой вкладке">
+                    <FluentIcon Value=@(new Icons.Regular.Size16.Open()) />
+                </a>
+            </div>
+            <iframe @key=reloadCounter src="@previewSrc" style="flex:1;width:100%;border:0;"></iframe>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    FrontItem? frontItem;
+
+    // дерево файлов (FluentTreeView). По умолчанию всё свёрнуто; раскрытые папки запоминаются тут.
+    List<FrontTreeItem>? treeItems;
+    bool treeLoadFailed;
+    bool treeBusy;
+    FrontTreeItem? selectedTreeItem;
+    readonly HashSet<string> expandedPaths = new(StringComparer.OrdinalIgnoreCase);
+
+    // файл -> URL из @page (для «открыть в предпросмотре»)
+    Dictionary<string, string> pageUrlByFile = new(StringComparer.OrdinalIgnoreCase);
+
+    // контекстное меню узла дерева
+    FluentMenu nodeMenu = default!;
+    bool showNodeMenu;
+    FFrontTreeNodeResponse? menuNode;
+
+    CodeEditor2 editor = default!;
+
+    string? selectedFile;
+    string editorLang = CodeEditor2.Language.handlebars;
+
+    string newPath = "";
+    string? renamingPath;
+    string renameValue = "";
+
+    bool fullPreview;
+    int reloadCounter;
+
+    // предпросмотр: адрес + история навигации
+    string previewBase = "";
+    string frontBaseUrl = "";
+    string previewSrc = "";
+    string addressInput = "";
+    readonly List<string> history = [];
+    int historyIndex = -1;
+
+    bool CanGoBack => historyIndex > 0;
+    bool CanGoForward => historyIndex < history.Count - 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        clientHub.OnFrontReload += OnFrontReload;
+
+        var option = await client.Option.GetOption<FrontsOption>();
+        frontItem = option?.Fronts.FirstOrDefault(s => string.Equals(s.Slug, Slug, StringComparison.OrdinalIgnoreCase));
+
+        previewBase = Q.BackendUrl.TrimEnd('/');
+        frontBaseUrl = previewBase + (frontItem?.Url ?? "");
+
+        Navigate(frontBaseUrl);
+
+        await LoadTree();
+
+        var rootItem = FindItem(s => !s.IsDirectory && s.Name == "_root.hbs");
+        if (rootItem is not null)
+        {
+            selectedTreeItem = rootItem;
+            await OpenFile(rootItem.Node.Path);
+        }
+    }
+
+    void OnFrontReload()
+    {
+        _ = InvokeAsync(() =>
+        {
+            reloadCounter++;
+            StateHasChanged();
+        });
+    }
+
+    void ToggleFullPreview()
+    {
+        fullPreview = !fullPreview;
+    }
+
+    #region Предпросмотр: адрес и навигация
+
+    void Navigate(string url)
+    {
+        previewSrc = url;
+        addressInput = url;
+
+        if (historyIndex < history.Count - 1)
+            history.RemoveRange(historyIndex + 1, history.Count - historyIndex - 1);
+
+        history.Add(url);
+        historyIndex = history.Count - 1;
+    }
+
+    void NavBack()
+    {
+        if (!CanGoBack) return;
+        historyIndex--;
+        previewSrc = history[historyIndex];
+        addressInput = previewSrc;
+    }
+
+    void NavForward()
+    {
+        if (!CanGoForward) return;
+        historyIndex++;
+        previewSrc = history[historyIndex];
+        addressInput = previewSrc;
+    }
+
+    void ReloadPreview()
+    {
+        reloadCounter++;
+    }
+
+    Task OnAddressKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key != "Enter") return Task.CompletedTask;
+
+        var url = addressInput.Trim();
+        if (url.Length == 0) return Task.CompletedTask;
+
+        if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            url = previewBase + (url.StartsWith('/') ? url : "/" + url);
+        }
+
+        Navigate(url);
+        return Task.CompletedTask;
+    }
+
+    bool IsPage(FFrontTreeNodeResponse node)
+        => !node.IsDirectory && pageUrlByFile.ContainsKey(node.Path);
+
+    void OpenNodeInPreview(FFrontTreeNodeResponse node)
+    {
+        if (!pageUrlByFile.TryGetValue(node.Path, out var pageUrl)) return;
+
+        Navigate(frontBaseUrl + (pageUrl.StartsWith('/') ? pageUrl : "/" + pageUrl));
+    }
+
+    #endregion
+
+    #region Дерево файлов
+
+    async Task LoadTree()
+    {
+        treeBusy = true;
+        StateHasChanged();
+
+        try
+        {
+            var root = await client.Front.FrontTree(Slug);
+            treeItems = root.Children.Select(ToTreeItem).ToList();
+            treeLoadFailed = false;
+            await LoadPageUrls();
+        }
+        catch (Exception ex)
+        {
+            treeItems = null;
+            treeLoadFailed = true;
+            _ = messageService.Error(ex.Message);
+        }
+
+        treeBusy = false;
+        StateHasChanged();
+    }
+
+    FrontTreeItem ToTreeItem(FFrontTreeNodeResponse node) => new()
+    {
+        Id = node.Path,
+        Text = node.Name,
+        Node = node,
+        Expanded = expandedPaths.Contains(node.Path),
+        Items = node.Children.Select(ToTreeItem).ToList(),
+        OnExpandedAsync = OnItemExpanded,
+    };
+
+    async Task LoadPageUrls()
+    {
+        try
+        {
+            var pages = await client.Front.FrontPages(Slug);
+            pageUrlByFile = pages
+                .Where(s => !string.IsNullOrEmpty(s.FileRelPath))
+                // FileRelPath приходит из Path.GetRelativePath — на Windows с обратными слешами
+                .GroupBy(s => s.FileRelPath.Replace('\\', '/').TrimStart('/'), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First().Url, StringComparer.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            pageUrlByFile = new(StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
+    FrontTreeItem? FindItem(Func<FFrontTreeNodeResponse, bool> predicate, IEnumerable<FrontTreeItem>? items = null)
+    {
+        items ??= treeItems;
+        if (items is null) return null;
+
+        foreach (var item in items)
+        {
+            if (predicate(item.Node)) return item;
+
+            if (item.Items is not null)
+            {
+                var found = FindItem(predicate, item.Items.OfType<FrontTreeItem>());
+                if (found is not null) return found;
+            }
+        }
+
+        return null;
+    }
+
+    Task OnTreeSelected(ITreeViewItem item)
+    {
+        // нативное выделение web-компонента; открытие файла/раскрытие папки делаем
+        // сами по клику (OnNodeClicked), т.к. selected-change срабатывает нестабильно
+        selectedTreeItem = item as FrontTreeItem;
+        return Task.CompletedTask;
+    }
+
+    void OnNodeClicked(FFrontTreeNodeResponse node)
+    {
+        var item = FindItem(s => ReferenceEquals(s, node));
+        if (item is null) return;
+
+        selectedTreeItem = item;
+
+        if (node.IsDirectory)
+        {
+            if (expandedPaths.Remove(item.Id))
+                item.Expanded = false;
+            else
+            {
+                expandedPaths.Add(item.Id);
+                item.Expanded = true;
+            }
+        }
+        else
+        {
+            _ = OpenFile(node.Path);
+        }
+    }
+
+    Task OnItemExpanded(TreeViewItemExpandedEventArgs e)
+    {
+        if (e.Expanded) expandedPaths.Add(e.CurrentItem.Id);
+        else expandedPaths.Remove(e.CurrentItem.Id);
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
+    #region Контекстное меню
+
+    Task OpenNodeMenu(FFrontTreeNodeResponse node, MouseEventArgs e)
+    {
+        //TODO: он открывается в неправильном месте. поправить.
+        menuNode = node;
+        StateHasChanged();
+        return nodeMenu.OpenAsync(800, 800, (int)e.ClientX, (int)e.ClientY);
+    }
+
+    void CloseNodeMenu()
+    {
+        if (showNodeMenu) showNodeMenu = false;
+    }
+
+    Task MenuOpenInPreview()
+    {
+        if (menuNode is not null) OpenNodeInPreview(menuNode);
+        return Task.CompletedTask;
+    }
+
+    Task MenuRename()
+    {
+        if (menuNode is not null) StartRename(menuNode);
+        return Task.CompletedTask;
+    }
+
+    async Task MenuDelete()
+    {
+        var node = menuNode;
+        if (node is null) return;
+
+        var ok = await dialogService.MarsDeleteConfirmation($"Удалить '{node.Name}'?");
+        if (!ok) return;
+
+        await DeleteNode(node.Path);
+    }
+
+    #endregion
+
+    async Task OpenFile(string path)
+    {
+        // повторный клик по уже открытому файлу не должен сбрасывать несохранённые правки
+        if (selectedFile == path) return;
+
+        try
+        {
+            var content = await client.Front.ReadFrontFile(Slug, path);
+            selectedFile = path;
+            editorLang = DetectLang(path);
+            StateHasChanged();
+
+            await Task.Delay(50);
+            if (editor is not null)
+            {
+                await editor.SetValue(content.Content);
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = messageService.Error(ex.Message);
+        }
+    }
+
+    string DetectLang(string path)
+    {
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".hbs" or ".handlebars" => CodeEditor2.Language.handlebars,
+            ".css" => CodeEditor2.Language.css,
+            ".js" => CodeEditor2.Language.js,
+            ".html" or ".htm" => CodeEditor2.Language.html,
+            ".json" => CodeEditor2.Language.json,
+            _ => CodeEditor2.Language.handlebars,
+        };
+    }
+
+    async Task OnEditorSave(string value)
+    {
+        if (selectedFile is null) return;
+
+        var result = await client.Front.SaveFrontFile(Slug, selectedFile, value).SmartActionResult();
+        if (result.Ok)
+        {
+            reloadCounter++;
+            // мог измениться атрибут @page — обновляем карту URL
+            _ = LoadPageUrls();
+        }
+    }
+
+    async Task CreateNew(bool isFolder)
+    {
+        var path = newPath.Trim();
+        if (string.IsNullOrEmpty(path))
+        {
+            _ = messageService.Warning("Укажите путь");
+            return;
+        }
+
+        var result = await client.Front.CreateFrontFile(Slug, path, isFolder).SmartActionResult();
+        if (result.Ok)
+        {
+            newPath = "";
+            ExpandParents(path);
+            await LoadTree();
+        }
+    }
+
+    void ExpandParents(string path)
+    {
+        var parts = path.Split('/');
+        for (int i = 1; i < parts.Length; i++)
+        {
+            expandedPaths.Add(string.Join('/', parts[..i]));
+        }
+    }
+
+    void StartRename(FFrontTreeNodeResponse node)
+    {
+        renamingPath = node.Path;
+        renameValue = node.Name;
+    }
+
+    async Task OnRenameKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ApplyRename();
+        }
+        else if (e.Key == "Escape")
+        {
+            renamingPath = null;
+        }
+    }
+
+    async Task ApplyRename()
+    {
+        var path = renamingPath;
+        renamingPath = null;
+
+        if (path is null || string.IsNullOrWhiteSpace(renameValue)) return;
+
+        var dir = path.Contains('/') ? path[..path.LastIndexOf('/')] : "";
+        var newRelPath = string.IsNullOrEmpty(dir) ? renameValue.Trim() : $"{dir}/{renameValue.Trim()}";
+
+        var result = await client.Front.RenameFrontFile(Slug, path, newRelPath).SmartActionResult();
+        if (result.Ok)
+        {
+            if (selectedFile == path) selectedFile = null;
+            await LoadTree();
+        }
+    }
+
+    async Task DeleteNode(string path)
+    {
+        var result = await client.Front.DeleteFrontFile(Slug, path).SmartActionResult();
+        if (result.Ok)
+        {
+            if (selectedFile == path) selectedFile = null;
+            await LoadTree();
+        }
+    }
+
+    public void Dispose()
+    {
+        clientHub.OnFrontReload -= OnFrontReload;
+    }
+
+    class FrontTreeItem : ITreeViewItem
+    {
+        public required string Id { get; set; }
+        public required string Text { get; set; }
+        public required FFrontTreeNodeResponse Node { get; set; }
+        public IEnumerable<ITreeViewItem>? Items { get; set; }
+        public Icon? IconCollapsed { get; set; }
+        public Icon? IconExpanded { get; set; }
+        public bool Disabled { get; set; }
+        public bool Expanded { get; set; }
+        public Func<TreeViewItemExpandedEventArgs, Task>? OnExpandedAsync { get; set; }
+    }
+}
+
+<style>
+    .FrontEditorPage .tree-item-content {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        width: 100%;
+        padding-right: 4px;
+    }
+
+    .FrontEditorPage .tree-item-content .tree-hover-btn {
+        opacity: 0;
+    }
+
+    .FrontEditorPage .tree-item-content:hover .tree-hover-btn {
+        opacity: 1;
+    }
+
+    .FrontEditorPage .preview-address {
+        flex: 1;
+        min-width: 80px;
+    }
+</style>

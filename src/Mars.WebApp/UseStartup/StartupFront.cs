@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.WebSite;
 using Mars.Services;
 using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor.Blazor;
-using Mars.WebSiteProcessor.DatabaseHandlebars;
 using Mars.WebSiteProcessor.Handlebars;
 using Mars.WebSiteProcessor.Interfaces;
 
@@ -12,19 +12,15 @@ namespace Mars.UseStartup;
 
 public static class StartupFront
 {
-    public static MarsAppProvider AppProvider = default!;
-
-    static IOptionService optionService = default!;
-
     public static WebApplicationBuilder AddFront(this WebApplicationBuilder builder)
     {
-        AppProvider = new MarsAppProvider(builder.Configuration);
-        builder.Services.AddSingleton(AppProvider);
-        builder.Services.AddSingleton<IMarsAppProvider>(sp => AppProvider);
+        builder.Services.AddSingleton<IMarsAppProvider, MarsAppProvider>();
+        builder.Services.AddSingleton<IFrontManager, FrontManager>();
+        builder.Services.AddSingleton<FrontTemplateService>();
+        builder.Services.AddSingleton<FrontFilesService>();
 
-        builder.AddWREHandlebars(AppProvider.Apps.Values);
-        builder.AddWREDatabaseHandlebars(AppProvider.Apps.Values);
-        builder.AddWREBlazor(AppProvider.Apps.Values);
+        builder.AddWREHandlebars();
+        builder.AddWREBlazor();
 
         return builder;
     }
@@ -32,48 +28,109 @@ public static class StartupFront
     [DebuggerStepThrough]
     static Task AppendMarsAppFrontInRequestContextItems(HttpContext context, Func<Task> next)
     {
-        var app = AppProvider.GetAppForUrl(context.Request.Path);
-        context.Items.Add(nameof(MarsAppFront), app);
+        try
+        {
+            //TODO: try catch выглядит тяжелой, просто упрозднить
+            var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
+            var appFront = locator.GetAppFrontForUrl(context.Request.Path);
+            if (appFront is not null)
+                context.Items[nameof(MarsAppFront)] = appFront;
+        }
+        catch (Exception ex)
+        {
+            // ошибка создания движка не должна ломать админку/API
+            Console.Error.WriteLine($"StartupFront: resolve front error: {ex.Message}");
+        }
 
         return next.Invoke();
     }
 
     public static IApplicationBuilder UseFront(this WebApplication app)
     {
-        optionService = app.Services.GetRequiredService<IOptionService>();
-
         UseRobotsTxt(app);
         app.Use(AppendMarsAppFrontInRequestContextItems);
+        app.Use(FrontStaticFilesMiddleware);
 
-        app.UseWREHandlebars(AppProvider.Apps.Values);
-        app.UseWREDatabaseHandlebars(AppProvider.Apps.Values);
-        app.UseWREBlazor(AppProvider.Apps.Values);
+        app.MapFallback("/api/{**slug}", ApiFallbackAsync);
 
-        foreach (var appFront in AppProvider.Apps.Values.Reverse())
-        {
-            var renderEngine = appFront.Features.Get<IWebRenderEngine>()
-                ?? throw new InvalidOperationException($"RenderEngine '{appFront.Configuration.Mode}' not resolved");
-
-            renderEngine.Setup();
-
-            app.Map(appFront.Configuration.Url, front =>
-            {
-                front.UseRouting();
-                front.UseAuthorization();
-
-                renderEngine.UseFront(front);
-
-                front.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                    endpoints.MarsUseEndpointApiFallback();
-                });
-
-            });
-
-        }
+        // Не endpoint: глобальный MapFallback выбирался бы внешним UseRouting для всех не-файл путей
+        // и перехватывал /dev (админка) и прочие ветки с их локальными fallback'ами.
+        // Middleware стоит последним и рендерит фронт, только если запрос никому не принадлежит.
+        app.Use(FrontRenderFallbackMiddleware);
 
         return app;
+    }
+
+    /// <summary>
+    /// Статика wwwroot фронтов. До endpoints — как UseStaticFiles в старой схеме.
+    /// (Fallback-запросы с точкой в пути — файлы — пропускаются и тут, и в FrontRenderFallbackMiddleware)
+    /// </summary>
+    static async Task FrontStaticFilesMiddleware(HttpContext context, Func<Task> next)
+    {
+        try
+        {
+            var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
+            var appFront = locator.GetAppFrontForUrl(context.Request.Path);
+            if (appFront is not null)
+            {
+                context.Items.TryAdd(nameof(MarsAppFront), appFront);
+
+                if (await locator.TryServeStaticFileAsync(context, appFront))
+                    return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"StartupFront: serve front static file error: {ex.Message}");
+        }
+
+        await next();
+    }
+
+    static Task ApiFallbackAsync(HttpContext context)
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return context.Response.WriteAsJsonAsync(new { Ok = false, Message = "ApiNotFound" });
+    }
+
+    static async Task FrontRenderFallbackMiddleware(HttpContext context, Func<Task> next)
+    {
+        // запрос уже принадлежит endpoint'у (контроллер, хаб, страница, robots.txt, /api-fallback,
+        // локальный fallback админки) — исполнится терминальным middleware
+        if (context.GetEndpoint() is not null)
+        {
+            await next();
+            return;
+        }
+
+        // семантика ограничения :nonfile — файловые запросы не рендерим
+        if (IsFileRequest(context.Request.Path))
+        {
+            await next();
+            return;
+        }
+
+        var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
+
+        var appFront = locator.GetAppFrontForUrl(context.Request.Path);
+        if (appFront is null)
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            await context.Response.WriteAsync("Front not found");
+            return;
+        }
+
+        context.Items.TryAdd(nameof(MarsAppFront), appFront);
+
+        var webSiteProcessor = context.RequestServices.GetRequiredService<IWebSiteProcessor>();
+        await webSiteProcessor.Response(context, context.RequestAborted);
+    }
+
+    static bool IsFileRequest(PathString path)
+    {
+        var value = path.Value ?? "";
+        var lastSegmentStart = value.LastIndexOf('/') + 1;
+        return value.IndexOf('.', lastSegmentStart) >= 0;
     }
 
     static void UseRobotsTxt(WebApplication app)
@@ -81,7 +138,7 @@ public static class StartupFront
         app.Map("robots.txt", (HttpContext context) =>
         {
             context.Response.StatusCode = 200;
-            return optionService.RobotsTxt();
+            return context.RequestServices.GetRequiredService<IOptionService>().RobotsTxt();
         }).ShortCircuit();
     }
 

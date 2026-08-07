@@ -30,7 +30,6 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>
         var processor = RNS.ServiceProvider.GetRequiredService<IWebSiteProcessor>();
         var appProvider = RNS.ServiceProvider.GetRequiredService<IMarsAppProvider>();
 
-        //MarsAppFront app = appProvider.GetAppForUrl(context.Request.Path);
         MarsAppFront af = appProvider.GetAppForUrl("/");
 
         http.HttpContext.Items.Add(nameof(MarsAppFront), af);

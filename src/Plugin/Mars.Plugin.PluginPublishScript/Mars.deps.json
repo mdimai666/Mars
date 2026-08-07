@@ -35,7 +35,6 @@
           "Mars.WebApp.Nodes.Host": "1.0.0",
           "Mars.WebSiteProcessor": "1.0.0",
           "Mars.WebSiteProcessor.Blazor": "1.0.0",
-          "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
           "Mars.WebSiteProcessor.Handlebars": "1.0.0",
           "Microsoft.AspNetCore.ApiAuthorization.IdentityServer": "7.0.20",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
@@ -2832,7 +2831,6 @@
       },
       "Mars.WebSiteProcessor/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Data": "0.7.7-alpha.20",
           "mdimai666.Mars.Host.Shared": "0.7.7-alpha.20"
         },
         "runtime": {
@@ -2845,24 +2843,11 @@
       "Mars.WebSiteProcessor.Blazor/1.0.0": {
         "dependencies": {
           "Mars.WebSiteProcessor": "1.0.0",
-          "Mars.WebSiteProcessor.DatabaseHandlebars": "1.0.0",
           "Mars.WebSiteProcessor.Handlebars": "1.0.0",
           "mdimai666.Mars.AppFront.Shared": "0.7.7-alpha.20"
         },
         "runtime": {
           "Mars.WebSiteProcessor.Blazor.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Mars.WebSiteProcessor.DatabaseHandlebars/1.0.0": {
-        "dependencies": {
-          "Mars.WebSiteProcessor": "1.0.0",
-          "Mars.WebSiteProcessor.Handlebars": "1.0.0"
-        },
-        "runtime": {
-          "Mars.WebSiteProcessor.DatabaseHandlebars.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2874,7 +2859,8 @@
           "Handlebars.Net.Extension.Json": "1.0.0",
           "Handlebars.Net.Extension.NewtonsoftJson": "1.0.3",
           "Mars.QueryLang": "1.0.0",
-          "Mars.WebSiteProcessor": "1.0.0"
+          "Mars.WebSiteProcessor": "1.0.0",
+          "mdimai666.Mars.Host.Data": "0.7.7-alpha.20"
         },
         "runtime": {
           "Mars.WebSiteProcessor.Handlebars.dll": {
@@ -4926,11 +4912,6 @@
       "sha512": ""
     },
     "Mars.WebSiteProcessor.Blazor/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Mars.WebSiteProcessor.DatabaseHandlebars/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -1,3 +1,5 @@
+using Mars.WebSiteProcessor.Interfaces;
+using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +9,7 @@ public static class MarsWebSiteProcessorMain
 {
     public static IServiceCollection AddMarsWebSiteProcessor(this IServiceCollection services)
     {
+        services.AddSingleton<IWebRenderEngineLocator, WebRenderEngineLocator>();
 
         return services;
     }

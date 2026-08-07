@@ -75,8 +75,7 @@
     {
         return [
             new("Settings","Общие", Match: NavLinkMatch.All),
-            new("Settings/html","Host html"),
-            new("Settings/Front","Front settings"),
+            new("Settings/Front","Фронты"),
             ..OptionFormList.Select(form=>new OptionMenuItem($"Settings/Option/{form.OptionType.FullName!.Replace(".", "+")}", form.DisplayName)),
             new("Settings/HostCache","Кеширование"),
             new("Settings/About","О системе"),

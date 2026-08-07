@@ -86,7 +86,6 @@
   </Folder>
   <Folder Name="/Mars.Modules/WebSiteProcessor/">
     <Project Path="src/Mars.Modules/Mars.WebSiteProcessor.Blazor/Mars.WebSiteProcessor.Blazor.csproj" />
-    <Project Path="src/Mars.Modules/Mars.WebSiteProcessor.DatabaseHandlebars/Mars.WebSiteProcessor.DatabaseHandlebars.csproj" />
     <Project Path="src/Mars.Modules/Mars.WebSiteProcessor.Handlebars/Mars.WebSiteProcessor.Handlebars.csproj" />
     <Project Path="src/Mars.Modules/Mars.WebSiteProcessor/Mars.WebSiteProcessor.csproj" />
   </Folder>

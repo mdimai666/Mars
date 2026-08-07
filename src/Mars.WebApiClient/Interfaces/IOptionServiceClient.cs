@@ -14,6 +14,5 @@ public interface IOptionServiceClient
     Task SetLanguage(string culture, string returnUrl);
     Task<UserActionResult> SendTestEmail(TestMailMessage request);
     Task<UserActionResult> SendTestSms(SendSmsModelRequest request);
-    Task<IReadOnlyCollection<AppFrontSettingsCfg>> AppFrontSettings();
 
 }

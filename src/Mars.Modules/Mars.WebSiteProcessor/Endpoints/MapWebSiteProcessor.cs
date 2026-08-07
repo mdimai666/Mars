@@ -1,6 +1,5 @@
 using System.Net.Mime;
 using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite;
 using Mars.Host.Shared.WebSite.Exceptions;
 using Mars.Host.Shared.WebSite.Interfaces;
@@ -22,8 +21,6 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         var _serviceProvider = httpContext.RequestServices;
 
         httpContext.Response.ContentType = MediaTypeNames.Text.Html;
-
-        IMarsAppProvider appProvider = _serviceProvider.GetRequiredService<IMarsAppProvider>();
 
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var request = new WebClientRequest(httpContext.Request);

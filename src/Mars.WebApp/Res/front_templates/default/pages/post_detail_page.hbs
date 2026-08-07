@@ -1,0 +1,50 @@
+@page "/posts/{Slug}"
+{{!-- @page "/posts/{id}" --}}
+
+{{!-- see about this in _root.hbs {{#>head}} --}}
+{{#*inline "head"}}
+    {{#context}}
+    post = ef.post.First(post.Slug.ToLower() == Slug.ToLower())
+    {{!-- post = news.First(post.Id == Guid.Parse(id)) --}}
+    {{!-- html = RenderPostContent(post.Id) --}}
+    {{/context}}
+
+    <title>{{{post.Title}}} - {{{SysOptions.SiteName}}}</title>
+{{/inline}}
+
+<div class="container">
+    {{#with post}}
+    <article>
+        <h1>{{Title}}</h1>
+
+        <img src="/img/image_placeholder.svg" alt="" style="max-height: 300px;">
+
+        <div class="mt-4 content">
+            {{!-- {{{Content}}} --}}
+            {{!-- {{{@root.html}}} --}}
+            {{{#RenderPostContent id}}}
+        </div>
+
+    </article>
+
+    {{/with}}
+
+    <div class="mt-5">
+        <div class="accordion" id="accordionExample">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Json
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse _show" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <code><pre>{{#tojson post}}</pre></code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

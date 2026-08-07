@@ -2,10 +2,14 @@ using Mars.Host.Shared.Models;
 
 namespace Mars.Host.Shared.Services;
 
-public interface IMarsAppProvider
+/// <summary>
+/// Фасад над IFrontManager для старых потребителей (ноды RenderPage, контроллеры рендера, CLI).
+/// Источник истины по фронтам — FrontsOption; экземпляры MarsAppFront кэшируются в IWebRenderEngineLocator.
+/// </summary>
+public interface IMarsAppProvider //TODO: придумать что с ним делать дальше
 {
-    public Dictionary<string, MarsAppFront> Apps { get; }
-    public MarsAppFront FirstApp { get; set; }
-    public bool SetupMultiApps { get; set; }
+    public IReadOnlyDictionary<string, MarsAppFront> Apps { get; }
+    public MarsAppFront FirstApp { get; }
+    public bool SetupMultiApps { get; }
     public MarsAppFront GetAppForUrl(string url);
 }

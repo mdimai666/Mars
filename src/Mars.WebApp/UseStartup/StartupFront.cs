@@ -7,6 +7,7 @@ using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor.Blazor;
 using Mars.WebSiteProcessor.Handlebars;
 using Mars.WebSiteProcessor.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.UseStartup;
 
@@ -47,6 +48,9 @@ public static class StartupFront
 
     public static IApplicationBuilder UseFront(this WebApplication app)
     {
+        // специальный фронт админки (data/admin/front) — создаётся один раз при старте
+        app.Services.GetRequiredService<FrontTemplateService>().EnsureAdminFront();
+
         UseRobotsTxt(app);
         app.Use(AppendMarsAppFrontInRequestContextItems);
         app.Use(FrontStaticFilesMiddleware);

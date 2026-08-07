@@ -57,7 +57,7 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
 
     public MarsAppFront? GetAppFrontBySlug(string slug)
     {
-        var front = frontManager.Fronts.FirstOrDefault(s => string.Equals(s.Slug, slug, StringComparison.OrdinalIgnoreCase));
+        var front = frontManager.FindBySlug(slug);
         if (front is null) return null;
 
         return GetOrCreate(front).App;
@@ -96,7 +96,9 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
     {
         foreach (var (slug, entry) in cache)
         {
-            var front = frontManager.Fronts.FirstOrDefault(s => string.Equals(s.Slug, slug, StringComparison.OrdinalIgnoreCase));
+            // FindBySlug видит и публичные фронты, и специальный админ-фронт —
+            // иначе админ-фронт (его нет в Fronts) вытеснялся бы из кеша при каждом сохранении опции.
+            var front = frontManager.FindBySlug(slug);
 
             if (front is null || FrontChanged(entry.Snapshot, front))
             {

@@ -34,6 +34,21 @@
         </div>
     </div>
 
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="hstack gap-2 flex-wrap">
+                <span class="fs-5 fw-semibold">admin</span>
+                <span class="badge text-bg-info">специальный фронт админки</span>
+                <span class="text-secondary small">data/admin/front · только в админ-панели</span>
+                <div class="ms-auto">
+                    <FluentButton Appearance="Appearance.Neutral" OnClick=@(() => nav.NavigateTo("front/editor/admin"))>
+                        Редактор
+                    </FluentButton>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <EditOptionForm @ref=form TModel="FrontsOption">
 
         <div class="vstack gap-3">

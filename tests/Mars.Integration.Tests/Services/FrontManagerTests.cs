@@ -182,4 +182,48 @@ public class FrontManagerTests
         FrontManager.IsValidSlug("bad/slug").Should().BeFalse();
         FrontManager.IsValidSlug("bad slug").Should().BeFalse();
     }
+
+    [Fact]
+    public void AdminFront_IsSpecialFront_WithReservedSlugAndAdminPath()
+    {
+        var manager = CreateManager(new FrontsOption(), out _, out _);
+
+        var admin = manager.AdminFront;
+        admin.Slug.Should().Be(FrontManager.AdminFrontSlug);
+        admin.EngineId.Should().Be(FrontItem.HandlebarsEngine);
+        admin.Path.Should().Be(FrontManager.AdminFrontDirName);
+        admin.Enabled.Should().BeTrue();
+
+        manager.ResolvePhysicalPath(admin).Should().Be(Path.Combine(ContentRoot, "data", "admin", "front"));
+    }
+
+    [Fact]
+    public void FindBySlug_ReturnsAdminFront_ForReservedSlug_CaseInsensitive()
+    {
+        var front = new FrontItem { Slug = "site", Url = "" };
+        var manager = CreateManager(new FrontsOption { Fronts = [front] }, out _, out _);
+
+        manager.FindBySlug("admin").Should().BeSameAs(manager.AdminFront);
+        manager.FindBySlug("ADMIN").Should().BeSameAs(manager.AdminFront);
+    }
+
+    [Fact]
+    public void FindBySlug_ReturnsConfiguredFront_OrNullOrAdmin()
+    {
+        var front = new FrontItem { Slug = "site", Url = "" };
+        var manager = CreateManager(new FrontsOption { Fronts = [front] }, out _, out _);
+
+        manager.FindBySlug("site").Should().BeSameAs(front);
+        manager.FindBySlug("unknown").Should().BeNull();
+    }
+
+    [Fact]
+    public void AdminFront_NotInFronts_And_NotResolvedByUrl()
+    {
+        var manager = CreateManager(new FrontsOption(), out _, out _);
+
+        manager.Fronts.Should().BeEmpty();
+        manager.GetFrontForUrl("/").Should().BeNull();
+        manager.GetFrontForUrl("/admin").Should().BeNull();
+    }
 }

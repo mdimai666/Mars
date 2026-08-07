@@ -38,6 +38,30 @@ public class FrontTemplateService
         CopyDirectory(templatePath, destPath);
     }
 
+    /// <summary>
+    /// Папка специального фронта админки: data/admin/front
+    /// </summary>
+    public string AdminFrontPath => Path.Combine(env.ContentRootPath, FrontManager.AdminFrontDirName);
+
+    /// <summary>
+    /// Имя стартового шаблона админ-фронта в Res/front_templates.
+    /// </summary>
+    public const string AdminTemplateName = "admin";
+
+    /// <summary>
+    /// Создаёт специальный фронт админки (data/admin/front) из шаблона Res/front_templates/admin,
+    /// дозаполняя отсутствующие файлы (_root.hbs, admin_index.hbs и др.).
+    /// Вызывается при старте; существующие файлы не затирает.
+    /// </summary>
+    public void EnsureAdminFront()
+    {
+        var templatePath = GetTemplatePath(AdminTemplateName);
+        if (!Directory.Exists(templatePath))
+            throw new DirectoryNotFoundException($"Шаблон админ-фронта не найден '{templatePath}'");
+
+        CopyMissingFiles(templatePath, AdminFrontPath);
+    }
+
     static void CopyDirectory(string sourcePath, string destPath)
     {
         Directory.CreateDirectory(destPath);
@@ -50,6 +74,26 @@ public class FrontTemplateService
         foreach (var dir in Directory.GetDirectories(sourcePath))
         {
             CopyDirectory(dir, Path.Combine(destPath, Path.GetFileName(dir)));
+        }
+    }
+
+    /// <summary>
+    /// Рекурсивно копирует только отсутствующие в назначении файлы (не затирая правки пользователя).
+    /// </summary>
+    static void CopyMissingFiles(string sourcePath, string destPath)
+    {
+        Directory.CreateDirectory(destPath);
+
+        foreach (var file in Directory.GetFiles(sourcePath))
+        {
+            var dest = Path.Combine(destPath, Path.GetFileName(file));
+            if (!File.Exists(dest))
+                File.Copy(file, dest);
+        }
+
+        foreach (var dir in Directory.GetDirectories(sourcePath))
+        {
+            CopyMissingFiles(dir, Path.Combine(destPath, Path.GetFileName(dir)));
         }
     }
 }

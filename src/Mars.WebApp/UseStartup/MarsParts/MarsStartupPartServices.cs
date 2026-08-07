@@ -45,6 +45,7 @@ internal static class MarsStartupPartServices
         // additional components
         services.AddSingleton<IAIToolService, AIToolService>();
         services.AddScoped<PostTypePresentationRenderHandler>();
+        services.AddScoped<AdminFrontRenderHandler>();
 
         //services.AddSingleton<DebugService>();
         services.TryAddSingleton<ModelInfoService>();

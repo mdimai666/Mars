@@ -12,10 +12,21 @@ public class FrontManager : IFrontManager
     /// </summary>
     public const string FrontsDirName = "fronts";
 
+    /// <summary>
+    /// Зарезервированный slug специального фронта админки.
+    /// </summary>
+    public const string AdminFrontSlug = "admin";
+
+    /// <summary>
+    /// Папка фронта админки относительно ContentRoot: data/admin/front
+    /// </summary>
+    public static string AdminFrontDirName => Path.Combine("data", "admin", "front");
+
     readonly IOptionService optionService;
     readonly IWebHostEnvironment env;
 
     volatile FrontsOption snapshot;
+    FrontItem? adminFront;
 
     public event Action? Changed;
 
@@ -33,6 +44,24 @@ public class FrontManager : IFrontManager
     }
 
     public IReadOnlyList<FrontItem> Fronts => snapshot.Fronts;
+
+    public FrontItem AdminFront => adminFront ??= new FrontItem
+    {
+        Slug = AdminFrontSlug,
+        Title = "Admin",
+        Url = "",
+        Path = AdminFrontDirName,
+        EngineId = FrontItem.HandlebarsEngine,
+        Enabled = true,
+    };
+
+    public FrontItem? FindBySlug(string slug)
+    {
+        if (string.Equals(slug, AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
+            return AdminFront;
+
+        return snapshot.Fronts.FirstOrDefault(s => string.Equals(s.Slug, slug, StringComparison.OrdinalIgnoreCase));
+    }
 
     public FrontItem? GetFrontForUrl(string url)
     {

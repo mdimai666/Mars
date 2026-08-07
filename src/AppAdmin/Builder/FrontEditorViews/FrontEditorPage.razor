@@ -190,6 +190,9 @@
     bool CanGoBack => historyIndex > 0;
     bool CanGoForward => historyIndex < history.Count - 1;
 
+    // специальный фронт админки: не роутится публично, предпросмотр идёт через api/AdminFront/Render
+    bool IsAdminFront => string.Equals(Slug, "admin", StringComparison.OrdinalIgnoreCase);
+
     protected override async Task OnInitializedAsync()
     {
         clientHub.OnFrontReload += OnFrontReload;
@@ -198,13 +201,22 @@
         frontItem = option?.Fronts.FirstOrDefault(s => string.Equals(s.Slug, Slug, StringComparison.OrdinalIgnoreCase));
 
         previewBase = Q.BackendUrl.TrimEnd('/');
-        frontBaseUrl = previewBase + (frontItem?.Url ?? "");
 
-        Navigate(frontBaseUrl);
+        if (IsAdminFront)
+        {
+            frontBaseUrl = previewBase;
+            Navigate(AdminPreviewUrl("admin_index.hbs"));
+        }
+        else
+        {
+            frontBaseUrl = previewBase + (frontItem?.Url ?? "");
+            Navigate(frontBaseUrl);
+        }
 
         await LoadTree();
 
-        var rootItem = FindItem(s => !s.IsDirectory && s.Name == "_root.hbs");
+        var defaultName = IsAdminFront ? "admin_index.hbs" : "_root.hbs";
+        var rootItem = FindItem(s => !s.IsDirectory && s.Name == defaultName);
         if (rootItem is not null)
         {
             selectedTreeItem = rootItem;
@@ -283,10 +295,19 @@
 
     void OpenNodeInPreview(FFrontTreeNodeResponse node)
     {
+        if (IsAdminFront)
+        {
+            Navigate(AdminPreviewUrl(node.Path));
+            return;
+        }
+
         if (!pageUrlByFile.TryGetValue(node.Path, out var pageUrl)) return;
 
         Navigate(frontBaseUrl + (pageUrl.StartsWith('/') ? pageUrl : "/" + pageUrl));
     }
+
+    string AdminPreviewUrl(string relPath)
+        => previewBase + "/api/AdminFront/Render?file=" + Uri.EscapeDataString(relPath.Replace('\\', '/'));
 
     #endregion
 

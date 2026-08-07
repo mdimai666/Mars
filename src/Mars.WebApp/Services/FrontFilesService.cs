@@ -20,7 +20,7 @@ public class FrontFilesService
 
     public FrontItem GetFront(string slug)
     {
-        return frontManager.Fronts.FirstOrDefault(s => string.Equals(s.Slug, slug, StringComparison.OrdinalIgnoreCase))
+        return frontManager.FindBySlug(slug)
             ?? throw new NotFoundException($"Front '{slug}' not found");
     }
 

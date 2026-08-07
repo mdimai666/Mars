@@ -124,6 +124,9 @@ public class FrontController : ControllerBase
         if (!FrontManager.IsValidSlug(request.Slug))
             return UserActionResult.Exception($"Некорректный slug '{request.Slug}'", null);
 
+        if (string.Equals(request.Slug, FrontManager.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
+            return UserActionResult.Exception($"Slug '{request.Slug}' зарезервирован для специального фронта админки", null);
+
         var option = _optionService.GetOption<FrontsOption>();
         if (option.Fronts.Any(s => string.Equals(s.Slug, request.Slug, StringComparison.OrdinalIgnoreCase)))
             return UserActionResult.Exception($"Фронт '{request.Slug}' уже существует", null);

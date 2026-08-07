@@ -4,6 +4,17 @@
         <name>Mars</name>
     </assembly>
     <members>
+        <member name="T:Mars.Controllers.AdminFrontController">
+            <summary>
+            Отдельные эндпоинты для отрисовки специального фронта админки (data/admin/front).
+            Эти шаблоны отображаются только в админ-панели и не роутятся публично.
+            </summary>
+        </member>
+        <member name="M:Mars.Controllers.AdminFrontController.Render(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Рендер страницы админ-фронта по относительному пути файла (например admin_index.hbs).
+            </summary>
+        </member>
         <member name="M:Mars.Controllers.FileReaderExtensions.Tail(System.IO.TextReader,System.Int32)">
             <summary>Returns the end of a text reader.</summary>
             <param name="reader">The reader to read from.</param>
@@ -14,6 +25,20 @@
             <summary>
             Страницы фронта: файл → URL из атрибута @page (для «открыть в предпросмотре» в редакторе).
             Root-файлы (_root.hbs) тоже попадают сюда — их URL это StartPath.
+            </summary>
+        </member>
+        <member name="T:Mars.Handlers.AdminFrontRenderHandler">
+            <summary>
+            Рендер страниц специального фронта админки (data/admin/front).
+            Не кэширует: форсирует перескан шаблона, чтобы правки в редакторе были видны сразу.
+            Рендерит только тело (без _root) — админка имеет собственную обвязку.
+            </summary>
+        </member>
+        <member name="M:Mars.Handlers.AdminFrontRenderHandler.#ctor(Mars.WebSiteProcessor.Interfaces.IWebRenderEngineLocator)">
+            <summary>
+            Рендер страниц специального фронта админки (data/admin/front).
+            Не кэширует: форсирует перескан шаблона, чтобы правки в редакторе были видны сразу.
+            Рендерит только тело (без _root) — админка имеет собственную обвязку.
             </summary>
         </member>
         <member name="T:Mars.Services.AppFrontMigration">
@@ -49,6 +74,16 @@
             Папка фронтов по умолчанию: data/fronts/&lt;slug&gt;
             </summary>
         </member>
+        <member name="F:Mars.Services.FrontManager.AdminFrontSlug">
+            <summary>
+            Зарезервированный slug специального фронта админки.
+            </summary>
+        </member>
+        <member name="P:Mars.Services.FrontManager.AdminFrontDirName">
+            <summary>
+            Папка фронта админки относительно ContentRoot: data/admin/front
+            </summary>
+        </member>
         <member name="M:Mars.Services.FrontManager.IsValidSlug(System.String)">
             <summary>
             Валидный slug для папки фронта: буквы/цифры/_/- , не пустой
@@ -62,6 +97,28 @@
         <member name="P:Mars.Services.FrontTemplateService.FrontsBasePath">
             <summary>
             Базовая папка фронтов: data/fronts
+            </summary>
+        </member>
+        <member name="P:Mars.Services.FrontTemplateService.AdminFrontPath">
+            <summary>
+            Папка специального фронта админки: data/admin/front
+            </summary>
+        </member>
+        <member name="F:Mars.Services.FrontTemplateService.AdminTemplateName">
+            <summary>
+            Имя стартового шаблона админ-фронта в Res/front_templates.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontTemplateService.EnsureAdminFront">
+            <summary>
+            Создаёт специальный фронт админки (data/admin/front) из шаблона Res/front_templates/admin,
+            дозаполняя отсутствующие файлы (_root.hbs, admin_index.hbs и др.).
+            Вызывается при старте; существующие файлы не затирает.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontTemplateService.CopyMissingFiles(System.String,System.String)">
+            <summary>
+            Рекурсивно копирует только отсутствующие в назначении файлы (не затирая правки пользователя).
             </summary>
         </member>
         <member name="T:Mars.Services.ImageProcessor">

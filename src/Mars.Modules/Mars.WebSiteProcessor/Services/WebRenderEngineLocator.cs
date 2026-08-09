@@ -7,22 +7,53 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.TemplateEngine;
 using Mars.Shared.Options;
 using Mars.WebSiteProcessor.Interfaces;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.WebSiteProcessor.Services;
 
 public class WebRenderEngineLocator : IWebRenderEngineLocator
 {
-    record CacheEntry(MarsAppFront App, IWebRenderEngine Engine, PhysicalFileProvider? WwwRoot, FrontItem Snapshot);
+    record CacheEntry(MarsAppFront App, IWebRenderEngine Engine, StaticFileMiddleware? StaticFiles, FrontItem Snapshot);
+
+    static readonly object StaticNotServedKey = new();
+    static readonly RequestDelegate StaticNotServed = context =>
+    {
+        context.Items[StaticNotServedKey] = true;
+        return Task.CompletedTask;
+    };
+
+    // стабильные ассеты кешируются надолго; css/js/html и прочее — ревалидация
+    // через ETag/Last-Modified, которые проставляет StaticFileMiddleware
+    static readonly HashSet<string> LongTermCacheExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".svg", ".bmp", ".ico",
+        ".woff", ".woff2", ".ttf", ".otf", ".eot",
+        ".mp4", ".webm", ".mp3", ".ogg", ".wav",
+        ".wasm",
+    };
+
+    const string LongTermCacheControl = "public, max-age=2592000";
+    const string RevalidateCacheControl = "no-cache";
 
     readonly IFrontManager frontManager;
     readonly IServiceProvider rootServices;
     readonly Dictionary<string, IWebRenderEngineFactory> factories;
     readonly ConcurrentDictionary<string, CacheEntry> cache = new(StringComparer.OrdinalIgnoreCase);
-    readonly FileExtensionContentTypeProvider contentTypeProvider = new();
+    readonly FileExtensionContentTypeProvider contentTypeProvider = CreateContentTypeProvider();
     readonly object buildLock = new();
+
+    static FileExtensionContentTypeProvider CreateContentTypeProvider()
+    {
+        var provider = new FileExtensionContentTypeProvider();
+        provider.Mappings.TryAdd(".wasm", "application/wasm");
+        return provider;
+    }
 
     public WebRenderEngineLocator(
         IFrontManager frontManager,
@@ -65,31 +96,13 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
 
     public async Task<bool> TryServeStaticFileAsync(HttpContext context, MarsAppFront appFront)
     {
-        //TODO: Выглядит костыльно и без кеш заголовка.
         var slug = appFront.Front?.Slug;
-        if (slug is null || !cache.TryGetValue(slug, out var entry) || entry.WwwRoot is null)
+        if (slug is null || !cache.TryGetValue(slug, out var entry) || entry.StaticFiles is null)
             return false;
 
-        var path = context.Request.Path;
-        if (!string.IsNullOrEmpty(appFront.Configuration.Url))
-        {
-            if (!path.StartsWithSegments(appFront.Configuration.Url, out path))
-                return false;
-        }
-
-        var fileInfo = entry.WwwRoot.GetFileInfo(path.Value ?? "");
-        if (!fileInfo.Exists || fileInfo.IsDirectory)
-            return false;
-
-        context.Response.StatusCode = StatusCodes.Status200OK;
-        context.Response.ContentType = contentTypeProvider.TryGetContentType(fileInfo.Name, out var contentType)
-            ? contentType
-            : "application/octet-stream";
-
-        await using var stream = fileInfo.CreateReadStream();
-        await stream.CopyToAsync(context.Response.Body, context.RequestAborted);
-
-        return true;
+        context.Items.Remove(StaticNotServedKey);
+        await entry.StaticFiles.Invoke(context);
+        return !context.Items.ContainsKey(StaticNotServedKey);
     }
 
     void OnFrontsChanged()
@@ -153,10 +166,33 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
         appFront.Features.Set(engine);
 
         var wwwrootPath = Path.Combine(configuration.Path, "wwwroot");
-        PhysicalFileProvider? wwwRoot = Directory.Exists(wwwrootPath)
-            ? new PhysicalFileProvider(wwwrootPath)
+        StaticFileMiddleware? staticFiles = Directory.Exists(wwwrootPath)
+            ? BuildStaticFiles(front, wwwrootPath)
             : null;
 
-        return new CacheEntry(appFront, engine, wwwRoot, front);
+        return new CacheEntry(appFront, engine, staticFiles, front);
+    }
+
+    StaticFileMiddleware BuildStaticFiles(FrontItem front, string wwwrootPath)
+    {
+        var options = new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(wwwrootPath),
+            RequestPath = front.Url,
+            ContentTypeProvider = contentTypeProvider,
+            OnPrepareResponse = ctx =>
+            {
+                ctx.Context.Response.Headers.CacheControl =
+                    LongTermCacheExtensions.Contains(Path.GetExtension(ctx.File.Name))
+                        ? LongTermCacheControl
+                        : RevalidateCacheControl;
+            },
+        };
+
+        return new StaticFileMiddleware(
+            StaticNotServed,
+            rootServices.GetRequiredService<IWebHostEnvironment>(),
+            Microsoft.Extensions.Options.Options.Create(options),
+            rootServices.GetRequiredService<ILoggerFactory>());
     }
 }

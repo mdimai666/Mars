@@ -64,6 +64,45 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
     }
 
     [IntegrationFact]
+    public async Task StaticFile_ServedWithRevalidationCache_And304OnConditionalRequest()
+    {
+        //Arrange
+        var client = AppFixture.GetClient();
+
+        //Act
+        var res = await client.Request("1.txt").SendAsync(HttpMethod.Get);
+
+        //Assert — txt не ассет: ревалидация, а не долгий кеш
+        res.StatusCode.Should().Be(StatusCodes.Status200OK);
+        res.Headers.TryGetFirst("Cache-Control", out var cacheControl).Should().BeTrue();
+        cacheControl.Should().Be("no-cache");
+        res.Headers.TryGetFirst("ETag", out var etag).Should().BeTrue();
+        etag.Should().NotBeNullOrWhiteSpace();
+
+        var conditional = await client.Request("1.txt")
+            .WithHeader("If-None-Match", etag)
+            .AllowAnyHttpStatus()
+            .SendAsync(HttpMethod.Get);
+
+        conditional.StatusCode.Should().Be(StatusCodes.Status304NotModified);
+    }
+
+    [IntegrationFact]
+    public async Task StaticFile_AssetServedWithLongTermCache()
+    {
+        //Arrange
+        var client = AppFixture.GetClient();
+
+        //Act
+        var res = await client.Request("logo.svg").SendAsync(HttpMethod.Get);
+
+        //Assert
+        res.StatusCode.Should().Be(StatusCodes.Status200OK);
+        res.Headers.TryGetFirst("Cache-Control", out var cacheControl).Should().BeTrue();
+        cacheControl.Should().Be("public, max-age=2592000");
+    }
+
+    [IntegrationFact]
     public async Task Basic_RootFilesDontWillServe_FilesFailAtTheLink()
     {
         //Act

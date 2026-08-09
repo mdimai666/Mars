@@ -167,12 +167,6 @@ public class WebTemplateService : IWebTemplateService
     }
     void _updateFile(string path, WatcherChangeTypes changeType)
     {
-        if (path == "x") //updated parts from Datadase
-        {
-            ScanSite();
-            _hub.Clients.All.SendAsync("reload");
-        }
-
         string ext = System.IO.Path.GetExtension(path);
 
         if (ext == ".css")

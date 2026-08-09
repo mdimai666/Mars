@@ -113,14 +113,4 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
         return await processor.RenderPage404(af, request, param ?? new(), cancellationToken);
     }
-
-    public WebPage? ResolveUrl(PathString path, HttpContext httpContext)
-    {
-        var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
-        var tsv = af.Features.Get<IWebTemplateService>();
-        //var serviceProvider = httpContext.RequestServices;
-        //WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
-        //return processor.ResolveUrl(path);
-        return tsv.Template.CompiledHttpRouteMatcher.Match(path, out _);
-    }
 }

@@ -48,6 +48,12 @@
             и бутстрап дефолтного фронта при чистом старте.
             </summary>
         </member>
+        <member name="T:Mars.Services.AppFrontMigration.LegacyAppFrontCfg">
+            <summary>
+            Легаси-запись секции "AppFront" из appsettings (до FrontsOption).
+            Mode — строка с именем значения старого перечисления AppFrontMode.
+            </summary>
+        </member>
         <member name="M:Mars.Services.AppFrontMigration.EnsureDefaultFront(System.IServiceProvider)">
             <summary>
             Чистый старт: если фронтов нет совсем — создаёт дефолтный фронт из стартового шаблона
@@ -137,13 +143,6 @@
         <member name="T:Mars.Services.ImageProcessor">
             <summary>
             Singletone.
-            </summary>
-        </member>
-        <member name="T:Mars.Services.MarsAppProvider">
-            <summary>
-            Фасад над IFrontManager/IWebRenderEngineLocator для старых потребителей IMarsAppProvider.
-            Раньше читал секцию AppFront из appsettings один раз при старте; теперь список фронтов
-            живёт в опции FrontsOption и применяется в рантайме.
             </summary>
         </member>
         <member name="M:Mars.UseStartup.StartupFront.FrontStaticFilesMiddleware(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">

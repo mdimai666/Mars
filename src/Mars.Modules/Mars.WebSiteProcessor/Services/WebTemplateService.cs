@@ -51,7 +51,7 @@ public class WebTemplateService : IWebTemplateService
         SetupWatcher();
 
         // Debounce: при выгрузке множества файлов перечитывать шаблон один раз, а не на каждое событие
-        _debouncer = new Debouncer(500);
+        _debouncer = new Debouncer(200);
 
         TryScanSite();
     }

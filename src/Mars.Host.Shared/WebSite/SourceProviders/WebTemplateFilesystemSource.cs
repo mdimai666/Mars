@@ -18,9 +18,12 @@ public class WebTemplateFilesystemSource : IWebTemplateSource
 
     public IEnumerable<WebPartSource> ReadParts()
     {
+        if (!Directory.Exists(path))
+            throw new DirectoryNotFoundException($"WebSiteTemplate: front folder not found '{path}'");
+
         var files = _fileService.ScanFiles(path);
 
-        if (!files.Any()) throw new Exception("WebSiteTemplate: any files not found");
+        if (!files.Any()) throw new FileNotFoundException($"WebSiteTemplate: no *.hbs files in front folder '{path}'");
 
         foreach (var file in files)
         {

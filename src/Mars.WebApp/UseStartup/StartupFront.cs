@@ -112,20 +112,36 @@ public static class StartupFront
             return;
         }
 
-        var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
-
-        var appFront = locator.GetAppFrontForUrl(context.Request.Path);
-        if (appFront is null)
+        try
         {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
-            await context.Response.WriteAsync("Front not found");
-            return;
+            var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
+
+            var appFront = locator.GetAppFrontForUrl(context.Request.Path);
+            if (appFront is null)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                await context.Response.WriteAsync("Front not found");
+                return;
+            }
+
+            context.Items.TryAdd(nameof(MarsAppFront), appFront);
+
+            var webSiteProcessor = context.RequestServices.GetRequiredService<IWebSiteProcessor>();
+            await webSiteProcessor.Response(context, context.RequestAborted);
         }
+        catch (Exception ex)
+        {
+            // ошибки сборки движка (нет папки фронта, битый шаблон) не должны улетать
+            // в глобальный обработчик без сообщения
+            Console.Error.WriteLine($"StartupFront: render front error: {ex.Message}");
 
-        context.Items.TryAdd(nameof(MarsAppFront), appFront);
-
-        var webSiteProcessor = context.RequestServices.GetRequiredService<IWebSiteProcessor>();
-        await webSiteProcessor.Response(context, context.RequestAborted);
+            if (!context.Response.HasStarted)
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.ContentType = "text/html";
+                await context.Response.WriteAsync($"<pre>Front render error: {ex.Message}</pre>");
+            }
+        }
     }
 
     static bool IsFileRequest(PathString path)

@@ -26,7 +26,28 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         var request = new WebClientRequest(httpContext.Request);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        var processor = new WebSiteRequestProcessor(_serviceProvider, tsv.Template);
+
+        WebSiteRequestProcessor processor;
+        try
+        {
+            // Template сканирует папку фронта: ошибки пути/структуры шаблона ловим отдельно —
+            // Page500 из сломанного шаблона отрисовать всё равно не получится
+            processor = new WebSiteRequestProcessor(_serviceProvider, tsv.Template);
+        }
+        catch (Exception ex)
+        {
+            httpContext.Response.StatusCode = 500;
+            await httpContext.Response.WriteAsync($"""
+                <pre>
+                Front template error
+                Front: {af.Front?.Slug}
+                Path: {af.Configuration.Path}
+                Message: {ex.Message}
+                </pre>
+                """);
+            return;
+        }
+
         try
         {
 
@@ -66,8 +87,8 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         }
         catch (Exception ex)
         {
-#if DEBUG
             httpContext.Response.StatusCode = 500;
+#if DEBUG
             await httpContext.Response.WriteAsync($"<pre>{ex.Message}\n\n{ex.StackTrace}</pre>");
 #else
             await httpContext.Response.WriteAsync($"<pre>{ex.Message}</pre>");

@@ -34,6 +34,11 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         {
             throw new ArgumentNullException("cfg: AppFront.Path");
         }
+
+        if (!Directory.Exists(AppFront.Configuration.Path))
+        {
+            throw new DirectoryNotFoundException($"Front folder not found '{AppFront.Configuration.Path}'");
+        }
     }
 
     /// <summary>

@@ -24,7 +24,6 @@ builder.Services.AddNodeWorkspace();
 
 var vm = new InitialSiteDataViewModel()
 {
-    LocalPages = [],
     NavMenus = [],
     Options = [],
     PostTypes = [],

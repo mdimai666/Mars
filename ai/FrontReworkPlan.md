@@ -362,7 +362,10 @@ IFrontManager (singleton)  ──подписка на IEventManager OptionUpdat
 
 ## 4. Вне скоупа (по условию задачи)
 
-- Blazor-рендер (`Mars.WebSiteProcessor.Blazor`) — следующая задача; код не трогаем, тесты замораживаем.
+- Blazor-рендер (`Mars.WebSiteProcessor.Blazor`) — оценён 2026-08-10 и удалён целиком
+  (модуль, тесты `BlazorEngine`, пример `BlazorTemplateExample`): серверный пререндер WASM
+  не нужен, а сценарий «Blazor/SPA-фронт в папке» при необходимости закроет отдельный
+  статический движок раздачи файлов (SPA + данные через API).
 - Ноды `RenderPage`/`MarsHostRootLayoutRender` — не рефакторим, только следим чтобы компилировались.
 - `{{#context}}`-eval блок страниц — не реализуем.
 

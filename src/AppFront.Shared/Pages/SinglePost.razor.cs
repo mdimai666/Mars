@@ -52,22 +52,6 @@ public partial class SinglePost
         if (string.IsNullOrEmpty(IDorSLUG) || Busy) return;
         _error = null;
 
-        var inLocal = Q.Site.LocalPages.FirstOrDefault(s => !s.NotFound && (s.Data.DataId.ToString() == IDorSLUG || s.Data.PostSlug == IDorSLUG));
-
-        if (inLocal is not null && !force)
-        {
-            res = inLocal;
-            if (MauiReplaceUrl && res.Data is not null)
-            {
-                res.Data.Html = OnePage.ReplaceRelativeUrls(res.Data.Html);
-            }
-            CurrentPageTitle = inLocal.Data.Title;
-
-            _oldId = inLocal.Data.PostSlug;
-            StateHasChanged();
-            return;
-        }
-
         if (Q.IsPrerenderProcess)
         {
             Busy = true;

@@ -35,7 +35,6 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
             UserPrimaryInfo = userPrimaryInfo,
             PostTypes = postTypes,
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),
-            LocalPages = [],
             Options = options.Select(OptionMapping.ToResponse).ToList(),
             XActions = actionManager.XActions,
         });

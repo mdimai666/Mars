@@ -4,7 +4,6 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite;
 using Mars.Services;
 using Mars.UseStartup.MarsParts;
-using Mars.WebSiteProcessor.Blazor;
 using Mars.WebSiteProcessor.Handlebars;
 using Mars.WebSiteProcessor.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +20,6 @@ public static class StartupFront
         builder.Services.AddSingleton<FrontRenderWarmupService>();
 
         builder.AddWREHandlebars();
-        builder.AddWREBlazor();
 
         return builder;
     }

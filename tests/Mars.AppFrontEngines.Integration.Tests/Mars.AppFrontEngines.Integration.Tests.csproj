@@ -21,9 +21,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Tests\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
-        <ProjectReference Include="..\BlazorTemplateExample\BlazorTemplateExample.csproj">
-            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-        </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>

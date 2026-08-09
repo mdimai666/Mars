@@ -52,7 +52,7 @@ Inspired by Node-RED and WordPress, Mars combines flow-based visual programming 
 - Database-driven templates (stored and edited in the admin panel)
 
 ### Multi-Front Architecture
-- Serve content as **SPA, static HTML, Blazor, or template-based pages**
+- Serve content as **SPA, static HTML, or template-based pages**
 - Use any frontend framework (React, Vue, Angular) via API
 - Mobile apps and IoT devices can connect directly
 

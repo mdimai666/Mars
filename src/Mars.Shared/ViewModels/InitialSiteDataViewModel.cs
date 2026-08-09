@@ -1,9 +1,6 @@
-using System.Text.Json.Serialization;
-using Mars.Shared.Common;
 using Mars.Shared.Contracts.NavMenus;
 using Mars.Shared.Contracts.Options;
 using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Contracts.Renders;
 using Mars.Shared.Contracts.XActions;
 using Mars.Shared.Options;
 
@@ -15,10 +12,6 @@ public class InitialSiteDataViewModel
     public required UserPrimaryInfo? UserPrimaryInfo { get; init; }
     public required IReadOnlyCollection<PostTypeAdminPanelItemResponse> PostTypes { get; init; }
     public required IReadOnlyCollection<NavMenuDetailResponse> NavMenus { get; init; }
-
-    [JsonIgnore]
-    public RenderActionResult<PostRenderResponse>? IndexPage => LocalPages.FirstOrDefault(s => s.Data?.PostSlug == "index");
-    public required IReadOnlyCollection<RenderActionResult<PostRenderResponse>> LocalPages { get; init; }
 
     public required IReadOnlyCollection<OptionSummaryResponse> Options { get; init; }
 

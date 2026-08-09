@@ -85,7 +85,6 @@
     <Project Path="src/Mars.Modules/Mars.WebApp.Nodes/Mars.WebApp.Nodes.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/WebSiteProcessor/">
-    <Project Path="src/Mars.Modules/Mars.WebSiteProcessor.Blazor/Mars.WebSiteProcessor.Blazor.csproj" />
     <Project Path="src/Mars.Modules/Mars.WebSiteProcessor.Handlebars/Mars.WebSiteProcessor.Handlebars.csproj" />
     <Project Path="src/Mars.Modules/Mars.WebSiteProcessor/Mars.WebSiteProcessor.csproj" />
   </Folder>
@@ -144,7 +143,6 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests/AppFront.Tests/AppFront.Tests.csproj" />
-    <Project Path="tests/BlazorTemplateExample/BlazorTemplateExample.csproj" />
     <Project Path="tests/ExternalServices.Integration.Tests/ExternalServices.Integration.Tests.csproj" />
     <Project Path="tests/ExternalServices.TestContainers/ExternalServices.TestContainers.csproj" Id="1518dc0b-e596-4243-9d6a-f125f44f360c" />
     <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />

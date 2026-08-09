@@ -3,7 +3,6 @@
 
 | Технология    | Пример    |
 |---------------|-----------|
-| Blazor        | готовится
 | Razor         | готовится
 | Handlebars    | https://github.com/mdimai666/MyMarsHandlebarsSiteTemplate
 

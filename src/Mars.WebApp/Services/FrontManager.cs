@@ -26,6 +26,7 @@ public class FrontManager : IFrontManager
     readonly IWebHostEnvironment env;
 
     volatile FrontsOption snapshot;
+    volatile BakedRoutes routes;
     FrontItem? adminFront;
 
     public event Action? Changed;
@@ -34,13 +35,45 @@ public class FrontManager : IFrontManager
     {
         this.optionService = optionService;
         this.env = env;
-        snapshot = optionService.GetOption<FrontsOption>();
+        (snapshot, routes) = Bake(optionService.GetOption<FrontsOption>());
 
         eventManager.AddEventListener(eventManager.Defaults.OptionUpdate(nameof(FrontsOption)), _ =>
         {
-            snapshot = optionService.GetOption<FrontsOption>();
+            (snapshot, routes) = Bake(optionService.GetOption<FrontsOption>());
             Changed?.Invoke();
         });
+    }
+
+    /// <summary>
+    /// Запечённая таблица маршрутов: пересобирается только при изменении FrontsOption,
+    /// чтение на каждый запрос без локов и перебора выключенных фронтов.
+    /// </summary>
+    sealed record BakedRoutes(FrontItem? Root, FrontItem[] Mounts);
+
+    static (FrontsOption Snapshot, BakedRoutes Routes) Bake(FrontsOption option)
+    {
+        FrontItem? root = null;
+        List<FrontItem>? mounts = null;
+
+        foreach (var front in option.Fronts)
+        {
+            if (!front.Enabled) continue;
+
+            if (string.IsNullOrEmpty(front.Url))
+            {
+                root ??= front;
+                continue;
+            }
+
+            (mounts ??= []).Add(front);
+        }
+
+        // по убыванию длины Url: первое совпадение = наиболее специфичный маунт
+        var mountsArray = mounts is null
+            ? []
+            : mounts.OrderByDescending(s => s.Url.Length).ToArray();
+
+        return (option, new BakedRoutes(root, mountsArray));
     }
 
     public IReadOnlyList<FrontItem> Fronts => snapshot.Fronts;
@@ -65,31 +98,23 @@ public class FrontManager : IFrontManager
 
     public FrontItem? GetFrontForUrl(string url)
     {
-        //TODO: выглядит медленно, надо запечь
-        // и в большинстве же случаев будет один "/" поэтому пердусмотреть hotpath
+        var r = routes;
+
+        // hotpath: типичная установка — один корневой фронт, маунтов нет
+        if (r.Mounts.Length == 0)
+            return r.Root;
+
+        // записи уже в нижнем регистре (сеттер FrontItem.Url)
         url = url.ToLowerInvariant();
 
-        FrontItem? rootFront = null;
-        FrontItem? best = null;
-
-        foreach (var front in snapshot.Fronts)
+        foreach (var mount in r.Mounts)
         {
-            if (!front.Enabled) continue;
-
-            if (string.IsNullOrEmpty(front.Url))
-            {
-                rootFront ??= front;
-                continue;
-            }
-
-            if ((url == front.Url || url.StartsWith(front.Url + "/"))
-                && (best is null || front.Url.Length > best.Url.Length))
-            {
-                best = front;
-            }
+            if (url.StartsWith(mount.Url)
+                && (url.Length == mount.Url.Length || url[mount.Url.Length] == '/'))
+                return mount;
         }
 
-        return best ?? rootFront;
+        return r.Root;
     }
 
     public string ResolvePhysicalPath(FrontItem front)

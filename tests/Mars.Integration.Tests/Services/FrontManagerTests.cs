@@ -71,6 +71,43 @@ public class FrontManagerTests
     }
 
     [Fact]
+    public void GetFrontForUrl_RebuildsBakedRoutes_WhenOptionUpdated()
+    {
+        var initial = new FrontsOption { Fronts = [new FrontItem { Slug = "one", Url = "" }] };
+        var updated = new FrontsOption
+        {
+            Fronts =
+            [
+                new FrontItem { Slug = "root2", Url = "" },
+                new FrontItem { Slug = "app2", Url = "/app2" },
+            ]
+        };
+
+        var optionService = Substitute.For<IOptionService>();
+        optionService.GetOption<FrontsOption>().Returns(initial, updated);
+
+        var eventManager = Substitute.For<IEventManager>();
+        eventManager.Defaults.Returns(new EventManagerDefaults());
+
+        Action<ManagerEventPayload>? listener = null;
+        eventManager.AddEventListener(
+            Arg.Do<string>(_ => { }),
+            Arg.Do<Action<ManagerEventPayload>>(l => listener = l));
+
+        var env = Substitute.For<IWebHostEnvironment>();
+        env.ContentRootPath.Returns(ContentRoot);
+
+        var manager = new FrontManager(optionService, eventManager, env);
+
+        manager.GetFrontForUrl("/app2").Should().BeSameAs(initial.Fronts[0], "до обновления /app2 отдаёт корневой фронт");
+
+        listener!.Invoke(new ManagerEventPayload("Option.FrontsOption", updated));
+
+        manager.GetFrontForUrl("/app2").Should().BeSameAs(updated.Fronts[1], "запечённая таблица пересобрана");
+        manager.GetFrontForUrl("/other").Should().BeSameAs(updated.Fronts[0]);
+    }
+
+    [Fact]
     public void ResolvePhysicalPath_Default_IsDataFrontsSlug()
     {
         var manager = CreateManager(new FrontsOption(), out _, out _);

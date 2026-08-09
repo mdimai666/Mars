@@ -38,33 +38,38 @@ public class WebTemplateService : IWebTemplateService
     private readonly IHubContext<ChatHub> _hub;
     private readonly IMemoryCache _memoryCache;
 
-    readonly IHostEnvironment env;
-    bool IsDevelopment;
-
     public WebTemplateService(IServiceProvider rootServiceProvider,
         IHubContext<ChatHub> hub, MarsAppFront appFront)
     {
         var af = appFront.Configuration;
         Path = af.Path;
-        bool enableWatcher = true;
-
-        //IWebFilesService webFilesService = rootServiceProvider.GetRequiredService<IWebFilesService>();
-        //var see = nameof(Microsoft.AspNetCore.Mvc.HotReload.HotReloadService);
 
         _rootServiceProvider = rootServiceProvider;
         _hub = hub;
         _memoryCache = rootServiceProvider.GetRequiredService<IMemoryCache>();
 
-        env = rootServiceProvider.GetRequiredService<IHostEnvironment>();
-        IsDevelopment = env.IsDevelopment();
+        SetupWatcher();
 
-        if (enableWatcher && false)
+        // Debounce: при выгрузке множества файлов перечитывать шаблон один раз, а не на каждое событие
+        _debouncer = new Debouncer(500);
+
+        TryScanSite();
+    }
+
+    void SetupWatcher()
+    {
+        if (!Directory.Exists(Path))
+            return;
+
+        try
         {
             _watcher = new FileSystemWatcher(Path)
             {
                 NotifyFilter = NotifyFilters.DirectoryName
                                      | NotifyFilters.FileName
-                                     | NotifyFilters.LastWrite
+                                     | NotifyFilters.LastWrite,
+                // чтобы события не терялись при массовой выгрузке файлов
+                InternalBufferSize = 64 * 1024,
             };
 
             _watcher.Changed += OnChanged;
@@ -73,20 +78,17 @@ public class WebTemplateService : IWebTemplateService
             _watcher.Renamed += OnRenamed;
             _watcher.Error += OnError;
 
-            _watcher.Disposed += Watcher_Disposed;
-
             _watcher.Filters.Add("*.hbs");
             _watcher.Filters.Add("*.css");
             _watcher.Filters.Add("*.js");
             _watcher.Filters.Add("*.resx");
             _watcher.IncludeSubdirectories = true;
             _watcher.EnableRaisingEvents = true;
-            //Console.WriteLine("SetWatcher");
         }
-
-        _debouncer = new Debouncer(200);
-
-        TryScanSite();
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"WebTemplateService: watcher init failed for '{Path}': {ex.Message}");
+        }
     }
 
     public void ScanSite()
@@ -109,11 +111,6 @@ public class WebTemplateService : IWebTemplateService
             Console.Error.WriteLine(ex.Message);
             //lastErrored = true;
         }
-    }
-
-    void Watcher_Disposed(object? sender, EventArgs e)
-    {
-        Console.WriteLine("Watcher_Disposed");
     }
 
     void OnChanged(object sender, FileSystemEventArgs e)
@@ -191,28 +188,9 @@ public class WebTemplateService : IWebTemplateService
         }
         else if (ext == ".hbs")
         {
-            if (changeType == WatcherChangeTypes.Deleted)
-            {
-                Console.WriteLine($"Deleted: {path}");
-                //_template.DeleteFile(path);
-                ScanSite();
-            }
-            else if (changeType == WatcherChangeTypes.Created)
-            {
-                Console.WriteLine($"Created: {path}");
-                //_template.CreatedFile(path);
-                ScanSite();
-            }
-            else if (changeType == WatcherChangeTypes.Changed)
-            {
-                Console.WriteLine($"Changed: {path}");
-                //_template.ChangedFile(path);
-                ScanSite();
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            Console.WriteLine($"Front file {changeType}: {path}");
+            // TryScanSite: если шаблон в момент перечитывания битый, остаётся предыдущая версия
+            TryScanSite();
         }
         else if (ext == ".resx")
         {
@@ -230,12 +208,10 @@ public class WebTemplateService : IWebTemplateService
 
     public void ClearCache()
     {
+        // иначе после правки файлов скомпилированные шаблоны висели бы в кеше до 30 минут
         if (_memoryCache is MemoryCache mc)
         {
-            if (IsDevelopment == false)
-            {
-                mc.Clear();
-            }
+            mc.Clear();
         }
     }
 

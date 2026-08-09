@@ -22,8 +22,8 @@ public class AdminFrontRenderHandler(IWebRenderEngineLocator renderEngineLocator
 
         var tsv = app.Features.Get<IWebTemplateService>();
 
-        // Форсируем перескан: файлы админ-фронта редактируются в редакторе,
-        // а FileSystemWatcher в WebTemplateService выключен.
+        // Форсируем перескан: watcher обновляет шаблон с debounce,
+        // а после сохранения в редакторе результат нужен сразу.
         tsv.ScanSite();
 
         var template = tsv.Template;

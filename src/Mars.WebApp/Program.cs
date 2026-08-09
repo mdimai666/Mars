@@ -12,6 +12,12 @@ Console.InputEncoding = Encoding.UTF8;
 var startWatch = new Stopwatch();
 startWatch.Start();
 
+// Npgsql читает переключатель при первой инициализации провайдера: визард установки
+// открывает соединение для проверки БД раньше, чем строится фабрика MarsDbContext
+// (там переключатель тоже ставится, но будет уже поздно). Без него сидинг падает
+// на записи DateTimeOffset с локальным смещением в timestamptz.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 _ = nameof(MarsStartupInfo);
 
 // todo: some fix for run from not Mars directory

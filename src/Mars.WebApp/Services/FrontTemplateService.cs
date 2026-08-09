@@ -6,6 +6,7 @@ namespace Mars.Services;
 public class FrontTemplateService
 {
     public const string DefaultTemplateName = "default";
+    public const string LandingTemplateName = "landing";
 
     readonly IWebHostEnvironment env;
 

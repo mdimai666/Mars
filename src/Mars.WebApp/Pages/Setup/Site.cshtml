@@ -1,4 +1,5 @@
 @page "/setup/site"
+@using Mars.Pages.Setup
 @model Mars.Pages.Setup.SiteModel
 @{
     ViewData["Title"] = "Настройки сайта";
@@ -39,18 +40,35 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-semibold">Режим фронтенда (AppFront)</label>
-        <select asp-for="AppFrontMode" class="form-select" id="appFrontMode">
-            <option value="HandlebarsTemplate">HandlebarsTemplate — отрисовка из базы</option>
-            <option value="HandlebarsTemplateStatic">HandlebarsTemplateStatic — статические файлы</option>
-            <option value="None">None — отключён</option>
-        </select>
+        <label class="form-label fw-semibold">Шаблон сайта (фронт)</label>
+        @foreach (var template in Model.AvailableTemplates)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="FrontChoice" value="@template" id="front-@template" />
+                <label class="form-check-label" for="front-@template">
+                    @SiteModel.TemplateTitle(template) <span class="text-muted">(@template)</span>
+                </label>
+            </div>
+        }
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="FrontChoice" value="existing" id="front-existing" />
+            <label class="form-check-label" for="front-existing">Существующая папка с шаблонами</label>
+        </div>
+        <div class="form-text">Стартовый шаблон будет скопирован в data/fronts и его можно править в редакторе фронтов.</div>
     </div>
 
-    <div class="mb-3" id="staticPathGroup">
-        <label class="form-label fw-semibold">Путь к статическим файлам</label>
-        <input asp-for="AppFrontStaticPath" class="form-control" placeholder="../client" />
-        <div class="form-text">Путь к папке с клиентским приложением (для HandlebarsTemplateStatic).</div>
+    <div class="mb-3" id="frontPathGroup">
+        <label class="form-label fw-semibold">Путь к папке с шаблонами</label>
+        <input asp-for="FrontPath" class="form-control" placeholder="C:\sites\my-front" />
+        <span asp-validation-for="FrontPath" class="text-danger small"></span>
+        <div class="form-text">Папка с *.hbs файлами фронта (_root.hbs, pages/...).</div>
+    </div>
+
+    <div class="mb-3" id="frontEngineGroup">
+        <label class="form-label fw-semibold">Движок рендера</label>
+        <select asp-for="FrontEngineId" class="form-select">
+            <option value="handlebars">Handlebars</option>
+        </select>
     </div>
 
     <div class="d-flex gap-2">
@@ -65,12 +83,14 @@
 
 @section Scripts {
 <script>
-    function toggleStaticPath() {
-        var mode = document.getElementById('appFrontMode').value;
-        var group = document.getElementById('staticPathGroup');
-        group.style.display = mode === 'HandlebarsTemplateStatic' ? 'block' : 'none';
+    function toggleExistingFront() {
+        var existing = document.getElementById('front-existing').checked;
+        document.getElementById('frontPathGroup').style.display = existing ? 'block' : 'none';
+        document.getElementById('frontEngineGroup').style.display = existing ? 'block' : 'none';
     }
-    document.getElementById('appFrontMode').addEventListener('change', toggleStaticPath);
-    toggleStaticPath();
+    document.querySelectorAll('input[name="FrontChoice"]').forEach(function (radio) {
+        radio.addEventListener('change', toggleExistingFront);
+    });
+    toggleExistingFront();
 </script>
 }

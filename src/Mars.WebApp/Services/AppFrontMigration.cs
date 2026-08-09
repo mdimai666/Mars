@@ -1,5 +1,6 @@
 using System.Text;
 using Mars.Host.Shared.Services;
+using Mars.Setup;
 using Mars.Shared.Options;
 using Mars.UseStartup;
 using Microsoft.Extensions.Configuration;
@@ -41,9 +42,11 @@ public static class AppFrontMigration //TODO: аотом убрать
     }
 
     /// <summary>
-    /// Чистый старт: если фронтов нет совсем — создаёт дефолтный фронт из стартового шаблона
+    /// Чистый старт: если фронтов нет совсем — создаёт фронт по выбору из визарда
+    /// (Setup:FrontChoice/FrontPath/FrontEngineId): стартовый шаблон (default/landing/...)
+    /// или подключение существующей папки с шаблонами; без выбора — дефолтный шаблон.
     /// </summary>
-    public static void EnsureDefaultFront(this IServiceProvider services)
+    public static void EnsureDefaultFront(this IServiceProvider services, IConfiguration configuration)
     {
         if (MarsStartupInfo.IsTesting) return;
 
@@ -51,23 +54,52 @@ public static class AppFrontMigration //TODO: аотом убрать
         var option = optionService.GetOption<FrontsOption>();
         if (option.Fronts.Count != 0) return;
 
-        const string slug = FrontTemplateService.DefaultTemplateName;
+        // визард: существующая папка с шаблонами (путь + движок)
+        var frontPath = configuration["Setup:FrontPath"];
+        if (!string.IsNullOrWhiteSpace(frontPath))
+        {
+            var folderName = Path.GetFileName(Path.TrimEndingDirectorySeparator(frontPath));
+            var engineId = configuration["Setup:FrontEngineId"];
+
+            option.Fronts.Add(new FrontItem
+            {
+                Slug = MakeSlug(folderName, []),
+                Title = folderName,
+                Url = "",
+                Path = frontPath,
+                EngineId = string.IsNullOrWhiteSpace(engineId) ? FrontItem.HandlebarsEngine : engineId,
+                Enabled = true,
+            });
+            optionService.SaveOption(option);
+
+            Console.WriteLine($"AppFront: attached existing front folder '{frontPath}'");
+            return;
+        }
+
+        // визард: стартовый шаблон (фолбек на default, если выбранного нет)
+        var templateService = services.GetRequiredService<FrontTemplateService>();
+        var templateName = configuration["Setup:FrontChoice"];
+        if (string.IsNullOrWhiteSpace(templateName)
+            || templateName == SetupService.ExistingFrontChoice
+            || !Directory.Exists(templateService.GetTemplatePath(templateName)))
+        {
+            templateName = FrontTemplateService.DefaultTemplateName;
+        }
 
         try
         {
-            var templateService = services.GetRequiredService<FrontTemplateService>();
-            templateService.CreateFrontFromTemplate(slug);
+            templateService.CreateFrontFromTemplate(templateName, templateName);
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"AppFront: create default front '{slug}' failed: {ex.Message}");
+            Console.Error.WriteLine($"AppFront: create front from template '{templateName}' failed: {ex.Message}");
             return;
         }
 
         option.Fronts.Add(new FrontItem
         {
-            Slug = slug,
-            Title = slug,
+            Slug = templateName,
+            Title = templateName,
             Url = "",
             Path = "",
             EngineId = FrontItem.HandlebarsEngine,
@@ -75,7 +107,7 @@ public static class AppFrontMigration //TODO: аотом убрать
         });
         optionService.SaveOption(option);
 
-        Console.WriteLine($"AppFront: created default front '{slug}' from starter template");
+        Console.WriteLine($"AppFront: created front '{templateName}' from starter template");
     }
 
     internal static FrontsOption MapToOption(IReadOnlyCollection<LegacyAppFrontCfg> items)

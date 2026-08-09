@@ -1,0 +1,43 @@
+@page "/"
+
+<header class="hero">
+    <div class="container hero-inner">
+        <h1>{{{SysOptions.SiteName}}}</h1>
+        <p class="lead">{{{SysOptions.SiteDescription}}}</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="#features">Возможности</a>
+            <a class="btn btn-ghost" href="/dev">Админ-панель</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section id="features" class="container features">
+        <div class="feature-card">
+            <h3>Визуальные сценарии</h3>
+            <p>Собирайте автоматизации из нод: HTTP, MQTT, файлы, SQL, планировщик — без кода.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Гибкий контент</h3>
+            <p>Типы контента, метаполя, категории и меню — модель данных под вашу задачу.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Headless API</h3>
+            <p>Отдавайте данные по REST любому клиенту: веб, мобильные приложения, IoT-устройства.</p>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Готовы начать?</h2>
+            <p>Добавьте контент через админ-панель и отредактируйте этот лендинг в редакторе фронтов.</p>
+            <a class="btn btn-primary" href="/dev">Открыть админ-панель</a>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <span>{{{SysOptions.SiteName}}} · работает на <a href="https://github.com/mdimai666/Mars" target="_blank">Mars</a></span>
+    </div>
+</footer>

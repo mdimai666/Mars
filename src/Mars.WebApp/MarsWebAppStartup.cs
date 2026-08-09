@@ -146,7 +146,7 @@ public static class MarsWebAppStartup
         app.Services.UseMarsOptions();
         app.Services.SeedData(builder.Configuration, _logger, migrated);
         app.Services.MigrateAppFrontToOption(builder.Configuration);
-        app.Services.EnsureDefaultFront();
+        app.Services.EnsureDefaultFront(builder.Configuration);
         app.Services.GetRequiredService<IFrontManager>();
         app.ApplyPluginMigrations();
 

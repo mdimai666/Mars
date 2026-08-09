@@ -54,9 +54,11 @@
             Mode — строка с именем значения старого перечисления AppFrontMode.
             </summary>
         </member>
-        <member name="M:Mars.Services.AppFrontMigration.EnsureDefaultFront(System.IServiceProvider)">
+        <member name="M:Mars.Services.AppFrontMigration.EnsureDefaultFront(System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Чистый старт: если фронтов нет совсем — создаёт дефолтный фронт из стартового шаблона
+            Чистый старт: если фронтов нет совсем — создаёт фронт по выбору из визарда
+            (Setup:FrontChoice/FrontPath/FrontEngineId): стартовый шаблон (default/landing/...)
+            или подключение существующей папки с шаблонами; без выбора — дефолтный шаблон.
             </summary>
         </member>
         <member name="T:Mars.Services.FrontFilesService">
@@ -155,6 +157,21 @@
         <member name="T:Mars.Services.ImageProcessor">
             <summary>
             Singletone.
+            </summary>
+        </member>
+        <member name="F:Mars.Setup.SetupService.ExistingFrontChoice">
+            <summary>
+            Значение выбора фронта в визарде: существующая папка с шаблонами (путь + движок).
+            </summary>
+        </member>
+        <member name="P:Mars.Setup.SetupService.FrontChoice">
+            <summary>
+            Выбор фронта: имя стартового шаблона (default/landing/...) или <see cref="F:Mars.Setup.SetupService.ExistingFrontChoice"/>.
+            </summary>
+        </member>
+        <member name="M:Mars.Setup.SetupService.GetAvailableFrontTemplates">
+            <summary>
+            Доступные стартовые шаблоны фронтов (папки в Res/front_templates, кроме служебного admin).
             </summary>
         </member>
         <member name="M:Mars.UseStartup.StartupFront.FrontStaticFilesMiddleware(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">

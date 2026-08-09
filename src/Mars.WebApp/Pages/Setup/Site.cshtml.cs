@@ -1,4 +1,6 @@
+using Mars.Services;
 using Mars.Setup;
+using Mars.Shared.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -21,15 +23,27 @@ public class SiteModel : PageModel
     public string LoggingLevel { get; set; } = "Information";
 
     [BindProperty]
-    public string AppFrontMode { get; set; } = "HandlebarsTemplate";
+    public string FrontChoice { get; set; } = FrontTemplateService.DefaultTemplateName;
 
     [BindProperty]
-    public string AppFrontStaticPath { get; set; } = "../client";
+    public string FrontPath { get; set; } = "";
+
+    [BindProperty]
+    public string FrontEngineId { get; set; } = FrontItem.HandlebarsEngine;
+
+    public IReadOnlyList<string> AvailableTemplates { get; private set; } = [];
 
     public SiteModel(SetupService setupService)
     {
         _setupService = setupService;
     }
+
+    public static string TemplateTitle(string name) => name switch
+    {
+        FrontTemplateService.DefaultTemplateName => "Базовый сайт",
+        FrontTemplateService.LandingTemplateName => "Лендинг",
+        _ => name,
+    };
 
     public IActionResult OnGet()
     {
@@ -45,21 +59,32 @@ public class SiteModel : PageModel
         SiteName = _setupService.SiteName;
         SiteDescription = _setupService.SiteDescription;
         LoggingLevel = _setupService.LoggingLevel;
-        AppFrontMode = _setupService.AppFrontMode;
-        AppFrontStaticPath = _setupService.AppFrontStaticPath;
+        FrontChoice = _setupService.FrontChoice;
+        FrontPath = _setupService.FrontPath;
+        FrontEngineId = _setupService.FrontEngineId;
+        AvailableTemplates = _setupService.GetAvailableFrontTemplates();
 
         return Page();
     }
 
     public IActionResult OnPost()
     {
+        AvailableTemplates = _setupService.GetAvailableFrontTemplates();
+
+        if (FrontChoice == SetupService.ExistingFrontChoice && string.IsNullOrWhiteSpace(FrontPath))
+        {
+            ModelState.AddModelError(nameof(FrontPath), "Укажите путь к папке с шаблонами");
+            return Page();
+        }
+
         // Save to service
         _setupService.SiteUrl = SiteUrl?.TrimEnd('/') ?? "";
         _setupService.SiteName = SiteName ?? "Mars";
         _setupService.SiteDescription = SiteDescription ?? "";
         _setupService.LoggingLevel = LoggingLevel ?? "Information";
-        _setupService.AppFrontMode = AppFrontMode ?? "HandlebarsTemplate";
-        _setupService.AppFrontStaticPath = AppFrontStaticPath ?? "../client";
+        _setupService.FrontChoice = FrontChoice ?? FrontTemplateService.DefaultTemplateName;
+        _setupService.FrontPath = FrontPath?.Trim() ?? "";
+        _setupService.FrontEngineId = string.IsNullOrWhiteSpace(FrontEngineId) ? FrontItem.HandlebarsEngine : FrontEngineId;
 
         return RedirectToPage("/setup/user");
     }

@@ -7,6 +7,7 @@ using Mars.Integration.Tests.Attributes;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebSiteProcessor.Handlebars.TemplateData;
+using Mars.WebSiteProcessor.Interfaces;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,9 +25,9 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
         _fixture.Customize(new FixtureCustomize());
         _ = nameof(WebFilesReadFilesystemService);
         _ = nameof(WebTemplateService.ScanSite);
-        var app = AppFixture.ServiceProvider.GetRequiredService<IMarsAppProvider>();
+        var app = AppFixture.ServiceProvider.GetRequiredService<IWebRenderEngineLocator>().GetAppFrontForUrl("/")!;
         _webTemplateService = Substitute.For<IWebTemplateService>();
-        app.FirstApp.Features.Set<IWebTemplateService>(_webTemplateService);
+        app.Features.Set<IWebTemplateService>(_webTemplateService);
     }
 
     WebSiteTemplate EmptyWebSiteTemplate(string indexContent, WebPartSource[]? parts = null) =>

@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Mappings.NavMenus;
+using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Services;
@@ -22,34 +23,31 @@ namespace Mars.Controllers;
 [AllExceptionCatchToUserActionResultFilter]
 public class FrontController : ControllerBase
 {
-    private readonly IMarsAppProvider _marsAppProvider;
-    private readonly IFrontManager _frontManager;
     private readonly FrontTemplateService _frontTemplateService;
     private readonly FrontFilesService _frontFilesService;
     private readonly IWebRenderEngineLocator _renderEngineLocator;
     private readonly IOptionService _optionService;
 
     public FrontController(
-        IMarsAppProvider MarsAppProvider,
-        IFrontManager frontManager,
         FrontTemplateService frontTemplateService,
         FrontFilesService frontFilesService,
         IWebRenderEngineLocator renderEngineLocator,
         IOptionService optionService)
     {
-        _marsAppProvider = MarsAppProvider;
-        _frontManager = frontManager;
         _frontTemplateService = frontTemplateService;
         _frontFilesService = frontFilesService;
         _renderEngineLocator = renderEngineLocator;
         _optionService = optionService;
     }
 
+    MarsAppFront FirstApp() => _renderEngineLocator.GetAppFrontForUrl("/")
+        ?? throw new NotFoundException("Default front not found");
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public FMarsAppFrontTemplateMinimumResponse FrontMinimal()
     {
-        var app = _marsAppProvider.FirstApp;
+        var app = FirstApp();
         var ts = app.Features.Get<IWebTemplateService>();
 
         return ts.Template.ToMinimumResponse();
@@ -59,7 +57,7 @@ public class FrontController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public FMarsAppFrontTemplateSummaryResponse FrontFiles()
     {
-        var app = _marsAppProvider.FirstApp;
+        var app = FirstApp();
         var ts = app.Features.Get<IWebTemplateService>();
 
         return ts.Template.ToSummaryResponse();
@@ -69,12 +67,12 @@ public class FrontController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public FrontSummaryInfoResponse FrontSummaryInfo()
     {
-        var app = _marsAppProvider.FirstApp;
+        var app = FirstApp();
         var ts = app.Features.Get<IWebTemplateService>();
 
         return new FrontSummaryInfoResponse
         {
-            Mode = app.Configuration.Mode,
+            EngineId = app.Front?.EngineId ?? "",
             PagesCount = ts.Template.Pages.Count,
             PartsCount = ts.Template.Parts.Count,
         };
@@ -86,7 +84,7 @@ public class FrontController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public FWebPartResponse? GetPart(string fileRelPath)
     {
-        var app = _marsAppProvider.FirstApp;
+        var app = FirstApp();
         var ts = app.Features.Get<IWebTemplateService>();
 
         var page = ts.Template.Pages.FirstOrDefault(x => x.FileRelPath == fileRelPath);

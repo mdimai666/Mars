@@ -141,7 +141,6 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
         {
             Url = front.Url,
             Path = frontManager.ResolvePhysicalPath(front),
-            Mode = AppFrontMode.HandlebarsTemplateStatic,
         };
 
         var appFront = new MarsAppFront

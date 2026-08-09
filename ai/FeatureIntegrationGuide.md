@@ -213,8 +213,7 @@ E2E — `tests/Mars.E2E.Tests` (Playwright + Testcontainers), см. `ai/E2ETesti
 - **Движки рендера** — реестр `IWebRenderEngineFactory` в DI (`IEnumerable<>`); кэш созданных движков
   per-front — `IWebRenderEngineLocator` (инвалидируется по `FrontManager.Changed`). Плагин добавляет
   свой движок регистрацией фабрики — см. `ai/PluginCreationGuide.md` (раздел «Custom Front Render Engine»).
-- **`IMarsAppProvider`** — легаси-фасад над `IFrontManager`/`IWebRenderEngineLocator` для старых
-  потребителей (ноды RenderPage, PageRenderController, CLI). Новому коду использовать
+  Потребители (ноды RenderPage, PageRenderController, CLI) резолвят фронт через
   `IFrontManager`/`IWebRenderEngineLocator` напрямую.
 - Пайплайн: статика `<front>/wwwroot` раздаётся middleware в `StartupFront` (MapFallback имеет
   ограничение `:nonfile`), рендер — `app.MapFallback` → `IWebSiteProcessor.Response`.

@@ -37,7 +37,6 @@ public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
 
         return [
             new AppFrontSettingsCfg(){
-                Mode = AppFrontMode.HandlebarsTemplateStatic,
                 Path = themeRoot,
                 Url = ""
             }

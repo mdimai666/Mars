@@ -8,6 +8,7 @@ using Mars.Host.Shared.Services;
 using Mars.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Renders;
+using Mars.WebSiteProcessor.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Controllers;
@@ -22,12 +23,12 @@ namespace Mars.Controllers;
 public class PageRenderController : ControllerBase
 {
     private readonly IPageRenderService _pageRenderService;
-    private readonly IMarsAppProvider _marsAppProvider;
+    private readonly IWebRenderEngineLocator _renderEngineLocator;
 
-    public PageRenderController(IPageRenderService pageRenderService, IMarsAppProvider marsAppProvider)
+    public PageRenderController(IPageRenderService pageRenderService, IWebRenderEngineLocator renderEngineLocator)
     {
         _pageRenderService = pageRenderService;
-        _marsAppProvider = marsAppProvider;
+        _renderEngineLocator = renderEngineLocator;
     }
 
     [HttpGet("by-id/{id:guid}")]
@@ -70,7 +71,8 @@ public class PageRenderController : ControllerBase
         MarsAppFront app;
         if (string.IsNullOrWhiteSpace(frontSlug))
         {
-            app = _marsAppProvider.FirstApp;
+            app = _renderEngineLocator.GetAppFrontForUrl("/")
+                ?? throw new NotFoundException("Default front not found");
         }
         else
         {
@@ -79,7 +81,8 @@ public class PageRenderController : ControllerBase
             if (string.Equals(frontSlug, FrontManager.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
                 throw new NotFoundException($"Front '{frontSlug}' not found");
 
-            app = _marsAppProvider.GetAppBySlug(frontSlug);
+            app = _renderEngineLocator.GetAppFrontBySlug(frontSlug)
+                ?? throw new NotFoundException($"Front '{frontSlug}' not found");
         }
         HttpContext.Items.TryAdd(nameof(MarsAppFront), app);
     }

@@ -1,4 +1,3 @@
-using Mars.Core.Models;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.Renders;
 using Mars.Host.Shared.Models;
@@ -133,18 +132,11 @@ internal class PageRenderService : IPageRenderService
         ArgumentNullException.ThrowIfNull(af, nameof(af));
         if (IsRenderNotSupport(af)) return RenderNotSupportError();
 
-        if (af.Configuration.Mode is AppFrontMode.None or AppFrontMode.HandlebarsTemplate or AppFrontMode.HandlebarsTemplateStatic)
-        {
-            if (post is null)
-                return await RenderPage404(httpContext, cancellationToken);
+        if (post is null)
+            return await RenderPage404(httpContext, cancellationToken);
 
-            var page = PostAsWebPage(post);
-            return await RenderPage(page, httpContext, null, cancellationToken);
-        }
-        else
-        {
-            throw new NotImplementedException("resolve page by Id not implement");
-        }
+        var page = PostAsWebPage(post);
+        return await RenderPage(page, httpContext, null, cancellationToken);
     }
 
     public async Task<RenderActionResult<PostRenderDto>> RenderPostById(Guid postId, HttpContext httpContext, CancellationToken cancellationToken)
@@ -163,21 +155,12 @@ internal class PageRenderService : IPageRenderService
         ArgumentNullException.ThrowIfNull(af, nameof(af));
         if (IsRenderNotSupport(af)) return RenderNotSupportError();
 
-        if (af.Configuration.Mode is AppFrontMode.None or AppFrontMode.HandlebarsTemplate or AppFrontMode.HandlebarsTemplateStatic)
+        var page = PostAsWebPage(post);
+        if (page is null)
         {
-            var page = PostAsWebPage(post);
-            if (page is null)
-            {
-                return await RenderPage404(httpContext, cancellationToken);
-            }
-            return await RenderPage(page, httpContext, null, cancellationToken);
-
+            return await RenderPage404(httpContext, cancellationToken);
         }
-        else
-        {
-            throw new NotImplementedException("resolve page by Id not implement");
-        }
-
+        return await RenderPage(page, httpContext, null, cancellationToken);
     }
 
     private WebPage PostAsWebPage(PostDetail post)

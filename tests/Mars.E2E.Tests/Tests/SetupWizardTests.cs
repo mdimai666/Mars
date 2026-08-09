@@ -88,7 +88,7 @@ public class SetupWizardTests : BaseE2ETests
         await Page.FillAsync("input[name='SiteUrl']", "http://localhost:5000");
         await Page.FillAsync("input[name='SiteName']", "Test Mars");
         await Page.FillAsync("textarea[name='SiteDescription']", "Test site description");
-        // Leave defaults for LoggingLevel and AppFrontMode
+        // Leave defaults for LoggingLevel and front mode
 
         // Click "Далее" — redirect to user page
         await Page.ClickAsync("button:has-text('Далее')");

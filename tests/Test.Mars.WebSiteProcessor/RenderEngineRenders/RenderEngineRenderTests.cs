@@ -66,7 +66,6 @@ public class RenderEngineRenderTests
         {
             Configuration = new AppFrontSettingsCfg()
             {
-                Mode = AppFrontMode.None,
                 Path = "",
             },
             Features = new()

@@ -53,7 +53,6 @@ v1
         {
             Path = path,
             Url = "",
-            Mode = AppFrontMode.HandlebarsTemplateStatic,
         },
     };
 

@@ -5,10 +5,10 @@ using Mars.Host.Handlers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Integration.Tests.Attributes;
-using Mars.Shared.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.UseStartup;
 using Mars.WebSiteProcessor.Blazor;
+using Mars.WebSiteProcessor.Interfaces;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,30 +23,13 @@ public class BlazorAppFrontTests : BaseAppFrontTests<BlazorAppFrontApplicationFi
     public BlazorAppFrontTests(BlazorAppFrontApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
-        var optionService = appFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        var front = optionService.GetOption<FrontOptions>();
-        front.HostItems[0].HostHtml = RootHtml;
-        optionService.SaveOption(front);
 
         _ = nameof(StartupFront);
         _ = nameof(BlazorWebRenderEngine);
         _ = nameof(WebTemplateService.ScanSite);
-        var app = AppFixture.ServiceProvider.GetRequiredService<IMarsAppProvider>();
-        app.FirstApp.Features.Get<IWebTemplateService>().ScanSite();
+        var app = AppFixture.ServiceProvider.GetRequiredService<IWebRenderEngineLocator>().GetAppFrontForUrl("/")!;
+        app.Features.Get<IWebTemplateService>().ScanSite();
     }
-
-    const string RootHtml = """
-        <!DOCTYPE html>
-        <html lang="ru">
-        <head>
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            </head>
-        <body>
-            @Body
-        </body>
-        </html>
-        """;
 
     [IntegrationFact(Skip = "Blazor-рендер отложен — движок не регистрируется до отдельной задачи")]
     public async Task Basic_IndexPage_ShouldOk()

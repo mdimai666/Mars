@@ -30,7 +30,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
     public virtual void Setup()
     {
-        if (AppFront.Configuration.Mode == Mars.Core.Models.AppFrontMode.HandlebarsTemplateStatic && string.IsNullOrEmpty(AppFront.Configuration.Path))
+        if (string.IsNullOrEmpty(AppFront.Configuration.Path))
         {
             throw new ArgumentNullException("cfg: AppFront.Path");
         }

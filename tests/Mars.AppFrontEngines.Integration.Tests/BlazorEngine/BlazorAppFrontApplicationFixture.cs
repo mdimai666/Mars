@@ -37,7 +37,6 @@ public class BlazorAppFrontApplicationFixture : ApplicationFixture
 
         return [
             new AppFrontSettingsCfg(){
-                Mode = AppFrontMode.BlazorPrerender,
                 Path = themeRoot,
                 Url = ""
             }

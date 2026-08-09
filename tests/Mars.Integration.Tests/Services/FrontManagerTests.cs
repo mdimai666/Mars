@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Mars.Core.Models;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Services;
@@ -146,14 +145,14 @@ public class FrontManagerTests
     [Fact]
     public void MapToOption_MigratesOnlyHandlebarsModes()
     {
-        var cfg = new AppFrontSettingsCfg[]
+        var cfg = new AppFrontMigration.LegacyAppFrontCfg[]
         {
-            new() { Mode = AppFrontMode.HandlebarsTemplateStatic, Path = @"C:\tpl", Url = "" },
-            new() { Mode = AppFrontMode.HandlebarsTemplate, Path = "", Url = "/app2" },
-            new() { Mode = AppFrontMode.None, Path = "", Url = "/none" },
-            new() { Mode = AppFrontMode.ServeStaticBlazor, Path = "", Url = "/blazor" },
-            new() { Mode = AppFrontMode.BlazorPrerender, Path = "", Url = "/prerender" },
-            new() { Mode = AppFrontMode.HandlebarsTemplateStatic, Path = "", Url = "/app2" },
+            new() { Mode = "HandlebarsTemplateStatic", Path = @"C:\tpl", Url = "" },
+            new() { Mode = "HandlebarsTemplate", Path = "", Url = "/app2" },
+            new() { Mode = "None", Path = "", Url = "/none" },
+            new() { Mode = "ServeStaticBlazor", Path = "", Url = "/blazor" },
+            new() { Mode = "BlazorPrerender", Path = "", Url = "/prerender" },
+            new() { Mode = "HandlebarsTemplateStatic", Path = "", Url = "/app2" },
         };
 
         var option = AppFrontMigration.MapToOption(cfg);

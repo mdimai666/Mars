@@ -52,7 +52,6 @@
         <Content Remove="compilerconfig.json" />
         <Content Remove="Pages\DisplayFF1.razor" />
         <Content Remove="Pages\EditFF1.razor" />
-        <Content Remove="Pages\_Host.cshtml" />
     </ItemGroup>
     <ItemGroup>
         <None Include="compilerconfig.json" />

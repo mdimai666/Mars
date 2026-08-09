@@ -48,18 +48,23 @@ public class InfoCommand : CommandCli
         Console.WriteLine("EnvMode = " + env.EnvironmentName);
         try
         {
-            var appProvider = sp.GetRequiredService<IMarsAppProvider>();
-            if (appProvider.SetupMultiApps)
+            var fronts = sp.GetRequiredService<IFrontManager>().Fronts.Where(s => s.Enabled).ToList();
+            if (fronts.Count > 1)
             {
                 Console.WriteLine("App fronts:");
-                foreach (var af in appProvider.Apps.Values)
+                foreach (var front in fronts)
                 {
-                    Console.WriteLine($"[\"{af.Configuration.Url}\", {af.Configuration.Mode}] {af.Configuration.Path}");
+                    Console.WriteLine($"[\"{(string.IsNullOrEmpty(front.Url) ? "/" : front.Url)}\", {front.EngineId}] {front.Slug}");
                 }
+            }
+            else if (fronts.Count == 1)
+            {
+                var front = fronts[0];
+                Console.WriteLine($"Front = '{front.Slug}' ({front.EngineId})");
             }
             else
             {
-                Console.WriteLine("Mode = " + appProvider.FirstApp.Configuration.Mode);
+                Console.WriteLine("App fronts: нет включённых");
             }
         }
         catch (Exception ex)

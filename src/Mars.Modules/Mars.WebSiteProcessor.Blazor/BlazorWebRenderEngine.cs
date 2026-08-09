@@ -25,41 +25,14 @@ public class BlazorWebRenderEngine : HandlebarsWebRenderEngine, IWebRenderEngine
 
     public override void Setup()
     {
-        var appFrontConfig = AppFront.Configuration;
-        var mode = appFrontConfig.Mode;
-
         ArgumentException.ThrowIfNullOrEmpty(AppFront.Configuration.Path, "configured theme path is null or empty");
 
         if (!Directory.Exists(AppFront.Configuration.Path))
             throw new DirectoryNotFoundException($"configured theme dir not exist '{AppFront.Configuration.Path}'");
 
-        if (mode == AppFrontMode.ServeStaticBlazor)
-        {
-
-        }
-        else if (mode == AppFrontMode.BlazorPrerender)
-        {
-            var appDll = DetermineAppRuntimeDllName(AppFront.Configuration.Path);
-            var dllPath = Path.Combine(AppFront.Configuration.Path, appDll);
-            var asm = BlazorRuntimeExtensions.AddBlazorWebAssemblyRuntime(dllPath);
-
-            var rootNamespace = asm.GetName().Name!;
-
-            var appType = asm.GetType(rootNamespace + ".App") ?? throw new ArgumentNullException($"on tempalte '{dllPath}' not found 'App.cs' type");
-
-            //Set IsPrerender
-            //FieldInfo? piShared = appType.GetField("IsPrerender");
-            //piShared?.SetValue(null, true);
-
-            AppFront.Features.Set<AppFrontBlazorAsm>(new() { AppType = appType, FilesPath = AppFront.Configuration.Path });
-
-            //AppFrontBlazorInstance.AppType = appType;
-            //AppSharedSettings.Program = programType;
-        }
-        else
-        {
-            throw new NotImplementedException();
-        }
+        // Движок заморожен до задачи по Blazor-рендеру: раньше подрежим
+        // (статика/пререндер) брался из удалённого AppFrontMode.
+        throw new NotSupportedException("Blazor render engine is under rework");
     }
 
     public override string RenderPage(RenderEngineRenderRequestContext renderContext, IServiceProvider serviceProvider, CancellationToken cancellationToken)

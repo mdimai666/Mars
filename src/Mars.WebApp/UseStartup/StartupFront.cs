@@ -15,7 +15,6 @@ public static class StartupFront
 {
     public static WebApplicationBuilder AddFront(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<IMarsAppProvider, MarsAppProvider>();
         builder.Services.AddSingleton<IFrontManager, FrontManager>();
         builder.Services.AddSingleton<FrontTemplateService>();
         builder.Services.AddSingleton<FrontFilesService>();

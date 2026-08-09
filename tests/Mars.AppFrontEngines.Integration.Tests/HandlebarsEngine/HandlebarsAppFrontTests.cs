@@ -18,7 +18,6 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
         _fixture.Customize(new FixtureCustomize());
         _ = nameof(WebFilesReadFilesystemService);
         _ = nameof(WebTemplateService.ScanSite);
-        var app = AppFixture.ServiceProvider.GetRequiredService<IMarsAppProvider>();
     }
 
     [IntegrationFact]

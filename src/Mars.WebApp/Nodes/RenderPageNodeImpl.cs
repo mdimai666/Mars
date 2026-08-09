@@ -6,6 +6,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Host.Shared;
 using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.WebApp.Nodes.Nodes;
+using Mars.WebSiteProcessor.Interfaces;
 
 namespace Mars.Nodes;
 
@@ -28,17 +29,16 @@ public class RenderPageNodeImpl : INodeImplement<RenderPageNode>
         if (http == null) throw new ArgumentNullException(nameof(http) + ":HttpInNodeHttpRequestContext");
 
         var processor = RNS.ServiceProvider.GetRequiredService<IWebSiteProcessor>();
-        var appProvider = RNS.ServiceProvider.GetRequiredService<IMarsAppProvider>();
+        var renderEngineLocator = RNS.ServiceProvider.GetRequiredService<IWebRenderEngineLocator>();
 
-        MarsAppFront af = appProvider.GetAppForUrl("/");
+        MarsAppFront af = renderEngineLocator.GetAppFrontForUrl("/")
+            ?? throw new InvalidOperationException("Фронт для url '/' не найден. Проверьте FrontsOption (настройки фронтов).");
 
         http.HttpContext.Items.Add(nameof(MarsAppFront), af);
 
         WebPage page = WebPage.Blank(input.Payload?.ToString() ?? "");
 
         var render = await processor.RenderPage(page, http.HttpContext, new() { UseCache = false }, default);
-
-        //var resolvedPage = processor.ResolveUrl("/url", http.HttpContext, RNS.ServiceProvider);
 
         input.Payload = render.html;
         callback(input);

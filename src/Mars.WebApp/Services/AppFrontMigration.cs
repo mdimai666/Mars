@@ -1,5 +1,4 @@
 using System.Text;
-using Mars.Core.Models;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Options;
 using Mars.UseStartup;
@@ -14,6 +13,17 @@ namespace Mars.Services;
 /// </summary>
 public static class AppFrontMigration //TODO: аотом убрать
 {
+    /// <summary>
+    /// Легаси-запись секции "AppFront" из appsettings (до FrontsOption).
+    /// Mode — строка с именем значения старого перечисления AppFrontMode.
+    /// </summary>
+    internal class LegacyAppFrontCfg
+    {
+        public string Path { get; set; } = "";
+        public string Url { get; set; } = "";
+        public string? Mode { get; set; }
+    }
+
     public static void MigrateAppFrontToOption(this IServiceProvider services, IConfiguration configuration)
     {
         var optionService = services.GetRequiredService<IOptionService>();
@@ -68,7 +78,7 @@ public static class AppFrontMigration //TODO: аотом убрать
         Console.WriteLine($"AppFront: created default front '{slug}' from starter template");
     }
 
-    internal static FrontsOption MapToOption(IReadOnlyCollection<AppFrontSettingsCfg> items)
+    internal static FrontsOption MapToOption(IReadOnlyCollection<LegacyAppFrontCfg> items)
     {
         var option = new FrontsOption();
         var takenSlugs = new List<string>();
@@ -77,8 +87,9 @@ public static class AppFrontMigration //TODO: аотом убрать
         {
             if (cfg is null) continue;
 
-            // Blazor-режимы (ServeStaticBlazor/BlazorPrerender) не мигрируются — Blazor-рендер это отдельная задача
-            if (cfg.Mode is not (AppFrontMode.HandlebarsTemplate or AppFrontMode.HandlebarsTemplateStatic))
+            // None и Blazor-режимы (ServeStaticBlazor/BlazorPrerender) не мигрируются —
+            // это режимы старого рендера, Blazor-рендер это отдельная задача
+            if (!IsHandlebarsMode(cfg.Mode))
                 continue;
 
             var slug = MakeSlug(cfg.Url, takenSlugs);
@@ -97,6 +108,11 @@ public static class AppFrontMigration //TODO: аотом убрать
 
         return option;
     }
+
+    static bool IsHandlebarsMode(string? mode)
+        => string.IsNullOrWhiteSpace(mode)
+        || mode.Equals("HandlebarsTemplate", StringComparison.OrdinalIgnoreCase)
+        || mode.Equals("HandlebarsTemplateStatic", StringComparison.OrdinalIgnoreCase);
 
     internal static string MakeSlug(string? url, IReadOnlyCollection<string> takenSlugs)
     {
@@ -122,7 +138,7 @@ public static class AppFrontMigration //TODO: аотом убрать
         return result;
     }
 
-    static AppFrontSettingsCfg[] ReadConfig(IConfiguration configuration)
+    static LegacyAppFrontCfg[] ReadConfig(IConfiguration configuration)
     {
         var section = configuration.GetSection("AppFront");
         if (!section.Exists()) return [];
@@ -130,7 +146,7 @@ public static class AppFrontMigration //TODO: аотом убрать
         var rootElementHasModeField = section.GetValue<string?>("Mode") is not null;
 
         return rootElementHasModeField
-            ? [section.Get<AppFrontSettingsCfg>()!]
-            : section.Get<AppFrontSettingsCfg[]>() ?? [];
+            ? [section.Get<LegacyAppFrontCfg>()!]
+            : section.Get<LegacyAppFrontCfg[]>() ?? [];
     }
 }

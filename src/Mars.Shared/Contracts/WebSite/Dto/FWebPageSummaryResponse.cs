@@ -1,4 +1,3 @@
-using Mars.Core.Models;
 using Mars.Shared.Contracts.WebSite.Models;
 
 namespace Mars.Shared.Contracts.WebSite.Dto;
@@ -57,7 +56,7 @@ public record FWebPageResponse : FWebPartResponse
 
 public record FrontSummaryInfoResponse
 {
-    public required AppFrontMode Mode { get; init; }
+    public required string EngineId { get; init; }
     public required int PagesCount { get; init; }
     public required int PartsCount { get; init; }
 }

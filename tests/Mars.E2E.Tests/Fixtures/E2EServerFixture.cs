@@ -13,6 +13,7 @@ using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
+using Mars.WebSiteProcessor.Interfaces;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -176,7 +177,8 @@ public class E2EServerFixture : IAsyncLifetime
 
     public async Task WarmupRenderer()
     {
-        var af = ServiceProvider.GetRequiredService<IMarsAppProvider>().FirstApp;
+        var af = ServiceProvider.GetRequiredService<IWebRenderEngineLocator>().GetAppFrontForUrl("/")
+            ?? throw new InvalidOperationException("Front for url '/' not found");
         var tsv = af.Features.Get<IWebTemplateService>();
         var processor = new WebSiteRequestProcessor(ServiceProvider, tsv.Template);
         await processor.RenderPage(af, new WebClientRequest(new Uri(BaseUrl)), tsv.Template.IndexPage, new(), default);

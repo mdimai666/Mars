@@ -12,4 +12,9 @@ public interface IMarsAppProvider //TODO: придумать что с ним д
     public MarsAppFront FirstApp { get; }
     public bool SetupMultiApps { get; }
     public MarsAppFront GetAppForUrl(string url);
+
+    /// <summary>
+    /// MarsAppFront по slug фронта (включая специальный фронт админки и выключенные фронты).
+    /// </summary>
+    public MarsAppFront GetAppBySlug(string slug);
 }

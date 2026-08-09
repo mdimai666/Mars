@@ -48,4 +48,10 @@ public class MarsAppProvider : IMarsAppProvider
         return Locator.GetAppFrontForUrl(url)
             ?? throw new InvalidOperationException($"Фронт для url '{url}' не найден. Проверьте FrontsOption (настройки фронтов).");
     }
+
+    public MarsAppFront GetAppBySlug(string slug)
+    {
+        return Locator.GetAppFrontBySlug(slug)
+            ?? throw new InvalidOperationException($"Фронт со slug '{slug}' не найден. Проверьте FrontsOption (настройки фронтов).");
+    }
 }

@@ -1,9 +1,11 @@
 using System.Net.Mime;
 using System.Web;
+using Mars.Core.Exceptions;
 using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Mappings.Renders;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
+using Mars.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Renders;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +31,9 @@ public class PageRenderController : ControllerBase
     }
 
     [HttpGet("by-id/{id:guid}")]
-    public async Task<RenderActionResult<PostRenderResponse>> RenderById(Guid id, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> RenderById(Guid id, [FromQuery] string? frontSlug, CancellationToken cancellationToken)
     {
-        SetupAppFront();
+        SetupAppFront(frontSlug);
         return (await _pageRenderService.RenderPostById(id, HttpContext, cancellationToken)).ToResponse();
     }
 
@@ -43,29 +45,42 @@ public class PageRenderController : ControllerBase
     //}
 
     [HttpGet("by-post/{type}/{slug}")]
-    public async Task<RenderActionResult<PostRenderResponse>> RenderPost(string type, string slug, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> RenderPost(string type, string slug, [FromQuery] string? frontSlug, CancellationToken cancellationToken)
     {
-        SetupAppFront();
+        SetupAppFront(frontSlug);
         return (await _pageRenderService.RenderPostBySlug(type, slug, HttpContext, cancellationToken)).ToResponse();
     }
 
     [HttpGet("by-slug/{slug}")]
-    public async Task<RenderActionResult<PostRenderResponse>> RenderPageBySlug(string slug, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> RenderPageBySlug(string slug, [FromQuery] string? frontSlug, CancellationToken cancellationToken)
     {
-        SetupAppFront();
+        SetupAppFront(frontSlug);
         return (await _pageRenderService.RenderPageBySlug(slug, HttpContext, cancellationToken)).ToResponse();
     }
 
     [HttpGet("by-url")]
-    public async Task<RenderActionResult<PostRenderResponse>> RenderUrl([FromQuery] string url, CancellationToken cancellationToken)
+    public async Task<RenderActionResult<PostRenderResponse>> RenderUrl([FromQuery] string url, [FromQuery] string? frontSlug, CancellationToken cancellationToken)
     {
-        SetupAppFront();
+        SetupAppFront(frontSlug);
         return (await _pageRenderService.RenderUrl(HttpUtility.UrlDecode(url), HttpContext)).ToResponse();
     }
 
-    private void SetupAppFront()
+    private void SetupAppFront(string? frontSlug)
     {
-        MarsAppFront app = _marsAppProvider.FirstApp;
+        MarsAppFront app;
+        if (string.IsNullOrWhiteSpace(frontSlug))
+        {
+            app = _marsAppProvider.FirstApp;
+        }
+        else
+        {
+            // Админ-фронт рендерится только через /api/AdminFront/Render —
+            // наружу отдаём 404, чтобы не раскрывать его существование.
+            if (string.Equals(frontSlug, FrontManager.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
+                throw new NotFoundException($"Front '{frontSlug}' not found");
+
+            app = _marsAppProvider.GetAppBySlug(frontSlug);
+        }
         HttpContext.Items.TryAdd(nameof(MarsAppFront), app);
     }
 }

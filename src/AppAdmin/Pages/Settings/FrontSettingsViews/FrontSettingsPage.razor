@@ -52,6 +52,19 @@
     <EditOptionForm @ref=form TModel="FrontsOption">
 
         <div class="vstack gap-3">
+
+            <div class="card d-card-glow">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="warmupRenderOnStartup" @bind="context.WarmupRenderOnStartup" />
+                        <label class="form-check-label" for="warmupRenderOnStartup">Прогревать рендер после запуска</label>
+                    </div>
+                    <div class="text-secondary small mt-1">
+                        Первый фронт собирается сразу после старта, чтобы первый запрос был быстрее.
+                    </div>
+                </div>
+            </div>
+
             @foreach (var _front in context.Fronts)
             {
                 var front = _front;

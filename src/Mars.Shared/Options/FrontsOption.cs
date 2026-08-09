@@ -7,6 +7,12 @@ namespace Mars.Shared.Options;
 public class FrontsOption
 {
     public List<FrontItem> Fronts { get; set; } = [];
+
+    /// <summary>
+    /// Прогревать рендер после запуска приложения: первый фронт собирается заранее,
+    /// чтобы первый запрос не платил за это. По умолчанию выключено.
+    /// </summary>
+    public bool WarmupRenderOnStartup { get; set; }
 }
 
 public class FrontItem

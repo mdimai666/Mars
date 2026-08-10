@@ -215,6 +215,14 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _hub.OnStopped += HubOnStopped;
         _hub.OnError += HubOnError;
         _hub.OnPageToolRequest += HubOnPageToolRequest;
+        _hub.OnReconnected += HubOnReconnected;
+    }
+
+    private void HubOnReconnected()
+    {
+        // За время обрыва события (чанки, Done, Question) не доставлялись —
+        // перечитываем состояние чата с сервера, иначе UI останется «зависшим».
+        _ = ReloadSessionAsync();
     }
 
     private void HubOnChunk(Guid chatId, Guid runId, string text)
@@ -519,6 +527,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _hub.OnStopped -= HubOnStopped;
             _hub.OnError -= HubOnError;
             _hub.OnPageToolRequest -= HubOnPageToolRequest;
+            _hub.OnReconnected -= HubOnReconnected;
         }
 
         _dotnetRef?.Dispose();

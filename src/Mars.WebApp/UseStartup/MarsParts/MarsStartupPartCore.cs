@@ -190,7 +190,11 @@ internal static class MarsStartupPartCore
             .AddSignalR(hubOptions =>
             {
                 hubOptions.EnableDetailedErrors = true;
-                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+                // Должен быть меньше server timeout клиентов (по умолчанию 30 с и у JS, и у .NET
+                // клиента): иначе в паузах без сообщений (долгие запуски ИИ-агента, ожидание
+                // инструментов) соединения рвутся с "Server timeout elapsed without receiving
+                // a message from the server".
+                hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
             })
             .AddJsonProtocol(options =>
             {

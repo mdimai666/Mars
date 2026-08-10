@@ -64,6 +64,14 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   Защита данных — на REST-уровне (роль Admin) и изоляцией по `userId`; chatId — неугадываемый Guid.
 - Сервер настроен на `PropertyNamingPolicy = null` (`AddMarsSignalRConfiguration`) —
   клиент обязан делать так же (в `AiChatHubClient.AddJsonProtocol` уже задано).
+- Серверный `KeepAliveInterval` = 15 с (`AddMarsSignalRConfiguration`) и не должен подниматься
+  выше server timeout клиентов (по умолчанию 30 с и у JS, и у .NET клиента). При 1 минуте
+  соединения рвались в паузах без сообщений («Server timeout elapsed without receiving a message
+  from the server») — ИИ-чат зависал посреди долгого запуска.
+- `AiChatHubClient` переподключается бесконечно (экспоненциальная пауза до 30 с), при реконнекте
+  сам делает повторный `JoinChat` (новое соединение не состоит в группе чата) и поднимает
+  `OnReconnected` — терминал по нему пересинхронизирует состояние через REST (`ReloadSessionAsync`),
+  т.к. события за время обрыва не доставлялись.
 
 ### Мост «агент → открытая страница» (page bridge)
 

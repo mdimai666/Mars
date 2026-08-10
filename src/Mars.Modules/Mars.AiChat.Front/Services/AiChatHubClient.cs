@@ -18,6 +18,7 @@ public class AiChatHubClient : IAsyncDisposable
     private readonly IJSRuntime _js;
     private readonly SemaphoreSlim _lock = new(1, 1);
     private HubConnection? _connection;
+    private Guid? _joinedChatId;
 
     public event Action<Guid, Guid, string>? OnChunk;
     public event Action<Guid, Guid, string, string>? OnToolCall;
@@ -27,6 +28,13 @@ public class AiChatHubClient : IAsyncDisposable
     public event Action<Guid, Guid>? OnStopped;
     public event Action<Guid, Guid, string>? OnError;
     public event Action<Guid, AiPageToolRequest>? OnPageToolRequest;
+
+    /// <summary>
+    /// Соединение восстановлено после обрыва. Подписка на группу чата уже
+    /// восстановлена; подписчику стоит пересинхронизировать состояние по REST,
+    /// т.к. события за время обрыва не доставлялись.
+    /// </summary>
+    public event Action? OnReconnected;
 
     public AiChatHubClient(IJSRuntime js)
     {
@@ -46,7 +54,7 @@ public class AiChatHubClient : IAsyncDisposable
                     options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
                     options.AccessTokenProvider = GetAccessTokenAsync;
                 })
-                .WithAutomaticReconnect([TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30)])
+                .WithAutomaticReconnect(RetryPolicy.Instance)
                 .AddJsonProtocol(options =>
                 {
                     // сервер настроен на PropertyNamingPolicy = null (AddMarsSignalRConfiguration)
@@ -55,6 +63,26 @@ public class AiChatHubClient : IAsyncDisposable
                 .Build();
 
             RegisterHandlers(connection);
+
+            connection.Reconnected += async _ =>
+            {
+                // Новое соединение не состоит в группе чата — без повторного JoinChat
+                // события сюда приходить не будут.
+                if (_joinedChatId is { } chatId)
+                {
+                    try
+                    {
+                        await connection.InvokeAsync("JoinChat", chatId);
+                    }
+                    catch
+                    {
+                        // соединение снова оборвалось — повторит следующий реконнект
+                    }
+                }
+
+                OnReconnected?.Invoke();
+            };
+
             await connection.StartAsync();
             _connection = connection;
         }
@@ -68,6 +96,7 @@ public class AiChatHubClient : IAsyncDisposable
     {
         if (_connection is null) return;
         await _connection.InvokeAsync("JoinChat", chatId);
+        _joinedChatId = chatId;
     }
 
     public async Task LeaveChatAsync(Guid chatId)
@@ -76,6 +105,8 @@ public class AiChatHubClient : IAsyncDisposable
         try
         {
             await _connection.InvokeAsync("LeaveChat", chatId);
+            if (_joinedChatId == chatId)
+                _joinedChatId = null;
         }
         catch
         {
@@ -141,6 +172,26 @@ public class AiChatHubClient : IAsyncDisposable
         {
             await _connection.DisposeAsync();
             _connection = null;
+            _joinedChatId = null;
+        }
+    }
+
+    /// <summary>
+    /// Бесконечные переподключения с экспоненциальной паузой (до 30 с): обрыв связи
+    /// не должен навсегда «убивать» чат. Конечный список попыток приводил к тому,
+    /// что соединение умирало безвозвратно, и UI зависал в состоянии «агент работает».
+    /// </summary>
+    private sealed class RetryPolicy : IRetryPolicy
+    {
+        public static readonly RetryPolicy Instance = new();
+
+        public TimeSpan? NextRetryDelay(RetryContext retryContext)
+        {
+            if (retryContext.PreviousRetryCount == 0)
+                return TimeSpan.Zero;
+
+            var seconds = Math.Min(30, 1 << (int)Math.Min(retryContext.PreviousRetryCount, 5));
+            return TimeSpan.FromSeconds(seconds);
         }
     }
 }

@@ -2,17 +2,43 @@
 const POS_KEY = 'mars.aichat.fab.pos';
 const FAB_MARGIN = 12;
 
+// Формат позиции: { edge: 'left'|'right'|'top'|'bottom', pos: 0..1 } —
+// край + доля вдоль него. Пиксели не сохраняются: при ресайзе окна кнопка
+// остаётся у выбранного края (CSS calc делает это без JS).
 export function getFabPos() {
     try {
         const raw = localStorage.getItem(POS_KEY);
-        if (raw) return JSON.parse(raw);
+        if (!raw) return null;
+        const v = JSON.parse(raw);
+        if (v && typeof v.edge === 'string' && typeof v.pos === 'number') {
+            return { edge: v.edge, pos: clamp01(v.pos) };
+        }
+        // старый формат {x, y}: прижимаем к ближайшему краю
+        if (v && typeof v.x === 'number' && typeof v.y === 'number') {
+            return migrateXyPos(v.x, v.y);
+        }
     } catch { /* ignore */ }
     return null;
 }
 
-export function saveFabPos(x, y) {
+function migrateXyPos(x, y) {
+    const w = window.innerWidth, h = window.innerHeight;
+    const BW = 120, BH = 40; // дефолтные размеры кнопки (до первого перетаскивания)
+    const dLeft = x, dRight = w - x - BW, dTop = y, dBottom = h - y - BH;
+    const min = Math.min(dLeft, dRight, dTop, dBottom);
+    if (min === dLeft || min === dRight) {
+        return { edge: min === dLeft ? 'left' : 'right', pos: clamp01(y / Math.max(1, h - BH)) };
+    }
+    return { edge: min === dTop ? 'top' : 'bottom', pos: clamp01(x / Math.max(1, w - BW)) };
+}
+
+function clamp01(v) {
+    return Math.min(1, Math.max(0, v));
+}
+
+export function saveFabPos(edge, pos) {
     try {
-        localStorage.setItem(POS_KEY, JSON.stringify({ x, y }));
+        localStorage.setItem(POS_KEY, JSON.stringify({ edge, pos }));
     } catch { /* ignore */ }
 }
 

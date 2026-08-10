@@ -69,6 +69,14 @@ public static class StartupFront
     /// </summary>
     static async Task FrontStaticFilesMiddleware(HttpContext context, Func<Task> next)
     {
+        // системные роуты никогда не обслуживаются из wwwroot фронтов:
+        // защита от shadowing системных ассетов файлами фронтов + минус лишняя проверка на запрос
+        if (IsSystemPath(context.Request.Path))
+        {
+            await next();
+            return;
+        }
+
         try
         {
             var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
@@ -87,6 +95,20 @@ public static class StartupFront
         }
 
         await next();
+    }
+
+    static readonly string[] SystemPathPrefixes = ["/dev", "/_content", "/_framework", "/mars", "/api", "/_ws"];
+
+    static bool IsSystemPath(PathString path)
+    {
+        var value = path.Value ?? "";
+        foreach (var prefix in SystemPathPrefixes)
+        {
+            if (value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
     }
 
     static Task ApiFallbackAsync(HttpContext context)

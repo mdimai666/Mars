@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -44,14 +45,40 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     private ElementReference _messagesEl;
     private ElementReference _inputEl;
 
-    private double _fabX = double.NaN;
-    private double _fabY = double.NaN;
     private double _fabW = 120;
     private double _fabH = 40;
 
-    private string FabStyle => double.IsNaN(_fabX)
-        ? "left: calc(50% - 60px); bottom: 18px;"
-        : $"left: {_fabX:0}px; top: {_fabY:0}px;";
+    // Позиция кнопки: край + доля вдоль него (0..1). Сам край задаётся CSS-свойством
+    // (left/right/top/bottom), отступ считается через calc() от процента — при ресайзе
+    // окна кнопка остаётся у выбранного края без JS-обработчиков.
+    // _fabX/_fabY (абсолютные координаты) живут только на время перетаскивания.
+    private FabEdge? _fabEdge;
+    private double _fabPos;
+    private double _fabX = double.NaN;
+    private double _fabY = double.NaN;
+
+    private string FabStyle
+    {
+        get
+        {
+            if (!double.IsNaN(_fabX))
+                return $"left: {_fabX:0}px; top: {_fabY:0}px;";
+
+            return _fabEdge switch
+            {
+                FabEdge.Left => $"left: {FabMargin:0}px; top: {EdgeOffsetCss(_fabH)};",
+                FabEdge.Right => $"right: {FabMargin:0}px; top: {EdgeOffsetCss(_fabH)};",
+                FabEdge.Top => $"top: {FabMargin:0}px; left: {EdgeOffsetCss(_fabW)};",
+                FabEdge.Bottom => $"bottom: {FabMargin:0}px; left: {EdgeOffsetCss(_fabW)};",
+                _ => "left: calc(50% - 60px); bottom: 18px;",
+            };
+        }
+    }
+
+    // Доля свободного пространства вдоль края; max(0px, ...) не даёт уйти в минус
+    // в окне, которое меньше кнопки.
+    private string EdgeOffsetCss(double buttonSize)
+        => $"max(0px, calc({_fabPos.ToString("0.####", CultureInfo.InvariantCulture)} * (100% - {buttonSize + FabMargin:0}px)))";
 
     private string StatusText => _running
         ? "агент работает…"
@@ -73,12 +100,12 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         {
             try
             {
-                _module = await _js.InvokeAsync<IJSObjectReference>("import", "./_content/Mars.AiChat.Front/js/mars-aichat.js");
-                var pos = await _module.InvokeAsync<FabRect?>("getFabPos");
-                if (pos is not null)
+                _module = await _js.InvokeAsync<IJSObjectReference>("import", AiChatAssets.JsModuleUrl);
+                var anchor = await _module.InvokeAsync<FabAnchor?>("getFabPos");
+                if (anchor is not null)
                 {
-                    _fabX = pos.X;
-                    _fabY = pos.Y;
+                    _fabEdge = ParseFabEdge(anchor.Edge);
+                    _fabPos = Math.Clamp(anchor.Pos, 0, 1);
                     StateHasChanged();
                 }
             }
@@ -449,11 +476,10 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _fabW = start.W;
             _fabH = start.H;
 
-            if (double.IsNaN(_fabX))
-            {
-                _fabX = start.X;
-                _fabY = start.Y;
-            }
+            // drag всегда стартует от фактического rect: когда кнопка прижата к краю,
+            // в стиле нет left/top, и только rect знает, где она реально
+            _fabX = start.X;
+            _fabY = start.Y;
         }
         catch
         {
@@ -485,29 +511,71 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             x = Math.Clamp(x, FabMargin, viewport.W - _fabW - FabMargin);
             y = Math.Clamp(y, FabMargin, viewport.H - _fabH - FabMargin);
 
-            // прилипание к ближайшему краю экрана
+            // прилипание к ближайшему краю; вдоль края запоминаем долю (0..1),
+            // а не пиксели — тогда при ресайзе кнопка остаётся у своего края
             var dLeft = x;
             var dRight = viewport.W - x - _fabW;
             var dTop = y;
             var dBottom = viewport.H - y - _fabH;
 
             var min = Math.Min(Math.Min(dLeft, dRight), Math.Min(dTop, dBottom));
-            if (min == dLeft) x = FabMargin;
-            else if (min == dRight) x = viewport.W - _fabW - FabMargin;
-            else if (min == dTop) y = FabMargin;
-            else y = viewport.H - _fabH - FabMargin;
 
-            _fabX = x;
-            _fabY = y;
-            await _module!.InvokeVoidAsync("saveFabPos", x, y);
+            FabEdge edge;
+            double pos;
+            if (min == dLeft || min == dRight)
+            {
+                edge = min == dLeft ? FabEdge.Left : FabEdge.Right;
+                pos = AlongEdgeFraction(y, viewport.H - _fabH);
+            }
+            else
+            {
+                edge = min == dTop ? FabEdge.Top : FabEdge.Bottom;
+                pos = AlongEdgeFraction(x, viewport.W - _fabW);
+            }
+
+            _fabEdge = edge;
+            _fabPos = pos;
+            _fabX = double.NaN;
+            _fabY = double.NaN;
+
+            try
+            {
+                await _module!.InvokeVoidAsync("saveFabPos", FabEdgeName(edge), pos);
+            }
+            catch
+            {
+                // позиция просто не сохранится до следующего перетаскивания
+            }
         }
         catch
         {
-            // остаёмся на последней позиции
+            // вьюпорт недоступен — оставляем кнопку в точке броска
+            _fabX = x;
+            _fabY = y;
         }
 
         StateHasChanged();
     }
+
+    private static double AlongEdgeFraction(double coord, double span)
+        => span <= 0 ? 0 : Math.Clamp(coord / span, 0, 1);
+
+    private static string FabEdgeName(FabEdge edge) => edge switch
+    {
+        FabEdge.Left => "left",
+        FabEdge.Right => "right",
+        FabEdge.Top => "top",
+        _ => "bottom",
+    };
+
+    private static FabEdge? ParseFabEdge(string? edge) => edge switch
+    {
+        "left" => FabEdge.Left,
+        "right" => FabEdge.Right,
+        "top" => FabEdge.Top,
+        "bottom" => FabEdge.Bottom,
+        _ => null,
+    };
 
     private static string Truncate(string? text, int max)
     {
@@ -531,6 +599,14 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         }
 
         _dotnetRef?.Dispose();
+    }
+
+    private enum FabEdge { Left, Right, Top, Bottom }
+
+    private class FabAnchor
+    {
+        [JsonPropertyName("edge")] public string Edge { get; set; } = "";
+        [JsonPropertyName("pos")] public double Pos { get; set; }
     }
 
     private class FabRect

@@ -137,6 +137,44 @@ export function startTermDrag(dotnetRef, el, pointerId, clientX, clientY) {
     });
 }
 
+// Нативный resize держит размер в inline-style элемента — Blazor его не видит
+// и при перерисовке (или повторном открытии) размер терялся бы. Наблюдатель
+// сообщает фактический размер в C#. Первый срабатывание observe() — текущий
+// (дефолтный) размер, его не передаём, чтобы не фиксировать дефолт в пикселях.
+let termResizeObserver = null;
+export function observeTermResize(dotnetRef, el) {
+    if (termResizeObserver) {
+        termResizeObserver.disconnect();
+        termResizeObserver = null;
+    }
+
+    let first = true;
+    const ro = new ResizeObserver(() => {
+        if (first) {
+            first = false;
+            return;
+        }
+        const r = el.getBoundingClientRect();
+        dotnetRef.invokeMethodAsync('OnTermResize', r.width, r.height);
+    });
+    ro.observe(el);
+    termResizeObserver = ro;
+}
+
+// Ресайз окна браузера: терминал позиционируется в пикселях и после уменьшения
+// страницы мог остаться за экраном — сообщаем новый вьюпорт, C# вернёт окно
+// в видимую область.
+let viewportResizeHandler = null;
+export function observeViewportResize(dotnetRef) {
+    if (viewportResizeHandler) {
+        window.removeEventListener('resize', viewportResizeHandler);
+    }
+    viewportResizeHandler = () => {
+        dotnetRef.invokeMethodAsync('OnViewportResize', window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', viewportResizeHandler);
+}
+
 export function scrollToBottom(el) {
     if (el) el.scrollTop = el.scrollHeight;
 }

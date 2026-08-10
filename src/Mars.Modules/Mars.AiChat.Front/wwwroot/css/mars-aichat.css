@@ -53,7 +53,11 @@
     flex-direction: column;
     width: min(720px, 94vw);
     height: min(46vh, 480px);
-    min-height: 260px;
+    min-width: 400px;
+    min-height: 200px;
+    max-width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+    resize: both;
     background: #0d1117;
     color: #d6deeb;
     border: 1px solid #2b3442;
@@ -192,19 +196,9 @@
     border-radius: 4px;
 }
 
-.aichat-cursor {
-    display: inline-block;
-    width: 7px;
-    height: 14px;
-    background: #7ee787;
-    vertical-align: text-bottom;
-    animation: aichat-blink 1s steps(1) infinite;
-}
-
-@keyframes aichat-blink {
-    50% {
-        opacity: 0;
-    }
+.aichat-spinner {
+    color: #7ee787;
+    margin-left: 2px;
 }
 
 /* ---------- строка ввода ---------- */
@@ -212,7 +206,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    /* справа шире — угол занят нативной ручкой resize окна */
+    padding: 8px 18px 8px 12px;
     border-top: 1px solid #2b3442;
     background: #161b22;
 }

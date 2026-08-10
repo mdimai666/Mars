@@ -81,14 +81,34 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     private string EdgeOffsetCss(double buttonSize)
         => $"max(0px, calc({_fabPos.ToString("0.####", CultureInfo.InvariantCulture)} * (100% - {buttonSize + FabMargin:0}px)))";
 
-    // Позиция окна терминала живёт только в памяти: переживает свернуть/развернуть,
-    // но после перезагрузки страницы окно снова открывается внизу по центру (NaN → CSS).
+    // Позиция и размер окна терминала живут только в памяти: переживают
+    // свернуть/развернуть, но после перезагрузки страницы окно снова открывается
+    // внизу по центру (NaN → CSS). Размер запоминаем при старте перетаскивания:
+    // нативный resize держит его в inline-style, а Blazor при драге перезаписывает
+    // атрибут style целиком — без явного width/height размер бы сбрасывался.
     private double _termX = double.NaN;
     private double _termY = double.NaN;
+    private double _termW = double.NaN;
+    private double _termH = double.NaN;
+    private bool _termObserved;
 
-    private string TermStyle => double.IsNaN(_termX)
-        ? ""
-        : $"left: {_termX:0}px; top: {_termY:0}px; bottom: auto; transform: none;";
+    private string TermStyle
+    {
+        get
+        {
+            var style = "";
+            if (!double.IsNaN(_termX))
+                style += $"left: {_termX:0}px; top: {_termY:0}px; bottom: auto; transform: none; ";
+            if (!double.IsNaN(_termW))
+                style += $"width: {_termW:0}px; height: {_termH:0}px;";
+            return style;
+        }
+    }
+
+    // Индикатор «чат думает»: braille-карусель из шести точек, как в консольных утилитах.
+    private static readonly string[] SpinnerFrames = ["⣾", "⣽", "⣻", "⢿", "⡿", "⣯", "⣷"];
+    private string _spinnerFrame = SpinnerFrames[0];
+    private CancellationTokenSource? _spinnerCts;
 
     private string StatusText => _running
         ? "агент работает…"
@@ -111,6 +131,8 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             try
             {
                 _module = await _js.InvokeAsync<IJSObjectReference>("import", AiChatAssets.JsModuleUrl);
+                _dotnetRef ??= DotNetObjectReference.Create(this);
+                await _module.InvokeVoidAsync("observeViewportResize", _dotnetRef);
                 var anchor = await _module.InvokeAsync<FabAnchor?>("getFabPos");
                 if (anchor is not null)
                 {
@@ -122,6 +144,21 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             catch
             {
                 // без JS-модуля чат продолжает работать с позицией по умолчанию
+            }
+        }
+
+        // наблюдатель размера вешаем на каждый свежий элемент окна (после открытия)
+        if (_visible && !_termObserved && _module is not null)
+        {
+            _termObserved = true;
+            try
+            {
+                _dotnetRef ??= DotNetObjectReference.Create(this);
+                await _module.InvokeVoidAsync("observeTermResize", _dotnetRef, _termEl);
+            }
+            catch
+            {
+                // без наблюдателя размер просто не переживёт перерисовку
             }
         }
 
@@ -155,6 +192,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     public void Close()
     {
         _visible = false;
+        _termObserved = false; // элемент окна удалён — наблюдателя размера повесим заново
         StateHasChanged();
     }
 
@@ -205,7 +243,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
 
         var dto = await _client.AiChat.GetSession(chatId);
         _messages = dto.Messages;
-        _running = dto.IsRunning;
+        SetRunning(dto.IsRunning);
         _pendingQuestion = dto.PendingQuestion;
         _stream.Clear();
         _scrollRequested = true;
@@ -220,7 +258,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         {
             var dto = await _client.AiChat.GetSession(chatId);
             _messages = dto.Messages;
-            _running = dto.IsRunning;
+            SetRunning(dto.IsRunning);
             _pendingQuestion = dto.PendingQuestion;
             _stream.Clear();
 
@@ -395,7 +433,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _input = "";
             _pendingQuestion = null;
             _messages.Add(new AiChatMessageDto { Role = AiChatMessageRole.User, Content = text });
-            _running = true;
+            SetRunning(true);
             _stream.Clear();
             _scrollRequested = true;
         }
@@ -481,15 +519,12 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _dotnetRef ??= DotNetObjectReference.Create(this);
 
             // один вызов: JS сам берёт rect и сразу вешает слушатели на window,
-            // различая клик и перетаскивание по порогу смещения
+            // различая клик и перетаскивание по порогу смещения.
+            // Абсолютные координаты ставит только OnFabDragMove — иначе после
+            // обычного клика кнопка осталась бы «в воздухе» вместо прилипания к краю
             var start = await _module.InvokeAsync<FabRect>("startFabDrag", _dotnetRef, _fabEl, e.PointerId, e.ClientX, e.ClientY);
             _fabW = start.W;
             _fabH = start.H;
-
-            // drag всегда стартует от фактического rect: когда кнопка прижата к краю,
-            // в стиле нет left/top, и только rect знает, где она реально
-            _fabX = start.X;
-            _fabY = start.Y;
         }
         catch
         {
@@ -576,7 +611,9 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         try
         {
             _dotnetRef ??= DotNetObjectReference.Create(this);
-            await _module.InvokeVoidAsync("startTermDrag", _dotnetRef, _termEl, e.PointerId, e.ClientX, e.ClientY);
+            var start = await _module.InvokeAsync<FabRect>("startTermDrag", _dotnetRef, _termEl, e.PointerId, e.ClientX, e.ClientY);
+            _termW = start.W;
+            _termH = start.H;
         }
         catch
         {
@@ -598,6 +635,80 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _termX = x;
         _termY = y;
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnTermResize(double w, double h)
+    {
+        // при закрытии элемент удаляется из DOM, и наблюдатель приходит с 0×0 —
+        // нули не должны затирать сохранённый размер
+        if (w < 1 || h < 1) return;
+        _termW = w;
+        _termH = h;
+    }
+
+    [JSInvokable]
+    public void OnViewportResize(double vw, double vh)
+    {
+        // окно браузера уменьшилось — терминал в пиксельной позиции мог остаться
+        // за экраном; возвращаем в видимую область (те же правила, что при драге)
+        var changed = false;
+
+        if (!double.IsNaN(_termW))
+        {
+            var w = Math.Min(_termW, vw - 24);
+            var h = Math.Min(_termH, vh - 24);
+            changed |= w != _termW || h != _termH;
+            _termW = w;
+            _termH = h;
+        }
+
+        if (!double.IsNaN(_termX) && !double.IsNaN(_termW))
+        {
+            var x = Math.Min(Math.Max(_termX, 80 - _termW), vw - 80);
+            var y = Math.Min(Math.Max(_termY, 0), vh - 40);
+            changed |= x != _termX || y != _termY;
+            _termX = x;
+            _termY = y;
+        }
+
+        if (changed) StateHasChanged();
+    }
+
+    // ---------- индикатор загрузки ----------
+
+    private void SetRunning(bool running)
+    {
+        if (_running == running) return;
+        _running = running;
+
+        _spinnerCts?.Cancel();
+        _spinnerCts = null;
+
+        if (running)
+        {
+            _spinnerCts = new CancellationTokenSource();
+            _ = SpinnerLoopAsync(_spinnerCts.Token);
+        }
+    }
+
+    private async Task SpinnerLoopAsync(CancellationToken ct)
+    {
+        var i = 0;
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(100, ct);
+                i = (i + 1) % SpinnerFrames.Length;
+                _spinnerFrame = SpinnerFrames[i];
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // остановка вместе с запуском агента
+        }
     }
 
     private static double AlongEdgeFraction(double coord, double span)
@@ -641,6 +752,8 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _hub.OnReconnected -= HubOnReconnected;
         }
 
+        _spinnerCts?.Cancel();
+        _spinnerCts?.Dispose();
         _dotnetRef?.Dispose();
     }
 

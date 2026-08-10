@@ -30,7 +30,6 @@
                         }
                     </select>
                     <button class="aichat-btn" @onclick="NewChatAsync" title="Новый чат">＋</button>
-                    <button class="aichat-btn danger" @onclick="StopAsync" disabled="@(!_running)" title="Остановить выполнение">■</button>
                     <button class="aichat-btn" @onclick="Close" title="Свернуть">✕</button>
                 </div>
             </div>
@@ -73,7 +72,7 @@
 
                     @if (_running)
                     {
-                        <div class="aichat-line aichat-line-assistant">@_stream<span class="aichat-cursor"></span></div>
+                        <div class="aichat-line aichat-line-assistant">@_stream<span class="aichat-spinner">@_spinnerFrame</span></div>
                     }
 
                     @if (_pendingQuestion is not null)
@@ -93,6 +92,7 @@
                        placeholder="@InputPlaceholder"
                        disabled="@(_sending || _startupError is not null)"
                        maxlength="4000" />
+                <button class="aichat-btn danger" @onclick="StopAsync" disabled="@(!_running)" title="Остановить выполнение">■</button>
             </div>
         </div>
     }

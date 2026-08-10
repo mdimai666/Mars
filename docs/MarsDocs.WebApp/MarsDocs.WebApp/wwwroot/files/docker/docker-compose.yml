@@ -1,7 +1,7 @@
 name: mars
 
 volumes:
-  data:
+  pgdata:
 
 networks:
   mars_container:
@@ -15,27 +15,48 @@ services:
       - POSTGRES_USER=mars
       - POSTGRES_PASSWORD=mars
       - POSTGRES_DB=mars
-    ports:
-      - 15432:5432
+    # ports:
+    #   - 127.0.0.1:15432:5432
     volumes:
-      - data:/var/lib/db
+      - pgdata:/var/lib/postgresql/data
     networks:
       - mars_container
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mars -d mars"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   mars-app:
     image: mdimai666/mars:latest
-    working_dir: /app
+    restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - mars_container
     ports:
       - "5004:80"
-    environment:
-      - ASPNETCORE_CONTENTROOT=/app
-      # - ConnectionStrings__DefaultConnection=Host=host.docker.internal:5432;Database=mars_v09;Username=postgres;Password=ggxxrr
+    # Установка без мастера: если задать connection string, визард не запускается.
+    # Заполните значения и раскомментируйте (пароль БД должен совпадать с POSTGRES_PASSWORD сервиса db):
+    # environment:
+    #   - ConnectionStrings__DefaultConnection=Host=db;Database=mars;Username=mars;Password=mars
+    #   - Setup__AdminEmail=admin@example.com
+    #   - Setup__AdminPassword=ChangeMe123!
+    #   - Setup__AdminFirstName=Admin
+    #   - Setup__SiteUrl=http://localhost:5004
+    #   - Setup__SiteName=Mars
+    #   - Setup__FrontChoice=default # первоначальный шаблон фронта: default | landing
     volumes:
-      - ./appsettings.Production.json:/app/appsettings.Production.json #config file
-      - ./data:/app/data #data (plugins, themes, nodes)
+      # Первый запуск: поднимется мастер настройки (http://localhost:5004/setup)
+      # и запишет конфиг в ./config/appsettings.Production.json.
+      # В мастере для БД указывайте хост "db" (имя сервиса в этой сети).
+      # Если БД не в контейнере, а на хосте: уберите сервис db и volume pgdata,
+      # а в мастере укажите хост "host.docker.internal" (на Linux добавьте
+      # extra_hosts: ["host.docker.internal:host-gateway"]) — см. QuickStart.
+      # Вместо ./config можно примонтировать готовый конфиг, тогда мастер не запускается:
+      # - ./appsettings.Production.json:/app/appsettings.Production.json
+      - ./config:/app/config
+      - ./data:/app/data # data (plugins, themes, nodes)
       - ./upload:/app/wwwroot/upload # upload media files
       - ./data-protection-keys:/root/.aspnet/DataProtection-Keys

@@ -1,101 +1,132 @@
+using System.Diagnostics;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Flurl.Http;
-using Microsoft.Extensions.Logging;
 using Testcontainers.PostgreSql;
 
-namespace ExternalServices.Integration.Tests.MarsDocker.Fixtures;
+namespace Mars.DockerContainer.Tests.Fixtures;
 
 public class MarsFixture : IAsyncLifetime
 {
+    private const string MarsImageTag = "mars-docker-build:latest";
+    private const string ApiEndpointHealthCheck = "/api/System/HealthCheck";
+
     private IContainer _marsContainer = default!;
-    private IFlurlClient _client = default!;
+    private IContainer _postgresContainer = default!;
     private INetwork _network = default!;
-    private const string _networkName = "mars-test-network";
+    private IFlurlClient _client = default!;
 
-    private PostgreSqlContainer _postgresContainer = default!;
-    public string ConnectionString => _postgresContainer.GetConnectionString();
-    public string MarsUrl { get; set; } = default!;
+    /// <summary>
+    /// Тесты с сборкой и запуском docker-контейнера тяжёлые, поэтому включаются явно:
+    /// MARS_DOCKER_TESTS=1 dotnet test
+    /// </summary>
+    public static bool DockerTestsEnabled => Environment.GetEnvironmentVariable("MARS_DOCKER_TESTS")?.Trim() == "1";
+
+    public string MarsUrl { get; private set; } = default!;
     public IFlurlClient Client => _client;
-
-    public const string ApiEndpointHealthCheck = "/api/System/HealthCheck";
-
-    public const string? SkipTest = "not require every time";
 
     public async Task InitializeAsync()
     {
-#pragma warning disable CS8793 // The given expression always matches the provided pattern.
-        if (SkipTest is not null) return;
-#pragma warning restore CS8793 // The given expression always matches the provided pattern.
+        if (!DockerTestsEnabled) return;
 
-        var marsImage = new ImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
-            .WithDockerfile("Dockerfile")
-            .WithName("mars-docker-build:latest")
-            .WithLogger(LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Testcontainers"))// See it VS2022: Outupt -> Tests
-            .Build();
-
-        await marsImage.CreateAsync().ConfigureAwait(false);
+        var solutionRoot = GetSolutionRoot();
+        await BuildMarsImageAsync(solutionRoot);
 
         _network = new NetworkBuilder()
-            .WithName(_networkName)
             .Build();
 
         await _network.CreateAsync();
 
-        _postgresContainer = new PostgreSqlBuilder("postgres:14")
-            .WithName("b-test-postgres")
+        _postgresContainer = new PostgreSqlBuilder("postgres:15-alpine")
             .WithUsername("postgres")
             .WithPassword("postgres")
             .WithDatabase("test_db_source")
             .WithNetwork(_network)
+            .WithNetworkAliases("db")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilCommandIsCompleted("pg_isready"))
             .WithCleanUp(true)
             .Build();
 
         await _postgresContainer.StartAsync().ConfigureAwait(false);
 
-        var appConnectionString = $"Host=b-test-postgres:5432;Database=test_db_source;Username=postgres;Password=postgres";
-
-        _marsContainer = new ContainerBuilder(marsImage)
-            .WithName("b-test-mars")
+        _marsContainer = new ContainerBuilder(MarsImageTag)
             .WithPortBinding(80, assignRandomHostPort: true)
             .WithNetwork(_network)
             .DependsOn(_postgresContainer)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .AddCustomWaitStrategy(new WaitUntilHealthCheckOk()))
-            .WithEnvironment("ASPNETCORE_URLS", "http://+:80")
             .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Production")
-            .WithEnvironment("ConnectionStrings__DefaultConnection", appConnectionString)
-            .WithEnvironment("Urls", "http://0.0.0.0:80")
+            .WithEnvironment("ASPNETCORE_URLS", "http://+:80")
+            .WithEnvironment("ConnectionStrings__DefaultConnection",
+                "Host=db;Database=test_db_source;Username=postgres;Password=postgres")
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .AddCustomWaitStrategy(new WaitUntilHealthCheckOk(),
+                    waitStrategy => waitStrategy.WithTimeout(TimeSpan.FromMinutes(5))))
             .WithCleanUp(true)
             .Build();
 
         await _marsContainer.StartAsync().ConfigureAwait(false);
 
-        MarsUrl = "http://localhost" + ":" + _marsContainer.GetMappedPublicPort(80);
+        MarsUrl = "http://localhost:" + _marsContainer.GetMappedPublicPort(80);
 
         _client = new FlurlClient(MarsUrl);
     }
 
     public async Task DisposeAsync()
     {
-#pragma warning disable CS8793 // The given expression always matches the provided pattern.
-        if (SkipTest is not null) return;
-#pragma warning restore CS8793 // The given expression always matches the provided pattern.
+        if (!DockerTestsEnabled) return;
 
-        if (_postgresContainer is not null)
-            await _postgresContainer.DisposeAsync();
+        if (_client is not null)
+            _client.Dispose();
         if (_marsContainer is not null)
             await _marsContainer.DisposeAsync();
+        if (_postgresContainer is not null)
+            await _postgresContainer.DisposeAsync();
         if (_network is not null)
             await _network.DisposeAsync();
     }
 
+    // Dockerfile использует RUN --mount=type=cache (BuildKit), который недоступен
+    // при сборке образа через API Testcontainers (legacy-эндпоинт /build),
+    // поэтому образ собирается docker CLI (buildx/BuildKit) - как при обычной сборке.
+    private static async Task BuildMarsImageAsync(string solutionRoot)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "docker",
+            ArgumentList = { "build", "-t", MarsImageTag, "." },
+            WorkingDirectory = solutionRoot,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        };
+
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Не удалось запустить docker build");
+
+        process.OutputDataReceived += (_, e) => { if (e.Data is not null) Console.WriteLine(e.Data); };
+        process.ErrorDataReceived += (_, e) => { if (e.Data is not null) Console.Error.WriteLine(e.Data); };
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0)
+            throw new InvalidOperationException($"docker build завершился с кодом {process.ExitCode}");
+    }
+
+    private static string GetSolutionRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !dir.EnumerateFiles("*.sln*").Any())
+            dir = dir.Parent;
+
+        return dir?.FullName
+            ?? throw new DirectoryNotFoundException("Не найден файл решения (*.sln / *.slnx)");
+    }
+
     // Custom wait strategy implementation
-    public class WaitUntilHealthCheckOk : IWaitUntil
+    private class WaitUntilHealthCheckOk : IWaitUntil
     {
         private static readonly HttpClient _httpClient = new()
         {
@@ -117,10 +148,5 @@ public class MarsFixture : IAsyncLifetime
                 return false;
             }
         }
-    }
-
-    public Task Reset()
-    {
-        return Task.CompletedTask;
     }
 }

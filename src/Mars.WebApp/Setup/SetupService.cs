@@ -1,11 +1,6 @@
 using System.Text.Json;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
 using Mars.Services;
 using Mars.Shared.Options;
-using Mars.UseStartup.MarsParts;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace Mars.Setup;
@@ -79,7 +74,9 @@ public class SetupService
 
     public void WriteLocalConfig()
     {
-        var configPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Local.json");
+        var configPath = SetupWizardHost.WizardConfigPath;
+        var fullConfigPath = Path.GetFullPath(configPath);
+        Directory.CreateDirectory(Path.GetDirectoryName(fullConfigPath)!);
 
         var config = new Dictionary<string, object>
         {
@@ -110,24 +107,6 @@ public class SetupService
         };
 
         var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(configPath, json);
-    }
-
-    public static async Task RunMigrationsAndSeedAsync(IServiceProvider serviceProvider, IConfiguration configuration, ILogger logger)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var marsDbContext = scope.ServiceProvider.GetRequiredService<MarsDbContext>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
-
-        // Run migrations
-        var migrations = marsDbContext.Database.GetPendingMigrations();
-        if (migrations.Any())
-        {
-            logger.LogWarning("[Setup] Running migrations: " + string.Join(", ", migrations));
-            await marsDbContext.Database.MigrateAsync();
-        }
-
-        // Seed data
-        MarsStartupPartMigrations.SeedData(serviceProvider, configuration, logger, true);
+        File.WriteAllText(fullConfigPath, json);
     }
 }

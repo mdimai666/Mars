@@ -50,6 +50,11 @@ public static class MarsWebAppStartup
         {
             builder.Configuration.ConfigureAppConfiguration(args);
         }
+        else if (IsRunningInDocker && !IsTesting)
+        {
+            // конфиг, записанный setup-визардом на том ./config; приоритет ниже env-переменных
+            builder.Configuration.AddWizardConfigSource();
+        }
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection(FeatureExtensions.SectionName));
         builder.Services.MarsAddLocalization()
                         .MarsAddCore(builder.Configuration)

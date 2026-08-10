@@ -29,13 +29,15 @@ _ = nameof(MarsStartupInfo);
 FixDebugModeBaseDirectory.SetBaseDirectory();
 #endif
 
-// Setup wizard — runs BEFORE the main application if no local config exists
-if (!IsTesting && !IsRunningInDocker && !File.Exists("appsettings.Local.json"))
+var builder = WebApplication.CreateBuilder(args);
+
+// Setup wizard — runs BEFORE the main application when no DB configuration exists
+if (SetupWizardHost.ShouldRunWizard())
 {
     await SetupWizardHost.RunAsync(args);
+    builder.Configuration.AddJsonFile(SetupWizardHost.WizardConfigPath, optional: false, reloadOnChange: false);
 }
 
-var builder = WebApplication.CreateBuilder(args);
 MarsWebAppStartup.ConfigureBuilder(builder, args);
 
 var app = builder.Build();

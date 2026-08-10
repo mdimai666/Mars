@@ -5,14 +5,58 @@
 <ContentWrapper>
     <h3>Быстрый старт</h3>
 
-    ```
-    //test start
-    docker run -d --name mars-app-nocontent -w /app -p 5005:80  -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal:5432;Database=mars_docker_app2;Username=postgres;Password=ggxxrr" mdimai666/mars:latest
-    ```
+    <p><b>Docker compose (рекомендуемый способ)</b> — PostgreSQL + Mars:</p>
 
     ```
-    //content save
-    docker run -d --name mars1 -w /app -p 5005:80 -e ASPNETCORE_CONTENTROOT=/app -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal:5432;Database=mars;Username=postgres;Password=postgres" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/root/.aspnet/DataProtection-Keys" mdimai666/mars:latest
+    docker compose up -d
     ```
+
+    <p>
+        Файл: <a href="files/docker/docker-compose.yml">docker-compose.yml</a>.
+        При первом запуске без конфигурации поднимется мастер настройки —
+        откройте <code>http://localhost:5004/setup</code>.
+        Для установки без мастера раскомментируйте блок <code>environment</code> в compose
+        и задайте connection string, администратора и стартовый шаблон фронта.
+    </p>
+
+    <p>
+        Пробный запуск через <code>docker run</code> без сохранения данных —
+        конфигурации нет, поэтому поднимется мастер настройки:
+    </p>
+
+    ```
+    docker run -d --name mars-try -p 5005:80 mdimai666/mars:latest
+    ```
+
+    <p>
+        Запуск с сохранением данных: мастер пишет конфиг в <code>./config</code>,
+        данные и загрузки — в <code>./data</code> и <code>./upload</code>:
+    </p>
+
+    ```
+    docker run -d --name mars -p 5005:80 -v "$(pwd)/config:/app/config" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/root/.aspnet/DataProtection-Keys" mdimai666/mars:latest
+    ```
+
+    <p>
+        Автоматическая установка без мастера — через переменные окружения
+        (наличие connection string отключает мастер):
+    </p>
+
+    ```
+    docker run -d --name mars -p 5005:80 -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal;Database=mars;Username=mars;Password=mars" -e "Setup__AdminEmail=admin@example.com" -e "Setup__AdminPassword=ChangeMe123!" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/root/.aspnet/DataProtection-Keys" mdimai666/mars:latest
+    ```
+
+    <p>
+        Переменные: <code>Setup__AdminEmail/AdminPassword/AdminFirstName</code>,
+        <code>Setup__SiteUrl/SiteName/SiteDescription</code>, <code>Setup__FrontChoice</code>
+        (первоначальный шаблон фронта: <code>default</code>, <code>landing</code>),
+        отключение мастера — <code>MARS_SETUP_WIZARD=0</code>.
+    </p>
+
+    <p>
+        Если PostgreSQL работает на хост-машине, а Mars в контейнере, в строке подключения
+        указывайте <code>Host=host.docker.internal</code> вместо <code>localhost</code>
+        (на Linux дополнительно <code>--add-host=host.docker.internal:host-gateway</code>).
+    </p>
 
 </ContentWrapper>

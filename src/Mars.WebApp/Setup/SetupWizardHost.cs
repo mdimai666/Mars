@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Configuration;
+using static Mars.UseStartup.MarsStartupInfo;
+
 namespace Mars.Setup;
 
 public static class SetupWizardHost
@@ -5,6 +8,44 @@ public static class SetupWizardHost
     private static readonly TaskCompletionSource _completionSource = new();
 
     public static Task Completion => _completionSource.Task;
+
+    /// <summary>
+    /// Куда визард пишет итоговый конфиг (относительно рабочей директории):
+    /// в Docker — на примонтированный том ./config, иначе — appsettings.Local.json рядом с приложением.
+    /// </summary>
+    public static string WizardConfigPath => IsRunningInDocker
+        ? Path.Combine("config", "appsettings.Production.json")
+        : "appsettings.Local.json";
+
+    /// <summary>
+    /// Визард запускается, когда приложение не сконфигурировано.
+    /// В Docker учитываются только явные источники: env-переменные, примонтированный
+    /// appsettings.Production.json и конфиг визарда на томе ./config — девелоперские
+    /// дефолты из appsettings.json внутри образа конфигурацией не считаются.
+    /// Отключается через MARS_SETUP_WIZARD=0.
+    /// </summary>
+    public static bool ShouldRunWizard()
+    {
+        if (IsTesting) return false;
+
+        var killSwitch = Environment.GetEnvironmentVariable("MARS_SETUP_WIZARD");
+        if (killSwitch is "0" || killSwitch is not null && killSwitch.Equals("false", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (IsRunningInDocker)
+        {
+            var probe = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: false)
+                .AddJsonFile(Path.Combine("config", "appsettings.Production.json"), optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables()
+                .Build();
+
+            return string.IsNullOrWhiteSpace(probe.GetConnectionString("DefaultConnection"));
+        }
+
+        return !File.Exists("appsettings.Local.json");
+    }
 
     public static void SignalComplete() => _completionSource.TrySetResult();
 

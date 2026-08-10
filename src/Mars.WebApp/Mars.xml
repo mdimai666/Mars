@@ -183,6 +183,28 @@
             Доступные стартовые шаблоны фронтов (папки в Res/front_templates, кроме служебного admin).
             </summary>
         </member>
+        <member name="P:Mars.Setup.SetupWizardHost.WizardConfigPath">
+            <summary>
+            Куда визард пишет итоговый конфиг (относительно рабочей директории):
+            в Docker — на примонтированный том ./config, иначе — appsettings.Local.json рядом с приложением.
+            </summary>
+        </member>
+        <member name="M:Mars.Setup.SetupWizardHost.ShouldRunWizard">
+            <summary>
+            Визард запускается, когда приложение не сконфигурировано.
+            В Docker учитываются только явные источники: env-переменные, примонтированный
+            appsettings.Production.json и конфиг визарда на томе ./config — девелоперские
+            дефолты из appsettings.json внутри образа конфигурацией не считаются.
+            Отключается через MARS_SETUP_WIZARD=0.
+            </summary>
+        </member>
+        <member name="M:Mars.UseStartup.ConfigureAppConfigurationExtensiions.AddWizardConfigSource(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <summary>
+            Docker: подключает конфиг, записанный setup-визардом (./config/appsettings.Production.json на томе).
+            Вставляется перед env-источниками: приоритет выше дефолтов appsettings.json из образа,
+            но env-переменные и явно примонтированный appsettings.Production.json перекрывают его.
+            </summary>
+        </member>
         <member name="M:Mars.UseStartup.StartupFront.FrontStaticFilesMiddleware(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">
             <summary>
             Статика wwwroot фронтов. До endpoints — как UseStaticFiles в старой схеме.

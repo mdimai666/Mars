@@ -6,8 +6,8 @@
 # ===========================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
+# Приложение слушает порт 80 (Urls в appsettings.json перекрывает дефолтные 8080 базового образа)
 EXPOSE 80
-#EXPOSE 443
 
 # ===========================
 # Build stage

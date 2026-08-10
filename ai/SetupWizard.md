@@ -27,14 +27,19 @@ WordPress-style мастер первоначальной настройки Mar
 
 ```
 Program.cs
-├─ File.Exists("appsettings.Local.json")?
-│   ├─ НЕТ → SetupWizardHost.RunAsync(args)
+├─ WebApplication.CreateBuilder(args)
+├─ SetupWizardHost.ShouldRunWizard()?
+│   (вне Docker: нет appsettings.Local.json;
+│    в Docker: нет connection string в env/примонтированном конфиге/./config;
+│    MARS_SETUP_WIZARD=0 отключает)
+│   ├─ ДА → SetupWizardHost.RunAsync(args)
 │   │        ├─ Отдельный WebApplication (Razor Pages + Bootstrap 5)
 │   │        ├─ /setup → Welcome → Database → Site → User → Complete
-│   │        └─ SignalComplete() → хост останавливается
-│   └─ ДА → продолжаем
-├─ WebApplication.CreateBuilder(args)
-├─ ConfigureBuilder() → полный DI
+│   │        └─ SignalComplete() → хост останавливается,
+│   │           записанный конфиг добавляется в builder.Configuration
+│   └─ НЕТ → продолжаем
+├─ MarsWebAppStartup.ConfigureBuilder() → полный DI
+│   (в Docker: + AddWizardConfigSource — config/appsettings.Production.json с тома)
 ├─ ConfigureApp() → миграции + seed + pipeline
 └─ app.Run()
 ```
@@ -107,11 +112,34 @@ Program.cs
 - `HandlebarsTemplateStatic` — статические файлы, нужен `StaticPath` (по умолчанию `../client`)
 - `None` — фронтенд отключён
 
-## Ограничения
+## Ограничения и Docker
 
-Wizard **не запускается** когда:
-- `IsRunningInDocker = true` — Docker использует переменные окружения
+Визард **не запускается** когда:
 - `IsTesting = true` — тесты используют TestContainers
+- `MARS_SETUP_WIZARD=0` — принудительное отключение
+- уже есть конфигурация БД
+
+### Поведение в Docker
+
+Гейт в `Program.cs` (`SetupWizardHost.ShouldRunWizard`): в Docker учитываются только
+явные источники — env-переменные, примонтированный `appsettings.Production.json`
+и конфиг визарда `config/appsettings.Production.json` на томе `./config`.
+Девелоперские дефолты из `appsettings.json` внутри образа конфигурацией не считаются
+(иначе визард бы никогда не запускался).
+
+- Итог визарда в Docker пишется в `config/appsettings.Production.json`
+  (`SetupWizardHost.WizardConfigPath`) — монтируйте `./config:/app/config`,
+  иначе конфиг не переживёт пересоздание контейнера.
+- При старте этот файл подключается в `MarsWebAppStartup.ConfigureBuilder`
+  (`AddWizardConfigSource`) перед последним env-источником: приоритет выше
+  json-дефолтов образа, но env-переменные перекрывают его.
+- Порт: приложение и визард слушают 80 (`"Urls": "http://+:80"` в appsettings.json
+  перекрывает дефолтные 8080 базового образа).
+- Автоматизация без визарда: `ConnectionStrings__DefaultConnection` +
+  `Setup__AdminEmail/AdminPassword/AdminFirstName`, `Setup__SiteUrl/SiteName/SiteDescription`,
+  `Setup__FrontChoice` — всё читается через IConfiguration, env работает как есть.
+- Безопасность: пока установка не завершена, UI визарда доступен без авторизации —
+  в доках предупреждать не выставлять порт до первой настройки.
 
 ## E2E тесты
 

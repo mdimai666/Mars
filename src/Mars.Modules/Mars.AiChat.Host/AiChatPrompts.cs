@@ -5,7 +5,7 @@ namespace Mars.AiChat.Host;
 
 internal static class AiChatPrompts
 {
-    public static string BuildInstructions(AiChatOption option, string? pageContext = null)
+    public static string BuildInstructions(AiChatOption option, string? pageContext = null, string? frontEditorSlug = null)
     {
         var sb = new StringBuilder(BaseInstructions);
 
@@ -22,6 +22,13 @@ internal static class AiChatPrompts
             sb.AppendLine();
             sb.Append("Контекст: у пользователя сейчас открыта страница админ-панели: ").Append(pageContext).Append('.');
             sb.AppendLine(" Если задача про «текущую/открытую страницу» — используй инструменты открытой страницы (GetOpenPage*).");
+        }
+
+        if (!string.IsNullOrWhiteSpace(frontEditorSlug))
+        {
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.Append(FrontEditorInstructions.Replace("{FRONT_SLUG}", frontEditorSlug));
         }
 
         if (!string.IsNullOrWhiteSpace(option.Instructions))
@@ -84,5 +91,30 @@ internal static class AiChatPrompts
              выполнять запись без подтверждений в рамках текущей задачи;
            - после записи проверь результат запросом на чтение и сообщи число затронутых строк;
            - никогда не выводи и не запрашивай connection strings.
+        """;
+
+    public const string FrontEditorInstructions = """
+        12. Файлы фронта (шаблоны сайта): пользователь открыл редактор фронта «{FRONT_SLUG}» — для этого фронта
+           доступны инструменты ListFrontFiles / ReadFrontFile / WriteFrontFile / CreateFrontFile /
+           RenameFrontFile / DeleteFrontFile.
+           - Фронт — папка с Handlebars-шаблонами сайта:
+             _root.hbs — корневой layout всего сайта (head, подключение стилей/скриптов, шапка,
+             @Body — место, куда рендерится страница, подвал);
+             pages/*.hbs — страницы: первая строка файла задаёт URL атрибутом @page "/url";
+             blocks/*.hbs — блоки, подключаются в других файлах как {{>blocks/имя_файла_без_расширения}};
+             wwwroot/ — статика: wwwroot/css/app.css — стили сайта, js, картинки (ссылки на них в _root.hbs).
+           - Пути — только относительные от корня фронта: "pages/about.hbs", "wwwroot/css/app.css".
+           - Сначала посмотри структуру (ListFrontFiles), перед правкой файла обязательно прочитай его (ReadFrontFile);
+             вноси точечные изменения и сохраняй остальной код как есть; полностью переписывай файл,
+             только если это нужно для задачи.
+           - WriteFrontFile сохраняет файл сразу: отдельно «сохранять» ничего не нужно, предпросмотр у пользователя
+             обновится автоматически. После правки перечитай файл и убедись, что изменение на месте.
+           - Новая страница — новый файл в pages/ с @page "/url" в первой строке; если у сайта есть меню/шапка
+             (blocks/), добавь туда ссылку на новую страницу, если это уместно.
+           - Переименование и перемещение файлов — только RenameFrontFile (атомарно, старый путь исчезает);
+             не создавай файл с новым именем рядом со старым. Если на переименованный файл ссылались другие
+             шаблоны ({{>blocks/...}}, layout, ссылки) — поправь и их.
+           - Удаление файлов (DeleteFrontFile) — только после подтверждения пользователя через AskUser.
+           - Выполнив правки, коротко сообщи, какие файлы изменены и что именно изменилось.
         """;
 }

@@ -16,7 +16,7 @@ public static class StartupFront
     {
         builder.Services.AddSingleton<IFrontManager, FrontManager>();
         builder.Services.AddSingleton<FrontTemplateService>();
-        builder.Services.AddSingleton<FrontFilesService>();
+        builder.Services.AddSingleton<IFrontFilesService, FrontFilesService>();
         builder.Services.AddSingleton<FrontRenderWarmupService>();
 
         builder.AddWREHandlebars();

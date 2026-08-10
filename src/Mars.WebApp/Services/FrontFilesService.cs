@@ -1,21 +1,27 @@
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Shared.Contracts.WebSite.Dto;
 using Mars.Shared.Options;
+using Mars.WebSiteProcessor.Interfaces;
 
 namespace Mars.Services;
 
 /// <summary>
 /// Файловые операции над папкой фронта. Используется REST-контроллером (админка)
 /// и ИИ-инструментами. Все пути — только относительные, с проверкой выхода за корень фронта.
+/// После изменяющих операций явно уведомляет движок рендера фронта (детерминированная
+/// инвалидация кеша и reload предпросмотра — не только через FileSystemWatcher).
 /// </summary>
-public class FrontFilesService
+public class FrontFilesService : IFrontFilesService
 {
     readonly IFrontManager frontManager;
+    readonly IWebRenderEngineLocator renderEngineLocator;
 
-    public FrontFilesService(IFrontManager frontManager)
+    public FrontFilesService(IFrontManager frontManager, IWebRenderEngineLocator renderEngineLocator)
     {
         this.frontManager = frontManager;
+        this.renderEngineLocator = renderEngineLocator;
     }
 
     public FrontItem GetFront(string slug)
@@ -114,6 +120,8 @@ public class FrontFilesService
         var fullPath = ResolveSafePath(slug, relPath);
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         File.WriteAllText(fullPath, content ?? "");
+
+        NotifyFrontChanged(slug, fullPath);
     }
 
     public void CreateFile(string slug, string relPath)
@@ -124,6 +132,8 @@ public class FrontFilesService
 
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         File.WriteAllText(fullPath, "");
+
+        NotifyFrontChanged(slug, fullPath);
     }
 
     public void CreateFolder(string slug, string relPath)
@@ -149,6 +159,8 @@ public class FrontFilesService
 
         if (File.Exists(fullPath)) File.Move(fullPath, newFullPath);
         else Directory.Move(fullPath, newFullPath);
+
+        NotifyFrontChanged(slug, newFullPath);
     }
 
     public void Delete(string slug, string relPath) //TODO: опасно
@@ -158,15 +170,36 @@ public class FrontFilesService
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);
+            NotifyFrontChanged(slug, fullPath);
             return;
         }
 
         if (Directory.Exists(fullPath))
         {
             Directory.Delete(fullPath, recursive: true);
+            NotifyFrontChanged(slug, fullPath);
             return;
         }
 
         throw new NotFoundException($"'{relPath}' not found");
+    }
+
+    /// <summary>
+    /// Движок рендера (если уже создан) перечитывает шаблон, чистит кеш и шлёт reload
+    /// в предпросмотр. Ошибки уведомления не ломают файловую операцию: FileSystemWatcher
+    /// остаётся страховкой.
+    /// </summary>
+    void NotifyFrontChanged(string slug, string fullPath)
+    {
+        try
+        {
+            renderEngineLocator.TryGetAppFrontBySlug(slug)
+                ?.Features.Get<IWebTemplateService>()
+                ?.NotifyFileChanged(fullPath);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"FrontFilesService: notify front '{slug}' file change failed: {ex.Message}");
+        }
     }
 }

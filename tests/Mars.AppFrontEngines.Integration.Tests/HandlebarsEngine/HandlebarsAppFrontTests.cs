@@ -137,4 +137,28 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
         html.Should().NotContain("Front not found");
         html.Should().Contain("<base href=\"/dev/\" />");
     }
+
+    [IntegrationFact]
+    public async Task Render_ImmediatelyFresh_AfterFrontFilesServiceWrite()
+    {
+        //Arrange
+        var filesService = AppFixture.ServiceProvider.GetRequiredService<IFrontFilesService>();
+        var marker = "ai_write_" + Guid.NewGuid().ToString("N");
+        var original = filesService.ReadFile("default", "pages/index_page.hbs").Content;
+
+        try
+        {
+            //Act — запись серверным сервисом (тот же путь, что у ИИ-инструментов фазы 6);
+            //рендер должен отдавать новое содержимое сразу, не полагаясь на FileSystemWatcher
+            filesService.SaveFile("default", "pages/index_page.hbs", original + "\n<h2>" + marker + "</h2>");
+            var render = await RenderRequestPage("/");
+
+            //Assert
+            render.Should().Contain(marker, "после записи файла фронта рендер должен сразу отдавать новое содержимое");
+        }
+        finally
+        {
+            filesService.SaveFile("default", "pages/index_page.hbs", original);
+        }
+    }
 }

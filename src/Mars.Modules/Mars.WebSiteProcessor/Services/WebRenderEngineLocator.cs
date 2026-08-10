@@ -94,6 +94,11 @@ public class WebRenderEngineLocator : IWebRenderEngineLocator
         return GetOrCreate(front).App;
     }
 
+    public MarsAppFront? TryGetAppFrontBySlug(string slug)
+    {
+        return cache.TryGetValue(slug, out var entry) ? entry.App : null;
+    }
+
     public async Task<bool> TryServeStaticFileAsync(HttpContext context, MarsAppFront appFront)
     {
         var slug = appFront.Front?.Slug;

@@ -35,6 +35,7 @@ public class AiChatAgentService
     private readonly MarsOptionsTools _optionsTools;
     private readonly MarsSystemTools _systemTools;
     private readonly MarsSqlTools _sqlTools;
+    private readonly IFrontFilesService _frontFilesService;
     private readonly ILogger<AiChatAgentService> _logger;
 
     public AiChatAgentService(
@@ -49,6 +50,7 @@ public class AiChatAgentService
         MarsOptionsTools optionsTools,
         MarsSystemTools systemTools,
         MarsSqlTools sqlTools,
+        IFrontFilesService frontFilesService,
         ILogger<AiChatAgentService> logger)
     {
         _hub = hub;
@@ -62,6 +64,7 @@ public class AiChatAgentService
         _optionsTools = optionsTools;
         _systemTools = systemTools;
         _sqlTools = sqlTools;
+        _frontFilesService = frontFilesService;
         _logger = logger;
     }
 
@@ -123,13 +126,28 @@ public class AiChatAgentService
                 _logger.LogDebug("AiChat: chat {ChatId} SQL tools enabled", chatId);
             }
 
+            // Файлы фронта — только когда открыт редактор фронта (slug из URL страницы)
+            var frontEditorSlug = MarsFrontFilesTools.TryParseSlugFromPageContext(pageContext);
+            if (frontEditorSlug is not null)
+            {
+                var frontTools = new MarsFrontFilesTools(_frontFilesService, frontEditorSlug);
+                tools.Add(AIFunctionFactory.Create(frontTools.ListFrontFiles));
+                tools.Add(AIFunctionFactory.Create(frontTools.ReadFrontFile));
+                tools.Add(AIFunctionFactory.Create(frontTools.WriteFrontFile));
+                tools.Add(AIFunctionFactory.Create(frontTools.CreateFrontFile));
+                tools.Add(AIFunctionFactory.Create(frontTools.RenameFrontFile));
+                tools.Add(AIFunctionFactory.Create(frontTools.DeleteFrontFile));
+
+                _logger.LogDebug("AiChat: chat {ChatId} front files tools enabled for front '{FrontSlug}'", chatId, frontEditorSlug);
+            }
+
             var client = _clientFactory.CreateClient(connection);
             agent = client.AsHarnessAgent(new HarnessAgentOptions
             {
                 Name = "mars-site-agent",
                 ChatOptions = new ChatOptions
                 {
-                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext),
+                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext, frontEditorSlug),
                     Tools = [.. tools],
                 },
                 MaximumIterationsPerRequest = 15,

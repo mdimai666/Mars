@@ -65,6 +65,8 @@
             <summary>
             Файловые операции над папкой фронта. Используется REST-контроллером (админка)
             и ИИ-инструментами. Все пути — только относительные, с проверкой выхода за корень фронта.
+            После изменяющих операций явно уведомляет движок рендера фронта (детерминированная
+            инвалидация кеша и reload предпросмотра — не только через FileSystemWatcher).
             </summary>
         </member>
         <member name="M:Mars.Services.FrontFilesService.ResolveSafePath(System.String,System.String)">
@@ -76,6 +78,13 @@
             <summary>
             Стандартные папки (.git, .vscode, node_modules, bin/obj и любые скрытые),
             которые не показываются в дереве файлов фронта.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontFilesService.NotifyFrontChanged(System.String,System.String)">
+            <summary>
+            Движок рендера (если уже создан) перечитывает шаблон, чистит кеш и шлёт reload
+            в предпросмотр. Ошибки уведомления не ломают файловую операцию: FileSystemWatcher
+            остаётся страховкой.
             </summary>
         </member>
         <member name="F:Mars.Services.FrontManager.FrontsDirName">
@@ -186,7 +195,7 @@
             (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
             </summary>
         </member>
-        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.#ctor(Mars.Services.FrontFilesService)">
+        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.#ctor(Mars.Host.Shared.Services.IFrontFilesService)">
             <summary>
             Создаёт шаблон представления списка записей в специальном фронте админки
             (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.

@@ -165,6 +165,13 @@ public class WebTemplateService : IWebTemplateService
     {
         _debouncer.Debouce(() => { _updateFile(path, changeType); });
     }
+
+    public void NotifyFileChanged(string fullPath)
+    {
+        // сразу, без дебаунса: запись уже завершена (это не поток файловых событий),
+        // а превью и кеш рендера должны обновиться детерминированно
+        _updateFile(fullPath, WatcherChangeTypes.Changed);
+    }
     void _updateFile(string path, WatcherChangeTypes changeType)
     {
         string ext = System.IO.Path.GetExtension(path);

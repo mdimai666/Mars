@@ -21,6 +21,12 @@ public interface IWebRenderEngineLocator
     MarsAppFront? GetAppFrontBySlug(string slug);
 
     /// <summary>
+    /// MarsAppFront по slug только если движок уже создан (ленивый кэш).
+    /// В отличие от <see cref="GetAppFrontBySlug"/> не создаёт движок как побочный эффект.
+    /// </summary>
+    MarsAppFront? TryGetAppFrontBySlug(string slug);
+
+    /// <summary>
     /// Отдаёт статику из wwwroot фронта, если файл существует. true — ответ уже записан.
     /// </summary>
     Task<bool> TryServeStaticFileAsync(HttpContext context, MarsAppFront appFront);

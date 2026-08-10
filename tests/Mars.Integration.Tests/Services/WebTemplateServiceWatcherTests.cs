@@ -72,6 +72,30 @@ v2
     }
 
     [Fact]
+    public async Task FileChangedInSubfolder_TemplateUpdated()
+    {
+        var pagesDir = Path.Combine(dir, "pages");
+        Directory.CreateDirectory(pagesDir);
+        var subFile = Path.Combine(pagesDir, "sub_page.hbs");
+        File.WriteAllText(subFile, """
+@page "/sub"
+
+sub_v1
+""");
+        var updated1 = await WaitUntil(() => wts.Template.Pages.Any(p => p.Content.Contains("sub_v1")));
+        updated1.Should().BeTrue("watcher должен подхватить новый файл в подпапке");
+
+        File.WriteAllText(subFile, """
+@page "/sub"
+
+sub_v2
+""");
+
+        var updated2 = await WaitUntil(() => wts.Template.Pages.Any(p => p.Content.Contains("sub_v2")));
+        updated2.Should().BeTrue("watcher должен перечитать файл в подпапке после изменения");
+    }
+
+    [Fact]
     public async Task ManyRapidChanges_ConvergesToLastVersion()
     {
         for (int i = 1; i <= 5; i++)

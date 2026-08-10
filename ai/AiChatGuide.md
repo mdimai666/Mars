@@ -230,6 +230,31 @@ connection strings не выводить. Connection strings также защи
   на уровне правил промпта и подтверждения пользователем.
 - Ошибки драйверы возвращают как `Ok=false + Message` (не исключениями) — инструменты отдают их модели строкой.
 
+### Файлы фронта (MarsFrontFilesTools)
+
+`Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs` — ИИ правит файлы фронта (Handlebars-шаблоны сайта)
+из редактора фронта (Фаза 6 фронт-рефакторинга, `ai/FrontReworkPlan.md`). Инструменты:
+`ListFrontFiles` (дерево файлов), `ReadFrontFile`, `WriteFrontFile` (создаёт/заменяет файл вместе
+с папками), `CreateFrontFile` (пустой файл/папка), `RenameFrontFile` (атомарное переименование/перемещение),
+`DeleteFrontFile`. Работают через `IFrontFilesService`
+(`Mars.Host.Shared/Services`, реализация `FrontFilesService` в `Mars.WebApp/Services`) — защита путей
+(только относительные, без выхода за корень фронта) наследуется; ошибки возвращаются модели строкой.
+
+Особенности подключения:
+
+- Экземпляр создаётся на каждый запуск агента в `AiChatAgentService.RunChatAsync` (как `MarsOpenPageTools`),
+  и ТОЛЬКО если открыт редактор фронта: slug парсится из PageContext —
+  `MarsFrontFilesTools.TryParseSlugFromPageContext` (URL страницы `/front/editor/{slug}`).
+- Правила работы — `AiChatPrompts.FrontEditorInstructions` (структура фронта `_root.hbs`/`pages`/`blocks`/
+  `wwwroot`, «прочитай перед правкой», удаление только через `ask_user`).
+- Сохранение автоматическое: `WriteFrontFile` пишет прямо в папку фронта; `FrontFilesService` после записи
+  явно уведомляет движок фронта (`IWebTemplateService.NotifyFileChanged`) — кеш рендера чистится и SignalR
+  `reload` обновляет предпросмотр (FileSystemWatcher — только страховка: рендер кеширует скомпилированный
+  шаблон на 30 минут, полагаться на одно файловое событие нельзя). Страница редактора (`FrontEditorPage`)
+  дополнительно перечитывает открытый файл по reload, если пользователь не вносил несохранённых правок.
+- Контекст страницы: `FrontEditorPage` реализует `IAiChatPageHandler` (второй пример после `EditPostView`):
+  `GetInfo` отдаёт фронт и открытый файл; `SetField`/`Save` объясняют модели, что правки идут через файлы.
+
 ## Как добавить новое событие сервер → клиент
 
 1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
@@ -243,7 +268,8 @@ connection strings не выводить. Connection strings также защи
 
 Реализовано: настройки сайта и любые опции, информация о системе, создание/чтение постов,
 мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу),
-SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`).
+SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`),
+файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`).
 
 - **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
   (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.

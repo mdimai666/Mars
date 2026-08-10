@@ -299,7 +299,7 @@ IFrontManager (singleton)  ──подписка на IEventManager OptionUpdat
 > `FrontFilesService` (Mars.WebApp/Services) — общий файловый слой с защитой путей
 > (нормализация + `StartsWith` корня фронта) — его же использует Фаза 6 для ИИ-инструментов.
 
-### Фаза 6. ИИ-чат в редакторе
+### Фаза 6. ИИ-чат в редакторе ✅ (2026-08-10)
 
 **Цель**: ИИ правит файлы фронта, изменения сразу видны в предпросмотре.
 
@@ -319,6 +319,35 @@ IFrontManager (singleton)  ──подписка на IEventManager OptionUpdat
 
 **Готово когда**: на странице редактора просьба «поменяй заголовок сайта в шапке» приводит к правке
 файла агентом, и изменение видно в iframe без ручных действий.
+
+> **Как реализовано (заметки)**: файловый слой разбит на абстракцию и реализацию:
+> `IFrontFilesService` — в `Mars.Host.Shared/Services` (туда же смотрит AiChat-модуль),
+> реализация `FrontFilesService` осталась в `Mars.WebApp/Services` (DI: `AddSingleton<IFrontFilesService, FrontFilesService>()`,
+> контроллер и XActions переведены на интерфейс).
+> Инструменты `Mars.AiChat.Host/Tools/MarsFrontFilesTools.cs`: `ListFrontFiles` (компактное дерево),
+> `ReadFrontFile` (с обрезкой >100 КБ), `WriteFrontFile` (создаёт/заменяет файл, папки автоматически),
+> `CreateFrontFile` (пустой файл/папка), `RenameFrontFile` (атомарно, добавлен после ручной проверки —
+> без него модель «переименовывала» созданием файла рядом), `DeleteFrontFile` — ошибки возвращаются
+> модели строкой, не исключением.
+> Экземпляр создаётся на запуск агента, только если открыт редактор фронта: slug парсится из PageContext
+> (`TryParseSlugFromPageContext`, URL `/front/editor/{slug}`); правила работы добавлены в промпт
+> (`AiChatPrompts.FrontEditorInstructions`): структура фронта, относительные пути, «прочитай перед правкой»,
+> удаление только через `AskUser`. Сохранение автоматическое: `WriteFrontFile` пишет прямо в папку фронта,
+> FileSystemWatcher шлёт `reload` — iframe обновляется сам.
+> Контекст страницы: `FrontEditorPage` реализует `IAiChatPageHandler` (`GetInfo` — фронт/открытый файл,
+> `GetFields` — содержимое открытого файла; SetField/Save объясняют, что правки идут через файлы).
+> Плюс защита от затирания: по событию reload страница перечитывает открытый файл в CodeEditor2, только если
+> пользователь не вносил несохранённых правок (`lastLoadedContent`).
+> **Баг-фикс инвалидации (найден при ручной проверке)**: превью не обновлялось после правок агента —
+> рендер кеширует скомпилированный шаблон на 30 минут (`HandlebarsWebRenderEngine.AppCacheKey`),
+> а инвалидация шла ТОЛЬКО из FileSystemWatcher; одно пропущенное файловое событие — и предпросмотр
+> показывает старое до ручного сохранения. Теперь `FrontFilesService` после каждой изменяющей операции
+> явно уведомляет движок фронта: `IWebRenderEngineLocator.TryGetAppFrontBySlug` (без создания движка) →
+> `IWebTemplateService.NotifyFileChanged(fullPath)` (сразу, без дебаунса: перечитывание шаблона +
+> `ClearCache` + SignalR `reload`). FileSystemWatcher остался страховкой для внешних правок.
+> Регрессия: `HandlebarsAppFrontTests.Render_ImmediatelyFresh_AfterFrontFilesServiceWrite`.
+> Тесты: `tests/Mars.Integration.Tests/Services/AiFrontFilesToolsTests.cs` (парсинг slug, CRUD,
+> path traversal, уведомление движка) — без Docker.
 
 ### Фаза 7. Чистка и документация ✅ (2026-08-07)
 

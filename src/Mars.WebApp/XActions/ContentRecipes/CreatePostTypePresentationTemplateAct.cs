@@ -1,6 +1,7 @@
 #if !NOADMIN
 using AppAdmin.Pages.PostTypeViews;
 #endif
+using Mars.Host.Shared.Services;
 using Mars.Services;
 using Mars.Shared.Contracts.XActions;
 
@@ -11,7 +12,7 @@ namespace Mars.XActions.ContentRecipes;
 /// (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
 /// </summary>
 [RegisterXActionCommand(CommandId, "Create PostType presentation template")]
-public class CreatePostTypePresentationTemplateAct(FrontFilesService frontFilesService) : IAct
+public class CreatePostTypePresentationTemplateAct(IFrontFilesService frontFilesService) : IAct
 {
     public const string CommandId = "Mars.XActions.Content.Templates." + nameof(CreatePostTypePresentationTemplateAct);
 

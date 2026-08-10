@@ -24,13 +24,13 @@ namespace Mars.Controllers;
 public class FrontController : ControllerBase
 {
     private readonly FrontTemplateService _frontTemplateService;
-    private readonly FrontFilesService _frontFilesService;
+    private readonly IFrontFilesService _frontFilesService;
     private readonly IWebRenderEngineLocator _renderEngineLocator;
     private readonly IOptionService _optionService;
 
     public FrontController(
         FrontTemplateService frontTemplateService,
-        FrontFilesService frontFilesService,
+        IFrontFilesService frontFilesService,
         IWebRenderEngineLocator renderEngineLocator,
         IOptionService optionService)
     {

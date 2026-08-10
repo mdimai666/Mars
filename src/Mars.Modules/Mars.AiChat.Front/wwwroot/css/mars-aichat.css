@@ -69,6 +69,9 @@
     padding: 6px 10px;
     background: #161b22;
     border-bottom: 1px solid #2b3442;
+    cursor: move;
+    user-select: none;
+    touch-action: none;
 }
 
 .aichat-title {

@@ -41,6 +41,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     private string _input = "";
     private string? _pendingQuestion;
 
+    private ElementReference _termEl;
     private ElementReference _fabEl;
     private ElementReference _messagesEl;
     private ElementReference _inputEl;
@@ -79,6 +80,15 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     // в окне, которое меньше кнопки.
     private string EdgeOffsetCss(double buttonSize)
         => $"max(0px, calc({_fabPos.ToString("0.####", CultureInfo.InvariantCulture)} * (100% - {buttonSize + FabMargin:0}px)))";
+
+    // Позиция окна терминала живёт только в памяти: переживает свернуть/развернуть,
+    // но после перезагрузки страницы окно снова открывается внизу по центру (NaN → CSS).
+    private double _termX = double.NaN;
+    private double _termY = double.NaN;
+
+    private string TermStyle => double.IsNaN(_termX)
+        ? ""
+        : $"left: {_termX:0}px; top: {_termY:0}px; bottom: auto; transform: none;";
 
     private string StatusText => _running
         ? "агент работает…"
@@ -554,6 +564,39 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _fabY = y;
         }
 
+        StateHasChanged();
+    }
+
+    // ---------- перетаскивание окна ----------
+
+    private async void OnTermHeaderPointerDown(PointerEventArgs e)
+    {
+        if (_module is null) return;
+
+        try
+        {
+            _dotnetRef ??= DotNetObjectReference.Create(this);
+            await _module.InvokeVoidAsync("startTermDrag", _dotnetRef, _termEl, e.PointerId, e.ClientX, e.ClientY);
+        }
+        catch
+        {
+            // без JS-модуля окно просто не перетаскивается
+        }
+    }
+
+    [JSInvokable]
+    public void OnTermDragMove(double x, double y)
+    {
+        _termX = x;
+        _termY = y;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnTermDragEnd(double x, double y)
+    {
+        _termX = x;
+        _termY = y;
         StateHasChanged();
     }
 

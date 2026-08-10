@@ -18,11 +18,11 @@
     }
     else
     {
-        <div class="aichat-modal">
-            <div class="aichat-header">
+        <div class="aichat-modal" @ref=_termEl style="@TermStyle">
+            <div class="aichat-header" @onpointerdown="OnTermHeaderPointerDown" @onpointerdown:preventDefault="true" title="тяни за шапку — окно переедет">
                 <span class="aichat-title">mars-ai</span>
                 <span class="aichat-status">@StatusText</span>
-                <div class="aichat-header-actions">
+                <div class="aichat-header-actions" @onpointerdown:stopPropagation="true">
                     <select class="aichat-sessions" @onchange="OnSessionSelectChanged" title="Сменить чат">
                         @foreach (var s in _sessions)
                         {

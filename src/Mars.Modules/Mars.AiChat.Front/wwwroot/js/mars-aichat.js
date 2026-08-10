@@ -46,16 +46,13 @@ export function getViewport() {
     return { w: window.innerWidth, h: window.innerHeight };
 }
 
-// Клик/перетаскивание кнопки. Вся логика различения — здесь, в JS:
-// если указатель не сдвинулся дальше порога — это клик (OnFabClick),
-// иначе — перетаскивание (OnFabDragMove/OnFabDragEnd с финальной позицией).
-// dotnetRef должен иметь методы: OnFabClick(), OnFabDragMove(x, y), OnFabDragEnd(x, y).
-// Возвращает стартовый rect кнопки { x, y, w, h }.
 let dragCleanup = null;
 const DRAG_THRESHOLD = 5;
 
-export function startFabDrag(dotnetRef, el, pointerId, clientX, clientY) {
-    // защита от слушателей, оставшихся от незавершённого предыдущего жеста
+// Общий каркас жеста перетаскивания: порог различения клика и сдвига,
+// слушатели на window, защита от незавершённого предыдущего жеста.
+// Возвращает стартовый rect элемента { x, y, w, h }.
+function beginDrag(el, pointerId, clientX, clientY, handlers) {
     if (dragCleanup) {
         dragCleanup();
         dragCleanup = null;
@@ -78,7 +75,7 @@ export function startFabDrag(dotnetRef, el, pointerId, clientX, clientY) {
             moved = true;
         }
         if (moved) {
-            dotnetRef.invokeMethodAsync('OnFabDragMove', lastX, lastY);
+            handlers.onMove(lastX, lastY);
         }
     }
 
@@ -86,11 +83,7 @@ export function startFabDrag(dotnetRef, el, pointerId, clientX, clientY) {
         if (e.pointerId !== pointerId) return;
         cleanup();
         if (cancelled) return;
-        if (moved) {
-            dotnetRef.invokeMethodAsync('OnFabDragEnd', lastX, lastY);
-        } else {
-            dotnetRef.invokeMethodAsync('OnFabClick');
-        }
+        handlers.onEnd(moved, lastX, lastY);
     }
 
     function onUp(e) { finish(e, false); }
@@ -109,6 +102,39 @@ export function startFabDrag(dotnetRef, el, pointerId, clientX, clientY) {
     dragCleanup = cleanup;
 
     return { x: startX, y: startY, w: rect.width, h: rect.height };
+}
+
+// Клик/перетаскивание кнопки: если указатель не сдвинулся дальше порога —
+// это клик (OnFabClick), иначе — OnFabDragMove/OnFabDragEnd с финальной позицией.
+export function startFabDrag(dotnetRef, el, pointerId, clientX, clientY) {
+    return beginDrag(el, pointerId, clientX, clientY, {
+        onMove: (x, y) => dotnetRef.invokeMethodAsync('OnFabDragMove', x, y),
+        onEnd: (moved, x, y) => moved
+            ? dotnetRef.invokeMethodAsync('OnFabDragEnd', x, y)
+            : dotnetRef.invokeMethodAsync('OnFabClick'),
+    });
+}
+
+// Перетаскивание окна терминала за шапку (OnTermDragMove/OnTermDragEnd).
+// Клика тут нет; окно не даём уехать за экран — видимой остаётся хотя бы шапка.
+export function startTermDrag(dotnetRef, el, pointerId, clientX, clientY) {
+    const rect = el.getBoundingClientRect();
+    const clampPos = (x, y) => ({
+        x: Math.min(Math.max(x, 80 - rect.width), window.innerWidth - 80),
+        y: Math.min(Math.max(y, 0), window.innerHeight - 40),
+    });
+
+    return beginDrag(el, pointerId, clientX, clientY, {
+        onMove: (x, y) => {
+            const p = clampPos(x, y);
+            dotnetRef.invokeMethodAsync('OnTermDragMove', p.x, p.y);
+        },
+        onEnd: (moved, x, y) => {
+            if (!moved) return;
+            const p = clampPos(x, y);
+            dotnetRef.invokeMethodAsync('OnTermDragEnd', p.x, p.y);
+        },
+    });
 }
 
 export function scrollToBottom(el) {

@@ -9,12 +9,15 @@ using Mars.AiChat.Shared.Dto;
 using Mars.AiChat.Shared.Options;
 using Mars.AiChat.Shared.SignalR;
 using Mars.Core.Exceptions;
+using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
 using Microsoft.Agents.AI;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Mars.AiChat.Host.Services;
 
@@ -35,7 +38,11 @@ public class AiChatAgentService
     private readonly MarsOptionsTools _optionsTools;
     private readonly MarsSystemTools _systemTools;
     private readonly MarsSqlTools _sqlTools;
+    private readonly MarsHttpTools _httpTools;
     private readonly IFrontFilesService _frontFilesService;
+    private readonly string _aiRoot;
+    private readonly AgentSkillsSource _skillsSource;
+    private readonly FileMemoryProvider _fileMemory;
     private readonly ILogger<AiChatAgentService> _logger;
 
     public AiChatAgentService(
@@ -50,9 +57,28 @@ public class AiChatAgentService
         MarsOptionsTools optionsTools,
         MarsSystemTools systemTools,
         MarsSqlTools sqlTools,
+        MarsHttpTools httpTools,
         IFrontFilesService frontFilesService,
+        [FromKeyedServices("data")] IOptions<FileHostingInfo> dataHostingInfo,
+        ILoggerFactory loggerFactory,
+        FileMemoryProvider fileMemory,
         ILogger<AiChatAgentService> logger)
     {
+        _fileMemory = fileMemory;
+        _aiRoot = Path.Combine(dataHostingInfo.Value.PhysicalPath.LocalPath, "ai");
+
+        // Скиллы (SKILL.md): кастомные из <data>/ai/skills + bundled рядом со сборкой;
+        // агент может дописывать свои через file_access_*
+        var customSkills = Path.Combine(_aiRoot, "skills");
+        var bundledSkills = Path.Combine(AppContext.BaseDirectory, "skills");
+        Directory.CreateDirectory(customSkills);
+        Directory.CreateDirectory(bundledSkills);
+        _skillsSource = new AggregatingAgentSkillsSource(
+        [
+            new AgentFileSkillsSource(customSkills, null, null, loggerFactory),
+            new AgentFileSkillsSource(bundledSkills, null, null, loggerFactory),
+        ]);
+
         _hub = hub;
         _store = store;
         _clientFactory = clientFactory;
@@ -64,6 +90,7 @@ public class AiChatAgentService
         _optionsTools = optionsTools;
         _systemTools = systemTools;
         _sqlTools = sqlTools;
+        _httpTools = httpTools;
         _frontFilesService = frontFilesService;
         _logger = logger;
     }
@@ -107,6 +134,7 @@ public class AiChatAgentService
                 AIFunctionFactory.Create(_optionsTools.GetSiteOption),
                 AIFunctionFactory.Create(_optionsTools.UpdateSiteOption),
                 AIFunctionFactory.Create(_systemTools.GetSystemInfo),
+                AIFunctionFactory.Create(_httpTools.HttpRequest),
                 AIFunctionFactory.Create(postTools.CreatePost),
                 AIFunctionFactory.Create(postTools.GetPost),
                 AIFunctionFactory.Create(postTools.ListPosts),
@@ -154,8 +182,19 @@ public class AiChatAgentService
                 DisableWebSearch = true,
                 DisableTodoProvider = true,
                 DisableAgentModeProvider = true,
+                // Память агента — общие файлы в <data>/ai/memory (не привязана к чату).
+                // Встроенный FileMemoryProvider отключён: его дефолт изолирует папку на сессию,
+                // вместо него подключаем свой провайдер с общим working folder.
                 DisableFileMemory = true,
-                DisableAgentSkillsProvider = true,
+                AIContextProviders = [_fileMemory],
+                // Скиллы (SKILL.md) и рабочая папка агента — <data>/ai
+                AgentSkillsSource = _skillsSource,
+                FileAccessStore = new FileSystemAgentFileStore(_aiRoot),
+                FileAccessProviderOptions = new FileAccessProviderOptions
+                {
+                    DisableReadOnlyToolApproval = true,
+                    DisableWriteToolApproval = true,
+                },
                 DisableOpenTelemetry = true,
             });
 

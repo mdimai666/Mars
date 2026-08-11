@@ -9,6 +9,10 @@ internal static class AiChatPrompts
     {
         var sb = new StringBuilder(BaseInstructions);
 
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.Append(MemoryInstructions);
+
         if (option.EnableSqlAccess)
         {
             sb.AppendLine();
@@ -79,8 +83,17 @@ internal static class AiChatPrompts
         10. Никогда не выдумывай результат действия: если инструмент не вызывался, действие не выполнено.
         """;
 
+    public const string MemoryInstructions = """
+        11. Долговременная память (общая для всех чатов, инструменты file_memory_*):
+           - запоминай устойчивые факты: особенности сайта, предпочтения администратора, принятые
+             соглашения, важные результаты выполненных задач;
+           - не запоминай временное: текущую переписку, черновики, разовые значения;
+           - прежде чем опереться на запомненный факт — проверь его актуальность;
+           - начни с file_memory_ls, чтобы увидеть, что уже известно; крупные файлы сопровождай описанием.
+        """;
+
     public const string SqlAccessInstructions = """
-        11. SQL-доступ к базам данных:
+        12. SQL-доступ к базам данных:
            - list_data_sources — список доступных баз; slug "default" — основная база самого сайта Mars
              (посты, пользователи, настройки, метаданные); остальные slug — настроенные внешние базы;
            - перед запросами изучи структуру: get_database_schema (для больших баз передавай tablesFilter —
@@ -94,7 +107,7 @@ internal static class AiChatPrompts
         """;
 
     public const string FrontEditorInstructions = """
-        12. Файлы фронта (шаблоны сайта): пользователь открыл редактор фронта «{FRONT_SLUG}» — для этого фронта
+        13. Файлы фронта (шаблоны сайта): пользователь открыл редактор фронта «{FRONT_SLUG}» — для этого фронта
            доступны инструменты ListFrontFiles / ReadFrontFile / WriteFrontFile / CreateFrontFile /
            RenameFrontFile / DeleteFrontFile.
            - Фронт — папка с Handlebars-шаблонами сайта:

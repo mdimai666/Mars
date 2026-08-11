@@ -84,6 +84,28 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 - После правок js/css модуля обязательно поднимать `MarsAppVersion` в `Directory.Packages.props`
   (конвенция та же, что `AppAdminSpaHtmlScripts`/`ScriptFileInfo` с `?v=`).
 
+### Память, скиллы и рабочая папка агента (/data/ai)
+
+Агент — harness (Microsoft Agent Framework); в `AiChatAgentService` включены встроенные
+контекст-провайдеры harness, все данные — в `<ContentRoot>/data/ai` (в Docker — `/data/ai`,
+корень берётся из keyed `IOptions<FileHostingInfo>("data")`):
+
+- **Память** — `FileMemoryProvider`: общие на инстанс файлы в `<data>/ai/memory`
+  (инструменты `file_memory_*`, автоиндекс `memories.md`); не привязана к чату, переживает
+  перезапуски. Правила «что запоминать» — секция 11 промпта (`MemoryInstructions`).
+  Нюанс: встроенный в harness провайдер отключён (`DisableFileMemory = true`), т.к. его дефолт
+  создаёт отдельную папку на сессию (`{timestamp}_{guid}`) — память не переживала новый чат;
+  вместо него в `AIContextProviders` подключён свой экземпляр (singleton в `MainAiChat`)
+  с постоянным working folder.
+- **Скиллы** — `AgentSkillsProvider` с двумя источниками `AgentFileSkillsSource`:
+  кастомные `<data>/ai/skills` + bundled `<assembly>/skills` (в репо — `Mars.AiChat.Host/skills/**`,
+  копируются в output). Формат — стандартный SKILL.md с YAML frontmatter (name/description),
+  как у Qwen Code CLI; список доступных скиллов harness подставляет в контекст сам.
+- **Рабочая папка** — `FileAccessProvider` на `<data>/ai` (инструменты `file_access_*`,
+  approve отключён): агент сам создаёт скиллы и артефакты, админ может править файлы руками.
+
+План развития (следующая фаза — ноды): `ai/AiSkillsMemoryNodesPlan.md`.
+
 ### Мост «агент → открытая страница» (page bridge)
 
 Агент работает на сервере, а поля формы живут в клиентском Blazor. Инструменты открытой страницы
@@ -288,7 +310,9 @@ connection strings не выводить. Connection strings также защи
 Реализовано: настройки сайта и любые опции, информация о системе, создание/чтение постов,
 мост открытой страницы редактирования поста (чтение/правка полей, сохранение по запросу),
 SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`),
-файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`).
+файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`),
+исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
+долговременная память и скиллы harness (см. «Память, скиллы и рабочая папка агента»).
 
 - **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
   (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.

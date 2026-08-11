@@ -11,9 +11,14 @@ internal class AppDebugServiceClient : BasicServiceClient, IAppDebugServiceClien
         _controllerName = "AppDebug";
     }
 
-    public Task<UserActionResult<string>> GetLogs(string filename, int lines = 1000)
+    public Task<UserActionResult<string>> GetLogs(int lines = 1000, IReadOnlyCollection<string>? levels = null, string? period = null)
         => _client.Request($"{_basePath}{_controllerName}", "GetLogs")
-                    .AppendQueryParam(new { filename, lines })
+                    .AppendQueryParam(new
+                    {
+                        lines,
+                        levels = levels is null ? "" : string.Join(",", levels),
+                        period = period ?? "",
+                    })
                     .GetJsonAsync<UserActionResult<string>>();
 
     public Task<IReadOnlyCollection<string>> LogFiles()

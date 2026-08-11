@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.JSInterop;
 
 namespace MarsCodeEditor2
@@ -11,12 +12,19 @@ namespace MarsCodeEditor2
 
     public class MarsCodeEditor2JsInterop : IAsyncDisposable
     {
+        // URL модуля с версией в query (?v=…) — cache-busting по конвенции
+        // AiChatAssets/AppAdminSpaHtmlScripts: статика отдаётся без Cache-Control,
+        // без версии в урле браузер может держать старый js из эвристического кеша.
+        static readonly string ModuleVersion = Uri.EscapeDataString(
+            typeof(MarsCodeEditor2JsInterop).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+            ?? "0.0.0");
+
         private readonly Lazy<Task<IJSObjectReference>> moduleTask;
 
         public MarsCodeEditor2JsInterop(IJSRuntime jsRuntime)
         {
             moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/mdimai666.Mars.MarsCodeEditor2/MarsCodeEditor2JsInterop.js").AsTask());
+                "import", $"./_content/mdimai666.Mars.MarsCodeEditor2/MarsCodeEditor2JsInterop.js?v={ModuleVersion}").AsTask());
         }
 
         public async ValueTask<string> Prompt(string message)
@@ -40,10 +48,10 @@ namespace MarsCodeEditor2
             await module.InvokeVoidAsync("f_editor_doaction", blazorMonacoId, actionId);
         }
 
-        public async ValueTask Editor_activateJSextensions(string blazorMonacoId)
+        public async ValueTask Editor_activateJSextensions(string blazorMonacoId, string? optionsJson = null)
         {
             var module = await moduleTask.Value;
-            await module.InvokeVoidAsync("activateJSextensions", blazorMonacoId);
+            await module.InvokeVoidAsync("activateJSextensions", blazorMonacoId, optionsJson);
         }
 
         public async ValueTask Editor_setModelLanguage(string blazorMonacoId, string lang)

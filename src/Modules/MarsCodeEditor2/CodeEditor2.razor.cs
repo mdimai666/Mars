@@ -35,6 +35,12 @@ public partial class CodeEditor2 : IDisposable
     [Parameter] public string ContainerCssStyle { get; set; } = "height:80vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;";
     [Parameter] public bool HideToolbarComponents { get; set; } = false;
 
+    /// <summary>
+    /// Дополнительные опции monaco в формате JSON — применяются через editor.updateOptions при инициализации.
+    /// Любые опции IEditorOptions, например: {"wordWrap":"off","minimap":{"enabled":false},"readOnly":true}
+    /// </summary>
+    [Parameter] public string OptionsJson { get; set; } = """{"wordWrap":"on"}""";
+
     [Parameter] public EventCallback<string> OnSave { get; set; }
     [Parameter] public EventCallback OnInit { get; set; }
 
@@ -94,7 +100,7 @@ public partial class CodeEditor2 : IDisposable
             }
         });
 
-        await js.Editor_activateJSextensions(editor1.Id);
+        await js.Editor_activateJSextensions(editor1.Id, OptionsJson);
 
         if (Lang == Language.log)
         {

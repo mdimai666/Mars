@@ -179,6 +179,45 @@
             Singletone.
             </summary>
         </member>
+        <member name="T:Mars.Services.LogFileFilter">
+            <summary>
+            Разбор и фильтрация записей лога приложения (формат NReco.Logging.File:
+            "2026-08-11T00:00:19.0445964+09:00	WARN	[Category]	[EventId]	сообщение").
+            Понимает и старый формат "2026-08-11 14:30:22.123 [7] WARN Logger[0] - сообщение".
+            Многострочные записи (например stack trace) не разрываются.
+            </summary>
+        </member>
+        <member name="F:Mars.Services.LogFileFilter.Levels">
+            <summary>Канонические уровни логов.</summary>
+        </member>
+        <member name="M:Mars.Services.LogFileFilter.ParsePeriod(System.String)">
+            <summary>
+            Код периода ("1h", "6h", "1d", "7d", "30d") в TimeSpan.
+            Пустое или неизвестое значение — null (без фильтра).
+            </summary>
+        </member>
+        <member name="M:Mars.Services.LogFileFilter.ParseLevels(System.String)">
+            <summary>
+            Csv уровней ("warn,error") в множество канонических уровней.
+            Пустое значение — null (без фильтра).
+            </summary>
+        </member>
+        <member name="M:Mars.Services.LogFileFilter.FilterLines(System.IO.TextReader,System.Collections.Generic.IReadOnlyCollection{System.String},System.Nullable{System.DateTime})">
+            <summary>
+            Читает строки лога и возвращает только записи указанных уровней и не старше <paramref name="since"/>.
+            Значение null означает отсутствие соответствующего фильтра.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.LogFileFilter.ReadSeamless(System.String,System.Collections.Generic.IReadOnlyCollection{System.String},System.Nullable{System.DateTime},System.Int32)">
+            <summary>
+            Бесшовное чтение дневных файлов app_*.log: от новейших к старейшим, записи фильтруются
+            по уровням и времени, суммарно не более <paramref name="maxLines"/> строк,
+            результат в хронологическом порядке.
+            </summary>
+        </member>
+        <member name="M:Mars.Services.LogFileFilter.ExtractLevel(System.String)">
+            <summary>Уровень записи: первый известный токен в начале строки.</summary>
+        </member>
         <member name="F:Mars.Setup.SetupService.ExistingFrontChoice">
             <summary>
             Значение выбора фронта в визарде: существующая папка с шаблонами (путь + движок).

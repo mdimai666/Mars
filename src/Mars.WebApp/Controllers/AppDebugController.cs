@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using Mars.Host.Shared.ExceptionFilters;
+using Mars.Services;
 using Mars.Shared.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,35 +28,21 @@ public class AppDebugController : ControllerBase
     [HttpGet("GetLogs")]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public UserActionResult<string> GetLogs(string filename, int lines = 1000)
+    public UserActionResult<string> GetLogs(int lines = 1000, string levels = "", string period = "")
     {
         try
         {
-            string logFileName;
+            var maxLines = Math.Min(lines, 1000);
 
-            if (string.IsNullOrEmpty(filename))
-            {
-                logFileName = string.Format("app_{0:yyyy}-{0:MM}-{0:dd}.log", DateTime.Now);
-            }
-            else
-            {
-                logFileName = Path.GetFileName(filename) + ".log";
-            }
+            var selectedLevels = LogFileFilter.ParseLevels(levels);
+            var since = LogFileFilter.ParsePeriod(period) is { } p ? DateTime.Now - p : (DateTime?)null;
 
-            string logspath = Path.Combine(_logPath, logFileName);
-
-            //using TextReader reader = new StreamReader(System.IO.File.OpenRead(logspath));
-
-            using var fs = new FileStream(logspath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var sr = new StreamReader(fs);
-            using TextReader reader = sr;//System.IO.File.OpenText(logspath);
-
-            var text = reader.Tail(Math.Min(lines, 1000));
+            var text = string.Join(Environment.NewLine, LogFileFilter.ReadSeamless(_logPath, selectedLevels, since, maxLines));
 
             return new UserActionResult<string>
             {
                 Ok = true,
-                Data = string.Join(Environment.NewLine, text)
+                Data = text
             };
         }
         catch (Exception ex)

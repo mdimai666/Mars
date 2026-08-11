@@ -1,74 +1,80 @@
 using Mars.Core.Extensions;
 using MarsCodeEditor2;
-using Microsoft.AspNetCore.Components;
 
 namespace AppAdmin.Builder.DebugViews;
 
 public partial class DebugPage
 {
-    [Parameter] public string FILENAME { get; set; } = default!;
-
     bool Busy = true;
     string text = "";
     string? error;
 
     CodeEditor2? editor1;
-    string? prevFileName;
 
-    protected override void OnParametersSet()
+    readonly string[] levelOptions = ["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"];
+    IEnumerable<string> selectedLevels = ["WARN", "ERROR", "CRITICAL"];
+
+    // цвета согласованы с темой logview Monaco-редактора логов
+    static readonly Dictionary<string, string> LevelColors = new()
     {
-        base.OnParametersSet();
-        if (prevFileName is null || prevFileName != FILENAME)
-        {
-            Load();
-        }
-        prevFileName = FILENAME;
+        ["TRACE"] = "#808080",
+        ["DEBUG"] = "#008800",
+        ["INFO"] = "#4b71ca",
+        ["WARN"] = "#FFA500",
+        ["ERROR"] = "#dc3545",
+        ["CRITICAL"] = "#a10000",
+    };
+
+    static string LevelColor(string level) => LevelColors.GetValueOrDefault(level, "#808080");
+
+    readonly KeyValuePair<string, string>[] periodOptions =
+    [
+        new("", "всё время"),
+        new("1h", "за час"),
+        new("6h", "за 6 часов"),
+        new("1d", "за день"),
+        new("7d", "за неделю"),
+        new("30d", "за месяц"),
+    ];
+    string period = "1d";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Load();
     }
-
-    IReadOnlyCollection<string>? logfiles;
-
 
     async void Load()
     {
         Busy = true;
         StateHasChanged();
 
-        logfiles ??= await client.AppDebug.LogFiles();
+        var res = await client.AppDebug.GetLogs(1000, [.. selectedLevels], period);
 
-        var fileName = string.IsNullOrEmpty(FILENAME) ? logfiles.FirstOrDefault() : FILENAME;
-
-        if (fileName is not null)
+        if (res.Ok)
         {
-            var res = await client.AppDebug.GetLogs(fileName, 1000);
-
-            if (res.Ok)
-            {
-                error = null;
-                text = res.Data;
-            }
-            else
-            {
-                error = res.Message;
-            }
+            error = null;
+            text = res.Data;
         }
-
-
+        else
+        {
+            error = res.Message;
+        }
 
         Busy = false;
         StateHasChanged();
+    }
 
+    void SetPeriod(string value)
+    {
+        if (period == value) return;
+        period = value;
+        Load();
     }
 
     void OnInit()
     {
         ScrollDown();
-    }
-
-    async void LoadLogFiles()
-    {
-        logfiles = await client.AppDebug.LogFiles();
-
-        StateHasChanged();
     }
 
     async void ScrollDown()
@@ -77,11 +83,5 @@ public partial class DebugPage
 
         var sh = await editor1.Monaco.GetScrollHeight();
         await editor1.Monaco.SetScrollTop((int)(sh - 1500));
-    }
-
-    void OnChangeLogFile(string file)
-    {
-        var u = $"/dev/builder/debug/{file}";
-        navigationManager.NavigateTo(u);
     }
 }

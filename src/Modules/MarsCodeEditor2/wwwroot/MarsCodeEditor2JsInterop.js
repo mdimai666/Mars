@@ -13,7 +13,7 @@ export function f_editor_doaction(blazorMonacoId, action_id) {
     action.run();
 }
 
-export function activateJSextensions(blazorMonacoId) {
+export function activateJSextensions(blazorMonacoId, optionsJson) {
     let editor = getEditorByBlazorMonacoId(blazorMonacoId)
 
     if (!blazorMonaco.Mars_extensions_activated) {
@@ -24,7 +24,14 @@ export function activateJSextensions(blazorMonacoId) {
         else "'monaco_plugin_init_log_lang' not found";
     }
 
-    editor.updateOptions({ wordWrap: "on" })
+    // произвольные опции редактора из JSON (CodeEditor2.OptionsJson)
+    if (optionsJson) {
+        try {
+            editor.updateOptions(JSON.parse(optionsJson))
+        } catch (e) {
+            console.error('invalid editor options json:', optionsJson, e)
+        }
+    }
 
     add_more_actions(editor)
 }

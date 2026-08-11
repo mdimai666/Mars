@@ -5,12 +5,12 @@ using Mars.AiChat.Host.Hubs;
 using Mars.AiChat.Host.Shared.Interfaces;
 using Mars.AiChat.Host.Shared.Models;
 using Mars.AiChat.Host.Tools;
+using Mars.AiChat.Host.Toolsets;
 using Mars.AiChat.Shared.Dto;
 using Mars.AiChat.Shared.Options;
 using Mars.AiChat.Shared.SignalR;
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
 using Microsoft.Agents.AI;
 using Microsoft.AspNetCore.SignalR;
@@ -31,15 +31,7 @@ public class AiChatAgentService
     private readonly IAiChatSessionStore _store;
     private readonly IAiChatClientFactory _clientFactory;
     private readonly IOptionService _optionService;
-    private readonly AiChatPageBridge _pageBridge;
-    private readonly IPostService _postService;
-    private readonly IHubContext<ChatHub> _chatHub;
-    private readonly MarsSiteTools _siteTools;
-    private readonly MarsOptionsTools _optionsTools;
-    private readonly MarsSystemTools _systemTools;
-    private readonly MarsSqlTools _sqlTools;
-    private readonly MarsHttpTools _httpTools;
-    private readonly IFrontFilesService _frontFilesService;
+    private readonly IReadOnlyList<IAiToolset> _toolsets;
     private readonly string _aiRoot;
     private readonly AgentSkillsSource _skillsSource;
     private readonly FileMemoryProvider _fileMemory;
@@ -50,27 +42,20 @@ public class AiChatAgentService
         IAiChatSessionStore store,
         IAiChatClientFactory clientFactory,
         IOptionService optionService,
-        AiChatPageBridge pageBridge,
-        IPostService postService,
-        IHubContext<ChatHub> chatHub,
-        MarsSiteTools siteTools,
-        MarsOptionsTools optionsTools,
-        MarsSystemTools systemTools,
-        MarsSqlTools sqlTools,
-        MarsHttpTools httpTools,
-        IFrontFilesService frontFilesService,
+        IEnumerable<IAiToolset> toolsets,
         [FromKeyedServices("data")] IOptions<FileHostingInfo> dataHostingInfo,
         ILoggerFactory loggerFactory,
         FileMemoryProvider fileMemory,
         ILogger<AiChatAgentService> logger)
     {
+        _toolsets = [.. toolsets];
         _fileMemory = fileMemory;
         _aiRoot = Path.Combine(dataHostingInfo.Value.PhysicalPath.LocalPath, "ai");
 
-        // Скиллы (SKILL.md): кастомные из <data>/ai/skills + bundled рядом со сборкой;
-        // агент может дописывать свои через file_access_*
+        // Скиллы (SKILL.md): кастомные из <data>/ai/skills + bundled рядом со сборкой (ai-skills,
+        // отдельно от skills/ модуля SemanticKernel); агент может дописывать свои через file_access_*
         var customSkills = Path.Combine(_aiRoot, "skills");
-        var bundledSkills = Path.Combine(AppContext.BaseDirectory, "skills");
+        var bundledSkills = Path.Combine(AppContext.BaseDirectory, "ai-skills");
         Directory.CreateDirectory(customSkills);
         Directory.CreateDirectory(bundledSkills);
         _skillsSource = new AggregatingAgentSkillsSource(
@@ -83,15 +68,6 @@ public class AiChatAgentService
         _store = store;
         _clientFactory = clientFactory;
         _optionService = optionService;
-        _pageBridge = pageBridge;
-        _postService = postService;
-        _chatHub = chatHub;
-        _siteTools = siteTools;
-        _optionsTools = optionsTools;
-        _systemTools = systemTools;
-        _sqlTools = sqlTools;
-        _httpTools = httpTools;
-        _frontFilesService = frontFilesService;
         _logger = logger;
     }
 
@@ -104,8 +80,8 @@ public class AiChatAgentService
         var group = AiChatHub.GroupName(chatId);
         var stopwatch = Stopwatch.StartNew();
 
-        _logger.LogDebug("AiChat: run {RunId} started in chat {ChatId} (user {UserId}), page: {PageContext}, message: {Message}",
-            runId, chatId, userId, pageContext ?? "-", userMessage);
+        _logger.LogInformation("AiChat: run {RunId} started in chat {ChatId} (user {UserId}), page: {PageContext}, savedAgentSession: {HasSaved}, uiMessages: {Messages}, message: {Message}",
+            runId, chatId, userId, pageContext ?? "-", !string.IsNullOrEmpty(state.SerializedAgentSession), state.Messages.Count, userMessage);
 
         if (state.Title is "" or "Новый чат")
             state.Title = userMessage.Length <= 40 ? userMessage : userMessage[..40] + "…";
@@ -123,51 +99,17 @@ public class AiChatAgentService
             _logger.LogDebug("AiChat: chat {ChatId} uses connection '{ConnectionName}' ({ProviderType}, model '{ModelId}')",
                 chatId, connection.Name, connection.ProviderType, connection.ModelId);
 
-            var askUser = new AskUserTool();
-            var pageTools = new MarsOpenPageTools(_pageBridge, chatId);
-            var postTools = new MarsPostTools(_postService, _chatHub, userId);
-            var tools = new List<AIFunction>
-            {
-                AIFunctionFactory.Create(_siteTools.GetSiteSettings),
-                AIFunctionFactory.Create(_siteTools.UpdateSiteSettings),
-                AIFunctionFactory.Create(_optionsTools.ListSiteOptions),
-                AIFunctionFactory.Create(_optionsTools.GetSiteOption),
-                AIFunctionFactory.Create(_optionsTools.UpdateSiteOption),
-                AIFunctionFactory.Create(_systemTools.GetSystemInfo),
-                AIFunctionFactory.Create(_httpTools.HttpRequest),
-                AIFunctionFactory.Create(postTools.CreatePost),
-                AIFunctionFactory.Create(postTools.GetPost),
-                AIFunctionFactory.Create(postTools.ListPosts),
-                AIFunctionFactory.Create(pageTools.GetOpenPageInfo),
-                AIFunctionFactory.Create(pageTools.GetOpenPageFields),
-                AIFunctionFactory.Create(pageTools.SetOpenPageField),
-                AIFunctionFactory.Create(pageTools.SaveOpenPage),
-                AIFunctionFactory.Create(askUser.AskUser),
-            };
-
-            if (option.EnableSqlAccess)
-            {
-                tools.Add(AIFunctionFactory.Create(_sqlTools.ListDataSources));
-                tools.Add(AIFunctionFactory.Create(_sqlTools.GetDatabaseSchema));
-                tools.Add(AIFunctionFactory.Create(_sqlTools.ExecuteSql));
-
-                _logger.LogDebug("AiChat: chat {ChatId} SQL tools enabled", chatId);
-            }
-
             // Файлы фронта — только когда открыт редактор фронта (slug из URL страницы)
             var frontEditorSlug = MarsFrontFilesTools.TryParseSlugFromPageContext(pageContext);
-            if (frontEditorSlug is not null)
-            {
-                var frontTools = new MarsFrontFilesTools(_frontFilesService, frontEditorSlug);
-                tools.Add(AIFunctionFactory.Create(frontTools.ListFrontFiles));
-                tools.Add(AIFunctionFactory.Create(frontTools.ReadFrontFile));
-                tools.Add(AIFunctionFactory.Create(frontTools.WriteFrontFile));
-                tools.Add(AIFunctionFactory.Create(frontTools.CreateFrontFile));
-                tools.Add(AIFunctionFactory.Create(frontTools.RenameFrontFile));
-                tools.Add(AIFunctionFactory.Create(frontTools.DeleteFrontFile));
 
-                _logger.LogDebug("AiChat: chat {ChatId} front files tools enabled for front '{FrontSlug}'", chatId, frontEditorSlug);
-            }
+            // Инструменты собираются из зарегистрированных тулсетов по контексту запуска
+            var askUser = new AskUserTool();
+            var toolsetCtx = new AiToolsetContext(userId, chatId, option, pageContext, frontEditorSlug, askUser);
+            var activeToolsets = _toolsets.Where(t => t.IsEnabled(toolsetCtx)).ToList();
+            var tools = activeToolsets.SelectMany(t => t.Build(toolsetCtx)).ToList();
+
+            _logger.LogDebug("AiChat: chat {ChatId} active toolsets: {Toolsets}, tools: {Tools}",
+                chatId, string.Join(", ", activeToolsets.Select(t => t.Name)), tools.Count);
 
             var client = _clientFactory.CreateClient(connection);
             agent = client.AsHarnessAgent(new HarnessAgentOptions
@@ -175,7 +117,7 @@ public class AiChatAgentService
                 Name = "mars-site-agent",
                 ChatOptions = new ChatOptions
                 {
-                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext, frontEditorSlug),
+                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext),
                     Tools = [.. tools],
                 },
                 MaximumIterationsPerRequest = 15,
@@ -251,7 +193,7 @@ public class AiChatAgentService
                         state.Messages.Add(NewMessage(AiChatMessageRole.Tool, argsJson, toolName: call.Name));
                         await SendCoreAsync(group, AiChatHubEvents.ToolCall, [chatId, runId, call.Name, argsJson]);
 
-                        _logger.LogDebug("AiChat: chat {ChatId} tool call {ToolName}, args: {Args} ({ElapsedMs} ms)",
+                        _logger.LogInformation("AiChat: chat {ChatId} tool call {ToolName}, args: {Args} ({ElapsedMs} ms)",
                             chatId, call.Name, Truncate(argsJson), stopwatch.ElapsedMilliseconds);
 
                         if (call.Name == AskUserTool.FunctionName)
@@ -270,7 +212,7 @@ public class AiChatAgentService
                         state.Messages.Add(NewMessage(AiChatMessageRole.Tool, resultText, toolName: currentCallName, isToolResult: true));
                         await SendCoreAsync(group, AiChatHubEvents.ToolResult, [chatId, runId, currentCallName, resultText]);
 
-                        _logger.LogDebug("AiChat: chat {ChatId} tool result {ToolName}: {Result} ({ElapsedMs} ms)",
+                        _logger.LogInformation("AiChat: chat {ChatId} tool result {ToolName}: {Result} ({ElapsedMs} ms)",
                             chatId, currentCallName, Truncate(resultText), stopwatch.ElapsedMilliseconds);
                         break;
                 }
@@ -305,21 +247,117 @@ public class AiChatAgentService
     {
         if (!string.IsNullOrEmpty(state.SerializedAgentSession))
         {
-            try
+            // История harness могла сохраниться битой (assistant с tool_calls без tool-ответов) —
+            // провайдер тогда отвечает 400 invalid_request; лечим сбросом сессии
+            if (TryFindOrphanToolCalls(state.SerializedAgentSession, out var orphan))
             {
-                var json = JsonSerializer.Deserialize<JsonElement>(state.SerializedAgentSession);
-                var session = await agent.DeserializeSessionAsync(json, null, ct);
-                _logger.LogDebug("AiChat: chat {ChatId} agent session restored", state.Id);
-                return session;
+                _logger.LogWarning("AiChat: chat {ChatId} saved agent session is corrupted (tool_call {Orphan} without tool result); starting a new one", state.Id, orphan);
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogWarning(ex, "AiChat: failed to restore agent session of chat {ChatId}, starting a new one", state.Id);
+                try
+                {
+                    var json = JsonSerializer.Deserialize<JsonElement>(state.SerializedAgentSession);
+                    var session = await agent.DeserializeSessionAsync(json, null, ct);
+                    _logger.LogInformation("AiChat: chat {ChatId} agent session restored", state.Id);
+                    return session;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "AiChat: failed to restore agent session of chat {ChatId}, starting a new one", state.Id);
+                }
             }
         }
 
-        _logger.LogDebug("AiChat: chat {ChatId} new agent session created", state.Id);
+        _logger.LogInformation("AiChat: chat {ChatId} new agent session created", state.Id);
         return await agent.CreateSessionAsync(ct);
+    }
+
+    static bool TryFindOrphanToolCalls(string serialized, out string orphanCallId)
+    {
+        orphanCallId = "";
+        try
+        {
+            using var doc = JsonDocument.Parse(serialized);
+            var messages = FindMessagesArray(doc.RootElement);
+            if (messages is null) return false;
+
+            for (var i = 0; i < messages.Value.GetArrayLength(); i++)
+            {
+                var m = messages.Value[i];
+                if (!m.TryGetProperty("role", out var role) || role.GetString() != "assistant") continue;
+
+                List<string> callIds;
+                if (m.TryGetProperty("contents", out var contents))
+                {
+                    callIds = [.. contents.EnumerateArray()
+                        .Where(c => c.TryGetProperty("$type", out var t) && t.GetString() == "functionCall" && c.TryGetProperty("callId", out _))
+                        .Select(c => c.GetProperty("callId").GetString() ?? "")];
+                }
+                else
+                {
+                    callIds = [];
+                }
+                if (callIds.Count == 0) continue;
+
+                var covered = new HashSet<string>();
+                if (i + 1 < messages.Value.GetArrayLength())
+                {
+                    var next = messages.Value[i + 1];
+                    if (next.TryGetProperty("role", out var nr) && nr.GetString() == "tool" && next.TryGetProperty("contents", out var nc))
+                    {
+                        foreach (var c in nc.EnumerateArray())
+                        {
+                            if (c.TryGetProperty("$type", out var t2) && t2.GetString() == "functionResult" && c.TryGetProperty("callId", out var cid))
+                                covered.Add(cid.GetString() ?? "");
+                        }
+                    }
+                }
+
+                var missing = callIds.FirstOrDefault(id => !covered.Contains(id));
+                if (missing is not null)
+                {
+                    orphanCallId = missing;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        catch
+        {
+            // не смогли разобрать — не мешаем восстановлению, ошибка проявится и залогироваться ниже
+            return false;
+        }
+    }
+
+    static JsonElement? FindMessagesArray(JsonElement root)
+    {
+        var queue = new Queue<(JsonElement Element, int Depth)>();
+        queue.Enqueue((root, 0));
+        while (queue.Count > 0)
+        {
+            var (el, depth) = queue.Dequeue();
+            if (depth > 4) continue;
+            switch (el.ValueKind)
+            {
+                case JsonValueKind.Array:
+                {
+                    using var e = el.EnumerateArray();
+                    if (e.MoveNext() && e.Current.ValueKind == JsonValueKind.Object && e.Current.TryGetProperty("role", out _))
+                        return el;
+                    break;
+                }
+                case JsonValueKind.Object:
+                    foreach (var p in el.EnumerateObject()) queue.Enqueue((p.Value, depth + 1));
+                    break;
+            }
+            if (el.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var c in el.EnumerateArray()) queue.Enqueue((c, depth + 1));
+            }
+        }
+        return null;
     }
 
     static void FlushText(AiChatSessionState state, StringBuilder text)

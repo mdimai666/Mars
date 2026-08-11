@@ -2,6 +2,7 @@ using Mars.AiChat.Host.Hubs;
 using Mars.AiChat.Host.Services;
 using Mars.AiChat.Host.Shared.Interfaces;
 using Mars.AiChat.Host.Tools;
+using Mars.AiChat.Host.Toolsets;
 using Mars.AiChat.Shared.Options;
 using Mars.AiChat.Shared.SignalR;
 using Mars.Host.Shared.Dto.Files;
@@ -38,6 +39,13 @@ public static class MainAiChat
         services.AddScoped<MarsSystemTools>();
         services.AddScoped<MarsSqlTools>();
         services.AddScoped<MarsHttpTools>();
+
+        // Тулсеты: новый домен инструментов = новый класс IAiToolset + эта строка
+        services.AddScoped<IAiToolset, CoreToolset>();
+        services.AddScoped<IAiToolset, ContentToolset>();
+        services.AddScoped<IAiToolset, PageToolset>();
+        services.AddScoped<IAiToolset, SqlToolset>();
+        services.AddScoped<IAiToolset, FrontToolset>();
 
         return services;
     }

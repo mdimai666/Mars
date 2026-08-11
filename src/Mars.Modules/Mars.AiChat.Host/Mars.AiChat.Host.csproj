@@ -19,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- bundled-скиллы агента (SKILL.md), рядом со сборкой читаются AgentFileSkillsSource -->
-    <Content Include="skills\**" CopyToOutputDirectory="PreserveNewest" />
+    <!-- bundled-скиллы агента (SKILL.md), рядом со сборкой читаются AgentFileSkillsSource;
+         папка ai-skills, чтобы не смешиваться со skills/ модуля SemanticKernel -->
+    <Content Include="ai-skills\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

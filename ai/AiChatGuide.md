@@ -98,9 +98,11 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   вместо него в `AIContextProviders` подключён свой экземпляр (singleton в `MainAiChat`)
   с постоянным working folder.
 - **Скиллы** — `AgentSkillsProvider` с двумя источниками `AgentFileSkillsSource`:
-  кастомные `<data>/ai/skills` + bundled `<assembly>/skills` (в репо — `Mars.AiChat.Host/skills/**`,
-  копируются в output). Формат — стандартный SKILL.md с YAML frontmatter (name/description),
-  как у Qwen Code CLI; список доступных скиллов harness подставляет в контекст сам.
+  кастомные `<data>/ai/skills` + bundled `<assembly>/ai-skills` (в репо — `Mars.AiChat.Host/ai-skills/**`,
+  копируются в output; папка ai-skills, чтобы не смешиваться со `skills/` модуля SemanticKernel).
+  Формат — стандартный SKILL.md с YAML frontmatter (name/description), как у Qwen Code CLI;
+  в контекст попадает только описание, полный текст модель подгружает через `load_skill`.
+  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`.
 - **Рабочая папка** — `FileAccessProvider` на `<data>/ai` (инструменты `file_access_*`,
   approve отключён): агент сам создаёт скиллы и артефакты, админ может править файлы руками.
 
@@ -143,10 +145,14 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 
 Чтобы подключить новую страницу к мосту — реализуй `IAiChatPageHandler` и зарегистрируй его так же.
 
-## Как добавить новый скилл (инструмент агента)
+## Как добавить новый инструмент агента
 
-Скилл = C#-метод, который агент вызывает через function calling. Пример: инструменты настроек сайта
-в `Mars.AiChat.Host/Tools/MarsSiteTools.cs`.
+Инструмент = C#-метод, который агент вызывает через function calling. Пример: инструменты настроек сайта
+в `Mars.AiChat.Host/Tools/MarsSiteTools.cs`. Домены инструментов собраны в тулсеты
+(`IAiToolset` в `Mars.AiChat.Host/Toolsets/`): на запуск агент получает объединение включённых
+тулсетов (`IsEnabled` — по флагу опции или контексту страницы), поэтому `AiChatAgentService`
+при добавлении домена не меняется. Архитектура — прогрессивное раскрытие как в Qwen Code CLI:
+в системном промпте только ядро, доменные инструкции — в скиллах, схемы инструментов — по релевантности.
 
 1. **Создай класс инструмента** в `Mars.AiChat.Host/Tools/` (scoped, если нужны сервисы Mars):
 
@@ -181,13 +187,17 @@ public class MarsContentTools
 services.AddScoped<MarsContentTools>();
 ```
 
-3. **Подключи к агенту** — `AiChatAgentService`: внедри в конструктор и добавь в массив tools:
+3. **Подключи к тулсету** — добавь `AIFunctionFactory.Create(...)` в `Build(...)` подходящего тулсета
+   (или создай новый тулсет и зарегистрируй `services.AddScoped<IAiToolset, MyToolset>()` в `MainAiChat`):
 
 ```csharp
 AIFunctionFactory.Create(_contentTools.ListPosts),
 ```
 
-4. **Обнови системный промпт** — `AiChatPrompts.BaseInstructions`: коротко опиши, когда применять инструмент.
+4. **Инструкции — в скилл, не в промпт** — доменные правила положи в bundled-скилл
+   `Mars.AiChat.Host/ai-skills/<имя>/SKILL.md` (YAML frontmatter `name`/`description`; в контекст попадает
+   только описание, полный текст модель подгружает через `load_skill`).
+   В `AiChatPrompts.BaseInstructions` — только ядро: стиль, базовые правила, память.
 
 5. **Собери и проверь** терминал: вызов инструмента виден строками `⚙ имя {аргументы}` и `← результат`.
 

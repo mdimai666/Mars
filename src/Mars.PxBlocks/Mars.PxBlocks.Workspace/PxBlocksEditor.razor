@@ -1,197 +1,86 @@
-@using Mars.PxBlocks.Shared
 @namespace Mars.PxBlocks.Workspace
 
-<div class="d-flex" style="height:100vh; width:100vw; font-family:'Segoe UI',sans-serif;">
-    <div style="min-width:160px; max-width:160px; height:100%;">
-        <PxToolbox Categories="_categories" OnBlockDragStart="OnBlockDragStart" />
+<div class="px-blocks-editor" style="width:100%; height:100%; display:flex; flex-direction:column;">
+    <div class="px-blocks-toolbar" style="display:flex; gap:6px; align-items:center; padding:6px 10px; border-bottom:1px solid #ddd;">
+        <button class="btn btn-sm btn-outline-secondary" @onclick="Undo" title="Ctrl+Z">↶ Undo</button>
+        <button class="btn btn-sm btn-outline-secondary" @onclick="Redo" title="Ctrl+Y">↷ Redo</button>
+        <button class="btn btn-sm btn-outline-danger" @onclick="Clear">🗑 Clear</button>
+        <span style="flex:1"></span>
+        <span style="font-size:12px; color:#888;">@_status</span>
     </div>
-    <div style="flex:1; height:100%; position:relative;">
-        <PxWorkspace @ref="_workspace" Blocks="_blocks" BlocksChanged="OnBlocksChanged" />
+    <div style="flex:1; min-height:0;">
+        <PxBlocksWorkspace @ref="_workspace"
+                           OptionsJson="@OptionsJson"
+                           Toolbox="EffectiveToolbox"
+                           Types="EffectiveTypes"
+                           BlockDefinitions="EffectiveDefinitions"
+                           OnReady="OnWorkspaceReady"
+                           OnWorkspaceChanged="OnWorkspaceChangedInternal" />
     </div>
 </div>
 
 @code {
-    private PxWorkspace _workspace = default!;
-    private List<PxBlock> _blocks = [];
-    private List<PxToolboxCategory> _categories = [];
+    [Parameter] public string? OptionsJson { get; set; }
 
-    protected override void OnInitialized()
+    /// <summary>Свой toolbox; без него — MakeCode-дефолт.</summary>
+    [Parameter] public PxToolbox? Toolbox { get; set; }
+
+    /// <summary>Свой реестр типов; без него — дефолт (Boolean/Number/String/Any/Object).</summary>
+    [Parameter] public PxTypeRegistry? Types { get; set; }
+
+    /// <summary>Свои определения блоков; без них — демо-набор.</summary>
+    [Parameter] public IReadOnlyList<PxBlockDefinition>? BlockDefinitions { get; set; }
+
+    /// <summary>Ключ localStorage для автосейва; пустая строка отключает автосейв.</summary>
+    [Parameter] public string StorageKey { get; set; } = "pxblocks.workspace";
+
+    /// <summary>Проброс событий workspace потребителю.</summary>
+    [Parameter] public EventCallback<IReadOnlyList<PxBlocklyEvent>> OnWorkspaceChanged { get; set; }
+
+    [Inject] private ILocalStorageService LocalStorage { get; set; } = default!;
+
+    private PxBlocksWorkspace? _workspace;
+    private string _status = "";
+
+    private PxToolbox? _defaultToolbox;
+    private PxTypeRegistry? _defaultTypes;
+    private IReadOnlyList<PxBlockDefinition>? _defaultDefinitions;
+
+    private PxToolbox EffectiveToolbox => Toolbox ?? (_defaultToolbox ??= PxDefaultToolbox.Create());
+    private PxTypeRegistry EffectiveTypes => Types ?? (_defaultTypes ??= PxTypeRegistry.CreateDefault());
+    private IReadOnlyList<PxBlockDefinition> EffectiveDefinitions => BlockDefinitions ?? (_defaultDefinitions ??= PxDefaultBlocks.Create());
+
+    private async Task OnWorkspaceReady()
     {
-        _categories = CreateToolbox();
+        if (string.IsNullOrEmpty(StorageKey))
+            return;
 
-        // Create initial blocks for debugging
-        var onStart = new PxBlockHat { Color = C_Events, X = 100, Y = 50 };
-        onStart.Fields.Add(new PxLabelField { Text = "on start" });
+        var json = await LocalStorage.GetItemAsStringAsync(StorageKey);
+        if (string.IsNullOrEmpty(json))
+            return;
 
-        var forever = new PxBlockCommand { Color = C_Events, X = 100, Y = 110 };
-        forever.Fields.Add(new PxLabelField { Text = "forever" });
-        forever.Inputs.Add(new PxInput { Name = "do", Type = PxInputType.Statement });
-
-        var setItem = new PxBlockCommand { Color = C_Vars, X = 164, Y = 166 };
-        setItem.Fields.Add(new PxLabelField { Text = "set" });
-        setItem.Fields.Add(new PxVariableField { Name = "var", VariableName = "item" });
-        setItem.Fields.Add(new PxLabelField { Text = "to" });
-        setItem.Inputs.Add(new PxInput { Name = "val", Type = PxInputType.Value });
-
-        var numBlock = new PxBlockValue { Color = C_Math, OutputType = "number" };
-        numBlock.Fields.Add(new PxNumberField { Name = "NUM", Value = 42 });
-
-        setItem.Inputs[0].ConnectedBlockId = numBlock.Id;
-        forever.Inputs[0].ConnectedBlockId = setItem.Id;
-        onStart.NextBlockId = forever.Id;
-
-        _blocks = [onStart, forever, setItem, numBlock];
+        await _workspace!.LoadAsync(json);
+        _status = "загружено из localStorage";
     }
 
-    private void OnBlockDragStart(PxBlockDefinition def)
+    private async Task OnWorkspaceChangedInternal(IReadOnlyList<PxBlocklyEvent> events)
     {
-        _workspace.PendingDefinition = def;
+        if (!string.IsNullOrEmpty(StorageKey))
+        {
+            var json = await _workspace!.SaveAsync();
+            await LocalStorage.SetItemAsStringAsync(StorageKey, json);
+            _status = $"автосейв {DateTime.Now:HH:mm:ss} (событий: {events.Count})";
+        }
+        await OnWorkspaceChanged.InvokeAsync(events);
     }
 
-    private void OnBlocksChanged(List<PxBlock> blocks)
-    {
-        _blocks = blocks;
-    }
+    public ValueTask<string> SaveAsync() => _workspace!.SaveAsync();
 
-    // --- MakeCode-style colors ---
-    private const string C_Loops = "#107C10";
-    private const string C_Logic = "#006C9E";
-    private const string C_Math = "#712672";
-    private const string C_Vars = "#A80000";
-    private const string C_Funcs = "#7B2FBE";
-    private const string C_Events = "#D83B01";
-    private const string C_Text = "#996600";
-    private const string C_Arrays = "#5C2D91";
+    public ValueTask LoadAsync(string blocksJson) => _workspace!.LoadAsync(blocksJson);
 
-    private static List<PxToolboxCategory> CreateToolbox()
-    {
-        return
-        [
-            new()
-            {
-                Name = "Основное", Colour = C_Events,
-                Blocks =
-                {
-                    Def("on start", C_Events, () => new PxBlockHat { Color = C_Events, Fields = { Lbl("on start") } }),
-                    Def("forever", C_Events, () => new PxBlockCommand { Color = C_Events, Fields = { Lbl("forever") }, Inputs = { Stmt("") } })
-                }
-            },
-            new()
-            {
-                Name = "Циклы", Colour = C_Loops,
-                Blocks =
-                {
-                    Def("repeat 4 times do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
-                        Fields = { Lbl("repeat"), Num("TIMES", 4), Lbl("times") },
-                        Inputs = { Stmt("do") } }),
-                    Def("while true do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
-                        Fields = { Lbl("while") },
-                        Inputs = { Val(""), Stmt("do") } }),
-                    Def("for from 0 to 4 do", C_Loops, () => new PxBlockCommand { Color = C_Loops,
-                        Fields = { Lbl("for"), Var("index"), Lbl("from"), Num("from", 0), Lbl("to"), Num("to", 4) },
-                        Inputs = { Stmt("do") } })
-                }
-            },
-            new()
-            {
-                Name = "Логика", Colour = C_Logic,
-                Blocks =
-                {
-                    Def("if true then", C_Logic, () => new PxBlockCommand { Color = C_Logic,
-                        Fields = { Lbl("if") },
-                        Inputs = { Val(""), Stmt("then") } }),
-                    Def("if true then else", C_Logic, () => new PxBlockCommand { Color = C_Logic,
-                        Fields = { Lbl("if") },
-                        Inputs = { Val(""), Stmt("then"), Stmt("else") } }),
-                    Def("0 = 0", C_Logic, true, "bool", () => new PxBlockValue { Color = C_Logic,
-                        Fields = { Num("A", 0), Lbl("="), Num("B", 0) } }),
-                    Def("\u2713 / \u2717", C_Logic, true, "bool", () => new PxBlockValue { Color = C_Logic,
-                        Fields = { Drop("BOOL", "true", "false") } }),
-                    Def("not", C_Logic, true, "bool", () => new PxBlockValue { Color = C_Logic,
-                        Fields = { Lbl("not") }, Inputs = { Val("") } })
-                }
-            },
-            new()
-            {
-                Name = "Математика", Colour = C_Math,
-                Blocks =
-                {
-                    Def("0 + 0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Num("A", 0), Lbl("+"), Num("B", 0) } }),
-                    Def("0 \u2212 0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Num("A", 0), Lbl("\u2212"), Num("B", 0) } }),
-                    Def("0 \u00D7 0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Num("A", 0), Lbl("\u00D7"), Num("B", 0) } }),
-                    Def("0 \u00F7 0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Num("A", 0), Lbl("\u00F7"), Num("B", 0) } }),
-                    Def("0", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Num("NUM", 0) } }),
-                    Def("pick random 0 to 10", C_Math, true, "number", () => new PxBlockValue { Color = C_Math,
-                        Fields = { Lbl("pick random"), Num("min", 0), Lbl("to"), Num("max", 10) } })
-                }
-            },
-            new()
-            {
-                Name = "Переменные", Colour = C_Vars,
-                Blocks =
-                {
-                    Def("set item to 0", C_Vars, () => new PxBlockCommand { Color = C_Vars,
-                        Fields = { Lbl("set"), Var("item"), Lbl("to") },
-                        Inputs = { Val("") } }),
-                    Def("change item by 1", C_Vars, () => new PxBlockCommand { Color = C_Vars,
-                        Fields = { Lbl("change"), Var("item"), Lbl("by"), Num("delta", 1) } }),
-                    Def("item", C_Vars, true, "any", () => new PxBlockValue { Color = C_Vars,
-                        Fields = { Var("item") } })
-                }
-            },
-            new()
-            {
-                Name = "Функции", Colour = C_Funcs,
-                Blocks =
-                {
-                    Def("call doSomething", C_Funcs, () => new PxBlockCommand { Color = C_Funcs,
-                        Fields = { Lbl("call"), Var("doSomething") } })
-                }
-            },
-            new()
-            {
-                Name = "Текст", Colour = C_Text,
-                Blocks =
-                {
-                    Def("\"Hello\"", C_Text, true, "string", () => new PxBlockValue { Color = C_Text,
-                        Fields = { Txt("TEXT", "Hello") } }),
-                    Def("join \u00AC \u00AC", C_Text, true, "string", () => new PxBlockValue { Color = C_Text,
-                        Fields = { Lbl("join") }, Inputs = { Val("A"), Val("B") } })
-                }
-            },
-            new()
-            {
-                Name = "Массивы", Colour = C_Arrays,
-                Blocks =
-                {
-                    Def("empty list", C_Arrays, true, "array", () => new PxBlockValue { Color = C_Arrays,
-                        Fields = { Lbl("empty list") } }),
-                    Def("length of \u00AC", C_Arrays, true, "number", () => new PxBlockValue { Color = C_Arrays,
-                        Fields = { Lbl("length of") }, Inputs = { Val("") } })
-                }
-            }
-        ];
-    }
+    public async Task Undo() => await _workspace!.UndoAsync();
 
-    // --- Helpers ---
+    public async Task Redo() => await _workspace!.RedoAsync();
 
-    private static PxBlockDefinition Def(string msg, string colour, Func<PxBlock> factory) =>
-        new() { Message = msg, Colour = colour, Factory = factory };
-
-    private static PxBlockDefinition Def(string msg, string colour, bool output, string outputType, Func<PxBlock> factory) =>
-        new() { Message = msg, Colour = colour, Output = output, OutputType = outputType, Factory = factory };
-
-    private static PxLabelField Lbl(string text) => new() { Text = text };
-    private static PxNumberField Num(string name, double value) => new() { Name = name, Value = value };
-    private static PxTextField Txt(string name, string value) => new() { Name = name, Value = value };
-    private static PxVariableField Var(string name) => new() { Name = name, VariableName = name };
-    private static PxDropdownField Drop(string name, params string[] options) =>
-        new() { Name = name, Options = options.ToList() };
-    private static PxInput Val(string name) => new() { Name = name, Type = PxInputType.Value };
-    private static PxInput Stmt(string name) => new() { Name = name, Type = PxInputType.Statement };
+    public async Task Clear() => await _workspace!.ClearAsync();
 }

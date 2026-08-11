@@ -1,0 +1,102 @@
+@namespace Mars.PxBlocks.Workspace
+@implements IAsyncDisposable
+
+<div class="px-blocks-workspace" style="width:100%; height:100%;" @ref="_containerRef"></div>
+
+@code {
+    /// <summary>JSON-проброс произвольных опций Blockly.inject, мержится поверх дефолтов.</summary>
+    [Parameter] public string? OptionsJson { get; set; }
+
+    [Parameter] public PxToolbox? Toolbox { get; set; }
+
+    /// <summary>Реестр типов стыковок: формы и матрица совместимости. Применяется до inject.</summary>
+    [Parameter] public PxTypeRegistry? Types { get; set; }
+
+    /// <summary>Определения блоков (наследники PxBlockDefinition). Регистрируются до inject.</summary>
+    [Parameter] public IReadOnlyList<PxBlockDefinition>? BlockDefinitions { get; set; }
+
+    /// <summary>Вызывается после создания workspace.</summary>
+    [Parameter] public EventCallback OnReady { get; set; }
+
+    /// <summary>Пакеты non-UI событий Blockly (дебаунс ~200 мс на стороне JS).</summary>
+    [Parameter] public EventCallback<IReadOnlyList<PxBlocklyEvent>> OnWorkspaceChanged { get; set; }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private ElementReference _containerRef;
+    private PxWorkspaceJsInterop? _interop;
+    private IJSObjectReference? _workspace;
+    private DotNetObjectReference<PxBlocksWorkspace>? _selfRef;
+    private PxToolbox? _appliedToolbox;
+    private bool _toolboxDirty;
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(Toolbox, _appliedToolbox))
+            _toolboxDirty = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _interop = new PxWorkspaceJsInterop(JS);
+
+            if (Types != null)
+                await _interop.SetTypes(Types.ToJson());
+            if (BlockDefinitions is { Count: > 0 })
+                await _interop.RegisterBlockDefinitions(PxBlockDefinition.ToArrayJson(BlockDefinitions));
+
+            _workspace = await _interop.InjectWorkspace(_containerRef, OptionsJson, Toolbox?.ToJson());
+            _appliedToolbox = Toolbox;
+            _toolboxDirty = false;
+
+            _selfRef = DotNetObjectReference.Create(this);
+            await _interop.RegisterEvents(_workspace, _selfRef);
+
+            await OnReady.InvokeAsync();
+        }
+
+        if (_toolboxDirty && _workspace != null)
+        {
+            _toolboxDirty = false;
+            _appliedToolbox = Toolbox;
+            if (Toolbox != null)
+                await _interop!.UpdateToolbox(_workspace, Toolbox.ToJson());
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnBlocklyEvents(string eventsJson)
+    {
+        var events = JsonSerializer.Deserialize<List<PxBlocklyEvent>>(eventsJson);
+        if (events is { Count: > 0 })
+            await OnWorkspaceChanged.InvokeAsync(events);
+    }
+
+    public ValueTask<string> SaveAsync() => _interop!.SaveWorkspace(_workspace!);
+
+    public ValueTask LoadAsync(string blocksJson) => _interop!.LoadWorkspace(_workspace!, blocksJson);
+
+    public ValueTask ClearAsync() => _interop!.ClearWorkspace(_workspace!);
+
+    public ValueTask UndoAsync() => _interop!.Undo(_workspace!, redo: false);
+
+    public ValueTask RedoAsync() => _interop!.Undo(_workspace!, redo: true);
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_workspace != null)
+                await _interop!.DisposeWorkspace(_workspace);
+
+            if (_interop != null)
+                await _interop.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        _selfRef?.Dispose();
+    }
+}

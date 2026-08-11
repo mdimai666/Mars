@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     </ItemGroup>
 

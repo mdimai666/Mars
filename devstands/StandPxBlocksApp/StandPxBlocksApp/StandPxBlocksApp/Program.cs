@@ -1,9 +1,13 @@
+using Blazored.LocalStorage;
 using StandPxBlocksApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 //builder.Services.AddHttpClient<IFlurlClient, FlurlClient>();
+
+// Регистрация нужна и на сервере для пререндера страницы; реально сервис используется только в WASM.
+builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddCors(options => //not check
 {

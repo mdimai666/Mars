@@ -162,6 +162,7 @@
     <Project Path="tests/Mars.Test.Common/Mars.Test.Common.csproj" />
     <Project Path="tests/Mars.WebApiClient.Integration.Tests/Mars.WebApiClient.Integration.Tests.csproj" />
     <Project Path="tests/Test.Mars.Core/Test.Mars.Core.csproj" />
+    <Project Path="tests/Test.Mars.PxBlocks/Test.Mars.PxBlocks.csproj" />
     <Project Path="tests/Test.Mars.Datasource.Host/Test.Mars.Datasource.Host.csproj" />
     <Project Path="tests/Test.Mars.Host/Test.Mars.Host.csproj" />
     <Project Path="tests/Test.Mars.MetaModelGenerator/Test.Mars.MetaModelGenerator.csproj" />

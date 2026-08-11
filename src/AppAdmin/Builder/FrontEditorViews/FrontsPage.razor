@@ -1,0 +1,142 @@
+@page "/front"
+@layout BuilderLayout
+@using Mars.Shared.Options
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Display(Name = "Фронты")]
+@inject IMarsWebApiClient client
+@inject NavigationManager nav
+
+<ContentWrapper Title="Фронты">
+    <SectionActions>
+        <FluentAnchor Appearance="Appearance.Neutral" Href="Settings/Front" IconStart="@(new Icons.Regular.Size20.Settings())">
+            Настройки фронтов
+        </FluentAnchor>
+    </SectionActions>
+    <ChildContent>
+
+        <p class="text-secondary">
+            Фронт — это папка с файлами (шаблоны, стили, скрипты), из которых движок рендера собирает страницы сайта.
+            У каждого фронта свой движок и точка маунта (URL). Откройте карточку, чтобы редактировать файлы
+            в редакторе с живым предпросмотром.
+        </p>
+
+        @if (loadFailed)
+        {
+            <div class="alert alert-warning">Не удалось загрузить список фронтов</div>
+        }
+        else if (option is null)
+        {
+            <SkeletonContent />
+        }
+        else
+        {
+            <section>
+                <div class="hstack gap-2 align-items-center">
+                    <h5 class="mb-0">Специальные</h5>
+                    <hr class="flex-grow-1 my-0" />
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-1">
+
+                    <div class="col">
+                        <div class="card d-card-glow">
+                            <div class="hstack ms-4">
+                                <div class="vstack flex-grow-0 my-3">
+                                    <i class="bi bi-window-desktop fs-1"></i>
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="mb-0">
+                                        admin
+                                    </h4>
+                                    <span class="badge text-bg-info align-middle">фронт админки</span>
+                                    <p class="mb-1">Специальный фронт админ-панели, не роутится публично</p>
+                                    <p class="text-secondary mb-0">handlebars · data/admin/front</p>
+                                    <a href="front/editor/admin" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="mt-4">
+                <div class="hstack gap-2 align-items-center">
+                    <h5 class="mb-0">Публичные фронты</h5>
+                    <hr class="flex-grow-1 my-0" />
+                </div>
+
+                @if (option.Fronts.Count == 0)
+                {
+                    <div class="mt-3">
+                        <SharedContentNoRecords />
+                    </div>
+                }
+                else
+                {
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mt-1">
+
+                        @foreach (var front in option.Fronts)
+                        {
+                            <div class="col">
+                                <div class="card d-card-glow">
+                                    <div class="hstack ms-4">
+                                        <div class="vstack flex-grow-0 my-3">
+                                            <i class="bi bi-window-desktop fs-1"></i>
+                                        </div>
+                                        <div class="card-body">
+                                            <h4 class="mb-0">
+                                                @front.Slug
+                                                @if (!front.Enabled)
+                                                {
+                                                    <span class="badge text-bg-warning align-middle">выключен</span>
+                                                }
+                                            </h4>
+                                            <p class="mb-1">@(string.IsNullOrWhiteSpace(front.Title) ? "Фронт сайта" : front.Title)</p>
+                                            <p class="text-secondary mb-0">
+                                                @front.EngineId
+                                                @if (!string.IsNullOrEmpty(front.Url))
+                                                {
+                                                    @($" · {front.Url}")
+                                                }
+                                            </p>
+                                            <p class="text-secondary small mb-0">
+                                                <i class="bi bi-folder2 me-1"></i>@FrontPath(front)
+                                            </p>
+                                            <a href="front/editor/@front.Slug" class="stretched-link"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                }
+            </section>
+        }
+
+    </ChildContent>
+</ContentWrapper>
+
+@code {
+    FrontsOption? option;
+    bool loadFailed;
+
+    /// <summary>Путь фронта: как задан в настройках, либо по конвенции data/fronts/&lt;Slug&gt;</summary>
+    static string FrontPath(FrontItem front)
+        => string.IsNullOrWhiteSpace(front.Path) ? $"data/fronts/{front.Slug}" : front.Path;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            option = await client.Option.GetOption<FrontsOption>();
+        }
+        catch
+        {
+            loadFailed = true;
+        }
+    }
+}

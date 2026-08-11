@@ -44,6 +44,19 @@ public class FrontTemplateServiceTests : IDisposable
         File.Exists(Path.Combine(dest, "default-marker.txt")).Should().BeFalse("дефолтный шаблон подменять выбранный не должен");
     }
 
+    [Fact]
+    public void GetStarterTemplates_ReturnsFolders_WithoutAdminTemplate()
+    {
+        var service = CreateService();
+
+        // специальный шаблон админ-фронта не должен попадать в публичный список
+        Directory.CreateDirectory(Path.Combine(dir, "Res", "front_templates", FrontTemplateService.AdminTemplateName));
+
+        var templates = service.GetStarterTemplates();
+
+        templates.Should().BeEquivalentTo(["default", "landing"]);
+    }
+
     public void Dispose()
     {
         try

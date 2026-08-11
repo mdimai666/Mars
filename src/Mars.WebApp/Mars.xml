@@ -22,6 +22,11 @@
             <param name="lineCount">The number of lines to return.</param>
             <returns>The last lneCount lines from the reader.</returns>
         </member>
+        <member name="M:Mars.Controllers.FrontController.FrontTemplates">
+            <summary>
+            Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных).
+            </summary>
+        </member>
         <member name="M:Mars.Controllers.FrontController.FrontPages(System.String)">
             <summary>
             Страницы фронта: файл → URL из атрибута @page (для «открыть в предпросмотре» в редакторе).
@@ -139,6 +144,12 @@
         <member name="P:Mars.Services.FrontTemplateService.FrontsBasePath">
             <summary>
             Базовая папка фронтов: data/fronts
+            </summary>
+        </member>
+        <member name="M:Mars.Services.FrontTemplateService.GetStarterTemplates">
+            <summary>
+            Стартовые шаблоны для новых фронтов (папки Res/front_templates).
+            Специальные шаблоны (админ-фронта) не входят в список.
             </summary>
         </member>
         <member name="P:Mars.Services.FrontTemplateService.AdminFrontPath">

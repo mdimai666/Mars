@@ -115,6 +115,16 @@ public class FrontController : ControllerBase
             .ToList();
     }
 
+    /// <summary>
+    /// Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных).
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IReadOnlyCollection<string> FrontTemplates()
+    {
+        return _frontTemplateService.GetStarterTemplates();
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public UserActionResult CreateFront([FromBody] FCreateFrontRequest request)
@@ -131,7 +141,14 @@ public class FrontController : ControllerBase
 
         if (request.UseTemplate)
         {
-            _frontTemplateService.CreateFrontFromTemplate(request.Slug);
+            var template = string.IsNullOrWhiteSpace(request.Template)
+                ? FrontTemplateService.DefaultTemplateName
+                : request.Template;
+
+            if (!Directory.Exists(_frontTemplateService.GetTemplatePath(template)))
+                return UserActionResult.Exception($"Шаблон фронта '{template}' не найден", null);
+
+            _frontTemplateService.CreateFrontFromTemplate(request.Slug, template);
         }
         else
         {

@@ -11,6 +11,11 @@ public interface IFrontServiceClient
     Task<FWebPartResponse?> GetPart(string fileRelPath);
 
     Task<IReadOnlyCollection<FFrontEngineResponse>> Engines();
+
+    /// <summary>
+    /// Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных).
+    /// </summary>
+    Task<IReadOnlyCollection<string>> FrontTemplates();
     Task<FFrontTreeNodeResponse> FrontTree(string slug);
     Task<IReadOnlyCollection<FFrontPageResponse>> FrontPages(string slug);
     Task<FFrontFileContentResponse> ReadFrontFile(string slug, string relPath);

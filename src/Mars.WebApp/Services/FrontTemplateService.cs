@@ -23,6 +23,29 @@ public class FrontTemplateService
     public string GetTemplatePath(string name = DefaultTemplateName)
         => Path.Combine(env.ContentRootPath, "Res", "front_templates", name);
 
+    /// <summary>
+    /// Стартовые шаблоны для новых фронтов (папки Res/front_templates).
+    /// Специальные шаблоны (админ-фронта) не входят в список.
+    /// </summary>
+    public IReadOnlyCollection<string> GetStarterTemplates()
+    {
+        var root = Path.Combine(env.ContentRootPath, "Res", "front_templates");
+        if (!Directory.Exists(root)) return [];
+
+        var names = new List<string>();
+        foreach (var dir in Directory.GetDirectories(root))
+        {
+            var name = Path.GetFileName(dir);
+            if (string.IsNullOrEmpty(name)) continue;
+            if (string.Equals(name, AdminTemplateName, StringComparison.OrdinalIgnoreCase)) continue;
+
+            names.Add(name);
+        }
+
+        names.Sort(StringComparer.OrdinalIgnoreCase);
+        return names;
+    }
+
     public void CreateFrontFromTemplate(string slug, string templateName = DefaultTemplateName)
     {
         if (!FrontManager.IsValidSlug(slug))

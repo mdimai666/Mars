@@ -42,4 +42,9 @@ public class FCreateFrontRequest
     public string Title { get; set; } = "";
     public string Url { get; set; } = "";
     public bool UseTemplate { get; set; } = true;
+
+    /// <summary>
+    /// Имя стартового шаблона из Res/front_templates. Пусто = шаблон по умолчанию.
+    /// </summary>
+    public string Template { get; set; } = "";
 }

@@ -35,7 +35,7 @@ var builder = WebApplication.CreateBuilder(args);
 if (SetupWizardHost.ShouldRunWizard())
 {
     await SetupWizardHost.RunAsync(args);
-    builder.Configuration.AddJsonFile(SetupWizardHost.WizardConfigPath, optional: false, reloadOnChange: false);
+    builder.Configuration.AddJsonFile(SetupWizardHost.WizardConfigPath, optional: false, reloadOnChange: true);
 }
 
 MarsWebAppStartup.ConfigureBuilder(builder, args);

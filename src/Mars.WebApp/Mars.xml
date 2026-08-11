@@ -179,6 +179,12 @@
             Singletone.
             </summary>
         </member>
+        <member name="T:Mars.Services.LogCleanupJob">
+            <summary>
+            Удаляет дневные файлы логов app_*.log старше периода хранения
+            (Logging:File:RetentionDays в конфигурации, по умолчанию 30 дней).
+            </summary>
+        </member>
         <member name="T:Mars.Services.LogFileFilter">
             <summary>
             Разбор и фильтрация записей лога приложения (формат NReco.Logging.File:
@@ -215,8 +221,29 @@
             результат в хронологическом порядке.
             </summary>
         </member>
+        <member name="M:Mars.Services.LogFileFilter.TryGetFileDate(System.String,System.DateTime@)">
+            <summary>Дата из имени файла app_yyyy-MM-dd.log; false если имя не распознано.</summary>
+        </member>
+        <member name="M:Mars.Services.LogFileFilter.DeleteFilesOlderThan(System.String,System.DateTime)">
+            <summary>
+            Удаляет дневные файлы app_*.log с датой в имени строго раньше <paramref name="cutoffDate"/>.
+            Файлы с нераспознанной датой не трогает. Возвращает количество удалённых.
+            </summary>
+        </member>
         <member name="M:Mars.Services.LogFileFilter.ExtractLevel(System.String)">
             <summary>Уровень записи: первый известный токен в начале строки.</summary>
+        </member>
+        <member name="T:Mars.Services.LogMaintenanceStartupService">
+            <summary>
+            Регистрирует системную Quartz-джобу обслуживания логов:
+            ежедневная чистка файлов старше периода хранения (+ прогон при старте).
+            </summary>
+        </member>
+        <member name="M:Mars.Services.LogMaintenanceStartupService.#ctor(System.IServiceProvider)">
+            <summary>
+            Регистрирует системную Quartz-джобу обслуживания логов:
+            ежедневная чистка файлов старше периода хранения (+ прогон при старте).
+            </summary>
         </member>
         <member name="F:Mars.Setup.SetupService.ExistingFrontChoice">
             <summary>

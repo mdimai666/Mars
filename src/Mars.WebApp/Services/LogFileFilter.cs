@@ -135,7 +135,8 @@ public static class LogFileFilter
         return allLines.Skip(skip).ToArray();
     }
 
-    static bool TryGetFileDate(string file, out DateTime date)
+    /// <summary>Дата из имени файла app_yyyy-MM-dd.log; false если имя не распознано.</summary>
+    public static bool TryGetFileDate(string file, out DateTime date)
     {
         var name = Path.GetFileNameWithoutExtension(file);
         var datePart = name.StartsWith(LogFileNamePrefix, StringComparison.Ordinal)
@@ -143,6 +144,27 @@ public static class LogFileFilter
             : name;
 
         return DateTime.TryParseExact(datePart, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+    }
+
+    /// <summary>
+    /// Удаляет дневные файлы app_*.log с датой в имени строго раньше <paramref name="cutoffDate"/>.
+    /// Файлы с нераспознанной датой не трогает. Возвращает количество удалённых.
+    /// </summary>
+    public static int DeleteFilesOlderThan(string logsDir, DateTime cutoffDate)
+    {
+        if (string.IsNullOrEmpty(logsDir) || !Directory.Exists(logsDir)) return 0;
+
+        var deleted = 0;
+        foreach (var file in Directory.EnumerateFiles(logsDir, LogFilePattern))
+        {
+            if (TryGetFileDate(file, out var fileDate) && fileDate < cutoffDate.Date)
+            {
+                File.Delete(file);
+                deleted++;
+            }
+        }
+
+        return deleted;
     }
 
     /// <summary>Уровень записи: первый известный токен в начале строки.</summary>

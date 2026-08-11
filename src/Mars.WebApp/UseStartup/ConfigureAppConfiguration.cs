@@ -22,7 +22,7 @@ public static class ConfigureAppConfigurationExtensiions
         {
             Path = Path.Combine("config", "appsettings.Production.json"),
             Optional = true,
-            ReloadOnChange = false,
+            ReloadOnChange = true,
             FileProvider = new PhysicalFileProvider(root),
         };
 
@@ -60,21 +60,21 @@ public static class ConfigureAppConfigurationExtensiions
             builder.AddJsonFile(
                     cfgpath,
                      optional: false,
-                     reloadOnChange: false);
+                     reloadOnChange: true);
         }
         else if (env_cfg is not null)
         {
             builder.AddJsonFile(
                     env_cfg,
                      optional: false,
-                     reloadOnChange: false);
+                     reloadOnChange: true);
         }
         else
         {
             builder.AddJsonFile(
                     "appsettings.Local.json",
                      optional: true,
-                     reloadOnChange: false);
+                     reloadOnChange: true);
         }
 
         return builder;

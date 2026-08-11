@@ -146,6 +146,29 @@ public class LogFileFilterTests : IDisposable
     }
 
     [Fact]
+    public void DeleteFilesOlderThan_RemovesOnlyOldDatedFiles()
+    {
+        WriteLogFile("2026-07-01", Entry("2026-07-01T10:00:00.0000000+09:00", "WARN", "old"));
+        WriteLogFile("2026-08-10", Entry("2026-08-10T10:00:00.0000000+09:00", "WARN", "kept"));
+        File.WriteAllText(Path.Combine(dir, "app_current.log"), "undated");
+        File.WriteAllText(Path.Combine(dir, "other_2026-07-01.log"), "not the app pattern");
+
+        var deleted = LogFileFilter.DeleteFilesOlderThan(dir, new DateTime(2026, 8, 1));
+
+        deleted.Should().Be(1);
+        File.Exists(Path.Combine(dir, "app_2026-07-01.log")).Should().BeFalse();
+        File.Exists(Path.Combine(dir, "app_2026-08-10.log")).Should().BeTrue();
+        File.Exists(Path.Combine(dir, "app_current.log")).Should().BeTrue();
+        File.Exists(Path.Combine(dir, "other_2026-07-01.log")).Should().BeTrue();
+    }
+
+    [Fact]
+    public void DeleteFilesOlderThan_MissingDir_ReturnsZero()
+    {
+        LogFileFilter.DeleteFilesOlderThan(Path.Combine(dir, "no-such-dir"), DateTime.Today).Should().Be(0);
+    }
+
+    [Fact]
     public void ParsePeriod_MapsKnownCodes_NullOtherwise()
     {
         LogFileFilter.ParsePeriod("1h").Should().Be(TimeSpan.FromHours(1));

@@ -1,3 +1,4 @@
+using Mars.Services;
 using NReco.Logging.File;
 
 namespace Mars.UseStartup.MarsParts;
@@ -9,22 +10,21 @@ internal static class MarsStartupPartLogging
         //https://github.com/nreco/logging
         builder.Services.AddLogging(loggingBuilder =>
         {
-
             loggingBuilder.AddConfiguration(builder.Configuration);
-            loggingBuilder.SetMinimumLevel(LogLevel.Warning);
 
+            // уровни не хардкодим: правила фильтрации (в т.ч. "Logging:File:LogLevel"
+            // по алиасу провайдера [ProviderAlias("File")]) приходят из конфигурации
+            // и перечитываются на лету при изменении appsettings без перезапуска
             loggingBuilder.AddFile("data/logs/app_{0:yyyy}-{0:MM}-{0:dd}.log", fileLoggerOpts =>
             {
                 fileLoggerOpts.FormatLogFileName = fName =>
                 {
                     return String.Format(fName, DateTime.Now);
                 };
-                fileLoggerOpts.FilterLogEntry = (msg) =>
-                {
-                    return msg.LogLevel >= LogLevel.Warning;
-                };
             });
         });
+
+        builder.Services.AddSingleton<LogMaintenanceStartupService>();
 
         return builder;
     }

@@ -14,7 +14,8 @@ public sealed record AiToolsetContext(
     AiChatOption Option,
     string? PageContext,
     string? FrontEditorSlug,
-    AskUserTool AskUser);
+    AskUserTool AskUser,
+    bool SkillsEnabled);
 
 /// <summary>
 /// Набор инструментов агента по домену. Новый домен = новый класс + регистрация в DI,

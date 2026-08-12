@@ -1,3 +1,4 @@
+using Mars.AiChat.Host.CommandLine;
 using Mars.AiChat.Host.Hubs;
 using Mars.AiChat.Host.Services;
 using Mars.AiChat.Host.Shared.Interfaces;
@@ -5,6 +6,7 @@ using Mars.AiChat.Host.Tools;
 using Mars.AiChat.Host.Toolsets;
 using Mars.AiChat.Shared.Options;
 using Mars.AiChat.Shared.SignalR;
+using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Services;
 using Microsoft.Agents.AI;
@@ -33,12 +35,15 @@ public static class MainAiChat
             return new FileMemoryProvider(store, _ => new FileMemoryState { WorkingFolder = "" }, null);
         });
 
+        services.AddSingleton<AiSkillCatalog>();
+
         services.AddScoped<AiChatAgentService>();
         services.AddScoped<MarsSiteTools>();
         services.AddScoped<MarsOptionsTools>();
         services.AddScoped<MarsSystemTools>();
         services.AddScoped<MarsSqlTools>();
         services.AddScoped<MarsHttpTools>();
+        services.AddScoped<MarsSkillsTools>();
 
         // Тулсеты: новый домен инструментов = новый класс IAiToolset + эта строка
         services.AddScoped<IAiToolset, CoreToolset>();
@@ -46,6 +51,7 @@ public static class MainAiChat
         services.AddScoped<IAiToolset, PageToolset>();
         services.AddScoped<IAiToolset, SqlToolset>();
         services.AddScoped<IAiToolset, FrontToolset>();
+        services.AddScoped<IAiToolset, SkillsToolset>();
 
         return services;
     }
@@ -59,6 +65,8 @@ public static class MainAiChat
         {
             options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
         });
+
+        app.Services.GetService<ICommandLineApi>()?.Register<AiChatCli>();
 
         return app;
     }

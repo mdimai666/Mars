@@ -97,16 +97,53 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   создаёт отдельную папку на сессию (`{timestamp}_{guid}`) — память не переживала новый чат;
   вместо него в `AIContextProviders` подключён свой экземпляр (singleton в `MainAiChat`)
   с постоянным working folder.
-- **Скиллы** — `AgentSkillsProvider` с двумя источниками `AgentFileSkillsSource`:
+- **Скиллы** — свой каталог `AiSkillCatalog` (singleton): сканирует папки `*/SKILL.md` в двух корнях —
   кастомные `<data>/ai/skills` + bundled `<assembly>/ai-skills` (в репо — `Mars.AiChat.Host/ai-skills/**`,
-  копируются в output; папка ai-skills, чтобы не смешиваться со `skills/` модуля SemanticKernel).
-  Формат — стандартный SKILL.md с YAML frontmatter (name/description), как у Qwen Code CLI;
-  в контекст попадает только описание, полный текст модель подгружает через `load_skill`.
-  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`.
+  копируются в output; папка ai-skills, чтобы не смешиваться со `skills/` модуля SemanticKernel;
+  кастомный скилл с тем же именем перекрывает bundled). Формат — стандартный SKILL.md с YAML frontmatter
+  (name/description), как у Qwen Code CLI. MAF `AgentSkillsProvider` НЕ используется: его источники
+  требуют живого агента в контексте, а свой каталог даёт контроль над масштабированием
+  (поиск, роутинг) — см. `ai/AiHarnessSkillsPlan.md`.
+  Прогрессивное раскрытие в три слоя:
+  1. компактный список `name: description` всех скиллов — всегда в системном промпте (`<available_skills>`);
+  2. `SearchSkills(query)` / `LoadSkill(name)` (`SkillsToolset`, `MarsSkillsTools`) — модель сама
+     ищет и подгружает полные инструкции по необходимости;
+  3. `PageSkillRouter` — детерминированный preload полных инструкций по открытой странице:
+     `/front/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
+     `EnableSqlAccess` → `mars-sql`. Агент сразу знает, какими инструментами работать,
+     не тратя ходы на discovery.
+  Bundled: `mars-sql`, `mars-posts`, `mars-front-editor`, `mars-settings`.
+  Скиллы включены всегда (флага нет): A/B-прогоны фазы 0 показали, что DeepSeek-v4-flash уверенно
+  работает и с провайдерами, и с каталогом — прежняя гипотеза «провайдеры ломают модель» не подтвердилась
+  (регрессия была из-за битых сохранённых сессий и потерянных front-инструкций).
 - **Рабочая папка** — `FileAccessProvider` на `<data>/ai` (инструменты `file_access_*`,
-  approve отключён): агент сам создаёт скиллы и артефакты, админ может править файлы руками.
+  approve отключён), включена по умолчанию: агент сам создаёт скиллы и артефакты,
+  админ может править файлы руками.
 
-План развития (следующая фаза — ноды): `ai/AiSkillsMemoryNodesPlan.md`.
+Планы развития: `ai/AiHarnessSkillsPlan.md` (масштабирование каталога, поиск, MCP),
+`ai/AiSkillsMemoryNodesPlan.md` (следующая фаза — ноды).
+
+### Полигон: headless-прогон агента (CLI)
+
+Тестировать агента без браузера и веб-сервера — CLI-команда `aichat send`
+(`Mars.AiChat.Host/CommandLine/AiChatCli.cs`, регистрация в `MainAiChat`, механика как у `ds` в `DataSourceCli`):
+
+```
+cd src/Mars.WebApp
+dotnet bin\Debug\net10.0\Mars.dll aichat send -m "задача" [-p /dev/front/editor/landing] [-u userId] [--skills true|false] [--access true|false]
+```
+
+- создаёт свежий чат, один раз прогоняет `AiChatAgentService.RunChatAsync` и печатает транскрипт
+  в консоль (вызовы/результаты инструментов, ответ ассистента);
+- пользователь по умолчанию — первый админ по дате создания (переопределяется `-u`);
+- `-p` — контекст страницы: по нему срабатывает `PageSkillRouter` (preload скиллов) и включаются
+  page-зависимые тулсеты (файлы фронта);
+- `--skills` / `--access` — A/B-флаги (тулсет скиллов и рабочая папка file_access_*), по умолчанию on;
+- веб-сервер не стартует; инструменты page bridge (GetOpenPage*) без открытого браузера ждут таймаут
+  (~20 с) и возвращают ошибку, остальные (файлы фронта, память, SQL, HTTP) работают;
+- использовать для A/B-проверок промптов/тулзов и воспроизведения багов: сборка → прогон → виден
+  каждый tool call. Логи `AiChat:` в консоли те же, что в веб-режиме; дополнительно логируются
+  usage (токены) и finish reason — видно пустые ходы и их причину.
 
 ### Мост «агент → открытая страница» (page bridge)
 
@@ -195,9 +232,10 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
 ```
 
 4. **Инструкции — в скилл, не в промпт** — доменные правила положи в bundled-скилл
-   `Mars.AiChat.Host/ai-skills/<имя>/SKILL.md` (YAML frontmatter `name`/`description`; в контекст попадает
-   только описание, полный текст модель подгружает через `load_skill`).
-   В `AiChatPrompts.BaseInstructions` — только ядро: стиль, базовые правила, память.
+   `Mars.AiChat.Host/ai-skills/<имя>/SKILL.md` (YAML frontmatter `name`/`description` одной строкой;
+   в контекст попадает только описание, полный текст модель берёт через `LoadSkill`,
+   либо он preload-ится `PageSkillRouter`, если скилл привязан к странице — см. его `Route(...)`).
+   В `AiChatPrompts.BaseInstructions` — только ядро: стиль, базовые правила, память, работа со скиллами.
 
 5. **Собери и проверь** терминал: вызов инструмента виден строками `⚙ имя {аргументы}` и `← результат`.
 
@@ -267,10 +305,10 @@ AIFunctionFactory.Create(_contentTools.ListPosts),
   с ответом «затронуто строк: N».
 
 Подключение к агенту — только при `AiChatOption.EnableSqlAccess` (по умолчанию true; чекбокс в форме
-настроек). Правила безопасности заданы в промпте (`AiChatPrompts.SqlAccessInstructions`): подтверждение
-через `ask_user` перед записывающими запросами, проверка чтения после записи, LIMIT на SELECT,
-connection strings не выводить. Connection strings также защищены в `MarsOptionsTools.ReadDenied`
-(`DatasourceOption`).
+настроек). Правила безопасности заданы в скилле `mars-sql` (preload-ится роутером при включённом
+доступе): подтверждение через `ask_user` перед записывающими запросами, проверка чтения после записи,
+LIMIT на SELECT, connection strings не выводить. Connection strings также защищены в
+`MarsOptionsTools.ReadDenied` (`DatasourceOption`).
 
 Нюансы слоя данных (учтены/доработаны):
 
@@ -296,8 +334,9 @@ connection strings не выводить. Connection strings также защи
 - Экземпляр создаётся на каждый запуск агента в `AiChatAgentService.RunChatAsync` (как `MarsOpenPageTools`),
   и ТОЛЬКО если открыт редактор фронта: slug парсится из PageContext —
   `MarsFrontFilesTools.TryParseSlugFromPageContext` (URL страницы `/front/editor/{slug}`).
-- Правила работы — `AiChatPrompts.FrontEditorInstructions` (структура фронта `_root.hbs`/`pages`/`blocks`/
-  `wwwroot`, «прочитай перед правкой», удаление только через `ask_user`).
+- Правила работы — скилл `mars-front-editor` (структура фронта `_root.hbs`/`pages`/`blocks`/
+  `wwwroot`, «прочитай перед правкой», удаление только через `ask_user`); при открытом редакторе
+  фронта `PageSkillRouter` preload-ит его инструкции в контекст запуска.
 - Сохранение автоматическое: `WriteFrontFile` пишет прямо в папку фронта; `FrontFilesService` после записи
   явно уведомляет движок фронта (`IWebTemplateService.NotifyFileChanged`) — кеш рендера чистится и SignalR
   `reload` обновляет предпросмотр (FileSystemWatcher — только страховка: рендер кеширует скомпилированный
@@ -322,7 +361,8 @@ connection strings не выводить. Connection strings также защи
 SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`),
 файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`),
 исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
-долговременная память и скиллы harness (см. «Память, скиллы и рабочая папка агента»).
+долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
+рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).
 
 - **Редактирование поста без страницы**: сейчас серверный `UpdatePost` сознательно опущен
   (полный `UpdatePostQuery` затёр бы метаполя); нужен аккуратный partial-update поверх `GetDetail`.

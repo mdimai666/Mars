@@ -33,7 +33,7 @@ public class AiChatAgentService
     private readonly IOptionService _optionService;
     private readonly IReadOnlyList<IAiToolset> _toolsets;
     private readonly string _aiRoot;
-    private readonly AgentSkillsSource _skillsSource;
+    private readonly AiSkillCatalog _catalog;
     private readonly FileMemoryProvider _fileMemory;
     private readonly ILogger<AiChatAgentService> _logger;
 
@@ -44,25 +44,14 @@ public class AiChatAgentService
         IOptionService optionService,
         IEnumerable<IAiToolset> toolsets,
         [FromKeyedServices("data")] IOptions<FileHostingInfo> dataHostingInfo,
-        ILoggerFactory loggerFactory,
+        AiSkillCatalog catalog,
         FileMemoryProvider fileMemory,
         ILogger<AiChatAgentService> logger)
     {
         _toolsets = [.. toolsets];
         _fileMemory = fileMemory;
+        _catalog = catalog;
         _aiRoot = Path.Combine(dataHostingInfo.Value.PhysicalPath.LocalPath, "ai");
-
-        // Скиллы (SKILL.md): кастомные из <data>/ai/skills + bundled рядом со сборкой (ai-skills,
-        // отдельно от skills/ модуля SemanticKernel); агент может дописывать свои через file_access_*
-        var customSkills = Path.Combine(_aiRoot, "skills");
-        var bundledSkills = Path.Combine(AppContext.BaseDirectory, "ai-skills");
-        Directory.CreateDirectory(customSkills);
-        Directory.CreateDirectory(bundledSkills);
-        _skillsSource = new AggregatingAgentSkillsSource(
-        [
-            new AgentFileSkillsSource(customSkills, null, null, loggerFactory),
-            new AgentFileSkillsSource(bundledSkills, null, null, loggerFactory),
-        ]);
 
         _hub = hub;
         _store = store;
@@ -71,7 +60,8 @@ public class AiChatAgentService
         _logger = logger;
     }
 
-    public async Task RunChatAsync(Guid chatId, Guid userId, string userMessage, string? pageContext, CancellationToken ct)
+    public async Task RunChatAsync(Guid chatId, Guid userId, string userMessage, string? pageContext, CancellationToken ct,
+        bool? overrideSkills = null, bool? overrideAccess = null)
     {
         var state = await _store.GetAsync(chatId, userId, ct)
             ?? throw new NotFoundException($"AiChat session '{chatId}' not found");
@@ -101,15 +91,28 @@ public class AiChatAgentService
 
             // Файлы фронта — только когда открыт редактор фронта (slug из URL страницы)
             var frontEditorSlug = MarsFrontFilesTools.TryParseSlugFromPageContext(pageContext);
+            var skillsOn = overrideSkills ?? true;
 
             // Инструменты собираются из зарегистрированных тулсетов по контексту запуска
             var askUser = new AskUserTool();
-            var toolsetCtx = new AiToolsetContext(userId, chatId, option, pageContext, frontEditorSlug, askUser);
+            var toolsetCtx = new AiToolsetContext(userId, chatId, option, pageContext, frontEditorSlug, askUser, skillsOn);
             var activeToolsets = _toolsets.Where(t => t.IsEnabled(toolsetCtx)).ToList();
             var tools = activeToolsets.SelectMany(t => t.Build(toolsetCtx)).ToList();
 
-            _logger.LogDebug("AiChat: chat {ChatId} active toolsets: {Toolsets}, tools: {Tools}",
-                chatId, string.Join(", ", activeToolsets.Select(t => t.Name)), tools.Count);
+            // Каталог скиллов: компактный список в контекст + полные инструкции
+            // скиллов открытой страницы (детерминированный роутинг)
+            var allSkills = await _catalog.GetSkillsAsync(ct);
+            var skillsListing = string.Join("\n", allSkills.Select(s => $"- {s.Name}: {s.Description}"));
+            var routedNames = PageSkillRouter.Route(pageContext, frontEditorSlug, option);
+            var preloaded = new List<(string Name, string Body)>();
+            foreach (var name in routedNames)
+            {
+                var skill = allSkills.FirstOrDefault(s => string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (skill is not null) preloaded.Add((skill.Name, skill.Body));
+            }
+
+            _logger.LogDebug("AiChat: chat {ChatId} active toolsets: {Toolsets}, tools: {Tools}, preloaded skills: {Preloaded}",
+                chatId, string.Join(", ", activeToolsets.Select(t => t.Name)), tools.Count, string.Join(", ", routedNames));
 
             var client = _clientFactory.CreateClient(connection);
             agent = client.AsHarnessAgent(new HarnessAgentOptions
@@ -117,7 +120,7 @@ public class AiChatAgentService
                 Name = "mars-site-agent",
                 ChatOptions = new ChatOptions
                 {
-                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext),
+                    Instructions = AiChatPrompts.BuildInstructions(option, pageContext, skillsListing, preloaded),
                     Tools = [.. tools],
                 },
                 MaximumIterationsPerRequest = 15,
@@ -129,9 +132,11 @@ public class AiChatAgentService
                 // вместо него подключаем свой провайдер с общим working folder.
                 DisableFileMemory = true,
                 AIContextProviders = [_fileMemory],
-                // Скиллы (SKILL.md) и рабочая папка агента — <data>/ai
-                AgentSkillsSource = _skillsSource,
-                FileAccessStore = new FileSystemAgentFileStore(_aiRoot),
+                // Скиллы — свой тулсет (каталог в контексте + SearchSkills/LoadSkill),
+                // MAF-провайдер выключен; рабочая папка file_access_* включена по умолчанию
+                // (--access на полигоне для A/B).
+                DisableAgentSkillsProvider = true,
+                FileAccessStore = (overrideAccess ?? true) ? new FileSystemAgentFileStore(_aiRoot) : null,
                 FileAccessProviderOptions = new FileAccessProviderOptions
                 {
                     DisableReadOnlyToolApproval = true,
@@ -167,9 +172,12 @@ public class AiChatAgentService
 
         var finalText = new StringBuilder();
         var currentCallName = "";
+        ChatFinishReason? lastFinish = null;
 
         await foreach (var update in agent.RunStreamingAsync(userMessage, session, null, ct))
         {
+            if (update.FinishReason is not null) lastFinish = update.FinishReason;
+
             // Фрагменты текста ассистента
             if (update.Role == ChatRole.Assistant && !string.IsNullOrEmpty(update.Text))
             {
@@ -215,14 +223,19 @@ public class AiChatAgentService
                         _logger.LogInformation("AiChat: chat {ChatId} tool result {ToolName}: {Result} ({ElapsedMs} ms)",
                             chatId, currentCallName, Truncate(resultText), stopwatch.ElapsedMilliseconds);
                         break;
+
+                    case UsageContent usage:
+                        _logger.LogInformation("AiChat: chat {ChatId} usage: {InputTokens} in / {OutputTokens} out tokens",
+                            chatId, usage.Details?.InputTokenCount, usage.Details?.OutputTokenCount);
+                        break;
                 }
             }
         }
 
         var answerLength = finalText.Length;
         FlushText(state, finalText);
-        _logger.LogDebug("AiChat: chat {ChatId} assistant answer {Length} chars ({ElapsedMs} ms)",
-            chatId, answerLength, stopwatch.ElapsedMilliseconds);
+        _logger.LogInformation("AiChat: chat {ChatId} assistant answer {Length} chars, finish {FinishReason} ({ElapsedMs} ms)",
+            chatId, answerLength, lastFinish?.ToString() ?? "-", stopwatch.ElapsedMilliseconds);
 
         // Сохраняем сессию агента только после успешного завершения —
         // при остановке в истории мог остаться незакрытый вызов инструмента.

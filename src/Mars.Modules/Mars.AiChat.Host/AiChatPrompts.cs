@@ -4,20 +4,43 @@ using Mars.AiChat.Shared.Options;
 namespace Mars.AiChat.Host;
 
 /// <summary>
-/// Системный промпт агента: только ядро (стиль, базовые правила, память).
-/// Доменные инструкции (SQL, посты, фронт, ноды) живут в скиллах (skills/**/SKILL.md)
-/// и подгружаются моделью по необходимости через load_skill — прогрессивное раскрытие,
-/// как в Qwen Code CLI.
+/// Системный промпт агента: только ядро (стиль, базовые правила, память, работа со скиллами).
+/// Доменные инструкции живут в скиллах (ai-skills/**/SKILL.md + <data>/ai/skills): в контекст
+/// попадает компактный каталог, полные тела модель берёт через LoadSkill, а скиллы открытой
+/// страницы preload-ит PageSkillRouter — прогрессивное раскрытие, как в Qwen Code CLI.
 /// </summary>
 internal static class AiChatPrompts
 {
-    public static string BuildInstructions(AiChatOption option, string? pageContext = null)
+    public static string BuildInstructions(
+        AiChatOption option, string? pageContext, string skillsListing,
+        IReadOnlyList<(string Name, string Body)> preloadedSkills)
     {
         var sb = new StringBuilder(BaseInstructions);
 
         sb.AppendLine();
         sb.AppendLine();
         sb.Append(MemoryInstructions);
+
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.Append(SkillsInstructions);
+
+        if (skillsListing != "")
+        {
+            sb.AppendLine();
+            sb.AppendLine("<available_skills>");
+            sb.AppendLine(skillsListing);
+            sb.AppendLine("</available_skills>");
+        }
+
+        foreach (var (name, body) in preloadedSkills)
+        {
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine($"Инструкции скилла для текущего контекста ({name}), уже загружены — следуй им:");
+            sb.AppendLine();
+            sb.Append(body);
+        }
 
         if (!string.IsNullOrWhiteSpace(pageContext))
         {
@@ -50,19 +73,10 @@ internal static class AiChatPrompts
            О самом приложении (версия Mars, git-коммит, ОС, окружение, запущено ли в Docker или pm2, аптайм, память) —
            инструмент get_system_info.
         3. Если не хватает информации, которую может дать только пользователь, — вызови инструмент ask_user и остановись до его ответа.
-        4. Настройки сайта:
-           - базовые (имя сайта, описание, email админа) — инструменты get_site_settings / update_site_settings;
-           - любые другие (SEO, режим обслуживания, медиа, маршрутизация фронта и т.д.) —
-             list_site_options → get_site_option → update_site_option;
-           - перед изменением обязательно прочитай текущее значение; изменяй только нужные поля и передавай
-             ПОЛНЫЙ JSON настройки, сохраняя точный регистр имён полей;
-           - если настройка защищена (readable/writable = false), честно скажи об этом и предложи поменять её вручную в Настройках.
-        5. Если задача попадает под один из доступных скиллов (SQL, посты, фронт и др.) — сначала вызови
-           load_skill с его именем и дальше следуй инструкциям скилла.
-        6. После изменения проверь результат инструментом (чтением).
-        7. Выполнив задачу, коротко сообщи результат: что изменилось (старое значение -> новое значение).
-        8. Если задача пока не поддерживается твоими инструментами — честно скажи об этом и предложи альтернативу.
-        9. Никогда не выдумывай результат действия: если инструмент не вызывался, действие не выполнено.
+        4. После изменения проверь результат инструментом (чтением).
+        5. Выполнив задачу, коротко сообщи результат: что изменилось (старое значение -> новое значение).
+        6. Если задача пока не поддерживается твоими инструментами — честно скажи об этом и предложи альтернативу.
+        7. Никогда не выдумывай результат действия: если инструмент не вызывался, действие не выполнено.
         """;
 
     public const string MemoryInstructions = """
@@ -72,5 +86,14 @@ internal static class AiChatPrompts
         - не запоминай временное: текущую переписку, черновики, разовые значения;
         - прежде чем опереться на запомненный факт — проверь его актуальность;
         - начни с file_memory_ls, чтобы увидеть, что уже известно; крупные файлы сопровождай описанием.
+        """;
+
+    public const string SkillsInstructions = """
+        Скиллы — доменные инструкции по работе с инструментами (каталог ниже в <available_skills>).
+        - Если задача попадает под скилл и его инструкции ещё нет в контексте — сначала вызови LoadSkill
+          с его именем, дальше следуй инструкциям скилла.
+        - Если не уверен, какой скилл подходит — SearchSkills с поисковым запросом.
+        - Скиллы текущего контекста (открытая страница) могут быть уже preload-ены в этот промпт —
+          тогда просто следуй им, без загрузки.
         """;
 }

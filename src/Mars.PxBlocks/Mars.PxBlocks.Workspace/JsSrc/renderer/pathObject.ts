@@ -80,52 +80,10 @@ export class PathObject extends Blockly.zelos.PathObject {
         super.removeConnectionHighlight(connection);
     }
 
-    override applyColour(block: Blockly.BlockSvg): void {
-        super.applyColour(block);
-
-        if (block.outputConnection) {
-            let didSetStroke = false;
-
-            const parent = block.getParent();
-            if (parent) {
-                // On very dark shadow blocks, make the border a little bit brighter
-                // to contrast with the parent better
-                if (block.isShadow()) {
-                    const parentBorder = parent.style.colourTertiary!;
-                    const rgb = Blockly.utils.colour.hexToRgb(parentBorder);
-                    const luminance = calculateLuminance(rgb);
-                    if (luminance < 0.15) {
-                        this.svgPath.setAttribute('stroke', Blockly.utils.colour.blend("#ffffff", parentBorder, 0.3)!);
-                        didSetStroke = true;
-                    }
-                }
-                else {
-                    const parentColor = parent.style.colourPrimary!;
-                    const childColor = block.style.colourPrimary!;
-
-                    // If the parent and child block are the same color, either lighten or darken
-                    // the color to help it contrast better
-                    if (parentColor === childColor) {
-                        const blendFactor = 0.6;
-                        const darkerBorder = Blockly.utils.colour.blend("#0000000", childColor, blendFactor)!;
-                        const lighterBorder = Blockly.utils.colour.blend("#ffffff", childColor, blendFactor)!;
-
-                        if (contrastRatio(darkerBorder, parentColor) > contrastRatio(lighterBorder, parentColor)) {
-                            this.svgPath.setAttribute('stroke', darkerBorder);
-                        }
-                        else {
-                            this.svgPath.setAttribute('stroke', lighterBorder);
-                        }
-                        didSetStroke = true;
-                    }
-                }
-            }
-
-            if (!didSetStroke) {
-                this.svgPath.setAttribute('stroke', block.style.colourTertiary);
-            }
-        }
-    }
+    // applyColour не переопределяем: контур вычисляет сам Zelos —
+    // colourTertiary (blend('#000', primary, 0.25)), у shadow — tertiary родителя.
+    // PXT-хаки (blend 0.6 к чёрному/белому, высветление shadow) на нашей палитре
+    // давали «чёрную ручку» и светлое «гало» вместо тонального контура.
 
     setHasDottedOutlineOnHover(enabled: boolean) {
         this.hasDottedOutlineOnHover = enabled;
@@ -171,26 +129,6 @@ export class PathObject extends Blockly.zelos.PathObject {
     isHighlighted() {
         return !!this.svgPathHighlighted;
     }
-}
-
-function calculateLuminance(rgb: number[]) {
-    return ((0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2])) / 255;
-}
-
-function relativeLuminance(rgb: number[]): number {
-    const [r, g, b] = rgb.map(channel => {
-        const c = channel / 255;
-        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-function contrastRatio(colorA: string, colorB: string): number {
-    const lumA = relativeLuminance(Blockly.utils.colour.hexToRgb(colorA));
-    const lumB = relativeLuminance(Blockly.utils.colour.hexToRgb(colorB));
-    const lighter = Math.max(lumA, lumB);
-    const darker = Math.min(lumA, lumB);
-    return (lighter + 0.05) / (darker + 0.05);
 }
 
 Blockly.Css.register(`

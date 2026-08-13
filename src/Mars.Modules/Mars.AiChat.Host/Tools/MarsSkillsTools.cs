@@ -8,20 +8,33 @@ namespace Mars.AiChat.Host.Tools;
 /// </summary>
 public class MarsSkillsTools
 {
+    private const int MaxSearchResults = 20;
+
     private readonly AiSkillCatalog _catalog;
 
     public MarsSkillsTools(AiSkillCatalog catalog) => _catalog = catalog;
 
-    [Description("Поиск по каталогу скиллов агента: возвращает имена и описания подходящих скиллов. " +
-                 "Пустой запрос — весь каталог. Используй, когда не уверен, какой скилл подходит под задачу.")]
+    [Description("Поиск по каталогу скиллов агента: возвращает имена и описания подходящих скиллов (до 20). " +
+                 "Пустой запрос — первые 20 каталога. Используй, когда не уверен, какой скилл подходит под задачу.")]
     public async Task<string> SearchSkills(
-        [Description("Поисковый запрос (слова из имени/описания), пусто — весь каталог")] string query = "",
+        [Description("Поисковый запрос (слова из имени/описания/тегов), пусто — начало каталога")] string query = "",
         CancellationToken ct = default)
     {
         var found = await _catalog.SearchAsync(query, ct);
-        if (found.Count == 0) return "Скиллы не найдены. Пустой запрос вернёт весь каталог.";
+        if (found.Count == 0) return "Скиллы не найдены. Попробуй другие слова или пустой запрос.";
 
-        return string.Join("\n", found.Select(s => $"- {s.Name}: {s.Description}"));
+        var sb = new System.Text.StringBuilder();
+        foreach (var s in found.Take(MaxSearchResults))
+        {
+            sb.Append("- ").Append(s.Name).Append(": ").Append(s.Description);
+            if (s.Tags.Count > 0) sb.Append(" (теги: ").Append(string.Join(", ", s.Tags)).Append(')');
+            sb.AppendLine();
+        }
+
+        if (found.Count > MaxSearchResults)
+            sb.Append($"…и ещё {found.Count - MaxSearchResults} — уточни запрос.");
+
+        return sb.ToString().TrimEnd();
     }
 
     [Description("Загрузить полные инструкции скилла по имени (из каталога скиллов). " +

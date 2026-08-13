@@ -1,6 +1,7 @@
 ---
 name: mars-settings
 description: Настройки сайта: базовые (get_site_settings / update_site_settings) и любые опции (list_site_options / get_site_option / update_site_option). Используй, когда задача про настройки сайта, SEO, режим обслуживания, медиа, маршрутизацию фронта.
+tags: настройки, опции, seo, сайт
 ---
 
 # Настройки сайта

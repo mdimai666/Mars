@@ -29,6 +29,21 @@ public sealed class AiChatOption
     [Display(Name = "Разрешить агенту доступ к SQL-базам")]
     public bool EnableSqlAccess { get; set; } = true;
 
+    /// <summary>
+    /// Имена скиллов (через запятую), чьи описания всегда держим в контексте агента,
+    /// первыми в списке. Остальные попадают по имени (по алфавиту) в пределах MaxSkillsInContext;
+    /// хвост большого каталога агент находит через SearchSkills.
+    /// </summary>
+    [Display(Name = "Скиллы в контексте (featured, через запятую)")]
+    public string FeaturedSkills { get; set; } = "";
+
+    /// <summary>
+    /// Сколько описаний скиллов держать в системном промпте (0 — не показывать список вовсе).
+    /// Ограничивает контекст на больших каталогах.
+    /// </summary>
+    [Display(Name = "Максимум скиллов в контексте")]
+    public int MaxSkillsInContext { get; set; } = 10;
+
     public AiProviderConnection? GetDefaultConnection()
     {
         if (Connections.Count == 0) return null;

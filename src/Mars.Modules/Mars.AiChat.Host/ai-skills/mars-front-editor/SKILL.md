@@ -1,6 +1,7 @@
 ---
 name: mars-front-editor
 description: Правка Handlebars-шаблонов сайта (фронта) из редактора фронта: ListFrontFiles / ReadFrontFile / WriteFrontFile / CreateFrontFile / RenameFrontFile / DeleteFrontFile. Используй, когда пользователь открыл редактор фронта (pageContext содержит /front/editor/{slug}) или задача про шаблоны/страницы/стили сайта.
+tags: фронт, шаблоны, handlebars, стили, css
 ---
 
 # Файлы фронта (шаблоны сайта)

@@ -104,10 +104,16 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
   (name/description), как у Qwen Code CLI. MAF `AgentSkillsProvider` НЕ используется: его источники
   требуют живого агента в контексте, а свой каталог даёт контроль над масштабированием
   (поиск, роутинг) — см. `ai/AiHarnessSkillsPlan.md`.
+  Каталог сканируется один раз и лежит в памяти индексом; `FileSystemWatcher` на обоих корнях
+  сбрасывает кеш при изменении файлов — правка скилла подхватывается без перезапуска.
+  Frontmatter поддерживает `tags: a, b` — учитываются в поиске и выводятся в выдаче.
   Прогрессивное раскрытие в три слоя:
-  1. компактный список `name: description` всех скиллов — всегда в системном промпте (`<available_skills>`);
-  2. `SearchSkills(query)` / `LoadSkill(name)` (`SkillsToolset`, `MarsSkillsTools`) — модель сама
-     ищет и подгружает полные инструкции по необходимости;
+  1. компактный список `name: description` в системном промпте (`<available_skills>`), ограничен
+     опциями `AiChatOption.MaxSkillsInContext` (default 10, 0 — скрыть) и `FeaturedSkills`
+     (csv имён — всегда в контексте, первыми); перелив большого каталога дописывает
+     «…и ещё N — ищи через SearchSkills»;
+  2. `SearchSkills(query)` (до 20 результатов, поиск по имени/описанию/тегам) / `LoadSkill(name)`
+     (`SkillsToolset`, `MarsSkillsTools`) — модель сама ищет и подгружает полные инструкции;
   3. `PageSkillRouter` — детерминированный preload полных инструкций по открытой странице:
      `/front/editor/{slug}` → `mars-front-editor`, сегмент `/Post/` → `mars-posts`,
      `EnableSqlAccess` → `mars-sql`. Агент сразу знает, какими инструментами работать,

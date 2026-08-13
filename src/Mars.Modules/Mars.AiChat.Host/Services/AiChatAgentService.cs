@@ -102,7 +102,8 @@ public class AiChatAgentService
             // Каталог скиллов: компактный список в контекст + полные инструкции
             // скиллов открытой страницы (детерминированный роутинг)
             var allSkills = await _catalog.GetSkillsAsync(ct);
-            var skillsListing = string.Join("\n", allSkills.Select(s => $"- {s.Name}: {s.Description}"));
+            var featured = option.FeaturedSkills.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var skillsListing = AiSkillCatalog.BuildContextListing(allSkills, featured, option.MaxSkillsInContext);
             var routedNames = PageSkillRouter.Route(pageContext, frontEditorSlug, option);
             var preloaded = new List<(string Name, string Body)>();
             foreach (var name in routedNames)

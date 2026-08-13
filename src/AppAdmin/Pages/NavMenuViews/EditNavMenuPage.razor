@@ -13,9 +13,13 @@
     <StandartEditContainer ID=@ID
                            TitleText="@AppRes.NavMenu"
                            TModel=NavMenu
-                           GetAction="@(()=>NavMenu.GetAction(client,ID))"
+                           GetAction="GetMenu"
                            SaveAction="@((s,create)=>NavMenu.SaveAction(client,s,create))"
                            DeleteAction="@(s=>NavMenu.DeleteAction(client,s))"
+                           OnLoadData="OnMenuLoaded"
+                           AfterSave="AfterSave"
+                           AfterDelete="AfterDelete"
+                           CanDelete="@(!(_loadedMenu?.IsSystem ?? false))"
                            @ref=f CanCreate=false>
         <ChildContent>
             <FluentStack Orientation="Orientation.Vertical" Class="vstack gap-3">
@@ -70,7 +74,7 @@
                             Структура
                         </label>
 
-                        <DTreeView Items="context.MenuItems" KeyExp="s=>s.Id" ParentExp="s=>s.ParentId"
+                        <DTreeView Items="context.MenuItems" KeyExp="s => s.Id" ParentExp="s => s.ParentId"
                                    TModel="NavMenuItem"
                                    TKey="Guid"
                                    SelectedItem="@_selNode"
@@ -78,20 +82,44 @@
                                    Context="item">
                             <div class="d-nav-menu d-flex 1border px-2 pt-1 @(item.Node.Disabled ? "disabled" : "")" @onclick="@(() => OnClickItem(item))">
                                 <div class="d-navmenu-title flex-fill">
-                                    @item.Node.Title
-                                    <div class="text-secondary">
-                                        @item.Node.Url
-                                    </div>
-                                    <div class="">
-                                        @(item.Node.RolesInverse ? "!= " : "")
-                                        @foreach (var r in item.Node.Roles)
-                                        {
-                                            <FluentBadge>@r</FluentBadge>
-                                        }
-                                    </div>
+                                    @if (item.Node.IsDivider)
+                                    {
+                                        <text>---</text>
+                                    }
+                                    else
+                                    {
+                                        @item.Node.Title
+
+                                        <div class="hstack gap-3">
+                                            <div class="text-secondary">
+                                                @item.Node.Url
+                                            </div>
+                                            <div class="hstack gap-2">
+                                                @(item.Node.RolesInverse ? "!= " : "")
+                                                @foreach (var r in item.Node.Roles)
+                                                {
+                                                    <FluentBadge>@r</FluentBadge>
+                                                }
+                                                @if (item.Node.IsSystem)
+                                                {
+                                                    <FluentBadge Appearance="@Appearance.Lightweight">system</FluentBadge>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                                 <div class="d-navmenu-tools d-flex flex-column align-items-end">
-                                    <a class="text-danger" @onclick=@(e => OnDeleteMenuItem(item.Node))>удалить</a>
+                                    @if (item.Node.IsSystem)
+                                    {
+                                        <a class="@(item.Node.Disabled ? "text-accent" : "text-secondary")"
+                                           @onclick=@(e => OnToggleMenuItem(item.Node))>
+                                            @(item.Node.Disabled ? "включить" : "отключить")
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="text-danger" @onclick=@(e => OnDeleteMenuItem(item.Node))>удалить</a>
+                                    }
 
                                     <div class="dropdown">
                                         <a id="@($"navmenu-{item.Node.Id}")" class="menu-dropdown-link fz14px ms-2 dropdown-toggle"
@@ -181,7 +209,17 @@
                                             <hr />
 
                                             <div class="actions">
-                                                <DFluentDeleteButton OnConfirm="e => OnDeleteMenuItem(_selMenu)" />
+                                                @if (_selMenu.IsSystem)
+                                                {
+                                                    <FluentButton Appearance="@(_selMenu.Disabled ? Appearance.Accent : Appearance.Neutral)"
+                                                                  OnClick="e => OnToggleMenuItem(_selMenu)">
+                                                        @(_selMenu.Disabled ? "Включить" : "Отключить")
+                                                    </FluentButton>
+                                                }
+                                                else
+                                                {
+                                                    <DFluentDeleteButton OnConfirm="e => OnDeleteMenuItem(_selMenu)" />
+                                                }
 
                                                 <span class="ms-2">
                                                     <FluentButton OnClick=@(e => NodePropArrowClick("left"))>
@@ -222,6 +260,17 @@
                     </FormItem2>
                 </div>
             </div>
+            @if (_loadedMenu is { IsSystem: true, IsPersisted: true })
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <FluentButton Appearance="Appearance.Neutral" OnClick="OnResetDevMenu">Сбросить к дефолту</FluentButton>
+                        <div class="text-secondary small mt-2">
+                            Сохранённая копия будет удалена, меню вернётся к генерируемому кодом состоянию.
+                        </div>
+                    </div>
+                </div>
+            }
             <div class="card">
                 <div class="card-body">
                     <a href=@url target="_blank">

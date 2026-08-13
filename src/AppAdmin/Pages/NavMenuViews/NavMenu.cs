@@ -62,6 +62,13 @@ public partial class EditNavMenuPage
 
         //extra
 
+        /// <summary>
+        /// false — меню ещё не сохранено в БД (отдаётся дефолтное состояние).
+        /// </summary>
+        public bool IsPersisted { get; set; } = true;
+
+        public bool IsSystem => Tags.Contains("system");
+
         public IEnumerable<string> SetRoles { get => Roles; set => Roles = value.ToList(); }
 
 
@@ -82,6 +89,7 @@ public partial class EditNavMenuPage
             {
                 await client.NavMenu.Update(navMenu.ToUpdateRequest());
             }
+            navMenu.IsPersisted = true;
             return navMenu;
         }
 
@@ -135,6 +143,7 @@ public partial class EditNavMenuPage
                 RolesInverse = response.RolesInverse,
                 Tags = response.Tags.ToArray(),
                 MenuItems = response.MenuItems.Select(NavMenuItem.ToModel).ToList(),
+                IsPersisted = response.IsPersisted,
             };
     }
 

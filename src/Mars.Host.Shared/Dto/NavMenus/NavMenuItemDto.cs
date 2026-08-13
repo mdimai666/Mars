@@ -1,6 +1,6 @@
 namespace Mars.Host.Shared.Dto.NavMenus;
 
-public class NavMenuItemDto
+public record NavMenuItemDto
 {
     public required Guid Id { get; init; } = Guid.NewGuid();
     public required Guid ParentId { get; init; }
@@ -15,6 +15,12 @@ public class NavMenuItemDto
     public required bool Disabled { get; init; }
     public required bool IsHeader { get; init; }
     public required bool IsDivider { get; init; }
+
+    /// <summary>
+    /// Пункт из дефолтного (генерируемого кодом) системного меню.
+    /// Вычисляется сервером при отдаче, при сохранении игнорируется.
+    /// </summary>
+    public bool IsSystem { get; init; }
 
     //public IEnumerable<NavMenuItem> GetItems(NavMenuEntity nav)
     //{

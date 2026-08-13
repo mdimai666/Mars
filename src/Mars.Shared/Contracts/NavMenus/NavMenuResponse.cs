@@ -25,6 +25,11 @@ public record NavMenuDetailResponse
     public required string Style { get; init; }
     public required IReadOnlyCollection<string> Roles { get; init; }
     public required bool RolesInverse { get; init; }
+
+    /// <summary>
+    /// false — меню не сохранено в БД и отдаётся из дефолтного (генерируемого кодом) состояния.
+    /// </summary>
+    public required bool IsPersisted { get; init; }
 }
 
 public record NavMenuItemResponse
@@ -42,4 +47,10 @@ public record NavMenuItemResponse
     public required bool Disabled { get; init; }
     public required bool IsHeader { get; init; }
     public required bool IsDivider { get; init; }
+
+    /// <summary>
+    /// Пункт из дефолтного (генерируемого кодом) системного меню:
+    /// его нельзя удалить, только скрыть (Disabled).
+    /// </summary>
+    public required bool IsSystem { get; init; }
 }

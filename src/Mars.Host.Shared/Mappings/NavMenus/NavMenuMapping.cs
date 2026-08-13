@@ -34,6 +34,7 @@ public static class NavMenuMapping
             Roles = entity.Roles,
             RolesInverse = entity.RolesInverse,
             MenuItems = entity.MenuItems.Select(ToResponse).ToList(),
+            IsPersisted = entity.IsPersisted,
         };
 
     public static NavMenuItemResponse ToResponse(this NavMenuItemDto entity)
@@ -53,6 +54,7 @@ public static class NavMenuMapping
             OpenInNewTab = entity.OpenInNewTab,
             ParentId = entity.ParentId,
             RolesInverse    = entity.RolesInverse,
+            IsSystem = entity.IsSystem,
         };
 
     public static ListDataResult<NavMenuSummaryResponse> ToResponse(this ListDataResult<NavMenuSummary> items)

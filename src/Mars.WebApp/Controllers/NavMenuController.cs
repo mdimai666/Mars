@@ -82,6 +82,15 @@ public class NavMenuController : ControllerBase
         return (await _navMenuService.ListTable(request.ToQuery(), cancellationToken)).ToResponse();
     }
 
+    /// <summary>
+    /// Список меню для админки: несохранённые системные меню подмешиваются виртуальной записью.
+    /// </summary>
+    [HttpGet("admin/list/offset")]
+    public async Task<ListDataResult<NavMenuSummaryResponse>> ListForAdmin([FromQuery] ListNavMenuQueryRequest request, CancellationToken cancellationToken)
+    {
+        return (await _navMenuService.ListForAdmin(request.ToQuery(), cancellationToken)).ToResponse();
+    }
+
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
@@ -104,6 +113,16 @@ public class NavMenuController : ControllerBase
     public Task DeleteMany([FromQuery] Guid[] ids, CancellationToken cancellationToken)
     {
         return _navMenuService.DeleteMany(new DeleteManyNavMenuQuery { Ids = ids }, cancellationToken);
+    }
+
+    /// <summary>
+    /// Сброс системного меню к дефолту: удаляет сохранённую копию из БД.
+    /// </summary>
+    [HttpPost("{id:guid}/reset")]
+    public async Task<UserActionResult> Reset(Guid id, CancellationToken cancellationToken)
+    {
+        await _navMenuService.Reset(id, cancellationToken);
+        return UserActionResult.Success("Меню сброшено к дефолтному состоянию");
     }
 
     //---------------

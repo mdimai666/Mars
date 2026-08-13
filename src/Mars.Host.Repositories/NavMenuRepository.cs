@@ -71,12 +71,14 @@ internal class NavMenuRepository : INavMenuRepository
             Slug = query.Slug,
             Disabled = query.Disabled,
             Tags = query.Tags.ToList(),
-            MenuItems = MapToItems(query.MenuItems),
             Class = query.Class,
             Style = query.Style,
             Roles = query.Roles.ToList(),
             RolesInverse = query.RolesInverse,
         });
+        // owned-коллекция не копируется через SetValues — присваивается явно,
+        // иначе изменения пунктов меню не попадают в БД
+        entity.MenuItems = MapToItems(query.MenuItems);
         entity.ModifiedAt = DateTimeOffset.Now;
 
         await _marsDbContext.SaveChangesAsync(cancellationToken);

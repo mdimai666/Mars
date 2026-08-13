@@ -33,6 +33,16 @@
             Root-файлы (_root.hbs) тоже попадают сюда — их URL это StartPath.
             </summary>
         </member>
+        <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Shared.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
+            <summary>
+            Список меню для админки: несохранённые системные меню подмешиваются виртуальной записью.
+            </summary>
+        </member>
+        <member name="M:Mars.Controllers.NavMenuController.Reset(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Сброс системного меню к дефолту: удаляет сохранённую копию из БД.
+            </summary>
+        </member>
         <member name="T:Mars.Handlers.AdminFrontRenderHandler">
             <summary>
             Рендер страниц специального фронта админки (data/admin/front).
@@ -236,13 +246,13 @@
         <member name="T:Mars.Services.LogMaintenanceStartupService">
             <summary>
             Регистрирует системную Quartz-джобу обслуживания логов:
-            ежедневная чистка файлов старше периода хранения (+ прогон при старте).
+            ежедневная чистка файлов старше периода хранения.
             </summary>
         </member>
         <member name="M:Mars.Services.LogMaintenanceStartupService.#ctor(System.IServiceProvider)">
             <summary>
             Регистрирует системную Quartz-джобу обслуживания логов:
-            ежедневная чистка файлов старше периода хранения (+ прогон при старте).
+            ежедневная чистка файлов старше периода хранения.
             </summary>
         </member>
         <member name="F:Mars.Setup.SetupService.ExistingFrontChoice">

@@ -37,17 +37,53 @@ public class NavMenuService : INavMenuService
         });
     }
 
-    public Task<NavMenuSummary?> Get(Guid id, CancellationToken cancellationToken)
-        => _navMenuRepository.Get(id, cancellationToken);
+    public async Task<NavMenuSummary?> Get(Guid id, CancellationToken cancellationToken)
+        => await _navMenuRepository.Get(id, cancellationToken) ?? (id == DevMenuFactory.DevMenuId ? DevMenu() : null);
 
-    public Task<NavMenuDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
-        => _navMenuRepository.GetDetail(id, cancellationToken);
+    public async Task<NavMenuDetail?> GetDetail(Guid id, CancellationToken cancellationToken)
+    {
+        if (id == DevMenuFactory.DevMenuId)
+            return DevMenu();
+
+        return await _navMenuRepository.GetDetail(id, cancellationToken);
+    }
 
     public Task<ListDataResult<NavMenuSummary>> List(ListNavMenuQuery query, CancellationToken cancellationToken)
         => _navMenuRepository.List(query, cancellationToken);
 
     public Task<PagingResult<NavMenuSummary>> ListTable(ListNavMenuQuery query, CancellationToken cancellationToken)
         => _navMenuRepository.ListTable(query, cancellationToken);
+
+    /// <summary>
+    /// Список меню для админки: несохранённые системные меню подмешиваются виртуальной записью.
+    /// </summary>
+    public async Task<ListDataResult<NavMenuSummary>> ListForAdmin(ListNavMenuQuery query, CancellationToken cancellationToken)
+    {
+        var result = await _navMenuRepository.List(query, cancellationToken);
+
+        if (query.Skip > 0) return result;
+        if (await _navMenuRepository.Get(DevMenuFactory.DevMenuId, cancellationToken) is not null) return result;
+        if (!MatchesSearch(DevMenuFactory.DevMenuTitle, query.Search) && !MatchesSearch(DevMenuFactory.DevMenuSlug, query.Search)) return result;
+
+        var devMenu = new NavMenuSummary
+        {
+            Id = DevMenuFactory.DevMenuId,
+            CreatedAt = DateTimeOffset.Now,
+            Title = DevMenuFactory.DevMenuTitle,
+            Slug = DevMenuFactory.DevMenuSlug,
+            Disabled = false,
+            Tags = [DevMenuFactory.SystemTag],
+        };
+
+        var items = new List<NavMenuSummary> { devMenu };
+        items.AddRange(result.Items);
+        if (items.Count > query.Take) items = [.. items.Take(query.Take)];
+
+        return new ListDataResult<NavMenuSummary>(items, result.HasMoreData, (result.TotalCount ?? 0) + 1);
+    }
+
+    static bool MatchesSearch(string value, string? search)
+        => string.IsNullOrWhiteSpace(search) || value.Contains(search, StringComparison.OrdinalIgnoreCase);
 
     public async Task<Guid> Create(CreateNavMenuQuery query, CancellationToken cancellationToken)
     {
@@ -63,7 +99,37 @@ public class NavMenuService : INavMenuService
 
     public async Task Update(UpdateNavMenuQuery query, CancellationToken cancellationToken)
     {
-        await _navMenuRepository.Update(query, cancellationToken);
+        if (query.Id == DevMenuFactory.DevMenuId)
+            query = EnforceSystemMenuInvariants(query);
+
+        var exists = await _navMenuRepository.Get(query.Id, cancellationToken) is not null;
+
+        if (exists)
+        {
+            await _navMenuRepository.Update(query, cancellationToken);
+        }
+        else if (query.Id == DevMenuFactory.DevMenuId)
+        {
+            // первое редактирование dev menu — сохраняем копию в БД
+            await _navMenuRepository.Create(new CreateNavMenuQuery
+            {
+                Id = query.Id,
+                Title = query.Title,
+                Slug = query.Slug,
+                Disabled = query.Disabled,
+                Tags = query.Tags,
+                MenuItems = query.MenuItems,
+                Class = query.Class,
+                Style = query.Style,
+                Roles = query.Roles,
+                RolesInverse = query.RolesInverse,
+            }, cancellationToken);
+        }
+        else
+        {
+            throw new NotFoundException();
+        }
+
         var updated = (await Get(query.Id, cancellationToken))!;
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuUpdate(), updated);
@@ -71,8 +137,24 @@ public class NavMenuService : INavMenuService
         ClearActiveMenusCache();
     }
 
+    /// <summary>
+    /// Системное меню нельзя лишить тега system или увести с дефолтного slug
+    /// (админ-панель ищет его по slug "dev").
+    /// </summary>
+    static UpdateNavMenuQuery EnforceSystemMenuInvariants(UpdateNavMenuQuery query)
+    {
+        var tags = query.Tags.Contains(DevMenuFactory.SystemTag)
+            ? query.Tags
+            : [.. query.Tags, DevMenuFactory.SystemTag];
+
+        return query with { Slug = DevMenuFactory.DevMenuSlug, Tags = tags };
+    }
+
     public async Task<NavMenuSummary> Delete(Guid id, CancellationToken cancellationToken)
     {
+        if (id == DevMenuFactory.DevMenuId)
+            throw new UserActionException("Системное меню нельзя удалить. Используйте «Сбросить к дефолту».");
+
         var navMenu = await Get(id, cancellationToken) ?? throw new NotFoundException();
 
         await _navMenuRepository.Delete(id, cancellationToken);
@@ -86,6 +168,9 @@ public class NavMenuService : INavMenuService
 
     public async Task<IReadOnlyCollection<NavMenuSummary>> DeleteMany(DeleteManyNavMenuQuery query, CancellationToken cancellationToken)
     {
+        if (query.Ids.Contains(DevMenuFactory.DevMenuId))
+            throw new UserActionException("Системное меню нельзя удалить. Используйте «Сбросить к дефолту».");
+
         var navMenus = await _navMenuRepository.ListAll(new() { Ids = query.Ids }, cancellationToken);
 
         await _navMenuRepository.DeleteMany(query, cancellationToken);
@@ -98,6 +183,25 @@ public class NavMenuService : INavMenuService
         ClearActiveMenusCache();
 
         return navMenus;
+    }
+
+    /// <summary>
+    /// Сброс системного меню к дефолту: удаляет сохранённую в БД копию,
+    /// после чего меню снова отдаётся генерируемым кодом состоянием.
+    /// </summary>
+    public async Task Reset(Guid id, CancellationToken cancellationToken)
+    {
+        if (id != DevMenuFactory.DevMenuId)
+            throw new UserActionException("Сбросить к дефолту можно только системное меню.");
+
+        var navMenu = await _navMenuRepository.Get(id, cancellationToken);
+        if (navMenu is null) return; // не сохранено — сбрасывать нечего
+
+        await _navMenuRepository.Delete(id, cancellationToken);
+
+        var payload = new ManagerEventPayload(_eventManager.Defaults.NavMenuDelete(), navMenu);
+        _eventManager.TriggerEvent(payload);
+        ClearActiveMenusCache();
     }
 
     public Task<NavMenuExport> Export(Guid id)
@@ -130,106 +234,24 @@ public class NavMenuService : INavMenuService
         //};
     }
 
+    /// <summary>
+    /// Dev menu: сохранённая в БД копия, смерженная с дефолтным (генерируемым кодом) состоянием.
+    /// Пока копии нет в БД — отдаётся дефолт.
+    /// </summary>
     public NavMenuDetail DevMenu()
     {
         return _memoryCache.GetOrCreate(DevMenuKey, entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = _cacheTtl;
+
             var postTypes = _postTypeRepository.ListAllActive(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
-            var devMenu = CreateDevMenu(postTypes);
-            return devMenu;
+            var defaultMenu = DevMenuFactory.Build(postTypes);
+
+            var dbMenu = _navMenuRepository.GetDetail(DevMenuFactory.DevMenuId, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            return dbMenu is null ? defaultMenu : DevMenuFactory.Merge(dbMenu, defaultMenu);
         })!;
     }
-
-    NavMenuDetail CreateDevMenu(IEnumerable<PostTypeSummary> postTypes)
-    {
-        var d = "/dev/";
-
-        var dev_menu = new Guid("9596ffe0-f688-452c-885e-e72f1123e50d");
-        var razdels = new Guid("9f34a009-e39e-4c7c-80bf-be6efa4dc8da");
-        var manage = new Guid("a7bc610c-412d-4292-9e0c-dd126725e285");
-
-        List<string> adminRoles = ["Admin"];
-
-        var menu = new NavMenuDetail()
-        {
-            Roles = [],
-            Slug = "dev",
-            Title = "Dev admin menu",
-            MenuItems = ((MenuItemInternal[])[
-                new(){ Title = "Главная" , Url = d, },
-                new(){ Title = AppRes.Media , Url = d+"Media"  },
-                new(){ IsDivider = true },
-                new(){ Title = "Записи", Url = d+"Post/post", },
-                ..postTypes.Where(s=>s.TypeName!="post").OrderBy(s=>s.Title).Select(postType=>new MenuItemInternal(){
-                    Title = postType.Title,
-                    Url = d+$"Post/{postType.TypeName}",
-                }),
-                new(){ IsDivider = true },
-                new(){ Title = "Типы", Url = d+"PostType", Roles=adminRoles },
-                new(){ Title = "Меню", Url = d+"NavMenu", Roles=adminRoles },
-                new(){ Title = "Разделы", Url = "#razdels", Id=razdels, Roles=adminRoles },
-                    new(){ Title = "Письма", Url = d+"FeedbackList", ParentId=razdels },
-                    //new(){ Title = "Geo", Url = d+"geo/GeoRegion", ParentId=razdels },
-                new(){ Title = "Управление", Url = d+"Manage", Id=manage, Roles = adminRoles },
-                    //new() { Title = "Анкета", Url = d+"Manage/AnketaManage", ParentId=manage },
-                    new() { Title = AppRes.Users, Url = d+"Users", ParentId=manage},
-                    new() { Title = AppRes.UserTypes, Url = d+"UserType", ParentId=manage},
-                    new() { Title = AppRes.PostCategoryTypes, Url = d+"PostCategoryType", ParentId=manage},
-                    //new() { Title = "Контакты", Url = d+"ContactsManagement", ParentId=manage},
-    #if DEBUG
-		            //new() { Title = "Роли", Url = d+"RoleManagement", ParentId=manage},
-	#endif
-                    //new() { Title = "Комментарии", Url = d+"Comments", ParentId=manage},
-                new(){ IsDivider = true },
-                new (){ Title = AppRes.Plugins, Url = d+"Plugins", Roles=adminRoles },
-                new (){ Title = "Настройки", Url = d+"Settings", Roles=adminRoles },
-
-            ]).Select(NewMenuItem).ToList(),
-
-            CreatedAt = DateTime.Now,
-            ModifiedAt = null,
-            Disabled = false,
-            Id = dev_menu,
-            RolesInverse = false,
-            Class = "",
-            Style = "",
-            Tags = []
-        };
-
-        return menu;
-    }
-
-    class MenuItemInternal
-    {
-        public Guid Id = Guid.NewGuid();
-        public string? Title;
-        public string? Url;
-        public bool IsDivider = false;
-        public bool IsHeader = false;
-        public IReadOnlyCollection<string>? Roles;
-        public Guid ParentId;
-
-    }
-
-    NavMenuItemDto NewMenuItem(MenuItemInternal item)
-        => new()
-        {
-            Title = item.Title ?? "",
-            Url = item.Url ?? "",
-
-            Id = item.Id,
-            Class = "",
-            Style = "",
-            Disabled = false,
-            Icon = "",
-            IsDivider = item.IsDivider,
-            IsHeader = item.IsHeader,
-            OpenInNewTab = false,
-            ParentId = item.ParentId,
-            Roles = item.Roles ?? [],
-            RolesInverse = false
-        };
 
     public IReadOnlyCollection<NavMenuDetail> GetAppInitialDataMenus(bool includeDevMenu = false)
     {
@@ -239,11 +261,21 @@ public class NavMenuService : INavMenuService
             return _navMenuRepository.ListAllActiveDetail(new(), CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
         })!;
 
-        return includeDevMenu ? [.. activeMenus, DevMenu()] : activeMenus;
+        // системные меню (тег system) не отдаются публичному фронту
+        var menus = activeMenus.Where(s => !s.Tags.Contains(DevMenuFactory.SystemTag)).ToList();
+
+        if (!includeDevMenu) return menus;
+
+        var devMenu = DevMenu();
+        if (devMenu.Disabled) return menus;
+
+        devMenu = devMenu with { MenuItems = devMenu.MenuItems.Where(s => !s.Disabled).ToList() };
+        return [.. menus, devMenu];
     }
 
     public void ClearActiveMenusCache()
     {
         _memoryCache.Remove(ActiveMenusMenuKey);
+        _memoryCache.Remove(DevMenuKey);
     }
 }

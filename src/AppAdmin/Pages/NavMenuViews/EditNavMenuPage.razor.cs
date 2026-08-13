@@ -13,6 +13,7 @@ public partial class EditNavMenuPage
     [Inject] protected IMarsWebApiClient client { get; set; } = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
     [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
+    [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Parameter] public Guid ID { get; set; }
     StandartEditContainer<NavMenu> f = default!;
 
@@ -20,6 +21,17 @@ public partial class EditNavMenuPage
 
     DTreeNode<NavMenuItem>? _selNode;
     IReadOnlyCollection<RoleSummaryResponse> _availRoles = [];
+
+    NavMenu? _loadedMenu;
+
+    async Task<NavMenu> GetMenu()
+        => _loadedMenu = await NavMenu.GetAction(client, ID);
+
+    void OnMenuLoaded(NavMenu menu)
+    {
+        _loadedMenu = menu;
+        StateHasChanged();
+    }
 
     protected override void OnInitialized()
     {
@@ -43,21 +55,67 @@ public partial class EditNavMenuPage
         else _selNode = node;
     }
 
-    void OnDeleteMenuItem(NavMenuItem item)
+    void OnToggleMenuItem(NavMenuItem item)
     {
-        //if (_selMenu == item) _selMenu = null;
-        if (_selMenu == item) _selNode = null;
-
-        TheRecurseDelete(item);
-        f.Model.MenuItems = f.Model.MenuItems.Except([item]);
+        item.Disabled = !item.Disabled;
+        StateHasChanged();
     }
 
-    void TheRecurseDelete(NavMenuItem item)
+    void OnDeleteMenuItem(NavMenuItem item)
     {
-        foreach (var h in item.GetItems(f.Model))
+        // системные пункты не удаляются, только отключаются
+        if (item.IsSystem)
         {
-            TheRecurseDelete(h);
+            OnToggleMenuItem(item);
+            return;
         }
+
+        if (_selMenu == item) _selNode = null;
+
+        var toDelete = new List<NavMenuItem> { item };
+        CollectChildren(item, toDelete);
+        f.Model.MenuItems = f.Model.MenuItems.Except(toDelete);
+        StateHasChanged();
+    }
+
+    void CollectChildren(NavMenuItem item, List<NavMenuItem> acc)
+    {
+        foreach (var child in item.GetItems(f.Model))
+        {
+            acc.Add(child);
+            CollectChildren(child, acc);
+        }
+    }
+
+    async void OnResetDevMenu()
+    {
+        var result = await client.NavMenu.Reset(ID);
+
+        if (result.Ok)
+        {
+            _ = messageService.Success(result.Message);
+            _ = f.Load();
+            RefreshInitialSiteData();
+        }
+        else
+        {
+            _ = messageService.Error(result.Message);
+        }
+    }
+
+    void AfterSave()
+    {
+        RefreshInitialSiteData();
+    }
+
+    void AfterDelete()
+    {
+        RefreshInitialSiteData();
+    }
+
+    void RefreshInitialSiteData()
+    {
+        _ = viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
     }
 
     void DropdownMenu_Copy(NavMenuItem item)

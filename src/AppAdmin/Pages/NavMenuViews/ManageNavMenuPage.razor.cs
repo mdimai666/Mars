@@ -39,7 +39,7 @@ public partial class ManageNavMenuPage
 
                 var sort = (req.SortByAscending ? "" : "-") + sortColumn;
 
-                data = await client.NavMenu.List(new()
+                data = await client.NavMenu.ListForAdmin(new()
                 {
                     //Page = pagination.CurrentPageIndex + 1,
                     //PageSize = pagination.ItemsPerPage,

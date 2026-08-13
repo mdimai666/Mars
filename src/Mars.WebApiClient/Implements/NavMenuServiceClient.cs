@@ -47,6 +47,16 @@ internal class NavMenuServiceClient : BasicServiceClient, INavMenuServiceClient
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<NavMenuSummaryResponse>>();
 
+    public Task<ListDataResult<NavMenuSummaryResponse>> ListForAdmin(ListNavMenuQueryRequest filter)
+        => _client.Request($"{_basePath}{_controllerName}/admin/list/offset")
+                    .AppendQueryParam(filter)
+                    .GetJsonAsync<ListDataResult<NavMenuSummaryResponse>>();
+
+    public Task<UserActionResult> Reset(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}", id, "reset")
+                    .PostAsync()
+                    .ReceiveJson<UserActionResult>();
+
     public Task<UserActionResult> Import(Guid id, string json)
     {
         throw new NotImplementedException();

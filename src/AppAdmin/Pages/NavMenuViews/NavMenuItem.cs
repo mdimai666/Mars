@@ -51,6 +51,11 @@ public partial class EditNavMenuPage
 
         //extra
 
+        /// <summary>
+        /// Пункт из дефолтного состояния системного меню: нельзя удалить, только скрыть.
+        /// </summary>
+        public bool IsSystem { get; set; }
+
         public IEnumerable<string> SetRoles { get => Roles; set => Roles = value.ToList(); }
 
 
@@ -132,6 +137,7 @@ public partial class EditNavMenuPage
                 IsDivider = response.IsDivider,
                 IsHeader = response.IsHeader,
                 OpenInNewTab = response.OpenInNewTab,
+                IsSystem = response.IsSystem,
             };
 
     }

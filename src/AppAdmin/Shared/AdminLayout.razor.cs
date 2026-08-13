@@ -72,6 +72,11 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
             UpdateMenuItems();
             StateHasChanged();
         });
+        Q.Root.On(typeof(AppInitialViewModel), EmitTypeMode.All, d =>
+        {
+            UpdateMenuItems();
+            StateHasChanged();
+        });
 
         UpdateMenuItems();
 

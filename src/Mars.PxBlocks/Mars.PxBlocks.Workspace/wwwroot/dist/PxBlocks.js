@@ -18237,6 +18237,9 @@ const El = class El extends mn.ConstantProvider {
       ) + K.svgPaths.moveBy(-n, 0);
     return h;
   }
+  init() {
+    super.init(), this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH = this.FIELD_BORDER_RECT_HEIGHT / 2, this.HEXAGONAL = this.makeHexagonal(), this.ROUNDED = this.makeRounded();
+  }
   getCSS_(I) {
     return super.getCSS_(I).concat([
       // Connection indicator.
@@ -18677,14 +18680,14 @@ const OT = {
     snap: !0
   },
   zoom: {
-    controls: !0,
+    controls: !1,
     wheel: !0,
     startScale: 1,
     maxScale: 3,
     minScale: 0.3,
     scaleSpeed: 1.2
   },
-  trashcan: !0,
+  trashcan: !1,
   move: {
     scrollbars: !0,
     drag: !0,
@@ -18732,7 +18735,10 @@ function Vv(k) {
 function Wv(k, I) {
   k.undo(I);
 }
-function Kv(k, I) {
+function Kv(k) {
+  k.scrollCenter();
+}
+function Yv(k, I) {
   let n = [], h;
   k.addChangeListener((M) => {
     if (M.type === Q_.TOOLBOX_ITEM_SELECT) {
@@ -18755,22 +18761,23 @@ function LT(k) {
   const I = k, n = { type: k.type };
   return I.blockId !== void 0 && (n.blockId = I.blockId), I.ids !== void 0 && (n.ids = I.ids), n;
 }
-function Yv(k) {
+function Xv(k) {
   k.dispose();
 }
-function Xv() {
+function zv() {
   return sT;
 }
 export {
+  Kv as centerContent,
   xv as clearToolboxSelection,
   Vv as clearWorkspace,
-  Yv as disposeWorkspace,
-  Xv as getVersion,
+  Xv as disposeWorkspace,
+  zv as getVersion,
   Dv as injectWorkspace,
   Bv as isFlyoutVisible,
   Gv as loadWorkspace,
   Uv as registerBlockDefinitions,
-  Kv as registerEvents,
+  Yv as registerEvents,
   Hv as saveWorkspace,
   Pv as selectCategory,
   Mv as setTypes,

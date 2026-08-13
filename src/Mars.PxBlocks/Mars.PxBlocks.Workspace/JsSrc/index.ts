@@ -18,14 +18,14 @@ const defaultOptions: Blockly.BlocklyOptions = {
         snap: true,
     },
     zoom: {
-        controls: true,
+        controls: false,
         wheel: true,
         startScale: 1.0,
         maxScale: 3,
         minScale: 0.3,
         scaleSpeed: 1.2,
     },
-    trashcan: true,
+    trashcan: false,
     move: {
         scrollbars: true,
         drag: true,
@@ -107,6 +107,11 @@ export function clearWorkspace(workspace: Blockly.WorkspaceSvg): void {
 
 export function undo(workspace: Blockly.WorkspaceSvg, redo: boolean): void {
     workspace.undo(redo);
+}
+
+// Центрируем содержимое в видимой области без изменения масштаба.
+export function centerContent(workspace: Blockly.WorkspaceSvg): void {
+    workspace.scrollCenter();
 }
 
 interface DotNetRef {

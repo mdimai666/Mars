@@ -79,6 +79,12 @@ public class PxWorkspaceJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("undo", workspace, redo);
     }
 
+    public async ValueTask CenterContent(IJSObjectReference workspace)
+    {
+        var module = await _moduleTask.Value;
+        await module.InvokeVoidAsync("centerContent", workspace);
+    }
+
     public async ValueTask RegisterEvents(IJSObjectReference workspace, DotNetObjectReference<PxBlocksWorkspace> reference)
     {
         var module = await _moduleTask.Value;

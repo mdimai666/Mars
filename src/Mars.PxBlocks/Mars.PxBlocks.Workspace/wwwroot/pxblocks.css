@@ -25,6 +25,32 @@ line.blocklyFlyoutLine {
     stroke: #ffffff;
 }
 
+/* Кнопки тулбара: нейтральные, без рамок, подсвечиваются только при наведении. */
+.pxb-tool-btn {
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #666666;
+    cursor: pointer;
+}
+
+.pxb-tool-btn:hover {
+    background: #f2f2f2;
+    color: #333333;
+}
+
+.pxb-tool-btn--danger {
+    color: #a26767;
+}
+
+.pxb-tool-btn--danger:hover {
+    background: #f7eeee;
+    color: #8c4f4f;
+}
+
 /* Рейка категорий. */
 .pxb-rail {
     width: 216px;

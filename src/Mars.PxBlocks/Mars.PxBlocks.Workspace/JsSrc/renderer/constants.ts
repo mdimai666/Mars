@@ -93,6 +93,16 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
         return mainPath;
     };
 
+    override init(): void {
+        super.init();
+        // Без капы радиус дуг dynamic-формы равен половине высоты блока:
+        // у многострочных получается гигантская «пилюля». Капа = радиус
+        // однострочного блока (половина его высоты), чтобы скругления совпадали.
+        this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH = this.FIELD_BORDER_RECT_HEIGHT / 2;
+        this.HEXAGONAL = this.makeHexagonal();
+        this.ROUNDED = this.makeRounded();
+    }
+
     override getCSS_(selector: string) {
         const css = super.getCSS_(selector);
 

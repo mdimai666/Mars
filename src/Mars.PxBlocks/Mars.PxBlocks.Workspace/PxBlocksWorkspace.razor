@@ -93,6 +93,9 @@
 
     public ValueTask RedoAsync() => _interop!.Undo(_workspace!, redo: true);
 
+    /// <summary>Центрирует содержимое в видимой области без изменения масштаба.</summary>
+    public ValueTask CenterContentAsync() => _interop!.CenterContent(_workspace!);
+
     /// <summary>Явная замена toolbox в обход параметра (поиск в рейке). Параметр при этом не перетирает.</summary>
     public async ValueTask SetToolboxAsync(PxToolbox toolbox)
     {

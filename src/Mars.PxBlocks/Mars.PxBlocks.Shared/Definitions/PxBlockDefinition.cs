@@ -1,12 +1,14 @@
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Mars.PxBlocks.Shared.Definitions;
 
 /// <summary>
 /// Определение блока: источник правды, из которого генерируется Blockly JSON definition.
-/// Новые блоки создаются наследованием; исполнение блоков будет жить отдельно (по образцу INodeImplement).
+/// Объявляется fluent-API (<see cref="PxMaster.Define"/>) либо наследованием для блоков
+/// с динамической структурой; исполнение блоков будет жить отдельно (по образцу INodeImplement).
 /// </summary>
-public class PxBlockDefinition
+public partial class PxBlockDefinition
 {
     public string TypeId { get; set; } = "";
     public string Colour { get; set; } = "#A8A8A8";
@@ -33,9 +35,10 @@ public class PxBlockDefinition
 
         for (var i = 0; i < Messages.Count; i++)
         {
-            node[$"message{i}"] = Messages[i].Message;
-            if (Messages[i].Args.Count > 0)
-                node[$"args{i}"] = new JsonArray(Messages[i].Args.Select(a => a.ToJsonNode()).ToArray());
+            var (message, args) = ResolveMessage(Messages[i]);
+            node[$"message{i}"] = message;
+            if (args.Count > 0)
+                node[$"args{i}"] = new JsonArray(args.Select(a => a.ToJsonNode()).ToArray());
         }
 
         if (!string.IsNullOrEmpty(Tooltip))
@@ -66,4 +69,48 @@ public class PxBlockDefinition
 
     public static string ToArrayJson(IEnumerable<PxBlockDefinition> definitions) =>
         new JsonArray(definitions.Select(d => JsonNode.Parse(d.ToJson())).ToArray()).ToJsonString();
+
+    [GeneratedRegex(@"\{([^{}]+)\}")]
+    private static partial Regex NamedHoleRegex();
+
+    /// <summary>
+    /// Именованные плейсхолдеры {имя}: порядок аргументов выводится из строки сообщения,
+    /// они заменяются на %1..%N для Blockly. Без плейсхолдеров {…} строка считается
+    /// позициянной (%1..%N) и аргументы идут в порядке объявления.
+    /// </summary>
+    private (string Message, List<PxArg> Args) ResolveMessage(PxMessageRow row)
+    {
+        var holes = NamedHoleRegex().Matches(row.Message);
+        if (holes.Count == 0)
+            return (row.Message, row.Args);
+
+        var byName = new Dictionary<string, PxArg>();
+        foreach (var arg in row.Args)
+        {
+            if (!byName.TryAdd(arg.Name, arg))
+                throw new InvalidOperationException($"Блок '{TypeId}': аргумент '{arg.Name}' объявлен дважды.");
+        }
+
+        var ordered = new List<PxArg>(holes.Count);
+        foreach (Match hole in holes)
+        {
+            var name = hole.Groups[1].Value;
+            if (ordered.Any(a => a.Name == name))
+                throw new InvalidOperationException($"Блок '{TypeId}': плейсхолдер '{{{name}}}' встречается в сообщении больше одного раза.");
+            if (!byName.TryGetValue(name, out var arg))
+                throw new InvalidOperationException($"Блок '{TypeId}': плейсхолдер '{{{name}}}' в сообщении не объявлен как аргумент.");
+            ordered.Add(arg);
+        }
+
+        var unused = row.Args.Where(a => !ordered.Contains(a)).Select(a => a.Name).ToList();
+        if (unused.Count > 0)
+            throw new InvalidOperationException(
+                $"Блок '{TypeId}': аргументы {string.Join(", ", unused)} не использованы в сообщении.");
+
+        var message = row.Message;
+        for (var i = 0; i < ordered.Count; i++)
+            message = message.Replace($"{{{ordered[i].Name}}}", $"%{i + 1}");
+
+        return (message, ordered);
+    }
 }

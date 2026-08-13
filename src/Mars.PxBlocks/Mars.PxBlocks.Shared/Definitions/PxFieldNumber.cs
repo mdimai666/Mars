@@ -4,7 +4,7 @@ namespace Mars.PxBlocks.Shared.Definitions;
 
 public class PxFieldNumber : PxArg
 {
-    public string Name { get; set; } = "";
+    public override string Name { get; set; } = "";
     public double Value { get; set; }
     public double? Min { get; set; }
     public double? Max { get; set; }

@@ -47,9 +47,10 @@
 - Rich field editor: клик по полю → форма-оверлей (Blazor-компонент).
 
 ### Будущее (вне текущего скоупа — «пока чисто редактор»)
-- Декларативная модель по образцу Mars.Nodes: определения блоков наследованием
-  классов; исполнение — отдельно (`IPxBlockImplement`, аналог `INodeImplement<TNode>`),
-  регистрируется локатором в другой сборке (`NodesLocator` → `PxBlocksLocator`).
+- Декларативная модель по образцу Mars.Nodes: определения блоков — fluent-API
+  `PxMaster.Define`/`PxBlockSet` (классы — только для динамических); исполнение — отдельно,
+  по TypeId (`IPxBlockImplement`, аналог `INodeImplement<TNode>`), регистрируется
+  локатором в другой сборке (`NodesLocator` → `PxBlocksLocator`).
 - Интерпретатор в .NET: workspace JSON → C#-AST → исполнение. Без кодогенерации.
 
 ## Структура проекта (по образцу Mars.Nodes.Workspace + EditorJsBlazored)
@@ -122,7 +123,13 @@ Save/load (`Blockly.serialization` + localStorage), undo/redo, zoom-контро
 ### Этап 5 — Определения блоков и объекты ✅
 Определения блоков — классы C# наследованием (`PxBlockDefinition` → Blockly JSON);
 блок «создать объект» с динамическими парами поле→значение (расширение Blockly,
-save/load через extraState). Дальше: rich-редакторы полей (Blazor-формы), PXT-фишки поштучно.
+save/load через extraState).
+
+### Этап 5.1 — Эргономика объявлений ✅
+fluent-API `PxMaster.Define("id")…` (аналог аннотаций на функциях в PXT) + группировка
+`PxBlockSet` по областям; именованные плейсхолдеры `{имя}` в сообщениях — порядок
+аргументов выводится из строки. Классы-наследники остались только для блоков
+с мутаторами/динамикой. Дальше: rich-редакторы полей (Blazor-формы), PXT-фишки поштучно.
 
 ## Что делаем со старым кодом
 - **Удаляем** (свой рендеринг, заменён Blockly): PxWorkspace.razor, PxBlockComponent.razor,

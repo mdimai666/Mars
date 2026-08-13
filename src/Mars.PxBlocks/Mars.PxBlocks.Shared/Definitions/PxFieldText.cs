@@ -4,7 +4,7 @@ namespace Mars.PxBlocks.Shared.Definitions;
 
 public class PxFieldText : PxArg
 {
-    public string Name { get; set; } = "";
+    public override string Name { get; set; } = "";
     public string Text { get; set; } = "";
 
     internal override JsonNode ToJsonNode() => new JsonObject

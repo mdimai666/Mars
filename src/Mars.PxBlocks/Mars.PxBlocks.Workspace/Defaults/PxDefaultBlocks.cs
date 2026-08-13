@@ -3,91 +3,39 @@ using Mars.PxBlocks.Shared.Definitions;
 namespace Mars.PxBlocks.Workspace.Defaults;
 
 /// <summary>
-/// Демо-блоки по умолчанию: пример определений классами через наследование
-/// (образец будущего декларативного слоя: определение отдельно, исполнение — в другой сборке).
+/// Демо-блоки по умолчанию: пример объявления блоков fluent-API (PxMaster.Define)
+/// в классе-наборе PxBlockSet. Имена полей (NUM, TEXT, VAL) сохраняются ради
+/// совместимости с уже сохранёнными workspace в localStorage.
 /// </summary>
 public static class PxDefaultBlocks
 {
-    public static IReadOnlyList<PxBlockDefinition> Create() =>
-    [
-        new PxDemoNumber(), new PxDemoString(), new PxDemoAny(), new PxDemoObjectValue(),
-        new PxTakeNumber(), new PxTakeAny(), new PxTakeObject(),
-        new PxCreateObject()
-    ];
+    public static IReadOnlyList<PxBlockDefinition> Create() => new PxDemoBlocks().Definitions;
+}
 
-    private abstract class DemoValueBlock : PxBlockDefinition
+/// <summary>Демо-набор: значения типов, блоки-приёмники и «создать объект» с мутатором.</summary>
+public sealed class PxDemoBlocks : PxBlockSet
+{
+    public PxDemoBlocks()
     {
-        protected DemoValueBlock(string typeId, string message, string outputType, string colour, PxArg? arg = null)
-        {
-            TypeId = typeId;
-            Colour = colour;
-            OutputType = outputType;
-            Messages = [new PxMessageRow { Message = message, Args = arg != null ? [arg] : [] }];
-        }
-    }
+        Add(PxMaster.Define("px_demo_number").Output("Number").Colour("#712672")
+            .Message("число {NUM}", PxMaster.Number("NUM")));
+        Add(PxMaster.Define("px_demo_string").Output("String").Colour("#996600")
+            .Message("строка {TEXT}", PxMaster.Text("TEXT", "abc")));
+        Add(PxMaster.Define("px_demo_any").Output("Any").Colour("#5C2D91")
+            .Message("любое значение"));
+        Add(PxMaster.Define("px_demo_object").Output("Object").Colour("#A80000")
+            .Message("объект"));
 
-    private sealed class PxDemoNumber : DemoValueBlock
-    {
-        public PxDemoNumber() : base("px_demo_number", "число %1", "Number", "#712672", new PxFieldNumber { Name = "NUM" }) { }
-    }
+        Add(PxMaster.Define("px_demo_take_number").Colour("#107C10")
+            .Message("принять число {VAL}", PxMaster.Value("VAL", "Number")));
+        Add(PxMaster.Define("px_demo_take_any").Colour("#107C10")
+            .Message("принять любое {VAL}", PxMaster.Value("VAL")));
+        Add(PxMaster.Define("px_demo_take_object").Colour("#107C10")
+            .Message("принять объект {VAL}", PxMaster.Value("VAL", "Object")));
 
-    private sealed class PxDemoString : DemoValueBlock
-    {
-        public PxDemoString() : base("px_demo_string", "строка %1", "String", "#996600", new PxFieldText { Name = "TEXT", Text = "abc" }) { }
-    }
-
-    private sealed class PxDemoAny : DemoValueBlock
-    {
-        public PxDemoAny() : base("px_demo_any", "любое значение", "Any", "#5C2D91") { }
-    }
-
-    private sealed class PxDemoObjectValue : DemoValueBlock
-    {
-        public PxDemoObjectValue() : base("px_demo_object", "объект", "Object", "#A80000") { }
-    }
-
-    private abstract class DemoTakeBlock : PxBlockDefinition
-    {
-        protected DemoTakeBlock(string typeId, string message, params string[] check)
-        {
-            TypeId = typeId;
-            Colour = "#107C10";
-            Messages =
-            [
-                new PxMessageRow
-                {
-                    Message = message,
-                    Args = [new PxValueInput { Name = "VAL", Check = [.. check] }]
-                }
-            ];
-        }
-    }
-
-    private sealed class PxTakeNumber : DemoTakeBlock
-    {
-        public PxTakeNumber() : base("px_demo_take_number", "принять число %1", "Number") { }
-    }
-
-    private sealed class PxTakeAny : DemoTakeBlock
-    {
-        public PxTakeAny() : base("px_demo_take_any", "принять любое %1") { }
-    }
-
-    private sealed class PxTakeObject : DemoTakeBlock
-    {
-        public PxTakeObject() : base("px_demo_take_object", "принять объект %1", "Object") { }
-    }
-
-    private sealed class PxCreateObject : PxBlockDefinition
-    {
-        public PxCreateObject()
-        {
-            TypeId = "px_create_object";
-            Colour = "#A80000";
-            OutputType = "Object";
-            Tooltip = "Кнопка «+» добавляет пары поле→значение";
-            Messages = [new PxMessageRow { Message = "создать объект" }];
-            Mutator = "px_object_builder";
-        }
+        Add(PxMaster.Define("px_create_object").Output("Object").Colour("#A80000")
+            .Tooltip("Кнопка «+» добавляет пары поле→значение")
+            .Message("создать объект")
+            .Mutator("px_object_builder"));
     }
 }

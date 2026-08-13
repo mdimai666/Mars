@@ -5,7 +5,7 @@ namespace Mars.PxBlocks.Shared.Definitions;
 /// <summary>C-вход для цепочки операторов (input_statement). Пустой Check — принимает любые операторы.</summary>
 public class PxStatementInput : PxArg
 {
-    public string Name { get; set; } = "";
+    public override string Name { get; set; } = "";
     public List<string> Check { get; set; } = [];
 
     internal override JsonNode ToJsonNode()

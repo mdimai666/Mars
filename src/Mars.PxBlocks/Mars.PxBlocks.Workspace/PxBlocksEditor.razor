@@ -28,8 +28,8 @@
     /// <summary>Свой реестр типов; без него — дефолт (Boolean/Number/String/Any/Object).</summary>
     [Parameter] public PxTypeRegistry? Types { get; set; }
 
-    /// <summary>Свои определения блоков; без них — демо-набор.</summary>
-    [Parameter] public IReadOnlyList<PxBlockDefinition>? BlockDefinitions { get; set; }
+    /// <summary>Свои определения блоков (список или PxBlockSet); без них — демо-набор.</summary>
+    [Parameter] public IEnumerable<PxBlockDefinition>? BlockDefinitions { get; set; }
 
     /// <summary>Ключ localStorage для автосейва; пустая строка отключает автосейв.</summary>
     [Parameter] public string StorageKey { get; set; } = "pxblocks.workspace";
@@ -48,7 +48,7 @@
 
     private PxToolbox EffectiveToolbox => Toolbox ?? (_defaultToolbox ??= PxDefaultToolbox.Create());
     private PxTypeRegistry EffectiveTypes => Types ?? (_defaultTypes ??= PxTypeRegistry.CreateDefault());
-    private IReadOnlyList<PxBlockDefinition> EffectiveDefinitions => BlockDefinitions ?? (_defaultDefinitions ??= PxDefaultBlocks.Create());
+    private IEnumerable<PxBlockDefinition> EffectiveDefinitions => BlockDefinitions ?? (_defaultDefinitions ??= PxDefaultBlocks.Create());
 
     private async Task OnWorkspaceReady()
     {

@@ -26,8 +26,13 @@ PxBlocks — визуальный редактор блоков в духе Micr
   `CompatibleWith` (в т.ч. `"*"`) — матрица совместимости.
 - `Definitions/` — определения блоков: `PxBlockDefinition` (`ToJson()` → Blockly JSON
   definitions: messageN/argsN, output или previous/next statement, extensions, mutator).
-  Новые блоки создаются **наследованием**. Аргументы: `PxFieldNumber`/`PxFieldText`/
-  `PxFieldDropdown`, `PxValueInput`/`PxStatementInput` (с `Check`).
+  Объявляются fluent-API `PxMaster.Define("id").Message("текст {arg}", PxMaster.Number("arg"))`,
+  группируются классами `PxBlockSet` по областям (аналог пакетов PXT, см. `PxDemoBlocks`);
+  наследование — только для блоков с динамической структурой. Плейсхолдеры в сообщениях:
+  именованные `{имя}` (порядок аргументов выводится из строки, %1..%N подставляются сами)
+  или позициянные `%1..%N`. Аргументы и фабрики: `PxFieldNumber`/`PxMaster.Number`,
+  `PxFieldText`/`PxMaster.Text`, `PxFieldDropdown`/`PxMaster.Dropdown`, `PxValueInput`/`PxMaster.Value`,
+  `PxStatementInput`/`PxMaster.Do` (входы с `Check`).
 - `PxBlocklyEvent` (пакет событий из JS), `PxWorkspaceState`.
 
 ### `src/Mars.PxBlocks/Mars.PxBlocks.Workspace` — RCL-редактор
@@ -84,6 +89,8 @@ dotnet test tests/Test.Mars.PxBlocks
 3. **Razor: строковый параметр без `@` передаётся литералом** — нужно `OptionsJson="@OptionsJson"`,
    иначе в JS улетит строка `"OptionsJson"`. Предупреждения компилятора для свойств не будет.
 4. Запущенный стенд **держит DLL** — перед `dotnet build` остановить `dotnet run`.
+   Если `_framework/*` отвечает 500, а в логе «Static Web Assets are not enabled» —
+   артефакты сборки рассинхронизированы: остановить сервер и пересобрать.
 5. Инкрементальная сборка Client может увидеть старую сборку Workspace RCL (Razor-генератор) —
    при странных ошибках привязки параметров пересобирать с `--no-incremental`.
 6. Пин blockly не поднимать без нужды: порты из `pxtblocks/*` написаны под 13.1.1.

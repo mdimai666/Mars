@@ -4,7 +4,7 @@ namespace Mars.PxBlocks.Shared.Definitions;
 
 public class PxFieldDropdown : PxArg
 {
-    public string Name { get; set; } = "";
+    public override string Name { get; set; } = "";
     public List<PxDropdownOption> Options { get; set; } = [];
 
     internal override JsonNode ToJsonNode() => new JsonObject

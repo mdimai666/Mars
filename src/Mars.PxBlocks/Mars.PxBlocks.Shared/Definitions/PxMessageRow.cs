@@ -1,6 +1,9 @@
 namespace Mars.PxBlocks.Shared.Definitions;
 
-/// <summary>Одна строка block-сообщения: текст с плейсхолдерами %1..%N и аргументы к ним.</summary>
+/// <summary>
+/// Одна строка block-сообщения. Плейсхолдеры: именованные <c>{имя}</c> (порядок
+/// аргументов выводится из строки) либо позициянные <c>%1..%N</c> в порядке объявления.
+/// </summary>
 public class PxMessageRow
 {
     public string Message { get; set; } = "";

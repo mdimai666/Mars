@@ -12,8 +12,8 @@
     /// <summary>Реестр типов стыковок: формы и матрица совместимости. Применяется до inject.</summary>
     [Parameter] public PxTypeRegistry? Types { get; set; }
 
-    /// <summary>Определения блоков (наследники PxBlockDefinition). Регистрируются до inject.</summary>
-    [Parameter] public IReadOnlyList<PxBlockDefinition>? BlockDefinitions { get; set; }
+    /// <summary>Определения блоков (PxBlockDefinition/PxBlockSet). Регистрируются до inject.</summary>
+    [Parameter] public IEnumerable<PxBlockDefinition>? BlockDefinitions { get; set; }
 
     /// <summary>Вызывается после создания workspace.</summary>
     [Parameter] public EventCallback OnReady { get; set; }
@@ -44,7 +44,7 @@
 
             if (Types != null)
                 await _interop.SetTypes(Types.ToJson());
-            if (BlockDefinitions is { Count: > 0 })
+            if (BlockDefinitions?.Any() == true)
                 await _interop.RegisterBlockDefinitions(PxBlockDefinition.ToArrayJson(BlockDefinitions));
 
             _workspace = await _interop.InjectWorkspace(_containerRef, OptionsJson, Toolbox?.ToJson());

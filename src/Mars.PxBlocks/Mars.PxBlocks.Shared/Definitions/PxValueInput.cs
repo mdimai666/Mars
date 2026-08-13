@@ -5,7 +5,7 @@ namespace Mars.PxBlocks.Shared.Definitions;
 /// <summary>Вход для value-блоков (input_value). Пустой Check — принимает любой тип.</summary>
 public class PxValueInput : PxArg
 {
-    public string Name { get; set; } = "";
+    public override string Name { get; set; } = "";
     public List<string> Check { get; set; } = [];
 
     internal override JsonNode ToJsonNode()

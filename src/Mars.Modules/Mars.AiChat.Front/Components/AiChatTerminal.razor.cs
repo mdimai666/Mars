@@ -2,11 +2,14 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using AppFront.Shared.Interfaces;
 using Mars.AiChat.Front.Services;
 using Mars.AiChat.Shared.Dto;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
@@ -15,6 +18,10 @@ namespace Mars.AiChat.Front.Components;
 public partial class AiChatTerminal : IAiChatModal, IDisposable
 {
     private const double FabMargin = 12;
+
+    /// <summary>Максимальный размер одного вложения (синхронно с лимитом POST api/AiChat/attachments).</summary>
+    private const long MaxAttachmentBytes = 32 * 1024 * 1024;
+    private const int MaxFilesPerMessage = 10;
 
     [Inject] IMarsWebApiClient _client { get; set; } = default!;
     [Inject] AiChatHubClient _hub { get; set; } = default!;
@@ -41,10 +48,25 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     private string _input = "";
     private string? _pendingQuestion;
 
+    // Подключения (модели): список из настроек + выбор текущего чата (пусто = дефолт)
+    private IReadOnlyList<AiChatConnectionDto> _connections = [];
+    private string _currentConnectionName = "";
+
+    private string EffectiveConnectionName =>
+        _currentConnectionName != ""
+            ? _currentConnectionName
+            : _connections.FirstOrDefault(c => c.IsDefault)?.Name ?? _connections.FirstOrDefault()?.Name ?? "";
+
+    // Вложения текущего (ещё не отправленного) сообщения
+    private readonly List<AiChatAttachmentDto> _attachments = [];
+    private bool _uploading;
+
     private ElementReference _termEl;
     private ElementReference _fabEl;
     private ElementReference _messagesEl;
     private ElementReference _inputEl;
+    private InputFile? _fileInput;
+    private bool _pasteWired;
 
     private double _fabW = 120;
     private double _fabH = 40;
@@ -110,13 +132,12 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     private string _spinnerFrame = SpinnerFrames[0];
     private CancellationTokenSource? _spinnerCts;
 
+    // Имя чата уже видно в списке чатов — в статусной строке его не дублируем
     private string StatusText => _running
         ? "агент работает…"
         : _pendingQuestion is not null
             ? "агент ждёт ответа"
-            : $"чат: {CurrentSessionTitle}";
-
-    private string CurrentSessionTitle => _sessions.FirstOrDefault(s => s.Id == _chatId)?.Title ?? "—";
+            : "";
 
     private string InputPlaceholder => _pendingQuestion is not null
         ? "ответьте на вопрос агента…"
@@ -162,6 +183,22 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             }
         }
 
+        // вставка файлов из буфера: Blazor не отдаёт clipboard-файлы из paste-события,
+        // поэтому слушатель живёт в JS и шлёт файлы в OnClipboardFile
+        if (_visible && !_pasteWired && _module is not null)
+        {
+            _pasteWired = true;
+            try
+            {
+                _dotnetRef ??= DotNetObjectReference.Create(this);
+                await _module.InvokeVoidAsync("watchPaste", _dotnetRef, _inputEl);
+            }
+            catch
+            {
+                // без JS-модуля вставка из буфера недоступна, скрепка работает
+            }
+        }
+
         // Скроллим только когда лента реально отрисована: пока _loading = true,
         // вместо сообщений рендерится заглушка, и запрос скролла исчез бы впустую —
         // тогда при открытии чата с историей лента оставалась бы сверху.
@@ -193,6 +230,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     {
         _visible = false;
         _termObserved = false; // элемент окна удалён — наблюдателя размера повесим заново
+        _pasteWired = false;   // поле ввода удалено — слушатель paste повесим заново
         StateHasChanged();
     }
 
@@ -211,6 +249,15 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         {
             SubscribeHub();
             await _hub.EnsureStartedAsync();
+
+            try
+            {
+                _connections = await _client.AiChat.GetConnections();
+            }
+            catch
+            {
+                // без списка подключений селектор модели просто не показывается
+            }
 
             _sessions = (await _client.AiChat.GetSessions()).ToList();
             if (_sessions.Count == 0)
@@ -245,6 +292,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         _messages = dto.Messages;
         SetRunning(dto.IsRunning);
         _pendingQuestion = dto.PendingQuestion;
+        _currentConnectionName = dto.ConnectionName ?? "";
         _stream.Clear();
         _scrollRequested = true;
         StateHasChanged();
@@ -260,6 +308,7 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _messages = dto.Messages;
             SetRunning(dto.IsRunning);
             _pendingQuestion = dto.PendingQuestion;
+            _currentConnectionName = dto.ConnectionName ?? "";
             _stream.Clear();
 
             // заголовок чата мог измениться
@@ -420,19 +469,26 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
 
     private async Task SendAsync()
     {
-        if (_chatId is not { } chatId || _running || _sending) return;
+        if (_chatId is not { } chatId || _running || _sending || _uploading) return;
 
         var text = _input.Trim();
-        if (text == "") return;
+        if (text == "" && _attachments.Count == 0) return;
 
         _sending = true;
         try
         {
-            await _client.AiChat.Send(chatId, text, GetCurrentPageContext());
+            List<Guid>? attachmentIds = _attachments.Count > 0 ? [.. _attachments.Select(a => a.FileId)] : null;
+            await _client.AiChat.Send(chatId, text, GetCurrentPageContext(), attachmentIds);
 
             _input = "";
             _pendingQuestion = null;
-            _messages.Add(new AiChatMessageDto { Role = AiChatMessageRole.User, Content = text });
+            _messages.Add(new AiChatMessageDto
+            {
+                Role = AiChatMessageRole.User,
+                Content = text,
+                Attachments = _attachments.Count > 0 ? [.. _attachments] : null,
+            });
+            _attachments.Clear();
             SetRunning(true);
             _stream.Clear();
             _scrollRequested = true;
@@ -446,6 +502,100 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             _sending = false;
             StateHasChanged();
         }
+    }
+
+    // ---------- вложения ----------
+
+    private async Task PickFilesAsync()
+    {
+        if (_module is null || _fileInput is null) return;
+        try
+        {
+            await _module.InvokeVoidAsync("clickElement", _fileInput.Element);
+        }
+        catch
+        {
+            // без JS-модуля диалог выбора файлов не открыть
+        }
+    }
+
+    private async void OnFilesSelected(InputFileChangeEventArgs e)
+    {
+        await UploadFilesAsync(e.GetMultipleFiles(MaxFilesPerMessage));
+    }
+
+    private async Task UploadFilesAsync(IReadOnlyList<IBrowserFile> files)
+    {
+        foreach (var file in files)
+        {
+            if (file.Size > MaxAttachmentBytes)
+            {
+                _ = _messageService.Error($"Файл «{file.Name}» больше 32 МБ — не приложен");
+                continue;
+            }
+
+            _uploading = true;
+            StateHasChanged();
+            try
+            {
+                using var stream = file.OpenReadStream(MaxAttachmentBytes);
+                var dto = await _client.AiChat.UploadAttachment(stream, file.Name);
+                _attachments.Add(dto);
+            }
+            catch (Exception ex)
+            {
+                _ = _messageService.Error($"Загрузка «{file.Name}»: {ex.GetBaseException().Message}");
+            }
+            finally
+            {
+                _uploading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    /// <summary>Вызывается JS-слушателем paste (mars-aichat.js) для каждого файла из буфера.</summary>
+    [JSInvokable]
+    public async void OnClipboardFile(string? name, string? contentType, string base64)
+    {
+        try
+        {
+            var bytes = Convert.FromBase64String(base64);
+            if (bytes.Length > MaxAttachmentBytes)
+            {
+                _ = _messageService.Error("Файл из буфера больше 32 МБ — не приложен");
+                return;
+            }
+
+            var fileName = string.IsNullOrWhiteSpace(name)
+                ? (contentType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true ? "clipboard.png" : "clipboard.bin")
+                : name;
+
+            _uploading = true;
+            StateHasChanged();
+            try
+            {
+                using var stream = new MemoryStream(bytes);
+                var dto = await _client.AiChat.UploadAttachment(stream, fileName);
+                _attachments.Add(dto);
+            }
+            finally
+            {
+                _uploading = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _uploading = false;
+            _ = _messageService.Error($"Вставка из буфера: {ex.GetBaseException().Message}");
+            StateHasChanged();
+        }
+    }
+
+    private void RemoveAttachment(AiChatAttachmentDto attachment)
+    {
+        _attachments.Remove(attachment);
     }
 
     private string? GetCurrentPageContext()
@@ -479,7 +629,8 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
     {
         try
         {
-            var created = await _client.AiChat.CreateSession();
+            // новый чат наследует явно выбранную модель; на дефолте остаётся дефолт
+            var created = await _client.AiChat.CreateSession(null, _currentConnectionName);
             _sessions.Insert(0, created);
             await SwitchToChatAsync(created.Id);
             _focusRequested = true;
@@ -505,6 +656,36 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
             {
                 _ = _messageService.Error(ex.Message);
             }
+        }
+    }
+
+    // ---------- выбор модели (подключения) ----------
+
+    private bool _modelMenuOpen;
+
+    // В свёрнутом пикере показываем название подключения, в раскрытом списке — модели
+    private string CurrentConnectionLabel
+        => _connections.FirstOrDefault(c => c.Name == EffectiveConnectionName)?.Name ?? "—";
+
+    private void ToggleModelMenu() => _modelMenuOpen = !_modelMenuOpen;
+
+    private async Task PickConnectionAsync(AiChatConnectionDto connection)
+    {
+        _modelMenuOpen = false;
+        if (_chatId is not { } chatId || connection.Name == EffectiveConnectionName) return;
+
+        var prev = _currentConnectionName;
+        _currentConnectionName = connection.Name;
+        StateHasChanged();
+        try
+        {
+            await _client.AiChat.SetConnection(chatId, connection.Name);
+        }
+        catch (Exception ex)
+        {
+            _currentConnectionName = prev;
+            _ = _messageService.Error(ex.Message);
+            StateHasChanged();
         }
     }
 
@@ -736,6 +917,75 @@ public partial class AiChatTerminal : IAiChatModal, IDisposable
         if (string.IsNullOrEmpty(text)) return "";
         return text.Length <= max ? text : text[..max] + "…";
     }
+
+    // ---------- картинки в тексте сообщений ----------
+
+    private static readonly string[] ImageExts = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".avif"];
+
+    // Картинки из медиатеки в тексте ответа:
+    //  1) целый тег <img src="..."> (в т.ч. в backticks) — съедаем весь тег;
+    //  2) голый URL (/upload/... или http...) — backtick не входит в совпадение;
+    //  3) <upload/...> без ведущего слэша — модель иногда пишет и так.
+    [GeneratedRegex(@"`?<img\b[^<>]*?\bsrc\s*=\s*[""'](?<imgsrc>[^""']+)[""'][^<>]*?>`?|(?<url>(?:https?://|/)[^\s""'<>`]+)|<(?<noslash>upload/[^\s""'<>`]+)>")]
+    private static partial Regex UrlRegex();
+
+    /// <summary>
+    /// Рендерит текст, показывая картинки из медиатеки (/upload/...) превью со
+    /// spotlight по клику; остальной текст — как есть (без разметки).
+    /// </summary>
+    private static RenderFragment RenderWithImages(string? text) => builder =>
+    {
+        if (string.IsNullOrEmpty(text)) return;
+
+        var seq = 0;
+        var pos = 0;
+        // одна и та же картинка в сообщении показывается один раз: повторные
+        // вхождения (модель любит дублировать тег голым URL) съедаем молча
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (Match match in UrlRegex().Matches(text))
+        {
+            var isTag = match.Groups["imgsrc"].Success;
+            var isAngle = match.Groups["noslash"].Success;
+            var url = isTag
+                ? match.Groups["imgsrc"].Value
+                : isAngle
+                    ? "/" + match.Groups["noslash"].Value
+                    : match.Value.TrimEnd('.', ',', ';', ':', '!', '?', ')', ']', '`');
+            if (!IsMediaImageUrl(url)) continue;
+
+            // тег и <upload/...> съедаем целиком, у голого URL — только хвостовую пунктуацию
+            var consumed = isTag || isAngle ? match.Length : url.Length;
+
+            // текст между совпадениями сохраняем всегда; сам дубль картинки не рендерим
+            if (match.Index > pos)
+                builder.AddContent(seq++, text[pos..match.Index]);
+
+            if (!seen.Add(url))
+            {
+                pos = match.Index + consumed;
+                continue;
+            }
+
+            builder.OpenElement(seq++, "a");
+            builder.AddAttribute(seq++, "class", "spotlight");
+            builder.AddAttribute(seq++, "href", url);
+            builder.OpenElement(seq++, "img");
+            builder.AddAttribute(seq++, "class", "aichat-inline-img");
+            builder.AddAttribute(seq++, "src", url);
+            builder.AddAttribute(seq++, "alt", url);
+            builder.CloseElement();
+            builder.CloseElement();
+
+            pos = match.Index + consumed;
+        }
+
+        if (pos < text.Length)
+            builder.AddContent(seq++, text[pos..]);
+    };
+
+    private static bool IsMediaImageUrl(string url)
+        => url.Contains("/upload/", StringComparison.OrdinalIgnoreCase)
+           && ImageExts.Any(ext => url.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
 
     public void Dispose()
     {

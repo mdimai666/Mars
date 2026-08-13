@@ -28,5 +28,10 @@ public class AiChatMessageDto
     /// </summary>
     public bool IsToolResult { get; set; }
 
+    /// <summary>
+    /// Приложенные медиафайлы (для сообщений пользователя).
+    /// </summary>
+    public List<AiChatAttachmentDto>? Attachments { get; set; }
+
     public DateTime CreatedAtUtc { get; set; }
 }

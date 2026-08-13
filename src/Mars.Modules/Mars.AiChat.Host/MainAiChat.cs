@@ -1,3 +1,4 @@
+using System.Text;
 using Mars.AiChat.Host.CommandLine;
 using Mars.AiChat.Host.Hubs;
 using Mars.AiChat.Host.Services;
@@ -21,6 +22,9 @@ public static class MainAiChat
 {
     public static IServiceCollection AddMarsAiChat(this IServiceCollection services)
     {
+        // windows-1251/koi8-r/cp866 для ReadMediaFile (повторная регистрация безвредна)
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         services.AddSingleton<IAiChatClientFactory, AiChatClientFactory>();
         services.AddSingleton<IAiChatSessionStore, AiChatSessionStore>();
         services.AddSingleton<IAiChatRunCoordinator, AiChatRunCoordinator>();
@@ -48,6 +52,7 @@ public static class MainAiChat
         // Тулсеты: новый домен инструментов = новый класс IAiToolset + эта строка
         services.AddScoped<IAiToolset, CoreToolset>();
         services.AddScoped<IAiToolset, ContentToolset>();
+        services.AddScoped<IAiToolset, MediaToolset>();
         services.AddScoped<IAiToolset, PageToolset>();
         services.AddScoped<IAiToolset, SqlToolset>();
         services.AddScoped<IAiToolset, FrontToolset>();

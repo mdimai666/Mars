@@ -30,16 +30,16 @@ public class AiChatRunCoordinator : IAiChatRunCoordinator
 
     public bool IsRunning(Guid chatId) => _runs.ContainsKey(chatId);
 
-    public void Enqueue(Guid chatId, Guid userId, string userMessage, string? pageContext = null)
+    public void Enqueue(Guid chatId, Guid userId, string userMessage, string? pageContext = null, IReadOnlyList<Guid>? attachmentIds = null)
     {
         var run = new Run { ChatId = chatId, Cts = new CancellationTokenSource() };
         if (!_runs.TryAdd(chatId, run))
             throw new UserActionException("Этот чат уже обрабатывается. Дождитесь завершения или нажмите «Стоп».");
 
-        _logger.LogDebug("AiChat: chat {ChatId} enqueued (user {UserId}, message {Length} chars)",
-            chatId, userId, userMessage.Length);
+        _logger.LogDebug("AiChat: chat {ChatId} enqueued (user {UserId}, message {Length} chars, attachments {Attachments})",
+            chatId, userId, userMessage.Length, attachmentIds?.Count ?? 0);
 
-        run.Task = Task.Run(() => ExecuteRunAsync(run, userId, userMessage, pageContext));
+        run.Task = Task.Run(() => ExecuteRunAsync(run, userId, userMessage, pageContext, attachmentIds));
     }
 
     public bool Stop(Guid chatId)
@@ -54,13 +54,13 @@ public class AiChatRunCoordinator : IAiChatRunCoordinator
         return false;
     }
 
-    private async Task ExecuteRunAsync(Run run, Guid userId, string userMessage, string? pageContext)
+    private async Task ExecuteRunAsync(Run run, Guid userId, string userMessage, string? pageContext, IReadOnlyList<Guid>? attachmentIds)
     {
         try
         {
             await using var scope = _serviceScopeFactory.CreateAsyncScope();
             var agentService = scope.ServiceProvider.GetRequiredService<AiChatAgentService>();
-            await agentService.RunChatAsync(run.ChatId, userId, userMessage, pageContext, run.Cts.Token);
+            await agentService.RunChatAsync(run.ChatId, userId, userMessage, pageContext, run.Cts.Token, attachmentIds: attachmentIds);
         }
         catch (OperationCanceledException)
         {

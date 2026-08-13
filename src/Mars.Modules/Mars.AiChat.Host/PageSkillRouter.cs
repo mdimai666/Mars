@@ -15,9 +15,19 @@ internal static class PageSkillRouter
 
         if (frontEditorSlug is not null) skills.Add("mars-front-editor");
         if (IsPostEditPage(pageContext)) skills.Add("mars-posts");
+        if (IsMediaPage(pageContext)) skills.Add("mars-media");
         if (option.EnableSqlAccess) skills.Add("mars-sql");
 
         return skills;
+    }
+
+    // Страница «Медиа» админки: /Media
+    static bool IsMediaPage(string? pageContext)
+    {
+        if (string.IsNullOrWhiteSpace(pageContext)) return false;
+
+        return pageContext.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Any(seg => seg.Equals("Media", StringComparison.OrdinalIgnoreCase));
     }
 
     // Страница редактирования поста: /Post/{posttype} (сегмент "Post" целиком,

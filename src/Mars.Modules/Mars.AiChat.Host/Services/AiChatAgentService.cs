@@ -31,6 +31,8 @@ public class AiChatAgentService
     private readonly IAiChatSessionStore _store;
     private readonly IAiChatClientFactory _clientFactory;
     private readonly IOptionService _optionService;
+    private readonly IFileService _fileService;
+    private readonly IFileStorage _fileStorage;
     private readonly IReadOnlyList<IAiToolset> _toolsets;
     private readonly string _aiRoot;
     private readonly AiSkillCatalog _catalog;
@@ -42,6 +44,8 @@ public class AiChatAgentService
         IAiChatSessionStore store,
         IAiChatClientFactory clientFactory,
         IOptionService optionService,
+        IFileService fileService,
+        IFileStorage fileStorage,
         IEnumerable<IAiToolset> toolsets,
         [FromKeyedServices("data")] IOptions<FileHostingInfo> dataHostingInfo,
         AiSkillCatalog catalog,
@@ -57,11 +61,16 @@ public class AiChatAgentService
         _store = store;
         _clientFactory = clientFactory;
         _optionService = optionService;
+        _fileService = fileService;
+        _fileStorage = fileStorage;
         _logger = logger;
     }
 
+    /// <summary>Вложение с данными файла из медиатеки (FilePhysicalPath нужен для чтения картинок).</summary>
+    private sealed record ResolvedAttachment(AiChatAttachmentDto Dto, FileDetail Detail);
+
     public async Task RunChatAsync(Guid chatId, Guid userId, string userMessage, string? pageContext, CancellationToken ct,
-        bool? overrideSkills = null, bool? overrideAccess = null)
+        bool? overrideSkills = null, bool? overrideAccess = null, IReadOnlyList<Guid>? attachmentIds = null)
     {
         var state = await _store.GetAsync(chatId, userId, ct)
             ?? throw new NotFoundException($"AiChat session '{chatId}' not found");
@@ -70,20 +79,29 @@ public class AiChatAgentService
         var group = AiChatHub.GroupName(chatId);
         var stopwatch = Stopwatch.StartNew();
 
-        _logger.LogInformation("AiChat: run {RunId} started in chat {ChatId} (user {UserId}), page: {PageContext}, savedAgentSession: {HasSaved}, uiMessages: {Messages}, message: {Message}",
-            runId, chatId, userId, pageContext ?? "-", !string.IsNullOrEmpty(state.SerializedAgentSession), state.Messages.Count, userMessage);
+        // Вложения: метаданные берём из медиатеки (доверенные данные, а не из запроса)
+        var resolved = await ResolveAttachmentsAsync(attachmentIds, ct);
+        var attachments = resolved.Select(r => r.Dto).ToList();
+
+        _logger.LogInformation("AiChat: run {RunId} started in chat {ChatId} (user {UserId}), page: {PageContext}, savedAgentSession: {HasSaved}, uiMessages: {Messages}, attachments: {Attachments}, message: {Message}",
+            runId, chatId, userId, pageContext ?? "-", !string.IsNullOrEmpty(state.SerializedAgentSession), state.Messages.Count, attachments.Count, userMessage);
 
         if (state.Title is "" or "Новый чат")
-            state.Title = userMessage.Length <= 40 ? userMessage : userMessage[..40] + "…";
+        {
+            var titleSource = string.IsNullOrWhiteSpace(userMessage) && attachments.Count > 0
+                ? attachments[0].Name
+                : userMessage;
+            state.Title = titleSource.Length <= 40 ? titleSource : titleSource[..40] + "…";
+        }
         state.PendingQuestion = null;
-        state.Messages.Add(NewMessage(AiChatMessageRole.User, userMessage));
+        state.Messages.Add(NewMessage(AiChatMessageRole.User, userMessage, attachments: attachments.Count > 0 ? attachments : null));
 
         // Настройка подключения и создание агента
         AIAgent agent;
         try
         {
             var option = _optionService.GetOption<AiChatOption>();
-            var connection = option.GetDefaultConnection()
+            var connection = ResolveConnection(option, state.ConnectionName)
                 ?? throw new UserActionException("Подключение к ИИ-сервису не настроено. Добавьте его в Настройки → ИИ-чат.");
 
             _logger.LogDebug("AiChat: chat {ChatId} uses connection '{ConnectionName}' ({ProviderType}, model '{ModelId}')",
@@ -146,7 +164,23 @@ public class AiChatAgentService
                 DisableOpenTelemetry = true,
             });
 
-            await RunAgentAsync(agent, state, askUser, userMessage, chatId, runId, group, stopwatch, ct);
+            // Сообщение модели: текст (со справкой о файлах) + картинки как DataContent.
+            // Если провайдер не умеет vision и падает — повторяем попытку без картинок.
+            var chatMessage = await BuildUserChatMessageAsync(userMessage, resolved, ct);
+            // DataContent здесь — только картинки (другие бинарные вложения в модель не кладём)
+            var hasImages = chatMessage.Contents?.OfType<DataContent>().Any() == true;
+            try
+            {
+                await RunAgentAsync(agent, state, askUser, chatMessage, chatId, runId, group, stopwatch, ct);
+            }
+            catch (Exception retryEx) when (hasImages && retryEx is not OperationCanceledException)
+            {
+                _logger.LogWarning(retryEx, "AiChat: chat {ChatId} run with images failed; retrying text-only", chatId);
+                state.Messages.Add(NewMessage(AiChatMessageRole.Info, "Модель не смогла принять картинки — повторяю без них."));
+                await RunAgentAsync(agent, state, askUser,
+                    new ChatMessage(ChatRole.User, ComposeAgentInput(userMessage, attachments)),
+                    chatId, runId, group, stopwatch, ct);
+            }
 
             _logger.LogDebug("AiChat: run {RunId} in chat {ChatId} done in {ElapsedMs} ms, history {Messages} messages",
                 runId, chatId, stopwatch.ElapsedMilliseconds, state.Messages.Count);
@@ -167,7 +201,7 @@ public class AiChatAgentService
 
     private async Task RunAgentAsync(
         AIAgent agent, AiChatSessionState state, AskUserTool askUser,
-        string userMessage, Guid chatId, Guid runId, string group, Stopwatch stopwatch, CancellationToken ct)
+        ChatMessage userMessage, Guid chatId, Guid runId, string group, Stopwatch stopwatch, CancellationToken ct)
     {
         var session = await RestoreSessionAsync(agent, state, ct);
 
@@ -175,7 +209,7 @@ public class AiChatAgentService
         var currentCallName = "";
         ChatFinishReason? lastFinish = null;
 
-        await foreach (var update in agent.RunStreamingAsync(userMessage, session, null, ct))
+        await foreach (var update in agent.RunStreamingAsync(new[] { userMessage }, session, null, ct))
         {
             if (update.FinishReason is not null) lastFinish = update.FinishReason;
 
@@ -381,15 +415,119 @@ public class AiChatAgentService
         text.Clear();
     }
 
-    static AiChatMessageDto NewMessage(AiChatMessageRole role, string content, string? toolName = null, bool isToolResult = false) => new()
+    static AiChatMessageDto NewMessage(AiChatMessageRole role, string content, string? toolName = null, bool isToolResult = false,
+        List<AiChatAttachmentDto>? attachments = null) => new()
     {
         Id = Guid.NewGuid(),
         Role = role,
         Content = content,
         ToolName = toolName,
         IsToolResult = isToolResult,
+        Attachments = attachments,
         CreatedAtUtc = DateTime.UtcNow,
     };
+
+    /// <summary>
+    /// Разрешает идентификаторы вложений в метаданные медиафайлов; отсутствующие пропускает.
+    /// </summary>
+    private async Task<List<ResolvedAttachment>> ResolveAttachmentsAsync(IReadOnlyList<Guid>? attachmentIds, CancellationToken ct)
+    {
+        var result = new List<ResolvedAttachment>();
+        if (attachmentIds is not { Count: > 0 }) return result;
+
+        foreach (var id in attachmentIds.Distinct())
+        {
+            var detail = await _fileService.GetDetail(id, ct);
+            if (detail is null)
+            {
+                _logger.LogWarning("AiChat: attachment file {FileId} not found, skipping", id);
+                continue;
+            }
+
+            var dto = new AiChatAttachmentDto
+            {
+                FileId = detail.Id,
+                Name = detail.Name,
+                Ext = detail.Ext,
+                Size = detail.Size,
+                IsImage = detail.IsImage,
+                UrlRelative = detail.UrlRelative,
+            };
+            result.Add(new ResolvedAttachment(dto, detail));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Сообщение пользователя для модели: текст со справкой о файлах плюс
+    /// сами картинки как DataContent с media type image/* (для vision-моделей).
+    /// </summary>
+    private Task<ChatMessage> BuildUserChatMessageAsync(string userMessage, IReadOnlyList<ResolvedAttachment> attachments, CancellationToken ct)
+    {
+        List<AIContent> contents = [new TextContent(ComposeAgentInput(userMessage, [.. attachments.Select(a => a.Dto)]))];
+
+        foreach (var attachment in attachments)
+        {
+            if (!attachment.Dto.IsImage) continue;
+            var mediaType = GetImageMediaType(attachment.Dto.Ext);
+            if (mediaType is null) continue;
+
+            try
+            {
+                var bytes = _fileStorage.Read(attachment.Detail.FilePhysicalPath);
+                contents.Add(new DataContent(bytes, mediaType));
+            }
+            catch (Exception ex)
+            {
+                // картинка не прочиталась — модель получит хотя бы текстовую ссылку на неё
+                _logger.LogWarning(ex, "AiChat: failed to read image {FileId} for model input", attachment.Dto.FileId);
+            }
+        }
+
+        return Task.FromResult(new ChatMessage(ChatRole.User, contents));
+    }
+
+    /// <summary>
+    /// Подключение чата: выбранный пользователем профиль, при отсутствии/пустом — дефолт.
+    /// </summary>
+    static AiProviderConnection? ResolveConnection(AiChatOption option, string? connectionName)
+        => string.IsNullOrWhiteSpace(connectionName)
+            ? option.GetDefaultConnection()
+            : option.Connections.FirstOrDefault(c => c.Name == connectionName) ?? option.GetDefaultConnection();
+
+    static string? GetImageMediaType(string ext) => ext.ToLowerInvariant() switch
+    {
+        "png" => "image/png",
+        "jpg" or "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "bmp" => "image/bmp",
+        "avif" => "image/avif",
+        "svg" => "image/svg+xml",
+        _ => null,
+    };
+
+    /// <summary>
+    /// Текст для модели: сообщение пользователя + справка о приложенных файлах.
+    /// </summary>
+    static string ComposeAgentInput(string userMessage, IReadOnlyList<AiChatAttachmentDto> attachments)
+    {
+        if (attachments.Count == 0) return userMessage;
+
+        var sb = new StringBuilder();
+        if (!string.IsNullOrWhiteSpace(userMessage))
+            sb.AppendLine(userMessage.Trim());
+
+        sb.AppendLine("Приложенные файлы (загружены в медиатеку Mars):");
+        foreach (var a in attachments)
+        {
+            var readHint = a.IsImage ? "" : "; содержимое читай инструментом ReadMediaFile(id)";
+            sb.AppendLine($"- {a.Name} ({a.Ext}, {a.Size} байт) — id медиафайла {a.FileId}, URL {a.UrlRelative}{readHint}");
+        }
+
+        return sb.ToString();
+    }
 
     static string Truncate(string? text, int max = 300)
     {

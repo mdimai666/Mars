@@ -124,15 +124,95 @@
         cursor: default;
     }
 
-.aichat-sessions {
+/* унифицированные контролы шапки: список чатов и кнопка модели */
+.aichat-sessions,
+.aichat-model-btn {
     background: #0d1117;
     color: #d6deeb;
     border: 1px solid #2b3442;
     border-radius: 6px;
-    max-width: 180px;
     font-family: inherit;
     font-size: 12px;
-    padding: 2px 4px;
+    padding: 2px 6px;
+    padding-right: 18px;
+    max-width: 170px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M0 0l4 6 4-6z' fill='%238b949e'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+}
+
+    .aichat-sessions:hover,
+    .aichat-model-btn:hover {
+        border-color: #79c0ff;
+    }
+
+    .aichat-sessions:disabled,
+    .aichat-model-btn:disabled {
+        color: #8b949e;
+        opacity: .6;
+        cursor: default;
+    }
+
+/* прячем родную стрелку селекта — общий шеврон нарисован выше */
+.aichat-sessions {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* выбор модели (подключения) для чата: кнопка — название подключения, меню — модели */
+.aichat-model-picker {
+    position: relative;
+}
+
+.aichat-model-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 41;
+    display: flex;
+    flex-direction: column;
+    min-width: 190px;
+    max-width: min(340px, calc(100vw - 48px));
+    max-height: 240px;
+    overflow-y: auto;
+    background: #0d1117;
+    border: 1px solid #2b3442;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+}
+
+.aichat-model-item {
+    background: transparent;
+    border: none;
+    color: #d6deeb;
+    font-family: inherit;
+    font-size: 12px;
+    padding: 5px 10px;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .aichat-model-item:hover {
+        background: #161b22;
+    }
+
+    .aichat-model-item.active {
+        color: #79c0ff;
+    }
+
+/* прозрачная подложка: клик мимо меню закрывает его */
+.aichat-model-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    background: transparent;
 }
 
 /* ---------- лента сообщений ---------- */
@@ -231,3 +311,123 @@
     .aichat-input::placeholder {
         color: #484f58;
     }
+
+/* ---------- вложения ---------- */
+
+/* панель чипов над строкой ввода */
+.aichat-attachbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 12px;
+    border-top: 1px solid #2b3442;
+    background: #161b22;
+}
+
+.aichat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 240px;
+    padding: 3px 6px;
+    background: #21262d;
+    border: 1px solid #2b3442;
+    border-radius: 6px;
+    color: #d6deeb;
+    font-size: 12px;
+}
+
+.aichat-chip-img {
+    width: 22px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.aichat-chip-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.aichat-chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.aichat-chip-x {
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0 2px;
+}
+
+    .aichat-chip-x:hover {
+        color: #f85149;
+    }
+
+.aichat-chip-busy {
+    color: #8b949e;
+    font-style: italic;
+}
+
+/* вложения в сообщениях */
+.aichat-msg-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 0 18px;
+}
+
+.aichat-msg-attach-img {
+    display: inline-block;
+    cursor: zoom-in;
+}
+
+    .aichat-msg-attach-img img {
+        display: block;
+        max-width: 180px;
+        max-height: 120px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #2b3442;
+    }
+
+    .aichat-msg-attach-img:hover img {
+        border-color: #79c0ff;
+    }
+
+.aichat-msg-attach-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: #21262d;
+    border: 1px solid #2b3442;
+    border-radius: 6px;
+    color: #79c0ff;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+    .aichat-msg-attach-file:hover {
+        border-color: #79c0ff;
+    }
+
+/* картинки в тексте ответа ассистента */
+.aichat-inline-img {
+    display: block;
+    max-width: 220px;
+    max-height: 150px;
+    margin: 4px 0;
+    border-radius: 6px;
+    border: 1px solid #2b3442;
+    cursor: zoom-in;
+}
+
+a.spotlight:has(.aichat-inline-img):hover .aichat-inline-img,
+a.spotlight:has(.aichat-msg-attach-img):hover {
+    text-decoration: none;
+}

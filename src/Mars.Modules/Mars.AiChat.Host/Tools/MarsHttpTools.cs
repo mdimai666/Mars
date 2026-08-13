@@ -24,7 +24,8 @@ public class MarsHttpTools
     }
 
     [Description("Выполнить HTTP-запрос и вернуть статус и тело ответа (обрезается до 30 КБ). " +
-                 "Используй для внешних API и интеграций; запрос уходит с сервера без аутентификации пользователя.")]
+                 "Используй для внешних API и интеграций; запрос уходит с сервера без аутентификации пользователя. " +
+                 "НЕ используй для чтения файлов медиатеки (/upload/...) — их содержимое читает ReadMediaFile.")]
     public async Task<string> HttpRequest(
         [Description("Метод: GET, POST, PUT, PATCH, DELETE")] string method,
         [Description("Абсолютный URL")] string url,

@@ -182,3 +182,27 @@ export function scrollToBottom(el) {
 export function focusElement(el) {
     if (el) el.focus();
 }
+
+export function clickElement(el) {
+    if (el) el.click();
+}
+
+// Вставка файлов из буфера в поле ввода: Blazor не отдаёт файлы из paste-события,
+// поэтому читаем их здесь и шлём в .NET base64-ом (OnClipboardFile).
+// Текст без файлов не перехватываем — обычная вставка текста работает как раньше.
+export function watchPaste(dotnetRef, el) {
+    if (!el) return;
+    el.addEventListener('paste', (e) => {
+        const files = e.clipboardData && e.clipboardData.files;
+        if (!files || files.length === 0) return;
+        e.preventDefault();
+        for (const file of files) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = String(reader.result).split(',')[1] || '';
+                dotnetRef.invokeMethodAsync('OnClipboardFile', file.name || null, file.type || null, base64);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}

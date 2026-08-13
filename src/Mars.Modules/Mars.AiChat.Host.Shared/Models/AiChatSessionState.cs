@@ -23,6 +23,12 @@ public class AiChatSessionState
     /// </summary>
     public string? PendingQuestion { get; set; }
 
+    /// <summary>
+    /// Выбранное для чата подключение (имя из AiChatOption.Connections).
+    /// null/пусто — подключение по умолчанию.
+    /// </summary>
+    public string? ConnectionName { get; set; }
+
     public List<AiChatMessageDto> Messages { get; set; } = [];
 
     public AiChatSessionSummary ToSummary(bool isRunning) => new()
@@ -42,6 +48,7 @@ public class AiChatSessionState
         CreatedAtUtc = CreatedAtUtc,
         IsRunning = isRunning,
         PendingQuestion = PendingQuestion,
+        ConnectionName = ConnectionName,
         Messages = Messages,
     };
 }

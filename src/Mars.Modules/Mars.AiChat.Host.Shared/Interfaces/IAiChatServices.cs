@@ -34,7 +34,7 @@ public interface IAiChatRunCoordinator
     /// <summary>
     /// Ставит сообщение в обработку. Бросает исключение, если чат уже обрабатывается.
     /// </summary>
-    void Enqueue(Guid chatId, Guid userId, string userMessage, string? pageContext = null);
+    void Enqueue(Guid chatId, Guid userId, string userMessage, string? pageContext = null, IReadOnlyList<Guid>? attachmentIds = null);
 
     /// <summary>
     /// Останавливает активный запуск чата. Возвращает false, если запуска нет.

@@ -351,6 +351,62 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 - Контекст страницы: `FrontEditorPage` реализует `IAiChatPageHandler` (второй пример после `EditPostView`):
   `GetInfo` отдаёт фронт и открытый файл; `SetField`/`Save` объясняют модели, что правки идут через файлы.
 
+### Вложения в чат (файлы и картинки)
+
+Пользователь прикладывает файлы скрепкой «📎» в терминале или вставкой из буфера (Ctrl+V —
+слушатель `watchPaste` в `mars-aichat.js` шлёт файлы base64-ом в `OnClipboardFile`):
+
+- Загрузка — `POST api/AiChat/attachments` (multipart, лимит 32 МБ + `UploadMediaFileValidator`
+  с лимитами `MediaOption`): файл пишется в медиатеку, подпапка `Media/AiChat/{год}`
+  (`IFileService.WriteUpload`), сразу виден на странице «Медиа»; ответ — `AiChatAttachmentDto`
+  (FileId/имя/URL/размер/IsImage).
+- Отправка — id вложений в `AiChatSendRequest.AttachmentIds`; валидация «сообщение ИЛИ вложения».
+- История: `AiChatMessageDto.Attachments` хранится вместе с чатом в HybridCache; терминал рендерит
+  картинки превью со spotlight (`<a class="spotlight">` — бандл уже подключён в админке),
+  прочие файлы — чипами-ссылками. Картинки в тексте ответов ассистента тоже распознаются
+  (URL `/upload/...` с расширением картинки → превью + spotlight).
+- Модель: в `AiChatAgentService` вложения резолвятся из медиатеки (доверенные метаданные, не из запроса).
+  Пользовательское сообщение собирается в M.E.AI `ChatMessage`: `TextContent` (текст + справка о файлах
+  с id/URL) плюс `DataContent` с media type `image/*` для картинок (в M.E.AI 10.x отдельного ImageContent
+  нет). Не-картинки уходят модели только текстовой справкой.
+- Фолбэк для не-vision моделей: если запуск с картинками падает, он автоматически повторяется
+  текстом без картинок (в историю добавляется Info-сообщение).
+
+### Медиатека (MarsMediaTools)
+
+`Mars.AiChat.Host/Tools/MarsMediaTools.cs` — инструменты `ListMedia` / `GetMedia` / `ReadMediaFile` /
+`AddMedia` / `DeleteMedia` поверх `IFileService` + `IFileStorage` (медиатека `/upload/Media`,
+миниатюры `/upload/MediaThumbs`):
+
+- Тулсет `MediaToolset`, включён всегда; экземпляр создаётся на запуск с `userId` владельца чата —
+  он становится владельцем добавленных файлов.
+- `ReadMediaFile(id, offset, encoding, maxChars)` читает текстовое содержимое напрямую через
+  `IFileStorage` (без HTTP): кодировка — запрошенная → BOM → строгий UTF-8 → фолбэк windows-1251
+  (в ответе видно, какая кодировка использована); `CodePagesEncodingProvider` регистрируется в
+  `AddMarsAiChat`. Скилл запрещает читать файлы `/upload/...` через `HttpRequest`.
+- `AddMedia(url, name)` скачивает внешний http/https URL (лимит 32 МБ) и пишет в `Media/AiChat/{год}`.
+- Правила — bundled-скилл `mars-media`: удаление только после `ask_user`, в шаблоны и посты картинки
+  вставляются по относительному URL `<img src="/upload/Media/...">`; preload скилла — на странице
+  «Медиа» (`PageSkillRouter`). Скилл `mars-front-editor` ссылается на медиатеку для вставки картинок
+  в шаблоны фронта.
+
+### Выбор модели (подключения) на чат
+
+Подключения настраиваются в опции `AiChatOption.Connections`. Выбор для конкретного чата:
+
+- `AiChatSessionState.ConnectionName` — имя подключения; null/пусто = дефолт
+  (`AiChatOption.GetDefaultConnection()`). Резолв в `AiChatAgentService.ResolveConnection`:
+  удалённое из настроек подключение тихо откатывается на дефолт.
+- REST: `GET api/AiChat/connections` (публичное представление без секретов —
+  `AiChatConnectionDto`), `PUT api/AiChat/sessions/{id}/connection` (валидация имени)
+  и `ConnectionName` в `AiChatCreateSessionRequest` (неизвестное имя тихо становится дефолтом).
+- Терминал показывает пикер модели только при двух и более подключениях: на кнопке —
+  название подключения, в раскрытом меню — модели (`ModelId`); выбор сохраняется на чат
+  и действует со следующего сообщения. Новый чат наследует явно выбранную модель
+  (`CreateSession(null, _currentConnectionName)`), на дефолте остаётся дефолт.
+  Смена модели посреди диалога допустима: если сериализованная MAF-сессия не переживёт
+  смену провайдера, `RestoreSessionAsync` сбросит её с предупреждением.
+
 ## Как добавить новое событие сервер → клиент
 
 1. Константа в `Mars.AiChat.Shared/SignalR/AiChatHubEvents.cs` (с сигнатурой в комментарии).
@@ -367,6 +423,9 @@ LIMIT на SELECT, connection strings не выводить. Connection strings 
 SQL-доступ к базам (схема/чтение/запись через `IDatasourceService`, флаг `EnableSqlAccess`),
 файлы фронта из редактора фронта (`MarsFrontFilesTools`, контекст страницы `FrontEditorPage`),
 исходящие HTTP-запросы (`MarsHttpTools.HttpRequest`, без аутентификации пользователя),
+вложения в чат (скрепка/буфер, превью + spotlight, отправка картинок в vision-модели через `DataContent`),
+медиатека (`MarsMediaTools`: список/детали/чтение содержимого/добавление/удаление, скилл `mars-media`),
+выбор модели на чат (селектор подключений в терминале, если их больше одного),
 долговременная память, каталог скиллов с поиском/загрузкой и preload-роутингом по странице,
 рабочая папка агента (см. «Память, скиллы и рабочая папка агента»).
 
@@ -376,8 +435,7 @@ SQL-доступ к базам (схема/чтение/запись через 
   добавить `SetHTML` и подключить в `SetContentValue`.
 - **Мост для других страниц**: реализовать `IAiChatPageHandler` для новых страниц (пользователи, настройки).
 - **Подтверждения опасных действий**: расширить `AskUserTool` до `confirm_action(action)` с ответом да/нет.
-- **Другие скиллы**: пользователи (`IUserService`), медиа (`IMediaService`), ноды-флоу, плагины, Docker.
-- **Выбор подключения на чат**: сейчас берётся `DefaultConnectionName`; можно хранить подключение в `AiChatSessionState`.
+- **Другие скиллы**: пользователи (`IUserService`), ноды-флоу, плагины, Docker.
 
 ## Известные ограничения
 

@@ -24,5 +24,9 @@ public class AiChatSessionDto
     public DateTime CreatedAtUtc { get; set; }
     public bool IsRunning { get; set; }
     public string? PendingQuestion { get; set; }
+
+    /// <summary>Выбранное подключение (имя); null/пусто — подключение по умолчанию.</summary>
+    public string? ConnectionName { get; set; }
+
     public List<AiChatMessageDto> Messages { get; set; } = [];
 }

@@ -131,6 +131,34 @@ fluent-API `PxMaster.Define("id")…` (аналог аннотаций на фу
 аргументов выводится из строки. Классы-наследники остались только для блоков
 с мутаторами/динамикой. Дальше: rich-редакторы полей (Blazor-формы), PXT-фишки поштучно.
 
+### Этап 6 — Тулбокс в стиле MakeCode ✅
+Эталон: скриншот micro:bit MakeCode. Белая рейка категорий с иконками и поиском,
+выбранная заливается цветом категории; тёмный flyout с заголовками и цветными блоками.
+Происхождение слоёв (проверено по microsoft-pxt):
+- рейка (иконки/поиск/«more»/Advanced) — React-шелл MakeCode, `webapp/src/toolbox.tsx` —
+  в pxtblocks и Blockly этого нет; аналог пишем в Blazor (внутри PxBlocksEditor);
+- flyout — Blockly: контент-заголовки собирает pxtblocks (`pxtblocks/toolbox.ts`,
+  `builtins/*`, `hideFlyoutHeadings`), вид — CSS шелла `theme/blockly-core.less`
+  (`--pxt-neutral-background3` и т.п.). Переносится: CSS + `kind: label` в toolbox JSON.
+
+Шаги:
+1. Стилизация flyout: перенести CSS из `theme/blockly-core.less` (фон, заголовки,
+   label, кнопки); `PxToolboxLabel` (kind=label) в модели + заголовки в дефолтных
+   категориях.
+2. Рейка `PxToolboxRail` в PxBlocksEditor: категории из PxToolbox (Icon/Colour/Advanced),
+   поиск, «more»; нативное меню категорий Blockly скрыть.
+3. Interop `selectCategory(name)` → `workspace.getToolbox().selectCategoryByName(...)`;
+   поиск — временная flyout-категория из подходящих блоков.
+4. Иконки категорий — inline SVG в рейке (набор свой или из `svgicons/` PXT).
+
+Реализовано: `PxToolboxRail.razor` (иконки inline SVG, поиск с дебаунсом 250 мс,
+экспандер Advanced; «more» как в MakeCode не воспроизводился), `PxToolboxLabel`
+(kind=label + web-class), тёмный flyout и стили рейки в `wwwroot/pxblocks.css`
+(подключается из `index.ts`), interop `selectCategory`/`clearToolboxSelection`,
+нативное меню категорий скрыто CSS. Поиск — временная категория «Поиск»
+(совпадение по имени категории или типу блока). Клик по выбранной категории
+закрывает flyout. Категории: `Blocks` → `Items` (блоки + метки), `Icon`/`Advanced`.
+
 ## Что делаем со старым кодом
 - **Удаляем** (свой рендеринг, заменён Blockly): PxWorkspace.razor, PxBlockComponent.razor,
   PxBlockSvgHelper.cs, PxToolbox.razor, pxWorkspaceJs.js, PxBlock.cs, PxField.cs, PxInput.cs.

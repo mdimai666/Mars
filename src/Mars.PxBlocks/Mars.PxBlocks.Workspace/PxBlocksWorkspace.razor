@@ -21,19 +21,25 @@
     /// <summary>Пакеты non-UI событий Blockly (дебаунс ~200 мс на стороне JS).</summary>
     [Parameter] public EventCallback<IReadOnlyList<PxBlocklyEvent>> OnWorkspaceChanged { get; set; }
 
+    /// <summary>Blockly сам выбрал/сбросил категорию (flyout закрылся после drag-out и т.п.). Имя или null.</summary>
+    [Parameter] public EventCallback<string?> OnToolboxSelectionChanged { get; set; }
+
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private ElementReference _containerRef;
     private PxWorkspaceJsInterop? _interop;
     private IJSObjectReference? _workspace;
     private DotNetObjectReference<PxBlocksWorkspace>? _selfRef;
-    private PxToolbox? _appliedToolbox;
+    private PxToolbox? _paramToolbox;
     private bool _toolboxDirty;
 
     protected override void OnParametersSet()
     {
-        if (!ReferenceEquals(Toolbox, _appliedToolbox))
+        if (!ReferenceEquals(Toolbox, _paramToolbox))
+        {
+            _paramToolbox = Toolbox;
             _toolboxDirty = true;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,7 +54,6 @@
                 await _interop.RegisterBlockDefinitions(PxBlockDefinition.ToArrayJson(BlockDefinitions));
 
             _workspace = await _interop.InjectWorkspace(_containerRef, OptionsJson, Toolbox?.ToJson());
-            _appliedToolbox = Toolbox;
             _toolboxDirty = false;
 
             _selfRef = DotNetObjectReference.Create(this);
@@ -60,7 +65,6 @@
         if (_toolboxDirty && _workspace != null)
         {
             _toolboxDirty = false;
-            _appliedToolbox = Toolbox;
             if (Toolbox != null)
                 await _interop!.UpdateToolbox(_workspace, Toolbox.ToJson());
         }
@@ -74,6 +78,11 @@
             await OnWorkspaceChanged.InvokeAsync(events);
     }
 
+    [JSInvokable]
+    public async Task OnToolboxSelect(string? name) => await OnToolboxSelectionChanged.InvokeAsync(name);
+
+    public ValueTask<bool> IsFlyoutVisibleAsync() => _interop!.IsFlyoutVisible(_workspace!);
+
     public ValueTask<string> SaveAsync() => _interop!.SaveWorkspace(_workspace!);
 
     public ValueTask LoadAsync(string blocksJson) => _interop!.LoadWorkspace(_workspace!, blocksJson);
@@ -83,6 +92,20 @@
     public ValueTask UndoAsync() => _interop!.Undo(_workspace!, redo: false);
 
     public ValueTask RedoAsync() => _interop!.Undo(_workspace!, redo: true);
+
+    /// <summary>Явная замена toolbox в обход параметра (поиск в рейке). Параметр при этом не перетирает.</summary>
+    public async ValueTask SetToolboxAsync(PxToolbox toolbox)
+    {
+        if (_workspace == null)
+            return;
+        await _interop!.UpdateToolbox(_workspace, toolbox.ToJson());
+        _toolboxDirty = false;
+    }
+
+    /// <summary>Выбор категории по имени: открывает её flyout (нативное меню скрыто рейкой).</summary>
+    public ValueTask<bool> SelectCategoryAsync(string name) => _interop!.SelectCategory(_workspace!, name);
+
+    public ValueTask ClearToolboxSelectionAsync() => _interop!.ClearToolboxSelection(_workspace!);
 
     public async ValueTask DisposeAsync()
     {

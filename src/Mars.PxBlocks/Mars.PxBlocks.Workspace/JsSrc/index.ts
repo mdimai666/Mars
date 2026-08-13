@@ -43,7 +43,46 @@ export function injectWorkspace(element: HTMLElement, optionsJson?: string, tool
     const toolbox = toolboxJson
         ? JSON.parse(toolboxJson)
         : { kind: 'categoryToolbox', contents: [] };
-    return Blockly.inject(element, { ...defaultOptions, toolbox, ...extra });
+    const workspace = Blockly.inject(element, { ...defaultOptions, toolbox, ...extra });
+
+    // Нативное меню категорий заменено Blazor-рейкой и скрыто CSS-ом из pxblocks.css
+    // (хост подключает его link-ом в head); здесь прячем inline и пересчитываем метрики
+    // на случай, если CSS ещё не применился, — иначе полотно останется
+    // «ширина минус toolbox» до первого ресайза окна.
+    const nativeToolbox = workspace.getToolbox() as Blockly.Toolbox | null;
+    if (nativeToolbox?.HtmlDiv) {
+        nativeToolbox.HtmlDiv.style.display = 'none';
+    }
+    workspace.resize();
+
+    return workspace;
+}
+
+// Меню категорий скрыто CSS-ом (рейка в Blazor); flyout открываем программным выбором.
+export function selectCategory(workspace: Blockly.WorkspaceSvg, name: string): boolean {
+    const toolbox = workspace.getToolbox() as Blockly.Toolbox | null;
+    if (!toolbox) return false;
+    const item = toolbox.getToolboxItems().find((it) => {
+        const category = it as Blockly.ToolboxCategory;
+        return typeof category.getName === 'function' && category.getName() === name;
+    });
+    if (!item) return false;
+    if (toolbox.getSelectedItem() === item) {
+        // Категория уже выбрана, но flyout мог быть закрыт (drag-out, клик мимо):
+        // повторный setSelectedItem — no-op, поэтому сбрасываем и выбираем заново.
+        toolbox.clearSelection();
+    }
+    toolbox.setSelectedItem(item);
+    return true;
+}
+
+export function isFlyoutVisible(workspace: Blockly.WorkspaceSvg): boolean {
+    const toolbox = workspace.getToolbox() as Blockly.Toolbox | null;
+    return toolbox?.getFlyout()?.isVisible() ?? false;
+}
+
+export function clearToolboxSelection(workspace: Blockly.WorkspaceSvg): void {
+    (workspace.getToolbox() as Blockly.Toolbox | null)?.clearSelection();
 }
 
 export function updateToolbox(workspace: Blockly.WorkspaceSvg, toolboxJson: string): void {
@@ -80,6 +119,13 @@ export function registerEvents(workspace: Blockly.WorkspaceSvg, dotNetRef: DotNe
     let timer: number | undefined;
 
     workspace.addChangeListener((event: Blockly.Events.Abstract) => {
+        // Синхронизация рейки: Blockly сам закрывает flyout и сбрасывает выбор
+        // (drag-out, клик мимо) — сообщаем .NET актуальное имя выбранной категории.
+        if (event.type === Blockly.Events.TOOLBOX_ITEM_SELECT) {
+            const select = event as Blockly.Events.ToolboxItemSelect;
+            void dotNetRef.invokeMethodAsync<void>('OnToolboxSelect', toolboxItemName(workspace, select.newItem ?? null));
+        }
+
         if (event.isUiEvent) {
             return;
         }
@@ -93,6 +139,13 @@ export function registerEvents(workspace: Blockly.WorkspaceSvg, dotNetRef: DotNe
             }, 200);
         }
     });
+}
+
+function toolboxItemName(workspace: Blockly.WorkspaceSvg, id: string | null): string | null {
+    if (!id) return null;
+    const toolbox = workspace.getToolbox() as Blockly.Toolbox | null;
+    const item = toolbox?.getToolboxItemById(id) as Blockly.ToolboxCategory | null;
+    return item && typeof item.getName === 'function' ? item.getName() : id;
 }
 
 function serializeEvent(event: Blockly.Events.Abstract): Record<string, unknown> {

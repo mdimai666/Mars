@@ -8,6 +8,7 @@
     "blockly": "13.1.1"
   },
   "devDependencies": {
+    "playwright": "^1.62.1",
     "typescript": "^5.7.3",
     "vite": "^6.1.0"
   }

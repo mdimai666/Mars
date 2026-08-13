@@ -1,30 +1,30 @@
 var l_ = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
-function Mu(D) {
-  return D && D.__esModule && Object.prototype.hasOwnProperty.call(D, "default") ? D.default : D;
+function Mu(k) {
+  return k && k.__esModule && Object.prototype.hasOwnProperty.call(k, "default") ? k.default : k;
 }
 var dl = { exports: {} }, $_ = dl.exports, a_;
 function Du() {
-  return a_ || (a_ = 1, (function(D, C) {
+  return a_ || (a_ = 1, (function(k, I) {
     (function(n, h) {
-      D.exports = h();
+      k.exports = h();
     })($_, function() {
-      var n = {}, h, P, et, Mt, De, H, xt, it, Oe, ft, ci, We, le, Rt, Ds, Co, q, w, Ke, Ri, $i, Te, S, L, Ps, ot, jt, lt, Ji, l, u, T, I, O, dt, Ee, vo, Ye, fl, Ai, qi, ml, In, Il, So, Ro, bi, Oi, Cl, Zi, Ao, Bu, vl, bo, X, Qi, qt, Cn, Sl, vn, Zt, Ht, ui, V, Sn, Rl, Al, bl, Ct, Rn, W, Ol, Oo, Xe, yi, yl, Ll, kl, Nl, yo, An, wl, Ml, ts, Li, Bs, xu, bn, Lo, On, yn, Ln, Dl, Pl, kn, Nn, wn, ko, xs, No, Mn, Fu, Uu, wo, Bl, fe, ki, xl, Dn, Fl, Hu, Ul, Hl, Gl, Vl, Pn, Bn, xn, Fn, ze, Gu, Fs, Wl, Un, Hn, Gn, Kl, Vn, Us, Wn, Vu, Yl, Xl, Wu, Ku, es, Kn, Hs, Yn, me, zl, is, Ni, jl, Yu, $l, di, Xu, Jl, ql, ss, gi, Zl, zu, Ql, ta, ea, ju, Xn, $u, Ju, qu, ia, Zu, Qu, td, zn, Gs, jn, sa, $n, oa, na, ra, la, aa, ha, ca, ua, Mo, Jn, Do, je, da, ga, Po, pa, _a, qn, Ta, Vs, Ea, fa, Bo, ma, ed, id, Ia, Ca, $e, va, Sa, Ra, os, xo, Zn, Qn, ns, Aa, tr, ba, Et, Ws, Oa, ya, er, rs, ls, Fo, La, ka, Na, Ks, sd, od, nd, Uo, wa, rd, Ma, ir, sr, Da, Pa, Ba, wi, xa, Ys, Fa, as, Ua, ld, Ha, or, Je, hs, Ga, nr, Ho, Va, rr, ad, F, de, Gt, vt, qe, Xs, U, At, hd, Wa, lr, Ka, Ya, Xa, za, zs, cd, ud, dd, js, ja, ar, hr, Ze, $a, $s, ye, cs, Ja, qa, Go, Za, Qa, th, eh, ih, sh, oh, nh, rh, lh, ah, hh, ch, uh, dh, gh, ph, _h, Th, Eh, fh, mh, Ih, Ch, vh, Sh, Rh, Ah, bh, Oh, gd, yh, Ie, cr, pi, Lh, Mi, ur, dr, kh, Nh, gr, wh, Mh, pd, Dh, Vo, Ph, Bh, xh, Fh, pr, Uh, Hh, _d, Td, Ed, fd, md, Gh, Vh, Wh, Kh, Yh, Xh, zh, _r, Wo, jh, $h, Jh, qh, Zh, Qh, tc, ec, ic, sc, oc, nc, _;
+      var n = {}, h, M, j, Ct, De, H, xt, it, Oe, ft, ci, We, le, At, Ds, Co, Z, D, Ke, Ri, $i, Te, S, L, Ps, ot, jt, lt, Ji, l, u, T, C, O, dt, Ee, vo, Ye, fl, Ai, qi, ml, In, Il, So, Ro, bi, Oi, Cl, Zi, Ao, Bu, vl, bo, X, Qi, qt, Cn, Sl, vn, Zt, Ht, ui, V, Sn, Rl, Al, bl, vt, Rn, W, Ol, Oo, Xe, yi, yl, Ll, kl, Nl, yo, An, wl, Ml, ts, Li, Bs, xu, bn, Lo, On, yn, Ln, Dl, Pl, kn, Nn, wn, ko, xs, No, Mn, Fu, Uu, wo, Bl, fe, ki, xl, Dn, Fl, Hu, Ul, Hl, Gl, Vl, Pn, Bn, xn, Fn, ze, Gu, Fs, Wl, Un, Hn, Gn, Kl, Vn, Us, Wn, Vu, Yl, Xl, Wu, Ku, es, Kn, Hs, Yn, me, zl, is, Ni, jl, Yu, $l, di, Xu, Jl, ql, ss, gi, Zl, zu, Ql, ta, ea, ju, Xn, $u, Ju, qu, ia, Zu, Qu, td, zn, Gs, jn, sa, $n, oa, na, ra, la, aa, ha, ca, ua, Mo, Jn, Do, je, da, ga, Po, pa, _a, qn, Ta, Vs, Ea, fa, Bo, ma, ed, id, Ia, Ca, $e, va, Sa, Ra, os, xo, Zn, Qn, ns, Aa, tr, ba, Et, Ws, Oa, ya, er, rs, ls, Fo, La, ka, Na, Ks, sd, od, nd, Uo, wa, rd, Ma, ir, sr, Da, Pa, Ba, wi, xa, Ys, Fa, as, Ua, ld, Ha, or, Je, hs, Ga, nr, Ho, Va, rr, ad, F, de, Gt, St, qe, Xs, U, bt, hd, Wa, lr, Ka, Ya, Xa, za, zs, cd, ud, dd, js, ja, ar, hr, Ze, $a, $s, ye, cs, Ja, qa, Go, Za, Qa, th, eh, ih, sh, oh, nh, rh, lh, ah, hh, ch, uh, dh, gh, ph, _h, Th, Eh, fh, mh, Ih, Ch, vh, Sh, Rh, Ah, bh, Oh, gd, yh, Ie, cr, pi, Lh, Mi, ur, dr, kh, Nh, gr, wh, Mh, pd, Dh, Vo, Ph, Bh, xh, Fh, pr, Uh, Hh, _d, Td, Ed, fd, md, Gh, Vh, Wh, Kh, Yh, Xh, zh, _r, Wo, jh, $h, Jh, qh, Zh, Qh, tc, ec, ic, sc, oc, nc, _;
       h = function(t, e) {
-        P(), Tr = setTimeout(function() {
+        M(), Tr = setTimeout(function() {
           e && e.handleRightClick(t);
         }, 750);
-      }, P = function() {
+      }, M = function() {
         Tr && (clearTimeout(Tr), Tr = 0);
-      }, et = function(t) {
+      }, j = function(t) {
         return !t.type.startsWith("pointer") || t instanceof PointerEvent && De(t);
-      }, Mt = function(t) {
+      }, Ct = function(t) {
         return `${t.pointerId}`;
       }, De = function(t) {
-        var e = Mt(t);
+        var e = Ct(t);
         return Qt ? Qt === e : t.type === "pointerdown" ? (Qt = e, !0) : !1;
       }, H = function(t, e, i, s, o, r) {
         function a(g) {
-          (o || et(g)) && (i ? s.call(i, g) : s(g));
+          (o || j(g)) && (i ? s.call(i, g) : s(g));
         }
         var c = [];
         if (e in us) for (let g = 0; g < us[e].length; g++) {
@@ -73,16 +73,16 @@ function Du() {
         }
       }, le = function(t, e) {
         return e = t.indexOf(e), e === -1 ? !1 : (t.splice(e, 1), !0);
-      }, Rt = function(t) {
+      }, At = function(t) {
         Md.push(t);
       }, Ds = function(t, e, i) {
         e && typeof window < "u" && (t = t.getRootNode(), wd.has(t) || (wd.add(t), i = i.replace(/[\\/]$/, ""), i = [v_, ...Md].join(`
 `).replace(/<<<PATH>>>/g, i), e = document.createElement("style"), e.id = "blockly-common-style", e.textContent = i, (typeof globalThis.ShadowRoot < "u" && t instanceof ShadowRoot ? t : document.head).prepend(e)));
       }, Co = function(t) {
         t.removeAttribute("role");
-      }, q = function(t, e) {
+      }, Z = function(t, e) {
         e ? t.setAttribute("role", e) : Co(t);
-      }, w = function(t, e, i) {
+      }, D = function(t, e, i) {
         Array.isArray(i) && (i = i.join(" ")), t.setAttribute("aria-" + e, `${i}`);
       }, Ke = function(t, e) {
         t.removeAttribute("aria-" + e);
@@ -91,20 +91,20 @@ function Du() {
       }, $i = function(t) {
         if (!zo || !document.contains(zo)) {
           var e = document.createElement("div");
-          e.textContent = "", e.id = "blocklyAriaAnnounce", L(e, "hiddenForAria"), w(e, k.LIVE, ae.POLITE), q(e, Pd), w(e, k.ATOMIC, !0), t.appendChild(e), zo = e;
+          e.textContent = "", e.id = "blocklyAriaAnnounce", L(e, "hiddenForAria"), D(e, N.LIVE, ae.POLITE), Z(e, Pd), D(e, N.ATOMIC, !0), t.appendChild(e), zo = e;
         }
       }, Te = function(t, e) {
         if (!zo) throw Error("ARIA live region not initialized.");
         var i = zo, { assertiveness: s = ae.POLITE, role: o = Pd } = e || {};
         dc.push(t), Xo = s === ae.ASSERTIVE || Xo === ae.ASSERTIVE ? ae.ASSERTIVE : s === ae.POLITE || Xo === ae.POLITE ? ae.POLITE : ae.OFF, clearTimeout(Bd), Bd = setTimeout(() => {
-          i.replaceChildren(), w(i, k.LIVE, Xo), q(i, o);
+          i.replaceChildren(), D(i, N.LIVE, Xo), Z(i, o);
           var r = document.createElement("span");
           r.textContent = dc.join(`
 `) + (gc ? " " : ""), gc = !gc, i.appendChild(r), dc.length = 0, Xo = ae.OFF;
         }, 10);
       }, S = function(t, e, i) {
         var s = document.createElementNS("http://www.w3.org/2000/svg", `${t}`);
-        t !== E.SVG.toString() && t !== E.G.toString() && s.tagName !== E.SVG.toString() && s.tagName !== E.G.toString() || q(s, J.NONE);
+        t !== E.SVG.toString() && t !== E.G.toString() && s.tagName !== E.SVG.toString() && s.tagName !== E.G.toString() || Z(s, q.NONE);
         for (let o in e) s.setAttribute(o, `${e[o]}`);
         return i && i.appendChild(s), s;
       }, L = function(t, e) {
@@ -127,7 +127,7 @@ function Du() {
         pc++, Be || (Be = /* @__PURE__ */ Object.create(null));
       }, T = function() {
         pc--, pc || (Be = null);
-      }, I = function(t) {
+      }, C = function(t) {
         var e = t.textContent + `
 ` + t.className.baseVal, i;
         return Be && (i = Be[e]) || (i = window.getComputedStyle(t), i = O(t, i.fontSize, i.fontWeight, i.fontFamily), Be && (Be[e] = i)), i;
@@ -215,7 +215,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, n.Ab = function(t) {
         for (let e of Object.keys(t)) {
           let i = t[e];
-          e in bt && console.warn(`Block definition "${e}" overwrites previous definition.`), bt[e] = i;
+          e in Ot && console.warn(`Block definition "${e}" overwrites previous definition.`), Ot[e] = i;
         }
       }, bo = function(t) {
         var e = Le, i = n.t().getFocusedTree();
@@ -300,7 +300,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return t = e.filter((i) => !i.isNull());
       }, bl = function() {
         for (let t = 0, e; e = ti[t]; t++) e.recordUndo = !1;
-      }, Ct = function() {
+      }, vt = function() {
         return n.Ub === 0;
       }, n.B = function(t) {
         Ec.setGroupInternal(t);
@@ -331,12 +331,12 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return new A(t.scrollLeft || e.scrollLeft, t.scrollTop || e.scrollTop);
       }, Ll = function(t) {
         var e = parseFloat(Xe(t, "borderLeftWidth")), i = parseFloat(Xe(t, "borderRightWidth")), s = parseFloat(Xe(t, "borderTopWidth"));
-        return t = parseFloat(Xe(t, "borderBottomWidth")), new j(s, t, e, i);
+        return t = parseFloat(Xe(t, "borderBottomWidth")), new $(s, t, e, i);
       }, kl = function(t, e, i) {
         t = Nl(t, e, i), e.scrollLeft = t.x, e.scrollTop = t.y;
       }, Nl = function(t, e, i) {
         var s = yi(t), o = yi(e), r = Ll(e), a = s.x - o.x - r.left;
-        return s = s.y - o.y - r.top, o = new $(t.offsetWidth, t.offsetHeight), t = e.clientWidth - o.width, o = e.clientHeight - o.height, r = e.scrollLeft, e = e.scrollTop, i ? (r += a - t / 2, e += s - o / 2) : (r += Math.min(a, Math.max(a - t, 0)), e += Math.min(s, Math.max(s - o, 0))), new A(r, e);
+        return s = s.y - o.y - r.top, o = new J(t.offsetWidth, t.offsetHeight), t = e.clientWidth - o.width, o = e.clientHeight - o.height, r = e.scrollLeft, e = e.scrollTop, i ? (r += a - t / 2, e += s - o / 2) : (r += Math.min(a, Math.max(a - t, 0)), e += Math.min(s, Math.max(s - o, 0))), new A(r, e);
       }, yo = function(t) {
         var e = new A(0, 0), i = t.x && t.getAttribute("x"), s = t.y && t.getAttribute("y");
         return i && (e.x = parseInt(i)), s && (e.y = parseInt(s)), (i = (i = t.getAttribute("transform")) && i.match(Yd)) && (e.x += Number(i[1]), i[3] && (e.y += Number(i[3]))), (t = t.getAttribute("style")) && t.includes("translate") && (t = t.match(Xd)) && (e.x += Number(t[1]), t[3] && (e.y += Number(t[3]))), e;
@@ -349,7 +349,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return new A(e, i);
       }, wl = function() {
         var t = yl();
-        return new j(t.y, document.documentElement.clientHeight + t.y, t.x, document.documentElement.clientWidth + t.x);
+        return new $(t.y, document.documentElement.clientHeight + t.y, t.x, document.documentElement.clientWidth + t.x);
       }, Ml = function() {
         var t = document.documentElement, e = window;
         return new A(e.pageXOffset || t.scrollLeft, e.pageYOffset || t.scrollTop);
@@ -419,14 +419,14 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return e;
       }, kn = function(t, e, i, s, o, r) {
         var a = r.scrollbar && r.scrollbar.canScrollVertically();
-        return t.horizontal === to.LEFT ? (i = o.absoluteMetrics.left + i, a && r.RTL && (i += Ot.scrollbarThickness)) : (i = o.absoluteMetrics.left + o.viewMetrics.width - e.width - i, a && !r.RTL && (i -= Ot.scrollbarThickness)), t.vertical === Ei.TOP ? t = o.absoluteMetrics.top + s : (t = o.absoluteMetrics.top + o.viewMetrics.height - e.height - s, r.scrollbar && r.scrollbar.canScrollHorizontally() && (t -= Ot.scrollbarThickness)), new j(t, t + e.height, i, i + e.width);
+        return t.horizontal === to.LEFT ? (i = o.absoluteMetrics.left + i, a && r.RTL && (i += yt.scrollbarThickness)) : (i = o.absoluteMetrics.left + o.viewMetrics.width - e.width - i, a && !r.RTL && (i -= yt.scrollbarThickness)), t.vertical === Ei.TOP ? t = o.absoluteMetrics.top + s : (t = o.absoluteMetrics.top + o.viewMetrics.height - e.height - s, r.scrollbar && r.scrollbar.canScrollHorizontally() && (t -= yt.scrollbarThickness)), new $(t, t + e.height, i, i + e.width);
       }, Nn = function(t, e) {
-        return { horizontal: e.toolboxMetrics.position === M.LEFT || t.horizontalLayout && !t.RTL ? to.RIGHT : to.LEFT, vertical: e.toolboxMetrics.position === M.BOTTOM ? Ei.TOP : Ei.BOTTOM };
+        return { horizontal: e.toolboxMetrics.position === P.LEFT || t.horizontalLayout && !t.RTL ? to.RIGHT : to.LEFT, vertical: e.toolboxMetrics.position === P.BOTTOM ? Ei.TOP : Ei.BOTTOM };
       }, wn = function(t, e, i, s) {
         var o = t.left, r = t.right - t.left, a = t.bottom - t.top;
         for (let c = 0; c < s.length; c++) {
           let g = s[c];
-          t.intersects(g) && (t = i === Hi.UP ? g.top - a - e : g.bottom + e, t = new j(t, t + a, o, o + r), c = -1);
+          t.intersects(g) && (t = i === Hi.UP ? g.top - a - e : g.bottom + e, t = new $(t, t + a, o, o + r), c = -1);
         }
         return t;
       }, ko = function(t, e) {
@@ -445,7 +445,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         if (t.width !== void 0 || t.height) {
           o = i.getSize();
           let r, a;
-          i.setSize(new $((r = t.width) != null ? r : o.width, (a = t.height) != null ? a : o.height));
+          i.setSize(new J((r = t.width) != null ? r : o.width, (a = t.height) != null ? a : o.height));
         }
         return t.collapsed !== void 0 && i.setCollapsed(t.collapsed), t.editable !== void 0 && i.setEditable(t.editable), t.movable !== void 0 && i.setMovable(t.movable), t.deletable !== void 0 && i.setDeletable(t.deletable), n.Qc = s, i;
       }, Mn = function(t, e) {
@@ -552,15 +552,15 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         }
         return Array.from(e.values());
       }, Un = function(t) {
-        return bt.variables_set || bt.variables_get || console.warn("There are no variable blocks, but there is a variable category."), t.registerButtonCallback("CREATE_VARIABLE", function(e) {
+        return Ot.variables_set || Ot.variables_get || console.warn("There are no variable blocks, but there is a variable category."), t.registerButtonCallback("CREATE_VARIABLE", function(e) {
           Us(e.getTargetWorkspace());
         }), [{ kind: "button", text: "%{BKY_NEW_VARIABLE}", callbackkey: "CREATE_VARIABLE" }, ...Gn(t, t.getVariableMap().getVariablesOfType(""), !0)];
       }, Hn = function(t) {
         return { VAR: { name: t.getName(), type: t.getType() } };
       }, Gn = function(t, e, i, s = "variables_get", o = "variables_set") {
-        i && (i = bt.math_change), t = [];
+        i && (i = Ot.math_change), t = [];
         var r = e.slice(-1)[0];
-        return r && (bt[o] && t.push({ kind: "block", type: o, gap: i ? 8 : 24, fields: Hn(r) }), i && t.push({ kind: "block", type: "math_change", gap: bt[s] ? 20 : 8, fields: Hn(r), inputs: { DELTA: { shadow: { type: "math_number", fields: { NUM: 1 } } } } })), bt[s] && t.push(...e.sort(Hs).map((a) => ({ kind: "block", type: s, gap: 8, fields: Hn(a) }))), t;
+        return r && (Ot[o] && t.push({ kind: "block", type: o, gap: i ? 8 : 24, fields: Hn(r) }), i && t.push({ kind: "block", type: "math_change", gap: Ot[s] ? 20 : 8, fields: Hn(r), inputs: { DELTA: { shadow: { type: "math_number", fields: { NUM: 1 } } } } })), Ot[s] && t.push(...e.sort(Hs).map((a) => ({ kind: "block", type: s, gap: 8, fields: Hn(a) }))), t;
       }, Kl = function(t) {
         return yg.generateUniqueNameInternal(t);
       }, Vn = function(t, e) {
@@ -734,7 +734,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         } finally {
           n.Ub--;
         }
-        if (Yu(e, a), Ct() && V(new (W(f.BLOCK_CREATE))(c)), n.B(o), n.Qc = r, e.rendered) {
+        if (Yu(e, a), vt() && V(new (W(f.BLOCK_CREATE))(c)), n.B(o), n.Qc = r, e.rendered) {
           let g = c;
           setTimeout(() => {
             g.disposed || g.setConnectionTracking(!0);
@@ -786,7 +786,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         } else o.initModel();
         return o;
       }, Yu = function(t, e) {
-        if (Ct()) for (t = Kn(t, e), e = 0; e < t.length; e++) {
+        if (vt()) for (t = Kn(t, e), e = 0; e < t.length; e++) {
           let i = t[e];
           V(new (W(f.VAR_CREATE))(i));
         }
@@ -1033,9 +1033,9 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return Bg = !0, aa(la(t), t, s, e, i);
       }, ra = function(t) {
         var e = t.getSvgRoot(), i = t.workspace.scale, s = t.height * i;
-        return t = t.width * i, e = yi(e), new j(e.y, e.y + s, e.x, e.x + t);
+        return t = t.width * i, e = yi(e), new $(e.y, e.y + s, e.x, e.x + t);
       }, la = function(t) {
-        return t = t.getScaledBBox(), new j(t.top, t.bottom, t.left, t.right);
+        return t = t.getScaledBBox(), new $(t.top, t.bottom, t.left, t.right);
       }, aa = function(t, e, i, s, o) {
         var r = t.left + (t.right - t.left) / 2, a = t.bottom;
         t = t.top, o && (t += o), o = e.getSourceBlock();
@@ -1044,7 +1044,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, ha = function(t, e, i, s, o, r, a, c) {
         n.t().registerPopoverFocusLossHandler(sa);
         var g;
-        return (g = Oi()) == null || g.appendChild(ut), Bt = t, Es = c || null, ut.style.direction = e ? "rtl" : "ltr", t = Le, Dg = t.getRenderer().getClassName(), Pg = t.getTheme().getClassName(), L(ut, Dg), L(ut, Pg), e = Ri(t.getFocusableElement(), k.OWNS), w(t.getFocusableElement(), k.OWNS, e ? [e, ut.id] : ut.id), t.getFocusableElement().classList.add("blocklyShowingDropDownDiv"), i = da(i, s, o, r), a && (Is = n.t().takeEphemeralFocus(ut)), i;
+        return (g = Oi()) == null || g.appendChild(ut), Bt = t, Es = c || null, ut.style.direction = e ? "rtl" : "ltr", t = Le, Dg = t.getRenderer().getClassName(), Pg = t.getTheme().getClassName(), L(ut, Dg), L(ut, Pg), e = Ri(t.getFocusableElement(), N.OWNS), D(t.getFocusableElement(), N.OWNS, e ? [e, ut.id] : ut.id), t.getFocusableElement().classList.add("blocklyShowingDropDownDiv"), i = da(i, s, o, r), a && (Is = n.t().takeEphemeralFocus(ut)), i;
       }, ca = function(t, e, i, s) {
         return t = Mo(t, i.left, i.right, s.width), { initialX: t.divX, initialY: e, finalX: t.divX, finalY: e + 16, arrowX: t.arrowX, arrowY: -9, arrowAtTop: !0, arrowVisible: !0 };
       }, ua = function(t, e, i, s) {
@@ -1060,8 +1060,8 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, je = function() {
         if (Bt) {
           tu && clearTimeout(tu), Es && (Es(), Es = null), Bt = null;
-          var t = Le, e, i = (e = Ri(t.getFocusableElement(), k.OWNS)) != null ? e : "";
-          w(t.getFocusableElement(), k.OWNS, i.replace(ut.id, "")), t.getFocusableElement().classList.remove("blocklyShowingDropDownDiv"), t.markFocused(), Is && (Is(), Is = null), $n();
+          var t = Le, e, i = (e = Ri(t.getFocusableElement(), N.OWNS)) != null ? e : "";
+          D(t.getFocusableElement(), N.OWNS, i.replace(ut.id, "")), t.getFocusableElement().classList.remove("blocklyShowingDropDownDiv"), t.markFocused(), Is && (Is(), Is = null), $n();
         }
       }, da = function(t, e, i, s) {
         t = eu.getPositionMetrics(t, e, i, s), t.arrowVisible ? (e = t.arrowX, i = t.arrowY, s = t.arrowAtTop ? 45 : 225, ms.style.display = "", ms.style.transform = `translate(${e}px, ${i}px) rotate(${s}deg)`, ms.setAttribute("class", "blocklyDropDownArrow")) : ms.style.display = "none", e = Math.floor(t.initialX), i = Math.floor(t.initialY), s = Math.floor(t.finalX);
@@ -1125,7 +1125,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
               a = G.length / z, o = 1;
               for (var g = 0; g < G.length - 1; g++) o < (g + 1.5) / a ? (o++, c[g] = !0) : c[g] = !1;
               c = Ta(G, c, r), a = qn(G, c, r), o = G, g = [];
-              for (let tt = 0; tt < o.length; tt++) g.push(o[tt]), c[tt] !== void 0 && g.push(c[tt] ? `
+              for (let et = 0; et < o.length; et++) g.push(o[et]), c[et] !== void 0 && g.push(c[et] ? `
 ` : " ");
               o = g.join(""), z++;
             } while (a > B);
@@ -1168,7 +1168,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         }
         return null;
       }, fa = function() {
-        document.querySelector(".blocklyTooltipDiv") || (yt = document.createElement("div"), yt.className = "blocklyTooltipDiv", (Oi() || document.body).appendChild(yt));
+        document.querySelector(".blocklyTooltipDiv") || (Lt = document.createElement("div"), Lt.className = "blocklyTooltipDiv", (Oi() || document.body).appendChild(Lt));
       }, Bo = function(t) {
         t.mouseOverWrapper_ = xt(t, "pointerover", null, ed), t.mouseOutWrapper_ = xt(t, "pointerout", null, id), t.addEventListener("pointermove", Ia, !1);
       }, ma = function(t) {
@@ -1197,27 +1197,27 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, Ca = function() {
         no = $t = null, $e();
       }, $e = function() {
-        en && (en = !1, yt && (yt.style.display = "none")), Cs && (clearTimeout(Cs), Cs = 0);
+        en && (en = !1, Lt && (Lt.style.display = "none")), Cs && (clearTimeout(Cs), Cs = 0);
       }, va = function(t, e) {
         $t !== t && ($e(), no = null, $t = t), $t && $t.tooltip && !Vi && (t = t.getFocusableElement().getBoundingClientRect(), Br = $t.RTL ? t.x + t.width : t.x, xr = t.y + t.height, Ra(e));
       }, Sa = function() {
         $e(), Vi = !0;
       }, Ra = function(t) {
-        if (!Vi && (no = $t, yt)) {
+        if (!Vi && (no = $t, Lt)) {
           var e;
-          if ((e = Oi(t)) == null || e.appendChild(yt), yt.textContent = "", yt && $t) if (typeof Pr == "function") Pr(yt, $t);
+          if ((e = Oi(t)) == null || e.appendChild(Lt), Lt.textContent = "", Lt && $t) if (typeof Pr == "function") Pr(Lt, $t);
           else for (t = Vs($t), t = n.xf(t, 50), t = t.split(`
 `), e = 0; e < t.length; e++) {
             var i = document.createElement("div");
-            i.appendChild(document.createTextNode(t[e])), yt.appendChild(i);
+            i.appendChild(document.createTextNode(t[e])), Lt.appendChild(i);
           }
-          t = $t.RTL, yt.style.direction = t ? "rtl" : "ltr", yt.style.display = "block", en = !0, e = document.documentElement.clientWidth, i = document.documentElement.clientHeight;
+          t = $t.RTL, Lt.style.direction = t ? "rtl" : "ltr", Lt.style.display = "block", en = !0, e = document.documentElement.clientWidth, i = document.documentElement.clientHeight;
           var s = Br;
-          s = t ? s - (0 + yt.offsetWidth) : s + 0;
-          var o = xr + 10, r, a = (r = yt) == null ? void 0 : r.parentElement;
-          a && (r = a.getBoundingClientRect(), s -= r.left + window.scrollX, o -= r.top + window.scrollY), o + yt.offsetHeight > i + window.scrollY && (o -= yt.offsetHeight + 20), t ? s = Math.max(5 - window.scrollX, s) : s + yt.offsetWidth > e + window.scrollX - 10 && (s = e - yt.offsetWidth - 10);
+          s = t ? s - (0 + Lt.offsetWidth) : s + 0;
+          var o = xr + 10, r, a = (r = Lt) == null ? void 0 : r.parentElement;
+          a && (r = a.getBoundingClientRect(), s -= r.left + window.scrollX, o -= r.top + window.scrollY), o + Lt.offsetHeight > i + window.scrollY && (o -= Lt.offsetHeight + 20), t ? s = Math.max(5 - window.scrollX, s) : s + Lt.offsetWidth > e + window.scrollX - 10 && (s = e - Lt.offsetWidth - 10);
           var { x: c, y: g } = { x: s, y: o };
-          yt.style.left = c + "px", yt.style.top = g + "px";
+          Lt.style.left = c + "px", Lt.style.top = g + "px";
         }
       }, os = function(t) {
         t = `${t}`.toLowerCase().trim();
@@ -1301,25 +1301,25 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         vs && (vs(!1), vs = null), rs();
       }, ya = function() {
         var t = Oi() || document.body, e = document.querySelector("div.blocklyWidgetDiv");
-        e ? kt = e : (kt = document.createElement("div"), kt.id = Ht(), kt.className = "blocklyWidgetDiv", kt.tabIndex = -1), H(kt, "keydown", null, bo), t.appendChild(kt);
+        e ? Nt = e : (Nt = document.createElement("div"), Nt.id = Ht(), Nt.className = "blocklyWidgetDiv", Nt.tabIndex = -1), H(Nt, "keydown", null, bo), t.appendChild(Nt);
       }, er = function(t, e, i, s, o = !0) {
-        if (rs(), se = t, Gr = i, i = kt) {
+        if (rs(), se = t, Gr = i, i = Nt) {
           Me = s ?? Le;
-          var r = Ri(Me.getFocusableElement(), k.OWNS);
-          w(Me.getFocusableElement(), k.OWNS, r ? [r, i.id] : i.id), Me.getFocusableElement().classList.add("blocklyShowingWidgetDiv");
+          var r = Ri(Me.getFocusableElement(), N.OWNS);
+          D(Me.getFocusableElement(), N.OWNS, r ? [r, i.id] : i.id), Me.getFocusableElement().classList.add("blocklyShowingWidgetDiv");
           var a;
           (a = Oi()) == null || a.appendChild(i), i.style.direction = e ? "rtl" : "ltr", i.style.display = "block", !s && t instanceof ht && t.getSourceBlock(), ro = Me.getRenderer().getClassName(), lo = Me.getTheme().getClassName(), ro && L(i, ro), lo && L(i, lo), o && (vs = n.t().takeEphemeralFocus(i)), n.t().registerPopoverFocusLossHandler(Oa);
         }
       }, rs = function() {
         if (se) {
           se = null;
-          var t = kt;
+          var t = Nt;
           if (t) {
             n.t().unregisterPopoverFocusLossHandler(Oa), t.style.display = "none", t.style.left = "", t.style.top = "", Gr && (Gr(), Gr = null), t.textContent = "", ro && (ot(t, ro), ro = ""), lo && (ot(t, lo), lo = "");
             var e;
-            if ((e = Me) == null || e.markFocused(), vs && (vs(), vs = null), Me && kt) {
+            if ((e = Me) == null || e.markFocused(), vs && (vs(), vs = null), Me && Nt) {
               var i;
-              t = (i = Ri(Me.getFocusableElement(), k.OWNS)) != null ? i : "", w(Me.getFocusableElement(), k.OWNS, t.replace(kt.id, "")), Me.getFocusableElement().classList.remove("blocklyShowingWidgetDiv");
+              t = (i = Ri(Me.getFocusableElement(), N.OWNS)) != null ? i : "", D(Me.getFocusableElement(), N.OWNS, t.replace(Nt.id, "")), Me.getFocusableElement().classList.remove("blocklyShowingWidgetDiv");
             }
           }
         }
@@ -1335,9 +1335,9 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         }
         e && rs();
       }, La = function(t, e, i) {
-        if (kt) {
-          var s = kt.parentElement;
-          s && (s = s.getBoundingClientRect(), t -= s.left + window.scrollX, e -= s.top + window.scrollY), kt.style.left = t + "px", kt.style.top = e + "px", kt.style.height = i + "px";
+        if (Nt) {
+          var s = Nt.parentElement;
+          s && (s = s.getBoundingClientRect(), t -= s.left + window.scrollX, e -= s.top + window.scrollY), Nt.style.left = t + "px", Nt.style.top = e + "px", Nt.style.height = i + "px";
         }
       }, ka = function(t, e, i, s) {
         var o = e.bottom + i.height >= t.bottom ? e.top - i.height : e.bottom;
@@ -1355,7 +1355,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         } else Uo();
       }, sd = function(t, e, i, s) {
         var o = new vc();
-        o.setRole(J.MENU);
+        o.setRole(q.MENU);
         for (let r = 0; r < t.length; r++) {
           let a = t[r];
           if (a.separator) {
@@ -1363,7 +1363,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
             continue;
           }
           let c = new yr(rd(a));
-          c.setRightToLeft(e), c.setRole(J.MENUITEM), o.addChild(c), c.setEnabled(a.enabled), a.enabled && c.onAction(function(g, v) {
+          c.setRightToLeft(e), c.setRole(q.MENUITEM), o.addChild(c), c.setEnabled(a.enabled), a.enabled && c.onAction(function(g, v) {
             Uo(), requestAnimationFrame(() => {
               setTimeout(() => {
                 a.callback(a.scope, i, v, s);
@@ -1374,8 +1374,8 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return o;
       }, od = function(t, e, i) {
         var s = wl();
-        i = new j(i.y + s.top, i.y + s.top, i.x + s.left, i.x + s.left);
-        var o = kt;
+        i = new $(i.y + s.top, i.y + s.top, i.x + s.left, i.x + s.left);
+        var o = Nt;
         if (!o) throw Error("Attempting to create a context menu when widget div is null");
         o = t.render(o), L(o, "blocklyContextMenu"), H(o, "contextmenu", null, nd), t.focus(), o = t.getSize(), e && (i.left += o.width, i.right += o.width, s.left += o.width, s.right += o.width), ka(s, i, o, e), t.focus();
       }, nd = function(t) {
@@ -1396,7 +1396,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           } finally {
             n.Ub--;
           }
-          return Ct() && !i.isShadow() && V(new (W(f.BLOCK_CREATE))(i)), n.t().focusNode(i), i;
+          return vt() && !i.isShadow() && V(new (W(f.BLOCK_CREATE))(i)), n.t().focusNode(i), i;
         };
       }, rd = function(t) {
         var e = t.text;
@@ -1490,7 +1490,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
             if (g === "block" || g === "shadow" && !n.Qc) {
               let B = as(v, e);
               s.push(B.id);
-              let G, z = parseInt((G = v.getAttribute("x")) != null ? G : "10", 10), tt, Jt = parseInt((tt = v.getAttribute("y")) != null ? tt : "10", 10);
+              let G, z = parseInt((G = v.getAttribute("x")) != null ? G : "10", 10), et, Jt = parseInt((et = v.getAttribute("y")) != null ? et : "10", 10);
               isNaN(z) || isNaN(Jt) || B.moveBy(e.RTL ? i - z : z, Jt, ["create"]), r = !1;
             } else {
               if (g === "shadow") throw TypeError("Shadow block cannot be a top-level block.");
@@ -1518,7 +1518,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         var c;
         e = parseInt((c = t.getAttribute("w")) != null ? c : "", 10);
         var g;
-        return c = parseInt((g = t.getAttribute("h")) != null ? g : "", 10), isNaN(e) || isNaN(c) || i.setSize(new $(e, c)), t.getAttribute("collapsed") === "true" && i.setCollapsed(!0), t.getAttribute("editable") === "false" && i.setEditable(!1), t.getAttribute("movable") === "false" && i.setMovable(!1), t.getAttribute("deletable") === "false" && i.setDeletable(!1), i;
+        return c = parseInt((g = t.getAttribute("h")) != null ? g : "", 10), isNaN(e) || isNaN(c) || i.setSize(new J(e, c)), t.getAttribute("collapsed") === "true" && i.setCollapsed(!0), t.getAttribute("editable") === "false" && i.setEditable(!1), t.getAttribute("movable") === "false" && i.setMovable(!1), t.getAttribute("deletable") === "false" && i.setDeletable(!1), i;
       }, n.eh = function(t, e) {
         return t = as(t, e), e.rendered && ki(), t;
       }, as = function(t, e) {
@@ -1541,7 +1541,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         } finally {
           n.Ub--;
         }
-        if (Ct()) {
+        if (vt()) {
           for (t = Kn(e, i), e = 0; e < t.length; e++) i = t[e], V(new (W(f.VAR_CREATE))(i));
           V(new (W(f.BLOCK_CREATE))(s));
         }
@@ -1555,11 +1555,11 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         }
       }, ld = function(t, e) {
         for (let i = 0; i < t.length; i++) {
-          let s = t[i], o = s.textContent, r = s.getAttribute("pinned") === "true", a, c = parseInt((a = s.getAttribute("w")) != null ? a : "50", 10), g, v = parseInt((g = s.getAttribute("h")) != null ? g : "50", 10), B, G = parseInt((B = s.getAttribute("x")) != null ? B : "", 10), z, tt = parseInt((z = s.getAttribute("y")) != null ? z : "", 10);
+          let s = t[i], o = s.textContent, r = s.getAttribute("pinned") === "true", a, c = parseInt((a = s.getAttribute("w")) != null ? a : "50", 10), g, v = parseInt((g = s.getAttribute("h")) != null ? g : "50", 10), B, G = parseInt((B = s.getAttribute("x")) != null ? B : "", 10), z, et = parseInt((z = s.getAttribute("y")) != null ? z : "", 10);
           e.setCommentText(o);
           let Jt = e.getIcon(Pt.COMMENT);
-          isNaN(c) || isNaN(v) || Jt.setBubbleSize(new $(c, v)), Jt.setBubbleVisible(r), setTimeout(() => {
-            isNaN(G) || isNaN(tt) || (G = e.workspace.RTL ? e.workspace.getWidth() - (G + c) : G, Jt.setBubbleLocation(new A(G, tt))), Jt.setBubbleVisible(r);
+          isNaN(c) || isNaN(v) || Jt.setBubbleSize(new J(c, v)), Jt.setBubbleVisible(r), setTimeout(() => {
+            isNaN(G) || isNaN(et) || (G = e.workspace.RTL ? e.workspace.getWidth() - (G + c) : G, Jt.setBubbleLocation(new A(G, et))), Jt.setBubbleVisible(r);
           }, 1);
         }
       }, Ha = function(t) {
@@ -1577,34 +1577,34 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         var c = [], g = [], v = [], B = [], G = [];
         a = [];
         for (var z = 0; z < t.children.length; z++) {
-          var tt = t.children[z];
-          if (tt.nodeType !== Qe.TEXT_NODE) switch (tt.nodeName.toLowerCase()) {
+          var et = t.children[z];
+          if (et.nodeType !== Qe.TEXT_NODE) switch (et.nodeName.toLowerCase()) {
             case "mutation":
-              c.push(tt);
+              c.push(et);
               break;
             case "comment":
-              g.push(tt);
+              g.push(et);
               break;
             case "data":
-              v.push(tt);
+              v.push(et);
               break;
             case "title":
             case "field":
-              B.push(tt);
+              B.push(et);
               break;
             case "value":
             case "statement":
-              G.push(tt);
+              G.push(et);
               break;
             case "next":
-              a.push(tt);
+              a.push(et);
               break;
             default:
-              console.warn("Ignoring unknown tag: " + tt.nodeName);
+              console.warn("Ignoring unknown tag: " + et.nodeName);
           }
         }
-        for (z = !1, tt = 0; tt < c.length; tt++) {
-          let Ru = c[tt];
+        for (z = !1, et = 0; et < c.length; et++) {
+          let Ru = c[et];
           o.domToMutation && (o.domToMutation(Ru), o.initSvg && (z = !0));
         }
         for (c = z, ld(g, o), g = v, v = 0; v < g.length; v++) o.data = g[v].textContent;
@@ -1728,7 +1728,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return " " + t + e.join("");
       }, Gt = function(t, e) {
         return " M " + t + "," + e + " ";
-      }, vt = function(t, e) {
+      }, St = function(t, e) {
         return " m " + t + "," + e + " ";
       }, qe = function(t, e) {
         return " l " + t + "," + e + " ";
@@ -1736,7 +1736,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return " l" + t.join("");
       }, U = function(t, e) {
         return " " + t + " " + e + " ";
-      }, At = function(t, e, i, s) {
+      }, bt = function(t, e, i, s) {
         return t + " " + i + " " + i + " " + e + s;
       }, hd = function(t, e) {
         var i = null;
@@ -1856,10 +1856,10 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         x.registry.register({ name: Y.DELETE, preconditionFn(t, e) {
           return e = e.focusedNode, (e = !t.isReadOnly() && e != null && ye(e) && e.isDeletable() && !t.isDragging() && !n.t().ephemeralFocusTaken()) || t.getAudioManager().playErrorBeep(), e;
         }, callback(t, e, i, s) {
-          return e.preventDefault(), e = s.focusedNode, e instanceof Nt ? e.checkAndDelete() : ye(e) && e.isDeletable() && (n.B(!0), e.dispose(), n.B(!1), t.getAudioManager().play("delete")), !0;
+          return e.preventDefault(), e = s.focusedNode, e instanceof wt ? e.checkAndDelete() : ye(e) && e.isDeletable() && (n.B(!0), e.dispose(), n.B(!1), t.getAudioManager().play("delete")), !0;
         }, keyCodes: [y.DELETE, y.BACKSPACE], displayText: () => n.C.SHORTCUTS_DELETE });
       }, Go = function(t) {
-        return $s(t) && ye(t) && cs(t) ? t.isCopyable ? t.isCopyable() : t instanceof Nt || t instanceof Ss ? t.isOwnDeletable() && t.isOwnMovable() : t.isDeletable() && t.isMovable() : !1;
+        return $s(t) && ye(t) && cs(t) ? t.isCopyable ? t.isCopyable() : t instanceof wt || t instanceof Ss ? t.isOwnDeletable() && t.isOwnMovable() : t.isDeletable() && t.isMovable() : !1;
       }, Za = function() {
         var t = x.registry.createSerializedKey(y.C, [y.CTRL_CMD]);
         x.registry.register({ name: Y.COPY, preconditionFn(e, i) {
@@ -1874,7 +1874,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         x.registry.register({ name: Y.CUT, preconditionFn(e, i) {
           return i = i.focusedNode, (i = !!i && !e.isReadOnly() && !e.isDragging() && !n.t().ephemeralFocusTaken() && Go(i) && ye(i) && i.isDeletable()) || e.getAudioManager().playErrorBeep(), i;
         }, callback(e, i, s, o) {
-          return s = o.focusedNode, s && Go(s) && ye(s) && s.isDeletable() && $s(s) ? (o = cs(s) ? s.getRelativeToSurfaceXY() : void 0, o = hr(s, o), s instanceof Nt ? (s.checkAndDelete(), i.preventDefault()) : ye(s) && (n.B(!0), s.dispose(), n.B(!1), e.getAudioManager().play("delete"), i.preventDefault()), o && i instanceof KeyboardEvent && ce.show(e, { message: n.C.KEYBOARD_NAV_CUT_HINT.replace("%1", di(Y.PASTE)), duration: 7, id: "cutHint" }), !!o) : !1;
+          return s = o.focusedNode, s && Go(s) && ye(s) && s.isDeletable() && $s(s) ? (o = cs(s) ? s.getRelativeToSurfaceXY() : void 0, o = hr(s, o), s instanceof wt ? (s.checkAndDelete(), i.preventDefault()) : ye(s) && (n.B(!0), s.dispose(), n.B(!1), e.getAudioManager().play("delete"), i.preventDefault()), o && i instanceof KeyboardEvent && ce.show(e, { message: n.C.KEYBOARD_NAV_CUT_HINT.replace("%1", di(Y.PASTE)), duration: 7, id: "cutHint" }), !!o) : !1;
         }, keyCodes: [t], displayText: () => n.C.CUT_SHORTCUT });
       }, th = function() {
         var t = x.registry.createSerializedKey(y.V, [y.CTRL_CMD]);
@@ -1895,7 +1895,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           if (i = (a = e.getNavigator().getSourceBlockFromNode(o)) == null ? void 0 : a.getRelativeToSurfaceXY()) return !!Ze(s, e, i);
           if (a = hn, !a) return !!Ze(s, e);
           var { left: c, top: g, width: v, height: B } = e.getMetricsManager().getViewMetrics(!0);
-          return new j(g, g + B, c, c + v).contains(a.x, a.y) ? !!Ze(s, e) : (a = new A(c + v / 2, g + B / 2), !!Ze(s, e, a));
+          return new $(g, g + B, c, c + v).contains(a.x, a.y) ? !!Ze(s, e) : (a = new A(c + v / 2, g + B / 2), !!Ze(s, e, a));
         }, keyCodes: [t], displayText: () => n.C.PASTE_SHORTCUT });
       }, eh = function() {
         var t = x.registry.createSerializedKey(y.Z, [y.CTRL_CMD]);
@@ -1998,7 +1998,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         }, keyCodes: [t], displayText: () => n.C.SHORTCUTS_EXTENDED_INFORMATION });
       }, ch = function() {
         var t = x.registry.createSerializedKey(y.X, [y.SHIFT]);
-        x.registry.register({ name: Y.DISCONNECT, preconditionFn: (e, i) => (i = i.focusedNode, (i = !e.isDragging() && !e.isReadOnly() && i instanceof Nt && !i.isShadow()) || e.getAudioManager().playErrorBeep(), i), callback: (e, i) => (Tt.setIsActive(!0), e = n.t().getFocusedNode(), e instanceof Nt ? (i = !(i instanceof KeyboardEvent && i.shiftKey), n.B(!0), e.unplug(i), n.B(!1), !0) : !1), keyCodes: [y.X, t], displayText: () => n.C.SHORTCUTS_DISCONNECT });
+        x.registry.register({ name: Y.DISCONNECT, preconditionFn: (e, i) => (i = i.focusedNode, (i = !e.isDragging() && !e.isReadOnly() && i instanceof wt && !i.isShadow()) || e.getAudioManager().playErrorBeep(), i), callback: (e, i) => (Tt.setIsActive(!0), e = n.t().getFocusedNode(), e instanceof wt ? (i = !(i instanceof KeyboardEvent && i.shiftKey), n.B(!0), e.unplug(i), n.B(!1), !0) : !1), keyCodes: [y.X, t], displayText: () => n.C.SHORTCUTS_DISCONNECT });
       }, uh = function() {
         var t = (i, s = n.t().getFocusedNode()) => {
           var o = i.getNavigator();
@@ -2054,7 +2054,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           return !1;
         }, keyCodes: [y.ENTER, y.SPACE], allowCollision: !0, displayText: () => n.C.SHORTCUTS_PERFORM_ACTION });
       }, ph = function() {
-        x.registry.register({ name: Y.DUPLICATE, preconditionFn: (t, e) => ({ focusedNode: e } = e, (e = !t.isDragging() && !t.isReadOnly() && !t.isFlyout && (e instanceof Nt ? e.isDuplicatable() : !0)) || t.getAudioManager().playErrorBeep(), e), callback: (t, e, i, s) => (Tt.setIsActive(!0), e = $s(s.focusedNode) && s.focusedNode, e && (e = e.toCopyData()) ? !!Ze(e, t) : !1), keyCodes: [y.D], allowCollision: !0, displayText: () => n.C.SHORTCUTS_DUPLICATE });
+        x.registry.register({ name: Y.DUPLICATE, preconditionFn: (t, e) => ({ focusedNode: e } = e, (e = !t.isDragging() && !t.isReadOnly() && !t.isFlyout && (e instanceof wt ? e.isDuplicatable() : !0)) || t.getAudioManager().playErrorBeep(), e), callback: (t, e, i, s) => (Tt.setIsActive(!0), e = $s(s.focusedNode) && s.focusedNode, e && (e = e.toCopyData()) ? !!Ze(e, t) : !1), keyCodes: [y.D], allowCollision: !0, displayText: () => n.C.SHORTCUTS_DUPLICATE });
       }, _h = function() {
         x.registry.register({ name: Y.CLEANUP, preconditionFn: (t) => !t.isDragging() && !t.isReadOnly() && !t.isFlyout, callback: (t) => (Tt.setIsActive(!0), t.cleanUp(), !0), keyCodes: [y.C], allowCollision: !0, displayText: () => n.C.SHORTCUTS_CLEANUP });
       }, Th = function() {
@@ -2138,7 +2138,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return t && typeof t.getChildToolboxItems == "function" && typeof t.isExpanded == "function" && typeof t.toggleExpanded == "function" && ss(t) && t.isCollapsible();
       }, pi = function(t) {
         var e = t.options.toolboxPosition;
-        return t.options.RTL && e !== M.TOP && e !== M.BOTTOM ? e === M.LEFT ? M.RIGHT : M.LEFT : e;
+        return t.options.RTL && e !== P.TOP && e !== P.BOTTOM ? e === P.LEFT ? P.RIGHT : P.LEFT : e;
       }, Lh = function(t, e) {
         X(R.ICON, t.toString(), e);
       }, Mi = function(t) {
@@ -2170,7 +2170,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         return !1;
       }, n.lj = function(t) {
         var e = this.getSourceBlock();
-        if (!e) throw new Lt();
+        if (!e) throw new kt();
         t = t.trim();
         var i = n.ij(t, e);
         Mi(e) && !e.isInsertionMarker() && e.getProcedureModel().setName(i);
@@ -2185,7 +2185,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           for (let [r, a] of s) i.push({ kind: "block", type: o, gap: 16, extraState: { name: r, params: a } });
         }
         var i = [];
-        return bt.procedures_defnoreturn && i.push({ kind: "block", type: "procedures_defnoreturn", gap: 16, fields: { NAME: n.C.PROCEDURES_DEFNORETURN_PROCEDURE } }), bt.procedures_defreturn && i.push({ kind: "block", type: "procedures_defreturn", gap: 16, fields: { NAME: n.C.PROCEDURES_DEFRETURN_PROCEDURE } }), bt.procedures_ifreturn && i.push({ kind: "block", type: "procedures_ifreturn", gap: 16 }), i.length && (i[i.length - 1].gap = 24), t = dr(t), e(t[0], "procedures_callnoreturn"), e(t[1], "procedures_callreturn"), i;
+        return Ot.procedures_defnoreturn && i.push({ kind: "block", type: "procedures_defnoreturn", gap: 16, fields: { NAME: n.C.PROCEDURES_DEFNORETURN_PROCEDURE } }), Ot.procedures_defreturn && i.push({ kind: "block", type: "procedures_defreturn", gap: 16, fields: { NAME: n.C.PROCEDURES_DEFRETURN_PROCEDURE } }), Ot.procedures_ifreturn && i.push({ kind: "block", type: "procedures_ifreturn", gap: 16 }), i.length && (i[i.length - 1].gap = 24), t = dr(t), e(t[0], "procedures_callnoreturn"), e(t[1], "procedures_callreturn"), i;
       }, wh = function(t) {
         var e = [], i = t.getBlocksByType("procedures_mutatorarg", !1);
         for (let r = 0, a; a = i[r]; r++) e.push(a.getFieldValue("NAME"));
@@ -2226,7 +2226,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, Fh = function(t) {
         Us(t.getTargetWorkspace(), void 0, "Colour");
       }, pr = function(t) {
-        return bt.variables_set_dynamic || bt.variables_get_dynamic || console.warn("There are no dynamic variable blocks, but there is a dynamic variable category."), t.registerButtonCallback("CREATE_VARIABLE_STRING", Bh), t.registerButtonCallback("CREATE_VARIABLE_NUMBER", xh), t.registerButtonCallback("CREATE_VARIABLE_COLOUR", Fh), [{ kind: "button", text: n.C.NEW_STRING_VARIABLE, callbackkey: "CREATE_VARIABLE_STRING" }, { kind: "button", text: n.C.NEW_NUMBER_VARIABLE, callbackkey: "CREATE_VARIABLE_NUMBER" }, {
+        return Ot.variables_set_dynamic || Ot.variables_get_dynamic || console.warn("There are no dynamic variable blocks, but there is a dynamic variable category."), t.registerButtonCallback("CREATE_VARIABLE_STRING", Bh), t.registerButtonCallback("CREATE_VARIABLE_NUMBER", xh), t.registerButtonCallback("CREATE_VARIABLE_COLOUR", Fh), [{ kind: "button", text: n.C.NEW_STRING_VARIABLE, callbackkey: "CREATE_VARIABLE_STRING" }, { kind: "button", text: n.C.NEW_NUMBER_VARIABLE, callbackkey: "CREATE_VARIABLE_NUMBER" }, {
           kind: "button",
           text: n.C.NEW_COLOUR_VARIABLE,
           callbackkey: "CREATE_VARIABLE_COLOUR"
@@ -2267,35 +2267,35 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         Up || (H(document, "scroll", null, function() {
           var t = qi();
           for (let e = 0, i; i = t[e]; e++) i instanceof zt && i.updateInverseScreenCTM();
-        }), xt(document, "touchend", null, P), xt(document, "touchcancel", null, P), xt(document, "keydown", null, function(t) {
+        }), xt(document, "touchend", null, M), xt(document, "touchcancel", null, M), xt(document, "keydown", null, function(t) {
           t.key === "Tab" && Tt.setIsActive(!0);
         })), Up = !0;
       }, md = function(t, e) {
         e = e.getAudioManager(), e.load([`${t}click.mp3`], "click"), e.load([`${t}disconnect.mp3`], "disconnect"), e.load([`${t}delete.mp3`], "delete"), e.load([`${t}drop.mp3`], "drop");
       }, Gh = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.UNDO;
         }, preconditionFn(t) {
           return t.workspace.getUndoStack().length > 0 ? "enabled" : "disabled";
         }, callback(t) {
           t.workspace.undo();
-        }, scopeType: Z.ScopeType.WORKSPACE, id: "undoWorkspace", weight: 1, associatedKeyboardShortcut: "undo" });
+        }, scopeType: Q.ScopeType.WORKSPACE, id: "undoWorkspace", weight: 1, associatedKeyboardShortcut: "undo" });
       }, Vh = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.REDO;
         }, preconditionFn(t) {
           return t.workspace.getRedoStack().length > 0 ? "enabled" : "disabled";
         }, callback(t) {
           t.workspace.redo();
-        }, scopeType: Z.ScopeType.WORKSPACE, id: "redoWorkspace", weight: 2, associatedKeyboardShortcut: "redo" });
+        }, scopeType: Q.ScopeType.WORKSPACE, id: "redoWorkspace", weight: 2, associatedKeyboardShortcut: "redo" });
       }, Wh = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.CLEAN_UP;
         }, preconditionFn(t) {
           return t.workspace.isMovable() ? t.workspace.getTopBlocks(!1).length > 1 ? "enabled" : "disabled" : "hidden";
         }, callback(t) {
           t.workspace.cleanUp();
-        }, scopeType: Z.ScopeType.WORKSPACE, id: "cleanWorkspace", weight: 3, associatedKeyboardShortcut: "cleanup" });
+        }, scopeType: Q.ScopeType.WORKSPACE, id: "cleanWorkspace", weight: 3, associatedKeyboardShortcut: "cleanup" });
       }, Kh = function(t, e) {
         function i(r) {
           o--, r.setCollapsed(t), o === 0 && n.B(!1);
@@ -2307,7 +2307,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           for (; a; ) o++, setTimeout(i.bind(null, a), s), a = a.getNextBlock(), s += 10;
         }
       }, Yh = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.COLLAPSE_ALL;
         }, preconditionFn(t) {
           if (t.workspace.options.collapse) {
@@ -2324,9 +2324,9 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           return "hidden";
         }, callback(t) {
           Kh(!0, t.workspace.getTopBlocks(!0));
-        }, scopeType: Z.ScopeType.WORKSPACE, id: "collapseWorkspace", weight: 4 });
+        }, scopeType: Q.ScopeType.WORKSPACE, id: "collapseWorkspace", weight: 4 });
       }, Xh = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.EXPAND_ALL;
         }, preconditionFn(t) {
           if (t.workspace.options.collapse) {
@@ -2343,7 +2343,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           return "hidden";
         }, callback(t) {
           Kh(!1, t.workspace.getTopBlocks(!0));
-        }, scopeType: Z.ScopeType.WORKSPACE, id: "expandWorkspace", weight: 5 });
+        }, scopeType: Q.ScopeType.WORKSPACE, id: "expandWorkspace", weight: 5 });
       }, zh = function(t, e) {
         if (t.isDeletable()) Array.prototype.push.apply(e, t.getDescendants(!1));
         else {
@@ -2360,7 +2360,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         var i = t.shift();
         i && (i.isDeadOrDying() ? Wo(t, e) : (i.dispose(!1, !0), setTimeout(Wo, 10, t, e))), n.B(!1);
       }, jh = function() {
-        Z.registry.register({
+        Q.registry.register({
           displayText(t) {
             return t.workspace ? (t = _r(t.workspace).length, t === 1 ? n.C.DELETE_BLOCK : n.C.DELETE_X_BLOCKS.replace("%1", `${t}`)) : "";
           },
@@ -2376,12 +2376,12 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
               });
             }
           },
-          scopeType: Z.ScopeType.WORKSPACE,
+          scopeType: Q.ScopeType.WORKSPACE,
           id: "workspaceDelete",
           weight: 6
         });
       }, $h = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.DUPLICATE_BLOCK;
         }, preconditionFn(t) {
           return t = t.block, !t.isInFlyout && t.isDeletable() && t.isMovable() ? t.isDuplicatable() ? "enabled" : "disabled" : "hidden";
@@ -2390,9 +2390,9 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
             var e = t.block.toCopyData();
             e && Ze(e, t.block.workspace);
           }
-        }, scopeType: Z.ScopeType.BLOCK, id: "blockDuplicate", weight: 1, associatedKeyboardShortcut: "duplicate" });
+        }, scopeType: Q.ScopeType.BLOCK, id: "blockDuplicate", weight: 1, associatedKeyboardShortcut: "duplicate" });
       }, Jh = function() {
-        Z.registry.register({
+        Q.registry.register({
           displayText(t) {
             return t.block.hasIcon(ri.TYPE) ? n.C.REMOVE_COMMENT : n.C.ADD_COMMENT;
           },
@@ -2411,12 +2411,12 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           callback(t) {
             (t = t.block) && t.hasIcon(ri.TYPE) ? t.setCommentText(null) : t.setCommentText("");
           },
-          scopeType: Z.ScopeType.BLOCK,
+          scopeType: Q.ScopeType.BLOCK,
           id: "blockComment",
           weight: 2
         });
       }, qh = function() {
-        Z.registry.register({ displayText(t) {
+        Q.registry.register({ displayText(t) {
           return t.block.getInputsInline() ? n.C.EXTERNAL_INPUTS : n.C.INLINE_INPUTS;
         }, preconditionFn(t) {
           if (t = t.block, !t.isInFlyout && t.isMovable() && !t.isCollapsed()) {
@@ -2425,17 +2425,17 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           return "hidden";
         }, callback(t) {
           t.block.setInputsInline(!t.block.getInputsInline());
-        }, scopeType: Z.ScopeType.BLOCK, id: "blockInline", weight: 3 });
+        }, scopeType: Q.ScopeType.BLOCK, id: "blockInline", weight: 3 });
       }, Zh = function() {
-        Z.registry.register({ displayText(t) {
+        Q.registry.register({ displayText(t) {
           return t.block.isCollapsed() ? n.C.EXPAND_BLOCK : n.C.COLLAPSE_BLOCK;
         }, preconditionFn(t) {
           return t = t.block, !t.isInFlyout && t.isMovable() && t.workspace.options.collapse ? "enabled" : "hidden";
         }, callback(t) {
           t.block.setCollapsed(!t.block.isCollapsed());
-        }, scopeType: Z.ScopeType.BLOCK, id: "blockCollapseExpand", weight: 4 });
+        }, scopeType: Q.ScopeType.BLOCK, id: "blockCollapseExpand", weight: 4 });
       }, Qh = function() {
-        Z.registry.register({ displayText(t) {
+        Q.registry.register({ displayText(t) {
           return t.block.hasDisabledReason("MANUALLY_DISABLED") ? n.C.ENABLE_BLOCK : n.C.DISABLE_BLOCK;
         }, preconditionFn(t) {
           if (t = t.block, !t.isInFlyout && t.workspace.options.disable && t.isEditable()) {
@@ -2447,26 +2447,26 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           t = t.block;
           var e = n.gd;
           e || n.B(!0), t.setDisabledReason(!t.hasDisabledReason("MANUALLY_DISABLED"), "MANUALLY_DISABLED"), n.B(e);
-        }, scopeType: Z.ScopeType.BLOCK, id: "blockDisable", weight: 5 });
+        }, scopeType: Q.ScopeType.BLOCK, id: "blockDisable", weight: 5 });
       }, tc = function() {
-        Z.registry.register({ displayText(t) {
+        Q.registry.register({ displayText(t) {
           var e = t.block;
           return t = e.getDescendants(!1).length, (e = e.getNextBlock()) && (t -= e.getDescendants(!1).length), t === 1 ? n.C.DELETE_BLOCK : n.C.DELETE_X_BLOCKS.replace("%1", `${t}`);
         }, preconditionFn(t) {
           return !t.block.isInFlyout && t.block.isDeletable() ? "enabled" : "hidden";
         }, callback(t) {
           t.block && (n.t().focusNode(t.block), t.block.checkAndDelete());
-        }, scopeType: Z.ScopeType.BLOCK, id: "blockDelete", weight: 6, associatedKeyboardShortcut: "delete" });
+        }, scopeType: Q.ScopeType.BLOCK, id: "blockDelete", weight: 6, associatedKeyboardShortcut: "delete" });
       }, ec = function() {
-        Z.registry.register({ displayText() {
+        Q.registry.register({ displayText() {
           return n.C.HELP;
         }, preconditionFn(t) {
           return t = t.block, (typeof t.helpUrl == "function" ? t.helpUrl() : t.helpUrl) ? "enabled" : "hidden";
         }, callback(t) {
           t.block.showHelp();
-        }, scopeType: Z.ScopeType.BLOCK, id: "blockHelp", weight: 7 });
+        }, scopeType: Q.ScopeType.BLOCK, id: "blockHelp", weight: 7 });
       }, ic = function() {
-        Z.registry.register({ displayText: () => n.C.REMOVE_COMMENT, preconditionFn(t) {
+        Q.registry.register({ displayText: () => n.C.REMOVE_COMMENT, preconditionFn(t) {
           var e;
           return (e = t.comment) != null && e.isDeletable() ? "enabled" : "hidden";
         }, callback(t) {
@@ -2475,9 +2475,9 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           (e = t.comment) == null || e.dispose(), n.B(!1);
           var i;
           (i = t.comment) == null || i.workspace.getAudioManager().play("delete");
-        }, scopeType: Z.ScopeType.COMMENT, id: "commentDelete", weight: 6, associatedKeyboardShortcut: "delete" });
+        }, scopeType: Q.ScopeType.COMMENT, id: "commentDelete", weight: 6, associatedKeyboardShortcut: "delete" });
       }, sc = function() {
-        Z.registry.register({ displayText: () => n.C.DUPLICATE_COMMENT, preconditionFn(t) {
+        Q.registry.register({ displayText: () => n.C.DUPLICATE_COMMENT, preconditionFn(t) {
           var e;
           return (e = t.comment) != null && e.isMovable() ? "enabled" : "hidden";
         }, callback(t) {
@@ -2485,14 +2485,14 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
             var e = t.comment.toCopyData();
             e && Ze(e, t.comment.workspace);
           }
-        }, scopeType: Z.ScopeType.COMMENT, id: "commentDuplicate", weight: 1, associatedKeyboardShortcut: "duplicate" });
+        }, scopeType: Q.ScopeType.COMMENT, id: "commentDuplicate", weight: 1, associatedKeyboardShortcut: "duplicate" });
       }, oc = function() {
-        Z.registry.register({ displayText: () => n.C.ADD_COMMENT, preconditionFn: (t) => {
+        Q.registry.register({ displayText: () => n.C.ADD_COMMENT, preconditionFn: (t) => {
           var e;
           return (e = t.workspace) != null && e.isMutator ? "hidden" : "enabled";
         }, callback: (t, e, i, s) => {
           (t = t.workspace) && (n.B(!0), e = new Ss(t), e.moveTo(ts(t, new A(s.x, s.y))), n.t().focusNode(e), n.B(!1));
-        }, scopeType: Z.ScopeType.WORKSPACE, id: "commentCreate", weight: 8 });
+        }, scopeType: Q.ScopeType.WORKSPACE, id: "commentCreate", weight: 8 });
       }, nc = function() {
         Gh(), Vh(), Wh(), Yh(), Xh(), jh(), $h(), Jh(), qh(), Zh(), Qh(), tc(), ec();
       }, _ = _ || {}, _.scope = {}, _.ASSUME_ES5 = !1, _.ASSUME_ES6 = !1, _.ASSUME_ES2020 = !1, _.ASSUME_NO_NATIVE_MAP = !1, _.ASSUME_NO_NATIVE_SET = !1, _.ISOLATE_POLYFILLS = !1, _.FORCE_POLYFILL_PROMISE = !1, _.FORCE_POLYFILL_PROMISE_WHEN_NO_UNHANDLED_REJECTION = !1, _.INSTRUMENT_ASYNC_CONTEXT = !0, _.objectCreate = _.ASSUME_ES5 || typeof Object.create == "function" ? Object.create : function(t) {
@@ -2816,7 +2816,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       var Id = "ontouchstart" in globalThis || !!(globalThis.document && document.documentElement && "ontouchstart" in document.documentElement) || !(!globalThis.navigator || !globalThis.navigator.maxTouchPoints && !globalThis.navigator.msMaxTouchPoints), Qt = null, us = { mousedown: ["pointerdown"], mouseenter: ["pointerenter"], mouseleave: ["pointerleave"], mousemove: ["pointermove"], mouseout: ["pointerout"], mouseover: ["pointerover"], mouseup: ["pointerup", "pointercancel"], touchend: ["pointerup"], touchcancel: ["pointercancel"] }, Tr = 0, ds = { TOUCH_ENABLED: Id, TOUCH_MAP: us };
       ds.checkTouchIdentifier = De, ds.clearTouchIdentifier = function() {
         Qt = null;
-      }, ds.getTouchIdentifierFromEvent = Mt, ds.longStart = h, ds.longStop = P, ds.shouldHandleEvent = et;
+      }, ds.getTouchIdentifierFromEvent = Ct, ds.longStart = h, ds.longStop = M, ds.shouldHandleEvent = j;
       var lc, Cd, vd, Sd, Er, fr, ac, Rd, Ad, bd;
       (function(t) {
         function e(s) {
@@ -3552,21 +3552,21 @@ input[type=number] {
   column-gap: 8px;
 }
 `, cc = {};
-      cc.inject = Ds, cc.register = Rt;
+      cc.inject = Ds, cc.register = At;
       var f, pt = f || (f = {});
       pt.BLOCK_CREATE = "create", pt.BLOCK_DELETE = "delete", pt.BLOCK_CHANGE = "change", pt.BLOCK_FIELD_INTERMEDIATE_CHANGE = "block_field_intermediate_change", pt.BLOCK_MOVE = "move", pt.VAR_CREATE = "var_create", pt.VAR_DELETE = "var_delete", pt.VAR_RENAME = "var_rename", pt.VAR_TYPE_CHANGE = "var_type_change", pt.UI = "ui", pt.BLOCK_DRAG = "drag", pt.SELECTED = "selected", pt.CLICK = "click", pt.MARKER_MOVE = "marker_move", pt.BUBBLE_OPEN = "bubble_open", pt.TRASHCAN_OPEN = "trashcan_open", pt.TOOLBOX_ITEM_SELECT = "toolbox_item_select", pt.THEME_CHANGE = "theme_change", pt.VIEWPORT_CHANGE = "viewport_change", pt.COMMENT_CREATE = "comment_create", pt.COMMENT_DELETE = "comment_delete", pt.COMMENT_CHANGE = "comment_change", pt.COMMENT_MOVE = "comment_move", pt.COMMENT_RESIZE = "comment_resize", pt.COMMENT_DRAG = "comment_drag", pt.COMMENT_COLLAPSE = "comment_collapse", pt.FINISHED_LOADING = "finished_loading";
-      var Dd = [f.BLOCK_CREATE, f.BLOCK_MOVE, f.COMMENT_CREATE, f.COMMENT_MOVE], bt = /* @__PURE__ */ Object.create(null), ae, uc = ae || (ae = {});
+      var Dd = [f.BLOCK_CREATE, f.BLOCK_MOVE, f.COMMENT_CREATE, f.COMMENT_MOVE], Ot = /* @__PURE__ */ Object.create(null), ae, uc = ae || (ae = {});
       uc.ASSERTIVE = "assertive", uc.OFF = "off", uc.POLITE = "polite";
-      var Xo = ae.OFF, dc = [], J, St = J || (J = {});
-      St.APPLICATION = "application", St.BUTTON = "button", St.CHECKBOX = "checkbox", St.DIALOG = "dialog", St.FIGURE = "figure", St.GENERIC = "generic", St.GRID = "grid", St.GRIDCELL = "gridcell", St.GROUP = "group", St.LIST = "list", St.LISTBOX = "listbox", St.LISTITEM = "listitem", St.MENU = "menu", St.MENUITEM = "menuitem", St.NONE = "none", St.OPTION = "option", St.REGION = "region", St.ROW = "row", St.SEPARATOR = "separator", St.STATUS = "status", St.TEXTBOX = "textbox", St.TREE = "tree", St.TREEITEM = "treeitem";
-      var Pd = J.STATUS, k, Vt = k || (k = {});
+      var Xo = ae.OFF, dc = [], q, Rt = q || (q = {});
+      Rt.APPLICATION = "application", Rt.BUTTON = "button", Rt.CHECKBOX = "checkbox", Rt.DIALOG = "dialog", Rt.FIGURE = "figure", Rt.GENERIC = "generic", Rt.GRID = "grid", Rt.GRIDCELL = "gridcell", Rt.GROUP = "group", Rt.LIST = "list", Rt.LISTBOX = "listbox", Rt.LISTITEM = "listitem", Rt.MENU = "menu", Rt.MENUITEM = "menuitem", Rt.NONE = "none", Rt.OPTION = "option", Rt.REGION = "region", Rt.ROW = "row", Rt.SEPARATOR = "separator", Rt.STATUS = "status", Rt.TEXTBOX = "textbox", Rt.TREE = "tree", Rt.TREEITEM = "treeitem";
+      var Pd = q.STATUS, N, Vt = N || (N = {});
       Vt.ACTIVEDESCENDANT = "activedescendant", Vt.ATOMIC = "atomic", Vt.CHECKED = "checked", Vt.CONTROLS = "controls", Vt.DISABLED = "disabled", Vt.EXPANDED = "expanded", Vt.HASPOPUP = "haspopup", Vt.HIDDEN = "hidden", Vt.INVALID = "invalid", Vt.LABEL = "label", Vt.LABELLEDBY = "labelledby", Vt.LEVEL = "level", Vt.LIVE = "live", Vt.ROLEDESCRIPTION = "roledescription", Vt.SELECTED = "selected", Vt.VALUEMAX = "valuemax", Vt.VALUEMIN = "valuemin", Vt.OWNS = "owns";
       var _t, qs = _t || (_t = {});
       qs[qs.TERSE = 0] = "TERSE", qs[qs.STANDARD = 1] = "STANDARD", qs[qs.LOQUACIOUS = 2] = "LOQUACIOUS";
       var zo = null, Bd, gc = !1, Ce = {};
-      Ce.LiveRegionAssertiveness = ae, Ce.Role = J, Ce.State = k, Ce.Verbosity = _t, Ce.announceDynamicAriaState = Te, Ce.clearState = Ke, Ce.getRole = function(t) {
-        return (t = t.getAttribute("role")) && Object.values(J).includes(t) ? t : null;
-      }, Ce.getState = Ri, Ce.initializeGlobalAriaLiveRegion = $i, Ce.removeRole = Co, Ce.setRole = q, Ce.setState = w;
+      Ce.LiveRegionAssertiveness = ae, Ce.Role = q, Ce.State = N, Ce.Verbosity = _t, Ce.announceDynamicAriaState = Te, Ce.clearState = Ke, Ce.getRole = function(t) {
+        return (t = t.getAttribute("role")) && Object.values(q).includes(t) ? t : null;
+      }, Ce.getState = Ri, Ce.initializeGlobalAriaLiveRegion = $i, Ce.removeRole = Co, Ce.setRole = Z, Ce.setState = D;
       var E = class {
         constructor(t) {
           this.tagName = t;
@@ -3581,7 +3581,7 @@ input[type=number] {
       var Be = null, pc = 0, jo = null, Wt = { HTML_NS: "http://www.w3.org/1999/xhtml" };
       Wt.NodeType = Qe, Wt.SVG_NS = "http://www.w3.org/2000/svg", Wt.XLINK_NS = "http://www.w3.org/1999/xlink", Wt.addClass = L, Wt.createSvgElement = S, Wt.getFastTextWidth = function(t, e, i, s) {
         return O(t, e + "pt", i, s);
-      }, Wt.getFastTextWidthWithSizeString = O, Wt.getTextWidth = I, Wt.hasClass = jt, Wt.insertAfter = Ji, Wt.measureFontMetrics = dt, Wt.removeClass = ot, Wt.removeClasses = Ps, Wt.removeNode = lt, Wt.setCssTransform = l, Wt.startTextWidthCache = u, Wt.stopTextWidthCache = T;
+      }, Wt.getFastTextWidthWithSizeString = O, Wt.getTextWidth = C, Wt.hasClass = jt, Wt.insertAfter = Ji, Wt.measureFontMetrics = dt, Wt.removeClass = ot, Wt.removeClasses = Ps, Wt.removeNode = lt, Wt.setCssTransform = l, Wt.startTextWidthCache = u, Wt.stopTextWidthCache = T;
       var Kt = class {
         static findFocusedNode(t) {
           var e = t.getRootFocusableNode();
@@ -3873,7 +3873,7 @@ input[type=number] {
       Tc.genUid = ui, Tc.getNextUniqueId = Ht;
       var ti, Ec;
       n.gd = "", n.Qc = !0, n.Ub = 0, ti = [], Ec = { FIRE_QUEUE: ti, enqueueEvent: Rl, fireNow: Sn, fireInternal: function(t) {
-        if (Ct()) {
+        if (vt()) {
           if (!ti.length) try {
             requestAnimationFrame(() => {
               setTimeout(Sn, 0);
@@ -3917,15 +3917,15 @@ input[type=number] {
         static sum(t, e) {
           return new A(t.x + e.x, t.y + e.y);
         }
-      }, j = class {
+      }, $ = class {
         constructor(t, e, i, s) {
           this.top = t, this.bottom = e, this.left = i, this.right = s;
         }
         static from(t) {
-          return new j(t.y, t.y + t.height, t.x, t.x + t.width);
+          return new $(t.y, t.y + t.height, t.x, t.x + t.width);
         }
         clone() {
-          return new j(this.top, this.bottom, this.left, this.right);
+          return new $(this.top, this.bottom, this.left, this.right);
         }
         getHeight() {
           return this.bottom - this.top;
@@ -3947,9 +3947,9 @@ input[type=number] {
         }
         static createFromPoint(t, e, i) {
           var s = t.x;
-          return t = t.y, new j(t, t + i, s, s + e);
+          return t = t.y, new $(t, t + i, s, s + e);
         }
-      }, $ = class {
+      }, J = class {
         constructor(t, e) {
           this.width = t, this.height = e;
         }
@@ -3957,27 +3957,27 @@ input[type=number] {
           return t === e ? !0 : t && e ? t.width === e.width && t.height === e.height : !1;
         }
         static max(t, e) {
-          return new $(Math.max(t.width, e.width), Math.max(t.height, e.height));
+          return new J(Math.max(t.width, e.width), Math.max(t.height, e.height));
         }
         static min(t, e) {
-          return new $(Math.min(t.width, e.width), Math.min(t.height, e.height));
+          return new J(Math.min(t.width, e.width), Math.min(t.height, e.height));
         }
       }, Kd = { getSizeInternal: function(t) {
-        if (Xe(t, "display") !== "none") return new $(t.offsetWidth, t.offsetHeight);
+        if (Xe(t, "display") !== "none") return new J(t.offsetWidth, t.offsetHeight);
         var e = t.style, i = e.display, s = e.visibility, o = e.position;
         e.visibility = "hidden", e.position = "absolute", e.display = "inline";
         var r = t.offsetWidth;
-        return t = t.offsetHeight, e.display = i, e.position = o, e.visibility = s, new $(r, t);
+        return t = t.offsetHeight, e.display = i, e.position = o, e.visibility = s, new J(r, t);
       } }, xi = { TEST_ONLY: Kd };
       xi.getBorderBox = Ll, xi.getComputedStyle = Xe, xi.getContainerOffsetToScrollInto = Nl, xi.getPageOffset = yi, xi.getSize = Oo, xi.getViewportPageOffset = yl, xi.scrollIntoContainerView = kl;
       var Yd = /translate\(\s*([-+\d.e]+)([ ,]\s*([-+\d.e]+)\s*)?/, Xd = /transform:\s*translate(?:3d)?\(\s*([-+\d.e]+)\s*px([ ,]\s*([-+\d.e]+)\s*px)?/, gs = { TEST_ONLY: { XY_REGEX: Yd, XY_STYLE_REGEX: Xd } };
       gs.getDocumentScroll = Ml, gs.getInjectionDivXY = An, gs.getRelativeXY = yo, gs.getViewportBBox = wl, gs.screenToWsCoordinates = ts, gs.wsToScreenCoordinates = Li;
-      var Ot = class {
+      var yt = class {
         constructor(t, e, i, s, o) {
-          this.workspace = t, this.horizontal = e, this.oldHostMetrics = null, this.ratio = 1, this.origin = new A(0, 0), this.startDragHandle = this.handlePosition = this.handleLength = this.scrollbarLength = this.startDragMouse = 0, this.containerVisible = this.isHandleVisible = !0, this.position = new A(0, 0), this.onMouseMoveWrapper_ = this.onMouseUpWrapper_ = null, this.pair = i || !1, this.margin = o !== void 0 ? o : Ot.DEFAULT_SCROLLBAR_MARGIN, t = "blocklyScrollbar" + (this.horizontal ? "Horizontal" : "Vertical"), s && (t += " " + s), this.outerSvg = S(E.SVG, { class: t }), s = S(E.G, {}, this.outerSvg), this.svgBackground = S(E.RECT, { class: "blocklyScrollbarBackground" }, s), t = Math.floor((Ot.scrollbarThickness - 5) / 2), this.svgHandle = S(E.RECT, { class: "blocklyScrollbarHandle", rx: t, ry: t }, s), this.workspace.getThemeManager().subscribe(this.svgHandle, "scrollbarColour", "fill"), this.workspace.getThemeManager().subscribe(this.svgHandle, "scrollbarOpacity", "fill-opacity"), Ji(this.outerSvg, this.workspace.getParentSvg()), this.setInitialThickness(), e ? (this.lengthAttribute_ = "width", this.positionAttribute_ = "x") : (this.lengthAttribute_ = "height", this.positionAttribute_ = "y"), this.onMouseDownBarWrapper_ = H(this.svgBackground, "pointerdown", this, this.onMouseDownBar), this.onMouseDownHandleWrapper_ = H(this.svgHandle, "pointerdown", this, this.onMouseDownHandle);
+          this.workspace = t, this.horizontal = e, this.oldHostMetrics = null, this.ratio = 1, this.origin = new A(0, 0), this.startDragHandle = this.handlePosition = this.handleLength = this.scrollbarLength = this.startDragMouse = 0, this.containerVisible = this.isHandleVisible = !0, this.position = new A(0, 0), this.onMouseMoveWrapper_ = this.onMouseUpWrapper_ = null, this.pair = i || !1, this.margin = o !== void 0 ? o : yt.DEFAULT_SCROLLBAR_MARGIN, t = "blocklyScrollbar" + (this.horizontal ? "Horizontal" : "Vertical"), s && (t += " " + s), this.outerSvg = S(E.SVG, { class: t }), s = S(E.G, {}, this.outerSvg), this.svgBackground = S(E.RECT, { class: "blocklyScrollbarBackground" }, s), t = Math.floor((yt.scrollbarThickness - 5) / 2), this.svgHandle = S(E.RECT, { class: "blocklyScrollbarHandle", rx: t, ry: t }, s), this.workspace.getThemeManager().subscribe(this.svgHandle, "scrollbarColour", "fill"), this.workspace.getThemeManager().subscribe(this.svgHandle, "scrollbarOpacity", "fill-opacity"), Ji(this.outerSvg, this.workspace.getParentSvg()), this.setInitialThickness(), e ? (this.lengthAttribute_ = "width", this.positionAttribute_ = "x") : (this.lengthAttribute_ = "height", this.positionAttribute_ = "y"), this.onMouseDownBarWrapper_ = H(this.svgBackground, "pointerdown", this, this.onMouseDownBar), this.onMouseDownHandleWrapper_ = H(this.svgHandle, "pointerdown", this, this.onMouseDownHandle);
         }
         setInitialThickness() {
-          var t = Ot.scrollbarThickness;
+          var t = yt.scrollbarThickness;
           this.horizontal ? (this.svgBackground.setAttribute("height", String(t)), this.outerSvg.setAttribute("height", String(t)), this.svgHandle.setAttribute(
             "height",
             String(t - 5)
@@ -4005,7 +4005,7 @@ input[type=number] {
           this.position.x = t, this.position.y = e, l(this.outerSvg, "translate(" + (this.position.x + this.origin.x) + "px," + (this.position.y + this.origin.y) + "px)");
         }
         resize(t) {
-          !t && (t = this.workspace.getMetrics(), !t) || this.oldHostMetrics && Ot.metricsAreEquivalent(t, this.oldHostMetrics) || (this.horizontal ? this.resizeHorizontal(t) : this.resizeVertical(t), this.oldHostMetrics = t, this.updateMetrics());
+          !t && (t = this.workspace.getMetrics(), !t) || this.oldHostMetrics && yt.metricsAreEquivalent(t, this.oldHostMetrics) || (this.horizontal ? this.resizeHorizontal(t) : this.resizeVertical(t), this.oldHostMetrics = t, this.updateMetrics());
         }
         requiresViewResize(t) {
           return this.oldHostMetrics ? this.oldHostMetrics.viewWidth !== t.viewWidth || this.oldHostMetrics.viewHeight !== t.viewHeight || this.oldHostMetrics.absoluteLeft !== t.absoluteLeft || this.oldHostMetrics.absoluteTop !== t.absoluteTop : !0;
@@ -4015,7 +4015,7 @@ input[type=number] {
         }
         resizeViewHorizontal(t) {
           var e = t.viewWidth - this.margin * 2;
-          this.pair && (e -= Ot.scrollbarThickness), this.setScrollbarLength(Math.max(0, e)), e = t.absoluteLeft + this.margin, this.pair && this.workspace.RTL && (e += Ot.scrollbarThickness), this.setPosition(e, t.absoluteTop + t.viewHeight - Ot.scrollbarThickness - this.margin), this.resizeContentHorizontal(t);
+          this.pair && (e -= yt.scrollbarThickness), this.setScrollbarLength(Math.max(0, e)), e = t.absoluteLeft + this.margin, this.pair && this.workspace.RTL && (e += yt.scrollbarThickness), this.setPosition(e, t.absoluteTop + t.viewHeight - yt.scrollbarThickness - this.margin), this.resizeContentHorizontal(t);
         }
         resizeContentHorizontal(t) {
           if (t.viewWidth >= t.scrollWidth) this.setHandleLength(this.scrollbarLength), this.setHandlePosition(0), this.pair || this.setVisible(!1);
@@ -4032,7 +4032,7 @@ input[type=number] {
         }
         resizeViewVertical(t) {
           var e = t.viewHeight - this.margin * 2;
-          this.pair && (e -= Ot.scrollbarThickness), this.setScrollbarLength(Math.max(0, e)), this.setPosition(this.workspace.RTL ? t.absoluteLeft + this.margin : t.absoluteLeft + t.viewWidth - Ot.scrollbarThickness - this.margin, t.absoluteTop + this.margin), this.resizeContentVertical(t);
+          this.pair && (e -= yt.scrollbarThickness), this.setScrollbarLength(Math.max(0, e)), this.setPosition(this.workspace.RTL ? t.absoluteLeft + this.margin : t.absoluteLeft + t.viewWidth - yt.scrollbarThickness - this.margin, t.absoluteTop + this.margin), this.resizeContentVertical(t);
         }
         resizeContentVertical(t) {
           if (t.viewHeight >= t.scrollHeight) this.setHandleLength(this.scrollbarLength), this.setHandlePosition(0), this.pair || this.setVisible(!1);
@@ -4103,7 +4103,7 @@ input[type=number] {
           return t.viewWidth === e.viewWidth && t.viewHeight === e.viewHeight && t.viewLeft === e.viewLeft && t.viewTop === e.viewTop && t.absoluteTop === e.absoluteTop && t.absoluteLeft === e.absoluteLeft && t.scrollWidth === e.scrollWidth && t.scrollHeight === e.scrollHeight && t.scrollLeft === e.scrollLeft && t.scrollTop === e.scrollTop;
         }
       };
-      Ot.scrollbarThickness = Id ? 25 : 15, Ot.DEFAULT_SCROLLBAR_MARGIN = 0.5;
+      yt.scrollbarThickness = Id ? 25 : 15, yt.DEFAULT_SCROLLBAR_MARGIN = 0.5;
       var Cr = { parseFromString: function() {
         throw Error("DOMParser was not found in the global scope and was not properly injected using injectDependencies");
       } }, fc = { serializeToString: function() {
@@ -4114,14 +4114,14 @@ input[type=number] {
       Qs.createElement = n.rc, Qs.createTextNode = n.sc, Qs.domToText = Bs, Qs.injectDependencies = function(t) {
         ({ document: vr = vr, DOMParser: qo = qo, XMLSerializer: Zo = Zo } = t), Cr = new qo(), fc = new Zo();
       }, Qs.textToDom = n.uc;
-      var M, Fi = M || (M = {});
+      var P, Fi = P || (P = {});
       Fi[Fi.TOP = 0] = "TOP", Fi[Fi.BOTTOM = 1] = "BOTTOM", Fi[Fi.LEFT = 2] = "LEFT", Fi[Fi.RIGHT = 3] = "RIGHT";
       var zd = { hasCategoriesInternal: function(t) {
         if (!t) return !1;
         var e = t.kind;
         return e ? e === "categoryToolbox" : !!t.contents.filter((i) => i.kind.toUpperCase() === "CATEGORY").length;
       } }, Ui = {};
-      Ui.Position = M, Ui.TEST_ONLY = zd, Ui.convertFlyoutDefToJsonArray = Lo, Ui.convertToolboxDefToJson = bn, Ui.hasCategories = On, Ui.isCategoryCollapsible = yn, Ui.parseToolboxTree = Pl;
+      Ui.Position = P, Ui.TEST_ONLY = zd, Ui.convertFlyoutDefToJsonArray = Lo, Ui.convertToolboxDefToJson = bn, Ui.hasCategories = On, Ui.isCategoryCollapsible = yn, Ui.parseToolboxTree = Pl;
       var Ei, Sr = Ei || (Ei = {});
       Sr[Sr.TOP = 0] = "TOP", Sr[Sr.BOTTOM = 1] = "BOTTOM";
       var to, Rr = to || (to = {});
@@ -4132,7 +4132,7 @@ input[type=number] {
       ps.bumpDirection = Hi, ps.bumpPositionRect = wn, ps.getCornerOppositeToolbox = Nn, ps.getStartPositionRect = kn, ps.horizontalPosition = to, ps.verticalPosition = Ei;
       var he = { width: 96, height: 124, url: "sprites.svg" }, mc = class {
         constructor(t, e) {
-          this.workspace = t, this.group = e, this.pointerDownHandler = H(e, "pointerdown", null, this.performAction.bind(this)), q(e, J.BUTTON), this.id = Ht(), this.group.id = this.id;
+          this.workspace = t, this.group = e, this.pointerDownHandler = H(e, "pointerdown", null, this.performAction.bind(this)), Z(e, q.BUTTON), this.id = Ht(), this.group.id = this.id;
         }
         zoom(t, e) {
           this.workspace.markFocused(), this.workspace.zoomCenter(t), this.fireZoomEvent(), Qt = null, e.stopPropagation(), e.preventDefault();
@@ -4160,7 +4160,7 @@ input[type=number] {
       }, O_ = class extends mc {
         constructor(t, e) {
           var i = String(Math.random()).substring(2);
-          e = S(E.G, { class: "blocklyZoom blocklyZoomIn", tabindex: "0" }, e), w(e, k.LABEL, n.C.ZOOM_IN), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
+          e = S(E.G, { class: "blocklyZoom blocklyZoomIn", tabindex: "0" }, e), D(e, N.LABEL, n.C.ZOOM_IN), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
           var s = S(E.CLIPPATH, { id: "blocklyZoominClipPath" + i }, e);
           S(E.RECT, { width: 32, height: 32 }, s), S(E.IMAGE, { width: he.width, height: he.height, x: -32, y: -92, "clip-path": "url(#blocklyZoominClipPath" + i + ")" }, e).setAttributeNS(
             "http://www.w3.org/1999/xlink",
@@ -4174,7 +4174,7 @@ input[type=number] {
       }, y_ = class extends mc {
         constructor(t, e) {
           var i = String(Math.random()).substring(2);
-          e = S(E.G, { class: "blocklyZoom blocklyZoomOut", tabindex: "0" }, e), w(e, k.LABEL, n.C.ZOOM_OUT), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
+          e = S(E.G, { class: "blocklyZoom blocklyZoomOut", tabindex: "0" }, e), D(e, N.LABEL, n.C.ZOOM_OUT), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
           var s = S(E.CLIPPATH, { id: "blocklyZoomoutClipPath" + i }, e);
           S(E.RECT, { width: 32, height: 32 }, s), S(E.IMAGE, { width: he.width, height: he.height, x: -64, y: -92, "clip-path": "url(#blocklyZoomoutClipPath" + i + ")" }, e).setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", t.options.pathToMedia + he.url), super(t, e);
         }
@@ -4184,7 +4184,7 @@ input[type=number] {
       }, L_ = class extends mc {
         constructor(t, e) {
           var i = String(Math.random()).substring(2);
-          e = S(E.G, { class: "blocklyZoom blocklyZoomReset", tabindex: "0" }, e), w(e, k.LABEL, n.C.RESET_ZOOM), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
+          e = S(E.G, { class: "blocklyZoom blocklyZoomReset", tabindex: "0" }, e), D(e, N.LABEL, n.C.RESET_ZOOM), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
           var s = S(E.CLIPPATH, { id: "blocklyZoomresetClipPath" + i }, e);
           S(E.RECT, { width: 32, height: 32 }, s), S(
             E.IMAGE,
@@ -4226,12 +4226,12 @@ input[type=number] {
         }
         getBoundingRectangle() {
           var t = this.SMALL_SPACING + 2 * this.HEIGHT;
-          return this.zoomResetControl && (t += this.LARGE_SPACING + this.HEIGHT), new j(this.top, this.top + t, this.left, this.left + this.WIDTH);
+          return this.zoomResetControl && (t += this.LARGE_SPACING + this.HEIGHT), new $(this.top, this.top + t, this.left, this.left + this.WIDTH);
         }
         position(t, e) {
           if (this.initialized) {
             var i = Nn(this.workspace, t), s = this.SMALL_SPACING + 2 * this.HEIGHT;
-            if (this.zoomResetControl && (s += this.LARGE_SPACING + this.HEIGHT), t = kn(i, new $(this.WIDTH, s), this.MARGIN_HORIZONTAL, this.MARGIN_VERTICAL, t, this.workspace), i = i.vertical, e = wn(t, this.MARGIN_VERTICAL, i === Ei.TOP ? Hi.DOWN : Hi.UP, e), i === Ei.TOP) {
+            if (this.zoomResetControl && (s += this.LARGE_SPACING + this.HEIGHT), t = kn(i, new J(this.WIDTH, s), this.MARGIN_HORIZONTAL, this.MARGIN_VERTICAL, t, this.workspace), i = i.vertical, e = wn(t, this.MARGIN_VERTICAL, i === Ei.TOP ? Hi.DOWN : Hi.UP, e), i === Ei.TOP) {
               var o = this.SMALL_SPACING + this.HEIGHT, r;
               (r = this.zoomInControl) == null || r.getFocusableElement().setAttribute("transform", "translate(0, " + o + ")"), this.zoomResetControl && (o = o + this.LARGE_SPACING + this.HEIGHT, this.zoomResetControl.getFocusableElement().setAttribute(
                 "transform",
@@ -4248,7 +4248,7 @@ input[type=number] {
           }
         }
       };
-      Rt(`
+      At(`
 .blocklyZoom>image, .blocklyZoom>svg>image {
   opacity: .4;
 }
@@ -4297,7 +4297,7 @@ input[type=number] {
           } finally {
             n.Ub--;
           }
-          return s ? (Ct() && V(new (W(f.COMMENT_CREATE))(s)), n.t().focusNode(s), s) : null;
+          return s ? (vt() && V(new (W(f.COMMENT_CREATE))(s)), n.t().focusNode(s), s) : null;
         }
       };
       Or.TYPE = "workspace-comment", Mn(Or.TYPE, new Or()), n.Ng = { dragRadius: 5, flyoutDragRadius: 10, snapRadius: 28, connectingSnapRadius: 28, currentConnectionPreference: 8, bumpDelay: 250 };
@@ -4309,9 +4309,9 @@ input[type=number] {
           var t = document.createElement("div");
           t.id = this.getId(), this.element = t, t.className = "blocklyMenuItem " + (this.enabled ? "" : "blocklyMenuItemDisabled ") + (this.checked ? "blocklyMenuItemSelected " : "") + (this.highlight ? "blocklyMenuItemHighlight " : "") + (this.rightToLeft ? "blocklyMenuItemRtl " : "");
           var e = document.createElement("div");
-          w(t, k.LABEL, this.getAriaLabel()), q(e, J.NONE), e.className = "blocklyMenuItemContent";
+          D(t, N.LABEL, this.getAriaLabel()), Z(e, q.NONE), e.className = "blocklyMenuItemContent";
           var i = this.content;
-          return typeof this.content == "string" && (i = document.createTextNode(this.content)), e.appendChild(i), t.appendChild(e), this.checkable && this.toggleHasCheckbox(!0), this.roleName && q(t, this.roleName), w(t, k.SELECTED, this.checkable && this.checked || !1), w(t, k.DISABLED, !this.enabled), t;
+          return typeof this.content == "string" && (i = document.createTextNode(this.content)), e.appendChild(i), t.appendChild(e), this.checkable && this.toggleHasCheckbox(!0), this.roleName && Z(t, this.roleName), D(t, N.SELECTED, this.checkable && this.checked || !1), D(t, N.DISABLED, !this.enabled), t;
         }
         getAriaLabel() {
           return this.ariaLabel || (typeof this.content == "string" ? this.content : this.content.textContent);
@@ -4344,7 +4344,7 @@ input[type=number] {
           (!t || this.checkable) && (this.checked = t, (t = this.getElement()) && (t.classList.toggle(
             "blocklyMenuItemSelected",
             this.checked
-          ), w(t, k.SELECTED, this.checked)));
+          ), D(t, N.SELECTED, this.checked)));
         }
         setHighlighted(t) {
           if (this.highlight = t, this.isEnabled()) {
@@ -4356,7 +4356,7 @@ input[type=number] {
           return this.enabled;
         }
         setEnabled(t) {
-          this.enabled = t, (t = this.getElement()) && (t.classList.toggle("blocklyMenuItemDisabled", !this.enabled), w(t, k.DISABLED, !this.enabled));
+          this.enabled = t, (t = this.getElement()) && (t.classList.toggle("blocklyMenuItemDisabled", !this.enabled), D(t, N.DISABLED, !this.enabled));
         }
         performAction(t) {
           this.isEnabled() && this.actionHandler && this.actionHandler(this, t);
@@ -4368,7 +4368,7 @@ input[type=number] {
           if (t) {
             let s;
             if ((s = this.getElement()) == null || !s.querySelector(".blocklyMenuItemContent .blocklyMenuItemCheckbox")) {
-              t = document.createElement("div"), w(t, k.HIDDEN, !0), t.className = "blocklyMenuItemCheckbox ";
+              t = document.createElement("div"), D(t, N.HIDDEN, !0), t.className = "blocklyMenuItemCheckbox ";
               var e, i;
               (e = this.getElement()) == null || (i = e.querySelector(".blocklyMenuItemContent")) == null || i.prepend(t);
             }
@@ -4386,7 +4386,7 @@ input[type=number] {
         }
         render(t) {
           var e = document.createElement("div");
-          e.className = "blocklyMenu", e.tabIndex = 0, e.id = this.getId(), this.roleName && q(e, this.roleName), this.element = e;
+          e.className = "blocklyMenu", e.tabIndex = 0, e.id = this.getId(), this.roleName && Z(e, this.roleName), this.element = e;
           for (let i = 0, s; s = this.menuItems[i]; i++) e.appendChild(s.createDom());
           return this.pointerMoveHandler = H(e, "pointermove", this, this.handlePointerMove, !0), this.clickHandler = H(e, "pointerup", this, this.handleClick, !0), this.pointerEnterHandler = H(e, "pointerenter", this, this.handlePointerEnter, !0), this.pointerLeaveHandler = H(e, "pointerleave", this, this.handlePointerLeave, !0), this.onKeyDownHandler = H(e, "keydown", this, this.handleKeyEvent), t.appendChild(e), e;
         }
@@ -4424,7 +4424,7 @@ input[type=number] {
           if (e && (e.setHighlighted(!1), this.highlightedItem = null), t) {
             t.setHighlighted(!0), this.highlightedItem = t, e = this.getElement();
             let i = t.getElement();
-            e && i && (kl(i, e), w(e, k.ACTIVEDESCENDANT, t.getId()));
+            e && i && (kl(i, e), D(e, N.ACTIVEDESCENDANT, t.getId()));
           }
         }
         highlightNext() {
@@ -4511,7 +4511,7 @@ input[type=number] {
           this.element = null;
         }
         createDom() {
-          return this.element = document.createElement("hr"), this.element.className = "blocklyMenuSeparator", q(this.element, J.SEPARATOR), this.element;
+          return this.element = document.createElement("hr"), this.element.className = "blocklyMenuSeparator", Z(this.element, q.SEPARATOR), this.element;
         }
         dispose() {
           var t;
@@ -4535,9 +4535,9 @@ input[type=number] {
         }
         static createDom(t, e) {
           var { message: i, duration: s = 5, assertiveness: o = ae.POLITE } = e, r = document.createElement("div");
-          t.getInjectionDiv().appendChild(r), r.dataset.toastId = e.id, r.className = "blocklyToast", e = r.appendChild(document.createElement("div")), e.className = "blocklyToastMessage", e.innerText = i, e = r.appendChild(document.createElement("button")), e.className = "blocklyToastCloseButton", w(e, k.LABEL, n.C.CLOSE);
+          t.getInjectionDiv().appendChild(r), r.dataset.toastId = e.id, r.className = "blocklyToast", e = r.appendChild(document.createElement("div")), e.className = "blocklyToastMessage", e.innerText = i, e = r.appendChild(document.createElement("button")), e.className = "blocklyToastCloseButton", D(e, N.LABEL, n.C.CLOSE);
           var a = S(E.SVG, { width: 24, height: 24, viewBox: "0 0 24 24", fill: "none" }, e);
-          w(a, k.HIDDEN, !0), S(E.RECT, { x: 19.7782, y: 2.80762, width: 2, height: 24, transform: "rotate(45, 19.7782, 2.80762)", fill: "black" }, a), S(E.RECT, { x: 2.80762, y: 4.22183, width: 2, height: 24, transform: "rotate(-45, 2.80762, 4.22183)", fill: "black" }, a), e.addEventListener("click", () => {
+          D(a, N.HIDDEN, !0), S(E.RECT, { x: 19.7782, y: 2.80762, width: 2, height: 24, transform: "rotate(45, 19.7782, 2.80762)", fill: "black" }, a), S(E.RECT, { x: 2.80762, y: 4.22183, width: 2, height: 24, transform: "rotate(-45, 2.80762, 4.22183)", fill: "black" }, a), e.addEventListener("click", () => {
             r.remove(), t.markFocused();
           });
           var c;
@@ -4546,13 +4546,13 @@ input[type=number] {
           }, a = () => clearTimeout(c), r.addEventListener(
             "focusin",
             a
-          ), r.addEventListener("focusout", e), r.addEventListener("mouseenter", a), r.addEventListener("mousemove", a), r.addEventListener("mouseleave", e), e(), Te(i, { assertiveness: o, role: J.STATUS }), r;
+          ), r.addEventListener("focusout", e), r.addEventListener("mouseenter", a), r.addEventListener("mousemove", a), r.addEventListener("mouseleave", e), e(), Te(i, { assertiveness: o, role: q.STATUS }), r;
         }
         static hide(t, e) {
           t = t.getInjectionDiv().querySelector(".blocklyToast"), t instanceof HTMLElement && (!e || e === t.dataset.toastId) && t.remove();
         }
       };
-      ce.shownIds = /* @__PURE__ */ new Set(), Rt(`
+      ce.shownIds = /* @__PURE__ */ new Set(), At(`
 .blocklyToast {
   font-size: 1.2rem;
   position: absolute;
@@ -5052,10 +5052,10 @@ input[type=number] {
           return t.oldWidth = Math.round(this.oldSize.width), t.oldHeight = Math.round(this.oldSize.height), t.newWidth = Math.round(this.newSize.width), t.newHeight = Math.round(this.newSize.height), t;
         }
         static fromJson(t, e, i) {
-          return e = ee.fromJson(t, e, i ?? new Kc()), e.oldSize = new $(t.oldWidth, t.oldHeight), e.newSize = new $(t.newWidth, t.newHeight), e;
+          return e = ee.fromJson(t, e, i ?? new Kc()), e.oldSize = new J(t.oldWidth, t.oldHeight), e.newSize = new J(t.newWidth, t.newHeight), e;
         }
         isNull() {
-          return $.equals(this.oldSize, this.newSize);
+          return J.equals(this.oldSize, this.newSize);
         }
         run(t) {
           var e = this.getEventWorkspace_();
@@ -5247,10 +5247,10 @@ input[type=number] {
         }
       };
       X(R.EVENT, f.FINISHED_LOADING, ig);
-      var sg, og, ng, rg, lg, ag, hg, cg, ug, dg, gg, pg, _g, Tg, Eg, fg, mg, Ig, Cg, vg, Sg, Rg, Ag, bg, N;
-      n.jm = f.BLOCK_CHANGE, n.Od = f.BLOCK_CREATE, n.km = f.BLOCK_DELETE, sg = f.BLOCK_DRAG, n.mm = f.BLOCK_MOVE, og = f.BLOCK_FIELD_INTERMEDIATE_CHANGE, ng = f.BUBBLE_OPEN, rg = f.BLOCK_CHANGE, lg = f.CLICK, ag = f.COMMENT_CHANGE, hg = f.COMMENT_CREATE, cg = f.COMMENT_DELETE, ug = f.COMMENT_MOVE, dg = f.COMMENT_RESIZE, gg = f.COMMENT_DRAG, pg = f.BLOCK_CREATE, _g = f.BLOCK_DELETE, Tg = f.FINISHED_LOADING, Eg = f.BLOCK_MOVE, fg = f.SELECTED, mg = f.THEME_CHANGE, Ig = f.TOOLBOX_ITEM_SELECT, Cg = f.TRASHCAN_OPEN, vg = f.UI, Sg = f.VAR_CREATE, Rg = f.VAR_DELETE, Ag = f.VAR_RENAME, bg = f.VIEWPORT_CHANGE, N = {}, N.Abstract = mi, N.BLOCK_CHANGE = n.jm, N.BLOCK_CREATE = n.Od, N.BLOCK_DELETE = n.km, N.BLOCK_DRAG = sg, N.BLOCK_FIELD_INTERMEDIATE_CHANGE = og, N.BLOCK_MOVE = n.mm, N.BUBBLE_OPEN = ng, N.BUMP_EVENTS = Dd, N.BlockBase = ke, N.BlockChange = _s, N.BlockCreate = Oc, N.BlockDelete = yc, N.BlockDrag = Lc, N.BlockFieldIntermediateChange = kc, N.BlockMove = Nc, N.BubbleOpen = wc, N.BubbleType = Mc, N.CHANGE = rg, N.CLICK = lg, N.COMMENT_CHANGE = ag, N.COMMENT_CREATE = hg, N.COMMENT_DELETE = cg, N.COMMENT_DRAG = gg, N.COMMENT_MOVE = ug, N.COMMENT_RESIZE = dg, N.CREATE = pg, N.Click = Pc, N.ClickTarget = Bc, N.CommentBase = ee, N.CommentChange = Fc, N.CommentCollapse = Uc, N.CommentCreate = Hc, N.CommentDelete = Gc, N.CommentDrag = Vc, N.CommentMove = Wc, N.CommentResize = Kc, N.DELETE = _g, N.FINISHED_LOADING = Tg, N.FinishedLoading = ig, N.MOVE = Eg, N.SELECTED = fg, N.Selected = Yc, N.THEME_CHANGE = mg, N.TOOLBOX_ITEM_SELECT = Ig, N.TRASHCAN_OPEN = Cg, N.ThemeChange = Xc, N.ToolboxItemSelect = zc, N.TrashcanOpen = jc, N.UI = vg, N.UiBase = Ft, N.VAR_CREATE = Sg, N.VAR_DELETE = Rg, N.VAR_RENAME = Ag, N.VIEWPORT_CHANGE = bg, N.VarBase = ei, N.VarCreate = $c, N.VarDelete = Jc, N.VarRename = qc, N.VarTypeChange = Zc, N.ViewportChange = Qc, N.clearPendingUndo = bl, N.disable = function() {
+      var sg, og, ng, rg, lg, ag, hg, cg, ug, dg, gg, pg, _g, Tg, Eg, fg, mg, Ig, Cg, vg, Sg, Rg, Ag, bg, w;
+      n.jm = f.BLOCK_CHANGE, n.Od = f.BLOCK_CREATE, n.km = f.BLOCK_DELETE, sg = f.BLOCK_DRAG, n.mm = f.BLOCK_MOVE, og = f.BLOCK_FIELD_INTERMEDIATE_CHANGE, ng = f.BUBBLE_OPEN, rg = f.BLOCK_CHANGE, lg = f.CLICK, ag = f.COMMENT_CHANGE, hg = f.COMMENT_CREATE, cg = f.COMMENT_DELETE, ug = f.COMMENT_MOVE, dg = f.COMMENT_RESIZE, gg = f.COMMENT_DRAG, pg = f.BLOCK_CREATE, _g = f.BLOCK_DELETE, Tg = f.FINISHED_LOADING, Eg = f.BLOCK_MOVE, fg = f.SELECTED, mg = f.THEME_CHANGE, Ig = f.TOOLBOX_ITEM_SELECT, Cg = f.TRASHCAN_OPEN, vg = f.UI, Sg = f.VAR_CREATE, Rg = f.VAR_DELETE, Ag = f.VAR_RENAME, bg = f.VIEWPORT_CHANGE, w = {}, w.Abstract = mi, w.BLOCK_CHANGE = n.jm, w.BLOCK_CREATE = n.Od, w.BLOCK_DELETE = n.km, w.BLOCK_DRAG = sg, w.BLOCK_FIELD_INTERMEDIATE_CHANGE = og, w.BLOCK_MOVE = n.mm, w.BUBBLE_OPEN = ng, w.BUMP_EVENTS = Dd, w.BlockBase = ke, w.BlockChange = _s, w.BlockCreate = Oc, w.BlockDelete = yc, w.BlockDrag = Lc, w.BlockFieldIntermediateChange = kc, w.BlockMove = Nc, w.BubbleOpen = wc, w.BubbleType = Mc, w.CHANGE = rg, w.CLICK = lg, w.COMMENT_CHANGE = ag, w.COMMENT_CREATE = hg, w.COMMENT_DELETE = cg, w.COMMENT_DRAG = gg, w.COMMENT_MOVE = ug, w.COMMENT_RESIZE = dg, w.CREATE = pg, w.Click = Pc, w.ClickTarget = Bc, w.CommentBase = ee, w.CommentChange = Fc, w.CommentCollapse = Uc, w.CommentCreate = Hc, w.CommentDelete = Gc, w.CommentDrag = Vc, w.CommentMove = Wc, w.CommentResize = Kc, w.DELETE = _g, w.FINISHED_LOADING = Tg, w.FinishedLoading = ig, w.MOVE = Eg, w.SELECTED = fg, w.Selected = Yc, w.THEME_CHANGE = mg, w.TOOLBOX_ITEM_SELECT = Ig, w.TRASHCAN_OPEN = Cg, w.ThemeChange = Xc, w.ToolboxItemSelect = zc, w.TrashcanOpen = jc, w.UI = vg, w.UiBase = Ft, w.VAR_CREATE = Sg, w.VAR_DELETE = Rg, w.VAR_RENAME = Ag, w.VIEWPORT_CHANGE = bg, w.VarBase = ei, w.VarCreate = $c, w.VarDelete = Jc, w.VarRename = qc, w.VarTypeChange = Zc, w.ViewportChange = Qc, w.clearPendingUndo = bl, w.disable = function() {
         n.Ub++;
-      }, N.disableOrphans = function(t) {
+      }, w.disableOrphans = function(t) {
         if ((t.type === f.BLOCK_MOVE || t.type === f.BLOCK_CREATE || t.type === f.BLOCK_DRAG && !t.isStart) && t.workspaceId) {
           var e = Ai(t.workspaceId);
           if (!t.blockId) throw Error("Encountered a blockEvent without a proper blockId");
@@ -5271,17 +5271,17 @@ input[type=number] {
             }
           }
         }
-      }, N.enable = function() {
+      }, w.enable = function() {
         n.Ub--;
-      }, N.filter = Al, N.fire = V, N.fromJson = function(t, e) {
+      }, w.filter = Al, w.fire = V, w.fromJson = function(t, e) {
         var i = W(t.type);
         if (!i) throw Error("Unknown event type.");
         return i.fromJson(t, e);
-      }, N.get = W, N.getDescendantIds = Rn, N.getGroup = function() {
+      }, w.get = W, w.getDescendantIds = Rn, w.getGroup = function() {
         return n.gd;
-      }, N.getRecordUndo = function() {
+      }, w.getRecordUndo = function() {
         return n.Qc;
-      }, N.isEnabled = Ct, N.setGroup = n.B, N.setRecordUndo = function(t) {
+      }, w.isEnabled = vt, w.setGroup = n.B, w.setRecordUndo = function(t) {
         n.Qc = t;
       };
       var Og = class {
@@ -5306,23 +5306,23 @@ input[type=number] {
         }
       }, Tt = new Og(), yg = { generateUniqueNameInternal: function(t) {
         return Vn("i", t.getVariableMap().getAllVariables().map((e) => e.getName()));
-      } }, wt = { CATEGORY_NAME: "VARIABLE", TEST_ONLY: yg, VAR_LETTER_OPTIONS: "ijkmnopqrstuvwxyzabcdefgh" };
-      wt.allDeveloperVariables = n.Cd, wt.allUsedVarModels = n.Bd, wt.compareByName = Hs, wt.createVariableButtonHandler = Us, wt.deleteVariable = n.Zd, wt.flyoutCategory = Un, wt.flyoutCategoryBlocks = function(t) {
+      } }, Mt = { CATEGORY_NAME: "VARIABLE", TEST_ONLY: yg, VAR_LETTER_OPTIONS: "ijkmnopqrstuvwxyzabcdefgh" };
+      Mt.allDeveloperVariables = n.Cd, Mt.allUsedVarModels = n.Bd, Mt.compareByName = Hs, Mt.createVariableButtonHandler = Us, Mt.deleteVariable = n.Zd, Mt.flyoutCategory = Un, Mt.flyoutCategoryBlocks = function(t) {
         t = t.getVariableMap().getVariablesOfType("");
         var e = [];
         if (t.length > 0) {
           var i = t[t.length - 1];
-          if (bt.variables_set) {
+          if (Ot.variables_set) {
             var s = n.rc("block");
-            s.setAttribute("type", "variables_set"), s.setAttribute("gap", bt.math_change ? "8" : "24"), s.appendChild(es(i)), e.push(s);
+            s.setAttribute("type", "variables_set"), s.setAttribute("gap", Ot.math_change ? "8" : "24"), s.appendChild(es(i)), e.push(s);
           }
-          if (bt.math_change && (s = n.rc("block"), s.setAttribute("type", "math_change"), s.setAttribute("gap", bt.variables_get ? "20" : "8"), s.appendChild(es(i)), i = n.uc('<value name="DELTA"><shadow type="math_number"><field name="NUM">1</field></shadow></value>'), s.appendChild(i), e.push(s)), bt.variables_get) {
+          if (Ot.math_change && (s = n.rc("block"), s.setAttribute("type", "math_change"), s.setAttribute("gap", Ot.variables_get ? "20" : "8"), s.appendChild(es(i)), i = n.uc('<value name="DELTA"><shadow type="math_number"><field name="NUM">1</field></shadow></value>'), s.appendChild(i), e.push(s)), Ot.variables_get) {
             t.sort(Hs);
             for (let o = 0, r; r = t[o]; o++) i = n.rc("block"), i.setAttribute("type", "variables_get"), i.setAttribute("gap", "8"), i.appendChild(es(r)), e.push(i);
           }
         }
         return e;
-      }, wt.generateUniqueName = Kl, wt.generateUniqueNameFromOptions = Vn, wt.generateVariableFieldDom = es, wt.getAddedVariables = Kn, wt.getOrCreateVariablePackage = n.Wd, wt.getVariable = n.Vd, wt.getVariableUsesById = Yn, wt.jsonFlyoutCategoryBlocks = Gn, wt.nameUsedWithAnyType = Yl, wt.nameUsedWithConflictingParam = Xl, wt.promptName = Wn, wt.renameVariable = n.Rd;
+      }, Mt.generateUniqueName = Kl, Mt.generateUniqueNameFromOptions = Vn, Mt.generateVariableFieldDom = es, Mt.getAddedVariables = Kn, Mt.getOrCreateVariablePackage = n.Wd, Mt.getVariable = n.Vd, Mt.getVariableUsesById = Yn, Mt.jsonFlyoutCategoryBlocks = Gn, Mt.nameUsedWithAnyType = Yl, Mt.nameUsedWithConflictingParam = Xl, Mt.promptName = Wn, Mt.renameVariable = n.Rd;
       var so = class extends Error {
       }, Lg = class extends so {
         constructor(t) {
@@ -5401,11 +5401,11 @@ children`), this.state = t;
       }, ie.showPositionedByField = na;
       var oo = {};
       oo.commonWordPrefix = pa, oo.commonWordSuffix = _a, oo.isNumber = n.yf, oo.shortestStringLength = Po, oo.wrap = n.xf;
-      var Pr = void 0, en = !1, Vi = !1, xg = 0, Cs = 0, Br = 0, xr = 0, $t = null, no = null, yt = null, pe = { HOVER_MS: 750, LIMIT: 50, MARGINS: 5, OFFSET_X: 0, OFFSET_Y: 10, RADIUS_OK: 10 };
+      var Pr = void 0, en = !1, Vi = !1, xg = 0, Cs = 0, Br = 0, xr = 0, $t = null, no = null, Lt = null, pe = { HOVER_MS: 750, LIMIT: 50, MARGINS: 5, OFFSET_X: 0, OFFSET_Y: 10, RADIUS_OK: 10 };
       pe.bindMouseEvents = Bo, pe.block = Sa, pe.createDom = fa, pe.display = va, pe.dispose = Ca, pe.getCustomTooltip = function() {
         return Pr;
       }, pe.getDiv = function() {
-        return yt;
+        return Lt;
       }, pe.getTooltipOfObject = Vs, pe.hide = $e, pe.isVisible = function() {
         return en;
       }, pe.setCustomTooltip = function(t) {
@@ -5440,7 +5440,7 @@ children`), this.state = t;
           this.size = t;
         }
         constructor(t, e, i) {
-          this.DEFAULT_VALUE = null, this.name = void 0, this.tooltip = this.ariaTypeName = this.validator_ = null, this.size = new $(0, 0), this.constants_ = this.mouseDownWrapper = this.textContent_ = this.textElement_ = this.borderRect_ = this.fieldGroup_ = null, this.disposed = !1, this.maxDisplayLength = 50, this.sourceBlock_ = null, this.enabled_ = this.visible_ = this.isDirty_ = !0, this.suffixField = this.prefixField = this.clickTarget_ = null, this.EDITABLE = !0, this.SERIALIZABLE = !1, this.id_ = null, this.value_ = "DEFAULT_VALUE" in new.target.prototype ? new.target.prototype.DEFAULT_VALUE : this.DEFAULT_VALUE, this.size_ = new $(0, 0), t !== ht.SKIP_SETUP && (i && this.configure_(i), this.setValue(t), e && this.setValidator(e));
+          this.DEFAULT_VALUE = null, this.name = void 0, this.tooltip = this.ariaTypeName = this.validator_ = null, this.size = new J(0, 0), this.constants_ = this.mouseDownWrapper = this.textContent_ = this.textElement_ = this.borderRect_ = this.fieldGroup_ = null, this.disposed = !1, this.maxDisplayLength = 50, this.sourceBlock_ = null, this.enabled_ = this.visible_ = this.isDirty_ = !0, this.suffixField = this.prefixField = this.clickTarget_ = null, this.EDITABLE = !0, this.SERIALIZABLE = !1, this.id_ = null, this.value_ = "DEFAULT_VALUE" in new.target.prototype ? new.target.prototype.DEFAULT_VALUE : this.DEFAULT_VALUE, this.size_ = new J(0, 0), t !== ht.SKIP_SETUP && (i && this.configure_(i), this.setValue(t), e && this.setValidator(e));
         }
         configure_(t) {
           t.tooltip && this.setTooltip(Et(t.tooltip)), t.ariaTypeName && (this.ariaTypeName = t.ariaTypeName);
@@ -5593,7 +5593,7 @@ children`), this.state = t;
           var e = this.getConstants();
           t = t !== void 0 ? t : this.borderRect_ ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0;
           var i = t * 2, s = e.FIELD_TEXT_HEIGHT, o = 0;
-          this.textElement_ && (o = I(this.textElement_), i += o), this.borderRect_ && (s = Math.max(s, e.FIELD_BORDER_RECT_HEIGHT)), this.size_ = new $(i, s), this.positionTextElement_(t, o), this.positionBorderRect_();
+          this.textElement_ && (o = C(this.textElement_), i += o), this.borderRect_ && (s = Math.max(s, e.FIELD_BORDER_RECT_HEIGHT)), this.size_ = new J(i, s), this.positionTextElement_(t, o), this.positionBorderRect_();
         }
         positionTextElement_(t, e) {
           if (this.textElement_) {
@@ -5608,11 +5608,11 @@ children`), this.state = t;
           ), this.borderRect_.setAttribute("ry", String(this.getConstants().FIELD_BORDER_RECT_RADIUS)));
         }
         getSize() {
-          return this.isVisible() ? (this.isDirty_ && (this.render_(), this.isDirty_ = !1), this.size_) : new $(0, 0);
+          return this.isVisible() ? (this.isDirty_ && (this.render_(), this.isDirty_ = !1), this.size_) : new J(0, 0);
         }
         getScaledBBox() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           if (this.borderRect_) {
             var e = this.borderRect_.getBoundingClientRect(), i = yi(this.borderRect_);
             t = e.width, e = e.height;
@@ -5621,7 +5621,7 @@ children`), this.state = t;
             let s = t.workspace.scale;
             i = this.getAbsoluteXY_(), t = (e.width + 1) * s, e = (e.height + 1) * s, yd ? (i.x += 1.5 * s, i.y += 1.5 * s) : (i.x -= 0.5 * s, i.y -= 0.5 * s);
           }
-          return new j(i.y, i.y + e, i.x, i.x + t);
+          return new $(i.y, i.y + e, i.x, i.x + t);
         }
         onLocationChange() {
         }
@@ -5654,7 +5654,7 @@ children`), this.state = t;
                   var a = this.sourceBlock_;
                   if (!a || !a.disposed) {
                     var c = this.getValue();
-                    c === r ? this.doValueUpdate_(r) : (this.doValueUpdate_(r), e && a && Ct() && V(new (W(f.BLOCK_CHANGE))(a, "field", this.name || null, c, r)), this.isDirty_ && this.forceRerender());
+                    c === r ? this.doValueUpdate_(r) : (this.doValueUpdate_(r), e && a && vt() && V(new (W(f.BLOCK_CHANGE))(a, "field", this.name || null, c, r)), this.isDirty_ && this.forceRerender());
                   }
                 }
               }
@@ -5702,7 +5702,7 @@ children`), this.state = t;
         }
         getParentInput() {
           var t = null, e = this.getSourceBlock();
-          if (!e) throw new Lt();
+          if (!e) throw new kt();
           var i = e.inputList;
           for (let s = 0; s < e.inputList.length; s++) {
             let o = i[s], r = o.fieldRow;
@@ -5725,7 +5725,7 @@ children`), this.state = t;
         }
         getFocusableTree() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           return t.workspace;
         }
         onNodeFocus() {
@@ -5750,32 +5750,32 @@ children`), this.state = t;
           var e;
           if ((e = this.getSourceBlock()) != null && e.isInFlyout) {
             let s, o;
-            if ((s = this.getSourceBlock()) == null || !s.getFullBlockField() || (o = this.getSourceBlock()) != null && o.getParent()) return w(t, k.HIDDEN, !0), !1;
+            if ((s = this.getSourceBlock()) == null || !s.getFullBlockField() || (o = this.getSourceBlock()) != null && o.getParent()) return D(t, N.HIDDEN, !0), !1;
             var i;
-            e = ((i = this.getSourceBlock()) == null ? void 0 : i.getAriaRoleDescription()) || n.C.BLOCK_LABEL_VALUE, w(t, k.ROLEDESCRIPTION, e);
+            e = ((i = this.getSourceBlock()) == null ? void 0 : i.getAriaRoleDescription()) || n.C.BLOCK_LABEL_VALUE, D(t, N.ROLEDESCRIPTION, e);
           }
-          return Ke(t, k.HIDDEN), q(t, J.BUTTON), i = this.computeAriaLabel(!0), this.isFullBlockField() && (i = gi(
+          return Ke(t, N.HIDDEN), Z(t, q.BUTTON), i = this.computeAriaLabel(!0), this.isFullBlockField() && (i = gi(
             this.getSourceBlock(),
             _t.STANDARD,
             i
-          )), w(t, k.LABEL, i), !0;
+          )), D(t, N.LABEL, i), !0;
         }
         static fromJson() {
           throw Error("Attempted to instantiate a field from the registry that hasn't defined a 'fromJson' method.");
         }
       };
       ht.NBSP = " ", ht.SKIP_SETUP = Symbol("SKIP_SETUP");
-      var Lt = class extends Error {
+      var kt = class extends Error {
         constructor() {
           super("The field has not yet been attached to its input. Call appendField to attach it.");
         }
-      }, se = null, Me = null, Gr = null, ro = "", lo = "", kt, vs = null, Ue = {};
+      }, se = null, Me = null, Gr = null, ro = "", lo = "", Nt, vs = null, Ue = {};
       Ue.createDom = ya, Ue.getDiv = function() {
-        return kt;
+        return Nt;
       }, Ue.hide = rs, Ue.hideIfOwner = ls, Ue.hideIfOwnerIsInWorkspace = Fo, Ue.isVisible = function() {
         return !!se;
       }, Ue.positionWithAnchor = ka, Ue.repositionForWindowResize = Na, Ue.show = er, Ue.testOnly_setDiv = function(t) {
-        if (kt = t, t === null) {
+        if (Nt = t, t === null) {
           let e;
           (e = document.querySelector(".blocklyWidgetDiv")) == null || e.remove();
         }
@@ -5788,7 +5788,7 @@ children`), this.state = t;
       }, Ki.hide = Uo, Ki.setCurrentBlock = function(t) {
         sn = t;
       }, Ki.show = Ks;
-      var Z = class {
+      var Q = class {
         constructor() {
           this.registeredItems = /* @__PURE__ */ new Map(), this.reset();
         }
@@ -5828,9 +5828,9 @@ children`), this.state = t;
             return s.weight - o.weight;
           }), i;
         }
-      }, Vr = Z || (Z = {}), iu = Vr.ScopeType || (Vr.ScopeType = {});
+      }, Vr = Q || (Q = {}), iu = Vr.ScopeType || (Vr.ScopeType = {});
       iu.BLOCK = "block", iu.WORKSPACE = "workspace", iu.COMMENT = "comment", Vr.registry = new Vr();
-      var su = Z.ScopeType, Hg = class {
+      var su = Q.ScopeType, Hg = class {
         constructor(t) {
           this.comment = t, this.startLoc = null, this.workspace = t.workspace;
         }
@@ -5879,7 +5879,7 @@ children`), this.state = t;
         }
         getSize(t = !1) {
           var e = this.icon.getBBox();
-          return e = j.from(e), t && (t = this.getMargin(), e.left -= t, e.top -= t, e.bottom += t, e.right += t), e;
+          return e = $.from(e), t && (t = this.getMargin(), e.left -= t, e.top -= t, e.bottom += t, e.right += t), e;
         }
         getMargin() {
           return (this.container.getBBox().height - this.icon.getBBox().height) / 2;
@@ -5892,7 +5892,7 @@ children`), this.state = t;
         }
         onNodeFocus() {
           var t = this.getCommentView(), e = t.getRelativeToSurfaceXY(), i = t.getSize();
-          e = new j(e.y, e.y + i.height, e.x, e.x + i.width), t.workspace.scrollBoundsIntoView(e);
+          e = new $(e.y, e.y + i.height, e.x, e.x + i.width), t.workspace.scrollBoundsIntoView(e);
         }
         onNodeBlur() {
         }
@@ -5901,9 +5901,9 @@ children`), this.state = t;
         }
         recomputeAriaContext() {
           if (this.icon) {
-            q(this.icon, J.BUTTON);
+            Z(this.icon, q.BUTTON);
             var t = this.getAriaLabel();
-            w(this.icon, k.LABEL, t || n.C.ARIA_LABEL_BUTTON);
+            D(this.icon, N.LABEL, t || n.C.ARIA_LABEL_BUTTON);
           }
         }
         getAriaLabel() {
@@ -5934,7 +5934,7 @@ children`), this.state = t;
           this.workspace = t, this.onFinishEditing = i, this.textChangeListeners = [], this.text = "", this.foreignObject = S(E.FOREIGNOBJECT, { class: "blocklyCommentForeignObject" }), t = document.createElementNS("http://www.w3.org/1999/xhtml", "body"), t.setAttribute("xmlns", "http://www.w3.org/1999/xhtml"), t.className = "blocklyMinimalBody", this.textArea = document.createElementNS("http://www.w3.org/1999/xhtml", "textarea"), this.textArea.setAttribute("tabindex", "-1"), this.textArea.setAttribute(
             "dir",
             this.workspace.RTL ? "RTL" : "LTR"
-          ), q(this.textArea, J.TEXTBOX), this.textArea.setAttribute("placeholder", n.C.WORKSPACE_COMMENT_DEFAULT_TEXT), L(this.textArea, "blocklyCommentText"), L(this.textArea, "blocklyTextarea"), L(this.textArea, "blocklyText"), t.appendChild(this.textArea), this.foreignObject.appendChild(t), this.id = e + "_comment_textarea_", this.textArea.setAttribute("id", this.id), H(this.textArea, "change", this, this.onTextChange), H(this.textArea, "pointerdown", this, (s) => {
+          ), Z(this.textArea, q.TEXTBOX), this.textArea.setAttribute("placeholder", n.C.WORKSPACE_COMMENT_DEFAULT_TEXT), L(this.textArea, "blocklyCommentText"), L(this.textArea, "blocklyTextarea"), L(this.textArea, "blocklyText"), t.appendChild(this.textArea), this.foreignObject.appendChild(t), this.id = e + "_comment_textarea_", this.textArea.setAttribute("id", this.id), H(this.textArea, "change", this, this.onTextChange), H(this.textArea, "pointerdown", this, (s) => {
             s.stopPropagation(), n.t().focusNode(this), Qt = null;
           }), H(this.textArea, "wheel", this, (s) => {
             s.stopPropagation();
@@ -5988,8 +5988,8 @@ children`), this.state = t;
           return this.workspace;
         }
         onNodeFocus() {
-          var t = j.from(this.foreignObject.getBoundingClientRect());
-          this.workspace.scrollBoundsIntoView(j.createFromPoint(ts(this.workspace, t.getOrigin()), t.getWidth(), t.getHeight()));
+          var t = $.from(this.foreignObject.getBoundingClientRect());
+          this.workspace.scrollBoundsIntoView($.createFromPoint(ts(this.workspace, t.getOrigin()), t.getWidth(), t.getHeight()));
         }
         onNodeBlur() {
         }
@@ -6020,7 +6020,7 @@ children`), this.state = t;
         }
       }, nn = class {
         constructor(t, e) {
-          this.workspace = t, this.commentId = e, this.collapsed = !1, this.editable = !0, this.location = new A(0, 0), this.sizeChangeListeners = [], this.disposeListeners = [], this.collapseChangeListeners = [], this.resizePointerMoveListener = this.resizePointerUpListener = null, this.disposed = this.disposing = !1, this.svgRoot = S(E.G, { class: "blocklyComment blocklyEditable blocklyDraggable" }), q(this.svgRoot, J.BUTTON), w(this.svgRoot, k.ROLEDESCRIPTION, n.C.ARIA_LABEL_COMMENT), this.highlightRect = this.createHighlightRect(this.svgRoot), { topBarGroup: this.topBarGroup, topBarBackground: this.topBarBackground, deleteButton: this.deleteButton, foldoutButton: this.foldoutButton, textPreview: this.textPreview, textPreviewNode: this.textPreviewNode } = this.createTopBar(this.svgRoot), this.commentEditor = this.createTextArea(), w(this.svgRoot, k.LABELLEDBY, this.commentEditor.getFocusableElement().id), this.resizeHandle = this.createResizeHandle(this.svgRoot, t);
+          this.workspace = t, this.commentId = e, this.collapsed = !1, this.editable = !0, this.location = new A(0, 0), this.sizeChangeListeners = [], this.disposeListeners = [], this.collapseChangeListeners = [], this.resizePointerMoveListener = this.resizePointerUpListener = null, this.disposed = this.disposing = !1, this.svgRoot = S(E.G, { class: "blocklyComment blocklyEditable blocklyDraggable" }), Z(this.svgRoot, q.BUTTON), D(this.svgRoot, N.ROLEDESCRIPTION, n.C.ARIA_LABEL_COMMENT), this.highlightRect = this.createHighlightRect(this.svgRoot), { topBarGroup: this.topBarGroup, topBarBackground: this.topBarBackground, deleteButton: this.deleteButton, foldoutButton: this.foldoutButton, textPreview: this.textPreview, textPreviewNode: this.textPreviewNode } = this.createTopBar(this.svgRoot), this.commentEditor = this.createTextArea(), D(this.svgRoot, N.LABELLEDBY, this.commentEditor.getFocusableElement().id), this.resizeHandle = this.createResizeHandle(this.svgRoot, t);
           var i;
           (i = t.getLayerManager()) == null || i.append(this, 50), this.size = nn.defaultCommentSize, this.setSizeWithoutFiringEvents(this.size), this.moveTo(new A(0, 0));
         }
@@ -6061,7 +6061,7 @@ children`), this.state = t;
         }
         setSizeWithoutFiringEvents(t) {
           var e = this.topBarBackground.getBBox(), i = this.textPreview.getBBox(), s = this.resizeHandle.getBBox();
-          this.size = t = $.max(t, this.calcMinSize(e)), this.svgRoot.setAttribute("height", `${t.height}`), this.svgRoot.setAttribute("width", `${t.width}`), this.updateHighlightRect(t), this.updateTopBarSize(t), this.commentEditor.updateSize(t, e), this.deleteButton.reposition(), this.foldoutButton.reposition(), this.updateTextPreviewSize(t, e, i), this.updateResizeHandlePosition(t, s);
+          this.size = t = J.max(t, this.calcMinSize(e)), this.svgRoot.setAttribute("height", `${t.height}`), this.svgRoot.setAttribute("width", `${t.width}`), this.updateHighlightRect(t), this.updateTopBarSize(t), this.commentEditor.updateSize(t, e), this.deleteButton.reposition(), this.foldoutButton.reposition(), this.updateTextPreviewSize(t, e, i), this.updateResizeHandlePosition(t, s);
         }
         setSize(t) {
           var e = this.preResizeSize || this.size;
@@ -6070,8 +6070,8 @@ children`), this.state = t;
         calcMinSize(t) {
           var e;
           this.updateTextPreview((e = this.commentEditor.getText()) != null ? e : "");
-          var i = e = I(this.textPreview);
-          return this.foldoutButton.isVisible() ? i += this.foldoutButton.getSize(!0).getWidth() : e && (i += 4), this.deleteButton.isVisible() ? i += this.deleteButton.getSize(!0).getWidth() : e && (i += 4), new $(i, t.height + 20);
+          var i = e = C(this.textPreview);
+          return this.foldoutButton.isVisible() ? i += this.foldoutButton.getSize(!0).getWidth() : e && (i += 4), this.deleteButton.isVisible() ? i += this.deleteButton.getSize(!0).getWidth() : e && (i += 4), new J(i, t.height + 20);
         }
         updateHighlightRect(t) {
           this.highlightRect.setAttribute("height", `${t.height}`), this.highlightRect.setAttribute("width", `${t.width}`), this.workspace.RTL && this.highlightRect.setAttribute("x", `${-t.width}`);
@@ -6109,7 +6109,7 @@ children`), this.state = t;
           Qt = null, this.resizePointerUpListener && (it(this.resizePointerUpListener), this.resizePointerUpListener = null), this.resizePointerMoveListener && (it(this.resizePointerMoveListener), this.resizePointerMoveListener = null), this.setSize(this.size), this.preResizeSize = void 0;
         }
         onResizePointerMove(t) {
-          t = sr(this.workspace, t), this.setSizeWithoutFiringEvents(new $(this.workspace.RTL ? -t.x : t.x, t.y));
+          t = sr(this.workspace, t), this.setSizeWithoutFiringEvents(new J(this.workspace.RTL ? -t.x : t.x, t.y));
         }
         isCollapsed() {
           return this.collapsed;
@@ -6190,7 +6190,7 @@ children`), this.state = t;
           return [this.foldoutButton, this.deleteButton];
         }
       };
-      nn.defaultCommentSize = new $(120, 100), Rt(`
+      nn.defaultCommentSize = new J(120, 100), At(`
 .injectionDiv {
   --commentFillColour: #FFFCC7;
   --commentBorderColour: #F2E49B;
@@ -6305,16 +6305,16 @@ children`), this.state = t;
           this.workspace = t, this.text = "", this.collapsed = !1, this.deletable = this.movable = this.editable = !0, this.location = new A(0, 0), this.disposing = this.disposed = !1, this.id = e && !t.getCommentById(e) ? e : ui(), this.size = nn.defaultCommentSize, t.addTopComment(this), this.fireCreateEvent();
         }
         fireCreateEvent() {
-          Ct() && V(new (W(f.COMMENT_CREATE))(this));
+          vt() && V(new (W(f.COMMENT_CREATE))(this));
         }
         fireDeleteEvent() {
-          Ct() && V(new (W(f.COMMENT_DELETE))(this));
+          vt() && V(new (W(f.COMMENT_DELETE))(this));
         }
         fireChangeEvent(t, e) {
-          Ct() && V(new (W(f.COMMENT_CHANGE))(this, t, e));
+          vt() && V(new (W(f.COMMENT_CHANGE))(this, t, e));
         }
         fireCollapseEvent(t) {
-          Ct() && V(new (W(f.COMMENT_COLLAPSE))(this, t));
+          vt() && V(new (W(f.COMMENT_COLLAPSE))(this, t));
         }
         setText(t) {
           var e = this.text;
@@ -6411,7 +6411,7 @@ children`), this.state = t;
         }
         getBoundingRectangle() {
           var t = this.getRelativeToSurfaceXY(), e, i, s = (i = (e = this.view) == null ? void 0 : e.getSize()) != null ? i : this.getSize();
-          return this.workspace.RTL ? (e = t.x - s.width, i = t.x) : (e = t.x, i = t.x + s.width), new j(t.y, t.y + s.height, e, i);
+          return this.workspace.RTL ? (e = t.x - s.width, i = t.x) : (e = t.x, i = t.x + s.width), new $(t.y, t.y + s.height, e, i);
         }
         moveBy(t, e, i) {
           var s = this.getRelativeToSurfaceXY();
@@ -6469,7 +6469,7 @@ children`), this.state = t;
           return { paster: Or.TYPE, commentState: xs(this, { addCoordinates: !0, saveIds: !1 }) };
         }
         showContextMenu(t) {
-          var e = Z.registry.getContextMenuOptions({ comment: this, focusedNode: this }, t), i = t instanceof PointerEvent ? new A(t.clientX, t.clientY) : Li(this.workspace, this.getRelativeToSurfaceXY()).translate(10, 10);
+          var e = Q.registry.getContextMenuOptions({ comment: this, focusedNode: this }, t), i = t instanceof PointerEvent ? new A(t.clientX, t.clientY) : Li(this.workspace, this.getRelativeToSurfaceXY()).translate(10, 10);
           Ks(t, e, this.workspace.RTL, this.workspace, i);
         }
         snapToGrid() {
@@ -6590,14 +6590,14 @@ children`), this.state = t;
         }
         showEditor_(t) {
           var e = this.getSourceBlock();
-          if (!e) throw new Lt();
-          this.dropdownCreate(), this.menu_ && (this.menu_.openingCoords = t && typeof t.clientX == "number" ? new A(t.clientX, t.clientY) : null, $n(), t = this.menu_.render(fs), L(t, "blocklyDropdownMenu"), this.getConstants().FIELD_DROPDOWN_COLOURED_DIV && (e = e.getColour(), t = this.sourceBlock_.getColourTertiary(), oa(e, t)), na(this, this.dropdownDispose_.bind(this)), fs.style.height = `${this.menu_.getSize().height}px`, this.menu_.focus(), this.selectedMenuItem && this.menu_.setHighlighted(this.selectedMenuItem), this.applyColour(), w(this.getFocusableElement(), k.EXPANDED, !0));
+          if (!e) throw new kt();
+          this.dropdownCreate(), this.menu_ && (this.menu_.openingCoords = t && typeof t.clientX == "number" ? new A(t.clientX, t.clientY) : null, $n(), t = this.menu_.render(fs), L(t, "blocklyDropdownMenu"), this.getConstants().FIELD_DROPDOWN_COLOURED_DIV && (e = e.getColour(), t = this.sourceBlock_.getColourTertiary(), oa(e, t)), na(this, this.dropdownDispose_.bind(this)), fs.style.height = `${this.menu_.getSize().height}px`, this.menu_.focus(), this.selectedMenuItem && this.menu_.setHighlighted(this.selectedMenuItem), this.applyColour(), D(this.getFocusableElement(), N.EXPANDED, !0));
         }
         dropdownCreate() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           var e = new vc();
-          e.setRole(J.LISTBOX), this.menu_ = e, w(this.getFocusableElement(), k.CONTROLS, this.menu_.getId());
+          e.setRole(q.LISTBOX), this.menu_ = e, D(this.getFocusableElement(), N.CONTROLS, this.menu_.getId());
           var i = this.getOptions(!1);
           this.selectedMenuItem = null;
           for (let r = 0; r < i.length; r++) {
@@ -6614,11 +6614,11 @@ children`), this.state = t;
               var o = new Image(a.width, a.height);
               o.src = a.src, o.alt = a.alt;
             } else o = a;
-            s = new yr(o, c, s), s.setRole(J.OPTION), s.setRightToLeft(t.RTL), s.setCheckable(!0), e.addChild(s), s.setChecked(c === this.value_), c === this.value_ && (this.selectedMenuItem = s), s.onAction(this.handleMenuActionEvent, this);
+            s = new yr(o, c, s), s.setRole(q.OPTION), s.setRightToLeft(t.RTL), s.setCheckable(!0), e.addChild(s), s.setChecked(c === this.value_), c === this.value_ && (this.selectedMenuItem = s), s.onAction(this.handleMenuActionEvent, this);
           }
         }
         dropdownDispose_() {
-          this.menu_ && this.menu_.dispose(), this.selectedMenuItem = this.menu_ = null, this.applyColour(), w(this.getFocusableElement(), k.EXPANDED, !1);
+          this.menu_ && this.menu_.dispose(), this.selectedMenuItem = this.menu_ = null, this.applyColour(), D(this.getFocusableElement(), N.EXPANDED, !1);
         }
         handleMenuActionEvent(t) {
           Jn(this, !0), this.onItemSelected_(
@@ -6658,14 +6658,14 @@ children`), this.state = t;
         }
         renderSelectedImage(t) {
           var e = this.getSourceBlock();
-          if (!e) throw new Lt();
+          if (!e) throw new kt();
           this.imageElement.style.display = "", this.imageElement.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", t.src), this.imageElement.setAttribute("height", String(t.height)), this.imageElement.setAttribute("width", String(t.width));
           var i = Number(t.height);
           t = Number(t.width);
           var s = !!this.borderRect_, o = Math.max(s ? this.getConstants().FIELD_DROPDOWN_BORDER_RECT_HEIGHT : 0, i + Yt.IMAGE_Y_PADDING);
           s = s ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0;
-          var r = this.svgArrow ? this.positionSVGArrow(t + s, o / 2 - this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE / 2) : I(this.arrow);
-          this.size_ = new $(t + r + s * 2, o);
+          var r = this.svgArrow ? this.positionSVGArrow(t + s, o / 2 - this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE / 2) : C(this.arrow);
+          this.size_ = new J(t + r + s * 2, o);
           var a = 0;
           e.RTL ? this.imageElement.setAttribute("x", `${s + r}`) : (a = t + r, this.getTextElement().setAttribute("text-anchor", "end"), this.imageElement.setAttribute("x", `${s}`)), this.imageElement.setAttribute("y", String(o / 2 - i / 2)), this.positionTextElement_(a + s, t + r);
         }
@@ -6675,15 +6675,15 @@ children`), this.state = t;
           L(t, "blocklyDropdownText"), t.setAttribute("text-anchor", "start");
           var e = !!this.borderRect_;
           t = Math.max(e ? this.getConstants().FIELD_DROPDOWN_BORDER_RECT_HEIGHT : 0, this.getConstants().FIELD_TEXT_HEIGHT);
-          var i = I(this.getTextElement());
+          var i = C(this.getTextElement());
           e = e ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0;
           var s = 0;
-          this.svgArrow && (s = this.positionSVGArrow(i + e, t / 2 - this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE / 2)), this.size_ = new $(i + s + e * 2, t), this.positionTextElement_(e, i);
+          this.svgArrow && (s = this.positionSVGArrow(i + e, t / 2 - this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE / 2)), this.size_ = new J(i + s + e * 2, t), this.positionTextElement_(e, i);
         }
         positionSVGArrow(t, e) {
           if (!this.svgArrow) return 0;
           var i = this.getSourceBlock();
-          if (!i) throw new Lt();
+          if (!i) throw new kt();
           var s = this.borderRect_ ? this.getConstants().FIELD_BORDER_RECT_X_PADDING : 0, o = this.getConstants().FIELD_DROPDOWN_SVG_ARROW_PADDING, r = this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE;
           return this.svgArrow.setAttribute("transform", "translate(" + (i.RTL ? s : t + o) + "," + e + ")"), r + o;
         }
@@ -6744,7 +6744,7 @@ children`), this.state = t;
         recomputeAriaContext() {
           if (!super.recomputeAriaContext()) return !1;
           var t = this.getFocusableElement();
-          return w(t, k.HASPOPUP, "listbox"), w(t, k.EXPANDED, !!this.menu_), !0;
+          return D(t, N.HASPOPUP, "listbox"), D(t, N.EXPANDED, !!this.menu_), !0;
         }
         computeOptionAriaLabel(t, e) {
           if (t === Yt.SEPARATOR) return "";
@@ -6946,15 +6946,15 @@ children`), this.state = t;
           var B = !!t.rtl, G = t.horizontalLayout;
           G === void 0 && (G = !1);
           var z = t.toolboxPosition !== "end";
-          z = G ? z ? M.TOP : M.BOTTOM : z === B ? M.RIGHT : M.LEFT;
-          var tt = t.css;
-          tt === void 0 && (tt = !0);
+          z = G ? z ? P.TOP : P.BOTTOM : z === B ? P.RIGHT : P.LEFT;
+          var et = t.css;
+          et === void 0 && (et = !0);
           var Jt = "https://static.blockly.com/media/";
           t.media && (Jt = t.media.endsWith("/") ? t.media : t.media + "/");
           var ne = t.oneBasedIndex, Ru = t.renderer || "thrasos", j_ = t.plugins || {}, Au = t.modalInputs;
           Au === void 0 && (Au = !0), this.RTL = B, this.oneBasedIndex = ne === void 0 ? !0 : ne, this.collapse = o, this.comments = r, this.disable = a, this.readOnly = g, this.maxBlocks = t.maxBlocks || 1 / 0;
           var o_;
-          this.maxInstances = (o_ = t.maxInstances) != null ? o_ : null, this.modalInputs = Au, this.pathToMedia = Jt, this.hasCategories = i, this.moveOptions = si.parseMoveOptions(t, i), this.hasScrollbars = !!this.moveOptions.scrollbars, this.hasTrashcan = s, this.maxTrashcanContents = v, this.hasSounds = c, this.hasCss = tt, this.horizontalLayout = G, this.languageTree = e, this.gridOptions = si.parseGridOptions(t), this.zoomOptions = si.parseZoomOptions(t), this.toolboxPosition = z, this.theme = si.parseThemeOptions(t), this.renderer = Ru;
+          this.maxInstances = (o_ = t.maxInstances) != null ? o_ : null, this.modalInputs = Au, this.pathToMedia = Jt, this.hasCategories = i, this.moveOptions = si.parseMoveOptions(t, i), this.hasScrollbars = !!this.moveOptions.scrollbars, this.hasTrashcan = s, this.maxTrashcanContents = v, this.hasSounds = c, this.hasCss = et, this.horizontalLayout = G, this.languageTree = e, this.gridOptions = si.parseGridOptions(t), this.zoomOptions = si.parseZoomOptions(t), this.toolboxPosition = z, this.theme = si.parseThemeOptions(t), this.renderer = Ru;
           var n_;
           this.rendererOverrides = (n_ = t.rendererOverrides) != null ? n_ : null;
           var r_;
@@ -7005,7 +7005,7 @@ children`), this.state = t;
         }
       }, ve, rt = class {
         constructor(t, e, i, s, o) {
-          this.workspace = t, this.anchor = e, this.ownerRect = i, this.owner = o, this.size = new $(0, 0), this.colour = "#ffffff", this.disposed = !1, this.relativeLeft = this.relativeTop = 0, this.dragStrategy = new Xg(this, this.workspace), this.ariaLabelProvider = null, this.id = Ht(), this.svgRoot = S(E.G, { class: "blocklyBubble" }, t.getBubbleCanvas()), t = S(E.G, { class: "blocklyEmboss" }, this.svgRoot), this.tail = S(E.PATH, { class: "blocklyBubbleTail" }, t), this.background = S(E.RECT, {
+          this.workspace = t, this.anchor = e, this.ownerRect = i, this.owner = o, this.size = new J(0, 0), this.colour = "#ffffff", this.disposed = !1, this.relativeLeft = this.relativeTop = 0, this.dragStrategy = new Xg(this, this.workspace), this.ariaLabelProvider = null, this.id = Ht(), this.svgRoot = S(E.G, { class: "blocklyBubble" }, t.getBubbleCanvas()), t = S(E.G, { class: "blocklyEmboss" }, this.svgRoot), this.tail = S(E.PATH, { class: "blocklyBubbleTail" }, t), this.background = S(E.RECT, {
             class: "blocklyDraggable",
             x: 0,
             y: 0,
@@ -7055,7 +7055,7 @@ children`), this.state = t;
           var i = this.getRelativeToSurfaceXY();
           this.moveTo(i.x + t, i.y + e);
         }
-        positionByRect(t = new j(0, 0, 0, 0)) {
+        positionByRect(t = new $(0, 0, 0, 0)) {
           var e = this.workspace.getMetricsManager().getViewMetrics(!0), i = this.getOptimalRelativeLeft(e), s = this.getOptimalRelativeTop(e), o = { x: i, y: -this.size.height - this.workspace.getRenderer().getConstants().MIN_BLOCK_HEIGHT }, r = { x: -this.size.width - 30, y: s };
           s = { x: t.getWidth(), y: s };
           var a = { x: i, y: t.getHeight() };
@@ -7091,10 +7091,10 @@ children`), this.state = t;
         }
         getWorkspaceViewRect(t) {
           var e = t.top, i = t.top + t.height, s = t.left;
-          return t = t.left + t.width, i -= this.getScrollbarThickness(), this.workspace.RTL ? s -= this.getScrollbarThickness() : t -= this.getScrollbarThickness(), new j(e, i, s, t);
+          return t = t.left + t.width, i -= this.getScrollbarThickness(), this.workspace.RTL ? s -= this.getScrollbarThickness() : t -= this.getScrollbarThickness(), new $(e, i, s, t);
         }
         getScrollbarThickness() {
-          return Ot.scrollbarThickness / this.workspace.scale;
+          return yt.scrollbarThickness / this.workspace.scale;
         }
         renderTail() {
           var t = [], e = this.size.width / 2, i = this.size.height / 2, s = -this.relativeLeft, o = -this.relativeTop;
@@ -7124,7 +7124,7 @@ children`), this.state = t;
         }
         getBoundingRectangle() {
           var t = this.getRelativeToSurfaceXY();
-          return new j(t.y, t.y + this.size.height, t.x, t.x + this.size.width);
+          return new $(t.y, t.y + this.size.height, t.x, t.x + this.size.width);
         }
         getSvgRoot() {
           return this.svgRoot;
@@ -7171,7 +7171,7 @@ children`), this.state = t;
         onNodeFocus() {
           this.select(), this.bringToFront();
           var t = this.getRelativeToSurfaceXY(), e = this.getSize();
-          t = new j(t.y, t.y + e.height, t.x, t.x + e.width), this.workspace.scrollBoundsIntoView(t);
+          t = new $(t.y, t.y + e.height, t.x, t.x + e.width), this.workspace.scrollBoundsIntoView(t);
         }
         onNodeBlur() {
           this.unselect();
@@ -7185,9 +7185,9 @@ children`), this.state = t;
         recomputeAriaContext() {
           var t = this.getFocusableElement();
           if (t) {
-            q(t, J.GROUP);
+            Z(t, q.GROUP);
             var e, i = (e = this.getAriaLabel()) == null ? void 0 : e.trim();
-            w(t, k.LABEL, i || n.C.BUBBLE_LABEL_DEFAULT);
+            D(t, N.LABEL, i || n.C.BUBBLE_LABEL_DEFAULT);
           }
         }
         setAriaLabelProvider(t) {
@@ -7240,7 +7240,7 @@ children`), this.state = t;
           if (!this.miniWorkspace.isDragging() || ct.mover.isMoving()) {
             this.autoLayout && (this.autoLayout = !ct.mover.isMoving());
             var t = this.getSize(), e = this.calculateWorkspaceSize();
-            Math.abs(t.width - e.width) < Ii.MINIMUM_VIEW_CHANGE && Math.abs(t.height - e.height) < Ii.MINIMUM_VIEW_CHANGE || (this.svgDialog.setAttribute("width", `${e.width}px`), this.svgDialog.setAttribute("height", `${e.height}px`), this.miniWorkspace.setCachedParentSvgSize(e.width, e.height), this.miniWorkspace.RTL && this.miniWorkspace.getCanvas().setAttribute("transform", `translate(${e.width}, 0)`), this.setSize(new $(e.width + rt.DOUBLE_BORDER, e.height + rt.DOUBLE_BORDER), this.autoLayout), this.miniWorkspace.resize(), this.miniWorkspace.recordDragTargets());
+            Math.abs(t.width - e.width) < Ii.MINIMUM_VIEW_CHANGE && Math.abs(t.height - e.height) < Ii.MINIMUM_VIEW_CHANGE || (this.svgDialog.setAttribute("width", `${e.width}px`), this.svgDialog.setAttribute("height", `${e.height}px`), this.miniWorkspace.setCachedParentSvgSize(e.width, e.height), this.miniWorkspace.RTL && this.miniWorkspace.getCanvas().setAttribute("transform", `translate(${e.width}, 0)`), this.setSize(new J(e.width + rt.DOUBLE_BORDER, e.height + rt.DOUBLE_BORDER), this.autoLayout), this.miniWorkspace.resize(), this.miniWorkspace.recordDragTargets());
           }
         }
         calculateWorkspaceSize() {
@@ -7251,7 +7251,7 @@ children`), this.state = t;
             let s = i.getWorkspace().getMetricsManager().getScrollMetrics();
             t = Math.max(t, s.height + 20), e += i.getWidth();
           }
-          return new $(e, t);
+          return new J(e, t);
         }
         updateBlockStyles() {
           for (var t of this.miniWorkspace.getAllBlocks(!1)) t.setStyle(t.getStyleName());
@@ -7292,7 +7292,7 @@ children`), this.state = t;
           return -1;
         }
         getSize() {
-          return new $(0, 0);
+          return new J(0, 0);
         }
         setTooltip(t) {
           this.tooltip = t ?? this.sourceBlock;
@@ -7338,7 +7338,7 @@ children`), this.state = t;
         }
         onNodeFocus() {
           var t = this.sourceBlock.getBoundingRectangle();
-          t = new j(t.top + this.offsetInBlock.y, t.top + this.offsetInBlock.y + this.getSize().height, t.left + this.offsetInBlock.x, t.left + this.offsetInBlock.x + this.getSize().width), this.sourceBlock.workspace.scrollBoundsIntoView(t);
+          t = new $(t.top + this.offsetInBlock.y, t.top + this.offsetInBlock.y + this.getSize().height, t.left + this.offsetInBlock.x, t.left + this.offsetInBlock.x + this.getSize().width), this.sourceBlock.workspace.scrollBoundsIntoView(t);
         }
         onNodeBlur() {
         }
@@ -7363,11 +7363,11 @@ children`), this.state = t;
           var t = this.getFocusableElement();
           if (t) {
             var e, i = (e = this.sourceBlock.workspace.targetWorkspace) == null ? void 0 : e.getFlyout();
-            if (i && !this.isClickableInFlyout(i.autoClose)) w(t, k.HIDDEN, !0);
+            if (i && !this.isClickableInFlyout(i.autoClose)) D(t, N.HIDDEN, !0);
             else {
-              Ke(t, k.HIDDEN), q(t, J.BUTTON);
+              Ke(t, N.HIDDEN), Z(t, q.BUTTON);
               var s;
-              e = (s = this.getAriaLabel()) != null ? s : n.C.ICON_LABEL_DEFAULT, w(t, k.LABEL, e);
+              e = (s = this.getAriaLabel()) != null ? s : n.C.ICON_LABEL_DEFAULT, D(t, N.LABEL, e);
             }
           }
         }
@@ -7398,7 +7398,7 @@ children`), this.state = t;
           return n.rh.WEIGHT;
         }
         getSize() {
-          return new $(17, 17);
+          return new J(17, 17);
         }
         applyColour() {
           super.applyColour();
@@ -7452,7 +7452,7 @@ children`), this.state = t;
         }
         getBubbleOwnerRect() {
           var t = this.sourceBlock.getSvgRoot().getBBox();
-          return new j(t.y, t.y + t.height, t.x, t.x + t.width);
+          return new $(t.y, t.y + t.height, t.x, t.x + t.width);
         }
         createRootBlock() {
           if (!this.sourceBlock.decompose) throw Error("Blocks with mutator icons must include a decompose method");
@@ -7517,12 +7517,12 @@ children`), this.state = t;
         Ga(t) ? delete ho[t] : console.warn('No extension mapping for name "' + t + '" found to unregister');
       };
       var Ci = {};
-      Ci.arc = At, Ci.curve = de, Ci.line = Xs, Ci.lineOnAxis = U, Ci.lineTo = qe, Ci.moveBy = vt, Ci.moveTo = Gt, Ci.point = F;
+      Ci.arc = bt, Ci.curve = de, Ci.line = Xs, Ci.lineOnAxis = U, Ci.lineTo = qe, Ci.moveBy = St, Ci.moveTo = Gt, Ci.point = F;
       var It = {};
-      It.Coordinate = A, It.KeyCodes = y, It.Rect = j, It.Size = $, It.Svg = E, It.aria = Ce, It.array = kd, It.browserEvents = _i, It.colour = we, It.deprecation = Hd, It.dom = Wt, It.extensions = He, It.idGenerator = Tc, It.math = wr, It.object = xd, It.parsing = Hr, It.string = oo, It.style = xi, It.svgMath = gs, It.svgPaths = Ci, It.toolbox = Ui, It.userAgent = C_, It.xml = Qs;
+      It.Coordinate = A, It.KeyCodes = y, It.Rect = $, It.Size = J, It.Svg = E, It.aria = Ce, It.array = kd, It.browserEvents = _i, It.colour = we, It.deprecation = Hd, It.dom = Wt, It.extensions = He, It.idGenerator = Tc, It.math = wr, It.object = xd, It.parsing = Hr, It.string = oo, It.style = xi, It.svgMath = gs, It.svgPaths = Ci, It.toolbox = Ui, It.userAgent = C_, It.xml = Qs;
       var ou = class extends rt {
         constructor(t, e, i, s) {
-          super(t, e, i, void 0, s), this.workspace = t, this.anchor = e, this.ownerRect = i, this.owner = s, this.resizePointerMoveListener = this.resizePointerUpListener = null, this.sizeChangeListeners = [], this.locationChangeListeners = [], this.DEFAULT_SIZE = new $(160 + rt.DOUBLE_BORDER, 80 + rt.DOUBLE_BORDER), this.MIN_SIZE = new $(45 + rt.DOUBLE_BORDER, 20 + rt.DOUBLE_BORDER), this.editable = !0, this.textChangeListener = () => {
+          super(t, e, i, void 0, s), this.workspace = t, this.anchor = e, this.ownerRect = i, this.owner = s, this.resizePointerMoveListener = this.resizePointerUpListener = null, this.sizeChangeListeners = [], this.locationChangeListeners = [], this.DEFAULT_SIZE = new J(160 + rt.DOUBLE_BORDER, 80 + rt.DOUBLE_BORDER), this.MIN_SIZE = new J(45 + rt.DOUBLE_BORDER, 20 + rt.DOUBLE_BORDER), this.editable = !0, this.textChangeListener = () => {
             this.recomputeAriaContext();
           }, L(this.svgRoot, "blocklyTextInputBubble"), this.editor = new on(t, this.id, () => {
             n.t().focusNode(this);
@@ -7555,7 +7555,7 @@ children`), this.state = t;
         setSize(t, e = !1) {
           t.width = Math.max(t.width, this.MIN_SIZE.width), t.height = Math.max(t.height, this.MIN_SIZE.height);
           var i = t.width - rt.DOUBLE_BORDER, s = t.height - rt.DOUBLE_BORDER;
-          this.editor.updateSize(new $(i, s), new $(0, 0)), this.editor.getDom().setAttribute("x", `${rt.DOUBLE_BORDER / 2}`), this.editor.getDom().setAttribute("y", `${rt.DOUBLE_BORDER / 2}`), this.resizeGroup.setAttribute("y", `${s}`), this.workspace.RTL ? this.resizeGroup.setAttribute("x", `${-rt.DOUBLE_BORDER}`) : this.resizeGroup.setAttribute("x", `${i}`), super.setSize(t, e), this.onSizeChange();
+          this.editor.updateSize(new J(i, s), new J(0, 0)), this.editor.getDom().setAttribute("x", `${rt.DOUBLE_BORDER / 2}`), this.editor.getDom().setAttribute("y", `${rt.DOUBLE_BORDER / 2}`), this.resizeGroup.setAttribute("y", `${s}`), this.workspace.RTL ? this.resizeGroup.setAttribute("x", `${-rt.DOUBLE_BORDER}`) : this.resizeGroup.setAttribute("x", `${i}`), super.setSize(t, e), this.onSizeChange();
         }
         getSize() {
           return super.getSize();
@@ -7566,7 +7566,7 @@ children`), this.state = t;
         setPositionRelativeToAnchor(t, e) {
           super.setPositionRelativeToAnchor(t, e), this.onLocationChange();
         }
-        positionByRect(t = new j(0, 0, 0, 0)) {
+        positionByRect(t = new $(0, 0, 0, 0)) {
           super.positionByRect(t), this.onLocationChange();
         }
         onResizePointerDown(t) {
@@ -7576,7 +7576,7 @@ children`), this.state = t;
           Qt = null, this.resizePointerUpListener && (it(this.resizePointerUpListener), this.resizePointerUpListener = null), this.resizePointerMoveListener && (it(this.resizePointerMoveListener), this.resizePointerMoveListener = null);
         }
         onResizePointerMove(t) {
-          t = sr(this.workspace, t), this.setSize(new $(this.workspace.RTL ? -t.x : t.x, t.y), !1), this.onSizeChange();
+          t = sr(this.workspace, t), this.setSize(new J(this.workspace.RTL ? -t.x : t.x, t.y), !1), this.onSizeChange();
         }
         onSizeChange() {
           for (let t of this.sizeChangeListeners) t();
@@ -7594,7 +7594,7 @@ children`), this.state = t;
           super.dispose(), this.editor.removeTextChangeListener(this.textChangeListener);
         }
       };
-      Rt(`
+      At(`
 .blocklyTextInputBubble .blocklyTextarea {
   background-color: var(--commentFillColour);
   border: 0;
@@ -7696,7 +7696,7 @@ children`), this.state = t;
             }
             this.applyShadowState(a);
           }
-          if (Ct()) {
+          if (vt()) {
             var r = new (W(f.BLOCK_MOVE))(s);
             r.setReason(["connect"]);
           }
@@ -7740,7 +7740,7 @@ children`), this.state = t;
           var { parentConnection: e, childConnection: i } = this.getParentAndChildConnections();
           if (!e || !i) throw Error("Source connection not connected.");
           var s = n.gd;
-          if (s || n.B(!0), Ct()) {
+          if (s || n.B(!0), vt()) {
             var o = new (W(f.BLOCK_MOVE))(i.getSourceBlock());
             o.setReason(["disconnect"]);
           }
@@ -7925,15 +7925,15 @@ children`), this.state = t;
         }
         setAriaRole(t) {
           var e = this.type === b.INPUT_VALUE ? n.C.INPUT_LABEL_VALUE : n.C.INPUT_LABEL_STATEMENT;
-          q(t, J.FIGURE), w(t, k.ROLEDESCRIPTION, e);
+          Z(t, q.FIGURE), D(t, N.ROLEDESCRIPTION, e);
         }
         recomputeAriaContext(t) {
           this.setAriaRole(t);
           var e, i, s, o = (s = this.getParentInput()) != null ? s : (e = this.getSourceBlock().getTopStackBlock().previousConnection) == null || (i = e.targetConnection) == null ? void 0 : i.getParentInput();
           if (o) {
             var r;
-            e = (r = o?.getAriaLabelText()) != null ? r : Xn(o.getSourceBlock(), o, !0).join(", "), this.type === b.NEXT_STATEMENT ? w(t, k.LABEL, n.C.INPUT_LABEL_END_STATEMENT.replace("%1", e)) : w(t, k.LABEL, e);
-          } else w(t, k.LABEL, n.C.INPUT_LABEL_EMPTY);
+            e = (r = o?.getAriaLabelText()) != null ? r : Xn(o.getSourceBlock(), o, !0).join(", "), this.type === b.NEXT_STATEMENT ? D(t, N.LABEL, n.C.INPUT_LABEL_END_STATEMENT.replace("%1", e)) : D(t, N.LABEL, e);
+          } else D(t, N.LABEL, n.C.INPUT_LABEL_EMPTY);
         }
         highlight() {
           this.highlighted = !0;
@@ -8015,7 +8015,7 @@ children`), this.state = t;
           return super.setCheck(t), this.sourceBlock_.queueRender(), this;
         }
         showContextMenu(t) {
-          var e = Z.registry.getContextMenuOptions({ focusedNode: this }, t);
+          var e = Q.registry.getContextMenuOptions({ focusedNode: this }, t);
           if (e.length) {
             var i = this.getSourceBlock(), s = i.workspace;
             if (t instanceof PointerEvent) var o = new A(t.clientX, t.clientY);
@@ -8162,7 +8162,7 @@ children`), this.state = t;
       var po = class {
         constructor(t, e, i) {
           if (this.data = null, this.disposed = !1, this.hue = null, this.colour_ = "#000000", this.styleName_ = "", this.suppressPrefixSuffix = !1, this.previousConnection = this.nextConnection = this.outputConnection = null, this.inputList = [], this.icons = [], this.disabledReasons = /* @__PURE__ */ new Set(), this.tooltip = "", this.contextMenu = !0, this.parentBlock_ = null, this.childBlocks_ = [], this.editable = this.movable = this.deletable = !0, this.collapsed_ = this.shadow = !1, this.outputShape_ = null, this.rendered = this.isInsertionMarker_ = this.initialized = this.disposing = !1, this.onchangeWrapper = this.helpUrl = null, this.statementInputCount = 0, this.workspace = t, this.id = i && !t.getBlockById(i) ? i : ui(), t.setBlockById(this.id, this), this.xy = new A(0, 0), this.isInFlyout = t.isFlyout, this.isInMutator = t.isMutator, this.RTL = t.RTL, e) {
-            if (this.type = e, i = bt[e], !i || typeof i != "object") throw TypeError("Invalid block definition for type: " + e);
+            if (this.type = e, i = Ot[e], !i || typeof i != "object") throw TypeError("Invalid block definition for type: " + e);
             Object.assign(this, i);
           }
           t.addTopBlock(this), t.addTypedBlock(this), new.target === po && this.doInit_();
@@ -8172,14 +8172,14 @@ children`), this.state = t;
           t || n.B(!0);
           var e = n.Qc;
           try {
-            typeof this.init == "function" && (n.Qc = !1, this.init(), n.Qc = e), Ct() && V(new (W(f.BLOCK_CREATE))(this));
+            typeof this.init == "function" && (n.Qc = !1, this.init(), n.Qc = e), vt() && V(new (W(f.BLOCK_CREATE))(this));
           } finally {
             n.B(t), n.Qc = e;
           }
           this.inputsInlineDefault = this.inputsInline, typeof this.onchange == "function" && this.setOnChange(this.onchange);
         }
         dispose(t = !1) {
-          this.disposing = !0, this.onchangeWrapper && this.workspace.removeChangeListener(this.onchangeWrapper), this.unplug(t), Ct() && V(new (W(f.BLOCK_DELETE))(this)), this.workspace.removeTopBlock(this), this.disposeInternal();
+          this.disposing = !0, this.onchangeWrapper && this.workspace.removeChangeListener(this.onchangeWrapper), this.unplug(t), vt() && V(new (W(f.BLOCK_DELETE))(this)), this.workspace.removeTopBlock(this), this.disposeInternal();
         }
         disposeInternal() {
           this.disposing = !0, this.onchangeWrapper && this.workspace.removeChangeListener(this.onchangeWrapper), this.workspace.removeTypedBlock(this), this.workspace.removeBlockById(this.id), typeof this.destroy == "function" && this.destroy(), this.childBlocks_.forEach((t) => t.disposeInternal()), this.inputList.forEach((t) => t.dispose()), this.inputList.length = 0, this.getConnections_(!0).forEach((t) => t.dispose()), this.disposed = !0;
@@ -8754,7 +8754,7 @@ children`), this.state = t;
             n.Ub--;
           }
           if (!s) return s;
-          Ct() && !s.isShadow() && V(new (W(f.BLOCK_CREATE))(s));
+          vt() && !s.isShadow() && V(new (W(f.BLOCK_CREATE))(s));
           var o = s;
           return fe().then(() => n.t().focusNode(o)), s;
         }
@@ -8782,9 +8782,9 @@ children`), this.state = t;
         constructor(t, e, i, s) {
           if (this.workspace = t, this.targetWorkspace = e, this.isFlyoutLabel = s, this.height = this.width = 0, this.cursorSvg = this.svgText = null, this.text = i.text, this.position = new A(0, 0), this.callbackKey = i.callbackKey || i.callbackkey, this.cssClass = i["web-class"] || null, this.info = i, t = this.isFlyoutLabel ? "blocklyFlyoutLabel" : "blocklyFlyoutButton", this.cssClass && (t += " " + this.cssClass), this.id = Ht(), this.svgGroup = S(E.G, { id: this.id, class: t }, this.workspace.getCanvas()), !this.isFlyoutLabel) {
             var o = S(E.RECT, { class: "blocklyFlyoutButtonShadow", rx: oe.BORDER_RADIUS, ry: oe.BORDER_RADIUS, x: 1, y: 1 }, this.svgGroup);
-            q(o, J.NONE);
+            Z(o, q.NONE);
           }
-          t = S(E.RECT, { class: this.isFlyoutLabel ? "blocklyFlyoutLabelBackground" : "blocklyFlyoutButtonBackground", rx: oe.BORDER_RADIUS, ry: oe.BORDER_RADIUS }, this.svgGroup), q(t, J.NONE), e = S(E.TEXT, { class: this.isFlyoutLabel ? "blocklyFlyoutLabelText" : "blocklyText", x: 0, y: 0, "text-anchor": "middle" }, this.svgGroup), i = Et(this.text), this.workspace.RTL && (i += "‏"), e.textContent = i, this.isFlyoutLabel && (this.svgText = e, this.workspace.getThemeManager().subscribe(this.svgText, "flyoutForegroundColour", "fill")), q(e, J.NONE), s = `${i}, ${this.isFlyoutLabel ? n.C.ARIA_LABEL_HEADING : n.C.ARIA_LABEL_BUTTON}`, w(this.getFocusableElement(), k.LABEL, s), q(this.getFocusableElement(), J.OPTION), s = Xe(e, "fontSize");
+          t = S(E.RECT, { class: this.isFlyoutLabel ? "blocklyFlyoutLabelBackground" : "blocklyFlyoutButtonBackground", rx: oe.BORDER_RADIUS, ry: oe.BORDER_RADIUS }, this.svgGroup), Z(t, q.NONE), e = S(E.TEXT, { class: this.isFlyoutLabel ? "blocklyFlyoutLabelText" : "blocklyText", x: 0, y: 0, "text-anchor": "middle" }, this.svgGroup), i = Et(this.text), this.workspace.RTL && (i += "‏"), e.textContent = i, this.isFlyoutLabel && (this.svgText = e, this.workspace.getThemeManager().subscribe(this.svgText, "flyoutForegroundColour", "fill")), Z(e, q.NONE), s = `${i}, ${this.isFlyoutLabel ? n.C.ARIA_LABEL_HEADING : n.C.ARIA_LABEL_BUTTON}`, D(this.getFocusableElement(), N.LABEL, s), Z(this.getFocusableElement(), q.OPTION), s = Xe(e, "fontSize");
           var r = Xe(e, "fontWeight"), a = Xe(e, "fontFamily");
           if (this.width = O(e, s, r, a), i = dt(i, s, r, a), this.height = this.height || i.height, !this.isFlyoutLabel) {
             this.width += 2 * oe.TEXT_MARGIN_X, this.height += 2 * oe.TEXT_MARGIN_Y;
@@ -8817,7 +8817,7 @@ children`), this.state = t;
           return this.position;
         }
         getBoundingRectangle() {
-          return new j(this.position.y, this.position.y + this.height, this.position.x, this.position.x + this.width);
+          return new $(this.position.y, this.position.y + this.height, this.position.x, this.position.x + this.width);
         }
         getButtonText() {
           return this.text;
@@ -8852,7 +8852,7 @@ children`), this.state = t;
         }
         onNodeFocus() {
           var t = this.getPosition();
-          t = new j(t.y, t.y + this.height, t.x, t.x + this.width), this.workspace.scrollBoundsIntoView(t);
+          t = new $(t.y, t.y + this.height, t.x, t.x + this.width), this.workspace.scrollBoundsIntoView(t);
         }
         onNodeBlur() {
         }
@@ -8870,7 +8870,7 @@ children`), this.state = t;
           } else (t = this.targetWorkspace.getButtonCallback(this.callbackKey)) && t(this);
         }
       };
-      oe.TEXT_MARGIN_X = 5, oe.TEXT_MARGIN_Y = 2, oe.BORDER_RADIUS = 4, Rt(`
+      oe.TEXT_MARGIN_X = 5, oe.TEXT_MARGIN_Y = 2, oe.BORDER_RADIUS = 4, At(`
 .blocklyFlyoutButton {
   fill: #888;
   cursor: default;
@@ -8900,8 +8900,8 @@ children`), this.state = t;
 `);
       var Si, _o = Si || (Si = {});
       _o[_o.COMMIT = 1] = "COMMIT", _o[_o.DELETE = 2] = "DELETE", _o[_o.REVERT = 3] = "REVERT";
-      var Y, Q = Y || (Y = {});
-      Q.ESCAPE = "escape", Q.DELETE = "delete", Q.COPY = "copy", Q.CUT = "cut", Q.PASTE = "paste", Q.UNDO = "undo", Q.REDO = "redo", Q.MENU = "menu", Q.FOCUS_WORKSPACE = "focus_workspace", Q.FOCUS_TOOLBOX = "focus_toolbox", Q.START_MOVE = "start_move", Q.START_MOVE_STACK = "start_move_stack", Q.FINISH_MOVE = "finish_move", Q.ABORT_MOVE = "abort_move", Q.MOVE_UP = "move_up", Q.MOVE_DOWN = "move_down", Q.MOVE_LEFT = "move_left", Q.MOVE_RIGHT = "move_right", Q.NAVIGATE_RIGHT = "right", Q.NAVIGATE_LEFT = "left", Q.NAVIGATE_UP = "up", Q.NAVIGATE_DOWN = "down", Q.DISCONNECT = "disconnect", Q.NEXT_STACK = "next_stack", Q.PREVIOUS_STACK = "previous_stack", Q.INFORMATION = "information", Q.EXTENDED_INFORMATION = "extended_information", Q.PERFORM_ACTION = "perform_action", Q.DUPLICATE = "duplicate", Q.CLEANUP = "cleanup", Q.SHOW_TOOLTIP = "show_tooltip", Q.NEXT_HEADING = "next_heading", Q.PREVIOUS_HEADING = "previous_heading", Q.TOGGLE_SCREENREADER = "toggle_screenreader", Q.JUMP_TOP_STACK = "jump_to_top_of_stack", Q.JUMP_BOTTOM_STACK = "jump_to_bottom_of_stack", Q.JUMP_BLOCK_START = "jump_to_block_start", Q.JUMP_BLOCK_END = "jump_to_block_end", Q.JUMP_FIRST_BLOCK = "jump_to_first_block", Q.JUMP_LAST_BLOCK = "jump_to_last_block";
+      var Y, tt = Y || (Y = {});
+      tt.ESCAPE = "escape", tt.DELETE = "delete", tt.COPY = "copy", tt.CUT = "cut", tt.PASTE = "paste", tt.UNDO = "undo", tt.REDO = "redo", tt.MENU = "menu", tt.FOCUS_WORKSPACE = "focus_workspace", tt.FOCUS_TOOLBOX = "focus_toolbox", tt.START_MOVE = "start_move", tt.START_MOVE_STACK = "start_move_stack", tt.FINISH_MOVE = "finish_move", tt.ABORT_MOVE = "abort_move", tt.MOVE_UP = "move_up", tt.MOVE_DOWN = "move_down", tt.MOVE_LEFT = "move_left", tt.MOVE_RIGHT = "move_right", tt.NAVIGATE_RIGHT = "right", tt.NAVIGATE_LEFT = "left", tt.NAVIGATE_UP = "up", tt.NAVIGATE_DOWN = "down", tt.DISCONNECT = "disconnect", tt.NEXT_STACK = "next_stack", tt.PREVIOUS_STACK = "previous_stack", tt.INFORMATION = "information", tt.EXTENDED_INFORMATION = "extended_information", tt.PERFORM_ACTION = "perform_action", tt.DUPLICATE = "duplicate", tt.CLEANUP = "cleanup", tt.SHOW_TOOLTIP = "show_tooltip", tt.NEXT_HEADING = "next_heading", tt.PREVIOUS_HEADING = "previous_heading", tt.TOGGLE_SCREENREADER = "toggle_screenreader", tt.JUMP_TOP_STACK = "jump_to_top_of_stack", tt.JUMP_BOTTOM_STACK = "jump_to_bottom_of_stack", tt.JUMP_BLOCK_START = "jump_to_block_start", tt.JUMP_BLOCK_END = "jump_to_block_end", tt.JUMP_FIRST_BLOCK = "jump_to_first_block", tt.JUMP_LAST_BLOCK = "jump_to_last_block";
       var nu = (t) => {
         if (t.isFlyout) {
           let i = t.targetWorkspace;
@@ -8929,10 +8929,10 @@ children`), this.state = t;
           if (t = Li(t.workspace, t.getRelativeToSurfaceXY()), t = ts(e.workspace, t), e.moveDuringDrag(t), this.moveMode === Re.CONSTRAINED) {
             var i = e.workspace, s = this.WORKSPACE_MARGIN;
             t = this.WORKSPACE_MARGIN;
-            var o = Math.max(n.Ng.connectingSnapRadius, n.Ng.snapRadius) + 2, r = i.getTopBlocks(!0).filter((z) => z.id !== e.id).map((z) => (z = z.getBoundingRectangle(), new j(z.top - o, z.bottom + o, z.left - o, z.right + o))), a, c = (a = i.getToolbox()) == null ? void 0 : a.getWidth();
+            var o = Math.max(n.Ng.connectingSnapRadius, n.Ng.snapRadius) + 2, r = i.getTopBlocks(!0).filter((z) => z.id !== e.id).map((z) => (z = z.getBoundingRectangle(), new $(z.top - o, z.bottom + o, z.left - o, z.right + o))), a, c = (a = i.getToolbox()) == null ? void 0 : a.getWidth();
             a = i.getParentSvg().clientWidth - (c ?? 0), i.getParentSvg(), { width: c } = e.getHeightWidth();
             var g = function(z) {
-              for (let tt of r) if (z.intersects(tt)) return tt;
+              for (let et of r) if (z.intersects(et)) return et;
               return null;
             }, v = t;
             i = i.getRenderer().getConstants().MIN_BLOCK_HEIGHT;
@@ -9060,14 +9060,14 @@ children`), this.state = t;
             let G;
             g = (G = i?.neighbour.getSourceBlock()) != null ? G : null;
             let z;
-            if (B = (z = g?.getRootBlock()) != null ? z : g, B === t && (B = g), B && (g = t.workspace.getTopBlocks().filter((tt) => tt !== t.getRootBlock()).map((tt) => tt.getBoundingRectangle()), g.length)) {
+            if (B = (z = g?.getRootBlock()) != null ? z : g, B === t && (B = g), B && (g = t.workspace.getTopBlocks().filter((et) => et !== t.getRootBlock()).map((et) => et.getBoundingRectangle()), g.length)) {
               switch (i = (v = i?.neighbour.x) != null ? v : t.getRelativeToSurfaceXY().x, v = this.BLOCK_CONNECTION_OFFSET * 2, this.getDirectionToNewLocation(A.sum(this.startLoc, e))) {
                 case mt.LEFT:
                 case mt.UP:
-                  e = Math.min(...g.map((tt) => tt.top)) - v - t.getHeightWidth().height;
+                  e = Math.min(...g.map((et) => et.top)) - v - t.getHeightWidth().height;
                   break;
                 default:
-                  e = Math.max(...g.map((tt) => tt.bottom)) + v;
+                  e = Math.max(...g.map((et) => et.bottom)) + v;
               }
               t.moveDuringDrag(new A(
                 i,
@@ -9257,7 +9257,7 @@ children`), this.state = t;
           super.configure_(t), t.class && (this.class = t.class);
         }
         initView() {
-          this.createTextElement_(), this.class && L(this.getTextElement(), this.class), this.fieldGroup_ && (L(this.fieldGroup_, "blocklyLabelField"), w(this.fieldGroup_, k.HIDDEN, !0));
+          this.createTextElement_(), this.class && L(this.getTextElement(), this.class), this.fieldGroup_ && (L(this.fieldGroup_, "blocklyLabelField"), D(this.fieldGroup_, N.HIDDEN, !0));
         }
         computeAriaLabel(t = !0) {
           t = t ? this.getAriaTypeName() : null;
@@ -9307,7 +9307,7 @@ children`), this.state = t;
         }
         updateBubbleSize() {
           var t = this.paragraph.getBBox();
-          this.setSize(new $(t.width + rt.BORDER_WIDTH * 2, t.height + rt.BORDER_WIDTH * 2), !0);
+          this.setSize(new J(t.width + rt.BORDER_WIDTH * 2, t.height + rt.BORDER_WIDTH * 2), !0);
         }
       }, ni = class extends ao {
         constructor(t) {
@@ -9328,7 +9328,7 @@ children`), this.state = t;
           return ni.WEIGHT;
         }
         getSize() {
-          return new $(17, 17);
+          return new J(17, 17);
         }
         applyColour() {
           super.applyColour();
@@ -9385,14 +9385,14 @@ children`), this.state = t;
         }
         getBubbleOwnerRect() {
           var t = this.sourceBlock.getSvgRoot().getBBox();
-          return new j(t.y, t.y + t.height, t.x, t.x + t.width);
+          return new $(t.y, t.y + t.height, t.x, t.x + t.width);
         }
         getAriaLabel() {
           return this.bubbleIsVisible() ? n.C.ICON_LABEL_WARNING_OPEN : n.C.ICON_LABEL_WARNING_CLOSED;
         }
       };
       ni.TYPE = Pt.WARNING, ni.WEIGHT = 2;
-      var Nt = class extends po {
+      var wt = class extends po {
         constructor(t, e, i) {
           if (super(t, e, i), this.childlessWidth = this.width = this.height = 0, this.warningTextDb = /* @__PURE__ */ new Map(), this.mutator = null, this.rendered = !0, this.visuallyDisabled = !1, this.previousConnection = this.nextConnection = this.outputConnection = null, this.translation = "", this.dragging = !1, this.relativeCoords = new A(0, 0), this.dragStrategy = new Jg(this), !t.rendered) throw TypeError("Cannot create a rendered block in a headless workspace");
           this.workspace = t, this.svgGroup = S(E.G, {}), e && L(
@@ -9443,7 +9443,7 @@ children`), this.state = t;
         }
         moveBy(t, e, i) {
           if (this.parentBlock_) throw Error("Block has parent");
-          var s = Ct(), o = null;
+          var s = vt(), o = null;
           s && (o = new (W(f.BLOCK_MOVE))(this), i && o.setReason(i)), t = new A(t, e), e = this.getRelativeToSurfaceXY(), t = A.sum(e, t), this.translate(t.x, t.y), this.updateComponentLocations(t), s && o && (o.recordNew(), V(o)), this.workspace.resizeContents();
         }
         translate(t, e) {
@@ -9479,7 +9479,7 @@ children`), this.state = t;
           if (this.RTL)
             var i = e.x - t.width, s = e.x;
           else i = e.x, s = e.x + t.width;
-          return new j(
+          return new $(
             e.y,
             e.y + t.height,
             i,
@@ -9504,7 +9504,7 @@ children`), this.state = t;
           var t = this.isCollapsed();
           for (let i = 0, s; s = this.inputList[i]; i++) s.name !== "_TEMP_COLLAPSED_INPUT" && s.setVisible(!t);
           for (var e of this.getIcons()) e.updateCollapsed();
-          t ? (L(this.svgGroup, "blocklyCollapsed"), this.childHasWarning() && this.setWarningText(n.C.COLLAPSED_WARNINGS_WARNING, Nt.COLLAPSED_WARNING_ID), t = this.toString(30), (e = this.getField("_TEMP_COLLAPSED_FIELD")) ? e.setValue(t) : ((this.getInput("_TEMP_COLLAPSED_INPUT") || this.appendDummyInput("_TEMP_COLLAPSED_INPUT")).appendField(new Ls(t), "_TEMP_COLLAPSED_FIELD"), this.recomputeAriaContext())) : (this.updateDisabled(), this.removeInput("_TEMP_COLLAPSED_INPUT"), ot(this.svgGroup, "blocklyCollapsed"), this.setWarningText(null, Nt.COLLAPSED_WARNING_ID));
+          t ? (L(this.svgGroup, "blocklyCollapsed"), this.childHasWarning() && this.setWarningText(n.C.COLLAPSED_WARNINGS_WARNING, wt.COLLAPSED_WARNING_ID), t = this.toString(30), (e = this.getField("_TEMP_COLLAPSED_FIELD")) ? e.setValue(t) : ((this.getInput("_TEMP_COLLAPSED_INPUT") || this.appendDummyInput("_TEMP_COLLAPSED_INPUT")).appendField(new Ls(t), "_TEMP_COLLAPSED_FIELD"), this.recomputeAriaContext())) : (this.updateDisabled(), this.removeInput("_TEMP_COLLAPSED_INPUT"), ot(this.svgGroup, "blocklyCollapsed"), this.setWarningText(null, wt.COLLAPSED_WARNING_ID));
         }
         onMouseDown(t) {
           if (!this.workspace.isReadOnly()) {
@@ -9517,7 +9517,7 @@ children`), this.state = t;
           t && window.open(t);
         }
         generateContextMenu(t) {
-          return this.workspace.isReadOnly() || !this.contextMenu ? null : (t = Z.registry.getContextMenuOptions({ block: this, focusedNode: this }, t), this.customContextMenu && this.customContextMenu(t), t);
+          return this.workspace.isReadOnly() || !this.contextMenu ? null : (t = Q.registry.getContextMenuOptions({ block: this, focusedNode: this }, t), this.customContextMenu && this.customContextMenu(t), t);
         }
         calculateContextMenuLocation(t) {
           if (t instanceof PointerEvent) return new A(t.clientX, t.clientY);
@@ -9650,7 +9650,7 @@ children`), this.state = t;
           else if (this.isInFlyout && (t = null), i = this.getIcon(ni.TYPE), t) {
             let s = this.getSurroundParent(), o = null;
             for (; s; ) s.isCollapsed() && (o = s), s = s.getSurroundParent();
-            o && o.setWarningText(n.C.COLLAPSED_WARNINGS_WARNING, Nt.COLLAPSED_WARNING_ID), i ? i.addMessage(t, e) : this.addIcon(new ni(this).addMessage(t, e));
+            o && o.setWarningText(n.C.COLLAPSED_WARNINGS_WARNING, wt.COLLAPSED_WARNING_ID), i ? i.addMessage(t, e) : this.addIcon(new ni(this).addMessage(t, e));
           } else i && (e ? (i.addMessage("", e), i.getText() || this.removeIcon(ni.TYPE)) : this.removeIcon(ni.TYPE));
         }
         setMutator(t) {
@@ -9922,11 +9922,11 @@ children`), this.state = t;
         }
         recomputeAriaContext() {
           var t = this.getFullBlockField();
-          t ? t.recomputeAriaContext() : (w(
+          t ? t.recomputeAriaContext() : (D(
             this.getFocusableElement(),
-            k.LABEL,
+            N.LABEL,
             this.getAriaLabel(_t.STANDARD)
-          ), q(this.getSvgRoot(), J.NONE), t = this.getFocusableElement(), this.isInFlyout || q(t, J.FIGURE), w(t, k.ROLEDESCRIPTION, this.getAriaRoleDescription()));
+          ), Z(this.getSvgRoot(), q.NONE), t = this.getFocusableElement(), this.isInFlyout || Z(t, q.FIGURE), D(t, N.ROLEDESCRIPTION, this.getAriaRoleDescription()));
         }
         getAriaLabel(t) {
           return gi(this, t);
@@ -9936,7 +9936,7 @@ children`), this.state = t;
           return t <= 1 ? gi(this, _t.TERSE) : n.C.BLOCK_LABEL_STACK_BLOCKS.replace("%1", t.toString());
         }
       };
-      Nt.INLINE = -1, Nt.COLLAPSED_WARNING_ID = "TEMP_COLLAPSED_WARNING_";
+      wt.INLINE = -1, wt.COLLAPSED_WARNING_ID = "TEMP_COLLAPSED_WARNING_";
       var Zg = class {
         constructor() {
         }
@@ -9959,7 +9959,7 @@ children`), this.state = t;
           super(), this.wouldDelete_ = !1;
         }
         wouldDelete(t) {
-          return ct.mover.isMoving() ? this.updateWouldDelete_(!1) : t instanceof Nt ? (t = !t.getParent() && t.isDeletable(), this.updateWouldDelete_(t)) : this.updateWouldDelete_(ye(t) && t.isDeletable()), this.wouldDelete_;
+          return ct.mover.isMoving() ? this.updateWouldDelete_(!1) : t instanceof wt ? (t = !t.getParent() && t.isDeletable(), this.updateWouldDelete_(t)) : this.updateWouldDelete_(ye(t) && t.isDeletable()), this.wouldDelete_;
         }
         updateWouldDelete_(t) {
           this.wouldDelete_ = t;
@@ -9980,7 +9980,7 @@ children`), this.state = t;
         }
         getDimensionsPx_(t) {
           var e = 0, i = 0;
-          return t && (e = t.getWidth(), i = t.getHeight()), new $(e, i);
+          return t && (e = t.getWidth(), i = t.getHeight()), new J(e, i);
         }
         getFlyoutMetrics(t) {
           return t = this.getDimensionsPx_(this.workspace_.getFlyout(t)), { width: t.width, height: t.height, position: this.workspace_.toolboxPosition };
@@ -9995,15 +9995,15 @@ children`), this.state = t;
         getAbsoluteMetrics() {
           var t = 0, e = 0, i = this.getToolboxMetrics(), s = this.getFlyoutMetrics(), o = !!this.workspace_.getToolbox(), r, a = !((r = this.workspace_.getFlyout()) != null && r.autoClose);
           r = o ? i.position : s.position;
-          var c = r === M.TOP;
-          return r === M.LEFT && (o && (t += i.width), a && (t += s.width)), c && (o && (e += i.height), a && (e += s.height)), { top: e, left: t };
+          var c = r === P.TOP;
+          return r === P.LEFT && (o && (t += i.width), a && (t += s.width)), c && (o && (e += i.height), a && (e += s.height)), { top: e, left: t };
         }
         getViewMetrics(t) {
           t = t ? this.workspace_.scale : 1;
           var e = this.getSvgMetrics(), i = this.getToolboxMetrics(), s = this.getFlyoutMetrics(), o = !!this.workspace_.getToolbox(), r, a = !((r = this.workspace_.getFlyout()) != null && r.autoClose);
           r = o ? i.position : s.position;
-          var c = r === M.LEFT || r === M.RIGHT;
-          return (r === M.TOP || r === M.BOTTOM) && (o && (e.height -= i.height), a && (e.height -= s.height)), c && (o && (e.width -= i.width), a && (e.width -= s.width)), { height: e.height / t, width: e.width / t, top: -this.workspace_.scrollY / t, left: -this.workspace_.scrollX / t };
+          var c = r === P.LEFT || r === P.RIGHT;
+          return (r === P.TOP || r === P.BOTTOM) && (o && (e.height -= i.height), a && (e.height -= s.height)), c && (o && (e.width -= i.width), a && (e.width -= s.width)), { height: e.height / t, width: e.width / t, top: -this.workspace_.scrollY / t, left: -this.workspace_.scrollX / t };
         }
         getContentMetrics(t) {
           t = t ? 1 : this.workspace_.scale;
@@ -10100,9 +10100,9 @@ children`), this.state = t;
         getBoundingRectangle() {
           switch (this.axis) {
             case "x":
-              return new j(this.y, this.y, this.x, this.x + this.gap);
+              return new $(this.y, this.y, this.x, this.x + this.gap);
             case "y":
-              return new j(this.y, this.y + this.gap, this.x, this.x);
+              return new $(this.y, this.y + this.gap, this.x, this.x);
           }
         }
         moveBy(t, e) {
@@ -10203,7 +10203,7 @@ children`), this.state = t;
           return t.canBeFocused();
         }
         isApplicable(t) {
-          return t instanceof Nt;
+          return t instanceof wt;
         }
       }, sp = class {
         getFirstChild() {
@@ -10541,7 +10541,7 @@ children`), this.state = t;
           return (e = this.get(t)) == null ? void 0 : e.isNavigable(t);
         }
         getSourceBlockFromNode(t) {
-          return t instanceof Nt ? t : t instanceof ht || t instanceof Xt || t instanceof ao ? t.getSourceBlock() : t instanceof on ? (t = t.getParent(), t instanceof Nt ? t : null) : null;
+          return t instanceof wt ? t : t instanceof ht || t instanceof Xt || t instanceof ao ? t.getSourceBlock() : t instanceof on ? (t = t.getParent(), t instanceof wt ? t : null) : null;
         }
       }, up = class {
         getFirstChild(t) {
@@ -10581,40 +10581,40 @@ children`), this.state = t;
         getInNode(t = n.t().getFocusedNode(), e = !1) {
           var i = pi(this.toolbox.getWorkspace());
           if (!e) switch (i) {
-            case M.TOP:
-            case M.BOTTOM:
+            case P.TOP:
+            case P.BOTTOM:
               return this.getNextNode(t, !0);
-            case M.RIGHT:
+            case P.RIGHT:
               return this.getOutNode(t, !0);
           }
           if (!ss(t) || ss(t) && !t.getContents().length) return null;
           var s;
-          return (t = (s = this.toolbox.getFlyout()) == null ? void 0 : s.getWorkspace().getNavigator()) ? !this.toolbox.getWorkspace().RTL || i !== M.TOP && i !== M.BOTTOM ? t.getFirstNode() : t.getLastNode() : null;
+          return (t = (s = this.toolbox.getFlyout()) == null ? void 0 : s.getWorkspace().getNavigator()) ? !this.toolbox.getWorkspace().RTL || i !== P.TOP && i !== P.BOTTOM ? t.getFirstNode() : t.getLastNode() : null;
         }
         getOutNode(t, e = !1) {
           if (!e) switch (pi(this.toolbox.getWorkspace())) {
-            case M.TOP:
-            case M.BOTTOM:
+            case P.TOP:
+            case P.BOTTOM:
               return this.getPreviousNode(t, !0);
-            case M.RIGHT:
+            case P.RIGHT:
               return this.getInNode(t, !0);
           }
           return super.getOutNode(t);
         }
         getNextNode(t, e = !1) {
           if (!e) switch (pi(this.toolbox.getWorkspace())) {
-            case M.TOP:
+            case P.TOP:
               return this.getInNode(t, !0);
-            case M.BOTTOM:
+            case P.BOTTOM:
               return this.getOutNode(t, !0);
           }
           return super.getNextNode(t);
         }
         getPreviousNode(t, e = !1) {
           if (!e) switch (pi(this.toolbox.getWorkspace())) {
-            case M.TOP:
+            case P.TOP:
               return this.getOutNode(t, !0);
-            case M.BOTTOM:
+            case P.BOTTOM:
               return this.getInNode(
                 t,
                 !0
@@ -10631,10 +10631,10 @@ children`), this.state = t;
         }
         getOutNode(t, e = !1) {
           if (!e && this.flyout.targetWorkspace) switch (pi(this.flyout.targetWorkspace)) {
-            case M.TOP:
-            case M.BOTTOM:
+            case P.TOP:
+            case P.BOTTOM:
               return this.flyout.RTL ? this.getNextNode(t, !0) : this.getPreviousNode(t, !0);
-            case M.RIGHT:
+            case P.RIGHT:
               return null;
           }
           var i;
@@ -10642,28 +10642,28 @@ children`), this.state = t;
         }
         getInNode(t, e = !1) {
           if (!e && this.flyout.targetWorkspace) switch (pi(this.flyout.targetWorkspace)) {
-            case M.TOP:
-            case M.BOTTOM:
+            case P.TOP:
+            case P.BOTTOM:
               return this.flyout.RTL ? this.getPreviousNode(t, !0) : this.getNextNode(t, !0);
-            case M.RIGHT:
+            case P.RIGHT:
               return this.getOutNode(t, !0);
           }
           return super.getInNode(t);
         }
         getNextNode(t, e = !1) {
           if (!e && this.flyout.targetWorkspace) switch (pi(this.flyout.targetWorkspace)) {
-            case M.TOP:
+            case P.TOP:
               return null;
-            case M.BOTTOM:
+            case P.BOTTOM:
               return this.getOutNode(t, !0);
           }
           return super.getNextNode(t);
         }
         getPreviousNode(t, e = !1) {
           if (!e && this.flyout.targetWorkspace) switch (pi(this.flyout.targetWorkspace)) {
-            case M.TOP:
+            case P.TOP:
               return this.getOutNode(t, !0);
-            case M.BOTTOM:
+            case P.BOTTOM:
               return null;
           }
           return super.getPreviousNode(t);
@@ -10678,7 +10678,7 @@ children`), this.state = t;
         constructor(t, e, i, s, o) {
           this.workspace = t, this.oldHostMetrics = this.corner_ = this.vScroll = this.hScroll = null, e = e === void 0 ? !0 : e, i = i === void 0 ? !0 : i;
           var r = e && i;
-          e && (this.hScroll = new Ot(t, !0, r, s, o)), i && (this.vScroll = new Ot(t, !1, r, s, o)), r && (this.corner_ = S(E.RECT, { height: Ot.scrollbarThickness, width: Ot.scrollbarThickness, class: "blocklyScrollbarBackground" }), Ji(this.corner_, t.getBubbleCanvas()));
+          e && (this.hScroll = new yt(t, !0, r, s, o)), i && (this.vScroll = new yt(t, !1, r, s, o)), r && (this.corner_ = S(E.RECT, { height: yt.scrollbarThickness, width: yt.scrollbarThickness, class: "blocklyScrollbarBackground" }), Ji(this.corner_, t.getBubbleCanvas()));
         }
         dispose() {
           lt(this.corner_), this.oldHostMetrics = this.corner_ = null, this.hScroll && (this.hScroll.dispose(), this.hScroll = null), this.vScroll && (this.vScroll.dispose(), this.vScroll = null);
@@ -10834,9 +10834,9 @@ children`), this.state = t;
         }
         updateAriaContext() {
           var t = this.getContents().map((i) => i.getElement()).filter((i) => i.canBeFocused()).map((i) => i.getFocusableElement().id);
-          w(this.getWorkspace().getCanvas(), k.OWNS, t.join(" ")), this.targetWorkspace.isMutator || this.autoClose ? q(this.getWorkspace().svgGroup_, J.NONE) : q(this.getWorkspace().svgGroup_, J.REGION);
+          D(this.getWorkspace().getCanvas(), N.OWNS, t.join(" ")), this.targetWorkspace.isMutator || this.autoClose ? Z(this.getWorkspace().svgGroup_, q.NONE) : Z(this.getWorkspace().svgGroup_, q.REGION);
           var e = (t = (e = this.targetWorkspace.getToolbox()) == null ? void 0 : e.getSelectedItem()) && ss(t) ? t.getName() : "";
-          e = n.C.WORKSPACE_LABEL_FLYOUT_WORKSPACE.replace("%1", e).trim(), w(this.getWorkspace().getCanvas(), k.LABEL, e), q(this.getWorkspace().getCanvas(), J.LISTBOX);
+          e = n.C.WORKSPACE_LABEL_FLYOUT_WORKSPACE.replace("%1", e).trim(), D(this.getWorkspace().getCanvas(), N.LABEL, e), Z(this.getWorkspace().getCanvas(), q.LISTBOX);
         }
         createFlyoutInfo(t) {
           var e = [], i = this.horizontalLayout ? this.GAP_X : this.GAP_Y;
@@ -10908,7 +10908,7 @@ children`), this.state = t;
         }
         updateFromEvent(t) {
           var e = new A(t.clientX, t.clientY);
-          this.updateDragDelta(e) && (this.updateIsDragging(t), P()), this.mostRecentEvent = t;
+          this.updateDragDelta(e) && (this.updateIsDragging(t), M()), this.mostRecentEvent = t;
         }
         updateDragDelta(t) {
           return this.currentDragDeltaXY = A.difference(t, this.mouseDownXY), this.hasExceededDragRadius ? !1 : this.hasExceededDragRadius = A.magnitude(this.currentDragDeltaXY) > (this.flyout ? n.Ng.flyoutDragRadius : n.Ng.dragRadius);
@@ -10935,15 +10935,15 @@ children`), this.state = t;
           this.boundEvents.push(H(document, "pointerdown", null, this.handleStart.bind(this), !0)), this.boundEvents.push(H(document, "pointermove", null, this.handleMove.bind(this), !0)), this.boundEvents.push(H(document, "pointerup", null, this.handleUp.bind(this), !0)), this.boundEvents.push(H(document, "pointercancel", null, this.handleUp.bind(this), !0)), t.preventDefault(), t.stopPropagation();
         }
         handleStart(t) {
-          this.isDragging() || (this.handleTouchStart(t), this.isMultiTouch() && P());
+          this.isDragging() || (this.handleTouchStart(t), this.isMultiTouch() && M());
         }
         handleMove(t) {
-          this.isDragging() && et(t) || !this.isMultiTouch() ? (this.updateFromEvent(t), this.workspaceDragger ? this.workspaceDragger.drag(this.currentDragDeltaXY) : this.dragger && this.dragger.onDrag(this.mostRecentEvent, this.currentDragDeltaXY), t.preventDefault(), t.stopPropagation()) : this.isMultiTouch() && (this.handleTouchMove(t), P());
+          this.isDragging() && j(t) || !this.isMultiTouch() ? (this.updateFromEvent(t), this.workspaceDragger ? this.workspaceDragger.drag(this.currentDragDeltaXY) : this.dragger && this.dragger.onDrag(this.mostRecentEvent, this.currentDragDeltaXY), t.preventDefault(), t.stopPropagation()) : this.isMultiTouch() && (this.handleTouchMove(t), M());
         }
         handleUp(t) {
           if (this.isDragging() || this.handleTouchEnd(t), !this.isMultiTouch() || this.isDragging()) {
-            if (!et(t)) return;
-            if (this.updateFromEvent(t), P(), this.isEnding_) {
+            if (!j(t)) return;
+            if (this.updateFromEvent(t), M(), this.isEnding_) {
               console.log("Trying to end a gesture recursively.");
               return;
             }
@@ -10952,13 +10952,13 @@ children`), this.state = t;
           t.preventDefault(), t.stopPropagation(), this.dispose();
         }
         handleTouchStart(t) {
-          var e = Mt(t);
+          var e = Ct(t);
           this.cachedPoints.set(e, this.getTouchPoint(t));
           var i = Array.from(this.cachedPoints.keys());
           i.length === 2 && (e = this.cachedPoints.get(i[0]), i = this.cachedPoints.get(i[1]), this.startDistance = A.distance(e, i), this.multiTouch = !0, t.preventDefault());
         }
         handleTouchMove(t) {
-          var e = Mt(t);
+          var e = Ct(t);
           this.cachedPoints.set(e, this.getTouchPoint(t)), this.isPinchZoomEnabled && this.cachedPoints.size === 2 ? this.handlePinch(t) : (this.updateFromEvent(t), this.workspaceDragger ? this.workspaceDragger.drag(this.currentDragDeltaXY) : this.dragger && this.dragger.onDrag(this.mostRecentEvent, this.currentDragDeltaXY), t.preventDefault(), t.stopPropagation());
         }
         handlePinch(t) {
@@ -10971,7 +10971,7 @@ children`), this.state = t;
           this.previousScale = i, t.preventDefault();
         }
         handleTouchEnd(t) {
-          t = Mt(t), this.cachedPoints.has(t) && this.cachedPoints.delete(t), this.cachedPoints.size < 2 && (this.cachedPoints.clear(), this.previousScale = 0);
+          t = Ct(t), this.cachedPoints.has(t) && this.cachedPoints.delete(t), this.cachedPoints.size < 2 && (this.cachedPoints.clear(), this.previousScale = 0);
         }
         getTouchPoint(t) {
           return this.startWorkspace_ ? new A(t.pageX, t.pageY) : null;
@@ -10980,7 +10980,7 @@ children`), this.state = t;
           return this.multiTouch;
         }
         cancel() {
-          this.isEnding_ || (P(), this.dragger ? this.dragger.onDragEnd(this.mostRecentEvent, this.currentDragDeltaXY) : this.workspaceDragger && this.workspaceDragger.endDrag(this.currentDragDeltaXY), this.dispose());
+          this.isEnding_ || (M(), this.dragger ? this.dragger.onDragEnd(this.mostRecentEvent, this.currentDragDeltaXY) : this.workspaceDragger && this.workspaceDragger.endDrag(this.currentDragDeltaXY), this.dispose());
         }
         handleRightClick(t) {
           var e = n.t().getFocusedNode();
@@ -11236,7 +11236,7 @@ children`), this.state = t;
       };
       var ri = class extends ao {
         constructor(t) {
-          super(t), this.sourceBlock = t, this.textInputBubble = null, this.text = "", this.bubbleSize = new $(160, 80), this.bubbleVisiblity = !1;
+          super(t), this.sourceBlock = t, this.textInputBubble = null, this.text = "", this.bubbleSize = new J(160, 80), this.bubbleVisiblity = !1;
         }
         getType() {
           return ri.TYPE;
@@ -11257,7 +11257,7 @@ children`), this.state = t;
           return ri.WEIGHT;
         }
         getSize() {
-          return new $(17, 17);
+          return new J(17, 17);
         }
         applyColour() {
           super.applyColour();
@@ -11312,7 +11312,7 @@ children`), this.state = t;
           var e;
           this.text = (e = t.text) != null ? e : "";
           var i, s;
-          this.bubbleSize = new $((i = t.width) != null ? i : 160, (s = t.height) != null ? s : 80);
+          this.bubbleSize = new J((i = t.width) != null ? i : 160, (s = t.height) != null ? s : 80);
           var o;
           this.bubbleVisiblity = (o = t.pinned) != null ? o : !1, this.setBubbleVisible(this.bubbleVisiblity);
           var r = t.x, a = t.y;
@@ -11710,7 +11710,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
       }, fu = /* @__PURE__ */ new Map(), nl = class {
         constructor() {
-          this.NO_PADDING = 0, this.SMALL_PADDING = 3, this.MEDIUM_PADDING = 5, this.MEDIUM_LARGE_PADDING = 8, this.LARGE_PADDING = 10, this.TAB_HEIGHT = 15, this.TAB_OFFSET_FROM_TOP = 5, this.TAB_VERTICAL_OVERLAP = 2.5, this.TAB_WIDTH = 8, this.NOTCH_WIDTH = 15, this.NOTCH_HEIGHT = 4, this.MIN_BLOCK_WIDTH = 12, this.EMPTY_BLOCK_SPACER_HEIGHT = 16, this.CORNER_RADIUS = 8, this.NOTCH_OFFSET_LEFT = 15, this.STATEMENT_BOTTOM_SPACER = 0, this.STATEMENT_INPUT_PADDING_LEFT = 20, this.BETWEEN_STATEMENT_PADDING_Y = 4, this.ADD_START_HATS = !1, this.START_HAT_HEIGHT = 15, this.START_HAT_WIDTH = 100, this.SPACER_DEFAULT_HEIGHT = 15, this.MIN_BLOCK_HEIGHT = 24, this.EMPTY_INLINE_INPUT_PADDING = 14.5, this.EXTERNAL_VALUE_INPUT_PADDING = 2, this.JAGGED_TEETH_HEIGHT = 12, this.JAGGED_TEETH_WIDTH = 6, this.FIELD_TEXT_FONTSIZE = 11, this.FIELD_TEXT_FONTWEIGHT = "normal", this.FIELD_TEXT_FONTFAMILY = "sans-serif", this.FIELD_TEXT_BASELINE = this.FIELD_TEXT_HEIGHT = -1, this.FIELD_BORDER_RECT_RADIUS = 4, this.FIELD_BORDER_RECT_HEIGHT = 16, this.FIELD_BORDER_RECT_X_PADDING = 5, this.FIELD_BORDER_RECT_Y_PADDING = 3, this.FIELD_BORDER_RECT_COLOUR = "#fff", this.FIELD_DROPDOWN_SVG_ARROW = this.FIELD_DROPDOWN_COLOURED_DIV = this.FIELD_DROPDOWN_NO_BORDER_RECT_SHADOW = !1, this.FIELD_DROPDOWN_SVG_ARROW_SIZE = 12, this.FIELD_COLOUR_FULL_BLOCK = this.FIELD_TEXTINPUT_BOX_SHADOW = !1, this.FIELD_COLOUR_DEFAULT_WIDTH = 26, this.defs = null, this.embossFilterId = "", this.embossFilter = null, this.disabledPatternId = "", this.disabledPattern = null, this.debugFilterId = "", this.debugFilter = null, this.CURSOR_COLOUR = "#cc0a0a", this.MARKER_COLOUR = "#4286f4", this.CURSOR_WS_WIDTH = 100, this.WS_CURSOR_HEIGHT = 5, this.CURSOR_STACK_PADDING = 10, this.CURSOR_BLOCK_PADDING = 2, this.CURSOR_STROKE_WIDTH = 4, this.FULL_BLOCK_FIELDS = !1, this.INSERTION_MARKER_COLOUR = "#000000", this.INSERTION_MARKER_OPACITY = 0.2, this.SHAPES = { PUZZLE: 1, NOTCH: 2 }, this.TALL_INPUT_FIELD_OFFSET_Y = this.MEDIUM_PADDING, this.DUMMY_INPUT_SHADOW_MIN_HEIGHT = this.DUMMY_INPUT_MIN_HEIGHT = this.TAB_HEIGHT, this.STATEMENT_INPUT_NOTCH_OFFSET = this.NOTCH_OFFSET_LEFT, this.TOP_ROW_MIN_HEIGHT = this.MEDIUM_PADDING, this.TOP_ROW_PRECEDES_STATEMENT_MIN_HEIGHT = this.LARGE_PADDING, this.BOTTOM_ROW_MIN_HEIGHT = this.MEDIUM_PADDING, this.BOTTOM_ROW_AFTER_STATEMENT_MIN_HEIGHT = this.LARGE_PADDING, this.EMPTY_INLINE_INPUT_HEIGHT = this.TAB_HEIGHT + 11, this.EMPTY_STATEMENT_INPUT_HEIGHT = this.MIN_BLOCK_HEIGHT, this.START_POINT = vt(0, 0), this.FIELD_TEXT_BASELINE_CENTER = !0, this.FIELD_DROPDOWN_BORDER_RECT_HEIGHT = this.FIELD_BORDER_RECT_HEIGHT, this.FIELD_DROPDOWN_SVG_ARROW_PADDING = this.FIELD_BORDER_RECT_X_PADDING, this.FIELD_DROPDOWN_SVG_ARROW_DATAURI = "data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMi43MSIgaGVpZ2h0PSI4Ljc5IiB2aWV3Qm94PSIwIDAgMTIuNzEgOC43OSI+PHRpdGxlPmRyb3Bkb3duLWFycm93PC90aXRsZT48ZyBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0xMi43MSwyLjQ0QTIuNDEsMi40MSwwLDAsMSwxMiw0LjE2TDguMDgsOC4wOGEyLjQ1LDIuNDUsMCwwLDEtMy40NSwwTDAuNzIsNC4xNkEyLjQyLDIuNDIsMCwwLDEsMCwyLjQ0LDIuNDgsMi40OCwwLDAsMSwuNzEuNzFDMSwwLjQ3LDEuNDMsMCw2LjM2LDBTMTEuNzUsMC40NiwxMiwuNzFBMi40NCwyLjQ0LDAsMCwxLDEyLjcxLDIuNDRaIiBmaWxsPSIjMjMxZjIwIi8+PC9nPjxwYXRoIGQ9Ik02LjM2LDcuNzlhMS40MywxLjQzLDAsMCwxLTEtLjQyTDEuNDIsMy40NWExLjQ0LDEuNDQsMCwwLDEsMC0yYzAuNTYtLjU2LDkuMzEtMC41Niw5Ljg3LDBhMS40NCwxLjQ0LDAsMCwxLDAsMkw3LjM3LDcuMzdBMS40MywxLjQzLDAsMCwxLDYuMzYsNy43OVoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=", this.FIELD_COLOUR_DEFAULT_HEIGHT = this.FIELD_BORDER_RECT_HEIGHT, this.FIELD_CHECKBOX_X_OFFSET = this.FIELD_BORDER_RECT_X_PADDING - 3, this.randomIdentifier = String(Math.random()).substring(2);
+          this.NO_PADDING = 0, this.SMALL_PADDING = 3, this.MEDIUM_PADDING = 5, this.MEDIUM_LARGE_PADDING = 8, this.LARGE_PADDING = 10, this.TAB_HEIGHT = 15, this.TAB_OFFSET_FROM_TOP = 5, this.TAB_VERTICAL_OVERLAP = 2.5, this.TAB_WIDTH = 8, this.NOTCH_WIDTH = 15, this.NOTCH_HEIGHT = 4, this.MIN_BLOCK_WIDTH = 12, this.EMPTY_BLOCK_SPACER_HEIGHT = 16, this.CORNER_RADIUS = 8, this.NOTCH_OFFSET_LEFT = 15, this.STATEMENT_BOTTOM_SPACER = 0, this.STATEMENT_INPUT_PADDING_LEFT = 20, this.BETWEEN_STATEMENT_PADDING_Y = 4, this.ADD_START_HATS = !1, this.START_HAT_HEIGHT = 15, this.START_HAT_WIDTH = 100, this.SPACER_DEFAULT_HEIGHT = 15, this.MIN_BLOCK_HEIGHT = 24, this.EMPTY_INLINE_INPUT_PADDING = 14.5, this.EXTERNAL_VALUE_INPUT_PADDING = 2, this.JAGGED_TEETH_HEIGHT = 12, this.JAGGED_TEETH_WIDTH = 6, this.FIELD_TEXT_FONTSIZE = 11, this.FIELD_TEXT_FONTWEIGHT = "normal", this.FIELD_TEXT_FONTFAMILY = "sans-serif", this.FIELD_TEXT_BASELINE = this.FIELD_TEXT_HEIGHT = -1, this.FIELD_BORDER_RECT_RADIUS = 4, this.FIELD_BORDER_RECT_HEIGHT = 16, this.FIELD_BORDER_RECT_X_PADDING = 5, this.FIELD_BORDER_RECT_Y_PADDING = 3, this.FIELD_BORDER_RECT_COLOUR = "#fff", this.FIELD_DROPDOWN_SVG_ARROW = this.FIELD_DROPDOWN_COLOURED_DIV = this.FIELD_DROPDOWN_NO_BORDER_RECT_SHADOW = !1, this.FIELD_DROPDOWN_SVG_ARROW_SIZE = 12, this.FIELD_COLOUR_FULL_BLOCK = this.FIELD_TEXTINPUT_BOX_SHADOW = !1, this.FIELD_COLOUR_DEFAULT_WIDTH = 26, this.defs = null, this.embossFilterId = "", this.embossFilter = null, this.disabledPatternId = "", this.disabledPattern = null, this.debugFilterId = "", this.debugFilter = null, this.CURSOR_COLOUR = "#cc0a0a", this.MARKER_COLOUR = "#4286f4", this.CURSOR_WS_WIDTH = 100, this.WS_CURSOR_HEIGHT = 5, this.CURSOR_STACK_PADDING = 10, this.CURSOR_BLOCK_PADDING = 2, this.CURSOR_STROKE_WIDTH = 4, this.FULL_BLOCK_FIELDS = !1, this.INSERTION_MARKER_COLOUR = "#000000", this.INSERTION_MARKER_OPACITY = 0.2, this.SHAPES = { PUZZLE: 1, NOTCH: 2 }, this.TALL_INPUT_FIELD_OFFSET_Y = this.MEDIUM_PADDING, this.DUMMY_INPUT_SHADOW_MIN_HEIGHT = this.DUMMY_INPUT_MIN_HEIGHT = this.TAB_HEIGHT, this.STATEMENT_INPUT_NOTCH_OFFSET = this.NOTCH_OFFSET_LEFT, this.TOP_ROW_MIN_HEIGHT = this.MEDIUM_PADDING, this.TOP_ROW_PRECEDES_STATEMENT_MIN_HEIGHT = this.LARGE_PADDING, this.BOTTOM_ROW_MIN_HEIGHT = this.MEDIUM_PADDING, this.BOTTOM_ROW_AFTER_STATEMENT_MIN_HEIGHT = this.LARGE_PADDING, this.EMPTY_INLINE_INPUT_HEIGHT = this.TAB_HEIGHT + 11, this.EMPTY_STATEMENT_INPUT_HEIGHT = this.MIN_BLOCK_HEIGHT, this.START_POINT = St(0, 0), this.FIELD_TEXT_BASELINE_CENTER = !0, this.FIELD_DROPDOWN_BORDER_RECT_HEIGHT = this.FIELD_BORDER_RECT_HEIGHT, this.FIELD_DROPDOWN_SVG_ARROW_PADDING = this.FIELD_BORDER_RECT_X_PADDING, this.FIELD_DROPDOWN_SVG_ARROW_DATAURI = "data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMi43MSIgaGVpZ2h0PSI4Ljc5IiB2aWV3Qm94PSIwIDAgMTIuNzEgOC43OSI+PHRpdGxlPmRyb3Bkb3duLWFycm93PC90aXRsZT48ZyBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0xMi43MSwyLjQ0QTIuNDEsMi40MSwwLDAsMSwxMiw0LjE2TDguMDgsOC4wOGEyLjQ1LDIuNDUsMCwwLDEtMy40NSwwTDAuNzIsNC4xNkEyLjQyLDIuNDIsMCwwLDEsMCwyLjQ0LDIuNDgsMi40OCwwLDAsMSwuNzEuNzFDMSwwLjQ3LDEuNDMsMCw2LjM2LDBTMTEuNzUsMC40NiwxMiwuNzFBMi40NCwyLjQ0LDAsMCwxLDEyLjcxLDIuNDRaIiBmaWxsPSIjMjMxZjIwIi8+PC9nPjxwYXRoIGQ9Ik02LjM2LDcuNzlhMS40MywxLjQzLDAsMCwxLTEtLjQyTDEuNDIsMy40NWExLjQ0LDEuNDQsMCwwLDEsMC0yYzAuNTYtLjU2LDkuMzEtMC41Niw5Ljg3LDBhMS40NCwxLjQ0LDAsMCwxLDAsMkw3LjM3LDcuMzdBMS40MywxLjQzLDAsMCwxLDYuMzYsNy43OVoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=", this.FIELD_COLOUR_DEFAULT_HEIGHT = this.FIELD_BORDER_RECT_HEIGHT, this.FIELD_CHECKBOX_X_OFFSET = this.FIELD_BORDER_RECT_X_PADDING - 3, this.randomIdentifier = String(Math.random()).substring(2);
         }
         init() {
           this.JAGGED_TEETH = this.makeJaggedTeeth(), this.NOTCH = this.makeNotch(), this.START_HAT = this.makeStartHat(), this.PUZZLE_TAB = this.makePuzzleTab(), this.INSIDE_CORNERS = this.makeInsideCorners(), this.OUTSIDE_CORNERS = this.makeOutsideCorners();
@@ -11781,11 +11781,11 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return { type: this.SHAPES.NOTCH, width: e, height: i, pathLeft: o, pathRight: r };
         }
         makeInsideCorners() {
-          var t = this.CORNER_RADIUS, e = At("a", "0 0,0", t, F(-t, t)), i = At("a", "0 0,0", t, F(t, t));
+          var t = this.CORNER_RADIUS, e = bt("a", "0 0,0", t, F(-t, t)), i = bt("a", "0 0,0", t, F(t, t));
           return { width: t, height: t, pathTop: e, pathBottom: i };
         }
         makeOutsideCorners() {
-          var t = this.CORNER_RADIUS, e = vt(0, t) + At("a", "0 0,1", t, F(t, -t)), i = At("a", "0 0,1", t, F(t, t)), s = At("a", "0 0,1", t, F(-t, -t)), o = At("a", "0 0,1", t, F(-t, t));
+          var t = this.CORNER_RADIUS, e = St(0, t) + bt("a", "0 0,1", t, F(t, -t)), i = bt("a", "0 0,1", t, F(t, t)), s = bt("a", "0 0,1", t, F(-t, -t)), o = bt("a", "0 0,1", t, F(-t, t));
           return {
             topLeft: e,
             topRight: i,
@@ -11911,7 +11911,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         drawTop_() {
           var t = this.info_.topRow, e = t.elements;
-          this.positionPreviousConnection_(), this.outlinePath_ += vt(t.xPos, this.info_.startY);
+          this.positionPreviousConnection_(), this.outlinePath_ += St(t.xPos, this.info_.startY);
           for (let i = 0, s; s = e[i]; i++) p.isLeftRoundedCorner(s) ? this.outlinePath_ += this.constants_.OUTSIDE_CORNERS.topLeft : p.isRightRoundedCorner(s) ? this.outlinePath_ += this.constants_.OUTSIDE_CORNERS.topRight : p.isPreviousConnection(s) ? this.outlinePath_ += s.shape.pathLeft : p.isHat(s) ? this.outlinePath_ += this.constants_.START_HAT.path : p.isSpacer(s) && (this.outlinePath_ += U("h", s.width));
           this.outlinePath_ += U("v", t.height - t.ascenderHeight);
         }
@@ -12025,12 +12025,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
             var i = t.shape;
             i.pathDown !== void 0 && i.pathUp !== void 0 && (e = t.shape.pathDown);
           }
-          return t = this.constants_.TAB_OFFSET_FROM_TOP, vt(0, -t) + U("v", t) + e + U("v", t);
+          return t = this.constants_.TAB_OFFSET_FROM_TOP, St(0, -t) + U("v", t) + e + U("v", t);
         }
         getStatementConnectionHighlightPath(t) {
           var e = t.shape;
           if (e.pathLeft === void 0 || e.pathRight === void 0) throw Error("Statement connections should have notch shapes");
-          return e = this.constants_.NOTCH_OFFSET_LEFT - this.constants_.CORNER_RADIUS, vt(-e, 0) + U("h", e) + t.shape.pathLeft + U("h", e);
+          return e = this.constants_.NOTCH_OFFSET_LEFT - this.constants_.CORNER_RADIUS, St(-e, 0) + U("h", e) + t.shape.pathLeft + U("h", e);
         }
       }, gn = class {
         constructor(t, e) {
@@ -12337,12 +12337,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         t = t.getVariableMap().getAllVariables();
         var e = [];
         if (t.length > 0) {
-          if (bt.variables_set_dynamic) {
+          if (Ot.variables_set_dynamic) {
             var i = t[t.length - 1];
             let s = n.rc("block");
             s.setAttribute("type", "variables_set_dynamic"), s.setAttribute("gap", "24"), s.appendChild(es(i)), e.push(s);
           }
-          if (bt.variables_get_dynamic) {
+          if (Ot.variables_get_dynamic) {
             t.sort(Hs);
             for (let s = 0, o; o = t[s]; s++) i = n.rc("block"), i.setAttribute("type", "variables_get_dynamic"), i.setAttribute("gap", "8"), i.appendChild(es(o)), e.push(i);
           }
@@ -12365,7 +12365,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         sortObjects(t, e) {
           var i = (s) => ({ getBoundingRectangle: () => {
             var o = s.getRelativeToSurfaceXY();
-            return new j(o.y, o.y, o.x, o.x);
+            return new $(o.y, o.y, o.x, o.x);
           }, moveBy: () => {
           } });
           return this.sortByOrigin(i(t), i(e));
@@ -12644,9 +12644,9 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         constructor(t) {
           super(t), this.resizeHandlerWrapper = null, this.resizesEnabled = this.visible = this.rendered = !0, this.startScrollY = this.startScrollX = this.scrollY = this.scrollX = 0, this.oldScale = this.scale = 1, this.oldLeft = this.oldTop = 0, this.inverseScreenCTM = this.targetWorkspace = this.dummyWheelListener = this.configureContextMenu = this.lastRecordedPageScroll = this.injectionDiv = this.currentGesture_ = this.toolbox = this.flyout = this.scrollbar = this.trashcan = null, this.inverseScreenCTMDirty = !0, this.highlightedBlocks = [], this.toolboxCategoryCallbacks = /* @__PURE__ */ new Map(), this.flyoutButtonCallbacks = /* @__PURE__ */ new Map(), this.cachedParentSvg = null, this.topBoundedElements = [], this.dragTargetAreas = [], this.workspaceFocusTarget = this.workspaceFocusTargetElement = this.workspaceSelectionRing = this.workspaceFocusRing = this.zoomControls_ = this.layerManager = null, this.navigator = new Qr(), this.metricsManager = new (Zt(R.METRICS_MANAGER, t, !0))(this), this.getMetrics = t.getMetrics || this.metricsManager.getMetrics.bind(this.metricsManager), this.setMetrics = t.setMetrics || zt.setTopLevelWorkspaceMetrics, this.componentManager = new gt(), this.connectionDBList = co.init(this.connectionChecker);
           var e;
-          this.audioManager = new Rp((e = t.parentWorkspace) != null ? e : this), this.grid = this.options.gridPattern ? new au(this.options.gridPattern, t.gridOptions) : null, wt && Un && this.registerToolboxCategoryCallback("VARIABLE", Un), Ns && pr && this.registerToolboxCategoryCallback("VARIABLE_DYNAMIC", pr), _e && gr && (this.registerToolboxCategoryCallback("PROCEDURE", gr), this.addChangeListener(Mh)), this.addChangeListener(this.variableChangeCallback.bind(this)), this.themeManager_ = this.options.parentWorkspace ? this.options.parentWorkspace.getThemeManager() : new Sp(this, this.options.theme || Xr), this.themeManager_.subscribeWorkspace(this);
+          this.audioManager = new Rp((e = t.parentWorkspace) != null ? e : this), this.grid = this.options.gridPattern ? new au(this.options.gridPattern, t.gridOptions) : null, Mt && Un && this.registerToolboxCategoryCallback("VARIABLE", Un), Ns && pr && this.registerToolboxCategoryCallback("VARIABLE_DYNAMIC", pr), _e && gr && (this.registerToolboxCategoryCallback("PROCEDURE", gr), this.addChangeListener(Mh)), this.addChangeListener(this.variableChangeCallback.bind(this)), this.themeManager_ = this.options.parentWorkspace ? this.options.parentWorkspace.getThemeManager() : new Sp(this, this.options.theme || Xr), this.themeManager_.subscribeWorkspace(this);
           var i;
-          this.renderer = Ph(this.options.renderer || "geras", this.getTheme(), (i = this.options.rendererOverrides) != null ? i : void 0), this.cachedParentSvgSize = new $(0, 0);
+          this.renderer = Ph(this.options.renderer || "geras", this.getTheme(), (i = this.options.rendererOverrides) != null ? i : void 0), this.cachedParentSvgSize = new J(0, 0);
         }
         getMetricsManager() {
           return this.metricsManager;
@@ -12706,7 +12706,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         getCachedParentSvgSize() {
           var t = this.cachedParentSvgSize;
-          return new $(t.width, t.height);
+          return new J(t.width, t.height);
         }
         getOriginOffsetInPixels() {
           return An(this.getCanvas());
@@ -12735,12 +12735,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         setInitialAriaContext() {
           if (!this.svgGroup_) throw Error("Must initialize svgGroup_ by calling `createDom` before calling setAriaContext");
-          this.isFlyout || (q(this.svgGroup_, J.REGION), this.isMutator ? w(this.svgGroup_, k.LABEL, n.C.WORKSPACE_LABEL_MUTATOR_WORKSPACE) : (w(this.svgGroup_, k.LABEL, n.C.WORKSPACE_LABEL_PLAIN), this.workspaceFocusTargetElement && (q(this.workspaceFocusTargetElement, J.FIGURE), w(this.workspaceFocusTargetElement, k.ROLEDESCRIPTION, n.C.WORKSPACE_ROLEDESCRIPTION), this.updateAriaLabel())));
+          this.isFlyout || (Z(this.svgGroup_, q.REGION), this.isMutator ? D(this.svgGroup_, N.LABEL, n.C.WORKSPACE_LABEL_MUTATOR_WORKSPACE) : (D(this.svgGroup_, N.LABEL, n.C.WORKSPACE_LABEL_PLAIN), this.workspaceFocusTargetElement && (Z(this.workspaceFocusTargetElement, q.FIGURE), D(this.workspaceFocusTargetElement, N.ROLEDESCRIPTION, n.C.WORKSPACE_ROLEDESCRIPTION), this.updateAriaLabel())));
         }
         updateAriaLabel() {
           if (this.workspaceFocusTargetElement) {
             var t = this.getTopBlocks(!1).length;
-            t == 1 ? w(this.workspaceFocusTargetElement, k.LABEL, n.C.WORKSPACE_LABEL_1_STACK) : w(this.workspaceFocusTargetElement, k.LABEL, n.C.WORKSPACE_LABEL_MANY_STACKS.replace("%1", String(t)));
+            t == 1 ? D(this.workspaceFocusTargetElement, N.LABEL, n.C.WORKSPACE_LABEL_1_STACK) : D(this.workspaceFocusTargetElement, N.LABEL, n.C.WORKSPACE_LABEL_MANY_STACKS.replace("%1", String(t)));
           }
         }
         createDom(t, e) {
@@ -12845,7 +12845,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return this.cachedParentSvg;
         }
         maybeFireViewportChangeEvent() {
-          if (Ct()) {
+          if (vt()) {
             var t = this.scale, e = -this.scrollY, i = -this.scrollX;
             if (!(t === this.oldScale && Math.abs(e - this.oldTop) < 1 && Math.abs(i - this.oldLeft) < 1)) {
               var s = new (W(f.VIEWPORT_CHANGE))(e, i, t, this.id, this.oldScale);
@@ -12950,7 +12950,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         getBlocksBoundingBox() {
           var t = this.getTopBoundedElements();
-          if (!t.length) return new j(
+          if (!t.length) return new $(
             0,
             0,
             0,
@@ -12981,7 +12981,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         showContextMenu(t) {
           if (!this.isReadOnly() && !this.isFlyout) {
-            var e = Z.registry.getContextMenuOptions({ workspace: this, focusedNode: this }, t);
+            var e = Q.registry.getContextMenuOptions({ workspace: this, focusedNode: this }, t);
             if (this.configureContextMenu && this.configureContextMenu(e, t), t instanceof PointerEvent) var i = new A(t.clientX, t.clientY);
             else i = this.RTL ? this.getWidth() - 5 : 5, i = Li(this, new A(i, 5));
             Ks(t, e, this.RTL, this, i);
@@ -13193,7 +13193,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         scrollBoundsIntoView(t, e = 10) {
           if (!el.inProgress()) {
             var i = this.getScale(), s = this.getMetricsManager().getViewMetrics(!0);
-            if (s = new j(s.top, s.top + s.height, s.left, s.left + s.width), !(t.left >= s.left && t.top >= s.top && t.right <= s.right && t.bottom <= s.bottom)) {
+            if (s = new $(s.top, s.top + s.height, s.left, s.left + s.width), !(t.left >= s.left && t.top >= s.top && t.right <= s.right && t.bottom <= s.bottom)) {
               t = t.clone(), t.top -= e, t.bottom += e, t.left -= e, t.right += e;
               var o = e = 0;
               t.left < s.left ? e = this.RTL ? Math.min(s.left - t.left, s.right - t.right) : s.left - t.left : t.right > s.right && (e = this.RTL ? s.right - t.right : Math.max(s.right - t.right, s.left - t.left)), t.top < s.top ? o = s.top - t.top : t.bottom > s.bottom && (o = Math.max(s.bottom - t.bottom, s.top - t.top)), this.scroll(this.scrollX + e * i, this.scrollY + o * i);
@@ -13439,10 +13439,10 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
       X(R.VARIABLE_MAP, "default", bp);
       var Op = class extends qr {
         constructor(t) {
-          super(), this.workspace = t, this.id = "trashcan", this.uniqueId = Ht(), this.contents = [], this.flyout = null, this.isLidOpen = !1, this.svgGroup = null, this.top = this.left = 0, this.initialized = !1, this.workspace.options.maxTrashcanContents <= 0 || (t = this.workspace.copyOptionsForFlyout(), this.workspace.horizontalLayout ? (t.toolboxPosition = this.workspace.toolboxPosition === M.TOP ? M.BOTTOM : M.TOP, this.flyout = new (Zt(R.FLYOUTS_HORIZONTAL_TOOLBOX, this.workspace.options, !0))(t)) : (t.toolboxPosition = this.workspace.toolboxPosition === M.RIGHT ? M.LEFT : M.RIGHT, this.flyout = new (Zt(R.FLYOUTS_VERTICAL_TOOLBOX, this.workspace.options, !0))(t)), this.workspace.addChangeListener(this.onDelete.bind(this)));
+          super(), this.workspace = t, this.id = "trashcan", this.uniqueId = Ht(), this.contents = [], this.flyout = null, this.isLidOpen = !1, this.svgGroup = null, this.top = this.left = 0, this.initialized = !1, this.workspace.options.maxTrashcanContents <= 0 || (t = this.workspace.copyOptionsForFlyout(), this.workspace.horizontalLayout ? (t.toolboxPosition = this.workspace.toolboxPosition === P.TOP ? P.BOTTOM : P.TOP, this.flyout = new (Zt(R.FLYOUTS_HORIZONTAL_TOOLBOX, this.workspace.options, !0))(t)) : (t.toolboxPosition = this.workspace.toolboxPosition === P.RIGHT ? P.LEFT : P.RIGHT, this.flyout = new (Zt(R.FLYOUTS_VERTICAL_TOOLBOX, this.workspace.options, !0))(t)), this.workspace.addChangeListener(this.onDelete.bind(this)));
         }
         createDom() {
-          this.svgGroup = S(E.G, { class: "blocklyTrash", tabindex: "0", id: this.uniqueId }), S(E.RECT, { width: 55, height: 68, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, this.svgGroup), q(this.svgGroup, J.BUTTON), w(this.svgGroup, k.LABEL, n.C.OPEN_TRASH);
+          this.svgGroup = S(E.G, { class: "blocklyTrash", tabindex: "0", id: this.uniqueId }), S(E.RECT, { width: 55, height: 68, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, this.svgGroup), Z(this.svgGroup, q.BUTTON), D(this.svgGroup, N.LABEL, n.C.OPEN_TRASH);
           var t = String(Math.random()).substring(2), e = S(E.CLIPPATH, { id: "blocklyTrashBodyClipPath" + t }, this.svgGroup);
           return S(E.RECT, { width: 47, height: 44, y: 16 }, e), S(E.IMAGE, { width: he.width, x: -0, height: he.height, y: -32, "clip-path": "url(#blocklyTrashBodyClipPath" + t + ")" }, this.svgGroup).setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", this.workspace.options.pathToMedia + he.url), e = S(E.CLIPPATH, { id: "blocklyTrashLidClipPath" + t }, this.svgGroup), S(E.RECT, { width: 47, height: 16 }, e), e = S(E.G, { class: "blocklyTrashLid" }, this.svgGroup), e = S(E.SVG, {
             viewBox: "0 32 47 16",
@@ -13507,7 +13507,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         position(t, e) {
           if (this.initialized) {
             var i = Nn(this.workspace, t);
-            t = kn(i, new $(47, 60), 20, 20, t, this.workspace), e = wn(t, 20, i.vertical === Ei.TOP ? Hi.DOWN : Hi.UP, e), this.top = e.top, this.left = e.left;
+            t = kn(i, new J(47, 60), 20, 20, t, this.workspace), e = wn(t, 20, i.vertical === Ei.TOP ? Hi.DOWN : Hi.UP, e), this.top = e.top, this.left = e.left;
             var s;
             (s = this.svgGroup) == null || s.setAttribute("transform", "translate(" + this.left + "," + this.top + ")");
             var o;
@@ -13515,12 +13515,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           }
         }
         getBoundingRectangle() {
-          return new j(this.top, this.top + 44 + 16, this.left, this.left + 47);
+          return new $(this.top, this.top + 44 + 16, this.left, this.left + 47);
         }
         getClientRect() {
           if (!this.svgGroup) return null;
           var t = this.svgGroup.getBoundingClientRect(), e = t.top + 32 - 10;
-          return t = t.left + 0 - 10, new j(e, e + 16 + 44 + 20, t, t + 47 + 20);
+          return t = t.left + 0 - 10, new $(e, e + 16 + 44 + 20, t, t + 47 + 20);
         }
         onDragOver() {
           ct.mover.isMoving() || this.setLidOpen(this.wouldDelete_);
@@ -13596,7 +13596,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           this.click();
         }
       };
-      Rt(`
+      At(`
   .blocklyTrash {
     opacity: 0.4;
     transition: opacity 0.08 ease-out;
@@ -13769,7 +13769,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
             var a = s > i ? s - i : 0;
             s = (s > i ? i : s) / 2;
             var c = r === o ? "0" : "1";
-            return At("a", "0 0," + c, s, F((r ? 1 : -1) * s, (o ? -1 : 1) * s)) + U("v", (o ? -1 : 1) * a) + At("a", "0 0," + c, s, F((r ? -1 : 1) * s, (o ? -1 : 1) * s));
+            return bt("a", "0 0," + c, s, F((r ? 1 : -1) * s, (o ? -1 : 1) * s)) + U("v", (o ? -1 : 1) * a) + bt("a", "0 0," + c, s, F((r ? -1 : 1) * s, (o ? -1 : 1) * s));
           }
           var e = this.MAX_DYNAMIC_CONNECTION_SHAPE_WIDTH, i = e * 2;
           return { type: this.SHAPES.ROUND, isDynamic: !0, width(s) {
@@ -13794,7 +13794,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           function t(i, s, o) {
             i -= e * 2;
             var r = o === s ? "0" : "1";
-            return At("a", "0 0," + r, e, F((o ? 1 : -1) * e, (s ? -1 : 1) * e)) + U("v", (s ? -1 : 1) * i) + At("a", "0 0," + r, e, F((o ? -1 : 1) * e, (s ? -1 : 1) * e));
+            return bt("a", "0 0," + r, e, F((o ? 1 : -1) * e, (s ? -1 : 1) * e)) + U("v", (s ? -1 : 1) * i) + bt("a", "0 0," + r, e, F((o ? -1 : 1) * e, (s ? -1 : 1) * e));
           }
           var e = this.CORNER_RADIUS;
           return { type: this.SHAPES.SQUARE, isDynamic: !0, width() {
@@ -13847,7 +13847,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return { type: this.SHAPES.NOTCH, width: e, height: i, pathLeft: c, pathRight: g };
         }
         makeInsideCorners() {
-          var t = this.CORNER_RADIUS, e = At("a", "0 0,0", t, F(-t, t)), i = At("a", "0 0,1", t, F(-t, t)), s = At("a", "0 0,0", t, F(t, t)), o = At("a", "0 0,1", t, F(
+          var t = this.CORNER_RADIUS, e = bt("a", "0 0,0", t, F(-t, t)), i = bt("a", "0 0,1", t, F(-t, t)), s = bt("a", "0 0,0", t, F(t, t)), o = bt("a", "0 0,1", t, F(
             t,
             t
           ));
@@ -13972,7 +13972,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         drawFlatTop_() {
           var t = this.info_.topRow;
-          this.positionPreviousConnection_(), this.outlinePath_ += vt(t.xPos, this.info_.startY), this.outlinePath_ += U("h", t.width);
+          this.positionPreviousConnection_(), this.outlinePath_ += St(t.xPos, this.info_.startY), this.outlinePath_ += U("h", t.width);
         }
         drawFlatBottom_() {
           var t = this.info_.bottomRow;
@@ -14002,7 +14002,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         constructor(t, e, i, s, o, r, a) {
           if (super(ht.SKIP_SETUP), this.imageElement = this.clickHandler = null, this.flipRtl = this.isDirty_ = this.EDITABLE = !1, this.altText = "", i = Number(Et(i)), e = Number(Et(e)), isNaN(i) || isNaN(e)) throw Error("Height and width values of an image field must cast to numbers.");
           if (i <= 0 || e <= 0) throw Error("Height and width values of an image field must be greater than 0.");
-          this.size_ = new $(e, i + ws.Y_PADDING), this.imageHeight = i, typeof o == "function" && (this.clickHandler = o), t !== ht.SKIP_SETUP && (a ? this.configure_(a) : typeof s == "object" && s !== null && !Array.isArray(s) && ("alt" in s || "flipRtl" in s) ? this.configure_(s) : (this.flipRtl = !!r, this.altText = typeof s == "string" && Et(s) || ""), this.setValue(Et(t)));
+          this.size_ = new J(e, i + ws.Y_PADDING), this.imageHeight = i, typeof o == "function" && (this.clickHandler = o), t !== ht.SKIP_SETUP && (a ? this.configure_(a) : typeof s == "object" && s !== null && !Array.isArray(s) && ("alt" in s || "flipRtl" in s) ? this.configure_(s) : (this.flipRtl = !!r, this.altText = typeof s == "string" && Et(s) || ""), this.setValue(Et(t)));
         }
         configure_(t) {
           super.configure_(t), t.flipRtl && (this.flipRtl = t.flipRtl), t.alt && (this.altText = Et(t.alt));
@@ -14056,9 +14056,9 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         recomputeAriaContext() {
           if (!super.recomputeAriaContext()) return !1;
           var t = this.getFocusableElement();
-          if (!this.isClickable()) return q(t, J.NONE), Ke(t, k.LABEL), !1;
+          if (!this.isClickable()) return Z(t, q.NONE), Ke(t, N.LABEL), !1;
           var e = this.getAriaValue() || "";
-          return w(t, k.LABEL, e), !0;
+          return D(t, N.LABEL, e), !0;
         }
       };
       ws.Y_PADDING = 1, Je("field_image", ws), ws.prototype.DEFAULT_VALUE = "";
@@ -14077,24 +14077,24 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           super.configure_(t), t.spellcheck !== void 0 && (this.spellcheck_ = t.spellcheck);
         }
         initView() {
-          if (!this.getSourceBlock()) throw new Lt();
+          if (!this.getSourceBlock()) throw new kt();
           this.isFullBlockField() || this.createBorderRect_(), this.createTextElement_(), this.fieldGroup_ && L(this.fieldGroup_, "blocklyField"), this.isFullBlockField() && (this.clickTarget_ = this.sourceBlock_.getSvgRoot()), this.fieldGroup_ && L(this.fieldGroup_, "blocklyInputField"), this.recomputeAriaContext();
         }
         isFullBlockField() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           var e;
           return this.fullBlockClickTarget_ = !((e = this.getConstants()) == null || !e.FULL_BLOCK_FIELDS) && t.isSimpleReporter();
         }
         doValueInvalid_(t, e = !0) {
-          this.isBeingEdited_ && (this.isDirty_ = !0, this.isTextValid_ = !1, t = this.value_, this.value_ = this.valueWhenEditorWasOpened_, this.sourceBlock_ && Ct() && this.value_ !== t && e && V(new (W(f.BLOCK_CHANGE))(this.sourceBlock_, "field", this.name || null, t, this.value_))), this.recomputeAriaContext();
+          this.isBeingEdited_ && (this.isDirty_ = !0, this.isTextValid_ = !1, t = this.value_, this.value_ = this.valueWhenEditorWasOpened_, this.sourceBlock_ && vt() && this.value_ !== t && e && V(new (W(f.BLOCK_CHANGE))(this.sourceBlock_, "field", this.name || null, t, this.value_))), this.recomputeAriaContext();
         }
         doValueUpdate_(t) {
           this.isTextValid_ = this.isDirty_ = !0, this.value_ = t, this.recomputeAriaContext();
         }
         applyColour() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           this.getConstants().FULL_BLOCK_FIELDS && this.fieldGroup_ && (!this.isFullBlockField() && this.borderRect_ ? (this.borderRect_.style.display = "block", this.borderRect_.setAttribute("stroke", t.getColourTertiary())) : t.pathObject.svgPath.setAttribute("fill", this.getConstants().FIELD_BORDER_RECT_COLOUR));
         }
         getSize() {
@@ -14107,9 +14107,9 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         render_() {
           if (super.render_(), this.isBeingEdited_) {
             var t = this.htmlInput_;
-            this.isTextValid_ ? (ot(t, "blocklyInvalidInput"), w(t, k.INVALID, !1)) : (L(t, "blocklyInvalidInput"), w(t, k.INVALID, !0));
+            this.isTextValid_ ? (ot(t, "blocklyInvalidInput"), D(t, N.INVALID, !1)) : (L(t, "blocklyInvalidInput"), D(t, N.INVALID, !0));
           }
-          if (t = this.getSourceBlock(), !t) throw new Lt();
+          if (t = this.getSourceBlock(), !t) throw new kt();
           this.getConstants().FULL_BLOCK_FIELDS && t.applyColour();
         }
         setSpellcheck(t) {
@@ -14125,22 +14125,22 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         showInlineEditor(t, e) {
           var i = this.getSourceBlock();
-          if (!i) throw new Lt();
+          if (!i) throw new kt();
           er(this, i.RTL, this.widgetDispose_.bind(this), this.workspace_, e), this.htmlInput_ = this.widgetCreate_(), this.isBeingEdited_ = !0, this.valueWhenEditorWasOpened_ = this.value_, t || (this.htmlInput_.focus({ preventScroll: !0 }), this.htmlInput_.select());
         }
         widgetCreate_() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           n.B(!0);
-          var e = kt, i = this.getClickTarget_();
+          var e = Nt, i = this.getClickTarget_();
           if (!i) throw Error("A click target has not been set.");
           L(i, "blocklyEditing"), i = document.createElement("input"), i.className = "blocklyHtmlInput", i.setAttribute("spellcheck", this.spellcheck_);
           var s = this.workspace_.getAbsoluteScale(), o = this.getConstants().FIELD_TEXT_FONTSIZE * s + "pt";
           return e.style.fontSize = o, i.style.fontSize = o, o = fo.BORDERRADIUS * s + "px", this.isFullBlockField() && (o = this.getScaledBBox(), o = (o.bottom - o.top) / 2 + "px", t = t.getParent() ? t.getParent().getColourTertiary() : this.sourceBlock_.getColourTertiary(), i.style.border = 1 * s + "px solid " + t, e.style.borderRadius = o, e.style.transition = "box-shadow 0.25s ease 0s", this.getConstants().FIELD_TEXTINPUT_BOX_SHADOW && (e.style.boxShadow = "rgba(255, 255, 255, 0.3) 0 0 0 " + 4 * s + "px")), i.style.borderRadius = o, e.appendChild(i), i.value = i.defaultValue = this.getEditorText_(this.value_), i.setAttribute("data-untyped-default-value", String(this.value_)), this.resizeEditor_(), this.bindInputEvents_(i), i;
         }
         widgetDispose_() {
-          this.isBeingEdited_ = !1, this.isTextValid_ = !0, this.forceRerender(), this.onFinishEditing_(this.value_), this.sourceBlock_ && Ct() && this.valueWhenEditorWasOpened_ !== null && this.valueWhenEditorWasOpened_ !== this.value_ && (V(new (W(f.BLOCK_CHANGE))(this.sourceBlock_, "field", this.name || null, this.valueWhenEditorWasOpened_, this.value_)), this.valueWhenEditorWasOpened_ = null), n.B(!1), this.unbindInputEvents_();
-          var t = kt.style;
+          this.isBeingEdited_ = !1, this.isTextValid_ = !0, this.forceRerender(), this.onFinishEditing_(this.value_), this.sourceBlock_ && vt() && this.valueWhenEditorWasOpened_ !== null && this.valueWhenEditorWasOpened_ !== this.value_ && (V(new (W(f.BLOCK_CHANGE))(this.sourceBlock_, "field", this.name || null, this.valueWhenEditorWasOpened_, this.value_)), this.valueWhenEditorWasOpened_ = null), n.B(!1), this.unbindInputEvents_();
+          var t = Nt.style;
           if (t.width = "auto", t.height = "auto", t.fontSize = "", t.transition = "", t.boxShadow = "", this.htmlInput_ = null, t = this.getClickTarget_(), !t) throw Error("A click target has not been set.");
           ot(t, "blocklyEditing"), this.recomputeAriaContext();
         }
@@ -14158,17 +14158,17 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           else if (t.key === "Tab") {
             t.preventDefault();
             var e;
-            let i = (e = this.workspace_) == null ? void 0 : e.getNavigator(), s = (o) => (o instanceof fo || o instanceof Nt && o.isSimpleReporter()) && o !== this.getSourceBlock();
+            let i = (e = this.workspace_) == null ? void 0 : e.getNavigator(), s = (o) => (o instanceof fo || o instanceof wt && o.isSimpleReporter()) && o !== this.getSourceBlock();
             e = this;
             do
               e = t.shiftKey ? i?.getOutNode(e) : i?.getInNode(e);
             while (e && !s(e));
-            e = e instanceof Nt && e.isSimpleReporter() ? e.getFields().next().value : e, e instanceof fo && (ls(this), je(), t = e.getSourceBlock(), e.isFullBlockField() && t && t instanceof Nt ? n.t().focusNode(t) : n.t().focusNode(e), e.showEditor());
+            e = e instanceof wt && e.isSimpleReporter() ? e.getFields().next().value : e, e instanceof fo && (ls(this), je(), t = e.getSourceBlock(), e.isFullBlockField() && t && t instanceof wt ? n.t().focusNode(t) : n.t().focusNode(e), e.showEditor());
           }
         }
         onHtmlInputChange() {
           var t = this.value_;
-          this.setValue(this.getValueFromEditorText_(this.htmlInput_.value), !1), this.sourceBlock_ && Ct() && this.value_ !== t && V(new (W(f.BLOCK_FIELD_INTERMEDIATE_CHANGE))(this.sourceBlock_, this.name || null, t, this.value_));
+          this.setValue(this.getValueFromEditorText_(this.htmlInput_.value), !1), this.sourceBlock_ && vt() && this.value_ !== t && V(new (W(f.BLOCK_FIELD_INTERMEDIATE_CHANGE))(this.sourceBlock_, this.name || null, t, this.value_));
         }
         setEditorValue_(t, e = !0) {
           this.isDirty_ = !0, this.isBeingEdited_ && (this.htmlInput_.value = this.getEditorText_(t)), this.setValue(t, e);
@@ -14176,8 +14176,8 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         resizeEditor_() {
           fe().then(() => {
             var t = this.getSourceBlock();
-            if (!t) throw new Lt();
-            var e = kt, i = this.getScaledBBox();
+            if (!t) throw new kt();
+            var e = Nt, i = this.getScaledBBox();
             e.style.width = i.right - i.left + "px", e.style.height = i.bottom - i.top + "px", t = t.RTL ? i.right - e.offsetWidth : i.left, i = i.top;
             var s = e?.parentElement;
             s && (s = s.getBoundingClientRect(), t -= s.left + window.scrollX, i -= s.top + window.scrollY), e.style.left = `${t}px`, e.style.top = `${i}px`;
@@ -14185,7 +14185,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         repositionForWindowResize() {
           var t, e = (t = this.getSourceBlock()) == null ? void 0 : t.getRootBlock();
-          return e instanceof Nt ? (js(this.workspace_, this.workspace_.getMetricsManager().getViewMetrics(!0), e) || this.resizeEditor_(), !0) : !1;
+          return e instanceof wt ? (js(this.workspace_, this.workspace_.getMetricsManager().getViewMetrics(!0), e) || this.resizeEditor_(), !0) : !1;
         }
         positionTextElement_(t, e) {
           var i = t * 2 + e;
@@ -14219,7 +14219,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
             "%1",
             e
           ));
-          return w(t, k.LABEL, e), !0;
+          return D(t, N.LABEL, e), !0;
         }
       };
       fo.BORDERRADIUS = 4, n.Ip = class extends fo {
@@ -14434,7 +14434,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           for (let t of this.outlines.values()) t.setAttribute("transform", "scale(-1 1)");
         }
         updateSelected(t) {
-          this.setClass_("blocklySelected", t), t ? this.svgPathSelected || (this.svgPathSelected = S(E.PATH, { class: "blocklyPath blocklyPathSelected", stroke: this.svgPath.getAttribute("stroke") || "", fill: this.svgPath.getAttribute("fill") || "", d: this.svgPath.getAttribute("d") || "", transform: this.svgPath.getAttribute("transform") || "", role: J.NONE }, this.svgRoot), this.svgRoot.appendChild(this.svgPathSelected)) : this.svgPathSelected && (this.svgRoot.removeChild(this.svgPathSelected), this.svgPathSelected = null);
+          this.setClass_("blocklySelected", t), t ? this.svgPathSelected || (this.svgPathSelected = S(E.PATH, { class: "blocklyPath blocklyPathSelected", stroke: this.svgPath.getAttribute("stroke") || "", fill: this.svgPath.getAttribute("fill") || "", d: this.svgPath.getAttribute("d") || "", transform: this.svgPath.getAttribute("transform") || "", role: q.NONE }, this.svgRoot), this.svgRoot.appendChild(this.svgPathSelected)) : this.svgPathSelected && (this.svgRoot.removeChild(this.svgPathSelected), this.svgPathSelected = null);
         }
         beginDrawing() {
           this.remainingOutlines.clear();
@@ -14697,7 +14697,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         getX() {
           if (!this.isVisible()) return 0;
           var t = this.targetWorkspace.getMetricsManager(), e = t.getAbsoluteMetrics(), i = t.getViewMetrics();
-          return t = t.getToolboxMetrics(), this.targetWorkspace.toolboxPosition === this.toolboxPosition_ ? this.targetWorkspace.getToolbox() ? this.toolboxPosition_ === M.LEFT ? t.width : i.width - this.getWidth() : this.toolboxPosition_ === M.LEFT ? 0 : i.width : this.toolboxPosition_ === M.LEFT ? 0 : i.width + e.left - this.getWidth();
+          return t = t.getToolboxMetrics(), this.targetWorkspace.toolboxPosition === this.toolboxPosition_ ? this.targetWorkspace.getToolbox() ? this.toolboxPosition_ === P.LEFT ? t.width : i.width - this.getWidth() : this.toolboxPosition_ === P.LEFT ? 0 : i.width : this.toolboxPosition_ === P.LEFT ? 0 : i.width + e.left - this.getWidth();
         }
         getY() {
           return 0;
@@ -14714,7 +14714,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           }
         }
         setBackgroundPath(t, e) {
-          var i = this.toolboxPosition_ === M.RIGHT, s = t + this.CORNER_RADIUS;
+          var i = this.toolboxPosition_ === P.RIGHT, s = t + this.CORNER_RADIUS;
           s = ["M " + (i ? s : 0) + ",0"], s.push("h", i ? -t : t), s.push("a", this.CORNER_RADIUS, this.CORNER_RADIUS, 0, 0, i ? 0 : 1, i ? -this.CORNER_RADIUS : this.CORNER_RADIUS, this.CORNER_RADIUS), s.push("v", Math.max(0, e)), s.push("a", this.CORNER_RADIUS, this.CORNER_RADIUS, 0, 0, i ? 0 : 1, i ? this.CORNER_RADIUS : -this.CORNER_RADIUS, this.CORNER_RADIUS), s.push("h", i ? t : -t), s.push("z"), this.svgBackground_.setAttribute("d", s.join(" "));
         }
         scrollToStart() {
@@ -14739,17 +14739,17 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         getClientRect() {
           if (!this.svgGroup_ || this.autoClose || !this.isVisible()) return null;
           var t = this.svgGroup_.getBoundingClientRect(), e = t.left;
-          return this.toolboxPosition_ === M.LEFT ? new j(-1e9, 1e9, -1e9, e + t.width) : new j(-1e9, 1e9, e, 1e9);
+          return this.toolboxPosition_ === P.LEFT ? new $(-1e9, 1e9, -1e9, e + t.width) : new $(-1e9, 1e9, e, 1e9);
         }
         reflowInternal_() {
           this.workspace_.scale = this.getFlyoutScale();
           var t = this.getContents().reduce((e, i) => Math.max(e, i.getElement().getBoundingRectangle().getWidth()), 0);
-          if (t += this.MARGIN * 1.5 + this.tabWidth_, t *= this.workspace_.scale, t += Ot.scrollbarThickness, this.getWidth() !== t) {
+          if (t += this.MARGIN * 1.5 + this.tabWidth_, t *= this.workspace_.scale, t += yt.scrollbarThickness, this.getWidth() !== t) {
             if (this.RTL) for (let e of this.getContents()) {
               let i = e.getElement().getBoundingRectangle().left, s = t / this.workspace_.scale - e.getElement().getBoundingRectangle().getWidth() - this.MARGIN - this.tabWidth_;
               e.getElement().moveBy(s - i, 0);
             }
-            this.targetWorkspace.scrollbar || this.autoClose || this.targetWorkspace.getFlyout() !== this || this.toolboxPosition_ !== M.LEFT || this.targetWorkspace.translate(
+            this.targetWorkspace.scrollbar || this.autoClose || this.targetWorkspace.getFlyout() !== this || this.toolboxPosition_ !== P.LEFT || this.targetWorkspace.translate(
               this.targetWorkspace.scrollX + t,
               this.targetWorkspace.scrollY
             ), this.width_ = t, this.position(), this.targetWorkspace.resizeContents(), this.targetWorkspace.recordDragTargets();
@@ -14774,7 +14774,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           if (!this.isVisible()) return 0;
           var t = this.targetWorkspace.getMetricsManager(), e = t.getAbsoluteMetrics(), i = t.getViewMetrics();
           t = t.getToolboxMetrics();
-          var s = this.toolboxPosition_ === M.TOP;
+          var s = this.toolboxPosition_ === P.TOP;
           return this.targetWorkspace.toolboxPosition === this.toolboxPosition_ ? this.targetWorkspace.getToolbox() ? s ? t.height : i.height - this.getHeight() : s ? 0 : i.height : s ? 0 : i.height + e.top - this.getHeight();
         }
         position() {
@@ -14789,7 +14789,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           }
         }
         setBackgroundPath(t, e) {
-          var i = this.toolboxPosition_ === M.TOP, s = ["M 0," + (i ? 0 : this.CORNER_RADIUS)];
+          var i = this.toolboxPosition_ === P.TOP, s = ["M 0," + (i ? 0 : this.CORNER_RADIUS)];
           i ? (s.push("h", t + 2 * this.CORNER_RADIUS), s.push("v", e), s.push("a", this.CORNER_RADIUS, this.CORNER_RADIUS, 0, 0, 1, -this.CORNER_RADIUS, this.CORNER_RADIUS), s.push("h", -t), s.push("a", this.CORNER_RADIUS, this.CORNER_RADIUS, 0, 0, 1, -this.CORNER_RADIUS, -this.CORNER_RADIUS)) : (s.push(
             "a",
             this.CORNER_RADIUS,
@@ -14824,25 +14824,25 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         getClientRect() {
           if (!this.svgGroup_ || this.autoClose || !this.isVisible()) return null;
           var t = this.svgGroup_.getBoundingClientRect(), e = t.top;
-          return this.toolboxPosition_ === M.TOP ? new j(-1e9, e + t.height, -1e9, 1e9) : new j(e, 1e9, -1e9, 1e9);
+          return this.toolboxPosition_ === P.TOP ? new $(-1e9, e + t.height, -1e9, 1e9) : new $(e, 1e9, -1e9, 1e9);
         }
         reflowInternal_() {
           this.workspace_.scale = this.getFlyoutScale();
           var t = this.getContents().reduce((e, i) => Math.max(e, i.getElement().getBoundingRectangle().getHeight()), 0);
-          t += this.MARGIN * 1.5, t *= this.workspace_.scale, t += Ot.scrollbarThickness, this.getHeight() !== t && (this.targetWorkspace.scrollbar || this.autoClose || this.targetWorkspace.getFlyout() !== this || this.toolboxPosition_ !== M.TOP || this.targetWorkspace.translate(this.targetWorkspace.scrollX, this.targetWorkspace.scrollY + t), this.height_ = t, this.position(), this.targetWorkspace.resizeContents(), this.targetWorkspace.recordDragTargets());
+          t += this.MARGIN * 1.5, t *= this.workspace_.scale, t += yt.scrollbarThickness, this.getHeight() !== t && (this.targetWorkspace.scrollbar || this.autoClose || this.targetWorkspace.getFlyout() !== this || this.toolboxPosition_ !== P.TOP || this.targetWorkspace.translate(this.targetWorkspace.scrollX, this.targetWorkspace.scrollY + t), this.height_ = t, this.position(), this.targetWorkspace.resizeContents(), this.targetWorkspace.recordDragTargets());
         }
       };
       X(R.FLYOUTS_HORIZONTAL_TOOLBOX, "default", Hp);
       var pn = class extends Yt {
         constructor(t, e, i, s, o) {
-          super(ht.SKIP_SETUP), this.defaultType = "", this.variableTypes = [], this.variable = null, this.SERIALIZABLE = !0, this.menuGenerator_ = pn.dropdownCreate, this.defaultVariableName = typeof t == "string" ? t : "", this.size_ = new $(0, 0), t !== ht.SKIP_SETUP && (o ? this.configure_(o) : this.setTypes(i, s), e && this.setValidator(e));
+          super(ht.SKIP_SETUP), this.defaultType = "", this.variableTypes = [], this.variable = null, this.SERIALIZABLE = !0, this.menuGenerator_ = pn.dropdownCreate, this.defaultVariableName = typeof t == "string" ? t : "", this.size_ = new J(0, 0), t !== ht.SKIP_SETUP && (o ? this.configure_(o) : this.setTypes(i, s), e && this.setValidator(e));
         }
         configure_(t) {
           super.configure_(t), this.setTypes(t.variableTypes, t.defaultType);
         }
         initModel() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           this.variable || (t = n.Wd(t.workspace, null, this.defaultVariableName, this.defaultType), this.doValueUpdate_(t.getId()));
         }
         initView() {
@@ -14850,12 +14850,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         shouldAddBorderRect_() {
           var t = this.getSourceBlock();
-          if (!t) throw new Lt();
+          if (!t) throw new kt();
           return super.shouldAddBorderRect_() && (!this.getConstants().FIELD_DROPDOWN_NO_BORDER_RECT_SHADOW || t.type !== "variables_get");
         }
         fromXml(t) {
           var e = this.getSourceBlock();
-          if (!e) throw new Lt();
+          if (!e) throw new kt();
           var i = t.getAttribute("id"), s = t.textContent, o = t.getAttribute("variabletype") || t.getAttribute("variableType") || "";
           if (e = n.Wd(e.workspace, i, s, o), o !== null && o !== e.getType()) throw Error("Serialized variable type with id '" + e.getId() + "' had type " + e.getType() + ", and does not match variable field that references it: " + Ys(t) + ".");
           this.setValue(e.getId());
@@ -14869,7 +14869,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         loadState(t) {
           var e = this.getSourceBlock();
-          if (!e) throw new Lt();
+          if (!e) throw new kt();
           this.loadLegacyState(pn, t) || (t = n.Wd(e.workspace, t.id || null, t.name, t.type || ""), this.setValue(t.getId()));
         }
         setSourceBlock(t) {
@@ -14894,12 +14894,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         doClassValidation_(t) {
           if (t === null) return null;
           var e = this.getSourceBlock();
-          if (!e) throw new Lt();
+          if (!e) throw new kt();
           return e = n.Vd(e.workspace, t), e ? (e = e.getType(), this.typeIsAllowed(e) ? t : (console.warn("Variable type doesn't match this field!  Type was " + e), null)) : (console.warn("Variable id doesn't point to a real variable! ID was " + t), null);
         }
         doValueUpdate_(t) {
           var e = this.getSourceBlock();
-          if (!e) throw new Lt();
+          if (!e) throw new kt();
           this.variable = n.Vd(e.workspace, t), super.doValueUpdate_(t);
         }
         typeIsAllowed(t) {
@@ -15109,9 +15109,9 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         recomputeAriaContext() {
           if (!super.recomputeAriaContext()) return !1;
           var t = this.getFocusableElement();
-          w(t, k.HIDDEN, !1), q(t, J.CHECKBOX);
+          D(t, N.HIDDEN, !1), Z(t, q.CHECKBOX);
           var e = this.convertValueToBool(this.value_);
-          return w(t, k.CHECKED, e), e = this.getAriaTypeName(), w(t, k.LABEL, e), !0;
+          return D(t, N.CHECKED, e), e = this.getAriaTypeName(), D(t, N.LABEL, e), !0;
         }
       };
       Ms.CHECK_CHAR = "✓", Je("field_checkbox", Ms), Ms.prototype.DEFAULT_VALUE = !1;
@@ -15259,15 +15259,15 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
         load(t, e) {
           this.setFlyout(e), t = this.createBlock(t, e.getWorkspace()), t.isEnabled() ? this.updateStateBasedOnCapacity(t) : this.permanentlyDisabledBlocks.add(t), t.getDescendants(!1).forEach((r) => {
-            r.isInFlyout = !0, r = r.getFocusableElement(), w(r, k.HIDDEN, !0), q(r, J.NONE);
+            r.isInFlyout = !0, r = r.getFocusableElement(), D(r, N.HIDDEN, !0), Z(r, q.NONE);
           });
           var i = t.getFocusableElement();
-          Ke(i, k.HIDDEN), q(i, J.OPTION);
+          Ke(i, N.HIDDEN), Z(i, q.OPTION);
           var s = t.getIcons().filter((r) => {
             var a;
             return (a = r.isClickableInFlyout) == null ? void 0 : a.call(r, e.autoClose);
           }).map((r) => r.getFocusableElement().id).filter((r) => !!r), o = t.getConnections_(!0).map((r) => r.id);
-          return s = [...s, ...o], s.length && w(i, k.OWNS, s), this.addBlockListeners(t), new To(t, "block");
+          return s = [...s, ...o], s.length && D(i, N.OWNS, s), this.addBlockListeners(t), new To(t, "block");
         }
         createBlock(t, e) {
           return t.blockxml ? (t = typeof t.blockxml == "string" ? n.uc(t.blockxml) : t.blockxml, e = as(t, e)) : (t.enabled === void 0 && (t.enabled = t.disabled !== "true" && t.disabled !== !0), t.disabledReasons === void 0 && t.enabled === !1 && (t.disabledReasons = ["MANUALLY_DISABLED"]), "x" in t && delete t.x, "y" in t && delete t.y, e = Ni(t, e)), e;
@@ -15278,7 +15278,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return !i || isNaN(i) ? e : i;
         }
         disposeItem(t) {
-          t = t.getElement(), t instanceof Nt && (this.removeListeners(t.id), t.dispose(!1, !1));
+          t = t.getElement(), t instanceof wt && (this.removeListeners(t.id), t.dispose(!1, !1));
         }
         removeListeners(t) {
           var e;
@@ -15337,7 +15337,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
 ` + this.inlineSteps_;
         }
         drawTopCorner(t) {
-          this.steps_ += vt(t.xPos, this.info_.startY);
+          this.steps_ += St(t.xPos, this.info_.startY);
           for (let e = 0, i; i = t.elements[e]; e++) p.isLeftSquareCorner(i) ? this.steps_ += this.highlightConstants_.START_POINT : p.isLeftRoundedCorner(i) ? this.steps_ += this.outsideCornerPaths_.topLeft(this.RTL_) : p.isPreviousConnection(i) ? this.steps_ += this.notchPaths_.pathLeft : p.isHat(i) ? this.steps_ += this.startPaths_.path(this.RTL_) : p.isSpacer(i) && i.width !== 0 && (this.steps_ += U("H", i.xPos + i.width - this.highlightOffset));
           this.steps_ += U("H", t.xPos + t.width - this.highlightOffset);
         }
@@ -15447,18 +15447,18 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
       }, $p = class {
         constructor(t) {
-          this.OFFSET = 0.5, this.constantProvider = t, this.START_POINT = vt(this.OFFSET, this.OFFSET);
+          this.OFFSET = 0.5, this.constantProvider = t, this.START_POINT = St(this.OFFSET, this.OFFSET);
         }
         init() {
           this.INSIDE_CORNER = this.makeInsideCorner(), this.OUTSIDE_CORNER = this.makeOutsideCorner(), this.PUZZLE_TAB = this.makePuzzleTab(), this.NOTCH = this.makeNotch(), this.JAGGED_TEETH = this.makeJaggedTeeth(), this.START_HAT = this.makeStartHat();
         }
         makeInsideCorner() {
-          var t = this.constantProvider.CORNER_RADIUS, e = this.OFFSET, i = (1 - Math.SQRT1_2) * (t + e) - e, s = vt(i, i) + At("a", "0 0,0", t, F(-i - e, t - i)), o = At(
+          var t = this.constantProvider.CORNER_RADIUS, e = this.OFFSET, i = (1 - Math.SQRT1_2) * (t + e) - e, s = St(i, i) + bt("a", "0 0,0", t, F(-i - e, t - i)), o = bt(
             "a",
             "0 0,0",
             t + e,
             F(t + e, t + e)
-          ), r = vt(i, -i) + At("a", "0 0,0", t + e, F(t - i, i + e));
+          ), r = St(i, -i) + bt("a", "0 0,0", t + e, F(t - i, i + e));
           return { width: t + e, height: t, pathTop(a) {
             return a ? s : "";
           }, pathBottom(a) {
@@ -15466,7 +15466,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           } };
         }
         makeOutsideCorner() {
-          var t = this.constantProvider.CORNER_RADIUS, e = this.OFFSET, i = (1 - Math.SQRT1_2) * (t - e) + e, s = vt(i, i) + At("a", "0 0,1", t - e, F(t - i, -i + e)), o = vt(e, t) + At("a", "0 0,1", t - e, F(t, -t + e)), r = -i, a = vt(i, r) + At("a", "0 0,1", t - e, F(-i + e, -r - t));
+          var t = this.constantProvider.CORNER_RADIUS, e = this.OFFSET, i = (1 - Math.SQRT1_2) * (t - e) + e, s = St(i, i) + bt("a", "0 0,1", t - e, F(t - i, -i + e)), o = St(e, t) + bt("a", "0 0,1", t - e, F(t, -t + e)), r = -i, a = St(i, r) + bt("a", "0 0,1", t - e, F(-i + e, -r - t));
           return { height: t, topLeft(c) {
             return c ? s : o;
           }, bottomLeft() {
@@ -15474,7 +15474,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           } };
         }
         makePuzzleTab() {
-          var t = this.constantProvider.TAB_WIDTH, e = this.constantProvider.TAB_HEIGHT, i = vt(-2, -e + 2.5 + 0.9) + qe(t * -0.45, -2.1), s = U("v", 2.5) + vt(-t * 0.97, 2.5) + de("q", [F(-t * 0.05, 10), F(t * 0.3, 9.5)]) + vt(t * 0.67, -1.9) + U("v", 2.5), o = U("v", -1.5) + vt(t * -0.92, -0.5) + de("q", [F(t * -0.19, -5.5), F(0, -11)]) + vt(t * 0.92, 1), r = vt(-5, e - 0.7) + qe(t * 0.46, -2.1);
+          var t = this.constantProvider.TAB_WIDTH, e = this.constantProvider.TAB_HEIGHT, i = St(-2, -e + 2.5 + 0.9) + qe(t * -0.45, -2.1), s = U("v", 2.5) + St(-t * 0.97, 2.5) + de("q", [F(-t * 0.05, 10), F(t * 0.3, 9.5)]) + St(t * 0.67, -1.9) + U("v", 2.5), o = U("v", -1.5) + St(t * -0.92, -0.5) + de("q", [F(t * -0.19, -5.5), F(0, -11)]) + St(t * 0.92, 1), r = St(-5, e - 0.7) + qe(t * 0.46, -2.1);
           return { width: t, height: e, pathUp(a) {
             return a ? i : o;
           }, pathDown(a) {
@@ -15485,10 +15485,10 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return { pathLeft: U("h", this.OFFSET) + this.constantProvider.NOTCH.pathLeft };
         }
         makeJaggedTeeth() {
-          return { pathLeft: qe(5.1, 2.6) + vt(-10.2, 6.8) + qe(5.1, 2.6), height: 12, width: 10.2 };
+          return { pathLeft: qe(5.1, 2.6) + St(-10.2, 6.8) + qe(5.1, 2.6), height: 12, width: 10.2 };
         }
         makeStartHat() {
-          var t = this.constantProvider.START_HAT.height, e = vt(25, -8.7) + de("c", [F(29.7, -6.2), F(57.2, -0.5), F(75, 8.7)]), i = de("c", [F(17.8, -9.2), F(45.3, -14.9), F(75, -8.7)]) + Gt(100.5, t + 0.5);
+          var t = this.constantProvider.START_HAT.height, e = St(25, -8.7) + de("c", [F(29.7, -6.2), F(57.2, -0.5), F(75, 8.7)]), i = de("c", [F(17.8, -9.2), F(45.3, -14.9), F(75, -8.7)]) + Gt(100.5, t + 0.5);
           return { path(s) {
             return s ? e : i;
           } };
@@ -15834,9 +15834,9 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           this.name_ = "name" in t ? Et(t.name) : "", this.colour_ = this.getColour_(t), Object.assign(this.cssConfig_, t.cssconfig || t.cssConfig);
         }
         createDom_() {
-          this.htmlDiv_ = this.createContainer_(), q(this.htmlDiv_, J.TREEITEM), w(this.htmlDiv_, k.SELECTED, !1), w(this.htmlDiv_, k.LEVEL, this.level_ + 1), this.rowDiv_ = this.createRowContainer_(), this.rowDiv_.style.pointerEvents = "auto", this.htmlDiv_.appendChild(this.rowDiv_), this.rowContents_ = this.createRowContentsContainer_(), this.rowContents_.style.pointerEvents = "none", this.rowDiv_.appendChild(this.rowContents_), this.iconDom_ = this.createIconDom_(), q(this.iconDom_, J.NONE), this.rowContents_.appendChild(this.iconDom_), this.labelDom_ = this.createLabelDom_(this.name_), this.rowContents_.appendChild(this.labelDom_);
+          this.htmlDiv_ = this.createContainer_(), Z(this.htmlDiv_, q.TREEITEM), D(this.htmlDiv_, N.SELECTED, !1), D(this.htmlDiv_, N.LEVEL, this.level_ + 1), this.rowDiv_ = this.createRowContainer_(), this.rowDiv_.style.pointerEvents = "auto", this.htmlDiv_.appendChild(this.rowDiv_), this.rowContents_ = this.createRowContentsContainer_(), this.rowContents_.style.pointerEvents = "none", this.rowDiv_.appendChild(this.rowContents_), this.iconDom_ = this.createIconDom_(), Z(this.iconDom_, q.NONE), this.rowContents_.appendChild(this.iconDom_), this.labelDom_ = this.createLabelDom_(this.name_), this.rowContents_.appendChild(this.labelDom_);
           var t = this.labelDom_.getAttribute("id");
-          return t && w(this.htmlDiv_, k.LABELLEDBY, t), this.addColourBorder_(this.colour_), this.htmlDiv_;
+          return t && D(this.htmlDiv_, N.LABELLEDBY, t), this.addColourBorder_(this.colour_), this.htmlDiv_;
         }
         createContainer_() {
           var t = document.createElement("div");
@@ -15941,7 +15941,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
               let i = this.parseColour(Ve.defaultBackgroundColour);
               this.rowDiv_.style.backgroundColor = this.colour_ || i, e && L(this.rowDiv_, e);
             } else this.rowDiv_.style.backgroundColor = "", e && ot(this.rowDiv_, e);
-            w(this.htmlDiv_, k.SELECTED, t);
+            D(this.htmlDiv_, N.SELECTED, t);
           }
         }
         setDisabled(t) {
@@ -15980,7 +15980,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           lt(this.htmlDiv_);
         }
       };
-      Ve.registrationName = "category", Ve.nestedPadding = 19, Ve.borderWidth = 8, Ve.defaultBackgroundColour = "#57e", Rt(`
+      Ve.registrationName = "category", Ve.nestedPadding = 19, Ve.borderWidth = 8, Ve.defaultBackgroundColour = "#57e", At(`
 .blocklyToolboxCategory:not(.blocklyToolboxSelected):hover {
   background-color: rgba(255, 255, 255, .2);
 }
@@ -16076,7 +16076,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return !1;
         }
       };
-      En.registrationName = "sep", Rt(`
+      En.registrationName = "sep", At(`
 .blocklyTreeSeparator {
   border-bottom: solid #e5e5e5 1px;
   height: 0;
@@ -16123,7 +16123,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         createDom_() {
           super.createDom_();
           var t = this.getChildToolboxItems();
-          return this.subcategoriesDiv_ = this.createSubCategoriesDom_(t), q(this.subcategoriesDiv_, J.GROUP), this.htmlDiv_.appendChild(this.subcategoriesDiv_), this.closeIcon_(this.iconDom_), w(this.htmlDiv_, k.EXPANDED, !1), this.htmlDiv_;
+          return this.subcategoriesDiv_ = this.createSubCategoriesDom_(t), Z(this.subcategoriesDiv_, q.GROUP), this.htmlDiv_.appendChild(this.subcategoriesDiv_), this.closeIcon_(this.iconDom_), D(this.htmlDiv_, N.EXPANDED, !1), this.htmlDiv_;
         }
         createIconDom_() {
           var t = document.createElement("span");
@@ -16149,7 +16149,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return e;
         }
         setExpanded(t) {
-          this.expanded_ !== t && ((this.expanded_ = t) ? (this.subcategoriesDiv_.style.display = "block", this.openIcon_(this.iconDom_)) : (this.setFlyoutVisible(!1), this.subcategoriesDiv_.style.display = "none", this.closeIcon_(this.iconDom_)), w(this.htmlDiv_, k.EXPANDED, t), this.parentToolbox_.handleToolboxItemResize());
+          this.expanded_ !== t && ((this.expanded_ = t) ? (this.subcategoriesDiv_.style.display = "block", this.openIcon_(this.iconDom_)) : (this.setFlyoutVisible(!1), this.subcategoriesDiv_.style.display = "none", this.closeIcon_(this.iconDom_)), D(this.htmlDiv_, N.EXPANDED, t), this.parentToolbox_.handleToolboxItemResize());
         }
         setVisible_(t) {
           this.htmlDiv_.style.display = t ? "block" : "none";
@@ -16209,7 +16209,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         createDom_(t) {
           t = t.getParentSvg();
           var e = this.createContainer_();
-          e.id = Ht(), this.contentsDiv_ = this.createContentsContainer_(), q(this.contentsDiv_, J.TREE), e.appendChild(this.contentsDiv_);
+          e.id = Ht(), this.contentsDiv_ = this.createContentsContainer_(), Z(this.contentsDiv_, q.TREE), e.appendChild(this.contentsDiv_);
           var i;
           return (i = t.parentNode) == null || i.insertBefore(e, t), this.attachEvents_(e, this.contentsDiv_), e;
         }
@@ -16291,12 +16291,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         getClientRect() {
           if (!this.HtmlDiv || !this.isVisible_) return null;
           var t = this.HtmlDiv.getBoundingClientRect(), e = t.top, i = e + t.height, s = t.left;
-          return t = s + t.width, this.toolboxPosition === M.TOP ? new j(-1e7, i, -1e7, 1e7) : this.toolboxPosition === M.BOTTOM ? new j(e, 1e7, -1e7, 1e7) : this.toolboxPosition === M.LEFT ? new j(
+          return t = s + t.width, this.toolboxPosition === P.TOP ? new $(-1e7, i, -1e7, 1e7) : this.toolboxPosition === P.BOTTOM ? new $(e, 1e7, -1e7, 1e7) : this.toolboxPosition === P.LEFT ? new $(
             -1e7,
             1e7,
             -1e7,
             t
-          ) : new j(-1e7, 1e7, s, 1e7);
+          ) : new $(-1e7, 1e7, s, 1e7);
         }
         onDragEnter() {
           ct.mover.isMoving() || this.updateCursorDeleteStyle_(!0);
@@ -16341,15 +16341,15 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         position() {
           var t = this.workspace_.getMetrics(), e = this.HtmlDiv;
           if (e) {
-            this.horizontalLayout ? (e.style.left = "0", e.style.height = "auto", e.style.width = "100%", this.height_ = e.offsetHeight, this.width_ = t.viewWidth, this.toolboxPosition === M.TOP ? e.style.top = "0" : e.style.bottom = "0") : (this.toolboxPosition === M.RIGHT ? e.style.right = "0" : e.style.left = "0", e.style.height = "100%", this.width_ = e.offsetWidth, this.height_ = t.viewHeight);
+            this.horizontalLayout ? (e.style.left = "0", e.style.height = "auto", e.style.width = "100%", this.height_ = e.offsetHeight, this.width_ = t.viewWidth, this.toolboxPosition === P.TOP ? e.style.top = "0" : e.style.bottom = "0") : (this.toolboxPosition === P.RIGHT ? e.style.right = "0" : e.style.left = "0", e.style.height = "100%", this.width_ = e.offsetWidth, this.height_ = t.viewHeight);
             var i;
             (i = this.flyout) == null || i.position();
           }
         }
         handleToolboxItemResize() {
           if (this.HtmlDiv) {
-            var t = this.workspace_, e = this.HtmlDiv.getBoundingClientRect(), i = this.getFlyout(), s = this.toolboxPosition === M.LEFT ? t.scrollX + e.width + (i != null && i.isVisible() ? i.getWidth() : 0) : t.scrollX;
-            e = this.toolboxPosition === M.TOP ? t.scrollY + e.height + (i != null && i.isVisible() ? i.getHeight() : 0) : t.scrollY, t.translate(s, e), Zi(t);
+            var t = this.workspace_, e = this.HtmlDiv.getBoundingClientRect(), i = this.getFlyout(), s = this.toolboxPosition === P.LEFT ? t.scrollX + e.width + (i != null && i.isVisible() ? i.getWidth() : 0) : t.scrollX;
+            e = this.toolboxPosition === P.TOP ? t.scrollY + e.height + (i != null && i.isVisible() ? i.getHeight() : 0) : t.scrollY, t.translate(s, e), Zi(t);
           }
         }
         clearSelection() {
@@ -16383,10 +16383,10 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return e !== null && e !== t;
         }
         deselectItem_(t) {
-          this.selectedItem_ = null, this.previouslySelectedItem_ = t, t.setSelected(!1), w(this.contentsDiv_, k.ACTIVEDESCENDANT, "");
+          this.selectedItem_ = null, this.previouslySelectedItem_ = t, t.setSelected(!1), D(this.contentsDiv_, N.ACTIVEDESCENDANT, "");
         }
         selectItem_(t, e) {
-          this.selectedItem_ = e, this.previouslySelectedItem_ = t, e.setSelected(!0), w(this.contentsDiv_, k.ACTIVEDESCENDANT, e.getId());
+          this.selectedItem_ = e, this.previouslySelectedItem_ = t, e.setSelected(!0), D(this.contentsDiv_, N.ACTIVEDESCENDANT, e.getId());
         }
         selectItemByPosition(t) {
           (t = this.getToolboxItems()[t]) && this.setSelectedItem(t);
@@ -16457,7 +16457,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           return this.navigator;
         }
       };
-      Rt(`
+      At(`
 .blocklyToolboxDelete {
   cursor: url("<<<PATH>>>/handdelete.cur"), auto;
 }
@@ -16493,11 +16493,11 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
   outline: none;
 }
 `), X(R.TOOLBOX, "default", s_);
-      var H_ = b.INPUT_VALUE, G_ = b.OUTPUT_VALUE, V_ = b.NEXT_STATEMENT, W_ = b.PREVIOUS_STATEMENT, K_ = M.TOP, Y_ = M.BOTTOM, X_ = M.LEFT, z_ = M.RIGHT;
+      var H_ = b.INPUT_VALUE, G_ = b.OUTPUT_VALUE, V_ = b.NEXT_STATEMENT, W_ = b.PREVIOUS_STATEMENT, K_ = P.TOP, Y_ = P.BOTTOM, X_ = P.LEFT, z_ = P.RIGHT;
       Eo.prototype.newBlock = function(t, e) {
         return new po(this, t, e);
       }, zt.prototype.newBlock = function(t, e) {
-        return new Nt(this, t, e);
+        return new wt(this, t, e);
       }, Eo.prototype.newComment = function(t) {
         return new Kr(this, t);
       }, zt.prototype.newComment = function(t) {
@@ -16511,14 +16511,14 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         for (let e = 0; e < t.length; e++) this.getName(t[e][0], n.jj.NameType.PROCEDURE);
       };
       var m = {};
-      return m.Block = po, m.BlockFlyoutInflater = Yp, m.BlockNavigationPolicy = ip, m.BlockSvg = Nt, m.Blocks = bt, m.BubbleNavigationPolicy = sp, m.ButtonFlyoutInflater = Kp, m.COLLAPSED_FIELD_NAME = "_TEMP_COLLAPSED_FIELD", m.COLLAPSED_INPUT_NAME = "_TEMP_COLLAPSED_INPUT", m.COLLAPSE_CHARS = 30, m.CodeGenerator = n.Rp, m.CollapsibleToolboxCategory = mo, m.CommentBarButtonNavigationPolicy = op, m.CommentEditorNavigationPolicy = np, m.ComponentManager = gt, m.Connection = st, m.ConnectionChecker = Wp, m.ConnectionDB = co, m.ConnectionNavigationPolicy = rp, m.ConnectionType = b, m.ContextMenu = Ki, m.ContextMenuItems = Ut, m.ContextMenuRegistry = Z, m.Css = cc, m.DELETE_VARIABLE_ID = "DELETE_VARIABLE_ID", m.DeleteArea = qr, m.Direction = mt, m.DragDisposition = Si, m.DragTarget = Zg, m.DropDownDiv = ie, m.Events = N, m.Extensions = He, m.Field = ht, m.FieldCheckbox = Ms, m.FieldDropdown = Yt, m.FieldImage = ws, m.FieldLabel = Ls, m.FieldLabelSerializable = Gp, m.FieldNavigationPolicy = lp, m.FieldNumber = Cu, m.FieldTextInput = n.Ip, m.FieldVariable = pn, m.Flyout = tl, m.FlyoutButton = oe, m.FlyoutButtonNavigationPolicy = tp, m.FlyoutItem = To, m.FlyoutMetricsManager = Qg, m.FlyoutNavigator = gp, m.FlyoutSeparator = Zr, m.FlyoutSeparatorNavigationPolicy = ep, m.FocusManager = te, m.FocusableTreeTraverser = Kt, m.Generator = n.Rp, m.Gesture = el, m.Grid = au, m.HorizontalFlyout = Hp, m.INPUT_VALUE = H_, m.IconNavigationPolicy = ap, m.Input = go, m.InsertionMarkerPreviewer = Fp, m.KeyboardMover = ct, m.KeyboardNavigationController = Og, m.LabelFlyoutInflater = kp, m.Menu = vc, m.MenuItem = yr, m.MetricsManager = ru, m.MoveIndicator = Yg, m.Msg = n.C, m.NEXT_STATEMENT = V_, m.Names = n.jj, m.NavigationDirection = Ae, m.Navigator = Qr, m.OPPOSITE_TYPE = bs, m.OUTPUT_VALUE = G_, m.Options = si, m.PREVIOUS_STATEMENT = W_, m.PROCEDURE_CATEGORY_NAME = "PROCEDURE", m.Procedures = _e, m.RENAME_VARIABLE_ID = "RENAME_VARIABLE_ID", m.RenderedConnection = Xt, m.Scrollbar = Ot, m.ScrollbarPair = lu, m.SeparatorFlyoutInflater = pp, m.ShortcutItems = nt, m.ShortcutRegistry = x, m.TOOLBOX_AT_BOTTOM = Y_, m.TOOLBOX_AT_LEFT = X_, m.TOOLBOX_AT_RIGHT = z_, m.TOOLBOX_AT_TOP = K_, m.Theme = Rs, m.ThemeManager = Sp, m.Themes = U_, m.Toast = ce, m.Toolbox = s_, m.ToolboxCategory = Ve, m.ToolboxItem = Su, m.ToolboxItemNavigationPolicy = up, m.ToolboxNavigator = dp, m.ToolboxSeparator = En, m.Tooltip = pe, m.Touch = ds, m.Trashcan = Op, m.UnattachedFieldError = Lt, m.VARIABLE_CATEGORY_NAME = "VARIABLE", m.VARIABLE_DYNAMIC_CATEGORY_NAME = "VARIABLE_DYNAMIC", m.VERSION = "13.1.1", m.VariableMap = bp, m.VariableModel = Ap, m.Variables = wt, m.VariablesDynamic = Ns, m.VerticalFlyout = Iu, m.WidgetDiv = Ue, m.Workspace = Eo, m.WorkspaceAudio = Rp, m.WorkspaceCommentNavigationPolicy = hp, m.WorkspaceDragger = _p, m.WorkspaceNavigationPolicy = cp, m.WorkspaceSvg = zt, m.Xml = ue, m.ZoomControls = jd, m.blockAnimations = ln, m.blockRendering = at, m.browserEvents = _i, m.bubbles = Tn, m.bumpObjects = jr, m.clipboard = Ge, m.comments = Yi, m.common = Dt, m.config = n.Ng, m.constants = { COLLAPSED_FIELD_NAME: "_TEMP_COLLAPSED_FIELD", COLLAPSED_INPUT_NAME: "_TEMP_COLLAPSED_INPUT", MANUALLY_DISABLED: "MANUALLY_DISABLED" }, m.defineBlocksWithJsonArray = vl, m.dialog = fi, m.dragging = _n, m.fieldRegistry = Yr, m.geras = hi, m.getFocusManager = n.t, m.getMainWorkspace = Il, m.getSelected = Ro, m.hasBubble = ze, m.hideChaff = function(t) {
+      return m.Block = po, m.BlockFlyoutInflater = Yp, m.BlockNavigationPolicy = ip, m.BlockSvg = wt, m.Blocks = Ot, m.BubbleNavigationPolicy = sp, m.ButtonFlyoutInflater = Kp, m.COLLAPSED_FIELD_NAME = "_TEMP_COLLAPSED_FIELD", m.COLLAPSED_INPUT_NAME = "_TEMP_COLLAPSED_INPUT", m.COLLAPSE_CHARS = 30, m.CodeGenerator = n.Rp, m.CollapsibleToolboxCategory = mo, m.CommentBarButtonNavigationPolicy = op, m.CommentEditorNavigationPolicy = np, m.ComponentManager = gt, m.Connection = st, m.ConnectionChecker = Wp, m.ConnectionDB = co, m.ConnectionNavigationPolicy = rp, m.ConnectionType = b, m.ContextMenu = Ki, m.ContextMenuItems = Ut, m.ContextMenuRegistry = Q, m.Css = cc, m.DELETE_VARIABLE_ID = "DELETE_VARIABLE_ID", m.DeleteArea = qr, m.Direction = mt, m.DragDisposition = Si, m.DragTarget = Zg, m.DropDownDiv = ie, m.Events = w, m.Extensions = He, m.Field = ht, m.FieldCheckbox = Ms, m.FieldDropdown = Yt, m.FieldImage = ws, m.FieldLabel = Ls, m.FieldLabelSerializable = Gp, m.FieldNavigationPolicy = lp, m.FieldNumber = Cu, m.FieldTextInput = n.Ip, m.FieldVariable = pn, m.Flyout = tl, m.FlyoutButton = oe, m.FlyoutButtonNavigationPolicy = tp, m.FlyoutItem = To, m.FlyoutMetricsManager = Qg, m.FlyoutNavigator = gp, m.FlyoutSeparator = Zr, m.FlyoutSeparatorNavigationPolicy = ep, m.FocusManager = te, m.FocusableTreeTraverser = Kt, m.Generator = n.Rp, m.Gesture = el, m.Grid = au, m.HorizontalFlyout = Hp, m.INPUT_VALUE = H_, m.IconNavigationPolicy = ap, m.Input = go, m.InsertionMarkerPreviewer = Fp, m.KeyboardMover = ct, m.KeyboardNavigationController = Og, m.LabelFlyoutInflater = kp, m.Menu = vc, m.MenuItem = yr, m.MetricsManager = ru, m.MoveIndicator = Yg, m.Msg = n.C, m.NEXT_STATEMENT = V_, m.Names = n.jj, m.NavigationDirection = Ae, m.Navigator = Qr, m.OPPOSITE_TYPE = bs, m.OUTPUT_VALUE = G_, m.Options = si, m.PREVIOUS_STATEMENT = W_, m.PROCEDURE_CATEGORY_NAME = "PROCEDURE", m.Procedures = _e, m.RENAME_VARIABLE_ID = "RENAME_VARIABLE_ID", m.RenderedConnection = Xt, m.Scrollbar = yt, m.ScrollbarPair = lu, m.SeparatorFlyoutInflater = pp, m.ShortcutItems = nt, m.ShortcutRegistry = x, m.TOOLBOX_AT_BOTTOM = Y_, m.TOOLBOX_AT_LEFT = X_, m.TOOLBOX_AT_RIGHT = z_, m.TOOLBOX_AT_TOP = K_, m.Theme = Rs, m.ThemeManager = Sp, m.Themes = U_, m.Toast = ce, m.Toolbox = s_, m.ToolboxCategory = Ve, m.ToolboxItem = Su, m.ToolboxItemNavigationPolicy = up, m.ToolboxNavigator = dp, m.ToolboxSeparator = En, m.Tooltip = pe, m.Touch = ds, m.Trashcan = Op, m.UnattachedFieldError = kt, m.VARIABLE_CATEGORY_NAME = "VARIABLE", m.VARIABLE_DYNAMIC_CATEGORY_NAME = "VARIABLE_DYNAMIC", m.VERSION = "13.1.1", m.VariableMap = bp, m.VariableModel = Ap, m.Variables = Mt, m.VariablesDynamic = Ns, m.VerticalFlyout = Iu, m.WidgetDiv = Ue, m.Workspace = Eo, m.WorkspaceAudio = Rp, m.WorkspaceCommentNavigationPolicy = hp, m.WorkspaceDragger = _p, m.WorkspaceNavigationPolicy = cp, m.WorkspaceSvg = zt, m.Xml = ue, m.ZoomControls = jd, m.blockAnimations = ln, m.blockRendering = at, m.browserEvents = _i, m.bubbles = Tn, m.bumpObjects = jr, m.clipboard = Ge, m.comments = Yi, m.common = Dt, m.config = n.Ng, m.constants = { COLLAPSED_FIELD_NAME: "_TEMP_COLLAPSED_FIELD", COLLAPSED_INPUT_NAME: "_TEMP_COLLAPSED_INPUT", MANUALLY_DISABLED: "MANUALLY_DISABLED" }, m.defineBlocksWithJsonArray = vl, m.dialog = fi, m.dragging = _n, m.fieldRegistry = Yr, m.geras = hi, m.getFocusManager = n.t, m.getMainWorkspace = Il, m.getSelected = Ro, m.hasBubble = ze, m.hideChaff = function(t) {
         Le.hideChaff(t);
       }, m.icons = zi, m.inject = function(t, e) {
         var i = null;
         i = typeof t == "string" ? document.getElementById(t) || document.querySelector(t) : t;
         var s;
         if (!document.contains(i) && document !== ((s = i) == null ? void 0 : s.ownerDocument)) throw Error("Error: container is not in current document");
-        t = new si(e || {}), s = document.createElement("div"), L(s, "injectionDiv"), e != null && e.rtl && L(s, "blocklyRTL"), q(s, J.APPLICATION), i.appendChild(s), e = _d(s, t);
+        t = new si(e || {}), s = document.createElement("div"), L(s, "injectionDiv"), e != null && e.rtl && L(s, "blocklyRTL"), Z(s, q.APPLICATION), i.appendChild(s), e = _d(s, t);
         var o = Td(s, e, t);
         return Ed(o), So(o), Zi(o), s.addEventListener("focusin", function() {
           So(o);
@@ -16540,192 +16540,192 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
 }
 var J_ = Du();
 const q_ = /* @__PURE__ */ Mu(J_), {
-  Block: yT,
-  BlockFlyoutInflater: LT,
-  BlockNavigationPolicy: kT,
-  BlockSvg: NT,
-  Blocks: wT,
-  BubbleNavigationPolicy: MT,
-  ButtonFlyoutInflater: DT,
-  COLLAPSED_FIELD_NAME: PT,
-  COLLAPSED_INPUT_NAME: BT,
-  COLLAPSE_CHARS: xT,
-  CodeGenerator: FT,
-  CollapsibleToolboxCategory: UT,
-  CommentBarButtonNavigationPolicy: HT,
-  CommentEditorNavigationPolicy: GT,
-  ComponentManager: VT,
-  Connection: WT,
+  Block: kT,
+  BlockFlyoutInflater: NT,
+  BlockNavigationPolicy: wT,
+  BlockSvg: MT,
+  Blocks: DT,
+  BubbleNavigationPolicy: PT,
+  ButtonFlyoutInflater: BT,
+  COLLAPSED_FIELD_NAME: xT,
+  COLLAPSED_INPUT_NAME: FT,
+  COLLAPSE_CHARS: UT,
+  CodeGenerator: HT,
+  CollapsibleToolboxCategory: GT,
+  CommentBarButtonNavigationPolicy: VT,
+  CommentEditorNavigationPolicy: WT,
+  ComponentManager: KT,
+  Connection: YT,
   ConnectionChecker: Z_,
-  ConnectionDB: KT,
-  ConnectionNavigationPolicy: YT,
-  ConnectionType: XT,
-  ContextMenu: zT,
-  ContextMenuItems: jT,
-  ContextMenuRegistry: $T,
-  Css: JT,
-  DELETE_VARIABLE_ID: qT,
-  DeleteArea: ZT,
-  Direction: QT,
-  DragDisposition: tE,
-  DragTarget: eE,
-  DropDownDiv: iE,
-  Events: sE,
-  Extensions: Q_,
-  Field: oE,
-  FieldCheckbox: nE,
-  FieldDropdown: rE,
-  FieldImage: tT,
-  FieldLabel: lE,
-  FieldLabelSerializable: aE,
-  FieldNavigationPolicy: hE,
-  FieldNumber: cE,
-  FieldTextInput: eT,
-  FieldVariable: uE,
-  Flyout: dE,
-  FlyoutButton: gE,
-  FlyoutButtonNavigationPolicy: pE,
-  FlyoutItem: _E,
-  FlyoutMetricsManager: TE,
-  FlyoutNavigator: EE,
-  FlyoutSeparator: fE,
-  FlyoutSeparatorNavigationPolicy: mE,
-  FocusManager: IE,
-  FocusableTreeTraverser: CE,
-  Generator: vE,
-  Gesture: SE,
-  Grid: RE,
-  HorizontalFlyout: AE,
-  INPUT_VALUE: bE,
-  IconNavigationPolicy: OE,
-  Input: yE,
-  InsertionMarkerPreviewer: LE,
-  KeyboardMover: kE,
-  KeyboardNavigationController: NE,
-  LabelFlyoutInflater: wE,
-  Menu: ME,
-  MenuItem: DE,
-  MetricsManager: PE,
-  MoveIndicator: BE,
-  Msg: xE,
-  NEXT_STATEMENT: FE,
-  Names: UE,
-  NavigationDirection: HE,
-  Navigator: GE,
-  OPPOSITE_TYPE: VE,
-  OUTPUT_VALUE: WE,
-  Options: KE,
-  PREVIOUS_STATEMENT: YE,
-  PROCEDURE_CATEGORY_NAME: XE,
-  Procedures: zE,
-  RENAME_VARIABLE_ID: jE,
-  RenderedConnection: $E,
-  Scrollbar: JE,
-  ScrollbarPair: qE,
-  SeparatorFlyoutInflater: ZE,
-  ShortcutItems: QE,
-  ShortcutRegistry: tf,
-  TOOLBOX_AT_BOTTOM: ef,
-  TOOLBOX_AT_LEFT: sf,
-  TOOLBOX_AT_RIGHT: of,
-  TOOLBOX_AT_TOP: nf,
-  Theme: rf,
-  ThemeManager: lf,
-  Themes: af,
-  Toast: hf,
-  Toolbox: cf,
-  ToolboxCategory: uf,
-  ToolboxItem: df,
-  ToolboxItemNavigationPolicy: gf,
-  ToolboxNavigator: pf,
-  ToolboxSeparator: _f,
-  Tooltip: Tf,
-  Touch: Ef,
-  Trashcan: ff,
-  UnattachedFieldError: mf,
-  VARIABLE_CATEGORY_NAME: If,
-  VARIABLE_DYNAMIC_CATEGORY_NAME: Cf,
-  VERSION: iT,
-  VariableMap: vf,
-  VariableModel: Sf,
-  Variables: Rf,
-  VariablesDynamic: Af,
-  VerticalFlyout: bf,
-  WidgetDiv: Of,
-  Workspace: yf,
-  WorkspaceAudio: Lf,
-  WorkspaceCommentNavigationPolicy: kf,
-  WorkspaceDragger: Nf,
-  WorkspaceNavigationPolicy: wf,
-  WorkspaceSvg: Mf,
-  Xml: Df,
-  ZoomControls: Pf,
-  blockAnimations: Bf,
-  blockRendering: xf,
-  browserEvents: Ff,
-  bubbles: Uf,
-  bumpObjects: Hf,
-  clipboard: Gf,
-  comments: Vf,
-  common: sT,
-  config: Wf,
-  constants: Kf,
-  defineBlocksWithJsonArray: Yf,
-  dialog: Xf,
-  dragging: zf,
-  fieldRegistry: jf,
-  geras: $f,
-  getFocusManager: Jf,
-  getMainWorkspace: qf,
-  getSelected: Zf,
-  hasBubble: Qf,
-  hideChaff: tm,
-  icons: em,
-  inject: oT,
-  inputs: im,
-  isBoundedElement: sm,
-  isCopyable: om,
-  isDeletable: nm,
-  isDraggable: rm,
-  isIcon: lm,
-  isObservable: am,
-  isPaster: hm,
-  isRenderedElement: cm,
-  isSelectable: um,
-  isSerializable: dm,
-  isVariableBackedParameterModel: gm,
-  keyboardNavigationController: pm,
-  layers: _m,
-  navigateBlock: Tm,
-  procedures: Em,
+  ConnectionDB: XT,
+  ConnectionNavigationPolicy: zT,
+  ConnectionType: jT,
+  ContextMenu: $T,
+  ContextMenuItems: JT,
+  ContextMenuRegistry: qT,
+  Css: ZT,
+  DELETE_VARIABLE_ID: QT,
+  DeleteArea: tE,
+  Direction: eE,
+  DragDisposition: iE,
+  DragTarget: sE,
+  DropDownDiv: oE,
+  Events: Q_,
+  Extensions: tT,
+  Field: nE,
+  FieldCheckbox: rE,
+  FieldDropdown: lE,
+  FieldImage: eT,
+  FieldLabel: aE,
+  FieldLabelSerializable: hE,
+  FieldNavigationPolicy: cE,
+  FieldNumber: uE,
+  FieldTextInput: iT,
+  FieldVariable: dE,
+  Flyout: gE,
+  FlyoutButton: pE,
+  FlyoutButtonNavigationPolicy: _E,
+  FlyoutItem: TE,
+  FlyoutMetricsManager: EE,
+  FlyoutNavigator: fE,
+  FlyoutSeparator: mE,
+  FlyoutSeparatorNavigationPolicy: IE,
+  FocusManager: CE,
+  FocusableTreeTraverser: vE,
+  Generator: SE,
+  Gesture: RE,
+  Grid: AE,
+  HorizontalFlyout: bE,
+  INPUT_VALUE: OE,
+  IconNavigationPolicy: yE,
+  Input: LE,
+  InsertionMarkerPreviewer: kE,
+  KeyboardMover: NE,
+  KeyboardNavigationController: wE,
+  LabelFlyoutInflater: ME,
+  Menu: DE,
+  MenuItem: PE,
+  MetricsManager: BE,
+  MoveIndicator: xE,
+  Msg: FE,
+  NEXT_STATEMENT: UE,
+  Names: HE,
+  NavigationDirection: GE,
+  Navigator: VE,
+  OPPOSITE_TYPE: WE,
+  OUTPUT_VALUE: KE,
+  Options: YE,
+  PREVIOUS_STATEMENT: XE,
+  PROCEDURE_CATEGORY_NAME: zE,
+  Procedures: jE,
+  RENAME_VARIABLE_ID: $E,
+  RenderedConnection: JE,
+  Scrollbar: qE,
+  ScrollbarPair: ZE,
+  SeparatorFlyoutInflater: QE,
+  ShortcutItems: tf,
+  ShortcutRegistry: ef,
+  TOOLBOX_AT_BOTTOM: sf,
+  TOOLBOX_AT_LEFT: of,
+  TOOLBOX_AT_RIGHT: nf,
+  TOOLBOX_AT_TOP: rf,
+  Theme: lf,
+  ThemeManager: af,
+  Themes: hf,
+  Toast: cf,
+  Toolbox: uf,
+  ToolboxCategory: df,
+  ToolboxItem: gf,
+  ToolboxItemNavigationPolicy: pf,
+  ToolboxNavigator: _f,
+  ToolboxSeparator: Tf,
+  Tooltip: Ef,
+  Touch: ff,
+  Trashcan: mf,
+  UnattachedFieldError: If,
+  VARIABLE_CATEGORY_NAME: Cf,
+  VARIABLE_DYNAMIC_CATEGORY_NAME: vf,
+  VERSION: sT,
+  VariableMap: Sf,
+  VariableModel: Rf,
+  Variables: Af,
+  VariablesDynamic: bf,
+  VerticalFlyout: Of,
+  WidgetDiv: yf,
+  Workspace: Lf,
+  WorkspaceAudio: kf,
+  WorkspaceCommentNavigationPolicy: Nf,
+  WorkspaceDragger: wf,
+  WorkspaceNavigationPolicy: Mf,
+  WorkspaceSvg: Df,
+  Xml: Pf,
+  ZoomControls: Bf,
+  blockAnimations: xf,
+  blockRendering: Ff,
+  browserEvents: Uf,
+  bubbles: Hf,
+  bumpObjects: Gf,
+  clipboard: Vf,
+  comments: Wf,
+  common: oT,
+  config: Kf,
+  constants: Yf,
+  defineBlocksWithJsonArray: Xf,
+  dialog: zf,
+  dragging: jf,
+  fieldRegistry: $f,
+  geras: Jf,
+  getFocusManager: qf,
+  getMainWorkspace: Zf,
+  getSelected: Qf,
+  hasBubble: tm,
+  hideChaff: em,
+  icons: im,
+  inject: nT,
+  inputs: sm,
+  isBoundedElement: om,
+  isCopyable: nm,
+  isDeletable: rm,
+  isDraggable: lm,
+  isIcon: am,
+  isObservable: hm,
+  isPaster: cm,
+  isRenderedElement: um,
+  isSelectable: dm,
+  isSerializable: gm,
+  isVariableBackedParameterModel: pm,
+  keyboardNavigationController: _m,
+  layers: Tm,
+  navigateBlock: Em,
+  procedures: fm,
   registry: h_,
-  renderManagement: fm,
+  renderManagement: mm,
   serialization: T_,
-  setLocale: mm,
-  setParentContainer: Im,
-  svgResize: Cm,
-  thrasos: vm,
-  uiPosition: Sm,
-  utils: Rm,
-  zelos: Am
+  setLocale: Im,
+  setParentContainer: Cm,
+  svgResize: vm,
+  thrasos: Sm,
+  uiPosition: Rm,
+  utils: Am,
+  zelos: bm
 } = q_;
-var gl = { exports: {} }, nT = gl.exports, c_;
+var gl = { exports: {} }, rT = gl.exports, c_;
 function E_() {
-  return c_ || (c_ = 1, (function(D, C) {
+  return c_ || (c_ = 1, (function(k, I) {
     (function(n, h) {
-      D.exports = h(Du());
-    })(nT, function(n) {
-      var h = n.__namespace__, P = function(l) {
+      k.exports = h(Du());
+    })(rT, function(n) {
+      var h = n.__namespace__, M = function(l) {
         return function() {
           var u = l.workspace, T = l.getField("VAR").getVariable();
           h.Rd(u, T);
         };
-      }, et = function(l) {
+      }, j = function(l) {
         return function() {
           var u = l.getField("VAR").getVariable();
           u && h.Zd(u.getWorkspace(), u, l);
         };
-      }, Mt = function(l) {
+      }, Ct = function(l) {
         return function() {
           var u = l.workspace, T = l.getField("VAR").getVariable();
           h.Rd(u, T);
@@ -16757,13 +16757,13 @@ function E_() {
       }]);
       h.oh("contextMenu_variableDynamicSetterGetter", { customContextMenu: function(l) {
         if (this.isInFlyout)
-          (this.type === "variables_get_dynamic" || this.type === "variables_get_reporter_dynamic") && (I = this.getField("VAR").getText(), T = { text: h.C.RENAME_VARIABLE.replace("%1", I), enabled: !0, callback: P(this) }, I = { text: h.C.DELETE_VARIABLE.replace("%1", I), enabled: !0, callback: et(this) }, l.unshift(T), l.unshift(I));
+          (this.type === "variables_get_dynamic" || this.type === "variables_get_reporter_dynamic") && (C = this.getField("VAR").getText(), T = { text: h.C.RENAME_VARIABLE.replace("%1", C), enabled: !0, callback: M(this) }, C = { text: h.C.DELETE_VARIABLE.replace("%1", C), enabled: !0, callback: j(this) }, l.unshift(T), l.unshift(C));
         else {
           if (this.type === "variables_get_dynamic")
             var u = "variables_set_dynamic", T = h.C.VARIABLES_GET_CREATE_SET;
           else u = "variables_get_dynamic", T = h.C.VARIABLES_SET_CREATE_GET;
-          var I = this.getField("VAR");
-          u = { type: u, fields: { VAR: I.saveState(!0) } }, l.push({ enabled: this.workspace.remainingCapacity() > 0, text: T.replace("%1", I.getText()), callback: h.Og(this, u) });
+          var C = this.getField("VAR");
+          u = { type: u, fields: { VAR: C.saveState(!0) } }, l.push({ enabled: this.workspace.remainingCapacity() > 0, text: T.replace("%1", C.getText()), callback: h.Og(this, u) });
         }
       }, onchange: function() {
         var l = this.getFieldValue("VAR");
@@ -16782,13 +16782,13 @@ function E_() {
       }]);
       h.oh("contextMenu_variableSetterGetter", { customContextMenu: function(l) {
         if (this.isInFlyout)
-          (this.type === "variables_get" || this.type === "variables_get_reporter") && (I = this.getField("VAR").getText(), T = { text: h.C.RENAME_VARIABLE.replace("%1", I), enabled: !0, callback: Mt(this) }, I = { text: h.C.DELETE_VARIABLE.replace("%1", I), enabled: !0, callback: De(this) }, l.unshift(T), l.unshift(I));
+          (this.type === "variables_get" || this.type === "variables_get_reporter") && (C = this.getField("VAR").getText(), T = { text: h.C.RENAME_VARIABLE.replace("%1", C), enabled: !0, callback: Ct(this) }, C = { text: h.C.DELETE_VARIABLE.replace("%1", C), enabled: !0, callback: De(this) }, l.unshift(T), l.unshift(C));
         else {
           if (this.type === "variables_get")
             var u = "variables_set", T = h.C.VARIABLES_GET_CREATE_SET;
           else u = "variables_get", T = h.C.VARIABLES_SET_CREATE_GET;
-          var I = this.getField("VAR");
-          u = { type: u, fields: { VAR: I.saveState(!0) } }, l.push({ enabled: this.workspace.remainingCapacity() > 0, text: T.replace("%1", I.getText()), callback: h.Og(this, u) });
+          var C = this.getField("VAR");
+          u = { type: u, fields: { VAR: C.saveState(!0) } }, l.push({ enabled: this.workspace.remainingCapacity() > 0, text: T.replace("%1", C.getText()), callback: h.Og(this, u) });
         }
       } }), h.Ab(it);
       var Oe = { blocks: it }, ft = h.yb([{ type: "text", message0: "%1", args0: [{ type: "field_input", name: "TEXT", text: "" }], output: "String", style: "text_blocks", helpUrl: "%{BKY_TEXT_TEXT_HELPURL}", tooltip: "%{BKY_TEXT_TEXT_TOOLTIP}", extensions: ["text_quotes", "parent_tooltip_when_inline"] }, { type: "text_join", message0: "", output: "String", style: "text_blocks", helpUrl: "%{BKY_TEXT_JOIN_HELPURL}", tooltip: "%{BKY_TEXT_JOIN_TOOLTIP}", mutator: "text_join_mutator" }, {
@@ -16822,9 +16822,9 @@ function E_() {
         this.WHERE_OPTIONS_1 = [[h.C.TEXT_GET_SUBSTRING_START_FROM_START, "FROM_START", h.C.TEXT_FROM_START_ARIA], [h.C.TEXT_GET_SUBSTRING_START_FROM_END, "FROM_END", h.C.TEXT_FROM_END_ARIA], [h.C.TEXT_GET_SUBSTRING_START_FIRST, "FIRST"]], this.WHERE_OPTIONS_2 = [[h.C.TEXT_GET_SUBSTRING_END_FROM_START, "FROM_START", h.C.TEXT_FROM_START_ARIA], [h.C.TEXT_GET_SUBSTRING_END_FROM_END, "FROM_END", h.C.TEXT_FROM_END_ARIA], [h.C.TEXT_GET_SUBSTRING_END_LAST, "LAST"]], this.setHelpUrl(h.C.TEXT_GET_SUBSTRING_HELPURL), this.setStyle("text_blocks"), this.appendValueInput("STRING").setCheck("String").appendField(h.C.TEXT_GET_SUBSTRING_INPUT_IN_TEXT).setAriaLabelProvider(h.C.INPUT_LABEL_TEXT_TO_CHECK);
         var l = (u) => {
           var T = h.kh({ type: "field_dropdown", options: this["WHERE_OPTIONS_" + u] });
-          return T.setValidator(function(I) {
+          return T.setValidator(function(C) {
             var O = this.getValue();
-            I = I === "FROM_START" || I === "FROM_END", I !== (O === "FROM_START" || O === "FROM_END") && this.getSourceBlock().updateAt_(u, I);
+            C = C === "FROM_START" || C === "FROM_END", C !== (O === "FROM_START" || O === "FROM_END") && this.getSourceBlock().updateAt_(u, C);
           }), T;
         };
         this.appendDummyInput("WHERE1_INPUT").appendField(l(1), "WHERE1"), this.appendDummyInput("AT1"), this.appendDummyInput("WHERE2_INPUT").appendField(l(2), "WHERE2"), this.appendDummyInput("AT2"), h.C.TEXT_GET_SUBSTRING_TAIL && this.appendDummyInput("TAIL").appendField(h.C.TEXT_GET_SUBSTRING_TAIL), this.setInputsInline(!0), this.setOutput(!0, "String"), this.updateAt_(1, !0), this.updateAt_(2, !0), this.setTooltip(h.C.TEXT_GET_SUBSTRING_TOOLTIP);
@@ -16880,8 +16880,8 @@ function E_() {
         QUOTE_IMAGE_WIDTH: 12,
         QUOTE_IMAGE_HEIGHT: 12,
         quoteField_: function(l) {
-          for (let u = 0, T; T = this.inputList[u]; u++) for (let I = 0, O; O = T.fieldRow[I]; I++) if (l === O.name) {
-            T.insertFieldAt(I, this.newQuote_(!0)), T.insertFieldAt(I + 2, this.newQuote_(!1));
+          for (let u = 0, T; T = this.inputList[u]; u++) for (let C = 0, O; O = T.fieldRow[C]; C++) if (l === O.name) {
+            T.insertFieldAt(C, this.newQuote_(!0)), T.insertFieldAt(C + 2, this.newQuote_(!1));
             return;
           }
           console.warn('field named "' + l + '" not found in ' + this.toDevString());
@@ -16912,14 +16912,14 @@ function E_() {
       }, decompose: function(l) {
         var u = l.newBlock("text_create_join_container");
         u.initSvg();
-        var T, I = (T = u.getInput("STACK")) == null ? void 0 : T.connection;
+        var T, C = (T = u.getInput("STACK")) == null ? void 0 : T.connection;
         for (T = 0; T < this.itemCount_; T++) {
           let O = l.newBlock("text_create_join_item");
           if (O.initSvg(), O.previousConnection) {
             let dt;
-            (dt = I) == null || dt.connect(O.previousConnection);
+            (dt = C) == null || dt.connect(O.previousConnection);
           }
-          I = O.nextConnection;
+          C = O.nextConnection;
         }
         return u;
       }, compose: function(l) {
@@ -16972,7 +16972,7 @@ function E_() {
           )), u;
         });
       }), h.Ab(ft);
-      var le = { blocks: ft }, Rt = {}, Ds = { setStatements_: function(l) {
+      var le = { blocks: ft }, At = {}, Ds = { setStatements_: function(l) {
         this.hasStatements_ !== l && (l ? (this.appendStatementInput("STACK").appendField(h.C.PROCEDURES_DEFNORETURN_DO), this.getInput("RETURN") && this.moveInputBefore("STACK", "RETURN")) : this.removeInput("STACK", !0), this.hasStatements_ = l);
       }, updateParams_: function() {
         var l = "";
@@ -16989,14 +16989,14 @@ function E_() {
           this.getFieldValue("NAME")
         );
         for (let T = 0; T < this.argumentVarModels_.length; T++) {
-          let I = h.rc("arg"), O = this.argumentVarModels_[T];
-          I.setAttribute("name", O.getName()), I.setAttribute("varid", O.getId()), l && this.paramIds_ && I.setAttribute("paramId", this.paramIds_[T]), u.appendChild(I);
+          let C = h.rc("arg"), O = this.argumentVarModels_[T];
+          C.setAttribute("name", O.getName()), C.setAttribute("varid", O.getId()), l && this.paramIds_ && C.setAttribute("paramId", this.paramIds_[T]), u.appendChild(C);
         }
         return this.hasStatements_ || u.setAttribute("statements", "false"), u;
       }, domToMutation: function(l) {
         this.arguments_ = [], this.argumentVarModels_ = [];
-        for (let T = 0, I; I = l.childNodes[T]; T++) if (I.nodeName.toLowerCase() === "arg") {
-          var u = I;
+        for (let T = 0, C; C = l.childNodes[T]; T++) if (C.nodeName.toLowerCase() === "arg") {
+          var u = C;
           let O = u.getAttribute("name");
           u = u.getAttribute("varid") || u.getAttribute("varId"), this.arguments_.push(O), u = h.Wd(this.workspace, u, O, ""), u !== null ? this.argumentVarModels_.push(u) : console.log(`Failed to create a variable named "${O}", ignoring.`);
         }
@@ -17023,10 +17023,10 @@ function E_() {
         for (let O = 0; O < this.arguments_.length; O++) {
           let dt = h.rc("block");
           dt.setAttribute("type", "procedures_mutatorarg");
-          var I = h.rc("field");
-          I.setAttribute("name", "NAME");
+          var C = h.rc("field");
+          C.setAttribute("name", "NAME");
           let Ee = h.sc(this.arguments_[O]);
-          I.appendChild(Ee), dt.appendChild(I), I = h.rc("next"), dt.appendChild(I), T.appendChild(dt), T = I;
+          C.appendChild(Ee), dt.appendChild(C), C = h.rc("next"), dt.appendChild(C), T.appendChild(dt), T = C;
         }
         return l = h.eh(u, l), this.type === "procedures_defreturn" ? l.setFieldValue(
           this.hasStatements_,
@@ -17040,28 +17040,28 @@ function E_() {
         }
         if (this.updateParams_(), h.rj(this), l = l.getFieldValue("STATEMENTS"), l !== null && (l = l === "TRUE", this.hasStatements_ !== l)) if (l) {
           this.setStatements_(!0);
-          var I;
-          (I = this.statementConnection_) == null || I.reconnect(this, "STACK"), this.statementConnection_ = null;
+          var C;
+          (C = this.statementConnection_) == null || C.reconnect(this, "STACK"), this.statementConnection_ = null;
         } else
-          I = this.getInput("STACK").connection, (this.statementConnection_ = I.targetConnection) && (I = I.targetBlock(), I.unplug(), I.bumpNeighbours()), this.setStatements_(!1);
+          C = this.getInput("STACK").connection, (this.statementConnection_ = C.targetConnection) && (C = C.targetBlock(), C.unplug(), C.bumpNeighbours()), this.setStatements_(!1);
       }, getVarModels: function() {
         return this.argumentVarModels_;
       }, renameVarById: function(l, u) {
         var T = this.workspace.getVariableMap().getVariableById(l);
         if (T.getType() === "") {
           T = T.getName(), u = this.workspace.getVariableMap().getVariableById(u);
-          var I = !1;
-          for (let O = 0; O < this.argumentVarModels_.length; O++) this.argumentVarModels_[O].getId() === l && (this.arguments_[O] = u.getName(), this.argumentVarModels_[O] = u, I = !0);
-          I && (this.displayRenamedVar_(T, u.getName()), h.rj(this));
+          var C = !1;
+          for (let O = 0; O < this.argumentVarModels_.length; O++) this.argumentVarModels_[O].getId() === l && (this.arguments_[O] = u.getName(), this.argumentVarModels_[O] = u, C = !0);
+          C && (this.displayRenamedVar_(T, u.getName()), h.rj(this));
         }
       }, updateVarName: function(l) {
         var u = l.getName(), T = !1;
         for (let O = 0; O < this.argumentVarModels_.length; O++) if (this.argumentVarModels_[O].getId() === l.getId()) {
-          var I = this.arguments_[O];
+          var C = this.arguments_[O];
           this.arguments_[O] = u, T = !0;
         }
         T && (this.displayRenamedVar_(
-          I,
+          C,
           u
         ), h.rj(this));
       }, displayRenamedVar_: function(l, u) {
@@ -17069,7 +17069,7 @@ function E_() {
         var T = this.getIcon(h.rh.TYPE);
         if (T && T.bubbleIsVisible()) {
           T = T.getWorkspace().getAllBlocks(!1);
-          for (let I = 0, O; O = T[I]; I++) O.type === "procedures_mutatorarg" && h.jj.equals(l, O.getFieldValue("NAME")) && O.setFieldValue(u, "NAME");
+          for (let C = 0, O; O = T[C]; C++) O.type === "procedures_mutatorarg" && h.jj.equals(l, O.getFieldValue("NAME")) && O.setFieldValue(u, "NAME");
         }
       }, customContextMenu: function(l) {
         if (!this.isInFlyout) {
@@ -17079,17 +17079,17 @@ function E_() {
             u
           ), callback: h.Og(this, T) }), !this.isCollapsed()) for (u = 0; u < this.argumentVarModels_.length; u++) {
             T = this.argumentVarModels_[u];
-            let I = { type: "variables_get", fields: { VAR: { name: T.getName(), id: T.getId(), type: T.getType() } } };
-            l.push({ enabled: !0, text: h.C.VARIABLES_SET_CREATE_GET.replace("%1", T.getName()), callback: h.Og(this, I) });
+            let C = { type: "variables_get", fields: { VAR: { name: T.getName(), id: T.getId(), type: T.getType() } } };
+            l.push({ enabled: !0, text: h.C.VARIABLES_SET_CREATE_GET.replace("%1", T.getName()), callback: h.Og(this, C) });
           }
         }
       } };
-      Rt.procedures_defnoreturn = Object.assign({}, Ds, { init: function() {
+      At.procedures_defnoreturn = Object.assign({}, Ds, { init: function() {
         var l = h.ij("", this);
         l = h.kh({ type: "field_input", text: l, ariaTypeName: h.C.ARIA_TYPE_FIELD_TEXT_INPUT_PROCEDURE }), l.setValidator(h.lj), l.setSpellcheck(!1), this.appendDummyInput().appendField(h.C.PROCEDURES_DEFNORETURN_TITLE).appendField(l, "NAME").appendField("", "PARAMS"), this.setMutator(new h.rh(["procedures_mutatorarg"], this)), (this.workspace.options.comments || this.workspace.options.parentWorkspace && this.workspace.options.parentWorkspace.options.comments) && h.C.PROCEDURES_DEFNORETURN_COMMENT && this.setCommentText(h.C.PROCEDURES_DEFNORETURN_COMMENT), this.setStyle("procedure_blocks"), this.setTooltip(h.C.PROCEDURES_DEFNORETURN_TOOLTIP), this.setHelpUrl(h.C.PROCEDURES_DEFNORETURN_HELPURL), this.arguments_ = [], this.argumentVarModels_ = [], this.setStatements_(!0), this.statementConnection_ = null;
       }, getProcedureDef: function() {
         return [this.getFieldValue("NAME"), this.arguments_, !1];
-      }, callType_: "procedures_callnoreturn" }), Rt.procedures_defreturn = Object.assign({}, Ds, {
+      }, callType_: "procedures_callnoreturn" }), At.procedures_defreturn = Object.assign({}, Ds, {
         init: function() {
           var l = h.ij("", this);
           l = h.kh({ type: "field_input", text: l, ariaTypeName: h.C.ARIA_TYPE_FIELD_TEXT_INPUT_PROCEDURE }), l.setValidator(h.lj), l.setSpellcheck(!1), this.appendDummyInput().appendField(h.C.PROCEDURES_DEFRETURN_TITLE).appendField(l, "NAME").appendField("", "PARAMS"), this.appendValueInput("RETURN").setAlign(h.Dn.RIGHT).appendField(h.C.PROCEDURES_DEFRETURN_RETURN), this.setMutator(new h.rh(["procedures_mutatorarg"], this)), (this.workspace.options.comments || this.workspace.options.parentWorkspace && this.workspace.options.parentWorkspace.options.comments) && h.C.PROCEDURES_DEFRETURN_COMMENT && this.setCommentText(h.C.PROCEDURES_DEFRETURN_COMMENT), this.setStyle("procedure_blocks"), this.setTooltip(h.C.PROCEDURES_DEFRETURN_TOOLTIP), this.setHelpUrl(h.C.PROCEDURES_DEFRETURN_HELPURL), this.arguments_ = [], this.argumentVarModels_ = [], this.setStatements_(!0), this.statementConnection_ = null;
@@ -17098,7 +17098,7 @@ function E_() {
           return [this.getFieldValue("NAME"), this.arguments_, !0];
         },
         callType_: "procedures_callreturn"
-      }), Rt.procedures_mutatorcontainer = { init: function() {
+      }), At.procedures_mutatorcontainer = { init: function() {
         this.appendDummyInput().appendField(h.C.PROCEDURES_MUTATORCONTAINER_TITLE), this.appendStatementInput("STACK"), this.appendDummyInput("STATEMENT_INPUT").appendField(h.C.PROCEDURES_ALLOW_STATEMENTS).appendField(h.kh({ type: "field_checkbox", checked: !0 }), "STATEMENTS"), this.setStyle("procedure_blocks"), this.setTooltip(h.C.PROCEDURES_MUTATORCONTAINER_TOOLTIP), this.contextMenu = !1;
       } };
       var Co = class extends h.Ip {
@@ -17112,7 +17112,7 @@ function E_() {
           super.onFinishEditing_(l), this.editingInteractively = !1;
         }
       };
-      Rt.procedures_mutatorarg = { init: function() {
+      At.procedures_mutatorarg = { init: function() {
         var l = new Co("x", this.validator_, { ariaTypeName: h.C.ARIA_TYPE_FIELD_TEXT_INPUT_ARGUMENT });
         this.appendDummyInput().appendField(h.C.PROCEDURES_MUTATORARG_TITLE).appendField(l, "NAME"), this.setPreviousStatement(!0), this.setNextStatement(!0), this.setStyle("procedure_blocks"), this.setTooltip(h.C.PROCEDURES_MUTATORARG_TOOLTIP), this.contextMenu = !1;
       }, validator_: function(l) {
@@ -17121,10 +17121,10 @@ function E_() {
           /^ | $/g,
           ""
         ), !l) return null;
-        var I = (u.workspace.targetWorkspace || u.workspace).getAllBlocks(!1), O = l.toLowerCase();
-        for (let dt = 0; dt < I.length; dt++) {
-          if (I[dt].id === this.getSourceBlock().id) continue;
-          let Ee = I[dt].getFieldValue("NAME");
+        var C = (u.workspace.targetWorkspace || u.workspace).getAllBlocks(!1), O = l.toLowerCase();
+        for (let dt = 0; dt < C.length; dt++) {
+          if (C[dt].id === this.getSourceBlock().id) continue;
+          let Ee = C[dt].getFieldValue("NAME");
           if (Ee && Ee.toLowerCase() === O) return null;
         }
         return u.isInFlyout || (u = T.getVariableMap(), (T = u.getVariable(l, "")) && T.getName() !== l && u.renameVariable(T, l), T || (this.editingInteractively ? this.editingVariable ? u.renameVariable(this.editingVariable, l) : this.editingVariable = u.createVariable(l, "") : u.createVariable(
@@ -17132,7 +17132,7 @@ function E_() {
           ""
         ))), l;
       } };
-      var q = { getProcedureCall: function() {
+      var Z = { getProcedureCall: function() {
         return this.getFieldValue("NAME");
       }, renameProcedure: function(l, u) {
         h.jj.equals(l, this.getProcedureCall()) && (this.setFieldValue(u, "NAME"), this.setTooltip((this.outputConnection ? h.C.PROCEDURES_CALLRETURN_TOOLTIP : h.C.PROCEDURES_CALLNORETURN_TOOLTIP).replace("%1", u)));
@@ -17145,8 +17145,8 @@ function E_() {
           if (u.length !== l.length) throw RangeError("paramNames and paramIds must be the same length.");
           this.quarkIds_ || (this.quarkConnections_ = {}, this.quarkIds_ = []);
           for (let O = 0; O < this.arguments_.length; O++) {
-            var I = this.getInput("ARG" + O);
-            I && (I = I.connection.targetConnection, this.quarkConnections_[this.quarkIds_[O]] = I, T && I && !u.includes(this.quarkIds_[O]) && (I.disconnect(), I.getSourceBlock().bumpNeighbours()));
+            var C = this.getInput("ARG" + O);
+            C && (C = C.connection.targetConnection, this.quarkConnections_[this.quarkIds_[O]] = C, T && C && !u.includes(this.quarkIds_[O]) && (C.disconnect(), C.getSourceBlock().bumpNeighbours()));
           }
           for (this.arguments_ = [].concat(l), this.argumentVarModels_ = [], l = 0; l < this.arguments_.length; l++) T = h.Wd(this.workspace, null, this.arguments_[l], ""), this.argumentVarModels_.push(T);
           if (this.updateShape_(), this.quarkIds_ = u) {
@@ -17182,7 +17182,7 @@ function E_() {
         var u = l.getAttribute("name");
         this.renameProcedure(this.getProcedureCall(), u), u = [];
         var T = [];
-        for (let I = 0, O; O = l.childNodes[I]; I++) O.nodeName.toLowerCase() === "arg" && (u.push(O.getAttribute("name")), T.push(O.getAttribute("paramId")));
+        for (let C = 0, O; O = l.childNodes[C]; C++) O.nodeName.toLowerCase() === "arg" && (u.push(O.getAttribute("name")), T.push(O.getAttribute("paramId")));
         this.setProcedureParameters_(u, T);
       }, saveExtraState: function() {
         var l = /* @__PURE__ */ Object.create(null);
@@ -17200,12 +17200,12 @@ function E_() {
           if (!T || T.type === this.defType_ && JSON.stringify(T.getVarModels().map((O) => O.getName())) === JSON.stringify(this.arguments_) || (T = null), T) T.isEnabled() || (this.setDisabledReason(!0, "DISABLED_PROCEDURE_DEFINITION"), this.setWarningText(h.C.PROCEDURES_CALL_DISABLED_DEF_WARNING.replace("%1", u)));
           else {
             h.B(l.group), l = h.rc("xml"), u = h.rc("block"), u.setAttribute("type", this.defType_), T = this.getRelativeToSurfaceXY();
-            var I = T.y + h.Ng.snapRadius * 2;
-            u.setAttribute("x", `${T.x + h.Ng.snapRadius * (this.RTL ? -1 : 1)}`), u.setAttribute("y", `${I}`), T = this.mutationToDom(), u.appendChild(T), T = h.rc("field"), T.setAttribute("name", "NAME"), I = this.getProcedureCall();
-            let O = h.ij(I, this);
-            I !== O && this.renameProcedure(I, O), T.appendChild(h.sc(I)), u.appendChild(T), l.appendChild(u), h.bh(l, this.workspace), h.B(!1);
+            var C = T.y + h.Ng.snapRadius * 2;
+            u.setAttribute("x", `${T.x + h.Ng.snapRadius * (this.RTL ? -1 : 1)}`), u.setAttribute("y", `${C}`), T = this.mutationToDom(), u.appendChild(T), T = h.rc("field"), T.setAttribute("name", "NAME"), C = this.getProcedureCall();
+            let O = h.ij(C, this);
+            C !== O && this.renameProcedure(C, O), T.appendChild(h.sc(C)), u.appendChild(T), l.appendChild(u), h.bh(l, this.workspace), h.B(!1);
           }
-        } else l.type === h.km ? (u = this.getProcedureCall(), h.sj(u, this.workspace) || (h.B(l.group), this.dispose(!0), h.B(!1))) : l.type === h.jm && l.element === "disabled" && (u = this.getProcedureCall(), (I = h.sj(u, this.workspace)) && I.id === l.blockId && ((T = h.gd) && console.log("Saw an existing group while responding to a definition change"), h.B(l.group), l = I.isEnabled(), this.setDisabledReason(
+        } else l.type === h.km ? (u = this.getProcedureCall(), h.sj(u, this.workspace) || (h.B(l.group), this.dispose(!0), h.B(!1))) : l.type === h.jm && l.element === "disabled" && (u = this.getProcedureCall(), (C = h.sj(u, this.workspace)) && C.id === l.blockId && ((T = h.gd) && console.log("Saw an existing group while responding to a definition change"), h.B(l.group), l = C.isEnabled(), this.setDisabledReason(
           !l,
           "DISABLED_PROCEDURE_DEFINITION"
         ), this.setWarningText(l ? null : h.C.PROCEDURES_CALL_DISABLED_DEF_WARNING.replace("%1", u)), h.B(T)));
@@ -17213,16 +17213,16 @@ function E_() {
         if (this.workspace.isMovable()) {
           var u = this.getProcedureCall(), T = this.workspace;
           l.push({ enabled: !0, text: h.C.PROCEDURES_HIGHLIGHT_DEF, callback: function() {
-            var I = h.sj(u, T);
-            I && (T.centerOnBlock(I.id), h.t().focusNode(I));
+            var C = h.sj(u, T);
+            C && (T.centerOnBlock(C.id), h.t().focusNode(C));
           } });
         }
       } };
-      Rt.procedures_callnoreturn = Object.assign({}, q, { init: function() {
+      At.procedures_callnoreturn = Object.assign({}, Z, { init: function() {
         this.appendDummyInput("TOPROW").appendField("", "NAME"), this.setPreviousStatement(!0), this.setNextStatement(!0), this.setStyle("procedure_blocks"), this.setHelpUrl(h.C.PROCEDURES_CALLNORETURN_HELPURL), this.arguments_ = [], this.argumentVarModels_ = [], this.quarkConnections_ = {}, this.quarkIds_ = null;
-      }, defType_: "procedures_defnoreturn" }), Rt.procedures_callreturn = Object.assign({}, q, { init: function() {
+      }, defType_: "procedures_defnoreturn" }), At.procedures_callreturn = Object.assign({}, Z, { init: function() {
         this.appendDummyInput("TOPROW").appendField("", "NAME"), this.setOutput(!0), this.setStyle("procedure_blocks"), this.setHelpUrl(h.C.PROCEDURES_CALLRETURN_HELPURL), this.arguments_ = [], this.argumentVarModels_ = [], this.quarkConnections_ = {}, this.quarkIds_ = null;
-      }, defType_: "procedures_defreturn" }), Rt.procedures_ifreturn = { init: function() {
+      }, defType_: "procedures_defreturn" }), At.procedures_ifreturn = { init: function() {
         this.appendValueInput("CONDITION").setCheck("Boolean").appendField(h.C.CONTROLS_IF_MSG_IF), this.appendValueInput("VALUE").appendField(h.C.PROCEDURES_DEFRETURN_RETURN), this.setInputsInline(!0), this.setPreviousStatement(!0), this.setNextStatement(!0), this.setStyle("procedure_blocks"), this.setTooltip(h.C.PROCEDURES_IFRETURN_TOOLTIP), this.setHelpUrl(h.C.PROCEDURES_IFRETURN_HELPURL), this.hasReturnValue_ = !0;
       }, mutationToDom: function() {
         var l = h.rc("mutation");
@@ -17249,8 +17249,8 @@ function E_() {
             h.Qc = !0;
           }
         }
-      }, FUNCTION_TYPES: ["procedures_defnoreturn", "procedures_defreturn"] }, h.Ab(Rt);
-      var w = { blocks: Rt }, Ke = h.yb([
+      }, FUNCTION_TYPES: ["procedures_defnoreturn", "procedures_defreturn"] }, h.Ab(At);
+      var D = { blocks: At }, Ke = h.yb([
         { type: "math_number", message0: "%1", args0: [{ type: "field_number", name: "NUM", value: 0 }], output: "Number", helpUrl: "%{BKY_MATH_NUMBER_HELPURL}", style: "math_blocks", tooltip: "%{BKY_MATH_NUMBER_TOOLTIP}", extensions: ["parent_tooltip_when_inline"] },
         {
           type: "math_arithmetic",
@@ -17526,7 +17526,7 @@ function E_() {
           var u = l.newBlock("controls_if_if");
           u.initSvg();
           var T = u.nextConnection;
-          for (let I = 1; I <= this.elseifCount_; I++) {
+          for (let C = 1; C <= this.elseifCount_; C++) {
             let O = l.newBlock("controls_if_elseif");
             O.initSvg(), T.connect(O.previousConnection), T = O.nextConnection;
           }
@@ -17534,13 +17534,13 @@ function E_() {
         },
         compose: function(l) {
           l = l.nextConnection.targetBlock(), this.elseCount_ = this.elseifCount_ = 0;
-          for (var u = [null], T = [null], I = null; l; ) {
+          for (var u = [null], T = [null], C = null; l; ) {
             if (!l.isInsertionMarker()) switch (l.type) {
               case "controls_if_elseif":
                 this.elseifCount_++, u.push(l.valueConnection_), T.push(l.statementConnection_);
                 break;
               case "controls_if_else":
-                this.elseCount_++, I = l.statementConnection_;
+                this.elseCount_++, C = l.statementConnection_;
                 break;
               default:
                 throw TypeError("Unknown block type: " + l.type);
@@ -17550,7 +17550,7 @@ function E_() {
           this.updateShape_(), this.reconnectChildBlocks_(
             u,
             T,
-            I
+            C
           );
         },
         saveConnections: function(l) {
@@ -17559,8 +17559,8 @@ function E_() {
             if (!l.isInsertionMarker()) switch (l.type) {
               case "controls_if_elseif":
                 var T = this.getInput("IF" + u);
-                let I = this.getInput("DO" + u);
-                l.valueConnection_ = T && T.connection.targetConnection, l.statementConnection_ = I && I.connection.targetConnection, u++;
+                let C = this.getInput("DO" + u);
+                l.valueConnection_ = T && T.connection.targetConnection, l.statementConnection_ = C && C.connection.targetConnection, u++;
                 break;
               case "controls_if_else":
                 T = this.getInput("ELSE"), l.statementConnection_ = T && T.connection.targetConnection;
@@ -17574,8 +17574,8 @@ function E_() {
         rebuildShape_: function() {
           var l = [null], u = [null], T = null;
           this.getInput("ELSE") && (T = this.getInput("ELSE").connection.targetConnection);
-          for (let I = 1; this.getInput("IF" + I); I++) {
-            let O = this.getInput("IF" + I), dt = this.getInput("DO" + I);
+          for (let C = 1; this.getInput("IF" + C); C++) {
+            let O = this.getInput("IF" + C), dt = this.getInput("DO" + C);
             l.push(O.connection.targetConnection), u.push(dt.connection.targetConnection);
           }
           this.updateShape_(), this.reconnectChildBlocks_(l, u, T);
@@ -17587,11 +17587,11 @@ function E_() {
           this.elseCount_ && this.appendStatementInput("ELSE").appendField(h.C.CONTROLS_IF_MSG_ELSE);
         },
         reconnectChildBlocks_: function(l, u, T) {
-          for (let I = 1; I <= this.elseifCount_; I++) {
+          for (let C = 1; C <= this.elseifCount_; C++) {
             let O;
-            (O = l[I]) == null || O.reconnect(this, "IF" + I);
+            (O = l[C]) == null || O.reconnect(this, "IF" + C);
             let dt;
-            (dt = u[I]) == null || dt.reconnect(this, "DO" + I);
+            (dt = u[C]) == null || dt.reconnect(this, "DO" + C);
           }
           T?.reconnect(this, "ELSE");
         }
@@ -17616,12 +17616,12 @@ function E_() {
       h.nh("logic_compare", function() {
         this.mixin(Ps);
       }), h.oh("logic_ternary", { prevParentConnection_: null, onchange: function(l) {
-        var u = this.getInputTargetBlock("THEN"), T = this.getInputTargetBlock("ELSE"), I = this.outputConnection.targetConnection;
-        if ((u || T) && I) for (let O = 0; O < 2; O++) {
+        var u = this.getInputTargetBlock("THEN"), T = this.getInputTargetBlock("ELSE"), C = this.outputConnection.targetConnection;
+        if ((u || T) && C) for (let O = 0; O < 2; O++) {
           let dt = O === 1 ? u : T;
-          dt && !dt.workspace.connectionChecker.doTypeChecks(dt.outputConnection, I) && (h.B(l.group), I === this.prevParentConnection_ ? (this.unplug(), I.getSourceBlock().bumpNeighbours()) : (dt.unplug(), dt.bumpNeighbours()), h.B(!1));
+          dt && !dt.workspace.connectionChecker.doTypeChecks(dt.outputConnection, C) && (h.B(l.group), C === this.prevParentConnection_ ? (this.unplug(), C.getSourceBlock().bumpNeighbours()) : (dt.unplug(), dt.bumpNeighbours()), h.B(!1));
         }
-        this.prevParentConnection_ = I;
+        this.prevParentConnection_ = C;
       } }), h.Ab(L);
       var ot = { blocks: L }, jt = h.yb([{ type: "lists_create_empty", message0: "%{BKY_LISTS_CREATE_EMPTY_TITLE}", output: "Array", style: "list_blocks", tooltip: "%{BKY_LISTS_CREATE_EMPTY_TOOLTIP}", helpUrl: "%{BKY_LISTS_CREATE_EMPTY_HELPURL}" }, {
         type: "lists_repeat",
@@ -17662,7 +17662,7 @@ function E_() {
           var u = l.newBlock("lists_create_with_container");
           u.initSvg();
           var T = u.getInput("STACK").connection;
-          for (let I = 0; I < this.itemCount_; I++) {
+          for (let C = 0; C < this.itemCount_; C++) {
             let O = l.newBlock("lists_create_with_item");
             if (O.initSvg(), !O.previousConnection) throw Error("itemBlock has no previousConnection");
             T.connect(O.previousConnection), T = O.nextConnection;
@@ -17722,48 +17722,48 @@ function E_() {
           l,
           "WHERE"
         ), this.appendDummyInput("AT"), h.C.LISTS_GET_INDEX_TAIL && this.appendDummyInput("TAIL").appendField(h.C.LISTS_GET_INDEX_TAIL), this.setInputsInline(!0), this.setOutput(!0), this.updateAt_(!0), this.setTooltip(() => {
-          var u = this.getFieldValue("MODE"), T = this.getFieldValue("WHERE"), I = "";
+          var u = this.getFieldValue("MODE"), T = this.getFieldValue("WHERE"), C = "";
           switch (u + " " + T) {
             case "GET FROM_START":
             case "GET FROM_END":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_FROM;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_FROM;
               break;
             case "GET FIRST":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_FIRST;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_FIRST;
               break;
             case "GET LAST":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_LAST;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_LAST;
               break;
             case "GET RANDOM":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_RANDOM;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_RANDOM;
               break;
             case "GET_REMOVE FROM_START":
             case "GET_REMOVE FROM_END":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_FROM;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_FROM;
               break;
             case "GET_REMOVE FIRST":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_FIRST;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_FIRST;
               break;
             case "GET_REMOVE LAST":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_LAST;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_LAST;
               break;
             case "GET_REMOVE RANDOM":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_RANDOM;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_RANDOM;
               break;
             case "REMOVE FROM_START":
             case "REMOVE FROM_END":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_FROM;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_FROM;
               break;
             case "REMOVE FIRST":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_FIRST;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_FIRST;
               break;
             case "REMOVE LAST":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_LAST;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_LAST;
               break;
             case "REMOVE RANDOM":
-              I = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_RANDOM;
+              C = h.C.LISTS_GET_INDEX_TOOLTIP_REMOVE_RANDOM;
           }
-          return (T === "FROM_START" || T === "FROM_END") && (I += "  " + (T === "FROM_START" ? h.C.LISTS_INDEX_FROM_START_TOOLTIP : h.C.LISTS_INDEX_FROM_END_TOOLTIP).replace("%1", this.workspace.options.oneBasedIndex ? "#1" : "#0")), I;
+          return (T === "FROM_START" || T === "FROM_END") && (C += "  " + (T === "FROM_START" ? h.C.LISTS_INDEX_FROM_START_TOOLTIP : h.C.LISTS_INDEX_FROM_END_TOOLTIP).replace("%1", this.workspace.options.oneBasedIndex ? "#1" : "#0")), C;
         });
       }, mutationToDom: function() {
         var l = h.rc("mutation");
@@ -17790,35 +17790,35 @@ function E_() {
           var T = this.getValue();
           u = u === "FROM_START" || u === "FROM_END", u !== (T === "FROM_START" || T === "FROM_END") && this.getSourceBlock().updateAt_(u);
         }), this.appendDummyInput().appendField(l, "WHERE"), this.appendDummyInput("AT"), this.appendValueInput("TO").appendField(h.C.LISTS_SET_INDEX_INPUT_TO).setAriaLabelProvider(h.C.INPUT_LABEL_LISTS_VALUE_TO_SET), this.setInputsInline(!0), this.setPreviousStatement(!0), this.setNextStatement(!0), this.setTooltip(h.C.LISTS_SET_INDEX_TOOLTIP), this.updateAt_(!0), this.setTooltip(() => {
-          var u = this.getFieldValue("MODE"), T = this.getFieldValue("WHERE"), I = "";
+          var u = this.getFieldValue("MODE"), T = this.getFieldValue("WHERE"), C = "";
           switch (u + " " + T) {
             case "SET FROM_START":
             case "SET FROM_END":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_SET_FROM;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_SET_FROM;
               break;
             case "SET FIRST":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_SET_FIRST;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_SET_FIRST;
               break;
             case "SET LAST":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_SET_LAST;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_SET_LAST;
               break;
             case "SET RANDOM":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_SET_RANDOM;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_SET_RANDOM;
               break;
             case "INSERT FROM_START":
             case "INSERT FROM_END":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_FROM;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_FROM;
               break;
             case "INSERT FIRST":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_FIRST;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_FIRST;
               break;
             case "INSERT LAST":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_LAST;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_LAST;
               break;
             case "INSERT RANDOM":
-              I = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_RANDOM;
+              C = h.C.LISTS_SET_INDEX_TOOLTIP_INSERT_RANDOM;
           }
-          return (T === "FROM_START" || T === "FROM_END") && (I += "  " + h.C.LISTS_INDEX_FROM_START_TOOLTIP.replace("%1", this.workspace.options.oneBasedIndex ? "#1" : "#0")), I;
+          return (T === "FROM_START" || T === "FROM_END") && (C += "  " + h.C.LISTS_INDEX_FROM_START_TOOLTIP.replace("%1", this.workspace.options.oneBasedIndex ? "#1" : "#0")), C;
         });
       }, mutationToDom: function() {
         var l = h.rc("mutation"), u = this.getInput("AT") instanceof h.Mn;
@@ -17835,9 +17835,9 @@ function E_() {
           this.WHERE_OPTIONS_1 = [[h.C.LISTS_GET_SUBLIST_START_FROM_START, "FROM_START"], [h.C.LISTS_GET_SUBLIST_START_FROM_END, "FROM_END"], [h.C.LISTS_GET_SUBLIST_START_FIRST, "FIRST"]], this.WHERE_OPTIONS_2 = [[h.C.LISTS_GET_SUBLIST_END_FROM_START, "FROM_START"], [h.C.LISTS_GET_SUBLIST_END_FROM_END, "FROM_END"], [h.C.LISTS_GET_SUBLIST_END_LAST, "LAST"]], this.setHelpUrl(h.C.LISTS_GET_SUBLIST_HELPURL), this.setStyle("list_blocks"), this.appendValueInput("LIST").setCheck("Array").appendField(h.C.LISTS_GET_SUBLIST_INPUT_IN_LIST).setAriaLabelProvider(h.C.INPUT_LABEL_LISTS_TO_CHECK);
           var l = (u) => {
             var T = h.kh({ type: "field_dropdown", options: this["WHERE_OPTIONS_" + u] });
-            return T.setValidator(function(I) {
+            return T.setValidator(function(C) {
               var O = this.getValue();
-              I = I === "FROM_START" || I === "FROM_END", I !== (O === "FROM_START" || O === "FROM_END") && this.getSourceBlock().updateAt_(u, I);
+              C = C === "FROM_START" || C === "FROM_END", C !== (O === "FROM_START" || O === "FROM_END") && this.getSourceBlock().updateAt_(u, C);
             }), T;
           };
           this.appendDummyInput("WHERE1_INPUT").appendField(l(1), "WHERE1"), this.appendDummyInput("AT1"), this.appendDummyInput("WHERE2_INPUT").appendField(l(2), "WHERE2"), this.appendDummyInput("AT2"), h.C.LISTS_GET_SUBLIST_TAIL && this.appendDummyInput("TAIL").appendField(h.C.LISTS_GET_SUBLIST_TAIL), this.setInputsInline(!0), this.setOutput(!0, "Array"), this.updateAt_(1, !0), this.updateAt_(2, !0), this.setTooltip(h.C.LISTS_GET_SUBLIST_TOOLTIP);
@@ -17910,223 +17910,223 @@ function E_() {
           this.updateType_(l.mode);
         }
       }, h.Ab(jt);
-      var lt = { blocks: jt }, Ji = { blocks: Object.assign({}, jt, L, $i, Ke, Rt, ft, it, H), lists: lt, logic: ot, loops: S, math: Ri, procedures: w, texts: le, variables: Oe, variablesDynamic: xt };
+      var lt = { blocks: jt }, Ji = { blocks: Object.assign({}, jt, L, $i, Ke, At, ft, it, H), lists: lt, logic: ot, loops: S, math: Ri, procedures: D, texts: le, variables: Oe, variablesDynamic: xt };
       return h.__chunk_blocks = Ji, h.__chunk_blocks.__namespace__ = h, h.__chunk_blocks;
     });
   })(gl)), gl.exports;
 }
-var rT = E_();
-const lT = /* @__PURE__ */ Mu(rT), {
-  blocks: bm,
-  lists: Om,
-  logic: ym,
-  loops: Lm,
-  math: km,
-  procedures: Nm,
-  texts: wm,
-  variables: Mm,
-  variablesDynamic: Dm
-} = lT;
-var pl = { exports: {} }, _l = { exports: {} }, aT = _l.exports, u_;
-function hT() {
-  return u_ || (u_ = 1, (function(D, C) {
+var lT = E_();
+const aT = /* @__PURE__ */ Mu(lT), {
+  blocks: Om,
+  lists: ym,
+  logic: Lm,
+  loops: km,
+  math: Nm,
+  procedures: wm,
+  texts: Mm,
+  variables: Dm,
+  variablesDynamic: Pm
+} = aT;
+var pl = { exports: {} }, _l = { exports: {} }, hT = _l.exports, u_;
+function cT() {
+  return u_ || (u_ = 1, (function(k, I) {
     (function(n, h) {
-      D.exports = h();
-    })(aT, function() {
+      k.exports = h();
+    })(hT, function() {
       var n = n || { Msg: /* @__PURE__ */ Object.create(null) };
       return n.Msg.ADD_COMMENT = "Add Comment", n.Msg.ALT_KEY = "Alt", n.Msg.ANNOUNCE_MOVE_AFTER = "Moving %1 after %2.", n.Msg.ANNOUNCE_MOVE_AROUND = "Moving %1 around %2.", n.Msg.ANNOUNCE_MOVE_BEFORE = "Moving %1 before %2.", n.Msg.ANNOUNCE_MOVE_CANCELED = "Canceled movement.", n.Msg.ANNOUNCE_MOVE_INSIDE = "Moving %1 inside %2.", n.Msg.ANNOUNCE_MOVE_OF = "%1 of %2", n.Msg.ANNOUNCE_MOVE_TO = "Moving %1 to %2.", n.Msg.ANNOUNCE_MOVE_WORKSPACE = "Moving %1 on workspace.", n.Msg.ARIA_LABEL_ADD_ELSE_IF = "Add else if", n.Msg.ARIA_LABEL_ADD_INPUT = "Add input", n.Msg.ARIA_LABEL_ADD_LIST_ITEM = "Add list item", n.Msg.ARIA_LABEL_ADD_TEXT = "Add text", n.Msg.ARIA_LABEL_BUTTON = "button", n.Msg.ARIA_LABEL_COMMENT = "Comment", n.Msg.ARIA_LABEL_COMMENT_COLLAPSE = "Collapse Comment", n.Msg.ARIA_LABEL_COMMENT_EXPAND = "Expand Comment", n.Msg.ARIA_LABEL_FIELD_ANGLE = "%1 degrees", n.Msg.ARIA_LABEL_HEADING = "heading", n.Msg.ARIA_LABEL_REMOVE_ELSE_IF = "Remove else if", n.Msg.ARIA_LABEL_REMOVE_INPUT = "Remove input", n.Msg.ARIA_LABEL_REMOVE_LIST_ITEM = "Remove list item", n.Msg.ARIA_LABEL_REMOVE_TEXT = "Remove text", n.Msg.ARIA_TYPE_FIELD_ANGLE = "angle", n.Msg.ARIA_TYPE_FIELD_BITMAP = "pixel image", n.Msg.ARIA_TYPE_FIELD_CHECKBOX = "checkbox", n.Msg.ARIA_TYPE_FIELD_COLOUR = "color", n.Msg.ARIA_TYPE_FIELD_DATE = "date", n.Msg.ARIA_TYPE_FIELD_DROPDOWN = "dropdown", n.Msg.ARIA_TYPE_FIELD_GRID = "grid dropdown", n.Msg.ARIA_TYPE_FIELD_IMAGE = "image", n.Msg.ARIA_TYPE_FIELD_INPUT = "input", n.Msg.ARIA_TYPE_FIELD_NUMBER = "number", n.Msg.ARIA_TYPE_FIELD_TEXT_INPUT = "text", n.Msg.ARIA_TYPE_FIELD_TEXT_INPUT_ARGUMENT = "input name", n.Msg.ARIA_TYPE_FIELD_TEXT_INPUT_PROCEDURE = "function name", n.Msg.BACKSPACE_KEY = "Backspace", n.Msg.BLOCK_LABEL_BEGIN_PREFIX = "Begin %1", n.Msg.BLOCK_LABEL_BEGIN_STACK = "Begin stack", n.Msg.BLOCK_LABEL_COLLAPSED = "collapsed", n.Msg.BLOCK_LABEL_CONTAINER = "container", n.Msg.BLOCK_LABEL_DISABLED = "disabled", n.Msg.BLOCK_LABEL_HAS_BRANCHES = "has %1 branches", n.Msg.BLOCK_LABEL_HAS_INPUT = "has input", n.Msg.BLOCK_LABEL_HAS_INPUTS = "has inputs", n.Msg.BLOCK_LABEL_REPLACEABLE = "replaceable", n.Msg.BLOCK_LABEL_STACK_BLOCKS = "%1 stack blocks", n.Msg.BLOCK_LABEL_STATEMENT = "statement", n.Msg.BLOCK_LABEL_TOOLBOX_CATEGORY = "%1 category", n.Msg.BLOCK_LABEL_VALUE = "value", n.Msg.BUBBLE_LABEL_COMMENT = "Comment: %1", n.Msg.BUBBLE_LABEL_DEFAULT = "Bubble", n.Msg.BUBBLE_LABEL_WARNING = "Warning: %1", n.Msg.CANNOT_DELETE_VARIABLE_PROCEDURE = "Can't delete the variable '%1' because it's part of the definition of the function '%2'", n.Msg.CAPS_LOCK_KEY = "Caps Lock", n.Msg.CHANGE_VALUE_TITLE = "Change value:", n.Msg.CHROME_OS = "ChromeOS", n.Msg.CLEAN_UP = "Clean up Blocks", n.Msg.CLOSE = "Close", n.Msg.CLOSE_BACKPACK = "Close backpack", n.Msg.COLLAPSED_WARNINGS_WARNING = "Collapsed blocks contain warnings.", n.Msg.COLLAPSE_ALL = "Collapse Blocks", n.Msg.COLLAPSE_BLOCK = "Collapse Block", n.Msg.COLOUR_BLEND_COLOUR1 = "colour 1", n.Msg.COLOUR_BLEND_COLOUR2 = "colour 2", n.Msg.COLOUR_BLEND_HELPURL = "https://meyerweb.com/eric/tools/color-blend/#:::rgbp", n.Msg.COLOUR_BLEND_RATIO = "ratio", n.Msg.COLOUR_BLEND_TITLE = "blend", n.Msg.COLOUR_BLEND_TOOLTIP = "Blends two colours together with a given ratio (0.0 - 1.0).", n.Msg.COLOUR_PICKER_HELPURL = "https://en.wikipedia.org/wiki/Color", n.Msg.COLOUR_PICKER_TOOLTIP = "Choose a colour from the palette.", n.Msg.COLOUR_RANDOM_HELPURL = "http://randomcolour.com", n.Msg.COLOUR_RANDOM_TITLE = "random colour", n.Msg.COLOUR_RANDOM_TOOLTIP = "Choose a colour at random.", n.Msg.COLOUR_RGB_BLUE = "blue", n.Msg.COLOUR_RGB_GREEN = "green", n.Msg.COLOUR_RGB_HELPURL = "https://www.december.com/html/spec/colorpercompact.html", n.Msg.COLOUR_RGB_RED = "red", n.Msg.COLOUR_RGB_TITLE = "colour with", n.Msg.COLOUR_RGB_TOOLTIP = "Create a colour with the specified amount of red, green, and blue. All values must be between 0 and 100.", n.Msg.COMMAND_KEY = "Command", n.Msg.CONTEXT_MENU_KEY = "≣ Menu", n.Msg.CONTROLS_FLOW_STATEMENTS_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Loops#loop-termination-blocks", n.Msg.CONTROLS_FLOW_STATEMENTS_OPERATOR_BREAK = "break out of loop", n.Msg.CONTROLS_FLOW_STATEMENTS_OPERATOR_CONTINUE = "continue with next iteration of loop", n.Msg.CONTROLS_FLOW_STATEMENTS_TOOLTIP_BREAK = "Break out of the containing loop.", n.Msg.CONTROLS_FLOW_STATEMENTS_TOOLTIP_CONTINUE = "Skip the rest of this loop, and continue with the next iteration.", n.Msg.CONTROLS_FLOW_STATEMENTS_WARNING = "Warning: This block may only be used within a loop.", n.Msg.CONTROLS_FOREACH_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Loops#for-each", n.Msg.CONTROLS_FOREACH_TITLE = "for each item %1 in list %2", n.Msg.CONTROLS_FOREACH_TOOLTIP = "For each item in a list, set the variable '%1' to the item, and then do some statements.", n.Msg.CONTROLS_FOR_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Loops#count-with", n.Msg.CONTROLS_FOR_TITLE = "count with %1 from %2 to %3 by %4", n.Msg.CONTROLS_FOR_TOOLTIP = "Have the variable '%1' take on the values from the start number to the end number, counting by the specified interval, and do the specified blocks.", n.Msg.CONTROLS_IF_ELSEIF_TOOLTIP = "Add a condition to the if block.", n.Msg.CONTROLS_IF_ELSE_TOOLTIP = "Add a final, catch-all condition to the if block.", n.Msg.CONTROLS_IF_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/IfElse", n.Msg.CONTROLS_IF_IF_TOOLTIP = "Add, remove, or reorder sections to reconfigure this if block.", n.Msg.CONTROLS_IF_MSG_ELSE = "else", n.Msg.CONTROLS_IF_MSG_ELSEIF = "else if", n.Msg.CONTROLS_IF_MSG_IF = "if", n.Msg.CONTROLS_IF_TOOLTIP_1 = "If a value is true, then do some statements.", n.Msg.CONTROLS_IF_TOOLTIP_2 = "If a value is true, then do the first block of statements. Otherwise, do the second block of statements.", n.Msg.CONTROLS_IF_TOOLTIP_3 = "If the first value is true, then do the first block of statements. Otherwise, if the second value is true, do the second block of statements.", n.Msg.CONTROLS_IF_TOOLTIP_4 = "If the first value is true, then do the first block of statements. Otherwise, if the second value is true, do the second block of statements. If none of the values are true, do the last block of statements.", n.Msg.CONTROLS_REPEAT_HELPURL = "https://en.wikipedia.org/wiki/For_loop", n.Msg.CONTROLS_REPEAT_INPUT_DO = "do", n.Msg.CONTROLS_REPEAT_TITLE = "repeat %1 times", n.Msg.CONTROLS_REPEAT_TOOLTIP = "Do some statements several times.", n.Msg.CONTROLS_WHILEUNTIL_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Loops#repeat", n.Msg.CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = "repeat until", n.Msg.CONTROLS_WHILEUNTIL_OPERATOR_WHILE = "repeat while", n.Msg.CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = "While a value is false, then do some statements.", n.Msg.CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = "While a value is true, then do some statements.", n.Msg.CONTROL_KEY = "Control", n.Msg.COPY_ALL_TO_BACKPACK = "Copy All Blocks to Backpack", n.Msg.COPY_SHORTCUT = "Copy", n.Msg.COPY_TO_BACKPACK = "Copy to Backpack", n.Msg.CURRENT_BLOCK_ANNOUNCEMENT = "Current block: %1", n.Msg.CUT_SHORTCUT = "Cut", n.Msg.DELETE_ALL_BLOCKS = "Delete all %1 blocks?", n.Msg.DELETE_BLOCK = "Delete Block", n.Msg.DELETE_KEY = "Delete", n.Msg.DELETE_VARIABLE = "Delete the '%1' variable", n.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?", n.Msg.DELETE_X_BLOCKS = "Delete %1 Blocks", n.Msg.DIALOG_CANCEL = "Cancel", n.Msg.DIALOG_OK = "OK", n.Msg.DISABLE_BLOCK = "Disable Block", n.Msg.DUPLICATE_BLOCK = "Duplicate", n.Msg.DUPLICATE_COMMENT = "Duplicate Comment", n.Msg.EDIT_BLOCK_CONTENTS = "Edit Block contents", n.Msg.EMPTY_BACKPACK = "Empty Backpack", n.Msg.ENABLE_BLOCK = "Enable Block", n.Msg.END_KEY = "End", n.Msg.ENTER_KEY = "Enter", n.Msg.ESCAPE = "Escape", n.Msg.EXPAND_ALL = "Expand Blocks", n.Msg.EXPAND_BLOCK = "Expand Block", n.Msg.EXTERNAL_INPUTS = "External Inputs", n.Msg.FIELD_BITMAP_BUTTON_LABEL_CLEAR = "Clear", n.Msg.FIELD_BITMAP_BUTTON_LABEL_RANDOMIZE = "Randomize", n.Msg.FIELD_LABEL_CHECKBOX_CHECKED = "Checked", n.Msg.FIELD_LABEL_CHECKBOX_UNCHECKED = "Not checked", n.Msg.FIELD_LABEL_EDIT_PREFIX = "Edit %1", n.Msg.FIELD_LABEL_EMPTY = "empty", n.Msg.FIELD_LABEL_OPTION_INDEX = "Option %1", n.Msg.FIELD_LABEL_VARIABLE = "Variable '%1'", n.Msg.FIELD_MULTILINEINPUT_FINISH_EDITING = "Finish editing", n.Msg.FIELD_MULTILINEINPUT_NEW_LINE = "New line", n.Msg.HELP = "Help", n.Msg.HELP_PROMPT = "Press %1 for help on keyboard controls.", n.Msg.HOME_KEY = "Home", n.Msg.ICON_LABEL_COMMENT_CLOSED = "Open Comment", n.Msg.ICON_LABEL_COMMENT_OPEN = "Close Comment", n.Msg.ICON_LABEL_DEFAULT = "Icon", n.Msg.ICON_LABEL_MUTATOR_CLOSED = "Edit this block", n.Msg.ICON_LABEL_MUTATOR_OPEN = "Close block editor", n.Msg.ICON_LABEL_WARNING_CLOSED = "Open Warning", n.Msg.ICON_LABEL_WARNING_OPEN = "Close Warning", n.Msg.INLINE_INPUTS = "Inline Inputs", n.Msg.INPUT_LABEL_CONDITION = "condition", n.Msg.INPUT_LABEL_CONDITION_A = "first condition", n.Msg.INPUT_LABEL_CONDITION_B = "second condition", n.Msg.INPUT_LABEL_EMPTY = "Empty", n.Msg.INPUT_LABEL_END_STATEMENT = "End %1", n.Msg.INPUT_LABEL_INDEX = "input %1", n.Msg.INPUT_LABEL_LISTS_CREATE_WITH_ITEM = "value %1", n.Msg.INPUT_LABEL_LISTS_DELIMITER = "delimiter", n.Msg.INPUT_LABEL_LISTS_END_POSITION = "end position", n.Msg.INPUT_LABEL_LISTS_LIST_FROM_TEXT = "text to split", n.Msg.INPUT_LABEL_LISTS_POSITION = "position within list", n.Msg.INPUT_LABEL_LISTS_REPEAT_ITEM = "value to repeat", n.Msg.INPUT_LABEL_LISTS_REPEAT_NUM = "number of times to repeat", n.Msg.INPUT_LABEL_LISTS_START_POSITION = "start position", n.Msg.INPUT_LABEL_LISTS_TEXT_FROM_LIST = "list to join", n.Msg.INPUT_LABEL_LISTS_TO_CHANGE = "list to change", n.Msg.INPUT_LABEL_LISTS_TO_CHECK = "list to check", n.Msg.INPUT_LABEL_LISTS_VALUE_TO_SET = "value to set", n.Msg.INPUT_LABEL_LOOP_BY = "increment", n.Msg.INPUT_LABEL_LOOP_FROM = "starting number", n.Msg.INPUT_LABEL_LOOP_LIST = "list to iterate over", n.Msg.INPUT_LABEL_LOOP_TIMES = "number of times to repeat", n.Msg.INPUT_LABEL_LOOP_TO = "ending number", n.Msg.INPUT_LABEL_MATH_CHANGE_BY = "amount to change by", n.Msg.INPUT_LABEL_MATH_CONSTRAIN_VALUE = "number to constrain", n.Msg.INPUT_LABEL_MATH_DIVIDEND = "dividend", n.Msg.INPUT_LABEL_MATH_DIVISOR = "divisor", n.Msg.INPUT_LABEL_NUMBER = "number", n.Msg.INPUT_LABEL_NUMBER_A = "first number", n.Msg.INPUT_LABEL_NUMBER_ATAN2_X = "x coordinate", n.Msg.INPUT_LABEL_NUMBER_ATAN2_Y = "y coordinate", n.Msg.INPUT_LABEL_NUMBER_B = "second number", n.Msg.INPUT_LABEL_NUMBER_LIST = "list of numbers", n.Msg.INPUT_LABEL_NUMBER_MAX = "maximum", n.Msg.INPUT_LABEL_NUMBER_MIN = "minimum", n.Msg.INPUT_LABEL_NUMBER_TO_CHECK = "number to check", n.Msg.INPUT_LABEL_STATEMENT = "statement position", n.Msg.INPUT_LABEL_TEXT_APPEND = "value to append", n.Msg.INPUT_LABEL_TEXT_END_POSITION = "end position", n.Msg.INPUT_LABEL_TEXT_JOIN_ITEM = "value %1", n.Msg.INPUT_LABEL_TEXT_POSITION = "letter position", n.Msg.INPUT_LABEL_TEXT_PROMPT_MESSAGE = "message", n.Msg.INPUT_LABEL_TEXT_START_POSITION = "start position", n.Msg.INPUT_LABEL_TEXT_TO_CHANGE = "text to change", n.Msg.INPUT_LABEL_TEXT_TO_CHECK = "text to check", n.Msg.INPUT_LABEL_TEXT_TO_FIND = "text to find", n.Msg.INPUT_LABEL_TEXT_TO_REPLACE = "text to replace", n.Msg.INPUT_LABEL_VALUE = "value position", n.Msg.INPUT_LABEL_VALUE_A = "first value", n.Msg.INPUT_LABEL_VALUE_B = "second value", n.Msg.INPUT_LABEL_VARIABLES_SET = "value to set", n.Msg.INSERT_KEY = "Insert", n.Msg.KEYBOARD_NAV_BLOCK_NAVIGATION_HINT = "Use %1 to navigate inside of blocks.", n.Msg.KEYBOARD_NAV_CONSTRAINED_MOVE_HINT = "Use the arrow keys to move, then %1 to accept the position.", n.Msg.KEYBOARD_NAV_COPIED_HINT = "Copied. Press %1 to paste.", n.Msg.KEYBOARD_NAV_CUT_HINT = "Cut. Press %1 to paste.", n.Msg.KEYBOARD_NAV_FLYOUT_LABEL_HINT = "Use the arrow keys to navigate to a block, or press %1 to go to the next heading.", n.Msg.KEYBOARD_NAV_UNCONSTRAINED_MOVE_HINT = "Hold %1 and use arrow keys to move freely, then %2 to accept the position.", n.Msg.KEYBOARD_NAV_WORKSPACE_NAVIGATION_HINT = "Use the arrow keys to navigate.", n.Msg.LINUX = "Linux", n.Msg.LISTS_CREATE_EMPTY_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#create-empty-list", n.Msg.LISTS_CREATE_EMPTY_TITLE = "create empty list", n.Msg.LISTS_CREATE_EMPTY_TOOLTIP = "Returns a list, of length 0, containing no data records", n.Msg.LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = "list", n.Msg.LISTS_CREATE_WITH_CONTAINER_TOOLTIP = "Add, remove, or reorder sections to reconfigure this list block.", n.Msg.LISTS_CREATE_WITH_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#create-list-with", n.Msg.LISTS_CREATE_WITH_INPUT_WITH = "create list with", n.Msg.LISTS_CREATE_WITH_ITEM_TOOLTIP = "Add an item to the list.", n.Msg.LISTS_CREATE_WITH_TOOLTIP = "Create a list with any number of items.", n.Msg.LISTS_GET_INDEX_FIRST = "first", n.Msg.LISTS_GET_INDEX_FROM_END = "# from end", n.Msg.LISTS_GET_INDEX_FROM_START = "#", n.Msg.LISTS_GET_INDEX_GET = "get", n.Msg.LISTS_GET_INDEX_GET_REMOVE = "get and remove", n.Msg.LISTS_GET_INDEX_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#getting-items-from-a-list", n.Msg.LISTS_GET_INDEX_LAST = "last", n.Msg.LISTS_GET_INDEX_RANDOM = "random", n.Msg.LISTS_GET_INDEX_REMOVE = "remove", n.Msg.LISTS_GET_INDEX_TAIL = "", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_FIRST = "Returns the first item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_FROM = "Returns the item at the specified position in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_LAST = "Returns the last item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_RANDOM = "Returns a random item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_FIRST = "Removes and returns the first item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_FROM = "Removes and returns the item at the specified position in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_LAST = "Removes and returns the last item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_GET_REMOVE_RANDOM = "Removes and returns a random item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_REMOVE_FIRST = "Removes the first item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_REMOVE_FROM = "Removes the item at the specified position in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_REMOVE_LAST = "Removes the last item in a list.", n.Msg.LISTS_GET_INDEX_TOOLTIP_REMOVE_RANDOM = "Removes a random item in a list.", n.Msg.LISTS_GET_SUBLIST_END_FROM_END = "to # from end", n.Msg.LISTS_GET_SUBLIST_END_FROM_START = "to #", n.Msg.LISTS_GET_SUBLIST_END_LAST = "to last", n.Msg.LISTS_GET_SUBLIST_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#getting-a-sublist", n.Msg.LISTS_GET_SUBLIST_START_FIRST = "get sub-list from first", n.Msg.LISTS_GET_SUBLIST_START_FROM_END = "get sub-list from # from end", n.Msg.LISTS_GET_SUBLIST_START_FROM_START = "get sub-list from #", n.Msg.LISTS_GET_SUBLIST_TAIL = "", n.Msg.LISTS_GET_SUBLIST_TOOLTIP = "Creates a copy of the specified portion of a list.", n.Msg.LISTS_INDEX_FROM_END_TOOLTIP = "%1 is the last item.", n.Msg.LISTS_INDEX_FROM_START_TOOLTIP = "%1 is the first item.", n.Msg.LISTS_INDEX_OF_FIRST = "find first occurrence of item", n.Msg.LISTS_INDEX_OF_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#finding-items-in-a-list", n.Msg.LISTS_INDEX_OF_LAST = "find last occurrence of item", n.Msg.LISTS_INDEX_OF_TOOLTIP = "Returns the index of the first/last occurrence of the item in the list. Returns %1 if item is not found.", n.Msg.LISTS_INLIST = "in list", n.Msg.LISTS_ISEMPTY_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#is-empty", n.Msg.LISTS_ISEMPTY_TITLE = "%1 is empty", n.Msg.LISTS_ISEMPTY_TOOLTIP = "Returns true if the list is empty.", n.Msg.LISTS_LENGTH_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#length-of", n.Msg.LISTS_LENGTH_TITLE = "length of %1", n.Msg.LISTS_LENGTH_TOOLTIP = "Returns the length of a list.", n.Msg.LISTS_REPEAT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#create-list-with", n.Msg.LISTS_REPEAT_TITLE = "create list with item %1 repeated %2 times", n.Msg.LISTS_REPEAT_TOOLTIP = "Creates a list consisting of the given value repeated the specified number of times.", n.Msg.LISTS_REVERSE_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#reversing-a-list", n.Msg.LISTS_REVERSE_MESSAGE0 = "reverse %1", n.Msg.LISTS_REVERSE_TOOLTIP = "Reverse a copy of a list.", n.Msg.LISTS_SET_INDEX_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#in-list--set", n.Msg.LISTS_SET_INDEX_INPUT_TO = "as", n.Msg.LISTS_SET_INDEX_INSERT = "insert at", n.Msg.LISTS_SET_INDEX_SET = "set", n.Msg.LISTS_SET_INDEX_TOOLTIP_INSERT_FIRST = "Inserts the item at the start of a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_INSERT_FROM = "Inserts the item at the specified position in a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_INSERT_LAST = "Append the item to the end of a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_INSERT_RANDOM = "Inserts the item randomly in a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_SET_FIRST = "Sets the first item in a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_SET_FROM = "Sets the item at the specified position in a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_SET_LAST = "Sets the last item in a list.", n.Msg.LISTS_SET_INDEX_TOOLTIP_SET_RANDOM = "Sets a random item in a list.", n.Msg.LISTS_SORT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#sorting-a-list", n.Msg.LISTS_SORT_ORDER_ASCENDING = "ascending", n.Msg.LISTS_SORT_ORDER_DESCENDING = "descending", n.Msg.LISTS_SORT_TITLE = "sort %1 %2 %3", n.Msg.LISTS_SORT_TOOLTIP = "Sort a copy of a list.", n.Msg.LISTS_SORT_TYPE_IGNORECASE = "alphabetic, ignore case", n.Msg.LISTS_SORT_TYPE_NUMERIC = "numeric", n.Msg.LISTS_SORT_TYPE_TEXT = "alphabetic", n.Msg.LISTS_SPLIT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Lists#splitting-strings-and-joining-lists", n.Msg.LISTS_SPLIT_LIST_FROM_TEXT = "make list from text", n.Msg.LISTS_SPLIT_TEXT_FROM_LIST = "make text from list", n.Msg.LISTS_SPLIT_TOOLTIP_JOIN = "Join a list of texts into one text, separated by a delimiter.", n.Msg.LISTS_SPLIT_TOOLTIP_SPLIT = "Split text into a list of texts, breaking at each delimiter.", n.Msg.LISTS_SPLIT_WITH_DELIMITER = "with delimiter", n.Msg.LOGIC_BOOLEAN_FALSE = "false", n.Msg.LOGIC_BOOLEAN_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Logic#values", n.Msg.LOGIC_BOOLEAN_TOOLTIP = "Returns either true or false.", n.Msg.LOGIC_BOOLEAN_TRUE = "true", n.Msg.LOGIC_COMPARE_EQ_ARIA = "equals", n.Msg.LOGIC_COMPARE_GTE_ARIA = "greater than or equal to", n.Msg.LOGIC_COMPARE_GT_ARIA = "greater than", n.Msg.LOGIC_COMPARE_HELPURL = "https://en.wikipedia.org/wiki/Inequality_(mathematics)", n.Msg.LOGIC_COMPARE_LTE_ARIA = "less than or equal to", n.Msg.LOGIC_COMPARE_LT_ARIA = "less than", n.Msg.LOGIC_COMPARE_NEQ_ARIA = "not equals", n.Msg.LOGIC_COMPARE_TOOLTIP_EQ = "Return true if both inputs equal each other.", n.Msg.LOGIC_COMPARE_TOOLTIP_GT = "Return true if the first input is greater than the second input.", n.Msg.LOGIC_COMPARE_TOOLTIP_GTE = "Return true if the first input is greater than or equal to the second input.", n.Msg.LOGIC_COMPARE_TOOLTIP_LT = "Return true if the first input is smaller than the second input.", n.Msg.LOGIC_COMPARE_TOOLTIP_LTE = "Return true if the first input is smaller than or equal to the second input.", n.Msg.LOGIC_COMPARE_TOOLTIP_NEQ = "Return true if both inputs are not equal to each other.", n.Msg.LOGIC_NEGATE_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Logic#not", n.Msg.LOGIC_NEGATE_TITLE = "not %1", n.Msg.LOGIC_NEGATE_TOOLTIP = "Returns true if the input is false. Returns false if the input is true.", n.Msg.LOGIC_NULL = "null", n.Msg.LOGIC_NULL_HELPURL = "https://en.wikipedia.org/wiki/Nullable_type", n.Msg.LOGIC_NULL_TOOLTIP = "Returns null.", n.Msg.LOGIC_OPERATION_AND = "and", n.Msg.LOGIC_OPERATION_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Logic#logical-operations", n.Msg.LOGIC_OPERATION_OR = "or", n.Msg.LOGIC_OPERATION_TOOLTIP_AND = "Return true if both inputs are true.", n.Msg.LOGIC_OPERATION_TOOLTIP_OR = "Return true if at least one of the inputs is true.", n.Msg.LOGIC_TERNARY_CONDITION = "test", n.Msg.LOGIC_TERNARY_HELPURL = "https://en.wikipedia.org/wiki/%3F:", n.Msg.LOGIC_TERNARY_IF_FALSE = "if false", n.Msg.LOGIC_TERNARY_IF_TRUE = "if true", n.Msg.LOGIC_TERNARY_TOOLTIP = "Check the condition in 'test'. If the condition is true, returns the 'if true' value; otherwise returns the 'if false' value.", n.Msg.MAC_OS = "macOS", n.Msg.MATH_ADDITION_SYMBOL = "+", n.Msg.MATH_ADDITION_SYMBOL_ARIA = "plus", n.Msg.MATH_ARITHMETIC_HELPURL = "https://en.wikipedia.org/wiki/Arithmetic", n.Msg.MATH_ARITHMETIC_TOOLTIP_ADD = "Return the sum of the two numbers.", n.Msg.MATH_ARITHMETIC_TOOLTIP_DIVIDE = "Return the quotient of the two numbers.", n.Msg.MATH_ARITHMETIC_TOOLTIP_MINUS = "Return the difference of the two numbers.", n.Msg.MATH_ARITHMETIC_TOOLTIP_MULTIPLY = "Return the product of the two numbers.", n.Msg.MATH_ARITHMETIC_TOOLTIP_POWER = "Return the first number raised to the power of the second number.", n.Msg.MATH_ATAN2_HELPURL = "https://en.wikipedia.org/wiki/Atan2", n.Msg.MATH_ATAN2_TITLE = "atan2 of X:%1 Y:%2", n.Msg.MATH_ATAN2_TOOLTIP = "Return the arctangent of point (X, Y) in degrees from -180 to 180.", n.Msg.MATH_CHANGE_HELPURL = "https://en.wikipedia.org/wiki/Programming_idiom#Incrementing_a_counter", n.Msg.MATH_CHANGE_TITLE = "change %1 by %2", n.Msg.MATH_CHANGE_TOOLTIP = "Add a number to variable '%1'.", n.Msg.MATH_CONSTANT_E_ARIA = "e", n.Msg.MATH_CONSTANT_GOLDEN_RATIO_ARIA = "golden ratio", n.Msg.MATH_CONSTANT_HELPURL = "https://en.wikipedia.org/wiki/Mathematical_constant", n.Msg.MATH_CONSTANT_INFINITY_ARIA = "infinity", n.Msg.MATH_CONSTANT_PI_ARIA = "pi", n.Msg.MATH_CONSTANT_SQRT1_2_ARIA = "square root of 1 over 2", n.Msg.MATH_CONSTANT_SQRT2_ARIA = "square root of 2", n.Msg.MATH_CONSTANT_TOOLTIP = "Return one of the common constants: π (3.141…), e (2.718…), φ (1.618…), sqrt(2) (1.414…), sqrt(½) (0.707…), or ∞ (infinity).", n.Msg.MATH_CONSTRAIN_HELPURL = "https://en.wikipedia.org/wiki/Clamping_(graphics)", n.Msg.MATH_CONSTRAIN_TITLE = "constrain %1 low %2 high %3", n.Msg.MATH_CONSTRAIN_TOOLTIP = "Constrain a number to be between the specified limits (inclusive).", n.Msg.MATH_DIVISION_SYMBOL = "÷", n.Msg.MATH_DIVISION_SYMBOL_ARIA = "divided by", n.Msg.MATH_IS_DIVISIBLE_BY = "is divisible by", n.Msg.MATH_IS_EVEN = "is even", n.Msg.MATH_IS_NEGATIVE = "is negative", n.Msg.MATH_IS_ODD = "is odd", n.Msg.MATH_IS_POSITIVE = "is positive", n.Msg.MATH_IS_PRIME = "is prime", n.Msg.MATH_IS_TOOLTIP = "Check if a number is an even, odd, prime, whole, positive, negative, or if it is divisible by certain number. Returns true or false.", n.Msg.MATH_IS_WHOLE = "is whole", n.Msg.MATH_MODULO_HELPURL = "https://en.wikipedia.org/wiki/Modulo_operation", n.Msg.MATH_MODULO_TITLE = "remainder of %1 ÷ %2", n.Msg.MATH_MODULO_TOOLTIP = "Return the remainder from dividing the two numbers.", n.Msg.MATH_MULTIPLICATION_SYMBOL = "×", n.Msg.MATH_MULTIPLICATION_SYMBOL_ARIA = "times", n.Msg.MATH_NUMBER_HELPURL = "https://en.wikipedia.org/wiki/Number", n.Msg.MATH_NUMBER_TOOLTIP = "A number.", n.Msg.MATH_ONLIST_HELPURL = "", n.Msg.MATH_ONLIST_OPERATOR_AVERAGE = "average of list", n.Msg.MATH_ONLIST_OPERATOR_MAX = "max of list", n.Msg.MATH_ONLIST_OPERATOR_MAX_ARIA = "maximum", n.Msg.MATH_ONLIST_OPERATOR_MEDIAN = "median of list", n.Msg.MATH_ONLIST_OPERATOR_MIN = "min of list", n.Msg.MATH_ONLIST_OPERATOR_MIN_ARIA = "minimum", n.Msg.MATH_ONLIST_OPERATOR_MODE = "modes of list", n.Msg.MATH_ONLIST_OPERATOR_RANDOM = "random item of list", n.Msg.MATH_ONLIST_OPERATOR_STD_DEV = "standard deviation of list", n.Msg.MATH_ONLIST_OPERATOR_SUM = "sum of list", n.Msg.MATH_ONLIST_TOOLTIP_AVERAGE = "Return the average (arithmetic mean) of the numeric values in the list.", n.Msg.MATH_ONLIST_TOOLTIP_MAX = "Return the largest number in the list.", n.Msg.MATH_ONLIST_TOOLTIP_MEDIAN = "Return the median number in the list.", n.Msg.MATH_ONLIST_TOOLTIP_MIN = "Return the smallest number in the list.", n.Msg.MATH_ONLIST_TOOLTIP_MODE = "Return a list of the most common item(s) in the list.", n.Msg.MATH_ONLIST_TOOLTIP_RANDOM = "Return a random element from the list.", n.Msg.MATH_ONLIST_TOOLTIP_STD_DEV = "Return the standard deviation of the list.", n.Msg.MATH_ONLIST_TOOLTIP_SUM = "Return the sum of all the numbers in the list.", n.Msg.MATH_POWER_SYMBOL = "^", n.Msg.MATH_POWER_SYMBOL_ARIA = "to the power of", n.Msg.MATH_RANDOM_FLOAT_HELPURL = "https://en.wikipedia.org/wiki/Random_number_generation", n.Msg.MATH_RANDOM_FLOAT_TITLE_RANDOM = "random fraction", n.Msg.MATH_RANDOM_FLOAT_TOOLTIP = "Return a random fraction between 0.0 (inclusive) and 1.0 (exclusive).", n.Msg.MATH_RANDOM_INT_HELPURL = "https://en.wikipedia.org/wiki/Random_number_generation", n.Msg.MATH_RANDOM_INT_TITLE = "random integer from %1 to %2", n.Msg.MATH_RANDOM_INT_TOOLTIP = "Return a random integer between the two specified limits, inclusive.", n.Msg.MATH_ROUND_HELPURL = "https://en.wikipedia.org/wiki/Rounding", n.Msg.MATH_ROUND_OPERATOR_ROUND = "round", n.Msg.MATH_ROUND_OPERATOR_ROUNDDOWN = "round down", n.Msg.MATH_ROUND_OPERATOR_ROUNDUP = "round up", n.Msg.MATH_ROUND_TOOLTIP = "Round a number up or down.", n.Msg.MATH_SINGLE_HELPURL = "https://en.wikipedia.org/wiki/Square_root", n.Msg.MATH_SINGLE_OP_ABSOLUTE = "absolute", n.Msg.MATH_SINGLE_OP_ABSOLUTE_ARIA = "absolute value", n.Msg.MATH_SINGLE_OP_EXP_ARIA = "e to the power of", n.Msg.MATH_SINGLE_OP_LN_ARIA = "natural logarithm", n.Msg.MATH_SINGLE_OP_LOG10_ARIA = "base 10 logarithm", n.Msg.MATH_SINGLE_OP_NEG_ARIA = "negative", n.Msg.MATH_SINGLE_OP_POW10_ARIA = "10 to the power of", n.Msg.MATH_SINGLE_OP_ROOT = "square root", n.Msg.MATH_SINGLE_TOOLTIP_ABS = "Return the absolute value of a number.", n.Msg.MATH_SINGLE_TOOLTIP_EXP = "Return e to the power of a number.", n.Msg.MATH_SINGLE_TOOLTIP_LN = "Return the natural logarithm of a number.", n.Msg.MATH_SINGLE_TOOLTIP_LOG10 = "Return the base 10 logarithm of a number.", n.Msg.MATH_SINGLE_TOOLTIP_NEG = "Return the negation of a number.", n.Msg.MATH_SINGLE_TOOLTIP_POW10 = "Return 10 to the power of a number.", n.Msg.MATH_SINGLE_TOOLTIP_ROOT = "Return the square root of a number.", n.Msg.MATH_SUBTRACTION_SYMBOL = "-", n.Msg.MATH_SUBTRACTION_SYMBOL_ARIA = "minus", n.Msg.MATH_TRIG_ACOS = "acos", n.Msg.MATH_TRIG_ACOS_ARIA = "inverse cosine", n.Msg.MATH_TRIG_ASIN = "asin", n.Msg.MATH_TRIG_ASIN_ARIA = "inverse sine", n.Msg.MATH_TRIG_ATAN = "atan", n.Msg.MATH_TRIG_ATAN_ARIA = "inverse tangent", n.Msg.MATH_TRIG_COS = "cos", n.Msg.MATH_TRIG_COS_ARIA = "cosine", n.Msg.MATH_TRIG_HELPURL = "https://en.wikipedia.org/wiki/Trigonometric_functions", n.Msg.MATH_TRIG_SIN = "sin", n.Msg.MATH_TRIG_SIN_ARIA = "sine", n.Msg.MATH_TRIG_TAN = "tan", n.Msg.MATH_TRIG_TAN_ARIA = "tangent", n.Msg.MATH_TRIG_TOOLTIP_ACOS = "Return the arccosine of a number.", n.Msg.MATH_TRIG_TOOLTIP_ASIN = "Return the arcsine of a number.", n.Msg.MATH_TRIG_TOOLTIP_ATAN = "Return the arctangent of a number.", n.Msg.MATH_TRIG_TOOLTIP_COS = "Return the cosine of a degree (not radian).", n.Msg.MATH_TRIG_TOOLTIP_SIN = "Return the sine of a degree (not radian).", n.Msg.MATH_TRIG_TOOLTIP_TAN = "Return the tangent of a degree (not radian).", n.Msg.MINIMAP_ARIA_LABEL = "Workspace minimap. Use the arrow keys to pan the workspace.", n.Msg.MOVE_BLOCK = "Move Block", n.Msg.NEW_COLOUR_VARIABLE = "Create colour variable...", n.Msg.NEW_NUMBER_VARIABLE = "Create number variable...", n.Msg.NEW_STRING_VARIABLE = "Create string variable...", n.Msg.NEW_VARIABLE = "Create variable...", n.Msg.NEW_VARIABLE_TITLE = "New variable name:", n.Msg.NEW_VARIABLE_TYPE_TITLE = "New variable type:", n.Msg.NO_PARENT_ANNOUNCEMENT = "Current block has no parent", n.Msg.OPEN_BACKPACK = "Open backpack", n.Msg.OPEN_TRASH = "Open trash", n.Msg.OPTION_KEY = "Option", n.Msg.ORDINAL_NUMBER_SUFFIX = "", n.Msg.PAGE_DOWN_KEY = "Page Down", n.Msg.PAGE_UP_KEY = "Page Up", n.Msg.PARENT_BLOCKS_ANNOUNCEMENT = "Parent blocks: %1", n.Msg.PASTE_ALL_FROM_BACKPACK = "Paste All Blocks from Backpack", n.Msg.PASTE_SHORTCUT = "Paste", n.Msg.PAUSE_KEY = "Pause", n.Msg.PROCEDURES_ALLOW_STATEMENTS = "allow statements", n.Msg.PROCEDURES_BEFORE_PARAMS = "with:", n.Msg.PROCEDURES_CALLNORETURN_HELPURL = "https://en.wikipedia.org/wiki/Subroutine", n.Msg.PROCEDURES_CALLNORETURN_TOOLTIP = "Run the user-defined function '%1'.", n.Msg.PROCEDURES_CALLRETURN_HELPURL = "https://en.wikipedia.org/wiki/Subroutine", n.Msg.PROCEDURES_CALLRETURN_TOOLTIP = "Run the user-defined function '%1' and use its output.", n.Msg.PROCEDURES_CALL_BEFORE_PARAMS = "with:", n.Msg.PROCEDURES_CALL_DISABLED_DEF_WARNING = "Can't run the user-defined function '%1' because the definition block is disabled.", n.Msg.PROCEDURES_CREATE_DO = "Create '%1'", n.Msg.PROCEDURES_DEFNORETURN_COMMENT = "Describe this function...", n.Msg.PROCEDURES_DEFNORETURN_DO = "", n.Msg.PROCEDURES_DEFNORETURN_HELPURL = "https://en.wikipedia.org/wiki/Subroutine", n.Msg.PROCEDURES_DEFNORETURN_PROCEDURE = "do something", n.Msg.PROCEDURES_DEFNORETURN_TITLE = "to", n.Msg.PROCEDURES_DEFNORETURN_TOOLTIP = "Creates a function with no output.", n.Msg.PROCEDURES_DEFRETURN_HELPURL = "https://en.wikipedia.org/wiki/Subroutine", n.Msg.PROCEDURES_DEFRETURN_RETURN = "return", n.Msg.PROCEDURES_DEFRETURN_TOOLTIP = "Creates a function with an output.", n.Msg.PROCEDURES_DEF_DUPLICATE_WARNING = "Warning: This function has duplicate parameters.", n.Msg.PROCEDURES_HIGHLIGHT_DEF = "Highlight function definition", n.Msg.PROCEDURES_IFRETURN_HELPURL = "https://c2.com/cgi/wiki?GuardClause", n.Msg.PROCEDURES_IFRETURN_TOOLTIP = "If a value is true, then return a second value.", n.Msg.PROCEDURES_IFRETURN_WARNING = "Warning: This block may be used only within a function definition.", n.Msg.PROCEDURES_MUTATORARG_TITLE = "input name:", n.Msg.PROCEDURES_MUTATORARG_TOOLTIP = "Add an input to the function.", n.Msg.PROCEDURES_MUTATORCONTAINER_TITLE = "inputs", n.Msg.PROCEDURES_MUTATORCONTAINER_TOOLTIP = "Add, remove, or reorder inputs to this function.", n.Msg.REDO = "Redo", n.Msg.REMOVE_COMMENT = "Remove Comment", n.Msg.REMOVE_FROM_BACKPACK = "Remove from Backpack", n.Msg.RENAME_VARIABLE = "Rename the '%1' variable", n.Msg.RENAME_VARIABLE_TITLE = "Rename all '%1' variables to:", n.Msg.RESET_ZOOM = "Reset zoom", n.Msg.SCREENREADER_HINT = "Use the arrow keys to navigate. Press %1 to toggle screenreader accessibility mode.", n.Msg.SCREENREADER_MODE_DISABLED = "Screenreader mode is off, press %1 to turn it on", n.Msg.SCREENREADER_MODE_ENABLED = "Screenreader mode is on, press %1 to turn it off", n.Msg.SHIFT_KEY = "Shift", n.Msg.SHORTCUTS_ABORT_MOVE = "Abort move", n.Msg.SHORTCUTS_CLEANUP = "Clean up workspace", n.Msg.SHORTCUTS_CODE_NAVIGATION = "Code navigation", n.Msg.SHORTCUTS_DELETE = "Delete", n.Msg.SHORTCUTS_DISCONNECT = "Disconnect block", n.Msg.SHORTCUTS_DUPLICATE = "Duplicate", n.Msg.SHORTCUTS_EDITING = "Editing", n.Msg.SHORTCUTS_ESCAPE = "Exit", n.Msg.SHORTCUTS_EXTENDED_INFORMATION = "Announce detailed information", n.Msg.SHORTCUTS_FINISH_MOVE = "Finish move", n.Msg.SHORTCUTS_FOCUS_TOOLBOX = "Focus toolbox", n.Msg.SHORTCUTS_FOCUS_WORKSPACE = "Focus workspace", n.Msg.SHORTCUTS_GENERAL = "General", n.Msg.SHORTCUTS_INFORMATION = "Announce information", n.Msg.SHORTCUTS_JUMP_BLOCK_END = "Jump to block end", n.Msg.SHORTCUTS_JUMP_BLOCK_START = "Jump to block start", n.Msg.SHORTCUTS_JUMP_BOTTOM_STACK = "Jump to bottom of stack", n.Msg.SHORTCUTS_JUMP_FIRST_BLOCK = "Jump to first block", n.Msg.SHORTCUTS_JUMP_LAST_BLOCK = "Jump to last block", n.Msg.SHORTCUTS_JUMP_TOP_STACK = "Jump to top of stack", n.Msg.SHORTCUTS_MOVE_DOWN = "Move down", n.Msg.SHORTCUTS_MOVE_LEFT = "Move left", n.Msg.SHORTCUTS_MOVE_RIGHT = "Move right", n.Msg.SHORTCUTS_MOVE_UP = "Move up", n.Msg.SHORTCUTS_NEXT_HEADING = "Next heading", n.Msg.SHORTCUTS_NEXT_STACK = "Next stack", n.Msg.SHORTCUTS_PERFORM_ACTION = "Edit or confirm", n.Msg.SHORTCUTS_PREVIOUS_HEADING = "Previous heading", n.Msg.SHORTCUTS_PREVIOUS_STACK = "Previous stack", n.Msg.SHORTCUTS_SHOW_CONTEXT_MENU = "Show menu", n.Msg.SHORTCUTS_SHOW_TOOLTIP = "Show tooltip", n.Msg.SHORTCUTS_START_MOVE = "Start move", n.Msg.SHORTCUTS_START_MOVE_STACK = "Start move stack", n.Msg.SHORTCUTS_TOGGLE_SCREENREADER_MODE = "Toggle screenreader mode", n.Msg.SPACE_KEY = "Space", n.Msg.TAB_KEY = "Tab", n.Msg.TEXT_APPEND_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#text-modification", n.Msg.TEXT_APPEND_TITLE = "to %1 append text %2", n.Msg.TEXT_APPEND_TOOLTIP = "Append some text to variable '%1'.", n.Msg.TEXT_CHANGECASE_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#adjusting-text-case", n.Msg.TEXT_CHANGECASE_OPERATOR_LOWERCASE = "to lower case", n.Msg.TEXT_CHANGECASE_OPERATOR_TITLECASE = "to Title Case", n.Msg.TEXT_CHANGECASE_OPERATOR_UPPERCASE = "to UPPER CASE", n.Msg.TEXT_CHANGECASE_TOOLTIP = "Return a copy of the text in a different case.", n.Msg.TEXT_CHARAT_FIRST = "get first letter", n.Msg.TEXT_CHARAT_FROM_END = "get letter # from end", n.Msg.TEXT_CHARAT_FROM_START = "get letter #", n.Msg.TEXT_CHARAT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#extracting-text", n.Msg.TEXT_CHARAT_LAST = "get last letter", n.Msg.TEXT_CHARAT_RANDOM = "get random letter", n.Msg.TEXT_CHARAT_TAIL = "", n.Msg.TEXT_CHARAT_TITLE = "in text %1 %2", n.Msg.TEXT_CHARAT_TOOLTIP = "Returns the letter at the specified position.", n.Msg.TEXT_COUNT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#counting-substrings", n.Msg.TEXT_COUNT_MESSAGE0 = "count %1 in %2", n.Msg.TEXT_COUNT_TOOLTIP = "Count how many times some text occurs within some other text.", n.Msg.TEXT_CREATE_JOIN_ITEM_TOOLTIP = "Add an item to the text.", n.Msg.TEXT_CREATE_JOIN_TITLE_JOIN = "join", n.Msg.TEXT_CREATE_JOIN_TOOLTIP = "Add, remove, or reorder sections to reconfigure this text block.", n.Msg.TEXT_FROM_END_ARIA = "letter number from end", n.Msg.TEXT_FROM_START_ARIA = "letter number", n.Msg.TEXT_GET_SUBSTRING_END_FROM_END = "to letter # from end", n.Msg.TEXT_GET_SUBSTRING_END_FROM_START = "to letter #", n.Msg.TEXT_GET_SUBSTRING_END_LAST = "to last letter", n.Msg.TEXT_GET_SUBSTRING_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#extracting-a-region-of-text", n.Msg.TEXT_GET_SUBSTRING_INPUT_IN_TEXT = "in text", n.Msg.TEXT_GET_SUBSTRING_START_FIRST = "get substring from first letter", n.Msg.TEXT_GET_SUBSTRING_START_FROM_END = "get substring from letter # from end", n.Msg.TEXT_GET_SUBSTRING_START_FROM_START = "get substring from letter #", n.Msg.TEXT_GET_SUBSTRING_TAIL = "", n.Msg.TEXT_GET_SUBSTRING_TOOLTIP = "Returns a specified portion of the text.", n.Msg.TEXT_INDEXOF_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#finding-text", n.Msg.TEXT_INDEXOF_OPERATOR_FIRST = "find first occurrence of text", n.Msg.TEXT_INDEXOF_OPERATOR_LAST = "find last occurrence of text", n.Msg.TEXT_INDEXOF_TITLE = "in text %1 %2 %3", n.Msg.TEXT_INDEXOF_TOOLTIP = "Returns the index of the first/last occurrence of the first text in the second text. Returns %1 if text is not found.", n.Msg.TEXT_ISEMPTY_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#checking-for-empty-text", n.Msg.TEXT_ISEMPTY_TITLE = "%1 is empty", n.Msg.TEXT_ISEMPTY_TOOLTIP = "Returns true if the provided text is empty.", n.Msg.TEXT_JOIN_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#text-creation", n.Msg.TEXT_JOIN_TITLE_CREATEWITH = "create text with", n.Msg.TEXT_JOIN_TOOLTIP = "Create a piece of text by joining together any number of items.", n.Msg.TEXT_LENGTH_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#text-modification", n.Msg.TEXT_LENGTH_TITLE = "length of %1", n.Msg.TEXT_LENGTH_TOOLTIP = "Returns the number of letters (including spaces) in the provided text.", n.Msg.TEXT_PRINT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#printing-text", n.Msg.TEXT_PRINT_TITLE = "print %1", n.Msg.TEXT_PRINT_TOOLTIP = "Print the specified text, number or other value.", n.Msg.TEXT_PROMPT_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#getting-input-from-the-user", n.Msg.TEXT_PROMPT_TOOLTIP_NUMBER = "Prompt for user for a number.", n.Msg.TEXT_PROMPT_TOOLTIP_TEXT = "Prompt for user for some text.", n.Msg.TEXT_PROMPT_TYPE_NUMBER = "prompt for number with message", n.Msg.TEXT_PROMPT_TYPE_TEXT = "prompt for text with message", n.Msg.TEXT_REPLACE_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#replacing-substrings", n.Msg.TEXT_REPLACE_MESSAGE0 = "replace %1 with %2 in %3", n.Msg.TEXT_REPLACE_TOOLTIP = "Replace all occurances of some text within some other text.", n.Msg.TEXT_REVERSE_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#reversing-text", n.Msg.TEXT_REVERSE_MESSAGE0 = "reverse %1", n.Msg.TEXT_REVERSE_TOOLTIP = "Reverses the order of the characters in the text.", n.Msg.TEXT_TEXT_HELPURL = "https://en.wikipedia.org/wiki/String_(computer_science)", n.Msg.TEXT_TEXT_TOOLTIP = "A letter, word, or line of text.", n.Msg.TEXT_TRIM_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Text#trimming-removing-spaces", n.Msg.TEXT_TRIM_OPERATOR_BOTH = "trim spaces from both sides of", n.Msg.TEXT_TRIM_OPERATOR_LEFT = "trim spaces from left side of", n.Msg.TEXT_TRIM_OPERATOR_RIGHT = "trim spaces from right side of", n.Msg.TEXT_TRIM_TOOLTIP = "Return a copy of the text with spaces removed from one or both ends.", n.Msg.TODAY = "Today", n.Msg.UNDO = "Undo", n.Msg.UNKNOWN = "Unknown", n.Msg.UNNAMED_KEY = "unnamed", n.Msg.VARIABLES_DEFAULT_NAME = "item", n.Msg.VARIABLES_GET_CREATE_SET = "Create 'set %1'", n.Msg.VARIABLES_GET_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Variables#get", n.Msg.VARIABLES_GET_TOOLTIP = "Returns the value of this variable.", n.Msg.VARIABLES_SET = "set %1 to %2", n.Msg.VARIABLES_SET_CREATE_GET = "Create 'get %1'", n.Msg.VARIABLES_SET_HELPURL = "https://github.com/RaspberryPiFoundation/blockly/wiki/Variables#set", n.Msg.VARIABLES_SET_TOOLTIP = "Sets this variable to be equal to the input.", n.Msg.VARIABLE_ALREADY_EXISTS = "A variable named '%1' already exists.", n.Msg.VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE = "A variable named '%1' already exists for another type: '%2'.", n.Msg.VARIABLE_ALREADY_EXISTS_FOR_A_PARAMETER = "A variable named '%1' already exists as a parameter in the procedure '%2'.", n.Msg.WINDOWS = "Windows", n.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT = "Say something...", n.Msg.WORKSPACE_CONTENTS_BLOCKS_MANY = "%1 stacks of blocks%2 in workspace.", n.Msg.WORKSPACE_CONTENTS_BLOCKS_ONE = "One stack of blocks%2 in workspace.", n.Msg.WORKSPACE_CONTENTS_BLOCKS_ZERO = "No blocks%2 in workspace.", n.Msg.WORKSPACE_CONTENTS_COMMENTS_MANY = " and %1 comments", n.Msg.WORKSPACE_CONTENTS_COMMENTS_ONE = " and one comment", n.Msg.WORKSPACE_LABEL_1_STACK = "1 stack of blocks", n.Msg.WORKSPACE_LABEL_FLYOUT_WORKSPACE = "%1 blocks", n.Msg.WORKSPACE_LABEL_MANY_STACKS = "%1 stacks of blocks", n.Msg.WORKSPACE_LABEL_MUTATOR_WORKSPACE = "Block editor workspace", n.Msg.WORKSPACE_LABEL_PLAIN = "Blocks workspace.", n.Msg.WORKSPACE_ROLEDESCRIPTION = "workspace", n.Msg.ZOOM_IN = "Zoom in", n.Msg.ZOOM_OUT = "Zoom out", n.Msg.ZOOM_TO_FIT_ARIA_LABEL = "Zoom to fit", n.Msg.CONTROLS_FOREACH_INPUT_DO = n.Msg.CONTROLS_REPEAT_INPUT_DO, n.Msg.CONTROLS_FOR_INPUT_DO = n.Msg.CONTROLS_REPEAT_INPUT_DO, n.Msg.CONTROLS_IF_ELSEIF_TITLE_ELSEIF = n.Msg.CONTROLS_IF_MSG_ELSEIF, n.Msg.CONTROLS_IF_ELSE_TITLE_ELSE = n.Msg.CONTROLS_IF_MSG_ELSE, n.Msg.CONTROLS_IF_IF_TITLE_IF = n.Msg.CONTROLS_IF_MSG_IF, n.Msg.CONTROLS_IF_MSG_THEN = n.Msg.CONTROLS_REPEAT_INPUT_DO, n.Msg.CONTROLS_WHILEUNTIL_INPUT_DO = n.Msg.CONTROLS_REPEAT_INPUT_DO, n.Msg.LISTS_CREATE_WITH_ITEM_TITLE = n.Msg.VARIABLES_DEFAULT_NAME, n.Msg.LISTS_GET_INDEX_INPUT_IN_LIST = n.Msg.LISTS_INLIST, n.Msg.LISTS_GET_SUBLIST_INPUT_IN_LIST = n.Msg.LISTS_INLIST, n.Msg.LISTS_INDEX_OF_INPUT_IN_LIST = n.Msg.LISTS_INLIST, n.Msg.LISTS_SET_INDEX_INPUT_IN_LIST = n.Msg.LISTS_INLIST, n.Msg.MATH_CHANGE_TITLE_ITEM = n.Msg.VARIABLES_DEFAULT_NAME, n.Msg.PROCEDURES_DEFRETURN_COMMENT = n.Msg.PROCEDURES_DEFNORETURN_COMMENT, n.Msg.PROCEDURES_DEFRETURN_DO = n.Msg.PROCEDURES_DEFNORETURN_DO, n.Msg.PROCEDURES_DEFRETURN_PROCEDURE = n.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, n.Msg.PROCEDURES_DEFRETURN_TITLE = n.Msg.PROCEDURES_DEFNORETURN_TITLE, n.Msg.TEXT_APPEND_VARIABLE = n.Msg.VARIABLES_DEFAULT_NAME, n.Msg.TEXT_CREATE_JOIN_ITEM_TITLE_ITEM = n.Msg.VARIABLES_DEFAULT_NAME, n.Msg.COLOUR_HUE = "20", n.Msg.LISTS_HUE = "260", n.Msg.LOGIC_HUE = "210", n.Msg.LOOPS_HUE = "120", n.Msg.MATH_HUE = "230", n.Msg.PROCEDURES_HUE = "290", n.Msg.TEXTS_HUE = "160", n.Msg.VARIABLES_DYNAMIC_HUE = "310", n.Msg.VARIABLES_HUE = "330", n.Msg;
     });
   })(_l)), _l.exports;
 }
-var cT = pl.exports, d_;
-function uT() {
-  return d_ || (d_ = 1, (function(D, C) {
+var uT = pl.exports, d_;
+function dT() {
+  return d_ || (d_ = 1, (function(k, I) {
     (function(n, h) {
-      D.exports = h(Du(), hT(), E_());
-    })(cT, function(n, h, P) {
+      k.exports = h(Du(), cT(), E_());
+    })(uT, function(n, h, M) {
       return n.setLocale(h), n;
     });
   })(pl)), pl.exports;
 }
-var dT = uT();
-const gT = /* @__PURE__ */ Mu(dT), {
-  Block: Pm,
-  BlockFlyoutInflater: Bm,
-  BlockNavigationPolicy: xm,
-  BlockSvg: Fm,
-  Blocks: Um,
-  BubbleNavigationPolicy: Hm,
-  ButtonFlyoutInflater: Gm,
-  COLLAPSED_FIELD_NAME: Vm,
-  COLLAPSED_INPUT_NAME: Wm,
-  COLLAPSE_CHARS: Km,
-  CodeGenerator: Ym,
-  CollapsibleToolboxCategory: Xm,
-  CommentBarButtonNavigationPolicy: zm,
-  CommentEditorNavigationPolicy: jm,
-  ComponentManager: $m,
-  Connection: Jm,
-  ConnectionChecker: qm,
-  ConnectionDB: Zm,
-  ConnectionNavigationPolicy: Qm,
+var gT = dT();
+const pT = /* @__PURE__ */ Mu(gT), {
+  Block: Bm,
+  BlockFlyoutInflater: xm,
+  BlockNavigationPolicy: Fm,
+  BlockSvg: Um,
+  Blocks: Hm,
+  BubbleNavigationPolicy: Gm,
+  ButtonFlyoutInflater: Vm,
+  COLLAPSED_FIELD_NAME: Wm,
+  COLLAPSED_INPUT_NAME: Km,
+  COLLAPSE_CHARS: Ym,
+  CodeGenerator: Xm,
+  CollapsibleToolboxCategory: zm,
+  CommentBarButtonNavigationPolicy: jm,
+  CommentEditorNavigationPolicy: $m,
+  ComponentManager: Jm,
+  Connection: qm,
+  ConnectionChecker: Zm,
+  ConnectionDB: Qm,
+  ConnectionNavigationPolicy: tI,
   ConnectionType: Io,
-  ContextMenu: tI,
-  ContextMenuItems: eI,
-  ContextMenuRegistry: iI,
+  ContextMenu: eI,
+  ContextMenuItems: iI,
+  ContextMenuRegistry: sI,
   Css: f_,
-  DELETE_VARIABLE_ID: sI,
-  DeleteArea: oI,
-  Direction: nI,
-  DragDisposition: rI,
-  DragTarget: lI,
-  DropDownDiv: aI,
-  Events: hI,
-  Extensions: cI,
-  Field: uI,
-  FieldCheckbox: dI,
-  FieldDropdown: gI,
-  FieldImage: pI,
-  FieldLabel: _I,
-  FieldLabelSerializable: TI,
-  FieldNavigationPolicy: EI,
-  FieldNumber: fI,
-  FieldTextInput: mI,
-  FieldVariable: II,
-  Flyout: CI,
-  FlyoutButton: vI,
-  FlyoutButtonNavigationPolicy: SI,
-  FlyoutItem: RI,
-  FlyoutMetricsManager: AI,
-  FlyoutNavigator: bI,
-  FlyoutSeparator: OI,
-  FlyoutSeparatorNavigationPolicy: yI,
-  FocusManager: LI,
-  FocusableTreeTraverser: kI,
-  Generator: NI,
-  Gesture: wI,
-  Grid: MI,
-  HorizontalFlyout: DI,
-  INPUT_VALUE: PI,
-  IconNavigationPolicy: BI,
-  Input: xI,
-  InsertionMarkerPreviewer: pT,
-  KeyboardMover: FI,
-  KeyboardNavigationController: UI,
-  LabelFlyoutInflater: HI,
-  Menu: GI,
-  MenuItem: VI,
-  MetricsManager: WI,
-  MoveIndicator: KI,
-  Msg: YI,
-  NEXT_STATEMENT: XI,
-  Names: zI,
-  NavigationDirection: jI,
-  Navigator: $I,
-  OPPOSITE_TYPE: JI,
-  OUTPUT_VALUE: qI,
-  Options: ZI,
-  PREVIOUS_STATEMENT: QI,
-  PROCEDURE_CATEGORY_NAME: tC,
-  Procedures: eC,
-  RENAME_VARIABLE_ID: iC,
-  RenderedConnection: sC,
-  Scrollbar: oC,
-  ScrollbarPair: nC,
-  SeparatorFlyoutInflater: rC,
-  ShortcutItems: lC,
-  ShortcutRegistry: aC,
-  TOOLBOX_AT_BOTTOM: hC,
-  TOOLBOX_AT_LEFT: cC,
-  TOOLBOX_AT_RIGHT: uC,
-  TOOLBOX_AT_TOP: dC,
-  Theme: gC,
-  ThemeManager: pC,
-  Themes: _C,
-  Toast: TC,
-  Toolbox: EC,
-  ToolboxCategory: fC,
-  ToolboxItem: mC,
-  ToolboxItemNavigationPolicy: IC,
-  ToolboxNavigator: CC,
-  ToolboxSeparator: vC,
-  Tooltip: SC,
-  Touch: RC,
-  Trashcan: AC,
-  UnattachedFieldError: bC,
-  VARIABLE_CATEGORY_NAME: OC,
-  VARIABLE_DYNAMIC_CATEGORY_NAME: yC,
-  VERSION: LC,
-  VariableMap: kC,
-  VariableModel: NC,
-  Variables: wC,
-  VariablesDynamic: MC,
-  VerticalFlyout: DC,
-  WidgetDiv: PC,
-  Workspace: BC,
-  WorkspaceAudio: xC,
-  WorkspaceCommentNavigationPolicy: FC,
-  WorkspaceDragger: UC,
-  WorkspaceNavigationPolicy: HC,
-  WorkspaceSvg: GC,
-  Xml: VC,
-  ZoomControls: WC,
-  blockAnimations: KC,
+  DELETE_VARIABLE_ID: oI,
+  DeleteArea: nI,
+  Direction: rI,
+  DragDisposition: lI,
+  DragTarget: aI,
+  DropDownDiv: hI,
+  Events: cI,
+  Extensions: uI,
+  Field: dI,
+  FieldCheckbox: gI,
+  FieldDropdown: pI,
+  FieldImage: _I,
+  FieldLabel: TI,
+  FieldLabelSerializable: EI,
+  FieldNavigationPolicy: fI,
+  FieldNumber: mI,
+  FieldTextInput: II,
+  FieldVariable: CI,
+  Flyout: vI,
+  FlyoutButton: SI,
+  FlyoutButtonNavigationPolicy: RI,
+  FlyoutItem: AI,
+  FlyoutMetricsManager: bI,
+  FlyoutNavigator: OI,
+  FlyoutSeparator: yI,
+  FlyoutSeparatorNavigationPolicy: LI,
+  FocusManager: kI,
+  FocusableTreeTraverser: NI,
+  Generator: wI,
+  Gesture: MI,
+  Grid: DI,
+  HorizontalFlyout: PI,
+  INPUT_VALUE: BI,
+  IconNavigationPolicy: xI,
+  Input: FI,
+  InsertionMarkerPreviewer: _T,
+  KeyboardMover: UI,
+  KeyboardNavigationController: HI,
+  LabelFlyoutInflater: GI,
+  Menu: VI,
+  MenuItem: WI,
+  MetricsManager: KI,
+  MoveIndicator: YI,
+  Msg: XI,
+  NEXT_STATEMENT: zI,
+  Names: jI,
+  NavigationDirection: $I,
+  Navigator: JI,
+  OPPOSITE_TYPE: qI,
+  OUTPUT_VALUE: ZI,
+  Options: QI,
+  PREVIOUS_STATEMENT: tC,
+  PROCEDURE_CATEGORY_NAME: eC,
+  Procedures: iC,
+  RENAME_VARIABLE_ID: sC,
+  RenderedConnection: oC,
+  Scrollbar: nC,
+  ScrollbarPair: rC,
+  SeparatorFlyoutInflater: lC,
+  ShortcutItems: aC,
+  ShortcutRegistry: hC,
+  TOOLBOX_AT_BOTTOM: cC,
+  TOOLBOX_AT_LEFT: uC,
+  TOOLBOX_AT_RIGHT: dC,
+  TOOLBOX_AT_TOP: gC,
+  Theme: pC,
+  ThemeManager: _C,
+  Themes: TC,
+  Toast: EC,
+  Toolbox: fC,
+  ToolboxCategory: mC,
+  ToolboxItem: IC,
+  ToolboxItemNavigationPolicy: CC,
+  ToolboxNavigator: vC,
+  ToolboxSeparator: SC,
+  Tooltip: RC,
+  Touch: AC,
+  Trashcan: bC,
+  UnattachedFieldError: OC,
+  VARIABLE_CATEGORY_NAME: yC,
+  VARIABLE_DYNAMIC_CATEGORY_NAME: LC,
+  VERSION: kC,
+  VariableMap: NC,
+  VariableModel: wC,
+  Variables: MC,
+  VariablesDynamic: DC,
+  VerticalFlyout: PC,
+  WidgetDiv: BC,
+  Workspace: xC,
+  WorkspaceAudio: FC,
+  WorkspaceCommentNavigationPolicy: UC,
+  WorkspaceDragger: HC,
+  WorkspaceNavigationPolicy: GC,
+  WorkspaceSvg: VC,
+  Xml: WC,
+  ZoomControls: KC,
+  blockAnimations: YC,
   blockRendering: re,
   browserEvents: ul,
-  bubbles: YC,
-  bumpObjects: XC,
-  clipboard: zC,
-  comments: jC,
-  common: $C,
-  config: JC,
-  constants: qC,
-  defineBlocksWithJsonArray: ZC,
-  dialog: QC,
-  dragging: tv,
-  fieldRegistry: ev,
-  geras: iv,
-  getFocusManager: sv,
-  getMainWorkspace: ov,
-  getSelected: nv,
-  hasBubble: rv,
-  hideChaff: lv,
-  icons: av,
-  inject: hv,
+  bubbles: XC,
+  bumpObjects: zC,
+  clipboard: jC,
+  comments: $C,
+  common: JC,
+  config: qC,
+  constants: ZC,
+  defineBlocksWithJsonArray: QC,
+  dialog: tv,
+  dragging: ev,
+  fieldRegistry: iv,
+  geras: sv,
+  getFocusManager: ov,
+  getMainWorkspace: nv,
+  getSelected: rv,
+  hasBubble: lv,
+  hideChaff: av,
+  icons: hv,
+  inject: cv,
   inputs: g_,
-  isBoundedElement: cv,
-  isCopyable: uv,
-  isDeletable: dv,
-  isDraggable: gv,
-  isIcon: pv,
-  isObservable: _v,
-  isPaster: Tv,
-  isRenderedElement: Ev,
-  isSelectable: fv,
-  isSerializable: mv,
-  isVariableBackedParameterModel: Iv,
-  keyboardNavigationController: Cv,
-  layers: vv,
-  navigateBlock: Sv,
-  procedures: Rv,
-  registry: Av,
-  renderManagement: _T,
-  serialization: bv,
-  setLocale: Ov,
-  setParentContainer: yv,
-  svgResize: Lv,
-  thrasos: kv,
-  uiPosition: Nv,
+  isBoundedElement: uv,
+  isCopyable: dv,
+  isDeletable: gv,
+  isDraggable: pv,
+  isIcon: _v,
+  isObservable: Tv,
+  isPaster: Ev,
+  isRenderedElement: fv,
+  isSelectable: mv,
+  isSerializable: Iv,
+  isVariableBackedParameterModel: Cv,
+  keyboardNavigationController: vv,
+  layers: Sv,
+  navigateBlock: Rv,
+  procedures: Av,
+  registry: bv,
+  renderManagement: TT,
+  serialization: Ov,
+  setLocale: yv,
+  setParentContainer: Lv,
+  svgResize: kv,
+  thrasos: Nv,
+  uiPosition: wv,
   utils: K,
   zelos: mn
-} = gT, bu = "blockly-dotted-outline-on-hover", Ou = "hover", Pu = class Pu extends mn.PathObject {
+} = pT, bu = "blockly-dotted-outline-on-hover", Ou = "hover", Pu = class Pu extends mn.PathObject {
   constructor() {
     super(...arguments), this.svgPathHighlighted = null, this.hasError = !1, this.hasDottedOutlineOnHover = !1, this.connectionPointIndicators = /* @__PURE__ */ new WeakMap();
   }
-  setPath(C) {
-    super.setPath(C), this.svgPathHighlighted && this.svgPathHighlighted.setAttribute("d", C);
+  setPath(I) {
+    super.setPath(I), this.svgPathHighlighted && this.svgPathHighlighted.setAttribute("d", I);
   }
-  updateHighlighted(C) {
-    if (C) {
+  updateHighlighted(I) {
+    if (I) {
       if (!this.svgPathHighlighted) {
         const n = this.constants, h = this.hasError ? n.errorOutlineFilterId : n.highlightOutlineFilterId;
         this.svgPathHighlighted = this.svgPath.cloneNode(!0), this.svgPathHighlighted.classList.add("pxtRendererHighlight"), this.svgPathHighlighted.setAttribute("fill", "none"), this.svgPathHighlighted.setAttribute(
@@ -18137,24 +18137,24 @@ const gT = /* @__PURE__ */ Mu(dT), {
     } else
       this.svgPathHighlighted && (this.svgRoot.removeChild(this.svgPathHighlighted), this.svgPathHighlighted = null);
   }
-  updateSelected(C) {
-    C && this.svgPath.classList.remove(Ou), super.updateSelected(C);
+  updateSelected(I) {
+    I && this.svgPath.classList.remove(Ou), super.updateSelected(I);
   }
-  addConnectionHighlight(C, n, h, P) {
-    const et = super.addConnectionHighlight(C, n, h, P);
+  addConnectionHighlight(I, n, h, M) {
+    const j = super.addConnectionHighlight(I, n, h, M);
     return this.staticConnectionIndicatorParentGroup ? this.svgRoot.appendChild(this.staticConnectionIndicatorParentGroup) : this.staticConnectionIndicatorParentGroup = K.dom.createSvgElement("g", {
       class: "blocklyConnectionIndicatorParent"
-    }, this.svgRoot), et;
+    }, this.svgRoot), j;
   }
-  removeConnectionHighlight(C) {
-    this.staticConnectionIndicatorParentGroup?.remove(), super.removeConnectionHighlight(C);
+  removeConnectionHighlight(I) {
+    this.staticConnectionIndicatorParentGroup?.remove(), super.removeConnectionHighlight(I);
   }
   // applyColour не переопределяем: контур вычисляет сам Zelos —
   // colourTertiary (blend('#000', primary, 0.25)), у shadow — tertiary родителя.
   // PXT-хаки (blend 0.6 к чёрному/белому, высветление shadow) на нашей палитре
   // давали «чёрную ручку» и светлое «гало» вместо тонального контура.
-  setHasDottedOutlineOnHover(C) {
-    this.hasDottedOutlineOnHover = C, C ? (this.svgPath.classList.add(bu), this.mouseOverData || (this.mouseOverData = ul.bind(
+  setHasDottedOutlineOnHover(I) {
+    this.hasDottedOutlineOnHover = I, I ? (this.svgPath.classList.add(bu), this.mouseOverData || (this.mouseOverData = ul.bind(
       this.svgRoot,
       "mouseover",
       this,
@@ -18170,8 +18170,8 @@ const gT = /* @__PURE__ */ Mu(dT), {
       }
     ))) : (this.svgPath.classList.remove(bu), this.mouseOverData && (ul.unbind(this.mouseOverData), ul.unbind(this.mouseLeaveData), this.mouseOverData = void 0, this.mouseLeaveData = void 0), this.svgPath.classList.remove(bu));
   }
-  setHasError(C) {
-    this.hasError = C;
+  setHasError(I) {
+    this.hasError = I;
   }
   isHighlighted() {
     return !!this.svgPathHighlighted;
@@ -18193,93 +18193,93 @@ f_.register(`
 }
 `);
 let Tl = /* @__PURE__ */ new Map();
-function wv(D) {
-  const C = JSON.parse(D);
-  Tl = new Map(C.types.map((n) => [n.name, n]));
+function Mv(k) {
+  const I = JSON.parse(k);
+  Tl = new Map(I.types.map((n) => [n.name, n]));
 }
-function TT(D) {
-  return Tl.get(D)?.shape;
+function ET(k) {
+  return Tl.get(k)?.shape;
 }
-function ET(D, C) {
-  if (D === C)
+function fT(k, I) {
+  if (k === I)
     return !0;
-  const n = Tl.get(D), h = Tl.get(C);
-  return !n && !h ? !1 : n?.compatibleWith.includes(C) === !0 || n?.compatibleWith.includes("*") === !0 || h?.compatibleWith.includes(D) === !0 || h?.compatibleWith.includes("*") === !0;
+  const n = Tl.get(k), h = Tl.get(I);
+  return !n && !h ? !1 : n?.compatibleWith.includes(I) === !0 || n?.compatibleWith.includes("*") === !0 || h?.compatibleWith.includes(k) === !0 || h?.compatibleWith.includes("*") === !0;
 }
 const El = class El extends mn.ConstantProvider {
   constructor() {
     super(...arguments), this.FIELD_TEXT_FONTFAMILY = '"Consolas", "Monaco", "Menlo", "Ubuntu Mono", "source-code-pro", monospace', this.FIELD_TEXT_FONTWEIGHT = "600", this.HIGHLIGHT_GLOW_COLOUR = "#FFF200", this.ERROR_HIGHLIGHT_GLOW_COLOR = "#FF0000", this.HIGHLIGHT_GLOW_SIZE = 1.1, this.ELLIPSES_RADIUS = 6, this.ELLIPSES_SPACING = 8, this.ellipses = this.makeEllipses();
   }
-  createDom(C, n, h) {
-    super.createDom(C, n, h);
-    const P = K.dom.createSvgElement(K.Svg.DEFS, {}, C);
-    this.highlightOutlineFilter = this.createHighlight(P, "blocklyHighlightedGlowFilter", this.HIGHLIGHT_GLOW_COLOUR), this.highlightOutlineFilterId = this.highlightOutlineFilter.id, this.errorOutlineFilter = this.createHighlight(P, "blocklyErrorHighlightedGlowFilter", this.ERROR_HIGHLIGHT_GLOW_COLOR), this.errorOutlineFilterId = this.errorOutlineFilter.id, this.embossFilterOverride = this.createOutline(P, "blocklyBubbleEmbossGlowFilter"), this.embossFilterId = this.embossFilterOverride.id;
+  createDom(I, n, h) {
+    super.createDom(I, n, h);
+    const M = K.dom.createSvgElement(K.Svg.DEFS, {}, I);
+    this.highlightOutlineFilter = this.createHighlight(M, "blocklyHighlightedGlowFilter", this.HIGHLIGHT_GLOW_COLOUR), this.highlightOutlineFilterId = this.highlightOutlineFilter.id, this.errorOutlineFilter = this.createHighlight(M, "blocklyErrorHighlightedGlowFilter", this.ERROR_HIGHLIGHT_GLOW_COLOR), this.errorOutlineFilterId = this.errorOutlineFilter.id, this.embossFilterOverride = this.createOutline(M, "blocklyBubbleEmbossGlowFilter"), this.embossFilterId = this.embossFilterOverride.id;
   }
   dispose() {
     super.dispose(), this.highlightOutlineFilter && K.dom.removeNode(this.highlightOutlineFilter);
   }
   makeEllipses() {
-    const C = this.ELLIPSES_RADIUS, n = this.ELLIPSES_SPACING;
+    const I = this.ELLIPSES_RADIUS, n = this.ELLIPSES_SPACING;
     let h = "";
-    for (let P = 0; P < 3; P++)
+    for (let M = 0; M < 3; M++)
       h += K.svgPaths.moveBy(n, 0) + K.svgPaths.arc(
         "a",
         "180 1,1",
-        C,
-        K.svgPaths.point(C * 2, 0)
+        I,
+        K.svgPaths.point(I * 2, 0)
       );
-    for (let P = 0; P < 3; P++)
+    for (let M = 0; M < 3; M++)
       h += K.svgPaths.arc(
         "a",
         "180 1,1",
-        C,
-        K.svgPaths.point(-C * 2, 0)
+        I,
+        K.svgPaths.point(-I * 2, 0)
       ) + K.svgPaths.moveBy(-n, 0);
     return h;
   }
-  getCSS_(C) {
-    return super.getCSS_(C).concat([
+  getCSS_(I) {
+    return super.getCSS_(I).concat([
       // Connection indicator.
-      C + " .blocklyConnectionIndicator, " + C + " .blocklyInputConnectionIndicator {",
+      I + " .blocklyConnectionIndicator, " + I + " .blocklyInputConnectionIndicator {",
       "fill: #ff0000;",
       "stroke: #ffff00;",
       "stroke-width: 3px;",
       "}",
-      C + " .blocklyConnectionIndicator {",
+      I + " .blocklyConnectionIndicator {",
       "display: none;",
       "}",
-      C + " .blocklyBlockDragSurface > g > .blocklyDraggable > .blocklyConnectionIndicator {",
+      I + " .blocklyBlockDragSurface > g > .blocklyDraggable > .blocklyConnectionIndicator {",
       "display: block;",
       "}",
-      C + " .blocklyConnectionLine {",
+      I + " .blocklyConnectionLine {",
       "stroke: #ffff00;",
       "stroke-width: 4px;",
       "}",
-      C + " .blocklyConnectionLine.hidden {",
+      I + " .blocklyConnectionLine.hidden {",
       "display: none;",
       "}",
       // Flyout heading.
-      C + " .blocklyFlyoutHeading .blocklyFlyoutLabelText {font-size: 1.5rem;",
+      I + " .blocklyFlyoutHeading .blocklyFlyoutLabelText {font-size: 1.5rem;",
       "}",
       // The rules below are all to work around a chrome bug where the browser isn't respecting
       // the user-select: none css style on blockly SVG text: https://github.com/microsoft/pxt-arcade/issues/6838
-      `${C} .blocklyText::selection {`,
+      `${I} .blocklyText::selection {`,
       "fill: #fff;",
       "}",
-      `${C} .blocklyNonEditableField>text::selection,`,
-      `${C} .blocklyEditableField>text::selection,`,
-      `${C} .blocklyNonEditableField>g>text::selection,`,
-      `${C} .blocklyEditableField>g>text::selection {`,
+      `${I} .blocklyNonEditableField>text::selection,`,
+      `${I} .blocklyEditableField>text::selection,`,
+      `${I} .blocklyNonEditableField>g>text::selection,`,
+      `${I} .blocklyEditableField>g>text::selection {`,
       "fill: #575E75;",
       "}",
       // Dropdown field.
-      `${C} .blocklyDropdownText::selection {`,
+      `${I} .blocklyDropdownText::selection {`,
       "fill: #fff !important;",
       "}"
     ]);
   }
-  createHighlight(C, n, h) {
-    const P = K.dom.createSvgElement(
+  createHighlight(I, n, h) {
+    const M = K.dom.createSvgElement(
       K.Svg.FILTER,
       {
         id: n + this.randomIdentifier,
@@ -18288,22 +18288,22 @@ const El = class El extends mn.ConstantProvider {
         y: "-30%",
         x: "-40%"
       },
-      C
+      I
     );
     K.dom.createSvgElement(
       K.Svg.FEGAUSSIANBLUR,
       { in: "SourceGraphic", stdDeviation: this.HIGHLIGHT_GLOW_SIZE },
-      P
+      M
     );
-    const et = K.dom.createSvgElement(
+    const j = K.dom.createSvgElement(
       K.Svg.FECOMPONENTTRANSFER,
       { result: "outBlur" },
-      P
+      M
     );
     return K.dom.createSvgElement(
       K.Svg.FEFUNCA,
       { type: "table", tableValues: "0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1" },
-      et
+      j
     ), K.dom.createSvgElement(
       K.Svg.FEFLOOD,
       {
@@ -18311,7 +18311,7 @@ const El = class El extends mn.ConstantProvider {
         "flood-opacity": 1,
         result: "outColor"
       },
-      P
+      M
     ), K.dom.createSvgElement(
       K.Svg.FECOMPOSITE,
       {
@@ -18320,10 +18320,10 @@ const El = class El extends mn.ConstantProvider {
         operator: "in",
         result: "outGlow"
       },
-      P
-    ), P;
+      M
+    ), M;
   }
-  createOutline(C, n) {
+  createOutline(I, n) {
     const h = K.dom.createSvgElement(
       K.Svg.FILTER,
       {
@@ -18333,14 +18333,14 @@ const El = class El extends mn.ConstantProvider {
         y: "-30%",
         x: "-40%"
       },
-      C
+      I
     );
     K.dom.createSvgElement(
       K.Svg.FEGAUSSIANBLUR,
       { in: "SourceGraphic", stdDeviation: 0.92 },
       h
     );
-    const P = K.dom.createSvgElement(
+    const M = K.dom.createSvgElement(
       K.Svg.FECOMPONENTTRANSFER,
       { result: "outBlur" },
       h
@@ -18348,7 +18348,7 @@ const El = class El extends mn.ConstantProvider {
     K.dom.createSvgElement(
       K.Svg.FEFUNCA,
       { type: "table", tableValues: "0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1" },
-      P
+      M
     ), K.dom.createSvgElement(
       K.Svg.FEFLOOD,
       {
@@ -18367,7 +18367,7 @@ const El = class El extends mn.ConstantProvider {
       },
       h
     );
-    const et = K.dom.createSvgElement(
+    const j = K.dom.createSvgElement(
       "feMerge",
       {},
       h
@@ -18377,34 +18377,34 @@ const El = class El extends mn.ConstantProvider {
       {
         in: "outBlur"
       },
-      et
+      j
     ), K.dom.createSvgElement(
       "feMergeNode",
       {
         in: "outGlow"
       },
-      et
+      j
     ), K.dom.createSvgElement(
       "feMergeNode",
       {
         in: "SourceGraphic"
       },
-      et
+      j
     ), h;
   }
-  shapeFor(C) {
-    let n = C.getCheck();
-    if (!n && C.targetConnection && (n = C.targetConnection.getCheck()), n)
+  shapeFor(I) {
+    let n = I.getCheck();
+    if (!n && I.targetConnection && (n = I.targetConnection.getCheck()), n)
       for (const h of n) {
-        const P = TT(h);
-        if (P === "hexagonal")
+        const M = ET(h);
+        if (M === "hexagonal")
           return this.HEXAGONAL;
-        if (P === "square")
+        if (M === "square")
           return this.SQUARED;
-        if (P === "rounded")
+        if (M === "rounded")
           return this.ROUNDED;
       }
-    switch (C.type) {
+    switch (I.type) {
       case Io.INPUT_VALUE:
       case Io.OUTPUT_VALUE:
         return n && n.includes("Boolean") ? this.HEXAGONAL : n && n.includes("Number") ? this.ROUNDED : n && n.includes("String") ? this.ROUNDED : this.ROUNDED;
@@ -18418,77 +18418,77 @@ const El = class El extends mn.ConstantProvider {
 };
 El.COLLAPSE_IMAGE_DATAURI = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg enable-background='new 0 0 24 24' version='1.1' viewBox='0 0 24 24' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%23CF8B17;%7D .st1%7Bfill:%23FFFFFF;%7D%0A%3C/style%3E%3Ctitle%3Erepeat%3C/title%3E%3Ccircle cx='12' cy='12' r='10.503' fill='none' stroke='%23fff' stroke-linecap='square' stroke-linejoin='round' stroke-width='2'/%3E%3Cg transform='matrix(.0086269 0 0 -.0086269 4.8224 17.354)'%3E%3Cpath d='m1611 367.42q0 53-37 90l-651 651q-38 38-91 38-54 0-90-38l-651-651q-38-36-38-90 0-53 38-91l74-75q39-37 91-37 53 0 90 37l486 486 486-486q37-37 90-37 52 0 91 37l75 75q37 39 37 91z' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E%0A", El.EXPAND_IMAGE_DATAURI = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg enable-background='new 0 0 24 24' version='1.1' viewBox='0 0 24 24' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%23CF8B17;%7D .st1%7Bfill:%23FFFFFF;%7D%0A%3C/style%3E%3Ctitle%3Erepeat%3C/title%3E%3Ccircle cx='12' cy='12' r='10.503' fill='none' stroke='%23fff' stroke-linecap='square' stroke-linejoin='round' stroke-width='2'/%3E%3Cg transform='matrix(.0086269 0 0 -.0086269 4.8224 17.654)'%3E%3Cpath d='m1611 832q0-53-37-90l-651-651q-38-38-91-38-54 0-90 38l-651 651q-38 36-38 90 0 53 38 91l74 75q39 37 91 37 53 0 90-37l486-486 486 486q37 37 90 37 52 0 91-37l75-75q37-39 37-91z' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E%0A";
 let Lu = El;
-class fT extends re.InputRow {
-  constructor(C) {
-    super(C), this.type |= re.Types.INPUT_ROW | re.Types.getType("COLLAPSED_INPUT_ROW");
+class mT extends re.InputRow {
+  constructor(I) {
+    super(I), this.type |= re.Types.INPUT_ROW | re.Types.getType("COLLAPSED_INPUT_ROW");
   }
   measure() {
     this.width = this.minWidth, this.height = this.constants_.EMPTY_STATEMENT_INPUT_HEIGHT;
   }
 }
-function ku(D) {
-  return !!(D.type & re.Types.getType("COLLAPSED_INPUT_ROW"));
+function ku(k) {
+  return !!(k.type & re.Types.getType("COLLAPSED_INPUT_ROW"));
 }
-class mT extends mn.RenderInfo {
+class IT extends mn.RenderInfo {
   measure() {
     if (this.block_)
-      for (const C of this.block_.inputList)
-        C.init();
+      for (const I of this.block_.inputList)
+        I.init();
     super.measure();
   }
   createRows_() {
     this.populateTopRow_(), this.rows.push(this.topRow);
-    let C = new re.InputRow(this.constants_);
-    this.inputRows.push(C);
+    let I = new re.InputRow(this.constants_);
+    this.inputRows.push(I);
     const n = this.block_.getIcons();
-    for (let P = 0, et; et = n[P]; P++) {
-      const Mt = new re.Icon(this.constants_, et);
-      (!this.isCollapsed || et.isShownWhenCollapsed()) && C.elements.push(Mt);
+    for (let M = 0, j; j = n[M]; M++) {
+      const Ct = new re.Icon(this.constants_, j);
+      (!this.isCollapsed || j.isShownWhenCollapsed()) && I.elements.push(Ct);
     }
     let h;
-    for (let P = 0, et; et = this.block_.inputList[P]; P++)
-      if (et.isVisible()) {
-        h && this.shouldStartNewRow_(et, h) && (this.rows.push(C), C = new re.InputRow(this.constants_), this.inputRows.push(C));
-        for (let Mt = 0, De; De = et.fieldRow[Mt]; Mt++)
-          C.elements.push(new re.Field(this.constants_, De, et));
-        this.addInput_(et, C), h = et;
+    for (let M = 0, j; j = this.block_.inputList[M]; M++)
+      if (j.isVisible()) {
+        h && this.shouldStartNewRow_(j, h) && (this.rows.push(I), I = new re.InputRow(this.constants_), this.inputRows.push(I));
+        for (let Ct = 0, De; De = j.fieldRow[Ct]; Ct++)
+          I.elements.push(new re.Field(this.constants_, De, j));
+        this.addInput_(j, I), h = j;
       }
-    this.isCollapsed && (this.block_.inputList.find(function(et) {
-      return et.type == g_.inputTypes.STATEMENT;
-    }) ? C = this.addCollapsedRow_(C) : (C.hasJaggedEdge = !0, C.elements.push(
+    this.isCollapsed && (this.block_.inputList.find(function(j) {
+      return j.type == g_.inputTypes.STATEMENT;
+    }) ? I = this.addCollapsedRow_(I) : (I.hasJaggedEdge = !0, I.elements.push(
       new re.JaggedEdge(this.constants_)
-    ))), (C.elements.length || C.hasDummyInput) && this.rows.push(C), this.populateBottomRow_(), this.rows.push(this.bottomRow);
+    ))), (I.elements.length || I.hasDummyInput) && this.rows.push(I), this.populateBottomRow_(), this.rows.push(this.bottomRow);
   }
   populateBottomRow_() {
-    this.bottomRow.hasNextConnection = !!this.block_.nextConnection, this.block_.inputList.length && this.block_.inputList[this.block_.inputList.length - 1] instanceof g_.StatementInput || this.rows.some((P) => ku(P)) ? this.bottomRow.minHeight = this.constants_.BOTTOM_ROW_AFTER_STATEMENT_MIN_HEIGHT : this.bottomRow.minHeight = this.constants_.BOTTOM_ROW_MIN_HEIGHT, this.bottomRow.hasLeftSquareCorner(this.block_) ? this.bottomRow.elements.push(new re.SquareCorner(this.constants_)) : this.bottomRow.elements.push(new re.RoundCorner(this.constants_)), this.bottomRow.hasNextConnection && (this.bottomRow.connection = new re.NextConnection(
+    this.bottomRow.hasNextConnection = !!this.block_.nextConnection, this.block_.inputList.length && this.block_.inputList[this.block_.inputList.length - 1] instanceof g_.StatementInput || this.rows.some((M) => ku(M)) ? this.bottomRow.minHeight = this.constants_.BOTTOM_ROW_AFTER_STATEMENT_MIN_HEIGHT : this.bottomRow.minHeight = this.constants_.BOTTOM_ROW_MIN_HEIGHT, this.bottomRow.hasLeftSquareCorner(this.block_) ? this.bottomRow.elements.push(new re.SquareCorner(this.constants_)) : this.bottomRow.elements.push(new re.RoundCorner(this.constants_)), this.bottomRow.hasNextConnection && (this.bottomRow.connection = new re.NextConnection(
       this.constants_,
       this.block_.nextConnection
     ), this.bottomRow.elements.push(this.bottomRow.connection)), this.bottomRow.hasRightSquareCorner(this.block_) ? this.bottomRow.elements.push(new re.SquareCorner(this.constants_, "right")) : this.bottomRow.elements.push(new re.RoundCorner(this.constants_, "right"));
   }
-  addCollapsedRow_(C) {
-    this.rows.push(C);
-    const n = new fT(this.constants_);
+  addCollapsedRow_(I) {
+    this.rows.push(I);
+    const n = new mT(this.constants_);
     return n.hasDummyInput = !0, n;
   }
 }
-class IT extends mn.Drawer {
-  drawCollapsedStack_(C) {
+class CT extends mn.Drawer {
+  drawCollapsedStack_(I) {
     const n = this.constants_.STATEMENT_INPUT_NOTCH_OFFSET + this.constants_.INSIDE_CORNERS.width, h = this.constants_.STATEMENT_INPUT_PADDING_LEFT + this.constants_.INSIDE_CORNERS.width * 2 + K.svgPaths.lineOnAxis(
       "h",
       -this.constants_.INSIDE_CORNERS.width
-    ) + this.constants_.INSIDE_CORNERS.pathTop, P = C.height - 2 * this.constants_.INSIDE_CORNERS.height, et = this.constants_.INSIDE_CORNERS.pathBottom + K.svgPaths.lineOnAxis(
+    ) + this.constants_.INSIDE_CORNERS.pathTop, M = I.height - 2 * this.constants_.INSIDE_CORNERS.height, j = this.constants_.INSIDE_CORNERS.pathBottom + K.svgPaths.lineOnAxis(
       "h",
       this.constants_.INSIDE_CORNERS.width
-    ), Mt = this.constants_.ellipses;
-    this.outlinePath_ += this.constants_.OUTSIDE_CORNERS.bottomRight + K.svgPaths.lineOnAxis("H", n) + h + K.svgPaths.lineOnAxis("v", P / 2) + Mt + K.svgPaths.lineOnAxis("v", P / 2) + et + K.svgPaths.lineOnAxis("H", C.xPos + C.width - this.constants_.OUTSIDE_CORNERS.rightHeight) + this.constants_.OUTSIDE_CORNERS.topRight;
+    ), Ct = this.constants_.ellipses;
+    this.outlinePath_ += this.constants_.OUTSIDE_CORNERS.bottomRight + K.svgPaths.lineOnAxis("H", n) + h + K.svgPaths.lineOnAxis("v", M / 2) + Ct + K.svgPaths.lineOnAxis("v", M / 2) + j + K.svgPaths.lineOnAxis("H", I.xPos + I.width - this.constants_.OUTSIDE_CORNERS.rightHeight) + this.constants_.OUTSIDE_CORNERS.topRight;
   }
   drawOutline_() {
     if (this.info_.outputConnection && this.info_.outputConnection.isDynamicShape && !this.info_.hasStatementInput && !this.info_.bottomRow.hasNextConnection)
       this.drawFlatTop_(), this.drawRightDynamicConnection_(), this.drawFlatBottom_(), this.drawLeftDynamicConnection_();
     else {
       this.drawTop_();
-      for (let C = 1; C < this.info_.rows.length - 1; C++) {
-        const n = this.info_.rows[C];
+      for (let I = 1; I < this.info_.rows.length - 1; I++) {
+        const n = this.info_.rows[I];
         n.hasJaggedEdge ? this.drawJaggedEdge_(n) : ku(n) ? this.drawCollapsedStack_(n) : n.hasStatement ? this.drawStatementInput_(n) : n.hasExternalInput ? this.drawValueInput_(n) : this.drawRightSideRow_(n);
       }
       this.drawBottom_(), this.drawLeft_();
@@ -18503,35 +18503,35 @@ class IT extends mn.Drawer {
     }
   }
 }
-class CT extends mn.Renderer {
-  makePathObject(C, n) {
-    return new yu(C, n, this.getConstants());
+class vT extends mn.Renderer {
+  makePathObject(I, n) {
+    return new yu(I, n, this.getConstants());
   }
   makeConstants_() {
     return new Lu();
   }
-  makeRenderInfo_(C) {
-    return new mT(this, C);
+  makeRenderInfo_(I) {
+    return new IT(this, I);
   }
-  makeDrawer_(C, n) {
-    return new IT(C, n);
+  makeDrawer_(I, n) {
+    return new CT(I, n);
   }
-  render(C) {
-    C.updateBeforeRender && C.updateBeforeRender(), super.render(C);
+  render(I) {
+    I.updateBeforeRender && I.updateBeforeRender(), super.render(I);
   }
 }
-re.register("pxt", CT);
-const fn = class fn extends pT {
+re.register("pxt", vT);
+const fn = class fn extends _T {
   constructor() {
     super(...arguments), this.connectionLine = null, this.draggedConnectionIndicator = null, this.staticConnection = null, this.staticConnectionIndicator = null;
   }
-  previewConnection(C, n) {
-    super.previewConnection(C, n), (n.type === Io.INPUT_VALUE || n.type === Io.OUTPUT_VALUE) && this.showDraggedIndicatorWithLine(C, n);
+  previewConnection(I, n) {
+    super.previewConnection(I, n), (n.type === Io.INPUT_VALUE || n.type === Io.OUTPUT_VALUE) && this.showDraggedIndicatorWithLine(I, n);
   }
-  previewReplacement(C, n, h) {
-    super.previewReplacement(C, n, h), this.showDraggedIndicatorWithLine(C, n);
+  previewReplacement(I, n, h) {
+    super.previewReplacement(I, n, h), this.showDraggedIndicatorWithLine(I, n);
   }
-  showDraggedIndicatorWithLine(C, n) {
+  showDraggedIndicatorWithLine(I, n) {
     if (!this.connectionLine) {
       this.connectionLine = K.dom.createSvgElement(
         "line",
@@ -18542,64 +18542,64 @@ const fn = class fn extends pT {
           x2: 0,
           y2: 0
         },
-        C.sourceBlock_.getSvgRoot()
-      ), this.draggedConnectionIndicator = this.createConnectionIndicator(C.sourceBlock_.getSvgRoot(), C);
+        I.sourceBlock_.getSvgRoot()
+      ), this.draggedConnectionIndicator = this.createConnectionIndicator(I.sourceBlock_.getSvgRoot(), I);
       const h = n.sourceBlock_.getSvgRoot().querySelector(":scope>.blocklyConnectionIndicatorParent");
       this.staticConnectionIndicator = this.createConnectionIndicator(h, n);
     }
-    this.raiseIndicators(), this.updateLineCoords(C, n), _T.finishQueuedRenders().then(() => {
-      this.connectionLine && (this.raiseIndicators(), this.updateLineCoords(C, n));
+    this.raiseIndicators(), this.updateLineCoords(I, n), TT.finishQueuedRenders().then(() => {
+      this.connectionLine && (this.raiseIndicators(), this.updateLineCoords(I, n));
     });
   }
   raiseIndicators() {
     this.draggedConnectionIndicator && this.draggedConnectionIndicator.parentElement?.appendChild(this.draggedConnectionIndicator);
-    const C = this.staticConnectionIndicator?.parentElement;
-    C && this.staticConnectionIndicator && (C.appendChild(this.staticConnectionIndicator), C.parentElement?.appendChild(C));
+    const I = this.staticConnectionIndicator?.parentElement;
+    I && this.staticConnectionIndicator && (I.appendChild(this.staticConnectionIndicator), I.parentElement?.appendChild(I));
   }
-  updateLineCoords(C, n) {
+  updateLineCoords(I, n) {
     if (!this.connectionLine || !this.draggedConnectionIndicator || !this.staticConnectionIndicator)
       return;
-    const h = fn.CONNECTION_INDICATOR_RADIUS, P = C.getOffsetInBlock(), et = n.getOffsetInBlock();
+    const h = fn.CONNECTION_INDICATOR_RADIUS, M = I.getOffsetInBlock(), j = n.getOffsetInBlock();
     this.draggedConnectionIndicator.setAttribute(
       "transform",
-      `translate(${P.x}, ${P.y})`
+      `translate(${M.x}, ${M.y})`
     ), this.staticConnectionIndicator.setAttribute(
       "transform",
-      `translate(${et.x}, ${et.y})`
+      `translate(${j.x}, ${j.y})`
     );
-    const Mt = K.Coordinate.sum(
-      C.sourceBlock_.getRelativeToSurfaceXY(),
-      P
+    const Ct = K.Coordinate.sum(
+      I.sourceBlock_.getRelativeToSurfaceXY(),
+      M
     ), De = K.Coordinate.sum(
       n.sourceBlock_.getRelativeToSurfaceXY(),
-      et
-    ), H = De.x - Mt.x, xt = De.y - Mt.y;
+      j
+    ), H = De.x - Ct.x, xt = De.y - Ct.y;
     if (Math.sqrt(H * H + xt * xt) < h * 2 + 1) {
       K.dom.addClass(this.connectionLine, "hidden");
       return;
     }
     K.dom.removeClass(this.connectionLine, "hidden");
     const Oe = Math.atan2(xt, H);
-    this.connectionLine.setAttribute("x1", String(P.x + Math.cos(Oe) * h)), this.connectionLine.setAttribute("y1", String(P.y + Math.sin(Oe) * h)), this.connectionLine.setAttribute("x2", String(P.x + H - Math.cos(Oe) * h)), this.connectionLine.setAttribute("y2", String(P.y + xt - Math.sin(Oe) * h));
+    this.connectionLine.setAttribute("x1", String(M.x + Math.cos(Oe) * h)), this.connectionLine.setAttribute("y1", String(M.y + Math.sin(Oe) * h)), this.connectionLine.setAttribute("x2", String(M.x + H - Math.cos(Oe) * h)), this.connectionLine.setAttribute("y2", String(M.y + xt - Math.sin(Oe) * h));
   }
   hidePreview() {
     super.hidePreview(), this.connectionLine?.remove(), this.draggedConnectionIndicator?.remove(), this.staticConnectionIndicator?.remove(), this.connectionLine = null, this.draggedConnectionIndicator = null, this.staticConnectionIndicator = null, this.staticConnection = null;
   }
-  createConnectionIndicator(C, n) {
+  createConnectionIndicator(I, n) {
     const h = K.dom.createSvgElement(
       "g",
       { class: "blocklyInputConnectionIndicator" },
-      C
+      I
     );
     K.dom.createSvgElement(
       "circle",
       { r: fn.CONNECTION_INDICATOR_RADIUS },
       h
     );
-    const P = n.getOffsetInBlock();
+    const M = n.getOffsetInBlock();
     return h.setAttribute(
       "transform",
-      "translate(" + P.x + "," + P.y + ")"
+      "translate(" + M.x + "," + M.y + ")"
     ), h;
   }
 };
@@ -18614,52 +18614,52 @@ f_.register(`
     fill: none;
 }
 `);
-class vT extends Z_ {
-  doTypeChecks(C, n) {
-    const h = C.getCheck(), P = n.getCheck();
-    if (!h || !P)
+class ST extends Z_ {
+  doTypeChecks(I, n) {
+    const h = I.getCheck(), M = n.getCheck();
+    if (!h || !M)
       return !0;
-    for (const et of h)
-      for (const Mt of P)
-        if (ET(et, Mt))
+    for (const j of h)
+      for (const Ct of M)
+        if (fT(j, Ct))
           return !0;
     return !1;
   }
 }
-h_.register(h_.Type.CONNECTION_CHECKER, "pxt", vT, !0);
-const ST = "data:image/svg+xml," + encodeURIComponent(
+h_.register(h_.Type.CONNECTION_CHECKER, "pxt", ST, !0);
+const RT = "data:image/svg+xml," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#8889dd"/><path d="M12 6v12M6 12h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>'
 ), m_ = "px_obj_value_", I_ = "px_obj_key_", __ = "px_obj_plus";
-function Nu(D, C) {
-  D.pxRowCounter++, D.appendValueInput(m_ + D.pxRowCounter).appendField("поле").appendField(new eT(C), I_ + D.pxRowCounter).appendField("значение");
+function Nu(k, I) {
+  k.pxRowCounter++, k.appendValueInput(m_ + k.pxRowCounter).appendField("поле").appendField(new iT(I), I_ + k.pxRowCounter).appendField("значение");
 }
-function RT(D) {
-  for (let C = D.pxRowCounter; C >= 1; C--)
-    D.removeInput(m_ + C, !0);
-  D.pxRowCounter = 0;
+function AT(k) {
+  for (let I = k.pxRowCounter; I >= 1; I--)
+    k.removeInput(m_ + I, !0);
+  k.pxRowCounter = 0;
 }
-function wu(D) {
-  D.removeInput(__, !0), D.appendDummyInput(__).appendField(new tT(ST, 20, 20, "добавить поле", AT));
+function wu(k) {
+  k.removeInput(__, !0), k.appendDummyInput(__).appendField(new eT(RT, 20, 20, "добавить поле", bT));
 }
-function AT(D) {
-  const C = D.getSourceBlock();
-  C.isInFlyout || (Nu(C, "поле" + (C.pxRowCounter + 1)), wu(C));
+function bT(k) {
+  const I = k.getSourceBlock();
+  I.isInFlyout || (Nu(I, "поле" + (I.pxRowCounter + 1)), wu(I));
 }
-Q_.registerMutator(
+tT.registerMutator(
   "px_object_builder",
   {
     saveExtraState() {
-      const D = [];
-      for (let C = 1; C <= this.pxRowCounter; C++) {
-        const n = this.getField(I_ + C);
-        D.push(n ? String(n.getValue()) : "");
+      const k = [];
+      for (let I = 1; I <= this.pxRowCounter; I++) {
+        const n = this.getField(I_ + I);
+        k.push(n ? String(n.getValue()) : "");
       }
-      return { keys: D };
+      return { keys: k };
     },
-    loadExtraState(D) {
-      RT(this);
-      for (const C of D.keys ?? [])
-        Nu(this, C);
+    loadExtraState(k) {
+      AT(this);
+      for (const I of k.keys ?? [])
+        Nu(this, I);
       wu(this);
     }
   },
@@ -18667,7 +18667,7 @@ Q_.registerMutator(
     this.pxRowCounter = 0, this.setInputsInline(!1), Nu(this, "поле1"), wu(this);
   }
 );
-const bT = {
+const OT = {
   renderer: "pxt",
   media: "_content/Mars.PxBlocks.Workspace/media/",
   grid: {
@@ -18695,59 +18695,86 @@ const bT = {
     connectionChecker: "pxt"
   }
 };
-function Mv(D, C, n) {
-  const h = C ? JSON.parse(C) : {}, P = n ? JSON.parse(n) : { kind: "categoryToolbox", contents: [] };
-  return oT(D, { ...bT, toolbox: P, ...h });
+function Dv(k, I, n) {
+  const h = I ? JSON.parse(I) : {}, M = n ? JSON.parse(n) : { kind: "categoryToolbox", contents: [] }, j = nT(k, { ...OT, toolbox: M, ...h }), Ct = j.getToolbox();
+  return Ct?.HtmlDiv && (Ct.HtmlDiv.style.display = "none"), j.resize(), j;
 }
-function Dv(D, C) {
-  D.updateToolbox(JSON.parse(C));
+function Pv(k, I) {
+  const n = k.getToolbox();
+  if (!n) return !1;
+  const h = n.getToolboxItems().find((M) => {
+    const j = M;
+    return typeof j.getName == "function" && j.getName() === I;
+  });
+  return h ? (n.getSelectedItem() === h && n.clearSelection(), n.setSelectedItem(h), !0) : !1;
 }
-function Pv(D) {
-  sT.defineBlocksWithJsonArray(JSON.parse(D));
+function Bv(k) {
+  return k.getToolbox()?.getFlyout()?.isVisible() ?? !1;
 }
-function Bv(D) {
-  return JSON.stringify(T_.workspaces.save(D));
+function xv(k) {
+  k.getToolbox()?.clearSelection();
 }
-function xv(D, C) {
-  T_.workspaces.load(JSON.parse(C), D);
+function Fv(k, I) {
+  k.updateToolbox(JSON.parse(I));
 }
-function Fv(D) {
-  D.clear();
+function Uv(k) {
+  oT.defineBlocksWithJsonArray(JSON.parse(k));
 }
-function Uv(D, C) {
-  D.undo(C);
+function Hv(k) {
+  return JSON.stringify(T_.workspaces.save(k));
 }
-function Hv(D, C) {
+function Gv(k, I) {
+  T_.workspaces.load(JSON.parse(I), k);
+}
+function Vv(k) {
+  k.clear();
+}
+function Wv(k, I) {
+  k.undo(I);
+}
+function Kv(k, I) {
   let n = [], h;
-  D.addChangeListener((P) => {
-    P.isUiEvent || (n.push(OT(P)), h === void 0 && (h = window.setTimeout(() => {
+  k.addChangeListener((M) => {
+    if (M.type === Q_.TOOLBOX_ITEM_SELECT) {
+      const j = M;
+      I.invokeMethodAsync("OnToolboxSelect", yT(k, j.newItem ?? null));
+    }
+    M.isUiEvent || (n.push(LT(M)), h === void 0 && (h = window.setTimeout(() => {
       h = void 0;
-      const et = n;
-      n = [], C.invokeMethodAsync("OnBlocklyEvents", JSON.stringify(et));
+      const j = n;
+      n = [], I.invokeMethodAsync("OnBlocklyEvents", JSON.stringify(j));
     }, 200)));
   });
 }
-function OT(D) {
-  const C = D, n = { type: D.type };
-  return C.blockId !== void 0 && (n.blockId = C.blockId), C.ids !== void 0 && (n.ids = C.ids), n;
+function yT(k, I) {
+  if (!I) return null;
+  const h = k.getToolbox()?.getToolboxItemById(I);
+  return h && typeof h.getName == "function" ? h.getName() : I;
 }
-function Gv(D) {
-  D.dispose();
+function LT(k) {
+  const I = k, n = { type: k.type };
+  return I.blockId !== void 0 && (n.blockId = I.blockId), I.ids !== void 0 && (n.ids = I.ids), n;
 }
-function Vv() {
-  return iT;
+function Yv(k) {
+  k.dispose();
+}
+function Xv() {
+  return sT;
 }
 export {
-  Fv as clearWorkspace,
-  Gv as disposeWorkspace,
-  Vv as getVersion,
-  Mv as injectWorkspace,
-  xv as loadWorkspace,
-  Pv as registerBlockDefinitions,
-  Hv as registerEvents,
-  Bv as saveWorkspace,
-  wv as setTypes,
-  Uv as undo,
-  Dv as updateToolbox
+  xv as clearToolboxSelection,
+  Vv as clearWorkspace,
+  Yv as disposeWorkspace,
+  Xv as getVersion,
+  Dv as injectWorkspace,
+  Bv as isFlyoutVisible,
+  Gv as loadWorkspace,
+  Uv as registerBlockDefinitions,
+  Kv as registerEvents,
+  Hv as saveWorkspace,
+  Pv as selectCategory,
+  Mv as setTypes,
+  Wv as undo,
+  Fv as updateToolbox
 };
 //# sourceMappingURL=PxBlocks.js.map

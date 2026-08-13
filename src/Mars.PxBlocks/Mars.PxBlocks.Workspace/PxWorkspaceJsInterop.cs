@@ -25,6 +25,24 @@ public class PxWorkspaceJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("updateToolbox", workspace, toolboxJson);
     }
 
+    public async ValueTask<bool> SelectCategory(IJSObjectReference workspace, string name)
+    {
+        var module = await _moduleTask.Value;
+        return await module.InvokeAsync<bool>("selectCategory", workspace, name);
+    }
+
+    public async ValueTask ClearToolboxSelection(IJSObjectReference workspace)
+    {
+        var module = await _moduleTask.Value;
+        await module.InvokeVoidAsync("clearToolboxSelection", workspace);
+    }
+
+    public async ValueTask<bool> IsFlyoutVisible(IJSObjectReference workspace)
+    {
+        var module = await _moduleTask.Value;
+        return await module.InvokeAsync<bool>("isFlyoutVisible", workspace);
+    }
+
     public async ValueTask SetTypes(string typesJson)
     {
         var module = await _moduleTask.Value;

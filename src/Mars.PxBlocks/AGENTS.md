@@ -38,8 +38,11 @@ PxBlocks — визуальный редактор блоков в духе Micr
 ### `src/Mars.PxBlocks/Mars.PxBlocks.Workspace` — RCL-редактор
 - `JsSrc/` — TypeScript, сборка Vite в `wwwroot/dist/PxBlocks.js` (ESM, коммитится вместе
   с `wwwroot/media/`; загрузка через `import("./_content/Mars.PxBlocks.Workspace/dist/PxBlocks.js")`):
-  - `index.ts` — `injectWorkspace`, `updateToolbox`, `setTypes`, `registerBlockDefinitions`,
-    `saveWorkspace`/`loadWorkspace`/`clearWorkspace`/`undo`, `registerEvents`;
+  - `index.ts` — `injectWorkspace` (прячет нативное меню категорий inline + resize),
+    `updateToolbox`, `selectCategory`/`clearToolboxSelection`/`isFlyoutVisible` (flyout
+    из Blazor-рейки), `setTypes`, `registerBlockDefinitions`,
+    `saveWorkspace`/`loadWorkspace`/`clearWorkspace`/`undo`, `registerEvents`
+    (синхронизирует выбор рейки событием `TOOLBOX_ITEM_SELECT`);
   - `renderer/` — порт рендерера «pxt» из PXT (`extends Blockly.zelos.*`, 9 файлов),
     `shapeFor()` дополнен чтением форм из реестра типов;
   - `connectionChecker.ts` — `PxConnectionChecker extends Blockly.ConnectionChecker`,
@@ -49,11 +52,20 @@ PxBlocks — визуальный редактор блоков в духе Micr
 - `PxBlocksWorkspace.razor` — **полотно**: inject, параметры `OptionsJson`/`Toolbox`/`Types`/
   `BlockDefinitions`, события `OnReady`/`OnWorkspaceChanged`, примитивы `SaveAsync`/`LoadAsync`/
   `ClearAsync`/`UndoAsync`/`RedoAsync`.
-- `PxBlocksEditor.razor` — **редактор** поверх полотна: тулбар Undo/Redo/Clear, автосейв в
-  localStorage (Blazored.LocalStorage, ключ — параметр `StorageKey`), дефолтная конфигурация
-  из `Defaults/` (`PxDefaultToolbox`, `PxDefaultBlocks`), если потребитель не передал свою.
-  Хост вставляет просто `<PxBlocksEditor />`.
+- `PxBlocksEditor.razor` — **редактор** поверх полотна: рейка + тулбар Undo/Redo/Clear,
+  автосейв в localStorage (Blazored.LocalStorage, ключ — параметр `StorageKey`), дефолтная
+  конфигурация из `Defaults/` (`PxDefaultToolbox`, `PxDefaultBlocks`), если потребитель
+  не передал свою. Хост вставляет `<PxBlocksEditor />` + link на pxblocks.css в head.
+- `PxToolboxRail.razor` — рейка категорий в стиле MakeCode: иконки (inline SVG), поиск
+  (дебаунс 250 мс, временная flyout-категория «Поиск»), экспандер Advanced; выбранная
+  категория заливается своим цветом; клик по выбранной закрывает flyout.
+- `wwwroot/pxblocks.css` — хром редактора: рейка, тёмный flyout, заголовки
+  (`blocklyFlyoutHeading`), скрытие нативного меню категорий (`display:none !important` —
+  `Toolbox.init()` ставит inline `display:block`). Подключается хостом link-ом в head
+  (стенд — `App.razor`), НЕ инъекцией из скрипта.
 - `PxWorkspaceJsInterop.cs` — ленивая загрузка ESM-модуля и вызовы JS.
+- `e2e/check.mjs` — headless-проверки стенда системным Edge (playwright, `channel: 'msedge'`):
+  замеры ширины svg/контейнеров + скриншоты (initial/category/resized).
 - npm-инфраструктура: `package.json` (blockly 13.1.1), `vite.config.js` (lib → ESM),
   `tsconfig.json`, `copy-media.mjs` (media blockly → wwwroot/media).
 
@@ -103,6 +115,10 @@ dotnet test tests/Test.Mars.PxBlocks
    ручку» и светлое «гало». Контур считаем как официальный Zelos: `colourTertiary` =
    `blend('#000', primary, 0.25)` (тональное затемнение с сохранением тона), у shadow —
    tertiary родителя. Любую цветовую логику из pxtblocks сверять с официальным blockly.
+9. CSS редактора (`pxblocks.css`) подключается хостом **link-ом в head** (стенд — `App.razor`),
+   не инъекцией из скрипта: поздняя загрузка CSS сдвигает лейаут после `Blockly.inject`,
+   и полотно остаётся неверной ширины до первого ресайза окна. Нативное меню категорий
+   прятать только с `!important` (Toolbox.init ставит inline `display:block`).
 
 ## Куда двигаться дальше
 

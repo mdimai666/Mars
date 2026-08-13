@@ -16,7 +16,11 @@ public class PxToolboxTests
                 {
                     Name = "Логика",
                     Colour = "#006C9E",
-                    Blocks = [new PxToolboxBlock { Type = "controls_if" }]
+                    Items =
+                    [
+                        new PxToolboxLabel { Text = "Логика", WebClass = "blocklyFlyoutHeading" },
+                        new PxToolboxBlock { Type = "controls_if" }
+                    ]
                 },
                 new PxToolboxSeparator { Colour = "#808080" },
                 new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Custom = "VARIABLE" }
@@ -36,8 +40,14 @@ public class PxToolboxTests
         Assert.Equal("#006C9E", (string)logic["colour"]!);
 
         var blocks = logic["contents"]!.AsArray();
-        Assert.Equal("block", (string)blocks[0]!["kind"]!);
-        Assert.Equal("controls_if", (string)blocks[0]!["type"]!);
+
+        var heading = blocks[0]!.AsObject();
+        Assert.Equal("label", (string)heading["kind"]!);
+        Assert.Equal("Логика", (string)heading["text"]!);
+        Assert.Equal("blocklyFlyoutHeading", (string)heading["web-class"]!);
+
+        Assert.Equal("block", (string)blocks[1]!["kind"]!);
+        Assert.Equal("controls_if", (string)blocks[1]!["type"]!);
 
         var sep = contents[1]!.AsObject();
         Assert.Equal("sep", (string)sep["kind"]!);

@@ -8,14 +8,21 @@
         <span style="flex:1"></span>
         <span style="font-size:12px; color:#888;">@_status</span>
     </div>
-    <div style="flex:1; min-height:0;">
-        <PxBlocksWorkspace @ref="_workspace"
-                           OptionsJson="@OptionsJson"
-                           Toolbox="EffectiveToolbox"
-                           Types="EffectiveTypes"
-                           BlockDefinitions="EffectiveDefinitions"
-                           OnReady="OnWorkspaceReady"
-                           OnWorkspaceChanged="OnWorkspaceChangedInternal" />
+    <div style="flex:1; min-height:0; display:flex;">
+        <PxToolboxRail Toolbox="EffectiveToolbox"
+                       Selected="_selectedCategory"
+                       OnCategorySelected="OnCategorySelectedAsync"
+                       OnSearch="OnSearchAsync" />
+        <div style="flex:1; min-width:0;">
+            <PxBlocksWorkspace @ref="_workspace"
+                               OptionsJson="@OptionsJson"
+                               Toolbox="EffectiveToolbox"
+                               Types="EffectiveTypes"
+                               BlockDefinitions="EffectiveDefinitions"
+                               OnReady="OnWorkspaceReady"
+                               OnWorkspaceChanged="OnWorkspaceChangedInternal"
+                               OnToolboxSelectionChanged="OnToolboxSelectionChanged" />
+        </div>
     </div>
 </div>
 
@@ -41,6 +48,9 @@
 
     private PxBlocksWorkspace? _workspace;
     private string _status = "";
+    private string? _selectedCategory;
+    private string? _lastCategory;
+    private bool _searchActive;
 
     private PxToolbox? _defaultToolbox;
     private PxTypeRegistry? _defaultTypes;
@@ -52,15 +62,98 @@
 
     private async Task OnWorkspaceReady()
     {
-        if (string.IsNullOrEmpty(StorageKey))
-            return;
+        if (!string.IsNullOrEmpty(StorageKey))
+        {
+            var json = await LocalStorage.GetItemAsStringAsync(StorageKey);
+            if (!string.IsNullOrEmpty(json))
+            {
+                await _workspace!.LoadAsync(json);
+                _status = "загружено из localStorage";
+            }
+        }
 
-        var json = await LocalStorage.GetItemAsStringAsync(StorageKey);
-        if (string.IsNullOrEmpty(json))
-            return;
+    }
 
-        await _workspace!.LoadAsync(json);
-        _status = "загружено из localStorage";
+    /// <summary>Blockly сам закрыл flyout/сбросил выбор (drag-out, клик мимо) — гасим подсветку рейки.</summary>
+    private async Task OnToolboxSelectionChanged(string? name)
+    {
+        if (name == SearchCategoryName)
+            name = null;
+        if (_selectedCategory == name)
+            return;
+        _selectedCategory = name;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnCategorySelectedAsync(string name)
+    {
+        if (_searchActive)
+        {
+            _searchActive = false;
+            await _workspace!.SetToolboxAsync(EffectiveToolbox);
+        }
+
+        // Тогл «закрыть flyout» — только если он реально открыт на этой категории:
+        // после drag-out Blockly закрывает flyout сам, и клик должен снова открыть.
+        if (_selectedCategory == name && await _workspace!.IsFlyoutVisibleAsync())
+        {
+            await _workspace!.ClearToolboxSelectionAsync();
+        }
+        else
+        {
+            _lastCategory = name;
+            await _workspace!.SelectCategoryAsync(name);
+        }
+    }
+
+    private const string SearchCategoryName = "Поиск";
+
+    private async Task OnSearchAsync(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            if (!_searchActive)
+                return;
+            _searchActive = false;
+            await _workspace!.SetToolboxAsync(EffectiveToolbox);
+            if (_lastCategory != null)
+                await _workspace!.SelectCategoryAsync(_lastCategory);
+            return;
+        }
+
+        _searchActive = true;
+        await _workspace!.SetToolboxAsync(BuildSearchToolbox(query));
+        await _workspace!.SelectCategoryAsync(SearchCategoryName);
+    }
+
+    /// <summary>Категория/блок совпадают с запросом — блоки попадают во flyout поиска.</summary>
+    private PxToolbox BuildSearchToolbox(string query)
+    {
+        var found = new List<PxToolboxItem>();
+        foreach (var category in EffectiveToolbox.Contents.OfType<PxToolboxCategory>())
+        {
+            var categoryMatch = category.Name.Contains(query, StringComparison.OrdinalIgnoreCase);
+            foreach (var block in category.Items.OfType<PxToolboxBlock>())
+            {
+                if (categoryMatch || block.Type.Contains(query, StringComparison.OrdinalIgnoreCase))
+                {
+                    found.Add(block);
+                    if (found.Count >= 50)
+                        break;
+                }
+            }
+        }
+
+        if (found.Count == 0)
+            found.Add(new PxToolboxLabel { Text = "Ничего не найдено" });
+
+        return new PxToolbox
+        {
+            Contents =
+            [
+                new PxToolboxCategory { Name = SearchCategoryName, Colour = "#575E75", Items = found }
+            ]
+        };
     }
 
     private async Task OnWorkspaceChangedInternal(IReadOnlyList<PxBlocklyEvent> events)

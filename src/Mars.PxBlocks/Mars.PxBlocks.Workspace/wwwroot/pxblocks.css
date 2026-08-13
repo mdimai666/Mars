@@ -1,0 +1,104 @@
+/* PxBlocks: хром редактора в стиле MakeCode. Подключается из PxBlocks.js (link#pxblocks-css). */
+
+/* Нативное меню категорий Blockly заменено Blazor-рейкой (PxToolboxRail).
+   !important обязателен: Toolbox.init() ставит inline style.display='block'. */
+.px-blocks-workspace .blocklyToolbox {
+    display: none !important;
+}
+
+/* Тёмный flyout по образцу theme/blockly-core.less (MakeCode). */
+path.blocklyFlyoutBackground {
+    fill: #51555e !important;
+    fill-opacity: 1 !important;
+}
+
+.blocklyFlyoutLabelText {
+    fill: #ffffff !important;
+    font-size: 1rem;
+}
+
+.blocklyFlyoutHeading .blocklyFlyoutLabelText {
+    font-size: 1.5rem;
+}
+
+line.blocklyFlyoutLine {
+    stroke: #ffffff;
+}
+
+/* Рейка категорий. */
+.pxb-rail {
+    width: 216px;
+    min-width: 216px;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    user-select: none;
+}
+
+.pxb-rail-search {
+    position: relative;
+    padding: 8px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.pxb-rail-search input {
+    width: 100%;
+    padding: 6px 8px 6px 30px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.pxb-rail-search svg {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    translate: 0 -50%;
+    width: 14px;
+    height: 14px;
+    color: #888888;
+}
+
+.pxb-rail-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+.pxb-rail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #333333;
+    cursor: pointer;
+    text-align: left;
+}
+
+.pxb-rail-item:hover {
+    background: #f2f2f2;
+}
+
+.pxb-rail-item.selected,
+.pxb-rail-item.selected:hover {
+    color: #ffffff;
+}
+
+.pxb-rail-item svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+}
+
+.pxb-rail-advanced .pxb-chev {
+    transition: transform .15s;
+}
+
+.pxb-rail-advanced .pxb-chev.open {
+    transform: rotate(90deg);
+}

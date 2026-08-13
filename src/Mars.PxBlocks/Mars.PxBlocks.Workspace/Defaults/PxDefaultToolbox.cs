@@ -11,24 +11,10 @@ public static class PxDefaultToolbox
         [
             new PxToolboxCategory
             {
-                Name = "Тест типов", Colour = "#607D8B",
-                Blocks =
+                Name = "Логика", Colour = "#006C9E", Icon = "logic",
+                Items =
                 [
-                    B("px_create_object"),
-                    B("px_demo_number"),
-                    B("px_demo_string"),
-                    B("px_demo_any"),
-                    B("px_demo_object"),
-                    B("px_demo_take_number"),
-                    B("px_demo_take_any"),
-                    B("px_demo_take_object")
-                ]
-            },
-            new PxToolboxCategory
-            {
-                Name = "Логика", Colour = "#006C9E",
-                Blocks =
-                [
+                    H("Логика"),
                     B("controls_if"),
                     B("controls_if_else"),
                     B("logic_compare"),
@@ -41,9 +27,10 @@ public static class PxDefaultToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Циклы", Colour = "#107C10",
-                Blocks =
+                Name = "Циклы", Colour = "#107C10", Icon = "loops",
+                Items =
                 [
+                    H("Циклы"),
                     B("controls_repeat_ext"),
                     B("controls_whileUntil"),
                     B("controls_for"),
@@ -53,9 +40,10 @@ public static class PxDefaultToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Математика", Colour = "#712672",
-                Blocks =
+                Name = "Математика", Colour = "#712672", Icon = "math",
+                Items =
                 [
+                    H("Математика"),
                     B("math_number"),
                     B("math_arithmetic"),
                     B("math_single"),
@@ -70,9 +58,10 @@ public static class PxDefaultToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Текст", Colour = "#996600",
-                Blocks =
+                Name = "Текст", Colour = "#996600", Icon = "text",
+                Items =
                 [
+                    H("Текст"),
                     B("text"),
                     B("text_join"),
                     B("text_append"),
@@ -87,9 +76,10 @@ public static class PxDefaultToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Массивы", Colour = "#5C2D91",
-                Blocks =
+                Name = "Массивы", Colour = "#5C2D91", Icon = "arrays",
+                Items =
                 [
+                    H("Массивы"),
                     B("lists_create_with"),
                     B("lists_repeat"),
                     B("lists_length"),
@@ -103,10 +93,29 @@ public static class PxDefaultToolbox
                 ]
             },
             new PxToolboxSeparator(),
-            new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Custom = "VARIABLE" },
-            new PxToolboxCategory { Name = "Функции", Colour = "#7B2FBE", Custom = "PROCEDURE" }
+            new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Icon = "variables", Custom = "VARIABLE" },
+            new PxToolboxCategory { Name = "Функции", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" },
+            new PxToolboxCategory
+            {
+                Name = "Тест типов", Colour = "#607D8B", Icon = "flask", Advanced = true,
+                Items =
+                [
+                    H("Тест типов"),
+                    B("px_create_object"),
+                    B("px_demo_number"),
+                    B("px_demo_string"),
+                    B("px_demo_any"),
+                    B("px_demo_object"),
+                    B("px_demo_take_number"),
+                    B("px_demo_take_any"),
+                    B("px_demo_take_object")
+                ]
+            }
         ]
     };
 
     private static PxToolboxBlock B(string type) => new() { Type = type };
+
+    /// <summary>Заголовок раздела во flyout, как в MakeCode.</summary>
+    private static PxToolboxLabel H(string text) => new() { Text = text, WebClass = "blocklyFlyoutHeading" };
 }

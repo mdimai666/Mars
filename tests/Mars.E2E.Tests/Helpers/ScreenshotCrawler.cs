@@ -20,7 +20,7 @@ public sealed class ScreenshotCrawler
         IEnumerable<Viewport> viewports,
         string outputDir)
     {
-        if (Directory.Exists(outputDir)) Directory.Delete(outputDir);
+        if (Directory.Exists(outputDir)) Directory.Delete(outputDir, recursive: true);
         Directory.CreateDirectory(outputDir);
 
         foreach (var viewport in viewports)

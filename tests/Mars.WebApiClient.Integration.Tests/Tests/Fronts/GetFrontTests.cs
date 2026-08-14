@@ -10,7 +10,7 @@ public class GetFrontTests : BaseWebApiClientTests
 {
     public GetFrontTests(ApplicationFixture appFixture) : base(appFixture)
     {
-
+        TestFrontHelper.EnsureFront(AppFixture.ServiceProvider);
     }
 
     private async Task ActionShouldNotThrown<T>(Func<IMarsWebApiClient, Task<T>> action)

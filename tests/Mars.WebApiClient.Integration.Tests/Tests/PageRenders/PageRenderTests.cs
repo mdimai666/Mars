@@ -1,9 +1,14 @@
+using AutoFixture;
 using Mars.Controllers;
+using Mars.Host.Data.Entities;
+using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Services;
+using Mars.Shared.Contracts.PostTypes;
+using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +18,8 @@ public class PageRenderTests : BaseWebApiClientTests
 {
     public PageRenderTests(ApplicationFixture appFixture) : base(appFixture)
     {
-
+        _fixture.Customize(new FixtureCustomize());
+        TestFrontHelper.EnsureFront(AppFixture.ServiceProvider);
     }
 
     private async Task<PostSummary> GetPostFirstByType(string type)
@@ -63,10 +69,24 @@ public class PageRenderTests : BaseWebApiClientTests
     public async Task RenderPageBySlug_Request_Success()
     {
         //Arrange
-        _ = nameof(PageRenderController.RenderById);
+        _ = nameof(PageRenderController.RenderPageBySlug);
         _ = nameof(PageRenderService.RenderPageBySlug);
         var client = GetWebApiClient();
-        var post = await GetPostFirstByType("page");
+
+        // тип "page" больше не создаётся в сиде — готовим данные сами
+        var ef = AppFixture.MarsDbContext();
+        var pageType = _fixture.Create<PostTypeEntity>();
+        pageType.TypeName = "page";
+        pageType.PostStatusList = PostStatusEntity.DefaultStatuses();
+        pageType.EnabledFeatures = [PostTypeConstants.Features.Content];
+        ef.PostTypes.Add(pageType);
+
+        var post = _fixture.Create<PostEntity>();
+        post.PostTypeId = pageType.Id;
+        post.Status = "";
+        ef.Posts.Add(post);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
 
         //Act
         var result = await client.PageRender.Render(post.Slug);
@@ -92,6 +112,7 @@ public class PageRenderTests : BaseWebApiClientTests
         //Assert
         result.Should().NotBeNull();
         result.Ok.Should().BeTrue();
+        result.Data.Should().NotBeNull();
     }
 
 }

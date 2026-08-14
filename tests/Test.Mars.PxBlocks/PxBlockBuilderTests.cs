@@ -142,6 +142,23 @@ public class PxBlockBuilderTests
     }
 
     [Fact]
+    public void Fluent_Hat_AddsPxHatExtension()
+    {
+        PxBlockDefinition def = PxMaster.Define("demo_event")
+            .NoPrevious().NoNext().Hat()
+            .Message("старт")
+            .Message("%1", PxMaster.Do("DO"));
+
+        var node = JsonNode.Parse(def.ToJson())!.AsObject();
+
+        // style.hat не используем: jsonInit Blockly обнуляет style в общем определении,
+        // и шапка доставалась бы только первому экземпляру блока.
+        Assert.False(node.ContainsKey("style"));
+        var extensions = node["extensions"]!.AsArray();
+        Assert.Contains(extensions, e => (string?)e == "px_hat_cap");
+    }
+
+    [Fact]
     public void PxBlockSet_EnumeratesDeclaredBlocks()
     {
         var set = new DemoSet();

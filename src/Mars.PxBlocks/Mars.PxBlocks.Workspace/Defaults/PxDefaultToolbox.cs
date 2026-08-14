@@ -11,6 +11,16 @@ public static class PxDefaultToolbox
         [
             new PxToolboxCategory
             {
+                Name = "Основное", Colour = "#00838F", Icon = "basic",
+                Items =
+                [
+                    H("Основное"),
+                    B("px_start"),
+                    B("px_loop")
+                ]
+            },
+            new PxToolboxCategory
+            {
                 Name = "Логика", Colour = "#006C9E", Icon = "logic",
                 Items =
                 [

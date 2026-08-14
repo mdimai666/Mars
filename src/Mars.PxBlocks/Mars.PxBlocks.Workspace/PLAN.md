@@ -1,7 +1,7 @@
 # PxBlocks — план: аналог PXT (Blockly) на Blazor
 
-Миссия: редактор блоков как в MakeCode/PXT. Сейчас — **только редактор**.
-Без симулятора и без кодогенерации (выполнение блоков — декларативное, в .NET, позже).
+Миссия: редактор блоков как в MakeCode/PXT. Этапы 0–6 — редактор (готов).
+Без симулятора и без кодогенерации; исполнение блоков — декларативное в .NET (Этап 7).
 
 ## Архитектура: гибрид — официальный Blockly + перенос слоя PXT
 
@@ -46,12 +46,21 @@
   (паттерн стандартных mutators Blockly).
 - Rich field editor: клик по полю → форма-оверлей (Blazor-компонент).
 
-### Будущее (вне текущего скоупа — «пока чисто редактор»)
-- Декларативная модель по образцу Mars.Nodes: определения блоков — fluent-API
-  `PxMaster.Define`/`PxBlockSet` (классы — только для динамических); исполнение — отдельно,
-  по TypeId (`IPxBlockImplement`, аналог `INodeImplement<TNode>`), регистрируется
-  локатором в другой сборке (`NodesLocator` → `PxBlocksLocator`).
-- Интерпретатор в .NET: workspace JSON → C#-AST → исполнение. Без кодогенерации.
+### Исполнение блоков — решение «вариант C» (2026-08-14), план — Этап 7
+- **Tree-walking интерпретатор в .NET.** workspace JSON → AST → `PxInterpreter`.
+  Без кодогенерации и Roslyn: песочница «по построению» (бек исполняет пользовательские
+  программы), лимиты шагов, ошибки/подсветка маппятся на blockId, исполнимо и в WASM.
+- Отвергнуты: кодоген + Roslyn (песочница на сервере, нет в WASM, маппинг ошибок на
+  блоки); «`BlockImplement` на каждый блок» (control flow размазывается по плагинам,
+  теряются единые гарантии скоупов/break/short-circuit); Jint + JS-кодоген Blockly
+  (чужая JS-семантика, конфликт с решением «декларативное исполнение в .NET»).
+- **Control flow — в ядре интерпретатора, не плагинится**: последовательности, if/else,
+  циклы, break/continue, процедуры, `variables_get/set`, short-circuit `logic_operation`.
+- **Листья — `IPxBlockImplement` по TypeId** (аналог `INodeImplement<TNode>`),
+  регистрация локатором `RegisterAssembly` (по образцу `NodesLocator`), имплементации
+  в отдельных сборках.
+- Все шаги `ValueTask` (задел на паузы/сенсоры); события исполнения с blockId
+  (задел на подсветку исполняемого блока и отладчик).
 
 ## Структура проекта (по образцу Mars.Nodes.Workspace + EditorJsBlazored)
 
@@ -61,6 +70,7 @@ src/Mars.PxBlocks/
 │  ├─ Toolbox/                    # PxToolboxCategory, элементы toolbox
 │  ├─ Types/                      # PxType — реестр типов и правил стыковки
 │  └─ Serialization/              # PxWorkspaceState ⇄ Blockly JSON
+├─ Mars.PxBlocks.Runtime/         # исполнение: AST + интерпретатор (Этап 7)
 └─ Mars.PxBlocks.Workspace/       # RCL-редактор
    ├─ JsSrc/                      # TypeScript-исходники (наши + портированные из pxtblocks)
    │  ├─ index.ts                 # export initWorkspace / api
@@ -93,7 +103,7 @@ devstands/StandPxBlocksApp/       # уже есть — стенд для про
 - Загрузка ленивая (при открытии редактора) — страницы Mars не утяжеляет.
 - Лицензия Blockly Apache-2.0 — совместима (атрибуция).
 
-## Этапы (только редактор)
+## Этапы
 
 ### Этап 0 — Фундамент ✅
 `package.json` (blockly@13.1.1) + `vite.config.js` + `tsconfig`; `Blockly.inject`
@@ -159,6 +169,88 @@ fluent-API `PxMaster.Define("id")…` (аналог аннотаций на фу
 (совпадение по имени категории или типу блока). Клик по выбранной категории
 закрывает flyout. Категории: `Blocks` → `Items` (блоки + метки), `Icon`/`Advanced`.
 
+### Этап 7 — Исполнение блоков в .NET (AST + интерпретатор) ✅
+Решение «вариант C» (2026-08-14): tree-walking интерпретатор; control flow в ядре;
+листья — плагинные имплементации. Без кодогенерации и симулятора.
+
+Новая сборка `src/Mars.PxBlocks/Mars.PxBlocks.Runtime` — чистый .NET без JS:
+исполним и in-process (стенд/WASM), и на серверном беке.
+
+```
+Mars.PxBlocks.Runtime/
+├─ Values/       # PxValue: Number/Boolean/String/Object/List — зеркало PxTypeRegistry
+├─ Ast/          # PxProgram, PxStatement*, PxExpression*; у каждого узла BlockId
+├─ Parsing/      # PxParser: PxWorkspaceState.BlocksJson → AST
+├─ Execution/    # PxInterpreter (ядро), PxContext (скоупы, вывод, события, лимиты),
+│                # IPxBlockImplement, локатор имплементаций
+└─ Standard/     # имплементации стандартных блоков-листьев
+```
+
+Шаги:
+1. **Каркас Runtime.** `PxValue` (+приведения по правилам `PxTypeRegistry`);
+   `PxContext` — скоупы переменных, поток вывода, события, `CancellationToken`,
+   лимит шагов (защита от бесконечных циклов).
+2. **AST + `PxParser`.** Blockly JSON → `PxProgram`; каждый узел несёт `id` блока;
+   неизвестный тип блока/входа → ошибка парсинга с blockId. Верхний уровень — стеки
+   statement-блоков (позже: блоки-события «when …» как в MakeCode).
+3. **Ядро `PxInterpreter`** (control flow, не плагинится): последовательное исполнение;
+   `controls_if` (включая else-if/else); `controls_repeat_ext`, `controls_whileUntil`,
+   `controls_for`, `controls_forEach`; break/continue (`controls_flow_statements`);
+   процедуры — `procedures_defnoreturn/defreturn`, `procedures_callnoreturn/callreturn`,
+   `procedures_ifreturn`: аргументы, локальные переменные, рекурсия; `variables_get/set`;
+   short-circuit `logic_operation`. Ошибки исполнения — с blockId.
+4. **`IPxBlockImplement` + локатор.** `Evaluate(ctx, args) → ValueTask<PxValue>`
+   для output-блоков, `ExecuteAsync(ctx, args)` для statement-блоков; аргументы
+   приходят уже вычисленными (кроме короткого замыкания — оно в ядре). Регистрация
+   `RegisterAssembly` (паттерн `NodesLocator`). Стандартные листья: литералы
+   `math_number`/`text`/`logic_boolean`, `math_arithmetic`, `math_number_property`,
+   `logic_compare`, `logic_negate`, `text_join`, `text_length`, `text_print`.
+5. **Тесты** (Test.Mars.PxBlocks): фикстуры Blockly JSON → AST; семантика control flow
+   (вложенные if, границы циклов, break из вложенного, скоупы функций, рекурсия,
+   short-circuit); лимит шагов; неизвестный блок; ошибки с blockId.
+6. **Стенд.** Кнопка «Run» в тулбаре `PxBlocksEditor` — исполнение in-process; панель
+   вывода (`text_print`); подсветка исполняемого блока — interop `highlightBlock(id)`
+   (CSS-класс на SVG-группе блока) по событиям ядра.
+
+Дальше (вне этапов): доменные пакеты блоков со своими `IPxBlockImplement` в отдельных
+сборках; серверный бек — тот же Runtime + стриминг событий (SignalR); паузы («ждать
+N мс», сенсоры) на async-каркасе.
+
+Реализовано: `Mars.PxBlocks.Runtime` (Values/Ast/Parsing/Execution/Standard; чистый
+.NET — собрался и в стенде-WASM): `PxValue`-иерархия (Number/Boolean/String/Object/
+List/Null), `PxParser` (форматы сверены с blockly 13.1.1: extraState `controls_if`/
+`procedures_*`/`text_join`, поля-переменные `{"id"}`, тени как дефолты сокетов,
+`disabledReasons`), ядро `PxInterpreter` (if/else-if/else, repeat/while/for/forEach,
+break/continue, процедуры с параметрами и рекурсией, скоупы, short-circuit, лимит
+шагов, события BlockEntered/Exited/Output с blockId), локатор `IPxBlockImplement`
++ стандартные листья (литералы, арифметика/тригонометрия/свойства чисел, сравнение,
+текстовые блоки, `text_print`), тесты 49 шт. (парсер/семантика/лимиты/short-circuit/
+события). Стенд: кнопки Run/Stop, панель вывода, подсветка бегущего блока
+(interop `setBlockHighlight`), ошибка подсвечивает виновный блок; демо-имплементации
+`PxDemoBlockImplements` в Workspace. Ограничение v1: `lists_*` не поддерживаются
+(неизвестный блок → ошибка с id), блоки «when …»-событий — позже.
+
+Дополнение (2026-08-15): событийные блоки **Start/Loop — аналог Arduino setup()/loop()**.
+`px_start`/`px_loop` — хат-блоки без prev/next (`PxBlockDefinition.Hat` → `style.hat`
+в Blockly JSON, шапку рисует zelos-ядро), парсер сводит их в `PxEventBlock`
+(`PxEvents.Start`/`PxEvents.Loop`). Семантика: обычные стеки и события Start идут
+в порядке workspace, события Loop — после всех и повторяются (выход — break или Stop).
+Режимы запуска `PxBlocksEditor`: `RunMode=AllTopLevel` (по умолчанию — как раньше)
+и `RunMode=Events` + `RunEventNames` (массив имён; в рантайме — `PxRunOptions.EventNames`).
+В режиме Events запуск идёт **фазами в порядке списка**: сначала ВСЕ события с первым
+именем (в порядке workspace), затем со вторым и т.д. — при `["start","loop"]` Loop
+гарантированно после Start независимо от раскладки на полотне. В режиме по умолчанию
+Loop тоже всегда после всех (включая Start). В редакторе лимит шагов снят (`StepLimit=0` —
+бесконечный loop живёт до Stop), вывод ограничен 1000 строк. Тулбокс: категория
+«Основное» (иконка-флаг в рейке). Тесты — 58 шт.
+
+Фикс шапки (2026-08-15): `jsonInit` Blockly читает `style.hat` один раз и обнуляет
+`style` прямо в общем JSON определения — шапка оставалась только у первого созданного
+экземпляра блока (flyout → перетаскивание → flyout теряли шапку). Теперь шапка ставится
+расширением `px_hat_cap` (`JsSrc/extensions/hat.ts`, вызывается при каждом создании
+блока); `PxBlockDefinition.Hat` генерирует `extensions: ["px_hat_cap"]` вместо `style`.
+Тестов — 59.
+
 ## Что делаем со старым кодом
 - **Удаляем** (свой рендеринг, заменён Blockly): PxWorkspace.razor, PxBlockComponent.razor,
   PxBlockSvgHelper.cs, PxToolbox.razor, pxWorkspaceJs.js, PxBlock.cs, PxField.cs, PxInput.cs.
@@ -173,3 +265,5 @@ fluent-API `PxMaster.Define("id")…` (аналог аннотаций на фу
 - Точки сцепления с внутренностями Blockly: checker, shapeFor, свои поля/мутаторы —
   держим в отдельных модулях JsSrc, чтобы переживать апгрейды Blockly.
 - Поток событий на больших схемах — пакетирование закладываем сразу (Этап 3).
+- Контракт парсера (Этап 7) — Blockly JSON версии blockly 13.1.1, включая extraState
+  мутаторов: фиксируем фикстурами в тестах, чтобы переживать апгрейды Blockly.

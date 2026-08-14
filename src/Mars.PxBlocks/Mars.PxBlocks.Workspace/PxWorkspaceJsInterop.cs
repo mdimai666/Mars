@@ -85,6 +85,12 @@ public class PxWorkspaceJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("centerContent", workspace);
     }
 
+    public async ValueTask SetBlockHighlight(IJSObjectReference workspace, string id, bool on)
+    {
+        var module = await _moduleTask.Value;
+        await module.InvokeVoidAsync("setBlockHighlight", workspace, id, on);
+    }
+
     public async ValueTask RegisterEvents(IJSObjectReference workspace, DotNetObjectReference<PxBlocksWorkspace> reference)
     {
         var module = await _moduleTask.Value;

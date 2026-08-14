@@ -51,6 +51,47 @@ line.blocklyFlyoutLine {
     color: #8c4f4f;
 }
 
+.pxb-tool-btn--run {
+    color: #107c10;
+}
+
+.pxb-tool-btn--run:hover {
+    background: #edf7ed;
+    color: #0c5a0c;
+}
+
+.pxb-tool-btn:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.pxb-tool-btn:disabled:hover {
+    background: transparent;
+}
+
+.pxb-toolbar-sep {
+    width: 1px;
+    height: 18px;
+    background: #dddddd;
+    margin: 0 4px;
+}
+
+/* Панель вывода исполнения (text_print, ошибки). */
+.px-blocks-output {
+    max-height: 180px;
+    overflow-y: auto;
+    border-top: 1px solid #dddddd;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font: 12px/1.6 Consolas, 'Courier New', monospace;
+    padding: 6px 12px;
+    white-space: pre-wrap;
+}
+
+.px-blocks-output-error {
+    color: #ff7b72;
+}
+
 /* Рейка категорий. */
 .pxb-rail {
     width: 216px;

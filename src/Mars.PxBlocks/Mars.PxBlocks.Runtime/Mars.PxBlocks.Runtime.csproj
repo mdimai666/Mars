@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!--Project-->
+
+        <!--Author-->
+        <PackageId>mdimai666.Mars.PxBlocks.Runtime</PackageId>
+        <PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Product>Mars.PxBlocks.Runtime</Product>
+        <PackageTags>Mars;PxBlocks;</PackageTags>
+        <Description>
+            PxBlock — это Programming x Block: среда, где код собирается как конструктор.
+            Runtime: AST и tree-walking интерпретатор исполнения блоков в .NET (без кодогенерации).
+        </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    </ItemGroup>
+
+</Project>

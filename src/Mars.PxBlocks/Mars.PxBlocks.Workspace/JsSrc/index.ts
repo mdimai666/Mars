@@ -3,6 +3,7 @@ import 'blockly/blocks';
 import './renderer';
 import './connectionChecker';
 import './extensions/objectBuilder';
+import './extensions/hat';
 
 export { setTypes } from './types';
 
@@ -112,6 +113,11 @@ export function undo(workspace: Blockly.WorkspaceSvg, redo: boolean): void {
 // Центрируем содержимое в видимой области без изменения масштаба.
 export function centerContent(workspace: Blockly.WorkspaceSvg): void {
     workspace.scrollCenter();
+}
+
+// Подсветка исполняемого блока (события PxInterpreter → interop).
+export function setBlockHighlight(workspace: Blockly.WorkspaceSvg, id: string, on: boolean): void {
+    workspace.getBlockById(id)?.setHighlighted(on);
 }
 
 interface DotNetRef {

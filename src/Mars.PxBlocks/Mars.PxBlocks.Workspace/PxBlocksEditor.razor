@@ -6,6 +6,9 @@
         <button class="pxb-tool-btn" @onclick="Redo" title="Ctrl+Y">↷ Redo</button>
         <button class="pxb-tool-btn pxb-tool-btn--danger" @onclick="Clear">🗑 Clear</button>
         <button class="pxb-tool-btn" @onclick="Center" title="Центрировать блоки">⌖ Center</button>
+        <span class="pxb-toolbar-sep"></span>
+        <button class="pxb-tool-btn pxb-tool-btn--run" @onclick="Run" disabled="@_running" title="Исполнить программу">▶ Run</button>
+        <button class="pxb-tool-btn pxb-tool-btn--danger" @onclick="Stop" disabled="@(!_running)" title="Остановить">⏹ Stop</button>
         <span style="flex:1"></span>
         <span style="font-size:12px; color:#888;">@_status</span>
     </div>
@@ -25,6 +28,19 @@
                                OnToolboxSelectionChanged="OnToolboxSelectionChanged" />
         </div>
     </div>
+    @if (_outputLines.Count > 0 || _runError != null)
+    {
+        <div class="px-blocks-output">
+            @if (_runError != null)
+            {
+                <div class="px-blocks-output-error">@_runError</div>
+            }
+            @foreach (var line in _outputLines)
+            {
+                <div>@line</div>
+            }
+        </div>
+    }
 </div>
 
 @code {
@@ -38,6 +54,22 @@
 
     /// <summary>Свои определения блоков (список или PxBlockSet); без них — демо-набор.</summary>
     [Parameter] public IEnumerable<PxBlockDefinition>? BlockDefinitions { get; set; }
+
+    /// <summary>Свой реестр имплементаций исполнения; без него — стандартные листья + демо-набор.</summary>
+    [Parameter] public PxBlockImplementsLocator? Implements { get; set; }
+
+    /// <summary>Режим запуска: все верхнеуровневые стеки (по умолчанию) или только события.</summary>
+    [Parameter] public PxEditorRunMode RunMode { get; set; } = PxEditorRunMode.AllTopLevel;
+
+    /// <summary>
+    /// Для режима <see cref="PxEditorRunMode.Events"/> — имена исполняемых событий
+    /// (PxEvents.Start / PxEvents.Loop). Запуск идёт фазами в порядке этого списка:
+    /// сначала ВСЕ блоки-события с первым именем (в порядке workspace), затем все
+    /// со вторым и т.д. При ["start", "loop"] все «старты» гарантированно исполняются
+    /// до всех «циклов», независимо от их раскладки на полотне. Пустой список — ничего
+    /// не исполняется. Пример: <c>RunEventNames="new[] { PxEvents.Start, PxEvents.Loop }"</c>.
+    /// </summary>
+    [Parameter] public IReadOnlyList<string>? RunEventNames { get; set; }
 
     /// <summary>Ключ localStorage для автосейва; пустая строка отключает автосейв.</summary>
     [Parameter] public string StorageKey { get; set; } = "pxblocks.workspace";
@@ -56,10 +88,28 @@
     private PxToolbox? _defaultToolbox;
     private PxTypeRegistry? _defaultTypes;
     private IReadOnlyList<PxBlockDefinition>? _defaultDefinitions;
+    private PxBlockImplementsLocator? _defaultImplements;
+
+    private CancellationTokenSource? _runCancellation;
+    private bool _running;
+    private string? _runError;
+    private string? _highlightedBlockId;
+    private DateTime _lastHighlightAt;
+    private readonly List<string> _outputLines = [];
 
     private PxToolbox EffectiveToolbox => Toolbox ?? (_defaultToolbox ??= PxDefaultToolbox.Create());
     private PxTypeRegistry EffectiveTypes => Types ?? (_defaultTypes ??= PxTypeRegistry.CreateDefault());
     private IEnumerable<PxBlockDefinition> EffectiveDefinitions => BlockDefinitions ?? (_defaultDefinitions ??= PxDefaultBlocks.Create());
+
+    private PxBlockImplementsLocator EffectiveImplements => Implements ?? (_defaultImplements ??= CreateDefaultImplements());
+
+    /// <summary>Стандартные листья Runtime + демо-имплементации этой сборки.</summary>
+    private static PxBlockImplementsLocator CreateDefaultImplements()
+    {
+        var locator = PxInterpreter.CreateDefaultImplements();
+        locator.RegisterAssembly(typeof(PxDefaultBlocks).Assembly);
+        return locator;
+    }
 
     private async Task OnWorkspaceReady()
     {
@@ -180,4 +230,125 @@
     public async Task Clear() => await _workspace!.ClearAsync();
 
     public async Task Center() => await _workspace!.CenterContentAsync();
+
+    /// <summary>Исполнение программы: workspace JSON → AST → интерпретатор (in-process).</summary>
+    public async Task Run()
+    {
+        if (_running)
+            return;
+
+        _running = true;
+        _runError = null;
+        _outputLines.Clear();
+        _status = "исполнение…";
+        _runCancellation = new CancellationTokenSource();
+
+        try
+        {
+            var blocksJson = await _workspace!.SaveAsync();
+
+            global::Mars.PxBlocks.Runtime.Ast.PxProgram program;
+            try
+            {
+                program = new PxParser(EffectiveImplements).Parse(blocksJson);
+            }
+            catch (PxParseException exception)
+            {
+                _runError = exception.Message;
+                if (!string.IsNullOrEmpty(exception.BlockId))
+                    await ApplyHighlightAsync(exception.BlockId);
+                _status = "ошибка разбора";
+                return;
+            }
+
+            var interpreter = new PxInterpreter(EffectiveImplements);
+            var options = new PxRunOptions
+            {
+                OnEvent = OnExecutionEvent,
+                // Лимит шагов снят: бесконечные события Loop останавливаются кнопкой Stop
+                // (YieldEvery не даёт повесить UI); защита от случайных циклов — та же кнопка.
+                StepLimit = 0,
+                EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
+            };
+            var result = await interpreter.RunAsync(program, options, _runCancellation.Token);
+
+            if (result.Canceled)
+            {
+                _runError = "Остановлено";
+                _status = "остановлено";
+            }
+            else if (!result.Success)
+            {
+                _runError = result.ErrorMessage;
+                if (!string.IsNullOrEmpty(result.ErrorBlockId))
+                    await ApplyHighlightAsync(result.ErrorBlockId);
+                _status = "ошибка исполнения";
+            }
+            else
+            {
+                _status = $"исполнено (шагов: {result.Steps})";
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        finally
+        {
+            await ApplyHighlightAsync(null);
+            _running = false;
+            _runCancellation?.Dispose();
+            _runCancellation = null;
+        }
+    }
+
+    public void Stop() => _runCancellation?.Cancel();
+
+    private void OnExecutionEvent(PxExecutionEvent executionEvent)
+    {
+        switch (executionEvent.Kind)
+        {
+            case PxExecutionEventKind.BlockEntered when executionEvent.BlockId != null:
+                RequestHighlight(executionEvent.BlockId);
+                break;
+
+            case PxExecutionEventKind.Output when executionEvent.Text != null:
+                _outputLines.Add(executionEvent.Text);
+                // Бесконечные события Loop штампуют строки — держим панель обозримой.
+                if (_outputLines.Count > 1000)
+                    _outputLines.RemoveRange(0, _outputLines.Count - 1000);
+                StateHasChanged();
+                break;
+        }
+    }
+
+    /// <summary>Троттлинг подсветки: в цикле блоки мелькают часто, interop шлём не чаще ~30 мс.</summary>
+    private void RequestHighlight(string blockId)
+    {
+        var now = DateTime.Now;
+        if ((now - _lastHighlightAt).TotalMilliseconds < 30)
+            return;
+
+        _lastHighlightAt = now;
+        _ = ApplyHighlightAsync(blockId);
+    }
+
+    private async Task ApplyHighlightAsync(string? blockId)
+    {
+        if (_highlightedBlockId == blockId)
+            return;
+
+        var previous = _highlightedBlockId;
+        _highlightedBlockId = blockId;
+
+        try
+        {
+            if (previous != null)
+                await _workspace!.HighlightBlockAsync(previous, on: false);
+            if (blockId != null)
+                await _workspace!.HighlightBlockAsync(blockId, on: true);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
 }

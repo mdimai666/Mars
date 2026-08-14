@@ -29,6 +29,14 @@ public partial class PxBlockDefinition
     /// <summary>Имя мутатора Blockly (Blockly.Extensions.registerMutator) — для блоков с динамической структурой.</summary>
     public string? Mutator { get; set; }
 
+    /// <summary>
+    /// «Шапка» хат-блока: "cap" — скруглённый верх событийных блоков. В Blockly JSON
+    /// уходит расширением px_hat_{Hat} (а не style.hat — тот jsonInit Blockly читает
+    /// один раз и обнуляет в общем определении, шапка досталась бы лишь первому
+    /// созданному экземпляру блока). Расширение регистрирует сторона JS (Workspace).
+    /// </summary>
+    public string? Hat { get; set; }
+
     public virtual string ToJson()
     {
         var node = new JsonObject { ["type"] = TypeId };
@@ -58,8 +66,11 @@ public partial class PxBlockDefinition
                 node["nextStatement"] = null;
         }
 
-        if (Extensions.Count > 0)
-            node["extensions"] = new JsonArray(Extensions.Select(e => (JsonNode?)e).ToArray());
+        var extensions = new List<string>(Extensions);
+        if (Hat != null)
+            extensions.Add($"px_hat_{Hat}");
+        if (extensions.Count > 0)
+            node["extensions"] = new JsonArray(extensions.Select(e => (JsonNode?)e).ToArray());
 
         if (Mutator != null)
             node["mutator"] = Mutator;

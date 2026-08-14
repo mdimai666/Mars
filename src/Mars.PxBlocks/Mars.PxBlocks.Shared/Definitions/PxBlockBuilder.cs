@@ -39,6 +39,13 @@ public sealed class PxBlockBuilder
         return this;
     }
 
+    /// <summary>«Шапка» хат-блока — скруглённый верх событийных блоков (расширение px_hat_{hat}).</summary>
+    public PxBlockBuilder Hat(string hat = "cap")
+    {
+        _definition.Hat = hat;
+        return this;
+    }
+
     public PxBlockBuilder Colour(string colour)
     {
         _definition.Colour = colour;

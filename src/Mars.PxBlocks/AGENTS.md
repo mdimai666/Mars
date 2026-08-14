@@ -1,11 +1,11 @@
 # Mars.PxBlocks — инструкция агенту
 
 PxBlocks — визуальный редактор блоков в духе Microsoft PXT (MakeCode/Blockly) на Blazor.
-Сейкается **только редактор**: без симулятора и без кодогенерации. Выполнение блоков —
-декларативное, в .NET (задел на будущее: определения блоков на C#, реализация в отдельной сборке,
-по образцу Mars.Nodes / INodeImplement).
-
-План и статус этапов: `Mars.PxBlocks.Workspace/PLAN.md`. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
+Этапы 0–6 (редактор) готовы; без симулятора и без кодогенерации. Дальше — Этап 7:
+исполнение блоков в .NET, решение «вариант C» от 2026-08-14: workspace JSON → AST →
+tree-walking интерпретатор; control flow в ядре, листья — `IPxBlockImplement` по TypeId
+(по образцу Mars.Nodes / INodeImplement), имплементации в отдельных сборках.
+Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`, Этап 7. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
 
 ## Архитектура: гибридная обёртка Blockly
 
@@ -34,6 +34,17 @@ PxBlocks — визуальный редактор блоков в духе Micr
   `PxFieldText`/`PxMaster.Text`, `PxFieldDropdown`/`PxMaster.Dropdown`, `PxValueInput`/`PxMaster.Value`,
   `PxStatementInput`/`PxMaster.Do` (входы с `Check`).
 - `PxBlocklyEvent` (пакет событий из JS), `PxWorkspaceState`.
+
+### `src/Mars.PxBlocks/Mars.PxBlocks.Runtime` — исполнение (AST + интерпретатор)
+Чистый .NET без JS (работает и в WASM): `Values/` — иерархия `PxValue` (Number/Boolean/
+String/Object/List/Null); `Ast/` — узлы программы (каждый несёт blockId); `Parsing/` —
+`PxParser` (Blockly JSON → AST; неизвестный лист → ошибка с blockId; форматы сверены
+с blockly 13.1.1) + `PxCoreBlocks` (структурные type-id); `Execution/` — `PxInterpreter`
+(control flow в ядре: if/циклы/break/процедуры/переменные/short-circuit; лимит шагов;
+события BlockEntered/Exited/Output), `PxContext`, `IPxBlockImplement` +
+`PxBlockImplementsLocator` (`RegisterAssembly`, паттерн NodesLocator); `Standard/` —
+имплементации стандартных листьев (математика, логика, текст, `text_print`).
+Точки входа: `PxParser.CreateDefault()`, `PxInterpreter.CreateDefaultImplements()`.
 
 ### `src/Mars.PxBlocks/Mars.PxBlocks.Workspace` — RCL-редактор
 - `JsSrc/` — TypeScript, сборка Vite в `wwwroot/dist/PxBlocks.js` (ESM, коммитится вместе
@@ -119,10 +130,18 @@ dotnet test tests/Test.Mars.PxBlocks
    не инъекцией из скрипта: поздняя загрузка CSS сдвигает лейаут после `Blockly.inject`,
    и полотно остаётся неверной ширины до первого ресайза окна. Нативное меню категорий
    прятать только с `!important` (Toolbox.init ставит inline `display:block`).
+10. **Шапку хат-блока нельзя задавать `style.hat` в JSON определения**: `jsonInit` Blockly
+    читает `style.hat` один раз и обнуляет `style` прямо в общем объекте определения —
+    шапка достаётся только первому созданному экземпляру блока (flyout → drag → flyout
+    теряют шапку). Используем расширение `px_hat_cap` (`JsSrc/extensions/hat.ts`):
+    `PxBlockDefinition.Hat` генерирует `extensions: ["px_hat_cap"]`.
 
 ## Куда двигаться дальше
 
 - Rich-редакторы полей: клик по полю → Blazor-форма (оверлей), удобно для объектов с множеством полей.
 - Фишки PXT поштучно из `pxtblocks/*` (fields, flyout-hover, workspace search и т.п.).
-- Декларативное исполнение: workspace JSON → C#-AST → интерпретатор в .NET; реализации блоков —
-  в отдельной сборке (`IPxBlockImplement` по образцу `INodeImplement<TNode>`), регистрация локатором.
+- **Этап 7 — исполнение** (решение «вариант C» от 2026-08-14): сборка `Mars.PxBlocks.Runtime` —
+  AST + tree-walking интерпретатор в .NET; control flow в ядре, листья — `IPxBlockImplement`
+  по TypeId с регистрацией локатором (`RegisterAssembly`, паттерн `NodesLocator`); события
+  исполнения с blockId — под подсветку бегущего блока и отладчик. Пошаговый план —
+  в `Mars.PxBlocks.Workspace/PLAN.md`, Этап 7.

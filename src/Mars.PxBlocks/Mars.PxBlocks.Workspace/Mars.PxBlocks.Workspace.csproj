@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Mars.PxBlocks.Runtime\Mars.PxBlocks.Runtime.csproj" />
         <ProjectReference Include="..\Mars.PxBlocks.Shared\Mars.PxBlocks.Shared.csproj" />
     </ItemGroup>
 

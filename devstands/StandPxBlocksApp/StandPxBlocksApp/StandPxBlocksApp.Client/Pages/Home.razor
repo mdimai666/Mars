@@ -1,8 +1,9 @@
 @page "/"
+@using Mars.PxBlocks.Runtime.Ast
 @using Mars.PxBlocks.Workspace
 
 <PageTitle>PxBlocks</PageTitle>
 
 <div style="height:100vh;">
-    <PxBlocksEditor />
+    <PxBlocksEditor RunMode="PxEditorRunMode.Events" RunEventNames="@([PxEvents.Start, PxEvents.Loop])" />
 </div>

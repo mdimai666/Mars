@@ -2,12 +2,12 @@ var l_ = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : t
 function Mu(k) {
   return k && k.__esModule && Object.prototype.hasOwnProperty.call(k, "default") ? k.default : k;
 }
-var dl = { exports: {} }, $_ = dl.exports, a_;
+var dl = { exports: {} }, J_ = dl.exports, a_;
 function Du() {
   return a_ || (a_ = 1, (function(k, I) {
     (function(n, h) {
       k.exports = h();
-    })($_, function() {
+    })(J_, function() {
       var n = {}, h, M, j, Ct, De, H, xt, it, Oe, ft, ci, We, le, At, Ds, Co, Z, D, Ke, Ri, $i, Te, S, L, Ps, ot, jt, lt, Ji, l, u, T, C, O, dt, Ee, vo, Ye, fl, Ai, qi, ml, In, Il, So, Ro, bi, Oi, Cl, Zi, Ao, Bu, vl, bo, X, Qi, qt, Cn, Sl, vn, Zt, Ht, ui, V, Sn, Rl, Al, bl, vt, Rn, W, Ol, Oo, Xe, yi, yl, Ll, kl, Nl, yo, An, wl, Ml, ts, Li, Bs, xu, bn, Lo, On, yn, Ln, Dl, Pl, kn, Nn, wn, ko, xs, No, Mn, Fu, Uu, wo, Bl, fe, ki, xl, Dn, Fl, Hu, Ul, Hl, Gl, Vl, Pn, Bn, xn, Fn, ze, Gu, Fs, Wl, Un, Hn, Gn, Kl, Vn, Us, Wn, Vu, Yl, Xl, Wu, Ku, es, Kn, Hs, Yn, me, zl, is, Ni, jl, Yu, $l, di, Xu, Jl, ql, ss, gi, Zl, zu, Ql, ta, ea, ju, Xn, $u, Ju, qu, ia, Zu, Qu, td, zn, Gs, jn, sa, $n, oa, na, ra, la, aa, ha, ca, ua, Mo, Jn, Do, je, da, ga, Po, pa, _a, qn, Ta, Vs, Ea, fa, Bo, ma, ed, id, Ia, Ca, $e, va, Sa, Ra, os, xo, Zn, Qn, ns, Aa, tr, ba, Et, Ws, Oa, ya, er, rs, ls, Fo, La, ka, Na, Ks, sd, od, nd, Uo, wa, rd, Ma, ir, sr, Da, Pa, Ba, wi, xa, Ys, Fa, as, Ua, ld, Ha, or, Je, hs, Ga, nr, Ho, Va, rr, ad, F, de, Gt, St, qe, Xs, U, bt, hd, Wa, lr, Ka, Ya, Xa, za, zs, cd, ud, dd, js, ja, ar, hr, Ze, $a, $s, ye, cs, Ja, qa, Go, Za, Qa, th, eh, ih, sh, oh, nh, rh, lh, ah, hh, ch, uh, dh, gh, ph, _h, Th, Eh, fh, mh, Ih, Ch, vh, Sh, Rh, Ah, bh, Oh, gd, yh, Ie, cr, pi, Lh, Mi, ur, dr, kh, Nh, gr, wh, Mh, pd, Dh, Vo, Ph, Bh, xh, Fh, pr, Uh, Hh, _d, Td, Ed, fd, md, Gh, Vh, Wh, Kh, Yh, Xh, zh, _r, Wo, jh, $h, Jh, qh, Zh, Qh, tc, ec, ic, sc, oc, nc, _;
       h = function(t, e) {
         M(), Tr = setTimeout(function() {
@@ -76,7 +76,7 @@ function Du() {
       }, At = function(t) {
         Md.push(t);
       }, Ds = function(t, e, i) {
-        e && typeof window < "u" && (t = t.getRootNode(), wd.has(t) || (wd.add(t), i = i.replace(/[\\/]$/, ""), i = [v_, ...Md].join(`
+        e && typeof window < "u" && (t = t.getRootNode(), wd.has(t) || (wd.add(t), i = i.replace(/[\\/]$/, ""), i = [S_, ...Md].join(`
 `).replace(/<<<PATH>>>/g, i), e = document.createElement("style"), e.id = "blockly-common-style", e.textContent = i, (typeof globalThis.ShadowRoot < "u" && t instanceof ShadowRoot ? t : document.head).prepend(e)));
       }, Co = function(t) {
         t.removeAttribute("role");
@@ -266,7 +266,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, Zt = function(t, e, i) {
         return e = e.plugins[String(t)] || "default", typeof e == "function" ? e : qt(t, e, i);
       }, Ht = function() {
-        return "blockly-" + (A_++).toString(36);
+        return "blockly-" + (b_++).toString(36);
       }, ui = function() {
         return Vd.genUid();
       }, V = function(t) {
@@ -375,7 +375,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, Bs = function(t) {
         return xu(fc.serializeToString(t));
       }, xu = function(t) {
-        return t.replace(b_, (e) => `&#${e.charCodeAt(0)};`);
+        return t.replace(O_, (e) => `&#${e.charCodeAt(0)};`);
       }, bn = function(t) {
         if (!t) return null;
         if (t instanceof Element || typeof t == "string") {
@@ -793,7 +793,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       }, $l = function(t, e) {
         e.shadow && t.setShadowState(e.shadow), e.block && jl(e.block, t.getSourceBlock().workspace, { parentConnection: t });
       }, di = function(t) {
-        return t = Xu(t, k_), t.length ? t[0].join(Yo ? " " : " + ") : "";
+        return t = Xu(t, N_), t.length ? t[0].join(Yo ? " " : " + ") : "";
       }, Xu = function(t, e) {
         if (t = x.registry.getKeyCodesByShortcutName(t), t.length === 0) return [];
         t = t.map((s) => s.split("+")), t.forEach((s) => s.sort((o, r) => (o = Jl(o), r = Jl(r), o - r))), t.sort((s, o) => (s = s.includes("Meta") ? 1 : 0, (o.includes("Meta") ? 1 : 0) - s));
@@ -883,7 +883,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
           return a.charAt(0).toUpperCase() + a.substring(1);
         }));
       }, Jl = function(t) {
-        return t = N_.indexOf(t), t === -1 ? Number.MAX_VALUE : t;
+        return t = w_.indexOf(t), t === -1 ? Number.MAX_VALUE : t;
       }, ql = function(t) {
         return t && typeof t.init == "function" && typeof t.getDiv == "function" && typeof t.getId == "function" && typeof t.getParent == "function" && typeof t.getLevel == "function" && typeof t.isSelectable == "function" && typeof t.isCollapsible == "function" && typeof t.dispose == "function" && typeof t.getClickTarget == "function" && typeof t.setVisible_ == "function" && typeof t.getParentToolbox == "function";
       }, ss = function(t) {
@@ -2826,7 +2826,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
         var i = lc.toUpperCase();
         Cd = e("JavaFX"), vd = e("WebKit"), Sd = e("Gecko") && !vd, Er = e("Android"), t = globalThis.navigator && globalThis.navigator.maxTouchPoints, fr = e("iPad") || e("Macintosh") && t > 0, ac = e("iPhone") && !fr, Rd = e("Macintosh"), Ad = fr || Er && !e("Mobile") || e("Silk"), bd = !Ad && (ac || Er);
       })(globalThis.navigator && globalThis.navigator.userAgent || "");
-      var Od = Cd, yd = Sd, Ld = Er, Ko = fr, mr = ac, Js = Rd, hc = bd, Yo = Js || Ko || mr, C_ = { ANDROID: Ld, APPLE: Yo, GECKO: yd, IPAD: Ko, IPHONE: mr, JavaFx: Od, MAC: Js, MOBILE: hc, raw: lc }, _i = {};
+      var Od = Cd, yd = Sd, Ld = Er, Ko = fr, mr = ac, Js = Rd, hc = bd, Yo = Js || Ko || mr, v_ = { ANDROID: Ld, APPLE: Yo, GECKO: yd, IPAD: Ko, IPHONE: mr, JavaFx: Od, MAC: Js, MOBILE: hc, raw: lc }, _i = {};
       _i.bind = xt, _i.conditionalBind = H, _i.getScrollDeltaPixels = We, _i.isRightButton = ft, _i.isTargetInput = Oe, _i.mouseToSvg = ci, _i.unbind = it;
       var kd = {};
       kd.removeElem = le;
@@ -2911,7 +2911,7 @@ Use ` + s + " instead."), Ud.has(t) || (Ud.add(t), console.warn(t));
       gt.Capability = Pe;
       var Nd = gt || (gt = {}), Di = Nd.ComponentWeight || (Nd.ComponentWeight = {});
       Di[Di.TOOLBOX_WEIGHT = 0] = "TOOLBOX_WEIGHT", Di[Di.FLYOUT_WEIGHT = 1] = "FLYOUT_WEIGHT", Di[Di.TRASHCAN_WEIGHT = 2] = "TRASHCAN_WEIGHT", Di[Di.ZOOM_CONTROLS_WEIGHT = 3] = "ZOOM_CONTROLS_WEIGHT";
-      var wd = /* @__PURE__ */ new WeakSet(), Md = [], v_ = `
+      var wd = /* @__PURE__ */ new WeakSet(), Md = [], S_ = `
 :is(
   .injectionDiv,
   .blocklyWidgetDiv,
@@ -3598,7 +3598,7 @@ input[type=number] {
         }
       };
       Kt.ACTIVE_CLASS_NAME = "blocklyActiveFocus", Kt.PASSIVE_CSS_CLASS_NAME = "blocklyPassiveFocus", Kt.ACTIVE_FOCUS_NODE_CSS_SELECTOR = `.${Kt.ACTIVE_CLASS_NAME}`, Kt.PASSIVE_FOCUS_NODE_CSS_SELECTOR = `.${Kt.PASSIVE_CSS_CLASS_NAME}`;
-      var S_ = class {
+      var R_ = class {
         constructor(t, e) {
           this.tree = t, this.rootShouldBeAutoTabbable = e;
         }
@@ -3631,7 +3631,7 @@ input[type=number] {
         }
         registerTree(t, e = !1) {
           if (this.ensureManagerIsUnlocked(), this.isRegistered(t)) throw Error(`Attempted to re-register already registered tree: ${t}.`);
-          this.registeredTrees.push(new S_(t, e));
+          this.registeredTrees.push(new R_(t, e));
           var i = t.getRootFocusableNode().getFocusableElement();
           if (!i.id || i.id === "null") throw Error(`Attempting to register a tree with a root element that has an invalid ID: ${t}.`);
           e && (i.tabIndex = 0);
@@ -3852,7 +3852,7 @@ input[type=number] {
       }, Dt.svgResize = Zi, Dt.unregisterWorkpace = function(t) {
         fl("Blockly.common.unregisterWorkpace", "v13", "v14", "Blockly.common.unregisterWorkspace"), In(t);
       }, Dt.unregisterWorkspace = In;
-      var Bi = /* @__PURE__ */ Object.create(null), R_ = { typeMap: Bi }, Ir = /* @__PURE__ */ Object.create(null), R = class {
+      var Bi = /* @__PURE__ */ Object.create(null), A_ = { typeMap: Bi }, Ir = /* @__PURE__ */ Object.create(null), R = class {
         constructor(t) {
           this.name = t;
         }
@@ -3861,7 +3861,7 @@ input[type=number] {
         }
       };
       R.CONNECTION_CHECKER = new R("connectionChecker"), R.CONNECTION_PREVIEWER = new R("connectionPreviewer"), R.EVENT = new R("event"), R.FIELD = new R("field"), R.INPUT = new R("input"), R.RENDERER = new R("renderer"), R.TOOLBOX = new R("toolbox"), R.THEME = new R("theme"), R.TOOLBOX_ITEM = new R("toolboxItem"), R.FLYOUTS_VERTICAL_TOOLBOX = new R("flyoutsVerticalToolbox"), R.FLYOUTS_HORIZONTAL_TOOLBOX = new R("flyoutsHorizontalToolbox"), R.FLYOUT_INFLATER = new R("flyoutInflater"), R.METRICS_MANAGER = new R("metricsManager"), R.BLOCK_DRAGGER = new R("blockDragger"), R.SERIALIZER = new R("serializer"), R.ICON = new R("icon"), R.PASTER = new R("paster"), R.VARIABLE_MODEL = new R("variableModel"), R.VARIABLE_MAP = new R("variableMap");
-      var Ti = { DEFAULT: "default", TEST_ONLY: R_ };
+      var Ti = { DEFAULT: "default", TEST_ONLY: A_ };
       Ti.Type = R, Ti.getAllItems = vn, Ti.getClass = Sl, Ti.getClassFromOptions = Zt, Ti.getObject = function(t, e, i) {
         return qt(t, e, i);
       }, Ti.hasItem = Cn, Ti.register = X, Ti.unregister = Qi;
@@ -3869,7 +3869,7 @@ input[type=number] {
         var t = [];
         for (let e = 0; e < 20; e++) t[e] = "!#$%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".charAt(Math.random() * 88);
         return t.join("");
-      } }, A_ = 0, Tc = { TEST_ONLY: Vd };
+      } }, b_ = 0, Tc = { TEST_ONLY: Vd };
       Tc.genUid = ui, Tc.getNextUniqueId = Ht;
       var ti, Ec;
       n.gd = "", n.Qc = !0, n.Ub = 0, ti = [], Ec = { FIRE_QUEUE: ti, enqueueEvent: Rl, fireNow: Sn, fireInternal: function(t) {
@@ -4110,7 +4110,7 @@ input[type=number] {
         throw Error("XMLSerializer was not foundin the global scope and was not properly injected using injectDependencies");
       } }, { document: vr, DOMParser: qo, XMLSerializer: Zo } = globalThis;
       qo && (Cr = new qo()), Zo && (fc = new Zo());
-      var b_ = /[\x00-\x09\x0B\x0C\x0E-\x1F]/g, Qs = { NAME_SPACE: "https://developers.google.com/blockly/xml" };
+      var O_ = /[\x00-\x09\x0B\x0C\x0E-\x1F]/g, Qs = { NAME_SPACE: "https://developers.google.com/blockly/xml" };
       Qs.createElement = n.rc, Qs.createTextNode = n.sc, Qs.domToText = Bs, Qs.injectDependencies = function(t) {
         ({ document: vr = vr, DOMParser: qo = qo, XMLSerializer: Zo = Zo } = t), Cr = new qo(), fc = new Zo();
       }, Qs.textToDom = n.uc;
@@ -4157,7 +4157,7 @@ input[type=number] {
         dispose() {
           it(this.pointerDownHandler);
         }
-      }, O_ = class extends mc {
+      }, y_ = class extends mc {
         constructor(t, e) {
           var i = String(Math.random()).substring(2);
           e = S(E.G, { class: "blocklyZoom blocklyZoomIn", tabindex: "0" }, e), D(e, N.LABEL, n.C.ZOOM_IN), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
@@ -4171,7 +4171,7 @@ input[type=number] {
         performAction(t) {
           this.zoom(1, t);
         }
-      }, y_ = class extends mc {
+      }, L_ = class extends mc {
         constructor(t, e) {
           var i = String(Math.random()).substring(2);
           e = S(E.G, { class: "blocklyZoom blocklyZoomOut", tabindex: "0" }, e), D(e, N.LABEL, n.C.ZOOM_OUT), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
@@ -4181,7 +4181,7 @@ input[type=number] {
         performAction(t) {
           this.zoom(-1, t);
         }
-      }, L_ = class extends mc {
+      }, k_ = class extends mc {
         constructor(t, e) {
           var i = String(Math.random()).substring(2);
           e = S(E.G, { class: "blocklyZoom blocklyZoomReset", tabindex: "0" }, e), D(e, N.LABEL, n.C.RESET_ZOOM), S(E.RECT, { width: 40, height: 40, x: -4, y: -4, rx: 2, ry: 2, fill: "none", class: "blocklyFocusRing" }, e);
@@ -4205,10 +4205,10 @@ input[type=number] {
           this.workspace = t, this.id = "zoomControls", this.zoomResetControl = this.zoomOutControl = this.zoomInControl = null, this.HEIGHT = this.WIDTH = 32, this.SMALL_SPACING = 2, this.LARGE_SPACING = 11, this.MARGIN_HORIZONTAL = this.MARGIN_VERTICAL = 20, this.svgGroup = null, this.top = this.left = 0, this.initialized = !1;
         }
         createDom() {
-          this.svgGroup = S(E.G, {}), this.zoomOutControl = new y_(this.workspace, this.svgGroup), this.zoomInControl = new O_(
+          this.svgGroup = S(E.G, {}), this.zoomOutControl = new L_(this.workspace, this.svgGroup), this.zoomInControl = new y_(
             this.workspace,
             this.svgGroup
-          ), this.workspace.isMovable() && (this.zoomResetControl = new L_(this.workspace, this.svgGroup));
+          ), this.workspace.isMovable() && (this.zoomResetControl = new k_(this.workspace, this.svgGroup));
           for (let t of [this.zoomOutControl, this.zoomInControl, this.zoomResetControl]) t && this.workspace.getComponentManager().addComponent({ component: t, weight: gt.ComponentWeight.ZOOM_CONTROLS_WEIGHT, capabilities: [gt.Capability.FOCUSABLE] });
           return this.svgGroup;
         }
@@ -5370,7 +5370,7 @@ children`), this.state = t;
       ko("blocks", new Mg());
       var tn = {};
       tn.BlockSerializer = Mg, tn.append = is, tn.appendInternal = Ni, tn.save = me;
-      var k_ = { Control: n.C.CONTROL_KEY, Meta: "⌘", Alt: Yo ? "⌥" : n.C.ALT_KEY }, N_ = ["Meta", "Control", "Alt", "Shift"], ge, Ne = ge || (ge = {});
+      var N_ = { Control: n.C.CONTROL_KEY, Meta: "⌘", Alt: Yo ? "⌥" : n.C.ALT_KEY }, w_ = ["Meta", "Control", "Alt", "Shift"], ge, Ne = ge || (ge = {});
       Ne[Ne.UNKNOWN = 0] = "UNKNOWN", Ne[Ne.BEFORE = 1] = "BEFORE", Ne[Ne.AFTER = 2] = "AFTER", Ne[Ne.AROUND = 3] = "AROUND", Ne[Ne.INSIDE = 4] = "INSIDE", Ne[Ne.TO = 5] = "TO";
       var wr = {};
       wr.clamp = Gs, wr.toDegrees = function(t) {
@@ -6951,14 +6951,14 @@ children`), this.state = t;
           et === void 0 && (et = !0);
           var Jt = "https://static.blockly.com/media/";
           t.media && (Jt = t.media.endsWith("/") ? t.media : t.media + "/");
-          var ne = t.oneBasedIndex, Ru = t.renderer || "thrasos", j_ = t.plugins || {}, Au = t.modalInputs;
+          var ne = t.oneBasedIndex, Ru = t.renderer || "thrasos", $_ = t.plugins || {}, Au = t.modalInputs;
           Au === void 0 && (Au = !0), this.RTL = B, this.oneBasedIndex = ne === void 0 ? !0 : ne, this.collapse = o, this.comments = r, this.disable = a, this.readOnly = g, this.maxBlocks = t.maxBlocks || 1 / 0;
           var o_;
           this.maxInstances = (o_ = t.maxInstances) != null ? o_ : null, this.modalInputs = Au, this.pathToMedia = Jt, this.hasCategories = i, this.moveOptions = si.parseMoveOptions(t, i), this.hasScrollbars = !!this.moveOptions.scrollbars, this.hasTrashcan = s, this.maxTrashcanContents = v, this.hasSounds = c, this.hasCss = et, this.horizontalLayout = G, this.languageTree = e, this.gridOptions = si.parseGridOptions(t), this.zoomOptions = si.parseZoomOptions(t), this.toolboxPosition = z, this.theme = si.parseThemeOptions(t), this.renderer = Ru;
           var n_;
           this.rendererOverrides = (n_ = t.rendererOverrides) != null ? n_ : null;
           var r_;
-          this.parentWorkspace = (r_ = t.parentWorkspace) != null ? r_ : null, this.plugins = j_;
+          this.parentWorkspace = (r_ = t.parentWorkspace) != null ? r_ : null, this.plugins = $_;
         }
         static parseMoveOptions(t, e) {
           var i = t.move || {}, s = {};
@@ -7496,7 +7496,7 @@ children`), this.state = t;
           return this.bubbleIsVisible() ? n.C.ICON_LABEL_MUTATOR_OPEN : n.C.ICON_LABEL_MUTATOR_CLOSED;
         }
       }, n.rh.TYPE = Pt.MUTATOR, n.rh.WEIGHT = 1;
-      var ho = /* @__PURE__ */ Object.create(null), w_ = { allExtensions: ho };
+      var ho = /* @__PURE__ */ Object.create(null), M_ = { allExtensions: ho };
       n.nh("parent_tooltip_when_inline", function() {
         var t = this.tooltip;
         this.setTooltip(function() {
@@ -7504,7 +7504,7 @@ children`), this.state = t;
           return e && e.getInputsInline() && e.tooltip || t;
         }.bind(this));
       });
-      var He = { TEST_ONLY: w_ };
+      var He = { TEST_ONLY: M_ };
       He.apply = nr, He.buildTooltipForDropdown = n.xh, He.buildTooltipWithFieldText = n.zh, He.isRegistered = Ga, He.register = n.nh, He.registerMixin = n.oh, He.registerMutator = n.sh, He.runAfterPageLoad = function(t) {
         if (typeof document != "object") throw Error("runAfterPageLoad() requires browser document.");
         if (document.readyState === "complete") t();
@@ -7519,7 +7519,7 @@ children`), this.state = t;
       var Ci = {};
       Ci.arc = bt, Ci.curve = de, Ci.line = Xs, Ci.lineOnAxis = U, Ci.lineTo = qe, Ci.moveBy = St, Ci.moveTo = Gt, Ci.point = F;
       var It = {};
-      It.Coordinate = A, It.KeyCodes = y, It.Rect = $, It.Size = J, It.Svg = E, It.aria = Ce, It.array = kd, It.browserEvents = _i, It.colour = we, It.deprecation = Hd, It.dom = Wt, It.extensions = He, It.idGenerator = Tc, It.math = wr, It.object = xd, It.parsing = Hr, It.string = oo, It.style = xi, It.svgMath = gs, It.svgPaths = Ci, It.toolbox = Ui, It.userAgent = C_, It.xml = Qs;
+      It.Coordinate = A, It.KeyCodes = y, It.Rect = $, It.Size = J, It.Svg = E, It.aria = Ce, It.array = kd, It.browserEvents = _i, It.colour = we, It.deprecation = Hd, It.dom = Wt, It.extensions = He, It.idGenerator = Tc, It.math = wr, It.object = xd, It.parsing = Hr, It.string = oo, It.style = xi, It.svgMath = gs, It.svgPaths = Ci, It.toolbox = Ui, It.userAgent = v_, It.xml = Qs;
       var ou = class extends rt {
         constructor(t, e, i, s) {
           super(t, e, i, void 0, s), this.workspace = t, this.anchor = e, this.ownerRect = i, this.owner = s, this.resizePointerMoveListener = this.resizePointerUpListener = null, this.sizeChangeListeners = [], this.locationChangeListeners = [], this.DEFAULT_SIZE = new J(160 + rt.DOUBLE_BORDER, 80 + rt.DOUBLE_BORDER), this.MIN_SIZE = new J(45 + rt.DOUBLE_BORDER, 20 + rt.DOUBLE_BORDER), this.editable = !0, this.textChangeListener = () => {
@@ -11164,7 +11164,7 @@ children`), this.state = t;
             `url(#${t.id})`
           ), t;
         }
-      }, M_ = class {
+      }, D_ = class {
         constructor(t) {
           this.workspace = t, this.layers = /* @__PURE__ */ new Map(), (t = t.getInjectionDiv()) && (this.dragLayer = this.createDragLayer(t), this.animationLayer = this.createAnimationLayer(t)), t = this.createLayer(50), L(t, "blocklyBlockCanvas"), t = this.createLayer(100), L(t, "blocklyBubbleCanvas");
         }
@@ -11451,7 +11451,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         }
       }, _e = { CATEGORY_NAME: "PROCEDURE", DEFAULT_ARG: "x" };
       _e.ObservableProcedureMap = Tp, _e.allProcedures = dr, _e.findLegalName = n.ij, _e.flyoutCategory = gr, _e.getCallers = Dh, _e.getDefinition = n.sj, _e.isNameUsed = Nh, _e.isProcedureBlock = Mi, _e.mutateCallers = n.rj, _e.mutatorOpenListener = Mh, _e.rename = n.lj;
-      var D_ = class {
+      var P_ = class {
         constructor() {
           this.NONE = 0, this.FIELD = 1, this.HAT = 2, this.ICON = 4, this.SPACER = 8, this.BETWEEN_ROW_SPACER = 16, this.IN_ROW_SPACER = 32, this.EXTERNAL_VALUE_INPUT = 64, this.INPUT = 128, this.INLINE_INPUT = 256, this.STATEMENT_INPUT = 512, this.CONNECTION = 1024, this.PREVIOUS_CONNECTION = 2048, this.NEXT_CONNECTION = 4096, this.OUTPUT_CONNECTION = 8192, this.CORNER = 16384, this.LEFT_SQUARE_CORNER = 32768, this.LEFT_ROUND_CORNER = 65536, this.RIGHT_SQUARE_CORNER = 131072, this.RIGHT_ROUND_CORNER = 262144, this.JAGGED_EDGE = 524288, this.ROW = 1048576, this.TOP_ROW = 2097152, this.BOTTOM_ROW = 4194304, this.INPUT_ROW = 8388608, this.LEFT_CORNER = this.LEFT_SQUARE_CORNER | this.LEFT_ROUND_CORNER, this.RIGHT_CORNER = this.RIGHT_SQUARE_CORNER | this.RIGHT_ROUND_CORNER, this.nextTypeValue_ = 16777216;
         }
@@ -11536,7 +11536,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         isInputRow(t) {
           return (t.type & this.INPUT_ROW) >= 1;
         }
-      }, p = new D_(), li = class {
+      }, p = new P_(), li = class {
         constructor(t) {
           this.centerline = this.xPos = this.height = this.width = 0, this.constants_ = t, this.type = p.NONE, this.notchOffset = this.constants_.NOTCH_OFFSET_LEFT;
         }
@@ -12619,7 +12619,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         getMuted() {
           return this.muted;
         }
-      }, P_ = class {
+      }, B_ = class {
         constructor(t, e) {
           this.workspace = t, this.element = e;
         }
@@ -12744,7 +12744,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           }
         }
         createDom(t, e) {
-          return this.injectionDiv || (this.injectionDiv = e ?? null), this.svgGroup_ = S(E.G, { class: "blocklyWorkspace", id: this.id }), t && (this.svgBackground_ = S(E.RECT, { height: "100%", width: "100%", class: t }, this.svgGroup_), t === "blocklyMainBackground" && this.grid ? this.svgBackground_.style.fill = "var(--blocklyGridPattern)" : this.themeManager_.subscribe(this.svgBackground_, "workspaceBackgroundColour", "fill")), this.workspaceSelectionRing = t = S(E.RECT, { fill: "none", class: "blocklyWorkspaceSelectionRing" }, this.svgGroup_), this.workspaceFocusRing = S(E.RECT, { fill: "none", class: "blocklyWorkspaceFocusRing" }, this.svgGroup_), this.isFlyout || this.isMutator || (t.id = `${this.id}_focusTarget`, this.workspaceFocusTargetElement = t, this.workspaceFocusTarget = new P_(this, t)), this.layerManager = new M_(this), this.svgBlockCanvas_ = this.layerManager.getBlockLayer(), this.svgBubbleCanvas_ = this.layerManager.getBubbleLayer(), this.setInitialAriaContext(), this.isFlyout || (H(this.svgGroup_, "pointerdown", this, this.onMouseDown, !1), this.dummyWheelListener = () => {
+          return this.injectionDiv || (this.injectionDiv = e ?? null), this.svgGroup_ = S(E.G, { class: "blocklyWorkspace", id: this.id }), t && (this.svgBackground_ = S(E.RECT, { height: "100%", width: "100%", class: t }, this.svgGroup_), t === "blocklyMainBackground" && this.grid ? this.svgBackground_.style.fill = "var(--blocklyGridPattern)" : this.themeManager_.subscribe(this.svgBackground_, "workspaceBackgroundColour", "fill")), this.workspaceSelectionRing = t = S(E.RECT, { fill: "none", class: "blocklyWorkspaceSelectionRing" }, this.svgGroup_), this.workspaceFocusRing = S(E.RECT, { fill: "none", class: "blocklyWorkspaceFocusRing" }, this.svgGroup_), this.isFlyout || this.isMutator || (t.id = `${this.id}_focusTarget`, this.workspaceFocusTargetElement = t, this.workspaceFocusTarget = new B_(this, t)), this.layerManager = new D_(this), this.svgBlockCanvas_ = this.layerManager.getBlockLayer(), this.svgBubbleCanvas_ = this.layerManager.getBubbleLayer(), this.setInitialAriaContext(), this.isFlyout || (H(this.svgGroup_, "pointerdown", this, this.onMouseDown, !1), this.dummyWheelListener = () => {
           }, document.body.addEventListener("wheel", this.dummyWheelListener, { passive: !0 }), H(this.svgGroup_, "wheel", this, this.onMouseWheel, !1, { passive: !1 })), this.options.hasCategories && (this.toolbox = new (Zt(R.TOOLBOX, this.options, !0))(this)), this.grid && this.grid.update(this.scale), this.recordDragTargets(), t = this.options.parentWorkspace === null, this.renderer.createDom(this.svgGroup_, this.getTheme(), t ? this.getInjectionDiv() : void 0), n.t().registerTree(this, !!this.injectionDiv || this.isFlyout), this.svgGroup_;
         }
         dispose() {
@@ -13639,7 +13639,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
     rotate: -45deg;
   }
 `);
-      var B_ = class {
+      var x_ = class {
         constructor(t, e) {
           this.procedureModelClass = t, this.parameterModelClass = e, this.priority = 75;
         }
@@ -13654,7 +13654,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
           t.getProcedureMap().clear();
         }
       }, hl = {};
-      hl.ProcedureSerializer = B_, hl.loadProcedure = Hh, hl.saveProcedure = Uh;
+      hl.ProcedureSerializer = x_, hl.loadProcedure = Hh, hl.saveProcedure = Uh;
       var yp = class {
         constructor() {
           this.priority = 100;
@@ -13675,7 +13675,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
       ko("variables", new yp());
       var Lp = {};
       Lp.VariableSerializer = yp;
-      var x_ = { blocks: tn, exceptions: Ts, priorities: { BLOCKS: 50, PROCEDURES: 75, VARIABLES: 100, WORKSPACE_COMMENTS: 25 }, procedures: hl, registry: Ic, variables: Lp, workspaceComments: br, workspaces: { load: function(t, e, { recordUndo: i = !1 } = {}) {
+      var F_ = { blocks: tn, exceptions: Ts, priorities: { BLOCKS: 50, PROCEDURES: 75, VARIABLES: 100, WORKSPACE_COMMENTS: 25 }, procedures: hl, registry: Ic, variables: Lp, workspaceComments: br, workspaces: { load: function(t, e, { recordUndo: i = !1 } = {}) {
         var s = vn(R.SERIALIZER, !0);
         if (s) {
           s = Object.entries(s).sort((r, a) => a[1].priority - r[1].priority);
@@ -15739,7 +15739,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
       Vo("thrasos", i_);
       var vu = {};
       vu.RenderInfo = e_, vu.Renderer = i_;
-      var F_ = new Rs("zelos", { colour_blocks: { colourPrimary: "#CF63CF", colourSecondary: "#C94FC9", colourTertiary: "#BD42BD" }, list_blocks: { colourPrimary: "#9966FF", colourSecondary: "#855CD6", colourTertiary: "#774DCB" }, logic_blocks: { colourPrimary: "#4C97FF", colourSecondary: "#4280D7", colourTertiary: "#3373CC" }, loop_blocks: { colourPrimary: "#0fBD8C", colourSecondary: "#0DA57A", colourTertiary: "#0B8E69" }, math_blocks: { colourPrimary: "#59C059", colourSecondary: "#46B946", colourTertiary: "#389438" }, procedure_blocks: {
+      var U_ = new Rs("zelos", { colour_blocks: { colourPrimary: "#CF63CF", colourSecondary: "#C94FC9", colourTertiary: "#BD42BD" }, list_blocks: { colourPrimary: "#9966FF", colourSecondary: "#855CD6", colourTertiary: "#774DCB" }, logic_blocks: { colourPrimary: "#4C97FF", colourSecondary: "#4280D7", colourTertiary: "#3373CC" }, loop_blocks: { colourPrimary: "#0fBD8C", colourSecondary: "#0DA57A", colourTertiary: "#0B8E69" }, math_blocks: { colourPrimary: "#59C059", colourSecondary: "#46B946", colourTertiary: "#389438" }, procedure_blocks: {
         colourPrimary: "#FF6680",
         colourSecondary: "#FF4D6A",
         colourTertiary: "#FF3355"
@@ -15753,7 +15753,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         text_category: { colour: "#FFBF00" },
         variable_category: { colour: "#FF8C1A" },
         variable_dynamic_category: { colour: "#FF8C1A" }
-      }), U_ = { Classic: Xr, Zelos: F_ }, Su = class {
+      }), H_ = { Classic: Xr, Zelos: U_ }, Su = class {
         constructor(t, e, i) {
           this.id_ = t.toolboxitemid || Ht(), this.level_ = (this.parent_ = i || null) ? this.parent_.getLevel() + 1 : 0, this.toolboxItemDef_ = t, this.parentToolbox_ = e, this.workspace_ = this.parentToolbox_.getWorkspace();
         }
@@ -16493,7 +16493,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
   outline: none;
 }
 `), X(R.TOOLBOX, "default", s_);
-      var H_ = b.INPUT_VALUE, G_ = b.OUTPUT_VALUE, V_ = b.NEXT_STATEMENT, W_ = b.PREVIOUS_STATEMENT, K_ = P.TOP, Y_ = P.BOTTOM, X_ = P.LEFT, z_ = P.RIGHT;
+      var G_ = b.INPUT_VALUE, V_ = b.OUTPUT_VALUE, W_ = b.NEXT_STATEMENT, K_ = b.PREVIOUS_STATEMENT, Y_ = P.TOP, X_ = P.BOTTOM, z_ = P.LEFT, j_ = P.RIGHT;
       Eo.prototype.newBlock = function(t, e) {
         return new po(this, t, e);
       }, zt.prototype.newBlock = function(t, e) {
@@ -16511,7 +16511,7 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         for (let e = 0; e < t.length; e++) this.getName(t[e][0], n.jj.NameType.PROCEDURE);
       };
       var m = {};
-      return m.Block = po, m.BlockFlyoutInflater = Yp, m.BlockNavigationPolicy = ip, m.BlockSvg = wt, m.Blocks = Ot, m.BubbleNavigationPolicy = sp, m.ButtonFlyoutInflater = Kp, m.COLLAPSED_FIELD_NAME = "_TEMP_COLLAPSED_FIELD", m.COLLAPSED_INPUT_NAME = "_TEMP_COLLAPSED_INPUT", m.COLLAPSE_CHARS = 30, m.CodeGenerator = n.Rp, m.CollapsibleToolboxCategory = mo, m.CommentBarButtonNavigationPolicy = op, m.CommentEditorNavigationPolicy = np, m.ComponentManager = gt, m.Connection = st, m.ConnectionChecker = Wp, m.ConnectionDB = co, m.ConnectionNavigationPolicy = rp, m.ConnectionType = b, m.ContextMenu = Ki, m.ContextMenuItems = Ut, m.ContextMenuRegistry = Q, m.Css = cc, m.DELETE_VARIABLE_ID = "DELETE_VARIABLE_ID", m.DeleteArea = qr, m.Direction = mt, m.DragDisposition = Si, m.DragTarget = Zg, m.DropDownDiv = ie, m.Events = w, m.Extensions = He, m.Field = ht, m.FieldCheckbox = Ms, m.FieldDropdown = Yt, m.FieldImage = ws, m.FieldLabel = Ls, m.FieldLabelSerializable = Gp, m.FieldNavigationPolicy = lp, m.FieldNumber = Cu, m.FieldTextInput = n.Ip, m.FieldVariable = pn, m.Flyout = tl, m.FlyoutButton = oe, m.FlyoutButtonNavigationPolicy = tp, m.FlyoutItem = To, m.FlyoutMetricsManager = Qg, m.FlyoutNavigator = gp, m.FlyoutSeparator = Zr, m.FlyoutSeparatorNavigationPolicy = ep, m.FocusManager = te, m.FocusableTreeTraverser = Kt, m.Generator = n.Rp, m.Gesture = el, m.Grid = au, m.HorizontalFlyout = Hp, m.INPUT_VALUE = H_, m.IconNavigationPolicy = ap, m.Input = go, m.InsertionMarkerPreviewer = Fp, m.KeyboardMover = ct, m.KeyboardNavigationController = Og, m.LabelFlyoutInflater = kp, m.Menu = vc, m.MenuItem = yr, m.MetricsManager = ru, m.MoveIndicator = Yg, m.Msg = n.C, m.NEXT_STATEMENT = V_, m.Names = n.jj, m.NavigationDirection = Ae, m.Navigator = Qr, m.OPPOSITE_TYPE = bs, m.OUTPUT_VALUE = G_, m.Options = si, m.PREVIOUS_STATEMENT = W_, m.PROCEDURE_CATEGORY_NAME = "PROCEDURE", m.Procedures = _e, m.RENAME_VARIABLE_ID = "RENAME_VARIABLE_ID", m.RenderedConnection = Xt, m.Scrollbar = yt, m.ScrollbarPair = lu, m.SeparatorFlyoutInflater = pp, m.ShortcutItems = nt, m.ShortcutRegistry = x, m.TOOLBOX_AT_BOTTOM = Y_, m.TOOLBOX_AT_LEFT = X_, m.TOOLBOX_AT_RIGHT = z_, m.TOOLBOX_AT_TOP = K_, m.Theme = Rs, m.ThemeManager = Sp, m.Themes = U_, m.Toast = ce, m.Toolbox = s_, m.ToolboxCategory = Ve, m.ToolboxItem = Su, m.ToolboxItemNavigationPolicy = up, m.ToolboxNavigator = dp, m.ToolboxSeparator = En, m.Tooltip = pe, m.Touch = ds, m.Trashcan = Op, m.UnattachedFieldError = kt, m.VARIABLE_CATEGORY_NAME = "VARIABLE", m.VARIABLE_DYNAMIC_CATEGORY_NAME = "VARIABLE_DYNAMIC", m.VERSION = "13.1.1", m.VariableMap = bp, m.VariableModel = Ap, m.Variables = Mt, m.VariablesDynamic = Ns, m.VerticalFlyout = Iu, m.WidgetDiv = Ue, m.Workspace = Eo, m.WorkspaceAudio = Rp, m.WorkspaceCommentNavigationPolicy = hp, m.WorkspaceDragger = _p, m.WorkspaceNavigationPolicy = cp, m.WorkspaceSvg = zt, m.Xml = ue, m.ZoomControls = jd, m.blockAnimations = ln, m.blockRendering = at, m.browserEvents = _i, m.bubbles = Tn, m.bumpObjects = jr, m.clipboard = Ge, m.comments = Yi, m.common = Dt, m.config = n.Ng, m.constants = { COLLAPSED_FIELD_NAME: "_TEMP_COLLAPSED_FIELD", COLLAPSED_INPUT_NAME: "_TEMP_COLLAPSED_INPUT", MANUALLY_DISABLED: "MANUALLY_DISABLED" }, m.defineBlocksWithJsonArray = vl, m.dialog = fi, m.dragging = _n, m.fieldRegistry = Yr, m.geras = hi, m.getFocusManager = n.t, m.getMainWorkspace = Il, m.getSelected = Ro, m.hasBubble = ze, m.hideChaff = function(t) {
+      return m.Block = po, m.BlockFlyoutInflater = Yp, m.BlockNavigationPolicy = ip, m.BlockSvg = wt, m.Blocks = Ot, m.BubbleNavigationPolicy = sp, m.ButtonFlyoutInflater = Kp, m.COLLAPSED_FIELD_NAME = "_TEMP_COLLAPSED_FIELD", m.COLLAPSED_INPUT_NAME = "_TEMP_COLLAPSED_INPUT", m.COLLAPSE_CHARS = 30, m.CodeGenerator = n.Rp, m.CollapsibleToolboxCategory = mo, m.CommentBarButtonNavigationPolicy = op, m.CommentEditorNavigationPolicy = np, m.ComponentManager = gt, m.Connection = st, m.ConnectionChecker = Wp, m.ConnectionDB = co, m.ConnectionNavigationPolicy = rp, m.ConnectionType = b, m.ContextMenu = Ki, m.ContextMenuItems = Ut, m.ContextMenuRegistry = Q, m.Css = cc, m.DELETE_VARIABLE_ID = "DELETE_VARIABLE_ID", m.DeleteArea = qr, m.Direction = mt, m.DragDisposition = Si, m.DragTarget = Zg, m.DropDownDiv = ie, m.Events = w, m.Extensions = He, m.Field = ht, m.FieldCheckbox = Ms, m.FieldDropdown = Yt, m.FieldImage = ws, m.FieldLabel = Ls, m.FieldLabelSerializable = Gp, m.FieldNavigationPolicy = lp, m.FieldNumber = Cu, m.FieldTextInput = n.Ip, m.FieldVariable = pn, m.Flyout = tl, m.FlyoutButton = oe, m.FlyoutButtonNavigationPolicy = tp, m.FlyoutItem = To, m.FlyoutMetricsManager = Qg, m.FlyoutNavigator = gp, m.FlyoutSeparator = Zr, m.FlyoutSeparatorNavigationPolicy = ep, m.FocusManager = te, m.FocusableTreeTraverser = Kt, m.Generator = n.Rp, m.Gesture = el, m.Grid = au, m.HorizontalFlyout = Hp, m.INPUT_VALUE = G_, m.IconNavigationPolicy = ap, m.Input = go, m.InsertionMarkerPreviewer = Fp, m.KeyboardMover = ct, m.KeyboardNavigationController = Og, m.LabelFlyoutInflater = kp, m.Menu = vc, m.MenuItem = yr, m.MetricsManager = ru, m.MoveIndicator = Yg, m.Msg = n.C, m.NEXT_STATEMENT = W_, m.Names = n.jj, m.NavigationDirection = Ae, m.Navigator = Qr, m.OPPOSITE_TYPE = bs, m.OUTPUT_VALUE = V_, m.Options = si, m.PREVIOUS_STATEMENT = K_, m.PROCEDURE_CATEGORY_NAME = "PROCEDURE", m.Procedures = _e, m.RENAME_VARIABLE_ID = "RENAME_VARIABLE_ID", m.RenderedConnection = Xt, m.Scrollbar = yt, m.ScrollbarPair = lu, m.SeparatorFlyoutInflater = pp, m.ShortcutItems = nt, m.ShortcutRegistry = x, m.TOOLBOX_AT_BOTTOM = X_, m.TOOLBOX_AT_LEFT = z_, m.TOOLBOX_AT_RIGHT = j_, m.TOOLBOX_AT_TOP = Y_, m.Theme = Rs, m.ThemeManager = Sp, m.Themes = H_, m.Toast = ce, m.Toolbox = s_, m.ToolboxCategory = Ve, m.ToolboxItem = Su, m.ToolboxItemNavigationPolicy = up, m.ToolboxNavigator = dp, m.ToolboxSeparator = En, m.Tooltip = pe, m.Touch = ds, m.Trashcan = Op, m.UnattachedFieldError = kt, m.VARIABLE_CATEGORY_NAME = "VARIABLE", m.VARIABLE_DYNAMIC_CATEGORY_NAME = "VARIABLE_DYNAMIC", m.VERSION = "13.1.1", m.VariableMap = bp, m.VariableModel = Ap, m.Variables = Mt, m.VariablesDynamic = Ns, m.VerticalFlyout = Iu, m.WidgetDiv = Ue, m.Workspace = Eo, m.WorkspaceAudio = Rp, m.WorkspaceCommentNavigationPolicy = hp, m.WorkspaceDragger = _p, m.WorkspaceNavigationPolicy = cp, m.WorkspaceSvg = zt, m.Xml = ue, m.ZoomControls = jd, m.blockAnimations = ln, m.blockRendering = at, m.browserEvents = _i, m.bubbles = Tn, m.bumpObjects = jr, m.clipboard = Ge, m.comments = Yi, m.common = Dt, m.config = n.Ng, m.constants = { COLLAPSED_FIELD_NAME: "_TEMP_COLLAPSED_FIELD", COLLAPSED_INPUT_NAME: "_TEMP_COLLAPSED_INPUT", MANUALLY_DISABLED: "MANUALLY_DISABLED" }, m.defineBlocksWithJsonArray = vl, m.dialog = fi, m.dragging = _n, m.fieldRegistry = Yr, m.geras = hi, m.getFocusManager = n.t, m.getMainWorkspace = Il, m.getSelected = Ro, m.hasBubble = ze, m.hideChaff = function(t) {
         Le.hideChaff(t);
       }, m.icons = zi, m.inject = function(t, e) {
         var i = null;
@@ -16534,12 +16534,12 @@ Blockly.YourGeneratorName.nameDB_.setVariableMap(workspace.getVariableMap());`),
         return t && typeof t.paste == "function";
       }, m.isRenderedElement = function(t) {
         return t && typeof t.getSvgRoot == "function";
-      }, m.isSelectable = vo, m.isSerializable = wo, m.isVariableBackedParameterModel = Wl, m.keyboardNavigationController = Tt, m.layers = { BLOCK: 50, BUBBLE: 100 }, m.navigateBlock = Ie, m.procedures = _e, m.registry = Ti, m.renderManagement = kr, m.serialization = x_, m.setLocale = Ol, m.setParentContainer = Cl, m.svgResize = Zi, m.thrasos = vu, m.uiPosition = ps, m.utils = It, m.zelos = ai, n.__chunk_blockly = m, n.__chunk_blockly.__namespace__ = n, n.__chunk_blockly;
+      }, m.isSelectable = vo, m.isSerializable = wo, m.isVariableBackedParameterModel = Wl, m.keyboardNavigationController = Tt, m.layers = { BLOCK: 50, BUBBLE: 100 }, m.navigateBlock = Ie, m.procedures = _e, m.registry = Ti, m.renderManagement = kr, m.serialization = F_, m.setLocale = Ol, m.setParentContainer = Cl, m.svgResize = Zi, m.thrasos = vu, m.uiPosition = ps, m.utils = It, m.zelos = ai, n.__chunk_blockly = m, n.__chunk_blockly.__namespace__ = n, n.__chunk_blockly;
     });
   })(dl)), dl.exports;
 }
-var J_ = Du();
-const q_ = /* @__PURE__ */ Mu(J_), {
+var q_ = Du();
+const Z_ = /* @__PURE__ */ Mu(q_), {
   Block: kT,
   BlockFlyoutInflater: NT,
   BlockNavigationPolicy: wT,
@@ -16556,7 +16556,7 @@ const q_ = /* @__PURE__ */ Mu(J_), {
   CommentEditorNavigationPolicy: WT,
   ComponentManager: KT,
   Connection: YT,
-  ConnectionChecker: Z_,
+  ConnectionChecker: Q_,
   ConnectionDB: XT,
   ConnectionNavigationPolicy: zT,
   ConnectionType: jT,
@@ -16570,8 +16570,8 @@ const q_ = /* @__PURE__ */ Mu(J_), {
   DragDisposition: iE,
   DragTarget: sE,
   DropDownDiv: oE,
-  Events: Q_,
-  Extensions: tT,
+  Events: tT,
+  Extensions: T_,
   Field: nE,
   FieldCheckbox: rE,
   FieldDropdown: lE,
@@ -16700,7 +16700,7 @@ const q_ = /* @__PURE__ */ Mu(J_), {
   procedures: fm,
   registry: h_,
   renderManagement: mm,
-  serialization: T_,
+  serialization: E_,
   setLocale: Im,
   setParentContainer: Cm,
   svgResize: vm,
@@ -16708,9 +16708,9 @@ const q_ = /* @__PURE__ */ Mu(J_), {
   uiPosition: Rm,
   utils: Am,
   zelos: bm
-} = q_;
+} = Z_;
 var gl = { exports: {} }, rT = gl.exports, c_;
-function E_() {
+function f_() {
   return c_ || (c_ = 1, (function(k, I) {
     (function(n, h) {
       k.exports = h(Du());
@@ -17915,7 +17915,7 @@ function E_() {
     });
   })(gl)), gl.exports;
 }
-var lT = E_();
+var lT = f_();
 const aT = /* @__PURE__ */ Mu(lT), {
   blocks: Om,
   lists: ym,
@@ -17942,7 +17942,7 @@ var uT = pl.exports, d_;
 function dT() {
   return d_ || (d_ = 1, (function(k, I) {
     (function(n, h) {
-      k.exports = h(Du(), cT(), E_());
+      k.exports = h(Du(), cT(), f_());
     })(uT, function(n, h, M) {
       return n.setLocale(h), n;
     });
@@ -17973,7 +17973,7 @@ const pT = /* @__PURE__ */ Mu(gT), {
   ContextMenu: eI,
   ContextMenuItems: iI,
   ContextMenuRegistry: sI,
-  Css: f_,
+  Css: m_,
   DELETE_VARIABLE_ID: oI,
   DeleteArea: nI,
   Direction: rI,
@@ -18179,7 +18179,7 @@ const pT = /* @__PURE__ */ Mu(gT), {
 };
 Pu.CONNECTION_INDICATOR_RADIUS = 9;
 let yu = Pu;
-f_.register(`
+m_.register(`
 .blockly-dotted-outline-on-hover {
     transition: stroke .4s;
 }
@@ -18608,7 +18608,7 @@ const fn = class fn extends _T {
 };
 fn.CONNECTION_INDICATOR_RADIUS = 9;
 let p_ = fn;
-f_.register(`
+m_.register(`
 .blocklyDropdownMenu .blocklyMenuItemCheckbox {
     filter: contrast(0) brightness(100);
 }
@@ -18617,7 +18617,7 @@ f_.register(`
     fill: none;
 }
 `);
-class ST extends Z_ {
+class ST extends Q_ {
   doTypeChecks(I, n) {
     const h = I.getCheck(), M = n.getCheck();
     if (!h || !M)
@@ -18632,13 +18632,13 @@ class ST extends Z_ {
 h_.register(h_.Type.CONNECTION_CHECKER, "pxt", ST, !0);
 const RT = "data:image/svg+xml," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#8889dd"/><path d="M12 6v12M6 12h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>'
-), m_ = "px_obj_value_", I_ = "px_obj_key_", __ = "px_obj_plus";
+), I_ = "px_obj_value_", C_ = "px_obj_key_", __ = "px_obj_plus";
 function Nu(k, I) {
-  k.pxRowCounter++, k.appendValueInput(m_ + k.pxRowCounter).appendField("поле").appendField(new iT(I), I_ + k.pxRowCounter).appendField("значение");
+  k.pxRowCounter++, k.appendValueInput(I_ + k.pxRowCounter).appendField("поле").appendField(new iT(I), C_ + k.pxRowCounter).appendField("значение");
 }
 function AT(k) {
   for (let I = k.pxRowCounter; I >= 1; I--)
-    k.removeInput(m_ + I, !0);
+    k.removeInput(I_ + I, !0);
   k.pxRowCounter = 0;
 }
 function wu(k) {
@@ -18648,13 +18648,13 @@ function bT(k) {
   const I = k.getSourceBlock();
   I.isInFlyout || (Nu(I, "поле" + (I.pxRowCounter + 1)), wu(I));
 }
-tT.registerMutator(
+T_.registerMutator(
   "px_object_builder",
   {
     saveExtraState() {
       const k = [];
       for (let I = 1; I <= this.pxRowCounter; I++) {
-        const n = this.getField(I_ + I);
+        const n = this.getField(C_ + I);
         k.push(n ? String(n.getValue()) : "");
       }
       return { keys: k };
@@ -18670,6 +18670,9 @@ tT.registerMutator(
     this.pxRowCounter = 0, this.setInputsInline(!1), Nu(this, "поле1"), wu(this);
   }
 );
+T_.register("px_hat_cap", function() {
+  this.hat = "cap";
+});
 const OT = {
   renderer: "pxt",
   media: "_content/Mars.PxBlocks.Workspace/media/",
@@ -18724,10 +18727,10 @@ function Uv(k) {
   oT.defineBlocksWithJsonArray(JSON.parse(k));
 }
 function Hv(k) {
-  return JSON.stringify(T_.workspaces.save(k));
+  return JSON.stringify(E_.workspaces.save(k));
 }
 function Gv(k, I) {
-  T_.workspaces.load(JSON.parse(I), k);
+  E_.workspaces.load(JSON.parse(I), k);
 }
 function Vv(k) {
   k.clear();
@@ -18738,10 +18741,13 @@ function Wv(k, I) {
 function Kv(k) {
   k.scrollCenter();
 }
-function Yv(k, I) {
+function Yv(k, I, n) {
+  k.getBlockById(I)?.setHighlighted(n);
+}
+function Xv(k, I) {
   let n = [], h;
   k.addChangeListener((M) => {
-    if (M.type === Q_.TOOLBOX_ITEM_SELECT) {
+    if (M.type === tT.TOOLBOX_ITEM_SELECT) {
       const j = M;
       I.invokeMethodAsync("OnToolboxSelect", yT(k, j.newItem ?? null));
     }
@@ -18761,25 +18767,26 @@ function LT(k) {
   const I = k, n = { type: k.type };
   return I.blockId !== void 0 && (n.blockId = I.blockId), I.ids !== void 0 && (n.ids = I.ids), n;
 }
-function Xv(k) {
+function zv(k) {
   k.dispose();
 }
-function zv() {
+function jv() {
   return sT;
 }
 export {
   Kv as centerContent,
   xv as clearToolboxSelection,
   Vv as clearWorkspace,
-  Xv as disposeWorkspace,
-  zv as getVersion,
+  zv as disposeWorkspace,
+  jv as getVersion,
   Dv as injectWorkspace,
   Bv as isFlyoutVisible,
   Gv as loadWorkspace,
   Uv as registerBlockDefinitions,
-  Yv as registerEvents,
+  Xv as registerEvents,
   Hv as saveWorkspace,
   Pv as selectCategory,
+  Yv as setBlockHighlight,
   Mv as setTypes,
   Wv as undo,
   Fv as updateToolbox

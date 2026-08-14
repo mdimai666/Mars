@@ -29,23 +29,32 @@ public sealed class ScreenshotCrawler
 
             foreach (var path in paths)
             {
-                var url = _baseUrl + path;
-
-                await _page.GotoAsync(url, new()
-                {
-                    WaitUntil = WaitUntilState.NetworkIdle
-                });
-
-                await _page.WaitForTimeoutAsync(300); // стабилизация SPA
-
                 var fileName = $"{viewport.Name}_{path.Trim('/').Replace('/', '_')}.png";
                 var fullPath = Path.Combine(outputDir, fileName);
 
-                await _page.ScreenshotAsync(new()
+                try
                 {
-                    Path = fullPath,
-                    FullPage = true
-                });
+                    var url = _baseUrl + path;
+
+                    await _page.GotoAsync(url, new()
+                    {
+                        WaitUntil = WaitUntilState.NetworkIdle
+                    });
+
+                    await _page.WaitForTimeoutAsync(300); // стабилизация SPA
+
+                    await _page.ScreenshotAsync(new()
+                    {
+                        Path = fullPath,
+                        FullPage = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // Одна упавшая страница не должна прерывать обход остальных
+                    Console.Error.WriteLine($"[ScreenshotCrawler] failed '{path}': {ex.Message}");
+                    await File.WriteAllTextAsync(fullPath + ".error.txt", ex.ToString());
+                }
             }
         }
     }

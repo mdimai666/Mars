@@ -1,4 +1,6 @@
 //using Mars.Areas.Identity;
+using AppFront.Shared.Interfaces;
+using AppFront.Shared.Services;
 using Mars.Handlers;
 using Mars.Host;
 using Mars.Host.Services;
@@ -48,6 +50,7 @@ internal static class MarsStartupPartServices
 
         //services.AddSingleton<DebugService>();
         services.TryAddSingleton<ModelInfoService>();
+        services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
 
         services.AddSingleton<IServiceCollection>(services);
 

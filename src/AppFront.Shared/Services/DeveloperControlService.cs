@@ -1,5 +1,5 @@
+using AppFront.Shared.Interfaces;
 using AppFront.Shared.Tools;
-using Mars.Shared.Tools;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -8,59 +8,66 @@ namespace AppFront.Shared.Services;
 public class DeveloperControlService
 {
     private readonly NavigationManager navigationManager;
-    private readonly ModelInfoService modelService;
-
-    static List<GPageInfo> pages = default!;
+    private readonly IBlazorPagesService pagesService;
 
     MyJS js;
 
-    public DeveloperControlService(NavigationManager navigationManager, ModelInfoService modelService, IJSRuntime JS)
+    public DeveloperControlService(NavigationManager navigationManager, IBlazorPagesService pagesService, IJSRuntime JS)
     {
         this.navigationManager = navigationManager;
-        this.modelService = modelService;
+        this.pagesService = pagesService;
 
-        if (pages == null)
-        {
-            if (Q.Program is null)
-            {
-                pages = new();
-            }
-            else
-            {
-                pages = modelService.GetPages(Q.Program.GetType().Assembly);
-            }
-
-        }
         js = new MyJS(JS);
     }
 
     public void OpenPageSource()
     {
-        var filename = modelService.GetFileNameFromPageClass(navigationManager, pages);
-        var path = Q.WorkDir;
-
-        if (filename is null)
+        if (Q.Program is null)
         {
-            Console.Error.WriteLine("filename is null");
+            Console.Error.WriteLine("Q.Program is null");
             return;
         }
 
-        var x = Q.HostingInfo.NormalizedPathJoin(path, filename);
-        _ = js.OpenNewTab($"vs2026://{x}");
+        // Путь относительно базы приложения (без префикса маунта)
+        var relativeUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
+        var page = pagesService.FindPageByUrl([Q.Program.Assembly], relativeUrl);
+
+        if (page is null)
+        {
+            Console.Error.WriteLine("page not found for url: " + navigationManager.Uri);
+            return;
+        }
+
+        OpenInEditor(page.PageType);
     }
 
     public void OpenPageSource(Type pageType, string? prependPath = null)
     {
-        string filename = modelService.GetFileNameFromPageClass(pageType);
-        string path = Q.WorkDir;
+        OpenInEditor(pageType, prependPath);
+    }
+
+    private void OpenInEditor(Type pageType, string? prependPath = null)
+    {
+        var filename = pagesService.ResolveSourceFilePath(pageType);
 
         if (filename is null)
         {
-            Console.Error.WriteLine("filename is null");
+            Console.Error.WriteLine("filename is null for type: " + pageType.FullName);
             return;
-        };
+        }
 
-        var x = Q.HostingInfo.NormalizedPathJoin(path, prependPath, filename);
-        _ = js.OpenNewTab($"vs2026://{x}");
+        // Абсолютный путь (Debug на сервере) открываем как есть,
+        // относительный склеиваем с рабочей директорией
+        string target;
+        if (Path.IsPathRooted(filename))
+        {
+            target = Q.HostingInfo.NormalizedPathJoin(filename);
+        }
+        else
+        {
+            target = Q.HostingInfo.NormalizedPathJoin(Q.WorkDir, prependPath, filename);
+        }
+
+        _ = js.OpenNewTab($"vs2026://{target}");
     }
 }

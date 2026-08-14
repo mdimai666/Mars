@@ -1,3 +1,5 @@
+using AppFront.Shared.Interfaces;
+using AppFront.Shared.Services;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Interfaces;
@@ -40,6 +42,7 @@ public static class HostStartup
 
         builder.Services.AddSingleton(builder.Services);
         builder.Services.TryAddSingleton<ModelInfoService>();
+        builder.Services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
         builder.Services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
         builder.Services.MarsAddTemplateEngines();

@@ -1,4 +1,5 @@
 using AppFront.Shared.AuthProviders;
+using AppFront.Shared.Interfaces;
 using AppFront.Shared.Services;
 using Blazored.LocalStorage;
 using BlazoredHtmlRender;
@@ -42,6 +43,7 @@ public static class MainAppFrontShared
         services.TryAddScoped<AppFrontJs>();
 
         services.TryAddSingleton<ModelInfoService>();
+        services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
         services.TryAddScoped<DeveloperControlService>();
         //services.TryAddScoped<GalleryService>();
         services.TryAddScoped<IActAppService, ActAppService>();

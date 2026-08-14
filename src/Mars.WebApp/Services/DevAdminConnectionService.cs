@@ -1,7 +1,7 @@
+using AppFront.Shared.Interfaces;
 using Mars.Core.Models;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
-using Mars.Shared.Tools;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.Services;
@@ -9,12 +9,12 @@ namespace Mars.Services;
 internal class DevAdminConnectionService : IDevAdminConnectionService
 {
     readonly IHubContext<ChatHub> _hub;
-    private readonly ModelInfoService _modelInfoService;
+    private readonly IBlazorPagesService _pagesService;
 
-    public DevAdminConnectionService(IHubContext<ChatHub> hub, ModelInfoService modelInfoService)
+    public DevAdminConnectionService(IHubContext<ChatHub> hub, IBlazorPagesService pagesService)
     {
         _hub = hub;
-        _modelInfoService = modelInfoService;
+        _pagesService = pagesService;
     }
 
     public Task ShowNotifyMessage(string message, string userId, MessageIntent? messageIntent = MessageIntent.Info)
@@ -29,8 +29,8 @@ internal class DevAdminConnectionService : IDevAdminConnectionService
 
     public IReadOnlyCollection<PageContextInfo> GetPageContexts()
     {
-        var pages = _modelInfoService.GetPagesPageNonId(typeof(AppAdmin.App).Assembly);
+        var pages = _pagesService.GetStaticRoutedPages([typeof(AppAdmin.App).Assembly]);
 
-        return pages.Select(x => new PageContextInfo(x.PageType.FullName!, x.DisplayAttributeName ?? x.Name)).ToList();
+        return pages.Select(x => new PageContextInfo(x.PageType.FullName!, x.DisplayName)).ToList();
     }
 }

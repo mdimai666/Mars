@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using Mars.Plugin.PluginProvider.Dto;
 using Mars.Plugin.PluginProvider.Providers;
+using Mars.Test.Common.Helpers;
 
 namespace Test.Mars.Plugin;
 
@@ -12,7 +13,7 @@ public class PluginManifestProviderTests
 
     public PluginManifestProviderTests()
     {
-        _testFilesDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "SampleWebStaticAssetEndpointsFiles"));
+        _testFilesDir = SolutionPathHelper.Resolve("tests", "Test.Mars.Plugin", "SampleWebStaticAssetEndpointsFiles");
     }
 
     [Theory]

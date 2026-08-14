@@ -2,6 +2,7 @@ using FluentAssertions;
 using Mars.Nodes.Core.Implements.Nodes.Storage;
 using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Implements.Test.Services;
+using Mars.Test.Common.Helpers;
 
 namespace Mars.Nodes.Implements.Test.Nodes;
 
@@ -11,7 +12,7 @@ public class DirReadNodeTests : NodeServiceUnitTestBase
 
     public DirReadNodeTests()
     {
-        _testFilesDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "TestFiles"));
+        _testFilesDir = SolutionPathHelper.Resolve("tests", "Mars.Nodes.Implements.Test", "TestFiles");
     }
 
     private string FP(string path) => Path.GetFullPath(Path.Combine(_testFilesDir, path));

@@ -7,6 +7,7 @@ using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Flurl.Http;
 using MySqlConnector;
+using Mars.Test.Common.Helpers;
 using Testcontainers.MySql;
 
 namespace ExternalServices.Integration.Tests.WordPressTests;
@@ -147,7 +148,7 @@ public class WordPressFixture : IAsyncLifetime
         Console.WriteLine($"Database '{databaseName}' created or already exists.");
     }
 
-    protected string MountFilesDir => Path.Combine(Path.GetFullPath("../../..", Environment.CurrentDirectory), "WordPressTests", "MountFiles");
+    protected string MountFilesDir => SolutionPathHelper.Resolve("tests", "ExternalServices.Integration.Tests", "WordPressTests", "MountFiles");
 
     protected virtual int GetNextFreePort(int port = 0)
     {

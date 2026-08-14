@@ -1,9 +1,9 @@
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Mars.Core.Models;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Common;
+using Mars.Test.Common.Helpers;
 using Mars.UseStartup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,8 +32,7 @@ public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
     {
         _ = nameof(StartupFront.AddFront);
 
-        var testDirPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "..", "..", ".."));
-        var themeRoot = Path.Combine(testDirPath, "HandlebarsEngine", "appTheme");
+        var themeRoot = SolutionPathHelper.Resolve("tests", "Mars.AppFrontEngines.Integration.Tests", "HandlebarsEngine", "appTheme");
 
         return [
             new AppFrontSettingsCfg(){

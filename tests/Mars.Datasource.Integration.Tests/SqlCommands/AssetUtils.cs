@@ -1,14 +1,12 @@
+using Mars.Test.Common.Helpers;
+
 namespace Mars.Datasource.Integration.Tests.SqlCommands;
 
 public static class AssetUtils
 {
     public static string Dir()
     {
-        var marsDir = Path.GetFullPath("../../..", Environment.CurrentDirectory);
-
-        var sqlCommandsDir = @"SqlCommands";
-
-        return Path.Combine(marsDir, sqlCommandsDir);
+        return SolutionPathHelper.Resolve("tests", "Mars.Datasource.Integration.Tests", "SqlCommands");
     }
 
     public static string GetSqlCommandScript(string pathFromSqlCommands)

@@ -7,6 +7,7 @@ using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
+using Mars.Test.Common.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,8 +25,7 @@ public class UpdateFileTests : ApplicationTests
         _fileService = appFixture.ServiceProvider.GetRequiredService<IFileService>();
         var opService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _fileHostingInfo = opService.FileHostingInfo();
-        // BaseDirectory вместо GetCurrentDirectory: приложение вне Visual Studio меняет CWD при старте (FixDebugModeBaseDirectory).
-        _exampleFilesPath = Path.Join(AppContext.BaseDirectory, "..", "..", "..", "Controllers", "Medias", "ExampleFiles");
+        _exampleFilesPath = SolutionPathHelper.Resolve("tests", "Mars.Integration.Tests", "Controllers", "Medias", "ExampleFiles");
 
     }
 

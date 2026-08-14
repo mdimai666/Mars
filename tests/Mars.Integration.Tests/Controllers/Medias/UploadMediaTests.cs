@@ -10,6 +10,7 @@ using Mars.Integration.Tests.Extensions;
 using Mars.Options.Models;
 using Mars.Shared.Contracts.Files;
 using Mars.Test.Common.FixtureCustomizes;
+using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,8 +34,7 @@ public sealed class UploadMediaTests : ApplicationTests
         _mediaOption = _optionService.GetOption<MediaOption>();
         _mediaOption.IsAutoResizeUploadImage = true;
         _optionService.SetOptionOnMemory(_mediaOption);
-        // BaseDirectory вместо GetCurrentDirectory: приложение вне Visual Studio меняет CWD при старте (FixDebugModeBaseDirectory).
-        _exampleFilesPath = Path.Join(AppContext.BaseDirectory, "..", "..", "..", "Controllers", "Medias", "ExampleFiles");
+        _exampleFilesPath = SolutionPathHelper.Resolve("tests", "Mars.Integration.Tests", "Controllers", "Medias", "ExampleFiles");
         _image_CreationOfSpace1jpg = "creation of space1.jpg";
 
     }

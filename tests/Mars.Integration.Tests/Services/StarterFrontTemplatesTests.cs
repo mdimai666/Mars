@@ -1,8 +1,8 @@
-using System.Reflection;
 using FluentAssertions;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Models;
 using Mars.Host.Shared.WebSite.SourceProviders;
+using Mars.Test.Common.Helpers;
 
 namespace Mars.Integration.Tests.Services;
 
@@ -12,14 +12,7 @@ namespace Mars.Integration.Tests.Services;
 /// </summary>
 public class StarterFrontTemplatesTests
 {
-    static string TemplatesRoot
-    {
-        get
-        {
-            var testDirPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "..", "..", ".."));
-            return Path.GetFullPath(Path.Combine(testDirPath, "..", "..", "src", "Mars.WebApp", "Res", "front_templates"));
-        }
-    }
+    static string TemplatesRoot => SolutionPathHelper.Resolve("src", "Mars.WebApp", "Res", "front_templates");
 
     [Theory]
     [InlineData("default")]

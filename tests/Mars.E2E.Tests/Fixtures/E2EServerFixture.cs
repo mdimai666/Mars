@@ -11,6 +11,7 @@ using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Interfaces;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
+using Mars.Test.Common.Helpers;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebSiteProcessor.Interfaces;
@@ -56,7 +57,7 @@ public class E2EServerFixture : IAsyncLifetime
 
     private async Task SetupAppFactory()
     {
-        var contentRootPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "Mars.WebApp"));
+        var contentRootPath = SolutionPathHelper.Resolve("src", "Mars.WebApp");
         var wwwRoot = Path.Combine(contentRootPath, "wwwroot");
         var options = new WebApplicationOptions
         {

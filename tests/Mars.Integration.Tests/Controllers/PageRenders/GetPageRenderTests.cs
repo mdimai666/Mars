@@ -15,6 +15,7 @@ using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Contracts.Renders;
 using Mars.Shared.Options;
 using Mars.Test.Common.FixtureCustomizes;
+using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,7 +41,7 @@ public class GetPageRenderTests : ApplicationTests
         var option = optionService.GetOption<FrontsOption>();
         if (option.Fronts.Any(s => s.Slug == _frontSlug)) return;
 
-        var themePath = Path.GetFullPath(Path.Join(AppContext.BaseDirectory, "..", "..", "..", "Controllers", "PageRenders", "appTheme"));
+        var themePath = SolutionPathHelper.Resolve("tests", "Mars.Integration.Tests", "Controllers", "PageRenders", "appTheme");
         option.Fronts.Add(new FrontItem
         {
             Slug = _frontSlug,

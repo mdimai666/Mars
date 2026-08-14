@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Tests\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
+        <ProjectReference Include="..\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
         <ProjectReference Include="..\..\src\Plugin\PluginExample\PluginExample.csproj">
             <!--<Private>false</Private>-->
             <!--<ExcludeAssets>runtime</ExcludeAssets>-->

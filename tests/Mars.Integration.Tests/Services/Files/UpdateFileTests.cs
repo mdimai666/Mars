@@ -24,7 +24,8 @@ public class UpdateFileTests : ApplicationTests
         _fileService = appFixture.ServiceProvider.GetRequiredService<IFileService>();
         var opService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _fileHostingInfo = opService.FileHostingInfo();
-        _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "..\\..\\..", "Controllers\\Medias\\ExampleFiles\\");
+        // BaseDirectory вместо GetCurrentDirectory: приложение вне Visual Studio меняет CWD при старте (FixDebugModeBaseDirectory).
+        _exampleFilesPath = Path.Join(AppContext.BaseDirectory, "..", "..", "..", "Controllers", "Medias", "ExampleFiles");
 
     }
 

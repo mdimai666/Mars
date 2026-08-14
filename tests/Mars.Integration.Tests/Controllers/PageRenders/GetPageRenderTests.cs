@@ -1,14 +1,19 @@
 using System.Web;
+using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
+using Mars.Host.Data.Entities;
+using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Services;
 using Mars.Shared.Common;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Contracts.Renders;
+using Mars.Shared.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,10 +23,34 @@ namespace Mars.Integration.Tests.Controllers.PageRenders;
 public class GetPageRenderTests : ApplicationTests
 {
     const string _apiUrl = "/api/PageRender";
+    const string _frontSlug = "render-test";
 
     public GetPageRenderTests(ApplicationFixture appFixture) : base(appFixture)
     {
         _fixture.Customize(new FixtureCustomize());
+        EnsureFront();
+    }
+
+    // После реворка фронтов (file-based fronts + FrontsOption в БД) в тестовом окружении
+    // фронт не создаётся (EnsureDefaultFront пропускает тесты) — регистрируем файловую тему,
+    // иначе PageRender отдаёт ответ без Data (фронт для url не найден).
+    private void EnsureFront()
+    {
+        var optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
+        var option = optionService.GetOption<FrontsOption>();
+        if (option.Fronts.Any(s => s.Slug == _frontSlug)) return;
+
+        var themePath = Path.GetFullPath(Path.Join(AppContext.BaseDirectory, "..", "..", "..", "Controllers", "PageRenders", "appTheme"));
+        option.Fronts.Add(new FrontItem
+        {
+            Slug = _frontSlug,
+            Title = _frontSlug,
+            Url = "",
+            Path = themePath,
+            EngineId = FrontItem.HandlebarsEngine,
+            Enabled = true,
+        });
+        optionService.SaveOption(option);
     }
 
     private async Task<PostSummary> GetPostFirstByType(string type)
@@ -77,10 +106,23 @@ public class GetPageRenderTests : ApplicationTests
         _ = nameof(PageRenderService.RenderPageBySlug);
         var client = AppFixture.GetClient();
 
-        var post = await GetPostFirstByType("page");
+        // тип "page" больше не создаётся в сиде — готовим данные сами
+        var ef = AppFixture.MarsDbContext();
+        var pageType = _fixture.Create<PostTypeEntity>();
+        pageType.TypeName = "page";
+        pageType.PostStatusList = PostStatusEntity.DefaultStatuses();
+        pageType.EnabledFeatures = [PostTypeConstants.Features.Content];
+        ef.PostTypes.Add(pageType);
+
+        var page = _fixture.Create<PostEntity>();
+        page.PostTypeId = pageType.Id;
+        page.Status = "";
+        ef.Posts.Add(page);
+        await ef.SaveChangesAsync();
+        ef.ChangeTracker.Clear();
 
         //Act
-        var res = await client.Request(_apiUrl, "by-slug", post.Slug).AllowAnyHttpStatus().GetAsync();
+        var res = await client.Request(_apiUrl, "by-slug", page.Slug).AllowAnyHttpStatus().GetAsync();
         var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
 
         //Assert

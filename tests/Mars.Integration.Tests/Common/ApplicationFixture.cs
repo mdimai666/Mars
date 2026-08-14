@@ -180,7 +180,10 @@ public class ApplicationFixture : IAsyncLifetime
     public void ResetMocks()
     {
         var ef = MarsDbContext();
-        if (ef.IsPooled) ef.ChangeTracker.Clear(); //use DbContrext is Pool like .AddDbContextPool()
+        // Контекст резолвится из корневого провайдера и захватывается одним инстансом на весь прогон,
+        // а IsPooled для pooled-контекста всегда False. Без безусловной очистки ChangeTracker копит
+        // сущности между тестами, и после Respawn-сброса и повторного сида они становятся протухшими.
+        ef.ChangeTracker.Clear();
         ResetClients();
         MarsLogger.Initialize(ServiceProvider.GetRequiredService<ILoggerFactory>());
         //ApiClientMock = Substitute.For<IApiClient>();

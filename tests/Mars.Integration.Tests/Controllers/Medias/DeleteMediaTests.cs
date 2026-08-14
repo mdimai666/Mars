@@ -31,7 +31,8 @@ public class DeleteMediaTests : ApplicationTests
         _mediaOption = _optionService.GetOption<MediaOption>();
         _mediaOption.IsAutoResizeUploadImage = true;
         _optionService.SetOptionOnMemory(_mediaOption);
-        _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "..\\..\\..", "Controllers\\Medias\\ExampleFiles\\");
+        // BaseDirectory вместо GetCurrentDirectory: приложение вне Visual Studio меняет CWD при старте (FixDebugModeBaseDirectory).
+        _exampleFilesPath = Path.Join(AppContext.BaseDirectory, "..", "..", "..", "Controllers", "Medias", "ExampleFiles");
 
     }
 

@@ -51,8 +51,9 @@ public class UploadPluginTests : ApplicationTests
         _ = nameof(IPluginService.UploadPlugin);
         var client = AppFixture.GetClient(true);
 
-        //Act
-        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PostAsync();
+        //Act — с пустым POST запрос не матчится на form-file экшен и уходит в api-fallback (404),
+        //поэтому отправляем multipart-заглушку, как прочие Unauthorized-тесты загрузки
+        var result = await client.Request(_apiUrl).AllowAnyHttpStatus().PostMultipartAsync(mp => mp.AddString("s", "v"));
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);

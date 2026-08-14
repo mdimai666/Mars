@@ -109,6 +109,8 @@
     <Project Path="src/Plugin/PluginExample/PluginExample.csproj" />
   </Folder>
   <Folder Name="/Mars.PxBlocks/">
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Host.Shared/Mars.PxBlocks.Host.Shared.csproj" />
+    <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Host/Mars.PxBlocks.Host.csproj" />
     <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Runtime/Mars.PxBlocks.Runtime.csproj" />
     <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Shared/Mars.PxBlocks.Shared.csproj" Id="9f5dd248-b4df-457f-b9f0-53adb80f94b2" />
     <Project Path="src/Mars.PxBlocks/Mars.PxBlocks.Workspace/Mars.PxBlocks.Workspace.csproj" Id="0e45ba41-20a3-4b68-9182-b5f0e0829c66" />

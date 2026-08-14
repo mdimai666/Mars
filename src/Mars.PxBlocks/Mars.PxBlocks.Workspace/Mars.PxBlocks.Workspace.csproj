@@ -11,9 +11,12 @@
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+        <PackageReference Include="Flurl.Http" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Mars.PxBlocks.Host.Shared\Mars.PxBlocks.Host.Shared.csproj" />
         <ProjectReference Include="..\Mars.PxBlocks.Runtime\Mars.PxBlocks.Runtime.csproj" />
         <ProjectReference Include="..\Mars.PxBlocks.Shared\Mars.PxBlocks.Shared.csproj" />
     </ItemGroup>

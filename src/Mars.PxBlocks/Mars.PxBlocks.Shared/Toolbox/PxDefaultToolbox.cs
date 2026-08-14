@@ -1,8 +1,10 @@
-using Mars.PxBlocks.Shared.Toolbox;
+namespace Mars.PxBlocks.Shared.Toolbox;
 
-namespace Mars.PxBlocks.Workspace.Defaults;
-
-/// <summary>MakeCode-подобный toolbox по умолчанию: стандартные блоки Blockly + демо-категория типов.</summary>
+/// <summary>
+/// MakeCode-подобный toolbox по умолчанию: событийные блоки + стандартные категории
+/// Blockly. Доменные категории добавляются поверх (на сервере — IPxBlockCatalog.RegisterToolboxCategory,
+/// в редакторе — свой параметр Toolbox).
+/// </summary>
 public static class PxDefaultToolbox
 {
     public static PxToolbox Create() => new()
@@ -104,23 +106,7 @@ public static class PxDefaultToolbox
             },
             new PxToolboxSeparator(),
             new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Icon = "variables", Custom = "VARIABLE" },
-            new PxToolboxCategory { Name = "Функции", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" },
-            new PxToolboxCategory
-            {
-                Name = "Тест типов", Colour = "#607D8B", Icon = "flask", Advanced = true,
-                Items =
-                [
-                    H("Тест типов"),
-                    B("px_create_object"),
-                    B("px_demo_number"),
-                    B("px_demo_string"),
-                    B("px_demo_any"),
-                    B("px_demo_object"),
-                    B("px_demo_take_number"),
-                    B("px_demo_take_any"),
-                    B("px_demo_take_object")
-                ]
-            }
+            new PxToolboxCategory { Name = "Функции", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" }
         ]
     };
 

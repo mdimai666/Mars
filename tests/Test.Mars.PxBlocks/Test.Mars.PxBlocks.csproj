@@ -5,6 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
@@ -18,8 +22,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Host\Mars.PxBlocks.Host.csproj" />
         <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Runtime\Mars.PxBlocks.Runtime.csproj" />
         <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Shared\Mars.PxBlocks.Shared.csproj" />
+        <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Workspace\Mars.PxBlocks.Workspace.csproj" />
     </ItemGroup>
 
     <ItemGroup>

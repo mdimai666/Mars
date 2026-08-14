@@ -1,12 +1,12 @@
 using Mars.PxBlocks.Runtime.Execution;
 using Mars.PxBlocks.Runtime.Values;
 
-namespace Mars.PxBlocks.Workspace.Defaults;
+namespace StandPxBlocksApp.Blocks;
 
 /// <summary>
-/// Исполнение демо-блоков (PxDefaultBlocks): значения — как есть, приёмники —
-/// печатают входящее значение, «создать объект» собирает PxObjectValue из пар
-/// поле→значение мутатора px_object_builder.
+/// Исполнение демо-блоков (PxDemoBlocks) — живёт и выполняется только на сервере:
+/// значения — как есть, приёмники — печатают входящее значение, «создать объект»
+/// собирает PxObjectValue из пар поле→значение мутатора px_object_builder.
 /// </summary>
 public sealed class PxDemoNumberImplement : IPxExpressionImplement
 {

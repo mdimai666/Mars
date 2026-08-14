@@ -99,7 +99,59 @@ export function saveWorkspace(workspace: Blockly.WorkspaceSvg): string {
 }
 
 export function loadWorkspace(workspace: Blockly.WorkspaceSvg, blocksJson: string): void {
-    Blockly.serialization.workspaces.load(JSON.parse(blocksJson), workspace);
+    const state = JSON.parse(blocksJson);
+    ensureUnknownBlockDefinitions(state);
+    Blockly.serialization.workspaces.load(state, workspace);
+}
+
+// «Unknown»: определение блока удалено на сервере, но блок остался в сохранённом
+// workspace. Регистрируем серый placeholder, чтобы полотно показало его, а не
+// упало при загрузке; запуск всё равно блокируется серверным разбором.
+function ensureUnknownBlockDefinitions(state: unknown): void {
+    const rootBlocks = (state as { blocks?: { blocks?: unknown[] } })?.blocks?.blocks;
+    if (!Array.isArray(rootBlocks)) return;
+    for (const block of rootBlocks) {
+        walkUnknownBlock(block as UnknownBlockShape, 'statement');
+    }
+}
+
+interface UnknownBlockShape {
+    type?: string;
+    inputs?: Record<string, { block?: UnknownBlockShape; shadow?: UnknownBlockShape }>;
+    next?: { block?: UnknownBlockShape };
+}
+
+function walkUnknownBlock(block: UnknownBlockShape, kind: 'statement' | 'value'): void {
+    if (!block || typeof block.type !== 'string') return;
+
+    if (!(block.type in Blockly.Blocks)) {
+        registerUnknownPlaceholder(block.type, kind);
+    }
+    if (block.inputs) {
+        for (const slot of Object.values(block.inputs)) {
+            if (slot?.block) walkUnknownBlock(slot.block, 'value');
+            if (slot?.shadow) walkUnknownBlock(slot.shadow, 'value');
+        }
+    }
+    if (block.next?.block) {
+        walkUnknownBlock(block.next.block, 'statement');
+    }
+}
+
+function registerUnknownPlaceholder(type: string, kind: 'statement' | 'value'): void {
+    Blockly.Blocks[type] = {
+        init(this: Blockly.Block) {
+            this.appendDummyInput().appendField(`Unknown: ${type}`);
+            if (kind === 'value') {
+                this.setOutput(true);
+            } else {
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+            }
+            this.setColour('#9E9E9E');
+            this.setTooltip('Определение блока удалено на сервере — запуск невозможен');
+        },
+    };
 }
 
 export function clearWorkspace(workspace: Blockly.WorkspaceSvg): void {

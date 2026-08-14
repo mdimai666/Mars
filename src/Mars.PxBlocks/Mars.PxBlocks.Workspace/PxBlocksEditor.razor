@@ -23,6 +23,7 @@
                                Toolbox="EffectiveToolbox"
                                Types="EffectiveTypes"
                                BlockDefinitions="EffectiveDefinitions"
+                               BlockDefinitionsJson="@BlockDefinitionsJson"
                                OnReady="OnWorkspaceReady"
                                OnWorkspaceChanged="OnWorkspaceChangedInternal"
                                OnToolboxSelectionChanged="OnToolboxSelectionChanged" />
@@ -55,8 +56,22 @@
     /// <summary>Свои определения блоков (список или PxBlockSet); без них — демо-набор.</summary>
     [Parameter] public IEnumerable<PxBlockDefinition>? BlockDefinitions { get; set; }
 
+    /// <summary>
+    /// Определения блоков с сервера — Blockly JSON-массив из api/PxBlocks/Definitions.
+    /// Имеет приоритет над <see cref="BlockDefinitions"/> (блоки объявлены на сервере,
+    /// в WASM их определений нет).
+    /// </summary>
+    [Parameter] public string? BlockDefinitionsJson { get; set; }
+
     /// <summary>Свой реестр имплементаций исполнения; без него — стандартные листья + демо-набор.</summary>
     [Parameter] public PxBlockImplementsLocator? Implements { get; set; }
+
+    /// <summary>
+    /// Транспорт серверного исполнения (PxServerRunClient): Run уходит на сервер
+    /// (api/PxBlocks + SignalR-события). null — исполнение in-process (локальный
+    /// режим, задел под браузерный рантайм).
+    /// </summary>
+    [Parameter] public IPxRunTransport? RunTransport { get; set; }
 
     /// <summary>Режим запуска: все верхнеуровневые стеки (по умолчанию) или только события.</summary>
     [Parameter] public PxEditorRunMode RunMode { get; set; } = PxEditorRunMode.AllTopLevel;
@@ -97,17 +112,23 @@
     private DateTime _lastHighlightAt;
     private readonly List<string> _outputLines = [];
 
+    private Guid? _serverRunId;
+    private IDisposable? _serverSubscription;
+
     private PxToolbox EffectiveToolbox => Toolbox ?? (_defaultToolbox ??= PxDefaultToolbox.Create());
     private PxTypeRegistry EffectiveTypes => Types ?? (_defaultTypes ??= PxTypeRegistry.CreateDefault());
-    private IEnumerable<PxBlockDefinition> EffectiveDefinitions => BlockDefinitions ?? (_defaultDefinitions ??= PxDefaultBlocks.Create());
+
+    // Локальный минимум: событийные блоки Start/Loop (определения в Shared);
+    // доменные наборы приходят с сервера (BlockDefinitionsJson).
+    private IEnumerable<PxBlockDefinition> EffectiveDefinitions => BlockDefinitions ?? (_defaultDefinitions ??= [.. new PxEventBlocks().Definitions]);
 
     private PxBlockImplementsLocator EffectiveImplements => Implements ?? (_defaultImplements ??= CreateDefaultImplements());
 
-    /// <summary>Стандартные листья Runtime + демо-имплементации этой сборки.</summary>
+    /// <summary>Стандартные листья Runtime + имплементации этой сборки (задел браузерного рантайма).</summary>
     private static PxBlockImplementsLocator CreateDefaultImplements()
     {
         var locator = PxInterpreter.CreateDefaultImplements();
-        locator.RegisterAssembly(typeof(PxDefaultBlocks).Assembly);
+        locator.RegisterAssembly(typeof(PxBlocksEditor).Assembly);
         return locator;
     }
 
@@ -231,7 +252,10 @@
 
     public async Task Center() => await _workspace!.CenterContentAsync();
 
-    /// <summary>Исполнение программы: workspace JSON → AST → интерпретатор (in-process).</summary>
+    /// <summary>
+    /// Исполнение программы: на сервере (RunTransport задан) или in-process.
+    /// Серверный запуск завершается событием RunFinished из хаба, не возвратом Run().
+    /// </summary>
     public async Task Run()
     {
         if (_running)
@@ -240,13 +264,28 @@
         _running = true;
         _runError = null;
         _outputLines.Clear();
-        _status = "исполнение…";
+        _status = RunTransport != null ? "исполнение на сервере…" : "исполнение…";
         _runCancellation = new CancellationTokenSource();
 
         try
         {
             var blocksJson = await _workspace!.SaveAsync();
+            if (RunTransport != null)
+                await RunOnServerAsync(blocksJson);
+            else
+                await RunLocalAsync(blocksJson);
+        }
+        catch (JSDisconnectedException)
+        {
+            await ResetRunStateAsync();
+        }
+    }
 
+    /// <summary>Локальное исполнение (in-process) — задел под будущий браузерный рантайм.</summary>
+    private async Task RunLocalAsync(string blocksJson)
+    {
+        try
+        {
             global::Mars.PxBlocks.Runtime.Ast.PxProgram program;
             try
             {
@@ -270,38 +309,188 @@
                 StepLimit = 0,
                 EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
             };
-            var result = await interpreter.RunAsync(program, options, _runCancellation.Token);
-
-            if (result.Canceled)
-            {
-                _runError = "Остановлено";
-                _status = "остановлено";
-            }
-            else if (!result.Success)
-            {
-                _runError = result.ErrorMessage;
-                if (!string.IsNullOrEmpty(result.ErrorBlockId))
-                    await ApplyHighlightAsync(result.ErrorBlockId);
-                _status = "ошибка исполнения";
-            }
-            else
-            {
-                _status = $"исполнено (шагов: {result.Steps})";
-            }
-        }
-        catch (JSDisconnectedException)
-        {
+            var result = await interpreter.RunAsync(program, options, _runCancellation!.Token);
+            await ApplyResultAsync(result.Canceled, result.Success, result.ErrorMessage, result.ErrorBlockId, result.Steps);
         }
         finally
         {
-            await ApplyHighlightAsync(null);
-            _running = false;
-            _runCancellation?.Dispose();
-            _runCancellation = null;
+            await ResetRunStateAsync();
         }
     }
 
-    public void Stop() => _runCancellation?.Cancel();
+    /// <summary>
+    /// Серверное исполнение: подписка на события хаба, затем POST программы.
+    /// RunId назначаем сами и подписываемся ДО запроса — события не теряются.
+    /// Быстрая программа может завершиться раньше, чем вернётся ответ POST —
+    /// поэтому _serverRunId выставляется до запроса, а все переходы сверяются по runId.
+    /// </summary>
+    private async Task RunOnServerAsync(string blocksJson)
+    {
+        var runId = Guid.NewGuid();
+
+        try
+        {
+            await RunTransport!.ConnectAsync(_runCancellation!.Token);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            _runError = $"Нет связи с сервером исполнения: {exception.Message}";
+            _status = "ошибка подключения";
+            await ResetRunStateAsync();
+            return;
+        }
+
+        _serverRunId = runId;
+        _serverSubscription = RunTransport.Subscribe(runId,
+            events => _ = InvokeAsync(() =>
+            {
+                foreach (var executionEvent in events)
+                    OnExecutionEvent(executionEvent);
+            }),
+            result => _ = InvokeAsync(() => FinishServerRunAsync(runId, result)));
+
+        PxRunResponse response;
+        try
+        {
+            response = await RunTransport.RunAsync(new PxRunRequest
+            {
+                RunId = runId,
+                BlocksJson = blocksJson,
+                // Лимит шагов снят: бесконечные события Loop останавливаются кнопкой Stop.
+                StepLimit = 0,
+                EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
+            }, _runCancellation!.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            if (_serverRunId == runId)
+                ClearServerRun();
+            _ = RunTransport.StopAsync(runId); // best effort: запрос мог ещё не дойти
+            _runError = "Остановлено";
+            _status = "остановлено";
+            await ResetRunStateAsync();
+            return;
+        }
+        catch (Exception exception)
+        {
+            if (_serverRunId == runId)
+                ClearServerRun();
+            _ = RunTransport.StopAsync(runId); // best effort: сервер мог уже стартовать запуск
+            _runError = $"Нет связи с сервером исполнения: {exception.Message}";
+            _status = "ошибка подключения";
+            await ResetRunStateAsync();
+            return;
+        }
+
+        // Итог мог прийти раньше ответа (быстрая программа) — состояние уже сброшено,
+        // либо запущен новый запуск: не трогаем чужое состояние.
+        if (_serverRunId != runId)
+        {
+            if (response.Started)
+                _ = RunTransport.StopAsync(runId); // осиротевший запуск без подписчика
+            return;
+        }
+
+        if (!response.Started)
+        {
+            ClearServerRun();
+            _runError = response.ErrorMessage;
+            if (!string.IsNullOrEmpty(response.ErrorBlockId))
+                await ApplyHighlightAsync(response.ErrorBlockId);
+            _status = "ошибка разбора";
+            await ResetRunStateAsync();
+            return;
+        }
+
+        _status = "исполнение на сервере…";
+    }
+
+    /// <summary>Итог серверного запуска из хаба — завершает Run-состояние редактора.</summary>
+    private async Task FinishServerRunAsync(Guid runId, PxRunResultDto result)
+    {
+        // Не свой запуск (уже сброшен Stop-ом или запущен новый) — игнорируем.
+        if (_serverRunId != runId)
+            return;
+
+        ClearServerRun();
+        try
+        {
+            await ApplyResultAsync(result.Canceled, result.Success, result.ErrorMessage, result.ErrorBlockId, result.Steps);
+        }
+        finally
+        {
+            // Сброс — всегда: иначе UI останется в «исполняется» без кнопки Run.
+            await ResetRunStateAsync();
+        }
+    }
+
+    private void ClearServerRun()
+    {
+        _serverSubscription?.Dispose();
+        _serverSubscription = null;
+        _serverRunId = null;
+    }
+
+    /// <summary>Единый маппинг итога (локального или серверного) в статус/ошибку/подсветку.</summary>
+    private async Task ApplyResultAsync(bool canceled, bool success, string? errorMessage, string? errorBlockId, long steps)
+    {
+        if (canceled)
+        {
+            _runError = "Остановлено";
+            _status = "остановлено";
+        }
+        else if (!success)
+        {
+            _runError = errorMessage;
+            if (!string.IsNullOrEmpty(errorBlockId))
+                await ApplyHighlightAsync(errorBlockId);
+            _status = "ошибка исполнения";
+        }
+        else
+        {
+            _status = $"исполнено (шагов: {steps})";
+        }
+    }
+
+    private async Task ResetRunStateAsync()
+    {
+        await ApplyHighlightAsync(null);
+        _running = false;
+        _runCancellation?.Dispose();
+        _runCancellation = null;
+        StateHasChanged();
+    }
+
+    public async Task Stop()
+    {
+        if (_serverRunId is Guid runId && RunTransport != null)
+        {
+            bool stopped;
+            try
+            {
+                stopped = await RunTransport.StopAsync(runId);
+            }
+            catch
+            {
+                stopped = false;
+            }
+
+            if (!stopped)
+            {
+                // Серверу запуск неизвестен (завершён, либо событие итога потеряно) —
+                // приводим редактор в порядок сами, иначе UI зависнет в «исполняется».
+                if (_serverRunId == runId)
+                    ClearServerRun();
+                _runError = "Остановлено";
+                _status = "остановлено";
+                await ResetRunStateAsync();
+            }
+
+            return;
+        }
+
+        _runCancellation?.Cancel();
+    }
 
     private void OnExecutionEvent(PxExecutionEvent executionEvent)
     {

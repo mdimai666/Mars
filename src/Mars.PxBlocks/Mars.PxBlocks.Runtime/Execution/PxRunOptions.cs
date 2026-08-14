@@ -15,6 +15,13 @@ public sealed class PxRunOptions
     /// <summary>Зерно генератора случайных чисел — воспроизводимость в тестах.</summary>
     public int? RandomSeed { get; init; }
 
+    /// <summary>
+    /// Максимум накопленных строк вывода (PxExecutionResult.Output); 0 или отрицательное —
+    /// без лимита. События Output стримятся подписчику независимо от лимита — он защищает
+    /// только память при бесконечных событиях Loop на сервере.
+    /// </summary>
+    public int OutputLimit { get; init; }
+
     /// <summary>Подписка на события исполнения (подсветка блока, вывод).</summary>
     public Action<PxExecutionEvent>? OnEvent { get; init; }
 

@@ -1,4 +1,9 @@
 using Blazored.LocalStorage;
+using Mars.PxBlocks.Host;
+using Mars.PxBlocks.Host.Hubs;
+using Mars.PxBlocks.Host.Shared;
+using Mars.PxBlocks.Host.Shared.Services;
+using StandPxBlocksApp.Blocks;
 using StandPxBlocksApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +24,9 @@ builder.Services.AddCors(options => //not check
 });
 
 builder.Services.AddControllers();
+
+// Серверное исполнение PxBlocks: api/PxBlocks + SignalR-стриминг событий.
+builder.Services.AddPxBlocks();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -41,6 +49,15 @@ app.UseCors();
 app.UseRouting();
 app.UseAntiforgery();
 app.MapControllers();
+
+// Ядерные определения (Start/Loop) + демо-домен стенда: определения и реализации
+// живут только на сервере, редактор получает их через api/PxBlocks/Definitions.
+app.UsePxBlocks();
+var pxCatalog = app.Services.GetRequiredService<IPxBlockCatalog>();
+pxCatalog.RegisterAssembly(typeof(Program).Assembly);
+pxCatalog.RegisterToolboxCategory(PxDemoToolbox.CreateCategory());
+
+app.MapHub<PxBlocksHub>(PxBlocksConstants.HubRoute);
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

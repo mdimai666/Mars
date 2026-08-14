@@ -1,7 +1,8 @@
 # PxBlocks — план: аналог PXT (Blockly) на Blazor
 
 Миссия: редактор блоков как в MakeCode/PXT. Этапы 0–6 — редактор (готов).
-Без симулятора и без кодогенерации; исполнение блоков — декларативное в .NET (Этап 7).
+Без симулятора и без кодогенерации; исполнение блоков — декларативное в .NET (Этап 7),
+запуск сценариев на сервере — Mars.PxBlocks.Host (Этап 8).
 
 ## Архитектура: гибрид — официальный Blockly + перенос слоя PXT
 
@@ -215,6 +216,7 @@ Mars.PxBlocks.Runtime/
 Дальше (вне этапов): доменные пакеты блоков со своими `IPxBlockImplement` в отдельных
 сборках; серверный бек — тот же Runtime + стриминг событий (SignalR); паузы («ждать
 N мс», сенсоры) на async-каркасе.
+— Серверный бек и доменные сборки на сервере реализованы в Этапе 8.
 
 Реализовано: `Mars.PxBlocks.Runtime` (Values/Ast/Parsing/Execution/Standard; чистый
 .NET — собрался и в стенде-WASM): `PxValue`-иерархия (Number/Boolean/String/Object/
@@ -250,6 +252,56 @@ Loop тоже всегда после всех (включая Start). В ред
 расширением `px_hat_cap` (`JsSrc/extensions/hat.ts`, вызывается при каждом создании
 блока); `PxBlockDefinition.Hat` генерирует `extensions: ["px_hat_cap"]` вместо `style`.
 Тестов — 59.
+
+### Этап 8 — Запуск на сервере (Mars.PxBlocks.Host) ✅
+Решение 2026-08-15: исполнение сценариев — на хосте, не в браузере; организация —
+по образцу Mars.Nodes (сервисы-синглтоны + контроллер + SignalR + RegisterAssembly),
+но без графа нод. Определения блоков объявляются и реализуются ТОЛЬКО на сервере;
+браузер получает их динамически (api/PxBlocks/Definitions); удалённое определение →
+блок «Unknown» на полотне, запуск блокируется серверным разбором. Браузерный рантайм
+(in-process путь в редакторе) сохранён как задел.
+
+Новые сборки:
+- `Mars.PxBlocks.Host.Shared` — контракты: DTO (PxRunRequest с клиентским RunId,
+  PxRunResponse, PxRunResultDto, PxDefinitionsResponse), IPxRunManager, IPxBlockCatalog,
+  IPxBlocksBroadcaster, IPxBlocksApiClient, IPxRunTransport, IPxBlocksClient (типизированный
+  хаб), константы (маршрут `/_ws/pxblocks`, группа `pxblocks`).
+- `Mars.PxBlocks.Host` — `PxBlockCatalog` (определения PxBlockSet + локатор
+  имплементаций; toolbox = PxDefaultToolbox + доменные категории перед
+  «Переменные»/«Функции»), `PxRunManager` + `PxRunSession` (разбор синхронно в
+  POST Run, исполнение фоновой задачей, события пакетируются 100 мс/256 шт. и
+  стримятся цепочкой последовательных отправок — порядок RunEvents→RunFinished
+  гарантирован), `PxBlocksHub` (авто-вход в группу при подключении),
+  `PxBlocksController` (api/PxBlocks: Definitions/Run/Stop), `MainPxBlocks.AddPxBlocks/UsePxBlocks`
+  (UsePxBlocks регистрирует ядерные PxEventBlocks; доменные сборки — хостом).
+
+Изменения:
+- `PxRunOptions.OutputLimit` (PxContext.Print): накопленный вывод ограничен — защита
+  памяти при бесконечных Loop на сервере (стриминг Output не ограничен).
+- Определения `PxEventBlocks` и `PxDefaultToolbox` перенесены в Shared (без демо-
+  категории); демо-домен (`PxDemoBlocks` + имплементации + категория toolbox) — в
+  серверном проекте стенда StandPxBlocksApp (server-only пример).
+- Редактор: параметр `RunTransport` (IPxRunTransport) — Run через сервер
+  (подписка на события ДО запроса Run, RunId назначает клиент — события не
+  теряются; Stop — REST); без RunTransport — прежний in-process путь. Параметр
+  `BlockDefinitionsJson` — определения с сервера (приоритет над BlockDefinitions).
+- JS: `loadWorkspace` регистрирует серые placeholder-определения для неизвестных
+  типов («Unknown: тип», statement/value по позиции в JSON) — сохранённый workspace
+  с удалённым блоком открывается, запуск блокирует серверный разбор
+  (PxParseException с blockId).
+- Стенд: сервер — AddPxBlocks + UsePxBlocks + RegisterAssembly(сборка стенда) +
+  MapHub<PxBlocksHub>; клиент — PxServerRunClient в DI, страница грузит определения
+  и передаёт BlockDefinitionsJson/Toolbox/RunTransport (пререндер страницы отключён).
+
+Проверено: 69 тестов (59 прежних + PxRunManager/PxBlockCatalog + сквозные
+PxRunServerIntegrationTests: реальный Kestrel + SignalR-хаб + PxServerRunClient —
+стриминг событий, остановка бесконечного Loop, ошибка разбора). REST-дым стенда:
+Definitions (10 определений, toolbox 10 категорий), Run/Stop.
+
+Дальше (вне этапов): доменные пакеты блоков под реальные устройства (MQTT/ноды
+Mars.Nodes как реализации блоков); сохранение сценариев на сервере; запуск
+PxBlocks-программ из графа Mars.Nodes (нода-обёртка); браузерный рантайм
+(локальные реализации стандартных листьев уже в редакторе).
 
 ## Что делаем со старым кодом
 - **Удаляем** (свой рендеринг, заменён Blockly): PxWorkspace.razor, PxBlockComponent.razor,

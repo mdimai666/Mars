@@ -23,6 +23,9 @@ public sealed class PxContext
     /// <summary>Каждые N шагов — Task.Yield (отзывчивость UI в WASM); 0 — не уступать.</summary>
     public int YieldEvery { get; }
 
+    /// <summary>Максимум накопленных строк вывода (OutputLines); 0 — без лимита.</summary>
+    public int OutputLimit { get; }
+
     public long Steps { get; private set; }
 
     public Random Random { get; }
@@ -42,6 +45,7 @@ public sealed class PxContext
         CancellationToken = cancellationToken;
         StepLimit = options.StepLimit;
         YieldEvery = options.YieldEvery;
+        OutputLimit = options.OutputLimit;
         RaiseEvent = options.OnEvent;
         Implements = implements;
         Random = options.RandomSeed is int seed ? new Random(seed) : new Random();
@@ -66,7 +70,8 @@ public sealed class PxContext
     /// <summary>Строка в панель вывода (text_print) + событие Output.</summary>
     public void Print(string text)
     {
-        _output.Add(text);
+        if (OutputLimit <= 0 || _output.Count < OutputLimit)
+            _output.Add(text);
         RaiseEvent?.Invoke(new PxExecutionEvent(PxExecutionEventKind.Output, null, text));
     }
 

@@ -15,6 +15,12 @@
     /// <summary>Определения блоков (PxBlockDefinition/PxBlockSet). Регистрируются до inject.</summary>
     [Parameter] public IEnumerable<PxBlockDefinition>? BlockDefinitions { get; set; }
 
+    /// <summary>
+    /// Определения блоков с сервера — готовый Blockly JSON-массив (api/PxBlocks/Definitions).
+    /// Имеет приоритет над <see cref="BlockDefinitions"/>.
+    /// </summary>
+    [Parameter] public string? BlockDefinitionsJson { get; set; }
+
     /// <summary>Вызывается после создания workspace.</summary>
     [Parameter] public EventCallback OnReady { get; set; }
 
@@ -50,7 +56,9 @@
 
             if (Types != null)
                 await _interop.SetTypes(Types.ToJson());
-            if (BlockDefinitions?.Any() == true)
+            if (!string.IsNullOrEmpty(BlockDefinitionsJson))
+                await _interop.RegisterBlockDefinitions(BlockDefinitionsJson);
+            else if (BlockDefinitions?.Any() == true)
                 await _interop.RegisterBlockDefinitions(PxBlockDefinition.ToArrayJson(BlockDefinitions));
 
             _workspace = await _interop.InjectWorkspace(_containerRef, OptionsJson, Toolbox?.ToJson());

@@ -17,7 +17,10 @@
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveWebAssembly" />
+    @* Пререндер отключён глобально: приложение — WASM-редактор на Blockly,
+       серверной части страниц нет, а DI-сервисы клиента (PxServerRunClient)
+       на сервере не зарегистрированы. *@
+    <Routes @rendermode="new InteractiveWebAssemblyRenderMode(prerender: false)" />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 

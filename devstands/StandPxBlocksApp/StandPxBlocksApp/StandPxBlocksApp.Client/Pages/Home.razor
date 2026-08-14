@@ -1,9 +1,44 @@
 @page "/"
+@using Mars.PxBlocks.Host.Shared.Dto
 @using Mars.PxBlocks.Runtime.Ast
 @using Mars.PxBlocks.Workspace
+@using Mars.PxBlocks.Workspace.Run
+@inject PxServerRunClient PxApi
 
 <PageTitle>PxBlocks</PageTitle>
 
 <div style="height:100vh;">
-    <PxBlocksEditor RunMode="PxEditorRunMode.Events" RunEventNames="@([PxEvents.Start, PxEvents.Loop])" />
+    @if (_loadError != null)
+    {
+        <div style="padding:20px; color:#B00020;">@_loadError</div>
+    }
+    else if (_definitions == null)
+    {
+        <div style="padding:20px;">Загрузка определений блоков с сервера…</div>
+    }
+    else
+    {
+        <PxBlocksEditor RunMode="PxEditorRunMode.Events"
+                        RunEventNames="@([PxEvents.Start, PxEvents.Loop])"
+                        BlockDefinitionsJson="@_definitions.DefinitionsJson"
+                        Toolbox="@_definitions.Toolbox"
+                        RunTransport="@PxApi" />
+    }
 </div>
+
+@code {
+    private PxDefinitionsResponse? _definitions;
+    private string? _loadError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _definitions = await PxApi.GetDefinitionsAsync();
+        }
+        catch (Exception exception)
+        {
+            _loadError = $"Не удалось получить определения блоков с сервера: {exception.Message}";
+        }
+    }
+}

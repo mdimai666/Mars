@@ -94,6 +94,7 @@ line.blocklyFlyoutLine {
 
 /* Рейка категорий. */
 .pxb-rail {
+    position: relative;
     width: 216px;
     min-width: 216px;
     display: flex;
@@ -168,4 +169,141 @@ line.blocklyFlyoutLine {
 
 .pxb-rail-advanced .pxb-chev.open {
     transform: rotate(90deg);
+}
+
+/* Компактная рейка. Auto: container queries — при малой ширине редактора рейка
+   сворачивается в иконки (без JS). Compact: те же правила без запросов. */
+.px-blocks-editor[data-rail="auto"] {
+    container-type: inline-size;
+    container-name: pxb;
+}
+
+@container pxb (max-width: 560px) {
+    .pxb-rail {
+        width: 56px;
+        min-width: 56px;
+    }
+
+    .pxb-rail-search {
+        display: none;
+    }
+
+    .pxb-rail-search-toggle {
+        display: flex;
+    }
+
+    .pxb-rail-name {
+        display: none;
+    }
+
+    .pxb-rail-item {
+        justify-content: center;
+        gap: 0;
+        padding: 10px 0;
+    }
+}
+
+.px-blocks-editor[data-rail="compact"] .pxb-rail {
+    width: 56px;
+    min-width: 56px;
+}
+
+.px-blocks-editor[data-rail="compact"] .pxb-rail-search {
+    display: none;
+}
+
+.px-blocks-editor[data-rail="compact"] .pxb-rail-search-toggle {
+    display: flex;
+}
+
+.px-blocks-editor[data-rail="compact"] .pxb-rail-name {
+    display: none;
+}
+
+.px-blocks-editor[data-rail="compact"] .pxb-rail-item {
+    justify-content: center;
+    gap: 0;
+    padding: 10px 0;
+}
+
+/* Кнопка поиска компактного режима (в полном режиме скрыта). */
+.pxb-rail-search-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    cursor: pointer;
+    color: #888888;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.pxb-rail-search-toggle:hover {
+    color: #333333;
+    background: #f2f2f2;
+}
+
+.pxb-rail-search-toggle svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Всплывающее поле поиска компактного режима. */
+.pxb-rail-search-pop {
+    position: absolute;
+    left: calc(100% + 6px);
+    top: 8px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+    padding: 4px;
+}
+
+.pxb-rail-search-pop input {
+    width: 200px;
+    padding: 5px 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.pxb-rail-search-close {
+    border: none;
+    background: transparent;
+    color: #888888;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.pxb-rail-search-close:hover {
+    background: #f2f2f2;
+    color: #333333;
+}
+
+/* Ссылка-переход стенда поверх редактора (демо встраивания). */
+.pxb-page-link {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 10;
+    font-size: 12px;
+    padding: 4px 8px;
+    background: #ffffffee;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #444444;
+}
+
+.pxb-page-link:hover {
+    background: #ffffff;
+    color: #111111;
 }

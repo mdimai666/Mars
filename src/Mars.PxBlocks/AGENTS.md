@@ -1,11 +1,9 @@
 # Mars.PxBlocks — инструкция агенту
 
 PxBlocks — визуальный редактор блоков в духе Microsoft PXT (MakeCode/Blockly) на Blazor.
-Этапы 0–6 (редактор) готовы; без симулятора и без кодогенерации. Дальше — Этап 7:
-исполнение блоков в .NET, решение «вариант C» от 2026-08-14: workspace JSON → AST →
-tree-walking интерпретатор; control flow в ядре, листья — `IPxBlockImplement` по TypeId
-(по образцу Mars.Nodes / INodeImplement), имплементации в отдельных сборках.
-Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`, Этап 7. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
+Этапы 0–6 (редактор), 7 (исполнение в .NET), 8 (запуск на сервере — Mars.PxBlocks.Host),
+9 (встраиваемость: контексты, песочница/форма) готовы. Без симулятора и без кодогенерации.
+Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
 
 ## Архитектура: гибридная обёртка Blockly
 
@@ -63,13 +61,23 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
 - `PxBlocksWorkspace.razor` — **полотно**: inject, параметры `OptionsJson`/`Toolbox`/`Types`/
   `BlockDefinitions`, события `OnReady`/`OnWorkspaceChanged`, примитивы `SaveAsync`/`LoadAsync`/
   `ClearAsync`/`UndoAsync`/`RedoAsync`.
-- `PxBlocksEditor.razor` — **редактор** поверх полотна: рейка + тулбар Undo/Redo/Clear,
-  автосейв в localStorage (Blazored.LocalStorage, ключ — параметр `StorageKey`), дефолтная
-  конфигурация из `Defaults/` (`PxDefaultToolbox`, `PxDefaultBlocks`), если потребитель
-  не передал свою. Хост вставляет `<PxBlocksEditor />` + link на pxblocks.css в head.
+- `PxBlocksEditor.razor` — **чистая форма редактирования** (Этап 9): рейка + полотно +
+  поиск, API Save/Load/Undo/Redo/Clear/Center/Highlight; БЕЗ тулбара и БЕЗ запуска.
+  Управляемый режим: параметр `BlocksJson` (смена значения перечитывает полотно),
+  сохранение — `SaveAsync()` хостом. Контекстный режим: `Context` (имя) + `Transport`
+  (IPxBlocksApiClient) — определения и toolbox из `api/PxBlocks/Contexts/{имя}`.
+  Параметр `RailDisplay` (Auto/Full/Compact) — сворачивание рейки, см. PxToolboxRail.
+  Хост вставляет `<PxBlocksEditor />` + link на pxblocks.css в head.
+- `PxSandboxEditor.razor` — **браузерная песочница** (до Этапа 9 — PxBlocksEditor):
+  тулбар Undo/Redo/Clear/Center/Run/Stop + статус, панель вывода, автосейв в
+  localStorage (Blazored.LocalStorage, ключ — `StorageKey`), исполнение in-process
+  или на сервере (`RunTransport`, `RunMode`/`RunEventNames`). Единственный редактор,
+  запускающий полный JSON программы из браузера.
 - `PxToolboxRail.razor` — рейка категорий в стиле MakeCode: иконки (inline SVG), поиск
   (дебаунс 250 мс, временная flyout-категория «Поиск»), экспандер Advanced; выбранная
-  категория заливается своим цветом; клик по выбранной закрывает flyout.
+  категория заливается своим цветом; клик по выбранной закрывает flyout. Компактный
+  режим (CSS, `data-rail` на корне редактора): Auto — container queries, при ширине
+  ≤560px только иконки + поиск-кнопка со всплывающим полем; Compact — то же всегда.
 - `wwwroot/pxblocks.css` — хром редактора: рейка, тёмный flyout, заголовки
   (`blocklyFlyoutHeading`), скрытие нативного меню категорий (`display:none !important` —
   `Toolbox.init()` ставит inline `display:block`). Подключается хостом link-ом в head
@@ -80,10 +88,31 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
 - npm-инфраструктура: `package.json` (blockly 13.1.1), `vite.config.js` (lib → ESM),
   `tsconfig.json`, `copy-media.mjs` (media blockly → wwwroot/media).
 
+### `src/Mars.PxBlocks/Mars.PxBlocks.Host.Shared` + `Mars.PxBlocks.Host` — серверное исполнение
+- Host.Shared — контракты: DTO (`PxRunRequest` с клиентским RunId и `ContextName`,
+  `PxRunResponse`, `PxRunResultDto`, `PxDefinitionsResponse`, `PxEditorContextInfo`),
+  `IPxRunManager`, `IPxBlockCatalog`, `IPxBlocksBroadcaster`, `IPxBlocksApiClient`,
+  `IPxRunTransport`, `IPxEditorContextRegistry`, `PxEditorContext` (fluent
+  `PxEditorContext.Define("имя")…` — состав контекста и политика запуска), константы
+  (маршрут `/_ws/pxblocks`, группа `pxblocks`).
+- Host — `PxBlockCatalog` (определения + локатор имплементаций; toolbox = дефолт +
+  доменные категории), `PxRunManager`+`PxRunSession` (разбор синхронно, исполнение
+  фоном, события пакетируются 100 мс/256, политика из контекста — явные поля запроса
+  в приоритете), `PxBlocksHub`, `PxBlocksController` (api/PxBlocks: Definitions,
+  Contexts, Contexts/{имя}, Run, Stop), `MainPxBlocks.AddPxBlocks/UsePxBlocks`
+  (UsePxBlocks — ядерные PxEventBlocks; доменные сборки и контексты регистрирует хост).
+- Определения блоков и реализации объявляются ТОЛЬКО на сервере; редактор получает
+  их через api/PxBlocks (песочница — Definitions, встраиваемая форма — Contexts/{имя}).
+  Голого хранилища сценариев нет (решение 2026-08-16): JSON блоков хранят владельцы
+  (ноды/админка) и передают в Run напрямую; запуск по месту — через IPxRunManager из DI.
+
 ### Стенд и тесты
 - `devstands/StandPxBlocksApp` — Blazor Web App + WASM для проверки редактора;
-  `Home.razor` = `<PxBlocksEditor />` без аргументов. `ILocalStorageService` регистрируется
-  и в серверном `Program.cs` (нужно для пререндера), и в клиентском.
+  `/` = `<PxSandboxEditor />` (определения с сервера, серверный запуск),
+  `/form` = `<PxBlocksEditor Context="demo" />` (управляемая форма, «хранилище»
+  в памяти страницы, переключатель RailDisplay и слайдер ширины). Пререндер отключён
+  глобально в App.razor. `ILocalStorageService` регистрируется и в серверном
+  `Program.cs` (нужно для пререндера), и в клиентском.
 - `tests/Test.Mars.PxBlocks` — xunit: сериализация toolbox, реестра типов, определений блоков.
 
 ## Сборка и запуск

@@ -8,6 +8,21 @@
         </svg>
         <input type="text" placeholder="Поиск…" value="@_query" @oninput="OnInputAsync" />
     </div>
+    @* Компактный режим (CSS): строка поиска скрыта, вместо неё кнопка со всплывающим полем. *@
+    <button class="pxb-rail-search-toggle" title="Поиск" @onclick="OpenCompactSearch">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <circle cx="7" cy="7" r="4.5" />
+            <path d="M10.5 10.5L14 14" />
+        </svg>
+    </button>
+    @if (_compactSearchOpen)
+    {
+        <div class="pxb-rail-search-pop">
+            <input @ref="_popInput" type="text" placeholder="Поиск…" value="@_query"
+                   @oninput="OnInputAsync" @onkeydown="OnPopKeyDownAsync" />
+            <button class="pxb-rail-search-close" title="Закрыть поиск" @onclick="CloseCompactSearchAsync">✕</button>
+        </div>
+    }
     <div class="pxb-rail-list">
         @foreach (var category in Categories.Where(c => !c.Advanced))
         {
@@ -20,7 +35,7 @@
                      stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 3l5 5-5 5" />
                 </svg>
-                Advanced
+                <span class="pxb-rail-name">Advanced</span>
             </button>
             @if (_advancedOpen)
             {
@@ -46,6 +61,9 @@
 
     private string _query = "";
     private bool _advancedOpen;
+    private bool _compactSearchOpen;
+    private bool _popFocusPending;
+    private ElementReference _popInput;
     private CancellationTokenSource? _debounce;
 
     private IEnumerable<PxToolboxCategory> Categories =>
@@ -56,9 +74,10 @@
     private RenderFragment Row(PxToolboxCategory category) =>
         @<button class="pxb-rail-item @(Selected == category.Name ? "selected" : "")"
                  style="@(Selected == category.Name ? $"background:{category.Colour}" : "")"
+                 title="@category.Name"
                  @onclick="() => ClickAsync(category)">
             <span style="color:@(Selected == category.Name ? "#ffffff" : category.Colour)">@Icon(category.Icon)</span>
-            @category.Name
+            <span class="pxb-rail-name">@category.Name</span>
         </button>;
 
     private async Task ClickAsync(PxToolboxCategory category)
@@ -83,6 +102,44 @@
         }
         catch (TaskCanceledException)
         {
+        }
+    }
+
+    private void OpenCompactSearch()
+    {
+        _compactSearchOpen = true;
+        _popFocusPending = true;
+    }
+
+    private async Task CloseCompactSearchAsync()
+    {
+        _compactSearchOpen = false;
+        if (_query.Length > 0)
+        {
+            _debounce?.Cancel();
+            _query = "";
+            await OnSearch.InvokeAsync("");
+        }
+    }
+
+    private async Task OnPopKeyDownAsync(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+            await CloseCompactSearchAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_popFocusPending)
+        {
+            _popFocusPending = false;
+            try
+            {
+                await _popInput.FocusAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
         }
     }
 

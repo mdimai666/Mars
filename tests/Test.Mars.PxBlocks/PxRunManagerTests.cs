@@ -1,4 +1,5 @@
 using Mars.PxBlocks.Host.Services;
+using Mars.PxBlocks.Host.Shared;
 using Mars.PxBlocks.Host.Shared.Dto;
 using Mars.PxBlocks.Host.Shared.Services;
 using Mars.PxBlocks.Runtime.Execution;
@@ -45,12 +46,13 @@ internal sealed class FakeBroadcaster : IPxBlocksBroadcaster
 /// <summary>Серверный запуск программ: PxRunManager + PxBlockCatalog без ASP.NET-слоя.</summary>
 public class PxRunManagerTests
 {
-    private static (PxRunManager Manager, FakeBroadcaster Broadcaster, PxBlockCatalog Catalog) CreateManager()
+    private static (PxRunManager Manager, FakeBroadcaster Broadcaster, PxBlockCatalog Catalog, PxEditorContextRegistry Contexts) CreateManager()
     {
         var catalog = new PxBlockCatalog();
         catalog.RegisterSet(new PxEventBlocks());
         var broadcaster = new FakeBroadcaster();
-        return (new PxRunManager(catalog, broadcaster), broadcaster, catalog);
+        var contexts = new PxEditorContextRegistry();
+        return (new PxRunManager(catalog, broadcaster, contexts), broadcaster, catalog, contexts);
     }
 
     private const string PrintJson = """
@@ -62,10 +64,60 @@ public class PxRunManagerTests
     }
     """;
 
+    /// <summary>Обычный стек (print «plain») + событие Start (print «started»).</summary>
+    private const string StartAndPlainJson = """
+    {
+      "blocks": { "languageVersion": 0, "blocks": [
+        { "type": "text_print", "id": "printPlain",
+          "inputs": { "TEXT": { "block": { "type": "text", "id": "tPlain", "fields": { "TEXT": "plain" } } } } },
+        { "type": "px_start", "id": "start1",
+          "inputs": { "DO": { "block":
+            { "type": "text_print", "id": "printStart",
+              "inputs": { "TEXT": { "block": { "type": "text", "id": "tStart", "fields": { "TEXT": "started" } } } } }
+          } }
+        }
+      ] }
+    }
+    """;
+
+    /// <summary>События Start (print «started») и Loop (print «looped», бесконечный).</summary>
+    private const string StartAndLoopJson = """
+    {
+      "blocks": { "languageVersion": 0, "blocks": [
+        { "type": "px_start", "id": "start1",
+          "inputs": { "DO": { "block":
+            { "type": "text_print", "id": "printStart",
+              "inputs": { "TEXT": { "block": { "type": "text", "id": "tStart", "fields": { "TEXT": "started" } } } } }
+          } }
+        },
+        { "type": "px_loop", "id": "loop1",
+          "inputs": { "DO": { "block":
+            { "type": "text_print", "id": "printLoop",
+              "inputs": { "TEXT": { "block": { "type": "text", "id": "tLoop", "fields": { "TEXT": "looped" } } } } }
+          } }
+        }
+      ] }
+    }
+    """;
+
+    /// <summary>Бесконечное событие Loop (print «tick»).</summary>
+    private const string LoopJson = """
+    {
+      "blocks": { "languageVersion": 0, "blocks": [
+        { "type": "px_loop", "id": "loop1",
+          "inputs": { "DO": { "block":
+            { "type": "text_print", "id": "pl",
+              "inputs": { "TEXT": { "block": { "type": "text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
+          } }
+        }
+      ] }
+    }
+    """;
+
     [Fact]
     public async Task Start_SimpleProgram_StreamsOutputAndFinishes()
     {
-        var (manager, broadcaster, _) = CreateManager();
+        var (manager, broadcaster, _, _) = CreateManager();
 
         var response = manager.Start(new PxRunRequest { BlocksJson = PrintJson });
 
@@ -79,7 +131,7 @@ public class PxRunManagerTests
     [Fact]
     public void Start_UnknownBlock_NotStarted()
     {
-        var (manager, _, _) = CreateManager();
+        var (manager, _, _, _) = CreateManager();
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
@@ -99,7 +151,7 @@ public class PxRunManagerTests
     [Fact]
     public async Task Stop_InfiniteLoop_CancelsRun()
     {
-        var (manager, broadcaster, _) = CreateManager();
+        var (manager, broadcaster, _, _) = CreateManager();
         // Бесконечное событие Loop: выход только через Stop.
         var json = """
         {
@@ -131,8 +183,71 @@ public class PxRunManagerTests
     [Fact]
     public void Stop_UnknownRunId_ReturnsFalse()
     {
-        var (manager, _, _) = CreateManager();
+        var (manager, _, _, _) = CreateManager();
         Assert.False(manager.Stop(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void Start_UnknownContext_NotStarted()
+    {
+        var (manager, _, _, _) = CreateManager();
+
+        var response = manager.Start(new PxRunRequest { BlocksJson = PrintJson, ContextName = "нет-такого" });
+
+        Assert.False(response.Started);
+        Assert.Contains("нет-такого", response.ErrorMessage);
+        Assert.Equal(0, manager.ActiveRunCount);
+    }
+
+    [Fact]
+    public async Task Start_WithContext_AppliesEventPolicy()
+    {
+        var (manager, broadcaster, _, contexts) = CreateManager();
+        contexts.Register(PxEditorContext.Define("events-only").Events("start"));
+
+        var response = manager.Start(new PxRunRequest { BlocksJson = StartAndPlainJson, ContextName = "events-only" });
+
+        Assert.True(response.Started);
+        var result = await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.True(result.Success);
+        // Политика контекста: исполняются только события «start», обычный стек пропущен.
+        Assert.Contains(broadcaster.Events, e => e.Kind == PxExecutionEventKind.Output && e.Text == "started");
+        Assert.DoesNotContain(broadcaster.Events, e => e.Kind == PxExecutionEventKind.Output && e.Text == "plain");
+    }
+
+    [Fact]
+    public async Task Start_WithContext_RequestPolicyOverridesContext()
+    {
+        var (manager, broadcaster, _, contexts) = CreateManager();
+        // Если бы победила политика контекста («loop»), запуск ушёл бы в бесконечный цикл.
+        contexts.Register(PxEditorContext.Define("override").Events("loop"));
+
+        var response = manager.Start(new PxRunRequest
+        {
+            BlocksJson = StartAndLoopJson,
+            ContextName = "override",
+            EventNames = ["start"]
+        });
+
+        Assert.True(response.Started);
+        var result = await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.True(result.Success);
+        Assert.Contains(broadcaster.Events, e => e.Kind == PxExecutionEventKind.Output && e.Text == "started");
+    }
+
+    [Fact]
+    public async Task Start_WithContext_StepLimitApplies()
+    {
+        var (manager, broadcaster, _, contexts) = CreateManager();
+        contexts.Register(PxEditorContext.Define("limited").StepLimit(10));
+
+        var response = manager.Start(new PxRunRequest { BlocksJson = LoopJson, ContextName = "limited" });
+
+        Assert.True(response.Started);
+        var result = await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.False(result.Success);
+        Assert.Contains("лимит шагов", result.ErrorMessage);
+        Assert.Equal(0, manager.ActiveRunCount);
     }
 
     [Fact]

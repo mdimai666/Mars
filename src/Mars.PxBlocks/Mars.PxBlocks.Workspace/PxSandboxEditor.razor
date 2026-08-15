@@ -1,0 +1,444 @@
+@namespace Mars.PxBlocks.Workspace
+
+<div class="px-blocks-editor px-blocks-sandbox" style="width:100%; height:100%; display:flex; flex-direction:column;">
+    <div class="px-blocks-toolbar" style="display:flex; gap:6px; align-items:center; padding:6px 10px; border-bottom:1px solid #ddd;">
+        <button class="pxb-tool-btn" @onclick="Undo" title="Ctrl+Z">↶ Undo</button>
+        <button class="pxb-tool-btn" @onclick="Redo" title="Ctrl+Y">↷ Redo</button>
+        <button class="pxb-tool-btn pxb-tool-btn--danger" @onclick="Clear">🗑 Clear</button>
+        <button class="pxb-tool-btn" @onclick="Center" title="Центрировать блоки">⌖ Center</button>
+        <span class="pxb-toolbar-sep"></span>
+        <button class="pxb-tool-btn pxb-tool-btn--run" @onclick="Run" disabled="@_running" title="Исполнить программу">▶ Run</button>
+        <button class="pxb-tool-btn pxb-tool-btn--danger" @onclick="Stop" disabled="@(!_running)" title="Остановить">⏹ Stop</button>
+        <span style="flex:1"></span>
+        <span style="font-size:12px; color:#888;">@_status</span>
+    </div>
+    <div style="flex:1; min-height:0;">
+        <PxBlocksEditor @ref="_editor"
+                        OptionsJson="@OptionsJson"
+                        Toolbox="Toolbox"
+                        Types="Types"
+                        BlockDefinitions="BlockDefinitions"
+                        BlockDefinitionsJson="@BlockDefinitionsJson"
+                        RailDisplay="RailDisplay"
+                        OnReady="OnEditorReady"
+                        OnWorkspaceChanged="OnWorkspaceChangedInternal" />
+    </div>
+    @if (_outputLines.Count > 0 || _runError != null)
+    {
+        <div class="px-blocks-output">
+            @if (_runError != null)
+            {
+                <div class="px-blocks-output-error">@_runError</div>
+            }
+            @foreach (var line in _outputLines)
+            {
+                <div>@line</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string? OptionsJson { get; set; }
+
+    /// <summary>Свой toolbox; без него — MakeCode-дефолт.</summary>
+    [Parameter] public PxToolbox? Toolbox { get; set; }
+
+    /// <summary>Свой реестр типов; без него — дефолт (Boolean/Number/String/Any/Object).</summary>
+    [Parameter] public PxTypeRegistry? Types { get; set; }
+
+    /// <summary>Свои определения блоков (список или PxBlockSet); без них — ядерные события Start/Loop.</summary>
+    [Parameter] public IEnumerable<PxBlockDefinition>? BlockDefinitions { get; set; }
+
+    /// <summary>
+    /// Определения блоков с сервера — Blockly JSON-массив из api/PxBlocks/Definitions.
+    /// Имеет приоритет над <see cref="BlockDefinitions"/> (блоки объявлены на сервере,
+    /// в WASM их определений нет).
+    /// </summary>
+    [Parameter] public string? BlockDefinitionsJson { get; set; }
+
+    /// <summary>Свой реестр имплементаций исполнения; без него — стандартные листья + демо-набор.</summary>
+    [Parameter] public PxBlockImplementsLocator? Implements { get; set; }
+
+    /// <summary>
+    /// Транспорт серверного исполнения (PxServerRunClient): Run уходит на сервер
+    /// (api/PxBlocks + SignalR-события). null — исполнение in-process (локальный
+    /// режим, задел под браузерный рантайм).
+    /// </summary>
+    [Parameter] public IPxRunTransport? RunTransport { get; set; }
+
+    /// <summary>Режим запуска: все верхнеуровневые стеки (по умолчанию) или только события.</summary>
+    [Parameter] public PxEditorRunMode RunMode { get; set; } = PxEditorRunMode.AllTopLevel;
+
+    /// <summary>
+    /// Для режима <see cref="PxEditorRunMode.Events"/> — имена исполняемых событий
+    /// (PxEvents.Start / PxEvents.Loop). Запуск идёт фазами в порядке этого списка:
+    /// сначала ВСЕ блоки-события с первым именем (в порядке workspace), затем все
+    /// со вторым и т.д. При ["start", "loop"] все «старты» гарантированно исполняются
+    /// до всех «циклов», независимо от их раскладки на полотне. Пустой список — ничего
+    /// не исполняется. Пример: <c>RunEventNames="new[] { PxEvents.Start, PxEvents.Loop }"</c>.
+    /// </summary>
+    [Parameter] public IReadOnlyList<string>? RunEventNames { get; set; }
+
+    /// <summary>Отображение рейки категорий: авто-сворачивание при малой ширине, явно полная или компактная.</summary>
+    [Parameter] public PxRailDisplay RailDisplay { get; set; } = PxRailDisplay.Auto;
+
+    /// <summary>Ключ localStorage для автосейва; пустая строка отключает автосейв.</summary>
+    [Parameter] public string StorageKey { get; set; } = "pxblocks.workspace";
+
+    /// <summary>Проброс событий workspace потребителю.</summary>
+    [Parameter] public EventCallback<IReadOnlyList<PxBlocklyEvent>> OnWorkspaceChanged { get; set; }
+
+    [Inject] private ILocalStorageService LocalStorage { get; set; } = default!;
+
+    private PxBlocksEditor? _editor;
+    private string _status = "";
+
+    private PxBlockImplementsLocator? _defaultImplements;
+
+    private CancellationTokenSource? _runCancellation;
+    private bool _running;
+    private string? _runError;
+    private string? _highlightedBlockId;
+    private DateTime _lastHighlightAt;
+    private readonly List<string> _outputLines = [];
+
+    private Guid? _serverRunId;
+    private IDisposable? _serverSubscription;
+
+    private PxBlockImplementsLocator EffectiveImplements => Implements ?? (_defaultImplements ??= CreateDefaultImplements());
+
+    /// <summary>Стандартные листья Runtime + имплементации этой сборки (задел браузерного рантайма).</summary>
+    private static PxBlockImplementsLocator CreateDefaultImplements()
+    {
+        var locator = PxInterpreter.CreateDefaultImplements();
+        locator.RegisterAssembly(typeof(PxSandboxEditor).Assembly);
+        return locator;
+    }
+
+    private async Task OnEditorReady()
+    {
+        if (!string.IsNullOrEmpty(StorageKey))
+        {
+            var json = await LocalStorage.GetItemAsStringAsync(StorageKey);
+            if (!string.IsNullOrEmpty(json))
+            {
+                await _editor!.LoadAsync(json);
+                await _editor!.Center();
+                _status = "загружено из localStorage";
+            }
+        }
+    }
+
+    private async Task OnWorkspaceChangedInternal(IReadOnlyList<PxBlocklyEvent> events)
+    {
+        if (!string.IsNullOrEmpty(StorageKey))
+        {
+            var json = await _editor!.SaveAsync();
+            await LocalStorage.SetItemAsStringAsync(StorageKey, json);
+            _status = $"автосейв {DateTime.Now:HH:mm:ss} (событий: {events.Count})";
+        }
+        await OnWorkspaceChanged.InvokeAsync(events);
+    }
+
+    public ValueTask<string> SaveAsync() => _editor!.SaveAsync();
+
+    public ValueTask LoadAsync(string blocksJson) => _editor!.LoadAsync(blocksJson);
+
+    public async Task Undo() => await _editor!.Undo();
+
+    public async Task Redo() => await _editor!.Redo();
+
+    public async Task Clear() => await _editor!.Clear();
+
+    public async Task Center() => await _editor!.Center();
+
+    /// <summary>
+    /// Исполнение программы: на сервере (RunTransport задан) или in-process.
+    /// Серверный запуск завершается событием RunFinished из хаба, не возвратом Run().
+    /// </summary>
+    public async Task Run()
+    {
+        if (_running)
+            return;
+
+        _running = true;
+        _runError = null;
+        _outputLines.Clear();
+        _status = RunTransport != null ? "исполнение на сервере…" : "исполнение…";
+        _runCancellation = new CancellationTokenSource();
+
+        try
+        {
+            var blocksJson = await _editor!.SaveAsync();
+            if (RunTransport != null)
+                await RunOnServerAsync(blocksJson);
+            else
+                await RunLocalAsync(blocksJson);
+        }
+        catch (JSDisconnectedException)
+        {
+            await ResetRunStateAsync();
+        }
+    }
+
+    /// <summary>Локальное исполнение (in-process) — задел под будущий браузерный рантайм.</summary>
+    private async Task RunLocalAsync(string blocksJson)
+    {
+        try
+        {
+            global::Mars.PxBlocks.Runtime.Ast.PxProgram program;
+            try
+            {
+                program = new PxParser(EffectiveImplements).Parse(blocksJson);
+            }
+            catch (PxParseException exception)
+            {
+                _runError = exception.Message;
+                if (!string.IsNullOrEmpty(exception.BlockId))
+                    await ApplyHighlightAsync(exception.BlockId);
+                _status = "ошибка разбора";
+                return;
+            }
+
+            var interpreter = new PxInterpreter(EffectiveImplements);
+            var options = new PxRunOptions
+            {
+                OnEvent = OnExecutionEvent,
+                // Лимит шагов снят: бесконечные события Loop останавливаются кнопкой Stop
+                // (YieldEvery не даёт повесить UI); защита от случайных циклов — та же кнопка.
+                StepLimit = 0,
+                EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
+            };
+            var result = await interpreter.RunAsync(program, options, _runCancellation!.Token);
+            await ApplyResultAsync(result.Canceled, result.Success, result.ErrorMessage, result.ErrorBlockId, result.Steps);
+        }
+        finally
+        {
+            await ResetRunStateAsync();
+        }
+    }
+
+    /// <summary>
+    /// Серверное исполнение: подписка на события хаба, затем POST программы.
+    /// RunId назначаем сами и подписываемся ДО запроса — события не теряются.
+    /// Быстрая программа может завершиться раньше, чем вернётся ответ POST —
+    /// поэтому _serverRunId выставляется до запроса, а все переходы сверяются по runId.
+    /// </summary>
+    private async Task RunOnServerAsync(string blocksJson)
+    {
+        var runId = Guid.NewGuid();
+
+        try
+        {
+            await RunTransport!.ConnectAsync(_runCancellation!.Token);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            _runError = $"Нет связи с сервером исполнения: {exception.Message}";
+            _status = "ошибка подключения";
+            await ResetRunStateAsync();
+            return;
+        }
+
+        _serverRunId = runId;
+        _serverSubscription = RunTransport.Subscribe(runId,
+            events => _ = InvokeAsync(() =>
+            {
+                foreach (var executionEvent in events)
+                    OnExecutionEvent(executionEvent);
+            }),
+            result => _ = InvokeAsync(() => FinishServerRunAsync(runId, result)));
+
+        PxRunResponse response;
+        try
+        {
+            response = await RunTransport.RunAsync(new PxRunRequest
+            {
+                RunId = runId,
+                BlocksJson = blocksJson,
+                // Лимит шагов снят: бесконечные события Loop останавливаются кнопкой Stop.
+                StepLimit = 0,
+                EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
+            }, _runCancellation!.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            if (_serverRunId == runId)
+                ClearServerRun();
+            _ = RunTransport.StopAsync(runId); // best effort: запрос мог ещё не дойти
+            _runError = "Остановлено";
+            _status = "остановлено";
+            await ResetRunStateAsync();
+            return;
+        }
+        catch (Exception exception)
+        {
+            if (_serverRunId == runId)
+                ClearServerRun();
+            _ = RunTransport.StopAsync(runId); // best effort: сервер мог уже стартовать запуск
+            _runError = $"Нет связи с сервером исполнения: {exception.Message}";
+            _status = "ошибка подключения";
+            await ResetRunStateAsync();
+            return;
+        }
+
+        // Итог мог прийти раньше ответа (быстрая программа) — состояние уже сброшено,
+        // либо запущен новый запуск: не трогаем чужое состояние.
+        if (_serverRunId != runId)
+        {
+            if (response.Started)
+                _ = RunTransport.StopAsync(runId); // осиротевший запуск без подписчика
+            return;
+        }
+
+        if (!response.Started)
+        {
+            ClearServerRun();
+            _runError = response.ErrorMessage;
+            if (!string.IsNullOrEmpty(response.ErrorBlockId))
+                await ApplyHighlightAsync(response.ErrorBlockId);
+            _status = "ошибка разбора";
+            await ResetRunStateAsync();
+            return;
+        }
+
+        _status = "исполнение на сервере…";
+    }
+
+    /// <summary>Итог серверного запуска из хаба — завершает Run-состояние редактора.</summary>
+    private async Task FinishServerRunAsync(Guid runId, PxRunResultDto result)
+    {
+        // Не свой запуск (уже сброшен Stop-ом или запущен новый) — игнорируем.
+        if (_serverRunId != runId)
+            return;
+
+        ClearServerRun();
+        try
+        {
+            await ApplyResultAsync(result.Canceled, result.Success, result.ErrorMessage, result.ErrorBlockId, result.Steps);
+        }
+        finally
+        {
+            // Сброс — всегда: иначе UI останется в «исполняется» без кнопки Run.
+            await ResetRunStateAsync();
+        }
+    }
+
+    private void ClearServerRun()
+    {
+        _serverSubscription?.Dispose();
+        _serverSubscription = null;
+        _serverRunId = null;
+    }
+
+    /// <summary>Единый маппинг итога (локального или серверного) в статус/ошибку/подсветку.</summary>
+    private async Task ApplyResultAsync(bool canceled, bool success, string? errorMessage, string? errorBlockId, long steps)
+    {
+        if (canceled)
+        {
+            _runError = "Остановлено";
+            _status = "остановлено";
+        }
+        else if (!success)
+        {
+            _runError = errorMessage;
+            if (!string.IsNullOrEmpty(errorBlockId))
+                await ApplyHighlightAsync(errorBlockId);
+            _status = "ошибка исполнения";
+        }
+        else
+        {
+            _status = $"исполнено (шагов: {steps})";
+        }
+    }
+
+    private async Task ResetRunStateAsync()
+    {
+        await ApplyHighlightAsync(null);
+        _running = false;
+        _runCancellation?.Dispose();
+        _runCancellation = null;
+        StateHasChanged();
+    }
+
+    public async Task Stop()
+    {
+        if (_serverRunId is Guid runId && RunTransport != null)
+        {
+            bool stopped;
+            try
+            {
+                stopped = await RunTransport.StopAsync(runId);
+            }
+            catch
+            {
+                stopped = false;
+            }
+
+            if (!stopped)
+            {
+                // Серверу запуск неизвестен (завершён, либо событие итога потеряно) —
+                // приводим редактор в порядок сами, иначе UI зависнет в «исполняется».
+                if (_serverRunId == runId)
+                    ClearServerRun();
+                _runError = "Остановлено";
+                _status = "остановлено";
+                await ResetRunStateAsync();
+            }
+
+            return;
+        }
+
+        _runCancellation?.Cancel();
+    }
+
+    private void OnExecutionEvent(PxExecutionEvent executionEvent)
+    {
+        switch (executionEvent.Kind)
+        {
+            case PxExecutionEventKind.BlockEntered when executionEvent.BlockId != null:
+                RequestHighlight(executionEvent.BlockId);
+                break;
+
+            case PxExecutionEventKind.Output when executionEvent.Text != null:
+                _outputLines.Add(executionEvent.Text);
+                // Бесконечные события Loop штампуют строки — держим панель обозримой.
+                if (_outputLines.Count > 1000)
+                    _outputLines.RemoveRange(0, _outputLines.Count - 1000);
+                StateHasChanged();
+                break;
+        }
+    }
+
+    /// <summary>Троттлинг подсветки: в цикле блоки мелькают часто, interop шлём не чаще ~30 мс.</summary>
+    private void RequestHighlight(string blockId)
+    {
+        var now = DateTime.Now;
+        if ((now - _lastHighlightAt).TotalMilliseconds < 30)
+            return;
+
+        _lastHighlightAt = now;
+        _ = ApplyHighlightAsync(blockId);
+    }
+
+    private async Task ApplyHighlightAsync(string? blockId)
+    {
+        if (_highlightedBlockId == blockId)
+            return;
+
+        var previous = _highlightedBlockId;
+        _highlightedBlockId = blockId;
+
+        try
+        {
+            if (previous != null)
+                await _editor!.HighlightBlockAsync(previous, on: false);
+            if (blockId != null)
+                await _editor!.HighlightBlockAsync(blockId, on: true);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+}

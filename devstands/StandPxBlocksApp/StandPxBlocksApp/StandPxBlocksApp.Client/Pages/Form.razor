@@ -1,0 +1,74 @@
+@page "/form"
+@using Mars.PxBlocks.Shared
+@using Mars.PxBlocks.Workspace
+@using Mars.PxBlocks.Workspace.Run
+@inject PxServerRunClient PxApi
+
+<PageTitle>PxBlocks — форма</PageTitle>
+
+@* Встраиваемая форма: редактор контекста «demo» без запуска. «Хранилище» хоста —
+    в памяти страницы (в админке здесь будет запись ноды/списка): сохранить — взять
+    JSON из редактора, вернуть — отдать его обратно параметром BlocksJson. *@
+<div style="position:relative; display:flex; flex-direction:column; height:100vh;">
+    <div style="display:flex; gap:8px; align-items:center; padding:6px 10px; border-bottom:1px solid #ddd; flex-wrap:wrap;">
+        <a class="pxb-page-link" style="position:static;" href="/">← песочница</a>
+        <strong style="font-size:14px;">Форма редактирования — контекст «demo»</strong>
+        <label style="font-size:12px; color:#666; display:flex; align-items:center; gap:4px; margin-left:12px;">
+            Рейка:
+            <select @bind="_railDisplay" style="font-size:12px;">
+                <option value="@PxRailDisplay.Auto">Auto</option>
+                <option value="@PxRailDisplay.Full">Full</option>
+                <option value="@PxRailDisplay.Compact">Compact</option>
+            </select>
+        </label>
+        <label style="font-size:12px; color:#666; display:flex; align-items:center; gap:6px;">
+            Ширина: @_widthPct%
+            <input type="range" min="30" max="100" @bind="_widthPct" style="width:120px;" />
+        </label>
+        <span style="flex:1"></span>
+        <span style="font-size:12px; color:#888;">@_status</span>
+        <button class="pxb-tool-btn" @onclick="SaveToHost">💾 Сохранить у хоста</button>
+        <button class="pxb-tool-btn" @onclick="Revert" disabled="@(_savedJson == null)">↩ Вернуть сохранённое</button>
+    </div>
+    <div style="flex:1; min-height:0;">
+        <div style="width:@(_widthPct)%; height:100%; transition:width .15s;">
+            <PxBlocksEditor @ref="_editor"
+                            Context="demo"
+                            Transport="@PxApi"
+                            BlocksJson="@_blocksJson"
+                            RailDisplay="_railDisplay"
+                            OnWorkspaceChanged="OnChanged" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private PxBlocksEditor? _editor;
+    private string? _blocksJson;
+    private string? _savedJson;
+    private string _status = "не сохранено";
+    private PxRailDisplay _railDisplay = PxRailDisplay.Auto;
+    private int _widthPct = 100;
+
+    private void OnChanged(IReadOnlyList<PxBlocklyEvent> events)
+    {
+        if (_savedJson != null)
+            _status = "изменено, не сохранено";
+    }
+
+    private async Task SaveToHost()
+    {
+        _savedJson = await _editor!.SaveAsync();
+        _status = $"сохранено у хоста {DateTime.Now:HH:mm:ss}";
+    }
+
+    private void Revert()
+    {
+        if (_savedJson == null)
+            return;
+
+        // Смена параметра — редактор сам перечитает полотно.
+        _blocksJson = _savedJson;
+        _status = "загружено сохранённое";
+    }
+}

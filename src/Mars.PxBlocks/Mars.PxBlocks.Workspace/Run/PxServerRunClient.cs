@@ -47,6 +47,12 @@ public sealed class PxServerRunClient : IPxBlocksApiClient, IPxRunTransport, IAs
     public Task<PxDefinitionsResponse> GetDefinitionsAsync(CancellationToken cancellationToken = default)
         => _http.Request("api/PxBlocks", "Definitions").GetJsonAsync<PxDefinitionsResponse>(cancellationToken: cancellationToken);
 
+    public async Task<IReadOnlyList<PxEditorContextInfo>> GetContextsAsync(CancellationToken cancellationToken = default)
+        => await _http.Request("api/PxBlocks", "Contexts").GetJsonAsync<List<PxEditorContextInfo>>(cancellationToken: cancellationToken);
+
+    public Task<PxDefinitionsResponse> GetContextDefinitionsAsync(string name, CancellationToken cancellationToken = default)
+        => _http.Request("api/PxBlocks", "Contexts", name).GetJsonAsync<PxDefinitionsResponse>(cancellationToken: cancellationToken);
+
     public Task<PxRunResponse> RunAsync(PxRunRequest request, CancellationToken cancellationToken = default)
         => _http.Request("api/PxBlocks", "Run").PostJsonAsync(request, cancellationToken: cancellationToken).ReceiveJson<PxRunResponse>();
 

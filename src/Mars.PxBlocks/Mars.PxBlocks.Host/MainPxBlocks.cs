@@ -18,6 +18,7 @@ public static class MainPxBlocks
         services.AddSingleton<IPxBlockCatalog, PxBlockCatalog>();
         services.AddSingleton<IPxBlocksBroadcaster, PxBlocksBroadcaster>();
         services.AddSingleton<IPxRunManager, PxRunManager>();
+        services.AddSingleton<IPxEditorContextRegistry, PxEditorContextRegistry>();
 
         // JSON-протокол SignalR в конвенции Mars (StandNodesApp.AddMarsSignalRConfiguration):
         // имена методов/свойств как объявлены, без camelCase.

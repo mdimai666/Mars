@@ -13,16 +13,30 @@ public sealed record PxRunRequest
     public required string BlocksJson { get; init; }
 
     /// <summary>
+    /// Имя контекста редактора (IPxEditorContextRegistry): политика запуска и лимиты
+    /// берутся из контекста, явно заданные поля запроса имеют приоритет.
+    /// null — запуск вне контекста.
+    /// </summary>
+    public string? ContextName { get; init; }
+
+    /// <summary>
     /// Режим «только события»: фазы в порядке списка имён (PxEvents.Start / PxEvents.Loop).
-    /// null — все верхнеуровневые стеки в порядке workspace, события Loop — после всех.
+    /// null — все верхнеуровневые стеки в порядке workspace, события Loop — после всех
+    /// (либо политика контекста, если задан <see cref="ContextName"/>).
     /// </summary>
     public IReadOnlyList<string>? EventNames { get; init; }
 
-    /// <summary>Лимит шагов; 0 или отрицательное — без лимита (остановка только через Stop).</summary>
-    public int StepLimit { get; init; }
+    /// <summary>
+    /// Лимит шагов; 0 или отрицательное — без лимита (остановка только через Stop).
+    /// null — лимит контекста (<see cref="ContextName"/>), иначе без лимита.
+    /// </summary>
+    public int? StepLimit { get; init; }
 
-    /// <summary>Максимум накопленных строк вывода в итоге; 0 — без лимита.</summary>
-    public int OutputLimit { get; init; } = 10_000;
+    /// <summary>
+    /// Максимум накопленных строк вывода в итоге; 0 — без лимита.
+    /// null — лимит контекста (<see cref="ContextName"/>), иначе 10 000.
+    /// </summary>
+    public int? OutputLimit { get; init; }
 
     /// <summary>Зерно генератора случайных чисел — воспроизводимость.</summary>
     public int? RandomSeed { get; init; }

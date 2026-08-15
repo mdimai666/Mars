@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using Mars.PxBlocks.Host.Shared;
 using Mars.PxBlocks.Host.Shared.Dto;
 using Mars.PxBlocks.Host.Shared.Services;
 using Mars.PxBlocks.Runtime.Ast;
@@ -18,18 +19,36 @@ public sealed class PxRunManager : IPxRunManager
 {
     private readonly IPxBlockCatalog _catalog;
     private readonly IPxBlocksBroadcaster _broadcaster;
+    private readonly IPxEditorContextRegistry _contexts;
     private readonly ConcurrentDictionary<Guid, PxRunSession> _runs = new();
 
-    public PxRunManager(IPxBlockCatalog catalog, IPxBlocksBroadcaster broadcaster)
+    public PxRunManager(IPxBlockCatalog catalog, IPxBlocksBroadcaster broadcaster, IPxEditorContextRegistry contexts)
     {
         _catalog = catalog;
         _broadcaster = broadcaster;
+        _contexts = contexts;
     }
 
     public int ActiveRunCount => _runs.Count;
 
     public PxRunResponse Start(PxRunRequest request)
     {
+        // Политика запуска из контекста (режим событий, лимиты); неизвестный контекст —
+        // ошибка сразу, как и ошибка разбора.
+        PxEditorContext? context = null;
+        if (request.ContextName != null)
+        {
+            context = _contexts.Get(request.ContextName);
+            if (context == null)
+            {
+                return new PxRunResponse
+                {
+                    Started = false,
+                    ErrorMessage = $"Контекст «{request.ContextName}» не зарегистрирован"
+                };
+            }
+        }
+
         PxProgram program;
         try
         {
@@ -62,7 +81,7 @@ public sealed class PxRunManager : IPxRunManager
             return new PxRunResponse { Started = false, ErrorMessage = $"Запуск {runId} уже активен" };
         }
 
-        _ = Task.Run(() => ExecuteAsync(session, program, request));
+        _ = Task.Run(() => ExecuteAsync(session, program, request, context));
         return new PxRunResponse { RunId = runId, Started = true };
     }
 
@@ -77,14 +96,15 @@ public sealed class PxRunManager : IPxRunManager
         return false;
     }
 
-    private async Task ExecuteAsync(PxRunSession session, PxProgram program, PxRunRequest request)
+    private async Task ExecuteAsync(PxRunSession session, PxProgram program, PxRunRequest request, PxEditorContext? context)
     {
+        // Явные поля запроса имеют приоритет; незаполненные дополняет политика контекста.
         var options = new PxRunOptions
         {
-            StepLimit = request.StepLimit,
-            OutputLimit = request.OutputLimit,
+            StepLimit = request.StepLimit ?? context?.StepLimit ?? 0,
+            OutputLimit = request.OutputLimit ?? context?.OutputLimit ?? 10_000,
             RandomSeed = request.RandomSeed,
-            EventNames = request.EventNames,
+            EventNames = request.EventNames ?? context?.EventNames,
             OnEvent = session.Enqueue
         };
 

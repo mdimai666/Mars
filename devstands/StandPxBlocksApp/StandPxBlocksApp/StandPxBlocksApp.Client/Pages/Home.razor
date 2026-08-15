@@ -7,7 +7,7 @@
 
 <PageTitle>PxBlocks</PageTitle>
 
-<div style="height:100vh;">
+<div style="position:relative; height:100vh;">
     @if (_loadError != null)
     {
         <div style="padding:20px; color:#B00020;">@_loadError</div>
@@ -18,12 +18,13 @@
     }
     else
     {
-        <PxBlocksEditor RunMode="PxEditorRunMode.Events"
-                        RunEventNames="@([PxEvents.Start, PxEvents.Loop])"
-                        BlockDefinitionsJson="@_definitions.DefinitionsJson"
-                        Toolbox="@_definitions.Toolbox"
-                        RunTransport="@PxApi" />
+        <PxSandboxEditor RunMode="PxEditorRunMode.Events"
+                         RunEventNames="@([PxEvents.Start, PxEvents.Loop])"
+                         BlockDefinitionsJson="@_definitions.DefinitionsJson"
+                         Toolbox="@_definitions.Toolbox"
+                         RunTransport="@PxApi" />
     }
+    <a class="pxb-page-link" href="form">форма редактирования →</a>
 </div>
 
 @code {

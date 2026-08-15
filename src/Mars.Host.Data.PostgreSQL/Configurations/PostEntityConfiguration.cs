@@ -17,6 +17,8 @@ public class PostEntityConfiguration : IEntityTypeConfiguration<PostEntity>
 
         entity.Property(x => x.Title).HasColumnType($"text").HasMaxLength(TitleMaxLength);
         entity.Property(x => x.Slug).HasColumnType($"varchar({SlugMaxLength})");
+        // Выражение-индексы по lower(slug) (ix_posts_post_type_id_slug_lower, ix_posts_slug_lower)
+        // созданы raw-SQL'ом в миграции 20260815151932_AddPostSlugIndexes — HasIndex выражения не умеет.
         entity.Property(x => x.Tags).HasColumnType($"character varying({EntityDefaultConstants.TagMaxLength})[]");
         entity.Property(x => x.Content).HasColumnType("text");
         entity.Property(x => x.Excerpt).HasColumnType("text").HasMaxLength(ExcerptMaxLength);

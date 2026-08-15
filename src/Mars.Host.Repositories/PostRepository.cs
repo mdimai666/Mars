@@ -43,11 +43,19 @@ internal class PostRepository : IPostRepository
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
                                         ?.ToDetail();
 
+    // Регистронезависимое сравнение через lower() вместо ILike: только так планировщик
+    // PostgreSQL берёт выражение-индекс ix_posts_post_type_id_slug_lower (ILike остаётся seq scan'ом).
+#pragma warning disable CA1862, CA1304, CA1311 // Сравнение выполняется в PostgreSQL как lower(slug) = lower(@p),
+    // а не в .NET: рекомендации анализатора (string.Equals(StringComparison), ToLower(CultureInfo))
+    // не транслируются Npgsql в SQL (проверено: 500 в интеграционных тестах).
     public async Task<PostDetail?> GetDetailBySlug(string slug, string type, CancellationToken cancellationToken)
+#pragma warning disable RCS1155 // Use StringComparison when comparing strings
                                 => (await InternalDetail
                                         .FirstOrDefaultAsync(s => s.PostType.TypeName == type
-                                                            && EF.Functions.ILike(s.Slug, slug), cancellationToken))
+                                                            && s.Slug.ToLower() == slug.ToLower(), cancellationToken))
                                         ?.ToDetail();
+#pragma warning restore RCS1155 // Use StringComparison when comparing strings
+#pragma warning restore CA1862, CA1304, CA1311
 
     public async Task<PostEditDetail?> GetPostEditDetail(Guid id, CancellationToken cancellationToken)
                                 => (await InternalDetail
@@ -286,6 +294,8 @@ internal class PostRepository : IPostRepository
                         => _marsDbContext.Posts.AsNoTracking().AnyAsync(s => s.Id == id, cancellationToken);
 
     public Task<bool> ExistAsync(string typeName, string slug, CancellationToken cancellationToken)
-                        => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug == slug, cancellationToken);
+#pragma warning disable RCS1155 // Use StringComparison when comparing strings
+                        => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug.ToLower() == slug.ToLower(), cancellationToken);
+#pragma warning restore RCS1155 // Use StringComparison when comparing strings
 
 }

@@ -1,6 +1,6 @@
 # Задача: индекс на Slug у постов
 
-**Статус:** не сделана (создана 2026-08-15 по итогам нагрузочных тестов k6).
+**Статус:** сделана (2026-08-16; миграция `20260815151932_AddPostSlugIndexes`, см. «Реализация» внизу).
 
 ## Проблема
 
@@ -55,3 +55,39 @@
    (БД раздувается до десятков тысяч постов) `post_update` не должен деградировать
    (до фикса: 627 → 202 ит/с; после фикса оба прогона дают сопоставимые цифры).
 3. Прогнать интеграционные тесты постов/WebApiClient — поведение не меняется.
+
+## Реализация (2026-08-16)
+
+1. Миграция `src/Mars.Host.Data.PostgreSQL/Migrations/20260815151932_AddPostSlugIndexes.cs`
+   (raw SQL, имена в реальной схеме snake_case — не PascalCase, как в примере выше):
+   - `ix_posts_post_type_id_slug_lower` ON `posts` (`post_type_id`, lower(`slug`)) — для
+     `GetDetailBySlug` (тип + slug);
+   - `ix_posts_slug_lower` ON `posts` (lower(`slug`)) — для QueryLang-запроса фронтов
+     `ef.post.First(post.Slug.ToLower() == ...)` без фильтра по типу.
+
+   Через `HasIndex`/`IEntityTypeConfiguration` выражение-индексы не объявляются (проверено:
+   EF Core 10 падает на `HasIndex(x => x.Slug.ToLower())`; позиция мейнтейнера Npgsql —
+   issue efcore.pg#293: только raw SQL или citext). В `PostEntityConfiguration` оставлен
+   комментарий-ссылка на миграцию. Уникальность не добавляли (soft-delete + проверки кодом).
+
+2. Пришлось поменять и сами запросы — одного индекса недостаточно: планировщик PostgreSQL
+   **не использует** индекс по `lower(slug)` для `ILIKE` (проверено EXPLAIN'ом, оставался
+   seq scan). В `src/Mars.Host.Repositories/PostRepository.cs`:
+   - `GetDetailBySlug`: `EF.Functions.ILike(s.Slug, slug)` → `s.Slug.ToLower() == slug.ToLower()`;
+   - `ExistAsync(typeName, slug)`: `s.Slug == slug` → сравнение через `ToLower()`
+     (заодно регистронезависимость приведена к единой семантике).
+
+## Результаты проверки (2026-08-16, БД раздута до ~36 000 постов)
+
+- `EXPLAIN ANALYZE`: все формы запросов — Index Scan по новым индексам,
+  0,06–0,09 мс (до фикса: Seq Scan 10–12 мс, в т.ч. для несуществующего slug).
+- Интеграционные тесты `Mars.WebApiClient.Integration.Tests`: 177/177 (поведение не изменилось).
+- k6 на раздутой БД (1000 посеяно + ~35k создано `post_create`), 30s full:
+
+  | Сценарий | 1000 постов (до фикса) | раздутая БД до фикса | раздутая БД после фикса |
+  |---|---:|---:|---:|
+  | post_update | 627 ит/с | **202 ит/с** | **641 ит/с** |
+  | post_read | 2 894 ит/с | — | 3 091 ит/с |
+  | post_create | 1 224 ит/с | — | 1 174 ит/с (индексы запись не замедлили) |
+
+  Деградация ×3 после `post_create` устранена.

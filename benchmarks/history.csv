@@ -1,0 +1,25 @@
+﻿timestamp,commit,version,mode,scenario,rps,avg_ms,p95_ms,failed_pct
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_static_anon,51079,0.33,1.44,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_static_auth,3877,5.03,7.62,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_db_anon,1207,16.36,22.34,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_db_auth,949,20.86,26.73,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,post_read,2894,6.78,9.16,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,post_list,2159,8.99,13.19,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,post_update,627,7.83,12.56,0
+2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,post_create,1224,8.01,10.22,0
+2026-08-15 23:55:32,3c886a3b,0.7.7-alpha.34,smoke,render_static_anon,7613,1,4.04,0
+2026-08-15 23:55:33,3c886a3b,0.7.7-alpha.34,smoke,render_static_auth,2227,7.25,11.34,0
+2026-08-15 23:55:35,3c886a3b,0.7.7-alpha.34,smoke,render_db_anon,923,19.92,26.96,0
+2026-08-15 23:55:37,3c886a3b,0.7.7-alpha.34,smoke,render_db_auth,697,26.78,35.14,0
+2026-08-15 23:55:38,3c886a3b,0.7.7-alpha.34,smoke,post_read,2056,8.13,10.52,0
+2026-08-15 23:55:40,3c886a3b,0.7.7-alpha.34,smoke,post_list,1607,10.65,14.29,0
+2026-08-15 23:55:42,3c886a3b,0.7.7-alpha.34,smoke,post_update,547,8.66,14.11,0
+2026-08-15 23:55:44,3c886a3b,0.7.7-alpha.34,smoke,post_create,1045,8.74,12.15,0
+2026-08-15 23:55:55,3c886a3b,0.7.7-alpha.34,smoke,render_static_anon,7775,0.97,3.07,0
+2026-08-15 23:55:56,3c886a3b,0.7.7-alpha.34,smoke,render_static_auth,2019,8.16,13.28,0
+2026-08-15 23:55:58,3c886a3b,0.7.7-alpha.34,smoke,render_db_anon,935,19.65,26.65,0
+2026-08-15 23:56:00,3c886a3b,0.7.7-alpha.34,smoke,render_db_auth,733,25.43,31.75,0
+2026-08-15 23:56:01,3c886a3b,0.7.7-alpha.34,smoke,post_read,1997,8.42,11.43,0
+2026-08-15 23:56:04,3c886a3b,0.7.7-alpha.34,smoke,post_list,1528,11.2,20.51,0
+2026-08-15 23:56:06,3c886a3b,0.7.7-alpha.34,smoke,post_update,563,8.39,13.72,0
+2026-08-15 23:56:08,3c886a3b,0.7.7-alpha.34,smoke,post_create,1061,8.61,11.06,0

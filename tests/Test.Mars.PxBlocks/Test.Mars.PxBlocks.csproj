@@ -26,6 +26,8 @@
         <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Runtime\Mars.PxBlocks.Runtime.csproj" />
         <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Shared\Mars.PxBlocks.Shared.csproj" />
         <ProjectReference Include="..\..\src\Mars.PxBlocks\Mars.PxBlocks.Workspace\Mars.PxBlocks.Workspace.csproj" />
+        <!-- Стенд: браузерный домен (контекст «browser», блоки pw_*, пример сценария). -->
+        <ProjectReference Include="..\..\devstands\StandPxBlocksApp\StandPxBlocksApp\StandPxBlocksApp\StandPxBlocksApp.csproj" />
     </ItemGroup>
 
     <ItemGroup>

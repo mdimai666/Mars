@@ -11,14 +11,14 @@ public static class PxDemoToolbox
         Items =
         [
             new PxToolboxLabel { Text = "Тест типов", WebClass = "blocklyFlyoutHeading" },
-            new PxToolboxBlock { Type = "px_create_object" },
-            new PxToolboxBlock { Type = "px_demo_number" },
-            new PxToolboxBlock { Type = "px_demo_string" },
-            new PxToolboxBlock { Type = "px_demo_any" },
-            new PxToolboxBlock { Type = "px_demo_object" },
-            new PxToolboxBlock { Type = "px_demo_take_number" },
-            new PxToolboxBlock { Type = "px_demo_take_any" },
-            new PxToolboxBlock { Type = "px_demo_take_object" }
+            new PxToolboxBlock { Type = "demostand.demo.create_object" },
+            new PxToolboxBlock { Type = "demostand.demo.number" },
+            new PxToolboxBlock { Type = "demostand.demo.string" },
+            new PxToolboxBlock { Type = "demostand.demo.any" },
+            new PxToolboxBlock { Type = "demostand.demo.object" },
+            new PxToolboxBlock { Type = "demostand.demo.take_number" },
+            new PxToolboxBlock { Type = "demostand.demo.take_any" },
+            new PxToolboxBlock { Type = "demostand.demo.take_object" }
         ]
     };
 }

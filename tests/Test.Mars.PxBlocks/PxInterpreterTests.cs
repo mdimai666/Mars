@@ -31,18 +31,18 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "variables_set", "id": "set1",
+              "type": "core.variables.set", "id": "set1",
               "fields": { "VAR": { "id": "varX" } },
               "inputs": { "VALUE": { "block": {
-                "type": "math_arithmetic", "id": "add1", "fields": { "OP": "ADD" },
+                "type": "core.math.arithmetic", "id": "add1", "fields": { "OP": "ADD" },
                 "inputs": {
-                  "A": { "block": { "type": "math_number", "id": "n2", "fields": { "NUM": 2 } } },
-                  "B": { "block": { "type": "math_number", "id": "n3", "fields": { "NUM": 3 } } }
+                  "A": { "block": { "type": "core.math.number", "id": "n2", "fields": { "NUM": 2 } } },
+                  "B": { "block": { "type": "core.math.number", "id": "n3", "fields": { "NUM": 3 } } }
                 }
               } } },
               "next": { "block": {
-                "type": "text_print", "id": "print1",
-                "inputs": { "TEXT": { "block": { "type": "variables_get", "id": "getX", "fields": { "VAR": { "id": "varX" } } } } }
+                "type": "core.text.print", "id": "print1",
+                "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "getX", "fields": { "VAR": { "id": "varX" } } } } }
               } }
             }
           ] },
@@ -65,13 +65,13 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_if_else", "id": "if1",
+              "type": "core.logic.if_else", "id": "if1",
               "inputs": {
-                "IF0": { "block": { "type": "logic_boolean", "id": "b", "fields": { "BOOL": "{{boolField}}" } } },
-                "DO0": { "block": { "type": "text_print", "id": "py",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "ty", "fields": { "TEXT": "yes" } } } } } },
-                "ELSE": { "block": { "type": "text_print", "id": "pn",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "tn", "fields": { "TEXT": "no" } } } } } }
+                "IF0": { "block": { "type": "core.logic.boolean", "id": "b", "fields": { "BOOL": "{{boolField}}" } } },
+                "DO0": { "block": { "type": "core.text.print", "id": "py",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "ty", "fields": { "TEXT": "yes" } } } } } },
+                "ELSE": { "block": { "type": "core.text.print", "id": "pn",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tn", "fields": { "TEXT": "no" } } } } } }
               }
             }
           ] }
@@ -91,35 +91,35 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "variables_set", "id": "init",
+              "type": "core.variables.set", "id": "init",
               "fields": { "VAR": { "id": "varX" } },
-              "inputs": { "VALUE": { "block": { "type": "math_number", "id": "zero", "fields": { "NUM": 0 } } } },
+              "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "zero", "fields": { "NUM": 0 } } } },
               "next": { "block": {
-                "type": "controls_whileUntil", "id": "while1",
+                "type": "core.loops.while_until", "id": "while1",
                 "fields": { "MODE": "WHILE" },
                 "inputs": {
                   "BOOL": { "block": {
-                    "type": "logic_compare", "id": "cmp1", "fields": { "OP": "LT" },
+                    "type": "core.logic.compare", "id": "cmp1", "fields": { "OP": "LT" },
                     "inputs": {
-                      "A": { "block": { "type": "variables_get", "id": "gx", "fields": { "VAR": { "id": "varX" } } } },
-                      "B": { "block": { "type": "math_number", "id": "five", "fields": { "NUM": 5 } } }
+                      "A": { "block": { "type": "core.variables.get", "id": "gx", "fields": { "VAR": { "id": "varX" } } } },
+                      "B": { "block": { "type": "core.math.number", "id": "five", "fields": { "NUM": 5 } } }
                     }
                   } },
                   "DO": { "block": {
-                    "type": "variables_set", "id": "inc",
+                    "type": "core.variables.set", "id": "inc",
                     "fields": { "VAR": { "id": "varX" } },
                     "inputs": { "VALUE": { "block": {
-                      "type": "math_arithmetic", "id": "addx", "fields": { "OP": "ADD" },
+                      "type": "core.math.arithmetic", "id": "addx", "fields": { "OP": "ADD" },
                       "inputs": {
-                        "A": { "block": { "type": "variables_get", "id": "gx2", "fields": { "VAR": { "id": "varX" } } } },
-                        "B": { "block": { "type": "math_number", "id": "one", "fields": { "NUM": 1 } } }
+                        "A": { "block": { "type": "core.variables.get", "id": "gx2", "fields": { "VAR": { "id": "varX" } } } },
+                        "B": { "block": { "type": "core.math.number", "id": "one", "fields": { "NUM": 1 } } }
                       }
                     } } }
                   } }
                 },
                 "next": { "block": {
-                  "type": "text_print", "id": "p",
-                  "inputs": { "TEXT": { "block": { "type": "variables_get", "id": "gx3", "fields": { "VAR": { "id": "varX" } } } } }
+                  "type": "core.text.print", "id": "p",
+                  "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "gx3", "fields": { "VAR": { "id": "varX" } } } } }
                 } }
               } }
             }
@@ -141,31 +141,31 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "variables_set", "id": "init",
+              "type": "core.variables.set", "id": "init",
               "fields": { "VAR": { "id": "varS" } },
-              "inputs": { "VALUE": { "block": { "type": "math_number", "id": "zero", "fields": { "NUM": 0 } } } },
+              "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "zero", "fields": { "NUM": 0 } } } },
               "next": { "block": {
-                "type": "controls_for", "id": "for1",
+                "type": "core.loops.for", "id": "for1",
                 "fields": { "VAR": { "id": "varI" } },
                 "inputs": {
-                  "FROM": { "block": { "type": "math_number", "id": "from", "fields": { "NUM": 1 } } },
-                  "TO": { "block": { "type": "math_number", "id": "to", "fields": { "NUM": 4 } } },
-                  "BY": { "block": { "type": "math_number", "id": "by", "fields": { "NUM": 1 } } },
+                  "FROM": { "block": { "type": "core.math.number", "id": "from", "fields": { "NUM": 1 } } },
+                  "TO": { "block": { "type": "core.math.number", "id": "to", "fields": { "NUM": 4 } } },
+                  "BY": { "block": { "type": "core.math.number", "id": "by", "fields": { "NUM": 1 } } },
                   "DO": { "block": {
-                    "type": "variables_set", "id": "add",
+                    "type": "core.variables.set", "id": "add",
                     "fields": { "VAR": { "id": "varS" } },
                     "inputs": { "VALUE": { "block": {
-                      "type": "math_arithmetic", "id": "adds", "fields": { "OP": "ADD" },
+                      "type": "core.math.arithmetic", "id": "adds", "fields": { "OP": "ADD" },
                       "inputs": {
-                        "A": { "block": { "type": "variables_get", "id": "gs", "fields": { "VAR": { "id": "varS" } } } },
-                        "B": { "block": { "type": "variables_get", "id": "gi", "fields": { "VAR": { "id": "varI" } } } }
+                        "A": { "block": { "type": "core.variables.get", "id": "gs", "fields": { "VAR": { "id": "varS" } } } },
+                        "B": { "block": { "type": "core.variables.get", "id": "gi", "fields": { "VAR": { "id": "varI" } } } }
                       }
                     } } }
                   } }
                 },
                 "next": { "block": {
-                  "type": "text_print", "id": "p",
-                  "inputs": { "TEXT": { "block": { "type": "variables_get", "id": "gs2", "fields": { "VAR": { "id": "varS" } } } } }
+                  "type": "core.text.print", "id": "p",
+                  "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "gs2", "fields": { "VAR": { "id": "varS" } } } } }
                 } }
               } }
             }
@@ -187,11 +187,11 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_repeat_ext", "id": "rep1",
+              "type": "core.loops.repeat", "id": "rep1",
               "inputs": {
-                "TIMES": { "shadow": { "type": "math_number", "id": "sh2", "fields": { "NUM": 2 } } },
-                "DO": { "block": { "type": "text_print", "id": "p",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "t", "fields": { "TEXT": "x" } } } } } }
+                "TIMES": { "shadow": { "type": "core.math.number", "id": "sh2", "fields": { "NUM": 2 } } },
+                "DO": { "block": { "type": "core.text.print", "id": "p",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t", "fields": { "TEXT": "x" } } } } } }
               }
             }
           ] }
@@ -212,36 +212,36 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_for", "id": "for1",
+              "type": "core.loops.for", "id": "for1",
               "fields": { "VAR": { "id": "varI" } },
               "inputs": {
-                "FROM": { "block": { "type": "math_number", "id": "from", "fields": { "NUM": 1 } } },
-                "TO": { "block": { "type": "math_number", "id": "to", "fields": { "NUM": 10 } } },
-                "BY": { "block": { "type": "math_number", "id": "by", "fields": { "NUM": 1 } } },
+                "FROM": { "block": { "type": "core.math.number", "id": "from", "fields": { "NUM": 1 } } },
+                "TO": { "block": { "type": "core.math.number", "id": "to", "fields": { "NUM": 10 } } },
+                "BY": { "block": { "type": "core.math.number", "id": "by", "fields": { "NUM": 1 } } },
                 "DO": { "block": {
-                  "type": "controls_if", "id": "ifSkip",
+                  "type": "core.logic.if", "id": "ifSkip",
                   "extraState": { "elseIfCount": 1 },
                   "inputs": {
                     "IF0": { "block": {
-                      "type": "logic_compare", "id": "c3", "fields": { "OP": "EQ" },
+                      "type": "core.logic.compare", "id": "c3", "fields": { "OP": "EQ" },
                       "inputs": {
-                        "A": { "block": { "type": "variables_get", "id": "gi1", "fields": { "VAR": { "id": "varI" } } } },
-                        "B": { "block": { "type": "math_number", "id": "n3", "fields": { "NUM": 3 } } }
+                        "A": { "block": { "type": "core.variables.get", "id": "gi1", "fields": { "VAR": { "id": "varI" } } } },
+                        "B": { "block": { "type": "core.math.number", "id": "n3", "fields": { "NUM": 3 } } }
                       }
                     } },
-                    "DO0": { "block": { "type": "controls_flow_statements", "id": "cont", "fields": { "FLOW": "CONTINUE" } } },
+                    "DO0": { "block": { "type": "core.loops.flow", "id": "cont", "fields": { "FLOW": "CONTINUE" } } },
                     "IF1": { "block": {
-                      "type": "logic_compare", "id": "c5", "fields": { "OP": "EQ" },
+                      "type": "core.logic.compare", "id": "c5", "fields": { "OP": "EQ" },
                       "inputs": {
-                        "A": { "block": { "type": "variables_get", "id": "gi2", "fields": { "VAR": { "id": "varI" } } } },
-                        "B": { "block": { "type": "math_number", "id": "n5", "fields": { "NUM": 5 } } }
+                        "A": { "block": { "type": "core.variables.get", "id": "gi2", "fields": { "VAR": { "id": "varI" } } } },
+                        "B": { "block": { "type": "core.math.number", "id": "n5", "fields": { "NUM": 5 } } }
                       }
                     } },
-                    "DO1": { "block": { "type": "controls_flow_statements", "id": "brk", "fields": { "FLOW": "BREAK" } } }
+                    "DO1": { "block": { "type": "core.loops.flow", "id": "brk", "fields": { "FLOW": "BREAK" } } }
                   },
                   "next": { "block": {
-                    "type": "text_print", "id": "p",
-                    "inputs": { "TEXT": { "block": { "type": "variables_get", "id": "gi3", "fields": { "VAR": { "id": "varI" } } } } }
+                    "type": "core.text.print", "id": "p",
+                    "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "gi3", "fields": { "VAR": { "id": "varI" } } } } }
                   } }
                 } }
               }
@@ -269,20 +269,20 @@ public class PxInterpreterTests
               "extraState": { "params": [ { "id": "pN", "name": "n" } ] },
               "inputs": {
                 "RETURN": { "block": {
-                  "type": "math_arithmetic", "id": "mul", "fields": { "OP": "MULTIPLY" },
+                  "type": "core.math.arithmetic", "id": "mul", "fields": { "OP": "MULTIPLY" },
                   "inputs": {
-                    "A": { "block": { "type": "variables_get", "id": "gn", "fields": { "VAR": { "id": "pN" } } } },
-                    "B": { "block": { "type": "math_number", "id": "two", "fields": { "NUM": 2 } } }
+                    "A": { "block": { "type": "core.variables.get", "id": "gn", "fields": { "VAR": { "id": "pN" } } } },
+                    "B": { "block": { "type": "core.math.number", "id": "two", "fields": { "NUM": 2 } } }
                   }
                 } }
               }
             },
             {
-              "type": "text_print", "id": "p1",
+              "type": "core.text.print", "id": "p1",
               "inputs": { "TEXT": { "block": {
                 "type": "procedures_callreturn", "id": "call1",
                 "extraState": { "name": "double", "params": [ "n" ] },
-                "inputs": { "ARG0": { "block": { "type": "math_number", "id": "five", "fields": { "NUM": 5 } } } }
+                "inputs": { "ARG0": { "block": { "type": "core.math.number", "id": "five", "fields": { "NUM": 5 } } } }
               } } }
             }
           ] }
@@ -310,27 +310,27 @@ public class PxInterpreterTests
                   "type": "procedures_ifreturn", "id": "ifr",
                   "inputs": {
                     "CONDITION": { "block": {
-                      "type": "logic_compare", "id": "c1", "fields": { "OP": "EQ" },
+                      "type": "core.logic.compare", "id": "c1", "fields": { "OP": "EQ" },
                       "inputs": {
-                        "A": { "block": { "type": "variables_get", "id": "gn", "fields": { "VAR": { "id": "pN" } } } },
-                        "B": { "block": { "type": "math_number", "id": "one", "fields": { "NUM": 1 } } }
+                        "A": { "block": { "type": "core.variables.get", "id": "gn", "fields": { "VAR": { "id": "pN" } } } },
+                        "B": { "block": { "type": "core.math.number", "id": "one", "fields": { "NUM": 1 } } }
                       }
                     } },
-                    "VALUE": { "block": { "type": "math_number", "id": "rv", "fields": { "NUM": 1 } } }
+                    "VALUE": { "block": { "type": "core.math.number", "id": "rv", "fields": { "NUM": 1 } } }
                   }
                 } },
                 "RETURN": { "block": {
-                  "type": "math_arithmetic", "id": "mul", "fields": { "OP": "MULTIPLY" },
+                  "type": "core.math.arithmetic", "id": "mul", "fields": { "OP": "MULTIPLY" },
                   "inputs": {
-                    "A": { "block": { "type": "variables_get", "id": "gn2", "fields": { "VAR": { "id": "pN" } } } },
+                    "A": { "block": { "type": "core.variables.get", "id": "gn2", "fields": { "VAR": { "id": "pN" } } } },
                     "B": { "block": {
                       "type": "procedures_callreturn", "id": "rec",
                       "extraState": { "name": "fact", "params": [ "n" ] },
                       "inputs": { "ARG0": { "block": {
-                        "type": "math_arithmetic", "id": "sub", "fields": { "OP": "MINUS" },
+                        "type": "core.math.arithmetic", "id": "sub", "fields": { "OP": "MINUS" },
                         "inputs": {
-                          "A": { "block": { "type": "variables_get", "id": "gn3", "fields": { "VAR": { "id": "pN" } } } },
-                          "B": { "block": { "type": "math_number", "id": "one2", "fields": { "NUM": 1 } } }
+                          "A": { "block": { "type": "core.variables.get", "id": "gn3", "fields": { "VAR": { "id": "pN" } } } },
+                          "B": { "block": { "type": "core.math.number", "id": "one2", "fields": { "NUM": 1 } } }
                         }
                       } } }
                     } }
@@ -339,11 +339,11 @@ public class PxInterpreterTests
               }
             },
             {
-              "type": "text_print", "id": "p1",
+              "type": "core.text.print", "id": "p1",
               "inputs": { "TEXT": { "block": {
                 "type": "procedures_callreturn", "id": "call1",
                 "extraState": { "name": "fact", "params": [ "n" ] },
-                "inputs": { "ARG0": { "block": { "type": "math_number", "id": "five", "fields": { "NUM": 5 } } } }
+                "inputs": { "ARG0": { "block": { "type": "core.math.number", "id": "five", "fields": { "NUM": 5 } } } }
               } } }
             }
           ] }
@@ -363,16 +363,16 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "variables_set", "id": "init",
+              "type": "core.variables.set", "id": "init",
               "fields": { "VAR": { "id": "varX" } },
-              "inputs": { "VALUE": { "block": { "type": "math_number", "id": "one", "fields": { "NUM": 1 } } } },
+              "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "one", "fields": { "NUM": 1 } } } },
               "next": { "block": {
                 "type": "procedures_callnoreturn", "id": "call1",
                 "extraState": { "name": "f", "params": [ "x" ] },
-                "inputs": { "ARG0": { "block": { "type": "math_number", "id": "five", "fields": { "NUM": 5 } } } },
+                "inputs": { "ARG0": { "block": { "type": "core.math.number", "id": "five", "fields": { "NUM": 5 } } } },
                 "next": { "block": {
-                  "type": "text_print", "id": "p",
-                  "inputs": { "TEXT": { "block": { "type": "variables_get", "id": "gx", "fields": { "VAR": { "id": "varX" } } } } }
+                  "type": "core.text.print", "id": "p",
+                  "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "gx", "fields": { "VAR": { "id": "varX" } } } } }
                 } }
               } }
             },
@@ -381,9 +381,9 @@ public class PxInterpreterTests
               "fields": { "NAME": "f" },
               "extraState": { "params": [ { "id": "pX", "name": "x" } ] },
               "inputs": { "STACK": { "block": {
-                "type": "variables_set", "id": "setp",
+                "type": "core.variables.set", "id": "setp",
                 "fields": { "VAR": { "id": "pX" } },
-                "inputs": { "VALUE": { "block": { "type": "math_number", "id": "hundred", "fields": { "NUM": 100 } } } }
+                "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "hundred", "fields": { "NUM": 100 } } } }
               } } }
             }
           ] },
@@ -404,11 +404,11 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "text_print", "id": "p1",
+              "type": "core.text.print", "id": "p1",
               "inputs": { "TEXT": { "block": {
-                "type": "logic_operation", "id": "and1", "fields": { "OP": "AND" },
+                "type": "core.logic.operation", "id": "and1", "fields": { "OP": "AND" },
                 "inputs": {
-                  "A": { "block": { "type": "logic_boolean", "id": "f", "fields": { "BOOL": "FALSE" } } },
+                  "A": { "block": { "type": "core.logic.boolean", "id": "f", "fields": { "BOOL": "FALSE" } } },
                   "B": { "block": { "type": "test_probe", "id": "probe1" } }
                 }
               } } }
@@ -430,13 +430,13 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "text_print", "id": "p1",
+              "type": "core.text.print", "id": "p1",
               "inputs": { "TEXT": { "block": {
-                "type": "logic_ternary", "id": "t1",
+                "type": "core.logic.ternary", "id": "t1",
                 "inputs": {
-                  "IF": { "block": { "type": "logic_boolean", "id": "f", "fields": { "BOOL": "FALSE" } } },
+                  "IF": { "block": { "type": "core.logic.boolean", "id": "f", "fields": { "BOOL": "FALSE" } } },
                   "THEN": { "block": { "type": "test_probe", "id": "probe1" } },
-                  "ELSE": { "block": { "type": "math_number", "id": "seven", "fields": { "NUM": 7 } } }
+                  "ELSE": { "block": { "type": "core.math.number", "id": "seven", "fields": { "NUM": 7 } } }
                 }
               } } }
             }
@@ -457,10 +457,10 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_whileUntil", "id": "w",
+              "type": "core.loops.while_until", "id": "w",
               "fields": { "MODE": "WHILE" },
               "inputs": {
-                "BOOL": { "block": { "type": "logic_boolean", "id": "t", "fields": { "BOOL": "TRUE" } } }
+                "BOOL": { "block": { "type": "core.logic.boolean", "id": "t", "fields": { "BOOL": "TRUE" } } }
               }
             }
           ] }
@@ -482,10 +482,10 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_whileUntil", "id": "w",
+              "type": "core.loops.while_until", "id": "w",
               "fields": { "MODE": "WHILE" },
               "inputs": {
-                "BOOL": { "block": { "type": "logic_boolean", "id": "t", "fields": { "BOOL": "TRUE" } } }
+                "BOOL": { "block": { "type": "core.logic.boolean", "id": "t", "fields": { "BOOL": "TRUE" } } }
               }
             }
           ] }
@@ -507,10 +507,10 @@ public class PxInterpreterTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_forEach", "id": "fe",
+              "type": "core.loops.for_each", "id": "fe",
               "fields": { "VAR": { "id": "varI" } },
               "inputs": {
-                "LIST": { "block": { "type": "math_number", "id": "n", "fields": { "NUM": 1 } } }
+                "LIST": { "block": { "type": "core.math.number", "id": "n", "fields": { "NUM": 1 } } }
               }
             }
           ] },
@@ -550,8 +550,8 @@ public class PxInterpreterTests
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "text_print", "id": "print1",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "t", "fields": { "TEXT": "hi" } } } } }
+            { "type": "core.text.print", "id": "print1",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t", "fields": { "TEXT": "hi" } } } } }
           ] }
         }
         """;

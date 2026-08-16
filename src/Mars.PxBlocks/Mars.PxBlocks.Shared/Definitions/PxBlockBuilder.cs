@@ -33,6 +33,13 @@ public sealed class PxBlockBuilder
         return this;
     }
 
+    /// <summary>Входы в одну строку (inputsInline) — для блоков с несколькими value-входами.</summary>
+    public PxBlockBuilder Inline(bool value = true)
+    {
+        _definition.InputsInline = value;
+        return this;
+    }
+
     public PxBlockBuilder NoNext()
     {
         _definition.HasNext = false;

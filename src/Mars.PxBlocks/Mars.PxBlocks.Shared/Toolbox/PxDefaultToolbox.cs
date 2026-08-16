@@ -2,8 +2,9 @@ namespace Mars.PxBlocks.Shared.Toolbox;
 
 /// <summary>
 /// MakeCode-подобный toolbox по умолчанию: событийные блоки + стандартные категории
-/// Blockly. Доменные категории добавляются поверх (на сервере — IPxBlockCatalog.RegisterToolboxCategory,
-/// в редакторе — свой параметр Toolbox).
+/// языка (core.* — определения отдаёт сервер, PxStandardBlocks). Массивы и процедуры —
+/// пока Blockly-имена (фаза 2). Доменные категории добавляются поверх (на сервере —
+/// IPxBlockCatalog.RegisterToolboxCategory, в редакторе — свой параметр Toolbox).
 /// </summary>
 public static class PxDefaultToolbox
 {
@@ -17,8 +18,8 @@ public static class PxDefaultToolbox
                 Items =
                 [
                     H("Основное"),
-                    B("px_start"),
-                    B("px_loop")
+                    B("core.events.start"),
+                    B("core.events.loop")
                 ]
             },
             new PxToolboxCategory
@@ -27,14 +28,14 @@ public static class PxDefaultToolbox
                 Items =
                 [
                     H("Логика"),
-                    B("controls_if"),
-                    B("controls_if_else"),
-                    B("logic_compare"),
-                    B("logic_operation"),
-                    B("logic_negate"),
-                    B("logic_boolean"),
-                    B("logic_null"),
-                    B("logic_ternary")
+                    B("core.logic.if"),
+                    B("core.logic.if_else"),
+                    B("core.logic.compare"),
+                    B("core.logic.operation"),
+                    B("core.logic.negate"),
+                    B("core.logic.boolean"),
+                    B("core.logic.null"),
+                    B("core.logic.ternary")
                 ]
             },
             new PxToolboxCategory
@@ -43,11 +44,11 @@ public static class PxDefaultToolbox
                 Items =
                 [
                     H("Циклы"),
-                    B("controls_repeat_ext"),
-                    B("controls_whileUntil"),
-                    B("controls_for"),
-                    B("controls_forEach"),
-                    B("controls_flow_statements")
+                    B("core.loops.repeat"),
+                    B("core.loops.while_until"),
+                    B("core.loops.for"),
+                    B("core.loops.for_each"),
+                    B("core.loops.flow")
                 ]
             },
             new PxToolboxCategory
@@ -56,16 +57,16 @@ public static class PxDefaultToolbox
                 Items =
                 [
                     H("Математика"),
-                    B("math_number"),
-                    B("math_arithmetic"),
-                    B("math_single"),
-                    B("math_trig"),
-                    B("math_constant"),
-                    B("math_number_property"),
-                    B("math_round"),
-                    B("math_modulo"),
-                    B("math_random_int"),
-                    B("math_random_float")
+                    B("core.math.number"),
+                    B("core.math.arithmetic"),
+                    B("core.math.single"),
+                    B("core.math.trig"),
+                    B("core.math.constant"),
+                    B("core.math.number_property"),
+                    B("core.math.round"),
+                    B("core.math.modulo"),
+                    B("core.math.random_int"),
+                    B("core.math.random_float")
                 ]
             },
             new PxToolboxCategory
@@ -74,16 +75,16 @@ public static class PxDefaultToolbox
                 Items =
                 [
                     H("Текст"),
-                    B("text"),
-                    B("text_join"),
-                    B("text_append"),
-                    B("text_length"),
-                    B("text_isEmpty"),
-                    B("text_indexOf"),
-                    B("text_charAt"),
-                    B("text_changeCase"),
-                    B("text_trim"),
-                    B("text_print")
+                    B("core.text.text"),
+                    B("core.text.join"),
+                    B("core.text.append"),
+                    B("core.text.length"),
+                    B("core.text.is_empty"),
+                    B("core.text.index_of"),
+                    B("core.text.char_at"),
+                    B("core.text.change_case"),
+                    B("core.text.trim"),
+                    B("core.text.print")
                 ]
             },
             new PxToolboxCategory

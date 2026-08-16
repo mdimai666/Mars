@@ -56,7 +56,32 @@ export function injectWorkspace(element: HTMLElement, optionsJson?: string, tool
     }
     workspace.resize();
 
+    // «Переменные» — свой flyout: блоки переменных ядра названы core.variables.*
+    // (определения отдаёт сервер), а штатная категория Blockly хардкодит
+    // variables_get/variables_set. «Функции» (PROCEDURE) — пока штатная.
+    workspace.registerToolboxCategoryCallback('VARIABLE', variablesFlyout);
+    workspace.registerButtonCallback('CREATE_VARIABLE', (button) => {
+        Blockly.Variables.createVariableButtonHandler(button.getTargetWorkspace());
+    });
+
     return workspace;
+}
+
+// Flyout категории «Переменные»: кнопка создания + get/set для каждой переменной.
+// Blockly 13 ждёт JSON-массив (FlyoutDefinition); состояние поля переменной —
+// {name, type}, как в штатном flyout (blockly/core/variables).
+function variablesFlyout(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.FlyoutItemInfo[] {
+    const items: Blockly.utils.toolbox.FlyoutItemInfo[] = [
+        { kind: 'button', text: 'Создать переменную', callbackkey: 'CREATE_VARIABLE' },
+    ];
+
+    for (const variable of workspace.getVariableMap().getVariablesOfType('')) {
+        const fields = { VAR: { name: variable.getName(), type: variable.getType() } };
+        items.push({ kind: 'block', type: 'core.variables.get', fields });
+        items.push({ kind: 'block', type: 'core.variables.set', fields });
+    }
+
+    return items;
 }
 
 // Меню категорий скрыто CSS-ом (рейка в Blazor); flyout открываем программным выбором.

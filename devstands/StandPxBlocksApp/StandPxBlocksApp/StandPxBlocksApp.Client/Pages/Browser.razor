@@ -1,0 +1,57 @@
+@page "/browser"
+@using Mars.PxBlocks.Workspace
+@using Mars.PxBlocks.Workspace.Run
+@inject PxServerRunClient PxApi
+@inject HttpClient Http
+
+<PageTitle>PxBlocks — браузерные скрипты</PageTitle>
+
+@* Браузерные скрипты: сценарий собирается из блоков Playwright-действий
+    (контекст «browser», только событие Start) и исполняется на сервере
+    в системном Edge — PxRunController стенда создаёт браузер на запуск.
+    Пример сценария хост отдаёт сам (api/PxBlocks/Samples/browser). *@
+<div style="position:relative; display:flex; flex-direction:column; height:100vh;">
+    <div style="display:flex; gap:8px; align-items:center; padding:6px 10px; border-bottom:1px solid #ddd; flex-wrap:wrap;">
+        <a class="pxb-page-link" style="position:static;" href="/">← песочница</a>
+        <strong style="font-size:14px;">Браузерные скрипты — контекст «browser» (Playwright в системном Edge)</strong>
+        <button class="pxb-tool-btn" @onclick="LoadSample" disabled="@(!_ready || _loadingSample)">📜 Пример: поиск в Википедии</button>
+        <span style="flex:1"></span>
+        <span style="font-size:12px; color:#888;">@_status</span>
+    </div>
+    <div style="flex:1; min-height:0;">
+        <PxSandboxEditor @ref="_editor"
+                         Context="browser"
+                         RunTransport="@PxApi"
+                         StorageKey="pxblocks.browser"
+                         OnReady="OnEditorReady" />
+    </div>
+</div>
+
+@code {
+    private PxSandboxEditor? _editor;
+    private bool _ready;
+    private bool _loadingSample;
+    private string _status = "";
+
+    private void OnEditorReady() => _ready = true;
+
+    private async Task LoadSample()
+    {
+        _loadingSample = true;
+        try
+        {
+            var json = await Http.GetStringAsync("api/PxBlocks/Samples/browser");
+            await _editor!.LoadAsync(json);
+            await _editor.Center();
+            _status = "пример загружен — нажмите Run";
+        }
+        catch (Exception exception)
+        {
+            _status = $"не удалось загрузить пример: {exception.Message}";
+        }
+        finally
+        {
+            _loadingSample = false;
+        }
+    }
+}

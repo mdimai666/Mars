@@ -19,7 +19,7 @@ public class PxToolboxTests
                     Items =
                     [
                         new PxToolboxLabel { Text = "Логика", WebClass = "blocklyFlyoutHeading" },
-                        new PxToolboxBlock { Type = "controls_if" }
+                        new PxToolboxBlock { Type = "core.logic.if" }
                     ]
                 },
                 new PxToolboxSeparator { Colour = "#808080" },
@@ -47,7 +47,7 @@ public class PxToolboxTests
         Assert.Equal("blocklyFlyoutHeading", (string)heading["web-class"]!);
 
         Assert.Equal("block", (string)blocks[1]!["kind"]!);
-        Assert.Equal("controls_if", (string)blocks[1]!["type"]!);
+        Assert.Equal("core.logic.if", (string)blocks[1]!["type"]!);
 
         var sep = contents[1]!.AsObject();
         Assert.Equal("sep", (string)sep["kind"]!);
@@ -64,7 +64,7 @@ public class PxToolboxTests
         {
             Contents =
             [
-                new PxToolboxBlock { Type = "math_number", FieldsJson = """{"NUM": 42}""" }
+                new PxToolboxBlock { Type = "core.math.number", FieldsJson = """{"NUM": 42}""" }
             ]
         };
 
@@ -73,7 +73,7 @@ public class PxToolboxTests
         Assert.Equal("flyoutToolbox", (string)root["kind"]!);
 
         var block = root["contents"]!.AsArray()[0]!.AsObject();
-        Assert.Equal("math_number", (string)block["type"]!);
+        Assert.Equal("core.math.number", (string)block["type"]!);
         Assert.Equal(42, (int)block["fields"]!["NUM"]!);
     }
 }

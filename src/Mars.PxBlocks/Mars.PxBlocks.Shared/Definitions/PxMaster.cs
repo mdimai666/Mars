@@ -22,6 +22,10 @@ public static class PxMaster
     public static PxFieldDropdown Dropdown(string name, params (string Text, string Value)[] options) =>
         new() { Name = name, Options = options.Select(o => new PxDropdownOption { Text = o.Text, Value = o.Value }).ToList() };
 
+    /// <summary>Поле-переменная (field_variable): выбор переменной workspace; variable — имя по умолчанию.</summary>
+    public static PxFieldVariable Variable(string name, string variable = "элемент") =>
+        new() { Name = name, Variable = variable };
+
     /// <summary>Вход для value-блоков (input_value). Пустой check — принимает любой тип.</summary>
     public static PxValueInput Value(string name, params string[] check) =>
         new() { Name = name, Check = [.. check] };

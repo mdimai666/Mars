@@ -5,6 +5,7 @@ using Mars.PxBlocks.Host.Shared;
 using Mars.PxBlocks.Host.Shared.Services;
 using Mars.PxBlocks.Runtime.Ast;
 using StandPxBlocksApp.Blocks;
+using StandPxBlocksApp.Blocks.Browser;
 using StandPxBlocksApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,6 +74,7 @@ pxContexts.Register(PxEditorContext.Define("demo")
     .Events(PxEvents.Start, PxEvents.Loop)
     .Set<PxDemoBlocks>()
     .Category(PxDemoToolbox.CreateCategory()));
+pxContexts.Register(PxBrowserContext.Create());
 
 app.MapHub<PxBlocksHub>(PxBlocksConstants.HubRoute);
 

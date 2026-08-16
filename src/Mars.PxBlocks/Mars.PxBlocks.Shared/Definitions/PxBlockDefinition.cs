@@ -23,6 +23,13 @@ public partial class PxBlockDefinition
     public bool HasPrevious { get; set; } = true;
     public bool HasNext { get; set; } = true;
 
+    /// <summary>
+    /// inputsInline: входы в одну строку. null — поведение Blockly по умолчанию
+    /// (несколько value-входов складываются в столбик — «верстка ползёт» у блоков
+    /// вида %1 %2 %3; штатные Blockly-блоки выставляют true).
+    /// </summary>
+    public bool? InputsInline { get; set; }
+
     /// <summary>Имена расширений Blockly (Blockly.Extensions.register).</summary>
     public List<string> Extensions { get; set; } = [];
 
@@ -51,6 +58,9 @@ public partial class PxBlockDefinition
 
         if (!string.IsNullOrEmpty(Tooltip))
             node["tooltip"] = Tooltip;
+
+        if (InputsInline != null)
+            node["inputsInline"] = InputsInline.Value;
 
         node["colour"] = Colour;
 

@@ -32,8 +32,10 @@ public static class MainPxBlocks
     {
         var catalog = app.Services.GetRequiredService<IPxBlockCatalog>();
 
-        // Ядерные событийные блоки Start/Loop — определения доступны всегда.
+        // Ядерные блоки — определения доступны всегда: событийные Start/Loop и
+        // стандартные категории языка (core.*).
         catalog.RegisterSet(new PxEventBlocks());
+        catalog.RegisterSet(new PxStandardBlocks());
 
         return app;
     }

@@ -3,8 +3,9 @@
 PxBlocks — визуальный редактор блоков в духе Microsoft PXT (MakeCode/Blockly) на Blazor.
 Этапы 0–6 (редактор), 7 (исполнение в .NET), 8 (запуск на сервере — Mars.PxBlocks.Host),
 9 (встраиваемость: контексты, песочница/форма), 10 (чистое встраивание: REST запуска
-объявляет хост, у библиотеки только read-эндпоинты) готовы. Без симулятора и без
-кодогенерации. Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
+объявляет хост, у библиотеки только read-эндпоинты), 11 (состояние запуска, имплементации
+по запуску), 12 (браузерные скрипты — Playwright-контекст стенда) готовы. Без симулятора
+и без кодогенерации. Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
 
 ## Архитектура: гибридная обёртка Blockly
 
@@ -14,6 +15,21 @@ PxBlocks — визуальный редактор блоков в духе Micr
 - Свой SVG-рендерер в Blazor не пишется (5 прошлых попыток провалились именно на этом).
 - PXT целиком не подключается; его слой `pxtblocks/*` переносится пофайлово
   (референс: `C:\js\2026\microsoft-pxt`, при переносе заменять `pxt.*`-зависимости).
+
+## Конвенция typeId (2026-08-17)
+
+Трёхуровневые имена `уровень.категория.имя`:
+- **`core.категория.имя`** — встроенные блоки библиотеки: события `core.events.start/loop`,
+  стандартные категории языка `core.logic.*`, `core.loops.*`, `core.math.*`, `core.text.*`,
+  `core.variables.get/set` (определения — `PxEventBlocks`/`PxStandardBlocks` в Shared,
+  исполнение — ядро PxInterpreter/PxParser + листья `Standard/`; сервер отдаёт их в
+  КАЖДЫЙ контекст — редактор не зависит от встроенных определений Blockly).
+- **`пакет.категория.имя`** — блоки хостов: у стенда `demostand.demo.*` и
+  `demostand.playwright.*`.
+- Исключения (фаза 2): процедуры `procedures_*` и массивы `lists_*` — пока Blockly-имена
+  (динамический тулбокс «Функции» и механика Blockly; для «Переменных» свой flyout-колбэк
+  в JsSrc/index.ts, т.к. штатный хардкодит variables_get/set). Имена мутаторов
+  (controls_if_mutator…) — штатные Blockly, не typeId.
 
 ## Состав
 
@@ -30,19 +46,27 @@ PxBlocks — визуальный редактор блоков в духе Micr
   наследование — только для блоков с динамической структурой. Плейсхолдеры в сообщениях:
   именованные `{имя}` (порядок аргументов выводится из строки, %1..%N подставляются сами)
   или позициянные `%1..%N`. Аргументы и фабрики: `PxFieldNumber`/`PxMaster.Number`,
-  `PxFieldText`/`PxMaster.Text`, `PxFieldDropdown`/`PxMaster.Dropdown`, `PxValueInput`/`PxMaster.Value`,
-  `PxStatementInput`/`PxMaster.Do` (входы с `Check`).
+  `PxFieldText`/`PxMaster.Text`, `PxFieldDropdown`/`PxMaster.Dropdown`,
+  `PxFieldVariable`/`PxMaster.Variable` (field_variable), `PxValueInput`/`PxMaster.Value`,
+  `PxStatementInput`/`PxMaster.Do` (входы с `Check`). Блокам с несколькими value-входами
+  в одну строку — `.Inline()` (inputsInline; без него Blockly складывает входы в столбик).
+- `PxEventBlocks` (core.events.start/loop; фабрики CreateStart/CreateLoop) и
+  `PxStandardBlocks` (все core.* категории: логика/циклы/математика/текст/переменные;
+  мутаторы — штатные Blockly: controls_if_mutator, text_join_mutator,
+  math_is_divisibleby_mutator, text_charAt_mutator — имена сверять с blocks_compressed.js) —
+  базовые наборы определений каждого контекста. Блоки с мутаторами, у которых хелпер
+  строит входы (text_join), объявляются с пустым сообщением.
 - `PxBlocklyEvent` (пакет событий из JS), `PxWorkspaceState`.
 
 ### `src/Mars.PxBlocks/Mars.PxBlocks.Runtime` — исполнение (AST + интерпретатор)
 Чистый .NET без JS (работает и в WASM): `Values/` — иерархия `PxValue` (Number/Boolean/
 String/Object/List/Null); `Ast/` — узлы программы (каждый несёт blockId); `Parsing/` —
 `PxParser` (Blockly JSON → AST; неизвестный лист → ошибка с blockId; форматы сверены
-с blockly 13.1.1) + `PxCoreBlocks` (структурные type-id); `Execution/` — `PxInterpreter`
-(control flow в ядре: if/циклы/break/процедуры/переменные/short-circuit; лимит шагов;
-события BlockEntered/Exited/Output), `PxContext`, `IPxBlockImplement` +
-`PxBlockImplementsLocator`; `Standard/` — имплементации стандартных листьев
-(математика, логика, текст, `text_print`).
+с blockly 13.1.1) + `PxCoreBlocks` (структурные typeId, синхронизированы с PxStandardBlocks);
+`Execution/` — `PxInterpreter` (control flow в ядре: if/циклы/break/процедуры/переменные/
+short-circuit; лимит шагов; события BlockEntered/Exited/Output), `PxContext`,
+`IPxBlockImplement` + `PxBlockImplementsLocator`; `Standard/` — имплементации стандартных
+листьев core.* (математика, логика, текст, `core.text.print`).
 Точки входа: `PxParser.CreateDefault()`, `PxInterpreter.CreateDefaultImplements()`.
 
 Жизненный цикл имплементаций и состояние запуска (Этап 11, Путь 1):
@@ -99,6 +123,10 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
 - `PxWorkspaceJsInterop.cs` — ленивая загрузка ESM-модуля и вызовы JS.
 - `e2e/check.mjs` — headless-проверки стенда системным Edge (playwright, `channel: 'msedge'`):
   замеры ширины svg/контейнеров + скриншоты (initial/category/resized).
+- `e2e/check-browser.mjs` — проверка страницы `/browser`: загрузить пример, нажать Run,
+  дождаться вывода (сценарий при этом реально открывает серверный Edge с Википедией).
+- `e2e/check-flyouts.mjs` — flyout-ы стандартных категорий (Математика с мутаторами,
+  Переменные со своим колбэком и созданием переменной через DOM-диалог Blockly 13).
 - npm-инфраструктура: `package.json` (blockly 13.1.1), `vite.config.js` (lib → ESM),
   `tsconfig.json`, `copy-media.mjs` (media blockly → wwwroot/media).
 
@@ -131,10 +159,22 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
   `/` = `<PxSandboxEditor Context="sandbox" />` (определения и политика запуска из
   контекста, запуск — через `Controllers/PxRunController` стенда), `/form` =
   `<PxBlocksEditor Context="demo" />` (управляемая форма, «хранилище» в памяти
-  страницы, переключатель RailDisplay и слайдер ширины). Контексты «sandbox» и
-  «demo» регистрируются в Program.cs. Пререндер отключён глобально в App.razor.
-  `ILocalStorageService` регистрируется и в серверном `Program.cs` (нужно для
-  пререндера), и в клиентском.
+  страницы, переключатель RailDisplay и слайдер ширины), `/browser` =
+  `<PxSandboxEditor Context="browser" />` (браузерные скрипты + кнопка «Пример»,
+  грузит сценарий с `GET api/PxBlocks/Samples/browser`). Контексты «sandbox»,
+  «demo» и «browser» регистрируются в Program.cs. Пререндер отключён глобально
+  в App.razor. `ILocalStorageService` регистрируется и в серверном `Program.cs`
+  (нужно для пререндера), и в клиентском.
+- **Браузерные скрипты** (контекст «browser», Этап 12): сценарии Playwright
+  исполняются НА СЕРВЕРЕ в системном Edge (`channel: msedge`, видимое окно,
+  SlowMo 50 — как Mars.E2E.Tests). Домен `Blocks/Browser/` в серверной сборке
+  стенда: `PxBrowserBlocks` (demostand.playwright.goto/click/type/press/
+  wait_selector/wait_ms/get_text/eval_js/print_texts), имплементации с инъекцией
+  `PxBrowserRunState` конструктором (ленивый запуск браузера, `IAsyncDisposable` —
+  диспозит PxRunManager), свой toolbox без Loop (событийные блоки контекста
+  фильтруются `PxEditorContext.EventBlocks`), только событие Start. Селекторы/
+  тексты — value-входы String c shadow-блоками из тулбокса (`PxToolboxBlock.InputsJson`).
+  Состояние запуска создаёт PxRunController по `request.ContextName`.
 - `tests/Test.Mars.PxBlocks` — xunit: сериализация toolbox, реестра типов, определений блоков.
 
 ## Сборка и запуск
@@ -162,6 +202,10 @@ dotnet test tests/Test.Mars.PxBlocks
    динамической структурой: `Extensions.registerMutator` + поле `mutator` в JSON-определении.
 3. **Razor: строковый параметр без `@` передаётся литералом** — нужно `OptionsJson="@OptionsJson"`,
    иначе в JS улетит строка `"OptionsJson"`. Предупреждения компилятора для свойств не будет.
+   Наступили повторно (2026-08-17): `Context="Context"` в PxSandboxEditor передавал
+   литерал «Context» вместо имени контекста — определения грузились с 404. Для
+   нестроковых параметров (объекты/enum/EventCallback) значение, наоборот, читается
+   как C#-выражение, поэтому `Toolbox="Toolbox"` работает и без `@`.
 4. Запущенный стенд **держит DLL** — перед `dotnet build` остановить `dotnet run`.
    Если `_framework/*` отвечает 500, а в логе «Static Web Assets are not enabled» —
    артефакты сборки рассинхронизированы: остановить сервер и пересобрать.

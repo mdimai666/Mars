@@ -7,7 +7,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 
 internal sealed class StdTextJoin : PxExpressionImplement
 {
-    public StdTextJoin() : base("text_join") { }
+    public StdTextJoin() : base("core.text.join") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -19,10 +19,10 @@ internal sealed class StdTextJoin : PxExpressionImplement
     }
 }
 
-/// <summary>text_append: дописать к переменной — использует переменные контекста.</summary>
+/// <summary>core.text.append: дописать к переменной — использует переменные контекста.</summary>
 internal sealed class StdTextAppend : PxStatementImplement
 {
-    public StdTextAppend() : base("text_append") { }
+    public StdTextAppend() : base("core.text.append") { }
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
@@ -37,7 +37,7 @@ internal sealed class StdTextAppend : PxStatementImplement
 
 internal sealed class StdTextLength : PxExpressionImplement
 {
-    public StdTextLength() : base("text_length") { }
+    public StdTextLength() : base("core.text.length") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(call.Input("VALUE").ToText().Length));
@@ -45,16 +45,16 @@ internal sealed class StdTextLength : PxExpressionImplement
 
 internal sealed class StdTextIsEmpty : PxExpressionImplement
 {
-    public StdTextIsEmpty() : base("text_isEmpty") { }
+    public StdTextIsEmpty() : base("core.text.is_empty") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxBooleanValue(string.IsNullOrEmpty(call.Input("VALUE").ToText())));
 }
 
-/// <summary>text_indexOf: результат 1-основный; 0 — не найдено (семантика Blockly).</summary>
+/// <summary>core.text.index_of: результат 1-основный; 0 — не найдено (семантика Blockly).</summary>
 internal sealed class StdTextIndexOf : PxExpressionImplement
 {
-    public StdTextIndexOf() : base("text_indexOf") { }
+    public StdTextIndexOf() : base("core.text.index_of") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -71,7 +71,7 @@ internal sealed class StdTextIndexOf : PxExpressionImplement
 
 internal sealed class StdTextCharAt : PxExpressionImplement
 {
-    public StdTextCharAt() : base("text_charAt") { }
+    public StdTextCharAt() : base("core.text.char_at") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -98,7 +98,7 @@ internal sealed class StdTextCharAt : PxExpressionImplement
 
 internal sealed class StdTextChangeCase : PxExpressionImplement
 {
-    public StdTextChangeCase() : base("text_changeCase") { }
+    public StdTextChangeCase() : base("core.text.change_case") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -118,7 +118,7 @@ internal sealed class StdTextChangeCase : PxExpressionImplement
 
 internal sealed class StdTextTrim : PxExpressionImplement
 {
-    public StdTextTrim() : base("text_trim") { }
+    public StdTextTrim() : base("core.text.trim") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -137,7 +137,7 @@ internal sealed class StdTextTrim : PxExpressionImplement
 
 internal sealed class StdTextPrint : PxStatementImplement
 {
-    public StdTextPrint() : base("text_print") { }
+    public StdTextPrint() : base("core.text.print") { }
 
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {

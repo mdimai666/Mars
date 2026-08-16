@@ -58,8 +58,8 @@ public class PxRunManagerTests
     private const string PrintJson = """
     {
       "blocks": { "languageVersion": 0, "blocks": [
-        { "type": "text_print", "id": "print1",
-          "inputs": { "TEXT": { "block": { "type": "text", "id": "t1", "fields": { "TEXT": "hello" } } } } }
+        { "type": "core.text.print", "id": "print1",
+          "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "hello" } } } } }
       ] }
     }
     """;
@@ -68,12 +68,12 @@ public class PxRunManagerTests
     private const string StartAndPlainJson = """
     {
       "blocks": { "languageVersion": 0, "blocks": [
-        { "type": "text_print", "id": "printPlain",
-          "inputs": { "TEXT": { "block": { "type": "text", "id": "tPlain", "fields": { "TEXT": "plain" } } } } },
-        { "type": "px_start", "id": "start1",
+        { "type": "core.text.print", "id": "printPlain",
+          "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tPlain", "fields": { "TEXT": "plain" } } } } },
+        { "type": "core.events.start", "id": "start1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "printStart",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "tStart", "fields": { "TEXT": "started" } } } } }
+            { "type": "core.text.print", "id": "printStart",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tStart", "fields": { "TEXT": "started" } } } } }
           } }
         }
       ] }
@@ -84,16 +84,16 @@ public class PxRunManagerTests
     private const string StartAndLoopJson = """
     {
       "blocks": { "languageVersion": 0, "blocks": [
-        { "type": "px_start", "id": "start1",
+        { "type": "core.events.start", "id": "start1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "printStart",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "tStart", "fields": { "TEXT": "started" } } } } }
+            { "type": "core.text.print", "id": "printStart",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tStart", "fields": { "TEXT": "started" } } } } }
           } }
         },
-        { "type": "px_loop", "id": "loop1",
+        { "type": "core.events.loop", "id": "loop1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "printLoop",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "tLoop", "fields": { "TEXT": "looped" } } } } }
+            { "type": "core.text.print", "id": "printLoop",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tLoop", "fields": { "TEXT": "looped" } } } } }
           } }
         }
       ] }
@@ -104,10 +104,10 @@ public class PxRunManagerTests
     private const string LoopJson = """
     {
       "blocks": { "languageVersion": 0, "blocks": [
-        { "type": "px_loop", "id": "loop1",
+        { "type": "core.events.loop", "id": "loop1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "pl",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
+            { "type": "core.text.print", "id": "pl",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
           } }
         }
       ] }
@@ -156,10 +156,10 @@ public class PxRunManagerTests
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "px_loop", "id": "loop1",
+            { "type": "core.events.loop", "id": "loop1",
               "inputs": { "DO": { "block":
-                { "type": "text_print", "id": "pl",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
+                { "type": "core.text.print", "id": "pl",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
               } }
             }
           ] }

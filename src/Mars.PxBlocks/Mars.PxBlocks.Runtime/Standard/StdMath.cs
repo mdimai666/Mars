@@ -5,7 +5,7 @@ namespace Mars.PxBlocks.Runtime.Standard;
 
 internal sealed class StdMathArithmetic : PxExpressionImplement
 {
-    public StdMathArithmetic() : base("math_arithmetic") { }
+    public StdMathArithmetic() : base("core.math.arithmetic") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -28,7 +28,7 @@ internal sealed class StdMathArithmetic : PxExpressionImplement
 
 internal sealed class StdMathSingle : PxExpressionImplement
 {
-    public StdMathSingle() : base("math_single") { }
+    public StdMathSingle() : base("core.math.single") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -50,10 +50,10 @@ internal sealed class StdMathSingle : PxExpressionImplement
     }
 }
 
-/// <summary>math_trig: тригонометрия Blockly работает в градусах.</summary>
+/// <summary>core.math.trig: тригонометрия Blockly работает в градусах.</summary>
 internal sealed class StdMathTrig : PxExpressionImplement
 {
-    public StdMathTrig() : base("math_trig") { }
+    public StdMathTrig() : base("core.math.trig") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -77,7 +77,7 @@ internal sealed class StdMathTrig : PxExpressionImplement
 
 internal sealed class StdMathConstant : PxExpressionImplement
 {
-    public StdMathConstant() : base("math_constant") { }
+    public StdMathConstant() : base("core.math.constant") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -98,7 +98,7 @@ internal sealed class StdMathConstant : PxExpressionImplement
 
 internal sealed class StdMathNumberProperty : PxExpressionImplement
 {
-    public StdMathNumberProperty() : base("math_number_property") { }
+    public StdMathNumberProperty() : base("core.math.number_property") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -140,7 +140,7 @@ internal sealed class StdMathNumberProperty : PxExpressionImplement
 
 internal sealed class StdMathRound : PxExpressionImplement
 {
-    public StdMathRound() : base("math_round") { }
+    public StdMathRound() : base("core.math.round") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -160,7 +160,7 @@ internal sealed class StdMathRound : PxExpressionImplement
 
 internal sealed class StdMathModulo : PxExpressionImplement
 {
-    public StdMathModulo() : base("math_modulo") { }
+    public StdMathModulo() : base("core.math.modulo") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -172,7 +172,7 @@ internal sealed class StdMathModulo : PxExpressionImplement
 
 internal sealed class StdMathRandomInt : PxExpressionImplement
 {
-    public StdMathRandomInt() : base("math_random_int") { }
+    public StdMathRandomInt() : base("core.math.random_int") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
     {
@@ -186,7 +186,7 @@ internal sealed class StdMathRandomInt : PxExpressionImplement
 
 internal sealed class StdMathRandomFloat : PxExpressionImplement
 {
-    public StdMathRandomFloat() : base("math_random_float") { }
+    public StdMathRandomFloat() : base("core.math.random_float") { }
 
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(context.Random.NextDouble()));

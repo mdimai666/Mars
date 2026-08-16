@@ -46,8 +46,8 @@ public class PxParserTests
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "text_print", "id": "p1", "disabledReasons": ["manually disabled"],
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "t1", "fields": { "TEXT": "hi" } } } } }
+            { "type": "core.text.print", "id": "p1", "disabledReasons": ["manually disabled"],
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "hi" } } } } }
           ] }
         }
         """;
@@ -63,17 +63,17 @@ public class PxParserTests
         {
           "blocks": { "languageVersion": 0, "blocks": [
             {
-              "type": "controls_if", "id": "if1",
+              "type": "core.logic.if", "id": "if1",
               "extraState": { "elseIfCount": 1, "hasElse": true },
               "inputs": {
-                "IF0": { "block": { "type": "logic_boolean", "id": "b0", "fields": { "BOOL": "FALSE" } } },
-                "IF1": { "block": { "type": "logic_boolean", "id": "b1", "fields": { "BOOL": "FALSE" } } },
-                "DO0": { "block": { "type": "text_print", "id": "d0",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "t0", "fields": { "TEXT": "0" } } } } } },
-                "DO1": { "block": { "type": "text_print", "id": "d1",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "t1", "fields": { "TEXT": "1" } } } } } },
-                "ELSE": { "block": { "type": "text_print", "id": "de",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "te", "fields": { "TEXT": "else" } } } } } }
+                "IF0": { "block": { "type": "core.logic.boolean", "id": "b0", "fields": { "BOOL": "FALSE" } } },
+                "IF1": { "block": { "type": "core.logic.boolean", "id": "b1", "fields": { "BOOL": "FALSE" } } },
+                "DO0": { "block": { "type": "core.text.print", "id": "d0",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t0", "fields": { "TEXT": "0" } } } } } },
+                "DO1": { "block": { "type": "core.text.print", "id": "d1",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "1" } } } } } },
+                "ELSE": { "block": { "type": "core.text.print", "id": "de",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "te", "fields": { "TEXT": "else" } } } } } }
               }
             }
           ] }
@@ -114,8 +114,8 @@ public class PxParserTests
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "variables_set", "id": "s1", "fields": { "VAR": "varX" },
-              "inputs": { "VALUE": { "block": { "type": "math_number", "id": "n1", "fields": { "NUM": 1 } } } } }
+            { "type": "core.variables.set", "id": "s1", "fields": { "VAR": "varX" },
+              "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "n1", "fields": { "NUM": 1 } } } } }
           ] },
           "variables": [ { "id": "varX", "name": "x" } ]
         }
@@ -132,10 +132,10 @@ public class PxParserTests
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "text_print", "id": "p1",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "t1", "fields": { "TEXT": "1" } } } },
-              "next": { "block": { "type": "text_print", "id": "p2",
-                "inputs": { "TEXT": { "block": { "type": "text", "id": "t2", "fields": { "TEXT": "2" } } } } } } }
+            { "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "1" } } } },
+              "next": { "block": { "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t2", "fields": { "TEXT": "2" } } } } } } }
           ] }
         }
         """;

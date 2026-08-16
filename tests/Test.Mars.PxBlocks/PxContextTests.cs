@@ -33,8 +33,8 @@ public class PxContextTests
 
         var typeIds = context.EffectiveDefinitions.Select(d => d.TypeId).ToList();
 
-        Assert.Contains("px_start", typeIds);
-        Assert.Contains("px_loop", typeIds);
+        Assert.Contains("core.events.start", typeIds);
+        Assert.Contains("core.events.loop", typeIds);
         Assert.Contains("test_context_probe", typeIds);
     }
 
@@ -47,8 +47,8 @@ public class PxContextTests
 
         var typeIds = context.EffectiveDefinitions.Select(d => d.TypeId).ToList();
 
-        Assert.DoesNotContain("px_start", typeIds);
-        Assert.DoesNotContain("px_loop", typeIds);
+        Assert.DoesNotContain("core.events.start", typeIds);
+        Assert.DoesNotContain("core.events.loop", typeIds);
         Assert.Contains("test_context_probe", typeIds);
     }
 

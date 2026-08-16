@@ -19,7 +19,7 @@
                         Types="Types"
                         BlockDefinitions="BlockDefinitions"
                         BlockDefinitionsJson="@BlockDefinitionsJson"
-                        Context="Context"
+                        Context="@Context"
                         Transport="ApiClient"
                         RailDisplay="RailDisplay"
                         OnReady="OnEditorReady"
@@ -102,6 +102,9 @@
     /// <summary>Ключ localStorage для автосейва; пустая строка отключает автосейв.</summary>
     [Parameter] public string StorageKey { get; set; } = "pxblocks.workspace";
 
+    /// <summary>Полотно готово (определения загружены, автосейв восстановлен) — можно вызывать LoadAsync и т.п.</summary>
+    [Parameter] public EventCallback OnReady { get; set; }
+
     /// <summary>Проброс событий workspace потребителю.</summary>
     [Parameter] public EventCallback<IReadOnlyList<PxBlocklyEvent>> OnWorkspaceChanged { get; set; }
 
@@ -147,6 +150,8 @@
                 _status = "загружено из localStorage";
             }
         }
+
+        await OnReady.InvokeAsync();
     }
 
     private async Task OnWorkspaceChangedInternal(IReadOnlyList<PxBlocklyEvent> events)

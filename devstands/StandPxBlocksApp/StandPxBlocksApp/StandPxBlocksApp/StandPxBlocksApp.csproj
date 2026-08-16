@@ -8,6 +8,8 @@
         <ProjectReference Include="..\StandPxBlocksApp.Client\StandPxBlocksApp.Client.csproj" />
         <ProjectReference Include="..\..\..\..\src\Mars.PxBlocks\Mars.PxBlocks.Host\Mars.PxBlocks.Host.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+        <!-- Браузерные скрипты (контекст «browser»): сценарии Playwright в системном Edge. -->
+        <PackageReference Include="Microsoft.Playwright" />
     </ItemGroup>
 
 </Project>

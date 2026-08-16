@@ -14,37 +14,37 @@ public class PxEventTests
     private const string ProgramJson = """
     {
       "blocks": { "languageVersion": 0, "blocks": [
-        { "type": "px_start", "id": "start1",
+        { "type": "core.events.start", "id": "start1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "ps",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "ts", "fields": { "TEXT": "setup" } } } } }
+            { "type": "core.text.print", "id": "ps",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "ts", "fields": { "TEXT": "setup" } } } } }
           } }
         },
-        { "type": "px_loop", "id": "loop1",
+        { "type": "core.events.loop", "id": "loop1",
           "inputs": { "DO": { "block":
-            { "type": "variables_set", "id": "inc",
+            { "type": "core.variables.set", "id": "inc",
               "fields": { "VAR": { "id": "varX" } },
               "inputs": { "VALUE": { "block": {
-                "type": "math_arithmetic", "id": "add", "fields": { "OP": "ADD" },
+                "type": "core.math.arithmetic", "id": "add", "fields": { "OP": "ADD" },
                 "inputs": {
-                  "A": { "block": { "type": "variables_get", "id": "gx", "fields": { "VAR": { "id": "varX" } } } },
-                  "B": { "block": { "type": "math_number", "id": "one", "fields": { "NUM": 1 } } }
+                  "A": { "block": { "type": "core.variables.get", "id": "gx", "fields": { "VAR": { "id": "varX" } } } },
+                  "B": { "block": { "type": "core.math.number", "id": "one", "fields": { "NUM": 1 } } }
                 }
               } } },
               "next": { "block":
-                { "type": "text_print", "id": "px",
-                  "inputs": { "TEXT": { "block": { "type": "variables_get", "id": "gx2", "fields": { "VAR": { "id": "varX" } } } } },
+                { "type": "core.text.print", "id": "px",
+                  "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "gx2", "fields": { "VAR": { "id": "varX" } } } } },
                   "next": { "block":
-                    { "type": "controls_if", "id": "ifb",
+                    { "type": "core.logic.if", "id": "ifb",
                       "inputs": {
                         "IF0": { "block": {
-                          "type": "logic_compare", "id": "cmp", "fields": { "OP": "EQ" },
+                          "type": "core.logic.compare", "id": "cmp", "fields": { "OP": "EQ" },
                           "inputs": {
-                            "A": { "block": { "type": "variables_get", "id": "gx3", "fields": { "VAR": { "id": "varX" } } } },
-                            "B": { "block": { "type": "math_number", "id": "three", "fields": { "NUM": 3 } } }
+                            "A": { "block": { "type": "core.variables.get", "id": "gx3", "fields": { "VAR": { "id": "varX" } } } },
+                            "B": { "block": { "type": "core.math.number", "id": "three", "fields": { "NUM": 3 } } }
                           }
                         } },
-                        "DO0": { "block": { "type": "controls_flow_statements", "id": "brk", "fields": { "FLOW": "BREAK" } } }
+                        "DO0": { "block": { "type": "core.loops.flow", "id": "brk", "fields": { "FLOW": "BREAK" } } }
                       }
                     }
                   }
@@ -53,8 +53,8 @@ public class PxEventTests
             }
           } }
         },
-        { "type": "text_print", "id": "pd",
-          "inputs": { "TEXT": { "block": { "type": "text", "id": "td", "fields": { "TEXT": "done" } } } } }
+        { "type": "core.text.print", "id": "pd",
+          "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "td", "fields": { "TEXT": "done" } } } } }
       ] },
       "variables": [ { "id": "varX", "name": "x" } ]
     }
@@ -105,10 +105,10 @@ public class PxEventTests
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "px_loop", "id": "loop1",
+            { "type": "core.events.loop", "id": "loop1",
               "inputs": { "DO": { "block":
-                { "type": "text_print", "id": "pt",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "tt", "fields": { "TEXT": "tick" } } } } }
+                { "type": "core.text.print", "id": "pt",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tt", "fields": { "TEXT": "tick" } } } } }
               } }
             }
           ] }
@@ -138,18 +138,18 @@ public class PxEventTests
     private const string LoopFirstJson = """
     {
       "blocks": { "languageVersion": 0, "blocks": [
-        { "type": "px_loop", "id": "loop1",
+        { "type": "core.events.loop", "id": "loop1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "pl",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "tl", "fields": { "TEXT": "L" } } } },
-              "next": { "block": { "type": "controls_flow_statements", "id": "brk", "fields": { "FLOW": "BREAK" } } }
+            { "type": "core.text.print", "id": "pl",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tl", "fields": { "TEXT": "L" } } } },
+              "next": { "block": { "type": "core.loops.flow", "id": "brk", "fields": { "FLOW": "BREAK" } } }
             }
           } }
         },
-        { "type": "px_start", "id": "start1",
+        { "type": "core.events.start", "id": "start1",
           "inputs": { "DO": { "block":
-            { "type": "text_print", "id": "ps",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "ts", "fields": { "TEXT": "S" } } } } }
+            { "type": "core.text.print", "id": "ps",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "ts", "fields": { "TEXT": "S" } } } } }
           } }
         }
       ] }

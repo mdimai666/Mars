@@ -1,3 +1,4 @@
+using Mars.PxBlocks.Runtime.Ast;
 using Mars.PxBlocks.Shared.Definitions;
 using Mars.PxBlocks.Shared.Toolbox;
 
@@ -39,8 +40,12 @@ public sealed class PxEditorContext
     /// <summary>Лимит накопленных строк вывода в итоге; 0 — без лимита.</summary>
     public int OutputLimit { get; init; } = 10_000;
 
-    /// <summary>Добавлять ли ядерные событийные блоки Start/Loop в определения контекста.</summary>
-    public bool IncludeEventBlocks { get; init; } = true;
+    /// <summary>
+    /// Ядерные событийные блоки, которые добавляются в определения контекста
+    /// (имена <see cref="PxEvents"/>): по умолчанию Start и Loop;
+    /// например, только Start — контекст браузерных сценариев; пусто — без них.
+    /// </summary>
+    public IReadOnlyList<string> EventBlocks { get; init; } = [PxEvents.Start, PxEvents.Loop];
 
     internal IReadOnlyList<PxBlockSet> Sets { get; init; } = [];
 
@@ -48,7 +53,7 @@ public sealed class PxEditorContext
 
     internal PxToolbox? CustomToolbox { get; init; }
 
-    /// <summary>Определения блоков контекста: ядерные события (если включены) + наборы.</summary>
+    /// <summary>Определения блоков контекста: ядерные события (если включены) + стандартные (core.*) + наборы.</summary>
     public IReadOnlyList<PxBlockDefinition> EffectiveDefinitions
     {
         get
@@ -56,8 +61,13 @@ public sealed class PxEditorContext
             if (_definitionsCache == null)
             {
                 var definitions = new List<PxBlockDefinition>();
-                if (IncludeEventBlocks)
-                    definitions.AddRange(new PxEventBlocks().Definitions);
+                if (EventBlocks.Contains(PxEvents.Start))
+                    definitions.Add(PxEventBlocks.CreateStart());
+                if (EventBlocks.Contains(PxEvents.Loop))
+                    definitions.Add(PxEventBlocks.CreateLoop());
+                // Стандартные блоки языка (core.*) доступны в каждом контексте —
+                // сервер единый источник определений для редактора.
+                definitions.AddRange(new PxStandardBlocks().Definitions);
                 foreach (var set in Sets)
                     definitions.AddRange(set.Definitions);
                 _definitionsCache = definitions;
@@ -116,7 +126,7 @@ public sealed class PxEditorContextBuilder
     private IReadOnlyList<string>? _eventNames;
     private int _stepLimit;
     private int _outputLimit = 10_000;
-    private bool _includeEventBlocks = true;
+    private IReadOnlyList<string>? _eventBlocks;
     private PxToolbox? _toolbox;
 
     internal PxEditorContextBuilder(string name) => _name = name;
@@ -154,10 +164,21 @@ public sealed class PxEditorContextBuilder
         return this;
     }
 
+    /// <summary>
+    /// Какие ядерные событийные блоки добавить в определения контекста
+    /// (имена <see cref="PxEvents"/>); по умолчанию — Start и Loop.
+    /// Пример: <c>EventBlocks(PxEvents.Start)</c> — контекст без Loop.
+    /// </summary>
+    public PxEditorContextBuilder EventBlocks(params string[] eventBlocks)
+    {
+        _eventBlocks = eventBlocks;
+        return this;
+    }
+
     /// <summary>Без ядерных событийных блоков Start/Loop (контексты-выражения, фильтры).</summary>
     public PxEditorContextBuilder WithoutEventBlocks()
     {
-        _includeEventBlocks = false;
+        _eventBlocks = [];
         return this;
     }
 
@@ -192,7 +213,7 @@ public sealed class PxEditorContextBuilder
         EventNames = _eventNames,
         StepLimit = _stepLimit,
         OutputLimit = _outputLimit,
-        IncludeEventBlocks = _includeEventBlocks,
+        EventBlocks = _eventBlocks ?? [PxEvents.Start, PxEvents.Loop],
         Sets = _sets.ToArray(),
         Categories = _categories.ToArray(),
         CustomToolbox = _toolbox

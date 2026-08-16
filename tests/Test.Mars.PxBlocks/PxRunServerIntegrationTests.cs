@@ -60,8 +60,8 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
     {
         var definitions = await _client!.GetDefinitionsAsync();
 
-        Assert.Contains("px_start", definitions.DefinitionsJson);
-        Assert.Contains("px_loop", definitions.DefinitionsJson);
+        Assert.Contains("core.events.start", definitions.DefinitionsJson);
+        Assert.Contains("core.events.loop", definitions.DefinitionsJson);
         Assert.Contains(definitions.Toolbox.Contents, c => c is global::Mars.PxBlocks.Shared.Toolbox.PxToolboxCategory { Name: "Основное" });
     }
 
@@ -71,8 +71,8 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "text_print", "id": "p1",
-              "inputs": { "TEXT": { "block": { "type": "text", "id": "t1", "fields": { "TEXT": "server" } } } } }
+            { "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "server" } } } } }
           ] }
         }
         """;
@@ -129,10 +129,10 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
         var json = """
         {
           "blocks": { "languageVersion": 0, "blocks": [
-            { "type": "px_loop", "id": "loop1",
+            { "type": "core.events.loop", "id": "loop1",
               "inputs": { "DO": { "block":
-                { "type": "text_print", "id": "pl",
-                  "inputs": { "TEXT": { "block": { "type": "text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
+                { "type": "core.text.print", "id": "pl",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "tl", "fields": { "TEXT": "tick" } } } } }
               } }
             }
           ] }

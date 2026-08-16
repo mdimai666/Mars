@@ -1,6 +1,6 @@
 using System.CommandLine;
 using System.Text.RegularExpressions;
-using Mars.Host.Shared.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Utils;
 using Microsoft.Extensions.Localization;

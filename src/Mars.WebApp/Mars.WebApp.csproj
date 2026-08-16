@@ -98,7 +98,6 @@
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" />
         <PackageReference Include="ResXResourceReader.NetStandard" />
         <PackageReference Include="Humanizer" />
-        <PackageReference Include="System.CommandLine" />
         <PackageReference Include="Microsoft.CodeAnalysis.Common" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
@@ -116,6 +115,7 @@
         <ProjectReference Include="..\Mars.Host.Infrastructure\Mars.Host.Infrastructure.csproj" />
         <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Host\Mars.AiChat.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />

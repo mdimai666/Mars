@@ -16,6 +16,8 @@ $dirs = @(
     "Mars.Host.Shared",
     "Mars.Host.Data",
     "Mars.Host.Data.PostgreSQL",
+    # Mars.Modules
+    "Mars.Modules/Mars.CommandLine.Shared"
     # nodes
     "Mars.Nodes/Mars.Nodes.Core",
     "Mars.Nodes/Mars.Nodes.Core.Implements",

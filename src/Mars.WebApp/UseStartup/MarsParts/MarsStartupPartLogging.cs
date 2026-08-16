@@ -21,6 +21,14 @@ internal static class MarsStartupPartLogging
                 {
                     return String.Format(fName, DateTime.Now);
                 };
+
+                // предохранитель: NReco открывает файл жадно и без обработчика бросает исключение —
+                // процесс не должен умирать из-за недоступного лога (нет прав, файл залочен).
+                // Не подставляем fallback-файл: ошибка глотается, файловый лог этого процесса отключается
+                fileLoggerOpts.HandleFileError = fileErr =>
+                {
+                    Console.WriteLine($"mars: file logging disabled ({fileErr.ErrorException.Message})");
+                };
             });
         });
 

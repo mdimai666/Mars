@@ -1,8 +1,10 @@
 using System.CommandLine;
 using System.Reflection;
+using Mars.CommandLine.Commands;
+using Mars.CommandLine.Shared;
 using Mars.Core.Extensions;
 using Mars.Core.Models;
-using Mars.Host.Shared.CommandLine;
+using Microsoft.AspNetCore.Builder;
 
 namespace Mars.CommandLine;
 
@@ -18,14 +20,24 @@ public class CommandLineApi : ICommandLineApi
 
     private readonly List<Type> _modules = [];
     private readonly Dictionary<Type, CommandCli> cli = [];
+    private bool _commandCliTypesLoaded = false;
+    private bool _baseCommandCliTypesLoaded = false;
 
-    Type[] initalCommands = [typeof(InfoCommand)];
+    //Type[] initalCommands = [typeof(InfoCommand)];
 
-    static readonly string[] _allowedBaseCommands = ["info", "migrate"];
+    internal static readonly string[] AllowedBaseCommands = ["info", "migrate"];
     private readonly Option _versionOption;
     private readonly Option _helpOption;
+    private readonly Assembly _mainProgramAssembly;
+    private readonly Type[] _initalCommands;
 
-    public CommandLineApi()
+    /// <summary>Удалённые команды (тонкий клиент + исполнение пришедших по UDS) — см. <see cref="CliRemoteCommands"/>.</summary>
+    public CliRemoteCommands Remote { get; }
+
+    internal Option HelpOption => _helpOption;
+    internal Option VersionOption => _versionOption;
+
+    public CommandLineApi(Assembly mainProgramAssembly, Type[] initalCommands)
     {
         rootCommand = new RootCommand("Mars command line interface");
 
@@ -34,6 +46,12 @@ public class CommandLineApi : ICommandLineApi
 
         var disableLogsOption = new Option<bool>("--disable-logs") { Description = "disable logging to /logs/app_{date}.log file" };
         rootCommand.Add(disableLogsOption);
+
+        var localOption = new Option<bool>("--local") { Description = "run the command in-process even if a Mars server is already running" };
+        rootCommand.Add(localOption);
+
+        var noUdsOption = new Option<bool>("--no-uds") { Description = "start without the CLI unix domain socket (allows a second instance for the same directory)" };
+        rootCommand.Add(noUdsOption);
 
         InitializeCliTypes(initalCommands);
 
@@ -48,6 +66,10 @@ public class CommandLineApi : ICommandLineApi
         {
             IsContinueRun = true;
         });
+
+        Remote = new CliRemoteCommands(this);
+        _mainProgramAssembly = mainProgramAssembly;
+        _initalCommands = initalCommands;
     }
 
     public void Setup(WebApplication app)
@@ -60,14 +82,21 @@ public class CommandLineApi : ICommandLineApi
 
     void LoadBaseCommandCliTypes()
     {
-        var cliTypes = GetEnumerableOfType<CommandCli>(typeof(Program).Assembly).Except(initalCommands);
-        InitializeCliTypes(cliTypes);
+        if (_baseCommandCliTypesLoaded) return;
+        var cliTypes = GetEnumerableOfType<CommandCli>(_mainProgramAssembly).Except(_initalCommands);
+        InitializeCliTypes([.. cliTypes, typeof(StatusCommandCli)]);
+        _baseCommandCliTypesLoaded = true;
     }
 
     void LoadCommandCliTypes()
     {
+        if (_commandCliTypesLoaded) return;
         InitializeCliTypes(_modules);
+        _commandCliTypesLoaded = true;
     }
+
+    internal void EnsureBaseCommandTypesLoaded() => LoadBaseCommandCliTypes();
+    internal void EnsureCommandTypesLoaded() => LoadCommandCliTypes();
 
     void InitializeCliTypes(IEnumerable<Type> cliTypes)
     {
@@ -96,7 +125,7 @@ public class CommandLineApi : ICommandLineApi
 
         if (parseResult.Action == _helpOption.Action) return (invoked: false, isHelpCmd: true);
 
-        if (parseResult.Action == _versionOption.Action || _allowedBaseCommands.Contains(parseResult.CommandResult.Command.Name))
+        if (parseResult.Action == _versionOption.Action || AllowedBaseCommands.Contains(parseResult.CommandResult.Command.Name))
         {
             await parseResult.InvokeAsync();
             return (invoked: true, isHelpCmd: false);
@@ -135,6 +164,12 @@ public class CommandLineApi : ICommandLineApi
 
     public bool Confirm(string message = "do you confirm your action?")
     {
+        if (Remote.InRemoteInvocation)
+        {
+            throw new InvalidOperationException(
+                "interactive confirmation is not available for remote CLI execution (the command runs inside the server process)");
+        }
+
         bool confirmed;
         Console.WriteLine($"{message}");
 

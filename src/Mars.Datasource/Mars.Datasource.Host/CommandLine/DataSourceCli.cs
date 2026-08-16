@@ -1,7 +1,7 @@
 using System.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Datasource.Host.Core.Models;
 using Mars.Datasource.Host.Services;
-using Mars.Host.Shared.CommandLine;
 using Mars.Shared.Common;
 using Microsoft.Extensions.DependencyInjection;
 

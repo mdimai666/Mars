@@ -1,7 +1,7 @@
 using System.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Core.Utils;
 using Mars.Host.Data.Entities;
-using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Dto.Roles;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Dto.Users.Passwords;

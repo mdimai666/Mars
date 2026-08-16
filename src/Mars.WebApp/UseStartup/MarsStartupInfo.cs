@@ -1,4 +1,5 @@
 using System.Reflection;
+using Mars.Host.Shared.Startup;
 
 namespace Mars.UseStartup;
 
@@ -23,4 +24,18 @@ public static class MarsStartupInfo
         Version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
     }
 
+    public static IMarsStartupInfo Instance = new MarsStartupInfoObject();
+}
+
+internal class MarsStartupInfoObject : IMarsStartupInfo
+{
+    public DateTimeOffset StartDateTime => MarsStartupInfo.StartDateTime;
+    public string StartWorkDirectory => MarsStartupInfo.StartWorkDirectory;
+
+    public string ASPNETCORE_ENVIRONMENT => MarsStartupInfo.ASPNETCORE_ENVIRONMENT;
+    public bool IsDevelopment => MarsStartupInfo.IsDevelopment;
+    public bool IsTesting => MarsStartupInfo.IsTesting;
+    public bool IsRunningInDocker => MarsStartupInfo.IsRunningInDocker;
+    public bool IsRunUnderVisualStudio => MarsStartupInfo.IsRunUnderVisualStudio;
+    public string Version => MarsStartupInfo.Version;
 }

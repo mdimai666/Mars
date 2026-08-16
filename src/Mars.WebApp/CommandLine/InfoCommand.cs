@@ -1,6 +1,6 @@
 using System.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Host.Data.Constants;
-using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Services;
 using Mars.UseStartup;
 using Npgsql;

@@ -8,7 +8,6 @@ using Mars.Datasource.Host;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
 using Mars.Host;
-using Mars.Host.Shared.CommandLine;
 using Mars.Host.Shared.Extensions;
 using Mars.Host.Shared.Features;
 using Mars.Host.Shared.Hubs;
@@ -36,6 +35,8 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
+using Mars.CommandLine.Shared;
+using Mars.CommandLine.Remote;
 
 namespace Mars;
 
@@ -43,7 +44,7 @@ public static class MarsWebAppStartup
 {
     public static void ConfigureBuilder(WebApplicationBuilder builder, string[] args)
     {
-        var commandsApi = new CommandLineApi();
+        var commandsApi = new CommandLineApi(typeof(Program).Assembly, [typeof(InfoCommand)]);
         builder.Services.AddSingleton<ICommandLineApi>(commandsApi);
 
         if (!IsTesting && !IsRunningInDocker)
@@ -75,7 +76,8 @@ public static class MarsWebAppStartup
 
         //------------------------------------------
         // Logger
-        bool disableLogs = commandsApi.CheckGlobalOption<bool>("--disable-logs", args);
+        bool disableLogs = commandsApi.CheckGlobalOption<bool>("--disable-logs", args)
+                           || MarsCliSocket.RunningServer is not null;
         if (!disableLogs && !IsTesting)
         {
             builder.MarsAddLogging();
@@ -117,6 +119,7 @@ public static class MarsWebAppStartup
         //------------------------------------------
         // PLUGINS
         builder.AddPlugins();
+        builder.AddMarsCliSocket(commandsApi, args, Instance);
     }
 
     public static async Task ConfigureApp(WebApplication app, WebApplicationBuilder builder, string[] args)
@@ -181,6 +184,8 @@ public static class MarsWebAppStartup
         app.MarsUseSwagger();
         app.MapControllers();
         app.MapRazorPages();
+
+        app.UseMarsCliSocket(Instance);
 
         app.MapHub<ChatHub>("/_ws/admin", options =>
         {

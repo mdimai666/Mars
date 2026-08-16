@@ -1,5 +1,5 @@
 using System.Text;
-using Mars.Host.Shared.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.HttpSmartAuthFlow;

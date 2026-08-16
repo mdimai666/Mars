@@ -30,5 +30,12 @@ public class MetaValueEntityConfiguration : IEntityTypeConfiguration<MetaValueEn
                 r => r.HasOne(x => x.MetaValue).WithMany(x => x.UserMetaValues),
                 k => k.HasKey(x => new { x.UserId, x.MetaValueId })
             );
+        entity.HasMany(x => x.PostCategories)
+            .WithMany(x => x.MetaValues)
+            .UsingEntity<PostCategoryMetaValueEntity>(
+                l => l.HasOne(x => x.PostCategory).WithMany(x => x.PostCategoryMetaValues),
+                r => r.HasOne(x => x.MetaValue).WithMany(x => x.PostCategoryMetaValues),
+                k => k.HasKey(x => new { x.PostCategoryId, x.MetaValueId })
+            );
     }
 }

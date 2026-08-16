@@ -57,6 +57,12 @@ public static class SetupWizardHost
         Console.WriteLine("╚══════════════════════════════════════════╝");
         Console.WriteLine();
 
+        // Npgsql читает переключатель при первой инициализации провайдера: визард установки
+        // открывает соединение для проверки БД раньше, чем строится фабрика MarsDbContext
+        // (там переключатель тоже ставится, но будет уже поздно). Без него сидинг падает
+        // на записи DateTimeOffset с локальным смещением в timestamptz.
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         var contentRoot = Path.Combine(Directory.GetCurrentDirectory());
         var wwwRoot = Path.Combine(contentRoot, "wwwroot");
 

@@ -7,7 +7,7 @@ using Mars.AiChat.Host.Tools;
 using Mars.AiChat.Host.Toolsets;
 using Mars.AiChat.Shared.Options;
 using Mars.AiChat.Shared.SignalR;
-using Mars.Host.Shared.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Services;
 using Microsoft.Agents.AI;

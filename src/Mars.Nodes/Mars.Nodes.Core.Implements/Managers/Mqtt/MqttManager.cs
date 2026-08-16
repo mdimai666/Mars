@@ -25,7 +25,6 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
         _scopeFactory = scopeFactory;
         _logger = logger;
         _clientLogger = clientLogger;
-        _nodeService.OnAssignNodes += _nodeService_OnAssignNodes;
     }
 
     private void _nodeService_OnAssignNodes()
@@ -119,8 +118,19 @@ public class MqttManager : IMarsAppLifetimeService, IAsyncDisposable
     [StartupOrder(11)]
     public Task OnStartupAsync()
     {
-        _nodeService_OnAssignNodes();
+        Setup();
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Специальная задержка. Сообщения могут прилететь в mqtt слишком быстро и перемешиваться с сообщениями в консоли.
+    /// </summary>
+    private async void Setup()
+    {
+        await Task.Delay(100);
+        _nodeService.OnAssignNodes += _nodeService_OnAssignNodes;
+
+        _nodeService_OnAssignNodes();
     }
 
     public async ValueTask DisposeAsync()

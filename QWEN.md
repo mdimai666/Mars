@@ -20,6 +20,19 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 - `docs/` — documentation site
 - `ai/` — AI agent context files
 
+## Mars CLI — thin client to a running instance
+
+`Mars.exe` (Mars.WebApp) can control an already running instance: if a server is running
+for the current directory, commands execute directly inside that live process over a unix
+domain socket (no second startup); otherwise they run in-process.
+
+- `Mars.exe status` — is the instance alive (pid, version, uptime); exit 1 if not.
+- The command set is not fixed — discover it via `-h` and the sources
+  (`src/Mars.Modules/Mars.CommandLine`, `src/Mars.WebApp/CommandLine`, CommandCli classes in modules).
+- Commands mutate the LIVE instance — run them against a running server only with the user's confirmation.
+- Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
+- In test mode (IsTesting / ASPNETCORE_ENVIRONMENT=Test) CLI arguments are ignored — this path is unavailable under tests.
+
 ## Codebase Knowledge Graph (codebase-memory MCP)
 
 The repository is indexed as a knowledge graph by the `codebase-memory` MCP server

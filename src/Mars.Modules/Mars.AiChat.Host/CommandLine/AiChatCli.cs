@@ -3,7 +3,7 @@ using Mars.AiChat.Host.Services;
 using Mars.AiChat.Host.Shared.Interfaces;
 using Mars.AiChat.Host.Shared.Models;
 using Mars.AiChat.Shared.Dto;
-using Mars.Host.Shared.CommandLine;
+using Mars.CommandLine.Shared;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Common;

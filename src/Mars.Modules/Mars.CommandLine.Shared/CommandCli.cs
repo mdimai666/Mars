@@ -1,7 +1,7 @@
 using Mars.Core.Models;
 using Microsoft.AspNetCore.Builder;
 
-namespace Mars.Host.Shared.CommandLine;
+namespace Mars.CommandLine.Shared;
 
 public abstract class CommandCli
 {

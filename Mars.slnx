@@ -49,6 +49,10 @@
     <Project Path="src/Mars.Modules/Mars.AiChat.Host/Mars.AiChat.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.AiChat.Shared/Mars.AiChat.Shared.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/CommandLine/">
+    <Project Path="src/Mars.Modules/Mars.CommandLine.Shared/Mars.CommandLine.Shared.csproj" Id="a3ad4068-c6db-4cd9-9512-093898a5a06f" />
+    <Project Path="src/Mars.Modules/Mars.CommandLine/Mars.CommandLine.csproj" Id="6b088378-aa0e-4a8a-a220-3359c86d6106" />
+  </Folder>
   <Folder Name="/Mars.Modules/Docker/">
     <Project Path="src/Mars.Modules/Mars.Docker.Front/Mars.Docker.Front.csproj" />
     <Project Path="src/Mars.Modules/Mars.Docker.Host.Shared/Mars.Docker.Host.Shared.csproj" />
@@ -148,6 +152,7 @@
     <Project Path="tests/ExternalServices.TestContainers/ExternalServices.TestContainers.csproj" Id="1518dc0b-e596-4243-9d6a-f125f44f360c" />
     <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />
     <Project Path="tests/Mars.AppFrontEngines.Integration.Tests/Mars.AppFrontEngines.Integration.Tests.csproj" />
+    <Project Path="tests/Mars.Cli.EndToEnd.Tests/Mars.Cli.EndToEnd.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
     <Project Path="tests/Mars.DockerContainer.Tests/Mars.DockerContainer.Tests.csproj" />
     <Project Path="tests/Mars.E2E.Tests/Mars.E2E.Tests.csproj" Id="c46baa26-4b58-4734-895a-15cf4183f29d" />

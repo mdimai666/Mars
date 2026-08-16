@@ -2,8 +2,9 @@
 
 PxBlocks — визуальный редактор блоков в духе Microsoft PXT (MakeCode/Blockly) на Blazor.
 Этапы 0–6 (редактор), 7 (исполнение в .NET), 8 (запуск на сервере — Mars.PxBlocks.Host),
-9 (встраиваемость: контексты, песочница/форма) готовы. Без симулятора и без кодогенерации.
-Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
+9 (встраиваемость: контексты, песочница/форма), 10 (чистое встраивание: REST запуска
+объявляет хост, у библиотеки только read-эндпоинты) готовы. Без симулятора и без
+кодогенерации. Детальный план — `Mars.PxBlocks.Workspace/PLAN.md`. Цели: `Mars.PxBlocks.Workspace/Mission.md`.
 
 ## Архитектура: гибридная обёртка Blockly
 
@@ -40,9 +41,22 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
 с blockly 13.1.1) + `PxCoreBlocks` (структурные type-id); `Execution/` — `PxInterpreter`
 (control flow в ядре: if/циклы/break/процедуры/переменные/short-circuit; лимит шагов;
 события BlockEntered/Exited/Output), `PxContext`, `IPxBlockImplement` +
-`PxBlockImplementsLocator` (`RegisterAssembly`, паттерн NodesLocator); `Standard/` —
-имплементации стандартных листьев (математика, логика, текст, `text_print`).
+`PxBlockImplementsLocator`; `Standard/` — имплементации стандартных листьев
+(математика, логика, текст, `text_print`).
 Точки входа: `PxParser.CreateDefault()`, `PxInterpreter.CreateDefaultImplements()`.
+
+Жизненный цикл имплементаций и состояние запуска (Этап 11, Путь 1):
+- Локатор хранит ТИПЫ; экземпляры создаются В МОМЕНТ ЗАПУСКА — по экземпляру на
+  исполнение (`PxContext.Implement(typeId)`, лениво). Состояние запуска допустимо
+  держать в полях имплементации.
+- Состояние запуска (`PxContext.State`, объект хоста — браузер, соединение, сервис…)
+  попадает в имплементации конструктором (один параметр, совместимый с типом
+  состояния) или через `PxContext.GetState<T>()`. В `PxRunOptions.State` его кладёт
+  запускающий; `IPxRunManager.Start(request, state)` принимает его во владение и
+  диспозит по завершении запуска (IDisposable/IAsyncDisposable; при Started=false —
+  сразу). Хост, передавший state, сам его НЕ диспозит.
+- Общие для разных типов блоков объекты — состояние запуска; данные, видимые
+  пользователю, — переменные Blockly (PxValue).
 
 ### `src/Mars.PxBlocks/Mars.PxBlocks.Workspace` — RCL-редактор
 - `JsSrc/` — TypeScript, сборка Vite в `wwwroot/dist/PxBlocks.js` (ESM, коммитится вместе
@@ -98,21 +112,29 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
 - Host — `PxBlockCatalog` (определения + локатор имплементаций; toolbox = дефолт +
   доменные категории), `PxRunManager`+`PxRunSession` (разбор синхронно, исполнение
   фоном, события пакетируются 100 мс/256, политика из контекста — явные поля запроса
-  в приоритете), `PxBlocksHub`, `PxBlocksController` (api/PxBlocks: Definitions,
-  Contexts, Contexts/{имя}, Run, Stop), `MainPxBlocks.AddPxBlocks/UsePxBlocks`
+  в приоритете), `PxBlocksHub`, `PxBlocksController` (api/PxBlocks — ТОЛЬКО
+  read-эндпоинты редактора: Definitions, Contexts, Contexts/{имя}; запуск из
+  библиотеки убран в Этапе 10), `MainPxBlocks.AddPxBlocks/UsePxBlocks`
   (UsePxBlocks — ядерные PxEventBlocks; доменные сборки и контексты регистрирует хост).
 - Определения блоков и реализации объявляются ТОЛЬКО на сервере; редактор получает
-  их через api/PxBlocks (песочница — Definitions, встраиваемая форма — Contexts/{имя}).
-  Голого хранилища сценариев нет (решение 2026-08-16): JSON блоков хранят владельцы
-  (ноды/админка) и передают в Run напрямую; запуск по месту — через IPxRunManager из DI.
+  их через api/PxBlocks (песочница и форма — Contexts/{имя}, Definitions — запасной
+  «всё сразу»). Голого хранилища сценариев нет (решение 2026-08-16): JSON блоков
+  хранят владельцы (ноды/админка) и передают в Run напрямую; запуск по месту — через
+  IPxRunManager из DI.
+- **REST запуска объявляет хост** (Этап 10): маршрут должен совпадать с ожиданием
+  PxServerRunClient — `POST api/PxBlocks/Run` (тело PxRunRequest → PxRunResponse) и
+  `POST api/PxBlocks/Stop/{runId:guid}` → bool. Образцы: PxRunController стенда и
+  TestPxRunController сквозных тестов.
 
 ### Стенд и тесты
 - `devstands/StandPxBlocksApp` — Blazor Web App + WASM для проверки редактора;
-  `/` = `<PxSandboxEditor />` (определения с сервера, серверный запуск),
-  `/form` = `<PxBlocksEditor Context="demo" />` (управляемая форма, «хранилище»
-  в памяти страницы, переключатель RailDisplay и слайдер ширины). Пререндер отключён
-  глобально в App.razor. `ILocalStorageService` регистрируется и в серверном
-  `Program.cs` (нужно для пререндера), и в клиентском.
+  `/` = `<PxSandboxEditor Context="sandbox" />` (определения и политика запуска из
+  контекста, запуск — через `Controllers/PxRunController` стенда), `/form` =
+  `<PxBlocksEditor Context="demo" />` (управляемая форма, «хранилище» в памяти
+  страницы, переключатель RailDisplay и слайдер ширины). Контексты «sandbox» и
+  «demo» регистрируются в Program.cs. Пререндер отключён глобально в App.razor.
+  `ILocalStorageService` регистрируется и в серверном `Program.cs` (нужно для
+  пререндера), и в клиентском.
 - `tests/Test.Mars.PxBlocks` — xunit: сериализация toolbox, реестра типов, определений блоков.
 
 ## Сборка и запуск

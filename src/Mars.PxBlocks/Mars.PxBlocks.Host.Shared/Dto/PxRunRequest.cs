@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+
 namespace Mars.PxBlocks.Host.Shared.Dto;
 
 /// <summary>Запрос на серверное исполнение PxBlocks-программы (POST api/PxBlocks/Run).</summary>
@@ -40,4 +42,11 @@ public sealed record PxRunRequest
 
     /// <summary>Зерно генератора случайных чисел — воспроизводимость.</summary>
     public int? RandomSeed { get; init; }
+
+    /// <summary>
+    /// Начальные значения переменных: имя переменной → JSON-значение
+    /// (число/строка/булево/объект/массив/null). Перезаписывают только переменные,
+    /// объявленные в workspace; неизвестные имена игнорируются.
+    /// </summary>
+    public IReadOnlyDictionary<string, JsonNode?>? InitialVariables { get; init; }
 }

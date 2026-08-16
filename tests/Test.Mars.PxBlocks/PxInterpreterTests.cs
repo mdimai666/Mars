@@ -20,7 +20,7 @@ public class PxInterpreterTests
     private static PxBlockImplementsLocator LocatorWithProbe()
     {
         var locator = PxInterpreter.CreateDefaultImplements();
-        locator.Register(new ProbeExpressionImplement());
+        locator.Register(typeof(ProbeExpressionImplement));
         return locator;
     }
 

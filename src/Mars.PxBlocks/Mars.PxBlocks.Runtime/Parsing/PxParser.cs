@@ -337,7 +337,7 @@ public sealed class PxParser
 
     private void EnsureImplemented(string type, string blockId)
     {
-        if (_implements?.Find(type) != null)
+        if (_implements?.Knows(type) == true)
             return;
         throw new PxParseException($"Неизвестный блок '{type}' — реализация исполнения не зарегистрирована", blockId);
     }

@@ -8,8 +8,13 @@ namespace Mars.PxBlocks.Host.Shared.Services;
 /// </summary>
 public interface IPxRunManager
 {
-    /// <summary>Разобрать и запустить программу. Ошибка разбора — Started=false.</summary>
-    PxRunResponse Start(PxRunRequest request);
+    /// <summary>
+    /// Разобрать и запустить программу. Ошибка разбора — Started=false.
+    /// state — объект хоста на время запуска (состояние запуска: браузер, соединение…);
+    /// передаётся во владение менеджера и диспозится по завершении, если он
+    /// IDisposable/IAsyncDisposable (при Started=false — сразу).
+    /// </summary>
+    PxRunResponse Start(PxRunRequest request, object? state = null);
 
     /// <summary>Остановить активный запуск (CancellationToken интерпретатора). false — запуск не найден/уже завершён.</summary>
     bool Stop(Guid runId);

@@ -1,3 +1,5 @@
+using Mars.PxBlocks.Runtime.Values;
+
 namespace Mars.PxBlocks.Runtime.Execution;
 
 /// <summary>Параметры запуска PxInterpreter.RunAsync.</summary>
@@ -33,6 +35,20 @@ public sealed class PxRunOptions
     /// null (по умолчанию) — все верхнеуровневые стеки, события Loop — после всех.
     /// </summary>
     public IReadOnlyList<string>? EventNames { get; init; }
+
+    /// <summary>
+    /// Состояние запуска — объект хоста (браузер, соединение, сервис…), доступный
+    /// имплементациям: конструктором (имплементации создаются в момент запуска)
+    /// или через PxContext.GetState. Запускающий передаёт его на время запуска;
+    /// PxRunManager диспозит его по завершении (IDisposable/IAsyncDisposable).
+    /// </summary>
+    public object? State { get; init; }
+
+    /// <summary>
+    /// Начальные значения переменных: имя → значение. Перезаписывают только
+    /// переменные, объявленные в workspace; неизвестные имена игнорируются.
+    /// </summary>
+    public IReadOnlyDictionary<string, PxValue>? InitialVariables { get; init; }
 }
 
 /// <summary>Итог исполнения программы.</summary>

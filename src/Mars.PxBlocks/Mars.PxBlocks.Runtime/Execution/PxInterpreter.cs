@@ -31,7 +31,7 @@ public sealed class PxInterpreter
         CancellationToken cancellationToken = default)
     {
         options ??= new PxRunOptions();
-        var context = new PxContext(program, options, _implements, cancellationToken);
+        var context = new PxContext(program, options, _implements, options.State, cancellationToken);
 
         try
         {
@@ -325,7 +325,7 @@ public sealed class PxInterpreter
 
     private static async ValueTask<PxValue> EvaluateLeafAsync(PxLeafExpression leaf, PxScope scope, PxContext context)
     {
-        if (context.Implements.Find(leaf.TypeId) is not IPxExpressionImplement implement)
+        if (context.Implement(leaf.TypeId) is not IPxExpressionImplement implement)
             throw new PxRuntimeException($"Для блока '{leaf.TypeId}' не зарегистрирована реализация", leaf.BlockId);
 
         var (inputs, order) = await EvaluateInputsAsync(leaf.Inputs, scope, context);
@@ -338,7 +338,7 @@ public sealed class PxInterpreter
 
     private static async Task ExecuteLeafAsync(PxLeafStatement leaf, PxScope scope, PxContext context)
     {
-        if (context.Implements.Find(leaf.TypeId) is not IPxStatementImplement implement)
+        if (context.Implement(leaf.TypeId) is not IPxStatementImplement implement)
             throw new PxRuntimeException($"Для блока '{leaf.TypeId}' не зарегистрирована реализация", leaf.BlockId);
 
         var (inputs, order) = await EvaluateInputsAsync(leaf.Inputs, scope, context);

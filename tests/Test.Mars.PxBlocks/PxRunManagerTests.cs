@@ -258,7 +258,7 @@ public class PxRunManagerTests
         catalog.RegisterAssembly(typeof(CatalogProbeSet).Assembly);
 
         Assert.Contains(catalog.Definitions, d => d.TypeId == "test_host_probe");
-        Assert.NotNull(catalog.Implements.Find("test_host_probe"));
+        Assert.True(catalog.Implements.Knows("test_host_probe"));
     }
 
     [Fact]

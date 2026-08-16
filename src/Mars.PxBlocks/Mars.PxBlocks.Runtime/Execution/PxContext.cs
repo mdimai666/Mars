@@ -4,12 +4,14 @@ using Mars.PxBlocks.Runtime.Values;
 namespace Mars.PxBlocks.Runtime.Execution;
 
 /// <summary>
-/// Контекст исполнения: переменные, процедуры, вывод, события, лимиты.
-/// Передаётся имплементациям листьев (IPxBlockImplement). Создаётся интерпретатором.
+/// Контекст исполнения: переменные, процедуры, вывод, события, лимиты, состояние
+/// запуска и имплементации запуска. Передаётся имплементациям листьев
+/// (IPxBlockImplement). Создаётся интерпретатором.
 /// </summary>
 public sealed class PxContext
 {
     private readonly List<string> _output = [];
+    private readonly Dictionary<string, IPxBlockImplement> _instances = [];
 
     internal PxScope Global { get; }
     internal PxBlockImplementsLocator Implements { get; }
@@ -36,10 +38,18 @@ public sealed class PxContext
     /// <summary>Отображение id переменной → имя (для сообщений об ошибках).</summary>
     public IReadOnlyDictionary<string, string> VariableNames { get; }
 
+    /// <summary>
+    /// Состояние запуска — объект, который хост передал на исполнение (браузер,
+    /// соединение, сервис…). Имплементации получают его конструктором (создаются
+    /// в момент запуска) или через <see cref="GetState{T}"/>.
+    /// </summary>
+    public object? State { get; }
+
     internal PxContext(
         PxProgram program,
         PxRunOptions options,
         PxBlockImplementsLocator implements,
+        object? state,
         CancellationToken cancellationToken)
     {
         CancellationToken = cancellationToken;
@@ -48,17 +58,48 @@ public sealed class PxContext
         OutputLimit = options.OutputLimit;
         RaiseEvent = options.OnEvent;
         Implements = implements;
+        State = state;
         Random = options.RandomSeed is int seed ? new Random(seed) : new Random();
 
         Global = new PxScope();
         VariableNames = program.Variables.ToDictionary(v => v.Id, v => v.Name, StringComparer.Ordinal);
 
-        // Переменные workspace объявлены заранее и стартуют с нуля (как в MakeCode).
+        // Переменные workspace объявлены заранее: стартовые значения — по именам
+        // из InitialVariables, остальные — с нуля (как в MakeCode).
         foreach (var variable in program.Variables)
-            Global.Define(variable.Id, PxNumberValue.Zero);
+        {
+            var initial = options.InitialVariables != null
+                && options.InitialVariables.TryGetValue(variable.Name, out var initialVariable)
+                    ? initialVariable
+                    : PxNumberValue.Zero;
+            Global.Define(variable.Id, initial);
+        }
 
         foreach (var procedure in program.Procedures)
             Procedures[procedure.Name] = procedure;
+    }
+
+    /// <summary>Состояние запуска в типе домена; отсутствует/другой тип — ошибка исполнения.</summary>
+    public T GetState<T>() => State is T typed
+        ? typed
+        : throw new PxRuntimeException($"Состояние запуска не задано или не является '{typeof(T).Name}'");
+
+    /// <summary>
+    /// Имплементация блока для этого запуска: экземпляр создаётся при первом
+    /// обращении (с инъекцией состояния запуска) и живёт до конца запуска.
+    /// null — тип не зарегистрирован.
+    /// </summary>
+    public IPxBlockImplement? Implement(string typeId)
+    {
+        if (_instances.TryGetValue(typeId, out var instance))
+            return instance;
+
+        if (!Implements.Knows(typeId))
+            return null;
+
+        instance = Implements.Create(typeId, State);
+        _instances[typeId] = instance;
+        return instance;
     }
 
     /// <summary>Прочитать переменную по id (текстовым реализациям — text_append и т.п.).</summary>

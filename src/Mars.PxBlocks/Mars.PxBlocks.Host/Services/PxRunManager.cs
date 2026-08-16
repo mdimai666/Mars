@@ -1,11 +1,13 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Mars.PxBlocks.Host.Shared;
 using Mars.PxBlocks.Host.Shared.Dto;
 using Mars.PxBlocks.Host.Shared.Services;
 using Mars.PxBlocks.Runtime.Ast;
 using Mars.PxBlocks.Runtime.Execution;
 using Mars.PxBlocks.Runtime.Parsing;
+using Mars.PxBlocks.Runtime.Values;
 
 namespace Mars.PxBlocks.Host.Services;
 
@@ -31,16 +33,18 @@ public sealed class PxRunManager : IPxRunManager
 
     public int ActiveRunCount => _runs.Count;
 
-    public PxRunResponse Start(PxRunRequest request)
+    public PxRunResponse Start(PxRunRequest request, object? state = null)
     {
         // Политика запуска из контекста (режим событий, лимиты); неизвестный контекст —
-        // ошибка сразу, как и ошибка разбора.
+        // ошибка сразу, как и ошибка разбора. Состояние запуска в обоих случаях
+        // возвращается хосту через dispose — запуск не состоялся.
         PxEditorContext? context = null;
         if (request.ContextName != null)
         {
             context = _contexts.Get(request.ContextName);
             if (context == null)
             {
+                DisposeState(state);
                 return new PxRunResponse
                 {
                     Started = false,
@@ -56,6 +60,7 @@ public sealed class PxRunManager : IPxRunManager
         }
         catch (PxParseException exception)
         {
+            DisposeState(state);
             return new PxRunResponse
             {
                 Started = false,
@@ -65,10 +70,26 @@ public sealed class PxRunManager : IPxRunManager
         }
         catch (JsonException exception)
         {
+            DisposeState(state);
             return new PxRunResponse
             {
                 Started = false,
                 ErrorMessage = $"Некорректный JSON workspace: {exception.Message}"
+            };
+        }
+
+        IReadOnlyDictionary<string, PxValue>? initialVariables;
+        try
+        {
+            initialVariables = ConvertInitialVariables(request.InitialVariables);
+        }
+        catch (Exception exception)
+        {
+            DisposeState(state);
+            return new PxRunResponse
+            {
+                Started = false,
+                ErrorMessage = $"Начальные переменные: {exception.Message}"
             };
         }
 
@@ -78,10 +99,11 @@ public sealed class PxRunManager : IPxRunManager
         if (!_runs.TryAdd(runId, session))
         {
             session.Dispose();
+            DisposeState(state);
             return new PxRunResponse { Started = false, ErrorMessage = $"Запуск {runId} уже активен" };
         }
 
-        _ = Task.Run(() => ExecuteAsync(session, program, request, context));
+        _ = Task.Run(() => ExecuteAsync(session, program, request, context, state, initialVariables));
         return new PxRunResponse { RunId = runId, Started = true };
     }
 
@@ -96,7 +118,13 @@ public sealed class PxRunManager : IPxRunManager
         return false;
     }
 
-    private async Task ExecuteAsync(PxRunSession session, PxProgram program, PxRunRequest request, PxEditorContext? context)
+    private async Task ExecuteAsync(
+        PxRunSession session,
+        PxProgram program,
+        PxRunRequest request,
+        PxEditorContext? context,
+        object? state,
+        IReadOnlyDictionary<string, PxValue>? initialVariables)
     {
         // Явные поля запроса имеют приоритет; незаполненные дополняет политика контекста.
         var options = new PxRunOptions
@@ -105,6 +133,8 @@ public sealed class PxRunManager : IPxRunManager
             OutputLimit = request.OutputLimit ?? context?.OutputLimit ?? 10_000,
             RandomSeed = request.RandomSeed,
             EventNames = request.EventNames ?? context?.EventNames,
+            State = state,
+            InitialVariables = initialVariables,
             OnEvent = session.Enqueue
         };
 
@@ -118,6 +148,11 @@ public sealed class PxRunManager : IPxRunManager
         {
             result = new PxExecutionResult { Success = false, ErrorMessage = exception.Message };
         }
+        finally
+        {
+            // Состояние запуска живёт ровно до конца исполнения — успех, ошибка или Stop.
+            await DisposeStateAsync(state);
+        }
 
         await session.CompleteAsync(new PxRunResultDto
         {
@@ -130,5 +165,59 @@ public sealed class PxRunManager : IPxRunManager
 
         _runs.TryRemove(session.RunId, out _);
         session.Dispose();
+    }
+
+    /// <summary>JSON-значения запроса → PxValue (PxValueJson); null-значения — Null.</summary>
+    private static IReadOnlyDictionary<string, PxValue>? ConvertInitialVariables(
+        IReadOnlyDictionary<string, JsonNode?>? source)
+    {
+        if (source is not { Count: > 0 })
+            return null;
+
+        var values = new Dictionary<string, PxValue>(StringComparer.Ordinal);
+        foreach (var (name, node) in source)
+            values[name] = PxValueJson.FromJson(node);
+        return values;
+    }
+
+    /// <summary>Синхронная уборка состояния (ранние отказы Start — запуск не состоялся).</summary>
+    private static void DisposeState(object? state)
+    {
+        try
+        {
+            switch (state)
+            {
+                case IAsyncDisposable asyncDisposable:
+                    asyncDisposable.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                    break;
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+            }
+        }
+        catch
+        {
+            // Ошибка уборки не должна заслонять причину отказа.
+        }
+    }
+
+    private static async ValueTask DisposeStateAsync(object? state)
+    {
+        try
+        {
+            switch (state)
+            {
+                case IAsyncDisposable asyncDisposable:
+                    await asyncDisposable.DisposeAsync();
+                    break;
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+            }
+        }
+        catch
+        {
+            // Ошибка уборки не должна заслонять итог исполнения.
+        }
     }
 }

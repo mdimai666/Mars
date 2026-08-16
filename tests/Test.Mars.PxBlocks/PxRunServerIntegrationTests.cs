@@ -8,6 +8,7 @@ using Mars.PxBlocks.Runtime.Execution;
 using Mars.PxBlocks.Workspace.Run;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,9 +30,11 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         builder.Logging.ClearProviders();
         builder.Services.AddPxBlocks();
-        // Контроллеры живут в Mars.PxBlocks.Host — slim-хост сам их не находит.
+        // Контроллеры определений/контекстов живут в Mars.PxBlocks.Host; REST запуска
+        // PxBlocks как встраиваемый модуль не даёт — его объявляет хост (TestPxRunController).
         builder.Services.AddControllers()
-            .AddApplicationPart(typeof(global::Mars.PxBlocks.Host.MainPxBlocks).Assembly);
+            .AddApplicationPart(typeof(global::Mars.PxBlocks.Host.MainPxBlocks).Assembly)
+            .AddApplicationPart(typeof(PxRunServerIntegrationTests).Assembly);
 
         _app = builder.Build();
         _app.UsePxBlocks();
@@ -163,4 +166,20 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
         var result = await finished.Task.WaitAsync(TimeSpan.FromSeconds(15));
         Assert.True(result.Canceled);
     }
+}
+
+/// <summary>
+/// REST запуска в тестовом сервере: PxBlocks как встраиваемый модуль исполнения
+/// не отдаёт — хост объявляет его сам (образец — PxRunController стенда).
+/// Маршрут повторяет ожидание PxServerRunClient.
+/// </summary>
+[ApiController]
+[Route("api/PxBlocks")]
+public class TestPxRunController(IPxRunManager runManager) : ControllerBase
+{
+    [HttpPost(nameof(Run))]
+    public PxRunResponse Run(PxRunRequest request) => runManager.Start(request);
+
+    [HttpPost(nameof(Stop) + "/{runId:guid}")]
+    public bool Stop(Guid runId) => runManager.Stop(runId);
 }

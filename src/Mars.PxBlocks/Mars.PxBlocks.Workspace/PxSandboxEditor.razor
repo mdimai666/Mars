@@ -19,6 +19,8 @@
                         Types="Types"
                         BlockDefinitions="BlockDefinitions"
                         BlockDefinitionsJson="@BlockDefinitionsJson"
+                        Context="Context"
+                        Transport="ApiClient"
                         RailDisplay="RailDisplay"
                         OnReady="OnEditorReady"
                         OnWorkspaceChanged="OnWorkspaceChangedInternal" />
@@ -56,6 +58,20 @@
     /// в WASM их определений нет).
     /// </summary>
     [Parameter] public string? BlockDefinitionsJson { get; set; }
+
+    /// <summary>
+    /// Имя контекста редактора: определения и toolbox берутся из
+    /// api/PxBlocks/Contexts/{имя}, при запуске политика исполнения (события, лимиты)
+    /// применяется на сервере из этого контекста. Явные RunMode/RunEventNames и
+    /// BlockDefinitionsJson/Toolbox имеют приоритет.
+    /// </summary>
+    [Parameter] public string? Context { get; set; }
+
+    /// <summary>
+    /// Клиент серверного API для <see cref="Context"/>; без него берётся
+    /// <see cref="RunTransport"/>, если тот реализует IPxBlocksApiClient.
+    /// </summary>
+    [Parameter] public IPxBlocksApiClient? Transport { get; set; }
 
     /// <summary>Свой реестр имплементаций исполнения; без него — стандартные листья + демо-набор.</summary>
     [Parameter] public PxBlockImplementsLocator? Implements { get; set; }
@@ -95,6 +111,9 @@
     private string _status = "";
 
     private PxBlockImplementsLocator? _defaultImplements;
+
+    /// <summary>API-клиент для режима Context: явный Transport либо транспорт запуска.</summary>
+    private IPxBlocksApiClient? ApiClient => Transport ?? (RunTransport as IPxBlocksApiClient);
 
     private CancellationTokenSource? _runCancellation;
     private bool _running;
@@ -257,8 +276,11 @@
             {
                 RunId = runId,
                 BlocksJson = blocksJson,
-                // Лимит шагов снят: бесконечные события Loop останавливаются кнопкой Stop.
-                StepLimit = 0,
+                // Контекст решает, что и как запускается: политика (события, лимиты)
+                // применяется на сервере. Без контекста — лимит шагов снят (остановка
+                // только кнопкой Stop), события — по явным параметрам редактора.
+                ContextName = Context,
+                StepLimit = Context != null ? null : 0,
                 EventNames = RunMode == PxEditorRunMode.Events ? RunEventNames ?? [] : null
             }, _runCancellation!.Token);
         }

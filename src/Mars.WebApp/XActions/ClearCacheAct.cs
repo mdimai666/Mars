@@ -1,26 +1,12 @@
-#if !NOADMIN
-using AppAdmin.Pages.Settings;
-#endif
 using Mars.Shared.Contracts.XActions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.XActions;
 
-[RegisterXActionCommand(CommandId, "Clear cache")]
 public class ClearCacheAct : IAct
 {
-    public const string CommandId = "Mars.XActions." + nameof(ClearCacheAct);
+    public const string CommandId = "mars.host.clearCache";
     private readonly IMemoryCache _memoryCache;
-
-    public static XActionCommand XAction { get; } = new XActionCommand()
-    {
-        Id = CommandId,
-        Label = "Очистить кеш",
-#if !NOADMIN
-        FrontContextId = [typeof(SettingsHostCachePage).FullName!],
-#endif
-        Type = XActionType.HostAction
-    };
 
     public ClearCacheAct(IMemoryCache memoryCache)
     {

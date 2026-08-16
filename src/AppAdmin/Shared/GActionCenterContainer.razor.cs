@@ -1,6 +1,8 @@
 using AppFront.Shared.Interfaces;
 using Mars.Shared.Contracts.Search;
+using Mars.Shared.Contracts.XActions;
 using Mars.Shared.Interfaces;
+using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
 namespace AppAdmin.Shared;
@@ -12,6 +14,7 @@ public partial class GActionCenterContainer
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
     [Inject] ViewModelService vm { get; set; } = default!;
     [Inject] DeveloperControlService _devControlService { get; set; } = default!;
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
 
     //List<LSearchFoundElement> locals { get; set; } = new();
     //List<LSearchFoundElement> remotes { get; set; } = new();
@@ -28,8 +31,22 @@ public partial class GActionCenterContainer
 
     IReadOnlyCollection<RSearchFoundElement> _remoteItems = [];
 
+    bool _wasVisible;
+
+    /// <summary>
+    /// Живой список команд (GET /api/Act/list) — спрашивается при каждом открытии палитры,
+    /// чтобы команды, зарегистрированные в рантайме (деплой нод, плагины), были видны без перезагрузки.
+    /// </summary>
+    IReadOnlyDictionary<string, XActionCommand>? _paletteCommands;
+
     protected override void OnParametersSet()
     {
+        if (Visible && !_wasVisible)
+        {
+            LoadPaletteCommands();
+        }
+        _wasVisible = Visible;
+
         if (!string.IsNullOrEmpty(Search))
         {
             if (_prevSearch != Search)
@@ -39,6 +56,31 @@ public partial class GActionCenterContainer
             }
 
         }
+    }
+
+    async void LoadPaletteCommands()
+    {
+        try
+        {
+            _paletteCommands = await _client.Act.List();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+        }
+    }
+
+    IEnumerable<IGrouping<string, XActionCommand>> PaletteGroups()
+        => (_paletteCommands?.Values ?? [])
+            .GroupBy(c => c.Category ?? "")
+            .OrderBy(g => string.IsNullOrEmpty(g.Key))
+            .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
+
+    void OnPaletteCommandClick(XActionCommand command)
+    {
+        _ = _actAppService.Inject(command.Id);
+        Visible = false;
     }
 
     async void Load()
@@ -90,7 +132,7 @@ public partial class GActionCenterContainer
         }
         else if (item.Type == FoundElementType.XAction)
         {
-            _actAppService.Inject(item.Key, []);
+            _actAppService.Inject(item.Key);
         }
         else
         {

@@ -2,6 +2,7 @@
 @using Mars.Shared.Contracts.Common
 @using Mars.Shared.Contracts.Posts
 @using Mars.Shared.Contracts.Search
+@using Mars.Shared.Contracts.XActions
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @if (Visible)
@@ -9,7 +10,54 @@
     <section id="global_search_container" class="card white">
         <div class="d-search-content">
 
-            @if (Items.Count() == 0)
+            @if (string.IsNullOrEmpty(Search))
+            {
+                @* Палитра без поиска: живые XActions по категориям + быстрые страницы *@
+                <div class="d-search-list-container">
+
+                    @foreach (var group in PaletteGroups())
+                    {
+                        var category = string.IsNullOrEmpty(group.Key) ? "Команды" : group.Key;
+
+                        <div class="px-3 pt-2 pb-1 text-secondary small">@category</div>
+
+                        @foreach (var command in group.OrderBy(c => c.Label, StringComparer.OrdinalIgnoreCase))
+                        {
+                            var cmd = command;
+
+                            <d-search-item @onclick=@(() => OnPaletteCommandClick(cmd))>
+                                <div class="d-search-item px-3 py-1">
+                                    <div class="text-accent h5 m-0 fw-normal">
+                                        @cmd.Label
+                                    </div>
+                                    <div class="text-black">
+                                        @(cmd.Description ?? cmd.Id)
+                                    </div>
+                                </div>
+                            </d-search-item>
+                        }
+                    }
+
+                    <div class="px-3 pt-2 pb-1 text-secondary small">Страницы</div>
+
+                    @foreach (var f in LocalItems())
+                    {
+                        var item = f;
+
+                        <d-search-item href="@f.Url" @onclick=@(e => OnResultItemClick(item))>
+                            <div class="d-search-item px-3 py-1">
+                                <div class="text-accent h5 m-0 fw-normal">
+                                    @f.Title
+                                </div>
+                                <div class="text-black">
+                                    @f.Description
+                                </div>
+                            </div>
+                        </d-search-item>
+                    }
+                </div>
+            }
+            else if (Items.Count() == 0)
             {
                 <SharedContentNoRecords />
             }

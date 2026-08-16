@@ -21,7 +21,7 @@ public class ExecXActionNodeImpl : INodeImplement<ExecXActionNode>
 
     public async Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)
     {
-        var result = await _actionManager.Inject(Node.CommandId, [], parameters.CancellationToken);
+        var result = await _actionManager.Inject(Node.CommandId, new Dictionary<string, string>(Node.Args), parameters.CancellationToken);
 
         input.Payload = result;
 

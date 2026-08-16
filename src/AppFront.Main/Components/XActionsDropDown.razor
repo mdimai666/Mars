@@ -63,6 +63,7 @@
     {
         //Console.WriteLine(">>DW: " + _contextId);
         _actions = Q.Site.XActions.Values
+                       .Where(s => !s.System)
                        .Where(s => (s.FrontContextId?.Contains(_contextId) ?? false)
                                     || (AlsoShowRootContext && (s.FrontContextId?.Contains(_rootContextId) ?? false)))
                        .OrderBy(s => s.ContextMenuOrder)

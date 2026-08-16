@@ -4,6 +4,17 @@
         <name>Mars</name>
     </assembly>
     <members>
+        <member name="M:Mars.Controllers.ActController.List">
+            <summary>
+            Список команд для UI (палитра, формы вызова): без системных.
+            </summary>
+        </member>
+        <member name="M:Mars.Controllers.ActController.Options(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Динамические варианты выбора для аргументов команд — фронт запрашивает
+            перед отрисовкой формы.
+            </summary>
+        </member>
         <member name="T:Mars.Controllers.AdminFrontController">
             <summary>
             Отдельные эндпоинты для отрисовки специального фронта админки (data/admin/front).
@@ -298,6 +309,11 @@
             (Fallback-запросы с точкой в пути — файлы — пропускаются и тут, и в FrontRenderFallbackMiddleware)
             </summary>
         </member>
+        <member name="F:Mars.XActions.ContentRecipes.CreateMockPostsAct.PostTypesOptionsSource">
+            <summary>
+            Ключ динамического источника вариантов выбора типа записей.
+            </summary>
+        </member>
         <member name="T:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct">
             <summary>
             Создаёт шаблон представления списка записей в специальном фронте админки
@@ -313,6 +329,12 @@
         <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.ListViewRelPath(System.String)">
             <summary>
             Правило именования шаблона списка: postTypes/&lt;typeName&gt;/listView.hbs
+            </summary>
+        </member>
+        <member name="T:Mars.XActions.FormTestAct">
+            <summary>
+            Отладочная команда для проверки генерик-формы XActions:
+            строка, число, bool и выбор из списка; по выполнению показывает тостом введённые значения.
             </summary>
         </member>
         <member name="T:Program">

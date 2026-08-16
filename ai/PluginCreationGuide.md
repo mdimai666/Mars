@@ -150,6 +150,45 @@ public class MyNodeImpl : INodeImplement<MyNode>
 }
 ```
 
+## XActions (platform commands)
+
+Плагины могут регистрировать собственные команды платформы (XActions) — единая точка входа
+для действий, вызываемых из админки (палитра, кнопки, контекстные меню), потоков Nodes и API.
+
+1. В `ConfigureWebApplicationBuilder` — регистрация Act-хэндлеров сборки в DI:
+
+```csharp
+public override void ConfigureWebApplicationBuilder(WebApplicationBuilder builder, PluginSettings settings)
+{
+    builder.Services.AddXActionHandlers(typeof(MainXxxPlugin).Assembly);
+}
+```
+
+2. В `ConfigureWebApplication` — императивная регистрация команд:
+
+```csharp
+public override void ConfigureWebApplication(WebApplication app, PluginSettings settings)
+{
+    var actionManager = app.Services.GetRequiredService<IActionManager>();
+
+    actionManager.Add(a => a
+        .Id("my_prefix.orders.deleteAllOrders")      // конвенция owner.category.name
+        .Label("Delete all orders")
+        .Category("Заказы")
+        .Argument("reason", "Причина", required: true)  // схема → автоформа в админке
+        .Handler<DeleteAllOrdersAct>());
+
+    // команда-ссылка без хэндлера
+    actionManager.Add(a => a
+        .Id("my_prefix.example.link")
+        .Label("Docs")
+        .Link("https://example.com"));
+}
+```
+
+Подробности и модель (Act ≠ XAction, схема аргументов, эффекты результата):
+`docs/dev_docs/Plugins/XActions.md`.
+
 ## Key NuGet Packages
 
 **Backend:**

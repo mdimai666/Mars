@@ -46,7 +46,7 @@ internal class CommandNodesActionProvider : IXActionCommandsProvider, IDisposabl
         }).ToList());
     }
 
-    public Task<XActResult> RunCommand(XActionCommand command, string[] args)
+    public Task<XActResult> RunCommand(XActionCommand command, IReadOnlyDictionary<string, string> args, CancellationToken cancellationToken)
     {
         if (_nodeService.BaseNodes.TryGetValue(command.Id, out var node))
         {

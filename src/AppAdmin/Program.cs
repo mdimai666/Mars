@@ -16,6 +16,7 @@ using Mars.WebApp.Nodes.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 //Info: Для быстрой разработки через dotnet watch запускайте Dev/DevAdmin.DevServer
@@ -51,6 +52,9 @@ builder.Services.AddHttpClientInterceptor();
 var safeMode = await builder.DetectIsSafeMode(logger);
 
 builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
+
+// формы аргументов XAction: заменяем null-презентер на диалоги FluentUI
+builder.Services.Replace(ServiceDescriptor.Scoped<AppFront.Shared.Services.IXActionFormPresenter, AppAdmin.Shared.FluentDialogXActionFormPresenter>());
 
 Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
 Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });

@@ -32,8 +32,11 @@ public partial class EditPostTypePresentationPage
         }
         else if (args.Id == "create_presentation_template")
         {
-            var commandId = "Mars.XActions.Content.Templates.CreatePostTypePresentationTemplateAct";
-            var xresult = await _actAppService.Inject(commandId, [f.Model.PostType.TypeName]);
+            var commandId = "mars.content.templates.createPresentation";
+            var xresult = await _actAppService.Inject(commandId, new Dictionary<string, string>
+            {
+                ["postTypeName"] = f.Model.PostType.TypeName,
+            });
             //TODO: как то коряво, пересмотреть XActions
 
             if (xresult.Ok)

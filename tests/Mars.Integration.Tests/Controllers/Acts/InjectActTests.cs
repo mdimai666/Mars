@@ -32,11 +32,10 @@ public class InjectActTests : ApplicationTests
         _ = nameof(XActionManager.Inject);
         _ = nameof(DummyAct);
         var client = AppFixture.GetClient();
-        var act = DummyAct.XAction; 
-        string[] args = [];
+        var call = new XActionCommandCall { Id = DummyAct.CommandId };
 
         //Act
-        var result = await client.Request(_apiUrl, "Inject", act.Id).PostJsonAsync(args).CatchUserActionError().ReceiveJson<XActResult>();
+        var result = await client.Request(_apiUrl, "Inject").PostJsonAsync(call).CatchUserActionError().ReceiveJson<XActResult>();
 
         //Assert
         result.Should().NotBeNull();
@@ -52,11 +51,10 @@ public class InjectActTests : ApplicationTests
         _ = nameof(ActController.Inject);
         _ = nameof(XActionManager.Inject);
         var client = AppFixture.GetClient();
-        var actId = "XAction_invalidId";
-        string[] args = [];
+        var call = new XActionCommandCall { Id = "XAction_invalidId" };
 
         //Act
-        var result = await client.Request(_apiUrl, "Inject", actId).AllowAnyHttpStatus().PostJsonAsync(args);
+        var result = await client.Request(_apiUrl, "Inject").AllowAnyHttpStatus().PostJsonAsync(call);
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status404NotFound);

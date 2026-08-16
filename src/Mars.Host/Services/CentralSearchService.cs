@@ -44,6 +44,7 @@ internal class CentralSearchService(
         )> Aggregator(string query, int maxCount, CancellationToken cancellationToken)
     {
         var actions = _actionManager.XActions.Values
+                                    .Where(s => !s.System)
                                     .Where(s => s.Label.Contains(query, StringComparison.OrdinalIgnoreCase) || s.Id.Contains(query, StringComparison.OrdinalIgnoreCase))
                                     .Take(maxCount)
                                     .ToList();

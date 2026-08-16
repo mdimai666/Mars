@@ -1,4 +1,3 @@
-using AppAdmin.Pages.Settings;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.XActions;
@@ -7,18 +6,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Mars.XActions;
 
 #if DEBUG
-[RegisterXActionCommand(CommandId, "DummyAct")]
 public class DummyAct(MarsDbContext ef) : IAct
 {
-    public const string CommandId = "Mars.XActions." + nameof(DummyAct);
-
-    public static XActionCommand XAction { get; } = new XActionCommand()
-    {
-        Id = CommandId,
-        Label = "DummyAct",
-        FrontContextId = [typeof(SettingsPage).FullName!],
-        Type = XActionType.HostAction
-    };
+    public const string CommandId = "mars.debug.dummy";
 
     public async Task<XActResult> Execute(IActContext context, CancellationToken cancellationToken)
     {
@@ -30,7 +20,9 @@ public class DummyAct(MarsDbContext ef) : IAct
 
         logger.LogWarning(message);
 
-        return XActResult.ToastSuccess(message);
+        return XActResult.ToastSuccess(message)
+            .WithNavigate("/dev")
+            .WithEvent("dummy-act-executed");
     }
 }
 

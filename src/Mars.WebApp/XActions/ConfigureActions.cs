@@ -8,6 +8,7 @@ using AppAdmin.Pages.Settings;
 #endif
 using Mars.Controllers;
 using Mars.Host.Shared.Managers;
+using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.XActions;
 using Mars.Shared.Resources;
 using Mars.XActions.ContentRecipes;
@@ -19,7 +20,7 @@ internal static class ConfigureActions
 
     public static IServiceCollection AddConfigureActions(this IServiceCollection services)
     {
-        services.AddSingleton<IActActionsProvider, ActActionsProvider>();
+        services.AddXActionHandlers(typeof(ClearCacheAct).Assembly);
 
         return services;
     }
@@ -27,81 +28,138 @@ internal static class ConfigureActions
     public static IApplicationBuilder UseConfigureActions(this WebApplication app)
     {
         var actionManager = app.Services.GetRequiredService<IActionManager>();
-        var actActionsProvider = app.Services.GetRequiredService<IActActionsProvider>();
 
-        actActionsProvider.RegisterAssembly(typeof(ClearCacheAct).Assembly);
-        actionManager.AddActionsProvider((IXActionCommandsProvider)actActionsProvider);
+        // динамический источник вариантов «типы записей» — фронт запрашивает его
+        // перед отрисовкой форм, где аргумент объявлен с optionsSource
+        var metaModelTypesLocator = app.Services.GetRequiredService<IMetaModelTypesLocator>();
+        actionManager.AddOptionsSource(CreateMockPostsAct.PostTypesOptionsSource, _ =>
+            Task.FromResult<IReadOnlyCollection<XActionOption>>(
+                metaModelTypesLocator.PostTypesDict().Keys
+                    .Select(k => new XActionOption { Key = k, Label = k })
+                    .ToList()));
 
-        ((List<XActionCommand>)[
-            #if DEBUG
-            DummyAct.XAction,
-            #endif
-            ClearCacheAct.XAction,
-            CreateMockPostsAct.XAction,
-        ]).ForEach(actionManager.AddAction);
-
+        actionManager.Add(a =>
+        {
+            a.Id(ClearCacheAct.CommandId)
+             .Label("Очистить кеш")
+             .Category("Хост")
+             .Handler<ClearCacheAct>();
 #if !NOADMIN
-        actionManager.AddXLink(new XActionCommand
-        {
-            Id = "App.Logs",
-            FrontContextId = [typeof(SettingsAboutSystemPage).FullName!],
-            Label = "App logs",
-            LinkValue = "/dev/builder/debug"
+            a.FrontContexts(typeof(SettingsHostCachePage).FullName!);
+#endif
         });
-        actionManager.AddXLink(new XActionCommand
+
+        actionManager.Add(a =>
         {
-            Id = "AppAdmin.Posts.page.TemplateViewer",
-            FrontContextId = [typeof(ManagePostPage).FullName! + "-page"],
-            Label = "View static template",
-            LinkValue = "template/view"
+            a.Id(CreateMockPostsAct.CommandId)
+             .Label("Create mock posts")
+             .Category("Контент")
+             .Argument(CreateMockPostsAct.PostTypeArg, "Тип записи", XActionArgumentType.Choice, defaultValue: "post", optionsSource: CreateMockPostsAct.PostTypesOptionsSource)
+             .Handler<CreateMockPostsAct>();
+#if !NOADMIN
+            a.FrontContexts(typeof(ManagePostPage).FullName + "-post");
+#endif
+        });
+
+        actionManager.Add(a =>
+        {
+            a.Id(CreatePostTypePresentationTemplateAct.CommandId)
+             .Label("Создать шаблон представления для типа записи")
+             .Category("Контент")
+             .Argument(CreatePostTypePresentationTemplateAct.PostTypeNameArg, "Тип записи", XActionArgumentType.Choice, required: true, optionsSource: CreateMockPostsAct.PostTypesOptionsSource)
+             .Handler<CreatePostTypePresentationTemplateAct>();
+#if !NOADMIN
+            a.FrontContexts(typeof(EditPostTypePresentationPage).FullName!);
+#endif
         });
 
 #if DEBUG
-
-        actionManager.AddXLink(new XActionCommand
+        actionManager.Add(a =>
         {
-            Id = "empty1",
-            FrontContextId = [typeof(ManagePostPage).FullName + "-post"],
-            Label = "EmptyAct 1",
-            LinkValue = "@empty"
-        });
-
-        actionManager.AddXLink(new XActionCommand
-        {
-            Id = typeof(EditPostPage).FullName + "-page",
-            FrontContextId = [typeof(EditPostPage).FullName + "-page"],
-            Label = "test",
-            LinkValue = "/{page_slug}"
-        });
+            a.Id(DummyAct.CommandId)
+             .Label("DummyAct")
+             .Category("Отладка")
+             .System()
+             .Handler<DummyAct>();
+#if !NOADMIN
+            a.FrontContexts(typeof(SettingsPage).FullName!);
 #endif
+        });
+
+        actionManager.Add(a => a
+            .Id(FormTestAct.CommandId)
+            .Label("Тест формы XAction")
+            .Description("Строка, число, bool и выбор из списка — тост покажет введённое")
+            .Category("Отладка")
+            .Argument(FormTestAct.TextArg, "Строка", required: true)
+            .Argument(FormTestAct.NumberArg, "Число", XActionArgumentType.Number, defaultValue: "42")
+            .Argument(FormTestAct.BoolArg, "Флаг", XActionArgumentType.Bool, defaultValue: "true")
+            .Argument(FormTestAct.ChoiceArg, "Выбор из списка", XActionArgumentType.Choice, options:
+            [
+                new() { Key = "one", Label = "Первый" },
+                new() { Key = "two", Label = "Второй" },
+                new() { Key = "three", Label = "Третий" },
+            ])
+            .Handler<FormTestAct>());
 #endif
-
-        actionManager.AddXLink(new XActionCommand
-        {
-            Id = nameof(GenSourceCodeController.MetaTypesSourceCode) + "+csharp",
-            FrontContextId = [typeof(ListPostTypePage).FullName!],
-            Label = "Просмотр кода C#",
-            LinkValue = $"/api/GenSourceCode/{nameof(GenSourceCodeController.MetaTypesSourceCode)}?lang=csharp"
-        });
-
-        actionManager.AddXLink(new XActionCommand
-        {
-            Id = typeof(DebugPage).FullName!,
-            FrontContextId = [typeof(SettingsPage).FullName!, typeof(NodeRedPage).FullName!],
-            Label = "Логи",
-            LinkValue = "builder/debug"
-        });
 
 #if !NOADMIN
-        actionManager.AddXLink(new XActionCommand
+        actionManager.Add(a => a
+            .Id("App.Logs")
+            .Label("App logs")
+            .Category("Разработка")
+            .FrontContexts(typeof(SettingsAboutSystemPage).FullName!)
+            .Link("/dev/builder/debug"));
+
+        actionManager.Add(a => a
+            .Id("AppAdmin.Posts.page.TemplateViewer")
+            .Label("View static template")
+            .Category("Контент")
+            .FrontContexts(typeof(ManagePostPage).FullName! + "-page")
+            .Link("template/view"));
+
+#if DEBUG
+        actionManager.Add(a => a
+            .Id("Mars.Debug.EmptyLink")
+            .Label("EmptyAct 1")
+            .Category("Отладка")
+            .FrontContexts(typeof(ManagePostPage).FullName + "-post")
+            .Link("@empty"));
+
+        actionManager.Add(a => a
+            .Id(typeof(EditPostPage).FullName + "-page")
+            .Label("test")
+            .Category("Отладка")
+            .FrontContexts(typeof(EditPostPage).FullName + "-page")
+            .Link("/{page_slug}"));
+#endif
+
+        actionManager.Add(a => a
+            .Id("Feedback.DownloadExcelList")
+            .Label(AppRes.DownloadExcel)
+            .Category("Обратная связь")
+            .FrontContexts(typeof(FeedbackListPage).FullName!)
+            .Link($"/api/Feedback/{nameof(FeedbackController.DownloadExcel)}"));
+#endif
+
+        actionManager.Add(a => a
+            .Id(nameof(GenSourceCodeController.MetaTypesSourceCode) + "+csharp")
+            .Label("Просмотр кода C#")
+            .Category("Разработка")
+            .FrontContexts(typeof(ListPostTypePage).FullName!)
+            .Link($"/api/GenSourceCode/{nameof(GenSourceCodeController.MetaTypesSourceCode)}?lang=csharp"));
+
+        actionManager.Add(a =>
         {
-            Id = "Feedback.DownloadExcelList",
-            FrontContextId = [typeof(FeedbackListPage).FullName!],
-            Label = AppRes.DownloadExcel,
-            LinkValue = $"/api/Feedback/{nameof(FeedbackController.DownloadExcel)}"
+            a.Id(typeof(DebugPage).FullName!)
+             .Label("Логи")
+             .Category("Разработка")
+             .Link("builder/debug");
+#if !NOADMIN
+            a.FrontContexts(typeof(SettingsPage).FullName!, typeof(NodeRedPage).FullName!);
+#endif
         });
 
-#endif
         actionManager.RefreshDict();
 
         return app;

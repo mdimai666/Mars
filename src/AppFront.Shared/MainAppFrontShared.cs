@@ -47,6 +47,8 @@ public static class MainAppFrontShared
         services.TryAddScoped<DeveloperControlService>();
         //services.TryAddScoped<GalleryService>();
         services.TryAddScoped<IActAppService, ActAppService>();
+        services.TryAddScoped<IXActionFormPresenter, NullXActionFormPresenter>();
+        services.TryAddSingleton<IXActionFormProvider, XActionFormProvider>();
         services.TryAddScoped<IAIToolAppService, AIToolAppService>();
 
         services.AddMarsWebApiClient();

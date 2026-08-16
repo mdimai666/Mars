@@ -7,56 +7,128 @@ public record XActionCommand
     public required string Id { get; init; }
     public required string Label { get; init; }
 
+    public string? Category { get; init; }
+    public string? Description { get; init; }
+    public string? Icon { get; init; }
+
+    /// <summary>
+    /// Системная команда: скрыта из палитры и контекстных меню,
+    /// вызывается только программно (потоки, API, код).
+    /// </summary>
+    public bool System { get; init; }
+
     public XActionType Type { get; init; }
     public string? LinkValue { get; init; }
-
-    public string? KeybindingContext { get; init; }
-    public int[]? Keybindings { get; init; }
 
     public string ContextMenuGroupId { get; init; } = "";
     public float ContextMenuOrder { get; init; }
     public string[]? FrontContextId { get; init; }
 
+    public XActionArgument[]? Arguments { get; init; }
+
+}
+
+public record XActionArgument
+{
+    public required string Name { get; init; }
+    public required string Label { get; init; }
+    public XActionArgumentType Type { get; init; } = XActionArgumentType.String;
+    public bool Required { get; init; }
+    public string? DefaultValue { get; init; }
+
+    /// <summary>
+    /// Статические варианты выбора — отдаются сразу вместе со схемой.
+    /// </summary>
+    public XActionOption[]? Options { get; init; }
+
+    /// <summary>
+    /// Ключ динамического источника вариантов: фронт запрашивает их
+    /// (GET /api/Act/options/{ключ}) перед отрисовкой формы.
+    /// </summary>
+    public string? OptionsSource { get; init; }
+}
+
+/// <summary>
+/// Вариант выбора: в вызов передаётся <see cref="Key"/>,
+/// <see cref="Label"/> — только отображение (локализация).
+/// </summary>
+public record XActionOption
+{
+    public required string Key { get; init; }
+    public string? Label { get; init; }
+
+    public static implicit operator XActionOption(string key) => new() { Key = key };
+}
+
+public enum XActionArgumentType : int
+{
+    String = 0,
+    Number,
+    Bool,
+    Choice,
 }
 
 public class XActResult : IUserActionResult
 {
-    public enum XActionNextStep : int
-    {
-        Toast = 0,
-        TriggerEvent,
-        NextAction
-    }
-
-    public XActionNextStep NextStep { get; init; }
     public bool Ok { get; init; }
     public required string Message { get; init; }
     public MessageIntent MessageIntent { get; init; }
-    public string? NextActionId { get; init; }
+
+    /// <summary>
+    /// Рекомендованные следующие шаги (навигация, событие, следующее действие).
+    /// Интерпретирует вызывающий; автоцепочки не выполняются.
+    /// </summary>
+    public IReadOnlyList<XActionEffect> Effects { get; init; } = [];
 
     public static XActResult ToastSuccess(string message)
-        => new() { Ok = true, Message = message, MessageIntent = MessageIntent.Success, NextStep = XActionNextStep.Toast };
+        => new() { Ok = true, Message = message, MessageIntent = MessageIntent.Success };
 
     public static XActResult ToastError(string message)
-        => new() { Message = message, MessageIntent = MessageIntent.Error, NextStep = XActionNextStep.Toast };
+        => new() { Message = message, MessageIntent = MessageIntent.Error };
 
     public static XActResult ToastWarning(string message)
-        => new() { Message = message, MessageIntent = MessageIntent.Warning, NextStep = XActionNextStep.Toast };
+        => new() { Message = message, MessageIntent = MessageIntent.Warning };
 
     public static XActResult ToastInfo(string message)
-        => new() { Message = message, MessageIntent = MessageIntent.Info, NextStep = XActionNextStep.Toast };
+        => new() { Message = message, MessageIntent = MessageIntent.Info };
+
+    public XActResult WithEffect(XActionEffect effect) => new()
+    {
+        Ok = Ok,
+        Message = Message,
+        MessageIntent = MessageIntent,
+        Effects = [.. Effects, effect],
+    };
+
+    public XActResult WithNavigate(string url)
+        => WithEffect(new NavigateEffect(url));
+
+    public XActResult WithEvent(string name, System.Text.Json.JsonElement? payload = null)
+        => WithEffect(new TriggerEventEffect(name, payload));
+
+    /// <summary>
+    /// Рекомендованное следующее действие. Автоматически не выполняется —
+    /// вызывающий сам решает, запускать ли его.
+    /// </summary>
+    public XActResult Then(string actionId, IReadOnlyDictionary<string, string>? args = null)
+        => WithEffect(new NextActionEffect(actionId, args));
 }
 
 public record XActionCommandCall
 {
     public required string Id { get; init; }
-    public required string[] Args { get; init; }
+    public IReadOnlyDictionary<string, string> Args { get; init; } = new Dictionary<string, string>();
 }
 
 public interface IActContext
 {
-    public string[] args { get; }
+    IReadOnlyDictionary<string, string> Args { get; }
+
+    string? Get(string name)
+        => Args.TryGetValue(name, out var value) ? value : null;
 }
+
+public record ActContext(IReadOnlyDictionary<string, string> Args) : IActContext;
 
 public interface IAct
 {

@@ -1,6 +1,3 @@
-#if !NOADMIN
-using AppAdmin.Pages.PostsViews;
-#endif
 using Bogus;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Interfaces;
@@ -9,30 +6,28 @@ using Mars.Shared.Contracts.XActions;
 
 namespace Mars.XActions.ContentRecipes;
 
-[RegisterXActionCommand(CommandId, "Create mock posts")]
 public class CreateMockPostsAct(
     IPostService postService,
     IMetaModelTypesLocator metaModelTypesLocator,
     IRequestContext requestContext) : IAct
 {
-    public const string CommandId = "Mars.XActions." + nameof(CreateMockPostsAct);
+    public const string CommandId = "mars.content.createMockPosts";
+    public const string PostTypeArg = "postType";
 
-    public static XActionCommand XAction { get; } = new XActionCommand()
-    {
-        Id = CommandId,
-        Label = "Create mock posts",
-#if !NOADMIN
-        FrontContextId = [typeof(ManagePostPage).FullName + "-post"],
-#endif
-        Type = XActionType.HostAction
-    };
+    /// <summary>
+    /// Ключ динамического источника вариантов выбора типа записей.
+    /// </summary>
+    public const string PostTypesOptionsSource = "postTypes";
 
     public async Task<XActResult> Execute(IActContext context, CancellationToken cancellationToken)
     {
         int count = 10;
-        int postCount = (await postService.ListTable(new() { Type = "post" }, cancellationToken)).TotalCount ?? 0;
+        var postTypeName = context.Get(PostTypeArg);
+        if (string.IsNullOrWhiteSpace(postTypeName)) postTypeName = "post";
 
-        var postType = metaModelTypesLocator.GetPostTypeByName("post");
+        int postCount = (await postService.ListTable(new() { Type = postTypeName }, cancellationToken)).TotalCount ?? 0;
+
+        var postType = metaModelTypesLocator.GetPostTypeByName(postTypeName);
         var statusSlug = postType.PostStatusList.FirstOrDefault()?.Slug ?? "";
 
         var faker = new Faker("ru");
@@ -51,7 +46,7 @@ public class CreateMockPostsAct(
                 Slug = $"post-mock-{next}",
                 Status = statusSlug,
                 Tags = ["mock"],
-                Type = "post",
+                Type = postTypeName,
                 UserId = requestContext.User.Id,
                 CategoryIds = [],
             };

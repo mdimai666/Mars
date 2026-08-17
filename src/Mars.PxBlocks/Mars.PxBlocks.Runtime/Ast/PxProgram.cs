@@ -9,6 +9,9 @@ public sealed class PxProgram
     /// <summary>Определения функций; исполняются не по месту, а при вызове.</summary>
     public List<PxProcedureDef> Procedures { get; set; } = [];
 
+    /// <summary>Определения функций MakeCode (function_definition); туда же при вызове.</summary>
+    public List<PxFunctionDef> Functions { get; set; } = [];
+
     /// <summary>Верхнеуровневые стеки операторов (без определений функций).</summary>
     public List<PxStatement> TopLevel { get; set; } = [];
 }

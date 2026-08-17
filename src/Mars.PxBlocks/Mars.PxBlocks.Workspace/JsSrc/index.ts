@@ -4,10 +4,27 @@ import './renderer';
 import './connectionChecker';
 import './extensions/objectBuilder';
 import './extensions/hat';
+import './functions/blocks';
+import { ensureFunctionMsg } from './functions/constants';
+import { functionsFlyout } from './functions/manager';
+import { registerFunctionCallbacks } from './functions/dialog';
+
+ensureFunctionMsg();
 
 export { setTypes } from './types';
 
 // Английская локаль встроена в blockly/core; другие языки (ru) подключим на этапе локализации.
+
+// Встроенные lists-блоки Blockly в категории Arrays получают формулировки MakeCode —
+// как в PXT (pxtblocks/builtins/lists.ts) переопределением Blockly.Msg; сами блоки
+// остаются штатными (у lists_create_with мутатор задаётся в init, JSON-определением
+// сервера его не выразить). Остальные массивные блоки (lists_index_get/set,
+// array_indexof) — серверные определения в PxStandardBlocks.
+Blockly.Msg.LISTS_CREATE_EMPTY_TITLE = 'empty array';
+Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH = 'array of';
+Blockly.Msg.LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = 'array';
+Blockly.Msg.LISTS_CREATE_WITH_ITEM_TITLE = 'value';
+Blockly.Msg.LISTS_LENGTH_TITLE = 'length of array %1';
 
 const defaultOptions: Blockly.BlocklyOptions = {
     renderer: 'pxt',
@@ -64,7 +81,10 @@ export function injectWorkspace(element: HTMLElement, optionsJson?: string, tool
     workspace.registerButtonCallback('CREATE_VARIABLE', (button) => {
         Blockly.Variables.createVariableButtonHandler(button.getTargetWorkspace());
     });
-    workspace.registerToolboxCategoryCallback('PROCEDURE', proceduresFlyout);
+    // «Функции» — редактор функций MakeCode (Этап 14C): кнопка «Make a Function...»,
+    // return с +/− и call-блоки определённых функций (порт pxtblocks/plugins/functions).
+    workspace.registerToolboxCategoryCallback('PROCEDURE', functionsFlyout);
+    registerFunctionCallbacks(workspace);
 
     return workspace;
 }
@@ -82,48 +102,6 @@ function variablesFlyout(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox
         items.push({ kind: 'block', type: 'core.variables.get', fields });
         items.push({ kind: 'block', type: 'core.variables.set', fields });
         items.push({ kind: 'block', type: 'core.variables.change', fields });
-    }
-
-    return items;
-}
-
-// Flyout категории «Функции»: повторяет штатный Blockly (def/defreturn/ifreturn
-// + call-блоки для каждой определённой функции) и добавляет наш досрочный
-// procedures_return со shadow-«пусто» в сокете значения.
-function proceduresFlyout(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.FlyoutItemInfo[] {
-    const items: Blockly.utils.toolbox.FlyoutItemInfo[] = [];
-
-    if (Blockly.Blocks['procedures_defnoreturn']) {
-        items.push({
-            kind: 'block', type: 'procedures_defnoreturn', gap: 16,
-            fields: { NAME: Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE'] },
-        });
-    }
-    if (Blockly.Blocks['procedures_defreturn']) {
-        items.push({
-            kind: 'block', type: 'procedures_defreturn', gap: 16,
-            fields: { NAME: Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE'] },
-        });
-    }
-    if (Blockly.Blocks['procedures_ifreturn']) {
-        items.push({ kind: 'block', type: 'procedures_ifreturn', gap: 16 });
-    }
-    if (Blockly.Blocks['procedures_return']) {
-        items.push({
-            kind: 'block', type: 'procedures_return', gap: 24,
-            inputs: { VALUE: { shadow: { type: 'core.logic.null' } } },
-        });
-    }
-    if (items.length > 0) {
-        (items[items.length - 1] as Blockly.utils.toolbox.BlockInfo).gap = 24;
-    }
-
-    const [noReturn, withReturn] = Blockly.Procedures.allProcedures(workspace);
-    for (const [name, params] of noReturn) {
-        items.push({ kind: 'block', type: 'procedures_callnoreturn', gap: 16, extraState: { name, params } });
-    }
-    for (const [name, params] of withReturn) {
-        items.push({ kind: 'block', type: 'procedures_callreturn', gap: 16, extraState: { name, params } });
     }
 
     return items;

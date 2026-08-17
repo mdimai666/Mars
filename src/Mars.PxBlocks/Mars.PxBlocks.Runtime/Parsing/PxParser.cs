@@ -66,6 +66,12 @@ public sealed class PxParser
                 continue;
             }
 
+            if (type == PxCoreBlocks.FunctionDefinition)
+            {
+                ParseFunctionDef(blockObject, BlockId(blockObject));
+                continue;
+            }
+
             if (ParseStatement(blockObject) is { } statement)
                 _program.TopLevel.Add(statement);
         }
@@ -153,7 +159,7 @@ public sealed class PxParser
                 Delta = ExpressionInput(block, "DELTA") ?? new PxNumberLiteral(1) { TypeId = PxCoreBlocks.LogicNull, BlockId = blockId }
             },
 
-            PxCoreBlocks.IfReturn => new PxIfReturnStatement
+            PxCoreBlocks.IfReturn or PxCoreBlocks.FunctionsIfReturn => new PxIfReturnStatement
             {
                 TypeId = type,
                 BlockId = blockId,
@@ -171,6 +177,17 @@ public sealed class PxParser
             PxCoreBlocks.ProceduresDefNoReturn or PxCoreBlocks.ProceduresDefReturn => ParseProcedureDef(block, type),
 
             PxCoreBlocks.ProceduresCallNoReturn => ParseProcedureCallStatement(block, blockId),
+
+            PxCoreBlocks.FunctionDefinition => ParseFunctionDef(block, blockId),
+
+            PxCoreBlocks.FunctionCall => ParseFunctionCallStatement(block, blockId),
+
+            PxCoreBlocks.FunctionReturn => new PxReturnStatement
+            {
+                TypeId = type,
+                BlockId = blockId,
+                Value = ExpressionInput(block, "RETURN_VALUE")
+            },
 
             _ => LeafStatement(block, type, blockId)
         };
@@ -217,6 +234,17 @@ public sealed class PxParser
             },
 
             PxCoreBlocks.ProceduresCallReturn => ParseProcedureCallExpression(block, blockId),
+
+            PxCoreBlocks.FunctionCallOutput => ParseFunctionCallExpression(block, blockId),
+
+            PxCoreBlocks.ArgumentReporterBoolean or PxCoreBlocks.ArgumentReporterNumber
+                or PxCoreBlocks.ArgumentReporterString or PxCoreBlocks.ArgumentReporterArray
+                or PxCoreBlocks.ArgumentReporterCustom => new PxArgumentReporter
+            {
+                TypeId = type,
+                BlockId = blockId,
+                ParamName = FieldText(block, "VALUE")
+            },
 
             _ => LeafExpression(block, type, blockId)
         };
@@ -320,6 +348,89 @@ public sealed class PxParser
         var args = new List<PxExpression>(argCount);
         for (var i = 0; i < argCount; i++)
             args.Add(ExpressionInput(block, $"ARG{i}") ?? NullLiteral(blockId));
+
+        return (name, args);
+    }
+
+    private PxFunctionDef ParseFunctionDef(JsonObject block, string blockId)
+    {
+        var name = "";
+        var functionId = "";
+        var parameters = new List<PxFunctionParam>();
+        if (block["extraState"] is JsonObject extra)
+        {
+            name = (string?)extra["name"] ?? "";
+            functionId = (string?)extra["functionid"] ?? "";
+            if (extra["arguments"] is JsonArray arguments)
+            {
+                foreach (var argument in arguments)
+                {
+                    if (argument is JsonObject argumentObject)
+                        parameters.Add(new PxFunctionParam(
+                            (string?)argumentObject["id"] ?? "",
+                            (string?)argumentObject["name"] ?? "",
+                            (string?)argumentObject["type"] ?? ""));
+                }
+            }
+        }
+
+        var definition = new PxFunctionDef
+        {
+            TypeId = PxCoreBlocks.FunctionDefinition,
+            BlockId = blockId,
+            Name = name,
+            FunctionId = functionId,
+            Params = parameters,
+            Body = StatementInput(block, "STACK")
+        };
+
+        // Определение может встретиться и внутри стека — регистрируем сразу.
+        if (_program.Functions.TrueForAll(f => f.Name != definition.Name))
+            _program.Functions.Add(definition);
+        return definition;
+    }
+
+    private PxFunctionCallStatement ParseFunctionCallStatement(JsonObject block, string blockId)
+    {
+        var (name, args) = ParseFunctionCall(block, blockId);
+        return new PxFunctionCallStatement
+        {
+            TypeId = PxCoreBlocks.FunctionCall,
+            BlockId = blockId,
+            Name = name,
+            Args = args
+        };
+    }
+
+    private PxFunctionCallExpression ParseFunctionCallExpression(JsonObject block, string blockId)
+    {
+        var (name, args) = ParseFunctionCall(block, blockId);
+        return new PxFunctionCallExpression
+        {
+            TypeId = PxCoreBlocks.FunctionCallOutput,
+            BlockId = blockId,
+            Name = name,
+            Args = args
+        };
+    }
+
+    /// <summary>Вызов function_*: имя и порядок аргументов — в extraState.arguments;
+    /// входы именуются id аргументов.</summary>
+    private (string Name, List<PxExpression> Args) ParseFunctionCall(JsonObject block, string blockId)
+    {
+        if (block["extraState"] is not JsonObject extra)
+            throw new PxParseException("Function call without a name (extraState)", blockId);
+
+        var name = (string?)extra["name"] ?? "";
+        var args = new List<PxExpression>();
+        if (extra["arguments"] is JsonArray arguments)
+        {
+            foreach (var argument in arguments)
+            {
+                var id = argument is JsonObject argumentObject ? (string?)argumentObject["id"] ?? "" : "";
+                args.Add(ExpressionInput(block, id) ?? NullLiteral(blockId));
+            }
+        }
 
         return (name, args);
     }

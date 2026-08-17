@@ -204,3 +204,21 @@ internal sealed class StdMathMinMax : PxExpressionImplement
         return ValueTask.FromResult<PxValue>(new PxNumberValue(result));
     }
 }
+
+/// <summary>core.math.map: пропорциональный перенос значения из одного диапазона в другой (без ограничения, как в MakeCode).</summary>
+internal sealed class StdMathMap : PxExpressionImplement
+{
+    public StdMathMap() : base("core.math.map") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+    {
+        var value = call.Input("VALUE").ToNumber();
+        var fromLow = call.Input("FROM_LOW").ToNumber();
+        var fromHigh = call.Input("FROM_HIGH").ToNumber();
+        var toLow = call.Input("TO_LOW").ToNumber();
+        var toHigh = call.Input("TO_HIGH").ToNumber();
+
+        var result = (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+        return ValueTask.FromResult<PxValue>(new PxNumberValue(result));
+    }
+}

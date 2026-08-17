@@ -206,6 +206,13 @@ public sealed class PxInterpreter
             case PxProcedureDef:
                 return; // определения собраны парсером в PxProgram.Procedures
 
+            case PxFunctionDef:
+                return; // определения собраны парсером в PxProgram.Functions
+
+            case PxFunctionCallStatement call:
+                await CallFunctionAsync(call.Name, call.Args, call.BlockId, scope, context);
+                return;
+
             case PxProcedureCallStatement call:
                 await CallProcedureAsync(call.Name, call.Args, call.BlockId, scope, context);
                 return;
@@ -299,6 +306,50 @@ public sealed class PxInterpreter
         }
     }
 
+    private static async ValueTask<PxValue> CallFunctionAsync(
+        string name,
+        IReadOnlyList<PxExpression> args,
+        string blockId,
+        PxScope callerScope,
+        PxContext context)
+    {
+        if (!context.Functions.TryGetValue(name, out var definition))
+            throw new PxRuntimeException($"Function '{name}' is not defined", blockId);
+
+        // Рамка функции: параметры локальны (по id и по имени — для argument_reporter),
+        // остальное видно до глобального скоупа.
+        var scope = new PxScope(context.Global);
+        for (var i = 0; i < definition.Params.Count; i++)
+        {
+            var parameter = definition.Params[i];
+            var value = i < args.Count
+                ? await EvaluateAsync(args[i], callerScope, context)
+                : TypeDefault(parameter.Type);
+            scope.Define(parameter.Id, value);
+            scope.Define(parameter.Name, value);
+        }
+
+        try
+        {
+            await ExecuteChainAsync(definition.Body, scope, context);
+            return PxNullValue.Instance;
+        }
+        catch (PxReturnSignal signal)
+        {
+            return signal.Value ?? PxNullValue.Instance;
+        }
+    }
+
+    /// <summary>Значение параметра по типу (MakeCode), когда аргумент не передан.</summary>
+    private static PxValue TypeDefault(string type) => type switch
+    {
+        "number" => PxNumberValue.Zero,
+        "string" => PxStringValue.Empty,
+        "boolean" => new PxBooleanValue(false),
+        "Array" => new PxListValue(),
+        _ => PxNullValue.Instance
+    };
+
     private static async ValueTask<PxValue> EvaluateAsync(PxExpression expression, PxScope scope, PxContext context)
     {
         switch (expression)
@@ -331,6 +382,15 @@ public sealed class PxInterpreter
 
             case PxProcedureCallExpression call:
                 return await CallProcedureAsync(call.Name, call.Args, call.BlockId, scope, context);
+
+            case PxFunctionCallExpression call:
+                return await CallFunctionAsync(call.Name, call.Args, call.BlockId, scope, context);
+
+            case PxArgumentReporter reporter:
+                // Параметр текущей функции по имени; вне функции — null.
+                return scope.TryGet(reporter.ParamName, out var parameter)
+                    ? parameter
+                    : PxNullValue.Instance;
 
             case PxLeafExpression leaf:
                 return await EvaluateLeafAsync(leaf, scope, context);

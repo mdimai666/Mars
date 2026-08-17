@@ -597,6 +597,449 @@ public class PxInterpreterTests
     }
 
     [Fact]
+    public async Task TextExtensions_Substring_Includes_Compare()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "core.text.substring", "id": "s1",
+                "inputs": {
+                  "VALUE": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "hello" } } },
+                  "START": { "block": { "type": "core.math.number", "id": "n1", "fields": { "NUM": 1 } } },
+                  "LENGTH": { "block": { "type": "core.math.number", "id": "n2", "fields": { "NUM": 3 } } }
+                }
+              } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": {
+                  "type": "core.text.substring", "id": "s2",
+                  "inputs": {
+                    "VALUE": { "block": { "type": "core.text.text", "id": "t2", "fields": { "TEXT": "hello" } } },
+                    "START": { "block": { "type": "core.math.number", "id": "n3", "fields": { "NUM": -2 } } },
+                    "LENGTH": { "block": { "type": "core.math.number", "id": "n4", "fields": { "NUM": 0 } } }
+                  }
+                } } },
+                "next": { "block": {
+                  "type": "core.text.print", "id": "p3",
+                  "inputs": { "TEXT": { "block": {
+                    "type": "core.text.includes", "id": "i1",
+                    "inputs": {
+                      "VALUE": { "block": { "type": "core.text.text", "id": "t3", "fields": { "TEXT": "hello" } } },
+                      "FIND": { "block": { "type": "core.text.text", "id": "t4", "fields": { "TEXT": "ell" } } }
+                    }
+                  } } },
+                  "next": { "block": {
+                    "type": "core.text.print", "id": "p4",
+                    "inputs": { "TEXT": { "block": {
+                      "type": "core.text.compare", "id": "c1",
+                      "inputs": {
+                        "A": { "block": { "type": "core.text.text", "id": "t5", "fields": { "TEXT": "a" } } },
+                        "B": { "block": { "type": "core.text.text", "id": "t6", "fields": { "TEXT": "b" } } }
+                      }
+                    } } }
+                  } } }
+                } }
+              } }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        // старт 0-основный; -2 — с конца, длина 0 — до конца; compare — порядковый (-1)
+        Assert.Equal(["ell", "lo", "true", "-1"], result.Output);
+    }
+
+    [Fact]
+    public async Task TextExtensions_Split_Parse_CharCode()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "core.text.split", "id": "sp1",
+                "inputs": {
+                  "VALUE": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "a-b" } } },
+                  "SEPARATOR": { "block": { "type": "core.text.text", "id": "t2", "fields": { "TEXT": "-" } } }
+                }
+              } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": {
+                  "type": "core.text.parse", "id": "pa1",
+                  "inputs": { "VALUE": { "block": { "type": "core.text.text", "id": "t3", "fields": { "TEXT": "12abc" } } } }
+                } } },
+                "next": { "block": {
+                  "type": "core.text.print", "id": "p3",
+                  "inputs": { "TEXT": { "block": {
+                    "type": "core.text.parse", "id": "pa2",
+                    "inputs": { "VALUE": { "block": { "type": "core.text.text", "id": "t4", "fields": { "TEXT": "abc" } } } }
+                  } } },
+                  "next": { "block": {
+                    "type": "core.text.print", "id": "p4",
+                    "inputs": { "TEXT": { "block": {
+                      "type": "core.text.char_code", "id": "cc1",
+                      "inputs": {
+                        "VALUE": { "block": { "type": "core.text.text", "id": "t5", "fields": { "TEXT": "A" } } },
+                        "INDEX": { "block": { "type": "core.math.number", "id": "n1", "fields": { "NUM": 0 } } }
+                      }
+                    } } }
+                  } } }
+                } }
+              } }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["a,b", "12", "NaN", "65"], result.Output);
+    }
+
+    [Fact]
+    public async Task Math_Map_ReMapsProportionally()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "core.math.map", "id": "m1",
+                "inputs": {
+                  "VALUE": { "block": { "type": "core.math.number", "id": "v", "fields": { "NUM": 512 } } },
+                  "FROM_LOW": { "block": { "type": "core.math.number", "id": "fl", "fields": { "NUM": 0 } } },
+                  "FROM_HIGH": { "block": { "type": "core.math.number", "id": "fh", "fields": { "NUM": 1024 } } },
+                  "TO_LOW": { "block": { "type": "core.math.number", "id": "tl", "fields": { "NUM": 0 } } },
+                  "TO_HIGH": { "block": { "type": "core.math.number", "id": "th", "fields": { "NUM": 4 } } }
+                }
+              } } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["2"], result.Output);
+    }
+
+    [Fact]
+    public async Task Lists_MakeCodeSet_ZeroBasedAndMutable()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.variables.set", "id": "s1",
+              "fields": { "VAR": { "id": "varL" } },
+              "inputs": { "VALUE": { "block": {
+                "type": "lists_create_with", "id": "cw",
+                "inputs": {
+                  "ADD0": { "block": { "type": "core.text.text", "id": "a1", "fields": { "TEXT": "a" } } },
+                  "ADD1": { "block": { "type": "core.text.text", "id": "a2", "fields": { "TEXT": "b" } } },
+                  "ADD2": { "block": { "type": "core.text.text", "id": "a3", "fields": { "TEXT": "c" } } }
+                }
+              } } },
+              "next": { "block": {
+                "type": "lists_index_set", "id": "st",
+                "inputs": {
+                  "LIST": { "block": { "type": "core.variables.get", "id": "g0", "fields": { "VAR": { "id": "varL" } } } },
+                  "INDEX": { "block": { "type": "core.math.number", "id": "n0", "fields": { "NUM": 1 } } },
+                  "VALUE": { "block": { "type": "core.text.text", "id": "t0", "fields": { "TEXT": "x" } } }
+                },
+                "next": { "block": {
+                  "type": "core.text.print", "id": "p1",
+                  "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g1", "fields": { "VAR": { "id": "varL" } } } } },
+                  "next": { "block": {
+                    "type": "core.text.print", "id": "p2",
+                    "inputs": { "TEXT": { "block": {
+                      "type": "lists_index_get", "id": "gt",
+                      "inputs": {
+                        "LIST": { "block": { "type": "core.variables.get", "id": "g2", "fields": { "VAR": { "id": "varL" } } } },
+                        "INDEX": { "block": { "type": "core.math.number", "id": "n2", "fields": { "NUM": 0 } } }
+                      }
+                    } } },
+                    "next": { "block": {
+                      "type": "core.text.print", "id": "p3",
+                      "inputs": { "TEXT": { "block": {
+                        "type": "lists_length", "id": "ln",
+                        "inputs": { "VALUE": { "block": { "type": "core.variables.get", "id": "g3", "fields": { "VAR": { "id": "varL" } } } } }
+                      } } },
+                      "next": { "block": {
+                        "type": "core.text.print", "id": "p4",
+                        "inputs": { "TEXT": { "block": {
+                          "type": "array_indexof", "id": "io",
+                          "inputs": {
+                            "LIST": { "block": { "type": "core.variables.get", "id": "g4", "fields": { "VAR": { "id": "varL" } } } },
+                            "VALUE": { "block": { "type": "core.text.text", "id": "t4", "fields": { "TEXT": "c" } } }
+                          }
+                        } } },
+                        "next": { "block": {
+                          "type": "core.text.print", "id": "p5",
+                          "inputs": { "TEXT": { "block": {
+                            "type": "lists_repeat", "id": "rp",
+                            "inputs": {
+                              "ITEM": { "block": { "type": "core.text.text", "id": "t5", "fields": { "TEXT": "z" } } },
+                              "NUM": { "block": { "type": "core.math.number", "id": "n5", "fields": { "NUM": 2 } } }
+                            }
+                          } } }
+                        } } }
+                      } }
+                    } }
+                  } }
+                } }
+              } }
+          ] },
+          "variables": [ { "id": "varL", "name": "list" } ]
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        // set по индексу 1 мутирует список; индексы 0-основные; indexof — 0-based
+        Assert.Equal(["a,x,c", "a", "3", "2", "z,z"], result.Output);
+    }
+
+    [Fact]
+    public async Task Lists_ModifyOps_PushPopShiftUnshiftInsertRemoveReverse()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            { "type": "core.variables.set", "id": "s1", "fields": { "VAR": { "id": "varL" } },
+              "inputs": { "VALUE": { "block": { "type": "lists_create_with", "id": "cw", "inputs": {
+                "ADD0": { "block": { "type": "core.text.text", "id": "a1", "fields": { "TEXT": "a" } } },
+                "ADD1": { "block": { "type": "core.text.text", "id": "a2", "fields": { "TEXT": "b" } } },
+                "ADD2": { "block": { "type": "core.text.text", "id": "a3", "fields": { "TEXT": "c" } } }
+              } } } },
+              "next": { "block": { "type": "array_push", "id": "pu",
+                "inputs": {
+                  "LIST": { "block": { "type": "core.variables.get", "id": "g0", "fields": { "VAR": { "id": "varL" } } } },
+                  "VALUE": { "block": { "type": "core.text.text", "id": "t0", "fields": { "TEXT": "d" } } }
+                },
+                "next": { "block": { "type": "core.text.print", "id": "p1",
+                  "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g1", "fields": { "VAR": { "id": "varL" } } } } },
+                  "next": { "block": { "type": "core.text.print", "id": "p2",
+                    "inputs": { "TEXT": { "block": { "type": "array_pop", "id": "po",
+                      "inputs": { "LIST": { "block": { "type": "core.variables.get", "id": "g2", "fields": { "VAR": { "id": "varL" } } } } }
+                    } } },
+                    "next": { "block": { "type": "core.text.print", "id": "p3",
+                      "inputs": { "TEXT": { "block": { "type": "array_shift", "id": "sh",
+                        "inputs": { "LIST": { "block": { "type": "core.variables.get", "id": "g3", "fields": { "VAR": { "id": "varL" } } } } }
+                      } } },
+                      "next": { "block": { "type": "array_unshift_statement", "id": "un",
+                        "inputs": {
+                          "LIST": { "block": { "type": "core.variables.get", "id": "g4", "fields": { "VAR": { "id": "varL" } } } },
+                          "VALUE": { "block": { "type": "core.text.text", "id": "t4", "fields": { "TEXT": "z" } } }
+                        },
+                        "next": { "block": { "type": "core.text.print", "id": "p4",
+                          "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g5", "fields": { "VAR": { "id": "varL" } } } } },
+                          "next": { "block": { "type": "array_insertAt", "id": "in",
+                            "inputs": {
+                              "LIST": { "block": { "type": "core.variables.get", "id": "g6", "fields": { "VAR": { "id": "varL" } } } },
+                              "INDEX": { "block": { "type": "core.math.number", "id": "n6", "fields": { "NUM": 1 } } },
+                              "VALUE": { "block": { "type": "core.text.text", "id": "t6", "fields": { "TEXT": "x" } } }
+                            },
+                            "next": { "block": { "type": "core.text.print", "id": "p5",
+                              "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g7", "fields": { "VAR": { "id": "varL" } } } } },
+                              "next": { "block": { "type": "core.text.print", "id": "p6",
+                                "inputs": { "TEXT": { "block": { "type": "array_removeat", "id": "ra",
+                                  "inputs": {
+                                    "LIST": { "block": { "type": "core.variables.get", "id": "g8", "fields": { "VAR": { "id": "varL" } } } },
+                                    "INDEX": { "block": { "type": "core.math.number", "id": "n8", "fields": { "NUM": 2 } } }
+                                  }
+                                } } },
+                                "next": { "block": { "type": "array_reverse", "id": "rv",
+                                  "inputs": { "LIST": { "block": { "type": "core.variables.get", "id": "g9", "fields": { "VAR": { "id": "varL" } } } } },
+                                  "next": { "block": { "type": "core.text.print", "id": "p7",
+                                    "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g10", "fields": { "VAR": { "id": "varL" } } } } },
+                                    "next": { "block": { "type": "core.text.print", "id": "p8",
+                                      "inputs": { "TEXT": { "block": { "type": "array_pickRandom", "id": "pr",
+                                        "inputs": { "LIST": { "block": { "type": "lists_create_with", "id": "cw2", "inputs": {
+                                          "ADD0": { "block": { "type": "core.text.text", "id": "a9", "fields": { "TEXT": "q" } } }
+                                        } } } }
+                                      } } }
+                                    } } }
+                                  } } }
+                                } } }
+                              } } }
+                            } } }
+                          } } }
+                        } } }
+                      } } }
+                    }
+          ] },
+          "variables": [ { "id": "varL", "name": "list" } ]
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["a,b,c,d", "d", "a", "z,b,c", "z,x,b,c", "b", "c,x,z", "q"], result.Output);
+    }
+
+    [Fact]
+    public async Task Functions_TypedArgs_CallOutput_AndMissingArgDefault()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "function_definition", "id": "fd",
+              "extraState": { "name": "addOne", "functionid": "f1", "arguments": [ { "id": "a1", "name": "num", "type": "number" } ] },
+              "inputs": { "STACK": { "block": {
+                "type": "function_return", "id": "fr",
+                "inputs": { "RETURN_VALUE": { "block": {
+                  "type": "core.math.arithmetic", "id": "ar", "fields": { "OP": "ADD" },
+                  "inputs": {
+                    "A": { "block": { "type": "argument_reporter_number", "id": "rp", "fields": { "VALUE": "num" } } },
+                    "B": { "block": { "type": "core.math.number", "id": "n1", "fields": { "NUM": 1 } } }
+                  }
+                } } }
+              } } }
+            },
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "function_call_output", "id": "fc",
+                "extraState": { "name": "addOne", "functionid": "f1", "arguments": [ { "id": "a1", "name": "num", "type": "number" } ] },
+                "inputs": { "a1": { "block": { "type": "core.math.number", "id": "n5", "fields": { "NUM": 5 } } } }
+              } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": {
+                  "type": "function_call_output", "id": "fc2",
+                  "extraState": { "name": "addOne", "functionid": "f1", "arguments": [] }
+                } } }
+              } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        // аргумент 5 → 6; вызов без аргументов → дефолт number 0 → 1
+        Assert.Equal(["6", "1"], result.Output);
+    }
+
+    [Fact]
+    public async Task Functions_EarlyReturn_StopsBody()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "function_definition", "id": "fd",
+              "extraState": { "name": "grade", "functionid": "f2", "arguments": [ { "id": "a1", "name": "num", "type": "number" } ] },
+              "inputs": { "STACK": { "block": {
+                "type": "core.logic.if", "id": "if1",
+                "extraState": {},
+                "inputs": {
+                  "IF0": { "block": {
+                    "type": "core.logic.compare", "id": "cmp", "fields": { "OP": "GT" },
+                    "inputs": {
+                      "A": { "block": { "type": "argument_reporter_number", "id": "rp", "fields": { "VALUE": "num" } } },
+                      "B": { "block": { "type": "core.math.number", "id": "n2", "fields": { "NUM": 2 } } }
+                    }
+                  } },
+                  "DO0": { "block": {
+                    "type": "function_return", "id": "fr1",
+                    "inputs": { "RETURN_VALUE": { "block": { "type": "core.text.text", "id": "tb", "fields": { "TEXT": "big" } } } }
+                  } }
+                },
+                "next": { "block": {
+                  "type": "function_return", "id": "fr2",
+                  "inputs": { "RETURN_VALUE": { "block": { "type": "core.text.text", "id": "ts", "fields": { "TEXT": "small" } } } }
+                } }
+              } } }
+            },
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "function_call_output", "id": "fc1",
+                "extraState": { "name": "grade", "functionid": "f2", "arguments": [ { "id": "a1", "name": "num", "type": "number" } ] },
+                "inputs": { "a1": { "block": { "type": "core.math.number", "id": "n5", "fields": { "NUM": 5 } } } }
+              } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": {
+                  "type": "function_call_output", "id": "fc2",
+                  "extraState": { "name": "grade", "functionid": "f2", "arguments": [ { "id": "a1", "name": "num", "type": "number" } ] },
+                  "inputs": { "a1": { "block": { "type": "core.math.number", "id": "n1", "fields": { "NUM": 1 } } } }
+                } } }
+              } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["big", "small"], result.Output);
+    }
+
+    [Fact]
+    public async Task Functions_IfReturnBlock_ReturnsOnlyWhenTrue()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "function_definition", "id": "fd",
+              "extraState": { "name": "pick", "functionid": "f3", "arguments": [ { "id": "b1", "name": "flag", "type": "boolean" } ] },
+              "inputs": { "STACK": { "block": {
+                "type": "core.functions.if_return", "id": "ir",
+                "inputs": {
+                  "CONDITION": { "block": { "type": "argument_reporter_boolean", "id": "rb", "fields": { "VALUE": "flag" } } },
+                  "VALUE": { "block": { "type": "core.text.text", "id": "ty", "fields": { "TEXT": "yes" } } }
+                },
+                "next": { "block": {
+                  "type": "function_return", "id": "fr",
+                  "inputs": { "RETURN_VALUE": { "block": { "type": "core.text.text", "id": "tn", "fields": { "TEXT": "no" } } } }
+                } }
+              } } }
+            },
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "function_call_output", "id": "fc1",
+                "extraState": { "name": "pick", "functionid": "f3", "arguments": [ { "id": "b1", "name": "flag", "type": "boolean" } ] },
+                "inputs": { "b1": { "block": { "type": "core.logic.boolean", "id": "bt", "fields": { "BOOL": "TRUE" } } } }
+              } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": {
+                  "type": "function_call_output", "id": "fc2",
+                  "extraState": { "name": "pick", "functionid": "f3", "arguments": [ { "id": "b1", "name": "flag", "type": "boolean" } ] },
+                  "inputs": { "b1": { "block": { "type": "core.logic.boolean", "id": "bf", "fields": { "BOOL": "FALSE" } } } }
+                } } }
+              } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["yes", "no"], result.Output);
+    }
+
+    [Fact]
     public async Task LogicOperation_ShortCircuit_And()
     {
         var json = """

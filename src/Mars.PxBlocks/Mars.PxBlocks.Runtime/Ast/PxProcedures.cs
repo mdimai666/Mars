@@ -48,3 +48,44 @@ public sealed record PxReturnStatement : PxStatement
 {
     public PxExpression? Value { get; init; }
 }
+
+public sealed record PxFunctionParam(string Id, string Name, string Type);
+
+/// <summary>
+/// function_definition (редактор функций MakeCode, Этап 14C). Парсер собирает их
+/// в PxProgram.Functions; интерпретатор исполняет при вызове. Параметры типизированы
+/// (number/string/boolean/Array) — тип даёт значение по умолчанию при нехватке аргументов.
+/// </summary>
+public sealed record PxFunctionDef : PxStatement
+{
+    public required string Name { get; init; }
+
+    public string FunctionId { get; init; } = "";
+
+    public List<PxFunctionParam> Params { get; init; } = [];
+
+    /// <summary>Стек операторов тела (вход STACK).</summary>
+    public PxStatement? Body { get; init; }
+}
+
+/// <summary>function_call — вызов в позиции оператора; входы именуются id аргументов.</summary>
+public sealed record PxFunctionCallStatement : PxStatement
+{
+    public required string Name { get; init; }
+
+    public List<PxExpression> Args { get; init; } = [];
+}
+
+/// <summary>function_call_output — вызов в позиции выражения.</summary>
+public sealed record PxFunctionCallExpression : PxExpression
+{
+    public required string Name { get; init; }
+
+    public List<PxExpression> Args { get; init; } = [];
+}
+
+/// <summary>argument_reporter_* — чтение параметра функции по имени внутри тела.</summary>
+public sealed record PxArgumentReporter : PxExpression
+{
+    public required string ParamName { get; init; }
+}

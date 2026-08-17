@@ -20,6 +20,9 @@ public sealed class PxStandardBlocks : PxBlockSet
     // Цвет штатных процедурных блоков Blockly (hue 290), чтобы return не отличался
     // от «to do something» во flyout «Functions»; цвет рейки — свой у категории.
     private const string Functions = "#995ba5";
+    // Цвет штатных lists-блоков Blockly (hue 260) — свои массивные блоки не должны
+    // отличаться от встроенных create/length в той же категории.
+    private const string Arrays = "#745ba6";
 
     public PxStandardBlocks()
     {
@@ -27,6 +30,7 @@ public sealed class PxStandardBlocks : PxBlockSet
         AddLoops();
         AddMath();
         AddText();
+        AddArrays();
         AddVariables();
         AddFunctions();
     }
@@ -186,6 +190,14 @@ public sealed class PxStandardBlocks : PxBlockSet
             .Message("%1 of %2 and %3",
                 PxMaster.Dropdown("OP", ("min", "MIN"), ("max", "MAX")),
                 PxMaster.Value("A", "Number"), PxMaster.Value("B", "Number")));
+
+        Add(PxMaster.Define("core.math.map").Output("Number").Colour(Math)
+            .Tooltip("Re-map a number from one range to another: from low/high is converted to to low/high proportionally")
+            .Inline()
+            .Message("map %1 from low %2 high %3 to low %4 high %5",
+                PxMaster.Value("VALUE", "Number"),
+                PxMaster.Value("FROM_LOW", "Number"), PxMaster.Value("FROM_HIGH", "Number"),
+                PxMaster.Value("TO_LOW", "Number"), PxMaster.Value("TO_HIGH", "Number")));
     }
 
     private void AddText()
@@ -245,9 +257,131 @@ public sealed class PxStandardBlocks : PxBlockSet
                 PxMaster.Dropdown("MODE", ("from both sides", "BOTH"), ("from the left", "LEFT"), ("from the right", "RIGHT")),
                 PxMaster.Value("TEXT", "String")));
 
+        // Расширения текста — блоки MakeCode (libs/pxt-common/pxt-core.d.ts),
+        // семантика 0-основная, как в MakeCode.
+        Add(PxMaster.Define("core.text.substring").Output("String").Colour(Text)
+            .Tooltip("Returns part of the text: from the given position (0 is the first, negative counts from the end) for the given number of characters; length 0 means to the end, negative gives an empty text")
+            .Inline()
+            .Message("substring of %1 from %2 of length %3",
+                PxMaster.Value("VALUE", "String"), PxMaster.Value("START", "Number"), PxMaster.Value("LENGTH", "Number")));
+
+        Add(PxMaster.Define("core.text.includes").Output("Boolean").Colour(Text)
+            .Tooltip("Returns true if the text contains the given text")
+            .Inline()
+            .Message("%1 includes %2", PxMaster.Value("VALUE", "String"), PxMaster.Value("FIND", "String")));
+
+        Add(PxMaster.Define("core.text.compare").Output("Number").Colour(Text)
+            .Tooltip("Compares two texts in character order (ASCII): -1 if the first comes before the second, 0 if equal, 1 if after")
+            .Inline()
+            .Message("compare %1 to %2", PxMaster.Value("A", "String"), PxMaster.Value("B", "String")));
+
+        Add(PxMaster.Define("core.text.split").Output("Array").Colour(Text)
+            .Tooltip("Splits the text into a list of parts at each occurrence of the separator (an empty separator splits into characters)")
+            .Inline()
+            .Message("split %1 at %2", PxMaster.Value("VALUE", "String"), PxMaster.Value("SEPARATOR", "String")));
+
+        Add(PxMaster.Define("core.text.parse").Output("Number").Colour(Text)
+            .Tooltip("Reads a number from the start of the text; returns NaN if the text does not begin with a number")
+            .Inline()
+            .Message("parse to number %1", PxMaster.Value("VALUE", "String")));
+
+        Add(PxMaster.Define("core.text.char_code").Output("Number").Colour(Text)
+            .Tooltip("Returns the code of the character at the given position (0 is the first); NaN if there is no character at the position")
+            .Inline()
+            .Message("char code from %1 at %2", PxMaster.Value("VALUE", "String"), PxMaster.Value("INDEX", "Number")));
+
         Add(PxMaster.Define("core.text.print").Colour(Text)
             .Tooltip("Print the value to the output panel.")
             .Message("print %1", PxMaster.Value("TEXT")));
+    }
+
+    /// <summary>
+    /// Массивы — набор MakeCode с 0-индексацией (Этап 14B). create_empty/create_with/
+    /// repeat/length — встроенные блоки Blockly с лейблами MakeCode (Msg-оверрайды
+    /// в JsSrc/index.ts, у create_with мутатор задаётся в init); здесь — остальные:
+    /// get/set по индексу и поиск индекса (аналоги lists_index_get/lists_index_set/
+    /// array_indexof из libs/pxt-common).
+    /// </summary>
+    private void AddArrays()
+    {
+        Add(PxMaster.Define("lists_index_get").Output("Any").Colour(Arrays)
+            .Tooltip("Returns the value at the given index in an array (0 is the first; null if there is no value at the index)")
+            .Inline()
+            .Message("%1 get value at %2", PxMaster.Value("LIST", "Array"), PxMaster.Value("INDEX", "Number")));
+
+        Add(PxMaster.Define("lists_index_set").Colour(Arrays)
+            .Tooltip("Sets the value at the given index in an array (0 is the first; the array grows if the index is beyond the end)")
+            .Inline()
+            .Message("%1 set value at %2 to %3",
+                PxMaster.Value("LIST", "Array"), PxMaster.Value("INDEX", "Number"), PxMaster.Value("VALUE")));
+
+        Add(PxMaster.Define("array_indexof").Output("Number").Colour(Arrays)
+            .Tooltip("Returns the index of the first occurrence of a value in an array (0 is the first; -1 if not found)")
+            .Inline()
+            .Message("%1 find index of %2", PxMaster.Value("LIST", "Array"), PxMaster.Value("VALUE")));
+
+        // Остальные блоки массивов MakeCode (pxt-common/pxt-core.d.ts): изменение
+        // мутирует список по ссылке; get-варианты возвращают значение (null на пустом).
+        Add(PxMaster.Define("array_push").Colour(Arrays)
+            .Tooltip("Append a new element to the end of an array")
+            .Inline()
+            .Message("%1 add value %2 to end", PxMaster.Value("LIST", "Array"), PxMaster.Value("VALUE")));
+
+        Add(PxMaster.Define("array_pop").Output("Any").Colour(Arrays)
+            .Tooltip("Remove the last element from an array and return it (null if the array is empty)")
+            .Inline()
+            .Message("get and remove last value from %1", PxMaster.Value("LIST", "Array")));
+
+        Add(PxMaster.Define("array_pop_statement").Colour(Arrays)
+            .Tooltip("Remove the last element from an array")
+            .Inline()
+            .Message("remove last value from %1", PxMaster.Value("LIST", "Array")));
+
+        Add(PxMaster.Define("array_shift").Output("Any").Colour(Arrays)
+            .Tooltip("Remove the first element from an array and return it (null if the array is empty)")
+            .Inline()
+            .Message("get and remove first value from %1", PxMaster.Value("LIST", "Array")));
+
+        Add(PxMaster.Define("array_shift_statement").Colour(Arrays)
+            .Tooltip("Remove the first element from an array")
+            .Inline()
+            .Message("remove first value from %1", PxMaster.Value("LIST", "Array")));
+
+        Add(PxMaster.Define("array_unshift").Output("Number").Colour(Arrays)
+            .Tooltip("Add one element to the beginning of an array and return the new length of the array")
+            .Inline()
+            .Message("%1 insert %2 at beginning", PxMaster.Value("LIST", "Array"), PxMaster.Value("VALUE")));
+
+        Add(PxMaster.Define("array_unshift_statement").Colour(Arrays)
+            .Tooltip("Add one element to the beginning of an array")
+            .Inline()
+            .Message("%1 insert %2 at beginning", PxMaster.Value("LIST", "Array"), PxMaster.Value("VALUE")));
+
+        Add(PxMaster.Define("array_removeat").Output("Any").Colour(Arrays)
+            .Tooltip("Remove and return the element at a certain index (null if there is no value at the index)")
+            .Inline()
+            .Message("%1 get and remove value at %2", PxMaster.Value("LIST", "Array"), PxMaster.Value("INDEX", "Number")));
+
+        Add(PxMaster.Define("array_removeat_statement").Colour(Arrays)
+            .Tooltip("Remove the element at a certain index")
+            .Inline()
+            .Message("%1 remove value at %2", PxMaster.Value("LIST", "Array"), PxMaster.Value("INDEX", "Number")));
+
+        Add(PxMaster.Define("array_insertAt").Colour(Arrays)
+            .Tooltip("Insert the value at a particular index, increases length by 1 (an index beyond the end appends)")
+            .Inline()
+            .Message("%1 insert at %2 value %3",
+                PxMaster.Value("LIST", "Array"), PxMaster.Value("INDEX", "Number"), PxMaster.Value("VALUE")));
+
+        Add(PxMaster.Define("array_pickRandom").Output("Any").Colour(Arrays)
+            .Tooltip("Return a random value from the array (null if the array is empty)")
+            .Inline()
+            .Message("get random value from %1", PxMaster.Value("LIST", "Array")));
+
+        Add(PxMaster.Define("array_reverse").Colour(Arrays)
+            .Tooltip("Reverse the elements in an array: the first element becomes the last, and the last becomes the first")
+            .Inline()
+            .Message("reverse %1", PxMaster.Value("LIST", "Array")));
     }
 
     private void AddVariables()
@@ -278,5 +412,14 @@ public sealed class PxStandardBlocks : PxBlockSet
             .Tooltip("Exit the current function early, optionally returning a value to the caller")
             .Inline()
             .Message("return %1", PxMaster.Value("VALUE")));
+
+        // «if … return …» для функций MakeCode: штатный procedures_ifreturn нельзя
+        // использовать внутри function_definition (warning + disable вне
+        // procedures_def*), поэтому свой блок с той же формой и семантикой.
+        Add(PxMaster.Define("core.functions.if_return").Colour(Functions)
+            .Tooltip("If the value is true, return the value from the function and stop it")
+            .Inline()
+            .Message("if %1 return %2",
+                PxMaster.Value("CONDITION", "Boolean"), PxMaster.Value("VALUE")));
     }
 }

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using Mars.PxBlocks.Runtime.Execution;
 using Mars.PxBlocks.Runtime.Values;
 
@@ -143,5 +144,98 @@ internal sealed class StdTextPrint : PxStatementImplement
     {
         context.Print(call.Input("TEXT").ToText());
         return Task.CompletedTask;
+    }
+}
+
+/// <summary>core.text.substring: семантика MakeCode — старт 0-основный (отрицательный с конца),
+/// длина 0 — до конца, отрицательная — пустая строка.</summary>
+internal sealed class StdTextSubstring : PxExpressionImplement
+{
+    public StdTextSubstring() : base("core.text.substring") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+    {
+        var text = call.Input("VALUE").ToText();
+        var start = (int)call.Input("START").ToNumber();
+        var length = (int)call.Input("LENGTH").ToNumber();
+
+        if (length < 0)
+            return ValueTask.FromResult<PxValue>(PxStringValue.Empty);
+
+        if (start < 0)
+            start = Math.Max(text.Length + start, 0);
+        start = Math.Min(start, text.Length);
+
+        if (length == 0)
+            length = text.Length - start;
+        length = Math.Min(length, text.Length - start);
+
+        return ValueTask.FromResult<PxValue>(new PxStringValue(text.Substring(start, length)));
+    }
+}
+
+internal sealed class StdTextIncludes : PxExpressionImplement
+{
+    public StdTextIncludes() : base("core.text.includes") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+        => ValueTask.FromResult<PxValue>(new PxBooleanValue(
+            call.Input("VALUE").ToText().Contains(call.Input("FIND").ToText(), StringComparison.Ordinal)));
+}
+
+/// <summary>core.text.compare: порядковое сравнение как в MakeCode — -1/0/1.</summary>
+internal sealed class StdTextCompare : PxExpressionImplement
+{
+    public StdTextCompare() : base("core.text.compare") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+        => ValueTask.FromResult<PxValue>(new PxNumberValue(
+            Math.Sign(string.CompareOrdinal(call.Input("A").ToText(), call.Input("B").ToText()))));
+}
+
+internal sealed class StdTextSplit : PxExpressionImplement
+{
+    public StdTextSplit() : base("core.text.split") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+    {
+        var text = call.Input("VALUE").ToText();
+        var separator = call.Input("SEPARATOR").ToText();
+
+        var parts = separator.Length == 0
+            ? text.Select(c => c.ToString())
+            : text.Split(separator).AsEnumerable();
+
+        return ValueTask.FromResult<PxValue>(new PxListValue(
+            parts.Select(p => (PxValue)new PxStringValue(p)).ToList()));
+    }
+}
+
+/// <summary>core.text.parse: семантика parseFloat — число в начале текста, иначе NaN.</summary>
+internal sealed class StdTextParse : PxExpressionImplement
+{
+    public StdTextParse() : base("core.text.parse") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+    {
+        var match = Regex.Match(call.Input("VALUE").ToText().TrimStart(),
+            @"^[+-]?(?:Infinity|NaN|(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)");
+
+        var result = match.Success ? double.Parse(match.Value, CultureInfo.InvariantCulture) : double.NaN;
+        return ValueTask.FromResult<PxValue>(new PxNumberValue(result));
+    }
+}
+
+internal sealed class StdTextCharCode : PxExpressionImplement
+{
+    public StdTextCharCode() : base("core.text.char_code") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+    {
+        var text = call.Input("VALUE").ToText();
+        var index = (int)call.Input("INDEX").ToNumber();
+
+        var result = index >= 0 && index < text.Length ? text[index] : double.NaN;
+        return ValueTask.FromResult<PxValue>(new PxNumberValue(result));
     }
 }

@@ -28,8 +28,8 @@ public class PxTypeRegistry
     };
 
     /// <summary>
-    /// Базовый набор в духе PXT: Boolean → шестиугольник, Number/String → скругление;
-    /// Any и Object — расширения под нашу систему.
+    /// Базовый набор в духе PXT: Boolean → шестиугольник, Number/String → скругление,
+    /// Array → квадрат; Any и Object — расширения под нашу систему.
     /// </summary>
     public static PxTypeRegistry CreateDefault() => new()
     {
@@ -38,6 +38,7 @@ public class PxTypeRegistry
             new PxType { Name = "Boolean", Shape = PxShape.Hexagonal },
             new PxType { Name = "Number" },
             new PxType { Name = "String" },
+            new PxType { Name = "Array", Shape = PxShape.Square },
             new PxType { Name = "Any", CompatibleWith = ["*"] },
             new PxType { Name = "Object", Shape = PxShape.Square }
         ]

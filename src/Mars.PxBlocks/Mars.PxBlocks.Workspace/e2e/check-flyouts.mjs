@@ -26,7 +26,7 @@ const flyoutBlocks = () =>
         .map((el) => el.getAttribute('data-id'))
         .filter(Boolean).length;
 
-for (const category of ['Math', 'Loops', 'Text']) {
+for (const category of ['Math', 'Loops', 'Text', 'Arrays']) {
     await page.click(`.pxb-rail-item:has-text("${category}")`);
     await page.waitForTimeout(600);
     console.log(`${category}: блоков во flyout =`, await page.evaluate(flyoutBlocks));

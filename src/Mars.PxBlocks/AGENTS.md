@@ -26,11 +26,23 @@ PxBlocks — визуальный редактор блоков в духе Micr
   КАЖДЫЙ контекст — редактор не зависит от встроенных определений Blockly).
 - **`пакет.категория.имя`** — блоки хостов: у стенда `demostand.demo.*` и
   `demostand.playwright.*`.
-- Исключения (фаза 2): процедуры `procedures_*` и массивы `lists_*` — пока Blockly-имена
-  (для "Functions" свой flyout-колбэк PROCEDURE в JsSrc/index.ts: штатный набор Blockly +
-  досрочный `procedures_return` (определение в PxStandardBlocks), которого в штатном
-  Blockly нет; для "Variables" свой flyout-колбэк, т.к. штатный хардкодит
-  variables_get/set). Имена мутаторов (controls_if_mutator…) — штатные Blockly, не typeId.
+- Исключение (фаза 2): процедуры `procedures_*` — Blockly-имена, сохранены только ради
+  совместимости сохранённых сценариев; "Functions" с Этапа 14C — редактор функций MakeCode
+  (порт pxtblocks/plugins/functions в JsSrc/functions/: function_definition/call(_output)/
+  argument_reporter_*/function_return с +/−, диалог «Edit Function» без React, flyout-
+  колбэк PROCEDURE — «Make a Function...»); для "Variables" свой flyout-колбэк, т.к.
+  штатный хардкодит variables_get/set.
+  Массивы — набор MakeCode, 0-based (Этап 14B): create_empty/create_with/repeat/length —
+  встроенные Blockly с лейблами MakeCode (оверрайд Blockly.Msg в JsSrc/index.ts; мутатор
+  create_with задаётся в init, серверным JSON не выразим), lists_index_get/
+  lists_index_set/array_indexof — серверные определения PxStandardBlocks; исполнение —
+  StdLists. Имена мутаторов (controls_if_mutator…) — штатные Blockly, не typeId.
+  Функции (Этап 14C): параметры в определении/декларации inline сразу после имени
+  (reorder входов как в commonFunctionMixin PXT); удаление и перемещение параметров
+  в диалоге «Edit Function» — иконками в виджете поля `field_argument_editor` (порт
+  поля PXT + стрелки вверх/вниз); if-return — свой `core.functions.if_return` (штатный
+  `procedures_ifreturn` вне `procedures_def*` вешает warning и disable), return во
+  flyout — с тенью null.
 
 ## Состав
 
@@ -38,8 +50,8 @@ PxBlocks — визуальный редактор блоков в духе Micr
 - `Toolbox/` — `PxToolbox` + `PxToolboxCategory`/`PxToolboxSeparator`/`PxToolboxBlock`;
   `ToJson()` → toolbox JSON Blockly (`custom: VARIABLE/PROCEDURE` — динамические категории).
 - `Types/` — `PxType`/`PxShape`/`PxTypeRegistry`: канонические типы стыковок.
-  Форма по типу: Boolean → шестиугольник, Number/String → скругление, Object → квадрат;
-  `CompatibleWith` (в т.ч. `"*"`) — матрица совместимости.
+  Форма по типу: Boolean → шестиугольник, Number/String → скругление,
+  Object/Array → квадрат; `CompatibleWith` (в т.ч. `"*"`) — матрица совместимости.
 - `Definitions/` — определения блоков: `PxBlockDefinition` (`ToJson()` → Blockly JSON
   definitions: messageN/argsN, output или previous/next statement, extensions, mutator).
   Объявляются fluent-API `PxMaster.Define("id").Message("текст {arg}", PxMaster.Number("arg"))`,
@@ -53,7 +65,10 @@ PxBlocks — визуальный редактор блоков в духе Micr
   в одну строку — `.Inline()` (inputsInline; без него Blockly складывает входы в столбик).
 - `PxEventBlocks` (core.events.start/loop; фабрики CreateStart/CreateLoop) и
   `PxStandardBlocks` (все core.* категории: логика/циклы (в т.ч. pause)/математика
-  (в т.ч. min_max)/текст/переменные (get/set/change) + досрочный `procedures_return`;
+  (в т.ч. min_max и map)/текст (в т.ч. расширения MakeCode: substring/includes/compare/
+  split/parse/char_code)/массивы (lists_index_get/set, array_indexof; остальные —
+  встроенные Blockly, см. фазу 2)/переменные (get/set/change) + досрочный `procedures_return`
+  и `core.functions.if_return` (if-return для новых функций);
   мутаторы — штатные Blockly: controls_if_mutator, text_join_mutator,
   math_is_divisibleby_mutator, text_charAt_mutator — имена сверять с blocks_compressed.js) —
   базовые наборы определений каждого контекста. Блоки с мутаторами, у которых хелпер
@@ -68,7 +83,9 @@ String/Object/List/Null); `Ast/` — узлы программы (каждый �
 `Execution/` — `PxInterpreter` (control flow в ядре: if/циклы/break/процедуры/переменные/
 short-circuit; лимит шагов; события BlockEntered/Exited/Output), `PxContext`,
 `IPxBlockImplement` + `PxBlockImplementsLocator`; `Standard/` — имплементации стандартных
-листьев core.* (математика, логика, текст, `core.text.print`).
+листьев core.* (математика, логика, текст, массивы — `StdLists`, `core.text.print`);
+функции `function_*` — тоже в ядре интерпретатора (рамка скоупа, параметры по id/имени,
+`PxReturnSignal`).
 Точки входа: `PxParser.CreateDefault()`, `PxInterpreter.CreateDefaultImplements()`.
 
 Жизненный цикл имплементаций и состояние запуска (Этап 11, Путь 1):

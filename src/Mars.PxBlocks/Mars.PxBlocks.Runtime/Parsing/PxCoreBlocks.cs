@@ -28,6 +28,24 @@ public static class PxCoreBlocks
     public const string IfReturn = "procedures_ifreturn";
     public const string ProceduresReturn = "procedures_return";
 
+    // Функции MakeCode (порт pxtblocks/plugins/functions, Этап 14C): типизированные
+    // аргументы, имя/параметры — в extraState {name, functionid, arguments:[{id,name,type}]}.
+    public const string FunctionDefinition = "function_definition";
+    public const string FunctionCall = "function_call";
+    public const string FunctionCallOutput = "function_call_output";
+    public const string FunctionReturn = "function_return";
+
+    /// <summary>
+    /// «if … return …» для функций MakeCode (аналог procedures_ifreturn; штатный
+    /// Blockly-блок вне procedures_def* вешает warning и disable, поэтому свой typeId).
+    /// </summary>
+    public const string FunctionsIfReturn = "core.functions.if_return";
+    public const string ArgumentReporterBoolean = "argument_reporter_boolean";
+    public const string ArgumentReporterNumber = "argument_reporter_number";
+    public const string ArgumentReporterString = "argument_reporter_string";
+    public const string ArgumentReporterArray = "argument_reporter_array";
+    public const string ArgumentReporterCustom = "argument_reporter_custom";
+
     public const string LogicOperation = "core.logic.operation";
     public const string LogicTernary = "core.logic.ternary";
     public const string LogicNull = "core.logic.null";

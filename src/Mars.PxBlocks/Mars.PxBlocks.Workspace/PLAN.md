@@ -452,8 +452,69 @@ math_change), `core.loops.pause` ("wait %1 ms", прерывается Stop че
 `core.math.min_max` ("min/max of %1 and %2").
 Проверено: 92/92 теста, tsc+vite, e2e (flyout-ы: Math=11, Loops=6, Functions=4+shadow,
 Variables=3; браузерный сценарий).
-Дальше: расширение текста (substring/includes/split/parse/char code/compare),
-исполнение lists_*, math_map, PXT-редактор функций с типизированными аргументами.
+Дальше: Этап 14 — arrays по MakeCode (14B) и PXT-редактор функций (14C).
+
+### Этап 14 — Parity: расширения текста, массивы по MakeCode, редактор функций PXT
+14A ✅: расширения текста — блоки MakeCode (формулировки и семантика из
+libs/pxt-common/pxt-core.d.ts локального чек-аута PXT) + core.math.map:
+substring («substring of %1 from %2 of length %3», 0-основный старт, отрицательный —
+с конца, длина 0 — до конца, отрицательная — пусто), includes («%1 includes %2»),
+compare («compare %1 to %2», порядковый, -1/0/1), split («split %1 at %2», список;
+пустой разделитель — по символам), parse («parse to number %1», семантика parseFloat),
+char_code («char code from %1 at %2», 0-основный, вне диапазона — NaN);
+map («map %1 from low %2 high %3 to low %4 high %5», без ограничения диапазона).
+Определения в PxStandardBlocks, toolbox со shadow-входами (InputsJson), Std-листы,
+тип Array в реестре стыковок (квадрат). Решения пользователя: функции — порт
+PXT-плагина (14C), массивы — набор MakeCode 0-based (14B).
+Проверено: 95/95 тестов, e2e (flyout Math=17, Text=28 — с учётом shadow; check,
+browser-сценарий).
+14B ✅: Arrays — ПОЛНЫЙ набор MakeCode (19 блоков), 0-based: встроенные
+create_empty («empty array»)/create_with («array of» + шестерёнка)/repeat/length
+(«length of array %1») с лейблами MakeCode через оверрайд Blockly.Msg в JsSrc/index.ts
+(как в PXT lists.ts; мутатор create_with задаётся в init — серверным JSON-определением
+не выразим); серверные определения в PxStandardBlocks: lists_index_get
+(«%1 get value at %2»), lists_index_set («%1 set value at %2 to %3»), array_indexof
+(«%1 find index of %2», -1 если нет) + 12 операций изменения: array_push
+(«%1 add value %2 to end»), array_pop/array_pop_statement («get and remove last value
+from»/«remove last value from»), array_shift/array_shift_statement, array_unshift
+(репортер, новая длина)/array_unshift_statement, array_removeat/array_removeat_statement,
+array_insertAt («%1 insert at %2 value %3»), array_pickRandom («get random value from %1»),
+array_reverse («reverse %1»). Цвет — hue 260 штатных lists-блоков. PxListValue мутабелен
+по ссылке (JS-семантика): SetAt дорастает null-ами, Append/InsertAt/Remove* на пустом —
+null; StdLists. Toolbox со shadow lists_create_empty в списковых входах.
+Sort в общий набор MakeCode НЕ входит (arraySort без block-аннотации, страницы в
+reference/arrays нет) — не добавлен сознательно.
+Проверено: 97/97 тестов, tsc+vite, e2e (flyout Arrays: 19 верхних блоков + shadow;
+check, browser-сценарий).
+14C ✅: редактор функций — порт pxtblocks/plugins/functions (JsSrc/functions/:
+constants/blocks/manager/dialog/duplicateOnDrag): function_definition (hat, имя с
+rename-валидатором, типизированные аргументы с shadow-репортёрами, duplicate-on-drag),
+function_call/function_call_output (typed shadows, авто-создание определения при
+вставке вызова), argument_reporter_*/argument_editor_*, function_declaration,
+function_return с +/−. Диалог «Edit Function» без React: оверлей + мини-воркспейс
+Blockly, кнопки +Number/+Text/+Boolean/+Array, Done/Cancel, валидации MakeCode.
+Flyout «Functions»: «Make a Function...», return, «Your Functions» + call-блоки
+(+call_output, если функция возвращает). Сериализация extraState
+{name, functionid, arguments:[{id,name,type}]} — её же ест Runtime: парсер/
+интерпретатор function_* (рамка скоупа, параметры по id и имени, дефолты по типам,
+PxReturnSignal), procedures_* сохранены для старых сценариев.
+Доработка 14C (по замечаниям): аргументы в определении/декларации идут inline
+сразу после имени — setInputsInline(true) + reorder входов из commonFunctionMixin
+(VALUE-входы в порядке arguments_ сразу после имени, STACK в конец). Поле параметра
+в диалоге — field_argument_editor (порт fields/fieldArgumentEditor.ts PXT,
+JsSrc/functions/fieldArgumentEditor.ts): клик по полю открывает виджет с корзинкой
+(удалить параметр) и стрелками вверх/вниз (переместить в сигнатуре через
+moveInputBefore; в PXT перемещения не было — наше дополнение).
+Возврат утраченного при порте набора («меньше нельзя»): return во flyout
+Functions — с тенью null, как в прежнем flyout процедур (в PXT — числовая 0,
+выбран вариант пользователя); if-return — свой блок core.functions.if_return
+(«if %1 return %2», определение PxStandardBlocks, парсер ест и старый
+procedures_ifreturn: штатный Blockly-блок вне procedures_def* вешает warning
+и дизейблится, поэтому не пригоден внутри function_definition). Тест
+Functions_IfReturnBlock_ReturnsOnlyWhenTrue.
+Проверено: 100/100 тестов, tsc+vite, e2e check-functions.mjs (flyout → диалог →
+два параметра → перемещение и удаление иконками виджета → создание функции →
+call во flyout), check/check-flyouts/check-browser.
 
 ## Что делаем со старым кодом
 - **Удаляем** (свой рендеринг, заменён Blockly): PxWorkspace.razor, PxBlockComponent.razor,

@@ -68,7 +68,12 @@ public static class PxDefaultToolbox
                     B("core.math.modulo"),
                     B("core.math.random_int"),
                     B("core.math.random_float"),
-                    B("core.math.min_max")
+                    B("core.math.min_max"),
+                    new PxToolboxBlock
+                    {
+                        Type = "core.math.map",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}},"FROM_LOW":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}},"FROM_HIGH":{"shadow":{"type":"core.math.number","fields":{"NUM":1023}}},"TO_LOW":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}},"TO_HIGH":{"shadow":{"type":"core.math.number","fields":{"NUM":4}}}}"""
+                    }
                 ]
             },
             new PxToolboxCategory
@@ -86,25 +91,107 @@ public static class PxDefaultToolbox
                     B("core.text.char_at"),
                     B("core.text.change_case"),
                     B("core.text.trim"),
+                    new PxToolboxBlock
+                    {
+                        Type = "core.text.substring",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}},"START":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}},"LENGTH":{"shadow":{"type":"core.math.number","fields":{"NUM":1}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "core.text.includes",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}},"FIND":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "core.text.compare",
+                        InputsJson = """{"A":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}},"B":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "core.text.split",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}},"SEPARATOR":{"shadow":{"type":"core.text.text","fields":{"TEXT":","}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "core.text.parse",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":"123"}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "core.text.char_code",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}},"INDEX":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}}}"""
+                    },
                     B("core.text.print")
                 ]
             },
             new PxToolboxCategory
             {
+                // Набор MakeCode (0-based): create_empty/create_with/repeat/length —
+                // встроенные блоки Blockly с Msg-лейблами MakeCode (JsSrc/index.ts),
+                // get/set/indexof — серверные определения PxStandardBlocks.
                 Name = "Arrays", Colour = "#5C2D91", Icon = "arrays",
                 Items =
                 [
                     H("Arrays"),
+                    B("lists_create_empty"),
                     B("lists_create_with"),
                     B("lists_repeat"),
-                    B("lists_length"),
-                    B("lists_isEmpty"),
-                    B("lists_indexOf"),
-                    B("lists_getIndex"),
-                    B("lists_setIndex"),
-                    B("lists_getSublist"),
-                    B("lists_split"),
-                    B("lists_sort")
+                    new PxToolboxBlock
+                    {
+                        Type = "lists_length",
+                        InputsJson = """{"VALUE":{"shadow":{"type":"lists_create_empty"}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_indexof",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "lists_index_get",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"INDEX":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "lists_index_set",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"INDEX":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}},"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_push",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock { Type = "array_pop", InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}}}""" },
+                    new PxToolboxBlock { Type = "array_pop_statement", InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}}}""" },
+                    new PxToolboxBlock { Type = "array_shift", InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}}}""" },
+                    new PxToolboxBlock { Type = "array_shift_statement", InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}}}""" },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_unshift",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_unshift_statement",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_insertAt",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"INDEX":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}},"VALUE":{"shadow":{"type":"core.text.text","fields":{"TEXT":""}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_removeat",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"INDEX":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}}}"""
+                    },
+                    new PxToolboxBlock
+                    {
+                        Type = "array_removeat_statement",
+                        InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}},"INDEX":{"shadow":{"type":"core.math.number","fields":{"NUM":0}}}}"""
+                    },
+                    new PxToolboxBlock { Type = "array_pickRandom", InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}}}""" },
+                    new PxToolboxBlock { Type = "array_reverse", InputsJson = """{"LIST":{"shadow":{"type":"lists_create_empty"}}}""" }
                 ]
             },
             new PxToolboxSeparator(),

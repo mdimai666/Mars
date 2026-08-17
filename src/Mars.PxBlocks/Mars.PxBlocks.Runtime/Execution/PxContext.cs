@@ -16,6 +16,8 @@ public sealed class PxContext
     internal PxScope Global { get; }
     internal PxBlockImplementsLocator Implements { get; }
     internal Dictionary<string, PxProcedureDef> Procedures { get; } = new(StringComparer.Ordinal);
+
+    internal Dictionary<string, PxFunctionDef> Functions { get; } = new(StringComparer.Ordinal);
     internal Action<PxExecutionEvent>? RaiseEvent { get; set; }
 
     public CancellationToken CancellationToken { get; }
@@ -77,6 +79,9 @@ public sealed class PxContext
 
         foreach (var procedure in program.Procedures)
             Procedures[procedure.Name] = procedure;
+
+        foreach (var function in program.Functions)
+            Functions[function.Name] = function;
     }
 
     /// <summary>Состояние запуска в типе домена; отсутствует/другой тип — ошибка исполнения.</summary>

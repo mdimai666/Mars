@@ -26,7 +26,7 @@ public sealed class PxStepLimitExceededException : PxRuntimeException
     public long Steps { get; }
 
     public PxStepLimitExceededException(string? blockId, long steps)
-        : base($"Превышен лимит шагов исполнения ({steps})", blockId)
+        : base($"Execution step limit exceeded ({steps})", blockId)
         => Steps = steps;
 }
 

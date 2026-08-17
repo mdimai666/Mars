@@ -84,7 +84,7 @@ public sealed class PxDemoCreateObjectImplement : IPxExpressionImplement
                 continue;
 
             var index = name[ValuePrefix.Length..];
-            var key = call.FieldText($"{KeyPrefix}{index}", $"поле{index}");
+            var key = call.FieldText($"{KeyPrefix}{index}", $"field{index}");
             members[key] = call.Inputs[name];
         }
 

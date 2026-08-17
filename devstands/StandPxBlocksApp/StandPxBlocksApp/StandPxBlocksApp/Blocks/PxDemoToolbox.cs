@@ -7,10 +7,10 @@ public static class PxDemoToolbox
 {
     public static PxToolboxCategory CreateCategory() => new()
     {
-        Name = "Тест типов", Colour = "#607D8B", Icon = "flask", Advanced = true,
+        Name = "Type test", Colour = "#607D8B", Icon = "flask", Advanced = true,
         Items =
         [
-            new PxToolboxLabel { Text = "Тест типов", WebClass = "blocklyFlyoutHeading" },
+            new PxToolboxLabel { Text = "Type test", WebClass = "blocklyFlyoutHeading" },
             new PxToolboxBlock { Type = "demostand.demo.create_object" },
             new PxToolboxBlock { Type = "demostand.demo.number" },
             new PxToolboxBlock { Type = "demostand.demo.string" },

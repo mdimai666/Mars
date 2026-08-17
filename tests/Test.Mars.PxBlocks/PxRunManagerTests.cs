@@ -246,7 +246,7 @@ public class PxRunManagerTests
         Assert.True(response.Started);
         var result = await broadcaster.Finished.WaitAsync(TimeSpan.FromSeconds(10));
         Assert.False(result.Success);
-        Assert.Contains("лимит шагов", result.ErrorMessage);
+        Assert.Contains("step limit", result.ErrorMessage);
         Assert.Equal(0, manager.ActiveRunCount);
     }
 

@@ -14,16 +14,16 @@ public class PxToolboxTests
             [
                 new PxToolboxCategory
                 {
-                    Name = "Логика",
+                    Name = "Logic",
                     Colour = "#006C9E",
                     Items =
                     [
-                        new PxToolboxLabel { Text = "Логика", WebClass = "blocklyFlyoutHeading" },
+                        new PxToolboxLabel { Text = "Logic", WebClass = "blocklyFlyoutHeading" },
                         new PxToolboxBlock { Type = "core.logic.if" }
                     ]
                 },
                 new PxToolboxSeparator { Colour = "#808080" },
-                new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Custom = "VARIABLE" }
+                new PxToolboxCategory { Name = "Variables", Colour = "#A80000", Custom = "VARIABLE" }
             ]
         };
 
@@ -36,14 +36,14 @@ public class PxToolboxTests
 
         var logic = contents[0]!.AsObject();
         Assert.Equal("category", (string)logic["kind"]!);
-        Assert.Equal("Логика", (string)logic["name"]!);
+        Assert.Equal("Logic", (string)logic["name"]!);
         Assert.Equal("#006C9E", (string)logic["colour"]!);
 
         var blocks = logic["contents"]!.AsArray();
 
         var heading = blocks[0]!.AsObject();
         Assert.Equal("label", (string)heading["kind"]!);
-        Assert.Equal("Логика", (string)heading["text"]!);
+        Assert.Equal("Logic", (string)heading["text"]!);
         Assert.Equal("blocklyFlyoutHeading", (string)heading["web-class"]!);
 
         Assert.Equal("block", (string)blocks[1]!["kind"]!);

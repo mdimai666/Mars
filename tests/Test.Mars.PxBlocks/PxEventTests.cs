@@ -119,7 +119,7 @@ public class PxEventTests
 
         Assert.False(result.Success);
         Assert.Equal("pt", result.ErrorBlockId); // лимит превышен на блоке тела цикла
-        Assert.Contains("лимит", result.ErrorMessage);
+        Assert.Contains("step limit", result.ErrorMessage);
     }
 
     [Fact]

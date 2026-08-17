@@ -21,15 +21,16 @@ PxBlocks — визуальный редактор блоков в духе Micr
 Трёхуровневые имена `уровень.категория.имя`:
 - **`core.категория.имя`** — встроенные блоки библиотеки: события `core.events.start/loop`,
   стандартные категории языка `core.logic.*`, `core.loops.*`, `core.math.*`, `core.text.*`,
-  `core.variables.get/set` (определения — `PxEventBlocks`/`PxStandardBlocks` в Shared,
+  `core.variables.get/set/change` (определения — `PxEventBlocks`/`PxStandardBlocks` в Shared,
   исполнение — ядро PxInterpreter/PxParser + листья `Standard/`; сервер отдаёт их в
   КАЖДЫЙ контекст — редактор не зависит от встроенных определений Blockly).
 - **`пакет.категория.имя`** — блоки хостов: у стенда `demostand.demo.*` и
   `demostand.playwright.*`.
 - Исключения (фаза 2): процедуры `procedures_*` и массивы `lists_*` — пока Blockly-имена
-  (динамический тулбокс «Функции» и механика Blockly; для «Переменных» свой flyout-колбэк
-  в JsSrc/index.ts, т.к. штатный хардкодит variables_get/set). Имена мутаторов
-  (controls_if_mutator…) — штатные Blockly, не typeId.
+  (для "Functions" свой flyout-колбэк PROCEDURE в JsSrc/index.ts: штатный набор Blockly +
+  досрочный `procedures_return` (определение в PxStandardBlocks), которого в штатном
+  Blockly нет; для "Variables" свой flyout-колбэк, т.к. штатный хардкодит
+  variables_get/set). Имена мутаторов (controls_if_mutator…) — штатные Blockly, не typeId.
 
 ## Состав
 
@@ -51,7 +52,8 @@ PxBlocks — визуальный редактор блоков в духе Micr
   `PxStatementInput`/`PxMaster.Do` (входы с `Check`). Блокам с несколькими value-входами
   в одну строку — `.Inline()` (inputsInline; без него Blockly складывает входы в столбик).
 - `PxEventBlocks` (core.events.start/loop; фабрики CreateStart/CreateLoop) и
-  `PxStandardBlocks` (все core.* категории: логика/циклы/математика/текст/переменные;
+  `PxStandardBlocks` (все core.* категории: логика/циклы (в т.ч. pause)/математика
+  (в т.ч. min_max)/текст/переменные (get/set/change) + досрочный `procedures_return`;
   мутаторы — штатные Blockly: controls_if_mutator, text_join_mutator,
   math_is_divisibleby_mutator, text_charAt_mutator — имена сверять с blocks_compressed.js) —
   базовые наборы определений каждого контекста. Блоки с мутаторами, у которых хелпер
@@ -94,8 +96,8 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
     `shapeFor()` дополнен чтением форм из реестра типов;
   - `connectionChecker.ts` — `PxConnectionChecker extends Blockly.ConnectionChecker`,
     зарегистрирован как `pxt`, включён опцией `plugins: { connectionChecker: 'pxt' }`;
-  - `extensions/objectBuilder.ts` — mutator «создать объект»: кнопка «+» добавляет пары
-    поле→значение, состояние через `saveExtraState/loadExtraState`.
+  - `extensions/objectBuilder.ts` — mutator "create object": кнопка «+» добавляет пары
+    field→value, состояние через `saveExtraState/loadExtraState`.
 - `PxBlocksWorkspace.razor` — **полотно**: inject, параметры `OptionsJson`/`Toolbox`/`Types`/
   `BlockDefinitions`, события `OnReady`/`OnWorkspaceChanged`, примитивы `SaveAsync`/`LoadAsync`/
   `ClearAsync`/`UndoAsync`/`RedoAsync`.
@@ -112,7 +114,7 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
   или на сервере (`RunTransport`, `RunMode`/`RunEventNames`). Единственный редактор,
   запускающий полный JSON программы из браузера.
 - `PxToolboxRail.razor` — рейка категорий в стиле MakeCode: иконки (inline SVG), поиск
-  (дебаунс 250 мс, временная flyout-категория «Поиск»), экспандер Advanced; выбранная
+  (дебаунс 250 мс, временная flyout-категория "Search"), экспандер Advanced; выбранная
   категория заливается своим цветом; клик по выбранной закрывает flyout. Компактный
   режим (CSS, `data-rail` на корне редактора): Auto — container queries, при ширине
   ≤560px только иконки + поиск-кнопка со всплывающим полем; Compact — то же всегда.
@@ -125,8 +127,8 @@ short-circuit; лимит шагов; события BlockEntered/Exited/Output)
   замеры ширины svg/контейнеров + скриншоты (initial/category/resized).
 - `e2e/check-browser.mjs` — проверка страницы `/browser`: загрузить пример, нажать Run,
   дождаться вывода (сценарий при этом реально открывает серверный Edge с Википедией).
-- `e2e/check-flyouts.mjs` — flyout-ы стандартных категорий (Математика с мутаторами,
-  Переменные со своим колбэком и созданием переменной через DOM-диалог Blockly 13).
+- `e2e/check-flyouts.mjs` — flyout-ы стандартных категорий (Math с мутаторами,
+  Variables со своим колбэком и созданием переменной через DOM-диалог Blockly 13).
 - npm-инфраструктура: `package.json` (blockly 13.1.1), `vite.config.js` (lib → ESM),
   `tsconfig.json`, `copy-media.mjs` (media blockly → wwwroot/media).
 

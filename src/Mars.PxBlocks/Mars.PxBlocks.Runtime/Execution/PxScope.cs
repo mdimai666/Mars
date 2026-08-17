@@ -29,7 +29,7 @@ internal sealed class PxScope
     public PxValue Get(string variableId)
         => TryGet(variableId, out var value)
             ? value
-            : throw new PxRuntimeException($"Переменная не найдена (id={variableId})");
+            : throw new PxRuntimeException($"Variable not found (id={variableId})");
 
     /// <summary>Привязка в текущей рамке (параметры функций).</summary>
     public void Define(string variableId, PxValue value) => _variables[variableId] = value;

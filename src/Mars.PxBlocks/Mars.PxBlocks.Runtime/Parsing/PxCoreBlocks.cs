@@ -19,12 +19,14 @@ public static class PxCoreBlocks
 
     public const string VariablesGet = "core.variables.get";
     public const string VariablesSet = "core.variables.set";
+    public const string VariablesChange = "core.variables.change";
 
     public const string ProceduresDefNoReturn = "procedures_defnoreturn";
     public const string ProceduresDefReturn = "procedures_defreturn";
     public const string ProceduresCallNoReturn = "procedures_callnoreturn";
     public const string ProceduresCallReturn = "procedures_callreturn";
     public const string IfReturn = "procedures_ifreturn";
+    public const string ProceduresReturn = "procedures_return";
 
     public const string LogicOperation = "core.logic.operation";
     public const string LogicTernary = "core.logic.ternary";

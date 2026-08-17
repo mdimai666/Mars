@@ -48,7 +48,7 @@ public sealed class PxRunManager : IPxRunManager
                 return new PxRunResponse
                 {
                     Started = false,
-                    ErrorMessage = $"Контекст «{request.ContextName}» не зарегистрирован"
+                    ErrorMessage = $"Context '{request.ContextName}' is not registered"
                 };
             }
         }
@@ -74,7 +74,7 @@ public sealed class PxRunManager : IPxRunManager
             return new PxRunResponse
             {
                 Started = false,
-                ErrorMessage = $"Некорректный JSON workspace: {exception.Message}"
+                ErrorMessage = $"Invalid workspace JSON: {exception.Message}"
             };
         }
 
@@ -89,7 +89,7 @@ public sealed class PxRunManager : IPxRunManager
             return new PxRunResponse
             {
                 Started = false,
-                ErrorMessage = $"Начальные переменные: {exception.Message}"
+                ErrorMessage = $"Initial variables: {exception.Message}"
             };
         }
 
@@ -100,7 +100,7 @@ public sealed class PxRunManager : IPxRunManager
         {
             session.Dispose();
             DisposeState(state);
-            return new PxRunResponse { Started = false, ErrorMessage = $"Запуск {runId} уже активен" };
+            return new PxRunResponse { Started = false, ErrorMessage = $"Run {runId} is already active" };
         }
 
         _ = Task.Run(() => ExecuteAsync(session, program, request, context, state, initialVariables));

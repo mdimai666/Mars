@@ -27,7 +27,7 @@ internal sealed class StdTextAppend : PxStatementImplement
     public override Task ExecuteAsync(PxContext context, PxCall call)
     {
         var variableId = call.FieldVariable("VAR")
-            ?? throw new PxRuntimeException("«Добавить текст» без переменной", call.BlockId);
+            ?? throw new PxRuntimeException("'append text' without a variable", call.BlockId);
 
         var current = context.GetVariable(variableId);
         context.SetVariable(variableId, new PxStringValue(current.ToText() + call.Input("TEXT").ToText()));

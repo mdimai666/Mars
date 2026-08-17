@@ -16,22 +16,22 @@ public sealed class PxBrowserBlocks : PxBlockSet
     public PxBrowserBlocks()
     {
         Add(PxMaster.Define("demostand.playwright.goto").Colour(Colour)
-            .Tooltip("Открыть страницу по URL и дождаться её загрузки")
-            .Message("открыть страницу {URL}", PxMaster.Value("URL", "String")));
+            .Tooltip("Open a page by URL and wait for it to load")
+            .Message("open page {URL}", PxMaster.Value("URL", "String")));
 
         Add(PxMaster.Define("demostand.playwright.click").Colour(Colour)
-            .Tooltip("Клик по первому элементу, найденному по селектору")
-            .Message("кликнуть по селектору {SELECTOR}", PxMaster.Value("SELECTOR", "String")));
+            .Tooltip("Click the first element matching the selector")
+            .Message("click {SELECTOR}", PxMaster.Value("SELECTOR", "String")));
 
         Add(PxMaster.Define("demostand.playwright.type").Colour(Colour)
-            .Tooltip("Ввести текст в поле (input/textarea) по селектору")
-            .Message("ввести текст {TEXT} в поле {SELECTOR}",
+            .Tooltip("Type text into a field (input/textarea) by selector")
+            .Message("type {TEXT} into {SELECTOR}",
                 PxMaster.Value("TEXT", "String"),
                 PxMaster.Value("SELECTOR", "String")));
 
         Add(PxMaster.Define("demostand.playwright.press").Colour(Colour)
-            .Tooltip("Нажать клавишу на клавиатуре")
-            .Message("нажать клавишу {KEY}", PxMaster.Dropdown("KEY",
+            .Tooltip("Press a keyboard key")
+            .Message("press key {KEY}", PxMaster.Dropdown("KEY",
                 ("Enter", "Enter"),
                 ("Tab", "Tab"),
                 ("Escape", "Escape"),
@@ -41,24 +41,24 @@ public sealed class PxBrowserBlocks : PxBlockSet
                 ("ArrowUp", "ArrowUp"))));
 
         Add(PxMaster.Define("demostand.playwright.wait_selector").Colour(Colour)
-            .Tooltip("Дождаться появления элемента по селектору (таймаут 15 секунд)")
-            .Message("ждать элемент {SELECTOR}", PxMaster.Value("SELECTOR", "String")));
+            .Tooltip("Wait for an element matching the selector to appear (15 second timeout)")
+            .Message("wait for {SELECTOR}", PxMaster.Value("SELECTOR", "String")));
 
         Add(PxMaster.Define("demostand.playwright.wait_ms").Colour(Colour)
-            .Tooltip("Пауза в миллисекундах")
-            .Message("ждать {MS} мс", PxMaster.Number("MS", 500, min: 0)));
+            .Tooltip("Pause in milliseconds")
+            .Message("wait {MS} ms", PxMaster.Number("MS", 500, min: 0)));
 
         Add(PxMaster.Define("demostand.playwright.get_text").Output("String").Colour(Colour)
-            .Tooltip("Текст первого элемента, найденного по селектору")
-            .Message("текст элемента по селектору {SELECTOR}", PxMaster.Value("SELECTOR", "String")));
+            .Tooltip("Text of the first element matching the selector")
+            .Message("text of {SELECTOR}", PxMaster.Value("SELECTOR", "String")));
 
         Add(PxMaster.Define("demostand.playwright.eval_js").Output("Any").Colour(Colour)
-            .Tooltip("Выполнить JavaScript на странице и вернуть результат")
-            .Message("выполнить JavaScript {CODE}", PxMaster.Text("CODE", "document.title")));
+            .Tooltip("Run JavaScript on the page and return the result")
+            .Message("evaluate JavaScript {CODE}", PxMaster.Text("CODE", "document.title")));
 
         Add(PxMaster.Define("demostand.playwright.print_texts").Colour(Colour)
-            .Tooltip("Вывести в консоль тексты первых N элементов по селектору")
-            .Message("вывести первые {COUNT} текстов по селектору {SELECTOR}",
+            .Tooltip("Print the texts of the first N elements matching the selector")
+            .Message("print first {COUNT} texts of {SELECTOR}",
                 PxMaster.Number("COUNT", 3, min: 1),
                 PxMaster.Value("SELECTOR", "String")));
     }

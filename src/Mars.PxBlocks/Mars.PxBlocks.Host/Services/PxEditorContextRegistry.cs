@@ -19,7 +19,7 @@ public sealed class PxEditorContextRegistry : IPxEditorContextRegistry
     public void Register(PxEditorContext context)
     {
         if (!_byName.TryAdd(context.Name, context))
-            throw new InvalidOperationException($"PxEditorContext «{context.Name}» уже зарегистрирован");
+            throw new InvalidOperationException($"PxEditorContext '{context.Name}' is already registered");
 
         _contexts.Add(context);
     }

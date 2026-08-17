@@ -20,14 +20,14 @@ public sealed class PwGotoImplement(PxBrowserRunState state) : IPxStatementImple
     {
         var url = TextInput(call, "URL");
         var page = await state.GetPageAsync();
-        context.Print($"→ открываю страницу {url}");
+        context.Print($"→ opening page {url}");
         try
         {
             await page.GotoAsync(url);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Не удалось открыть страницу {url}", exception);
+            throw Fail(call, $"Failed to open page {url}", exception);
         }
     }
 }
@@ -40,14 +40,14 @@ public sealed class PwClickImplement(PxBrowserRunState state) : IPxStatementImpl
     {
         var selector = TextInput(call, "SELECTOR");
         var page = await state.GetPageAsync();
-        context.Print($"→ клик по селектору {selector}");
+        context.Print($"→ clicking {selector}");
         try
         {
             await page.ClickAsync(selector);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Клик по селектору {selector} не выполнен", exception);
+            throw Fail(call, $"Click on {selector} failed", exception);
         }
     }
 }
@@ -61,14 +61,14 @@ public sealed class PwTypeImplement(PxBrowserRunState state) : IPxStatementImple
         var text = TextInput(call, "TEXT");
         var selector = TextInput(call, "SELECTOR");
         var page = await state.GetPageAsync();
-        context.Print($"→ ввожу «{text}» в {selector}");
+        context.Print($"→ typing '{text}' into {selector}");
         try
         {
             await page.FillAsync(selector, text);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Ввод текста в {selector} не выполнен", exception);
+            throw Fail(call, $"Typing into {selector} failed", exception);
         }
     }
 }
@@ -81,14 +81,14 @@ public sealed class PwPressImplement(PxBrowserRunState state) : IPxStatementImpl
     {
         var key = call.FieldText("KEY", "Enter");
         var page = await state.GetPageAsync();
-        context.Print($"→ клавиша {key}");
+        context.Print($"→ key {key}");
         try
         {
             await page.Keyboard.PressAsync(key);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Нажатие клавиши {key} не выполнено", exception);
+            throw Fail(call, $"Key press {key} failed", exception);
         }
     }
 }
@@ -101,14 +101,14 @@ public sealed class PwWaitSelectorImplement(PxBrowserRunState state) : IPxStatem
     {
         var selector = TextInput(call, "SELECTOR");
         var page = await state.GetPageAsync();
-        context.Print($"→ жду элемент {selector}");
+        context.Print($"→ waiting for {selector}");
         try
         {
             await page.WaitForSelectorAsync(selector);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Элемент {selector} не появился", exception);
+            throw Fail(call, $"Element {selector} did not appear", exception);
         }
     }
 }
@@ -121,7 +121,7 @@ public sealed class PwWaitMsImplement : IPxStatementImplement
     public async Task ExecuteAsync(PxContext context, PxCall call)
     {
         var milliseconds = Math.Max(0, (int)call.FieldNumber("MS", 500));
-        context.Print($"→ жду {milliseconds} мс");
+        context.Print($"→ waiting {milliseconds} ms");
         // С токеном запуска — Stop прерывает паузу сразу, не дожидаясь конца.
         await Task.Delay(milliseconds, context.CancellationToken);
     }
@@ -138,12 +138,12 @@ public sealed class PwGetTextImplement(PxBrowserRunState state) : IPxExpressionI
         try
         {
             var text = await page.InnerTextAsync(selector);
-            context.Print($"→ текст {selector}: {Truncate(text)}");
+            context.Print($"→ text of {selector}: {Truncate(text)}");
             return new PxStringValue(text);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Текст элемента {selector} не получен", exception);
+            throw Fail(call, $"Text of element {selector} was not retrieved", exception);
         }
     }
 }
@@ -156,7 +156,7 @@ public sealed class PwEvalJsImplement(PxBrowserRunState state) : IPxExpressionIm
     {
         var code = call.FieldText("CODE");
         if (string.IsNullOrWhiteSpace(code))
-            throw new PxRuntimeException("Пустой код JavaScript", call.BlockId);
+            throw new PxRuntimeException("Empty JavaScript code", call.BlockId);
 
         var page = await state.GetPageAsync();
         try
@@ -168,7 +168,7 @@ public sealed class PwEvalJsImplement(PxBrowserRunState state) : IPxExpressionIm
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, "Ошибка выполнения JavaScript", exception);
+            throw Fail(call, "JavaScript execution failed", exception);
         }
     }
 }
@@ -182,13 +182,13 @@ public sealed class PwPrintTextsImplement(PxBrowserRunState state) : IPxStatemen
         var count = Math.Max(1, (int)call.FieldNumber("COUNT", 3));
         var selector = TextInput(call, "SELECTOR");
         var page = await state.GetPageAsync();
-        context.Print($"→ первые {count} текстов по селектору {selector}:");
+        context.Print($"→ first {count} texts of {selector}:");
         try
         {
             var elements = await page.QuerySelectorAllAsync(selector);
             if (elements.Count == 0)
             {
-                context.Print("ничего не найдено");
+                context.Print("nothing found");
                 return;
             }
 
@@ -201,7 +201,7 @@ public sealed class PwPrintTextsImplement(PxBrowserRunState state) : IPxStatemen
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            throw Fail(call, $"Тексты по селектору {selector} не получены", exception);
+            throw Fail(call, $"Texts of {selector} were not retrieved", exception);
         }
     }
 }
@@ -213,7 +213,7 @@ internal static class PxBrowserImplementHelpers
     public static string TextInput(PxCall call, string inputName)
     {
         if (!call.Inputs.TryGetValue(inputName, out var value))
-            throw new PxRuntimeException($"Подключите строку к входу «{inputName}»", call.BlockId);
+            throw new PxRuntimeException($"Connect a string to the '{inputName}' input", call.BlockId);
         return value.ToText();
     }
 

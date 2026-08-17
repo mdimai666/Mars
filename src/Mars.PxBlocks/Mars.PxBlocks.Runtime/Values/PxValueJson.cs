@@ -37,10 +37,10 @@ public static class PxValueJson
                     return new PxNumberValue(number);
                 if (jsonValue.TryGetValue(out string? text))
                     return new PxStringValue(text ?? "");
-                throw new InvalidOperationException($"неподдерживаемое JSON-значение: {jsonValue.ToJsonString()}");
+                throw new InvalidOperationException($"Unsupported JSON value: {jsonValue.ToJsonString()}");
 
             default:
-                throw new InvalidOperationException($"неподдерживаемый JSON-узел: {node.ToJsonString()}");
+                throw new InvalidOperationException($"Unsupported JSON node: {node.ToJsonString()}");
         }
     }
 }

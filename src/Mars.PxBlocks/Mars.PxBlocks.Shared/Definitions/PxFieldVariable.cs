@@ -12,7 +12,7 @@ public class PxFieldVariable : PxArg
     public override string Name { get; set; } = "";
 
     /// <summary>Имя переменной по умолчанию (создаётся при первом использовании блока).</summary>
-    public string Variable { get; set; } = "элемент";
+    public string Variable { get; set; } = "item";
 
     internal override JsonNode ToJsonNode() => new JsonObject
     {

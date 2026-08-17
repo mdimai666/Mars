@@ -26,11 +26,11 @@ public sealed class PxBlockImplementsLocator
     public void Register(Type type)
     {
         if (!typeof(IPxBlockImplement).IsAssignableFrom(type) || type.IsAbstract || type.IsInterface)
-            throw new ArgumentException($"Тип '{type.Name}' не является реализацией IPxBlockImplement", nameof(type));
+            throw new ArgumentException($"Type '{type.Name}' is not an IPxBlockImplement implementation", nameof(type));
 
         var typeId = ProbeTypeId(type);
         if (string.IsNullOrEmpty(typeId))
-            throw new InvalidOperationException($"Реализация '{type.Name}': не удалось прочитать TypeId при регистрации");
+            throw new InvalidOperationException($"Implementation '{type.Name}': failed to read TypeId during registration");
 
         _types[typeId] = type;
     }
@@ -91,7 +91,7 @@ public sealed class PxBlockImplementsLocator
     public IPxBlockImplement Create(string typeId, object? state = null)
     {
         if (!_types.TryGetValue(typeId, out var type))
-            throw new InvalidOperationException($"Реализация '{typeId}' не зарегистрирована");
+            throw new InvalidOperationException($"Implementation '{typeId}' is not registered");
 
         if (state != null)
         {
@@ -109,6 +109,6 @@ public sealed class PxBlockImplementsLocator
             return (IPxBlockImplement)Activator.CreateInstance(type)!;
 
         throw new InvalidOperationException(
-            $"Реализация '{typeId}': нет конструктора без параметров или с параметром состояния запуска");
+            $"Implementation '{typeId}': no parameterless constructor or constructor with a run-state parameter");
     }
 }

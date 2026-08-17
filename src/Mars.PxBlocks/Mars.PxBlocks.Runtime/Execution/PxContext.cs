@@ -82,7 +82,7 @@ public sealed class PxContext
     /// <summary>Состояние запуска в типе домена; отсутствует/другой тип — ошибка исполнения.</summary>
     public T GetState<T>() => State is T typed
         ? typed
-        : throw new PxRuntimeException($"Состояние запуска не задано или не является '{typeof(T).Name}'");
+        : throw new PxRuntimeException($"Run state is not set or is not of type '{typeof(T).Name}'");
 
     /// <summary>
     /// Имплементация блока для этого запуска: экземпляр создаётся при первом

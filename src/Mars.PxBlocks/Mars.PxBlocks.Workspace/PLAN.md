@@ -51,7 +51,7 @@
   форма — визуальное следствие.
 
 ### Объекты с множеством полей (этап 5)
-- Mutator-блок «создать объект» с раскладывающимися строками `поле → значение`
+- Mutator-блок "create object" с раскладывающимися строками `field → value`
   (паттерн стандартных mutators Blockly).
 - Rich field editor: клик по полю → форма-оверлей (Blazor-компонент).
 
@@ -126,7 +126,7 @@ devstands/StandPxBlocksApp/       # уже есть — стенд для про
 
 ### Этап 2 — Toolbox и базовые блоки ✅
 Модель toolbox в Shared → toolbox JSON Blockly; категории как в MakeCode
-(Основное/Циклы/Логика/Математика/Переменные/Текст и т.д.); стандартные блоки.
+(Basic/Loops/Logic/Math/Variables/Text и т.д.); стандартные блоки.
 ✅ Drag из flyout, стыковка next/value/statement, удаление, trashcan.
 
 ### Этап 3 — Полный редактор ✅
@@ -141,7 +141,7 @@ Save/load (`Blockly.serialization` + localStorage), undo/redo, zoom-контро
 
 ### Этап 5 — Определения блоков и объекты ✅
 Определения блоков — классы C# наследованием (`PxBlockDefinition` → Blockly JSON);
-блок «создать объект» с динамическими парами поле→значение (расширение Blockly,
+блок "create object" с динамическими парами field→value (расширение Blockly,
 save/load через extraState).
 
 ### Этап 5.1 — Эргономика объявлений ✅
@@ -174,7 +174,7 @@ fluent-API `PxMaster.Define("id")…` (аналог аннотаций на фу
 экспандер Advanced; «more» как в MakeCode не воспроизводился), `PxToolboxLabel`
 (kind=label + web-class), тёмный flyout и стили рейки в `wwwroot/pxblocks.css`
 (подключается из `index.ts`), interop `selectCategory`/`clearToolboxSelection`,
-нативное меню категорий скрыто CSS. Поиск — временная категория «Поиск»
+нативное меню категорий скрыто CSS. Поиск — временная категория "Search"
 (совпадение по имени категории или типу блока). Клик по выбранной категории
 закрывает flyout. Категории: `Blocks` → `Items` (блоки + метки), `Icon`/`Advanced`.
 
@@ -252,7 +252,7 @@ break/continue, процедуры с параметрами и рекурсие
 гарантированно после Start независимо от раскладки на полотне. В режиме по умолчанию
 Loop тоже всегда после всех (включая Start). В редакторе лимит шагов снят (`StepLimit=0` —
 бесконечный loop живёт до Stop), вывод ограничен 1000 строк. Тулбокс: категория
-«Основное» (иконка-флаг в рейке). Тесты — 58 шт.
+"Basic" (иконка-флаг в рейке). Тесты — 58 шт.
 
 Фикс шапки (2026-08-15): `jsonInit` Blockly читает `style.hat` один раз и обнуляет
 `style` прямо в общем JSON определения — шапка оставалась только у первого созданного
@@ -276,7 +276,7 @@ Loop тоже всегда после всех (включая Start). В ред
   хаб), константы (маршрут `/_ws/pxblocks`, группа `pxblocks`).
 - `Mars.PxBlocks.Host` — `PxBlockCatalog` (определения PxBlockSet + локатор
   имплементаций; toolbox = PxDefaultToolbox + доменные категории перед
-  «Переменные»/«Функции»), `PxRunManager` + `PxRunSession` (разбор синхронно в
+  "Variables"/"Functions"), `PxRunManager` + `PxRunSession` (разбор синхронно в
   POST Run, исполнение фоновой задачей, события пакетируются 100 мс/256 шт. и
   стримятся цепочкой последовательных отправок — порядок RunEvents→RunFinished
   гарантирован), `PxBlocksHub` (авто-вход в группу при подключении),
@@ -433,6 +433,27 @@ REST-дым: Contexts (sandbox+demo), Run через контроллер сте
 
 Проверено: сборка чистая, 80/80 тестов (новые не писались — по решению);
 REST-дым: Run c InitialVariables (param + неизвестное имя) — Started=true.
+
+### Этап 13 — Английские label + добор блоков до parity (PXT/MakeCode) ✅
+13A (перевод): формулировки блоков/категорий — стандартные английские Blockly/MakeCode
+("if %1 do", "repeat %1 times", "count with %1 from %2 to %3 by %4", "pick random %1 to %2",
+категории Basic/Logic/Loops/Math/Text/Arrays/Variables/Functions, "on start"/"loop");
+JS-строки flyout (Create a variable, field/value, Unknown-тултип), дефолт переменной
+"элемент"→"item", ошибки рантайма/хоста в панели редактора, демо- и браузер-блоки стенда,
+упоминания лейблов в AGENTS.md/PLAN.md. Страницы стенда, комментарии и документация —
+по-русски (решение пользователя). typeId/поля/значения дропдаунов не менялись —
+сохранённые сценарии совместимы.
+13B (return): `procedures_return` — досрочный выход из функции (аналог function_return
+в PXT): определение в PxStandardBlocks, AST PxReturnStatement + ядро интерпретатора
+(PxReturnSignal), свой flyout-колбэк PROCEDURE в JsSrc/index.ts (штатный набор Blockly +
+return со shadow-null). return вне функции завершает программу (как раньше).
+13C (лакуны): `core.variables.change` ("change %1 by %2", нечисловое — с нуля как
+math_change), `core.loops.pause` ("wait %1 ms", прерывается Stop через токен),
+`core.math.min_max` ("min/max of %1 and %2").
+Проверено: 92/92 теста, tsc+vite, e2e (flyout-ы: Math=11, Loops=6, Functions=4+shadow,
+Variables=3; браузерный сценарий).
+Дальше: расширение текста (substring/includes/split/parse/char code/compare),
+исполнение lists_*, math_map, PXT-редактор функций с типизированными аргументами.
 
 ## Что делаем со старым кодом
 - **Удаляем** (свой рендеринг, заменён Blockly): PxWorkspace.razor, PxBlockComponent.razor,

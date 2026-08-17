@@ -30,9 +30,9 @@ type ObjectBuilderBlock = Blockly.Block & {
 function addRow(block: ObjectBuilderBlock, key: string): void {
     block.pxRowCounter++;
     block.appendValueInput(VALUE_PREFIX + block.pxRowCounter)
-        .appendField('поле')
+        .appendField('field')
         .appendField(new Blockly.FieldTextInput(key), KEY_PREFIX + block.pxRowCounter)
-        .appendField('значение');
+        .appendField('value');
 }
 
 function removeDynamicRows(block: ObjectBuilderBlock): void {
@@ -45,7 +45,7 @@ function removeDynamicRows(block: ObjectBuilderBlock): void {
 function ensurePlusRow(block: ObjectBuilderBlock): void {
     block.removeInput(PLUS_INPUT, true);
     block.appendDummyInput(PLUS_INPUT)
-        .appendField(new Blockly.FieldImage(PLUS_ICON, 20, 20, 'добавить поле', onPlusClick));
+        .appendField(new Blockly.FieldImage(PLUS_ICON, 20, 20, 'add field', onPlusClick));
 }
 
 function onPlusClick(field: Blockly.FieldImage): void {
@@ -53,7 +53,7 @@ function onPlusClick(field: Blockly.FieldImage): void {
     if (block.isInFlyout) {
         return;
     }
-    addRow(block, 'поле' + (block.pxRowCounter + 1));
+    addRow(block, 'field' + (block.pxRowCounter + 1));
     ensurePlusRow(block);
 }
 
@@ -80,6 +80,6 @@ Blockly.Extensions.registerMutator(
     function (this: ObjectBuilderBlock) {
         this.pxRowCounter = 0;
         this.setInputsInline(false);
-        addRow(this, 'поле1');
+        addRow(this, 'field1');
         ensurePlusRow(this);
     });

@@ -156,7 +156,7 @@ public sealed class PxInterpreter
                 var to = (await EvaluateAsync(forLoop.To, scope, context)).ToNumber();
                 var by = (await EvaluateAsync(forLoop.By, scope, context)).ToNumber();
                 if (by == 0)
-                    throw new PxRuntimeException("Шаг цикла не может быть нулём", forLoop.BlockId);
+                    throw new PxRuntimeException("Loop step cannot be zero", forLoop.BlockId);
 
                 for (var value = from; by > 0 ? value <= to : value >= to; value += by)
                 {
@@ -172,7 +172,7 @@ public sealed class PxInterpreter
             {
                 var listValue = await EvaluateAsync(forEach.List, scope, context);
                 if (listValue is not PxListValue list)
-                    throw new PxRuntimeException("«Для каждого» требует список", forEach.BlockId);
+                    throw new PxRuntimeException("'for each' requires a list", forEach.BlockId);
 
                 foreach (var item in list.Items)
                 {
@@ -214,6 +214,15 @@ public sealed class PxInterpreter
                 scope.Set(set.VariableId, await EvaluateAsync(set.Value, scope, context));
                 return;
 
+            case PxVariableChange change:
+            {
+                // Как math_change в Blockly: нечисловое текущее значение считается нулём.
+                var current = scope.TryGet(change.VariableId, out var value) ? value.ToNumber() : 0;
+                var delta = (await EvaluateAsync(change.Delta, scope, context)).ToNumber();
+                scope.Set(change.VariableId, new PxNumberValue(current + delta));
+                return;
+            }
+
             case PxIfReturnStatement ifReturn:
             {
                 if ((await EvaluateAsync(ifReturn.Condition, scope, context)).IsTruthy())
@@ -226,12 +235,20 @@ public sealed class PxInterpreter
                 return;
             }
 
+            case PxReturnStatement returnStatement:
+            {
+                var value = returnStatement.Value == null
+                    ? null
+                    : await EvaluateAsync(returnStatement.Value, scope, context);
+                throw new PxReturnSignal(value);
+            }
+
             case PxLeafStatement leaf:
                 await ExecuteLeafAsync(leaf, scope, context);
                 return;
 
             default:
-                throw new PxRuntimeException($"Неизвестный оператор '{node.TypeId}'", node.BlockId);
+                throw new PxRuntimeException($"Unknown statement '{node.TypeId}'", node.BlockId);
         }
     }
 
@@ -257,7 +274,7 @@ public sealed class PxInterpreter
         PxContext context)
     {
         if (!context.Procedures.TryGetValue(name, out var definition))
-            throw new PxRuntimeException($"Функция '{name}' не определена", blockId);
+            throw new PxRuntimeException($"Function '{name}' is not defined", blockId);
 
         // Рамка функции: параметры локальны, остальное видно до глобального скоупа.
         var scope = new PxScope(context.Global);
@@ -319,14 +336,14 @@ public sealed class PxInterpreter
                 return await EvaluateLeafAsync(leaf, scope, context);
 
             default:
-                throw new PxRuntimeException($"Неизвестное выражение '{expression.TypeId}'", expression.BlockId);
+                throw new PxRuntimeException($"Unknown expression '{expression.TypeId}'", expression.BlockId);
         }
     }
 
     private static async ValueTask<PxValue> EvaluateLeafAsync(PxLeafExpression leaf, PxScope scope, PxContext context)
     {
         if (context.Implement(leaf.TypeId) is not IPxExpressionImplement implement)
-            throw new PxRuntimeException($"Для блока '{leaf.TypeId}' не зарегистрирована реализация", leaf.BlockId);
+            throw new PxRuntimeException($"No implementation registered for block '{leaf.TypeId}'", leaf.BlockId);
 
         var (inputs, order) = await EvaluateInputsAsync(leaf.Inputs, scope, context);
         return await implement.EvaluateAsync(context, new PxCall(leaf.BlockId, inputs, leaf.Fields)
@@ -339,7 +356,7 @@ public sealed class PxInterpreter
     private static async Task ExecuteLeafAsync(PxLeafStatement leaf, PxScope scope, PxContext context)
     {
         if (context.Implement(leaf.TypeId) is not IPxStatementImplement implement)
-            throw new PxRuntimeException($"Для блока '{leaf.TypeId}' не зарегистрирована реализация", leaf.BlockId);
+            throw new PxRuntimeException($"No implementation registered for block '{leaf.TypeId}'", leaf.BlockId);
 
         var (inputs, order) = await EvaluateInputsAsync(leaf.Inputs, scope, context);
         await implement.ExecuteAsync(context, new PxCall(leaf.BlockId, inputs, leaf.Fields)

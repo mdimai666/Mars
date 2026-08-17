@@ -191,3 +191,16 @@ internal sealed class StdMathRandomFloat : PxExpressionImplement
     public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
         => ValueTask.FromResult<PxValue>(new PxNumberValue(context.Random.NextDouble()));
 }
+
+internal sealed class StdMathMinMax : PxExpressionImplement
+{
+    public StdMathMinMax() : base("core.math.min_max") { }
+
+    public override ValueTask<PxValue> EvaluateAsync(PxContext context, PxCall call)
+    {
+        var a = call.Input("A").ToNumber();
+        var b = call.Input("B").ToNumber();
+        var result = call.FieldText("OP") == "MAX" ? Math.Max(a, b) : Math.Min(a, b);
+        return ValueTask.FromResult<PxValue>(new PxNumberValue(result));
+    }
+}

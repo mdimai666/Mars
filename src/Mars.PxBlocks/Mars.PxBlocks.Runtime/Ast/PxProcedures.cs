@@ -42,3 +42,9 @@ public sealed record PxIfReturnStatement : PxStatement
 
     public PxExpression? Value { get; init; }
 }
+
+/// <summary>procedures_return: досрочный выход из функции (значение необязательно).</summary>
+public sealed record PxReturnStatement : PxStatement
+{
+    public PxExpression? Value { get; init; }
+}

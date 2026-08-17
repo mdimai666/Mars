@@ -16,19 +16,19 @@ public static class PxBrowserToolbox
         [
             new PxToolboxCategory
             {
-                Name = "Основное", Colour = "#00838F", Icon = "basic",
+                Name = "Basic", Colour = "#00838F", Icon = "basic",
                 Items =
                 [
-                    H("Основное"),
+                    H("Basic"),
                     B("core.events.start")
                 ]
             },
             new PxToolboxCategory
             {
-                Name = "Браузер", Colour = "#1976D2", Icon = "globe",
+                Name = "Browser", Colour = "#1976D2", Icon = "globe",
                 Items =
                 [
-                    H("Навигация и действия"),
+                    H("Navigation and actions"),
                     new PxToolboxBlock
                     {
                         Type = "demostand.playwright.goto",
@@ -44,7 +44,7 @@ public static class PxBrowserToolbox
                         Type = "demostand.playwright.type",
                         InputsJson = """
                         {
-                          "TEXT": {"shadow": {"type": "core.text.text", "fields": {"TEXT": "текст"}}},
+                          "TEXT": {"shadow": {"type": "core.text.text", "fields": {"TEXT": "text"}}},
                           "SELECTOR": {"shadow": {"type": "core.text.text", "fields": {"TEXT": "#input"}}}
                         }
                         """
@@ -56,7 +56,7 @@ public static class PxBrowserToolbox
                         InputsJson = """{"SELECTOR":{"shadow":{"type":"core.text.text","fields":{"TEXT":".result"}}}}"""
                     },
                     B("demostand.playwright.wait_ms"),
-                    H("Данные"),
+                    H("Data"),
                     new PxToolboxBlock
                     {
                         Type = "demostand.playwright.get_text",
@@ -72,10 +72,10 @@ public static class PxBrowserToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Логика", Colour = "#006C9E", Icon = "logic",
+                Name = "Logic", Colour = "#006C9E", Icon = "logic",
                 Items =
                 [
-                    H("Логика"),
+                    H("Logic"),
                     B("core.logic.if"),
                     B("core.logic.compare"),
                     B("core.logic.operation"),
@@ -85,10 +85,10 @@ public static class PxBrowserToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Текст", Colour = "#996600", Icon = "text",
+                Name = "Text", Colour = "#996600", Icon = "text",
                 Items =
                 [
-                    H("Текст"),
+                    H("Text"),
                     B("core.text.text"),
                     B("core.text.join"),
                     B("core.text.length"),
@@ -96,8 +96,8 @@ public static class PxBrowserToolbox
                 ]
             },
             new PxToolboxSeparator(),
-            new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Icon = "variables", Custom = "VARIABLE" },
-            new PxToolboxCategory { Name = "Функции", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" }
+            new PxToolboxCategory { Name = "Variables", Colour = "#A80000", Icon = "variables", Custom = "VARIABLE" },
+            new PxToolboxCategory { Name = "Functions", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" }
         ]
     };
 

@@ -13,3 +13,11 @@ public sealed record PxVariableSet : PxStatement
 
     public required PxExpression Value { get; init; }
 }
+
+/// <summary>core.variables.change — увеличить числовую переменную на дельту (аналог math_change).</summary>
+public sealed record PxVariableChange : PxStatement
+{
+    public required string VariableId { get; init; }
+
+    public required PxExpression Delta { get; init; }
+}

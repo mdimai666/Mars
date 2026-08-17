@@ -49,7 +49,7 @@ public class PxBrowserStandTests
 
         var browserCategory = context.EffectiveToolbox.Contents
             .OfType<PxToolboxCategory>()
-            .Single(category => category.Name == "Браузер");
+            .Single(category => category.Name == "Browser");
         Assert.Equal("globe", browserCategory.Icon);
     }
 

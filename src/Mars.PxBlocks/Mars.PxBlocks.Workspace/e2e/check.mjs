@@ -37,7 +37,7 @@ const measure = () => ({
 console.log('INITIAL:', JSON.stringify(await page.evaluate(measure)));
 await page.screenshot({ path: outDir + 'initial.png' });
 
-await page.click('.pxb-rail-item:has-text("Логика")');
+await page.click('.pxb-rail-item:has-text("Logic")');
 await page.waitForTimeout(600);
 console.log('CATEGORY OPEN:', JSON.stringify(await page.evaluate(measure)));
 await page.screenshot({ path: outDir + 'category.png' });

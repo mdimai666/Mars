@@ -15,7 +15,7 @@ public static class PxBrowserContext
 
     public static PxEditorContext Create() => PxEditorContext.Define(Name)
         .Title("Браузерные скрипты")
-        .Description("Сценарии Playwright в системном Edge: навигация, клики, ввод, ожидания, JavaScript. Всё начинается с блока «старт».")
+        .Description("Сценарии Playwright в системном Edge: навигация, клики, ввод, ожидания, JavaScript. Всё начинается с блока \"on start\".")
         .Events(PxEvents.Start)
         .EventBlocks(PxEvents.Start)
         .Set<PxBrowserBlocks>()

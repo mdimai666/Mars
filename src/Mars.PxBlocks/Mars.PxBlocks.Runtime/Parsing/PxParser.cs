@@ -24,13 +24,13 @@ public sealed class PxParser
 
     public PxProgram Parse(string blocksJson)
     {
-        var root = JsonNode.Parse(blocksJson) ?? throw new PxParseException("Пустой workspace JSON");
+        var root = JsonNode.Parse(blocksJson) ?? throw new PxParseException("Empty workspace JSON");
         return Parse(root);
     }
 
     public PxProgram Parse(JsonNode root)
     {
-        var rootObject = root as JsonObject ?? throw new PxParseException("Workspace JSON не является объектом");
+        var rootObject = root as JsonObject ?? throw new PxParseException("Workspace JSON is not an object");
         _program = new PxProgram();
 
         if (rootObject["variables"] is JsonArray variables)
@@ -49,7 +49,7 @@ public sealed class PxParser
         {
             JsonObject wrapper when wrapper["blocks"] is JsonArray inner => inner,
             JsonArray direct => direct,
-            _ => throw new PxParseException("В workspace JSON нет списка блоков")
+            _ => throw new PxParseException("Workspace JSON has no blocks list")
         };
 
         foreach (var block in blocks)
@@ -145,11 +145,26 @@ public sealed class PxParser
                 Value = ExpressionInput(block, "VALUE") ?? NullLiteral(blockId)
             },
 
+            PxCoreBlocks.VariablesChange => new PxVariableChange
+            {
+                TypeId = type,
+                BlockId = blockId,
+                VariableId = FieldVariableId(block, "VAR", blockId),
+                Delta = ExpressionInput(block, "DELTA") ?? new PxNumberLiteral(1) { TypeId = PxCoreBlocks.LogicNull, BlockId = blockId }
+            },
+
             PxCoreBlocks.IfReturn => new PxIfReturnStatement
             {
                 TypeId = type,
                 BlockId = blockId,
                 Condition = ExpressionInput(block, "CONDITION") ?? NullLiteral(blockId),
+                Value = ExpressionInput(block, "VALUE")
+            },
+
+            PxCoreBlocks.ProceduresReturn => new PxReturnStatement
+            {
+                TypeId = type,
+                BlockId = blockId,
                 Value = ExpressionInput(block, "VALUE")
             },
 
@@ -297,7 +312,7 @@ public sealed class PxParser
     private (string Name, List<PxExpression> Args) ParseProcedureCall(JsonObject block, string blockId)
     {
         if (block["extraState"] is not JsonObject extra)
-            throw new PxParseException("Вызов функции без имени (extraState)", blockId);
+            throw new PxParseException("Function call without a name (extraState)", blockId);
 
         var name = (string?)extra["name"] ?? "";
         var argCount = extra["params"] is JsonArray parameters ? parameters.Count : 0;
@@ -339,7 +354,7 @@ public sealed class PxParser
     {
         if (_implements?.Knows(type) == true)
             return;
-        throw new PxParseException($"Неизвестный блок '{type}' — реализация исполнения не зарегистрирована", blockId);
+        throw new PxParseException($"Unknown block '{type}' — no execution implementation registered", blockId);
     }
 
     private List<(string Name, PxExpression Expr)> ParseInputs(JsonObject block)
@@ -418,7 +433,7 @@ public sealed class PxParser
             _ => null
         };
 
-        return variableId ?? throw new PxParseException($"Поле '{fieldName}' не ссылается на переменную", blockId);
+        return variableId ?? throw new PxParseException($"Field '{fieldName}' does not reference a variable", blockId);
     }
 
     /// <summary>blockly 13 помечает отключённые блоки disabledReasons; старый формат — enabled: false.</summary>
@@ -430,7 +445,7 @@ public sealed class PxParser
     }
 
     private static string BlockType(JsonObject block)
-        => (string?)block["type"] ?? throw new PxParseException("Встречен блок без типа", BlockId(block));
+        => (string?)block["type"] ?? throw new PxParseException("Block without a type", BlockId(block));
 
     private static string BlockId(JsonObject block) => (string?)block["id"] ?? "";
 

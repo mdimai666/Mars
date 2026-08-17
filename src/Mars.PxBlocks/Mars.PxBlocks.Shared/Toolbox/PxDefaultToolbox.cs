@@ -14,20 +14,20 @@ public static class PxDefaultToolbox
         [
             new PxToolboxCategory
             {
-                Name = "Основное", Colour = "#00838F", Icon = "basic",
+                Name = "Basic", Colour = "#00838F", Icon = "basic",
                 Items =
                 [
-                    H("Основное"),
+                    H("Basic"),
                     B("core.events.start"),
                     B("core.events.loop")
                 ]
             },
             new PxToolboxCategory
             {
-                Name = "Логика", Colour = "#006C9E", Icon = "logic",
+                Name = "Logic", Colour = "#006C9E", Icon = "logic",
                 Items =
                 [
-                    H("Логика"),
+                    H("Logic"),
                     B("core.logic.if"),
                     B("core.logic.if_else"),
                     B("core.logic.compare"),
@@ -40,23 +40,24 @@ public static class PxDefaultToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Циклы", Colour = "#107C10", Icon = "loops",
+                Name = "Loops", Colour = "#107C10", Icon = "loops",
                 Items =
                 [
-                    H("Циклы"),
+                    H("Loops"),
                     B("core.loops.repeat"),
                     B("core.loops.while_until"),
                     B("core.loops.for"),
                     B("core.loops.for_each"),
-                    B("core.loops.flow")
+                    B("core.loops.flow"),
+                    B("core.loops.pause")
                 ]
             },
             new PxToolboxCategory
             {
-                Name = "Математика", Colour = "#712672", Icon = "math",
+                Name = "Math", Colour = "#712672", Icon = "math",
                 Items =
                 [
-                    H("Математика"),
+                    H("Math"),
                     B("core.math.number"),
                     B("core.math.arithmetic"),
                     B("core.math.single"),
@@ -66,15 +67,16 @@ public static class PxDefaultToolbox
                     B("core.math.round"),
                     B("core.math.modulo"),
                     B("core.math.random_int"),
-                    B("core.math.random_float")
+                    B("core.math.random_float"),
+                    B("core.math.min_max")
                 ]
             },
             new PxToolboxCategory
             {
-                Name = "Текст", Colour = "#996600", Icon = "text",
+                Name = "Text", Colour = "#996600", Icon = "text",
                 Items =
                 [
-                    H("Текст"),
+                    H("Text"),
                     B("core.text.text"),
                     B("core.text.join"),
                     B("core.text.append"),
@@ -89,10 +91,10 @@ public static class PxDefaultToolbox
             },
             new PxToolboxCategory
             {
-                Name = "Массивы", Colour = "#5C2D91", Icon = "arrays",
+                Name = "Arrays", Colour = "#5C2D91", Icon = "arrays",
                 Items =
                 [
-                    H("Массивы"),
+                    H("Arrays"),
                     B("lists_create_with"),
                     B("lists_repeat"),
                     B("lists_length"),
@@ -106,8 +108,8 @@ public static class PxDefaultToolbox
                 ]
             },
             new PxToolboxSeparator(),
-            new PxToolboxCategory { Name = "Переменные", Colour = "#A80000", Icon = "variables", Custom = "VARIABLE" },
-            new PxToolboxCategory { Name = "Функции", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" }
+            new PxToolboxCategory { Name = "Variables", Colour = "#A80000", Icon = "variables", Custom = "VARIABLE" },
+            new PxToolboxCategory { Name = "Functions", Colour = "#7B2FBE", Icon = "functions", Custom = "PROCEDURE" }
         ]
     };
 

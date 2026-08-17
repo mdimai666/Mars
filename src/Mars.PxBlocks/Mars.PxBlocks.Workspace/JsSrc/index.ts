@@ -56,13 +56,15 @@ export function injectWorkspace(element: HTMLElement, optionsJson?: string, tool
     }
     workspace.resize();
 
-    // «Переменные» — свой flyout: блоки переменных ядра названы core.variables.*
-    // (определения отдаёт сервер), а штатная категория Blockly хардкодит
-    // variables_get/variables_set. «Функции» (PROCEDURE) — пока штатная.
+    // «Переменные» и «Функции» — свои flyout-ы: блоки переменных ядра названы
+    // core.variables.* (определения отдаёт сервер), а штатная категория Blockly
+    // хардкодит variables_get/variables_set; в процедуры добавлен наш досрочный
+    // return (procedures_return), которого в штатном наборе Blockly нет.
     workspace.registerToolboxCategoryCallback('VARIABLE', variablesFlyout);
     workspace.registerButtonCallback('CREATE_VARIABLE', (button) => {
         Blockly.Variables.createVariableButtonHandler(button.getTargetWorkspace());
     });
+    workspace.registerToolboxCategoryCallback('PROCEDURE', proceduresFlyout);
 
     return workspace;
 }
@@ -72,13 +74,56 @@ export function injectWorkspace(element: HTMLElement, optionsJson?: string, tool
 // {name, type}, как в штатном flyout (blockly/core/variables).
 function variablesFlyout(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.FlyoutItemInfo[] {
     const items: Blockly.utils.toolbox.FlyoutItemInfo[] = [
-        { kind: 'button', text: 'Создать переменную', callbackkey: 'CREATE_VARIABLE' },
+        { kind: 'button', text: 'Create a variable', callbackkey: 'CREATE_VARIABLE' },
     ];
 
     for (const variable of workspace.getVariableMap().getVariablesOfType('')) {
         const fields = { VAR: { name: variable.getName(), type: variable.getType() } };
         items.push({ kind: 'block', type: 'core.variables.get', fields });
         items.push({ kind: 'block', type: 'core.variables.set', fields });
+        items.push({ kind: 'block', type: 'core.variables.change', fields });
+    }
+
+    return items;
+}
+
+// Flyout категории «Функции»: повторяет штатный Blockly (def/defreturn/ifreturn
+// + call-блоки для каждой определённой функции) и добавляет наш досрочный
+// procedures_return со shadow-«пусто» в сокете значения.
+function proceduresFlyout(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.FlyoutItemInfo[] {
+    const items: Blockly.utils.toolbox.FlyoutItemInfo[] = [];
+
+    if (Blockly.Blocks['procedures_defnoreturn']) {
+        items.push({
+            kind: 'block', type: 'procedures_defnoreturn', gap: 16,
+            fields: { NAME: Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE'] },
+        });
+    }
+    if (Blockly.Blocks['procedures_defreturn']) {
+        items.push({
+            kind: 'block', type: 'procedures_defreturn', gap: 16,
+            fields: { NAME: Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE'] },
+        });
+    }
+    if (Blockly.Blocks['procedures_ifreturn']) {
+        items.push({ kind: 'block', type: 'procedures_ifreturn', gap: 16 });
+    }
+    if (Blockly.Blocks['procedures_return']) {
+        items.push({
+            kind: 'block', type: 'procedures_return', gap: 24,
+            inputs: { VALUE: { shadow: { type: 'core.logic.null' } } },
+        });
+    }
+    if (items.length > 0) {
+        (items[items.length - 1] as Blockly.utils.toolbox.BlockInfo).gap = 24;
+    }
+
+    const [noReturn, withReturn] = Blockly.Procedures.allProcedures(workspace);
+    for (const [name, params] of noReturn) {
+        items.push({ kind: 'block', type: 'procedures_callnoreturn', gap: 16, extraState: { name, params } });
+    }
+    for (const [name, params] of withReturn) {
+        items.push({ kind: 'block', type: 'procedures_callreturn', gap: 16, extraState: { name, params } });
     }
 
     return items;
@@ -174,7 +219,7 @@ function registerUnknownPlaceholder(type: string, kind: 'statement' | 'value'): 
                 this.setNextStatement(true);
             }
             this.setColour('#9E9E9E');
-            this.setTooltip('Определение блока удалено на сервере — запуск невозможен');
+            this.setTooltip('Block definition was removed on the server — run is not possible');
         },
     };
 }

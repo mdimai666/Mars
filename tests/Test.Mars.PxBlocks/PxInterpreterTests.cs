@@ -398,6 +398,205 @@ public class PxInterpreterTests
     }
 
     [Fact]
+    public async Task Procedure_Return_EarlyWithValue()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "procedures_defreturn", "id": "def1",
+              "fields": { "NAME": "pick" },
+              "inputs": {
+                "STACK": { "block": {
+                  "type": "core.text.print", "id": "p1",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "before" } } } },
+                  "next": { "block": {
+                    "type": "procedures_return", "id": "ret",
+                    "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "n42", "fields": { "NUM": 42 } } } },
+                    "next": { "block": {
+                      "type": "core.text.print", "id": "p2",
+                      "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t2", "fields": { "TEXT": "after" } } } }
+                    } }
+                  } }
+                } }
+              }
+            },
+            {
+              "type": "core.text.print", "id": "p3",
+              "inputs": { "TEXT": { "block": {
+                "type": "procedures_callreturn", "id": "call1",
+                "extraState": { "name": "pick", "params": [] }
+              } } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["before", "42"], result.Output); // «after» пропущено ранним return
+    }
+
+    [Fact]
+    public async Task Procedure_Return_WithoutValue_GivesNull()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "procedures_defreturn", "id": "def1",
+              "fields": { "NAME": "noval" },
+              "inputs": {
+                "STACK": { "block": { "type": "procedures_return", "id": "ret" } },
+                "RETURN": { "block": { "type": "core.math.number", "id": "seven", "fields": { "NUM": 7 } } }
+              }
+            },
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "procedures_callreturn", "id": "call1",
+                "extraState": { "name": "noval", "params": [] }
+              } } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["null"], result.Output); // return без значения, RETURN-слот не исполняется
+    }
+
+    [Fact]
+    public async Task Return_AtTopLevel_EndsProgram()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "1" } } } },
+              "next": { "block": {
+                "type": "procedures_return", "id": "ret",
+                "next": { "block": {
+                  "type": "core.text.print", "id": "p2",
+                  "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t2", "fields": { "TEXT": "2" } } } }
+                } }
+              } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success); // return вне функции завершает программу
+        Assert.Equal(["1"], result.Output);
+    }
+
+    [Fact]
+    public async Task VariablesChange_NullStartsFromZero_ThenAdds()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.variables.change", "id": "c1",
+              "fields": { "VAR": { "id": "varX" } },
+              "inputs": { "DELTA": { "block": { "type": "core.math.number", "id": "d7", "fields": { "NUM": 7 } } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p1",
+                "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g1", "fields": { "VAR": { "id": "varX" } } } } },
+                "next": { "block": {
+                  "type": "core.variables.set", "id": "s1",
+                  "fields": { "VAR": { "id": "varX" } },
+                  "inputs": { "VALUE": { "block": { "type": "core.math.number", "id": "n10", "fields": { "NUM": 10 } } } },
+                  "next": { "block": {
+                    "type": "core.variables.change", "id": "c2",
+                    "fields": { "VAR": { "id": "varX" } },
+                    "inputs": { "DELTA": { "block": { "type": "core.math.number", "id": "d5", "fields": { "NUM": 5 } } } },
+                    "next": { "block": {
+                      "type": "core.text.print", "id": "p2",
+                      "inputs": { "TEXT": { "block": { "type": "core.variables.get", "id": "g2", "fields": { "VAR": { "id": "varX" } } } } }
+                    } }
+                  } }
+                } }
+              } }
+            }
+          ] },
+          "variables": [ { "id": "varX", "name": "x" } ]
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["7", "15"], result.Output); // необъявленное значение — 0, затем 10+5
+    }
+
+    [Fact]
+    public async Task LoopsPause_WaitsAndContinues()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.loops.pause", "id": "w",
+              "inputs": { "MS": { "block": { "type": "core.math.number", "id": "n1", "fields": { "NUM": 1 } } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p1",
+                "inputs": { "TEXT": { "block": { "type": "core.text.text", "id": "t1", "fields": { "TEXT": "ok" } } } }
+              } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["ok"], result.Output);
+    }
+
+    [Fact]
+    public async Task Math_MinMax()
+    {
+        var json = """
+        {
+          "blocks": { "languageVersion": 0, "blocks": [
+            {
+              "type": "core.text.print", "id": "p1",
+              "inputs": { "TEXT": { "block": {
+                "type": "core.math.min_max", "id": "mn", "fields": { "OP": "MIN" },
+                "inputs": {
+                  "A": { "block": { "type": "core.math.number", "id": "a1", "fields": { "NUM": 3 } } },
+                  "B": { "block": { "type": "core.math.number", "id": "b1", "fields": { "NUM": 5 } } }
+                }
+              } } },
+              "next": { "block": {
+                "type": "core.text.print", "id": "p2",
+                "inputs": { "TEXT": { "block": {
+                  "type": "core.math.min_max", "id": "mx", "fields": { "OP": "MAX" },
+                  "inputs": {
+                    "A": { "block": { "type": "core.math.number", "id": "a2", "fields": { "NUM": 3 } } },
+                    "B": { "block": { "type": "core.math.number", "id": "b2", "fields": { "NUM": 5 } } }
+                  }
+                } } }
+              } }
+            }
+          ] }
+        }
+        """;
+
+        var result = await PxTestRun.RunAsync(json, PxTestRun.Fast());
+
+        Assert.True(result.Success);
+        Assert.Equal(["3", "5"], result.Output);
+    }
+
+    [Fact]
     public async Task LogicOperation_ShortCircuit_And()
     {
         var json = """
@@ -471,7 +670,7 @@ public class PxInterpreterTests
 
         Assert.False(result.Success);
         Assert.NotNull(result.ErrorMessage);
-        Assert.Contains("лимит", result.ErrorMessage);
+        Assert.Contains("step limit", result.ErrorMessage);
         Assert.Equal("w", result.ErrorBlockId);
     }
 

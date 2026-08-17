@@ -62,7 +62,7 @@ public class PxRunServerIntegrationTests : IAsyncLifetime
 
         Assert.Contains("core.events.start", definitions.DefinitionsJson);
         Assert.Contains("core.events.loop", definitions.DefinitionsJson);
-        Assert.Contains(definitions.Toolbox.Contents, c => c is global::Mars.PxBlocks.Shared.Toolbox.PxToolboxCategory { Name: "Основное" });
+        Assert.Contains(definitions.Toolbox.Contents, c => c is global::Mars.PxBlocks.Shared.Toolbox.PxToolboxCategory { Name: "Basic" });
     }
 
     [Fact]

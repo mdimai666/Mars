@@ -151,6 +151,28 @@ public class GetPageRenderTests : ApplicationTests
     }
 
     [IntegrationFact]
+    public async Task RenderUrl_ByFrontUrl_RendersRequestedPage()
+    {
+        //Arrange
+        _ = nameof(PageRenderController.RenderUrl);
+        _ = nameof(PageRenderService.RenderUrl);
+        var client = AppFixture.GetClient();
+
+        var url = HttpUtility.UrlEncode("/");
+
+        //Act — by-url рендерит именно запрошенный url фронта, а не путь API-эндпоинта
+        var res = await client.Request(_apiUrl, "by-url").AppendQueryParam(new { url }).AllowAnyHttpStatus().GetAsync();
+        var result = await res.GetJsonAsync<RenderActionResult<PostRenderResponse>>();
+
+        //Assert
+        res.StatusCode.Should().Be(StatusCodes.Status200OK);
+        result.Ok.Should().BeTrue();
+        result.NotFound.Should().BeFalse();
+        result.Data.Should().NotBeNull();
+        result.Data!.Html.Should().Contain("Render test front");
+    }
+
+    [IntegrationFact]
     public async Task RenderUrl_NonExistUrl_ShouldStatus200Instead404()
     {
         //Arrange

@@ -4,7 +4,6 @@ using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Exceptions;
 using Mars.Host.Shared.WebSite.Models;
-using Mars.Options.Models;
 using Mars.WebSiteProcessor.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -33,13 +32,6 @@ public class WebSiteRequestProcessor
     public async Task<RenderInfo> RenderRequest(HttpContext httpContext, RenderParam param, CancellationToken cancellationToken)
     {
         var appFront = (httpContext.Items[nameof(MarsAppFront)] as MarsAppFront)!;
-        var maintenanceModeOption = optionService.GetOption<MaintenanceModeOption>();
-
-        if (maintenanceModeOption.Enable)
-        {
-            var request0 = new WebClientRequest(httpContext.Request);
-            return await RenderMaintenancePage(appFront, request0, maintenanceModeOption, param, cancellationToken);
-        }
 
         WebPage? page = template.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
         var request = new WebClientRequest(httpContext.Request, routeValues: routeValues);
@@ -82,35 +74,6 @@ public class WebSiteRequestProcessor
             Code = 404,
             html = await RenderPageHtml(appFront, request, template.Page404 ?? template.IndexPage, param, cancellationToken),
             Title = "404"
-        };
-    }
-
-    public async Task<RenderInfo> RenderMaintenancePage(MarsAppFront appFront, WebClientRequest request, MaintenanceModeOption option, RenderParam param, CancellationToken cancellationToken)
-    {
-        WebPage webPage;
-        string pageTitle;
-        //param.OnlyBody = true; Check it
-
-        if (option.MaintenancePageSource == EMaintenancePageSource.StaticHtml)
-        {
-            webPage = WebPage.Blank(option.MaintenanceStaticPageContent, option.MaintenanceStaticPageTitle);
-            pageTitle = option.MaintenanceStaticPageTitle;
-        }
-        else if (option.MaintenancePageSource == EMaintenancePageSource.PostPage)
-        {
-            webPage = template.Pages.FirstOrDefault(post => post.Url == option.RenderPageUrl) ?? WebPage.Blank("Maintenance Page not found", "503");
-            pageTitle = webPage.Title ?? webPage.Name;
-        }
-        else
-        {
-            throw new NotImplementedException();
-        }
-
-        return new RenderInfo
-        {
-            Code = 503,
-            html = await RenderPageHtml(appFront, request, webPage, param, cancellationToken),
-            Title = pageTitle
         };
     }
 

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mars.AppFrontEngines.Integration.Tests.Common;
+using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.WebSite.Interfaces;
 using Mars.Host.Shared.WebSite.Models;
@@ -10,14 +11,18 @@ using Mars.WebSiteProcessor.Handlebars.TemplateData;
 using Mars.WebSiteProcessor.Interfaces;
 using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
 
-public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicationFixture>
+[Collection(HandlebarsAppFrontCollection.CollectionName)]
+public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicationFixture>, IDisposable
 {
     private readonly IWebTemplateService _webTemplateService;
+    private readonly MarsAppFront _app;
+    private readonly IWebTemplateService? _originalTemplateService;
 
     public WebSiteTemplateTests(HandlebarsAppFrontApplicationFixture appFixture) : base(appFixture)
     {
@@ -25,9 +30,26 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
         _fixture.Customize(new FixtureCustomize());
         _ = nameof(WebFilesReadFilesystemService);
         _ = nameof(WebTemplateService.ScanSite);
-        var app = AppFixture.ServiceProvider.GetRequiredService<IWebRenderEngineLocator>().GetAppFrontForUrl("/")!;
+        _app = AppFixture.ServiceProvider.GetRequiredService<IWebRenderEngineLocator>().GetAppFrontForUrl("/")!;
+        _originalTemplateService = _app.Features.Get<IWebTemplateService>();
         _webTemplateService = Substitute.For<IWebTemplateService>();
-        app.Features.Set<IWebTemplateService>(_webTemplateService);
+        _app.Features.Set<IWebTemplateService>(_webTemplateService);
+
+        // Движок кэширует скомпилированные шаблоны в IMemoryCache на 30 минут по page.Url:
+        // страницы реальной темы, отрендеренные предыдущими тестами, иначе подменят результат мока
+        var memoryCache = AppFixture.ServiceProvider.GetRequiredService<IMemoryCache>();
+        foreach (var url in new[] { "/", "/second", "/404" })
+            foreach (var onlyBody in new[] { 0, 1 })
+                foreach (var allowLayout in new[] { 0, 1 })
+                    memoryCache.Remove($"HandlebarsWebRenderEngine::::AppCacheKey[{url},{onlyBody},{allowLayout}]");
+    }
+
+    public void Dispose()
+    {
+        // мок подменяет сервис на общем (кэшированном) MarsAppFront — без восстановления
+        // следующие тесты сьюта рендерили бы мок вместо реальной темы
+        if (_originalTemplateService is not null)
+            _app.Features.Set(_originalTemplateService);
     }
 
     WebSiteTemplate EmptyWebSiteTemplate(string indexContent, WebPartSource[]? parts = null) =>
@@ -63,10 +85,11 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
     {
         //Arrange
         var template = "index_page";
+        // URL обязан быть /404 — по нему WebSiteTemplate определяет Page404
         var page404 = new WebPartSource("""
             @page /404
 
-            <h1>page_404</h1>
+            <h1>page_404_mock</h1>
             """, "404", "404", "", "");
         _webTemplateService.Template.Returns(EmptyWebSiteTemplate(template, [page404]));
 
@@ -74,7 +97,7 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
         var (render, statusCode) = await RenderRequestPageEx("/non_exist_pageUrl_for_404");
 
         //Assert
-        render.Should().Contain("page_404");
+        render.Should().Contain("page_404_mock");
         render.Should().NotContain("index_page");
         statusCode.Should().Be(StatusCodes.Status404NotFound);
     }

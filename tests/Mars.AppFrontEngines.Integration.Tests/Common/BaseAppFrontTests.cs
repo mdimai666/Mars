@@ -7,7 +7,11 @@ using Mars.Integration.Tests.Extensions;
 
 namespace Mars.AppFrontEngines.Integration.Tests.Common;
 
-public abstract class BaseAppFrontTests<TAppFixture> : IClassFixture<TAppFixture> where TAppFixture : ApplicationFixture
+/// <summary>
+/// Фикстура одна на весь сьют (коллекция xUnit): два отдельных IClassFixture-инстанса
+/// поднимали два приложения в одном процессе и ломали друг друга через общее статическое состояние.
+/// </summary>
+public abstract class BaseAppFrontTests<TAppFixture> where TAppFixture : ApplicationFixture
 {
     protected readonly TAppFixture AppFixture;
     //protected MarsDbContext DbContext => AppFixture.DbFixture.DbContext;

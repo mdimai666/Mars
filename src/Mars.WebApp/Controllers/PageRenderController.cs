@@ -5,6 +5,7 @@ using Mars.Host.Shared.ExceptionFilters;
 using Mars.Host.Shared.Mappings.Renders;
 using Mars.Host.Shared.Models;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.WebSite;
 using Mars.Services;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Renders;
@@ -20,6 +21,7 @@ namespace Mars.Controllers;
 [NotFoundExceptionFilter]
 [FluentValidationExceptionFilter]
 [AllExceptionCatchToUserActionResultFilter]
+[FrontRenderEndpoint]
 public class PageRenderController : ControllerBase
 {
     private readonly IPageRenderService _pageRenderService;

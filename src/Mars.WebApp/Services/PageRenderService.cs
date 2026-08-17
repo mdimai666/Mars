@@ -103,11 +103,22 @@ internal class PageRenderService : IPageRenderService
         if (IsRenderNotSupport(af)) return RenderNotSupportError();
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        WebPage? page = tsv.Template.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
+        WebPage? page = tsv.Template.CompiledHttpRouteMatcher.Match(url, out var routeValues);
 
-        var render = await RenderPageOr404(page, httpContext, renderParam, cancellationToken);
+        if (page is null)
+            return await RenderPage404(httpContext, cancellationToken);
 
-        return render;
+        // рендерим запрошенный url (не путь API-эндпоинта); routeValues копируются
+        // в WebClientRequest, поэтому пуловский словарь сразу возвращаем
+        var request = new WebClientRequest(httpContext.Request, replacePath: url, routeValues: routeValues);
+
+        if (routeValues is not null)
+            CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+
+        var processor = new WebSiteProcessor.Services.WebSiteRequestProcessor(_serviceProvider, tsv.Template);
+        var render = await processor.RenderPage(af, request, page, renderParam ?? RenderParam(httpContext), cancellationToken);
+
+        return AsResult(render, httpContext);
     }
 
     public Task<RenderActionResult<PostRenderDto>> RenderPageBySlug(string slug, HttpContext httpContext, CancellationToken cancellationToken)

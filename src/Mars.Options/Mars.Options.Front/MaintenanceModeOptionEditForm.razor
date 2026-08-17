@@ -1,5 +1,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using MarsCodeEditor2
+@using Mars.Shared.Options
+@using Mars.WebApiClient.Interfaces
 @using Color = Microsoft.FluentUI.AspNetCore.Components.Color
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
@@ -10,13 +12,12 @@
 <EditOptionForm @ref=form TModel="MaintenanceModeOption" BeforeSave="BeforeSave">
     <h3>Настройки MaintenanceMode</h3>
 
-    @* <FluentCard Style="padding: 1.5rem; width: 400px; height: 250px; ">
-    <h2>Hello World!</h2>
-    <FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
-    </FluentCard> *@
-
     <FormItem2 For="()=>context.Enable" class="col">
         <FluentSwitch @bind-Value="@context.Enable" />
+    </FormItem2>
+
+    <FormItem2 For="()=>context.EnableForApiRender" class="col">
+        <FluentSwitch @bind-Value="@context.EnableForApiRender" />
     </FormItem2>
 
     <FluentDivider Class="my-4" />
@@ -42,27 +43,80 @@
             </FormItem2>
         </FluentCard>
     }
-    else if (context.MaintenancePageSource == EMaintenancePageSource.PostPage)
+    else if (context.MaintenancePageSource == EMaintenancePageSource.FrontPage)
     {
-        <FluentTextField @bind-Value=@context.RenderPageUrl Label="Render Url" Class="mt-4" Placeholder="/pageUrl">
-            <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Slot="start" Color="Color.Accent" />
-        </FluentTextField>
-    }
-    else
-    {
-        <FluentMessageBar Title="Не реализовано" Intent="@MessageIntent.Warning">
-            <b>@context.MaintenancePageSource</b> не реализована
-        </FluentMessageBar>
-    }
+        <div class="mt-3">
+            <hr />
+            @if (_fronts.Count > 1)
+            {
+                <div class="mb-3">
+                    <label>Фронт</label>
+                    <FluentSelect TOption="FrontItem"
+                                  Items="_fronts"
+                                  OptionText="@(f => f.Slug)"
+                                  SelectedOption="_selectedFront"
+                                  SelectedOptionChanged="OnFrontSelected" />
+                </div>
+            }
 
-    @* <FluentButton Appearance="Appearance.Accent">Primary</FluentButton> *@
+            <div class="mb-3">
+                <label>Страница фронта</label>
+                <FluentSelect TOption="string"
+                              Items="_pageUrls"
+                              @bind-Value="@context.RenderPageUrl" />
+            </div>
+
+            <FormItem2 For="()=>context.RenderPageUrl">
+                <FluentTextField @bind-Value=@context.RenderPageUrl Placeholder="/maintenance">
+                    <FluentIcon Value="@(new Icons.Regular.Size16.Globe())" Slot="start" Color="Color.Accent" />
+                </FluentTextField>
+            </FormItem2>
+        </div>
+    }
 
 </EditOptionForm>
-
 
 @code {
     EditOptionForm<MaintenanceModeOption> form = default!;
     CodeEditor2 codeEditor = default!;
+
+    [Inject] IMarsWebApiClient client { get; set; } = default!;
+
+    List<FrontItem> _fronts = [];
+    FrontItem? _selectedFront;
+    List<string> _pageUrls = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var frontsOption = await client.Option.GetOption<FrontsOption>();
+        _fronts = frontsOption?.Fronts.Where(s => s.Enabled).ToList() ?? [];
+        _selectedFront = _fronts.FirstOrDefault();
+        await LoadPages();
+    }
+
+    async Task OnFrontSelected(FrontItem? front)
+    {
+        _selectedFront = front;
+        await LoadPages();
+    }
+
+    async Task LoadPages()
+    {
+        _pageUrls = [];
+        if (_selectedFront is null) return;
+
+        try
+        {
+            var pages = await client.Front.FrontPages(_selectedFront.Slug);
+            // эндпоинт отдаёт и root-файлы (_root.hbs со StartPath "/") — для выбора
+            // страницы обслуживания нужны только уникальные URL страниц
+            _pageUrls = pages.Select(s => s.Url ?? "").Where(s => s != "").Distinct().OrderBy(s => s).ToList();
+        }
+        catch
+        {
+            // фронт может быть недоступен (нет папки/движка) — оставляем ручной ввод URL
+        }
+    }
 
     async Task BeforeSave(MaintenanceModeOption option)
     {

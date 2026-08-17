@@ -233,6 +233,27 @@ IFrontManager (singleton)  ──подписка на IEventManager OptionUpdat
 > `PostTypePresentationRenderHandler`/`PageRenderService` не тронуты — рендерят посты поверх файловых
 > шаблонов. `Post.page`-специфика в админ-вьюхах posts оставлена (для уже существующих БД).
 
+> **Догоняющий фикс maintenance-режима (2026-08-18)**: после переделки проверка maintenance жила
+> только в `WebSiteRequestProcessor.RenderRequest` — главный fallback-рендер закрывался, но обходные
+> пути фронта остались открытыми: статика wwwroot фронтов (SPA с `index.html` продолжал работать)
+> и `/api/PageRender/*` (регрессия: `RenderUrl` до реворка шёл через `RenderRequest`). Решение —
+> пайплайн обработчиков фронтов: контракт `IFrontRequestHandler` в `Mars.Host.Shared/WebSite`,
+> исполняется в `UseFront` до статики и fallback-рендера (`FrontRequestHandlersMiddleware`):
+> запросы без endpoint'а (рендер фронта + html-файлы wwwroot) и endpoint'ы, помеченные
+> `FrontRenderEndpointAttribute` (PageRenderController). `MaintenanceFrontRequestHandler`
+> зарегистрирован в `Mars.Options.Host` — код фронтов про опцию ничего не знает; из
+> `WebSiteRequestProcessor` проверка и `RenderMaintenancePage` удалены. Семантика: закрывается
+> только сайт; рендер по API продолжает работать для мобилок, пока в опции не включена
+> `EnableForApiRender`. `EMaintenancePageSource.PostPage` → `FrontPage` (enum хранится числом —
+> данные совместимы); `RenderPageUrl` — страница фронта, которая отдаётся на все запросы (503).
+> Попутно: `PageRenderService.RenderUrl` снова матчит переданный url (не путь API); форма опции
+> выбирает страницу из `FrontController.FrontPages`. Тесты: maintenance-блок в
+> `HandlebarsAppFrontTests` + `RenderUrl_ByFrontUrl_RendersRequestedPage`. Сьют
+> `Mars.AppFrontEngines.Integration.Tests` переведён на одну коллекцию xUnit
+> (`HandlebarsAppFrontCollection`): два `IClassFixture` поднимали два приложения в одном процессе
+> и ломали друг друга; `WebSiteTemplateTests` восстанавливает подменённый `IWebTemplateService`
+> и чистит кеш скомпилированных шаблонов по ключам.
+
 ### Фаза 4. Админка — список фронтов (переделка SettingsHostHtml) ✅ (2026-08-07)
 
 **Цель**: настройки фронта — простой список: путь, движок, вкл/выкл; клик → редактор.

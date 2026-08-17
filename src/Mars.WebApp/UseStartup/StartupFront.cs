@@ -51,6 +51,7 @@ public static class StartupFront
 
         UseRobotsTxt(app);
         app.Use(AppendMarsAppFrontInRequestContextItems);
+        app.Use(FrontRequestHandlersMiddleware);
         app.Use(FrontStaticFilesMiddleware);
 
         app.MapFallback("/api/{**slug}", ApiFallbackAsync);
@@ -61,6 +62,55 @@ public static class StartupFront
         app.Use(FrontRenderFallbackMiddleware);
 
         return app;
+    }
+
+    /// <summary>
+    /// Пайплайн обработчиков фронтов (IFrontRequestHandler из DI, по возрастанию Order).
+    /// Исполняется до статики фронтов и fallback-рендера: обработчик может перехватить запрос
+    /// (например, режим обслуживания), не встраиваясь в код фронтов.
+    ///
+    /// Запросы с endpoint'ом проходят через обработчики только если endpoint помечен
+    /// FrontRenderEndpointAttribute (публичное API рендера фронтов); админка и прочие API
+    /// не затрагиваются. Файловые запросы (ассеты) идут мимо, кроме html-страниц в wwwroot.
+    /// </summary>
+    static async Task FrontRequestHandlersMiddleware(HttpContext context, Func<Task> next)
+    {
+        var endpoint = context.GetEndpoint();
+        if (endpoint is not null)
+        {
+            if (endpoint.Metadata.GetMetadata<FrontRenderEndpointAttribute>() is null)
+            {
+                await next();
+                return;
+            }
+        }
+        else if (IsFileRequest(context.Request.Path) && !IsHtmlFileRequest(context.Request.Path))
+        {
+            await next();
+            return;
+        }
+
+        var appFront = context.Items[nameof(MarsAppFront)] as MarsAppFront;
+        if (appFront is null)
+        {
+            // API рендера: SetupAppFront контроллера ещё не исполнялся — резолвим фронт сами
+            var locator = context.RequestServices.GetRequiredService<IWebRenderEngineLocator>();
+            appFront = locator.GetAppFrontForUrl(context.Request.Path) ?? locator.GetAppFrontForUrl("/");
+            if (appFront is null)
+            {
+                await next();
+                return;
+            }
+        }
+
+        var handlers = context.RequestServices.GetRequiredService<IEnumerable<IFrontRequestHandler>>();
+        foreach (var handler in handlers.OrderBy(s => s.Order))
+        {
+            if (await handler.HandleAsync(context, appFront, context.RequestAborted))
+                return;
+        }
+
+        await next();
     }
 
     /// <summary>
@@ -171,6 +221,13 @@ public static class StartupFront
         var value = path.Value ?? "";
         var lastSegmentStart = value.LastIndexOf('/') + 1;
         return value.IndexOf('.', lastSegmentStart) >= 0;
+    }
+
+    static bool IsHtmlFileRequest(PathString path)
+    {
+        var ext = Path.GetExtension(path.Value ?? "");
+        return ext.Equals(".html", StringComparison.OrdinalIgnoreCase)
+            || ext.Equals(".htm", StringComparison.OrdinalIgnoreCase);
     }
 
     static void UseRobotsTxt(WebApplication app)

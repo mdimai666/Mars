@@ -1,6 +1,7 @@
 using Mars.Host.Handlers;
 using Mars.Host.Shared.Constants.Website;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.WebSite;
 using Mars.Host.Shared.WebSite.Scripts;
 using Mars.Options.Models;
 using Mars.Shared.Options;
@@ -14,6 +15,7 @@ public static class MainOptions
 
     public static IServiceCollection AddMarsOptions(this IServiceCollection services)
     {
+        services.AddSingleton<IFrontRequestHandler, MaintenanceFrontRequestHandler>();
         return services;
     }
 

@@ -9,7 +9,10 @@ public class MaintenanceModeOption
     [Display(Name = "Включить режим обслуживания")]
     public bool Enable { get; set; }
 
-    [Display(Name = "PageSource")]
+    [Display(Name = "Закрывать также рендер фронтов по API (PageRender)", Description = "Если выключено, мобильные приложения и другие потребители API рендера продолжают работать.")]
+    public bool EnableForApiRender { get; set; }
+
+    [Display(Name = "Источник страницы обслуживания")]
     public EMaintenancePageSource MaintenancePageSource { get; set; } = EMaintenancePageSource.StaticHtml;
 
     string _maintenanceStaticPage = null!;
@@ -36,13 +39,13 @@ public class MaintenanceModeOption
         </html>
         """;
 
-    [Display(Name = "RenderPageUrl")]
+    [Display(Name = "Страница фронта", Description = "URL страницы в шаблоне фронта (например /maintenance). Во время режима обслуживания все запросы фронта отдают эту страницу.")]
     public string RenderPageUrl { get; set; } = "";
 }
 
 public enum EMaintenancePageSource
 {
     StaticHtml,
-    PostPage
+    FrontPage
 }
 

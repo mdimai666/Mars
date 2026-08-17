@@ -1,0 +1,165 @@
+// Command Palette (ActionCenter) — стиль по мотивам VS Code Quick Input.
+
+// Кнопка-триггер в шапке (вместо прежнего поля поиска).
+.ac-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 280px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: var(--neutral-foreground-rest, #444444);
+    background: var(--neutral-fill-stealth-rest, #f3f3f3);
+    border: 1px solid var(--neutral-stroke-rest, #d9d9d9);
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--neutral-fill-stealth-hover, #e9e9e9);
+    }
+
+    .ac-trigger-text {
+        flex: 1;
+        text-align: left;
+        opacity: 0.7;
+    }
+
+    .ac-trigger-kbd {
+        font-size: 11px;
+        padding: 1px 6px;
+        border: 1px solid var(--neutral-stroke-rest, #cccccc);
+        border-radius: 3px;
+        background: var(--neutral-fill-rest, #ffffff);
+        opacity: 0.8;
+    }
+}
+
+.ac-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 12vh;
+}
+
+.ac-dialog {
+    width: min(640px, 92vw);
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--neutral-layer-1, #ffffff);
+    border: 1px solid var(--neutral-stroke-rest, #d6d6d6);
+    border-radius: 6px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.ac-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--neutral-stroke-rest, #e1e1e1);
+
+    .ac-input-icon {
+        color: var(--neutral-foreground-rest, #616161);
+        flex-shrink: 0;
+    }
+}
+
+.ac-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--neutral-foreground-rest, #1f1f1f);
+
+    &::placeholder {
+        color: var(--neutral-foreground-hint, #9a9a9a);
+    }
+}
+
+// Маленький спиннер справа в строке ввода, пока идёт серверный поиск.
+.ac-spinner {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    border: 2px solid var(--neutral-stroke-rest, #d0d0d0);
+    border-top-color: var(--accent-fill-rest, #0060c0);
+    border-radius: 50%;
+    animation: ac-spin 0.7s linear infinite;
+}
+
+@keyframes ac-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ac-list {
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+.ac-divider {
+    height: 1px;
+    margin: 5px 0;
+    background: var(--neutral-stroke-rest, #e5e5e5);
+}
+
+// Пункт в одну строку: иконка, название, затем с отступом хвост (описание/категория/url).
+.ac-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    .ac-item-icon {
+        color: var(--neutral-foreground-hint, #7a7a7a);
+        flex-shrink: 0;
+        width: 18px;
+        text-align: center;
+    }
+
+    .ac-item-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 13.5px;
+        color: var(--neutral-foreground-rest, #1f1f1f);
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ac-item-desc {
+        flex: 0 0 auto;
+        max-width: 45%;
+        margin-left: 8px;
+        font-size: 12px;
+        color: var(--neutral-foreground-hint, #8a8a8a);
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &.ac-selected {
+        background: var(--accent-fill-rest, #0060c0);
+
+        .ac-item-title,
+        .ac-item-desc,
+        .ac-item-icon {
+            color: #ffffff;
+        }
+    }
+}
+
+.ac-empty {
+    padding: 16px 12px;
+    font-size: 13px;
+    color: var(--neutral-foreground-hint, #8a8a8a);
+    text-align: center;
+}

@@ -18,6 +18,8 @@ public sealed class XActionBuilder
     float _contextMenuOrder;
     string? _linkValue;
     Type? _handlerType;
+    bool _frontAction;
+    int? _recommended;
     readonly List<XActionArgument> _arguments = [];
 
     public XActionBuilder Id(string id)
@@ -53,6 +55,16 @@ public sealed class XActionBuilder
     public XActionBuilder System(bool value = true)
     {
         _system = value;
+        return this;
+    }
+
+    /// <summary>
+    /// Пометить команду как рекомендуемую в палитре (режим «&gt;» без ввода).
+    /// Чем больше <paramref name="priority"/>, тем выше команда в топе.
+    /// </summary>
+    public XActionBuilder Recommended(int priority = 1)
+    {
+        _recommended = priority;
         return this;
     }
 
@@ -116,18 +128,41 @@ public sealed class XActionBuilder
         return this;
     }
 
+    /// <summary>
+    /// Фронтовое действие: исполняется на клиенте через реестр раннеров
+    /// (<c>IFrontActionRunner</c>), хэндлер и ссылка не требуются.
+    /// </summary>
+    public XActionBuilder FrontAction()
+    {
+        _frontAction = true;
+        return this;
+    }
+
     public XActionCommand Build(out Type? handlerType)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(_id, "XAction Id");
         ArgumentException.ThrowIfNullOrWhiteSpace(_label, "XAction Label");
 
-        if (_handlerType is null && string.IsNullOrEmpty(_linkValue))
-            throw new InvalidOperationException($"XAction '{_id}': не задана привязка исполнения — укажите Handler<TAct>() или Link(url)");
+        XActionType type;
+        if (_frontAction)
+        {
+            if (_handlerType is not null || !string.IsNullOrEmpty(_linkValue))
+                throw new InvalidOperationException($"XAction '{_id}': FrontAction нельзя совмещать с Handler или Link");
 
-        if (_handlerType is not null && !string.IsNullOrEmpty(_linkValue))
-            throw new InvalidOperationException($"XAction '{_id}': одновременно заданы Handler и Link");
+            type = XActionType.FrontAction;
+        }
+        else
+        {
+            if (_handlerType is null && string.IsNullOrEmpty(_linkValue))
+                throw new InvalidOperationException($"XAction '{_id}': не задана привязка исполнения — укажите Handler<TAct>(), Link(url) или FrontAction()");
 
-        handlerType = _handlerType;
+            if (_handlerType is not null && !string.IsNullOrEmpty(_linkValue))
+                throw new InvalidOperationException($"XAction '{_id}': одновременно заданы Handler и Link");
+
+            type = string.IsNullOrEmpty(_linkValue) ? XActionType.HostAction : XActionType.Link;
+        }
+
+        handlerType = _frontAction ? null : _handlerType;
 
         return new XActionCommand
         {
@@ -137,11 +172,12 @@ public sealed class XActionBuilder
             Description = _description,
             Icon = _icon,
             System = _system,
+            Recommended = _recommended,
             FrontContextId = _frontContexts,
             ContextMenuGroupId = _contextMenuGroupId,
             ContextMenuOrder = _contextMenuOrder,
             LinkValue = _linkValue,
-            Type = string.IsNullOrEmpty(_linkValue) ? XActionType.HostAction : XActionType.Link,
+            Type = type,
             Arguments = _arguments.Count > 0 ? [.. _arguments] : null,
         };
     }

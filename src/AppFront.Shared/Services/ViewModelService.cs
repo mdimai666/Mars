@@ -5,7 +5,6 @@ using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Features;
 using Mars.Shared.Common;
-using Mars.Shared.Contracts.Search;
 using Mars.Shared.Contracts.Systems;
 using Mars.Shared.ViewModels;
 using Microsoft.JSInterop;
@@ -86,13 +85,6 @@ public class ViewModelService : IViewModelService
     public async Task<StatisticPageViewModel> StatisticPageViewModel()
     {
         return await Get<StatisticPageViewModel>();
-    }
-
-    public async Task<List<SearchFoundElementResponse>> GlobalSearch(string text, int maxCount = 20)
-    {
-        return await _client.Request($"{_basePath}{_controllerName}/GlobalSearch")
-            .AppendQueryParam(new { text, maxCount })
-            .GetJsonAsync<List<SearchFoundElementResponse>>();
     }
 
     SemaphoreSlim initialSiteDataIsLoad = new(1);

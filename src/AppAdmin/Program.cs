@@ -56,6 +56,13 @@ builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
 // формы аргументов XAction: заменяем null-презентер на диалоги FluentUI
 builder.Services.Replace(ServiceDescriptor.Scoped<AppFront.Shared.Services.IXActionFormPresenter, AppAdmin.Shared.FluentDialogXActionFormPresenter>());
 
+builder.Services.AddScoped<AppAdmin.Shared.ActionCenter.ActionCenterService>();
+builder.Services.AddScoped<AppAdmin.Shared.ActionCenter.RecentPagesService>();
+
+#if DEBUG
+builder.Services.AddScoped<AppFront.Shared.Services.IFrontActionRunner, AppAdmin.Shared.FrontDemoActionRunner>();
+#endif
+
 Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
 Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));

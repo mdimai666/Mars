@@ -22,6 +22,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public INavMenuServiceClient NavMenu { get; }
     public IOptionServiceClient Option { get; }
     public IActServiceClient Act { get; }
+    public ISearchServiceClient Search { get; }
     public IAppDebugServiceClient AppDebug { get; }
     public IMediaServiceClient Media { get; }
     public IPostJsonServiceClient PostJson { get; }
@@ -50,6 +51,7 @@ public class MarsWebApiClient : IMarsWebApiClient
         NavMenu = new NavMenuServiceClient(serviceProvider, targetClient);
         Option = new OptionServiceClient(serviceProvider, targetClient);
         Act = new ActServiceClient(serviceProvider, targetClient);
+        Search = new SearchServiceClient(serviceProvider, targetClient);
         AppDebug = new AppDebugServiceClient(serviceProvider, targetClient);
         Media = new MediaServiceClient(serviceProvider, targetClient);
         PostJson = new PostJsonServiceClient(serviceProvider, targetClient);

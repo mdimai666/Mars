@@ -43,6 +43,7 @@ internal static class ConfigureActions
             a.Id(ClearCacheAct.CommandId)
              .Label("Очистить кеш")
              .Category("Хост")
+             .Recommended(10)
              .Handler<ClearCacheAct>();
 #if !NOADMIN
             a.FrontContexts(typeof(SettingsHostCachePage).FullName!);
@@ -66,6 +67,7 @@ internal static class ConfigureActions
             a.Id(CreatePostTypePresentationTemplateAct.CommandId)
              .Label("Создать шаблон представления для типа записи")
              .Category("Контент")
+             .Recommended(5)
              .Argument(CreatePostTypePresentationTemplateAct.PostTypeNameArg, "Тип записи", XActionArgumentType.Choice, required: true, optionsSource: CreateMockPostsAct.PostTypesOptionsSource)
              .Handler<CreatePostTypePresentationTemplateAct>();
 #if !NOADMIN
@@ -101,6 +103,13 @@ internal static class ConfigureActions
                 new() { Key = "three", Label = "Третий" },
             ])
             .Handler<FormTestAct>());
+
+        actionManager.Add(a => a
+            .Id(FrontDemoXAction.CommandId)
+            .Label(FrontDemoXAction.Label)
+            .Description("Исполняется на клиенте, хост такую команду не выполняет")
+            .Category("Отладка")
+            .FrontAction());
 #endif
 
 #if !NOADMIN

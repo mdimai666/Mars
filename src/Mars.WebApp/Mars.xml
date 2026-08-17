@@ -348,6 +348,14 @@
             строка, число, bool и выбор из списка; по выполнению показывает тостом введённые значения.
             </summary>
         </member>
+        <member name="T:Mars.XActions.FrontDemoXAction">
+            <summary>
+            Отладочное фронтовое действие (<see cref="F:Mars.Shared.Contracts.XActions.XActionType.FrontAction"/>):
+            метаданные регистрируются на хосте, исполнение — на клиенте через раннер
+            (см. AppAdmin.Shared.FrontDemoActionRunner). Сами продуктовые фронтовые действия
+            (тема, язык) будут регистрироваться по этому образцу.
+            </summary>
+        </member>
         <member name="T:Program">
             <summary>
             Auto-generated public partial Program class for top-level statement apps.

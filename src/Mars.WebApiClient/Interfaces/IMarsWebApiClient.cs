@@ -19,6 +19,7 @@ public interface IMarsWebApiClient
     INavMenuServiceClient NavMenu { get; }
     IOptionServiceClient Option { get; }
     IActServiceClient Act { get; }
+    ISearchServiceClient Search { get; }
     IAppDebugServiceClient AppDebug { get; }
     IMediaServiceClient Media { get; }
     IPostJsonServiceClient PostJson { get; }

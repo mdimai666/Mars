@@ -1,3 +1,4 @@
+using AppAdmin.Shared.ActionCenter;
 using AppFront.Shared.AuthProviders;
 using AppFront.Shared.Features;
 using AppFront.Shared.Models;
@@ -34,6 +35,7 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
     }
 
     [Inject] HotKeys HotKeys { get; set; } = default!;
+    [Inject] ActionCenterService ActionCenterService { get; set; } = default!;
     HotKeysContext HotKeysContext = default!;
 
     HeaderAdmin1 headerAdmin = default!;
@@ -83,7 +85,8 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
         //Load();
 
         HotKeysContext = HotKeys.CreateContext()
-             .Add(ModCode.None, Code.F1, () => headerAdmin.FocusActionCenter(), "Focus Action center");
+             .Add(ModCode.None, Code.F1, () => ActionCenterService.Toggle(), "Open Action center")
+             .Add(ModCode.Ctrl, Code.K, () => ActionCenterService.Toggle(), "Open Action center");
     }
 
     bool collapsed;

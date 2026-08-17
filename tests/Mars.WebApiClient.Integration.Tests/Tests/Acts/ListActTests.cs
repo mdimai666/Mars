@@ -87,6 +87,23 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
+    public async Task List_ShouldCarryRecommendedPriority()
+    {
+        //Arrange
+        var client = GetWebApiClient();
+
+        //Act
+        var list = await client.Act.List();
+
+        //Assert
+        var clearCache = list.Should().ContainKey(ClearCacheAct.CommandId).WhoseValue;
+        clearCache.Recommended.Should().Be(10);
+
+        var template = list.Should().ContainKey(CreatePostTypePresentationTemplateAct.CommandId).WhoseValue;
+        template.Recommended.Should().Be(5);
+    }
+
+    [IntegrationFact]
     public async Task Options_ShouldReturnDynamicOptions()
     {
         //Arrange

@@ -1,18 +1,7 @@
 using System.Net.Mime;
-using Mars.Core.Exceptions;
-using Mars.Handlers;
 using Mars.Host.Handlers;
 using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Mappings.NavMenus;
-using Mars.Host.Shared.Mappings.Options;
-using Mars.Host.Shared.Mappings.PostTypes;
-using Mars.Host.Shared.Mappings.Renders;
-using Mars.Host.Shared.Mappings.Search;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.Search;
-using Mars.Shared.Models;
 using Mars.Shared.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Controllers;
@@ -28,16 +17,13 @@ public class ViewModelController : ControllerBase //MinimalControllerBase, IView
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly InitialSiteDataViewModelHandler _initialSiteDataViewModelHandler;
-    private readonly ICentralSearchService _centralSearchService;
 
     public ViewModelController(
         IServiceProvider serviceProvider,
-        InitialSiteDataViewModelHandler initialSiteDataViewModelHandler,
-        ICentralSearchService centralSearchService)
+        InitialSiteDataViewModelHandler initialSiteDataViewModelHandler)
     {
         _serviceProvider = serviceProvider;
         _initialSiteDataViewModelHandler = initialSiteDataViewModelHandler;
-        _centralSearchService = centralSearchService;
     }
 
     [HttpGet]
@@ -45,15 +31,5 @@ public class ViewModelController : ControllerBase //MinimalControllerBase, IView
     {
         return _initialSiteDataViewModelHandler.Handle(Request, devAdminPageData, cancellationToken);
         //return await InitialSiteDataViewModel(_serviceProvider, Request, devAdminPageData: devAdminPageData);
-    }
-
-    [HttpGet]
-    [Authorize]
-    public async Task<IReadOnlyCollection<SearchFoundElementResponse>> GlobalSearch(string text, int maxCount = 10, CancellationToken cancellationToken = default)
-    {
-        if (maxCount > 30) throw MarsValidationException.FromSingleError(nameof(maxCount), "maxCount maximum is 30");
-        if (string.IsNullOrWhiteSpace(text) || text.Trim().Length < 2) return [];
-        var results = await _centralSearchService.ActionBarSearch(text, maxCount, cancellationToken);
-        return results.ToResponse();
     }
 }

@@ -93,6 +93,9 @@ internal partial class XActionManager : IActionManager, IMarsAppLifetimeService
         if (action.Provider != null)
             return await action.Provider.RunCommand(action.Command, args, cancellationToken);
 
+        if (action.Command.Type == XActionType.FrontAction)
+            return XActResult.ToastError($"команда '{id}' — фронтовая: выполняется на клиенте, хост её не исполняет");
+
         if (action.Command.Type == XActionType.Link)
             return XActResult.ToastWarning($"команда '{id}' — ссылка: {action.Command.LinkValue}");
 

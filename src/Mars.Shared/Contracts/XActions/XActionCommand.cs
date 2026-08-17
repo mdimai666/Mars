@@ -17,6 +17,12 @@ public record XActionCommand
     /// </summary>
     public bool System { get; init; }
 
+    /// <summary>
+    /// Рекомендуемая команда в палитре (режим «&gt;» без ввода): чем больше значение,
+    /// тем выше в топе. null/0 — не рекомендуемая.
+    /// </summary>
+    public int? Recommended { get; init; }
+
     public XActionType Type { get; init; }
     public string? LinkValue { get; init; }
 
@@ -139,4 +145,10 @@ public enum XActionType : int
 {
     Link = 0,
     HostAction = 1,
+
+    /// <summary>
+    /// Фронтовое действие: метаданные зарегистрированы как обычно (система видит команду),
+    /// но исполнение происходит на клиенте через реестр раннеров — хост такую команду не выполняет.
+    /// </summary>
+    FrontAction = 2,
 }

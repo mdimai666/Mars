@@ -61,6 +61,8 @@ public static class MainMarsHost
         services.AddScoped<IGalleryService, GalleryService>();
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
+        services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();
+        services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();
         services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
         services.AddScoped<SiteFaviconConfiguratorHandler>();
         services.AddSingleton<IDatabaseEntityTypeCatalogService, DatabaseEntityTypeCatalogService>();

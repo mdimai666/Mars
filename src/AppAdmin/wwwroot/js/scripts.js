@@ -277,3 +277,21 @@ window.selectTextForElement = function (element) {
         console.warn(`Element with ID "${elementId}" not found.`);
     }
 };
+
+// ActionCenter (палитра команд): прокрутка выбранного пункта в видимую область списка
+window.d_actionCenter_scrollIntoView = function (elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.scrollIntoView({ block: 'nearest' });
+};
+
+// ActionCenter: стрелки вверх/вниз navigируют по списку — не даём им при этом
+// двигать каретку в инпуте (ArrowUp/ArrowDown по умолчанию ставят её в начало/конец).
+window.d_actionCenter_preventArrowCaret = function (element) {
+    if (!element || element._acArrowsHooked) return;
+    element._acArrowsHooked = true;
+    element.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+        }
+    });
+};

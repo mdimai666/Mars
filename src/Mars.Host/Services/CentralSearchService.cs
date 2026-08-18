@@ -18,8 +18,14 @@ internal class CentralSearchService(
             .OrderBy(p => p.Order)
             .ToList();
 
-        var results = await Task.WhenAll(
-            orderedProviders.Select(p => p.SearchAsync(query, maxCount, cancellationToken)));
+        // Последовательный вызов: провайдеры scoped и делят один MarsDbContext из pool,
+        // параллельный Task.WhenAll приводил к InvalidOperationException
+        // ("A second operation was started on this context instance before a previous operation completed").
+        var results = new List<IReadOnlyCollection<SearchFoundElement>>();
+        foreach (var provider in orderedProviders)
+        {
+            results.Add(await provider.SearchAsync(query, maxCount, cancellationToken));
+        }
 
         var items = orderedProviders
             .Zip(results)

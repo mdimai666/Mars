@@ -19,7 +19,7 @@
                                 <div class="flex-fill fz18px">
                                     @(MetaFieldEditModel.TypeIcons[field.Type])
 
-                                    <span class="@(field.Disabled ? "text-secondary text-strike" : "") @(field.Hidden ? "text-italic" : "")">
+                                    <span class="@(field.Disabled ? "text-secondary text-decoration-line-through" : "") @(field.Hidden ? "fst-italic" : "")">
                                         @(string.IsNullOrEmpty(field.Title) ? "<nameless>" : field.Title)
                                     </span>
                                     @*<span class="text-primary fz14px">{@field.Id}</span>*@

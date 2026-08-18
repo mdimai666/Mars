@@ -6,7 +6,7 @@
     &:not(:active):hover {
         transform: translate(@push-size, -@push-size);
         position: relative;
-        border: 1px solid @color-accent !important;
+        border: 1px solid var(--mars-color-accent) !important;
         z-index: 1;
         .animate__onPushUp_0();
         -webkit-animation-name: onPushUp;
@@ -15,8 +15,8 @@
         &::before {
             /*border-left: @push-size solid @color-dark-accent;
             border-bottom: @push-size solid @color-dark-accent;*/
-            border-left: 0 solid @color-dark-accent;
-            border-bottom: 0 solid @color-dark-accent;
+            border-left: 0 solid var(--mars-bg-surface-active);
+            border-bottom: 0 solid var(--mars-bg-surface-active);
             clip-path: polygon( @push-size 0%, calc(100% - @push-size) 0%, 100% 0px, 100% calc(100% - @push-size), calc(100% - @push-size) 100%, 0% calc(100% + @push-size), 0% @push-size);
             content: '';
             position: absolute;
@@ -40,7 +40,7 @@
 body.dark {
     .ani-hover-onpush {
         &:not(:active):hover {
-            border: 1px solid black !important;
+            border: 1px solid var(--mars-text-primary) !important;
 
             &::before {
                 -webkit-animation-name: onPushUp_border__black;
@@ -79,22 +79,22 @@ body.dark {
     }
 
     40% {
-        border-left: @push-size solid @color-dark-accent;
-        border-bottom: @push-size solid @color-dark-accent;
+        border-left: @push-size solid var(--mars-bg-surface-active);
+        border-bottom: @push-size solid var(--mars-bg-surface-active);
         left: -@push-size;
         bottom: -@push-size;
     }
 
     60% {
-        border-left: calc(@push-size / 1.5) solid @color-dark-accent;
-        border-bottom: calc(@push-size / 1.5) solid @color-dark-accent;
+        border-left: calc(@push-size / 1.5) solid var(--mars-bg-surface-active);
+        border-bottom: calc(@push-size / 1.5) solid var(--mars-bg-surface-active);
         left: calc(-@push-size / 1.5);
         bottom: calc(-@push-size / 1.5);
     }
 
     100% {
-        border-left: @push-size solid @color-dark-accent;
-        border-bottom: @push-size solid @color-dark-accent;
+        border-left: @push-size solid var(--mars-bg-surface-active);
+        border-bottom: @push-size solid var(--mars-bg-surface-active);
         left: -@push-size;
         bottom: -@push-size;
     }

@@ -1,6 +1,6 @@
 # Mars Project Context
 
-Read @ai/ProjectDescription.md for a full overview of the Mars platform.
+Full overview: @ai/ProjectDescription.md
 
 ## Quick Summary
 
@@ -15,10 +15,24 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 
 - `src/Mars.WebApp` — main application
 - `src/Mars.Nodes` — visual programming engine
-- `src/AppAdmin` — admin panel (Blazor Server)
+- `src/AppAdmin` — admin panel (Blazor WASM)
 - `src/Plugin` — plugin system
 - `docs/` — documentation site
 - `ai/` — AI agent context files
+
+## Build & Test
+
+```
+dotnet build Mars.slnx                                        # full solution build
+dotnet test tests/Test.Mars.Host --verbosity minimal          # fast unit tests
+dotnet test tests/Mars.Integration.Tests --verbosity minimal  # integration tests
+```
+
+## Conventions
+
+- **Solution**: `Mars.slnx` — everything builds from here
+- **Modules**: `src/Mars.Modules/<ModuleName>/` — each module is a self-contained project
+- **Tests**: `tests/Test.Mars.*` (unit) and `tests/Mars.*.Integration.Tests` (integration)
 
 ## Mars CLI — thin client to a running instance
 
@@ -32,24 +46,6 @@ domain socket (no second startup); otherwise they run in-process.
 - Commands mutate the LIVE instance — run them against a running server only with the user's confirmation.
 - Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
 - In test mode (IsTesting / ASPNETCORE_ENVIRONMENT=Test) CLI arguments are ignored — this path is unavailable under tests.
-
-## Codebase Knowledge Graph (codebase-memory MCP)
-
-The repository is indexed as a knowledge graph by the `codebase-memory` MCP server
-(project: `C-Users-D-Documents-VisualStudio-2025-Mars`; confirm via `list_projects`).
-Use it for STRUCTURAL questions that grep can't answer:
-
-- `search_graph` / `get_code_snippet` — find symbol definitions, read their source
-- `trace_path` — call chains: who calls X / what X calls
-- `detect_changes` — blast radius of a diff before refactoring
-- `search_code` — large usage searches, deduplicated into functions
-- `get_architecture` — high-level overview of the solution
-
-Do NOT use it for reading known files (`read_file`) or when the exact current text
-matters (`grep_search`) — the live tree is always the source of truth.
-
-The index is a SNAPSHOT and can go stale. If graph results contradict the live code,
-re-index: `index_repository(repo_path=<repo root>, mode="full")`.
 
 ## Language
 

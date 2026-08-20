@@ -1,6 +1,6 @@
 # План переделки ActionCenter — Command Palette в стиле VS Code
 
-> **Статус: P0–P5 реализованы (2026-08-18).**
+> **Статус: P0–P5 реализованы (2026-08-18); поиск настроек — 2026-08-20.**
 > Задача-источник: [CreateNewActionCenterPrompt.md](./CreateNewActionCenterPrompt.md).
 > Предыстория: XActions как командная шина добиты по [XActionsPlan.md](./XActionsPlan.md) (P1–P4);
 > палитра — главный потребитель этого реестра.
@@ -258,6 +258,26 @@ QuerySearch/InjectAct/CentralSearch — вся зелёная.
   пробрасывается в `ISearchServiceClient.Query` (`GetJsonAsync(..., HttpCompletionOption, ct)`),
   вытесненный запрос реально отменяется; в ветке «запрос очищен» теперь гасится зависший
   `_searchCts`; применение результата только по `seq == _searchSeq`; `InvokeAsync(StateHasChanged)`.
+
+---
+
+## 4c. Поиск настроек (опций) в палитре — ✅ реализовано 2026-08-20
+
+Поиск по зарегистрированным настройкам (например, `ApiOption`) — **локально в палитре**
+(вариант «A»), без серверного провайдера: источник — клиентский `IOptionsFormsLocator`
+(`RegisteredFormsAutoShow()` — ровно то множество, что показывает меню страницы Настроек,
+поэтому тупиковых пунктов «Option type Form not found» не бывает).
+
+- `ActionCenter.razor.cs`: `[Inject] IOptionsFormsLocator`, кеш `OptionEntry`
+  (Title = Display формы, Description = Display класса опции либо «Настройка»,
+  SearchText = «Display формы + Display класса + имя класса»,
+  Url = `/dev/Settings/Option/{FullName с "+" вместо "."}` — тот же, что строит `ASideOptions`),
+  `FilterOptions` через существующий `MatchScore`, `PaletteItemKind.Option` + иконка `bi bi-gear`.
+- Секции: ввод без префикса — команды → настройки → серверный поиск (разделители между
+  непустыми); режим `#` — настройки → серверный поиск, но при пустом запросе после `#`
+  настройки не показываются (по фидбеку пользователя). `>` не изменён.
+- Исполнение — `NavigateTo(url)` в общей ветке Page/SearchResult/RecentPage/Option.
+- Сервер, контракты поиска и стили не менялись; `MarsAppVersion` не поднимался (чистый WASM C#).
 
 ---
 

@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using AppFront.Main.OptionEditForms;
 using AppFront.Shared.Interfaces;
 using AppFront.Shared.Models;
 using AppFront.Shared.Services;
@@ -29,6 +32,7 @@ public partial class ActionCenter : IDisposable
     [Inject] IMessageService MessageService { get; set; } = default!;
     [Inject] IBlazorPagesService BlazorPages { get; set; } = default!;
     [Inject] IAiChatAppService AiChatService { get; set; } = default!;
+    [Inject] IOptionsFormsLocator OptionsForms { get; set; } = default!;
 
     enum Mode { Default, Commands, Search }
     enum PaletteView { Main, Pages }
@@ -43,6 +47,7 @@ public partial class ActionCenter : IDisposable
     List<string> _mruIds = [];
     IReadOnlyCollection<SearchFoundElementResponse> _searchResults = [];
     List<BlazorPageInfo>? _pages;
+    List<OptionEntry>? _options;
 
     List<PaletteSection> _sections = [];
     List<PaletteItem> _flat = [];
@@ -52,6 +57,11 @@ public partial class ActionCenter : IDisposable
     int _searchSeq;
 
     ElementReference _inputRef;
+
+    /// <summary>
+    /// Кеш зарегистрированных настроек с формами редактирования (IOptionsFormsLocator).
+    /// </summary>
+    sealed record OptionEntry(string Title, string Description, string SearchText, string Url);
 
     protected override void OnInitialized()
     {
@@ -93,6 +103,8 @@ public partial class ActionCenter : IDisposable
 
         try
         {
+            LoadOptions();
+
             await Task.WhenAll(
                 LoadCommandsAsync(),
                 LoadMruAsync(),
@@ -128,6 +140,26 @@ public partial class ActionCenter : IDisposable
         {
             _mruIds = [];
         }
+    }
+
+    void LoadOptions()
+    {
+        if (_options is not null) return;
+
+        _options = OptionsForms.RegisteredFormsAutoShow()
+            .Select(f =>
+            {
+                var classDisplay = f.OptionType.GetCustomAttribute<DisplayAttribute>()?.Name;
+                return new OptionEntry(
+                    Title: f.DisplayName,
+                    Description: string.IsNullOrEmpty(classDisplay) || classDisplay == f.DisplayName
+                        ? "Настройка"
+                        : classDisplay,
+                    SearchText: $"{f.DisplayName} {classDisplay} {f.OptionType.Name}",
+                    Url: "/dev/Settings/Option/" + f.OptionType.FullName!.Replace(".", "+"));
+            })
+            .OrderBy(o => o.Title, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -379,14 +411,25 @@ public partial class ActionCenter : IDisposable
     List<PaletteSection> BuildTypingSections(string query)
     {
         var sections = new List<PaletteSection>();
+        var hasPrev = false;
 
         var commands = FilterCommands(query).Select(CommandItem).ToList();
         if (commands.Count > 0)
+        {
             sections.Add(new PaletteSection { Items = commands });
+            hasPrev = true;
+        }
+
+        var options = FilterOptions(query).Select(OptionItem).ToList();
+        if (options.Count > 0)
+        {
+            sections.Add(new PaletteSection { DividerBefore = hasPrev, Items = options });
+            hasPrev = true;
+        }
 
         var search = _searchResults.Select(SearchItem).ToList();
         if (search.Count > 0)
-            sections.Add(new PaletteSection { DividerBefore = commands.Count > 0, Items = search });
+            sections.Add(new PaletteSection { DividerBefore = hasPrev, Items = search });
 
         return sections;
     }
@@ -399,8 +442,22 @@ public partial class ActionCenter : IDisposable
 
     List<PaletteSection> BuildSearchSections()
     {
+        var sections = new List<PaletteSection>();
+
+        var query = StripPrefix(_search);
+
+        // пустой запрос в режиме «#» — все настройки не показываем, только ждём ввод
+        var options = string.IsNullOrWhiteSpace(query)
+            ? []
+            : FilterOptions(query).Select(OptionItem).ToList();
+        if (options.Count > 0)
+            sections.Add(new PaletteSection { Items = options });
+
         var search = _searchResults.Select(SearchItem).ToList();
-        return [new PaletteSection { Items = search }];
+        if (search.Count > 0)
+            sections.Add(new PaletteSection { DividerBefore = options.Count > 0, Items = search });
+
+        return sections;
     }
 
     IEnumerable<XActionCommand> FilterCommands(string query)
@@ -412,6 +469,18 @@ public partial class ActionCenter : IDisposable
             .Where(x => x.Score is not null)
             .OrderByDescending(x => x.Score)
             .Select(x => x.Command);
+    }
+
+    IEnumerable<OptionEntry> FilterOptions(string query)
+    {
+        var options = _options ?? [];
+        if (string.IsNullOrWhiteSpace(query)) return options;
+
+        return options
+            .Select(o => (Option: o, Score: MatchScore(o.SearchText, query)))
+            .Where(x => x.Score is not null)
+            .OrderByDescending(x => x.Score)
+            .Select(x => x.Option);
     }
 
     static string CommandSearchText(XActionCommand c)
@@ -474,6 +543,16 @@ public partial class ActionCenter : IDisposable
         Url = result.Url,
         IconClass = "bi bi-file-earmark-text",
         SearchResult = result,
+    };
+
+    static PaletteItem OptionItem(OptionEntry option) => new()
+    {
+        Id = "option:" + option.Url,
+        Title = option.Title,
+        Description = option.Description,
+        Kind = PaletteItemKind.Option,
+        Url = option.Url,
+        IconClass = "bi bi-gear",
     };
 
     static PaletteItem RecentItem(RecentPage page) => new()
@@ -539,6 +618,7 @@ public partial class ActionCenter : IDisposable
             case PaletteItemKind.Page:
             case PaletteItemKind.SearchResult:
             case PaletteItemKind.RecentPage:
+            case PaletteItemKind.Option:
                 Service.Close();
                 if (!string.IsNullOrEmpty(item.Url))
                     NavigationManager.NavigateTo(item.Url);

@@ -5,7 +5,7 @@ using Mars.Core.Extensions;
 
 namespace Mars.Options.Models;
 
-[Display(Name = "Настройки Api")]
+[Display(Name = "Настройки Media")]
 public class MediaOption
 {
     public const ulong DefaultMaximumInputFileSize = 100 * 1024 * 1024;

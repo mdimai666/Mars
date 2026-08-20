@@ -10,6 +10,7 @@ public enum PaletteItemKind
     SearchResult,
     RecentPage,
     Page,
+    Option,
 }
 
 /// <summary>

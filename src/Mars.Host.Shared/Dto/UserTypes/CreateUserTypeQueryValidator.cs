@@ -6,12 +6,12 @@ namespace Mars.Host.Shared.Dto.UserTypes;
 
 public class CreateUserTypeQueryValidator : AbstractValidator<CreateUserTypeQuery>
 {
-    public CreateUserTypeQueryValidator(IUserMetaLocator userMetaLocator)
+    public CreateUserTypeQueryValidator(IUserMetaLocator userMetaLocator, IMetaModelTypesLocator metaModelTypesLocator)
     {
         RuleFor(x => x.TypeName)
             .Must(name => !userMetaLocator.ExistType(name))
             .WithMessage(x => $"User type '{x.TypeName}' already exist");
 
-        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator(metaModelTypesLocator));
     }
 }

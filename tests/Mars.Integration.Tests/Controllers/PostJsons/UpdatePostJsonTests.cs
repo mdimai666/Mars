@@ -72,7 +72,7 @@ public class UpdatePostJsonTests : ApplicationTests
         AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
 
         var metaValuesQuery = metaValues.Select(s => ModifyMetaValueDetailQuery.GetBlank(s.MetaField!.ToDto(), s.Id).SetMetaValue(_fixture)).ToList();
-        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => JsonValue.Create(s.GetValueSimple()));
+        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => (JsonNode)JsonValue.Create(s.GetValueSimple())!);
 
         var post = _fixture.Create<UpdatePostJsonRequest>() with
         {
@@ -140,7 +140,7 @@ public class UpdatePostJsonTests : ApplicationTests
             return mv;
         });
         var metaValuesQuery = metaValues.Select(s => ModifyMetaValueDetailQuery.GetBlank(s.MetaField!.ToDto(), s.Id).SetMetaValue(_fixture)).ToList();
-        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => JsonValue.Create(s.GetValueSimple()));
+        var metaValuesUpdateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => (JsonNode)JsonValue.Create(s.GetValueSimple())!);
 
         var post = _fixture.Create<UpdatePostJsonRequest>() with
         {

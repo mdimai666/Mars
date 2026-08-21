@@ -1,11 +1,13 @@
 using FluentValidation;
+using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Utils;
+using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Host.Shared.Dto.MetaFields;
 
 public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaFieldsSupportDto>
 {
-    public MetaFieldsDuplicateQueryValidator()
+    public MetaFieldsDuplicateQueryValidator(IMetaModelTypesLocator metaModelTypesLocator)
     {
         RuleForEach(x => x.MetaFields)
             .ChildRules(metaField =>
@@ -35,6 +37,9 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
                             context.AddFailure($"Variant с ключом '{key}' дублируется");
                         }
                     });
+
+                metaField.RuleFor(x => x)
+                    .Custom((field, context) => ValidateModelName(field!, metaModelTypesLocator, context));
             });
 
         RuleFor(x => x.MetaFields)
@@ -52,5 +57,40 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
                     context.AddFailure($"MetaFields[{index}].Key", $"MetaField with key '{duplicate.Key}' дублируется");
                 }
             });
+    }
+
+    /// <summary>
+    /// Валидация <see cref="MetaFieldDto.ModelName"/> по реестру известных целей связей
+    /// </summary>
+    static void ValidateModelName(MetaFieldDto field, IMetaModelTypesLocator metaModelTypesLocator, ValidationContext<MetaFieldDto> context)
+    {
+        if (field.Type is MetaFieldType.File or MetaFieldType.Image)
+        {
+            if (!string.IsNullOrEmpty(field.ModelName))
+                context.AddFailure(nameof(field.ModelName), $"ModelName должен быть пустым для типа поля '{field.Type}'");
+            return;
+        }
+
+        if (field.Type != MetaFieldType.Relation) return;
+
+        if (string.IsNullOrEmpty(field.ModelName))
+        {
+            context.AddFailure(nameof(field.ModelName), "ModelName должен быть указан для поля типа Relation");
+            return;
+        }
+
+        var parts = field.ModelName.Split('.', 2);
+        var root = parts[0];
+
+        if (!metaModelTypesLocator.ListMetaRelationModelProviderKeys().Contains(root))
+        {
+            context.AddFailure(nameof(field.ModelName), $"Цель связи '{field.ModelName}' не найдена в реестре целей");
+            return;
+        }
+
+        if (root == "Post" && parts.Length > 1 && !metaModelTypesLocator.ExistPostType(parts[1]))
+        {
+            context.AddFailure(nameof(field.ModelName), $"Тип поста '{parts[1]}' цели связи не существует");
+        }
     }
 }

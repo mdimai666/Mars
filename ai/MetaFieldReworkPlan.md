@@ -16,6 +16,23 @@
 > `posts.status`, jsonb `post_types.post_status_list` удалён; backfill не нужен —
 > живых данных нет. Статус в запросе/ответе остался слагом (резолв в
 > `PostRepository`/`PostMapping.ResolveStatusId`).
+> **Фаза 6 выполнена 2026-08-22** (без миграций — схема не менялась): мульти-значения
+> Relation/File/Image (N строк на поле, порядок `Index`; в JSON-записи массив, в
+> чтении массив материализованных моделей), фикс `DistinctBy`-потери в обогащении
+> бланками (`PostService`/`PostCategoryService`) и в словарях значений, валидация
+> `ModelName` по реестру целей (`MetaFieldsDuplicateQueryValidator`), propagation
+> целей `Post.<typeName>` при переименовании типа
+> (`PostTypeRepository.PropagateTypeNameInRelationTargetsAsync`), батч-материализация
+> Relation-навигаций в Mto/QueryLang-пути (`MtoRelationMaterializer`, хук в
+> `QueryLangLinqDatabaseQueryHandler`).
+> **Фаза 7 выполнена 2026-08-22** (без миграций — определение в существующем
+> `Options` jsonb): вычислимый тип поля `Query = 110`; определение
+> `target` + `backReferenceKey` (+резерв `filter`) в `Options`
+> (`MetaFieldQueryDefinition`), батч-резолв обратной связи в JSON-чтении
+> (`MetaQueryFieldResolver` → `PostJsonService.FillQueryFieldsAsync`); Query-поля
+> исключены из Mto-генерации и хранимых значений, дефолты/бланки их пропускают;
+> редактор определения в админке. Общий QueryLang-фильтр с `this` отложен —
+> реализован пресет обратной связи.
 > Реализация — отдельными сессиями по фазам.
 > Views — последняя фаза (по решению пользователя); тень-таблицы — вне этого плана,
 > точечно и только после views.

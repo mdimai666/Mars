@@ -41,7 +41,13 @@ internal static class MetaValueMapping
         => entities.Select(ToDto).ToList();
 
     public static IReadOnlyDictionary<string, MetaValueDto> ToDictionaryDto(this IEnumerable<MetaValueBase> entities)
-        => entities.ToDictionary(s => s.MetaField.Key, ToDto);
+        => entities.GroupBy(s => s.MetaField.Key)
+                   .ToDictionary(g => g.Key, g =>
+                   {
+                       // мульти-значения (несколько строк на поле) не теряются в словаре
+                       var rows = g.OrderBy(s => s.Index).Select(ToDto).ToList();
+                       return rows.Count == 1 ? rows[0] : rows[0] with { MultiValues = rows };
+                   });
 
     public static MetaFieldVariantDto ToDto(this MetaFieldVariant entity)
         => new()
@@ -92,7 +98,8 @@ internal static class MetaValueMapping
         => entities.Select(ToDetailDto).ToList();
 
     public static IReadOnlyDictionary<string, MetaValueDetailDto> ToDictionaryDetailDto(this IEnumerable<MetaValueBase> entities)
-        => entities.ToDictionary(s => s.MetaField.Key, ToDetailDto);
+        => entities.GroupBy(s => s.MetaField.Key)
+                   .ToDictionary(g => g.Key, g => g.OrderBy(s => s.Index).First().ToDetailDto());
 
     public static TValue ToEntity<TValue>(this ModifyMetaValueDetailQuery dto) where TValue : MetaValueBase, new()
         => new()

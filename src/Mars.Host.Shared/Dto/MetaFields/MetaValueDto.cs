@@ -28,6 +28,12 @@ public record MetaValueDto : IHasId
     public required object? Value { get; init; }
     public required MetaFieldDto MetaField { get; init; }
 
+    /// <summary>
+    /// Все строки значения (по <see cref="Index"/>), если у поля несколько значений
+    /// (мульти-значения Relation); null — одно значение
+    /// </summary>
+    public IReadOnlyCollection<MetaValueDto>? MultiValues { get; init; }
+
 }
 
 public abstract record MetaValueDetailBase
@@ -72,6 +78,8 @@ public abstract record MetaValueDetailBase
             MetaFieldType.Relation => ModelId,
             MetaFieldType.File => ModelId,
             MetaFieldType.Image => ModelId,
+
+            MetaFieldType.Query => null, // вычислимое — хранимого значения нет
 
             _ => throw new NotImplementedException()
         };

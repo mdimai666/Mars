@@ -1,3 +1,4 @@
+using Mars.Core.Extensions;
 using Mars.Host.Data.Entities;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Utils;
@@ -54,7 +55,7 @@ internal static class MetaFieldMapping
             Hidden = dto.Hidden,
             Disabled = dto.Disabled,
             Variants = dto.Variants?.ToEntity() ?? [],
-            ModelName = dto.ModelName,
+            ModelName = dto.ModelName.AsNullIfEmpty(),
         };
 
     public static List<MetaFieldEntity> ToEntity(this IReadOnlyCollection<MetaFieldDto> entities)

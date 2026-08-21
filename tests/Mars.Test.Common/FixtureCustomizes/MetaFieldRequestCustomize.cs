@@ -14,6 +14,8 @@ public sealed class MetaFieldRequestCustomize : ICustomization
                                     //.OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.Key, () => $"key_{Guid.NewGuid():N}")
+                                    // примитивный тип: случайный не пройдёт валидацию целей связей
+                                    .With(s => s.Type, MetaFieldType.String)
                                     .With(s => s.Variants)
                                     .Without(s => s.Default)
                                     .Without(s => s.Options)
@@ -22,6 +24,8 @@ public sealed class MetaFieldRequestCustomize : ICustomization
         fixture.Customize<UpdateMetaFieldRequest>(composer => composer
                                     .With(s => s.Id)
                                     .With(s => s.Key, () => $"key_{Guid.NewGuid():N}")
+                                    // примитивный тип: случайный не пройдёт валидацию целей связей
+                                    .With(s => s.Type, MetaFieldType.String)
                                     .With(s => s.Variants)
                                     .Without(s => s.Default)
                                     .Without(s => s.Options)

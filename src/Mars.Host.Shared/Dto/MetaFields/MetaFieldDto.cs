@@ -34,4 +34,10 @@ public record MetaFieldDto : IHasId
         => Default?.VariantId is Guid variantId
             ? Variants?.FirstOrDefault(v => v.Id == variantId)?.Key
             : null;
+
+    /// <summary>
+    /// Определение вычислимого поля (для <see cref="MetaFieldType.Query"/>)
+    /// </summary>
+    public MetaFieldQueryDefinition? GetQueryDefinition()
+        => MetaFieldQueryDefinition.FromOptions(Options);
 }

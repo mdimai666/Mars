@@ -46,7 +46,7 @@ public sealed class UpdatePostJsonTests : BaseWebApiClientTests
             Id = entity.Id,
             Title = "new Title",
             Type = "post",
-            Meta = new Dictionary<string, JsonValue>
+            Meta = new Dictionary<string, JsonNode>
             {
                 ["int1"] = JsonValue.Create(42)!
             }

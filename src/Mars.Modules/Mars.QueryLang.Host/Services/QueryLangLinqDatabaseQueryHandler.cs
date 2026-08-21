@@ -16,14 +16,17 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
     private readonly MarsDbContext _marsDbContext;
     private readonly IMetaModelTypesLocator? _metaModelTypesLocator;
     private readonly IDatabaseEntityTypeCatalogService _databaseEntityTypeCatalogService;
+    private readonly IMtoRelationMaterializer? _mtoRelationMaterializer;
 
     public QueryLangLinqDatabaseQueryHandler(MarsDbContext MarsDbContext,
                                             IMetaModelTypesLocator? metaModelTypesLocator,
-                                            IDatabaseEntityTypeCatalogService databaseEntityTypeCatalogService)
+                                            IDatabaseEntityTypeCatalogService databaseEntityTypeCatalogService,
+                                            IMtoRelationMaterializer? mtoRelationMaterializer = null)
     {
         _marsDbContext = MarsDbContext;
         _metaModelTypesLocator = metaModelTypesLocator;
         _databaseEntityTypeCatalogService = databaseEntityTypeCatalogService;
+        _mtoRelationMaterializer = mtoRelationMaterializer;
     }
 
     public Task<object?> Handle(string linqExpression, XInterpreter ppt, CancellationToken cancellationToken)
@@ -82,7 +85,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
                     throw new NotImplementedException("Union for metaTypes not work yet. Please use 'ef.Union(arr1,arr2) method. \nLike: 'posts = ef.Union(myType.Take(1),posts.Where(post.Slug=123))'");
                 }
 
-                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService)
+                var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService, _mtoRelationMaterializer)
                                                     .Handle(args, ppt, autoCompleteWithList: false, cancellationToken);
                 var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
 
@@ -99,6 +102,13 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         if (autoCompleteWithList && result is IQueryable)
         {
             result = instance.InvokeMethod(nameof(EfStringQuery<>.ToList), "");
+        }
+
+        // батч-материализация Relation-навигаций Mto-моделей
+        if (isMetaType && _mtoRelationMaterializer is not null
+            && result is not IQueryable and System.Collections.IEnumerable enumerable)
+        {
+            await _mtoRelationMaterializer.FillAsync(resolveResult.EntityUri[1], enumerable, cancellationToken);
         }
 
         return result;
@@ -174,7 +184,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService)
+            var efExpression = await new QueryLangLinqDatabaseQueryHandler(_marsDbContext, _metaModelTypesLocator, _databaseEntityTypeCatalogService, _mtoRelationMaterializer)
                                             .Handle(args, ppt, autoCompleteWithList: false, cancellationToken);
             var internalQuery = (efExpression as IDynamicQueryableObject).GetQuery();
 

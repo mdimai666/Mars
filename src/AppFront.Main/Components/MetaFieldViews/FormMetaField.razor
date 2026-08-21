@@ -126,6 +126,36 @@
 
                                         </div>
 
+                                        @if (field.IsTypeQuery)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Определение вычислимого поля</FluentLabel>
+                                                <div class="d-flex gap-3">
+                                                    <div>
+                                                        <FluentLabel>Целевой тип</FluentLabel>
+                                                        <FluentSelect TOption="string"
+                                                                      Width="250px"
+                                                                      @bind-Value="@field.QueryTarget">
+                                                            @foreach (var relModel in MetaRelationModels)
+                                                            {
+                                                                <FluentOption Value="@relModel.Key">@relModel.Title</FluentOption>
+
+                                                                @foreach (var subModel in relModel.SubTypes)
+                                                                {
+                                                                    <FluentOption Value="@subModel.Key"> <span class="ms-3">-</span> @subModel.Title</FluentOption>
+                                                                }
+                                                            }
+                                                        </FluentSelect>
+                                                    </div>
+                                                    <div>
+                                                        <FluentTextField @bind-Value=@field.QueryBackReferenceKey
+                                                                         Label="Relation-поле цели (обратная ссылка)"
+                                                                         Style="min-width:250px" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
                                         @if (field.IsTypeHasMinMax)
                                         {
                                             <div class="vstack">

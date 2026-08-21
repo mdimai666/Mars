@@ -43,7 +43,7 @@ public class CreatePostJsonTests : BaseWebApiClientTests
         //Act
         await _createTest.ValidRequest_ShouldSuccess(req => req with
         {
-            Meta = new Dictionary<string, JsonValue>
+            Meta = new Dictionary<string, JsonNode>
             {
                 ["int1"] = JsonValue.Create(42)!
             }

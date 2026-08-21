@@ -23,6 +23,6 @@ public class UpdatePostTypeQueryValidator : AbstractValidator<UpdatePostTypeQuer
 
             });
 
-        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator(metaModelTypesLocator));
     }
 }

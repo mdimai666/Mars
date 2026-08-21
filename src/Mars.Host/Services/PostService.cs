@@ -178,16 +178,19 @@ internal class PostService : IPostService
                                                             IReadOnlyCollection<MetaFieldDto> metaFields)
     {
 
-        var valuesDictByMfId = metaValues.DistinctBy(s => s.MetaField.Id)
-                                        .ToDictionary(s => s.MetaField.Id);
+        var valuesByMfId = metaValues.GroupBy(s => s.MetaField.Id)
+                                     .ToDictionary(g => g.Key, g => g.OrderBy(v => v.Index).ToList());
 
         var enrichMetaValues = new List<MetaValueDetailDto>(metaFields.Count);
 
         foreach (var mf in metaFields)
         {
-            if (valuesDictByMfId.TryGetValue(mf.Id, out var mv))
+            if (mf.Type == MetaFieldType.Query) continue; // вычислимое — хранимых значений нет
+
+            if (valuesByMfId.TryGetValue(mf.Id, out var values))
             {
-                enrichMetaValues.Add(mv);
+                // все строки поля (мульти-значения), без потери дубликатов
+                enrichMetaValues.AddRange(values);
             }
             else
             {

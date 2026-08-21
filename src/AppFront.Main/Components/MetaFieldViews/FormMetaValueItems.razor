@@ -2,7 +2,7 @@
 
 @if (MetaValues is not null && MetaFields is not null)
 {
-    @foreach (var f in MetaFields.Where(s => !s.Disabled).Where(s => !Client || !s.Hidden).OrderBy(s => s.Order))
+    @foreach (var f in MetaFields.Where(s => !s.Disabled).Where(s => s.Type != MetaFieldType.Query).Where(s => !Client || !s.Hidden).OrderBy(s => s.Order))
     {
         var meta = f;
         <div class=@($"card1rounded-0 mb-3 1p-3 {(Vertical?"FormMetaField_Vertical":"FormMetaField_Row")} {(Client?"":"FormMetaField_Client")}")

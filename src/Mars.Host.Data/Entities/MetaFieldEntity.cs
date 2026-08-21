@@ -144,6 +144,8 @@ public class MetaFieldEntity : IBasicEntity
                 [EMetaFieldType.File] = "File",
                 [EMetaFieldType.Image] = "Image",
 
+                [EMetaFieldType.Query] = "Query",
+
             };
 
             return _typeList;
@@ -164,6 +166,7 @@ public class MetaFieldEntity : IBasicEntity
             EMetaFieldType.Select => "Выбор",
             EMetaFieldType.SelectMany => "Выбор из многих",
             EMetaFieldType.DateTime => "Дата",
+            EMetaFieldType.Query => "Query",
             _ => type.ToString()
         };
     }
@@ -188,6 +191,8 @@ public class MetaFieldEntity : IBasicEntity
             EMetaFieldType.Relation => typeof(Guid?),//IBasicEntity
             EMetaFieldType.File => typeof(Guid?),//FileEntity
             EMetaFieldType.Image => typeof(Guid?),//FileEntity
+
+            EMetaFieldType.Query => typeof(object),//вычислимое — значения не хранятся
 
             _ => throw new NotImplementedException()
         };
@@ -214,4 +219,9 @@ public enum EMetaFieldType : int
     Relation = 100,
     File = 101,
     Image = 102,
+
+    /// <summary>
+    /// Вычислимое поле: хранится только определение, значение резолвится на чтении
+    /// </summary>
+    Query = 110,
 }

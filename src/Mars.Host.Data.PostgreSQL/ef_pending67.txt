@@ -1,0 +1,9 @@
+C:\Users\D\Documents\VisualStudio\2025\Mars\src\Mars.WebApp\Mars.WebApp.csproj : warning NU1903: Package 'AutoMapper' 11.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x
+Build started...
+Build succeeded.
+The Entity Framework tools version '10.0.1' is older than that of the runtime '10.0.9'. Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.
+args = 
+directory = C:\Users\D\Documents\VisualStudio\2025\Mars\src\Mars.WebApp
+connectionString = Host=127.0.0.1;Port=5432;Database=mars;Username=mars;Password=mars
+new MarsDbContext()
+No changes have been made to the model since the last migration.

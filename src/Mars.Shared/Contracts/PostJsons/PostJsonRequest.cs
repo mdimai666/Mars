@@ -23,7 +23,11 @@ public record CreatePostJsonRequest
     public string? Excerpt { get; init; }
     public string? LangCode { get; init; }
     public IReadOnlyCollection<Guid>? CategoryIds { get; init; }
-    public IReadOnlyDictionary<string, JsonValue>? Meta { get; init; }
+
+    /// <summary>
+    /// Значения мета-полей по ключам; массив для полей с мульти-значениями (Relation/File/Image)
+    /// </summary>
+    public IReadOnlyDictionary<string, JsonNode>? Meta { get; init; }
 
 }
 
@@ -47,6 +51,10 @@ public record UpdatePostJsonRequest
     public required string? Excerpt { get; init; }
     public required string? LangCode { get; init; }
     public IReadOnlyCollection<Guid>? CategoryIds { get; init; }
-    public required IReadOnlyDictionary<string, JsonValue>? Meta { get; init; }
+
+    /// <summary>
+    /// Значения мета-полей по ключам; массив для полей с мульти-значениями (Relation/File/Image)
+    /// </summary>
+    public required IReadOnlyDictionary<string, JsonNode>? Meta { get; init; }
 
 }

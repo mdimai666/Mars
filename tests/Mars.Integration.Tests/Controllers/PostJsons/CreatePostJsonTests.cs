@@ -68,7 +68,7 @@ public class CreatePostJsonTests : ApplicationTests
 
         var metaValuesQuery = metaFields.Select(s => ModifyMetaValueDetailQuery.GetBlank(s.ToDto()).SetMetaValue(_fixture)).ToList();
 
-        var metaValuesCreateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => JsonValue.Create(s.GetValueSimple()));
+        var metaValuesCreateList = metaValuesQuery.ToDictionary(s => s.MetaField.Key, s => (JsonNode)JsonValue.Create(s.GetValueSimple())!);
 
         var post = _fixture.Create<CreatePostJsonRequest>() with
         {

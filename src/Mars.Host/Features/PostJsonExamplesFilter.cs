@@ -30,7 +30,7 @@ public class PostJsonExamplesFilter : IOperationFilter
                     Status = null,
                     Excerpt = null,
                     LangCode = null,
-                    Meta = new Dictionary<string, JsonValue>
+                    Meta = new Dictionary<string, JsonNode>
                     {
                         ["int"] = JsonValue.Create(123),
                         ["bool"] = JsonValue.Create(true),
@@ -55,7 +55,7 @@ public class PostJsonExamplesFilter : IOperationFilter
                     Status = null,
                     Excerpt = null,
                     LangCode = null,
-                    Meta = new Dictionary<string, JsonValue>
+                    Meta = new Dictionary<string, JsonNode>
                     {
                         ["int"] = JsonValue.Create(123),
                         ["bool"] = JsonValue.Create(true),

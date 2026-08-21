@@ -48,12 +48,19 @@ public class PostJsonServiceTestBase
         _postService = Substitute.For<IPostService>();
         _metaModelTypesLocator = Substitute.For<IMetaModelTypesLocator>();
 
+        var metaQueryFieldResolver = Substitute.For<IMetaQueryFieldResolver>();
+        metaQueryFieldResolver.ResolveAsync(Arg.Any<global::Mars.Host.Shared.Dto.PostTypes.PostTypeDetail>(),
+                                            Arg.Any<IReadOnlyCollection<Guid>>(),
+                                            Arg.Any<CancellationToken>())
+                              .Returns([]);
+
         _postJsonService = new PostJsonService(_postRepository,
                                             validatorFactory,
                                             _metaFieldMaterializerService,
                                             _postService,
                                             _metaModelTypesLocator,
-                                            postTransformer);
+                                            postTransformer,
+                                            metaQueryFieldResolver);
     }
 
     protected void SetupSamplePost(Action<PostEntity> metaSetupActon)

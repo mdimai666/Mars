@@ -70,6 +70,8 @@ public abstract class MetaValueBase : IBasicEntity
             EMetaFieldType.File => ModelId,
             EMetaFieldType.Image => ModelId,
 
+            EMetaFieldType.Query => null, // вычислимое — хранимого значения нет
+
             _ => throw new NotImplementedException()
         };
     }
@@ -96,6 +98,7 @@ public abstract class MetaValueBase : IBasicEntity
                 case EMetaFieldType.DateTime: DateTime = null; break;
                 case EMetaFieldType.Select: VariantId = null; break;
                 case EMetaFieldType.SelectMany: VariantsIds = []; break;
+                case EMetaFieldType.Query: break; // вычислимое — хранимого значения нет
                 default:
                     if (ERelations.Contains(t.Type))
                     {

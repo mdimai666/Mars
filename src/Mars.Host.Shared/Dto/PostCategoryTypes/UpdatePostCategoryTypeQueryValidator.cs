@@ -6,13 +6,13 @@ namespace Mars.Host.Shared.Dto.PostCategoryTypes;
 
 public class UpdatePostCategoryTypeQueryValidator : AbstractValidator<UpdatePostCategoryTypeQuery>
 {
-    public UpdatePostCategoryTypeQueryValidator(IPostCategoryMetaLocator postCategoryMetaLocator)
+    public UpdatePostCategoryTypeQueryValidator(IPostCategoryMetaLocator postCategoryMetaLocator, IMetaModelTypesLocator metaModelTypesLocator)
     {
         RuleFor(x => x.TypeName)
             .Must(name => !postCategoryMetaLocator.ExistType(name))
             .When((x) => postCategoryMetaLocator.GetTypeDetailById(x.Id)?.TypeName != x.TypeName)
             .WithMessage(x => $"Post type '{x.TypeName}' already exist");
 
-        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator(metaModelTypesLocator));
     }
 }

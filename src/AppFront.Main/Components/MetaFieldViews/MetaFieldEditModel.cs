@@ -162,6 +162,38 @@ public class MetaFieldEditModel
     public bool IsTypeHasMinMax => EHasMinMax.Contains(Type);
     public bool IsTypeSelectable => ESelectable.Contains(Type);
     public bool IsTypeRelation => ERelations.Contains(Type);
+    public bool IsTypeQuery => Type == MetaFieldType.Query;
+    #endregion
+
+    #region QUERY_OPTIONS
+    /// <summary>Определение вычислимого поля: целевой тип (формат ModelName)</summary>
+    public string QueryTarget
+    {
+        get => ReadOptionString("target");
+        set => WriteOptionString("target", value);
+    }
+
+    /// <summary>Определение вычислимого поля: ключ Relation-поля цели, ссылающегося на этот тип</summary>
+    public string QueryBackReferenceKey
+    {
+        get => ReadOptionString("backReferenceKey");
+        set => WriteOptionString("backReferenceKey", value);
+    }
+
+    string ReadOptionString(string name)
+        => Options is JsonObject obj && obj[name] is JsonValue value && value.TryGetValue<string>(out var result)
+            ? result
+            : "";
+
+    void WriteOptionString(string name, string optionValue)
+    {
+        if (Options is not JsonObject obj)
+        {
+            obj = new JsonObject();
+            Options = obj;
+        }
+        obj[name] = optionValue;
+    }
     #endregion
 
     public string Label => TypeList[Type];
@@ -196,6 +228,8 @@ public class MetaFieldEditModel
                 [MetaFieldType.Relation] = "Relation",
                 [MetaFieldType.File] = "File",
                 [MetaFieldType.Image] = "Image",
+
+                [MetaFieldType.Query] = "Query",
 
             };
 
@@ -234,6 +268,8 @@ public class MetaFieldEditModel
                 [MetaFieldType.Relation] = "♦️",
                 [MetaFieldType.File] = "📁",
                 [MetaFieldType.Image] = "🖼️",
+
+                [MetaFieldType.Query] = "🧮",
 
             };
 

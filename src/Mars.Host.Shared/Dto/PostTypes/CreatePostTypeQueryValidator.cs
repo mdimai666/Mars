@@ -14,6 +14,6 @@ public class CreatePostTypeQueryValidator : AbstractValidator<CreatePostTypeQuer
             .Must(name => metaModelTypesLocator.GetPostTypeByName(name) == null)
             .WithMessage(x => $"Post type '{x.TypeName}' already exist");
 
-        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator());
+        RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator(metaModelTypesLocator));
     }
 }

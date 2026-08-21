@@ -18,4 +18,10 @@ public enum MetaFieldType : int
     Relation = 100,
     File = 101,
     Image = 102,
+
+    /// <summary>
+    /// Вычислимое поле: хранится только определение (в <see cref="MetaFieldDetailBase.Options"/>),
+    /// значение резолвится батчем на чтении
+    /// </summary>
+    Query = 110,
 }

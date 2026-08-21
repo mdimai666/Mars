@@ -30,7 +30,7 @@ public static class PostJsonMapping
 
             ///<see cref="MetaValueMapping.ToDto"/>
             ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
-            Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertObjectValue(v.Value, fillDict)),
+            Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertMetaValue(v.Value, fillDict)),
             Status = entity.Status,
             Categories = entity.Categories,
         };
@@ -50,13 +50,25 @@ public static class PostJsonMapping
 
             ///<see cref="MetaValueMapping.ToDto"/>
             ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
-            Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertObjectValue(v.Value, fillDict)),
+            Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertMetaValue(v.Value, fillDict)),
             Status = entity.Status,
             Categories = entity.Categories,
         };
 
     public static IReadOnlyCollection<PostJsonDto> ToJsonDtoList(this IEnumerable<PostDetail> entities, MetaFieldRelatedFillDict? fillDict)
         => entities.Select(s => s.ToJsonDtoSummary(fillDict)).ToList();
+
+    /// <summary>
+    /// Мульти-значения поля (несколько строк) отдаёт массивом
+    /// </summary>
+    internal static object? ConvertMetaValue(MetaValueDto? metaValue, MetaFieldRelatedFillDict? fillDict)
+    {
+        if (metaValue?.MultiValues is not null)
+        {
+            return metaValue.MultiValues.Select(s => ConvertObjectValue(s, fillDict)).ToArray();
+        }
+        return ConvertObjectValue(metaValue, fillDict);
+    }
 
     internal static object? ConvertObjectValue(MetaValueDto? metaValue, MetaFieldRelatedFillDict? fillDict)
     {

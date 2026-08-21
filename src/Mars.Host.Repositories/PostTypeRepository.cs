@@ -76,7 +76,37 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         ModifyStatusList(entity, query, modifiedAt);
         MetaFieldsTools.ModifyMetaFields(_marsDbContext, entity.MetaFields!, query.MetaFields, modifiedAt);
 
+        if (oldTypeName != entity.TypeName)
+        {
+            await PropagateTypeNameInRelationTargetsAsync(oldTypeName, entity.TypeName, cancellationToken);
+        }
+
         await _marsDbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// При переименовании типа обновляет цели связей "Post.&lt;староеИмя&gt;" у всех мета-полей
+    /// </summary>
+    async Task PropagateTypeNameInRelationTargetsAsync(string oldTypeName, string newTypeName, CancellationToken cancellationToken)
+    {
+        var oldModel = $"Post.{oldTypeName}";
+        var newModel = $"Post.{newTypeName}";
+
+        // уже отслеживаемые поля (например, поля самого переименованного типа) правим в памяти,
+        // чтобы SaveChanges не перезаписал ExecuteUpdate
+        var tracked = _marsDbContext.ChangeTracker.Entries<MetaFieldEntity>()
+                                    .Where(e => e.Entity.ModelName == oldModel)
+                                    .Select(e => e.Entity)
+                                    .ToList();
+        foreach (var field in tracked)
+        {
+            field.ModelName = newModel;
+        }
+        var trackedIds = tracked.Select(f => f.Id).ToList();
+
+        await _marsDbContext.MetaFields
+            .Where(f => f.ModelName == oldModel && !trackedIds.Contains(f.Id))
+            .ExecuteUpdateAsync(s => s.SetProperty(f => f.ModelName, newModel), cancellationToken);
     }
 
     void ModifyStatusList(PostTypeEntity entity, UpdatePostTypeQuery query, DateTimeOffset modifiedAt)

@@ -46,7 +46,10 @@ internal class MetaFieldMaterializerService : IMetaFieldMaterializerService
 
     public async Task<MetaFieldRelatedFillDict> GetFillContext(IEnumerable<MetaValueDto> metaValues, CancellationToken cancellationToken)
     {
-        var dict = new MetaFieldRelatedFillDict(metaValues.Where(s => s.ModelId != null)
+        // мульти-значения: разворачиваем все строки поля
+        var allValues = metaValues.SelectMany(s => (IEnumerable<MetaValueDto>?)s.MultiValues ?? [s]);
+
+        var dict = new MetaFieldRelatedFillDict(allValues.Where(s => s.ModelId != null)
                             .Select(s => new { key = (s.Type, s.MetaField.ModelName, s.ModelId!.Value), value = s })
                             .DistinctBy(s => s.key)
                             .Select(s => new KeyValuePair<(MetaFieldType type, string? modelName, Guid ModelId), MetaFieldRelatedFillDictValue>(

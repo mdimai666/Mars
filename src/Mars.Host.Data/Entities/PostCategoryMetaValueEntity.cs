@@ -2,13 +2,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mars.Host.Data.Entities;
 
-public class PostCategoryMetaValueEntity
+/// <summary>
+/// Мета-значение категории постов (таблица <c>post_category_meta_values</c>).
+/// </summary>
+public class PostCategoryMetaValueEntity : MetaValueBase
 {
     [ForeignKey(nameof(PostCategory))]
     public Guid PostCategoryId { get; set; }
     public virtual PostCategoryEntity? PostCategory { get; set; }
-
-    [ForeignKey(nameof(MetaValue))]
-    public Guid MetaValueId { get; set; }
-    public virtual MetaValueEntity? MetaValue { get; set; }
 }

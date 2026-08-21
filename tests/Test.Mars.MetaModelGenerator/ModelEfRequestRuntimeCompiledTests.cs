@@ -47,7 +47,7 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
         var mfKey = $"key_{type}".ToLower();
 
         var mf = new MetaFieldEntity() { Key = mfKey, Type = type, Id = mfId, Title = $"Title - {mfKey}" };
-        MetaValueEntity mv;
+        PostMetaValueEntity mv;
 
         if (type == EMetaFieldType.Select)
         {
@@ -61,7 +61,7 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
         }
         else
         {
-            mv = _fixture.MetaValueEntity(mfId, type);
+            mv = _fixture.MetaValueEntity<PostMetaValueEntity>(mfId, type);
         }
 
         var (postType, _) = await SetupPostType2(typeName, [mf], [mv]);
@@ -138,7 +138,7 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
 
     async Task<(PostTypeEntity postType, PostDetail[] posts)> SetupPostType2(string postTypeName,
                                                                                     List<MetaFieldEntity> metaFields,
-                                                                                    List<MetaValueEntity> metaValues)
+                                                                                    List<PostMetaValueEntity> metaValues)
     {
         //var pts = AppFixture.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         var ps = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();

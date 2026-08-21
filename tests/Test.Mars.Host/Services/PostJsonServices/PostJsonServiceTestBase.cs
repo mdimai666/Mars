@@ -102,7 +102,7 @@ public class PostJsonServiceTestBase
             Key = "bool1",
             Type = EMetaFieldType.Bool,
         };
-        var metaValue1 = new MetaValueEntity()
+        var metaValue1 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -119,7 +119,7 @@ public class PostJsonServiceTestBase
             Key = "str1",
             Type = EMetaFieldType.String,
         };
-        var metaValue2 = new MetaValueEntity()
+        var metaValue2 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -136,7 +136,7 @@ public class PostJsonServiceTestBase
             Key = "int1",
             Type = EMetaFieldType.Int,
         };
-        var metaValue3 = new MetaValueEntity()
+        var metaValue3 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -170,7 +170,7 @@ public class PostJsonServiceTestBase
                 },
             ]
         };
-        var metaValue1 = new MetaValueEntity()
+        var metaValue1 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -209,7 +209,7 @@ public class PostJsonServiceTestBase
                 },
             ]
         };
-        var metaValue2 = new MetaValueEntity()
+        var metaValue2 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -231,7 +231,7 @@ public class PostJsonServiceTestBase
             Key = "file1",
             Type = EMetaFieldType.File,
         };
-        var metaValue1 = new MetaValueEntity()
+        var metaValue1 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -248,7 +248,7 @@ public class PostJsonServiceTestBase
             Key = "image1",
             Type = EMetaFieldType.Image,
         };
-        var metaValue2 = new MetaValueEntity()
+        var metaValue2 = new PostMetaValueEntity()
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
@@ -273,7 +273,7 @@ public class PostJsonServiceTestBase
                 Type = EMetaFieldType.Relation,
                 ModelName = value.modelName,
             };
-            var metaValue = new MetaValueEntity()
+            var metaValue = new PostMetaValueEntity()
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTimeOffset.UtcNow,

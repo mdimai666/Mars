@@ -115,20 +115,19 @@ if (ef.MetaFields.Count() == 0)
     ef.MetaFields.Add(mf);
     ef.SaveChanges();
 
-    var mv = new MetaValueEntity()
+    var pt = ef.PostTypes.First();
+    var post1 = ef.Posts.First();
+
+    var mv = new PostMetaValueEntity()
     {
         Type = EMetaFieldType.String,
         StringShort = "value1",
         MetaFieldId = mf.Id,
+        PostId = post1.Id,
     };
 
-    ef.MetaValues.Add(mv);
-    ef.SaveChanges();
-
-    var pt = ef.PostTypes.First();
-    var post1 = ef.Posts.First();
     ef.PostTypeMetaFields.Add(new PostTypeMetaFieldEntity { MetaFieldId = mf.Id, PostTypeId = pt.Id });
-    ef.PostMetaValues.Add(new PostMetaValueEntity { MetaValueId = mv.Id, PostId = post1.Id });
+    ef.PostMetaValues.Add(mv);
 
     ef.SaveChanges();
 }

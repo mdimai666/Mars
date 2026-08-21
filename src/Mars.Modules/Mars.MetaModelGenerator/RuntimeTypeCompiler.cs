@@ -39,7 +39,7 @@ public class RuntimeMetaTypeCompiler
                             typeof(DisplayAttribute),
                             typeof(System.Linq.Expressions.Expression),
                             //typeof(EntityFrameworkQueryableExtensions),
-                            typeof(MetaValueEntity),
+                            typeof(MetaValueBase),
                             typeof(MetaFieldEntity),
                             typeof(IMtoMarker),
                             typeof(MetaFieldVariant),

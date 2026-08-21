@@ -110,7 +110,7 @@ public class MtFieldInfo
             return $"""
                 {keyName}Id = post.MetaValues!
                     .Where(f => f.MetaField.Key == "{keyName}")
-                    .Select(f => f.{MetaValueEntity.GetColName(metaField.Type)})
+                    .Select(f => f.{MetaValueBase.GetColName(metaField.Type)})
                     .FirstOrDefault()!
                 """;
         }
@@ -136,7 +136,7 @@ public class MtFieldInfo
         return $"""
                 {keyName} = post.MetaValues!
                     .Where(f => f.MetaField.Key == "{keyName}")
-                    .Select(f => f.{MetaValueEntity.GetColName(metaField.Type)})
+                    .Select(f => f.{MetaValueBase.GetColName(metaField.Type)})
                     .FirstOrDefault()!
                 """;
     }

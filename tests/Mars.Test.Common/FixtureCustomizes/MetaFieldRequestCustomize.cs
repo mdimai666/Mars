@@ -49,9 +49,10 @@ public static class MetaValueFixtureCustomizeExtension
                                     .SetMetaValue(fixture, type);
     }
 
-    public static MetaValueEntity MetaValueEntity(this IFixture fixture, Guid metaFieldId, EMetaFieldType type)
+    public static TValue MetaValueEntity<TValue>(this IFixture fixture, Guid metaFieldId, EMetaFieldType type)
+        where TValue : MetaValueBase, new()
     {
-        return fixture.Build<MetaValueEntity>()
+        return fixture.Build<TValue>()
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.MetaFieldId, metaFieldId)
@@ -60,7 +61,8 @@ public static class MetaValueFixtureCustomizeExtension
                                     .SetMetaValue(fixture, type);
     }
 
-    public static MetaValueEntity SetMetaValue(this MetaValueEntity mv, IFixture _fixture, EMetaFieldType type)
+    public static TValue SetMetaValue<TValue>(this TValue mv, IFixture _fixture, EMetaFieldType type)
+        where TValue : MetaValueBase
     {
         if (type == EMetaFieldType.Int) mv.Int = _fixture.Create<int>();
         else if (type == EMetaFieldType.Bool) mv.Bool = _fixture.Create<bool>();

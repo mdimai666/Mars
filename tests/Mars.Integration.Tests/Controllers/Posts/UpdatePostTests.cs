@@ -44,7 +44,7 @@ public sealed class UpdatePostTests : ApplicationTests
         postType.MetaFields = metaFields;
         var metaValues = metaFields.Select(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<PostMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         }).ToList();

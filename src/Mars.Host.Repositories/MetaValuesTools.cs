@@ -8,22 +8,19 @@ namespace Mars.Host.Repositories;
 
 public static class MetaValuesTools
 {
-    public static void ModifyMetaValues(
+    public static void ModifyMetaValues<TValue>(
         MarsDbContext _marsDbContext,
-        List<MetaValueEntity> existMetaFields,
+        ICollection<TValue> existMetaFields,
         IReadOnlyCollection<ModifyMetaValueDetailQuery> modifyMetaFields,
         DateTimeOffset modifiedAt)
+        where TValue : MetaValueBase, new()
     {
         if (existMetaFields.Count == 0 && modifyMetaFields.Count == 0)
         {
             return;
         }
 
-        var metaFieldDict = existMetaFields.Select(x => x.MetaField)
-                                            .DistinctBy(s=>s.Id)
-                                            .ToDictionary(x => x.Id);
-
-        var metaDiff = DiffList.FindDifferencesBy(existMetaFields, modifyMetaFields.ToEntity().ToList(), s => s.Id);
+        var metaDiff = DiffList.FindDifferencesBy(existMetaFields.ToList(), modifyMetaFields.ToEntity<TValue>().ToList(), s => s.Id);
 
         //TODO: сделать проверку что Для каждого MetaField есть только один MetaValue
 
@@ -34,7 +31,7 @@ public static class MetaValuesTools
             foreach (var item in metaDiff.ToRemove)
             {
                 existMetaFields.Remove(item);
-                _marsDbContext.MetaValues.Remove(item);
+                _marsDbContext.Set<TValue>().Remove(item);
             }
             foreach (var item in metaDiff.ToAdd)
             {
@@ -42,14 +39,14 @@ public static class MetaValuesTools
                 item.CreatedAt = modifiedAt;
                 item.ModifiedAt = null;
                 item.MetaFieldId = q.MetaFieldId;
-                _marsDbContext.MetaValues.Add(item);
+                _marsDbContext.Set<TValue>().Add(item);
                 existMetaFields.Add(item);
             }
         }
         foreach (var item in existMetaFields.Except(metaDiff.ToRemove).Except(metaDiff.ToAdd))
         {
             var q = queryDict[item.Id];
-            var qe = q.ToEntity();
+            var qe = q.ToEntity<TValue>();
             _marsDbContext.Entry(item).CurrentValues.SetValues(new
             {
                 qe.Id,

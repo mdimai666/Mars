@@ -47,7 +47,7 @@ public class MetaFieldEntity : IBasicEntity
 
     [NotMapped]
     [Comment("Значение по умолчанию")]
-    public MetaValueEntity? Default { get; set; }
+    public MetaValueBase? Default { get; set; }
 
     [Comment("Порядок")]
     public int Order { get; set; }
@@ -79,7 +79,9 @@ public class MetaFieldEntity : IBasicEntity
 
     // Relations
 
-    public virtual ICollection<MetaValueEntity>? MetaValues { get; set; }
+    public virtual ICollection<PostMetaValueEntity>? PostMetaValues { get; set; }
+    public virtual ICollection<UserMetaValueEntity>? UserMetaValues { get; set; }
+    public virtual ICollection<PostCategoryMetaValueEntity>? PostCategoryMetaValues { get; set; }
 
     public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; }
 
@@ -97,12 +99,12 @@ public class MetaFieldEntity : IBasicEntity
     public virtual List<PostCategoryTypeEntity>? PostCategoryTypes { get; set; }
 
     #region ENUMS
-    public static readonly EMetaFieldType[] ENumbers = MetaValueEntity.ENumbers;
-    public static readonly EMetaFieldType[] EStrings = MetaValueEntity.EStrings;
+    public static readonly EMetaFieldType[] ENumbers = MetaValueBase.ENumbers;
+    public static readonly EMetaFieldType[] EStrings = MetaValueBase.EStrings;
 
-    public static readonly EMetaFieldType[] EHasMinMax = MetaValueEntity.EHasMinMax;
-    public static readonly EMetaFieldType[] ESelectable = MetaValueEntity.ESelectable;
-    public static readonly EMetaFieldType[] ERelations = MetaValueEntity.ERelations;
+    public static readonly EMetaFieldType[] EHasMinMax = MetaValueBase.EHasMinMax;
+    public static readonly EMetaFieldType[] ESelectable = MetaValueBase.ESelectable;
+    public static readonly EMetaFieldType[] ERelations = MetaValueBase.ERelations;
 
     public bool IsNumber => ENumbers.Contains(Type);
     public bool IsString => EStrings.Contains(Type);

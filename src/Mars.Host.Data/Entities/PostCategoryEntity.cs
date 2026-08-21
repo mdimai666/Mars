@@ -25,7 +25,5 @@ public class PostCategoryEntity : HierarchyEntity
     public virtual PostCategoryTypeEntity? PostCategoryType { get; set; }
 
     //META
-    public virtual ICollection<PostCategoryMetaValueEntity>? PostCategoryMetaValues { get; set; }
-    [NotMapped]
-    public virtual List<MetaValueEntity>? MetaValues { get; set; }
+    public virtual ICollection<PostCategoryMetaValueEntity>? MetaValues { get; set; }
 }

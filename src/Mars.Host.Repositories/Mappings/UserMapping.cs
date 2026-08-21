@@ -135,7 +135,7 @@ internal static class UserMapping
             AvatarUrl = query.AvatarUrl,
 
             UserTypeId = userTypeId,
-            MetaValues = query.MetaValues.ToEntity(),
+            MetaValues = query.MetaValues.ToEntity<UserMetaValueEntity>(),
 
         };
 

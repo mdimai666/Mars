@@ -171,7 +171,21 @@ public sealed class EntitiesCustomize : ICustomization
                                     .With(s => s.Variants)
                                    );
 
-        fixture.Customize<MetaValueEntity>(composer => composer
+        fixture.Customize<PostMetaValueEntity>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Type, EMetaFieldType.String)
+                                    .With(s => s.VariantsIds, [])
+                                   );
+
+        fixture.Customize<UserMetaValueEntity>(composer => composer
+                                    .OmitAutoProperties()
+                                    .With(s => s.Id)
+                                    .With(s => s.Type, EMetaFieldType.String)
+                                    .With(s => s.VariantsIds, [])
+                                   );
+
+        fixture.Customize<PostCategoryMetaValueEntity>(composer => composer
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.Type, EMetaFieldType.String)

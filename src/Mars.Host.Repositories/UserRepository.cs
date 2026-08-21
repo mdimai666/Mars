@@ -57,7 +57,7 @@ internal class UserRepository : IUserRepository, IDisposable
                                 => (await InternalDetail
                                         .Include(s => s.UserType)
                                             .ThenInclude(s => s.MetaFields!)
-                                                .ThenInclude(s => s.MetaValues)
+                                                .ThenInclude(s => s.UserMetaValues)
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
                                         ?.ToEditDetail();
 

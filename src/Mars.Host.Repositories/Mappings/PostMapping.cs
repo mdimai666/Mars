@@ -108,7 +108,7 @@ internal static class PostMapping
 
             Excerpt = query.Excerpt,
             LangCode = query.LangCode,
-            MetaValues = query.MetaValues.ToEntity(),
+            MetaValues = query.MetaValues.ToEntity<PostMetaValueEntity>(),
         };
         postEntity.PostPostCategories = query.CategoryIds.Select(categoryId =>
             new PostPostCategoriesEntity

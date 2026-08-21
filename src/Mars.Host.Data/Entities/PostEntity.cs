@@ -81,9 +81,7 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
     [NotMapped]
     public virtual List<FileEntity>? Files { get; set; }
 
-    public virtual ICollection<PostMetaValueEntity>? PostMetaValues { get; set; }
-    [NotMapped]
-    public virtual List<MetaValueEntity>? MetaValues { get; set; }
+    public virtual ICollection<PostMetaValueEntity>? MetaValues { get; set; }
 
     ////=====================================
     ////Comments

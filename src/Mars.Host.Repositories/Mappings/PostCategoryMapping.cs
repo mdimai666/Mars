@@ -86,7 +86,7 @@ internal static class PostCategoryMapping
             LevelsCount = pathIds.Length,
             Disabled = query.Disabled,
 
-            MetaValues = query.MetaValues.ToEntity(),
+            MetaValues = query.MetaValues.ToEntity<PostCategoryMetaValueEntity>(),
         };
 
     public static PostCategoryEntity UpdateEntity(this PostCategoryEntity entity, UpdatePostCategoryQuery query, Guid[] pathIds, string slugPath)

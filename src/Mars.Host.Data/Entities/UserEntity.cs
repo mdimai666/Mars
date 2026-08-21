@@ -73,9 +73,7 @@ public class UserEntity : IdentityUser<Guid>, IBasicEntity
     public Guid UserTypeId { get; set; }
     public virtual UserTypeEntity? UserType { get; set; }
 
-    [NotMapped]
-    public virtual List<MetaValueEntity>? MetaValues { get; set; } = default!;
-    public virtual ICollection<UserMetaValueEntity>? UserMetaValues { get; set; } = default!;
+    public virtual ICollection<UserMetaValueEntity>? MetaValues { get; set; }
 
     [NotMapped]
     public virtual List<RoleEntity>? Roles { get; set; }

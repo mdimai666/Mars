@@ -7,7 +7,7 @@ namespace Mars.Host.Repositories.Mappings;
 
 internal static class MetaValueMapping
 {
-    public static MetaValueDto ToDto(this MetaValueEntity entity)
+    public static MetaValueDto ToDto(this MetaValueBase entity)
         => new()
         {
             Id = entity.Id,
@@ -21,7 +21,7 @@ internal static class MetaValueMapping
             MetaField = entity.MetaField!.ToDto(),
         };
 
-    internal static object? ConvertObjectValue(MetaValueEntity metaValue)
+    internal static object? ConvertObjectValue(MetaValueBase metaValue)
     {
         if (metaValue.MetaField.Type == EMetaFieldType.Select)
         {
@@ -37,10 +37,10 @@ internal static class MetaValueMapping
         }
     }
 
-    public static IReadOnlyCollection<MetaValueDto> ToDto(this List<MetaValueEntity> entities)
+    public static IReadOnlyCollection<MetaValueDto> ToDto(this IEnumerable<MetaValueBase> entities)
         => entities.Select(ToDto).ToList();
 
-    public static IReadOnlyDictionary<string, MetaValueDto> ToDictionaryDto(this List<MetaValueEntity> entities)
+    public static IReadOnlyDictionary<string, MetaValueDto> ToDictionaryDto(this IEnumerable<MetaValueBase> entities)
         => entities.ToDictionary(s => s.MetaField.Key, ToDto);
 
     public static MetaFieldVariantDto ToDto(this MetaFieldVariant entity)
@@ -65,7 +65,7 @@ internal static class MetaValueMapping
             Value = entity.Value,
         };
 
-    public static MetaValueDetailDto ToDetailDto(this MetaValueEntity entity)
+    public static MetaValueDetailDto ToDetailDto(this MetaValueBase entity)
         => new()
         {
             Id = entity.Id,
@@ -86,13 +86,13 @@ internal static class MetaValueMapping
             ModelId = entity.ModelId,
         };
 
-    public static IReadOnlyCollection<MetaValueDetailDto> ToDetailDto(this List<MetaValueEntity> entities)
+    public static IReadOnlyCollection<MetaValueDetailDto> ToDetailDto(this IEnumerable<MetaValueBase> entities)
         => entities.Select(ToDetailDto).ToList();
 
-    public static IReadOnlyDictionary<string, MetaValueDetailDto> ToDictionaryDetailDto(this List<MetaValueEntity> entities)
+    public static IReadOnlyDictionary<string, MetaValueDetailDto> ToDictionaryDetailDto(this IEnumerable<MetaValueBase> entities)
         => entities.ToDictionary(s => s.MetaField.Key, ToDetailDto);
 
-    public static MetaValueEntity ToEntity(this ModifyMetaValueDetailQuery dto)
+    public static TValue ToEntity<TValue>(this ModifyMetaValueDetailQuery dto) where TValue : MetaValueBase, new()
         => new()
         {
             Id = dto.Id,
@@ -114,7 +114,7 @@ internal static class MetaValueMapping
             MetaFieldId = dto.MetaFieldId,
         };
 
-    public static List<MetaValueEntity> ToEntity(this IReadOnlyCollection<ModifyMetaValueDetailQuery> entities)
-        => entities.Select(ToEntity).ToList();
+    public static List<TValue> ToEntity<TValue>(this IReadOnlyCollection<ModifyMetaValueDetailQuery> entities) where TValue : MetaValueBase, new()
+        => entities.Select(ToEntity<TValue>).ToList();
 
 }

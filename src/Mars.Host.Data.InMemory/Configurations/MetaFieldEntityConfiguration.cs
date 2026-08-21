@@ -26,9 +26,6 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
         // https://www.npgsql.org/efcore/mapping/json.html?tabs=data-annotations%2Cjsondocument#tojson-owned-entity-mapping
         entity.OwnsMany(x => x.Variants, f => { f.ToJson(); });
 
-        entity.HasMany(x => x.MetaValues)
-            .WithOne(x => x.MetaField);
-
         // Relations
 
         entity.HasMany(x => x.PostTypes)

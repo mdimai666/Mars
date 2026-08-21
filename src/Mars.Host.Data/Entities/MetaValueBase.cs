@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Mars.Host.Data.Entities;
 
 [DebuggerDisplay("{Type}/{Id}")]
-public class MetaValueEntity : IBasicEntity
+public abstract class MetaValueBase : IBasicEntity
 {
     [Key]
     [Comment("ИД")]
@@ -47,21 +47,6 @@ public class MetaValueEntity : IBasicEntity
     [ForeignKey(nameof(MetaField))]
     public Guid MetaFieldId { get; set; }
     public virtual MetaFieldEntity? MetaField { get; set; }
-
-    public virtual ICollection<PostMetaValueEntity>? PostMetaValues { get; set; }
-
-    [NotMapped]
-    public virtual List<PostEntity>? Posts { get; set; }
-
-    public virtual ICollection<UserMetaValueEntity>? UserMetaValues { get; set; }
-
-    [NotMapped]
-    public virtual List<UserEntity>? Users { get; set; }
-
-    public virtual ICollection<PostCategoryMetaValueEntity>? PostCategoryMetaValues { get; set; }
-
-    [NotMapped]
-    public virtual List<PostCategoryEntity>? PostCategories { get; set; }
 
     #region SETTER
 
@@ -220,7 +205,7 @@ public class MetaValueEntity : IBasicEntity
             return nameof(VariantsIds);
         }
         //else if (type == EMetaFieldType.Relation)
-        else if (MetaValueEntity.ERelations.Contains(type))
+        else if (MetaValueBase.ERelations.Contains(type))
         {
             return nameof(ModelId);
         }
@@ -271,7 +256,7 @@ public class MetaValueEntity : IBasicEntity
     {
         if (MetaField is null) throw new ArgumentNullException("MetaFieldTemplate is null");
 
-        return MetaValueEntity.Check(MetaField, value);
+        return MetaValueBase.Check(MetaField, value);
     }
 
     public static IEnumerable<string> Check(MetaFieldEntity t, object value)
@@ -306,7 +291,7 @@ public class MetaValueEntity : IBasicEntity
     {
         if (MetaField is null) throw new ArgumentNullException("MetaFieldTemplate is null");
 
-        return MetaValueEntity.IsValid(MetaField, value);
+        return MetaValueBase.IsValid(MetaField, value);
     }
 
     public static bool IsValid(MetaFieldEntity t, object value)

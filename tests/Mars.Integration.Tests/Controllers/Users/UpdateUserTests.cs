@@ -58,7 +58,7 @@ public sealed class UpdateUserTests : ApplicationTests
         userType.MetaFields = new(metaFields);
         var metaValues = metaFields.Select(mf =>
         {
-            var mv = _fixture.MetaValueEntity(mf.Id, mf.Type);
+            var mv = _fixture.MetaValueEntity<UserMetaValueEntity>(mf.Id, mf.Type);
             mv.MetaField = mf;
             return mv;
         }).ToList();

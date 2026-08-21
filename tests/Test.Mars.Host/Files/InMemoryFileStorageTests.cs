@@ -115,4 +115,55 @@ public class InMemoryFileStorageTests
         // Assert
         fileInfo.Length.Should().BeGreaterThan(0);
     }
+
+    [Fact]
+    public void MoveFile_ReadNewPath_ShouldSuccess()
+    {
+        // Arrange
+        var storage = GetStorage();
+        const string newPath = "archive/text.txt";
+
+        // Act
+        storage.MoveFile(TextFilepath1, newPath);
+
+        // Assert
+        storage.ReadAllText(newPath).Should().Be("OK");
+        var action = () => storage.ReadAllText(TextFilepath1);
+        action.Should().Throw<FileNotFoundException>();
+    }
+
+    [Fact]
+    public void MoveFile_NotExistFile_ShouldException()
+    {
+        // Arrange
+        var storage = GetStorage();
+
+        // Act
+        var action = () => storage.MoveFile("not-exist.txt", "archive/not-exist.txt");
+
+        // Assert
+        action.Should().Throw<FileNotFoundException>();
+    }
+
+    [Fact]
+    public void MoveDirectory_ReadMovedContent_ShouldSuccess()
+    {
+        // Arrange
+        var storage = GetStorage();
+        storage.CreateDirectory("files");
+        storage.CreateDirectory("files/sub");
+        storage.Write("files/sub/inner.txt", "inner");
+
+        // Act
+        storage.MoveDirectory("files", "archive");
+
+        // Assert
+        storage.DirectoryExists("archive").Should().BeTrue();
+        storage.DirectoryExists("archive/sub").Should().BeTrue();
+        storage.DirectoryExists("files").Should().BeFalse();
+        storage.ReadAllText("archive/text.txt").Should().Be("OK");
+        storage.ReadAllText("archive/second file.txt").Should().Be("second");
+        storage.ReadAllText("archive/sub/inner.txt").Should().Be("inner");
+        storage.ReadAllText("root-file.bin").Should().Be("123");
+    }
 }

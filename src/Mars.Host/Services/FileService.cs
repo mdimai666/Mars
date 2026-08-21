@@ -195,20 +195,22 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         string subpath,
         byte[] bytes,
         Guid userId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Guid? folderId = null)
     {
         Stream stream = new MemoryStream(bytes);
-        return WriteUpload(originalFileNameWithExt, subpath, stream, userId, generateUniqueName: true, cancellationToken);
+        return WriteUpload(originalFileNameWithExt, subpath, stream, userId, generateUniqueName: true, cancellationToken, folderId);
     }
 
     public Task<Guid> WriteUpload(
         IFormFile formFile,
         string subpath,
         Guid userId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Guid? folderId = null)
     {
         var originalFileNameWithExt = string.IsNullOrEmpty(formFile.FileName) ? Guid.NewGuid().ToString() : formFile.FileName;
-        return WriteUpload(originalFileNameWithExt, subpath, formFile.OpenReadStream(), userId, generateUniqueName: true, cancellationToken);
+        return WriteUpload(originalFileNameWithExt, subpath, formFile.OpenReadStream(), userId, generateUniqueName: true, cancellationToken, folderId);
     }
 
     /// <summary>
@@ -223,7 +225,8 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         Guid userId,
         //string fileGroup,
         bool generateUniqueName,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Guid? folderId = null)
     {
         if (userId == Guid.Empty) throw new ArgumentException("UserId cannot be empty");
 
@@ -308,6 +311,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
                 Meta = fileMeta,
                 UserId = userId,
                 FilePathFromUpload = filepathFromUpload,
+                FolderId = folderId,
             };
 
             var createdId = await _fileRepository.Create(createFileQuery, hostingInfo, cancellationToken);

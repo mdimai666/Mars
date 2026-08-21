@@ -37,6 +37,7 @@ public static class FileMapping
            UrlRelative = entity.UrlRelative,
            FilePhysicalPath = entity.FilePhysicalPath,
            FileVirtualPath = entity.FileVirtualPath,
+           FolderId = entity.FolderId,
        };
 
     public static FileDetailResponse ToResponse(this FileDetail entity)

@@ -1,3 +1,4 @@
+using Mars.Core.Exceptions;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
@@ -14,6 +15,7 @@ namespace Mars.Host.Services;
 internal class MediaService : FileService, IMediaService, IMarsAppLifetimeService
 {
     private readonly ILogger<MediaService> _logger;
+    private readonly IMediaFolderService _folderService;
     internal string MediaDirByYear => MediaDirName + '/' + DateTimeOffset.Now.Year;
 
     public MediaService(
@@ -22,6 +24,7 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         IFileRepository fileRepository,
         IImageProcessor imageProcessor,
         IValidatorFactory validatorFactory,
+        IMediaFolderService folderService,
         ILogger<MediaService> logger)
         : base(
             fileStorage,
@@ -30,6 +33,7 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
             imageProcessor,
             validatorFactory)
     {
+        _folderService = folderService;
         _logger = logger;
     }
 
@@ -47,9 +51,21 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         }
     }
 
-    public Task<Guid> WriteUploadToMedia(IFormFile formFile, Guid userId, CancellationToken cancellationToken)
+    public async Task<Guid> WriteUploadToMedia(IFormFile formFile, Guid userId, CancellationToken cancellationToken, Guid? folderId = null)
     {
-        return WriteUpload(formFile, MediaDirByYear, userId, cancellationToken);
+        MediaFolderDto folder;
+        if (folderId is not null)
+        {
+            folder = await _folderService.GetById(folderId.Value, cancellationToken)
+                ?? throw new NotFoundException("Папка не найдена");
+        }
+        else
+        {
+            // загрузка в корень: как и раньше в Media/{год}, с привязкой к папке года
+            folder = await _folderService.GetOrCreateByPath(MediaDirByYear, userId, cancellationToken);
+        }
+
+        return await WriteUpload(formFile, folder.Path, userId, cancellationToken, folder.Id);
     }
 
     public async Task<UserActionResult> ExecuteAction(ExecuteActionRequest action, Guid userId, CancellationToken cancellationToken)
@@ -100,9 +116,17 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
 
         var files = ScanFiles(_hostingInfo.FileAbsolutePath(MediaDirName), exts, _hostingInfo);
         var existInDbFiles = await _fileRepository.ListAllAbsolutePaths(_hostingInfo, cancellationToken);
-        var nonExistFiles = files.Except(existInDbFiles);
+        var nonExistFiles = files.Except(existInDbFiles).ToList();
 
-        var fileEntities = new List<CreateFileQuery>(nonExistFiles.Count());
+        // зарегистрировать найденные каталоги как папки в БД
+        var relPaths = files.Select(f => f.Substring(uploadPath.Length)).ToList();
+        var dirPaths = relPaths
+            .Where(p => p.Contains('/'))
+            .Select(p => p[..p.LastIndexOf('/')])
+            .Distinct();
+        var pathToFolderId = await _folderService.EnsureFoldersByPaths(dirPaths, userId, cancellationToken);
+
+        var fileEntities = new List<CreateFileQuery>(nonExistFiles.Count);
 
         foreach (var filepath in nonExistFiles)
         {
@@ -115,6 +139,7 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
             FileInfo fi = new(filepath);
 
             var filePathFromUpload = filepath.Substring(uploadPath.Length);
+            var fileDir = filePathFromUpload.Contains('/') ? filePathFromUpload[..filePathFromUpload.LastIndexOf('/')] : null;
 
             var createQuery = new CreateFileQuery
             {
@@ -122,13 +147,39 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
                 Name = filename,
                 Size = (ulong)fi.Length,
                 UserId = userId,
-                Meta = null // call regenerate thumbs after this
+                Meta = null, // call regenerate thumbs after this
+                FolderId = fileDir is not null ? pathToFolderId.GetValueOrDefault(fileDir) : null,
             };
 
             fileEntities.Add(createQuery);
         }
 
         await _fileRepository.CreateMany(fileEntities, _hostingInfo, cancellationToken);
+
+        // привязать к папкам файлы, которые были в базе без папки
+        var unassignedFiles = await _fileRepository.ListAll(new ListAllFileQuery { FolderId = Guid.Empty }, _hostingInfo, cancellationToken);
+        var assignUpdates = new List<FileMoveUpdate>();
+
+        foreach (var file in unassignedFiles)
+        {
+            if (!file.FilePhysicalPath.Contains('/')) continue;
+
+            var fileDir = file.FilePhysicalPath[..file.FilePhysicalPath.LastIndexOf('/')];
+            if (!pathToFolderId.TryGetValue(fileDir, out var assignedFolderId)) continue;
+
+            assignUpdates.Add(new FileMoveUpdate
+            {
+                Id = file.Id,
+                FilePhysicalPath = file.FilePhysicalPath,
+                FileVirtualPath = file.FileVirtualPath,
+                FolderId = assignedFolderId,
+            });
+        }
+
+        if (assignUpdates.Count > 0)
+        {
+            await _fileRepository.UpdateAfterMove(assignUpdates, _hostingInfo, cancellationToken);
+        }
 
         return new UserActionResult
         {

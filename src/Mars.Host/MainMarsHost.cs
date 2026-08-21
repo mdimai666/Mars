@@ -48,6 +48,7 @@ public static class MainMarsHost
         services.AddScoped<IUserTypeService, UserTypeService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IMediaFolderService, MediaFolderService>();
         services.AddScoped<IMediaService, MediaService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IPostTypeService, PostTypeService>();

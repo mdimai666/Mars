@@ -14,6 +14,8 @@ public interface IFileRepository : IDisposable
     Task CreateMany(IReadOnlyCollection<CreateFileQuery> queries, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
+    Task UpdateAfterMove(IReadOnlyCollection<FileMoveUpdate> updates, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
+    Task<int> CountByFolder(Guid folderId, CancellationToken cancellationToken);
     Task Delete(Guid id, CancellationToken cancellationToken);
     Task<int> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<FileListItem>> ListAll(ListAllFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);

@@ -72,6 +72,10 @@ public class FileEntity : IBasicUserEntity
     public Guid UserId { get; set; }
     public virtual UserEntity? User { get; set; }
 
+    [Comment("ИД папки медиа")]
+    public Guid? FolderId { get; set; }
+    public virtual MediaFolderEntity? Folder { get; set; }
+
 }
 
 //public enum EFileType

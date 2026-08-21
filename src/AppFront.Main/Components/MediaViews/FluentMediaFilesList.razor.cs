@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using AppFront.Main.Extensions;
 using AppFront.Shared.Extensions;
 using AppFront.Shared.Services;
+using Flurl.Http;
 using Mars.Core.Exceptions;
+using Mars.Shared.Common;
 using Mars.Shared.Contracts.Files;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
@@ -80,6 +83,7 @@ public partial class FluentMediaFilesList
                     //Take = req.Count ?? BasicListQuery.DefaultPageSize,
                     Sort = sort,
                     Search = _searchText,
+                    FolderId = _currentFolderId ?? Guid.Empty,
                 });
 
                 var collection = new Collection<FileListItemResponse>(data.Items.ToList());
@@ -89,6 +93,185 @@ public partial class FluentMediaFilesList
                 return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
             }
         );
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFolders();
+    }
+
+    //-------------------------------------------
+    // Folders
+
+    Guid? _currentFolderId = null;
+    List<FolderResponse> _folders = [];
+    List<FolderResponse> _breadcrumbs = [];
+    bool _foldersLoading;
+    bool IsRoot => _currentFolderId is null;
+
+    /// <summary>Родитель текущей папки как цель перемещения (null когда уже в корне)</summary>
+    FolderResponse? ParentFolderForMove => _breadcrumbs.Count > 1 ? _breadcrumbs[^2] : null;
+
+    async Task LoadFolders()
+    {
+        _foldersLoading = true;
+        StateHasChanged();
+
+        _folders = await client.Media.ListFolders(_currentFolderId);
+        _breadcrumbs = _currentFolderId is Guid folderId
+            ? await client.Media.FolderBreadcrumbs(folderId)
+            : [];
+
+        _foldersLoading = false;
+        StateHasChanged();
+    }
+
+    async Task OpenFolder(FolderResponse folder)
+    {
+        _currentFolderId = folder.Id;
+        pagination = new PaginationState { ItemsPerPage = PageSize };
+        await LoadFolders();
+        _ = table.RefreshDataAsync();
+    }
+
+    async Task GoToRoot()
+    {
+        _currentFolderId = null;
+        pagination = new PaginationState { ItemsPerPage = PageSize };
+        await LoadFolders();
+        _ = table.RefreshDataAsync();
+    }
+
+    // создание / переименование папки
+
+    bool _visibleFolderNameModal;
+    string _folderNameInput = "";
+    string? _folderNameError;
+    FolderResponse? _renamingFolder;
+
+    void OpenCreateFolderDialog()
+    {
+        _renamingFolder = null;
+        _folderNameInput = "";
+        _folderNameError = null;
+        _visibleFolderNameModal = true;
+    }
+
+    void OpenRenameFolderDialog(FolderResponse folder)
+    {
+        _renamingFolder = folder;
+        _folderNameInput = folder.Name;
+        _folderNameError = null;
+        _visibleFolderNameModal = true;
+    }
+
+    async Task SubmitFolderName()
+    {
+        try
+        {
+            if (_renamingFolder is null)
+            {
+                await client.Media.CreateFolder(new CreateFolderRequest
+                {
+                    Name = _folderNameInput.Trim(),
+                    ParentId = _currentFolderId,
+                });
+            }
+            else
+            {
+                await client.Media.RenameFolder(_renamingFolder.Id, new RenameFolderRequest
+                {
+                    NewName = _folderNameInput.Trim(),
+                });
+            }
+
+            _visibleFolderNameModal = false;
+            await LoadFolders();
+            _ = table.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _folderNameError = await ExtractErrorMessage(ex);
+        }
+    }
+
+    async Task FolderDeleteClick(FolderResponse folder)
+    {
+        var ok = await _dialogService.MarsDeleteConfirmation();
+        if (!ok) return;
+
+        if (await client.Media.DeleteFolder(folder.Id).SmartDelete())
+        {
+            await LoadFolders();
+        }
+    }
+
+    // перемещение файла
+
+    bool _visibleMoveModal;
+    FileListItemResponse? _movingFile;
+
+    void OpenMoveDialog(FileListItemResponse file)
+    {
+        _movingFile = file;
+        _visibleMoveModal = true;
+    }
+
+    async Task MoveTo(Guid? targetFolderId)
+    {
+        if (_movingFile is null) return;
+
+        try
+        {
+            var result = await client.Media.MoveFiles(new MoveFilesRequest
+            {
+                Ids = [_movingFile.Id],
+                FolderId = targetFolderId,
+            });
+
+            _visibleMoveModal = false;
+            _movingFile = null;
+
+            if (!result.Ok)
+            {
+                ShowActionResult(result);
+                return;
+            }
+
+            await LoadFolders();
+            _ = table.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _visibleMoveModal = false;
+            ShowActionResult(new UserActionResult { Message = await ExtractErrorMessage(ex) });
+        }
+    }
+
+    void ShowActionResult(UserActionResult result)
+    {
+        actionResult = result;
+        _visibleActionModal = true;
+        StateHasChanged();
+    }
+
+    static async Task<string> ExtractErrorMessage(Exception ex)
+    {
+        if (ex is FlurlHttpException httpEx)
+        {
+            try
+            {
+                var body = await httpEx.GetResponseStringAsync();
+                var result = JsonSerializer.Deserialize<UserActionResult>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (!string.IsNullOrEmpty(result?.Message)) return result.Message;
+            }
+            catch
+            {
+                // тело не UserActionResult — показываем стандартное сообщение
+            }
+        }
+
+        return ex.Message;
     }
 
     void HandleSearchInput()
@@ -150,7 +333,7 @@ public partial class FluentMediaFilesList
     {
         try
         {
-            var x = await client.Media.Upload(file.Stream!, file.Name);
+            var x = await client.Media.Upload(file.Stream!, file.Name, _currentFolderId);
             var result = new FileUploadResult(x.Name, x.Size, null);
             fileUploadResults.Add(result);
         }

@@ -7,4 +7,5 @@ public record CreateFileQuery
     public ulong Size { get; init; }
     public required Guid UserId { get; init; }
     public required FileEntityMetaDto? Meta { get; init; }
+    public Guid? FolderId { get; init; }
 }

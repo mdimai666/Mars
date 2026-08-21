@@ -94,6 +94,43 @@ internal class FileRepository : IFileRepository
         await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task UpdateAfterMove(IReadOnlyCollection<FileMoveUpdate> updates, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(updates, nameof(updates));
+
+        var ids = updates.Select(s => s.Id).ToList();
+        var entities = await _marsDbContext.Files.Where(s => ids.Contains(s.Id)).ToListAsync(cancellationToken);
+
+        if (entities.Count != ids.Count) throw new NotFoundException("some elements not found");
+
+        var updatesDict = updates.ToDictionary(s => s.Id);
+
+        entities.ForEach(e =>
+        {
+            var update = updatesDict[e.Id];
+            e.FilePhysicalPath = update.FilePhysicalPath;
+            e.FileVirtualPath = update.FileVirtualPath;
+            e.FolderId = update.FolderId;
+            if (update.Meta != null)
+            {
+                e.Meta = update.Meta.ToEntity(hostingInfo);
+            }
+            e.ModifiedAt = DateTimeOffset.Now;
+        });
+
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<int> CountByFolder(Guid folderId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        return _marsDbContext.Files.AsNoTracking().CountAsync(s => s.FolderId == folderId, cancellationToken);
+    }
+
     public async Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -186,6 +223,8 @@ internal class FileRepository : IFileRepository
             que = que.Where(s => query.Ids.Contains(s.Id));
         }
 
+        que = ApplyFolderFilter(que, query.FolderId);
+
         var list = await que.ToListAsync(cancellationToken);
 
         if (query.IsImage is not null)//TODO: save ext in database and replace to queryable
@@ -227,6 +266,8 @@ internal class FileRepository : IFileRepository
         var queryable = _listAllQuery.AsNoTracking().Where(s => query.Search == null
                                     || (EF.Functions.ILike(s.FileName, $"%{query.Search}%")));
 
+        queryable = ApplyFolderFilter(queryable, query.FolderId);
+
         var list = await queryable.ToListDataResult(query, cancellationToken);
 
         var resolver = new ImagePreviewResolver(new(), hostingInfo);
@@ -243,10 +284,24 @@ internal class FileRepository : IFileRepository
         var queryable = _listAllQuery.AsNoTracking().Where(s => query.Search == null
                                     || (EF.Functions.ILike(s.FileName, $"%{query.Search}%")));
 
+        queryable = ApplyFolderFilter(queryable, query.FolderId);
+
         var list = await queryable.ToPagingResult(query, cancellationToken);
 
         var resolver = new ImagePreviewResolver(new(), hostingInfo);
         return list.ToListItemList(resolver);
 
+    }
+
+    /// <summary>
+    /// null — без фильтра; Guid.Empty — файлы без папки (корень); иначе — файлы указанной папки.
+    /// </summary>
+    static IQueryable<FileEntity> ApplyFolderFilter(IQueryable<FileEntity> queryable, Guid? folderId)
+    {
+        if (folderId is null) return queryable;
+
+        return folderId == Guid.Empty
+            ? queryable.Where(s => s.FolderId == null)
+            : queryable.Where(s => s.FolderId == folderId);
     }
 }

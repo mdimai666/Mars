@@ -18,13 +18,20 @@ internal class MediaServiceClient : BasicServiceClient, IMediaServiceClient
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<FileDetailResponse?>();
 
-    public Task<FileDetailResponse> Upload(Stream stream, string fileName)
-        => _client.Request($"{_basePath}{_controllerName}", "Upload")
-                    .PostMultipartAsync(mp => mp
+    public Task<FileDetailResponse> Upload(Stream stream, string fileName, Guid? folderId = null)
+    {
+        var request = _client.Request($"{_basePath}{_controllerName}", "Upload");
+        if (folderId is not null)
+        {
+            request = request.AppendQueryParam("folderId", folderId.Value.ToString());
+        }
+
+        return request.PostMultipartAsync(mp => mp
                         //.AddFile("file", GenerateStreamFromString(fileContent), fileName)
                         .AddFile("file", stream, fileName)
                     )
                     .ReceiveJson<FileDetailResponse>();
+    }
 
     //public Task Update(UpdateMediaRequest request)
     //    => _client.Request($"{_basePath}{_controllerName}")
@@ -56,4 +63,38 @@ internal class MediaServiceClient : BasicServiceClient, IMediaServiceClient
                     .PostJsonAsync(action)
                     .ReceiveJson<UserActionResult>();
 
+    public Task<List<FolderResponse>> ListFolders(Guid? parentId)
+    {
+        var request = _client.Request($"{_basePath}{_controllerName}", "folders");
+        if (parentId is not null)
+        {
+            request = request.AppendQueryParam("parentId", parentId.Value.ToString());
+        }
+
+        return request.GetJsonAsync<List<FolderResponse>>();
+    }
+
+    public Task<List<FolderResponse>> FolderBreadcrumbs(Guid folderId)
+        => _client.Request($"{_basePath}{_controllerName}", "folders", folderId, "breadcrumbs")
+                    .GetJsonAsync<List<FolderResponse>>();
+
+    public Task<FolderResponse> CreateFolder(CreateFolderRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", "folders")
+                    .PostJsonAsync(request)
+                    .ReceiveJson<FolderResponse>();
+
+    public Task<FolderResponse> RenameFolder(Guid id, RenameFolderRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", "folders", id, "rename")
+                    .PutJsonAsync(request)
+                    .ReceiveJson<FolderResponse>();
+
+    public Task DeleteFolder(Guid id)
+        => _client.Request($"{_basePath}{_controllerName}", "folders", id)
+                    .OnError(OnStatus404ThrowException)
+                    .DeleteAsync();
+
+    public Task<UserActionResult> MoveFiles(MoveFilesRequest request)
+        => _client.Request($"{_basePath}{_controllerName}", "move-files")
+                    .PostJsonAsync(request)
+                    .ReceiveJson<UserActionResult>();
 }

@@ -27,6 +27,7 @@ public static class FileRequestExtensions
             Take = request.Take,
             Search = request.Search,
             Sort = request.Sort,
+            FolderId = request.FolderId,
         };
 
     public static ListFileQuery ToQuery(this TableFileQueryRequest request)
@@ -36,5 +37,6 @@ public static class FileRequestExtensions
             Take = request.PageSize,
             Search = request.Search,
             Sort = request.Sort,
+            FolderId = request.FolderId,
         };
 }

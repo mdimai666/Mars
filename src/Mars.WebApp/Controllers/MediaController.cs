@@ -25,12 +25,18 @@ namespace Mars.Controllers;
 public class MediaController : ControllerBase
 {
     private readonly IMediaService _mediaService;
+    private readonly IMediaFolderService _folderService;
     private readonly IRequestContext _requestContext;
     private readonly IValidatorFactory _validatorFactory;
 
-    public MediaController(IMediaService mediaService, IRequestContext requestContext, IValidatorFactory validatorFactory)
+    public MediaController(
+        IMediaService mediaService,
+        IMediaFolderService folderService,
+        IRequestContext requestContext,
+        IValidatorFactory validatorFactory)
     {
         _mediaService = mediaService;
+        _folderService = folderService;
         _requestContext = requestContext;
         _validatorFactory = validatorFactory;
     }
@@ -107,12 +113,55 @@ public class MediaController : ControllerBase
     public async Task<ActionResult<FileDetailResponse>> Upload(
             IFormFile file,
             //[FromQuery] string file_group = "Files",
+            [FromQuery] Guid? folderId = null,
             CancellationToken cancellationToken = default)
     {
         await _validatorFactory.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
 
-        var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken);
+        var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken, folderId);
         return (await _mediaService.GetDetail(fileId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
+    }
+
+    [HttpGet("folders")]
+    public async Task<List<FolderResponse>> ListFolders([FromQuery] Guid? parentId, CancellationToken cancellationToken)
+    {
+        return (await _folderService.ListFolders(parentId, cancellationToken)).ToResponseList();
+    }
+
+    [HttpGet("folders/{id:guid}/breadcrumbs")]
+    public async Task<List<FolderResponse>> FolderBreadcrumbs(Guid id, CancellationToken cancellationToken)
+    {
+        return (await _folderService.GetBreadcrumbs(id, cancellationToken)).ToResponseList();
+    }
+
+    [HttpPost("folders")]
+    public async Task<FolderResponse> CreateFolder([FromBody] CreateFolderRequest request, CancellationToken cancellationToken)
+    {
+        var query = new CreateFolderQuery
+        {
+            Name = request.Name.Trim(),
+            ParentId = request.ParentId,
+            UserId = _requestContext.User.Id,
+        };
+        return (await _folderService.Create(query, cancellationToken)).ToResponse();
+    }
+
+    [HttpPut("folders/{id:guid}/rename")]
+    public async Task<FolderResponse> RenameFolder(Guid id, [FromBody] RenameFolderRequest request, CancellationToken cancellationToken)
+    {
+        return (await _folderService.Rename(id, request.NewName.Trim(), cancellationToken)).ToResponse();
+    }
+
+    [HttpDelete("folders/{id:guid}")]
+    public Task DeleteFolder(Guid id, CancellationToken cancellationToken)
+    {
+        return _folderService.Delete(id, cancellationToken);
+    }
+
+    [HttpPost("move-files")]
+    public Task<UserActionResult> MoveFiles([FromBody] MoveFilesRequest request, CancellationToken cancellationToken)
+    {
+        return _folderService.MoveFiles(new MoveFilesQuery { Ids = request.Ids, FolderId = request.FolderId }, cancellationToken);
     }
 
     [HttpPost(nameof(Upload2))]

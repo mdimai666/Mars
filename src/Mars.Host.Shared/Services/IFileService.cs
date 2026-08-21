@@ -16,8 +16,8 @@ public interface IFileService
     Task Update(UpdateFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task UpdateBulk(IReadOnlyCollection<UpdateFileQuery> query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
 
-    Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, byte[] bytes, Guid userId, CancellationToken cancellationToken);
+    Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, byte[] bytes, Guid userId, CancellationToken cancellationToken, Guid? folderId = null);
 
-    Task<Guid> WriteUpload(IFormFile formFile, string subpath, Guid userId, CancellationToken cancellationToken);
-    Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, Stream fileStream, Guid userId, bool generateUniqueName, CancellationToken cancellationToken);
+    Task<Guid> WriteUpload(IFormFile formFile, string subpath, Guid userId, CancellationToken cancellationToken, Guid? folderId = null);
+    Task<Guid> WriteUpload(string originalFileNameWithExt, string subpath, Stream fileStream, Guid userId, bool generateUniqueName, CancellationToken cancellationToken, Guid? folderId = null);
 }

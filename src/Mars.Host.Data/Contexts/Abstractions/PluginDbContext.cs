@@ -42,6 +42,7 @@ public abstract class PluginDbContextBase : IdentityDbContext<UserEntity, RoleEn
     //--------CORE----------
     public virtual DbSet<OptionEntity> Options { get; set; } = default!;
     public virtual DbSet<FileEntity> Files { get; set; } = default!;
+    public virtual DbSet<MediaFolderEntity> MediaFolders { get; set; } = default!;
 
     //--------POST----------
     public virtual DbSet<PostEntity> Posts { get; set; } = default!;

@@ -27,3 +27,78 @@
         }
     }
 }
+
+.media-folders {
+    .d-folder-breadcrumbs {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+
+        .folder-crumb {
+            cursor: pointer;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+
+            &.active {
+                font-weight: 600;
+            }
+        }
+
+        .crumb-sep {
+            opacity: 0.5;
+            margin: 0 2px;
+        }
+    }
+
+    .d-folder-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .d-folder-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        width: 120px;
+        padding: 12px 8px 8px;
+        border-radius: 6px;
+        background: var(--mars-bg-subtle);
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 5%);
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);
+        }
+
+        .d-folder-item-name {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.9em;
+
+            .d-folder-item-count {
+                opacity: 0.6;
+            }
+        }
+
+        .d-folder-item-actions {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: none;
+            gap: 2px;
+        }
+
+        &:hover .d-folder-item-actions {
+            display: flex;
+        }
+    }
+}

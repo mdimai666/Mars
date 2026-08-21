@@ -147,6 +147,20 @@ public class FileStorage : IFileStorage
         }
     }
 
+    public void MoveFile(string fromPath, string toPath)
+    {
+        fromPath = AbsolutePath(fromPath);
+        toPath = AbsolutePath(toPath);
+        File.Move(fromPath, toPath);
+    }
+
+    public void MoveDirectory(string fromPath, string toPath)
+    {
+        fromPath = AbsolutePath(fromPath);
+        toPath = AbsolutePath(toPath);
+        Directory.Move(fromPath, toPath);
+    }
+
     internal string AbsolutePath(string path)
     {
         if (Path.IsPathFullyQualified(path)) throw new Exception("path must be relative");

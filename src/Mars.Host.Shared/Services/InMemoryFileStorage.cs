@@ -150,6 +150,40 @@ public class InMemoryFileStorage : IFileStorage
         }
     }
 
+    public void MoveFile(string fromPath, string toPath)
+    {
+        fromPath = Normalize(fromPath);
+        toPath = Normalize(toPath);
+
+        if (!_files.TryGetValue(fromPath, out var bytes))
+        {
+            throw new FileNotFoundException($"Файл не найден: {fromPath}");
+        }
+
+        _files.Remove(fromPath);
+        _files[toPath] = bytes;
+    }
+
+    public void MoveDirectory(string fromPath, string toPath)
+    {
+        fromPath = Normalize(fromPath);
+        toPath = Normalize(toPath);
+
+        var prefix = fromPath + '/';
+
+        foreach (var dir in _directories.Where(d => d == fromPath || d.StartsWith(prefix)).ToList())
+        {
+            _directories.Remove(dir);
+            _directories.Add(toPath + dir[fromPath.Length..]);
+        }
+
+        foreach (var key in _files.Keys.Where(k => k.StartsWith(prefix)).ToList())
+        {
+            _files[toPath + key[fromPath.Length..]] = _files[key];
+            _files.Remove(key);
+        }
+    }
+
     public IDirectoryContents GetDirectoryContents(string subpath)
     {
         subpath = Normalize(subpath);

@@ -27,4 +27,14 @@ public interface IFileStorage
     void CreateDirectory(string filepath);
     bool DirectoryExists(string filepath);
     void DeleteDirectory(string path, bool recursive);
+
+    /// <summary>
+    /// Перемещает файл на новый путь
+    /// </summary>
+    void MoveFile(string fromPath, string toPath);
+
+    /// <summary>
+    /// Перемещает каталог со всем содержимым на новый путь
+    /// </summary>
+    void MoveDirectory(string fromPath, string toPath);
 }

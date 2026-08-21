@@ -42,6 +42,7 @@ internal static class FileMapping
 
            FilePhysicalPath = entity.FilePhysicalPath,
            FileVirtualPath = entity.FileVirtualPath,
+           FolderId = entity.FolderId,
        };
 
     public static FileDetail ToDetail(this FileEntity entity, ImagePreviewResolver imagePreviewResolver)
@@ -56,6 +57,7 @@ internal static class FileMapping
             FileVirtualPath = entity.FileVirtualPath,
             ModifiedAt = entity.ModifiedAt,
             UserId = entity.UserId,
+            FolderId = entity.FolderId,
             Meta = entity.Meta.ToDto(imagePreviewResolver.HostingInfo),
 
             IsImage = imagePreviewResolver.HostingInfo.ExtIsImage(entity.FileExt),
@@ -122,6 +124,7 @@ internal static class FileMapping
             FileVirtualPath = query.FilePathFromUpload,
             FileSize = query.Size,
             UserId = query.UserId,
+            FolderId = query.FolderId,
 
             Meta = query.Meta?.ToEntity(hostingInfo) ?? new()
         };

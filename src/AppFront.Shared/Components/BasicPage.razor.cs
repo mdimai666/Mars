@@ -45,10 +45,7 @@ namespace AppFront.Shared.Components
 
         protected override void OnInitialized()
         {
-            if (Q.IsPrerenderProcess == false)
-            {
-                _ = StartLoad();
-            }
+            _ = StartLoad();
         }
 
         //protected override void OnAfterRender(bool firstRender)

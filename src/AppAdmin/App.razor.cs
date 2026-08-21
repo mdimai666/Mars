@@ -31,8 +31,6 @@ public partial class App
     [Inject] HotKeys HotKeys { get; set; } = default!;
 
     public static bool IsDevelopment => Q.IsDevelopment;
-    public static bool IsPrerenderSupport = false;
-    public static bool IsPrerenderProcess => Q.IsPrerenderProcess;
 
     HotKeysContext appHotKeysContext = default!;
     FluentDesignSystemProvider? _fluentDesignSystemProvider;

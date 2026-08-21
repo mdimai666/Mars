@@ -79,7 +79,7 @@ public class RecentPagesService : IDisposable
         }
         catch
         {
-            // localStorage может быть недоступен (prerender) — не критично
+            // localStorage может быть недоступен — не критично
         }
     }
 

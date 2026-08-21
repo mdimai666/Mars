@@ -219,11 +219,7 @@ else
 
         _addNewItem = ID == Guid.Empty;
 
-        if (!Q.IsPrerender)
-        {
-            Load();
-        }
-
+        Load();
     }
 
     async void Load()

@@ -18,9 +18,6 @@
 @inject InitialSiteDataViewModelHandler _initialSiteDataHandler;
 
 @{
-    //TODO: Uncomment
-    Q.IsPrerenderProcess = false;
-
     var scriptsBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
 
     var vm = await _initialSiteDataHandler.Handle(Request, devAdminPageData: true, CancellationToken.None);
@@ -29,24 +26,13 @@
 
     var json = System.Text.Json.JsonSerializer.Serialize(vm);
 
-    string bodyClass = "";
-    bool loggedIn = requestContext.IsAuthenticated;
-    bodyClass += "logged-in ";
+    string bodyClass = "logged-in ";
 
-    try
+    if (requestContext.IsAuthenticated && requestContext.Roles is not null)
     {
+        var isAdmin = requestContext.Roles.Contains("Admin");
 
-        if (requestContext.IsAuthenticated && requestContext.Roles is not null)
-        {
-            var isAdmin = requestContext.Roles.Contains("Admin");
-
-            bodyClass += $"{(isAdmin ? "admin" : "")} ";
-        }
-    }
-    catch (Exception)
-    {
-
-        throw;
+        bodyClass += $"{(isAdmin ? "admin" : "")} ";
     }
 
     bool isDarkTheme = false;
@@ -54,7 +40,6 @@
     {
         isDarkTheme = bool.Parse(Request.Cookies["dark"] ?? "false");
     }
-
 }
 <!DOCTYPE html>
 <html lang="ru">
@@ -64,27 +49,20 @@
     <title>@optionService.SysOption.SiteName</title>
     <base href="/dev/" />
 
-    @{
-        // all scripts moved to:
-        _ = nameof(AppAdminSpaHtmlScripts);
-    }
+    @* все скрипты админки собираются в AppAdminSpaHtmlScripts *@
     @Html.Raw(scriptsBuilder.HeadScriptsRender())
 
 </head>
-<body class="@($"{bodyClass} {(isDarkTheme ? "dark" : "")}")" prerender>
+<body class="@($"{bodyClass} {(isDarkTheme ? "dark" : "")}")">
 
     <script>
-        //window._dev = true;
         function InitialSiteDataViewModel() {
             let vm = "@Html.Raw(TextZip.ZipToBase64(json))";
             return vm;
         }
     </script>
     <app id="app">
-        @* <component type="typeof(AppAdmin.App)" render-mode="Static" /> *@
         <div class="flex-fill xcenter">
-            @* <component type="typeof(AppFront.Shared.Components.SharedLoader1)" render-mode="WebAssembly" /> *@
-
             <img src="/mars/img/logo.svg" width="200" class="mb-2" />
 
             <div class="loading-progress">

@@ -104,12 +104,6 @@
         if (_url.IsNullOrEmpty() || Busy) return;
         _error = null;
 
-        if (Q.IsPrerenderProcess)
-        {
-            Busy = true;
-            return;
-        }
-
         if (!hot) Busy = true;
         StateHasChanged();
 

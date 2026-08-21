@@ -22,7 +22,6 @@ public static class Q
     static AppInitialViewModel _site = default!;
     public static AppInitialViewModel Site => _site;
 
-    public static bool IsPrerenderProcess;
 #if DEBUG
     public static readonly bool IsDevelopment = true;
 #else

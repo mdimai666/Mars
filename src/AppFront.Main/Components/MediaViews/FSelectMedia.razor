@@ -111,10 +111,7 @@ else
             _value = value;
             ValueChanged.InvokeAsync(_value).Wait();
             OnValueChange.InvokeAsync(_value);
-            if (!Q.IsPrerenderProcess)
-            {
-                _ = LoadPreview();
-            }
+            _ = LoadPreview();
         }
     }
     [Parameter] public EventCallback<Guid> ValueChanged { get; set; }

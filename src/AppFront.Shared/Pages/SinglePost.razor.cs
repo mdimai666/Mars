@@ -52,13 +52,6 @@ public partial class SinglePost
         if (string.IsNullOrEmpty(IDorSLUG) || Busy) return;
         _error = null;
 
-        if (Q.IsPrerenderProcess)
-        {
-            Busy = true;
-            return;
-        }
-        ;
-
         if (!hot) Busy = true;
         StateHasChanged();
 

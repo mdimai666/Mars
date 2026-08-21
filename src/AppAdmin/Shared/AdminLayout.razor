@@ -47,15 +47,6 @@
         <SharedLoader1 />
     </Authorizing>
     <NotAuthorized>
-        @if (!Q.IsPrerenderProcess)
-        {
-            <RedirectToLogin />
-        }
-        else
-        {
-            <div class="admin-layout d-flex flex-column xcenter" style="min-height:100vh;">
-                <SharedLoader1 />
-            </div>
-        }
+        <RedirectToLogin />
     </NotAuthorized>
 </AuthorizeView>

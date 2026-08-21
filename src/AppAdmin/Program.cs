@@ -76,8 +76,7 @@ builder.Services.AddNodeWorkspace()
                 .AddSemanticKernelFront()
                 .AddAiChatFront();
 
-if (!App.IsPrerenderProcess)
-    builder.ConfigureWebSockets(backendUrl);
+builder.ConfigureWebSockets(backendUrl);
 
 if (safeMode)
 {

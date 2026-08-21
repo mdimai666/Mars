@@ -39,23 +39,16 @@
         <!--<NoWarn>1701;1702;1591;0162;0414;1998;8618</NoWarn>-->
     </PropertyGroup>
     <ItemGroup>
-        <Compile Remove="Areas\Identity\**" />
         <Compile Remove="wwwroot\upload\**" />
-        <Content Remove="Areas\Identity\**" />
         <Content Remove="wwwroot\upload\**" />
-        <EmbeddedResource Remove="Areas\Identity\**" />
         <EmbeddedResource Remove="wwwroot\upload\**" />
-        <None Remove="Areas\Identity\**" />
         <None Remove="wwwroot\upload\**" />
     </ItemGroup>
     <ItemGroup>
         <Content Remove="compilerconfig.json" />
-        <Content Remove="Pages\DisplayFF1.razor" />
-        <Content Remove="Pages\EditFF1.razor" />
     </ItemGroup>
     <ItemGroup>
         <None Include="compilerconfig.json" />
-        <None Include="wwwroot\js\code.js" />
     </ItemGroup>
 
     <ItemGroup>
@@ -142,7 +135,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Areas\" />
         <Folder Include="data\logs\" />
         <Folder Include="logs\" />
         <Folder Include="Res\Excel\Feedback\" />

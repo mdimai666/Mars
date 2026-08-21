@@ -9,6 +9,12 @@ namespace AppFront.Shared.Components.MetaFieldViews;
 public class MetaFieldVariantEditModel
 {
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// Стабильный ключ варианта; пустой — сервер сгенерирует из названия
+    /// </summary>
+    public string Key { get; set; } = "";
+
     [Required]
     public string Title { get; set; } = "";
     public string[] Tags { get; set; } = [];
@@ -19,6 +25,7 @@ public class MetaFieldVariantEditModel
         => new()
         {
             Id = Id,
+            Key = Key,
             Title = Title,
             Tags = Tags,
             Value = Value,
@@ -29,6 +36,7 @@ public class MetaFieldVariantEditModel
     => new()
     {
         Id = Id,
+        Key = Key,
         Title = Title,
         Tags = Tags,
         Value = Value,
@@ -39,6 +47,7 @@ public class MetaFieldVariantEditModel
     => new()
     {
         Id = response.Id,
+        Key = response.Key,
         Title = response.Title,
         Disable = response.Disable,
         Value = response.Value,
@@ -49,6 +58,7 @@ public class MetaFieldVariantEditModel
         => new()
         {
             Id = Guid.NewGuid(),
+            Key = Key.Length > 0 ? $"{Key}_copy" : "",
             Title = Title,
             Tags = [.. Tags],
             Value = Value,

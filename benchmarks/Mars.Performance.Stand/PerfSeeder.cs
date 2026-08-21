@@ -52,8 +52,12 @@ public static class PerfSeeder
 
         var postType = await ef.PostTypes.AsNoTracking().FirstAsync(t => t.TypeName == "post");
         var user = await ef.Users.AsNoTracking().FirstAsync(u => u.UserName == UserConstants.TestUserUsername);
-        var status = postType.PostStatusList?.FirstOrDefault(s => s.Slug == "publish")?.Slug
-                     ?? PostStatusEntity.DefaultStatuses().First().Slug;
+        var statuses = await ef.PostStatuses.AsNoTracking()
+                                            .Where(s => s.PostTypeId == postType.Id)
+                                            .OrderBy(s => s.Order)
+                                            .ToListAsync();
+        var statusId = statuses.FirstOrDefault(s => s.Slug == "publish")?.Id
+                       ?? statuses.FirstOrDefault()?.Id;
 
         var existing = await ef.Posts.CountAsync(p => p.Slug.StartsWith(PostSlugPrefix));
         if (existing >= count)
@@ -76,7 +80,7 @@ public static class PerfSeeder
                 Slug = $"{PostSlugPrefix}{i:D4}",
                 PostTypeId = postType.Id,
                 UserId = user.Id,
-                Status = status,
+                StatusId = statusId,
                 Content = BuildContent(i),
                 Excerpt = $"Отрывок поста №{i} для нагрузочного стенда.",
                 Tags = ["perf", $"tag{i % 5}"],

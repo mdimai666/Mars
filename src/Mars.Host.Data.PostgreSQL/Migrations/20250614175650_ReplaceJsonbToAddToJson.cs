@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Data.OwnedTypes.NavMenus;
+using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -21,7 +22,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 nullable: true,
                 oldClrType: typeof(List<PostStatusEntity>),
                 oldType: "jsonb",
-                oldComment: "Статусы");
+                oldComment: "РЎС‚Р°С‚СѓСЃС‹");
 
             migrationBuilder.AlterColumn<string>(
                 name: "post_content_type",
@@ -30,7 +31,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 nullable: false,
                 oldClrType: typeof(PostContentSettings),
                 oldType: "jsonb",
-                oldComment: "Настройки контента");
+                oldComment: "РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚РµРЅС‚Р°");
 
             migrationBuilder.AlterColumn<string>(
                 name: "menu_items",
@@ -39,7 +40,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 nullable: true,
                 oldClrType: typeof(List<NavMenuItem>),
                 oldType: "jsonb",
-                oldComment: "Элементы");
+                oldComment: "Р­Р»РµРјРµРЅС‚С‹");
 
             migrationBuilder.AlterColumn<string>(
                 name: "variants",
@@ -48,7 +49,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 nullable: true,
                 oldClrType: typeof(List<MetaFieldVariant>),
                 oldType: "jsonb",
-                oldComment: "Варианты");
+                oldComment: "Р’Р°СЂРёР°РЅС‚С‹");
         }
 
         /// <inheritdoc />
@@ -59,7 +60,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 table: "post_types",
                 type: "jsonb",
                 nullable: false,
-                comment: "Статусы",
+                comment: "РЎС‚Р°С‚СѓСЃС‹",
                 oldClrType: typeof(string),
                 oldType: "jsonb",
                 oldNullable: true);
@@ -69,7 +70,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 table: "post_types",
                 type: "jsonb",
                 nullable: false,
-                comment: "Настройки контента",
+                comment: "РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚РµРЅС‚Р°",
                 oldClrType: typeof(string),
                 oldType: "jsonb");
 
@@ -78,7 +79,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 table: "nav_menus",
                 type: "jsonb",
                 nullable: false,
-                comment: "Элементы",
+                comment: "Р­Р»РµРјРµРЅС‚С‹",
                 oldClrType: typeof(string),
                 oldType: "jsonb",
                 oldNullable: true);
@@ -88,7 +89,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 table: "meta_fields",
                 type: "jsonb",
                 nullable: false,
-                comment: "Варианты",
+                comment: "Р’Р°СЂРёР°РЅС‚С‹",
                 oldClrType: typeof(string),
                 oldType: "jsonb",
                 oldNullable: true);

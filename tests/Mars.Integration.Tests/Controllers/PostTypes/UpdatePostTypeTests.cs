@@ -62,7 +62,7 @@ public class UpdatePostTypeTests : ApplicationTests
 
         var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields!)
                                                 .ThenInclude(s => s.Variants)
-                                            .Include(s => s.PostStatusList)
+                                            .Include(s => s.Statuses)
                                             .FirstOrDefault(s => s.Id == updatingId);
         postTypeEntity.Should().NotBeNull();
         postTypeEntity.Should().BeEquivalentTo(request, options => options
@@ -72,7 +72,7 @@ public class UpdatePostTypeTests : ApplicationTests
             .Excluding(s => s.PostStatusList)
             .Excluding(s => s.MetaFields)
             .ExcludingMissingMembers());
-        postTypeEntity.PostStatusList.Should().AllSatisfy(e =>
+        postTypeEntity.Statuses.Should().AllSatisfy(e =>
         {
             var req = request.PostStatusList.First(s => s.Id == e.Id);
             e.Should().BeEquivalentTo(req, options => options

@@ -79,10 +79,17 @@ if (ef.Files.Count() == 0)
 if (ef.Posts.Count() == 0)
 {
     var user = ef.Users.First();
+    var statusDraft = new PostStatusEntity()
+    {
+        Id = Guid.NewGuid(),
+        Title = "Черновик",
+        Slug = "draft",
+    };
     var pt = new PostTypeEntity()
     {
         Title = "post",
         TypeName = "post",
+        Statuses = [statusDraft],
     };
 
     var post1 = new PostEntity()
@@ -90,7 +97,7 @@ if (ef.Posts.Count() == 0)
         Title = "title1",
         Content = "content",
         Slug = "slug1",
-        Status = "draft",
+        StatusId = statusDraft.Id,
         PostTypeId = pt.Id,
         UserId = user.Id,
     };

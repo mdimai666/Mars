@@ -64,7 +64,9 @@ public sealed class CreatePostTypeTests : ApplicationTests
         res.StatusCode.Should().Be(StatusCodes.Status201Created);
         result.Should().NotBeNull();
         var ef = AppFixture.MarsDbContext();
-        var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.Id == postTypeRequest.Id);
+        var postTypeEntity = ef.PostTypes.Include(s => s.MetaFields)
+                                         .Include(s => s.Statuses)
+                                         .FirstOrDefault(s => s.Id == postTypeRequest.Id);
         postTypeEntity.Should().NotBeNull();
         postTypeEntity.Should().BeEquivalentTo(postTypeRequest, options => options
             .ComparingRecordsByValue()
@@ -73,7 +75,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
             .Excluding(s => s.PostStatusList)
             .Excluding(s => s.MetaFields)
             .ExcludingMissingMembers());
-        postTypeEntity.PostStatusList.Should().AllSatisfy(e =>
+        postTypeEntity.Statuses.Should().AllSatisfy(e =>
         {
             var req = postTypeRequest.PostStatusList.First(s => s.Id == e.Id);
             e.Should().BeEquivalentTo(req, options => options

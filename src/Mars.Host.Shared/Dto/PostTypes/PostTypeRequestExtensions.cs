@@ -72,8 +72,9 @@ public static class PostTypeRequestExtensions
         {
             Id = request.Id,
             Slug = request.Slug,
-            Tags = request.Tags,
-            Title = request.Title
+            Title = request.Title,
+            Color = request.Color,
+            Order = request.Order,
         };
 
     public static PostStatusDto ToDto(this UpdatePostStatusRequest request)
@@ -81,8 +82,9 @@ public static class PostTypeRequestExtensions
         {
             Id = request.Id,
             Slug = request.Slug,
-            Tags = request.Tags,
-            Title = request.Title
+            Title = request.Title,
+            Color = request.Color,
+            Order = request.Order,
         };
 
     public static IReadOnlyCollection<PostStatusDto> ToDto(this IReadOnlyCollection<CreatePostStatusRequest> entities)

@@ -99,7 +99,6 @@ public sealed class EntitiesCustomize : ICustomization
                                    .With(s => s.Id)
                                    .With(s => s.Title, () => fixture.Create("Title - "))
                                    .With(s => s.Content, () => "<p>" + faker.Lorem.Paragraphs(4, "</p>\n<p>") + "</p>\n")
-                                   .With(s => s.Status, () => PostStatusEntity.DefaultStatuses().TakeRandom().Slug)
                                    //.With(s => s.Image, "")
                                    .With(s => s.LangCode, () => Random.Shared.GetItems(["", "ru"], 1)[0])
                                    //.With(s => s.Type, "post")

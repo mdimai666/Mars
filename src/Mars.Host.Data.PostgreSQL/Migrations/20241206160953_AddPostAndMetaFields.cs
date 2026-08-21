@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Mars.Host.Data.OwnedTypes.MetaFields;
+using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -18,23 +19,23 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 name: "meta_fields",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "ИД"),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "Создан"),
-                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "Изменен"),
-                    parent_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Родительское мета поле"),
-                    title = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false, comment: "Название"),
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "РР”"),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "РЎРѕР·РґР°РЅ"),
+                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "РР·РјРµРЅРµРЅ"),
+                    parent_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Р РѕРґРёС‚РµР»СЊСЃРєРѕРµ РјРµС‚Р° РїРѕР»Рµ"),
+                    title = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false, comment: "РќР°Р·РІР°РЅРёРµ"),
                     key = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false, comment: "Key"),
-                    type = table.Column<int>(type: "integer", nullable: false, comment: "Тип"),
-                    variants = table.Column<List<MetaFieldVariant>>(type: "jsonb", nullable: false, comment: "Варианты"),
-                    max_value = table.Column<decimal>(type: "numeric", nullable: true, comment: "Максимальное"),
-                    min_value = table.Column<decimal>(type: "numeric", nullable: true, comment: "Минимальное"),
-                    description = table.Column<string>(type: "text", maxLength: 256, nullable: false, comment: "Описание"),
+                    type = table.Column<int>(type: "integer", nullable: false, comment: "РўРёРї"),
+                    variants = table.Column<List<MetaFieldVariant>>(type: "jsonb", nullable: false, comment: "Р’Р°СЂРёР°РЅС‚С‹"),
+                    max_value = table.Column<decimal>(type: "numeric", nullable: true, comment: "РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ"),
+                    min_value = table.Column<decimal>(type: "numeric", nullable: true, comment: "РњРёРЅРёРјР°Р»СЊРЅРѕРµ"),
+                    description = table.Column<string>(type: "text", maxLength: 256, nullable: false, comment: "РћРїРёСЃР°РЅРёРµ"),
                     is_nullable = table.Column<bool>(type: "boolean", nullable: false, comment: "IsNullable"),
-                    order = table.Column<int>(type: "integer", nullable: false, comment: "Порядок"),
-                    tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "Теги"),
-                    hidden = table.Column<bool>(type: "boolean", nullable: false, comment: "Скрытое"),
-                    disabled = table.Column<bool>(type: "boolean", nullable: false, comment: "Отключен"),
-                    model_name = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: true, comment: "Модель")
+                    order = table.Column<int>(type: "integer", nullable: false, comment: "РџРѕСЂСЏРґРѕРє"),
+                    tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "РўРµРіРё"),
+                    hidden = table.Column<bool>(type: "boolean", nullable: false, comment: "РЎРєСЂС‹С‚РѕРµ"),
+                    disabled = table.Column<bool>(type: "boolean", nullable: false, comment: "РћС‚РєР»СЋС‡РµРЅ"),
+                    model_name = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: true, comment: "РњРѕРґРµР»СЊ")
                 },
                 constraints: table =>
                 {
@@ -45,16 +46,16 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 name: "post_types",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "ИД"),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "Создан"),
-                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "Изменен"),
-                    title = table.Column<string>(type: "text", maxLength: 256, nullable: false, comment: "Название"),
-                    type_name = table.Column<string>(type: "varchar(128)", maxLength: 100, nullable: false, comment: "Тип"),
-                    post_status_list = table.Column<List<PostStatusEntity>>(type: "jsonb", nullable: false, comment: "Статусы"),
-                    enabled_features = table.Column<List<string>>(type: "jsonb", nullable: false, comment: "Функции"),
-                    disabled = table.Column<bool>(type: "boolean", nullable: false, comment: "Отключен"),
-                    post_content_type = table.Column<PostContentSettings>(type: "jsonb", nullable: false, comment: "Настройки контента"),
-                    tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "Теги")
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "РР”"),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "РЎРѕР·РґР°РЅ"),
+                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "РР·РјРµРЅРµРЅ"),
+                    title = table.Column<string>(type: "text", maxLength: 256, nullable: false, comment: "РќР°Р·РІР°РЅРёРµ"),
+                    type_name = table.Column<string>(type: "varchar(128)", maxLength: 100, nullable: false, comment: "РўРёРї"),
+                    post_status_list = table.Column<List<PostStatusEntity>>(type: "jsonb", nullable: false, comment: "РЎС‚Р°С‚СѓСЃС‹"),
+                    enabled_features = table.Column<List<string>>(type: "jsonb", nullable: false, comment: "Р¤СѓРЅРєС†РёРё"),
+                    disabled = table.Column<bool>(type: "boolean", nullable: false, comment: "РћС‚РєР»СЋС‡РµРЅ"),
+                    post_content_type = table.Column<PostContentSettings>(type: "jsonb", nullable: false, comment: "РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚РµРЅС‚Р°"),
+                    tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "РўРµРіРё")
                 },
                 constraints: table =>
                 {
@@ -66,9 +67,9 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 name: "meta_values",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "ИД"),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "Создан"),
-                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "Изменен"),
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "РР”"),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "РЎРѕР·РґР°РЅ"),
+                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "РР·РјРµРЅРµРЅ"),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: false),
                     type = table.Column<int>(type: "integer", nullable: false),
                     index = table.Column<int>(type: "integer", nullable: false),
@@ -149,18 +150,18 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 name: "posts",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "ИД"),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "Создан"),
-                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "Изменен"),
-                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "Удален в"),
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "РР”"),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()", comment: "РЎРѕР·РґР°РЅ"),
+                    modified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "РР·РјРµРЅРµРЅ"),
+                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true, comment: "РЈРґР°Р»РµРЅ РІ"),
                     slug = table.Column<string>(type: "varchar(256)", nullable: false, comment: "slug"),
-                    tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "Теги"),
-                    title = table.Column<string>(type: "text", maxLength: 512, nullable: false, comment: "Название"),
-                    content = table.Column<string>(type: "text", nullable: true, comment: "Текст"),
-                    excerpt = table.Column<string>(type: "text", maxLength: 512, nullable: true, comment: "Отрывок"),
-                    status = table.Column<string>(type: "varchar(256)", nullable: false, comment: "Статус"),
-                    type = table.Column<string>(type: "varchar(128)", nullable: false, comment: "Тип"),
-                    lang_code = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false, comment: "Язык")
+                    tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "РўРµРіРё"),
+                    title = table.Column<string>(type: "text", maxLength: 512, nullable: false, comment: "РќР°Р·РІР°РЅРёРµ"),
+                    content = table.Column<string>(type: "text", nullable: true, comment: "РўРµРєСЃС‚"),
+                    excerpt = table.Column<string>(type: "text", maxLength: 512, nullable: true, comment: "РћС‚СЂС‹РІРѕРє"),
+                    status = table.Column<string>(type: "varchar(256)", nullable: false, comment: "РЎС‚Р°С‚СѓСЃ"),
+                    type = table.Column<string>(type: "varchar(128)", nullable: false, comment: "РўРёРї"),
+                    lang_code = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false, comment: "РЇР·С‹Рє")
                 },
                 constraints: table =>
                 {

@@ -77,13 +77,13 @@ public class PageRenderTests : BaseWebApiClientTests
         var ef = AppFixture.MarsDbContext();
         var pageType = _fixture.Create<PostTypeEntity>();
         pageType.TypeName = "page";
-        pageType.PostStatusList = PostStatusEntity.DefaultStatuses();
+        pageType.Statuses = PostStatusEntity.DefaultStatuses();
         pageType.EnabledFeatures = [PostTypeConstants.Features.Content];
         ef.PostTypes.Add(pageType);
 
         var post = _fixture.Create<PostEntity>();
         post.PostTypeId = pageType.Id;
-        post.Status = "";
+        post.StatusId = null;
         ef.Posts.Add(post);
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();

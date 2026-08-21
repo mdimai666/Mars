@@ -20,12 +20,16 @@ public class PostEntityConfiguration : IEntityTypeConfiguration<PostEntity>
         entity.Property(x => x.Tags).HasColumnType($"character varying({EntityDefaultConstants.TagMaxLength})[]");
         entity.Property(x => x.Content).HasColumnType("text");
         entity.Property(x => x.Excerpt).HasColumnType("text").HasMaxLength(ExcerptMaxLength);
-        entity.Property(x => x.Status).HasColumnType($"varchar({StatusMaxLength})");
 
         //entity.Property(x => x.Type).HasColumnType($"varchar({PostTypeConstants.TypeNameMaxLength})");
         entity.Property(x => x.LangCode).HasColumnType($"varchar({LangCodeMaxLength})");
 
         // Relations
+
+        entity.HasOne(x => x.PostStatus)
+              .WithMany()
+              .HasForeignKey(x => x.StatusId)
+              .OnDelete(DeleteBehavior.SetNull);
 
         entity.HasMany(x => x.Files)
             .WithMany(x => x.Posts)

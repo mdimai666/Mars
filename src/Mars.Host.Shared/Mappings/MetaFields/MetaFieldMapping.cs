@@ -26,6 +26,7 @@ public static class MetaFieldMapping
         => new()
         {
             Id = entity.Id,
+            Key = entity.Key,
             Title = entity.Title,
             Value = entity.Value,
             Tags = entity.Tags,
@@ -36,6 +37,7 @@ public static class MetaFieldMapping
         => new()
         {
             Id = entity.Id,
+            Key = entity.Key,
             Tags = entity.Tags,
             Title = entity.Title,
             Value = entity.Value,
@@ -45,6 +47,7 @@ public static class MetaFieldMapping
         => new()
         {
             Id = entity.Id,
+            Key = entity.Key,
             Tags = entity.Tags,
             Title = entity.Title,
             Value = entity.Value,

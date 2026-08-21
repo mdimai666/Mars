@@ -4,6 +4,7 @@ using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Utils;
 
 namespace Mars.Host.Repositories;
 
@@ -27,6 +28,7 @@ public static class MetaFieldsTools
                 var q = queryDict[item.Id];
                 item.CreatedAt = modifiedAt;
                 item.ModifiedAt = null;
+                EnsureVariantKeys(item.Variants);
                 _marsDbContext.MetaFields.Add(item);
                 existMetaFields.Add(item);
             }
@@ -35,6 +37,7 @@ public static class MetaFieldsTools
         {
             var q = queryDict[item.Id];
             var qe = q.ToEntity();
+            EnsureVariantKeys(qe.Variants);
 
             // смена типа поля: перенос значений между колонками, где это возможно
             if (item.Type != qe.Type)
@@ -104,11 +107,45 @@ public static class MetaFieldsTools
         foreach (var item in entityVariants.Except(statusDiff.ToRemove).Except(statusDiff.ToAdd))
         {
             var q = newVariants.First(s => s.Id == item.Id);
+            item.Key = q.Key;
             item.Title = q.Title;
             item.Tags = q.Tags.ToList();
             item.Value = q.Value;
             item.Disable = q.Disable;
 
+        }
+    }
+
+    /// <summary>
+    /// Обеспечивает варианты непустыми уникальными ключами: нормализует заданные,
+    /// пустые генерирует из Title (backfill), коллизии разрешает суффиксами.
+    /// </summary>
+    public static void EnsureVariantKeys(List<MetaFieldVariant> variants)
+    {
+        if (variants.Count == 0) return;
+
+        foreach (var variant in variants)
+        {
+            var key = MetaFieldKeyNormalizer.Normalize(variant.Key);
+            if (key.Length == 0)
+                key = MetaFieldKeyNormalizer.Normalize(variant.Title);
+            if (key.Length == 0)
+                key = $"variant_{variant.Id:N}";
+
+            variant.Key = key;
+        }
+
+        var taken = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var variant in variants)
+        {
+            var candidate = variant.Key;
+            var suffix = 2;
+            while (!taken.Add(candidate))
+            {
+                candidate = $"{variant.Key}_{suffix}";
+                suffix++;
+            }
+            variant.Key = candidate;
         }
     }
 }

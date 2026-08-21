@@ -111,13 +111,13 @@ public class GetPageRenderTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var pageType = _fixture.Create<PostTypeEntity>();
         pageType.TypeName = "page";
-        pageType.PostStatusList = PostStatusEntity.DefaultStatuses();
+        pageType.Statuses = PostStatusEntity.DefaultStatuses();
         pageType.EnabledFeatures = [PostTypeConstants.Features.Content];
         ef.PostTypes.Add(pageType);
 
         var page = _fixture.Create<PostEntity>();
         page.PostTypeId = pageType.Id;
-        page.Status = "";
+        page.StatusId = null;
         ef.Posts.Add(page);
         await ef.SaveChangesAsync();
         ef.ChangeTracker.Clear();

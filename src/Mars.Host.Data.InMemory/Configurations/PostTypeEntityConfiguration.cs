@@ -24,10 +24,8 @@ public class PostTypeEntityConfiguration : IEntityTypeConfiguration<PostTypeEnti
         entity.HasIndex(x => x.TypeName)
             .HasFilter("\"disabled\" IS true"); ;
 
-        //entity.OwnsMany(x => x.PostStatusList, f => { f.ToJson(); });
         //entity.OwnsOne(x => x.PostContentType, f => { f.ToJson(); });
 
-        entity.Property(x => x.PostStatusList).HasJsonConversion();
         entity.Property(x => x.PostContentType).HasJsonConversion();
 
         //entity.Property(x => x.EnabledFeatures).HasColumnType("jsonb");

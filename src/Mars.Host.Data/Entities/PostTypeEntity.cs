@@ -32,12 +32,6 @@ public class PostTypeEntity : IBasicEntity
     /// <summary>
     /// <b>[jsonb]</b>
     /// </summary>
-    [Comment("Статусы")]
-    public List<PostStatusEntity> PostStatusList { get; set; } = [];
-
-    /// <summary>
-    /// <b>[jsonb]</b>
-    /// </summary>
     [Comment("Функции")]
     public List<string> EnabledFeatures { get; set; } = [];
 
@@ -59,6 +53,8 @@ public class PostTypeEntity : IBasicEntity
     public List<string> Tags { get; set; } = [];
 
     // Relations
+
+    public virtual ICollection<PostStatusEntity>? Statuses { get; set; }
 
     public virtual ICollection<MetaFieldEntity>? MetaFields { get; set; }
 

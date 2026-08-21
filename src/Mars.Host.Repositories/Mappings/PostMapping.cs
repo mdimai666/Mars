@@ -1,6 +1,5 @@
 using Mars.Core.Utils;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Shared.Contracts.PostTypes;
 
@@ -52,7 +51,7 @@ internal static class PostMapping
             ModifiedAt = entity.ModifiedAt,
             Content = entity.Content,
             Author = entity.User!.ToPostAuthor(),
-            Status = entity.Status,
+            Status = entity.PostStatus?.Slug ?? "",
             Excerpt = entity.Excerpt,
             LangCode = entity.LangCode,
             CategoryIds = entity.Categories!.Select(s => s.Id).ToList(),
@@ -61,11 +60,10 @@ internal static class PostMapping
 
     public static KeyValuePair<string, string>? GetStatus(PostEntity entity)
     {
-        if (entity.PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
+        if (entity.PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status)
+            && entity.PostStatus is not null)
         {
-            var status = entity.PostType.PostStatusList.FirstOrDefault(s => s.Slug == entity.Status);
-            if (status == null) return null;
-            return new(status.Slug, status.Title);
+            return new(entity.PostStatus.Slug, entity.PostStatus.Title);
         }
         return null;
     }
@@ -84,25 +82,16 @@ internal static class PostMapping
             DisplayName = string.Join(' ', entity.LastName, entity.FirstName),
         };
 
-    public static PostStatusDto ToDto(this PostStatusEntity entity)
-        => new()
-        {
-            Id = entity.Id,
-            Slug = entity.Slug,
-            Title = entity.Title,
-            Tags = entity.Tags,
-        };
-
-    public static PostEntity ToEntity(this CreatePostQuery query, Guid postTypeId)
+    public static PostEntity ToEntity(this CreatePostQuery query, PostTypeEntity postType)
     {
         var postEntity = new PostEntity()
         {
             Id = query.Id ?? Guid.Empty,
             Slug = query.Slug,
             Title = query.Title,
-            PostTypeId = postTypeId,
+            PostTypeId = postType.Id,
             Tags = query.Tags.ToList(),
-            Status = query.Status ?? "",
+            StatusId = ResolveStatusId(postType, query.Status),
             UserId = query.UserId,
             Content = query.Content,
 
@@ -120,6 +109,15 @@ internal static class PostMapping
         return postEntity;
     }
 
+    /// <summary>
+    /// Резолвит строку-слаг статуса в ИД статуса типа; пусто/нет такого — null
+    /// </summary>
+    public static Guid? ResolveStatusId(PostTypeEntity postType, string? statusSlug)
+    {
+        if (string.IsNullOrEmpty(statusSlug)) return null;
+        return postType.Statuses?.FirstOrDefault(s => s.Slug == statusSlug)?.Id;
+    }
+
     public static PostEntity UpdateEntity(this PostEntity entity, UpdatePostQuery query)
     {
         entity.Title = query.Title;
@@ -127,7 +125,6 @@ internal static class PostMapping
         entity.Tags = query.Tags.ToList();
         entity.Content = query.Content;
         entity.Excerpt = query.Excerpt;
-        entity.Status = query.Status ?? "";
         entity.LangCode = query.LangCode;
 
         var existIds = entity.PostPostCategories!.Select(s => s.PostCategoryId).ToList();

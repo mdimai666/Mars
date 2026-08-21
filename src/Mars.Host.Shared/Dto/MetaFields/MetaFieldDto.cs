@@ -26,4 +26,12 @@ public record MetaFieldDto : IHasId
     public required string? ModelName { get; init; }
 
     public bool IsTypeRelation => Type is MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image;
+
+    /// <summary>
+    /// Key варианта из дефолтного значения (для Select)
+    /// </summary>
+    public string? GetDefaultVariantKey()
+        => Default?.VariantId is Guid variantId
+            ? Variants?.FirstOrDefault(v => v.Id == variantId)?.Key
+            : null;
 }

@@ -78,7 +78,8 @@ public static class PostTypeMapping
             Id = entity.Id,
             Slug = entity.Slug,
             Title = entity.Title,
-            Tags = entity.Tags,
+            Color = entity.Color,
+            Order = entity.Order,
         };
 
     public static PostContentSettingsResponse ToResponse(this PostContentSettingsDto entity)

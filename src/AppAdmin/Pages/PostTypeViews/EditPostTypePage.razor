@@ -128,10 +128,12 @@
                             <div class="card">
                                 <div class="card-body small">
                                     <div class="st-item row mb-3 ">
-                                        <div class="col-lg-4">@AppRes.Name</div>
-                                        <div class="col-lg-4">@AppRes.Slug</div>
-                                        <div class="col-lg-4 d-flex gap-2">
-                                            <FluentButton OnClick=@(e=>context.PostStatusList.Add(new ()))>
+                                        <div class="col-lg-3">@AppRes.Name</div>
+                                        <div class="col-lg-3">@AppRes.Slug</div>
+                                        <div class="col-lg-2">Цвет</div>
+                                        <div class="col-lg-2">Порядок</div>
+                                        <div class="col-lg-2 d-flex gap-2">
+                                            <FluentButton OnClick=@(e=>context.PostStatusList.Add(new () { Order = context.PostStatusList.Count }))>
                                                 Добавить
                                             </FluentButton>
                                             <FluentMenuButton ButtonAppearance="Appearance.Neutral" Text="@AppRes.Actions">
@@ -146,13 +148,19 @@
                                     {
                                         var st = _st;
                                         <div class="st-item row mb-3">
-                                            <div class="col-lg-4">
+                                            <div class="col-lg-3">
                                                 <FluentTextField @bind-Value=@st.Title />
                                             </div>
-                                            <div class="col-lg-4">
+                                            <div class="col-lg-3">
                                                 <FluentTextField @bind-Value=@st.Slug />
                                             </div>
-                                            <div class="col-lg-4">
+                                            <div class="col-lg-2">
+                                                <FluentTextField @bind-Value=@st.Color />
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <FluentNumberField @bind-Value=@st.Order />
+                                            </div>
+                                            <div class="col-lg-2">
                                                 <DFluentDeleteButton OnConfirm=@(e=>context.PostStatusList.Remove(st)) />
                                             </div>
                                         </div>

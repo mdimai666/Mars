@@ -27,12 +27,14 @@ internal class PostRepository : IPostRepository
     public async Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
         => (await _marsDbContext.Posts.AsNoTracking()
                                         .Include(s => s.PostType)
+                                        .Include(s => s.PostStatus)
                                         .Include(s => s.User)
                                         .FirstOrDefaultAsync(s => s.Id == id, cancellationToken))
                                         ?.ToSummary();
 
     IQueryable<PostEntity> InternalDetail => _marsDbContext.Posts.AsNoTracking()
                                         .Include(s => s.PostType)
+                                        .Include(s => s.PostStatus)
                                         .Include(s => s.User)
                                         .Include(s => s.MetaValues!)
                                             .ThenInclude(s => s.MetaField)
@@ -68,9 +70,10 @@ internal class PostRepository : IPostRepository
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var postType = await _marsDbContext.PostTypes.FirstAsync(s => s.TypeName == query.Type);
+        var postType = await _marsDbContext.PostTypes.Include(s => s.Statuses)
+                                                     .FirstAsync(s => s.TypeName == query.Type);
 
-        var entity = query.ToEntity(postType.Id);
+        var entity = query.ToEntity(postType);
 
         await _marsDbContext.Posts.AddAsync(entity, cancellationToken);
         await _marsDbContext.SaveChangesAsync(cancellationToken);
@@ -86,6 +89,7 @@ internal class PostRepository : IPostRepository
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
         var entity = await _marsDbContext.Posts.Include(s => s.PostType)
+                                                    .ThenInclude(s => s!.Statuses)
                                                 .Include(s => s.MetaValues!)
                                                     .ThenInclude(s => s.MetaField)
                                                 .Include(s => s.PostPostCategories)
@@ -99,11 +103,15 @@ internal class PostRepository : IPostRepository
             MetaValuesTools.ModifyMetaValues(_marsDbContext, entity.MetaValues!, query.MetaValues, entity.ModifiedAt!.Value);
         }
 
-        if (entity.PostType.TypeName != query.Type)
+        var targetType = entity.PostType!;
+        if (targetType.TypeName != query.Type)
         {
-            var newPostType = await _marsDbContext.PostTypes.FirstAsync(s => s.TypeName == query.Type);
-            entity.PostTypeId = newPostType.Id;
+            targetType = await _marsDbContext.PostTypes.Include(s => s.Statuses)
+                                                       .FirstAsync(s => s.TypeName == query.Type);
+            entity.PostTypeId = targetType.Id;
         }
+        entity.StatusId = PostMapping.ResolveStatusId(targetType, query.Status);
+
         await _marsDbContext.SaveChangesAsync(cancellationToken);
         _marsDbContext.Entry(entity).State = EntityState.Detached;
     }
@@ -150,6 +158,7 @@ internal class PostRepository : IPostRepository
     {
         return _listAllQuery.AsNoTracking()
                             .Include(s => s.PostType)
+                            .Include(s => s.PostStatus)
                             .Include(s => s.User)
                             .Where(s => (query.Ids == null || query.Ids.Contains(s.Id))
                                         && (query.Type == null || s.PostType.TypeName == query.Type));
@@ -181,6 +190,7 @@ internal class PostRepository : IPostRepository
     {
         var q = _listAllQuery.AsNoTracking()
                             .Include(s => s.PostType)
+                            .Include(s => s.PostStatus)
                             .Include(s => s.User)
                             .Where(s => query.Type == null || s.PostType.TypeName == query.Type);
 
@@ -219,6 +229,13 @@ internal class PostRepository : IPostRepository
             queryable = desc
                         ? queryable.OrderByDescending(s => s.User.UserName)
                         : queryable.OrderBy(s => s.User.UserName);
+        }
+        else if (sortColumnName.Equals(nameof(PostListItemResponse.Status), StringComparison.OrdinalIgnoreCase))
+        {
+            query = query with { Sort = null };
+            queryable = desc
+                        ? queryable.OrderByDescending(s => s.PostStatus!.Slug)
+                        : queryable.OrderBy(s => s.PostStatus!.Slug);
         }
         return query;
     }

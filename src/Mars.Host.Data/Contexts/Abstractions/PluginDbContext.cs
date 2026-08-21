@@ -47,6 +47,7 @@ public abstract class PluginDbContextBase : IdentityDbContext<UserEntity, RoleEn
     //--------POST----------
     public virtual DbSet<PostEntity> Posts { get; set; } = default!;
     public virtual DbSet<PostTypeEntity> PostTypes { get; set; } = default!;
+    public virtual DbSet<PostStatusEntity> PostStatuses { get; set; } = default!;
     public virtual DbSet<MetaFieldEntity> MetaFields { get; set; } = default!;
     public virtual DbSet<PostMetaValueEntity> PostMetaValues { get; set; } = default!;
     public virtual DbSet<PostTypePresentationEntity> PostTypePresentations { get; set; } = default!;

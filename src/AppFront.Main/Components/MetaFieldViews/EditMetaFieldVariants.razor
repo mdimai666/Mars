@@ -42,6 +42,11 @@
                             <FluentTextField @bind-Value=@item.Title MaxLength="255" />
                         </FormItem2>
                     </div>
+                    <div class="">
+                        <FormItem2 For="@(()=>item.Key)">
+                            <FluentTextField @bind-Value=@item.Key MaxLength="255" Placeholder="(авто)" />
+                        </FormItem2>
+                    </div>
                     <div>
                         <FluentNumberField @bind-Value=@item.Value Size="2" Label="Value" />
                     </div>

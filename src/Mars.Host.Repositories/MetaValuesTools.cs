@@ -4,6 +4,7 @@ using Mars.Core.Utils;
 using Mars.Host.Data.Constants;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
+using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.MetaFields;
 
@@ -29,6 +30,31 @@ public static class MetaValuesTools
 
         var queryDict = modifyMetaFields.ToDictionary(s => s.Id);
 
+        // денормализация: для Select-значений string_short несёт Key варианта
+        Dictionary<Guid, List<MetaFieldVariant>>? selectVariants = null;
+        Dictionary<Guid, List<MetaFieldVariant>> GetSelectVariants()
+        {
+            if (selectVariants is not null) return selectVariants;
+            var fieldIds = modifyMetaFields.Select(q => q.MetaFieldId).Distinct().ToList();
+            selectVariants = _marsDbContext.MetaFields
+                .Where(f => fieldIds.Contains(f.Id) && f.Type == EMetaFieldType.Select)
+                .ToDictionary(f => f.Id, f => f.Variants);
+            return selectVariants;
+        }
+
+        void ApplyVariantKey(MetaValueBase value)
+        {
+            if (value.Type != EMetaFieldType.Select) return;
+
+            string? key = null;
+            if (value.VariantId is Guid variantId
+                && GetSelectVariants().TryGetValue(value.MetaFieldId, out var variants))
+            {
+                key = variants.FirstOrDefault(x => x.Id == variantId)?.Key;
+            }
+            value.StringShort = key?.Left(EntityDefaultConstants.DefaultShortValueMaxLength);
+        }
+
         if (metaDiff.HasChanges)
         {
             foreach (var item in metaDiff.ToRemove)
@@ -42,6 +68,7 @@ public static class MetaValuesTools
                 item.CreatedAt = modifiedAt;
                 item.ModifiedAt = null;
                 item.MetaFieldId = q.MetaFieldId;
+                ApplyVariantKey(item);
                 _marsDbContext.Set<TValue>().Add(item);
                 existMetaFields.Add(item);
             }
@@ -50,6 +77,7 @@ public static class MetaValuesTools
         {
             var q = queryDict[item.Id];
             var qe = q.ToEntity<TValue>();
+            ApplyVariantKey(qe);
             _marsDbContext.Entry(item).CurrentValues.SetValues(new
             {
                 qe.Id,

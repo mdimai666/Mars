@@ -28,6 +28,7 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
         => (await _marsDbContext.PostTypes.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id, cancellationToken))?.ToSummary();
 
     IQueryable<PostTypeEntity> InternalDetail => _marsDbContext.PostTypes.AsNoTracking()
+                                                                        .Include(s => s.Statuses)
                                                                         .Include(s => s.MetaFields)
                                                                         .Include(s => s.Presentation);
 
@@ -65,7 +66,7 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
 
         var entity = await _marsDbContext.PostTypes.Include(s => s.MetaFields!)
                                                         .ThenInclude(s => s.Variants)
-                                                    .Include(s => s.PostStatusList)
+                                                    .Include(s => s.Statuses)
                                                     .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken)
                                                     ?? throw new NotFoundException();
         var oldTypeName = entity.TypeName;
@@ -80,29 +81,37 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
 
     void ModifyStatusList(PostTypeEntity entity, UpdatePostTypeQuery query, DateTimeOffset modifiedAt)
     {
-        var statusDiff = DiffList.FindDifferencesBy(entity.PostStatusList, query.PostStatusList.Select(s => s.ToEntity(modifiedAt)).ToList(), s => s.Id);
+        var existStatuses = entity.Statuses ??= [];
+        var newStatuses = query.PostStatusList.Select(s => s.ToEntity(modifiedAt)).ToList();
+
+        var statusDiff = DiffList.FindDifferencesBy(existStatuses.ToList(), newStatuses, s => s.Id);
         if (statusDiff.HasChanges)
         {
-            foreach (var item in statusDiff.ToRemove) entity.PostStatusList.Remove(item);
+            foreach (var item in statusDiff.ToRemove)
+            {
+                existStatuses.Remove(item);
+                _marsDbContext.Remove(item);
+            }
             foreach (var item in statusDiff.ToAdd)
             {
                 item.CreatedAt = modifiedAt;
                 item.ModifiedAt = null;
-                entity.PostStatusList.Add(item);
+                item.PostTypeId = entity.Id;
+                // Add в контекст обязателен: через навигацию сущность с заполненным
+                // первичным ключом прикрепилась бы как Modified (UPDATE вместо INSERT)
+                _marsDbContext.Add(item);
+                existStatuses.Add(item);
             }
         }
-        foreach (var item in entity.PostStatusList.Except(statusDiff.ToRemove).Except(statusDiff.ToAdd))
+        foreach (var item in existStatuses.Except(statusDiff.ToRemove).Except(statusDiff.ToAdd))
         {
-            var q = query.PostStatusList.First(s => s.Id == item.Id);
+            var q = newStatuses.First(s => s.Id == item.Id);
             item.Slug = q.Slug;
             item.Title = q.Title;
-            item.Tags = q.Tags.ToList();
+            item.Color = q.Color;
+            item.Order = q.Order;
             item.ModifiedAt = modifiedAt;
-
         }
-
-        // отключено после перевода [jsonb] аттрибута в .ToJson()
-        //_marsDbContext.Entry(entity).Property(e => e.PostStatusList).IsModified = true;
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken)

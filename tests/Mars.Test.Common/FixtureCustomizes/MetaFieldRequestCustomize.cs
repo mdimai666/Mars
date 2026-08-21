@@ -33,6 +33,16 @@ public sealed class MetaFieldRequestCustomize : ICustomization
                                     .With(s => s.VariantsIds, [])
                                     );
 
+        fixture.Customize<CreateMetaFieldVariantRequest>(composer => composer
+                                    .With(s => s.Id)
+                                    .With(s => s.Key, () => $"variant_{Guid.NewGuid():N}")
+                                    );
+
+        fixture.Customize<UpdateMetaFieldVariantRequest>(composer => composer
+                                    .With(s => s.Id)
+                                    .With(s => s.Key, () => $"variant_{Guid.NewGuid():N}")
+                                    );
+
     }
 }
 

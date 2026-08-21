@@ -7,6 +7,15 @@
 > своя таблица значений на семью вместо единой связки (миграция
 > `20260821205615_FamilyMetaValueTables`). **Фаза 3 выполнена 2026-08-22** (миграции
 > `20260821213204_MetaFieldsOneToNOwnership` + `20260821220153_MetaFieldOwnerComments`).
+> **Фаза 4 выполнена 2026-08-22** (миграция `20260821222226_MetaFieldVariantKey` —
+> пустая: варианты живут в owned ToJson; backfill ключей вариантов — рантайм-генерация
+> `MetaFieldsTools.EnsureVariantKeys`, SQL-перенос не нужен — живых данных нет).
+> **Фаза 5 выполнена 2026-08-22** (миграция `20260821224838_PostStatusesTable`:
+> таблица `post_statuses` (id, post_type_id, title, slug, color, order; unique
+> (post_type_id, slug)), `posts.status_id` FK ON DELETE SET NULL вместо строки
+> `posts.status`, jsonb `post_types.post_status_list` удалён; backfill не нужен —
+> живых данных нет. Статус в запросе/ответе остался слагом (резолв в
+> `PostRepository`/`PostMapping.ResolveStatusId`).
 > Реализация — отдельными сессиями по фазам.
 > Views — последняя фаза (по решению пользователя); тень-таблицы — вне этого плана,
 > точечно и только после views.

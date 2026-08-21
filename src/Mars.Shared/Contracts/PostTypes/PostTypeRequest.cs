@@ -48,7 +48,8 @@ public record CreatePostStatusRequest
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required string Slug { get; init; }
-    public required IReadOnlyCollection<string> Tags { get; init; }
+    public required string Color { get; init; }
+    public required int Order { get; init; }
 }
 
 public record CreatePostContentSettingsRequest
@@ -65,7 +66,8 @@ public record UpdatePostStatusRequest
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required string Slug { get; init; }
-    public required IReadOnlyCollection<string> Tags { get; init; }
+    public required string Color { get; init; }
+    public required int Order { get; init; }
 }
 
 public record UpdatePostContentSettingsRequest

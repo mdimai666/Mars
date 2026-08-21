@@ -35,7 +35,7 @@ public static class SeedPostData
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Title = "Записи",
             TypeName = "post",
-            PostStatusList = PostStatusEntity.DefaultStatuses(),
+            Statuses = PostStatusEntity.DefaultStatuses(),
             EnabledFeatures = [Feature.Content, Feature.Status, Feature.Tags],
             PostContentType = new PostContentSettings { PostContentType = PostTypeConstants.DefaultPostContentTypes.BlockEditor },
         });
@@ -102,13 +102,16 @@ public static class SeedPostData
             Content = "<p> hello on Mars!</p>"
         });
 
+        var statuses = await ef.PostStatuses.ToListAsync();
+        var firstStatusByType = statuses.GroupBy(s => s.PostTypeId)
+                                        .ToDictionary(g => g.Key, g => g.OrderBy(s => s.Order).First().Id);
+
         foreach (var post in list)
         {
             post.UserId = user.Id;
-            if (postTypesDictId[post.PostTypeId].EnabledFeatures.Contains(Feature.Status))
-                post.Status = PostStatusEntity.DefaultStatuses().First().Slug;
-            else
-                post.Status = "";
+            if (postTypesDictId[post.PostTypeId].EnabledFeatures.Contains(Feature.Status)
+                && firstStatusByType.TryGetValue(post.PostTypeId, out var statusId))
+                post.StatusId = statusId;
         }
 
         ef.Posts.AddRange(list);

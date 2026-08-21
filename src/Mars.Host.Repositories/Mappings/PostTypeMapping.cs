@@ -31,7 +31,7 @@ internal static class PostTypeMapping
             EnabledFeatures = entity.EnabledFeatures,
             Disabled = entity.Disabled,
             PostContentSettings = entity.PostContentType.ToDto(),
-            PostStatusList = entity.PostStatusList.ToDto(),
+            PostStatusList = entity.Statuses!.OrderBy(s => s.Order).ToDto(),
             MetaFields = entity.MetaFields!.ToDto(),
 
             Presentation = entity.Presentation.ToDto(),
@@ -49,8 +49,9 @@ internal static class PostTypeMapping
         {
             Id = entity.Id,
             Slug = entity.Slug,
-            Tags = entity.Tags,
-            Title = entity.Title
+            Title = entity.Title,
+            Color = entity.Color,
+            Order = entity.Order,
         };
 
     public static IReadOnlyCollection<PostTypeSummary> ToSummaryList(this IEnumerable<PostTypeEntity> entities)
@@ -77,7 +78,7 @@ internal static class PostTypeMapping
                 PostContentType = query.PostContentSettings.PostContentType,
                 CodeLang = query.PostContentSettings.CodeLang,
             },
-            PostStatusList = query.PostStatusList.Select(s => ToEntity(s, null)).ToList(),
+            Statuses = query.PostStatusList.Select(s => ToEntity(s, null)).ToList(),
             MetaFields = query.MetaFields.ToEntity()
         };
 
@@ -87,7 +88,8 @@ internal static class PostTypeMapping
             Id = query.Id,
             Title = query.Title,
             Slug = query.Slug,
-            Tags = query.Tags.ToList(),
+            Color = query.Color,
+            Order = query.Order,
             CreatedAt = DateTimeOffset.Now,
             ModifiedAt = modifiedAt,
         };

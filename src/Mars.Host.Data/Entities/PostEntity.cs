@@ -48,10 +48,6 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
     //[JsonPropertyName("postImage")]
     //public string Image { get; set; } = ""; //TODO: May be relation PostAttachments?
 
-    [Required]
-    [Comment("Статус")]
-    public string Status { get; set; } = "";
-
     //[Required]
     //[Comment("Тип")]
     //public string Type { get; set; } = default!;
@@ -75,6 +71,10 @@ public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSu
     [ForeignKey(nameof(PostType))]
     public Guid PostTypeId { get; set; }
     public virtual PostTypeEntity? PostType { get; set; }
+
+    [Comment("ИД статуса")]
+    public Guid? StatusId { get; set; }
+    public virtual PostStatusEntity? PostStatus { get; set; }
 
     public virtual ICollection<PostFilesEntity>? PostFiles { get; set; }
     [Comment("Файлы")]

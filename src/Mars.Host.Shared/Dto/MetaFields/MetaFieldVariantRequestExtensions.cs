@@ -1,3 +1,4 @@
+using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Host.Shared.Dto.MetaFields;
@@ -8,6 +9,7 @@ public static class MetaFieldVariantRequestExtensions
        => new()
        {
            Id = request.Id,
+           Key = MetaFieldKeyNormalizer.Normalize(request.Key),
            Title = request.Title,
            Tags = request.Tags,
            Value = request.Value,
@@ -18,6 +20,7 @@ public static class MetaFieldVariantRequestExtensions
        => new()
        {
            Id = request.Id,
+           Key = MetaFieldKeyNormalizer.Normalize(request.Key),
            Title = request.Title,
            Tags = request.Tags,
            Value = request.Value,

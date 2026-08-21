@@ -17,6 +17,24 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
                 metaField.RuleFor(x => x.Key)
                     .Matches(MetaFieldKeyNormalizer.FormatPattern)
                     .WithMessage("Key должен соответствовать формату [a-z_][a-z0-9_]*");
+
+                metaField.RuleFor(x => x.Variants)
+                    .Custom((variants, context) =>
+                    {
+                        if (variants is null) return;
+
+                        var duplicates = variants
+                            .Select(v => v.Key)
+                            .Where(k => !string.IsNullOrEmpty(k))
+                            .GroupBy(k => k)
+                            .Where(g => g.Count() > 1)
+                            .Select(g => g.Key);
+
+                        foreach (var key in duplicates)
+                        {
+                            context.AddFailure($"Variant с ключом '{key}' дублируется");
+                        }
+                    });
             });
 
         RuleFor(x => x.MetaFields)

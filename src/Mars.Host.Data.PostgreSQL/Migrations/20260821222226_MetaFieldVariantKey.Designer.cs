@@ -6,6 +6,7 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Data.OwnedTypes.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -14,9 +15,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mars.Host.Data.PostgreSQL.Migrations
 {
     [DbContext(typeof(MarsDbContext))]
-    partial class MarsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260821222226_MetaFieldVariantKey")]
+    partial class MetaFieldVariantKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -767,10 +770,11 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                         .HasColumnName("slug")
                         .HasComment("slug");
 
-                    b.Property<Guid?>("StatusId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("status_id")
-                        .HasComment("ИД статуса");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("varchar(256)")
+                        .HasColumnName("status")
+                        .HasComment("Статус");
 
                     b.PrimitiveCollection<List<string>>("Tags")
                         .IsRequired()
@@ -801,9 +805,6 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
 
                     b.HasIndex("PostTypeId")
                         .HasDatabaseName("ix_posts_post_type_id");
-
-                    b.HasIndex("StatusId")
-                        .HasDatabaseName("ix_posts_status_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_posts_user_id");
@@ -941,63 +942,6 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                         .HasDatabaseName("ix_post_post_categories_entity_post_category_id");
 
                     b.ToTable("post_post_categories_entity", (string)null);
-                });
-
-            modelBuilder.Entity("Mars.Host.Data.Entities.PostStatusEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasComment("ИД");
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("color")
-                        .HasComment("Цвет (канбан)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()")
-                        .HasComment("Создан");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modified_at")
-                        .HasComment("Изменен");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer")
-                        .HasColumnName("order")
-                        .HasComment("Порядок (канбан)");
-
-                    b.Property<Guid>("PostTypeId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("post_type_id");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("varchar(256)")
-                        .HasColumnName("slug")
-                        .HasComment("Значение");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("title")
-                        .HasComment("Название");
-
-                    b.HasKey("Id")
-                        .HasName("pk_post_statuses");
-
-                    b.HasIndex("PostTypeId", "Slug")
-                        .IsUnique()
-                        .HasDatabaseName("ix_post_statuses_post_type_id_slug");
-
-                    b.ToTable("post_statuses", (string)null);
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.PostTypeEntity", b =>
@@ -1904,20 +1848,12 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_posts_post_types_post_type_id");
 
-                    b.HasOne("Mars.Host.Data.Entities.PostStatusEntity", "PostStatus")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_posts_post_statuses_status_id");
-
                     b.HasOne("Mars.Host.Data.Entities.UserEntity", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_posts_users_user_id");
-
-                    b.Navigation("PostStatus");
 
                     b.Navigation("PostType");
 
@@ -1987,18 +1923,6 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                     b.Navigation("PostCategory");
                 });
 
-            modelBuilder.Entity("Mars.Host.Data.Entities.PostStatusEntity", b =>
-                {
-                    b.HasOne("Mars.Host.Data.Entities.PostTypeEntity", "PostType")
-                        .WithMany("Statuses")
-                        .HasForeignKey("PostTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_post_statuses_post_types_post_type_id");
-
-                    b.Navigation("PostType");
-                });
-
             modelBuilder.Entity("Mars.Host.Data.Entities.PostTypeEntity", b =>
                 {
                     b.OwnsOne("Mars.Host.Data.OwnedTypes.PostTypes.PostContentSettings", "PostContentType", b1 =>
@@ -2023,8 +1947,51 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                                 .HasConstraintName("fk_post_types_post_types_id");
                         });
 
+                    b.OwnsMany("Mars.Host.Data.OwnedTypes.PostTypes.PostStatusEntity", "PostStatusList", b1 =>
+                        {
+                            b1.Property<Guid>("PostTypeEntityId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<DateTimeOffset>("CreatedAt")
+                                .HasComment("Создан");
+
+                            b1.Property<Guid>("Id")
+                                .HasComment("ИД");
+
+                            b1.Property<DateTimeOffset?>("ModifiedAt")
+                                .HasComment("Изменен");
+
+                            b1.Property<string>("Slug")
+                                .IsRequired()
+                                .HasComment("Значение");
+
+                            b1.PrimitiveCollection<string>("Tags")
+                                .IsRequired()
+                                .HasComment("Теги");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasComment("Название");
+
+                            b1.HasKey("PostTypeEntityId", "__synthesizedOrdinal");
+
+                            b1.ToTable("post_types");
+
+                            b1
+                                .ToJson("post_status_list")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostTypeEntityId")
+                                .HasConstraintName("fk_post_types_post_types_post_type_entity_id");
+                        });
+
                     b.Navigation("PostContentType")
                         .IsRequired();
+
+                    b.Navigation("PostStatusList");
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.PostTypePresentationEntity", b =>
@@ -2202,8 +2169,6 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                     b.Navigation("PostCategories");
 
                     b.Navigation("Presentation");
-
-                    b.Navigation("Statuses");
                 });
 
             modelBuilder.Entity("Mars.Host.Data.Entities.RoleEntity", b =>

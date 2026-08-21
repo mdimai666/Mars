@@ -215,7 +215,9 @@ internal class PostService : IPostService
             Long = def?.Long,
             DateTime = def?.DateTime,
             ModelId = def?.ModelId,
-            StringShort = metaField.Type == MetaFieldType.String ? def?.StringShort ?? "" : def?.StringShort,
+            StringShort = metaField.Type == MetaFieldType.String ? def?.StringShort ?? ""
+                        : metaField.Type == MetaFieldType.Select ? metaField.GetDefaultVariantKey()
+                        : def?.StringShort,
             StringText = metaField.Type == MetaFieldType.Text ? def?.StringText ?? "" : def?.StringText,
             MetaField = metaField,
             VariantId = def?.VariantId,

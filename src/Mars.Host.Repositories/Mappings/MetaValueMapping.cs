@@ -47,6 +47,7 @@ internal static class MetaValueMapping
         => new()
         {
             Id = entity.Id,
+            Key = entity.Key,
             Tags = entity.Tags,
             Title = entity.Title,
             Value = entity.Value,
@@ -60,6 +61,7 @@ internal static class MetaValueMapping
         => new()
         {
             Id = entity.Id,
+            Key = entity.Key,
             Tags = entity.Tags,
             Title = entity.Title,
             Value = entity.Value,

@@ -58,8 +58,8 @@
             {
                 <FluentNumberField @bind-Value=@Value.Float
                             Style="min-width:200px;"
-                            Min=@(((Value.MetaField.MinValue is null)?float.MinValue:((float)Value.MetaField.MinValue)).ToString())
-                            Max=@(((Value.MetaField.MaxValue is null)?float.MaxValue:((float)Value.MetaField.MaxValue)).ToString())
+                            Min=@(((Value.MetaField.MinValue is null)?double.MinValue:((double)Value.MetaField.MinValue)).ToString())
+                            Max=@(((Value.MetaField.MaxValue is null)?double.MaxValue:((double)Value.MetaField.MaxValue)).ToString())
                             Label="@Value.MetaField.Title"
                             Id="@($"metavalue-{Value.Id}-{Value.Index}")" />
             }

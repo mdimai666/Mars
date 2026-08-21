@@ -15,6 +15,9 @@ public class MetaValueEntityConfiguration : IEntityTypeConfiguration<MetaValueEn
            .HasDefaultValueSql("now()")
            .IgnorePropertyFromUpdate();
 
+        entity.HasIndex(e => e.MetaFieldId);
+        entity.HasIndex(e => new { e.MetaFieldId, e.StringShort });
+
         entity.HasMany(x => x.Posts)
             .WithMany(x => x.MetaValues)
             .UsingEntity<PostMetaValueEntity>(

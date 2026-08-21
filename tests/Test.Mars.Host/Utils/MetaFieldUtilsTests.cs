@@ -26,7 +26,7 @@ public class MetaFieldUtilsTests
 
             yield return new object[] { MetaFieldType.Bool, true };
             yield return new object[] { MetaFieldType.Int, 321 };
-            yield return new object[] { MetaFieldType.Float, 215.1f };
+            yield return new object[] { MetaFieldType.Float, 215.1 };
             yield return new object[] { MetaFieldType.Decimal, 84m };
             yield return new object[] { MetaFieldType.Long, 666L };
             yield return new object[] { MetaFieldType.DateTime, dt };
@@ -101,7 +101,7 @@ public class MetaFieldUtilsTests
 
             yield return new object[] { createMmf(MetaFieldType.Bool) with { Bool = true }, JsonValue.Create(true) };
             yield return new object[] { createMmf(MetaFieldType.Int) with { Int = 321 }, JsonValue.Create(321) };
-            yield return new object[] { createMmf(MetaFieldType.Float) with { Float = 215.1f }, JsonValue.Create(215.1f) };
+            yield return new object[] { createMmf(MetaFieldType.Float) with { Float = 215.1 }, JsonValue.Create(215.1) };
             yield return new object[] { createMmf(MetaFieldType.Decimal) with { Decimal = 84m }, JsonValue.Create(84m) };
             yield return new object[] { createMmf(MetaFieldType.Long) with { Long = 666L }, JsonValue.Create(666L) };
             yield return new object[] { createMmf(MetaFieldType.DateTime) with { DateTime = dt }, JsonValue.Create(dt) };

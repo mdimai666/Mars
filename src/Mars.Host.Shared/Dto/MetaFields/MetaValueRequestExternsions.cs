@@ -8,7 +8,6 @@ public static class MetaValueRequestExternsions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Index = request.Index,
             Bool = request.Bool,
             Int = request.Int,
@@ -20,7 +19,6 @@ public static class MetaValueRequestExternsions
             VariantId = request.VariantId,
             VariantsIds = request.VariantsIds,
             DateTime = request.DateTime,
-            NULL = request.NULL,
             ModelId = request.ModelId,
             MetaFieldId = request.MetaFieldId,
         };
@@ -29,7 +27,6 @@ public static class MetaValueRequestExternsions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Index = request.Index,
             Bool = request.Bool,
             Int = request.Int,
@@ -41,7 +38,6 @@ public static class MetaValueRequestExternsions
             VariantId = request.VariantId,
             VariantsIds = request.VariantsIds,
             DateTime = request.DateTime,
-            NULL = request.NULL,
             ModelId = request.ModelId,
             MetaFieldId = request.MetaFieldId,
         };
@@ -66,7 +62,6 @@ public static class MetaValueRequestExternsions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Index = request.Index,
             Bool = request.Bool,
             Int = request.Int,
@@ -78,7 +73,6 @@ public static class MetaValueRequestExternsions
             VariantId = request.VariantId,
             VariantsIds = request.VariantsIds,
             DateTime = request.DateTime,
-            NULL = request.NULL,
             ModelId = request.ModelId,
             MetaFieldId = request.MetaField.Id,
             MetaField = request.MetaField,

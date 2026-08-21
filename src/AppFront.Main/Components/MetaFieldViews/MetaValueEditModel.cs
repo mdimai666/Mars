@@ -9,20 +9,17 @@ namespace AppFront.Shared.Components.MetaFieldViews;
 public class MetaValueEditModel
 {
     public Guid Id { get; set; }
-    public Guid ParentId { get; set; }
     public int Index { get; set; }
 
     public bool Bool { get; set; }
     public int Int { get; set; }
-    public float Float { get; set; }
+    public double Float { get; set; }
     public decimal Decimal { get; set; }
     public long Long { get; set; }
     public string StringText { get; set; } = "";
-    
+
     [StringLength(256)]
     public string StringShort { get; set; } = "";
-
-    public bool NULL { get; set; }
 
     public DateTime? DateTime { get; set; }
 
@@ -38,7 +35,6 @@ public class MetaValueEditModel
         => new()
         {
             Id = Id,
-            ParentId = ParentId,
             Index = Index,
 
             Bool = Bool,
@@ -46,13 +42,12 @@ public class MetaValueEditModel
             Float = Float,
             Decimal = Decimal,
             Long = Long,
-            DateTime = DateTime ?? System.DateTime.MinValue,
+            DateTime = DateTime,
 
-            ModelId = ModelId,
+            ModelId = ModelId == Guid.Empty ? null : ModelId,
             StringShort = StringShort,
             StringText = StringText,
-            NULL = NULL,
-            VariantId = VariantId,
+            VariantId = VariantId == Guid.Empty ? null : VariantId,
             VariantsIds = VariantsIds,
 
             MetaFieldId = MetaField.Id,
@@ -62,7 +57,6 @@ public class MetaValueEditModel
         => new()
         {
             Id = Id,
-            ParentId = ParentId,
             Index = Index,
 
             Bool = Bool,
@@ -70,13 +64,12 @@ public class MetaValueEditModel
             Float = Float,
             Decimal = Decimal,
             Long = Long,
-            DateTime = DateTime ?? System.DateTime.MinValue,
+            DateTime = DateTime,
 
-            ModelId = ModelId,
+            ModelId = ModelId == Guid.Empty ? null : ModelId,
             StringShort = StringShort,
             StringText = StringText,
-            NULL = NULL,
-            VariantId = VariantId,
+            VariantId = VariantId == Guid.Empty ? null : VariantId,
             VariantsIds = VariantsIds,
 
             MetaFieldId = MetaField.Id,
@@ -86,21 +79,19 @@ public class MetaValueEditModel
         => new()
         {
             Id = response.Id,
-            ParentId = response.ParentId,
             Index = response.Index,
 
-            Bool = response.Bool,
-            Int = response.Int,
-            Float = response.Float,
-            Decimal = response.Decimal,
-            Long = response.Long,
-            DateTime = response.DateTime == System.DateTime.MinValue ? null : response.DateTime,
+            Bool = response.Bool ?? false,
+            Int = response.Int ?? 0,
+            Float = response.Float ?? 0,
+            Decimal = response.Decimal ?? 0,
+            Long = response.Long ?? 0,
+            DateTime = response.DateTime,
 
-            ModelId = response.ModelId,
+            ModelId = response.ModelId ?? Guid.Empty,
             StringShort = response.StringShort ?? "",
             StringText = response.StringText ?? "",
-            NULL = response.NULL,
-            VariantId = response.VariantId,
+            VariantId = response.VariantId ?? Guid.Empty,
             VariantsIds = response.VariantsIds ?? [],
             MetaField = MetaFieldEditModel.ToModel(response.MetaField!)
         };

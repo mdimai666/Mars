@@ -9,15 +9,13 @@ public static class MetaFieldUtils
 {
     public static ModifyMetaValueDetailQuery MetaValueFromJson(ModifyMetaValueDetailQuery mv, JsonValue jsonValue)
     {
-        //if(mv.NULL && jsonValue == null) 
-
         var t = mv.MetaField.Type;
         if (t == MetaFieldType.Bool)
             return mv with { Bool = jsonValue.GetValue<bool>() };
         else if (t == MetaFieldType.Int)
             return mv with { Int = jsonValue.GetValue<int>() };
         else if (t == MetaFieldType.Float)
-            return mv with { Float = jsonValue.GetValue<float>() };
+            return mv with { Float = jsonValue.GetValue<double>() };
         else if (t == MetaFieldType.Decimal)
             return mv with { Decimal = jsonValue.GetValue<decimal>() };
         else if (t == MetaFieldType.Long)
@@ -45,7 +43,7 @@ public static class MetaFieldUtils
         else if (t == MetaFieldType.Int)
             return int.Parse(stringValue);
         else if (t == MetaFieldType.Float)
-            return float.Parse(stringValue, CultureInfo.InvariantCulture);
+            return double.Parse(stringValue, CultureInfo.InvariantCulture);
         else if (t == MetaFieldType.Decimal)
             return decimal.Parse(stringValue, CultureInfo.InvariantCulture);
         else if (t == MetaFieldType.Long)
@@ -81,7 +79,7 @@ public static class MetaFieldUtils
         else if (t == MetaFieldType.Int)
             return mv with { Int = int.Parse(stringValue) };
         else if (t == MetaFieldType.Float)
-            return mv with { Float = float.Parse(stringValue, CultureInfo.InvariantCulture) };
+            return mv with { Float = double.Parse(stringValue, CultureInfo.InvariantCulture) };
         else if (t == MetaFieldType.Decimal)
             return mv with { Decimal = decimal.Parse(stringValue, CultureInfo.InvariantCulture) };
         else if (t == MetaFieldType.Long)
@@ -125,15 +123,13 @@ public static class MetaFieldUtils
 
     public static ModifyMetaValueDetailQuery MetaValueFromObject(ModifyMetaValueDetailQuery mv, object value)
     {
-        //if(mv.NULL && jsonValue == null) 
-
         var t = mv.MetaField.Type;
         if (t == MetaFieldType.Bool)
             return mv with { Bool = (bool)value };
         else if (t == MetaFieldType.Int)
             return mv with { Int = (int)value };
         else if (t == MetaFieldType.Float)
-            return mv with { Float = (float)value };
+            return mv with { Float = (double)value };
         else if (t == MetaFieldType.Decimal)
             return mv with { Decimal = (decimal)value };
         else if (t == MetaFieldType.Long)
@@ -163,7 +159,7 @@ public static class MetaFieldUtils
             MetaFieldType.Bool => typeof(bool),
             MetaFieldType.Int => typeof(int),
             MetaFieldType.Long => typeof(long),
-            MetaFieldType.Float => typeof(float),
+            MetaFieldType.Float => typeof(double),
             MetaFieldType.Decimal => typeof(decimal),
             MetaFieldType.DateTime => typeof(DateTime),
 

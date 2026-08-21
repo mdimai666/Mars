@@ -57,7 +57,6 @@ public static class MetaFieldRequestExtensions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Index = request.Index,
             Bool = request.Bool,
             Int = request.Int,
@@ -69,7 +68,6 @@ public static class MetaFieldRequestExtensions
             VariantId = request.VariantId,
             VariantsIds = request.VariantsIds,
             DateTime = request.DateTime,
-            NULL = request.NULL,
             ModelId = request.ModelId,
             MetaFieldId = request.MetaFieldId,
             MetaField = metaFields[request.MetaFieldId],
@@ -79,7 +77,6 @@ public static class MetaFieldRequestExtensions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Index = request.Index,
             Bool = request.Bool,
             Int = request.Int,
@@ -91,7 +88,6 @@ public static class MetaFieldRequestExtensions
             VariantId = request.VariantId,
             VariantsIds = request.VariantsIds,
             DateTime = request.DateTime,
-            NULL = request.NULL,
             ModelId = request.ModelId,
             MetaFieldId = request.MetaFieldId,
             MetaField = metaFields[request.MetaFieldId],

@@ -21,28 +21,25 @@ public class MetaValueEntity : IBasicEntity
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
 
-    public Guid ParentId { get; set; }
     public EMetaFieldType Type { get; set; }
     public int Index { get; set; }
 
-    public bool Bool { get; set; }
-    public int Int { get; set; }
-    public float Float { get; set; }
-    public decimal Decimal { get; set; }
-    public long Long { get; set; }
+    public bool? Bool { get; set; }
+    public int? Int { get; set; }
+    public double? Float { get; set; }
+    public decimal? Decimal { get; set; }
+    public long? Long { get; set; }
     public string? StringText { get; set; }
 
     [StringLength(EntityDefaultConstants.DefaultShortValueMaxLength)]
     public string? StringShort { get; set; }
 
-    public bool NULL { get; set; }
+    public DateTime? DateTime { get; set; }
 
-    public DateTime DateTime { get; set; }
-
-    public Guid VariantId { get; set; }
+    public Guid? VariantId { get; set; }
     public Guid[] VariantsIds { get; set; } = [];
 
-    public Guid ModelId { get; set; }
+    public Guid? ModelId { get; set; }
 
     // ==========================================
     // Relations
@@ -70,13 +67,11 @@ public class MetaValueEntity : IBasicEntity
 
     public object? Get()
     {
-        if (NULL) return default;
-
         return MetaField.Type switch
         //return Type switch // проблема Type приходит 0 вместо нужного enum
         {
-            EMetaFieldType.String => StringShort ?? "",
-            EMetaFieldType.Text => StringText ?? "",
+            EMetaFieldType.String => StringShort,
+            EMetaFieldType.Text => StringText,
 
             EMetaFieldType.Bool => Bool,
             EMetaFieldType.Int => Int,
@@ -96,18 +91,38 @@ public class MetaValueEntity : IBasicEntity
         };
     }
 
-    public void Set(MetaFieldEntity t, object value)
+    public void Set(MetaFieldEntity t, object? value)
     {
         //basic
         if (value is null)
         {
-            if (t.IsNullable)
-            {
-                NULL = true;
-            }
-            else
+            if (t.IsNullable == false)
             {
                 throw new ArgumentNullException(t.Key);
+            }
+
+            switch (t.Type)
+            {
+                case EMetaFieldType.String: StringShort = null; break;
+                case EMetaFieldType.Text: StringText = null; break;
+                case EMetaFieldType.Bool: Bool = null; break;
+                case EMetaFieldType.Int: Int = null; break;
+                case EMetaFieldType.Long: Long = null; break;
+                case EMetaFieldType.Float: Float = null; break;
+                case EMetaFieldType.Decimal: Decimal = null; break;
+                case EMetaFieldType.DateTime: DateTime = null; break;
+                case EMetaFieldType.Select: VariantId = null; break;
+                case EMetaFieldType.SelectMany: VariantsIds = []; break;
+                default:
+                    if (ERelations.Contains(t.Type))
+                    {
+                        ModelId = null;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"ArgumentException: type={t.Type} not implement");
+                    }
+                    break;
             }
         }
         else if (Type == EMetaFieldType.String && value is string _st)
@@ -130,7 +145,7 @@ public class MetaValueEntity : IBasicEntity
         {
             Long = _long;
         }
-        else if (Type == EMetaFieldType.Float && value is float _float)
+        else if (Type == EMetaFieldType.Float && value is double _float)
         {
             Float = _float;
         }
@@ -302,8 +317,6 @@ public class MetaValueEntity : IBasicEntity
 
     public T? Get<T>()
     {
-        if (NULL) return default;
-
         return (T?)Get();
     }
 

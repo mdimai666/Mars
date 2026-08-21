@@ -69,7 +69,6 @@ internal static class MetaValueMapping
         => new()
         {
             Id = entity.Id,
-            ParentId = entity.ParentId,
             Index = entity.Index,
             //Value = entity.Get(),
             Bool = entity.Bool,
@@ -78,7 +77,6 @@ internal static class MetaValueMapping
             Decimal = entity.Decimal,
             Long = entity.Long,
             DateTime = entity.DateTime,
-            NULL = entity.NULL,
             StringShort = entity.StringShort,
             StringText = entity.StringText,
 
@@ -98,7 +96,6 @@ internal static class MetaValueMapping
         => new()
         {
             Id = dto.Id,
-            ParentId = dto.ParentId,
             Index = dto.Index,
             Type = (EMetaFieldType)dto.MetaField.Type,
 
@@ -109,7 +106,6 @@ internal static class MetaValueMapping
             Long = dto.Long,
             StringText = dto.StringText,
             StringShort = dto.StringShort,
-            NULL = dto.NULL,
             DateTime = dto.DateTime,
             VariantId = dto.VariantId,
             VariantsIds = dto.VariantsIds,

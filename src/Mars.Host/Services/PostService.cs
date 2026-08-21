@@ -206,20 +206,18 @@ internal class PostService : IPostService
         {
             Id = Guid.NewGuid(),
             Index = 0,
-            ParentId = Guid.Empty,
 
-            Bool = false,
-            Int = 0,
-            Float = 0,
-            Decimal = 0,
-            Long = 0,
-            DateTime = DateTime.MinValue,
-            ModelId = Guid.Empty,
-            NULL = false,
+            Bool = null,
+            Int = null,
+            Float = null,
+            Decimal = null,
+            Long = null,
+            DateTime = null,
+            ModelId = null,
             StringShort = metaField.Type == MetaFieldType.String ? "" : null,
             StringText = metaField.Type == MetaFieldType.Text ? "" : null,
             MetaField = metaField,
-            VariantId = Guid.Empty,
+            VariantId = null,
             VariantsIds = []
         };
     }

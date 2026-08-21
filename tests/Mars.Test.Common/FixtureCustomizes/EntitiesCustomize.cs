@@ -174,7 +174,6 @@ public sealed class EntitiesCustomize : ICustomization
         fixture.Customize<MetaValueEntity>(composer => composer
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.Type, EMetaFieldType.String)
                                     .With(s => s.VariantsIds, [])
                                    );

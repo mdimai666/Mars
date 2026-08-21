@@ -53,7 +53,6 @@ public static class MetaValuesTools
             _marsDbContext.Entry(item).CurrentValues.SetValues(new
             {
                 qe.Id,
-                qe.ParentId,
                 qe.Index,
                 qe.Type,
 
@@ -64,7 +63,6 @@ public static class MetaValuesTools
                 qe.Long,
                 qe.StringText,
                 qe.StringShort,
-                qe.NULL,
                 qe.DateTime,
                 qe.VariantId,
                 qe.VariantsIds,

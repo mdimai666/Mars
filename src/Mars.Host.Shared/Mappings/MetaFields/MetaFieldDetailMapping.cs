@@ -29,7 +29,6 @@ public static class MetaFieldDetailMapping
         => new()
         {
             Id = entity.Id,
-            ParentId = entity.ParentId,
             Index = entity.Index,
             MetaField = entity.MetaField.ToDetailResponse(),
 
@@ -40,7 +39,6 @@ public static class MetaFieldDetailMapping
             Long = entity.Long,
             StringShort = entity.StringShort,
             StringText = entity.StringText,
-            NULL = entity.NULL,
             DateTime = entity.DateTime,
             VariantId = entity.VariantId,
             VariantsIds = entity.VariantsIds,

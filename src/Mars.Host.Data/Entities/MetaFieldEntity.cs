@@ -174,19 +174,19 @@ public class MetaFieldEntity : IBasicEntity
         {
             EMetaFieldType.String => typeof(string),
             EMetaFieldType.Text => typeof(string),
-            EMetaFieldType.Bool => typeof(bool),
-            EMetaFieldType.Int => typeof(int),
-            EMetaFieldType.Long => typeof(long),
-            EMetaFieldType.Float => typeof(float),
-            EMetaFieldType.Decimal => typeof(decimal),
-            EMetaFieldType.DateTime => typeof(DateTime),
+            EMetaFieldType.Bool => typeof(bool?),
+            EMetaFieldType.Int => typeof(int?),
+            EMetaFieldType.Long => typeof(long?),
+            EMetaFieldType.Float => typeof(double?),
+            EMetaFieldType.Decimal => typeof(decimal?),
+            EMetaFieldType.DateTime => typeof(DateTime?),
 
             EMetaFieldType.Select => typeof(Guid), //typeof(MetaFieldVariant),
             EMetaFieldType.SelectMany => typeof(Guid[]), //typeof(List<MetaFieldVariant>),
 
-            EMetaFieldType.Relation => typeof(Guid),//IBasicEntity
-            EMetaFieldType.File => typeof(Guid),//FileEntity
-            EMetaFieldType.Image => typeof(Guid),//FileEntity
+            EMetaFieldType.Relation => typeof(Guid?),//IBasicEntity
+            EMetaFieldType.File => typeof(Guid?),//FileEntity
+            EMetaFieldType.Image => typeof(Guid?),//FileEntity
 
             _ => throw new NotImplementedException()
         };

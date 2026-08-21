@@ -4,6 +4,12 @@ public static class GenSourceCodeMasterHelper
 {
     public static string GetFormattedName(Type type)
     {
+        var nullableUnderlying = Nullable.GetUnderlyingType(type);
+        if (nullableUnderlying is not null)
+        {
+            return GetFriendlyTypeName(nullableUnderlying.Name) + "?";
+        }
+
         if (type.IsGenericType)
         {
             string genericArguments = type.GetGenericArguments()

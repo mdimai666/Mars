@@ -44,4 +44,14 @@ public class MetaFieldVariantEditModel
         Value = response.Value,
         Tags = response.Tags.ToArray()
     };
+
+    public MetaFieldVariantEditModel Clone()
+        => new()
+        {
+            Id = Guid.NewGuid(),
+            Title = Title,
+            Tags = [.. Tags],
+            Value = Value,
+            Disable = Disable,
+        };
 }

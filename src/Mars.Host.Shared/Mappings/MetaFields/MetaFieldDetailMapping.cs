@@ -19,6 +19,8 @@ public static class MetaFieldDetailMapping
             MaxValue = entity.MaxValue,
             MinValue = entity.MinValue,
             ModelName = entity.ModelName,
+            Default = entity.Default,
+            Options = entity.Options,
             Order = entity.Order,
             Tags = entity.Tags,
             Variants = entity.Variants?.ToResponse(),

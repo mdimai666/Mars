@@ -55,7 +55,7 @@ public sealed class UpdateUserTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
         var userType = ef.UserTypes.Include(s => s.MetaFields).First(s => s.TypeName == UserTypeEntity.DefaultTypeName);
-        userType.MetaFields = new(metaFields);
+        userType.MetaFields = metaFields.ToList();
         var metaValues = metaFields.Select(mf =>
         {
             var mv = _fixture.MetaValueEntity<UserMetaValueEntity>(mf.Id, mf.Type);

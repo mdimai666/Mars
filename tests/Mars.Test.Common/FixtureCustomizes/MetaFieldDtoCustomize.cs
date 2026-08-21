@@ -23,6 +23,8 @@ public sealed class MetaFieldDtoCustomize : ICustomization
                                             MaxValue = null,
                                             MinValue = null,
                                             ModelName = null,
+                                            Default = null,
+                                            Options = null,
                                             Order = 0,
                                             Tags = [],
                                             Type = MetaFieldType.Bool,

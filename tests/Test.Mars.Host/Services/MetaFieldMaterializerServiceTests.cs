@@ -143,6 +143,8 @@ public class MetaFieldMaterializerServiceTests
 
             MaxValue = default,
             MinValue = default,
+            Default = null,
+            Options = null,
             Order = 0,
             Tags = [],
             Variants = [],

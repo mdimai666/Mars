@@ -8,22 +8,23 @@ public record ModifyMetaValueDetailQuery : ModifyMetaValueDetailDto
 
     public static ModifyMetaValueDetailQuery GetBlank(MetaFieldDto metaField, Guid? id = null)
     {
+        var def = metaField.Default;
         return new()
         {
             Id = id ?? Guid.NewGuid(),
             Index = 0,
 
-            Bool = null,
-            Int = null,
-            Float = null,
-            Decimal = null,
-            Long = null,
-            DateTime = null,
-            ModelId = null,
-            StringShort = metaField.Type == MetaFieldType.String ? "" : null,
-            StringText = metaField.Type == MetaFieldType.Text ? "" : null,
-            VariantId = null,
-            VariantsIds = [],
+            Bool = def?.Bool,
+            Int = def?.Int,
+            Float = def?.Float,
+            Decimal = def?.Decimal,
+            Long = def?.Long,
+            DateTime = def?.DateTime,
+            ModelId = def?.ModelId,
+            StringShort = metaField.Type == MetaFieldType.String ? def?.StringShort ?? "" : def?.StringShort,
+            StringText = metaField.Type == MetaFieldType.Text ? def?.StringText ?? "" : def?.StringText,
+            VariantId = def?.VariantId,
+            VariantsIds = def?.VariantsIds ?? [],
 
             MetaField = metaField,
             MetaFieldId = metaField.Id,

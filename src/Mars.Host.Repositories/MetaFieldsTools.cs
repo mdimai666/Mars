@@ -9,9 +9,9 @@ namespace Mars.Host.Repositories;
 
 public static class MetaFieldsTools
 {
-    public static void ModifyMetaFields(MarsDbContext _marsDbContext, List<MetaFieldEntity> existMetaFields, IReadOnlyCollection<MetaFieldDto> modifyMetaFields, DateTimeOffset modifiedAt)
+    public static void ModifyMetaFields(MarsDbContext _marsDbContext, ICollection<MetaFieldEntity> existMetaFields, IReadOnlyCollection<MetaFieldDto> modifyMetaFields, DateTimeOffset modifiedAt)
     {
-        var metaDiff = DiffList.FindDifferencesBy(existMetaFields, modifyMetaFields.ToEntity(), s => s.Id);
+        var metaDiff = DiffList.FindDifferencesBy(existMetaFields.ToList(), modifyMetaFields.ToEntity(), s => s.Id);
 
         var queryDict = modifyMetaFields.ToDictionary(s => s.Id);
 
@@ -35,6 +35,13 @@ public static class MetaFieldsTools
         {
             var q = queryDict[item.Id];
             var qe = q.ToEntity();
+
+            // смена типа поля: перенос значений между колонками, где это возможно
+            if (item.Type != qe.Type)
+            {
+                MetaValuesTools.MigrateValuesOnFieldTypeChange(_marsDbContext, item, item.Type, qe.Type);
+            }
+
             _marsDbContext.Entry(item).CurrentValues.SetValues(new
             {
                 qe.Title,
@@ -45,18 +52,42 @@ public static class MetaFieldsTools
                 qe.MinValue,
                 qe.Description,
                 qe.IsNullable,
-                //qe.Default,
                 qe.Order,
                 qe.Tags,
                 qe.Hidden,
                 qe.Disabled,
                 qe.ModelName,
+                qe.Options,
             });
+            // owned-типы через CurrentValues не обновляются
+            SetDefault(item, qe.Default);
             item.ModifiedAt = modifiedAt;
 
             ModifyVariants(item.Variants, qe.Variants);
         }
 
+    }
+
+    static void SetDefault(MetaFieldEntity entity, MetaFieldDefaultValue? newValue)
+    {
+        if (newValue is null)
+        {
+            entity.Default = null;
+            return;
+        }
+
+        entity.Default ??= new MetaFieldDefaultValue();
+        entity.Default.Bool = newValue.Bool;
+        entity.Default.Int = newValue.Int;
+        entity.Default.Float = newValue.Float;
+        entity.Default.Decimal = newValue.Decimal;
+        entity.Default.Long = newValue.Long;
+        entity.Default.StringText = newValue.StringText;
+        entity.Default.StringShort = newValue.StringShort;
+        entity.Default.DateTime = newValue.DateTime;
+        entity.Default.VariantId = newValue.VariantId;
+        entity.Default.VariantsIds = newValue.VariantsIds;
+        entity.Default.ModelId = newValue.ModelId;
     }
 
     static void ModifyVariants(List<MetaFieldVariant> entityVariants, List<MetaFieldVariant> newVariants)

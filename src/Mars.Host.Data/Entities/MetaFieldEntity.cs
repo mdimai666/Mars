@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
 using Mars.Host.Data.OwnedTypes.MetaFields;
@@ -45,9 +46,11 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("IsNullable")]
     public bool IsNullable { get; set; }
 
-    [NotMapped]
     [Comment("Значение по умолчанию")]
-    public MetaValueBase? Default { get; set; }
+    public virtual MetaFieldDefaultValue? Default { get; set; }
+
+    [Comment("Опции (точка расширения)")]
+    public JsonNode? Options { get; set; }
 
     [Comment("Порядок")]
     public int Order { get; set; }
@@ -55,10 +58,10 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("Теги")]
     public List<string> Tags { get; set; } = [];
 
-    [Comment("Скрытое")]
+    [Comment("Скрытое: хранится и отдаётся в API, но скрыт в формах")]
     public bool Hidden { get; set; }
 
-    [Comment("Отключен")]
+    [Comment("Отключен: исключён из генерации/форм, значения сохраняются")]
     public bool Disabled { get; set; }
 
     ////SETTERS===============
@@ -83,20 +86,16 @@ public class MetaFieldEntity : IBasicEntity
     public virtual ICollection<UserMetaValueEntity>? UserMetaValues { get; set; }
     public virtual ICollection<PostCategoryMetaValueEntity>? PostCategoryMetaValues { get; set; }
 
-    public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; }
+    // Поле принадлежит ровно одному типу (1:1 из трёх владельцев)
 
-    [NotMapped]
-    public virtual List<PostTypeEntity>? PostTypes { get; set; }
+    public Guid? PostTypeId { get; set; }
+    public virtual PostTypeEntity? PostType { get; set; }
 
-    public virtual ICollection<UserTypeMetaFieldEntity>? UserTypeMetaFields { get; set; }
+    public Guid? UserTypeId { get; set; }
+    public virtual UserTypeEntity? UserType { get; set; }
 
-    [NotMapped]
-    public virtual List<UserTypeEntity>? UserTypes { get; set; }
-
-    public virtual ICollection<PostCategoryTypeMetaFieldEntity>? PostCategoryTypeMetaFields { get; set; }
-
-    [NotMapped]
-    public virtual List<PostCategoryTypeEntity>? PostCategoryTypes { get; set; }
+    public Guid? PostCategoryTypeId { get; set; }
+    public virtual PostCategoryTypeEntity? PostCategoryType { get; set; }
 
     #region ENUMS
     public static readonly EMetaFieldType[] ENumbers = MetaValueBase.ENumbers;

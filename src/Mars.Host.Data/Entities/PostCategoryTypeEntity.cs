@@ -35,9 +35,7 @@ public class PostCategoryTypeEntity : IBasicEntity //Пост ли? Можно �
 
     // Relations
 
-    public virtual ICollection<PostCategoryTypeMetaFieldEntity>? PostCategoryTypeMetaFields { get; set; }
-    [NotMapped]
-    public virtual List<MetaFieldEntity>? MetaFields { get; set; }
+    public virtual ICollection<MetaFieldEntity>? MetaFields { get; set; }
 
     [NotMapped]
     public virtual List<PostCategoryEntity>? PostCategories { get; set; }

@@ -1,3 +1,4 @@
+using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Host.Shared.Dto.MetaFields;
@@ -9,13 +10,14 @@ public static class MetaFieldRequestExtensions
         {
             Id = request.Id,
             Title = request.Title,
-            Key = request.Key,
+            Key = MetaFieldKeyNormalizer.Normalize(request.Key),
             Type = request.Type,
             MaxValue = request.MaxValue,
             MinValue = request.MinValue,
             Description = request.Description,
             IsNullable = request.IsNullable,
-            //Default = request.Default,
+            Default = request.Default,
+            Options = request.Options,
             Order = request.Order,
             Tags = request.Tags,
             Hidden = request.Hidden,
@@ -30,13 +32,14 @@ public static class MetaFieldRequestExtensions
         {
             Id = request.Id,
             Title = request.Title,
-            Key = request.Key,
+            Key = MetaFieldKeyNormalizer.Normalize(request.Key),
             Type = request.Type,
             MaxValue = request.MaxValue,
             MinValue = request.MinValue,
             Description = request.Description,
             IsNullable = request.IsNullable,
-            //Default = request.Default,
+            Default = request.Default,
+            Options = request.Options,
             Order = request.Order,
             Tags = request.Tags,
             Hidden = request.Hidden,

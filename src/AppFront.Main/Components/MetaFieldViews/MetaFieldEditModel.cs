@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Nodes;
 using Mars.Core.Attributes;
 using Mars.Shared.Contracts.MetaFields;
 
@@ -27,6 +28,12 @@ public class MetaFieldEditModel
     public string Description { get; set; } = "";
     public bool IsNullable { get; set; }
 
+    public MetaFieldDefaultValue? Default { get; set; }
+    public JsonNode? Options { get; set; }
+
+    /// <summary>Поле ещё не сохранялось на сервер (нет значений, о которых нужно предупреждать).</summary>
+    public bool IsNew { get; set; } = true;
+
     public int Order { get; set; }
     public string[] Tags { get; set; } = [];
     public bool Hidden { get; set; }
@@ -47,7 +54,8 @@ public class MetaFieldEditModel
             MinValue = MinValue,
             Description = Description,
             IsNullable = IsNullable,
-            //Default = //Default,
+            Default = Default,
+            Options = Options,
             Order = Order,
             Tags = Tags,
             Hidden = Hidden,
@@ -67,7 +75,8 @@ public class MetaFieldEditModel
         MinValue = MinValue,
         Description = Description,
         IsNullable = IsNullable,
-        //Default = //Default,
+        Default = Default,
+        Options = Options,
         Order = Order,
         Tags = Tags,
         Hidden = Hidden,
@@ -87,7 +96,9 @@ public class MetaFieldEditModel
         MinValue = response.MinValue,
         Description = response.Description,
         IsNullable = response.IsNullable,
-        //Default response.= //Default,
+        Default = response.Default,
+        Options = response.Options,
+        IsNew = false,
         Order = response.Order,
         Tags = response.Tags.ToArray(),
         Hidden = response.Hidden,
@@ -95,6 +106,29 @@ public class MetaFieldEditModel
         Variants = response.Variants?.Select(MetaFieldVariantEditModel.ToModel).ToList() ?? [],
         ModelName = response.ModelName ?? "",
     };
+
+    /// <summary>«Создать поле из существующего»: копия с новыми Id (поле и варианты).</summary>
+    public MetaFieldEditModel Clone(int order)
+        => new()
+        {
+            Id = Guid.NewGuid(),
+            Title = Title,
+            Key = $"{Key}_copy",
+            Type = Type,
+            MaxValue = MaxValue,
+            MinValue = MinValue,
+            Description = Description,
+            IsNullable = IsNullable,
+            Default = Default,
+            Options = Options,
+            IsNew = true,
+            Order = order,
+            Tags = [.. Tags],
+            Hidden = Hidden,
+            Disabled = Disabled,
+            Variants = Variants.Select(s => s.Clone()).ToList(),
+            ModelName = ModelName,
+        };
 
     #region ENUMS
     public static readonly MetaFieldType[] ENumbers = { MetaFieldType.Int, MetaFieldType.Long, MetaFieldType.Float, MetaFieldType.Decimal };

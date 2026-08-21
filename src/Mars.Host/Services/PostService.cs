@@ -202,23 +202,24 @@ internal class PostService : IPostService
 
     public static MetaValueDetailDto GetBlankMetaValue(MetaFieldDto metaField)
     {
+        var def = metaField.Default;
         return new()
         {
             Id = Guid.NewGuid(),
             Index = 0,
 
-            Bool = null,
-            Int = null,
-            Float = null,
-            Decimal = null,
-            Long = null,
-            DateTime = null,
-            ModelId = null,
-            StringShort = metaField.Type == MetaFieldType.String ? "" : null,
-            StringText = metaField.Type == MetaFieldType.Text ? "" : null,
+            Bool = def?.Bool,
+            Int = def?.Int,
+            Float = def?.Float,
+            Decimal = def?.Decimal,
+            Long = def?.Long,
+            DateTime = def?.DateTime,
+            ModelId = def?.ModelId,
+            StringShort = metaField.Type == MetaFieldType.String ? def?.StringShort ?? "" : def?.StringShort,
+            StringText = metaField.Type == MetaFieldType.Text ? def?.StringText ?? "" : def?.StringText,
             MetaField = metaField,
-            VariantId = null,
-            VariantsIds = []
+            VariantId = def?.VariantId,
+            VariantsIds = def?.VariantsIds ?? []
         };
     }
 

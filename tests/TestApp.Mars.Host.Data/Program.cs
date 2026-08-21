@@ -118,6 +118,8 @@ if (ef.MetaFields.Count() == 0)
     var pt = ef.PostTypes.First();
     var post1 = ef.Posts.First();
 
+    mf.PostTypeId = pt.Id;
+
     var mv = new PostMetaValueEntity()
     {
         Type = EMetaFieldType.String,
@@ -126,7 +128,6 @@ if (ef.MetaFields.Count() == 0)
         PostId = post1.Id,
     };
 
-    ef.PostTypeMetaFields.Add(new PostTypeMetaFieldEntity { MetaFieldId = mf.Id, PostTypeId = pt.Id });
     ef.PostMetaValues.Add(mv);
 
     ef.SaveChanges();

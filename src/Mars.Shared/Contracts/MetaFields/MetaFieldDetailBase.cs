@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+
 namespace Mars.Shared.Contracts.MetaFields;
 
 public abstract record MetaFieldDetailBase
@@ -11,7 +13,8 @@ public abstract record MetaFieldDetailBase
     public required decimal? MinValue { get; init; }
     public required string Description { get; init; }
     public required bool IsNullable { get; init; }
-    //public required MetaValueDto? Default { get; init; }
+    public required MetaFieldDefaultValue? Default { get; init; }
+    public required JsonNode? Options { get; init; }
     public required int Order { get; init; }
     public required IReadOnlyCollection<string> Tags { get; init; }
     public required bool Hidden { get; init; }

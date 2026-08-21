@@ -11,7 +11,13 @@ namespace Test.Mars.Host.Utils;
 
 public class MetaFieldUtilsTests
 {
-    public readonly IFixture _fixture = new Fixture();
+    public readonly IFixture _fixture;
+
+    public MetaFieldUtilsTests()
+    {
+        _fixture = new Fixture();
+        _fixture.Customize(new MetaFieldDtoCustomize());
+    }
 
     public class MetaValuesTestData : IEnumerable<object[]>
     {

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Mars.Host.Data.Entities;
 
 /// <summary>
@@ -7,7 +5,6 @@ namespace Mars.Host.Data.Entities;
 /// </summary>
 public class PostMetaValueEntity : MetaValueBase
 {
-    [ForeignKey(nameof(Post))]
     public Guid PostId { get; set; }
     public virtual PostEntity? Post { get; set; }
 }

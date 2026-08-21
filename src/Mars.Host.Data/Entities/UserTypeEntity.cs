@@ -35,9 +35,7 @@ public class UserTypeEntity : IBasicEntity
 
     // Relations
 
-    public virtual ICollection<UserTypeMetaFieldEntity>? UserTypeMetaFields { get; set; }
-    [NotMapped]
-    public virtual List<MetaFieldEntity>? MetaFields { get; set; }
+    public virtual ICollection<MetaFieldEntity>? MetaFields { get; set; }
 
     [NotMapped] //вспомогательный, для получения
     public virtual List<UserEntity>? Users { get; set; }

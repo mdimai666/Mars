@@ -60,9 +60,7 @@ public class PostTypeEntity : IBasicEntity
 
     // Relations
 
-    public virtual ICollection<PostTypeMetaFieldEntity>? PostTypeMetaFields { get; set; }
-    [NotMapped]
-    public virtual List<MetaFieldEntity>? MetaFields { get; set; }
+    public virtual ICollection<MetaFieldEntity>? MetaFields { get; set; }
 
     [NotMapped] //вспомогательный, для получения
     public virtual List<PostEntity>? Posts { get; set; }

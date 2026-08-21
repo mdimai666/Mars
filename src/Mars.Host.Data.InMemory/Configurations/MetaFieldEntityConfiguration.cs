@@ -25,32 +25,29 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
 
         // https://www.npgsql.org/efcore/mapping/json.html?tabs=data-annotations%2Cjsondocument#tojson-owned-entity-mapping
         entity.OwnsMany(x => x.Variants, f => { f.ToJson(); });
+        entity.OwnsOne(x => x.Default, f => { f.ToJson(); });
+        entity.Property(x => x.Options).HasColumnType("jsonb");
 
         // Relations
+        // Поле принадлежит ровно одному типу (1:N); каскад: тип -> его поля -> значения.
 
-        entity.HasMany(x => x.PostTypes)
+        entity.HasOne(x => x.PostType)
             .WithMany(x => x.MetaFields)
-            .UsingEntity<PostTypeMetaFieldEntity>(
-                l => l.HasOne(x => x.PostType).WithMany(x => x.PostTypeMetaFields),
-                r => r.HasOne(x => x.MetaField).WithMany(x => x.PostTypeMetaFields),
-                k => k.HasKey(x => new { x.PostTypeId, x.MetaFieldId })
-            );
+            .HasForeignKey(x => x.PostTypeId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entity.HasIndex(x => new { x.PostTypeId, x.Key }).IsUnique();
 
-        entity.HasMany(x => x.UserTypes)
+        entity.HasOne(x => x.UserType)
             .WithMany(x => x.MetaFields)
-            .UsingEntity<UserTypeMetaFieldEntity>(
-                l => l.HasOne(x => x.UserType).WithMany(x => x.UserTypeMetaFields),
-                r => r.HasOne(x => x.MetaField).WithMany(x => x.UserTypeMetaFields),
-                k => k.HasKey(x => new { x.UserTypeId, x.MetaFieldId })
-            );
+            .HasForeignKey(x => x.UserTypeId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entity.HasIndex(x => new { x.UserTypeId, x.Key }).IsUnique();
 
-        entity.HasMany(x => x.PostCategoryTypes)
+        entity.HasOne(x => x.PostCategoryType)
             .WithMany(x => x.MetaFields)
-            .UsingEntity<PostCategoryTypeMetaFieldEntity>(
-                l => l.HasOne(x => x.PostCategoryType).WithMany(x => x.PostCategoryTypeMetaFields),
-                r => r.HasOne(x => x.MetaField).WithMany(x => x.PostCategoryTypeMetaFields),
-                k => k.HasKey(x => new { x.PostCategoryTypeId, x.MetaFieldId })
-            );
+            .HasForeignKey(x => x.PostCategoryTypeId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entity.HasIndex(x => new { x.PostCategoryTypeId, x.Key }).IsUnique();
 
     }
 }

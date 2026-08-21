@@ -34,6 +34,9 @@
                                     <span class="text-secondary fz12px">
                                         @field.Key
                                     </span>
+                                    <FluentButton Appearance="Appearance.Stealth" OnClick="() => OnClone(field)">
+                                        <span class="text-secondary">дублировать</span>
+                                    </FluentButton>
                                     <DFluentDeleteButton OnConfirm="() => OnDelete(field)">
                                         <span class="text-danger">удалить</span>
                                     </DFluentDeleteButton>
@@ -93,7 +96,8 @@
                                                                   Items="Enum.GetValues<MetaFieldType>()"
                                                                   OptionText="@(f=>MetaFieldEditModel.TypeIcons[f] + " " + MetaFieldEditModel.TypeList[f])"
                                                                   Width="250px"
-                                                                  @bind-SelectedOption="@field.Type" />
+                                                                  SelectedOption="@field.Type"
+                                                                  SelectedOptionChanged="@(v => OnChangeFieldType(v, field))" />
                                                 </FormItem2>
                                             </div>
                                             <div>

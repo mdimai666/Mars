@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Mars.Host.Data.Entities;
 
 /// <summary>
@@ -7,7 +5,6 @@ namespace Mars.Host.Data.Entities;
 /// </summary>
 public class UserMetaValueEntity : MetaValueBase
 {
-    [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
     public virtual UserEntity? User { get; set; }
 }

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Mars.Host.Shared.Utils;
 
 namespace Mars.Host.Shared.Dto.MetaFields;
 
@@ -12,6 +13,10 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
                 metaField.RuleFor(x => x.Key)
                     .NotEmpty()
                     .WithMessage("Key не может быть пустым");
+
+                metaField.RuleFor(x => x.Key)
+                    .Matches(MetaFieldKeyNormalizer.FormatPattern)
+                    .WithMessage("Key должен соответствовать формату [a-z_][a-z0-9_]*");
             });
 
         RuleFor(x => x.MetaFields)

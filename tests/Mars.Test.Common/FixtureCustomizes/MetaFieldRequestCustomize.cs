@@ -13,7 +13,18 @@ public sealed class MetaFieldRequestCustomize : ICustomization
         fixture.Customize<CreateMetaFieldRequest>(composer => composer
                                     //.OmitAutoProperties()
                                     .With(s => s.Id)
+                                    .With(s => s.Key, () => $"key_{Guid.NewGuid():N}")
                                     .With(s => s.Variants)
+                                    .Without(s => s.Default)
+                                    .Without(s => s.Options)
+                                    );
+
+        fixture.Customize<UpdateMetaFieldRequest>(composer => composer
+                                    .With(s => s.Id)
+                                    .With(s => s.Key, () => $"key_{Guid.NewGuid():N}")
+                                    .With(s => s.Variants)
+                                    .Without(s => s.Default)
+                                    .Without(s => s.Options)
                                     );
 
         fixture.Customize<CreateMetaValueRequest>(composer => composer

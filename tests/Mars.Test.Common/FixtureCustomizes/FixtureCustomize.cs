@@ -18,6 +18,7 @@ public sealed class FixtureCustomize : ICustomization
         fixture.Customize(new EntitiesCustomize());
         fixture.Customize(new RequestCustomize());
         fixture.Customize(new MetaFieldRequestCustomize());
+        fixture.Customize(new MetaFieldDtoCustomize());
     }
 
     public static Func<T> Chance<T>(T[] variants)

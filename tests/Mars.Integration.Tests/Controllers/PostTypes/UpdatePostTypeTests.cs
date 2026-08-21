@@ -35,7 +35,7 @@ public class UpdatePostTypeTests : ApplicationTests
         var postType = _fixture.Create<PostTypeEntity>();
         var ef = AppFixture.MarsDbContext();
         var metaFields = _fixture.CreateMany<MetaFieldEntity>(3).ToArray();
-        postType.MetaFields = new(metaFields);
+        postType.MetaFields = metaFields.ToList();
         ef.PostTypes.Add(postType);
         ef.SaveChanges();
         ef.ChangeTracker.Clear();

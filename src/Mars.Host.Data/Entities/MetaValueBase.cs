@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Core.Extensions;
 using Mars.Host.Data.Common;
@@ -44,7 +43,6 @@ public abstract class MetaValueBase : IBasicEntity
     // ==========================================
     // Relations
 
-    [ForeignKey(nameof(MetaField))]
     public Guid MetaFieldId { get; set; }
     public virtual MetaFieldEntity? MetaField { get; set; }
 

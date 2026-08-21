@@ -90,10 +90,6 @@ public class MtFieldInfo
         {
             fieldRow = $"\tpublic {nameof(MetaFieldVariant)}[]? {keyName} {{ get; set; }}";
         }
-        else if (metaField.TypeParentable)
-        {
-            throw new NotImplementedException();
-        }
         else
         {
             fieldRow = $"\tpublic {friendlyTypeName} {keyName} {{ get; set; }}";
@@ -113,7 +109,7 @@ public class MtFieldInfo
         {
             return $"""
                 {keyName}Id = post.MetaValues!
-                    .Where(f => f.MetaField.Key == "{keyName}" && f.MetaField.ParentId == Guid.Empty)
+                    .Where(f => f.MetaField.Key == "{keyName}")
                     .Select(f => f.{MetaValueEntity.GetColName(metaField.Type)})
                     .FirstOrDefault()!
                 """;
@@ -122,7 +118,7 @@ public class MtFieldInfo
         {
             return $"""
                 {keyName} = post.MetaValues!
-                    .Where(f => f.MetaField.Key == "{keyName}" && f.MetaField.ParentId == Guid.Empty)
+                    .Where(f => f.MetaField.Key == "{keyName}")
                     .Select(f => f.MetaField.Variants.FirstOrDefault(v => v.Id == f.VariantId))
                     .FirstOrDefault()!
                 """;
@@ -131,7 +127,7 @@ public class MtFieldInfo
         {
             return $"""
                 {keyName} = post.MetaValues!
-                    .Where(f => f.MetaField.Key == "{keyName}" && f.MetaField.ParentId == Guid.Empty)
+                    .Where(f => f.MetaField.Key == "{keyName}")
                     .SelectMany(f => f.MetaField.Variants.Where(v => f.VariantsIds.Contains(v.Id)))
                     .ToArray()
                 """;
@@ -139,7 +135,7 @@ public class MtFieldInfo
 
         return $"""
                 {keyName} = post.MetaValues!
-                    .Where(f => f.MetaField.Key == "{keyName}" && f.MetaField.ParentId == Guid.Empty)
+                    .Where(f => f.MetaField.Key == "{keyName}")
                     .Select(f => f.{MetaValueEntity.GetColName(metaField.Type)})
                     .FirstOrDefault()!
                 """;

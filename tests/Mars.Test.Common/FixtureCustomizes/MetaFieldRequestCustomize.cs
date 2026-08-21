@@ -13,7 +13,6 @@ public sealed class MetaFieldRequestCustomize : ICustomization
         fixture.Customize<CreateMetaFieldRequest>(composer => composer
                                     //.OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.Variants)
                                     );
 

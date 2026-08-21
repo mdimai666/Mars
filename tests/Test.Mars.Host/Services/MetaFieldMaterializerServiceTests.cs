@@ -140,7 +140,6 @@ public class MetaFieldMaterializerServiceTests
             Key = key,
             ModelName = modelName,
             Type = type,
-            ParentId = Guid.Empty,
 
             MaxValue = default,
             MinValue = default,

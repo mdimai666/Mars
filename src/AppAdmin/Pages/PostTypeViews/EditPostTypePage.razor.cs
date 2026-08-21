@@ -31,8 +31,7 @@ public partial class EditPostTypePage
     void AddNewField()
     {
         int order = f.Model.MetaFields.Any() ? f.Model.MetaFields.Max(s => s.Order) + 1 : 0;
-        Guid parentId = Guid.Empty;
-        f.Model.MetaFields.Add(FormMetaField.NewField(order, parentId));
+        f.Model.MetaFields.Add(FormMetaField.NewField(order));
     }
 
     void AfterSave()

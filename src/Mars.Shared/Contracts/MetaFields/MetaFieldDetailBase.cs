@@ -3,7 +3,6 @@ namespace Mars.Shared.Contracts.MetaFields;
 public abstract record MetaFieldDetailBase
 {
     public required Guid Id { get; init; }
-    public required Guid ParentId { get; init; }
     public required string Title { get; init; }
     public required string Key { get; init; }
     public required MetaFieldType Type { get; init; }

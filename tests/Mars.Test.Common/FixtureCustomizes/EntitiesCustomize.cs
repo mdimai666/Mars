@@ -166,7 +166,6 @@ public sealed class EntitiesCustomize : ICustomization
                                     })
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
-                                    .With(s => s.ParentId, Guid.Empty)
                                     .With(s => s.Order)
                                     .With(s => s.Tags)
                                     .With(s => s.Variants)

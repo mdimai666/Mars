@@ -21,9 +21,6 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("Изменен")]
     public DateTimeOffset? ModifiedAt { get; set; }
 
-    [Comment("Родительское мета поле")]
-    public Guid ParentId { get; set; }
-
     [Comment("Название")]
     public string Title { get; set; } = default!;
 
@@ -105,14 +102,12 @@ public class MetaFieldEntity : IBasicEntity
 
     public static readonly EMetaFieldType[] EHasMinMax = MetaValueEntity.EHasMinMax;
     public static readonly EMetaFieldType[] ESelectable = MetaValueEntity.ESelectable;
-    public static readonly EMetaFieldType[] EParentable = MetaValueEntity.EParentable;
     public static readonly EMetaFieldType[] ERelations = MetaValueEntity.ERelations;
 
     public bool IsNumber => ENumbers.Contains(Type);
     public bool IsString => EStrings.Contains(Type);
     public bool TypeHasMinMax => EHasMinMax.Contains(Type);
     public bool TypeSelectable => ESelectable.Contains(Type);
-    public bool TypeParentable => EParentable.Contains(Type);
     public bool TypeRelation => ERelations.Contains(Type);
 
     #endregion
@@ -148,9 +143,6 @@ public class MetaFieldEntity : IBasicEntity
                 [EMetaFieldType.File] = "File",
                 [EMetaFieldType.Image] = "Image",
 
-                [EMetaFieldType.Group] = "Группа",
-                [EMetaFieldType.List] = "List",
-
             };
 
             return _typeList;
@@ -171,154 +163,10 @@ public class MetaFieldEntity : IBasicEntity
             EMetaFieldType.Select => "Выбор",
             EMetaFieldType.SelectMany => "Выбор из многих",
             EMetaFieldType.DateTime => "Дата",
-            EMetaFieldType.Group => "Группа",
-            EMetaFieldType.List => "List",
             _ => type.ToString()
         };
     }
     #endregion
-
-    //Validators
-
-    public static ICollection<MetaValueEntity> GetValuesBlank(ICollection<MetaValueEntity> metaValues, ICollection<MetaFieldEntity> metaFields)
-    {
-
-        if (metaValues is null || metaFields is null)
-        {
-            throw new ArgumentException();
-        }
-
-        //var existDict = metaValues.ToDictionary(s => s.MetaFieldId);
-
-        var blankValues = FieldsBlank(metaValues, /*existDict, */metaFields, Guid.Empty);
-        return metaValues.Concat(blankValues).Where(s => !s.MetaField.Disabled).ToList();
-    }
-
-    public static ICollection<MetaValueEntity> FieldsBlank(ICollection<MetaValueEntity> metaValues, ICollection<MetaFieldEntity> metaFields, Guid parentId, int index = 0)
-    {
-        List<MetaValueEntity> list = [];
-
-        foreach (var f in metaFields.Where(s => s.ParentId == parentId && !s.Disabled))
-        {
-            //bool exist = existDict.ContainsKey(f.Id);
-            var value = metaValues.FirstOrDefault(s => s.MetaFieldId == f.Id && s.Index == index);
-            bool exist = value is not null;
-
-            if (!exist)
-            //{
-            //    list.Add(value);
-            //}
-            //else
-            {
-                if (f.TypeParentable == false)
-                {
-                    var val = new MetaValueEntity
-                    {
-                        MetaFieldId = f.Id,
-                        MetaField = f,
-                        Type = f.Type,
-                        //PostId = a.Id,
-                        NULL = f.IsNullable,
-                        ParentId = parentId,
-                    };
-
-                    list.Add(val);
-                }
-            }
-
-            if (f.TypeParentable)
-            {
-
-                if (f.Type == EMetaFieldType.Group)
-                {
-                    var values = FieldsBlank(metaValues, metaFields, f.Id);
-                    list.AddRange(values);
-
-                }
-                else if (f.Type == EMetaFieldType.List)
-                {
-
-                    var childs = metaValues.Where(s => s.ParentId == f.Id);
-
-                    if (childs.Count() == 0)
-                    {
-                        //Console.WriteLine("222");
-
-                        //var group = new MetaValue
-                        //{
-                        //    Id = Guid.NewGuid(),
-                        //    MetaFieldId = f.Id,
-                        //    MetaField = f,
-                        //    Type = EMetaFieldType.Group,
-                        //    //PostId = a.Id,
-                        //    ParentId = parentId,
-                        //};
-
-                        //list.Add(group);
-
-                        var values = FieldsBlank(metaValues, metaFields, f.Id);
-                        //values.Where(s => s.ParentId == f.Id).ToList().ForEach(s => s.ParentId = group.Id);
-                        list.AddRange(values);
-
-                        //var metaList = f;
-                        //var iteratorMetaFields = metaFields.Where(s => s.ParentId == metaList.Id).ToList();
-                        //var items = MetaField.MetaListGetNewGroupChild(metaList, metaFields);
-                        //list.AddRange(items);
-                    }
-                    else
-                    {
-                        var groups = childs.GroupBy(s => s.Index).OrderBy(s => s.Key);
-
-                        foreach (var group in groups)
-                        {
-                            var values = FieldsBlank(metaValues, metaFields, f.Id, group.Key);
-                            list.AddRange(values);
-
-                        }
-
-                    }
-                }
-            }
-
-        }
-        list = list.Where(s => s.MetaField is not null).OrderBy(s => s.MetaField.Order).ToList();
-
-        return list;
-    }
-
-    public static ICollection<MetaValueEntity> MetaListGetNewGroupChild(MetaFieldEntity list, ICollection<MetaFieldEntity> metaFields, int index)
-    {
-        //List<MetaValue> values = new();
-
-        //var group = new MetaValue
-        //{
-        //    Id = Guid.NewGuid(),
-        //    MetaFieldId = list.Id,
-        //    MetaField = list,
-        //    Type = EMetaFieldType.Group,
-        //    //PostId = a.Id,
-        //    ParentId = list.Id,
-        //};
-
-        //values.Add(group);
-
-        //var x = FieldsBlank(new List<MetaValue>(), metaFields, list.Id);
-        //foreach (var f in x)
-        //{
-        //    f.ParentId = group.Id;
-        //}
-
-        //values.AddRange(x);
-
-        //return values;
-
-        var values = FieldsBlank([], metaFields, list.Id);
-        foreach (var v in values.Where(s => s.ParentId == list.Id))
-        {
-            v.Index = index;
-        }
-        return values;
-    }
 
     public static Type MetaFieldTypeToType(EMetaFieldType mtype)
     {
@@ -335,9 +183,6 @@ public class MetaFieldEntity : IBasicEntity
 
             EMetaFieldType.Select => typeof(Guid), //typeof(MetaFieldVariant),
             EMetaFieldType.SelectMany => typeof(Guid[]), //typeof(List<MetaFieldVariant>),
-
-            EMetaFieldType.Group => throw new NotImplementedException(),//todo: implement
-            EMetaFieldType.List => throw new NotImplementedException(),
 
             EMetaFieldType.Relation => typeof(Guid),//IBasicEntity
             EMetaFieldType.File => typeof(Guid),//FileEntity
@@ -365,64 +210,7 @@ public enum EMetaFieldType : int
     Select = 30,
     SelectMany = 31,
 
-    Group = 40,
-    List = 50,
-
     Relation = 100,
     File = 101,
     Image = 102,
 }
-
-public class FieldScheme//not use
-{
-    public enum Type
-    {
-        Once,
-        List,
-        Group,
-
-        Relation// to some other model
-    }
-}
-
-//Repeater
-//Groups
-//select from other models
-
-//public class MetaFieldDto//придумать
-//{
-
-//}
-
-//public class ManyToMany_Post_MetaForm : BasicEntityNonUser
-//{
-//    [ForeignKey(nameof(Post))]
-//    public virtual Guid PostId { get; set; }
-//    public virtual Post Post { get; set; }
-
-//    [ForeignKey(nameof(MetaForm))]
-//    public virtual Guid MetaFormId { get; set; }
-//    public virtual MetaForm MetaForm { get; set; }
-//}
-
-//public interface IManyToManyCompaitable<TManyToManyEntity>//придумать
-//{
-//    (Expression<Func<TManyToManyEntity, bool>> queryExp,
-//    Expression<Func<TManyToManyEntity, Guid>> mainEntitySelect,
-//    Expression<Func<TManyToManyEntity, Guid>> subEntitySelect,
-//    Guid postId)
-//    GetManyToManyMTuple();
-//}
-
-//[Table("MetaForms")]
-//public class MetaForm : BasicEntityNonUser
-//{
-//    [Comment("Название")]
-//    public string Title { get; set; }
-//    [Comment("Key")]
-//    public string Key { get; set; }
-//    [Comment("Описание")]
-//    public string Description { get; set; } = "";
-
-//    public virtual ICollection<MetaFieldTemplate> MetaFieldTemplates { get; set; }
-//}

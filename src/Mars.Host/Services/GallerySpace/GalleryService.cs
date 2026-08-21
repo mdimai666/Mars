@@ -255,7 +255,7 @@ public static MetaValue? ImageMetaField(Post post)
 {
    if (post.MetaValues is null) return null;
 
-   var imageMeta = post.MetaValues.FirstOrDefault(s => s.MetaField.ParentId == Guid.Empty && s.MetaField.Key == "image" && s.MetaField.Type == EMetaFieldType.Image);
+   var imageMeta = post.MetaValues.FirstOrDefault(s => s.MetaField.Key == "image" && s.MetaField.Type == EMetaFieldType.Image);
 
    return imageMeta;
 }

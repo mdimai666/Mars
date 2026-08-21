@@ -8,7 +8,6 @@ public static class MetaFieldRequestExtensions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Title = request.Title,
             Key = request.Key,
             Type = request.Type,
@@ -30,7 +29,6 @@ public static class MetaFieldRequestExtensions
         => new()
         {
             Id = request.Id,
-            ParentId = request.ParentId,
             Title = request.Title,
             Key = request.Key,
             Type = request.Type,

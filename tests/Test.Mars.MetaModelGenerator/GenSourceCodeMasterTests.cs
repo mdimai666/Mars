@@ -86,8 +86,6 @@ public class GenSourceCodeMasterTests
     [InlineData([EMetaFieldType.Image])]
     [InlineData([EMetaFieldType.File])]
     [InlineData([EMetaFieldType.Relation])]// add relation Post Post.page File and other, add Plugin
-    //[InlineData([EMetaFieldType.List])]
-    //[InlineData([EMetaFieldType.Group])]
     public void Generate_AllNonPrimitiveTypes_ShouldSuccess(EMetaFieldType fieldType)
     {
         //Arrange

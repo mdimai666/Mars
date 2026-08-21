@@ -9,7 +9,7 @@
         <FluentAccordion>
             @if (Model is not null)
             {
-                @foreach (var f in Model.Where(s => s.ParentId == ParentId).OrderBy(s => s.Order))
+                @foreach (var f in Model.OrderBy(s => s.Order))
                 {
                     var field = f;
 
@@ -147,42 +147,6 @@
                                                 </div>
                                             </div>
                                         }
-                                        @if (field.IsTypeParentable)
-                                        {
-                                            <div class="row">
-                                                <div class="w-25 text-end">
-                                                    group
-                                                </div>
-                                                <div class="w-75">
-                                                    @if (field.Id == Guid.Empty)
-                                                    {
-                                                        <div class="text-danger">00-00 recurse error</div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <CascadingValue Value="Model">
-                                                            <FormMetaField ParentId="@field.Id" />
-                                                        </CascadingValue>
-                                                    }
-
-                                                    <div class="" style="background-color:#eee">
-                                                        @if (CountChilds(field.Id) == 0)
-                                                        {
-                                                            <div class="text-center text-secondary">
-                                                                <i>
-                                                                    &lt; нет полей &gt;
-                                                                </i>
-                                                            </div>
-                                                        }
-                                                        <div class="text-end">
-                                                            <FluentButton OnClick="e => AddNewField(field.Id)">Добавить</FluentButton>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        }
-
                                         <div class="hstack gap-3">
                                             <FluentSwitch @bind-Value=field.Hidden Label="@AppRes.Hidden" />
                                             <FluentSwitch @bind-Value=field.Disabled Label="@AppRes.Disabled" />

@@ -84,8 +84,7 @@
         if (MetaFields is not null)
         {
             int order = MetaFields.Any() ? MetaFields.Max(s => s.Order) + 1 : 0;
-            Guid parentId = Guid.Empty;
-            MetaFields.Add(FormMetaField.NewField(order, parentId));
+            MetaFields.Add(FormMetaField.NewField(order));
         }
     }
 

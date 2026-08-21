@@ -18,7 +18,7 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
             .Custom((metaFields, context) =>
             {
                 var duplicates = metaFields
-                    .GroupBy(m => new { m.Key, m.ParentId })
+                    .GroupBy(m => m.Key)
                     .Where(g => g.Count() > 1)
                     .SelectMany(g => g.Skip(1));
 
@@ -26,11 +26,7 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
                 {
                     var index = metaFields.ToArray().IndexOf(duplicate);
 
-                    var message = duplicate.ParentId == Guid.Empty
-                                    ? $"MetaField with key '{duplicate.Key}' дублируется"
-                                    : $"MetaField with key '{duplicate.Key}' дублируется для '{duplicate.Title}'({duplicate.ParentId})";
-
-                    context.AddFailure($"MetaFields[{index}].Key", message);
+                    context.AddFailure($"MetaFields[{index}].Key", $"MetaField with key '{duplicate.Key}' дублируется");
                 }
             });
     }

@@ -170,9 +170,6 @@ public static class MetaFieldUtils
             MetaFieldType.Select => typeof(Guid), //typeof(MetaFieldVariant),
             MetaFieldType.SelectMany => typeof(Guid[]), //typeof(List<MetaFieldVariant>),
 
-            MetaFieldType.Group => throw new NotImplementedException(),//todo: implement
-            MetaFieldType.List => throw new NotImplementedException(),
-
             MetaFieldType.Relation => typeof(Guid),//IBasicEntity
             MetaFieldType.File => typeof(Guid),//FileEntity
             MetaFieldType.Image => typeof(Guid),//FileEntity

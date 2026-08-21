@@ -118,19 +118,18 @@ public class ModelEfRequestManualTests : MetaModelGeneratorTests
             Id = post.Id,
             Title = post.Title,
             Content = post.Content,
-            //str1 = post.MetaValues.FirstOrDefault(s => s.MetaField.Key == nameof(MyPostTypeEntity.str1) && s.MetaField.ParentId == Guid.Empty)
             str1 = post.MetaValues!
-                .Where(f => f.MetaField.Key == "str1" && f.MetaField.ParentId == Guid.Empty)
+                .Where(f => f.MetaField.Key == "str1")
                 .Select(f => f.StringShort)
                 .FirstOrDefault()!,
 
             select1 = post.MetaValues!
-                .Where(f => f.MetaField.Key == "select1" && f.MetaField.ParentId == Guid.Empty)
+                .Where(f => f.MetaField.Key == "select1")
                 .Select(f => f.MetaField.Variants.FirstOrDefault(v => v.Id == f.VariantId))
                 .FirstOrDefault()!,
 
             selectMany1 = post.MetaValues!
-                .Where(f => f.MetaField.Key == "selectMany1" && f.MetaField.ParentId == Guid.Empty)
+                .Where(f => f.MetaField.Key == "selectMany1")
                 .SelectMany(f => f.MetaField.Variants.Where(v => f.VariantsIds.Contains(v.Id)))
                 .ToArray(),
         };

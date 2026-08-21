@@ -72,8 +72,6 @@ public abstract record MetaValueDetailBase
             MetaFieldType.Select => VariantId,
             MetaFieldType.SelectMany => VariantsIds,
 
-            MetaFieldType.Group => null,//???
-
             MetaFieldType.Relation => ModelId,
             MetaFieldType.File => ModelId,
             MetaFieldType.Image => ModelId,

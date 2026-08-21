@@ -1,6 +1,7 @@
 # План переработки мета-полей — хранение и модель расширяемых сущностей
 
-> **Статус: план зафиксирован 2026-08-22.** Реализация — отдельными сессиями по фазам.
+> **Статус: план зафиксирован 2026-08-22. Фаза 0 выполнена 2026-08-22** (миграция
+> `20260821191224_RemoveMetaFieldParentId`). Реализация — отдельными сессиями по фазам.
 > Views — последняя фаза (по решению пользователя); тень-таблицы — вне этого плана,
 > точечно и только после views.
 
@@ -81,7 +82,8 @@ Strapi, Directus, + Salesforce/Dataverse/Jira/Odoo/Airtable-клоны): EAV —
   (`MetaFieldTypeToType`, `Get()`, `Check()`, `EParentable`, `MetaValueTree` ×2, ветки Group/List
   в `FormMetaValueItems`/`FormMetaField`, записи в `TypeList`/`TypeAsText`, `FieldScheme`,
   закомментированные эксперименты в `FieldsBlank`/`MetaListGetNewGroupChild`/внизу
-  `MetaFieldEntity.cs`); `ParentId` перестаёт использоваться; чистка данных по `ParentId`.
+  `MetaFieldEntity.cs`); `ParentId` упраздняется. Чистка данных НЕ нужна — живых
+  инстансов нет, БД пересоздаётся (уточнение 2026-08-22).
 - **Фаза 1 — чистка `meta_values`.** Миграция: nullable значениевые колонки, удаление `NULL`-флага,
   конвертация сентинелов в NULL, `float4 → float8`, индексы `(meta_field_id)` +
   `(meta_field_id, string_short)`.

@@ -14,7 +14,6 @@ public sealed class MetaFieldDtoCustomize : ICustomization
                                         return new MetaFieldDto()
                                         {
                                             Id = Guid.NewGuid(),
-                                            ParentId = Guid.Empty,
                                             Key = fixture.Create<string>("key-"),
                                             Title = fixture.Create<string>("Title"),
                                             Disabled = false,

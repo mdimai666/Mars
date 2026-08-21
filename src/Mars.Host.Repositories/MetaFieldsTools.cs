@@ -37,7 +37,6 @@ public static class MetaFieldsTools
             var qe = q.ToEntity();
             _marsDbContext.Entry(item).CurrentValues.SetValues(new
             {
-                qe.ParentId,
                 qe.Title,
                 qe.Key,
                 qe.Type,

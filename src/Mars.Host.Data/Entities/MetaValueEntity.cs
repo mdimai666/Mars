@@ -68,42 +68,6 @@ public class MetaValueEntity : IBasicEntity
 
     #region SETTER
 
-    //DateTime
-
-    //public void Set(object value)
-    //{
-    //    if (value is bool _bool)
-    //    {
-    //        Bool = _bool;
-    //    }
-    //    else if (value is int _int)
-    //    {
-    //        Int = _int;
-    //    }
-    //    //========
-    //    if (value is string Str)
-    //    {
-
-    //    }
-    //    //========
-    //    else if (value is float _float)
-    //    {
-    //        Float = _float;
-    //    }
-    //    else if (value is decimal _decimal)
-    //    {
-    //        Decimal = _decimal;
-    //    }
-    //    else if (value is long _long)
-    //    {
-    //        Long = _long;
-    //    }
-    //    else
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
     public object? Get()
     {
         if (NULL) return default;
@@ -123,8 +87,6 @@ public class MetaValueEntity : IBasicEntity
 
             EMetaFieldType.Select => MetaField.Variants.FirstOrDefault(s => s.Id == VariantId),
             EMetaFieldType.SelectMany => MetaField.Variants.Where(s => VariantsIds.Contains(s.Id)).ToArray(),
-
-            EMetaFieldType.Group => null,//???
 
             EMetaFieldType.Relation => ModelId,
             EMetaFieldType.File => ModelId,
@@ -268,15 +230,10 @@ public class MetaValueEntity : IBasicEntity
         EMetaFieldType.Decimal,
         EMetaFieldType.DateTime,
         EMetaFieldType.SelectMany,
-        EMetaFieldType.List,
     };
     public static readonly EMetaFieldType[] ESelectable = {
         EMetaFieldType.Select,
         EMetaFieldType.SelectMany,
-    };
-    public static readonly EMetaFieldType[] EParentable = {
-        EMetaFieldType.Group,
-        EMetaFieldType.List,
     };
 
     public static readonly EMetaFieldType[] ERelations = {
@@ -291,7 +248,6 @@ public class MetaValueEntity : IBasicEntity
     public bool IsString => EStrings.Contains(Type);
     public bool TypeHasMinMax => EHasMinMax.Contains(Type);
     public bool TypeSelectable => ESelectable.Contains(Type);
-    public bool TypeParentable => EParentable.Contains(Type);
     public bool TypeRelation => ERelations.Contains(Type);
     #endregion
 
@@ -326,11 +282,6 @@ public class MetaValueEntity : IBasicEntity
                 if (t.MinValue is not null && (dynamic)value < t.MinValue) err.Add($"min value {t.MinValue}");
                 if (t.MaxValue is not null && (dynamic)value > t.MaxValue) err.Add($"max value {t.MinValue}");
             }
-
-            if (t.Type == EMetaFieldType.List)
-            {
-                throw new NotImplementedException();
-            }
         }
 
         return err;
@@ -354,37 +305,6 @@ public class MetaValueEntity : IBasicEntity
         if (NULL) return default;
 
         return (T?)Get();
-    }
-
-}
-
-public class MetaValueTree
-{
-    public string Key { get; set; } = string.Empty;
-    public EMetaFieldType Type { get; set; }
-    public object Value { get; set; } = default!;
-    public bool IsList { get; set; }
-    //public int Index { get; set; }
-    public IEnumerable<MetaValueTree> Childs { get; set; } = [];
-
-    public MetaValueTree()
-    {
-
-    }
-
-    public MetaValueTree(MetaValueEntity value)
-    {
-        Key = value.MetaField.Key;
-        Type = value.Type;
-        Value = (value.Type == EMetaFieldType.List ? null : value.Get())!;
-        IsList = value.Type == EMetaFieldType.List;
-    }
-
-    public MetaValueTree(MetaFieldEntity value)
-    {
-        Key = value.Key;
-        Type = value.Type;
-        IsList = value.Type == EMetaFieldType.List;
     }
 
 }

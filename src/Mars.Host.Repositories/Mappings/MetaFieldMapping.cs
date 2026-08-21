@@ -10,7 +10,6 @@ internal static class MetaFieldMapping
         => new()
         {
             Id = entity.Id,
-            ParentId = entity.ParentId,
             Key = entity.Key,
             Title = entity.Title,
             Type = (MetaFieldType)entity.Type,
@@ -37,7 +36,6 @@ internal static class MetaFieldMapping
         => new()
         {
             Id = dto.Id == Guid.Empty ? Guid.NewGuid() : dto.Id,
-            ParentId = dto.ParentId,
             Title = dto.Title,
             Key = dto.Key,
             Type = dto.Type.ToEntity(),

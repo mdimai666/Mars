@@ -15,9 +15,6 @@ public enum MetaFieldType : int
     Select = 30,
     SelectMany = 31,
 
-    Group = 40,
-    List = 50,
-
     Relation = 100,
     File = 101,
     Image = 102,

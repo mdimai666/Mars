@@ -20,7 +20,6 @@ public static class MetaFieldDetailMapping
             MinValue = entity.MinValue,
             ModelName = entity.ModelName,
             Order = entity.Order,
-            ParentId = entity.ParentId,
             Tags = entity.Tags,
             Variants = entity.Variants?.ToResponse(),
 

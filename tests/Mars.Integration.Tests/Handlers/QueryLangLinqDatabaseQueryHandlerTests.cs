@@ -126,7 +126,7 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     async Task<(PostTypeDetail postTypeDetail, PostDetail[] posts)> SetupPostType(string typeName = "mytype", int createPostCount = 3)
     {
         var postType = _fixture.Create<CreatePostTypeRequest>().ToQuery() with { TypeName = typeName };
-        var metaField = _fixture.Create<MetaFieldDto>() with { Key = "str1", ParentId = Guid.Empty, Type = MetaFieldType.String };
+        var metaField = _fixture.Create<MetaFieldDto>() with { Key = "str1", Type = MetaFieldType.String };
         postType = postType with { MetaFields = [metaField] };
         var pts = AppFixture.ServiceProvider.GetRequiredService<IPostTypeRepository>();
         var ps = AppFixture.ServiceProvider.GetRequiredService<IPostRepository>();

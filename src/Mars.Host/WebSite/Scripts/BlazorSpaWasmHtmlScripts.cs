@@ -6,7 +6,6 @@ namespace Mars.Host.WebSite.Scripts;
 
 public class BlazorSpaWasmHtmlScripts
 {
-    public ScriptFileInfo Brotli { get; }
     public InlineRawBlock BlazorSpaInlineScipt => _blazorSpaInlineScipt;
     static InlineRawBlock _blazorSpaInlineScipt = default!;
 
@@ -19,9 +18,5 @@ public class BlazorSpaWasmHtmlScripts
             var identedHtml = reader.ReadToEnd().Split(["\r\n", "\n", "\r"], StringSplitOptions.None).Select(s => '\t' + s).JoinStr("\n").Trim();
             _blazorSpaInlineScipt = new InlineRawBlock(identedHtml);
         }
-
-        //https://github.com/google/brotli
-        Brotli = new ScriptFileInfo(new Uri("./mars/js/brotli.decode.min.js", UriKind.RelativeOrAbsolute), scriptName: "brotli", version: null, order: 1);
-
     }
 }

@@ -1,7 +1,8 @@
 # План: админка (AppAdmin) — хостинг и модернизация
 
-> **Статус: Фаза 0 выполнена 2026-08-21, prerender-механика удалена 2026-08-21.**
-> Фаза 1 (ассеты) — ждёт решения о старте. Фаза 2 (Blazor Web App) — отклонена.
+> **Статус: Фаза 0 ✅ и Фаза 1 ✅ выполнены 2026-08-21, prerender-механика удалена 2026-08-21.**
+> Фаза 2 (Blazor Web App) — отклонена. Остатки: инлайн-стили лоадера в `_AdminHost.cshtml`
+> перенести в `.less` (компилирует пользователь).
 > Задача-источник: вопросы пользователя «правильно ли админка живёт в /dev со старых
 > версий .NET» и «переходить ли на App.razor из Blazor Web App» (2026-08-21).
 
@@ -52,8 +53,8 @@
   keyed `ISiteScriptsBuilder` (`AppAdminSpaHtmlScripts`), инлайн-функция
   `InitialSiteDataViewModel()` с zip→base64 JSON, лоадер, blazor-error-ui.
 - Бут WASM: `BlazorScriptsAppend.html` (embedded resource в Mars.Host) —
-  `blazor.webassembly.js autostart="false"` + `Blazor.start({ loadBootResource })`,
-  в продакшене вручную фетчит `.br` и разжимает JS-brotli.
+  `blazor.webassembly.js autostart="false"` + `Blazor.start({ applicationCulture })`
+  (с Фазы 1 — без кастомного `loadBootResource`/JS-brotli; сжатие отдаёт сервер).
 - Ограничение: плагины считают свои фронтовые ассеты по
   `AppAdmin.staticwebassets.endpoints.json` (копируется в publish-папку target'ом
   `CopyAppAdminStaticWebAssets`).
@@ -78,68 +79,58 @@
 - Починены ссылки в csproj (исключения `Areas\Identity\**`, `Content Remove` удалённых
   razor-файлов, `<Folder Include="Areas\" />`, `None Include` удалённого code.js).
 
-## Фаза 1 — ассеты: нативная прекомпрессия и кеширование (ждёт старта)
+## Фаза 1 — ассеты: нативная прекомпрессия и кеширование ✅ (2026-08-21)
 
-### Проблема
+### Что сделано
 
-- После `dotnet publish` прекомпрессия `.br`/`.gz` не раздаётся автоматически:
-  `UseStaticFiles`/`UseBlazorFrameworkFiles` не делают Content-Encoding negotiation
-  вне Development. Поэтому в `BlazorScriptsAppend.html` живёт кастомный
-  `loadBootResource`: фетч `<файл>.br` + ручная JS-декомпрессия brotli-полифилом
-  (`/mars/js/brotli.decode.min.js`, `fetch(cache:'no-cache')`).
-  Минусы: медленнее нативного HTTP, нет браузерного кеширования бут-ассетов,
-  лишний код и полифил.
-- Статика отдаётся без `Cache-Control` → браузерный эвристический кеш (источник
-  прошлых багов рассинхрона JS↔.NET; сейчас лечится bump MarsAppVersion + `?v=`).
-- В .NET 10 удалён старый механизм кеширования бут-ресурсов `BlazorCacheBootResources` —
-  замена ему fingerprinting.
+1. **`MapStaticAssets()` добавлен в ветку `/dev`** (`StartupDevAdmin`): эндпоинты
+   статических ассетов внутри ветки (`UseRouting` → `UseAuthorization` →
+   `UseEndpoints(MapStaticAssets + MapFallbackToPage)`), после них fallback-середины
+   `UseBlazorFrameworkFiles("/dev")` + `UseStaticFiles` для дев-ассетов, которых
+   нет в эндпоинтах.
+2. **JS-brotli удалён полностью**: `BlazorScriptsAppend.html` переписан на обычный
+   `blazor.webassembly.js autostart=false` + `Blazor.start({ applicationCulture })`
+   с минимальным экраном ошибки старта; удалены `loadBootResource`, brotli-полифил
+   `wwwroot/mars/js/brotli.decode.min.js` и неиспользуемое свойство
+   `BlazorSpaWasmHtmlScripts.Brotli`.
+3. **Cache-Control для бут-ассетов**: middleware в `UseHostFiles` ставит
+   `Cache-Control: no-cache` на ответы `/dev/_framework*` (см. грабли ниже).
+4. Bump `MarsAppVersion` → 0.7.8-alpha.42.
 
-### Вариант A (основной) — `MapStaticAssets` (.NET 9+)
+### Грабли (важно для будущих правок пайплайна)
 
-Эндпоинт-раздача статических веб-ассетов с:
-- negotiation `.br`/`.gz` по `Accept-Encoding` (нативная раздача, без JS),
-- `Cache-Control: max-age=31536000, immutable` для fingerprinted-файлов,
-- `no-cache` для остальных; поддержка вариантов по query-строке.
+**Физические ассеты `/dev/*` отдаёт глобальный `UseHostFiles` ДО ветки `/dev`.**
+После publish файлы `wwwroot/dev/_framework/*` и `wwwroot/dev/*` существуют физически,
+и общий `app.UseStaticFiles()` (`UseHostFiles`) обслуживает их раньше, чем запрос
+доходит до `MapWhen("/dev")`. Поэтому:
+- `MapStaticAssets` в ветке реально подхватывает только переписанные `_content`-ассеты
+  (`/dev/_content/*` → rewrite → `/_content/*`, физически их в `wwwroot/dev/` нет);
+- сжатие `_framework` в publish делает `UseResponseCompression` (динамически,
+  BrotliCompressionProvider уже зарегистрирован в `MarsStartupPartCore`),
+  а не прекомпрессированные файлы;
+- middleware заголовков для `/dev/_framework` должна стоять ПЕРЕД `UseHostFiles`,
+  а не в ветке (эксперимент подтвердил: из ветки заголовок не появлялся).
+В Development `_framework` отдаёт манифест статических ассетов через тот же
+глобальный `UseStaticFiles`.
 
-Открытые вопросы spike'а (проверить прототипом в publish-режиме):
-1. Подхватывает ли `MapStaticAssets` ассеты `_framework` и `_content` в нашем сценарии
-   (WASM-проект подключён референсом, не шаблонный hosted-кейс).
-2. Работает ли внутри `MapWhen("/dev")`-ветки с base href `/dev/`
-   (ассеты — endpoint'ы; ветка уже имеет свои `UseRouting`/`UseEndpoints`).
-3. Не ломает ли rewrite `dev/_content/*` (rewrite middleware до эндпоинтов).
-4. Совместимость с плагин-механикой `AppAdmin.staticwebassets.endpoints.json`
-   (MapStaticAssets читает тот же манифест — проверить diff-логику PluginManifestProvider).
-5. Как ведёт себя `UseWebAssemblyDebugging()`/hot reload в Development.
+### Проверено
 
-### Вариант B (запасной)
+- **Publish (Release)**: `Content-Encoding: br` по `Accept-Encoding` на
+  `/dev/_framework/dotnet.js` (+ вариант gzip), на fingerprinted
+  `AppAdmin.<hash>.wasm` (.NET 10 фингерпринтит WASM при публикации),
+  на `/dev/_content/*` (через rewrite) и `/dev/css/*`; `Cache-Control: no-cache`
+  на `_framework`; `Vary: Accept-Encoding`; ETag; HTML `/dev/` без brotli,
+  SPA-fallback `/dev/settings` → 200; плагины не сломаны
+  (манифест `Mars.staticwebassets.endpoints.json` на месте).
+- **Development**: все ассеты `/dev` → 200, `_framework` с `Cache-Control: no-cache`.
+- **Регрессия**: сборка + `HandlebarsAppFrontTests` 17/17.
 
-Если `MapStaticAssets` не срастается с подпутью/веткой — маленькая самописная
-middleware Content-Encoding negotiation поверх `_framework`-каталога
-(~50 строк, известный паттерн), либо статус-кво с JS-brotli.
+### Не вошло (возможные продолжения)
 
-### Шаг за шагом
-
-1. Ветка-прототип: `app.MapStaticAssets()` (+ при необходимости в ветке `/dev`),
-   `dotnet publish` Release, локальный запуск publish-сборки, проверка заголовков
-   (`Content-Encoding: br`, `Cache-Control`) на `_framework/*` и `_content/*`.
-2. Если ок: `BlazorScriptsAppend.html` упрощается до обычного подключения
-   `blazor.webassembly.js` (обработчик ошибок загрузки можно оставить);
-   brotli-полифил и `loadBootResource` удаляются.
-3. Решить по `?v=`-версионированию (`ScriptFileInfo`): оставить как есть
-   (MapStaticAssets умеет query-варианты) или перевести часть ассетов на fingerprinting.
-4. Опционально, фичи standalone WASM из .NET 10: preload фреймворк-ассетов
-   (`OverrideHtmlAssetPlaceholders` + `<link rel="preload">`),
-   `WasmApplicationEnvironmentName` вместо заголовка `Blazor-Environment`.
-
-### Риски
-
-Подпуть + ветка MapWhen, плагин-ассеты, NOADMIN-сборка, дебаг/hot reload,
-поведение в Development (там прекомпрессия и так раздавалась манифестом).
-
-### Верификация
-
-Сборка + `HandlebarsAppFrontTests`; для самого spike'а — publish-сборка + локальная
-проверка заголовков и загрузки админки в браузере.
+- Preload фреймворк-ассетов .NET 10 (`OverrideHtmlAssetPlaceholders`) — требует
+  плейсхолдеров в HTML-шелле, у нас шелл `_AdminHost.cshtml` нестандартный.
+- Перевод `?v=`-версионирования (`ScriptFileInfo`) на fingerprinting — пока
+  `?v=`+`MarsAppVersion` работает, MapStaticAssets query-варианты поддерживает.
 
 ## Фаза 2 — Blazor Web App: отклонено
 

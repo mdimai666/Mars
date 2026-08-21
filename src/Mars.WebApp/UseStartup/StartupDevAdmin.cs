@@ -19,17 +19,22 @@ internal static class StartupDevAdmin
                 .AddRewrite("^dev/_content/(.*)", "_content/$1", false);
 
             first.UseRewriter(options);
-            first.UseBlazorFrameworkFiles("/dev");
 
-            first.UseStaticFiles();
             first.UseRouting();
-
             first.UseAuthorization();
 
             first.UseEndpoints(endpoints =>
             {
+                // статические ассеты эндпоинтами: после publish раздаёт прекомпрессированные
+                // .br/.gz по Accept-Encoding (без ручного JS-brotli) и ставит Cache-Control
+                endpoints.MapStaticAssets();
+
                 endpoints.MapFallbackToPage("/_AdminHost");
             });
+
+            // fallback для ассетов, которых нет в MapStaticAssets (например _framework в Development)
+            first.UseBlazorFrameworkFiles("/dev");
+            first.UseStaticFiles();
         });
 
         return app;

@@ -22,19 +22,22 @@ internal class PostTypeService : IPostTypeService
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IServiceProvider _serviceProvider;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly IPostTypeViewService _postTypeViewService;
 
     public PostTypeService(
         IPostTypeRepository postTypeRepository,
         IEventManager eventManager,
         IMetaModelTypesLocator metaModelTypesLocator,
         IServiceProvider serviceProvider,
-        IValidatorFactory validatorFactory)
+        IValidatorFactory validatorFactory,
+        IPostTypeViewService postTypeViewService)
     {
         _postTypeRepository = postTypeRepository;
         _eventManager = eventManager;
         _metaModelTypesLocator = metaModelTypesLocator;
         _serviceProvider = serviceProvider;
         _validatorFactory = validatorFactory;
+        _postTypeViewService = postTypeViewService;
     }
 
     public Task<PostTypeSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -57,6 +60,7 @@ internal class PostTypeService : IPostTypeService
         var created = await GetDetail(id, cancellationToken);
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+        await _postTypeViewService.DropViewAsync(created.TypeName, cancellationToken);
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeAdd(created.TypeName), created.ToSummary());//TODO: сделать явный тип.
         _eventManager.TriggerEvent(payload);
@@ -79,10 +83,18 @@ internal class PostTypeService : IPostTypeService
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
+        // до обновления — чтобы сбросить представление и при переименовании типа
+        var before = await Get(query.Id, cancellationToken);
+
         await _postTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+        if (before is not null)
+        {
+            await _postTypeViewService.DropViewAsync(before.TypeName, cancellationToken);
+        }
+        await _postTypeViewService.DropViewAsync(updated.TypeName, cancellationToken);
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeUpdate(updated.TypeName), updated.ToSummary());
         _eventManager.TriggerEvent(payload);
@@ -99,6 +111,7 @@ internal class PostTypeService : IPostTypeService
         await _postTypeRepository.Delete(id, cancellationToken);
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+        await _postTypeViewService.DropViewAsync(postType.TypeName, cancellationToken);
 
         var payload = new ManagerEventPayload(_eventManager.Defaults.PostTypeDelete(postType.TypeName), postType);
         _eventManager.TriggerEvent(payload);
@@ -114,6 +127,11 @@ internal class PostTypeService : IPostTypeService
         await _postTypeRepository.DeleteMany(query, cancellationToken);
 
         _metaModelTypesLocator.InvalidateCompiledMetaMtoModels();
+
+        foreach (var postType in postTypes)
+        {
+            await _postTypeViewService.DropViewAsync(postType.TypeName, cancellationToken);
+        }
 
         foreach (var postType in postTypes)
         {

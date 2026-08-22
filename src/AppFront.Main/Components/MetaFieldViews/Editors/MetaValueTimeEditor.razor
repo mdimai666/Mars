@@ -1,0 +1,23 @@
+@* Редактор значения «Время»: хранится в DateTime на фиксированной дате
+    (дата-часть не несёт смысла), редактируется только время *@
+
+<div class="vstack">
+    <label>@Value.MetaField.Title</label>
+    <input type="time" value="@TimeValue" @onchange="OnTimeChanged" class="form-control" style="max-width:200px;" />
+</div>
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    string TimeValue => Value.DateTime?.ToString("HH:mm") ?? "";
+
+    async Task OnTimeChanged(ChangeEventArgs e)
+    {
+        if (TimeSpan.TryParse(e.Value?.ToString(), out var time))
+        {
+            Value.DateTime = DateTime.MinValue.Date.Add(time);
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
+}

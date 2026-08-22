@@ -18,6 +18,8 @@ public static class MainAppFrontShared
         services.AddFluentUIComponents();
 
         services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
+        services.TryAddSingleton<AppFront.Shared.Components.MetaFieldViews.IMetaFieldEditorLocator,
+            AppFront.Shared.Components.MetaFieldViews.MetaFieldEditorLocator>();
 
         if (!OperatingSystem.IsBrowser()) return;
 

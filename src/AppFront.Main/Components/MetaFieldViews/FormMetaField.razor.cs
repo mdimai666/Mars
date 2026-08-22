@@ -17,6 +17,7 @@ public partial class FormMetaField
 
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
+    [Inject] IMetaFieldEditorLocator _editorLocator { get; set; } = default!;
 
     void OnChangeFieldTitle(string value, MetaFieldEditModel model)
     {
@@ -44,6 +45,47 @@ public partial class FormMetaField
         }
 
         field.Type = newType;
+    }
+
+    /// <summary>Группы пикера типа поля: пресеты («Основные») и сырые типы («Технические»)</summary>
+    static readonly IEnumerable<IGrouping<string?, MetaFieldTypePresets.PickerItem>> TypePickerGroups
+        = MetaFieldTypePresets.PickerItems.GroupBy(i => i.Group);
+
+    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор) или «технический» тип</summary>
+    string GetTypePickerValue(MetaFieldEditModel field)
+    {
+        var preset = MetaFieldTypePresets.All.FirstOrDefault(p =>
+            p.Type == field.Type
+            && (string.IsNullOrEmpty(field.Editor) ? p.Editor is null : p.Editor == field.Editor));
+
+        return preset is not null
+            ? MetaFieldTypePresets.OptionKey(preset)
+            : MetaFieldTypePresets.OptionKey(field.Type);
+    }
+
+    async Task OnChangeFieldTypePicker(string optionKey, MetaFieldEditModel field)
+    {
+        var preset = MetaFieldTypePresets.FindPreset(optionKey);
+        var newType = preset?.Type ?? MetaFieldTypePresets.FindType(optionKey);
+        if (newType is null)
+        {
+            UpdateState();
+            return;
+        }
+
+        var typeChanged = newType != field.Type;
+        if (typeChanged)
+        {
+            await OnChangeFieldType(newType.Value, field);
+            if (field.Type != newType.Value) return; // смену типа отменили
+        }
+
+        if (preset is not null)
+            field.Editor = preset.Editor ?? ""; // пресет задаёт редактор целиком
+        else if (typeChanged && _editorLocator.GetEditorComponent(field.Editor, field.Type) is null)
+            field.Editor = ""; // редактор несовместим с новым типом
+
+        UpdateState();
     }
 
     void OnClone(MetaFieldEditModel field)

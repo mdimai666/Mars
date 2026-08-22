@@ -47,6 +47,7 @@ public class MetaFieldEditModel
     {
         SyncValidatorsToOptions();
         SyncGeneratorToOptions();
+        SyncEditorToOptions();
         return new()
         {
             Id = Id,
@@ -72,6 +73,7 @@ public class MetaFieldEditModel
     {
         SyncValidatorsToOptions();
         SyncGeneratorToOptions();
+        SyncEditorToOptions();
         return new()
         {
         Id = Id,
@@ -117,6 +119,7 @@ public class MetaFieldEditModel
             Validators = ReadValidators(response.Options),
         };
         ReadGenerator(model, response.Options);
+        model.Editor = ReadEditor(response.Options);
         return model;
     }
 
@@ -145,6 +148,7 @@ public class MetaFieldEditModel
             Validators = ReadValidators(Options),
         };
         ReadGenerator(clone, Options);
+        clone.Editor = ReadEditor(Options);
         return clone;
     }
 
@@ -329,6 +333,33 @@ public class MetaFieldEditModel
             Options = obj;
         }
         obj["generator"] = generator;
+    }
+    #endregion
+
+    #region EDITOR
+    /// <summary>Редактор значения (хранится в Options.editor); пусто = дефолтный редактор типа</summary>
+    public string Editor { get; set; } = "";
+
+    static string ReadEditor(JsonNode? options)
+        => options is JsonObject obj && obj["editor"] is JsonValue value && value.TryGetValue<string>(out var editor)
+            ? editor
+            : "";
+
+    /// <summary>Синхронизирует выбранный редактор в Options.editor</summary>
+    public void SyncEditorToOptions()
+    {
+        if (string.IsNullOrEmpty(Editor))
+        {
+            if (Options is JsonObject emptyObj) emptyObj.Remove("editor");
+            return;
+        }
+
+        if (Options is not JsonObject obj)
+        {
+            obj = new JsonObject();
+            Options = obj;
+        }
+        obj["editor"] = Editor;
     }
     #endregion
 

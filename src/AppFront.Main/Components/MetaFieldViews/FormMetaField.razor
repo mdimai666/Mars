@@ -92,13 +92,31 @@
                                             <div>
                                                 <FormItem2 For="() => field.Type">
 
-                                                    <FluentSelect TOption="MetaFieldType"
-                                                                  Items="Enum.GetValues<MetaFieldType>()"
-                                                                  OptionText="@(f=>MetaFieldEditModel.TypeIcons[f] + " " + MetaFieldEditModel.TypeList[f])"
-                                                                  Width="250px"
-                                                                  SelectedOption="@field.Type"
-                                                                  SelectedOptionChanged="@(v => OnChangeFieldType(v, field))" />
+                                                    <GroupedSelectDropDown TOption="MetaFieldTypePresets.PickerItem"
+                                                                           Items="@TypePickerGroups"
+                                                                           OptionText="@(i => i.Label)"
+                                                                           OptionValue="@(i => i.OptionKey)"
+                                                                           Value="@GetTypePickerValue(field)"
+                                                                           ValueChanged="@(v => OnChangeFieldTypePicker(v, field))"
+                                                                           ButtonStyle="min-width:250px;" />
                                                 </FormItem2>
+                                            </div>
+                                            <div>
+                                                @if (_editorLocator.EditorsFor(field.Type).Count > 0)
+                                                {
+                                                    <div class="vstack">
+                                                        <label>Редактор значения</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.Editor"
+                                                                      ValueChanged="@(v => field.Editor = v)">
+                                                            <FluentOption TOption="string" Value="">— обычный для типа —</FluentOption>
+                                                            @foreach (var editor in _editorLocator.EditorsFor(field.Type))
+                                                            {
+                                                                <FluentOption TOption="string" Value="@editor.Key">@editor.Title</FluentOption>
+                                                            }
+                                                        </FluentSelect>
+                                                    </div>
+                                                }
                                             </div>
                                             <div>
                                                 @if (field.Type == MetaFieldType.Relation)

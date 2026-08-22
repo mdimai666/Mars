@@ -1,6 +1,8 @@
 @using Mars.Shared.Contracts.MetaFields
 @using Microsoft.FluentUI.AspNetCore.Components
 
+@inject IMetaFieldEditorLocator _editorLocator
+
 <d-row-meta-value class="FormRowMetaField @("Value.MarkForDelete?bg-red:")">
 
     <div class="d-flex">
@@ -17,7 +19,11 @@
             }
         </div> *@
         <div class="d-metafield-metavalue-body">
-            @if (Value.MetaField.Type == MetaFieldType.Bool)
+            @if (_editorLocator.GetEditorComponent(Value.MetaField.Editor, Value.MetaField.Type) is Type editorComponent)
+            {
+                <DynamicComponent Type="@editorComponent" Parameters="@EditorParameters" />
+            }
+            else if (Value.MetaField.Type == MetaFieldType.Bool)
             {
                 <FluentSwitch @bind-Value=@Value.Bool
                                 Label="@Value.MetaField.Title"
@@ -143,6 +149,13 @@
     MetaValueEditModel _value = default!;
 
     [Parameter] public bool Client { get; set; }
+
+    /// <summary>Параметры для кастомного редактора значения (реестр IMetaFieldEditorLocator)</summary>
+    Dictionary<string, object> EditorParameters => new()
+    {
+        ["Value"] = Value,
+        ["ValueChanged"] = EventCallback.Factory.Create<MetaValueEditModel>(this, v => ValueChanged.InvokeAsync(v)),
+    };
 
     [Parameter]
     public MetaValueEditModel Value

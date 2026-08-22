@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/ai/">
+    <Project Path="ai/AiDocs.csproj">
+      <Build Solution="Debug|*" Project="false" />
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+  </Folder>
   <Folder Name="/AppFront/">
     <Project Path="src/AppFront.Main/AppFront.Main.csproj" />
     <Project Path="src/AppFront.Shared/AppFront.Shared.csproj" />

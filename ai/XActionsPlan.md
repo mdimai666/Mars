@@ -9,7 +9,7 @@
 > варианты выбора `XActionOption { Key, Label }`: статические (в схеме) и динамические
 > (`OptionsSource` → `GET /api/Act/options/{ключ}` перед отрисовкой формы), в вызов передаётся Key.
 
-Задача: [FinalizeXActionsPrompt.md](./FinalizeXActionsPrompt.md).
+Задача: [FinalizeXActionsPrompt.md](./Prompts/FinalizeXActionsPrompt.md).
 Документ — дизайн и поэтапный план приведения XActions в вид «универсальный интерфейс всех действий
 платформы» (вдохновение — Command Palette VS Code). Реализация — отдельными сессиями по фазам,
 этот документ кодом не сопровождается.

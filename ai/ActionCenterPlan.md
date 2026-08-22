@@ -1,7 +1,7 @@
 # План переделки ActionCenter — Command Palette в стиле VS Code
 
 > **Статус: P0–P5 реализованы (2026-08-18); поиск настроек — 2026-08-20.**
-> Задача-источник: [CreateNewActionCenterPrompt.md](./CreateNewActionCenterPrompt.md).
+> Задача-источник: [CreateNewActionCenterPrompt.md](./Prompts/CreateNewActionCenterPrompt.md).
 > Предыстория: XActions как командная шина добиты по [XActionsPlan.md](./XActionsPlan.md) (P1–P4);
 > палитра — главный потребитель этого реестра.
 

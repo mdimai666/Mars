@@ -1,7 +1,7 @@
 # План: каталог плагинов Mars — отдельный сервер (пункт 1.1)
 
 Исходные материалы: [PluginDistributionPlan.md](./PluginDistributionPlan.md) (исследование и общая
-стратегия), [PlanPluginServerPrompt.md](./PlanPluginServerPrompt.md) (брейншторм).
+стратегия), [PlanPluginServerPrompt.md](../Prompts/PlanPluginServerPrompt.md) (брейншторм).
 Статус: **план согласовывается, не начат**.
 
 Суть пункта 1.1: бинарники плагинов живут на nuget.org (`packageType=MarsPlugin`), а «список

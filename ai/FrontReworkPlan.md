@@ -1,6 +1,6 @@
 # План рефакторинга рендера фронта (Front Rework Plan)
 
-Задача: [ReworkTemplateEnginePrompt.md](./ReworkTemplateEnginePrompt.md).
+Задача: [ReworkTemplateEnginePrompt.md](./Prompts/ReworkTemplateEnginePrompt.md).
 Документ — пошаговый план: рефакторить/переделать рендер фронта (Handlebars), уйти от настроек в
 appsettings и «магических» постов в БД к файловым фронтам в `data/fronts/`, управляемым из админки
 в рантайме, и добавить редактор фронта с ИИ-чатом.

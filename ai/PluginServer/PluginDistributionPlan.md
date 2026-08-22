@@ -1,6 +1,6 @@
 # Распространение плагинов Mars — исследование и план
 
-> Исходный брейншторм: [PlanPluginServerPrompt.md](PlanPluginServerPrompt.md)
+> Исходный брейншторм: [PlanPluginServerPrompt.md](../Prompts/PlanPluginServerPrompt.md)
 > Дата: 2026-08-11
 
 Цели (из брейншторма):

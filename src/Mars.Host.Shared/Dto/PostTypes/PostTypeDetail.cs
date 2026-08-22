@@ -1,5 +1,6 @@
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
 
@@ -22,9 +23,13 @@ public record PostTypePresentation
     /// </summary>
     public required string? ListViewTemplate { get; init; }
 
+    /// <summary>Настройки грида постов в админке; null — стандартный набор колонок</summary>
+    public PostTypeGridSettings? Grid { get; init; }
+
     public static PostTypePresentation Default()
         => new()
         {
-            ListViewTemplate = null
+            ListViewTemplate = null,
+            Grid = null,
         };
 }

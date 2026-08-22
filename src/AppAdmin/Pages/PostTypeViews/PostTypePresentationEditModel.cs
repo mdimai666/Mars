@@ -18,6 +18,9 @@ public class PostTypePresentationEditModel : IHasId
     [Display(Name = "ListViewTemplate", Description = "относительный путь шаблона во фронте админки, напр. postTypes/article/listView.hbs")]
     public string ListViewTemplate { get; set; } = "";
 
+    /// <summary>Настройки колонок грида постов в админке; null — стандартный набор</summary>
+    public PostTypeGridSettings? Grid { get; set; }
+
     public PostTypeSummaryResponse PostType { get; init; } = default!;
 
     public static async Task<PostTypePresentationEditModel> GetAction(IMarsWebApiClient client, Guid id)
@@ -37,6 +40,7 @@ public class PostTypePresentationEditModel : IHasId
         {
             Id = Id,
             ListViewTemplate = ListViewTemplate,
+            Grid = Grid,
         };
 
     public static PostTypePresentationEditModel ToModel(PostTypePresentationEditViewModel viewModel)
@@ -45,6 +49,7 @@ public class PostTypePresentationEditModel : IHasId
             Id = viewModel.PostType.Id,
             PostType = viewModel.PostType,
 
-            ListViewTemplate = viewModel.Presentation.ListViewTemplate ?? ""
+            ListViewTemplate = viewModel.Presentation.ListViewTemplate ?? "",
+            Grid = viewModel.Presentation.Grid,
         };
 }

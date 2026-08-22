@@ -9,5 +9,6 @@ public static class PostTypePresentationMapping
         => new()
         {
             ListViewTemplate = entity.ListViewTemplate,
+            Grid = entity.Grid,
         };
 }

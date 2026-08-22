@@ -30,14 +30,17 @@ public class PostController : ControllerBase
     private readonly IPostService _postService;
     private readonly IFileService _fileService;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly IPostMetaColumnsService _postMetaColumnsService;
 
     public PostController(IPostService postService,
                             IFileService fileService,
-                            IValidatorFactory validatorFactory)
+                            IValidatorFactory validatorFactory,
+                            IPostMetaColumnsService postMetaColumnsService)
     {
         _postService = postService;
         _fileService = fileService;
         _validatorFactory = validatorFactory;
+        _postMetaColumnsService = postMetaColumnsService;
     }
 
     [HttpGet("{id:guid}")]
@@ -137,7 +140,26 @@ public class PostController : ControllerBase
                                                                     [DefaultValue("post")] string type,
                                                                     CancellationToken cancellationToken)
     {
-        return (await _postService.List(request.ToQuery(type), cancellationToken)).ToResponse();
+        var result = (await _postService.List(request.ToQuery(type), cancellationToken)).ToResponse();
+        return await EnrichMetaColumnsAsync(result, type, request.MetaFields, cancellationToken);
+    }
+
+    /// <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
+    async Task<ListDataResult<PostListItemResponse>> EnrichMetaColumnsAsync(ListDataResult<PostListItemResponse> result,
+                                                                             string typeName,
+                                                                             string[]? metaFields,
+                                                                             CancellationToken cancellationToken)
+    {
+        if (metaFields is not { Length: > 0 } || result.Items.Count == 0) return result;
+
+        var postIds = result.Items.Select(s => s.Id).ToList();
+        var values = await _postMetaColumnsService.GetDisplayValuesAsync(typeName, metaFields, postIds, cancellationToken);
+
+        var items = result.Items
+                          .Select(item => item with { MetaColumns = values.GetValueOrDefault(item.Id) })
+                          .ToList();
+
+        return new ListDataResult<PostListItemResponse>(items, result.HasMoreData, result.TotalCount);
     }
 
     [HttpPost("by-type/{type}/list/page")]

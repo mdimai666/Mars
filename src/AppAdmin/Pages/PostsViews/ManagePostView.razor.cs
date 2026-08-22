@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
 using AppFront.Main.Extensions;
 using AppFront.Shared.Hub;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Posts;
 using Mars.Shared.Contracts.PostTypes;
+using Mars.Shared.Interfaces;
+using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -13,6 +16,7 @@ public partial class ManagePostView : IDisposable
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] ClientHub clientHub { get; set; } = default!;
+    [Inject] ViewModelService viewModelService { get; set; } = default!;
 
     [Parameter, EditorRequired]
     public PostTypeAdminPanelItemResponse PostType { get; set; } = default!;
@@ -30,64 +34,200 @@ public partial class ManagePostView : IDisposable
     Guid _filterCategoryId;
     string prevPostTypeName = "";
 
+    // динамические колонки из настроек презентации типа
+    PostTypeGridSettings? _gridSettings;
+    IReadOnlyCollection<MetaFieldDetailResponse> _metaFields = [];
+    List<GridColumn> _columns = [];
+    int _gridVersion;
+
+    // диалог настройки колонок
+    bool _settingsDialogVisible;
+    PostTypeGridSettings? _gridDraft;
+
     protected override void OnInitialized()
     {
         clientHub.OnPostListChanged += OnPostListChanged;
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        GridTemplateColumns = "3fr" // Title
-            + (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category) ? " 2fr" : "")
-            //+ (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Tags) ? " 1.1fr" : "")
-            + (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status) ? " min-content" : "")
-            + " min-content" //Author
-            + " min-content" //CreatedAt
-            + " min-content"; //Actions
-
         if (prevPostTypeName != PostType.TypeName)
         {
             prevPostTypeName = PostType.TypeName;
 
-            dataProvider = new GridItemsProvider<PostListItemResponse>(
-                async req =>
-                {
-                    _ = req.SortByAscending;
-                    _ = req.SortByColumn;
+            // презентация берётся с сервера — начальные данные сайта могли устареть
+            var presentation = await client.PostType.GetPresentationEditModel(PostType.Id);
+            _gridSettings = presentation.Presentation.Grid;
 
-                    var sortColumn = req.GetSortByProperties().Count == 0 ? nameof(PostListItemResponse.CreatedAt) : req.GetSortByProperties().First().PropertyName;
+            var detail = await client.PostType.Get(PostType.Id);
+            _metaFields = detail?.MetaFields ?? [];
 
-                    var sort = (req.SortByAscending ? "" : "-") + sortColumn;
-
-                    data = await client.Post.List(PostType.TypeName, new()
-                    {
-                        //Page = pagination.CurrentPageIndex + 1,
-                        //PageSize = pagination.ItemsPerPage,
-                        Skip = req.StartIndex,
-                        Take = req.Count ?? BasicListQuery.DefaultPageSize,
-                        Sort = sort,
-                        Search = _searchText,
-                        IncludeCategory = true,
-                        CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
-                        FilterIncludeDescendantsCategories = false
-                    });
-
-                    var collection = new Collection<PostListItemResponse>(data.Items.ToList());
-
-                    StateHasChanged();
-
-                    return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
-                }
-            );
+            RebuildColumns();
+            BuildDataProvider();
             Refresh();
         }
 
         if (previousRequestPostTypeName != PostType.TypeName)
         {
             previousRequestPostTypeName = PostType.TypeName;
-            //data = ListDataResult<PostListItemResponse>.Empty();
-            //dataProvider.ClearData()
         }
+    }
+
+    void BuildDataProvider()
+    {
+        dataProvider = new GridItemsProvider<PostListItemResponse>(
+            async req =>
+            {
+                string sortColumn;
+                bool ascending;
+                if (req.GetSortByProperties().Count != 0)
+                {
+                    sortColumn = req.GetSortByProperties().First().PropertyName;
+                    ascending = req.SortByAscending;
+                }
+                else
+                {
+                    // сортировка по умолчанию из настройки типа; запасная — дата создания
+                    var def = _columns.FirstOrDefault(c => c.IsDefaultSort);
+                    sortColumn = def?.Kind switch
+                    {
+                        GridColumnKind.Title => nameof(PostListItemResponse.Title),
+                        GridColumnKind.Categories => nameof(PostListItemResponse.Categories),
+                        GridColumnKind.Status => nameof(PostListItemResponse.Status),
+                        GridColumnKind.Author => nameof(PostListItemResponse.Author),
+                        _ => nameof(PostListItemResponse.CreatedAt),
+                    };
+                    ascending = def?.DefaultSortDirection != SortDirection.Descending;
+                }
+
+                var sort = (ascending ? "" : "-") + sortColumn;
+
+                data = await client.Post.List(PostType.TypeName, new()
+                {
+                    Skip = req.StartIndex,
+                    Take = req.Count ?? BasicListQuery.DefaultPageSize,
+                    Sort = sort,
+                    Search = _searchText,
+                    IncludeCategory = true,
+                    CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
+                    FilterIncludeDescendantsCategories = false,
+                    MetaFields = _columns.Where(c => c.Kind == GridColumnKind.Meta).Select(c => c.Key).ToArray(),
+                });
+
+                var collection = new Collection<PostListItemResponse>(data.Items.ToList());
+
+                StateHasChanged();
+
+                return GridItemsProviderResult.From(collection, data.TotalCount ?? data.Items.Count);
+            }
+        );
+    }
+
+    /// <summary>Доступные колонки: базовые (с учётом фич типа) + мета-поля</summary>
+    List<GridColumn> BuildAvailableColumns()
+    {
+        var list = new List<GridColumn>
+        {
+            new(PostTypeGridConstants.Title, AppRes.Title, GridColumnKind.Title),
+        };
+
+        if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
+            list.Add(new GridColumn(PostTypeGridConstants.Categories, AppRes.Categories, GridColumnKind.Categories));
+
+        if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
+            list.Add(new GridColumn(PostTypeGridConstants.Status, AppRes.Status, GridColumnKind.Status));
+
+        list.Add(new GridColumn(PostTypeGridConstants.Author, AppRes.Author, GridColumnKind.Author));
+        list.Add(new GridColumn(PostTypeGridConstants.CreatedAt, AppRes.CreatedAt, GridColumnKind.CreatedAt));
+
+        foreach (var field in _metaFields)
+        {
+            // плоскому гриду не подходят многовариантные и вычислимые поля
+            if (field.Type is MetaFieldType.Query or MetaFieldType.SelectMany) continue;
+            list.Add(new GridColumn(field.Key, field.Title, GridColumnKind.Meta));
+        }
+
+        return list;
+    }
+
+    void RebuildColumns()
+    {
+        var available = BuildAvailableColumns();
+        var configured = _gridSettings?.Columns ?? [];
+        var configuredKeys = configured.Select(c => c.Key).ToHashSet();
+        var columns = new List<GridColumn>();
+
+        foreach (var conf in configured)
+        {
+            if (!conf.Visible) continue;
+            var col = available.FirstOrDefault(c => c.Key == conf.Key);
+            if (col is null) continue;
+            columns.Add(col);
+            available.Remove(col);
+        }
+
+        // колонки, которых нет в настройке, — в конце; скрытые настройкой не добавляются
+        columns.AddRange(available.Where(c => !configuredKeys.Contains(c.Key)));
+
+        // сортировка по умолчанию — только базовые колонки; запасная — дата создания
+        var sortKey = _gridSettings?.SortKey;
+        var sortColumn = columns.FirstOrDefault(c => c.Key == sortKey && c.Kind != GridColumnKind.Meta)
+                         ?? columns.FirstOrDefault(c => c.Kind == GridColumnKind.CreatedAt);
+        if (sortColumn is not null)
+        {
+            sortColumn.IsDefaultSort = true;
+            sortColumn.DefaultSortDirection = _gridSettings?.SortDescending == true
+                ? SortDirection.Descending
+                : SortDirection.Ascending;
+        }
+
+        _columns = columns;
+
+        GridTemplateColumns = string.Join(" ", columns.Select(ColumnWidth)) + " min-content"; // + Actions
+    }
+
+    static string ColumnWidth(GridColumn column)
+        => column.Kind switch
+        {
+            GridColumnKind.Title => "3fr",
+            GridColumnKind.Categories => "2fr",
+            GridColumnKind.Meta => "min-content",
+            _ => "min-content",
+        };
+
+    static string? MetaDisplay(PostListItemResponse item, string key)
+        => item.MetaColumns is not null && item.MetaColumns.TryGetValue(key, out var value) ? value : null;
+
+    void OpenSettingsDialog()
+    {
+        _gridDraft = _gridSettings;
+        _settingsDialogVisible = true;
+    }
+
+    void CancelSettingsDialog()
+    {
+        _settingsDialogVisible = false;
+    }
+
+    async Task SaveSettingsAsync()
+    {
+        await client.PostType.UpdatePresentation(new UpdatePostTypePresentationRequest
+        {
+            Id = PostType.Id,
+            ListViewTemplate = PostType.Presentation.ListViewTemplate ?? "",
+            Grid = _gridDraft,
+        });
+
+        _gridSettings = _gridDraft;
+        _settingsDialogVisible = false;
+
+        RebuildColumns();
+        BuildDataProvider();
+        // пересоздаём грид — применяются новые колонки и сортировка по умолчанию
+        _gridVersion++;
+
+        // Presentation входит в начальные данные сайта — обновляем, как после сохранения типа
+        _ = viewModelService.TryUpdateInitialSiteData(forceRemote: true, devAdminPageData: true);
     }
 
     void HandleSearchInput()
@@ -131,5 +271,31 @@ public partial class ManagePostView : IDisposable
     public void Dispose()
     {
         clientHub.OnPostListChanged -= OnPostListChanged;
+    }
+
+    public enum GridColumnKind
+    {
+        Title,
+        Categories,
+        Status,
+        Author,
+        CreatedAt,
+        Meta,
+    }
+
+    public class GridColumn
+    {
+        public GridColumn(string key, string title, GridColumnKind kind)
+        {
+            Key = key;
+            Title = title;
+            Kind = kind;
+        }
+
+        public string Key { get; }
+        public string Title { get; }
+        public GridColumnKind Kind { get; }
+        public bool IsDefaultSort { get; set; }
+        public SortDirection DefaultSortDirection { get; set; } = SortDirection.Descending;
     }
 }

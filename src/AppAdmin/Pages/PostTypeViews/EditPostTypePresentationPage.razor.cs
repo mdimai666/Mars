@@ -1,3 +1,4 @@
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -7,6 +8,15 @@ namespace AppAdmin.Pages.PostTypeViews;
 
 public partial class EditPostTypePresentationPage
 {
+    IReadOnlyCollection<MetaFieldDetailResponse> _metaFields = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        // мета-поля нужны редактору колонок грида
+        var detail = await _client.PostType.Get(ID);
+        _metaFields = detail?.MetaFields ?? [];
+    }
+
     [Inject] protected IMarsWebApiClient _client { get; set; } = default!;
     [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] NavigationManager _navigationManager { get; set; } = default!;

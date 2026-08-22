@@ -117,6 +117,7 @@ internal static class PostTypeMapping
             : new()
             {
                 ListViewTemplate = entity.ListViewTemplateSourceUri,
+                Grid = PostTypeGridSettingsJson.Parse(entity.GridSettings),
             };
 
 }

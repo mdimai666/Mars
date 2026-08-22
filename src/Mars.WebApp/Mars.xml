@@ -54,6 +54,9 @@
             Сброс системного меню к дефолту: удаляет сохранённую копию из БД.
             </summary>
         </member>
+        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Shared.Common.ListDataResult{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+            <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
+        </member>
         <member name="T:Mars.Handlers.AdminFrontRenderHandler">
             <summary>
             Рендер страниц специального фронта админки (data/admin/front).

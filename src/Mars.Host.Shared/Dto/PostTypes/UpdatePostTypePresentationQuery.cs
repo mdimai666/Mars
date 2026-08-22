@@ -1,4 +1,5 @@
 using FluentValidation;
+using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
 
@@ -11,6 +12,9 @@ public record UpdatePostTypePresentationQuery
     /// </summary>
     public required string ListViewTemplate { get; init; }
 
+    /// <summary>Настройки грида постов в админке; null — стандартный набор колонок</summary>
+    public PostTypeGridSettings? Grid { get; init; }
+
 }
 
 public class UpdatePostTypePresentationQueryValidator : AbstractValidator<UpdatePostTypePresentationQuery>
@@ -20,5 +24,11 @@ public class UpdatePostTypePresentationQueryValidator : AbstractValidator<Update
         RuleFor(x => x.ListViewTemplate)
             .Must(path => string.IsNullOrWhiteSpace(path) || !path.Replace('\\', '/').Contains(".."))
             .WithMessage(x => $"'{x.ListViewTemplate}' некорректный относительный путь шаблона");
+
+        When(x => x.Grid is not null, () =>
+        {
+            RuleForEach(x => x.Grid!.Columns)
+                .ChildRules(column => column.RuleFor(c => c.Key).NotEmpty());
+        });
     }
 }

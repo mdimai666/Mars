@@ -9,5 +9,6 @@ public static class PostTypePresentationRequestExtensions
         {
             Id = request.Id,
             ListViewTemplate = request.ListViewTemplate,
+            Grid = request.Grid,
         };
 }

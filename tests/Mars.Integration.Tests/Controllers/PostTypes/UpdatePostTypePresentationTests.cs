@@ -9,6 +9,7 @@ using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -64,5 +65,52 @@ public class UpdatePostTypePresentationTests : ApplicationTests
             .ComparingRecordsByValue()
             .ComparingByMembers<UpdatePostTypePresentationQuery>()
             .ExcludingMissingMembers());
+    }
+
+    [IntegrationFact]
+    public async Task UpdatePostTypePresentation_WithGridSettings_ShouldStoreAndReturnThem()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.UpdatePresentation);
+        _ = nameof(PostTypeController.GetPresentationEditModel);
+        var client = AppFixture.GetClient();
+
+        var ef = AppFixture.MarsDbContext();
+        var postType = _fixture.Create<PostTypeEntity>();
+        postType.TypeName = $"grid{Guid.NewGuid():N}"[..12];
+
+        ef.PostTypes.Add(postType);
+        ef.SaveChanges();
+        ef.ChangeTracker.Clear();
+        AppFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
+
+        var grid = new PostTypeGridSettings
+        {
+            Columns =
+            [
+                new PostTypeGridColumn { Key = "title", Visible = true },
+                new PostTypeGridColumn { Key = "subtitle", Visible = false },
+            ],
+            SortKey = "created_at",
+            SortDescending = true,
+        };
+        var request = new UpdatePostTypePresentationRequest
+        {
+            Id = postType.Id,
+            ListViewTemplate = "",
+            Grid = grid,
+        };
+
+        //Act
+        var result = await client.Request(_apiUrl, "update").PutJsonAsync(request).CatchUserActionError();
+
+        //Assert
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        var entity = ef.PostTypes.Include(s => s.Presentation).First(s => s.Id == postType.Id);
+        entity.Presentation!.GridSettings.Should().NotBeNull();
+
+        var viewModel = await client.Request(_apiUrl, "edit", postType.Id)
+                                    .GetJsonAsync<PostTypePresentationEditViewModel>();
+        viewModel.Presentation.Grid.Should().BeEquivalentTo(grid);
     }
 }

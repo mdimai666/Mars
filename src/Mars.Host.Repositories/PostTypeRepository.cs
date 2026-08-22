@@ -264,11 +264,13 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
             entity.Presentation = new()
             {
                 ListViewTemplateSourceUri = query.ListViewTemplate.AsNullIfEmpty(),
+                GridSettings = query.Grid.ToJsonNode(),
             };
         }
         else
         {
             entity.Presentation.ListViewTemplateSourceUri = query.ListViewTemplate.AsNullIfEmpty();
+            entity.Presentation.GridSettings = query.Grid.ToJsonNode();
         }
 
         entity.ModifiedAt = DateTimeOffset.Now;

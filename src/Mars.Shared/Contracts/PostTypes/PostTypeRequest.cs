@@ -96,4 +96,7 @@ public record UpdatePostTypePresentationRequest
     /// например postTypes/article/listView.hbs. Пусто — стандартный вывод.
     /// </summary>
     public required string ListViewTemplate { get; init; }
+
+    /// <summary>Настройки грида постов в админке; null — стандартный набор колонок</summary>
+    public PostTypeGridSettings? Grid { get; init; }
 }

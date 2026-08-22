@@ -13,6 +13,7 @@ public class PostTypePresentationEntityConfiguration : IEntityTypeConfiguration<
         entity.ToTable("post_type_presentations");
 
         entity.Property(x => x.ListViewTemplateSourceUri).HasColumnType($"varchar({SourceUriMaxLength})");
+        entity.Property(x => x.GridSettings).HasColumnType("jsonb");
 
     }
 }

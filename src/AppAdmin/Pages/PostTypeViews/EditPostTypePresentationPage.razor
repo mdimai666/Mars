@@ -1,5 +1,6 @@
 @page "/EditPostType/Presentation/{ID:guid}"
 
+@using AppAdmin.Pages.PostsViews
 @using Mars.Shared.Contracts.PostTypes
 @using Blazored.TextEditor
 @using Mars.Shared.Models
@@ -55,6 +56,17 @@
                                 </FluentMenuButton>
                             </div>
                         </FormItem2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Колонки списка постов (админка)
+                    </div>
+                    <div class="card-body">
+                        <PostTypeGridSettingsEditor @bind-Value="context.Grid"
+                                                    EnabledFeatures="context.PostType.EnabledFeatures"
+                                                    MetaFields="_metaFields" />
                     </div>
                 </div>
 

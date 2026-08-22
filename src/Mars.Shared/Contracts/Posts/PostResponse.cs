@@ -51,4 +51,7 @@ public record PostListItemResponse : IBasicEntityResponse
     public required PostAuthorResponse Author { get; init; }
     public required IReadOnlyCollection<PostCategorySummaryResponse>? Categories { get; init; }
     public required KeyValuePair<string, string>? Status { get; init; }
+
+    /// <summary>Отображаемые значения запрошенных мета-полей (ключ поля → значение) для колонок грида</summary>
+    public IReadOnlyDictionary<string, string?>? MetaColumns { get; init; }
 }

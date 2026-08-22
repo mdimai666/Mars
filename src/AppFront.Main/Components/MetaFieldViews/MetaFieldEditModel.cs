@@ -44,7 +44,9 @@ public class MetaFieldEditModel
     public string ModelName { get; set; } = "";
 
     public CreateMetaFieldRequest ToCreateRequest()
-        => new()
+    {
+        SyncValidatorsToOptions();
+        return new()
         {
             Id = Id,
             Title = Title,
@@ -63,10 +65,13 @@ public class MetaFieldEditModel
             Variants = Variants?.Select(s => s.ToCreateRequest()).ToList(),
             ModelName = ModelName,
         };
+    }
 
     public UpdateMetaFieldRequest ToUpdateRequest()
-    => new()
     {
+        SyncValidatorsToOptions();
+        return new()
+        {
         Id = Id,
         Title = Title,
         Key = Key,
@@ -83,7 +88,8 @@ public class MetaFieldEditModel
         Disabled = Disabled,
         Variants = Variants?.Select(s => s.ToUpdateRequest()).ToList(),
         ModelName = ModelName,
-    };
+        };
+    }
 
     public static MetaFieldEditModel ToModel(MetaFieldDetailResponse response)
     => new()
@@ -105,6 +111,7 @@ public class MetaFieldEditModel
         Disabled = response.Disabled,
         Variants = response.Variants?.Select(MetaFieldVariantEditModel.ToModel).ToList() ?? [],
         ModelName = response.ModelName ?? "",
+        Validators = ReadValidators(response.Options),
     };
 
     /// <summary>«Создать поле из существующего»: копия с новыми Id (поле и варианты).</summary>
@@ -128,6 +135,7 @@ public class MetaFieldEditModel
             Disabled = Disabled,
             Variants = Variants.Select(s => s.Clone()).ToList(),
             ModelName = ModelName,
+            Validators = ReadValidators(Options),
         };
 
     #region ENUMS
@@ -163,6 +171,77 @@ public class MetaFieldEditModel
     public bool IsTypeSelectable => ESelectable.Contains(Type);
     public bool IsTypeRelation => ERelations.Contains(Type);
     public bool IsTypeQuery => Type == MetaFieldType.Query;
+    #endregion
+
+    #region VALIDATORS
+    /// <summary>Правила валидации значений (хранятся в Options.validators)</summary>
+    public List<MetaFieldValidatorEditRow> Validators { get; set; } = [];
+
+    public class MetaFieldValidatorEditRow
+    {
+        public string Type { get; set; } = MetaFieldValidatorCatalog.Regex;
+        public string Pattern { get; set; } = "";
+        public string Message { get; set; } = "";
+        public int? Min { get; set; }
+        public int? Max { get; set; }
+    }
+
+    static List<MetaFieldValidatorEditRow> ReadValidators(JsonNode? options)
+    {
+        var rows = new List<MetaFieldValidatorEditRow>();
+        if (options is not JsonObject obj || obj["validators"] is not JsonArray array) return rows;
+
+        foreach (var item in array.OfType<JsonObject>())
+        {
+            var type = item["type"] is JsonValue typeValue && typeValue.TryGetValue<string>(out var t) ? t : "";
+            var p = item["params"] as JsonObject;
+            rows.Add(new MetaFieldValidatorEditRow
+            {
+                Type = type,
+                Pattern = p?["pattern"] is JsonValue pv && pv.TryGetValue<string>(out var pattern) ? pattern : "",
+                Message = p?["message"] is JsonValue mv && mv.TryGetValue<string>(out var message) ? message : "",
+                Min = p?["min"] is JsonValue minValue && minValue.TryGetValue<int>(out var min) ? min : null,
+                Max = p?["max"] is JsonValue maxValue && maxValue.TryGetValue<int>(out var max) ? max : null,
+            });
+        }
+
+        return rows;
+    }
+
+    /// <summary>Синхронизирует строки редактора в Options.validators</summary>
+    public void SyncValidatorsToOptions()
+    {
+        if (Validators.Count == 0)
+        {
+            if (Options is JsonObject emptyObj) emptyObj.Remove("validators");
+            return;
+        }
+
+        var array = new JsonArray();
+        foreach (var row in Validators)
+        {
+            var p = new JsonObject();
+            if (row.Type == MetaFieldValidatorCatalog.Regex)
+            {
+                p["pattern"] = row.Pattern;
+                if (!string.IsNullOrEmpty(row.Message)) p["message"] = row.Message;
+            }
+            else if (row.Type == MetaFieldValidatorCatalog.Length)
+            {
+                if (row.Min is int min) p["min"] = min;
+                if (row.Max is int max) p["max"] = max;
+            }
+
+            array.Add(new JsonObject { ["type"] = row.Type, ["params"] = p });
+        }
+
+        if (Options is not JsonObject obj)
+        {
+            obj = new JsonObject();
+            Options = obj;
+        }
+        obj["validators"] = array;
+    }
     #endregion
 
     #region QUERY_OPTIONS

@@ -172,6 +172,42 @@
                                             </div>
                                         }
 
+                                        @if (field.IsString)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Валидация</FluentLabel>
+                                                @foreach (var v in field.Validators)
+                                                {
+                                                    <div class="hstack gap-2 align-items-center">
+                                                        <FluentSelect TOption="string" Width="220px" @bind-Value="v.Type">
+                                                            @foreach (var catalogItem in MetaFieldValidatorCatalog.All)
+                                                            {
+                                                                <FluentOption Value="@catalogItem.Key">@catalogItem.Title</FluentOption>
+                                                            }
+                                                        </FluentSelect>
+                                                        @if (v.Type == MetaFieldValidatorCatalog.Regex)
+                                                        {
+                                                            <FluentTextField @bind-Value="v.Pattern" Label="Шаблон" Style="min-width:200px;" />
+                                                            <FluentTextField @bind-Value="v.Message" Label="Сообщение" Style="min-width:200px;" />
+                                                        }
+                                                        else if (v.Type == MetaFieldValidatorCatalog.Length)
+                                                        {
+                                                            <FluentNumberField @bind-Value="v.Min" Label="Мин" Style="width:100px;" />
+                                                            <FluentNumberField @bind-Value="v.Max" Label="Макс" Style="width:100px;" />
+                                                        }
+                                                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => field.Validators.Remove(v))">
+                                                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                                        </FluentButton>
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <FluentButton OnClick="@(() => field.Validators.Add(new MetaFieldEditModel.MetaFieldValidatorEditRow()))">
+                                                        Добавить правило
+                                                    </FluentButton>
+                                                </div>
+                                            </div>
+                                        }
+
                                         @if (field.IsTypeSelectable)
                                         {
                                             <label>Варианты</label>

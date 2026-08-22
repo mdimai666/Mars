@@ -7,7 +7,9 @@ namespace Mars.Host.Shared.Dto.PostJsons;
 
 public class UpdatePostJsonQueryValidator : AbstractValidator<UpdatePostJsonQuery>
 {
-    public UpdatePostJsonQueryValidator(IMetaModelTypesLocator metaModelTypesLocator, IPostRepository postRepository)
+    public UpdatePostJsonQueryValidator(IMetaModelTypesLocator metaModelTypesLocator,
+                                        IPostRepository postRepository,
+                                        IMetaValuesValidator metaValuesValidator)
     {
         RuleFor(x => x)
             .Custom((x, context) =>
@@ -39,6 +41,9 @@ public class UpdatePostJsonQueryValidator : AbstractValidator<UpdatePostJsonQuer
                         return;
                     }
                 }
+
+                foreach (var error in metaValuesValidator.ValidateJson(postType.MetaFields, x.Meta, requireAll: false))
+                    context.AddFailure(nameof(x.Meta), $"поле '{error.FieldKey}': {error.Message}");
             });
 
         RuleFor(x => x.Id)

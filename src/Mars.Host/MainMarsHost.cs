@@ -65,6 +65,7 @@ public static class MainMarsHost
         services.AddScoped<IMtoRelationMaterializer, MtoRelationMaterializer>();
         services.AddScoped<IPostTypeViewService, PostTypeViewService>();
         services.AddScoped<IPostMetaColumnsService, PostMetaColumnsService>();
+        services.AddScoped<IMetaValuesValidator, MetaValuesValidator>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();
         services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();

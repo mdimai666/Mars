@@ -1,13 +1,19 @@
 using FluentValidation;
 using Mars.Host.Shared.Dto.Users.Phones;
 using Mars.Host.Shared.Repositories;
+using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 
 namespace Mars.Host.Shared.Dto.Users;
 
 public class UpdateUserQueryValidator : AbstractValidator<UpdateUserQuery>
 {
-    public UpdateUserQueryValidator(IRoleRepository roleRepository, IUserRepository userRepository)
+    public UpdateUserQueryValidator(IRoleRepository roleRepository,
+                                    IUserRepository userRepository,
+                                    IMetaValuesValidator metaValuesValidator)
     {
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+
         RuleFor(x => x.Roles)
             .NotEmpty()
             .MustAsync(roleRepository.RolesExsists)

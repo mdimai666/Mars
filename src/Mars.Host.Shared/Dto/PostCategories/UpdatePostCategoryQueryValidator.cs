@@ -2,6 +2,7 @@ using FluentValidation;
 using Mars.Core.Features;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Host.Shared.Validators;
 
 namespace Mars.Host.Shared.Dto.PostCategories;
 
@@ -9,8 +10,11 @@ public class UpdatePostCategoryQueryValidator : AbstractValidator<UpdatePostCate
 {
     public UpdatePostCategoryQueryValidator(IPostCategoryMetaLocator postCategoryMetaLocator,
                                             IPostCategoryRepository postCategoryRepository,
-                                            IMetaModelTypesLocator metaModelTypesLocator)
+                                            IMetaModelTypesLocator metaModelTypesLocator,
+                                            IMetaValuesValidator metaValuesValidator)
     {
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+
         RuleFor(x => x.Slug)
             .NotEmpty()
             .Must(TextTool.IsValidSlugWithUpperCase)

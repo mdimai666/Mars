@@ -81,4 +81,9 @@ public record TablePostQueryRequest : BasicTableQueryRequest
     /// включить дочерние категории (потомков)
     /// </summary>
     public bool FilterIncludeDescendantsCategories { get; init; }
+
+    /// <summary>
+    /// Ключи мета-полей, значения которых приложить к элементам списка (колонки грида)
+    /// </summary>
+    public string[]? MetaFields { get; init; }
 }

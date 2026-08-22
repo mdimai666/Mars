@@ -57,6 +57,12 @@
         <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Shared.Common.ListDataResult{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
         </member>
+        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Shared.Common.PagingResult{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+            <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
+        </member>
+        <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+            <summary>Батч-загрузка значений: тип из маршрута либо группировка по типам самих элементов</summary>
+        </member>
         <member name="T:Mars.Handlers.AdminFrontRenderHandler">
             <summary>
             Рендер страниц специального фронта админки (data/admin/front).

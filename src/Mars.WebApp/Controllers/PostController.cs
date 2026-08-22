@@ -124,14 +124,16 @@ public class PostController : ControllerBase
     [AllowAnonymous]
     public async Task<ListDataResult<PostListItemResponse>> List([FromQuery] ListPostQueryRequest request, CancellationToken cancellationToken)
     {
-        return (await _postService.List(request.ToQuery(null), cancellationToken)).ToResponse();
+        var result = (await _postService.List(request.ToQuery(null), cancellationToken)).ToResponse();
+        return await EnrichMetaColumnsAsync(result, null, request.MetaFields, cancellationToken);
     }
 
     [HttpGet("list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request, CancellationToken cancellationToken)
     {
-        return (await _postService.ListTable(request.ToQuery(null), cancellationToken)).ToResponse();
+        var result = (await _postService.ListTable(request.ToQuery(null), cancellationToken)).ToResponse();
+        return await EnrichMetaColumnsAsync(result, null, request.MetaFields, cancellationToken);
     }
 
     [HttpGet("by-type/{type}/list/offset")]
@@ -144,17 +146,25 @@ public class PostController : ControllerBase
         return await EnrichMetaColumnsAsync(result, type, request.MetaFields, cancellationToken);
     }
 
+    [HttpPost("by-type/{type}/list/page")]
+    [AllowAnonymous]
+    public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request,
+                                                                    [DefaultValue("post")] string type,
+                                                                    CancellationToken cancellationToken)
+    {
+        var result = (await _postService.ListTable(request.ToQuery(type), cancellationToken)).ToResponse();
+        return await EnrichMetaColumnsAsync(result, type, request.MetaFields, cancellationToken);
+    }
+
     /// <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
     async Task<ListDataResult<PostListItemResponse>> EnrichMetaColumnsAsync(ListDataResult<PostListItemResponse> result,
-                                                                             string typeName,
+                                                                             string? typeName,
                                                                              string[]? metaFields,
                                                                              CancellationToken cancellationToken)
     {
         if (metaFields is not { Length: > 0 } || result.Items.Count == 0) return result;
 
-        var postIds = result.Items.Select(s => s.Id).ToList();
-        var values = await _postMetaColumnsService.GetDisplayValuesAsync(typeName, metaFields, postIds, cancellationToken);
-
+        var values = await LoadMetaColumnsAsync(result.Items, typeName, metaFields, cancellationToken);
         var items = result.Items
                           .Select(item => item with { MetaColumns = values.GetValueOrDefault(item.Id) })
                           .ToList();
@@ -162,13 +172,41 @@ public class PostController : ControllerBase
         return new ListDataResult<PostListItemResponse>(items, result.HasMoreData, result.TotalCount);
     }
 
-    [HttpPost("by-type/{type}/list/page")]
-    [AllowAnonymous]
-    public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request,
-                                                                    [DefaultValue("post")] string type,
-                                                                    CancellationToken cancellationToken)
+    /// <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
+    async Task<PagingResult<PostListItemResponse>> EnrichMetaColumnsAsync(PagingResult<PostListItemResponse> result,
+                                                                          string? typeName,
+                                                                          string[]? metaFields,
+                                                                          CancellationToken cancellationToken)
     {
-        return (await _postService.ListTable(request.ToQuery(type), cancellationToken)).ToResponse();
+        if (metaFields is not { Length: > 0 } || result.Items.Count == 0) return result;
+
+        var values = await LoadMetaColumnsAsync(result.Items, typeName, metaFields, cancellationToken);
+        var items = result.Items
+                          .Select(item => item with { MetaColumns = values.GetValueOrDefault(item.Id) })
+                          .ToList();
+
+        return new PagingResult<PostListItemResponse>(items, result.Page, result.PageSize, result.HasMoreData, result.TotalCount);
+    }
+
+    /// <summary>Батч-загрузка значений: тип из маршрута либо группировка по типам самих элементов</summary>
+    async Task<IReadOnlyDictionary<Guid, IReadOnlyDictionary<string, string?>>> LoadMetaColumnsAsync(
+        IEnumerable<PostListItemResponse> items,
+        string? typeName,
+        string[] metaFields,
+        CancellationToken cancellationToken)
+    {
+        var values = new Dictionary<Guid, IReadOnlyDictionary<string, string?>>();
+        foreach (var group in items.GroupBy(s => typeName ?? s.Type))
+        {
+            var part = await _postMetaColumnsService.GetDisplayValuesAsync(
+                group.Key, metaFields, group.Select(s => s.Id).ToList(), cancellationToken);
+            foreach (var pair in part)
+            {
+                values[pair.Key] = pair.Value;
+            }
+        }
+
+        return values;
     }
 
     [HttpDelete("{id:guid}")]

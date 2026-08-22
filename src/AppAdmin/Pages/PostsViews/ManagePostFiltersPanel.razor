@@ -1,0 +1,226 @@
+@using Mars.Shared.Contracts.MetaFields;
+@using Mars.Shared.Contracts.Posts;
+@using Mars.Shared.Contracts.PostTypes;
+@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDisposable
+
+@* Панель фильтров колонок грида постов: владеет состоянием фильтров (сессионно),
+    применяет сразу при изменении, текстовый/числовой ввод — с debounce. *@
+
+<div class="mt-2 d-flex flex-wrap gap-2 align-items-end">
+    @foreach (var col in Columns)
+    {
+        var f = FilterState(col.Key);
+        var metaField = col.Kind == ManagePostView.GridColumnKind.Meta ? MetaFieldOf(col) : null;
+
+        <div class="vstack gap-1" style="min-width:150px;">
+            <label class="text-secondary small">@col.Title</label>
+
+            @if (col.Kind == ManagePostView.GridColumnKind.Title || col.Kind == ManagePostView.GridColumnKind.Author
+                 || metaField is { Type: MetaFieldType.String or MetaFieldType.Text })
+            {
+                <FluentTextField @bind-Value="f.Text" @bind-Value:after="OnFilterInputChanged"
+                                 Immediate
+                                 Placeholder="поиск…" Style="min-width:150px;" />
+            }
+            else if (col.Kind == ManagePostView.GridColumnKind.CreatedAt || metaField is { Type: MetaFieldType.DateTime })
+            {
+                <div class="hstack gap-1">
+                    <FluentDatePicker @bind-Value="f.DateFrom" @bind-Value:after="RaiseNow" Placeholder="от" Style="max-width:140px;" />
+                    <FluentDatePicker @bind-Value="f.DateTo" @bind-Value:after="RaiseNow" Placeholder="до" Style="max-width:140px;" />
+                </div>
+            }
+            else if (metaField is { Type: MetaFieldType.Int or MetaFieldType.Long or MetaFieldType.Float or MetaFieldType.Decimal })
+            {
+                <div class="hstack gap-1">
+                    <FluentNumberField @bind-Value="f.NumberFrom" @bind-Value:after="OnFilterInputChanged"
+                                       Immediate
+                                       Placeholder="от" Style="width:80px;" />
+                    <FluentNumberField @bind-Value="f.NumberTo" @bind-Value:after="OnFilterInputChanged"
+                                       Immediate
+                                       Placeholder="до" Style="width:80px;" />
+                </div>
+            }
+            else if (col.Kind == ManagePostView.GridColumnKind.Status)
+            {
+                <FluentAutocomplete TOption="string" Multiple
+                                    Items="PostStatuses.Select(s => s.Slug).ToList()"
+                                    OptionText="@(slug => PostStatuses.FirstOrDefault(s => s.Slug == slug)?.Title ?? slug)"
+                                    Placeholder="статусы…"
+                                    @bind-SelectedOptions="f.Selected"
+                                    @bind-SelectedOptions:after="RaiseNow"
+                                    Style="min-width:150px;" />
+            }
+            else if (metaField is { Type: MetaFieldType.Select } && metaField.Variants is not null)
+            {
+                <FluentAutocomplete TOption="string" Multiple
+                                    Items="metaField.Variants.Select(v => v.Id.ToString()).ToList()"
+                                    OptionText="@(id => metaField.Variants.FirstOrDefault(v => v.Id.ToString() == id)?.Title ?? id)"
+                                    Placeholder="варианты…"
+                                    @bind-SelectedOptions="f.Selected"
+                                    @bind-SelectedOptions:after="RaiseNow"
+                                    Style="min-width:150px;" />
+            }
+
+            @if (col.Kind == ManagePostView.GridColumnKind.Meta)
+            {
+                <FluentSelect TOption="string" @bind-Value="f.Presence" @bind-Value:after="RaiseNow" Style="min-width:150px;">
+                    <FluentOption TOption="string" Value="">значение: любое</FluentOption>
+                    <FluentOption TOption="string" Value="@PostGridFilterOps.NotEmpty">заполнено</FluentOption>
+                    <FluentOption TOption="string" Value="@PostGridFilterOps.Empty">пусто</FluentOption>
+                </FluentSelect>
+            }
+        </div>
+    }
+
+    <div class="hstack gap-1">
+        <FluentButton OnClick="ResetFilters">Сбросить</FluentButton>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyCollection<ManagePostView.GridColumn> Columns { get; set; } = default!;
+    [Parameter, EditorRequired] public IReadOnlyCollection<MetaFieldDetailResponse> MetaFields { get; set; } = default!;
+    [Parameter, EditorRequired] public IReadOnlyCollection<PostStatusResponse> PostStatuses { get; set; } = default!;
+
+    /// <summary>Сигнал родителю обновить грид</summary>
+    [Parameter] public EventCallback Changed { get; set; }
+
+    /// <summary>Сессионное состояние фильтра колонки</summary>
+    public class ColumnFilterState
+    {
+        public string Text { get; set; } = "";
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public double? NumberFrom { get; set; }
+        public double? NumberTo { get; set; }
+        public IEnumerable<string> Selected { get; set; } = [];
+
+        /// <summary>"" | empty | notEmpty — наличие значения мета-поля</summary>
+        public string Presence { get; set; } = "";
+    }
+
+    readonly Dictionary<string, ColumnFilterState> _columnFilters = new();
+    CancellationTokenSource? _debounceCts;
+
+    ColumnFilterState FilterState(string key)
+        => _columnFilters.TryGetValue(key, out var state) ? state : _columnFilters[key] = new ColumnFilterState();
+
+    MetaFieldDetailResponse? MetaFieldOf(ManagePostView.GridColumn column)
+        => MetaFields.FirstOrDefault(f => f.Key == column.Key);
+
+    /// <summary>Мгновенное применение (выбор дат/значений)</summary>
+    void RaiseNow()
+    {
+        _debounceCts?.Cancel();
+        Changed.InvokeAsync();
+    }
+
+    /// <summary>Применение с задержкой — для текстового/числового ввода</summary>
+    void OnFilterInputChanged()
+    {
+        _debounceCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _debounceCts = cts;
+        _ = DebouncedRaiseAsync(cts.Token);
+    }
+
+    async Task DebouncedRaiseAsync(CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(300, token);
+            if (!token.IsCancellationRequested)
+                await Changed.InvokeAsync();
+        }
+        catch (TaskCanceledException)
+        {
+            // ввод продолжается — ждём следующую паузу
+        }
+    }
+
+    void ResetFilters()
+    {
+        _columnFilters.Clear();
+        Changed.InvokeAsync();
+    }
+
+    /// <summary>Собирает заполненные фильтры колонок для запроса списка</summary>
+    public PostGridFilter[] BuildGridFilters()
+    {
+        var list = new List<PostGridFilter>();
+
+        foreach (var column in Columns)
+        {
+            if (!_columnFilters.TryGetValue(column.Key, out var state)) continue;
+
+            switch (column.Kind)
+            {
+                case ManagePostView.GridColumnKind.Title:
+                case ManagePostView.GridColumnKind.Author:
+                    if (!string.IsNullOrWhiteSpace(state.Text))
+                        list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.Contains, Value = state.Text.Trim() });
+                    break;
+
+                case ManagePostView.GridColumnKind.CreatedAt:
+                    AddRangeFilters(list, column.Key, state.DateFrom, state.DateTo, d => d.ToString("O"));
+                    break;
+
+                case ManagePostView.GridColumnKind.Status:
+                    if (state.Selected.Any())
+                        list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.In, Values = [.. state.Selected] });
+                    break;
+
+                case ManagePostView.GridColumnKind.Meta:
+                    var field = MetaFieldOf(column);
+                    if (field is null) break;
+
+                    if (state.Presence == PostGridFilterOps.Empty || state.Presence == PostGridFilterOps.NotEmpty)
+                        list.Add(new PostGridFilter { Key = column.Key, Op = state.Presence });
+
+                    switch (field.Type)
+                    {
+                        case MetaFieldType.String:
+                        case MetaFieldType.Text:
+                            if (!string.IsNullOrWhiteSpace(state.Text))
+                                list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.Contains, Value = state.Text.Trim() });
+                            break;
+
+                        case MetaFieldType.Int:
+                        case MetaFieldType.Long:
+                        case MetaFieldType.Float:
+                        case MetaFieldType.Decimal:
+                            AddRangeFilters(list, column.Key, state.NumberFrom, state.NumberTo,
+                                n => n.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                            break;
+
+                        case MetaFieldType.DateTime:
+                            AddRangeFilters(list, column.Key, state.DateFrom, state.DateTo, d => d.ToString("O"));
+                            break;
+
+                        case MetaFieldType.Select:
+                            if (state.Selected.Any())
+                                list.Add(new PostGridFilter { Key = column.Key, Op = PostGridFilterOps.In, Values = [.. state.Selected] });
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        return [.. list];
+    }
+
+    static void AddRangeFilters<T>(List<PostGridFilter> list, string key, T? from, T? to,
+                                   Func<T, string> format) where T : struct
+    {
+        if (from is not null)
+            list.Add(new PostGridFilter { Key = key, Op = PostGridFilterOps.Gte, Value = format(from.Value) });
+        if (to is not null)
+            list.Add(new PostGridFilter { Key = key, Op = PostGridFilterOps.Lte, Value = format(to.Value) });
+    }
+
+    public void Dispose()
+    {
+        _debounceCts?.Cancel();
+    }
+}

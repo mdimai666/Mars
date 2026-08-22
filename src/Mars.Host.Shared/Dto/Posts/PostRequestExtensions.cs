@@ -53,6 +53,7 @@ public static class PostRequestExtensions
             IncludeCategory = request.IncludeCategory,
             CategoryId = request.CategoryId,
             FilterIncludeDescendantsCategories = request.FilterIncludeDescendantsCategories,
+            Filters = request.Filters,
         };
 
     public static ListPostQuery ToQuery(this TablePostQueryRequest request, string? postTypeName)
@@ -67,6 +68,7 @@ public static class PostRequestExtensions
             IncludeCategory = request.IncludeCategory,
             CategoryId = request.CategoryId,
             FilterIncludeDescendantsCategories = request.FilterIncludeDescendantsCategories,
+            Filters = request.Filters,
         };
 
 }

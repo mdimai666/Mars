@@ -27,12 +27,14 @@ internal class PostJsonServiceClient : BasicServiceClient, IPostJsonServiceClien
 
     public Task<ListDataResult<PostJsonResponse>> List(ListPostQueryRequest filter, string type)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/list/offset")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<ListDataResult<PostJsonResponse>>();
 
     public Task<PagingResult<PostJsonResponse>> ListTable(TablePostQueryRequest filter, string type)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{type}/list/offset")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<PagingResult<PostJsonResponse>>();
     public Task<PostJsonResponse> Create(CreatePostJsonRequest request)
         => _client.Request($"{_basePath}{_controllerName}")

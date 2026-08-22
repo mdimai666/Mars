@@ -47,23 +47,26 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
 
     public Task<ListDataResult<PostListItemResponse>> List(ListPostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/list/offset")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
     public Task<PagingResult<PostListItemResponse>> ListTable(TablePostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/list/page")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<PagingResult<PostListItemResponse>>();
 
     public Task<ListDataResult<PostListItemResponse>> List(string postType, ListPostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/offset")
-                    .AppendQueryParam(filter)
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
                     .GetJsonAsync<ListDataResult<PostListItemResponse>>();
 
     public Task<PagingResult<PostListItemResponse>> ListTable(string postType, TablePostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/page")
-                    .AppendQueryParam(filter)
-                    .GetJsonAsync<PagingResult<PostListItemResponse>>();
+                    .PostJsonAsync(filter)
+                    .ReceiveJson<PagingResult<PostListItemResponse>>();
 
     public Task<PostEditViewModel> GetEditModel(Guid id)
         => _client.Request($"{_basePath}{_controllerName}/edit", id)

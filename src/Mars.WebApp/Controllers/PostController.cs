@@ -148,7 +148,7 @@ public class PostController : ControllerBase
 
     [HttpPost("by-type/{type}/list/page")]
     [AllowAnonymous]
-    public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request,
+    public async Task<PagingResult<PostListItemResponse>> ListTable([FromBody] TablePostQueryRequest request,
                                                                     [DefaultValue("post")] string type,
                                                                     CancellationToken cancellationToken)
     {

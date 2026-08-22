@@ -71,6 +71,9 @@ public record ListPostQueryRequest : BasicListQueryRequest
     /// Ключи мета-полей, значения которых приложить к элементам списка (колонки грида)
     /// </summary>
     public string[]? MetaFields { get; init; }
+
+    /// <summary>Фильтры колонок грида</summary>
+    public PostGridFilter[]? Filters { get; init; }
 }
 
 public record TablePostQueryRequest : BasicTableQueryRequest
@@ -86,4 +89,7 @@ public record TablePostQueryRequest : BasicTableQueryRequest
     /// Ключи мета-полей, значения которых приложить к элементам списка (колонки грида)
     /// </summary>
     public string[]? MetaFields { get; init; }
+
+    /// <summary>Фильтры колонок грида</summary>
+    public PostGridFilter[]? Filters { get; init; }
 }

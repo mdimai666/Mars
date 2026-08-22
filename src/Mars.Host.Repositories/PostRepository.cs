@@ -9,6 +9,7 @@ using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Repositories;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Posts;
+using Mars.Shared.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Repositories;
@@ -237,7 +238,7 @@ internal class PostRepository : IPostRepository
         return (await list.ToListAsync(cancellationToken)).ToDetailList();
     }
 
-    IQueryable<PostEntity> ListFilterQuery(ListPostQuery query)
+    async Task<IQueryable<PostEntity>> ListFilterQueryAsync(ListPostQuery query, CancellationToken cancellationToken)
     {
         var q = _listAllQuery.AsNoTracking()
                             .Include(s => s.PostType)
@@ -255,10 +256,67 @@ internal class PostRepository : IPostRepository
         }
         else if (query.IncludeCategory) q = q.Include(s => s.Categories);
 
-        return q.Where(s => query.Search == null
+        q = q.Where(s => query.Search == null
                         || (EF.Functions.ILike(s.Id.ToString(), query.Search)
                             || EF.Functions.ILike(s.Slug, $"%{query.Search}%")
                             || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
+
+        return await ApplyGridFiltersAsync(q, query, cancellationToken);
+    }
+
+    /// <summary>Фильтры колонок грида: базовые колонки + значения мета-полей</summary>
+    async Task<IQueryable<PostEntity>> ApplyGridFiltersAsync(IQueryable<PostEntity> q, ListPostQuery query, CancellationToken cancellationToken)
+    {
+        if (query.Filters is not { Count: > 0 }) return q;
+
+        Dictionary<string, MetaFieldEntity>? metaFields = null;
+
+        foreach (var filter in query.Filters)
+        {
+            if (string.IsNullOrEmpty(filter.Key) || string.IsNullOrEmpty(filter.Op)) continue;
+
+            switch (filter.Key)
+            {
+                case PostTypeGridConstants.Title when filter.Op == PostGridFilterOps.Contains && !string.IsNullOrWhiteSpace(filter.Value):
+                    var titlePattern = $"%{filter.Value.Trim()}%";
+                    q = q.Where(p => EF.Functions.ILike(p.Title, titlePattern));
+                    break;
+
+                case PostTypeGridConstants.Author when filter.Op == PostGridFilterOps.Contains && !string.IsNullOrWhiteSpace(filter.Value):
+                    var authorPattern = $"%{filter.Value.Trim()}%";
+                    q = q.Where(p => p.User != null && EF.Functions.ILike(p.User.UserName, authorPattern));
+                    break;
+
+                case PostTypeGridConstants.CreatedAt when DateTimeOffset.TryParse(filter.Value, out var date):
+                    q = filter.Op == PostGridFilterOps.Gte ? q.Where(p => p.CreatedAt >= date)
+                      : filter.Op == PostGridFilterOps.Lte ? q.Where(p => p.CreatedAt <= date)
+                      : q;
+                    break;
+
+                case PostTypeGridConstants.Status when filter.Op == PostGridFilterOps.In && filter.Values is { Length: > 0 } statusSlugs:
+                    q = q.Where(p => p.PostStatus != null && statusSlugs.Contains(p.PostStatus.Slug));
+                    break;
+
+                case PostTypeGridConstants.Categories:
+                    // у страницы собственный фильтр по категориям (CategoryId) — здесь не дублируем
+                    break;
+
+                default:
+                    // колонка мета-поля — нужен тип поста, чтобы найти поле по ключу
+                    if (query.Type is null) break;
+
+                    metaFields ??= await _marsDbContext.MetaFields
+                        .Where(f => f.PostType.TypeName == query.Type)
+                        .ToDictionaryAsync(f => f.Key, cancellationToken);
+
+                    if (!metaFields.TryGetValue(filter.Key, out var field)) break;
+
+                    q = q.Where(PostGridMetaFilterExpressions.Build(field.Id, field.Type, filter));
+                    break;
+            }
+        }
+
+        return q;
     }
 
     ListPostQuery RewriteSorting(ListPostQuery query, ref IQueryable<PostEntity> queryable)
@@ -297,7 +355,7 @@ internal class PostRepository : IPostRepository
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var queryable = ListFilterQuery(query);
+        var queryable = await ListFilterQueryAsync(query, cancellationToken);
         query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToListDataResult(query, cancellationToken);
@@ -311,7 +369,7 @@ internal class PostRepository : IPostRepository
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        var queryable = ListFilterQuery(query);
+        var queryable = await ListFilterQueryAsync(query, cancellationToken);
         query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToPagingResult(query, cancellationToken);
@@ -325,7 +383,7 @@ internal class PostRepository : IPostRepository
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        IQueryable<PostEntity> queryable = ListFilterQuery(query).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
+        IQueryable<PostEntity> queryable = (await ListFilterQueryAsync(query, cancellationToken)).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
                                                                 .Include(s=>s.Categories);
         query = RewriteSorting(query, ref queryable);
 
@@ -340,7 +398,7 @@ internal class PostRepository : IPostRepository
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
-        IQueryable<PostEntity> queryable = ListFilterQuery(query).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
+        IQueryable<PostEntity> queryable = (await ListFilterQueryAsync(query, cancellationToken)).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
                                                                 .Include(s => s.Categories);
         query = RewriteSorting(query, ref queryable);
 

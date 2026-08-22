@@ -1,6 +1,7 @@
 @using AppAdmin.Pages.PostCategoryViews
 @using Mars.Shared.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
+@using Mars.Shared.Contracts.MetaFields;
 @using Mars.Shared.Contracts.Posts;
 @using Mars.Shared.Contracts.PostTypes;
 
@@ -22,6 +23,10 @@
                           Appearance="FluentInputAppearance.Filled"
                           AriaLabel="Search" />
             <FluentButton aria-label="refresh" IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="Refresh" />
+            <FluentButton aria-label="filters" Title="Фильтры"
+                          Appearance="@(_filtersVisible ? Appearance.Accent : Appearance.Neutral)"
+                          IconEnd="@(new Icons.Regular.Size16.Filter())"
+                          OnClick="ToggleFilters" />
             <FluentButton aria-label="grid settings" Title="Настроить колонки"
                           IconEnd="@(new Icons.Regular.Size16.Settings())"
                           OnClick="OpenSettingsDialog" />
@@ -43,6 +48,16 @@
                 </a>
             </div>
         </div>
+
+        @if (_filtersVisible)
+        {
+            <ManagePostFiltersPanel @ref="_filtersPanel"
+                                    @key="PostType.TypeName"
+                                    Columns="_filterColumns"
+                                    MetaFields="_metaFields"
+                                    PostStatuses="_postStatuses"
+                                    Changed="Refresh" />
+        }
 
         <div class="mt-4 flex-fill d-flex flex-column">
             <div style="height: 534px; overflow:auto; flex: 1 1 auto;">

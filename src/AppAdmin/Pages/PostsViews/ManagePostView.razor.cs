@@ -37,8 +37,14 @@ public partial class ManagePostView : IDisposable
     // динамические колонки из настроек презентации типа
     PostTypeGridSettings? _gridSettings;
     IReadOnlyCollection<MetaFieldDetailResponse> _metaFields = [];
+    IReadOnlyCollection<PostStatusResponse> _postStatuses = [];
     List<GridColumn> _columns = [];
     int _gridVersion;
+
+    // фильтры колонок (сессионно, без сохранения) — состояние в панели
+    bool _filtersVisible;
+    ManagePostFiltersPanel? _filtersPanel;
+    List<GridColumn> _filterColumns = [];
 
     // диалог настройки колонок
     bool _settingsDialogVisible;
@@ -61,6 +67,7 @@ public partial class ManagePostView : IDisposable
 
             var detail = await client.PostType.Get(PostType.Id);
             _metaFields = detail?.MetaFields ?? [];
+            _postStatuses = detail?.PostStatusList ?? [];
 
             RebuildColumns();
             BuildDataProvider();
@@ -112,6 +119,7 @@ public partial class ManagePostView : IDisposable
                     CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
                     FilterIncludeDescendantsCategories = false,
                     MetaFields = _columns.Where(c => c.Kind == GridColumnKind.Meta).Select(c => c.Key).ToArray(),
+                    Filters = _filtersPanel?.BuildGridFilters() ?? [],
                 });
 
                 var collection = new Collection<PostListItemResponse>(data.Items.ToList());
@@ -182,6 +190,7 @@ public partial class ManagePostView : IDisposable
         }
 
         _columns = columns;
+        _filterColumns = _columns.Where(IsFilterable).ToList();
 
         GridTemplateColumns = string.Join(" ", columns.Select(ColumnWidth)) + " min-content"; // + Actions
     }
@@ -298,4 +307,26 @@ public partial class ManagePostView : IDisposable
         public bool IsDefaultSort { get; set; }
         public SortDirection DefaultSortDirection { get; set; } = SortDirection.Descending;
     }
+
+    #region FILTERS
+    /// <summary>Показать/скрыть панель фильтров. При скрытии панель разбирается
+    /// вместе с состоянием — фильтры перестают применяться.</summary>
+    void ToggleFilters()
+    {
+        _filtersVisible = !_filtersVisible;
+
+        if (!_filtersVisible)
+            table.RefreshDataAsync();
+    }
+
+    /// <summary>Колонка, для которой есть фильтр в панели</summary>
+    bool IsFilterable(GridColumn column)
+        => column.Kind switch
+        {
+            GridColumnKind.Title or GridColumnKind.Author or GridColumnKind.CreatedAt => true,
+            GridColumnKind.Status => PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status),
+            GridColumnKind.Meta => true,
+            _ => false,
+        };
+    #endregion
 }

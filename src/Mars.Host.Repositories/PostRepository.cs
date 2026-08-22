@@ -4,6 +4,7 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories.Mappings;
 using Mars.Host.Shared.Dto.Common;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Repositories;
 using Mars.Shared.Common;
@@ -114,6 +115,56 @@ internal class PostRepository : IPostRepository
 
         await _marsDbContext.SaveChangesAsync(cancellationToken);
         _marsDbContext.Entry(entity).State = EntityState.Detached;
+    }
+
+    public async Task UpsertMetaValuesAsync(IReadOnlyCollection<PostMetaValueUpsert> items, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(items, nameof(items));
+        if (items.Count == 0) return;
+
+        var postIds = items.Select(s => s.PostId).Distinct().ToList();
+        var posts = await _marsDbContext.Posts
+            .Include(s => s.MetaValues)
+            .Where(s => postIds.Contains(s.Id))
+            .ToListAsync(cancellationToken);
+
+        var fieldIds = items.Select(s => s.MetaField.Id).Distinct().ToList();
+        var fields = await _marsDbContext.MetaFields
+            .Where(s => fieldIds.Contains(s.Id))
+            .ToDictionaryAsync(s => s.Id, cancellationToken);
+
+        foreach (var item in items)
+        {
+            var post = posts.FirstOrDefault(s => s.Id == item.PostId)
+                ?? throw new NotFoundException($"post '{item.PostId}' not found");
+            var field = fields[item.MetaField.Id];
+
+            var row = post.MetaValues!.Where(v => v.MetaFieldId == field.Id)
+                                      .OrderBy(v => v.Index)
+                                      .FirstOrDefault();
+
+            if (row is null)
+            {
+                row = new PostMetaValueEntity
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    MetaFieldId = field.Id,
+                    Type = field.Type,
+                    Index = 0,
+                    CreatedAt = DateTimeOffset.Now,
+                };
+                post.MetaValues.Add(row);
+                await _marsDbContext.PostMetaValues.AddAsync(row, cancellationToken);
+            }
+
+            row.Set(field, item.Value);
+            row.ModifiedAt = DateTimeOffset.Now;
+        }
+
+        await _marsDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken)

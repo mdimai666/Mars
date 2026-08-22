@@ -75,6 +75,28 @@ internal static class ConfigureActions
 #endif
         });
 
+        actionManager.Add(a =>
+        {
+            a.Id(RegenerateGeneratedMetaValuesAct.CommandId)
+             .Label("Перегенерировать значения полей-генераторов")
+             .Description("Порядковые номера и даты у существующих постов: перенумеровать, только сегодня или дозаполнить пустые")
+             .Category("Контент")
+             .Argument(RegenerateGeneratedMetaValuesAct.PostTypeArg, "Тип записи", XActionArgumentType.Choice, required: true, optionsSource: CreateMockPostsAct.PostTypesOptionsSource)
+             .Argument(RegenerateGeneratedMetaValuesAct.ModeArg, "Режим", XActionArgumentType.Choice, defaultValue: RegenerateGeneratedMetaValuesAct.ModeAll, options:
+             [
+                 new() { Key = RegenerateGeneratedMetaValuesAct.ModeAll, Label = "Перенумеровать с первого" },
+                 new() { Key = RegenerateGeneratedMetaValuesAct.ModeToday, Label = "Перенумеровать за сегодня" },
+                 new() { Key = RegenerateGeneratedMetaValuesAct.ModeFromLast, Label = "Дозаполнить пустые (продолжить)" },
+             ])
+             .Argument(RegenerateGeneratedMetaValuesAct.StatusesArg, "Статусы (slug через запятую; пусто — все)")
+             .Handler<RegenerateGeneratedMetaValuesAct>();
+#if !NOADMIN
+            // корневой контекст страницы списка постов (без суффикса типа) — видно для всех типов
+            // в дропдауне «Действия» (он с AlsoShowRootContext) и при любом {тип} в маршруте
+            a.FrontContexts(typeof(ManagePostPage).FullName!);
+#endif
+        });
+
 #if DEBUG
         actionManager.Add(a =>
         {

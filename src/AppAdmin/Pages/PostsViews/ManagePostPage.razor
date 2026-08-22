@@ -2,11 +2,16 @@
 @page "/Post/{POSTTYPE}"
 @using AppAdmin.Pages.PageViews
 @inject IStringLocalizer<AppRes> L
+@inject Mars.Shared.Interfaces.IActAppService actApp
 @attribute [Authorize(Roles = "Admin")]
 
 <ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
     <SectionActions>
-        <XActionsDropDown ContextPart="@POSTTYPE" />
+        <FluentButton Appearance="Appearance.Stealth" Title="Перегенерировать значения полей-генераторов"
+                      @onclick="@(() => actApp.Inject(AppAdmin.Shared.RegenerateGeneratedMetaValuesForm.CommandId))">
+            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSync())" />
+        </FluentButton>
+        <XActionsDropDown ContextPart="@POSTTYPE" AlsoShowRootContext="true" />
     </SectionActions>
     <ChildContent>
 

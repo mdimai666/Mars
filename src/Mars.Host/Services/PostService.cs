@@ -26,6 +26,7 @@ internal class PostService : IPostService
     private readonly IRequestContext _requestContext;
     private readonly IValidatorFactory _validatorFactory;
     private readonly IPostTransformer _postTransformer;
+    private readonly IMetaValuesGeneratorService _metaValuesGenerator;
 
     public PostService(
         IPostRepository postRepository,
@@ -33,7 +34,8 @@ internal class PostService : IPostService
         IEventManager eventManager,
         IRequestContext requestContext,
         IValidatorFactory validatorFactory,
-        IPostTransformer postTransformer)
+        IPostTransformer postTransformer,
+        IMetaValuesGeneratorService metaValuesGenerator)
     {
         _postRepository = postRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
@@ -41,6 +43,7 @@ internal class PostService : IPostService
         _requestContext = requestContext;
         _validatorFactory = validatorFactory;
         _postTransformer = postTransformer;
+        _metaValuesGenerator = metaValuesGenerator;
     }
 
     public Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -78,6 +81,10 @@ internal class PostService : IPostService
     public async Task<PostDetail> Create(CreatePostQuery query, CancellationToken cancellationToken)
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+
+        var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type);
+        if (postType is not null)
+            query = await _metaValuesGenerator.ApplyAsync(postType, query, cancellationToken);
 
         var id = await _postRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, renderContent: false, cancellationToken);

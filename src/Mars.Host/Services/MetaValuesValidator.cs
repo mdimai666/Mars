@@ -34,7 +34,8 @@ internal class MetaValuesValidator : IMetaValuesValidator
             var present = meta is not null && meta.TryGetValue(field.Key, out node) && node is not null;
             if (!present)
             {
-                if (requireAll && !field.IsNullable)
+                // поле с генератором будет заполнено при создании — отсутствие значения не ошибка
+                if (requireAll && !field.IsNullable && MetaFieldGeneratorDefinition.FromOptions(field.Options) is null)
                     errors.Add(new MetaValueValidationError(field.Key, "значение обязательно"));
                 continue;
             }

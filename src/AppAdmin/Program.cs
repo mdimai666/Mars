@@ -102,6 +102,10 @@ app.Services.UseAppFrontMain()
 var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
 optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
+// кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
+app.Services.GetRequiredService<AppFront.Shared.Services.IXActionFormProvider>()
+            .Register(AppAdmin.Shared.RegenerateGeneratedMetaValuesForm.CommandId, typeof(AppAdmin.Shared.RegenerateGeneratedMetaValuesForm));
+
 SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
 
 if (!safeMode)

@@ -351,6 +351,18 @@
             Правило именования шаблона списка: postTypes/&lt;typeName&gt;/listView.hbs
             </summary>
         </member>
+        <member name="T:Mars.XActions.ContentRecipes.RegenerateGeneratedMetaValuesAct">
+            <summary>
+            Перегенерация значений мета-полей с генераторами (порядковые номера, даты) у существующих постов:
+            генератор могли добавить позже создания записей — старые посты нужно перенумеровать/дозаполнить.
+            </summary>
+        </member>
+        <member name="M:Mars.XActions.ContentRecipes.RegenerateGeneratedMetaValuesAct.#ctor(Mars.Host.Shared.Services.IMetaValuesGeneratorService)">
+            <summary>
+            Перегенерация значений мета-полей с генераторами (порядковые номера, даты) у существующих постов:
+            генератор могли добавить позже создания записей — старые посты нужно перенумеровать/дозаполнить.
+            </summary>
+        </member>
         <member name="T:Mars.XActions.FormTestAct">
             <summary>
             Отладочная команда для проверки генерик-формы XActions:

@@ -208,6 +208,63 @@
                                             </div>
                                         }
 
+                                        @if (field.Type == MetaFieldType.String || field.Type == MetaFieldType.DateTime)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Генератор значения</FluentLabel>
+                                                <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Автозаполнение при создании объекта</FluentLabel>
+
+                                                <div class="hstack gap-2 align-items-center">
+                                                    <FluentSelect TOption="string" Width="220px" @bind-Value="field.GeneratorType">
+                                                        <FluentOption Value="">— нет —</FluentOption>
+                                                        @foreach (var g in MetaFieldGeneratorCatalog.All)
+                                                        {
+                                                            @if ((g.Key == MetaFieldGeneratorCatalog.Sequence && field.Type == MetaFieldType.String)
+                                                              || (g.Key == MetaFieldGeneratorCatalog.Now && field.Type == MetaFieldType.DateTime))
+                                                            {
+                                                                <FluentOption Value="@g.Key">@g.Title</FluentOption>
+                                                            }
+                                                        }
+                                                    </FluentSelect>
+
+                                                    @if (field.GeneratorType == MetaFieldGeneratorCatalog.Sequence)
+                                                    {
+                                                        <FluentTextField @bind-Value="field.GeneratorPrefix" Label="Префикс" Style="width:120px;" />
+                                                        <FluentNumberField @bind-Value="field.GeneratorPaddingWidth" Label="Разрядов числа" Style="width:110px;" />
+                                                        <div class="vstack">
+                                                            <label>Счётчик</label>
+                                                            <FluentSelect TOption="string" Width="180px" @bind-Value="field.GeneratorMode">
+                                                                <FluentOption Value="@MetaFieldGeneratorCatalog.ModeContinue">продолжается</FluentOption>
+                                                                <FluentOption Value="@MetaFieldGeneratorCatalog.ModeDaily">сброс каждый день</FluentOption>
+                                                            </FluentSelect>
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                @if (field.GeneratorType == MetaFieldGeneratorCatalog.Sequence)
+                                                {
+                                                    <div class="vstack gap-2 ms-3">
+                                                        <FluentLabel Color="@Color.Custom" CustomColor="#ddd">Префикс из категории (словарь категория → префикс)</FluentLabel>
+                                                        @foreach (var row in field.GeneratorCategoryPrefixes)
+                                                        {
+                                                            <div class="hstack gap-2 align-items-center">
+                                                                <FluentTextField @bind-Value="row.CategorySlug" Label="Slug категории" Style="min-width:180px;" />
+                                                                <FluentTextField @bind-Value="row.Prefix" Label="Префикс" Style="width:120px;" />
+                                                                <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => field.GeneratorCategoryPrefixes.Remove(row))">
+                                                                    <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                                                </FluentButton>
+                                                            </div>
+                                                        }
+                                                        <div>
+                                                            <FluentButton OnClick="@(() => field.GeneratorCategoryPrefixes.Add(new MetaFieldEditModel.MetaFieldGeneratorCategoryRow()))">
+                                                                Добавить категорию
+                                                            </FluentButton>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+
                                         @if (field.IsTypeSelectable)
                                         {
                                             <label>Варианты</label>

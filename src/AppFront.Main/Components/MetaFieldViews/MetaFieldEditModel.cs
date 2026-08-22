@@ -46,6 +46,7 @@ public class MetaFieldEditModel
     public CreateMetaFieldRequest ToCreateRequest()
     {
         SyncValidatorsToOptions();
+        SyncGeneratorToOptions();
         return new()
         {
             Id = Id,
@@ -70,6 +71,7 @@ public class MetaFieldEditModel
     public UpdateMetaFieldRequest ToUpdateRequest()
     {
         SyncValidatorsToOptions();
+        SyncGeneratorToOptions();
         return new()
         {
         Id = Id,
@@ -92,31 +94,36 @@ public class MetaFieldEditModel
     }
 
     public static MetaFieldEditModel ToModel(MetaFieldDetailResponse response)
-    => new()
     {
-        Id = response.Id,
-        Title = response.Title,
-        Key = response.Key,
-        Type = response.Type,
-        MaxValue = response.MaxValue,
-        MinValue = response.MinValue,
-        Description = response.Description,
-        IsNullable = response.IsNullable,
-        Default = response.Default,
-        Options = response.Options,
-        IsNew = false,
-        Order = response.Order,
-        Tags = response.Tags.ToArray(),
-        Hidden = response.Hidden,
-        Disabled = response.Disabled,
-        Variants = response.Variants?.Select(MetaFieldVariantEditModel.ToModel).ToList() ?? [],
-        ModelName = response.ModelName ?? "",
-        Validators = ReadValidators(response.Options),
-    };
+        var model = new MetaFieldEditModel
+        {
+            Id = response.Id,
+            Title = response.Title,
+            Key = response.Key,
+            Type = response.Type,
+            MaxValue = response.MaxValue,
+            MinValue = response.MinValue,
+            Description = response.Description,
+            IsNullable = response.IsNullable,
+            Default = response.Default,
+            Options = response.Options,
+            IsNew = false,
+            Order = response.Order,
+            Tags = response.Tags.ToArray(),
+            Hidden = response.Hidden,
+            Disabled = response.Disabled,
+            Variants = response.Variants?.Select(MetaFieldVariantEditModel.ToModel).ToList() ?? [],
+            ModelName = response.ModelName ?? "",
+            Validators = ReadValidators(response.Options),
+        };
+        ReadGenerator(model, response.Options);
+        return model;
+    }
 
     /// <summary>«Создать поле из существующего»: копия с новыми Id (поле и варианты).</summary>
     public MetaFieldEditModel Clone(int order)
-        => new()
+    {
+        var clone = new MetaFieldEditModel
         {
             Id = Guid.NewGuid(),
             Title = Title,
@@ -137,6 +144,9 @@ public class MetaFieldEditModel
             ModelName = ModelName,
             Validators = ReadValidators(Options),
         };
+        ReadGenerator(clone, Options);
+        return clone;
+    }
 
     #region ENUMS
     public static readonly MetaFieldType[] ENumbers = { MetaFieldType.Int, MetaFieldType.Long, MetaFieldType.Float, MetaFieldType.Decimal };
@@ -241,6 +251,84 @@ public class MetaFieldEditModel
             Options = obj;
         }
         obj["validators"] = array;
+    }
+    #endregion
+
+    #region GENERATORS
+    /// <summary>Генератор значения при создании (хранится в Options.generator)</summary>
+    public string GeneratorType { get; set; } = "";
+    public string GeneratorPrefix { get; set; } = "";
+    public int GeneratorPaddingWidth { get; set; } = 4;
+    public string GeneratorMode { get; set; } = MetaFieldGeneratorCatalog.ModeContinue;
+
+    /// <summary>Словарь категория→префикс для генератора «порядковый номер»</summary>
+    public List<MetaFieldGeneratorCategoryRow> GeneratorCategoryPrefixes { get; set; } = [];
+
+    public class MetaFieldGeneratorCategoryRow
+    {
+        public string CategorySlug { get; set; } = "";
+        public string Prefix { get; set; } = "";
+    }
+
+    static void ReadGenerator(MetaFieldEditModel model, JsonNode? options)
+    {
+        if (options is not JsonObject obj || obj["generator"] is not JsonObject generator) return;
+
+        model.GeneratorType = generator["type"] is JsonValue typeValue && typeValue.TryGetValue<string>(out var type) ? type : "";
+
+        if (generator["params"] is not JsonObject p) return;
+
+        model.GeneratorPrefix = p["prefix"] is JsonValue prefixValue && prefixValue.TryGetValue<string>(out var prefix) ? prefix : "";
+        model.GeneratorPaddingWidth = p["paddingWidth"] is JsonValue paddingValue && paddingValue.TryGetValue<int>(out var padding) ? padding : 4;
+        model.GeneratorMode = p["mode"] is JsonValue modeValue && modeValue.TryGetValue<string>(out var mode)
+            ? mode
+            : MetaFieldGeneratorCatalog.ModeContinue;
+
+        if (p["categoryPrefixes"] is JsonObject categoryPrefixes)
+        {
+            foreach (var (slug, node) in categoryPrefixes)
+            {
+                if (node is JsonValue v && v.TryGetValue<string>(out var categoryPrefix))
+                    model.GeneratorCategoryPrefixes.Add(new MetaFieldGeneratorCategoryRow { CategorySlug = slug, Prefix = categoryPrefix });
+            }
+        }
+    }
+
+    /// <summary>Синхронизирует настройки генератора в Options.generator</summary>
+    public void SyncGeneratorToOptions()
+    {
+        if (string.IsNullOrEmpty(GeneratorType))
+        {
+            if (Options is JsonObject emptyObj) emptyObj.Remove("generator");
+            return;
+        }
+
+        var generator = new JsonObject { ["type"] = GeneratorType };
+
+        if (GeneratorType == MetaFieldGeneratorCatalog.Sequence)
+        {
+            var p = new JsonObject
+            {
+                ["prefix"] = GeneratorPrefix,
+                ["paddingWidth"] = GeneratorPaddingWidth,
+                ["mode"] = GeneratorMode,
+            };
+
+            var categoryPrefixes = new JsonObject();
+            foreach (var row in GeneratorCategoryPrefixes.Where(s => !string.IsNullOrWhiteSpace(s.CategorySlug)))
+                categoryPrefixes[row.CategorySlug.Trim()] = row.Prefix;
+
+            if (categoryPrefixes.Count > 0) p["categoryPrefixes"] = categoryPrefixes;
+
+            generator["params"] = p;
+        }
+
+        if (Options is not JsonObject obj)
+        {
+            obj = new JsonObject();
+            Options = obj;
+        }
+        obj["generator"] = generator;
     }
     #endregion
 

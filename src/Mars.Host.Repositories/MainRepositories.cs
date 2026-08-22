@@ -21,5 +21,6 @@ public static class MainRepositories
             .AddScoped<IFeedbackRepository, FeedbackRepository>()
             .AddScoped<IPostCategoryRepository, PostCategoryRepository>()
             .AddScoped<IPostCategoryTypeRepository, PostCategoryTypeRepository>()
+            .AddScoped<IMetaSequenceRepository, MetaSequenceRepository>()
         ;
 }

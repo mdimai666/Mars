@@ -1,4 +1,5 @@
 using Mars.Core.Exceptions;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Shared.Common;
 
@@ -15,6 +16,9 @@ public interface IPostRepository : IDisposable
 
     /// <exception cref="NotFoundException"/>
     Task Update(UpdatePostQuery query, CancellationToken cancellationToken);
+
+    /// <summary>Точечно обновляет/создаёт строки мета-значений постов (без валидации и остальных полей поста).</summary>
+    Task UpsertMetaValuesAsync(IReadOnlyCollection<PostMetaValueUpsert> items, CancellationToken cancellationToken);
 
     /// <exception cref="NotFoundException"/>
     Task Delete(Guid id, CancellationToken cancellationToken);

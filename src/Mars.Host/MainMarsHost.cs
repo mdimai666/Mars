@@ -15,6 +15,7 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
 using Mars.Host.Shared.WebSite.Scripts;
 using Mars.Host.WebSite.Scripts;
+using Mars.Shared.Contracts.MetaFields;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -66,6 +67,7 @@ public static class MainMarsHost
         services.AddScoped<IPostTypeViewService, PostTypeViewService>();
         services.AddScoped<IPostMetaColumnsService, PostMetaColumnsService>();
         services.AddScoped<IMetaValuesValidator, MetaValuesValidator>();
+        services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();
         services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();
@@ -84,6 +86,7 @@ public static class MainMarsHost
         services.AddScoped<Shared.Validators.IValidatorFactory, ValidatorFactory>();
 
         UseIMetaRelationModelProviderHandler(services);
+        UseIMetaValueGeneratorHandler(services);
         RegisterAIToolScenarioProviders(services);
         services.AddScoped<IPostTransformer, PostTransformer>();
         RegisterPostContentProcessorsLocator(services);
@@ -108,6 +111,14 @@ public static class MainMarsHost
             .AddKeyedScoped<IMetaRelationModelProviderHandler, PostRelationModelProviderHandler>("Post")
             .AddKeyedScoped<IMetaRelationModelProviderHandler, FeedbackRelationModelProviderHandler>("Feedback")
             .AddKeyedScoped<IMetaRelationModelProviderHandler, NavMenuRelationModelProviderHandler>("NavMenu")
+            ;
+    }
+
+    static void UseIMetaValueGeneratorHandler(IServiceCollection services)
+    {
+        services
+            .AddKeyedScoped<IMetaValueGeneratorHandler, SequenceValueGeneratorHandler>(MetaFieldGeneratorCatalog.Sequence)
+            .AddKeyedScoped<IMetaValueGeneratorHandler, NowValueGeneratorHandler>(MetaFieldGeneratorCatalog.Now)
             ;
     }
 

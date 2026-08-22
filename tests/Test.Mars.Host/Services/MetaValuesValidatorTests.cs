@@ -111,6 +111,19 @@ public class MetaValuesValidatorTests
     }
 
     [Fact]
+    public void ValidateJson_MissingRequiredWithGenerator_NoError()
+    {
+        // поле с генератором будет заполнено при создании — отсутствие значения не ошибка
+        var options = new JsonObject
+        {
+            ["generator"] = new JsonObject { ["type"] = "sequence" },
+        };
+        var field = Field(MetaFieldType.String, "code", isNullable: false, options: options);
+
+        new MetaValuesValidator().ValidateJson([field], null, requireAll: true).Should().BeEmpty();
+    }
+
+    [Fact]
     public void ValidateJson_StringValueCheckedByRegex()
     {
         var field = Field(MetaFieldType.String, "code", options: RegexOptions(@"^\d{3}$"));

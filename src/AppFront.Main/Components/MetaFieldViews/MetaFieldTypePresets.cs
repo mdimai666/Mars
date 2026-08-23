@@ -9,7 +9,7 @@ namespace AppFront.Shared.Components.MetaFieldViews;
 /// </summary>
 public static class MetaFieldTypePresets
 {
-    public record Preset(string Key, string Title, MetaFieldType Type, string Group, string? Editor = null, string? Kind = null);
+    public record Preset(string Key, string Title, MetaFieldType Type, string Group, string? Editor = null, string? Kind = null, string? CodeLang = null);
 
     const string PresetPrefix = "preset:";
     const string TypePrefix = "type:";
@@ -29,6 +29,9 @@ public static class MetaFieldTypePresets
         new("color", "Цвет", MetaFieldType.String, GroupText, MetaFieldEditorCatalog.Color),
         new("url", "Ссылка", MetaFieldType.String, GroupText, MetaFieldEditorCatalog.Url),
         new("email", "Email", MetaFieldType.String, GroupText, MetaFieldEditorCatalog.Email),
+        new("wysiwyg", "Текст (WYSIWYG)", MetaFieldType.Text, GroupText, MetaFieldEditorCatalog.Wysiwyg),
+        new("blockeditor", "Текст (Editor.js)", MetaFieldType.Text, GroupText, MetaFieldEditorCatalog.BlockEditor),
+        new("code", "Код", MetaFieldType.Text, GroupText, MetaFieldEditorCatalog.Code, CodeLang: MetaFieldEditorCatalog.DefaultCodeLang),
 
         new("number", "Число", MetaFieldType.Int, GroupNumber),
         new("longnumber", "Большое число", MetaFieldType.Long, GroupNumber),

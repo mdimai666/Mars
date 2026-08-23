@@ -19,6 +19,15 @@ public static class FeatureFieldsCatalog
     /// <summary>Заголовок автосоздаваемого поля картинки</summary>
     public const string PostImageFieldTitle = "Изображение";
 
+    /// <summary>Маркер поля контента типа (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>
+    public const string Content = "content";
+
+    /// <summary>Ключ поля контента (фиксированный, переименование запрещено)</summary>
+    public const string ContentFieldKey = "content";
+
+    /// <summary>Заголовок автосоздаваемого поля контента</summary>
+    public const string ContentFieldTitle = "Контент";
+
     /// <summary>Ключ опции маркера фичи в Options</summary>
     public static string FeatureKeyOption() => "featureKey";
 
@@ -47,9 +56,13 @@ public static class FeatureFieldsCatalog
 
     /// <summary>Фича → маркер требуемого ей поля (null = фича не требует поля)</summary>
     public static string? GetFeatureKeyFor(string feature)
-        => feature == PostTypeConstants.Features.PostImage ? PostImage : null;
+        => feature == PostTypeConstants.Features.PostImage ? PostImage
+        : feature == PostTypeConstants.Features.Content ? Content
+        : null;
 
     /// <summary>Маркер поля → имя фичи (для подписей; пусто, если маркер неизвестен)</summary>
     public static string GetFeatureName(string featureKey)
-        => featureKey == PostImage ? PostTypeConstants.Features.PostImage : "";
+        => featureKey == PostImage ? PostTypeConstants.Features.PostImage
+        : featureKey == Content ? PostTypeConstants.Features.Content
+        : "";
 }

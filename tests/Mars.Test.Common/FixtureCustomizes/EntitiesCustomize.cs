@@ -1,10 +1,9 @@
-using AutoFixture;
+﻿using AutoFixture;
 using Bogus;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.NavMenus;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Data.OwnedTypes.Users;
 using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.PostTypes;
@@ -67,18 +66,12 @@ public sealed class EntitiesCustomize : ICustomization
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    );
 
-        fixture.Customize<PostContentSettings>(composer => composer
-                                    .OmitAutoProperties()
-                                    .With(s => s.PostContentType, PostTypeConstants.DefaultPostContentTypes.PlainText)
-                                    );
-
         fixture.Customize<PostTypeEntity>(composer => composer
                                    .OmitAutoProperties()
                                    .With(s => s.Id)
                                    .With(s => s.Title, () => fixture.Create("Title - "))
                                    //.With(s => s.PostStatusList, PostStatus.DefaultStatuses())
                                    .With(s => s.TypeName)
-                                   .With(s => s.PostContentType)
                                    .With(s => s.EnabledFeatures, [nameof(PostEntity.Content)])
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    //.With(s => s.ModifiedAt, DateTime.MinValue)

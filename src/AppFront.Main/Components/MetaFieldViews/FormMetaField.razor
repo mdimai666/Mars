@@ -1,5 +1,6 @@
 @using Mars.Shared.Contracts.MetaFields
 @using Mars.WebApiClient.Interfaces
+@using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <d-meta-field class="FormMetaField">
@@ -34,7 +35,14 @@
                                     <span class="text-secondary fz12px">
                                         @field.Key
                                     </span>
-                                    @if (IsFeatureField(field))
+                                    @if (IsContentFeatureField(field))
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral"
+                                                     title="Поле контента (фича «Контент»). Чтобы удалить его — снимите галочку фичи.">
+                                            фича
+                                        </FluentBadge>
+                                    }
+                                    else if (IsFeatureField(field))
                                     {
                                         <FluentBadge Appearance="Appearance.Neutral"
                                                      title="Поле — картинка поста (фича «Картинка поста»). Чтобы удалить его — снимите галочку фичи или выберите другое поле картинки типа и сохраните.">
@@ -44,7 +52,7 @@
                                     <FluentButton Appearance="Appearance.Stealth" OnClick="() => OnClone(field)">
                                         <span class="text-secondary">дублировать</span>
                                     </FluentButton>
-                                    @if (!IsFeatureField(field))
+                                    @if (!IsProtectedFeatureField(field))
                                     {
                                         <DFluentDeleteButton OnConfirm="() => OnDelete(field)">
                                             <span class="text-danger">удалить</span>
@@ -76,6 +84,7 @@
                                                 <FormItem2 For="() => field.Key">
                                                     <FluentTextField Value=@field.Key
                                                                      ValueChanged="@((v) => OnChangeFieldKey(v, field))"
+                                                                     Disabled="IsContentFeatureField(field)"
                                                                      Required />
                                                 </FormItem2>
                                             </div>
@@ -108,7 +117,7 @@
                                                                            OptionText="@(i => i.Label)"
                                                                            OptionValue="@(i => i.OptionKey)"
                                                                            Value="@GetTypePickerValue(field)"
-                                                                           Disabled="IsFeatureField(field)"
+                                                                           Disabled="IsProtectedFeatureField(field)"
                                                                            ValueChanged="@(v => OnChangeFieldTypePicker(v, field))"
                                                                            ButtonStyle="min-width:250px;" />
                                                 </FormItem2>
@@ -130,6 +139,23 @@
                                                     </div>
                                                 }
                                             </div>
+                                            @if (field.Editor == MetaFieldEditorCatalog.Code)
+                                            {
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Язык кода</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.CodeLang"
+                                                                      ValueChanged="@(v => field.CodeLang = v)">
+                                                            <FluentOption TOption="string" Value="">— по умолчанию (@MetaFieldEditorCatalog.DefaultCodeLang) —</FluentOption>
+                                                            @foreach (var lang in CodeEditor2.Language.Array)
+                                                            {
+                                                                <FluentOption TOption="string" Value="@lang">@lang</FluentOption>
+                                                            }
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                            }
                                             <div>
                                                 @if (field.Type == MetaFieldType.Relation)
                                                 {

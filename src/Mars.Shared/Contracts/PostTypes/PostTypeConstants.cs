@@ -5,18 +5,6 @@ public sealed class PostTypeConstants
     public const int TypeNameMinLength = 3;
     public const int TypeNameMaxLength = 128;
 
-    public sealed class DefaultPostContentTypes
-    {
-        public static readonly string[] All = [PlainText, WYSIWYG, Code, BlockEditor];
-
-        public const string PlainText = "PlainText";
-        public const string WYSIWYG = "WYSIWYG";
-        public const string Code = "Code";
-        public const string BlockEditor = "BlockEditor";
-
-        public const string DefaultCodeTemplate = "handlebars";
-    }
-
     public sealed class Features
     {
         public static readonly string[] All = [

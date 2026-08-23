@@ -35,7 +35,6 @@ public static class PostTypeMapping
             Disabled = entity.Disabled,
             Visibility = entity.Visibility,
             EnabledFeatures = entity.EnabledFeatures,
-            PostContentSettings = entity.PostContentSettings.ToResponse(),
             PostStatusList = entity.PostStatusList.ToResponse(),
             MetaFields = entity.MetaFields.ToDetailResponse(),
             ImageFieldKey = entity.ImageFieldKey,
@@ -90,13 +89,6 @@ public static class PostTypeMapping
             Title = entity.Title,
             Color = entity.Color,
             Order = entity.Order,
-        };
-
-    public static PostContentSettingsResponse ToResponse(this PostContentSettingsDto entity)
-        => new()
-        {
-            CodeLang = entity.CodeLang,
-            PostContentType = entity.PostContentType,
         };
 
     public static ListDataResult<PostTypeListItemResponse> ToResponse(this ListDataResult<PostTypeSummary> postTypes)

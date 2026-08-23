@@ -2,7 +2,6 @@
 using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Data.OwnedTypes.NavMenus;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -29,7 +28,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 table: "post_types",
                 type: "jsonb",
                 nullable: false,
-                oldClrType: typeof(PostContentSettings),
+                oldClrType: typeof(string),
                 oldType: "jsonb",
                 oldComment: "РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚РµРЅС‚Р°");
 
@@ -65,7 +64,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                 oldType: "jsonb",
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<PostContentSettings>(
+            migrationBuilder.AlterColumn<string>(
                 name: "post_content_type",
                 table: "post_types",
                 type: "jsonb",

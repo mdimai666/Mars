@@ -6,6 +6,7 @@ using Mars.Core.Features;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.Services;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -44,12 +45,12 @@ public class MarsPostTools
         try
         {
             var blank = await _postService.GetEditModelBlank(type, CancellationToken.None);
-            var contentType = blank.PostType.PostContentSettings.PostContentType;
+            var contentEditor = blank.PostType.ContentEditorKey();
 
-            var content = contentType switch
+            var content = contentEditor switch
             {
-                PostTypeConstants.DefaultPostContentTypes.BlockEditor => BuildBlockEditorJson(contentText),
-                PostTypeConstants.DefaultPostContentTypes.WYSIWYG => BuildHtml(contentText),
+                MetaFieldEditorCatalog.BlockEditor => BuildBlockEditorJson(contentText),
+                MetaFieldEditorCatalog.Wysiwyg => BuildHtml(contentText),
                 _ => contentText,
             };
 

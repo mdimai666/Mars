@@ -85,4 +85,36 @@ public class PostTypeFeatureFieldsTests
         pointer.Should().Be($"{FeatureFieldsCatalog.PostImageFieldKey}_2");
         fields.Should().HaveCount(2);
     }
+
+    [Fact]
+    public void Content_Disabled_FieldsUntouched()
+    {
+        var textField = Field(MetaFieldType.Text, "body");
+
+        var fields = PostTypeFeatureFields.ApplyFeatureContent([textField], enable: false);
+
+        fields.Should().BeEquivalentTo(new[] { textField });
+    }
+
+    [Fact]
+    public void Content_Enabled_NoField_CreatesFeatureFieldWithMarkerAndEditor()
+    {
+        var fields = PostTypeFeatureFields.ApplyFeatureContent([], enable: true);
+
+        var created = fields.Should().ContainSingle().Which;
+        created.Key.Should().Be(FeatureFieldsCatalog.ContentFieldKey);
+        created.Type.Should().Be(MetaFieldType.Text);
+        created.Options.GetFeatureKey().Should().Be(FeatureFieldsCatalog.Content);
+        created.Options.GetEditor().Should().Be(MetaFieldEditorCatalog.BlockEditor);
+    }
+
+    [Fact]
+    public void Content_Enabled_FieldExists_NoCreate()
+    {
+        var contentField = Field(MetaFieldType.Text, FeatureFieldsCatalog.ContentFieldKey);
+
+        var fields = PostTypeFeatureFields.ApplyFeatureContent([contentField], enable: true);
+
+        fields.Should().ContainSingle().Which.Id.Should().Be(contentField.Id);
+    }
 }

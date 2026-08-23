@@ -33,6 +33,19 @@ public class CreatePostTypeQueryValidator : AbstractValidator<CreatePostTypeQuer
                 }
             });
 
+        RuleFor(x => x)
+            .Custom((x, context) =>
+            {
+                if (!x.EnabledFeatures.Contains(PostTypeConstants.Features.Content)) return;
+
+                if (!x.MetaFields.Any(f => f.Key == FeatureFieldsCatalog.ContentFieldKey
+                                           && (f.Type == MetaFieldType.String || f.Type == MetaFieldType.Text)))
+                {
+                    context.AddFailure(nameof(x.MetaFields),
+                        $"Для фичи «Контент» требуется поле с ключом «{FeatureFieldsCatalog.ContentFieldKey}» типа Текст или Строка");
+                }
+            });
+
         RuleFor(x => x).SetValidator(new MetaFieldsDuplicateQueryValidator(metaModelTypesLocator));
     }
 }

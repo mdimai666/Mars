@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Mars.Host.Data.Common;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Host.Data.Entities;
@@ -50,14 +50,15 @@ public class PostTypeEntity : IBasicEntity
 
     //icon, in_menu, search, public
 
-    /// <summary>
-    /// <b>[jsonb]</b>
-    /// </summary>
-    [Comment("Настройки контента")]
-    public PostContentSettings PostContentType { get; set; } = new();
-
     [Comment("Теги")]
     public List<string> Tags { get; set; } = [];
+
+    /// <summary>
+    /// <b>[jsonb]</b> Общие настройки типа (точка расширения) —
+    /// см. <c>PostTypeOptionsCatalog</c>. Пер-постовые вещи — мета-поля, не опции.
+    /// </summary>
+    [Comment("Опции (точка расширения)")]
+    public JsonNode? Options { get; set; }
 
     // Relations
 

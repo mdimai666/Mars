@@ -84,7 +84,10 @@ internal class PostService : IPostService
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type);
         if (postType is not null)
+        {
+            query = StripContentFieldValue(query, postType);
             query = await _metaValuesGenerator.ApplyAsync(postType, query, cancellationToken);
+        }
 
         var id = await _postRepository.Create(query, cancellationToken);
         var created = await GetDetail(id, renderContent: false, cancellationToken);
@@ -100,6 +103,10 @@ internal class PostService : IPostService
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
         //await _validatorFactory.ValidateAndThrowAsync<UpdatePostQueryValidator, UpdatePostQuery>(query, cancellationToken);
 
+        var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type);
+        if (postType is not null)
+            query = StripContentFieldValue(query, postType);
+
         await _postRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, renderContent: false, cancellationToken);
 
@@ -107,6 +114,28 @@ internal class PostService : IPostService
         _eventManager.TriggerEvent(payload);
 
         return updated;
+    }
+
+    /// <summary>
+    /// Значения поля контента фичи не хранятся в мета-значениях (значение — колонка
+    /// posts.Content): присланные строки такого поля отбрасываются на общем пути записи.
+    /// </summary>
+    static CreatePostQuery StripContentFieldValue(CreatePostQuery query, PostTypeDetail postType)
+    {
+        var contentField = postType.ContentField();
+        if (contentField is null) return query;
+
+        var values = query.MetaValues.Where(v => v.MetaFieldId != contentField.Id).ToList();
+        return values.Count == query.MetaValues.Count ? query : query with { MetaValues = values };
+    }
+
+    static UpdatePostQuery StripContentFieldValue(UpdatePostQuery query, PostTypeDetail postType)
+    {
+        var contentField = postType.ContentField();
+        if (contentField is null || query.MetaValues is null) return query;
+
+        var values = query.MetaValues.Where(v => v.MetaFieldId != contentField.Id).ToList();
+        return values.Count == query.MetaValues.Count ? query : query with { MetaValues = values };
     }
 
     public async Task<PostSummary> Delete(Guid id, CancellationToken cancellationToken)
@@ -146,7 +175,7 @@ internal class PostService : IPostService
 
         if (post.MetaValues.Count != postType.MetaFields.Count)
         {
-            post = post with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields) };
+            post = post with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
         }
 
         return new()
@@ -164,7 +193,7 @@ internal class PostService : IPostService
 
         if (post.MetaValues.Count != postType.MetaFields.Count)
         {
-            post = post with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields) };
+            post = post with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
         }
 
         return Task.FromResult<PostEditViewModel>(new()
@@ -179,10 +208,12 @@ internal class PostService : IPostService
     /// </summary>
     /// <param name="metaValues"></param>
     /// <param name="metaFields"></param>
+    /// <param name="contentFieldKey">Поле контента фичи: значения нет в мета-значениях (оно в posts.Content)</param>
     /// <returns></returns>
     public static IReadOnlyCollection<MetaValueDetailDto> EnrichWithBlankMetaValuesFromMetaValues(
                                                             IEnumerable<MetaValueDetailDto> metaValues,
-                                                            IReadOnlyCollection<MetaFieldDto> metaFields)
+                                                            IReadOnlyCollection<MetaFieldDto> metaFields,
+                                                            string? contentFieldKey = null)
     {
 
         var valuesByMfId = metaValues.GroupBy(s => s.MetaField.Id)
@@ -193,6 +224,7 @@ internal class PostService : IPostService
         foreach (var mf in metaFields)
         {
             if (mf.Type == MetaFieldType.Query) continue; // вычислимое — хранимых значений нет
+            if (contentFieldKey is not null && mf.Key == contentFieldKey) continue; // значение — в posts.Content
 
             if (valuesByMfId.TryGetValue(mf.Id, out var values))
             {

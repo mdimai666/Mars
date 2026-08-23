@@ -21,6 +21,7 @@
                        SaveAction="@((model,create)=>UserEditModel.SaveAction(client, model, isCreateNew))"
                        AfterDelete="AfterDelete"
                        AfterSave="AfterSave"
+                       BeforeSave="OnBeforeSave"
                        @ref=_editForm1>
 
         <div class="vstack gap-2">
@@ -73,7 +74,7 @@
             <CascadingValue Value="@model.MetaValues">
                 <CascadingValue Value="@model.UserType.MetaFields">
                     @* <AppFront.Shared.Components.MetaFieldViews.FormMetaValue Vertical Client /> *@
-                    <AppFront.Shared.Components.MetaFieldViews.FormMetaValue />
+                    <AppFront.Shared.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
                 </CascadingValue>
             </CascadingValue>
 

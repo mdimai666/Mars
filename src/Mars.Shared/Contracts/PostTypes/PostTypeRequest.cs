@@ -23,7 +23,6 @@ public record CreatePostTypeRequest
     public required PostTypeVisibility Visibility { get; init; }
     public string? ImageFieldKey { get; init; }
 
-    public required CreatePostContentSettingsRequest PostContentSettings { get; init; }
     public required IReadOnlyCollection<CreateMetaFieldRequest> MetaFields { get; init; }
 }
 
@@ -45,7 +44,6 @@ public record UpdatePostTypeRequest
     public required PostTypeVisibility Visibility { get; init; }
     public string? ImageFieldKey { get; init; }
 
-    public required UpdatePostContentSettingsRequest PostContentSettings { get; init; }
     public required IReadOnlyCollection<UpdateMetaFieldRequest> MetaFields { get; init; }
 }
 
@@ -58,15 +56,6 @@ public record CreatePostStatusRequest
     public required int Order { get; init; }
 }
 
-public record CreatePostContentSettingsRequest
-{
-    /// <summary>
-    /// <see cref="PostTypeConstants.DefaultPostContentTypes.PlainText"/>
-    /// </summary>
-    public required string PostContentType { get; init; }
-    public required string? CodeLang { get; init; }
-}
-
 public record UpdatePostStatusRequest
 {
     public required Guid Id { get; init; }
@@ -74,15 +63,6 @@ public record UpdatePostStatusRequest
     public required string Slug { get; init; }
     public required string Color { get; init; }
     public required int Order { get; init; }
-}
-
-public record UpdatePostContentSettingsRequest
-{
-    /// <summary>
-    /// <see cref="PostTypeConstants.DefaultPostContentTypes.PlainText"/>
-    /// </summary>
-    public required string PostContentType { get; init; }
-    public required string? CodeLang { get; init; }
 }
 
 public record ListPostTypeQueryRequest : BasicListQueryRequest

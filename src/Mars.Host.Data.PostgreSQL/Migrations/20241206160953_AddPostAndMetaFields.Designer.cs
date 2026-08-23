@@ -5,7 +5,6 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Data.OwnedTypes.Files;
 using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -493,7 +492,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                         .HasColumnName("modified_at")
                         .HasComment("РР·РјРµРЅРµРЅ");
 
-                    b.Property<PostContentSettings>("PostContentType")
+                    b.Property<string>("PostContentType")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("post_content_type")

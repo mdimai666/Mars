@@ -55,7 +55,6 @@ public class MetaValuesGeneratorServiceTests
             Visibility = PostTypeVisibility.Public,
             ModifiedAt = null,
             PostStatusList = [],
-            PostContentSettings = new PostContentSettingsDto { PostContentType = "plain", CodeLang = null },
             MetaFields = fields,
             Presentation = PostTypePresentation.Default(),
         };

@@ -23,12 +23,14 @@ internal class MetaValuesValidator : IMetaValuesValidator
 
     public IReadOnlyCollection<MetaValueValidationError> ValidateJson(IReadOnlyCollection<MetaFieldDto> fields,
                                                                       IReadOnlyDictionary<string, JsonNode>? meta,
-                                                                      bool requireAll)
+                                                                      bool requireAll,
+                                                                      string? contentFieldKey = null)
     {
         var errors = new List<MetaValueValidationError>();
         foreach (var field in fields)
         {
             if (field.Type == MetaFieldType.Query) continue;
+            if (contentFieldKey is not null && field.Key == contentFieldKey) continue; // значение — в posts.Content
 
             JsonNode? node = null;
             var present = meta is not null && meta.TryGetValue(field.Key, out node) && node is not null;

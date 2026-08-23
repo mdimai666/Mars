@@ -1,5 +1,6 @@
 @using AppAdmin.Pages.PostCategoryViews
 @using AppAdmin.Pages.PostTypeViews
+@using Mars.Shared.Contracts.MetaFields
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
 @using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
@@ -56,16 +57,16 @@
         {
             <div class="my-2">
                 <div class="">
-                    @if (PostContentType == DefaultPostContentTypes.WYSIWYG)
+                    @if (ContentEditorKey == MetaFieldEditorCatalog.Wysiwyg)
                     {
                         <WysiwygEditor Content="@context.Content" @ref=editor1 />
                     }
-                    else if (PostContentType == DefaultPostContentTypes.Code)
+                    else if (ContentEditorKey == MetaFieldEditorCatalog.Code)
                     {
 
                         <div>
                             <div class="text-end mb-1">
-                                <FluentSelect Value="@lang1"
+                                <FluentSelect Value="@(string.IsNullOrEmpty(lang1) ? ContentCodeLang : lang1)"
                                               TOption="string"
                                               Style="width: 180px;"
                                               Items="CodeEditor2.Language.Array"
@@ -74,19 +75,19 @@
                             </div>
 
                             <MarsCodeEditor2.CodeEditor2 @ref=codeEditor1
-                                                         Lang=@CodeEditor2.Language.handlebars
+                                                         Lang=@(string.IsNullOrEmpty(lang1) ? ContentCodeLang : lang1)
                                                          OnSave="OnSaveFromCodeEditor"
                                                          Value="@f.Model.Content" />
                             <HandlebarsHintsText />
                         </div>
                     }
-                    else if (PostContentType == DefaultPostContentTypes.PlainText)
+                    else if (ContentEditorKey == "")
                     {
                         <FormItem2 For="@(() => context.Content)">
                             <FluentTextArea Rows="8" @bind-Value=@context.Content Class="w-100" />
                         </FormItem2>
                     }
-                    else if (PostContentType == DefaultPostContentTypes.BlockEditor)
+                    else if (ContentEditorKey == MetaFieldEditorCatalog.BlockEditor)
                     {
                         <div class="text-end">
                             <FluentButton id="@blockEditorMenuButtonId"
@@ -114,7 +115,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <FluentLabel Color="@Color.Warning">
-                                    content type <strong>'@PostContentType'</strong> not implement
+                                    content editor <strong>'@ContentEditorKey'</strong> not implement
                                 </FluentLabel>
                             </div>
                         </div>
@@ -159,7 +160,7 @@
 
         <CascadingValue Value="@context.MetaValues">
             <CascadingValue Value="@context.PostType.MetaFields">
-                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue />
+                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
             </CascadingValue>
         </CascadingValue>
 

@@ -26,7 +26,25 @@ public class MetaFieldEditorLocator : IMetaFieldEditorLocator
         [MetaFieldEditorCatalog.Date] = (typeof(Editors.MetaValueDateEditor), [MetaFieldType.DateTime]),
         [MetaFieldEditorCatalog.Time] = (typeof(Editors.MetaValueTimeEditor), [MetaFieldType.DateTime]),
         [MetaFieldEditorCatalog.DateTime] = (typeof(Editors.MetaValueDateTimeEditor), [MetaFieldType.DateTime]),
+        [MetaFieldEditorCatalog.Wysiwyg] = (typeof(Editors.MetaValueWysiwygEditor), [MetaFieldType.String, MetaFieldType.Text]),
+        [MetaFieldEditorCatalog.Code] = (typeof(Editors.MetaValueCodeEditor), [MetaFieldType.String, MetaFieldType.Text]),
     };
+
+    static readonly object RegistrationLock = new();
+
+    /// <summary>
+    /// Динамическая регистрация редактора (админка, плагины) — до рендеринга.
+    /// Так тяжёлые/модульные редакторы не тянут статических ссылок из общей
+    /// фронт-библиотеки: ключ в <see cref="MetaFieldEditorCatalog"/> есть всегда,
+    /// а компонент появляется только там, где его зарегистрировали.
+    /// </summary>
+    public static void Register(string editorKey, Type component, params MetaFieldType[] fieldTypes)
+    {
+        lock (RegistrationLock)
+        {
+            Registry[editorKey] = (component, fieldTypes);
+        }
+    }
 
     public Type? GetEditorComponent(string? editorKey, MetaFieldType fieldType)
     {

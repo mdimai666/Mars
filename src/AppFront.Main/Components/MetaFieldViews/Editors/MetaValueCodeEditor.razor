@@ -1,0 +1,54 @@
+@* Редактор значения «Код (Monaco)». Тяжёлый: значение забирается в модель
+   при сохранении формы (IHeavyMetaValueEditor); Ctrl+S — промежуточный коммит. *@
+@using Mars.Shared.Contracts.MetaFields
+@implements IHeavyMetaValueEditor
+
+<div class="vstack">
+    <label>@Value.MetaField.Title</label>
+    <MarsCodeEditor2.CodeEditor2 @ref=_editor
+                                 Lang="@EditorLang"
+                                 Value="@TextValue"
+                                 OnSave="OnEditorSave"
+                                 ContainerCssStyle="height:40vh;border:1px solid #dfdfdf; border-radius:4px;overflow:hidden;" />
+</div>
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    [CascadingParameter] FormMetaValue formMetaValue { get; set; } = default!;
+
+    MarsCodeEditor2.CodeEditor2? _editor;
+
+    string TextValue => Value.MetaField.Type == MetaFieldType.Text ? Value.StringText : Value.StringShort;
+
+    string EditorLang => string.IsNullOrEmpty(Value.MetaField.CodeLang)
+        ? MetaFieldEditorCatalog.DefaultCodeLang
+        : Value.MetaField.CodeLang;
+
+    protected override void OnInitialized() => formMetaValue?.RegisterHeavyEditor(this);
+
+    public async Task<string?> GetValueAsync()
+        => _editor is null ? TextValue : await _editor.GetValue();
+
+    public Task SetValueAsync(string? value)
+        => _editor is null ? Task.CompletedTask : _editor.SetValue(value ?? "");
+
+    Task OnEditorSave(string text) => CommitAsync(text);
+
+    public Task CommitAsync() => CommitAsync(null);
+
+    /// <summary>Коммит в модель; <paramref name="text"/> = null — забрать из редактора</summary>
+    async Task CommitAsync(string? text)
+    {
+        var value = text ?? await GetValueAsync();
+        if (value == TextValue) return;
+
+        if (Value.MetaField.Type == MetaFieldType.Text) Value.StringText = value ?? "";
+        else Value.StringShort = value ?? "";
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    public void Dispose() => formMetaValue?.UnregisterHeavyEditor(this);
+}

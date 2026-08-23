@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using AntDesign;
 using AppFront.Shared.AuthProviders;
+using AppFront.Shared.Components.MetaFieldViews;
 using AppShared.Dto;
 using AppShared.ViewModels;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ public partial class AdminEditUserPage
     public UserEditProfileResponse? user { get; set; }
 
     BasicPage<UserEditProfileResponse>? basicPage;
+
+    FormMetaValue? metaValueForm;
 
     [Inject] public MessageService messageService { get; set; } = default!;
     [Inject] public UserService userService { get; set; } = default!;
@@ -51,6 +54,8 @@ public partial class AdminEditUserPage
     {
 
         if (user == null) throw new ArgumentNullException(nameof(user));
+
+        if (metaValueForm is not null) await metaValueForm.PullAsync();
 
         var result = await userService.UserEditProfileUpdate(user);
 

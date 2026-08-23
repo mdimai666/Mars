@@ -43,7 +43,6 @@ public class PostTypeViewServiceSqlTests
             Visibility = PostTypeVisibility.Public,
             ModifiedAt = null,
             PostStatusList = [],
-            PostContentSettings = new PostContentSettingsDto { PostContentType = "PlainText", CodeLang = null },
             MetaFields = fields,
             Presentation = PostTypePresentation.Default(),
         };

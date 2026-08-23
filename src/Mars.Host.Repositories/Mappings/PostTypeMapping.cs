@@ -1,5 +1,4 @@
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Shared.Contracts.PostTypes;
@@ -35,18 +34,10 @@ internal static class PostTypeMapping
             Disabled = entity.Disabled,
             Visibility = (PostTypeVisibility)entity.Visibility,
             ImageFieldKey = entity.ImageFieldKey,
-            PostContentSettings = entity.PostContentType.ToDto(),
             PostStatusList = entity.Statuses!.OrderBy(s => s.Order).ToDto(),
             MetaFields = entity.MetaFields!.ToDto(),
 
             Presentation = entity.Presentation.ToDto(),
-        };
-
-    public static PostContentSettingsDto ToDto(this PostContentSettings entity)
-        => new()
-        {
-            CodeLang = entity.CodeLang,
-            PostContentType = entity.PostContentType,
         };
 
     public static PostStatusDto ToDto(this PostStatusEntity entity)
@@ -80,11 +71,6 @@ internal static class PostTypeMapping
             Visibility = (EPostTypeVisibility)query.Visibility,
             ImageFieldKey = query.ImageFieldKey,
             EnabledFeatures = query.EnabledFeatures.ToList(),
-            PostContentType = new()
-            {
-                PostContentType = query.PostContentSettings.PostContentType,
-                CodeLang = query.PostContentSettings.CodeLang,
-            },
             Statuses = query.PostStatusList.Select(s => ToEntity(s, null)).ToList(),
             MetaFields = query.MetaFields.ToEntity()
         };
@@ -110,11 +96,6 @@ internal static class PostTypeMapping
         entity.Disabled = query.Disabled;
         entity.Visibility = (EPostTypeVisibility)query.Visibility;
         entity.ImageFieldKey = query.ImageFieldKey;
-        entity.PostContentType = new()
-        {
-            PostContentType = query.PostContentSettings.PostContentType,
-            CodeLang = query.PostContentSettings.CodeLang,
-        };
 
         entity.ModifiedAt = DateTimeOffset.Now;
         return entity;

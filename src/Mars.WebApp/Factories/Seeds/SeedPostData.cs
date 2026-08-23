@@ -1,8 +1,9 @@
+using System.Text.Json.Nodes;
 using Mars.Core.Extensions;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.NavMenus;
-using Mars.Host.Data.OwnedTypes.PostTypes;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
 using Feature = Mars.Shared.Contracts.PostTypes.PostTypeConstants.Features;
@@ -37,7 +38,26 @@ public static class SeedPostData
             TypeName = "post",
             Statuses = PostStatusEntity.DefaultStatuses(),
             EnabledFeatures = [Feature.Content, Feature.Status, Feature.Tags],
-            PostContentType = new PostContentSettings { PostContentType = PostTypeConstants.DefaultPostContentTypes.BlockEditor },
+            MetaFields =
+            [
+                new MetaFieldEntity
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTimeOffset.Now,
+                    Title = FeatureFieldsCatalog.ContentFieldTitle,
+                    Key = FeatureFieldsCatalog.ContentFieldKey,
+                    Type = EMetaFieldType.Text,
+                    IsNullable = true,
+                    Options = new JsonObject
+                    {
+                        [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
+                        [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
+                    },
+                    Order = 0,
+                    Tags = [],
+                    Variants = [],
+                },
+            ],
         });
 
         await ef.PostTypes.AddRangeAsync(list);

@@ -1,6 +1,5 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
@@ -55,7 +54,6 @@ public class PostTypeViewServiceTests : ApplicationTests
             Title = "View test",
             TypeName = typeName,
             CreatedAt = DateTimeOffset.Now,
-            PostContentType = new PostContentSettings(),
             MetaFields = [stringField, intField],
         };
         var post = new PostEntity

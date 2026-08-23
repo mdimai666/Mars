@@ -4,12 +4,13 @@ using EditorJsBlazored.Core;
 using FluentAssertions;
 using Mars.Host.Services;
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
-using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
 
 namespace Mars.Integration.Tests.Services;
 
@@ -31,8 +32,8 @@ public class PostTransformerTests : ApplicationTests
         //Arrange
         _ = nameof(PostTransformer.Transform);
         var postType = _metaModelTypesLocator.GetPostTypeByName("post")!;
-        if (postType.PostContentSettings.PostContentType != DefaultPostContentTypes.BlockEditor)
-            throw new NotSupportedException($"PostType must be '{DefaultPostContentTypes.BlockEditor}'. Retrived '{postType.TypeName}'.");
+        if (postType.ContentEditorKey() != MetaFieldEditorCatalog.BlockEditor)
+            throw new NotSupportedException($"PostType must be '{MetaFieldEditorCatalog.BlockEditor}'. Retrived '{postType.TypeName}'.");
 
         var content = new EditorJsContent()
         {

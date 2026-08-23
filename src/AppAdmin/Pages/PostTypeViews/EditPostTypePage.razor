@@ -111,35 +111,6 @@
                 </div>
                 *@
 
-                @if (context.FeatureActivated(PostTypeConstants.Features.Content))
-                {
-                    <div class="card">
-                        <div class="card-header">
-                            @nameof(context.PostContentSettings)
-                        </div>
-                        <div class="statuses card-body">
-
-                            <div class="row row-cols-sm-3 py-2">
-                                <div class="col">
-                                    <FormItem2 For="@(()=>context.PostContentSettings.PostContentType)">
-                                        <FluentSelect TOption="string"
-                                                      Items="@PostTypeConstants.DefaultPostContentTypes.All"
-                                                      @bind-Value="@context.PostContentSettings.PostContentType" />
-                                    </FormItem2>
-                                </div>
-                                <div class="col">
-                                    @if (context.PostContentSettings.PostContentType == PostTypeConstants.DefaultPostContentTypes.Code)
-                                    {
-                                        <FormItem2 For="@(()=>context.PostContentSettings.CodeLang)">
-                                            <FluentTextField @bind-Value="@context.PostContentSettings.CodeLang" />
-                                        </FormItem2>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-
                 @if (context.FeatureActivated(PostTypeConstants.Features.Status))
                 {
                     <div class="">
@@ -234,6 +205,7 @@
                                 <CascadingValue Value="@context.MetaRelationModels">
                                     <AppFront.Shared.Components.MetaFieldViews.FormMetaField
                                         FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
+                                        ContentFeatureEnabled="@context.FeatureActivated(PostTypeConstants.Features.Content)"
                                         OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
                                 </CascadingValue>
                             </CascadingValue>

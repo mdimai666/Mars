@@ -20,6 +20,10 @@ public partial class FormMetaField
     /// удаления и смены типа); пусто — таких полей нет</summary>
     [Parameter] public string? FeatureFieldKey { get; set; }
 
+    /// <summary>Фича «Контент» включена: поле с фиксированным ключом content
+    /// защищено (бейдж, запрет удаления, смены типа и переименования)</summary>
+    [Parameter] public bool ContentFeatureEnabled { get; set; }
+
     /// <summary>Поле переименовано (старый ключ, новый ключ) — страница двигает указатель фичи</summary>
     [Parameter] public Action<string, string>? OnFieldKeyRenamed { get; set; }
 
@@ -30,6 +34,14 @@ public partial class FormMetaField
     /// <summary>Поле — текущий указатель фичи типа (например, картинки поста)</summary>
     bool IsFeatureField(MetaFieldEditModel field)
         => FeatureFieldKey is not null && field.Key == FeatureFieldKey;
+
+    /// <summary>Поле контента включённой фичи «Контент» (фиксированный ключ)</summary>
+    bool IsContentFeatureField(MetaFieldEditModel field)
+        => ContentFeatureEnabled && field.Key == FeatureFieldsCatalog.ContentFieldKey;
+
+    /// <summary>Поле защищено фичей: нельзя удалить, сменить тип (и ключ для контента)</summary>
+    bool IsProtectedFeatureField(MetaFieldEditModel field)
+        => IsFeatureField(field) || IsContentFeatureField(field);
 
     void OnChangeFieldTitle(string value, MetaFieldEditModel model)
     {
@@ -71,13 +83,14 @@ public partial class FormMetaField
     static readonly IEnumerable<IGrouping<string?, MetaFieldTypePresets.PickerItem>> TypePickerGroups
         = MetaFieldTypePresets.PickerItems.GroupBy(i => i.Group);
 
-    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор + вид) или «технический» тип</summary>
+    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор + вид + язык кода) или «технический» тип</summary>
     string GetTypePickerValue(MetaFieldEditModel field)
     {
         var preset = MetaFieldTypePresets.All.FirstOrDefault(p =>
             p.Type == field.Type
             && (string.IsNullOrEmpty(field.Editor) ? p.Editor is null : p.Editor == field.Editor)
-            && (string.IsNullOrEmpty(field.Kind) ? p.Kind is null : p.Kind == field.Kind));
+            && (string.IsNullOrEmpty(field.Kind) ? p.Kind is null : p.Kind == field.Kind)
+            && (string.IsNullOrEmpty(field.CodeLang) ? p.CodeLang is null : p.CodeLang == field.CodeLang));
 
         return preset is not null
             ? MetaFieldTypePresets.OptionKey(preset)
@@ -105,6 +118,7 @@ public partial class FormMetaField
         {
             field.Editor = preset.Editor ?? ""; // пресет задаёт редактор целиком
             field.Kind = preset.Kind ?? ""; // и вид поля (список объектов и т.п.)
+            field.CodeLang = preset.CodeLang ?? ""; // и язык кода для редактора «Код»
         }
         else if (typeChanged && _editorLocator.GetEditorComponent(field.Editor, field.Type) is null)
             field.Editor = ""; // редактор несовместим с новым типом

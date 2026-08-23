@@ -3,6 +3,7 @@ using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
 using Mars.Host.Repositories.Helpers;
 using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.MetaFields;
 using Microsoft.EntityFrameworkCore;
@@ -39,8 +40,9 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
         var postType = _metaModelTypesLocator.GetPostTypeByName(typeName);
         if (postType is null) return empty;
 
+        var contentFieldKey = postType.ContentField()?.Key;
         var fields = postType.MetaFields
-                             .Where(f => fieldKeys.Contains(f.Key) && f.Type != MetaFieldType.Query)
+                             .Where(f => fieldKeys.Contains(f.Key) && f.Type != MetaFieldType.Query && f.Key != contentFieldKey)
                              .ToList();
         if (fields.Count == 0) return empty;
 

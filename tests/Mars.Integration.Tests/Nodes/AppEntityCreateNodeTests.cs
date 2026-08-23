@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
@@ -43,13 +44,35 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
         {
             Title = "ExPost",
             TypeName = SubPostTypeName,
-            PostContentSettings = new() { PostContentType = PostTypeConstants.DefaultPostContentTypes.PlainText, CodeLang = null },
             EnabledFeatures = [PostTypeConstants.Features.Content],
             Tags = [],
             Disabled = false,
             Visibility = PostTypeVisibility.Public,
             PostStatusList = [],
             MetaFields = [
+                new MetaFieldDto
+                {
+                    Id = Guid.NewGuid(),
+                    Title = FeatureFieldsCatalog.ContentFieldTitle,
+                    Key = FeatureFieldsCatalog.ContentFieldKey,
+                    Type = MetaFieldType.Text,
+                    MaxValue = null,
+                    MinValue = null,
+                    Description = "",
+                    IsNullable = true,
+                    Default = null,
+                    Options = new JsonObject
+                    {
+                        [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
+                        [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
+                    },
+                    Order = 999,
+                    Tags = [],
+                    Hidden = false,
+                    Disabled = false,
+                    Variants = [],
+                    ModelName = null,
+                },
                 _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.String, Key = "str1" },
                 _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.Int, Key = "int1" },
             ],

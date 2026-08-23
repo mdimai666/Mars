@@ -1,5 +1,6 @@
 using Mars.Core.Exceptions;
 using Mars.Host.Shared.Dto.Posts;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Services;
 
 namespace Mars.Host.Services;
@@ -23,7 +24,11 @@ internal class PostTransformer : IPostTransformer
     {
         if (string.IsNullOrEmpty(post.Content)) return post;
         var postType = _metaModelTypesLocator.GetPostTypeByName(post.Type) ?? throw new NotFoundException($"PostType '{post.Type}' not found");
-        var postContentProcessor = _postContentProcessorsLocator.GetProvider(postType.PostContentSettings.PostContentType, _serviceProvider);
+
+        var editorKey = postType.ContentEditorKey();
+        if (string.IsNullOrEmpty(editorKey)) return post; // обычный текст — рендерить нечем
+
+        var postContentProcessor = _postContentProcessorsLocator.GetProvider(editorKey, _serviceProvider);
         if (postContentProcessor is null) return post;
         var content = await postContentProcessor.RenderPostContent(postType, post.Content, cancellationToken);
 

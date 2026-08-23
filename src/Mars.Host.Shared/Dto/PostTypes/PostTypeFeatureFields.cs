@@ -36,6 +36,24 @@ public static class PostTypeFeatureFields
         return (list, created.Key);
     }
 
+    /// <summary>
+    /// Применение фичи «Контент» к списку полей.
+    /// <paramref name="enable"/> = true: поля с ключом <see cref="FeatureFieldsCatalog.ContentFieldKey"/>
+    /// нет — оно создаётся (тип Текст, маркер <see cref="FeatureFieldsCatalog.Content"/> в Options,
+    /// редактор — блочный). <paramref name="enable"/> = false: поля не трогаются.
+    /// </summary>
+    public static IReadOnlyCollection<MetaFieldDto> ApplyFeatureContent(
+        IReadOnlyCollection<MetaFieldDto> fields, bool enable)
+    {
+        if (!enable) return fields;
+
+        var list = fields.ToList();
+        if (list.Any(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)) return list;
+
+        list.Add(CreateContentField(list));
+        return list;
+    }
+
     static MetaFieldDto CreatePostImageField(IReadOnlyCollection<MetaFieldDto> currentFields)
     {
         var takenKeys = new HashSet<string>(currentFields.Select(f => f.Key), StringComparer.Ordinal);
@@ -61,6 +79,33 @@ public static class PostTypeFeatureFields
             Options = new JsonObject
             {
                 [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.PostImage,
+            },
+            Order = currentFields.Count == 0 ? 0 : currentFields.Max(f => f.Order) + 1,
+            Tags = [],
+            Hidden = false,
+            Disabled = false,
+            Variants = [],
+            ModelName = null,
+        };
+    }
+
+    static MetaFieldDto CreateContentField(IReadOnlyCollection<MetaFieldDto> currentFields)
+    {
+        return new MetaFieldDto
+        {
+            Id = Guid.NewGuid(),
+            Title = FeatureFieldsCatalog.ContentFieldTitle,
+            Key = FeatureFieldsCatalog.ContentFieldKey,
+            Type = MetaFieldType.Text,
+            MaxValue = null,
+            MinValue = null,
+            Description = "",
+            IsNullable = true,
+            Default = null,
+            Options = new JsonObject
+            {
+                [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
+                [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
             },
             Order = currentFields.Count == 0 ? 0 : currentFields.Max(f => f.Order) + 1,
             Tags = [],

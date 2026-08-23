@@ -1,11 +1,13 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using AppFront.Shared.Components.MetaFieldViews;
 using EditorJsBlazored;
 using EditorJsBlazored.Blocks;
 using EditorJsBlazored.Core;
 using Mars.AiChat.Front.Services;
 using Mars.Core.Features;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Interfaces;
 using Mars.WebApiClient.Interfaces;
@@ -47,7 +49,9 @@ public partial class EditPostView : IAiChatPageHandler
     CodeEditor2? codeEditor1;
     BlockEditor1? blockEditor1;
 
-    string lang1 = CodeEditor2.Language.handlebars;
+    FormMetaValue? metaValueForm;
+
+    string lang1 = "";
 
     void OnChangeTitle()
     {
@@ -59,11 +63,13 @@ public partial class EditPostView : IAiChatPageHandler
 
     async Task BeforeSave(PostEditModel post)
     {
+        if (metaValueForm is not null) await metaValueForm.PullAsync();
+
         if (post.FeatureActivated(PostTypeConstants.Features.Content))
         {
-            var contentType = post.PostType.PostContentSettings.PostContentType;
+            var editorKey = post.PostType.ContentEditorKey();
 
-            if (contentType == PostTypeConstants.DefaultPostContentTypes.WYSIWYG)
+            if (editorKey == MetaFieldEditorCatalog.Wysiwyg)
             {
 
                 if (editor1 is not null)
@@ -71,7 +77,7 @@ public partial class EditPostView : IAiChatPageHandler
                     post.Content = await editor1!.GetHTML();
                 }
             }
-            else if (contentType == PostTypeConstants.DefaultPostContentTypes.Code)
+            else if (editorKey == MetaFieldEditorCatalog.Code)
             {
                 post.Content = await codeEditor1!.GetValue();
 
@@ -114,21 +120,23 @@ public partial class EditPostView : IAiChatPageHandler
             page = "EditPost",
             postType = PostTypeName,
             postId = f?.Model?.Id ?? ID,
-            contentType = PostContentType,
+            contentEditor = ContentEditorKey,
             fields = new[] { "title", "slug", "excerpt", "tags", "categories", "content" },
-            contentAiEditable = PostContentType != DefaultPostContentTypes.WYSIWYG,
+            contentAiEditable = ContentEditorKey != MetaFieldEditorCatalog.Wysiwyg,
         }, AiJsonOptions);
     }
 
     public async Task<string> GetFields()
     {
+        if (metaValueForm is not null) await metaValueForm.PullAsync();
+
         var model = f?.Model ?? throw new InvalidOperationException("Модель поста ещё не загружена.");
 
-        var content = PostContentType switch
+        var content = ContentEditorKey switch
         {
-            DefaultPostContentTypes.BlockEditor => blockEditor1?.ContentJson ?? model.Content,
-            DefaultPostContentTypes.Code => codeEditor1 is null ? model.Content : await codeEditor1.GetValue(),
-            DefaultPostContentTypes.WYSIWYG => editor1 is null ? model.Content : await editor1.GetHTML(),
+            MetaFieldEditorCatalog.BlockEditor => blockEditor1?.ContentJson ?? model.Content,
+            MetaFieldEditorCatalog.Code => codeEditor1 is null ? model.Content : await codeEditor1.GetValue(),
+            MetaFieldEditorCatalog.Wysiwyg => editor1 is null ? model.Content : await editor1.GetHTML(),
             _ => model.Content,
         };
 
@@ -139,9 +147,9 @@ public partial class EditPostView : IAiChatPageHandler
             excerpt = model.Excerpt,
             tags = model.Tags,
             categories = model.CategoryIds,
-            contentType = PostContentType,
+            contentEditor = ContentEditorKey,
             content,
-            contentText = ExtractPlainText(content, PostContentType),
+            contentText = ExtractPlainText(content, ContentEditorKey),
         }, AiJsonOptions);
     }
 
@@ -202,9 +210,9 @@ public partial class EditPostView : IAiChatPageHandler
 
     private async Task<string?> SetContentValue(string value)
     {
-        switch (PostContentType)
+        switch (ContentEditorKey)
         {
-            case DefaultPostContentTypes.BlockEditor:
+            case var k when k == MetaFieldEditorCatalog.BlockEditor:
                 if (blockEditor1 is null) return "Редактор блоков ещё не инициализирован.";
                 var json = BuildBlockEditorJson(value);
                 blockEditor1.Content = EditorJsContent.FromJson(json);
@@ -212,17 +220,13 @@ public partial class EditPostView : IAiChatPageHandler
                 f.Model.Content = json; // страховка, если JS onChange запаздывает
                 return null;
 
-            case DefaultPostContentTypes.Code:
+            case var k when k == MetaFieldEditorCatalog.Code:
                 if (codeEditor1 is null) return "Редактор кода ещё не инициализирован.";
                 await codeEditor1.SetValue(value);
                 f.Model.Content = value;
                 return null;
 
-            case DefaultPostContentTypes.PlainText:
-                f.Model.Content = value;
-                return null;
-
-            case DefaultPostContentTypes.WYSIWYG:
+            case var k when k == MetaFieldEditorCatalog.Wysiwyg:
                 return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
 
             default:
@@ -257,11 +261,11 @@ public partial class EditPostView : IAiChatPageHandler
     /// <summary>
     /// Plain-text извлечение контента для чтения моделью ИИ.
     /// </summary>
-    static string ExtractPlainText(string content, string contentType)
+    static string ExtractPlainText(string content, string contentEditor)
     {
         if (string.IsNullOrEmpty(content)) return "";
 
-        if (contentType == DefaultPostContentTypes.BlockEditor)
+        if (contentEditor == MetaFieldEditorCatalog.BlockEditor)
         {
             try
             {
@@ -304,7 +308,7 @@ public partial class EditPostView : IAiChatPageHandler
             }
         }
 
-        if (contentType == DefaultPostContentTypes.WYSIWYG)
+        if (contentEditor == MetaFieldEditorCatalog.Wysiwyg)
         {
             return Regex.Replace(content, "<[^>]+>", " ").Trim();
         }
@@ -312,7 +316,9 @@ public partial class EditPostView : IAiChatPageHandler
         return content;
     }
 
-    string PostContentType => f?.Model.PostType.PostContentSettings.PostContentType ?? "";
+    string ContentEditorKey => f?.Model.PostType.ContentEditorKey() ?? "";
+
+    string ContentCodeLang => f?.Model.PostType.ContentCodeLang() ?? MetaFieldEditorCatalog.DefaultCodeLang;
 
     async Task<BlockImage.ImageFileData?> OnImageFileRequest()
     {

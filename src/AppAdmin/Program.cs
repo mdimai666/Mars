@@ -3,6 +3,7 @@ using AppAdmin.Components;
 using AppAdmin.Startups;
 using AppFront.Main.Extensions;
 using AppFront.Main.OptionEditForms;
+using AppFront.Shared.Components.MetaFieldViews;
 using AppFront.Shared.Features;
 using AppFront.Shared.Interfaces;
 using Flurl.Http;
@@ -12,6 +13,7 @@ using Mars.Nodes.Workspace;
 using Mars.Options.Front;
 using Mars.Plugin.Front;
 using Mars.SemanticKernel.Front;
+using Mars.Shared.Contracts.MetaFields;
 using Mars.WebApp.Nodes.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
@@ -67,6 +69,10 @@ Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
 Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
 ContentWrapper.GeneralSectionActions = typeof(AppAdmin.Shared.GeneralSectionActions);
+
+// блочный редактор мета-полей: модуль подключён только в админке
+// (общая фронт-библиотека от EditorJsBlazored не зависит)
+MetaFieldEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor), MetaFieldType.String, MetaFieldType.Text);
 
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();

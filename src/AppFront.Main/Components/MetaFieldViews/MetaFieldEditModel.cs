@@ -50,6 +50,7 @@ public class MetaFieldEditModel
         SyncValidatorsToOptions();
         SyncGeneratorToOptions();
         SyncEditorToOptions();
+        SyncCodeLangToOptions();
         SyncKindToOptions();
         return new()
         {
@@ -77,6 +78,7 @@ public class MetaFieldEditModel
         SyncValidatorsToOptions();
         SyncGeneratorToOptions();
         SyncEditorToOptions();
+        SyncCodeLangToOptions();
         SyncKindToOptions();
         return new()
         {
@@ -124,6 +126,7 @@ public class MetaFieldEditModel
         };
         ReadGenerator(model, response.Options);
         model.Editor = ReadEditor(response.Options);
+        model.CodeLang = ReadCodeLang(response.Options);
         model.Kind = response.Options.GetKind();
         model.RemoveMode = response.Options.GetRemoveMode();
         return model;
@@ -154,6 +157,7 @@ public class MetaFieldEditModel
         };
         ReadGenerator(clone, Options);
         clone.Editor = ReadEditor(Options);
+        clone.CodeLang = ReadCodeLang(Options);
         clone.Kind = Options.GetKind();
         clone.RemoveMode = Options.GetRemoveMode();
         return clone;
@@ -347,9 +351,15 @@ public class MetaFieldEditModel
     /// <summary>Редактор значения (хранится в Options.editor); пусто = дефолтный редактор типа</summary>
     public string Editor { get; set; } = "";
 
-    static string ReadEditor(JsonNode? options)
-        => options is JsonObject obj && obj["editor"] is JsonValue value && value.TryGetValue<string>(out var editor)
-            ? editor
+    /// <summary>Язык кода для редактора Код (хранится в Options.codeLang); пусто = дефолтный</summary>
+    public string CodeLang { get; set; } = "";
+
+    static string ReadEditor(JsonNode? options) => options.GetEditor();
+
+    static string ReadCodeLang(JsonNode? options)
+        => options is JsonObject obj && obj[MetaFieldEditorCatalog.CodeLangOption()] is JsonValue value
+            && value.TryGetValue<string>(out var lang)
+            ? lang
             : "";
 
     /// <summary>Синхронизирует выбранный редактор в Options.editor</summary>
@@ -357,7 +367,7 @@ public class MetaFieldEditModel
     {
         if (string.IsNullOrEmpty(Editor))
         {
-            if (Options is JsonObject emptyObj) emptyObj.Remove("editor");
+            if (Options is JsonObject emptyObj) emptyObj.Remove(MetaFieldEditorCatalog.EditorOption());
             return;
         }
 
@@ -366,7 +376,24 @@ public class MetaFieldEditModel
             obj = new JsonObject();
             Options = obj;
         }
-        obj["editor"] = Editor;
+        obj[MetaFieldEditorCatalog.EditorOption()] = Editor;
+    }
+
+    /// <summary>Синхронизирует язык кода в Options.codeLang</summary>
+    public void SyncCodeLangToOptions()
+    {
+        if (string.IsNullOrEmpty(CodeLang))
+        {
+            if (Options is JsonObject emptyObj) emptyObj.Remove(MetaFieldEditorCatalog.CodeLangOption());
+            return;
+        }
+
+        if (Options is not JsonObject obj)
+        {
+            obj = new JsonObject();
+            Options = obj;
+        }
+        obj[MetaFieldEditorCatalog.CodeLangOption()] = CodeLang;
     }
     #endregion
 

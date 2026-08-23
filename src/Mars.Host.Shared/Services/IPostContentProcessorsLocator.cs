@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Host.Shared.Services;
 
@@ -9,9 +9,9 @@ public interface IPostContentProcessorsLocator
     /// <summary>
     /// GetProvider
     /// </summary>
-    /// <param name="key">
-    /// <see cref="PostTypeDetail.PostContentSettings"/>
-    /// <see cref="PostContentSettingsDto.PostContentType"/>
+    /// <param name="postContentType">
+    /// Ключ редактора контента (<see cref="MetaFieldEditorCatalog"/>) —
+    /// редактор поля контента типа (<c>Options.editor</c> поля <c>content</c>).
     /// </param>
     /// <returns></returns>
     IPostContentProcessor? GetProvider(string postContentType, IServiceProvider serviceProvider);

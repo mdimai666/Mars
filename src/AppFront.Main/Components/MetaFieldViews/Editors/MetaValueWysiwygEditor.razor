@@ -1,0 +1,41 @@
+@* Редактор значения «WYSIWYG (Quill)». Тяжёлый: значение забирается в модель
+   при сохранении формы (IHeavyMetaValueEditor), а не пушится при вводе. *@
+@using Mars.Shared.Contracts.MetaFields
+@implements IHeavyMetaValueEditor
+
+<div class="vstack">
+    <label>@Value.MetaField.Title</label>
+    <WysiwygEditor @ref=_editor Content="@TextValue" />
+</div>
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    [CascadingParameter] FormMetaValue formMetaValue { get; set; } = default!;
+
+    WysiwygEditor? _editor;
+
+    string TextValue => Value.MetaField.Type == MetaFieldType.Text ? Value.StringText : Value.StringShort;
+
+    protected override void OnInitialized() => formMetaValue?.RegisterHeavyEditor(this);
+
+    public async Task<string?> GetValueAsync()
+        => _editor is null ? TextValue : await _editor.GetHTML();
+
+    public Task SetValueAsync(string? value)
+        => _editor is null ? Task.CompletedTask : _editor.LoadContent(value ?? "");
+
+    public async Task CommitAsync()
+    {
+        var html = await GetValueAsync();
+        if (html == TextValue) return;
+
+        if (Value.MetaField.Type == MetaFieldType.Text) Value.StringText = html ?? "";
+        else Value.StringShort = html ?? "";
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    public void Dispose() => formMetaValue?.UnregisterHeavyEditor(this);
+}

@@ -51,11 +51,6 @@ public sealed class ListMetaValueRelationModelsTests : BaseWebApiClientTests
             EnabledFeatures = [],
             Disabled = false,
             Visibility = PostTypeVisibility.Public,
-            PostContentSettings = new CreatePostContentSettingsRequest
-            {
-                PostContentType = PostTypeConstants.DefaultPostContentTypes.PlainText,
-                CodeLang = null,
-            },
             MetaFields = [],
         };
 

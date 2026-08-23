@@ -132,6 +132,16 @@
             return (await QuillHtml!.GetHTML())!;
     }
 
+    /// <summary>Записать контент в редактор программно</summary>
+    public async Task LoadContent(string html)
+    {
+        _content = html;
+        _isViewSource = false;
+        await Task.Delay(10);
+        await QuillHtml!.LoadHTMLContent(html);
+        StateHasChanged();
+    }
+
     public async void InsertImage()
     {
         var file = await mediaService.OpenSelectMedia();

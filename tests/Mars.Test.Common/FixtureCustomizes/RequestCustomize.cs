@@ -1,9 +1,8 @@
-using AutoFixture;
+﻿using AutoFixture;
 using Bogus;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Feedbacks;
 using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.Feedbacks;
@@ -65,7 +64,6 @@ public sealed class RequestCustomize : ICustomization
                                     .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 3)).ToList())
                                     .With(s => s.EnabledFeatures)
                                     .With(s => s.PostStatusList)
-                                    .With(s => s.PostContentSettings)
                                     .With(s => s.MetaFields)
                                     );
 

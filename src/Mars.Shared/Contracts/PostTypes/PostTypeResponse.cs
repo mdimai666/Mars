@@ -63,20 +63,10 @@ public record PostTypeDetailResponse : IBasicEntityResponse
 
     [Display(Name = "Видимость")]
     public required PostTypeVisibility Visibility { get; init; }
-    public required PostContentSettingsResponse PostContentSettings { get; init; }
     public required IReadOnlyCollection<MetaFieldDetailResponse> MetaFields { get; init; }
 
     public string? ImageFieldKey { get; init; }
 
-}
-
-public record PostContentSettingsResponse
-{
-    /// <summary>
-    /// <see cref="PostTypeConstants.DefaultPostContentTypes.PlainText"/>
-    /// </summary>
-    public required string PostContentType { get; init; }
-    public required string? CodeLang { get; init; }
 }
 
 public record PostStatusResponse
@@ -114,4 +104,22 @@ public record PostTypeAdminPanelItemResponse : PostTypeSummaryResponse
 {
     public required PostTypePresentationResponse Presentation { get; init; }
 
+}
+
+/// <summary>Поле контента типа поста (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>
+public static class PostTypeDetailResponseContentExtensions
+{
+    /// <summary>Поле контента: фича включена и поле с фиксированным ключом существует</summary>
+    public static MetaFieldDetailResponse? ContentField(this PostTypeDetailResponse postType)
+        => postType.EnabledFeatures.Contains(PostTypeConstants.Features.Content)
+            ? postType.MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
+            : null;
+
+    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
+    public static string ContentEditorKey(this PostTypeDetailResponse postType)
+        => postType.ContentField()?.Options.GetEditor() ?? "";
+
+    /// <summary>Язык кода редактора контента</summary>
+    public static string ContentCodeLang(this PostTypeDetailResponse postType)
+        => postType.ContentField()?.Options.GetCodeLang() ?? MetaFieldEditorCatalog.DefaultCodeLang;
 }

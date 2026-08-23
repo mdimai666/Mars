@@ -54,9 +54,6 @@ public class PostTypeEditModel : IBasicEntity
     [Display(Name = "Поле картинки поста")]
     public string? ImageFieldKey { get; set; }
 
-    [ValidateComplexType]
-    public PostContentSettingsEditModel PostContentSettings { get; set; } = new();
-
     [Display(Name = nameof(AppRes.MetaFields), ResourceType = typeof(AppRes))]
     [ValidateComplexType]
     public List<MetaFieldEditModel> MetaFields { get; set; } = [];
@@ -77,6 +74,8 @@ public class PostTypeEditModel : IBasicEntity
     /// дополнительно оркестрирует выбор/создание поля-указателя
     /// (см. <see cref="CreateFeatureImageField"/>); серверная согласованность —
     /// на валидаторе (<c>UpdatePostTypeQueryValidator</c>).
+    /// Поле контента создаётся сразу при включении фичи (ключ фиксированный,
+    /// кандидатов нет — диалог выбора не нужен).
     /// </summary>
     public void ToggleFeature(string feature, bool enabled)
     {
@@ -85,6 +84,12 @@ public class PostTypeEditModel : IBasicEntity
 
         if (feature == PostTypeConstants.Features.PostImage && !enabled)
             ImageFieldKey = null;
+
+        if (feature == PostTypeConstants.Features.Content && enabled
+            && MetaFields.All(f => f.Key != FeatureFieldsCatalog.ContentFieldKey))
+        {
+            CreateFeatureContentField();
+        }
     }
 
     /// <summary>Переименование ключа поля: указатель картинки следует за полем, к которому привязан</summary>
@@ -123,6 +128,42 @@ public class PostTypeEditModel : IBasicEntity
                 [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.PostImage,
             },
         };
+
+        MetaFields.Add(field);
+        return field;
+    }
+
+    /// <summary>Поле контента типа: фича включена и поле с фиксированным ключом существует</summary>
+    public MetaFieldEditModel? ContentField()
+        => FeatureActivated(PostTypeConstants.Features.Content)
+            ? MetaFields.FirstOrDefault(f => f.Key == FeatureFieldsCatalog.ContentFieldKey)
+            : null;
+
+    /// <summary>Ключ редактора поля контента (пусто = обычный текст)</summary>
+    public string ContentEditorKey() => ContentField()?.Editor ?? "";
+
+    /// <summary>Язык кода редактора контента</summary>
+    public string ContentCodeLang() => ContentField()?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
+
+    /// <summary>Создаёт поле фичи «Контент» (ключ фиксированный) и добавляет в поля типа</summary>
+    public MetaFieldEditModel CreateFeatureContentField()
+    {
+        var field = new MetaFieldEditModel
+        {
+            Id = Guid.NewGuid(),
+            Title = FeatureFieldsCatalog.ContentFieldTitle,
+            Key = FeatureFieldsCatalog.ContentFieldKey,
+            Type = MetaFieldType.Text,
+            IsNullable = true,
+            IsNew = true,
+            Order = MetaFields.Count == 0 ? 0 : MetaFields.Max(f => f.Order) + 1,
+            Options = new JsonObject
+            {
+                [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
+                [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
+            },
+        };
+        field.Editor = MetaFieldEditorCatalog.BlockEditor;
 
         MetaFields.Add(field);
         return field;
@@ -180,7 +221,6 @@ public class PostTypeEditModel : IBasicEntity
             Disabled = Disabled,
             Visibility = Visibility,
             ImageFieldKey = ImageFieldKey,
-            PostContentSettings = PostContentSettings.ToCreateRequest(),
             PostStatusList = PostStatusList.Select(s => s.ToCreateRequest()).ToList(),
             Tags = Tags,
             MetaFields = MetaFields.Select(s => s.ToCreateRequest()).ToList(),
@@ -196,7 +236,6 @@ public class PostTypeEditModel : IBasicEntity
             Disabled = Disabled,
             Visibility = Visibility,
             ImageFieldKey = ImageFieldKey,
-            PostContentSettings = PostContentSettings.ToUpdateRequest(),
             PostStatusList = PostStatusList.Select(s => s.ToUpdateRequest()).ToList(),
             Tags = Tags,
             MetaFields = MetaFields.Select(s => s.ToUpdateRequest()).ToList(),
@@ -218,7 +257,6 @@ public class PostTypeEditModel : IBasicEntity
             Disabled = response.Disabled,
             Visibility = response.Visibility,
             ImageFieldKey = response.ImageFieldKey,
-            PostContentSettings = PostContentSettingsEditModel.ToModel(response.PostContentSettings),
             PostStatusList = response.PostStatusList.Select(PostStatusEditModel.ToModel).ToList(),
             Tags = response.Tags.ToArray(),
             MetaFields = response.MetaFields.Select(MetaFieldEditModel.ToModel).ToList(),

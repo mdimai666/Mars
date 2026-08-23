@@ -68,7 +68,6 @@ public class UpdatePostTypeTests : ApplicationTests
         postTypeEntity.Should().BeEquivalentTo(request, options => options
             .ComparingRecordsByValue()
             .ComparingByMembers<UpdatePostTypeRequest>()
-            .WithMapping(nameof(PostTypeEntity.PostContentType), nameof(CreatePostTypeRequest.PostContentSettings))
             .Excluding(s => s.PostStatusList)
             .Excluding(s => s.MetaFields)
             .ExcludingMissingMembers());

@@ -1,5 +1,6 @@
 using FluentValidation;
 using Mars.Core.Extensions;
+using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 
@@ -42,7 +43,7 @@ public class UpdatePostJsonQueryValidator : AbstractValidator<UpdatePostJsonQuer
                     }
                 }
 
-                foreach (var error in metaValuesValidator.ValidateJson(postType.MetaFields, x.Meta, requireAll: false))
+                foreach (var error in metaValuesValidator.ValidateJson(postType.MetaFields, x.Meta, requireAll: false, postType.ContentField()?.Key))
                     context.AddFailure(nameof(x.Meta), $"поле '{error.FieldKey}': {error.Message}");
             });
 

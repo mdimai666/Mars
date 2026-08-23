@@ -1,7 +1,6 @@
-using AutoFixture;
+﻿using AutoFixture;
 using Mars.Controllers;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;

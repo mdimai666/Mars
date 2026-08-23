@@ -1,3 +1,4 @@
+using AppFront.Shared.Components.MetaFieldViews;
 using AppFront.Shared.Interfaces;
 using Mars.Shared.Resources;
 using Mars.WebApiClient.Interfaces;
@@ -16,7 +17,11 @@ public partial class EditUserPage
     [Inject] NavigationManager navigationManager { get; set; } = default!;
 
     StandartEditForm1<UserEditModel> _editForm1 = default!;
+    FormMetaValue? metaValueForm;
     bool isCreateNew => ID == Guid.Empty;
+
+    Task OnBeforeSave(UserEditModel model)
+        => metaValueForm is null ? Task.CompletedTask : metaValueForm.PullAsync();
 
     void AfterSave(UserEditModel model)
     {

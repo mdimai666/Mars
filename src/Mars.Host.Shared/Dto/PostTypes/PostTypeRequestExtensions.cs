@@ -18,7 +18,6 @@ public static class PostTypeRequestExtensions
             Visibility = request.Visibility,
             ImageFieldKey = request.ImageFieldKey,
             EnabledFeatures = request.EnabledFeatures,
-            PostContentSettings = request.PostContentSettings.ToDto(),
             PostStatusList = request.PostStatusList.ToDto(),
             MetaFields = request.MetaFields.ToDto()
         };
@@ -34,7 +33,6 @@ public static class PostTypeRequestExtensions
             Visibility = request.Visibility,
             ImageFieldKey = request.ImageFieldKey,
             EnabledFeatures = request.EnabledFeatures,
-            PostContentSettings = request.PostContentSettings.ToDto(),
             PostStatusList = request.PostStatusList.ToDto(),
             MetaFields = request.MetaFields.ToDto()
         };
@@ -57,20 +55,6 @@ public static class PostTypeRequestExtensions
             Search = request.Search,
             Sort = request.Sort,
             IncludeComponent = request.IncludeComponent,
-        };
-
-    public static PostContentSettingsDto ToDto(this CreatePostContentSettingsRequest request)
-        => new()
-        {
-            PostContentType = request.PostContentType,
-            CodeLang = request.CodeLang,
-        };
-
-    public static PostContentSettingsDto ToDto(this UpdatePostContentSettingsRequest request)
-        => new()
-        {
-            PostContentType = request.PostContentType,
-            CodeLang = request.CodeLang,
         };
 
     public static PostStatusDto ToDto(this CreatePostStatusRequest request)

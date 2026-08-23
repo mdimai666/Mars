@@ -4,11 +4,11 @@ using Mars.Host.Shared.Attributes;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
-using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
+using Mars.Shared.Contracts.MetaFields;
 
 namespace Mars.Services;
 
-[KeyredHandler(key: DefaultPostContentTypes.BlockEditor, Tags = ["post"])]
+[KeyredHandler(key: MetaFieldEditorCatalog.BlockEditor, Tags = ["post"])]
 internal class BlockEditor1PostContentProcessor(IPostRepository postRepository, IMetaModelTypesLocator metaModelTypesLocator) : IPostContentProcessor
 {
 
@@ -22,8 +22,8 @@ internal class BlockEditor1PostContentProcessor(IPostRepository postRepository, 
 
     public Task<string?> RenderPostContent(PostTypeDetail postType, string content, CancellationToken cancellationToken)
     {
-        if (postType.PostContentSettings.PostContentType != DefaultPostContentTypes.BlockEditor)
-            throw new NotSupportedException($"{nameof(BlockEditor1PostContentProcessor)} is support only '{DefaultPostContentTypes.BlockEditor}'. Retrive PostType '{postType.TypeName}'");
+        if (postType.ContentEditorKey() != MetaFieldEditorCatalog.BlockEditor)
+            throw new NotSupportedException($"{nameof(BlockEditor1PostContentProcessor)} is support only '{MetaFieldEditorCatalog.BlockEditor}'. Retrive PostType '{postType.TypeName}'");
 
         if (string.IsNullOrEmpty(content)) return Task.FromResult<string?>(null);
 

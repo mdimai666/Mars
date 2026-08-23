@@ -128,7 +128,7 @@ internal class PostJsonService : IPostJsonService
 
         var postType = _metaModelTypesLocator.GetPostTypeByName(query.Type)
                             ?? throw new NotFoundException($"Post type '{query.Type}' not found");
-        var meta = CreateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, postType.TypeName);
+        var meta = CreateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, postType.TypeName, postType.ContentField()?.Key);
         var createQuery = ToCreateQuery(query, meta, postType);
 
         var post = await _postService.Create(createQuery, cancellationToken);
@@ -144,7 +144,7 @@ internal class PostJsonService : IPostJsonService
                             ?? throw new NotFoundException($"Post type '{query.Type}' not found");
         var existPost = await _postRepository.GetPostEditDetail(query.Id, cancellationToken)
                             ?? throw new NotFoundException($"Post with id '{query.Id}' not found");
-        var meta = UpdateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, existPost.MetaValues, postType.TypeName);
+        var meta = UpdateJsonMetaValuesToModifyDto(query.Meta, postType.MetaFields, existPost.MetaValues, postType.TypeName, postType.ContentField()?.Key);
         var updateQuery = ToUpdateQuery(query, meta, postType);
 
         var post = await _postService.Update(updateQuery, cancellationToken);
@@ -188,7 +188,8 @@ internal class PostJsonService : IPostJsonService
 
     internal static IReadOnlyCollection<ModifyMetaValueDetailQuery> CreateJsonMetaValuesToModifyDto(IReadOnlyDictionary<string, JsonNode>? meta,
                                                                                                 IReadOnlyCollection<MetaFieldDto> metaFields,
-                                                                                                string postTypeName)
+                                                                                                string postTypeName,
+                                                                                                string? contentFieldKey = null)
     {
         if (meta is null) return [];
 
@@ -208,6 +209,7 @@ internal class PostJsonService : IPostJsonService
         {
             var metaField = mfDict[key];
             if (metaField.Type == MetaFieldType.Query) continue; // вычислимое — значения не принимаются
+            if (contentFieldKey is not null && key == contentFieldKey) continue; // значение — в posts.Content
 
             var jsonVal = meta[key];
             if (jsonVal is JsonArray array)
@@ -248,7 +250,8 @@ internal class PostJsonService : IPostJsonService
     internal static IReadOnlyCollection<ModifyMetaValueDetailQuery>? UpdateJsonMetaValuesToModifyDto(IReadOnlyDictionary<string, JsonNode>? meta,
                                                                                                 IReadOnlyCollection<MetaFieldDto> metaFields,
                                                                                                 IReadOnlyCollection<MetaValueDetailDto> existMetaValues,
-                                                                                                string postTypeName)
+                                                                                                string postTypeName,
+                                                                                                string? contentFieldKey = null)
     {
         if (meta is null) return null;
 
@@ -275,6 +278,7 @@ internal class PostJsonService : IPostJsonService
         {
             var metaField = mfDict[key];
             if (metaField.Type == MetaFieldType.Query) continue; // вычислимое — значения не принимаются
+            if (contentFieldKey is not null && key == contentFieldKey) continue; // значение — в posts.Content
 
             var jsonVal = meta.GetValueOrDefault(key);
             if (jsonVal is null) continue;
@@ -295,7 +299,9 @@ internal class PostJsonService : IPostJsonService
         }
 
         return existMetaValues
-            .Where(s => s.MetaField.Type != MetaFieldType.Query && !multiKeys.Contains(s.MetaField.Key))
+            .Where(s => s.MetaField.Type != MetaFieldType.Query
+                        && !multiKeys.Contains(s.MetaField.Key)
+                        && !(contentFieldKey is not null && s.MetaField.Key == contentFieldKey))
             .Select(s =>
             {
                 var updValue = meta.GetValueOrDefault(s.MetaField.Key) as JsonValue;

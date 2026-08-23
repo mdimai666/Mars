@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Mars.Host.Data.OwnedTypes.MetaFields;
 using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.PostTypes;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -54,7 +53,7 @@ namespace Mars.Host.Data.PostgreSQL.Migrations
                     post_status_list = table.Column<List<PostStatusEntity>>(type: "jsonb", nullable: false, comment: "РЎС‚Р°С‚СѓСЃС‹"),
                     enabled_features = table.Column<List<string>>(type: "jsonb", nullable: false, comment: "Р¤СѓРЅРєС†РёРё"),
                     disabled = table.Column<bool>(type: "boolean", nullable: false, comment: "РћС‚РєР»СЋС‡РµРЅ"),
-                    post_content_type = table.Column<PostContentSettings>(type: "jsonb", nullable: false, comment: "РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚РµРЅС‚Р°"),
+                    post_content_type = table.Column<string>(type: "jsonb", nullable: false, comment: "РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚РµРЅС‚Р°"),
                     tags = table.Column<List<string>>(type: "character varying(128)[]", nullable: false, comment: "РўРµРіРё")
                 },
                 constraints: table =>

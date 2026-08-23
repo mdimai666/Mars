@@ -71,7 +71,6 @@ public sealed class CreatePostTypeTests : ApplicationTests
         postTypeEntity.Should().BeEquivalentTo(postTypeRequest, options => options
             .ComparingRecordsByValue()
             .ComparingByMembers<CreatePostTypeRequest>()
-            .WithMapping(nameof(PostTypeEntity.PostContentType), nameof(CreatePostTypeRequest.PostContentSettings))
             .Excluding(s => s.PostStatusList)
             .Excluding(s => s.MetaFields)
             .ExcludingMissingMembers());

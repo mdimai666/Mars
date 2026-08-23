@@ -246,6 +246,9 @@ internal class PostRepository : IPostRepository
                             .Include(s => s.User)
                             .Where(s => query.Type == null || s.PostType.TypeName == query.Type);
 
+        if (query.Ids is { Count: > 0 })
+            q = q.Where(s => query.Ids.Contains(s.Id));
+
         if (query.CategoryId is not null)
         {
             q = q.Include(s => s.Categories);

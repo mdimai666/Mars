@@ -13,6 +13,9 @@ public record ListPostQuery : BasicListQuery
     /// </summary>
     public bool FilterIncludeDescendantsCategories { get; init; }
 
+    /// <summary>Вернуть только посты с этими Id (таблицы выбранных элементов, секции детей)</summary>
+    public IReadOnlyCollection<Guid>? Ids { get; init; }
+
     /// <summary>Фильтры колонок грида</summary>
     public IReadOnlyCollection<PostGridFilter>? Filters { get; init; }
 }

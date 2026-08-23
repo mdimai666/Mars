@@ -67,6 +67,9 @@ public record ListPostQueryRequest : BasicListQueryRequest
     /// </summary>
     public bool FilterIncludeDescendantsCategories { get; init; }
 
+    /// <summary>Вернуть только посты с этими Id (таблицы выбранных элементов, секции детей)</summary>
+    public Guid[]? Ids { get; init; }
+
     /// <summary>
     /// Ключи мета-полей, значения которых приложить к элементам списка (колонки грида)
     /// </summary>

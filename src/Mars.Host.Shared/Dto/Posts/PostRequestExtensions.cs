@@ -53,6 +53,7 @@ public static class PostRequestExtensions
             IncludeCategory = request.IncludeCategory,
             CategoryId = request.CategoryId,
             FilterIncludeDescendantsCategories = request.FilterIncludeDescendantsCategories,
+            Ids = request.Ids,
             Filters = request.Filters,
         };
 

@@ -51,12 +51,13 @@ public partial class FormMetaField
     static readonly IEnumerable<IGrouping<string?, MetaFieldTypePresets.PickerItem>> TypePickerGroups
         = MetaFieldTypePresets.PickerItems.GroupBy(i => i.Group);
 
-    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор) или «технический» тип</summary>
+    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор + вид) или «технический» тип</summary>
     string GetTypePickerValue(MetaFieldEditModel field)
     {
         var preset = MetaFieldTypePresets.All.FirstOrDefault(p =>
             p.Type == field.Type
-            && (string.IsNullOrEmpty(field.Editor) ? p.Editor is null : p.Editor == field.Editor));
+            && (string.IsNullOrEmpty(field.Editor) ? p.Editor is null : p.Editor == field.Editor)
+            && (string.IsNullOrEmpty(field.Kind) ? p.Kind is null : p.Kind == field.Kind));
 
         return preset is not null
             ? MetaFieldTypePresets.OptionKey(preset)
@@ -81,7 +82,10 @@ public partial class FormMetaField
         }
 
         if (preset is not null)
+        {
             field.Editor = preset.Editor ?? ""; // пресет задаёт редактор целиком
+            field.Kind = preset.Kind ?? ""; // и вид поля (список объектов и т.п.)
+        }
         else if (typeChanged && _editorLocator.GetEditorComponent(field.Editor, field.Type) is null)
             field.Editor = ""; // редактор несовместим с новым типом
 

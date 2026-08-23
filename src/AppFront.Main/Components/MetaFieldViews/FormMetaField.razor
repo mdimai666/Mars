@@ -81,12 +81,11 @@
                                             </div>
                                         </div>
 
-                                        @if (false)
-                                        {
-                                            <FormItem2 For="() => field.IsNullable">
-                                                <FluentCheckbox @bind-Value=@field.IsNullable />
-                                            </FormItem2>
-                                        }
+                                        <div>
+                                            <FluentSwitch Value="@(!field.IsNullable)"
+                                                          ValueChanged="@(v => field.IsNullable = !v)"
+                                                          Label="Обязательное" />
+                                        </div>
 
                                         <div class="d-flex gap-3">
                                             <div>
@@ -141,6 +140,21 @@
                                                     </FormItem2>
                                                 }
                                             </div>
+                                            @if (field.Type == MetaFieldType.Relation && field.IsListKind)
+                                            {
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Удаление из списка</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.RemoveMode"
+                                                                      ValueChanged="@(v => field.RemoveMode = v)">
+                                                            <FluentOption TOption="string" Value="">— по типу цели —</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.Unlink">Отвязать</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.DeleteConfirm">Удалить объект (с подтверждением)</FluentOption>
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                            }
 
                                         </div>
 

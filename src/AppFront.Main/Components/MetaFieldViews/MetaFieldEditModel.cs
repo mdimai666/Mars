@@ -26,7 +26,9 @@ public class MetaFieldEditModel
     public decimal? MaxValue { get; set; }
     public decimal? MinValue { get; set; }
     public string Description { get; set; } = "";
-    public bool IsNullable { get; set; }
+
+    /// <summary>false = обязательное поле (по умолчанию новые поля необязательные)</summary>
+    public bool IsNullable { get; set; } = true;
 
     public MetaFieldDefaultValue? Default { get; set; }
     public JsonNode? Options { get; set; }
@@ -48,6 +50,7 @@ public class MetaFieldEditModel
         SyncValidatorsToOptions();
         SyncGeneratorToOptions();
         SyncEditorToOptions();
+        SyncKindToOptions();
         return new()
         {
             Id = Id,
@@ -74,6 +77,7 @@ public class MetaFieldEditModel
         SyncValidatorsToOptions();
         SyncGeneratorToOptions();
         SyncEditorToOptions();
+        SyncKindToOptions();
         return new()
         {
         Id = Id,
@@ -120,6 +124,8 @@ public class MetaFieldEditModel
         };
         ReadGenerator(model, response.Options);
         model.Editor = ReadEditor(response.Options);
+        model.Kind = response.Options.GetKind();
+        model.RemoveMode = response.Options.GetRemoveMode();
         return model;
     }
 
@@ -149,6 +155,8 @@ public class MetaFieldEditModel
         };
         ReadGenerator(clone, Options);
         clone.Editor = ReadEditor(Options);
+        clone.Kind = Options.GetKind();
+        clone.RemoveMode = Options.GetRemoveMode();
         return clone;
     }
 
@@ -360,6 +368,35 @@ public class MetaFieldEditModel
             Options = obj;
         }
         obj["editor"] = Editor;
+    }
+    #endregion
+
+    #region KIND
+    /// <summary>Вид поля (хранится в Options.kind); пусто = обычный рендер по типу</summary>
+    public string Kind { get; set; } = "";
+
+    /// <summary>Удаление значений списка (хранится в Options.removeMode); пусто = по видимости типа-цели</summary>
+    public string RemoveMode { get; set; } = "";
+
+    /// <summary>Поле — упорядоченный список объектов (дочерних постов)</summary>
+    public bool IsListKind => Kind == MetaFieldKindCatalog.List;
+
+    /// <summary>Синхронизирует вид и режим удаления в Options</summary>
+    public void SyncKindToOptions()
+    {
+        if (Options is not JsonObject obj)
+        {
+            obj = new JsonObject();
+            Options = obj;
+        }
+
+        if (string.IsNullOrEmpty(Kind)) obj.Remove(MetaFieldKindCatalog.KindOption());
+        else obj[MetaFieldKindCatalog.KindOption()] = Kind;
+
+        if (string.IsNullOrEmpty(RemoveMode)) obj.Remove(MetaFieldKindCatalog.RemoveModeOption());
+        else obj[MetaFieldKindCatalog.RemoveModeOption()] = RemoveMode;
+
+        if (obj.Count == 0) Options = null;
     }
     #endregion
 

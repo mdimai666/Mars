@@ -3,7 +3,7 @@ namespace Mars.Shared.Contracts.MetaFields;
 public record MetaValueResponse
 {
     public required Guid Id { get; init; }
-    //public required int Index { get; init; }
+    public required int Index { get; init; }
 
     //public required Guid? VariantId { get; init; }
     //public required Guid[]? VariantsIds { get; init; }

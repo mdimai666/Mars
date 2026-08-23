@@ -18,6 +18,7 @@ public static class MetaFieldMapping
         => new()
         {
             Id = entity.Id,
+            Index = entity.Index,
             MetaField = entity.MetaField.ToResponse(),
             Value = entity.Value,
         };
@@ -57,6 +58,7 @@ public static class MetaFieldMapping
         => new()
         {
             Id = entity.Id,
+            Index = entity.Index,
             MetaField = entity.MetaField.ToResponse(),
             Value = entity.GetValueSimple(entity.MetaField.Type),
         };
@@ -81,6 +83,12 @@ public static class MetaFieldMapping
 
     public static IReadOnlyDictionary<string, MetaValueResponse> ToResponse(this IReadOnlyDictionary<string, MetaValueDto> list)
         => list.ToDictionary(s => s.Key, s => s.Value.ToResponse());
+
+    /// <summary>Мульти-значения: ключ поля → список значений по <see cref="MetaValueResponse.Index"/></summary>
+    public static IReadOnlyDictionary<string, IReadOnlyList<MetaValueResponse>> ToListResponse(this IReadOnlyDictionary<string, MetaValueDto> list)
+        => list.ToDictionary(
+            s => s.Key,
+            s => (IReadOnlyList<MetaValueResponse>)(s.Value.MultiValues ?? [s.Value]).ToResponse().ToList());
 
     public static IReadOnlyDictionary<string, MetaValueResponse> ToResponse(this IReadOnlyDictionary<string, MetaValueDetailDto> list)
         => list.ToDictionary(s => s.Key, s => s.Value.ToResponse());

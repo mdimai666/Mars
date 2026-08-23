@@ -61,6 +61,24 @@ public class PostEditModel : IBasicEntity
     public List<MetaValueEditModel> MetaValues { get; set; } = new();
     public Guid[] CategoryIds { get; set; } = [];
 
+    Dictionary<(string Key, int Index), MetaValueEditModel>? _metaValuesByIndex;
+
+    /// <summary>
+    /// Доступ к значениям по <c>(ключ поля, Index)</c>; одиночные значения — <c>(key, 0)</c>.
+    /// Кэш по текущему списку <see cref="MetaValues"/>: пересобирается при изменении состава списка.
+    /// </summary>
+    public IReadOnlyDictionary<(string Key, int Index), MetaValueEditModel> MetaValuesByIndex
+    {
+        get
+        {
+            if (_metaValuesByIndex is null || _metaValuesByIndex.Count != MetaValues.Count)
+            {
+                _metaValuesByIndex = MetaValues.ToKeyIndexDictionary();
+            }
+            return _metaValuesByIndex;
+        }
+    }
+
     //==========================================
     //Internal
 

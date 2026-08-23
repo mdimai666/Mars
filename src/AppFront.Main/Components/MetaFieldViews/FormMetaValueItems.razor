@@ -9,7 +9,7 @@
              data-tags="@meta.Tags?.JoinStr(",")" data-key="@meta.Key" title="@meta.Key" @key="meta" >
             <div class="1card-body 1p-2">
                 @{
-                    var field = MetaValues.FirstOrDefault(s => s.MetaField.Id == meta.Id && s.Index == 0);
+                    var field = MetaValues.FirstOrDefault(s => s.MetaField.Key == meta.Key && s.Index == 0);
                 }
                 @if (field is not null)
                 {

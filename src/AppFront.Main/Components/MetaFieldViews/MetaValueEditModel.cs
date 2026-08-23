@@ -11,6 +11,9 @@ public class MetaValueEditModel
     public Guid Id { get; set; }
     public int Index { get; set; }
 
+    /// <summary>Ключ мета-поля (стабильный идентификатор значения в словаре <c>(Key, Index)</c>)</summary>
+    public string Key => MetaField.Key;
+
     public bool Bool { get; set; }
     public int Int { get; set; }
     public double Float { get; set; }

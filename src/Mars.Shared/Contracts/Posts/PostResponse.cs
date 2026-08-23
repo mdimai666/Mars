@@ -35,7 +35,8 @@ public record PostDetailResponse : PostSummaryResponse
     [Display(Name = "Текст")]
     public required string? Content { get; init; }
 
-    public required IReadOnlyDictionary<string, MetaValueResponse> MetaValues { get; init; }
+    /// <summary>Значения мета-полей: ключ поля → список значений (по <see cref="MetaValueResponse.Index"/>)</summary>
+    public required IReadOnlyDictionary<string, IReadOnlyList<MetaValueResponse>> MetaValues { get; init; }
 }
 
 public record PostListItemResponse : IBasicEntityResponse

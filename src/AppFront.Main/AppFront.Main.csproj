@@ -40,13 +40,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Remove="Components\MetaFieldViews\ClientEditPost1.razor" />
-	  <Content Remove="Components\MetaFieldViews\DisplayMetaField.razor" />
-	  <Content Remove="Components\MetaFieldViews\RowMetaField.razor" />
-	  <Content Remove="Components\PSelectVariants.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 

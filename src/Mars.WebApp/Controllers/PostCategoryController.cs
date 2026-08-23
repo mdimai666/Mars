@@ -132,7 +132,7 @@ public class PostCategoryController : ControllerBase
         return (await _postCategoryService.List(request.ToQuery(postTypeName: null, categoryType: type), cancellationToken)).ToResponse();
     }
 
-    [HttpPost("by-type/{type}/list/page")]
+    [HttpGet("by-type/{type}/list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostCategoryListItemResponse>> ListTable([FromQuery] TablePostCategoryQueryRequest request,
                                                                     [DefaultValue("default")] string type,
@@ -150,7 +150,7 @@ public class PostCategoryController : ControllerBase
         return (await _postCategoryService.List(request.ToQuery(postTypeName: postType, categoryType: null), cancellationToken)).ToResponse();
     }
 
-    [HttpPost("for-post-type/{postType}/list/page")]
+    [HttpGet("for-post-type/{postType}/list/page")]
     [AllowAnonymous]
     public async Task<PagingResult<PostCategoryListItemResponse>> ListForPostType([FromQuery] TablePostCategoryQueryRequest request,
                                                                     [DefaultValue("post")] string postType,

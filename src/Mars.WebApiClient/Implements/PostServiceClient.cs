@@ -65,8 +65,9 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
 
     public Task<PagingResult<PostListItemResponse>> ListTable(string postType, TablePostQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/by-type/{postType}/list/page")
-                    .PostJsonAsync(filter)
-                    .ReceiveJson<PagingResult<PostListItemResponse>>();
+                    .AppendQueryParam(filter with { Filters = null })
+                    .AppendGridFilters(filter.Filters)
+                    .GetJsonAsync<PagingResult<PostListItemResponse>>();
 
     public Task<PostEditViewModel> GetEditModel(Guid id)
         => _client.Request($"{_basePath}{_controllerName}/edit", id)

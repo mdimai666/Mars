@@ -65,12 +65,24 @@ public class ListPostGridFilterTests : ApplicationTests
     }
 
     static Task<PagingResult<PostListItemResponse>> ListAsync(IFlurlClient client, TablePostQueryRequest request)
-        => client.Request(_listUrl).PostJsonAsync(request).ReceiveJson<PagingResult<PostListItemResponse>>();
+    {
+        var url = client.Request(_listUrl).AppendQueryParam(request with { Filters = null });
+        AppendGridFilters(url, request.Filters);
+        return url.GetJsonAsync<PagingResult<PostListItemResponse>>();
+    }
 
-    /// <summary>GET list/offset с фильтрами в query (indexed-формат, как сериализует веб-клиент) — путь грида</summary>
+    /// <summary>GET list/offset с фильтрами в query (путь грида админки)</summary>
     static Task<ListDataResult<PostListItemResponse>> ListOffsetAsync(IFlurlClient client, params PostGridFilter[] filters)
     {
-        var request = client.Request("/api/Post/by-type/post/list/offset").AppendQueryParam(new { Skip = 0, Take = 50 });
+        var url = client.Request("/api/Post/by-type/post/list/offset").AppendQueryParam(new { Skip = 0, Take = 50 });
+        AppendGridFilters(url, filters);
+        return url.GetJsonAsync<ListDataResult<PostListItemResponse>>();
+    }
+
+    /// <summary>Фильтры грида в query: indexed-формат, как сериализует веб-клиент</summary>
+    static IFlurlRequest AppendGridFilters(IFlurlRequest request, IReadOnlyCollection<PostGridFilter>? filters)
+    {
+        if (filters is not { Count: > 0 }) return request;
 
         var i = 0;
         foreach (var filter in filters)
@@ -90,7 +102,7 @@ public class ListPostGridFilterTests : ApplicationTests
             i++;
         }
 
-        return request.GetJsonAsync<ListDataResult<PostListItemResponse>>();
+        return request;
     }
 
     [IntegrationFact]

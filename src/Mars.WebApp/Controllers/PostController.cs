@@ -146,9 +146,9 @@ public class PostController : ControllerBase
         return await EnrichMetaColumnsAsync(result, type, request.MetaFields, cancellationToken);
     }
 
-    [HttpPost("by-type/{type}/list/page")]
+    [HttpGet("by-type/{type}/list/page")]
     [AllowAnonymous]
-    public async Task<PagingResult<PostListItemResponse>> ListTable([FromBody] TablePostQueryRequest request,
+    public async Task<PagingResult<PostListItemResponse>> ListTable([FromQuery] TablePostQueryRequest request,
                                                                     [DefaultValue("post")] string type,
                                                                     CancellationToken cancellationToken)
     {

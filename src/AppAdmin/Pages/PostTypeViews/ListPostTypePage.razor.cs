@@ -20,6 +20,7 @@ public partial class ListPostTypePage
     //table
     FluentDataGrid<PostTypeListItemResponse> table = default!;
     string _searchText = "";
+    bool _includeComponent = false;
     ListDataResult<PostTypeListItemResponse> data = ListDataResult<PostTypeListItemResponse>.Empty();
     GridItemsProvider<PostTypeListItemResponse> dataProvider = default!;
 
@@ -43,6 +44,7 @@ public partial class ListPostTypePage
                     Take = req.Count ?? BasicListQuery.DefaultPageSize,
                     Sort = sort,
                     Search = _searchText,
+                    IncludeComponent = _includeComponent,
                 });
 
                 var collection = new Collection<PostTypeListItemResponse>(data.Items.ToList());
@@ -57,6 +59,12 @@ public partial class ListPostTypePage
     void HandleSearchInput()
     {
         table.RefreshDataAsync();
+    }
+
+    void HandleIncludeComponentChanged(bool value)
+    {
+        _includeComponent = value;
+        _ = table.RefreshDataAsync();
     }
 
     public async Task Delete(Guid id)

@@ -47,6 +47,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
             EnabledFeatures = [PostTypeConstants.Features.Content],
             Tags = [],
             Disabled = false,
+            Visibility = PostTypeVisibility.Public,
             PostStatusList = [],
             MetaFields = [
                 _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.String, Key = "str1" },

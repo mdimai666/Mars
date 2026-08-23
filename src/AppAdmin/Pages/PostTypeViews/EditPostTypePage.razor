@@ -37,6 +37,17 @@
                     <FluentTextField @bind-Value=@context.TypeName Label="TypeName" />
                     <FluentValidationMessage For="@(() => context.TypeName)" />
                 </div>
+                <div class="">
+                    <FluentSelect TOption="PostTypeVisibility" Label="Видимость"
+                                  Items="@(Enum.GetValues<PostTypeVisibility>())"
+                                  OptionText="@(v => v switch
+                                  {
+                                      PostTypeVisibility.Component => "Компонент (встроенный)",
+                                      _ => "Публичный",
+                                  })"
+                                  SelectedOption="context.Visibility"
+                                  SelectedOptionChanged="@(v => context.Visibility = v)" />
+                </div>
 
             </div>
 

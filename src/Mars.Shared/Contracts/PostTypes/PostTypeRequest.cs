@@ -20,6 +20,7 @@ public record CreatePostTypeRequest
     public required IReadOnlyCollection<CreatePostStatusRequest> PostStatusList { get; init; }
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required bool Disabled { get; init; }
+    public required PostTypeVisibility Visibility { get; init; }
     public required CreatePostContentSettingsRequest PostContentSettings { get; init; }
     public required IReadOnlyCollection<CreateMetaFieldRequest> MetaFields { get; init; }
 }
@@ -39,6 +40,7 @@ public record UpdatePostTypeRequest
     public required IReadOnlyCollection<UpdatePostStatusRequest> PostStatusList { get; init; }
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required bool Disabled { get; init; }
+    public required PostTypeVisibility Visibility { get; init; }
     public required UpdatePostContentSettingsRequest PostContentSettings { get; init; }
     public required IReadOnlyCollection<UpdateMetaFieldRequest> MetaFields { get; init; }
 }
@@ -81,10 +83,14 @@ public record UpdatePostContentSettingsRequest
 
 public record ListPostTypeQueryRequest : BasicListQueryRequest
 {
+    /// <summary>Показывать встроенные типы-компоненты (по умолчанию скрыты)</summary>
+    public bool IncludeComponent { get; init; }
 }
 
 public record TablePostTypeQueryRequest : BasicTableQueryRequest
 {
+    /// <summary>Показывать встроенные типы-компоненты (по умолчанию скрыты)</summary>
+    public bool IncludeComponent { get; init; }
 }
 
 public record UpdatePostTypePresentationRequest

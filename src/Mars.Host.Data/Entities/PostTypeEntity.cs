@@ -38,6 +38,9 @@ public class PostTypeEntity : IBasicEntity
     [Comment("Отключен")]
     public bool Disabled { get; set; }
 
+    [Comment("Видимость: публичный тип или встроенный компонент")]
+    public EPostTypeVisibility Visibility { get; set; } = EPostTypeVisibility.Public;
+
     //[Comment("Категория")]
     //public Guid CategoryId { get; set; }
 

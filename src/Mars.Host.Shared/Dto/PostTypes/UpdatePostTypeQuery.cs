@@ -17,6 +17,7 @@ public record UpdatePostTypeQuery : IGeneralPostTypeQuery, IGeneralMetaFieldsSup
     public required IReadOnlyCollection<PostStatusDto> PostStatusList { get; init; }
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required bool Disabled { get; init; }
+    public required PostTypeVisibility Visibility { get; init; }
     public required PostContentSettingsDto PostContentSettings { get; init; }
 
     public required IReadOnlyCollection<MetaFieldDto> MetaFields { get; init; }

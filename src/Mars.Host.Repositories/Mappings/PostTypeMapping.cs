@@ -2,6 +2,7 @@ using Mars.Host.Data.Entities;
 using Mars.Host.Data.OwnedTypes.PostTypes;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.Host.Repositories.Mappings;
 
@@ -17,6 +18,7 @@ internal static class PostTypeMapping
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
             Disabled = entity.Disabled,
+            Visibility = (PostTypeVisibility)entity.Visibility,
         };
 
     public static PostTypeDetail ToDetail(this PostTypeEntity entity)
@@ -30,6 +32,7 @@ internal static class PostTypeMapping
             ModifiedAt = entity.ModifiedAt,
             EnabledFeatures = entity.EnabledFeatures,
             Disabled = entity.Disabled,
+            Visibility = (PostTypeVisibility)entity.Visibility,
             PostContentSettings = entity.PostContentType.ToDto(),
             PostStatusList = entity.Statuses!.OrderBy(s => s.Order).ToDto(),
             MetaFields = entity.MetaFields!.ToDto(),
@@ -72,6 +75,7 @@ internal static class PostTypeMapping
             Tags = query.Tags.ToList(),
 
             Disabled = query.Disabled,
+            Visibility = (EPostTypeVisibility)query.Visibility,
             EnabledFeatures = query.EnabledFeatures.ToList(),
             PostContentType = new()
             {
@@ -101,6 +105,7 @@ internal static class PostTypeMapping
         entity.Tags = query.Tags.ToList();
         entity.EnabledFeatures = query.EnabledFeatures.ToList();
         entity.Disabled = query.Disabled;
+        entity.Visibility = (EPostTypeVisibility)query.Visibility;
         entity.PostContentType = new()
         {
             PostContentType = query.PostContentSettings.PostContentType,

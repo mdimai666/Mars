@@ -3,6 +3,7 @@ using Mars.Host.Services;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Shared.Contracts.MetaFields;
+using Mars.Shared.Contracts.PostTypes;
 
 namespace Test.Mars.Host.Services;
 
@@ -39,6 +40,7 @@ public class PostTypeViewServiceSqlTests
             Tags = [],
             EnabledFeatures = [],
             Disabled = false,
+            Visibility = PostTypeVisibility.Public,
             ModifiedAt = null,
             PostStatusList = [],
             PostContentSettings = new PostContentSettingsDto { PostContentType = "PlainText", CodeLang = null },

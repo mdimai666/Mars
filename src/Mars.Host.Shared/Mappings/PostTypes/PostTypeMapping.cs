@@ -18,6 +18,7 @@ public static class PostTypeMapping
             TypeName = entity.TypeName,
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
+            Visibility = entity.Visibility,
             //MetaFields = entity.MetaFields.ToResponse(),
         };
 
@@ -31,6 +32,7 @@ public static class PostTypeMapping
             TypeName = entity.TypeName,
             Tags = entity.Tags,
             Disabled = entity.Disabled,
+            Visibility = entity.Visibility,
             EnabledFeatures = entity.EnabledFeatures,
             PostContentSettings = entity.PostContentSettings.ToResponse(),
             PostStatusList = entity.PostStatusList.ToResponse(),
@@ -47,6 +49,7 @@ public static class PostTypeMapping
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
             Disabled = entity.Disabled,
+            Visibility = entity.Visibility,
         };
 
     public static PostTypeSummaryResponse ToSummaryResponse(this PostTypeDetail entity)
@@ -58,6 +61,7 @@ public static class PostTypeMapping
             TypeName = entity.TypeName,
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
+            Visibility = entity.Visibility,
         };
 
     public static PostTypeListItemResponse ToItemResponse(this PostTypeSummary entity)
@@ -70,6 +74,7 @@ public static class PostTypeMapping
             EnabledFeatures = entity.EnabledFeatures,
             Tags = entity.Tags,
             Disabled = entity.Disabled,
+            Visibility = entity.Visibility,
         };
 
     public static PostStatusResponse ToResponse(this PostStatusDto entity)
@@ -110,6 +115,7 @@ public static class PostTypeMapping
             TypeName = entity.TypeName,
             Tags = entity.Tags,
             EnabledFeatures = entity.EnabledFeatures,
+            Visibility = entity.Visibility,
             Presentation = entity.Presentation.ToResponse(),
         };
 }

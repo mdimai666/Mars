@@ -7,6 +7,7 @@ using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.MetaFields;
+using Mars.Shared.Contracts.PostTypes;
 using NSubstitute;
 
 namespace Test.Mars.Host.Handlers;
@@ -46,6 +47,7 @@ public class MetaValueGeneratorHandlersTests
             Tags = [],
             EnabledFeatures = [],
             Disabled = false,
+            Visibility = PostTypeVisibility.Public,
             ModifiedAt = null,
             PostStatusList = [],
             PostContentSettings = new PostContentSettingsDto { PostContentType = "plain", CodeLang = null },

@@ -1,4 +1,5 @@
 using Mars.Core.Interfaces;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Validators;
 
 namespace Mars.Host.Shared.Dto.PostTypes;
@@ -13,6 +14,7 @@ public record PostTypeSummary : IHasId
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     //public required ModelViewSettings ViewSettings { get; init; }
     public required bool Disabled { get; init; }
+    public required PostTypeVisibility Visibility { get; init; }
 
 }
 

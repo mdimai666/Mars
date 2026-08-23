@@ -45,6 +45,9 @@ public class PostTypeEditModel : IBasicEntity
 
     public bool Disabled { get; set; }
 
+    [Display(Name = "Видимость")]
+    public PostTypeVisibility Visibility { get; set; } = PostTypeVisibility.Public;
+
     [ValidateComplexType]
     public PostContentSettingsEditModel PostContentSettings { get; set; } = new();
 
@@ -113,6 +116,7 @@ public class PostTypeEditModel : IBasicEntity
             TypeName = TypeName,
             EnabledFeatures = EnabledFeatures,
             Disabled = Disabled,
+            Visibility = Visibility,
             PostContentSettings = PostContentSettings.ToCreateRequest(),
             PostStatusList = PostStatusList.Select(s => s.ToCreateRequest()).ToList(),
             Tags = Tags,
@@ -127,6 +131,7 @@ public class PostTypeEditModel : IBasicEntity
             TypeName = TypeName,
             EnabledFeatures = EnabledFeatures,
             Disabled = Disabled,
+            Visibility = Visibility,
             PostContentSettings = PostContentSettings.ToUpdateRequest(),
             PostStatusList = PostStatusList.Select(s => s.ToUpdateRequest()).ToList(),
             Tags = Tags,
@@ -147,6 +152,7 @@ public class PostTypeEditModel : IBasicEntity
             TypeName = response.TypeName,
             EnabledFeatures = response.EnabledFeatures.ToList(),
             Disabled = response.Disabled,
+            Visibility = response.Visibility,
             PostContentSettings = PostContentSettingsEditModel.ToModel(response.PostContentSettings),
             PostStatusList = response.PostStatusList.Select(PostStatusEditModel.ToModel).ToList(),
             Tags = response.Tags.ToArray(),

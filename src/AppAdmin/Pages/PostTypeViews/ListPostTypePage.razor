@@ -17,6 +17,11 @@
                       ImmediateDelay="300"
                       Appearance="FluentInputAppearance.Filled"
                       AriaLabel="Search" />
+        <FluentCheckbox Value=_includeComponent
+                        ValueChanged=HandleIncludeComponentChanged
+                        Style="margin-left: 12px;">
+            Компонентные типы
+        </FluentCheckbox>
         <div class="ms-auto">
             <a href="@urlEditPage">
                 <FluentButton Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Add())">@AppRes.Create</FluentButton>
@@ -63,6 +68,10 @@
                     @if (context.Disabled)
                     {
                         <FluentBadge Fill="black">@AppRes.Disabled</FluentBadge>
+                    }
+                    @if (context.Visibility == PostTypeVisibility.Component)
+                    {
+                        <FluentBadge Fill="neutral">Компонент</FluentBadge>
                     }
                     <FluentOverflow Style="width: 100%;">
                         @foreach (var tag in context.EnabledFeatures)

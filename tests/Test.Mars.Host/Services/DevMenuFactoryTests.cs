@@ -2,6 +2,7 @@ using FluentAssertions;
 using Mars.Host.Services;
 using Mars.Host.Shared.Dto.NavMenus;
 using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Resources;
 
 namespace Test.Mars.Host.Services;
@@ -49,6 +50,16 @@ public class DevMenuFactoryTests
 
         menu.MenuItems.Should().Contain(s => s.Url == "/dev/Post/news");
         menu.MenuItems.Should().NotContain(s => s.Url == "/dev/Post/post" && s.Title != "Записи");
+    }
+
+    [Fact]
+    public void Build_ExcludesComponentPostTypes()
+    {
+        var component = PostType("photo", "Фото") with { Visibility = PostTypeVisibility.Component };
+        var menu = DevMenuFactory.Build([PostType("news", "Новости"), component]);
+
+        menu.MenuItems.Should().Contain(s => s.Url == "/dev/Post/news");
+        menu.MenuItems.Should().NotContain(s => s.Url == "/dev/Post/photo");
     }
 
     [Fact]
@@ -147,5 +158,6 @@ public class DevMenuFactoryTests
             Tags = [],
             EnabledFeatures = [],
             Disabled = false,
+            Visibility = PostTypeVisibility.Public,
         };
 }

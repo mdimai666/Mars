@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Mars.Host.Shared.Dto.NavMenus;
 using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Resources;
 
 namespace Mars.Host.Services;
@@ -34,7 +35,9 @@ public static class DevMenuFactory
             Divider("divider-1"),
             Item("post-list", "Записи", d + "Post/post"),
 
-            ..postTypes.Where(s => s.TypeName != "post").OrderBy(s => s.Title)
+            ..postTypes.Where(s => s.TypeName != "post")
+                       .Where(s => s.Visibility == PostTypeVisibility.Public)
+                       .OrderBy(s => s.Title)
                        .Select(postType => Item($"post-type:{postType.TypeName}", postType.Title, d + $"Post/{postType.TypeName}")),
 
             Divider("divider-2"),

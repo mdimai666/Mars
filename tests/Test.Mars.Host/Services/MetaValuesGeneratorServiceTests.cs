@@ -11,6 +11,7 @@ using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.Posts;
+using Mars.Shared.Contracts.PostTypes;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
@@ -51,6 +52,7 @@ public class MetaValuesGeneratorServiceTests
             Tags = [],
             EnabledFeatures = [],
             Disabled = false,
+            Visibility = PostTypeVisibility.Public,
             ModifiedAt = null,
             PostStatusList = [],
             PostContentSettings = new PostContentSettingsDto { PostContentType = "plain", CodeLang = null },

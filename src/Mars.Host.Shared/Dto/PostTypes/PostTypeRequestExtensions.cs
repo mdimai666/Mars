@@ -15,6 +15,7 @@ public static class PostTypeRequestExtensions
             Id = request.Id,
             Tags = request.Tags,
             Disabled = request.Disabled,
+            Visibility = request.Visibility,
             EnabledFeatures = request.EnabledFeatures,
             PostContentSettings = request.PostContentSettings.ToDto(),
             PostStatusList = request.PostStatusList.ToDto(),
@@ -29,6 +30,7 @@ public static class PostTypeRequestExtensions
             Id = request.Id,
             Tags = request.Tags,
             Disabled = request.Disabled,
+            Visibility = request.Visibility,
             EnabledFeatures = request.EnabledFeatures,
             PostContentSettings = request.PostContentSettings.ToDto(),
             PostStatusList = request.PostStatusList.ToDto(),
@@ -42,6 +44,7 @@ public static class PostTypeRequestExtensions
             Take = request.Take,
             Search = request.Search,
             Sort = request.Sort,
+            IncludeComponent = request.IncludeComponent,
         };
 
     public static ListPostTypeQuery ToQuery(this TablePostTypeQueryRequest request)
@@ -51,6 +54,7 @@ public static class PostTypeRequestExtensions
             Take = request.PageSize,
             Search = request.Search,
             Sort = request.Sort,
+            IncludeComponent = request.IncludeComponent,
         };
 
     public static PostContentSettingsDto ToDto(this CreatePostContentSettingsRequest request)

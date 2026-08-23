@@ -218,7 +218,9 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
     }
 
     IQueryable<PostTypeEntity> ListFilterQuery(ListPostTypeQuery query) => _listAllQuery
-                                    .AsNoTracking().Where(s => query.Search == null
+                                    .AsNoTracking()
+                                    .Where(s => query.IncludeComponent || s.Visibility == EPostTypeVisibility.Public)
+                                    .Where(s => query.Search == null
                                     || (EF.Functions.ILike(s.TypeName, $"%{query.Search}%")
                                         || EF.Functions.ILike(s.Title, $"%{query.Search}%")));
 

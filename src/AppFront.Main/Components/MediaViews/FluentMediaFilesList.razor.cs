@@ -4,7 +4,6 @@ using AppFront.Main.Extensions;
 using AppFront.Shared.Extensions;
 using AppFront.Shared.Services;
 using Flurl.Http;
-using Mars.Core.Exceptions;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Files;
 using Mars.Shared.Resources;
@@ -28,7 +27,6 @@ public partial class FluentMediaFilesList
 
     public string? ViewFiltergroup { get; set; } = null;
     public const string AllowExternsionsDefault = ".jpg,.png,.jpeg,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.jfif,.svg,.heic";
-    string _fluentInputFileElementId = "my-file-uploader_" + Guid.NewGuid();
 
     //table data
     FluentDataGrid<FileListItemResponse> table = default!;
@@ -37,11 +35,7 @@ public partial class FluentMediaFilesList
     GridItemsProvider<FileListItemResponse> dataProvider = default!;
     PaginationState pagination = new PaginationState { ItemsPerPage = PageSize };
 
-    //upload data
-    int ProgressPercent = 0;
     //FluentInputFileEventArgs[] Files2 = Array.Empty<FluentInputFileEventArgs>();
-
-    List<FileUploadResult> fileUploadResults = new();
 
     //[Parameter]
     //public EventCallback<List<FileListItemResponse>> FilesChanged { get; set; }
@@ -315,41 +309,8 @@ public partial class FluentMediaFilesList
     //-------------------------------------------
     // Upload
 
-    class FileUploadResult
+    void OnUploadCompleted(IReadOnlyCollection<FileDetailResponse> files)
     {
-        public string Name { get; init; }
-        public long Size { get; init; }
-        public string? ErrorMessage { get; init; }
-
-        public FileUploadResult(string name, ulong size, string? errorMessage)
-        {
-            Name = name;
-            Size = (long)size;
-            ErrorMessage = errorMessage;
-        }
-    }
-
-    private async Task OnFileUploaded(FluentInputFileEventArgs file)
-    {
-        try
-        {
-            var x = await client.Media.Upload(file.Stream!, file.Name, _currentFolderId);
-            var result = new FileUploadResult(x.Name, x.Size, null);
-            fileUploadResults.Add(result);
-        }
-        catch (MarsValidationException ex)
-        {
-            fileUploadResults.Add(new FileUploadResult(file.Name, (ulong)file.Size, string.Join("; ", ex.Errors.Values.SelectMany(x => x))));
-        }
-        catch (Exception ex)
-        {
-            fileUploadResults.Add(new FileUploadResult(file.Name, (ulong)file.Size, ex.Message));
-        }
-    }
-
-    private void OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
-    {
-        //ProgressPercent = 0;
         HandleSearchInput();
     }
 

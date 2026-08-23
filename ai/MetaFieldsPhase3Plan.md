@@ -1,6 +1,65 @@
 # План развития мета-полей — списки объектов, видимость типов, редакторы контента, уникальность
 
 > **Статус: черновик от 2026-08-23, обсуждение дизайна завершено.**
+> **Фаза 3 выполнена 2026-08-23**: `Features.PostImage` + указатель картинки +
+> загрузка. Миграция `20260823070140_PostTypeImageFieldKey` (колонка
+> `image_field_key` на `post_types`). Механизм «фича → системное поле»:
+> `SystemMetaFieldCatalog` (Mars.Shared: маркер `Options.systemKey`,
+> `GetSystemKey/IsSystem/WithoutSystemKey`) + `PostTypeSystemFields`
+> (Mars.Host.Shared: применение в `PostTypeService.Create/Update` до валидации;
+> фича включена — системное поле `image` (Type=Image) гарантируется в составе
+> полей и указатель пишется в `ImageFieldKey`; ключ переименованного поля
+> отслеживается; фича выключена — маркер снимается, указатель очищается, поле
+> остаётся пользовательским). Защита: `MetaFieldsTools` не удаляет поля с
+> `systemKey` через дифф; в форме поля — бейдж «системное», без кнопки удаления,
+> пикер типа заблокирован (`GroupedSelectDropDown.Disabled`), клон маркер теряет.
+> Превью по указателю: `PostMetaColumnsService` для полей Файл/Изображение
+> батчом отдаёт превью-адрес файлов (`ImagePreviewResolver`) — грид постов,
+> таблица детей и любые мета-колонки; фронт рендерит колонки типа Image
+> миниатюрой (`ManagePostView`, `MetaValueChildrenList`). Пикер/строки
+> мульти-отношений: `ImageUrl` в `MetaValueRelationModelSummary(+Response)`,
+> заполняет `PostRelationModelProviderHandler` через `IPostMetaColumnsService`
+> (группировка по типу поста, групповой запрос). Загрузка: общий
+> `MediaUploadZone` (AppFront.Main: авто-режим с загрузкой в медиа и список
+> результатов, ручной режим для `ZipUploadDialog`; лимит 50 вместо
+> захардкоженных 4, `Accept` реально используется), `FluentMediaFilesList` на нём;
+> эндпоинт `api/Media/Upload` и клиент получили `folderPath`
+> (`GetOrCreateByPath` на сервере). Папка загрузки полей Файл/Изображение —
+> `Options.uploadFolder` (`MetaFieldKindCatalog.UploadFolderOption`), пикер папок
+> `MediaFolderSelectDialog` в форме поля, пусто = папка года. Дроп файлов в
+> секцию детей: зона в `MetaValueChildrenList`, поле-приёмник = указатель
+> картинки ребёнка ?? первое Image ?? первое File-поле; на каждый файл —
+> `client.Post.Create` (заголовок из имени файла, уникальный суффикс в slug,
+> значение Файл/Изображение) + привязка. Удалён мёртвый код: вся цепочка
+> `SpecialViews` (`GalleryFluentFileUploader1`, `GalleryPhotosList`,
+> `GalleryEditView`, `GalleryManageView`). Точечные тесты зелёные: юнит
+> `Test.Mars.Host` 381/381 (+6 новых `PostTypeSystemFieldsTests`), интеграционные
+> посты/типы 37/37, `WebApiClient` посты/типы 33/33.
+> **Фиксы по обкатке (2026-08-23)**: (1) чекбокс фичи в `EditPostTypePage` сразу
+> синхронизирует системные поля на клиенте (`PostTypeEditModel.ToggleFeature` —
+> зеркало серверного `PostTypeSystemFields`), поле `image` появляется без
+> пересохранения; (2) `MediaUploadZone` не загружала файлы: при заданном
+> `OnInputFileChange` FluentInputFile полностью пропускает свою обработку —
+> делегат подключается только в ручном режиме (`FilesSelectedHandler`,
+> `EventCallback.Empty` в авто).
+> **Редизайн PostImage по обкатке (2026-08-24)**: указатель картинки —
+> редактируемый. Ренейминг: `SystemMetaFieldCatalog` → `FeatureFieldsCatalog`
+> (`IsSystem` → `IsFeatureRequired`, JSON `systemKey` → `featureKey`),
+> `PostTypeSystemFields` → `PostTypeFeatureFields`. **Финальная модель
+> (упрощена по решению пользователя)**: согласования в пайплайне сохранения НЕТ —
+> `PostTypeFeatureFields.ApplyFeaturePostImage(fields, enable, key)` — свободная
+> тулза (сервис не вызывает; для сервисного кода/тестов/миграций):
+> `enable + корректный ключ` → использует поле; `пусто/не найдено` → создаёт поле
+> `image` с маркером; `!enable` → указатель в null, поля не трогает. Валидаторы
+> (оба, Create/Update): фича включена → `ImageFieldKey` обязателен и указывает на
+> поле типа Image («не пускать с галочкой и неправильными данными»). Поле при
+> включении фичи создаёт клиент: картинок нет → сразу; есть → мини-модалка
+> `PostImageSelectDialog` (создать/выбрать). Дропдаун «Поле картинки поста» на
+> форме при включённой фиче. Маркер в Options — только происхождение: бейдж
+> «фича»/запрет удаления/смены типа считаются из «поле == указатель && фича
+> включена» (`FormMetaField.FeatureFieldKey`), в БД маркер остаётся («пусть
+> висит»). Переименование ключа поля двигает указатель
+> (`OnFieldKeyRenamed` в форме → `PostTypeEditModel`). Юнит 380/380.
 > **Фаза 2 выполнена 2026-08-23** (без миграций): вид «Список» и дети/мульти-ссылки.
 > Маркер `Options.kind = list` — `MetaFieldKindCatalog` (Mars.Shared, типизированное
 > чтение `GetKind/IsListKind/GetRemoveMode`), в `MetaFieldEditModel` регион KIND

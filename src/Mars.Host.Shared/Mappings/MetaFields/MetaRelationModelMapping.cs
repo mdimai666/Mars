@@ -38,6 +38,7 @@ public static class MetaRelationModelMapping
             Title = entity.Title,
             Description = entity.Description,
             CreatedAt = entity.CreatedAt,
+            ImageUrl = entity.ImageUrl,
         };
 
     public static ListDataResult<MetaValueRelationModelSummaryResponse> ToResponse(this ListDataResult<MetaValueRelationModelSummary> items)

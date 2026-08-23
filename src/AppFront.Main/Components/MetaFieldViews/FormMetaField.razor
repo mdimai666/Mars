@@ -34,12 +34,22 @@
                                     <span class="text-secondary fz12px">
                                         @field.Key
                                     </span>
+                                    @if (IsFeatureField(field))
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral"
+                                                     title="Поле — картинка поста (фича «Картинка поста»). Чтобы удалить его — снимите галочку фичи или выберите другое поле картинки типа и сохраните.">
+                                            фича
+                                        </FluentBadge>
+                                    }
                                     <FluentButton Appearance="Appearance.Stealth" OnClick="() => OnClone(field)">
                                         <span class="text-secondary">дублировать</span>
                                     </FluentButton>
-                                    <DFluentDeleteButton OnConfirm="() => OnDelete(field)">
-                                        <span class="text-danger">удалить</span>
-                                    </DFluentDeleteButton>
+                                    @if (!IsFeatureField(field))
+                                    {
+                                        <DFluentDeleteButton OnConfirm="() => OnDelete(field)">
+                                            <span class="text-danger">удалить</span>
+                                        </DFluentDeleteButton>
+                                    }
                                 </div>
 
                             </div>
@@ -64,7 +74,9 @@
                                             </div>
                                             <div class="col">
                                                 <FormItem2 For="() => field.Key">
-                                                    <FluentTextField @bind-Value=@field.Key Required />
+                                                    <FluentTextField Value=@field.Key
+                                                                     ValueChanged="@((v) => OnChangeFieldKey(v, field))"
+                                                                     Required />
                                                 </FormItem2>
                                             </div>
                                         </div>
@@ -96,6 +108,7 @@
                                                                            OptionText="@(i => i.Label)"
                                                                            OptionValue="@(i => i.OptionKey)"
                                                                            Value="@GetTypePickerValue(field)"
+                                                                           Disabled="IsFeatureField(field)"
                                                                            ValueChanged="@(v => OnChangeFieldTypePicker(v, field))"
                                                                            ButtonStyle="min-width:250px;" />
                                                 </FormItem2>
@@ -184,6 +197,23 @@
                                                                          Label="Relation-поле цели (обратная ссылка)"
                                                                          Style="min-width:250px" />
                                                     </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (field.Type is MetaFieldType.File or MetaFieldType.Image)
+                                        {
+                                            <div class="vstack gap-2">
+                                                <FluentLabel>Папка загрузки</FluentLabel>
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <span class="text-secondary">
+                                                        @(string.IsNullOrEmpty(field.UploadFolder) ? "— папка года (по умолчанию) —" : field.UploadFolder)
+                                                    </span>
+                                                    <FluentButton Size="small" OnClick="@(() => OpenFolderPickerAsync(field))">Выбрать…</FluentButton>
+                                                    @if (!string.IsNullOrEmpty(field.UploadFolder))
+                                                    {
+                                                        <FluentButton Size="small" Appearance="Appearance.Stealth" OnClick="@(() => { field.UploadFolder = ""; })">Сбросить</FluentButton>
+                                                    }
                                                 </div>
                                             </div>
                                         }

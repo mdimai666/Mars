@@ -1,3 +1,5 @@
+@using AppFront.Shared.Components.MediaViews
+@using Mars.Shared.Contracts.MetaFields
 @using Mars.Shared.Contracts.Posts
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits FluentComponentBase
@@ -25,8 +27,20 @@
                 @foreach (var col in _metaColumns)
                 {
                     var key = col.Key;
+                    var isImage = col.Type == MetaFieldType.Image;
                     <TemplateColumn Title="@col.Title">
-                        @context.MetaColumns?.GetValueOrDefault(key)
+                        @if (isImage)
+                        {
+                            var url = context.MetaColumns?.GetValueOrDefault(key)?.Split(", ").FirstOrDefault();
+                            @if (!string.IsNullOrEmpty(url))
+                            {
+                                <img src="@url" alt="" class="d-children-thumb" />
+                            }
+                        }
+                        else
+                        {
+                            @context.MetaColumns?.GetValueOrDefault(key)
+                        }
                     </TemplateColumn>
                 }
                 <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Align="Align.End" />
@@ -49,6 +63,26 @@
             <FluentButton OnClick="OpenCreateAsync" IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
             <FluentButton OnClick="OpenSelectAsync" Appearance="Appearance.Neutral">Привязать существующий…</FluentButton>
         </div>
+
+        @if (_dropField is not null)
+        {
+            <div class="mt-2">
+                <MediaUploadZone FolderPath="@_dropField.Options.GetUploadFolder()"
+                                 Accept="@(_dropField.Type == MetaFieldType.Image ? "image/*" : "*")"
+                                 Label="Загрузить файлы — создастся объект на каждый файл"
+                                 ZoneStyle="min-height: 60px;"
+                                 OnFilesUploaded="OnFilesUploadedAsync" />
+            </div>
+        }
     }
 
 </d-metavalue-children-list>
+
+<style>
+    .d-children-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>

@@ -41,6 +41,10 @@ public class PostTypeEntity : IBasicEntity
     [Comment("Видимость: публичный тип или встроенный компонент")]
     public EPostTypeVisibility Visibility { get; set; } = EPostTypeVisibility.Public;
 
+    [StringLength(100)]
+    [Comment("Ключ мета-поля — картинки типа (указатель превью)")]
+    public string? ImageFieldKey { get; set; }
+
     //[Comment("Категория")]
     //public Guid CategoryId { get; set; }
 

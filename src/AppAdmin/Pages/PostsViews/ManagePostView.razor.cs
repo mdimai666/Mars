@@ -207,6 +207,12 @@ public partial class ManagePostView : IDisposable
     static string? MetaDisplay(PostListItemResponse item, string key)
         => item.MetaColumns is not null && item.MetaColumns.TryGetValue(key, out var value) ? value : null;
 
+    bool IsImageMetaColumn(string key)
+        => _metaFields.FirstOrDefault(f => f.Key == key)?.Type == MetaFieldType.Image;
+
+    static string? FirstOf(string? display)
+        => display?.Split(", ").FirstOrDefault();
+
     void OpenSettingsDialog()
     {
         _gridDraft = _gridSettings;

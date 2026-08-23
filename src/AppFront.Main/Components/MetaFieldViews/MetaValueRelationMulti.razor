@@ -9,6 +9,10 @@
             <ItemTemplate>
                 <div class="d-flex align-items-center gap-2 py-1" @key="row">
                     <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" Style="cursor:grab;" />
+                    @if (ImageUrlOf(row) is string imageUrl)
+                    {
+                        <img src="@imageUrl" alt="" class="d-relation-thumb" />
+                    }
                     <div class="flex-fill text-truncate">
                         @TitleOf(row)
                         @if (DescriptionOf(row) is string description)
@@ -33,3 +37,13 @@
     </div>
 
 </d-metavalue-relation-multi>
+
+<style>
+    .d-relation-thumb {
+        width: 36px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 4px;
+        flex: none;
+    }
+</style>

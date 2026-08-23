@@ -168,7 +168,18 @@
 
                             case GridColumnKind.Meta:
                                 <TemplateColumn Title="@col.Title" Sortable="false">
-                                    @MetaDisplay(context, col.Key)
+                                    @if (IsImageMetaColumn(col.Key))
+                                    {
+                                        var url = FirstOf(MetaDisplay(context, col.Key));
+                                        @if (!string.IsNullOrEmpty(url))
+                                        {
+                                            <img src="@url" alt="" class="d-manage-post-thumb" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @MetaDisplay(context, col.Key)
+                                    }
                                 </TemplateColumn>
                                 break;
                         }
@@ -210,3 +221,12 @@
         </FluentDialogFooter>
     </FluentDialog>
 </d-manage-post-view>
+
+<style>
+    .d-manage-post-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>

@@ -51,13 +51,18 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         }
     }
 
-    public async Task<Guid> WriteUploadToMedia(IFormFile formFile, Guid userId, CancellationToken cancellationToken, Guid? folderId = null)
+    public async Task<Guid> WriteUploadToMedia(IFormFile formFile, Guid userId, CancellationToken cancellationToken, Guid? folderId = null, string? folderPath = null)
     {
         MediaFolderDto folder;
         if (folderId is not null)
         {
             folder = await _folderService.GetById(folderId.Value, cancellationToken)
                 ?? throw new NotFoundException("Папка не найдена");
+        }
+        else if (!string.IsNullOrWhiteSpace(folderPath))
+        {
+            // папка по пути (например, из настроек мета-поля); создаётся при отсутствии
+            folder = await _folderService.GetOrCreateByPath(folderPath.Trim(), userId, cancellationToken);
         }
         else
         {

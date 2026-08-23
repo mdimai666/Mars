@@ -24,6 +24,9 @@ public record MetaValueRelationModelSummaryResponse
     public required string Title { get; init; }
     public required string Description { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
+
+    /// <summary>Превью-адрес картинки поста по указателю типа (пусто, если картинки нет)</summary>
+    public string? ImageUrl { get; init; }
 }
 
 public record MetaValueRelationModelsListQueryRequest : BasicListQueryRequest

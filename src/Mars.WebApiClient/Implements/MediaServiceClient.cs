@@ -18,12 +18,16 @@ internal class MediaServiceClient : BasicServiceClient, IMediaServiceClient
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<FileDetailResponse?>();
 
-    public Task<FileDetailResponse> Upload(Stream stream, string fileName, Guid? folderId = null)
+    public Task<FileDetailResponse> Upload(Stream stream, string fileName, Guid? folderId = null, string? folderPath = null)
     {
         var request = _client.Request($"{_basePath}{_controllerName}", "Upload");
         if (folderId is not null)
         {
             request = request.AppendQueryParam("folderId", folderId.Value.ToString());
+        }
+        else if (!string.IsNullOrWhiteSpace(folderPath))
+        {
+            request = request.AppendQueryParam("folderPath", folderPath);
         }
 
         return request.PostMultipartAsync(mp => mp

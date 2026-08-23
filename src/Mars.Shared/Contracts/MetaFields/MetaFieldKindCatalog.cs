@@ -31,6 +31,9 @@ public static class MetaFieldKindCatalog
     /// <summary>Ключ опции режима удаления в Options</summary>
     public static string RemoveModeOption() => "removeMode";
 
+    /// <summary>Ключ опции папки загрузки (поля Файл/Изображение; пусто = папка года)</summary>
+    public static string UploadFolderOption() => "uploadFolder";
+
     /// <summary>Вид поля из <c>Options.kind</c> (пусто = обычный)</summary>
     public static string GetKind(this JsonNode? options)
         => options is JsonObject obj && obj[KindOption()] is JsonValue value && value.TryGetValue<string>(out var kind)
@@ -45,5 +48,11 @@ public static class MetaFieldKindCatalog
     public static string GetRemoveMode(this JsonNode? options)
         => options is JsonObject obj && obj[RemoveModeOption()] is JsonValue value && value.TryGetValue<string>(out var mode)
             ? mode
+            : "";
+
+    /// <summary>Папка загрузки из <c>Options.uploadFolder</c> (пусто = папка года)</summary>
+    public static string GetUploadFolder(this JsonNode? options)
+        => options is JsonObject obj && obj[UploadFolderOption()] is JsonValue value && value.TryGetValue<string>(out var folder)
+            ? folder
             : "";
 }

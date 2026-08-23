@@ -129,7 +129,6 @@ public class MetaFieldEditModel
         return model;
     }
 
-    /// <summary>«Создать поле из существующего»: копия с новыми Id (поле и варианты).</summary>
     public MetaFieldEditModel Clone(int order)
     {
         var clone = new MetaFieldEditModel
@@ -143,7 +142,7 @@ public class MetaFieldEditModel
             Description = Description,
             IsNullable = IsNullable,
             Default = Default,
-            Options = Options,
+            Options = Options.WithoutFeatureKey(),
             IsNew = true,
             Order = order,
             Tags = [.. Tags],
@@ -413,6 +412,26 @@ public class MetaFieldEditModel
     {
         get => ReadOptionString("backReferenceKey");
         set => WriteOptionString("backReferenceKey", value);
+    }
+
+    /// <summary>Папка загрузки для полей Файл/Изображение (хранится в Options); пусто = папка года</summary>
+    public string UploadFolder
+    {
+        get => ReadOptionString(MetaFieldKindCatalog.UploadFolderOption());
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (Options is JsonObject obj)
+                {
+                    obj.Remove(MetaFieldKindCatalog.UploadFolderOption());
+                    if (obj.Count == 0) Options = null;
+                }
+                return;
+            }
+
+            WriteOptionString(MetaFieldKindCatalog.UploadFolderOption(), value.Trim());
+        }
     }
 
     string ReadOptionString(string name)

@@ -21,6 +21,8 @@ public record CreatePostTypeRequest
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required bool Disabled { get; init; }
     public required PostTypeVisibility Visibility { get; init; }
+    public string? ImageFieldKey { get; init; }
+
     public required CreatePostContentSettingsRequest PostContentSettings { get; init; }
     public required IReadOnlyCollection<CreateMetaFieldRequest> MetaFields { get; init; }
 }
@@ -41,6 +43,8 @@ public record UpdatePostTypeRequest
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
     public required bool Disabled { get; init; }
     public required PostTypeVisibility Visibility { get; init; }
+    public string? ImageFieldKey { get; init; }
+
     public required UpdatePostContentSettingsRequest PostContentSettings { get; init; }
     public required IReadOnlyCollection<UpdateMetaFieldRequest> MetaFields { get; init; }
 }

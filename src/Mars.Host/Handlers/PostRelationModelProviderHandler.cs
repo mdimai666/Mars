@@ -8,7 +8,10 @@ using Mars.Shared.Resources;
 
 namespace Mars.Host.Handlers;
 
-internal class PostRelationModelProviderHandler(IPostRepository postRepository, IMetaModelTypesLocator modelTypesLocator, IPostService postService)
+internal class PostRelationModelProviderHandler(IPostRepository postRepository,
+                                                IMetaModelTypesLocator modelTypesLocator,
+                                                IPostService postService,
+                                                IPostMetaColumnsService postMetaColumnsService)
     : IMetaRelationModelProviderHandler, IMetaRelationModelProviderWithSubItemsHandler
 {
     public async Task<Dictionary<Guid, object>> ListHandle(IReadOnlyCollection<Guid> ids, string modelName, CancellationToken cancellationToken)
@@ -56,25 +59,51 @@ internal class PostRelationModelProviderHandler(IPostRepository postRepository, 
             Type = subtypeModelName,
 
         }, cancellationToken);
-        return data.ToMap(ToModelSummary);
+
+        var imageUrls = await GetImageUrlsAsync(data.Items, cancellationToken);
+        return data.ToMap(s => ToModelSummary(s, imageUrls));
     }
 
     public async Task<IReadOnlyDictionary<Guid, MetaValueRelationModelSummary>> GetIds(string modelName, Guid[] ids, CancellationToken cancellationToken)
     {
         var subtypeModelName = modelName == "Post" ? null : modelName.Split('.', 2)[1];
 
-        return (await postRepository.ListAll(new() { Ids = ids, Type = subtypeModelName }, cancellationToken))
-                                    .ToDictionary(s => s.Id, ToModelSummary);
+        var posts = await postRepository.ListAll(new() { Ids = ids, Type = subtypeModelName }, cancellationToken);
+        var imageUrls = await GetImageUrlsAsync(posts, cancellationToken);
+
+        return posts.ToDictionary(s => s.Id, s => ToModelSummary(s, imageUrls));
     }
 
-    MetaValueRelationModelSummary ToModelSummary(PostSummary value)
+    MetaValueRelationModelSummary ToModelSummary(PostSummary value, IReadOnlyDictionary<Guid, string> imageUrls)
         => new()
         {
             Id = value.Id,
             Title = value.Title,
             Description = value.Slug,
             CreatedAt = value.CreatedAt,
+            ImageUrl = imageUrls.GetValueOrDefault(value.Id),
         };
+
+    async Task<Dictionary<Guid, string>> GetImageUrlsAsync(IEnumerable<PostSummary> posts, CancellationToken cancellationToken)
+    {
+        var urls = new Dictionary<Guid, string>();
+
+        foreach (var group in posts.GroupBy(s => s.Type))
+        {
+            var imageKey = modelTypesLocator.GetPostTypeByName(group.Key)?.ImageFieldKey;
+            if (string.IsNullOrEmpty(imageKey)) continue;
+
+            var ids = group.Select(s => s.Id).ToArray();
+            var values = await postMetaColumnsService.GetDisplayValuesAsync(group.Key, [imageKey], ids, cancellationToken);
+            foreach (var (postId, row) in values)
+            {
+                var url = row.GetValueOrDefault(imageKey);
+                if (!string.IsNullOrEmpty(url)) urls[postId] = url;
+            }
+        }
+
+        return urls;
+    }
 
     //TODO: переместить сюда PostTypes list sub types
 

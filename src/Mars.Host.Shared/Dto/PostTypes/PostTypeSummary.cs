@@ -12,9 +12,9 @@ public record PostTypeSummary : IHasId
     public required string TypeName { get; init; }
     public required IReadOnlyCollection<string> Tags { get; init; }
     public required IReadOnlyCollection<string> EnabledFeatures { get; init; }
-    //public required ModelViewSettings ViewSettings { get; init; }
     public required bool Disabled { get; init; }
     public required PostTypeVisibility Visibility { get; init; }
+    public string? ImageFieldKey { get; init; }
 
 }
 

@@ -64,17 +64,30 @@
 
                             @foreach (var d in PostTypeConstants.Features.All)
                             {
+                                var feature = d;
                                 <div class="col-lg-4">
-                                    <FluentCheckbox Value=@context.EnabledFeatures.Contains(d)
-                                                    ValueChanged=@(v=>{
-                                                if(v)context.EnabledFeatures.Add(d);
-                                                else context.EnabledFeatures.Remove(d);
-                                                })>
-                                        @L[d]
+                                    <FluentCheckbox Value=@context.EnabledFeatures.Contains(feature)
+                                                    ValueChanged=@(v => OnToggleFeatureAsync(context, feature, v))>
+                                        @L[feature]
                                     </FluentCheckbox>
                                 </div>
                             }
                         </div>
+
+                        @if (context.FeatureActivated(PostTypeConstants.Features.PostImage))
+                        {
+                            <div class="mt-3" style="max-width:400px;">
+                                <FormItem2 For="@(() => context.ImageFieldKey)">
+                                    <FluentSelect TOption="string"
+                                                  Label="Поле картинки поста"
+                                                  Items="@context.ImagePointerCandidates().Select(s => s.Key).ToList()"
+                                                  Value="@context.ImageFieldKey"
+                                                  ValueChanged="@(v => context.ImageFieldKey = v)"
+                                                  Required />
+                                </FormItem2>
+                                <FluentValidationMessage For="@(() => context.ImageFieldKey)" />
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -219,7 +232,9 @@
 
                             <CascadingValue Value="@context.MetaFields">
                                 <CascadingValue Value="@context.MetaRelationModels">
-                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
+                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaField
+                                        FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
+                                        OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
                                 </CascadingValue>
                             </CascadingValue>
 

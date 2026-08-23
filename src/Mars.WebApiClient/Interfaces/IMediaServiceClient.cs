@@ -15,7 +15,7 @@ public interface IMediaServiceClient
     /// <returns></returns>
     /// <exception cref="MarsValidationException"></exception>
     /// <exception cref="UserActionException"></exception>
-    Task<FileDetailResponse> Upload(Stream stream, string fileName, Guid? folderId = null);
+    Task<FileDetailResponse> Upload(Stream stream, string fileName, Guid? folderId = null, string? folderPath = null);
     //Task Update(UpdateNavMenuRequest request);
     Task<ListDataResult<FileListItemResponse>> List(ListFileQueryRequest filter);
     Task<PagingResult<FileListItemResponse>> ListTable(TableFileQueryRequest filter);

@@ -14,6 +14,7 @@
                   Appearance="Appearance.Neutral"
                   Style="@ButtonStyle"
                   Class="@ButtonClass"
+                  Disabled="@Disabled"
                   IconEnd="@(new Icons.Regular.Size16.ChevronDown())"
                   Id="@_buttonId">
         @DisplayValue
@@ -65,6 +66,8 @@
     [Parameter] public string ButtonClass { get; set; } = string.Empty;
     [Parameter] public string ButtonStyle { get; set; } = string.Empty;
 
+    [Parameter] public bool Disabled { get; set; }
+
     MarkupString _customButtonStyle => new InlineStyleBuilder()
         .AddStyle($"#{_buttonId}::part(content)", "width", "stretch")
         .AddStyle($"#{_buttonId}::part(content)", "text-align", "start")
@@ -102,6 +105,7 @@
 
     private void OpenMenu()
     {
+        if (Disabled) return;
         isMenuOpen = true;
     }
 

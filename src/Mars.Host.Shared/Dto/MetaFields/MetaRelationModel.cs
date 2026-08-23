@@ -31,13 +31,13 @@ public record RelationModelSubType
 /// </summary>
 public record MetaValueRelationModelSummary
 {
-    
+
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required string Description { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
+    public string? ImageUrl { get; init; }
 }
-
 
 /// <summary>
 /// <see cref="MetaValueRelationModelsListQueryRequest"/>

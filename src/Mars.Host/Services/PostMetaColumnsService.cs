@@ -1,6 +1,7 @@
 using System.Globalization;
 using Mars.Host.Data.Contexts;
 using Mars.Host.Data.Entities;
+using Mars.Host.Repositories.Helpers;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Services;
 using Mars.Shared.Contracts.MetaFields;
@@ -13,14 +14,17 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
     private readonly MarsDbContext _marsDbContext;
     private readonly IMetaModelTypesLocator _metaModelTypesLocator;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IOptionService _optionService;
 
     public PostMetaColumnsService(MarsDbContext marsDbContext,
                                   IMetaModelTypesLocator metaModelTypesLocator,
-                                  IServiceProvider serviceProvider)
+                                  IServiceProvider serviceProvider,
+                                  IOptionService optionService)
     {
         _marsDbContext = marsDbContext;
         _metaModelTypesLocator = metaModelTypesLocator;
         _serviceProvider = serviceProvider;
+        _optionService = optionService;
     }
 
     public async Task<IReadOnlyDictionary<Guid, IReadOnlyDictionary<string, string?>>> GetDisplayValuesAsync(
@@ -47,6 +51,7 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
                                          .ToListAsync(cancellationToken);
 
         var relationTitles = await LoadRelationTitlesAsync(fields, values, cancellationToken);
+        var filePreviews = await LoadFilePreviewsAsync(fields, values, cancellationToken);
 
         var result = new Dictionary<Guid, IReadOnlyDictionary<string, string?>>();
         foreach (var postId in postIds)
@@ -55,7 +60,7 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
             foreach (var field in fields)
             {
                 var fieldValues = values.Where(v => v.PostId == postId && v.MetaFieldId == field.Id).ToList();
-                row[field.Key] = FormatField(field, fieldValues, relationTitles);
+                row[field.Key] = FormatField(field, fieldValues, relationTitles, filePreviews);
             }
             result[postId] = row;
         }
@@ -91,7 +96,38 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
         return titles;
     }
 
-    static string? FormatField(MetaFieldDto field, List<PostMetaValueEntity> fieldValues, IReadOnlyDictionary<Guid, string> relationTitles)
+    async Task<Dictionary<Guid, string>> LoadFilePreviewsAsync(List<MetaFieldDto> fields,
+                                                               List<PostMetaValueEntity> values,
+                                                               CancellationToken cancellationToken)
+    {
+        var previews = new Dictionary<Guid, string>();
+
+        var fileFields = fields.Where(f => f.Type is MetaFieldType.File or MetaFieldType.Image).ToList();
+        if (fileFields.Count == 0) return previews;
+
+        var fieldIds = fileFields.Select(f => f.Id).ToList();
+        var fileIds = values.Where(v => fieldIds.Contains(v.MetaFieldId) && v.ModelId is not null)
+                            .Select(v => v.ModelId!.Value)
+                            .Distinct()
+                            .ToArray();
+        if (fileIds.Length == 0) return previews;
+
+        var resolver = new ImagePreviewResolver(new(), _optionService.FileHostingInfo());
+        var files = await _marsDbContext.Files.AsNoTracking()
+                                              .Where(f => fileIds.Contains(f.Id))
+                                              .ToListAsync(cancellationToken);
+        foreach (var file in files)
+        {
+            previews.TryAdd(file.Id, resolver.ResolvePreview(file));
+        }
+
+        return previews;
+    }
+
+    static string? FormatField(MetaFieldDto field,
+                               List<PostMetaValueEntity> fieldValues,
+                               IReadOnlyDictionary<Guid, string> relationTitles,
+                               IReadOnlyDictionary<Guid, string> filePreviews)
     {
         if (fieldValues.Count == 0) return null;
         var first = fieldValues[0];
@@ -123,11 +159,16 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
             }
 
             case MetaFieldType.Relation:
+                return string.Join(", ", fieldValues
+                    .Where(v => v.ModelId is not null)
+                    .Select(v => relationTitles.GetValueOrDefault(v.ModelId!.Value))
+                    .Where(t => t is not null));
+
             case MetaFieldType.File:
             case MetaFieldType.Image:
                 return string.Join(", ", fieldValues
                     .Where(v => v.ModelId is not null)
-                    .Select(v => relationTitles.GetValueOrDefault(v.ModelId!.Value))
+                    .Select(v => filePreviews.GetValueOrDefault(v.ModelId!.Value))
                     .Where(t => t is not null));
 
             default:

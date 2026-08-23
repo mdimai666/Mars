@@ -1,6 +1,8 @@
 using AppFront.Shared.Extensions;
 using AppFront.Shared.Services;
 using Flurl.Http;
+using Mars.Core.Features;
+using Mars.Shared.Contracts.Files;
 using Mars.Shared.Contracts.MetaFields;
 using Mars.Shared.Contracts.PostTypes;
 using Mars.Shared.Contracts.Posts;
@@ -31,9 +33,12 @@ public partial class MetaValueChildrenList
     string? _childTypeName;
     PostTypeDetailResponse? _childType;
     List<PostListItemResponse> _items = [];
-    List<(string Key, string Title)> _metaColumns = [];
+    List<(string Key, string Title, MetaFieldType Type)> _metaColumns = [];
 
-    string GridColumns => $"minmax(180px, 2fr) {string.Concat(Enumerable.Repeat("1fr ", _metaColumns.Count))}100px 40px";
+    /// <summary>Поле детского типа, принимающее загруженные файлы (указатель картинки, иначе первое Image/File)</summary>
+    MetaFieldDetailResponse? _dropField;
+
+    string GridColumns => $"minmax(180px, 2fr) {string.Concat(_metaColumns.Select(c => c.Type == MetaFieldType.Image ? "56px " : "1fr "))}100px 40px";
 
     List<MetaValueEditModel> FieldRows()
         => MetaValues.Where(v => v.MetaField.Key == Meta.Key)
@@ -71,6 +76,7 @@ public partial class MetaValueChildrenList
 
             var blank = await client.Post.GetPostBlank(_childTypeName);
             _childType = blank.PostType;
+            _dropField = ResolveDropField(_childType);
             await ReloadAsync();
         }
         catch (FlurlHttpException ex)
@@ -98,7 +104,7 @@ public partial class MetaValueChildrenList
         var fields = _childType.MetaFields
             .Where(s => s.Type != MetaFieldType.Query && s.Type != MetaFieldType.SelectMany)
             .ToList();
-        _metaColumns = fields.Select(s => (s.Key, s.Title)).ToList();
+        _metaColumns = fields.Select(s => (s.Key, s.Title, s.Type)).ToList();
         var keys = fields.Select(s => s.Key).ToArray();
 
         var result = await client.Post.List(_childTypeName, new ListPostQueryRequest
@@ -211,5 +217,78 @@ public partial class MetaValueChildrenList
 
         await ReloadAsync();
         StateHasChanged();
+    }
+
+    //-------------------------------------------
+    // Загрузка файлов: на каждый файл создаётся пост-ребёнок со значением Файл/Изображение
+
+    /// <summary>Поле детского типа, принимающее файлы: указатель картинки, иначе первое Image/File-поле</summary>
+    static MetaFieldDetailResponse? ResolveDropField(PostTypeDetailResponse childType)
+    {
+        if (!string.IsNullOrEmpty(childType.ImageFieldKey))
+        {
+            var pointer = childType.MetaFields.FirstOrDefault(f => f.Key == childType.ImageFieldKey);
+            if (pointer is not null) return pointer;
+        }
+
+        return childType.MetaFields.FirstOrDefault(f => f.Type == MetaFieldType.Image)
+            ?? childType.MetaFields.FirstOrDefault(f => f.Type == MetaFieldType.File);
+    }
+
+    async Task OnFilesUploadedAsync(IReadOnlyCollection<FileDetailResponse> files)
+    {
+        if (_childTypeName is null || _dropField is null) return;
+
+        foreach (var file in files)
+        {
+            var title = Path.GetFileNameWithoutExtension(file.Name);
+            if (string.IsNullOrWhiteSpace(title)) title = file.Name;
+
+            var slugBase = TextTool.TranslateToPostSlug(title);
+            if (string.IsNullOrEmpty(slugBase)) slugBase = "file";
+
+            try
+            {
+                var post = await client.Post.Create(new CreatePostRequest
+                {
+                    Id = null,
+                    Title = title,
+                    Type = _childTypeName,
+                    Slug = $"{slugBase}-{Guid.NewGuid().ToString("N")[..8]}",
+                    Tags = [],
+                    Content = null,
+                    Status = null,
+                    Excerpt = null,
+                    LangCode = "",
+                    CategoryIds = [],
+                    MetaValues =
+                    [
+                        new CreateMetaValueRequest
+                        {
+                            Id = Guid.NewGuid(),
+                            Index = 0,
+                            Bool = null,
+                            Int = null,
+                            Float = null,
+                            Decimal = null,
+                            Long = null,
+                            StringText = null,
+                            StringShort = null,
+                            DateTime = null,
+                            VariantId = null,
+                            VariantsIds = [],
+                            ModelId = file.Id,
+                            MetaFieldId = _dropField.Id,
+                        },
+                    ],
+                });
+
+                LinkPost(post.Id);
+            }
+            catch (FlurlHttpException ex)
+            {
+                _ = _messageService.Error(ex.Message);
+            }
+        }
     }
 }

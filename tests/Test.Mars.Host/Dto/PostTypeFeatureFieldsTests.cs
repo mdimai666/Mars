@@ -1,0 +1,88 @@
+using System.Text.Json.Nodes;
+using FluentAssertions;
+using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Shared.Contracts.MetaFields;
+using Mars.Shared.Contracts.PostTypes;
+
+namespace Test.Mars.Host.Dto;
+
+public class PostTypeFeatureFieldsTests
+{
+    static MetaFieldDto Field(MetaFieldType type, string key, JsonNode? options = null)
+        => new()
+        {
+            Id = Guid.NewGuid(),
+            Title = key,
+            Key = key,
+            Type = type,
+            MaxValue = null,
+            MinValue = null,
+            Description = "",
+            IsNullable = true,
+            Default = null,
+            Options = options,
+            Order = 0,
+            Tags = [],
+            Hidden = false,
+            Disabled = false,
+            Variants = null,
+            ModelName = null,
+        };
+
+    [Fact]
+    public void Disabled_ClearsPointer_FieldsUntouched()
+    {
+        var imageField = Field(MetaFieldType.Image, "image");
+
+        var (fields, pointer) = PostTypeFeatureFields.ApplyFeaturePostImage([imageField], enable: false);
+
+        pointer.Should().BeNull();
+        fields.Should().BeEquivalentTo(new[] { imageField });
+    }
+
+    [Fact]
+    public void Enabled_ValidKey_UsesField_NoCreate()
+    {
+        var imageField = Field(MetaFieldType.Image, "photo");
+
+        var (fields, pointer) = PostTypeFeatureFields.ApplyFeaturePostImage([imageField], enable: true, key: "photo");
+
+        pointer.Should().Be("photo");
+        fields.Should().ContainSingle().Which.Id.Should().Be(imageField.Id);
+    }
+
+    [Fact]
+    public void Enabled_NoKey_CreatesFeatureFieldWithMarker()
+    {
+        var (fields, pointer) = PostTypeFeatureFields.ApplyFeaturePostImage([], enable: true);
+
+        pointer.Should().Be(FeatureFieldsCatalog.PostImageFieldKey);
+
+        var created = fields.Should().ContainSingle().Which;
+        created.Type.Should().Be(MetaFieldType.Image);
+        created.Options.GetFeatureKey().Should().Be(FeatureFieldsCatalog.PostImage);
+    }
+
+    [Fact]
+    public void Enabled_KeyNotFound_CreatesField()
+    {
+        var imageField = Field(MetaFieldType.Image, "photo");
+
+        var (fields, pointer) = PostTypeFeatureFields.ApplyFeaturePostImage([imageField], enable: true, key: "missing");
+
+        pointer.Should().Be(FeatureFieldsCatalog.PostImageFieldKey);
+        fields.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void Enabled_KeyOfNonImageField_CreatesFieldWithSuffix()
+    {
+        var stringField = Field(MetaFieldType.String, "image");
+
+        var (fields, pointer) = PostTypeFeatureFields.ApplyFeaturePostImage([stringField], enable: true, key: "image");
+
+        pointer.Should().Be($"{FeatureFieldsCatalog.PostImageFieldKey}_2");
+        fields.Should().HaveCount(2);
+    }
+}

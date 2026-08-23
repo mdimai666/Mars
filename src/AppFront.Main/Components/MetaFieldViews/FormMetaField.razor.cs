@@ -1,3 +1,4 @@
+using AppFront.Shared.Components.MediaViews;
 using AppFront.Shared.Extensions;
 using Mars.Core.Features;
 using Mars.Shared.Contracts.MetaFields;
@@ -15,9 +16,20 @@ public partial class FormMetaField
     [CascadingParameter]
     public IReadOnlyCollection<MetaRelationModelResponse> MetaRelationModels { get; set; } = default!;
 
+    /// <summary>Ключ поля, на который сейчас указывает фича типа (бейдж, запрет
+    /// удаления и смены типа); пусто — таких полей нет</summary>
+    [Parameter] public string? FeatureFieldKey { get; set; }
+
+    /// <summary>Поле переименовано (старый ключ, новый ключ) — страница двигает указатель фичи</summary>
+    [Parameter] public Action<string, string>? OnFieldKeyRenamed { get; set; }
+
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMetaFieldEditorLocator _editorLocator { get; set; } = default!;
+
+    /// <summary>Поле — текущий указатель фичи типа (например, картинки поста)</summary>
+    bool IsFeatureField(MetaFieldEditModel field)
+        => FeatureFieldKey is not null && field.Key == FeatureFieldKey;
 
     void OnChangeFieldTitle(string value, MetaFieldEditModel model)
     {
@@ -26,6 +38,14 @@ public partial class FormMetaField
         {
             model.Key = TextTool.TranslateToPostSlug(model.Title);
         }
+    }
+
+    void OnChangeFieldKey(string value, MetaFieldEditModel field)
+    {
+        var oldKey = field.Key;
+        field.Key = value;
+        if (oldKey != value)
+            OnFieldKeyRenamed?.Invoke(oldKey, value);
     }
 
     async Task OnChangeFieldType(MetaFieldType newType, MetaFieldEditModel field)
@@ -95,6 +115,27 @@ public partial class FormMetaField
     void OnClone(MetaFieldEditModel field)
     {
         Model.Add(field.Clone(Model.Count));
+    }
+
+    /// <summary>Выбор папки загрузки для полей Файл/Изображение</summary>
+    async Task OpenFolderPickerAsync(MetaFieldEditModel field)
+    {
+        DialogParameters parameters = new()
+        {
+            Title = "Папка загрузки",
+            SecondaryAction = null,
+            Width = "500px",
+            Modal = true,
+            PreventScroll = true
+        };
+
+        IDialogReference dialog = await _dialogService.ShowDialogAsync<MediaFolderSelectDialog>("", parameters);
+        DialogResult? result = await dialog.Result;
+
+        if (result.Cancelled || result.Data is not string path) return;
+
+        field.UploadFolder = path;
+        UpdateState();
     }
 
     public void UpdateState()

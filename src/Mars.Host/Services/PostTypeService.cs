@@ -10,8 +10,6 @@ using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Resources;
-using Microsoft.Extensions.Localization;
 
 namespace Mars.Host.Services;
 
@@ -81,10 +79,9 @@ internal class PostTypeService : IPostTypeService
 
     public async Task<PostTypeDetail> Update(UpdatePostTypeQuery query, CancellationToken cancellationToken)
     {
-        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
+        var before = await Get(query.Id, cancellationToken) ?? throw new NotFoundException();
 
-        // до обновления — чтобы сбросить представление и при переименовании типа
-        var before = await Get(query.Id, cancellationToken);
+        await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
         await _postTypeRepository.Update(query, cancellationToken);
         var updated = await GetDetail(query.Id, cancellationToken);

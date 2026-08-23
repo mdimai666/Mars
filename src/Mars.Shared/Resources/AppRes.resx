@@ -453,6 +453,9 @@
   <data name="PostCategoryTypes" xml:space="preserve">
     <value>Post category types</value>
   </data>
+  <data name="PostImage" xml:space="preserve">
+    <value>Post image</value>
+  </data>
   <data name="Posts" xml:space="preserve">
     <value>Posts</value>
   </data>

@@ -28,6 +28,8 @@ public record PostTypeSummaryResponse : IBasicEntityResponse
     [Display(Name = "Видимость")]
     public required PostTypeVisibility Visibility { get; init; }
 
+    public string? ImageFieldKey { get; init; }
+
     //extra
     //public required IReadOnlyCollection<MetaFieldResponse> MetaFields { get; init; }
 
@@ -63,6 +65,8 @@ public record PostTypeDetailResponse : IBasicEntityResponse
     public required PostTypeVisibility Visibility { get; init; }
     public required PostContentSettingsResponse PostContentSettings { get; init; }
     public required IReadOnlyCollection<MetaFieldDetailResponse> MetaFields { get; init; }
+
+    public string? ImageFieldKey { get; init; }
 
 }
 
@@ -102,6 +106,8 @@ public record PostTypeListItemResponse : IBasicEntityResponse
     public required IReadOnlyCollection<string> Tags { get; init; }
     public required bool Disabled { get; init; }
     public required PostTypeVisibility Visibility { get; init; }
+
+    public string? ImageFieldKey { get; init; }
 }
 
 public record PostTypeAdminPanelItemResponse : PostTypeSummaryResponse

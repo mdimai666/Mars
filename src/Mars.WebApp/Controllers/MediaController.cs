@@ -114,11 +114,12 @@ public class MediaController : ControllerBase
             IFormFile file,
             //[FromQuery] string file_group = "Files",
             [FromQuery] Guid? folderId = null,
+            [FromQuery] string? folderPath = null,
             CancellationToken cancellationToken = default)
     {
         await _validatorFactory.ValidateAndThrowAsync<IFormFile, UploadMediaFileValidator>(file, cancellationToken);
 
-        var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken, folderId);
+        var fileId = await _mediaService.WriteUploadToMedia(file, _requestContext.User.Id, cancellationToken, folderId, folderPath);
         return (await _mediaService.GetDetail(fileId, cancellationToken))?.ToResponse() ?? throw new NotFoundException();
     }
 

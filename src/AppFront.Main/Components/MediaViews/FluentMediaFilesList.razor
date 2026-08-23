@@ -97,50 +97,9 @@
     </div>
 
     <div class="my-4" style="min-height:100px;">
-        <FluentInputFile Mode="InputFileMode.Stream"
-                         Id="@_fluentInputFileElementId"
-                         Multiple="true"
-                         MaximumFileCount="4"
-                         MaximumFileSize="@(1000*1024*1024)"
-                         Accept="*"
-                         @bind-ProgressPercent="@ProgressPercent"
-                         OnCompleted="@OnCompletedAsync"
-                         OnFileUploaded="OnFileUploaded"
-                         Style="min-height: 100px; max-width: 300px;">
-            <ChildContent>
-                <label for="@_fluentInputFileElementId" class="p-3">
-                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
-                    <div>
-                        Загрузка файла
-                    </div>
-                </label>
-            </ChildContent>
-        </FluentInputFile>
-
-        @if (fileUploadResults.Any())
-        {
-            <div>
-                <strong>Список загруженного: </strong>
-                <a @onclick="@(_ => fileUploadResults.Clear())">@AppRes.Clear.ToLower()</a>
-            </div>
-            <ul>
-                @foreach (var file in fileUploadResults)
-                {
-                    var _class = file.ErrorMessage != null ? "text-danger" : "";
-
-                    <li class="@_class">
-                        <span>@file.Name</span> 🔹
-                        @(file.Size.ToHumanizedSize()) 🔹
-
-                        @if (file.ErrorMessage != null)
-                        {
-                            <span class="text-danger"> @file.ErrorMessage </span>
-                        }
-                    </li>
-                }
-            </ul>
-        }
-
+        <MediaUploadZone FolderId="_currentFolderId"
+                         Accept="@Accept"
+                         OnFilesUploaded="OnUploadCompleted" />
     </div>
 
     <div class="media-table">

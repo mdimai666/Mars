@@ -73,9 +73,15 @@
                     }
 
                     <div class="d-metavalue-relation-select-dialog__list-item position-relative">
-                        <div class="@($"{_class}")">
-                            <div class="fz18px">@context.Title</div>
-                            <div class="text-secondary small">@context.Description</div>
+                        <div class="d-flex align-items-center gap-2 @($"{_class}")">
+                            @if (!string.IsNullOrEmpty(context.ImageUrl))
+                            {
+                                <img src="@context.ImageUrl" alt="" class="d-relation-select-thumb" />
+                            }
+                            <div class="text-truncate">
+                                <div class="fz18px">@context.Title</div>
+                                <div class="text-secondary small">@context.Description</div>
+                            </div>
                         </div>
                         @* <a href="@urlEditPage/@context.Id" class="stretched-link"></a> *@
                     </div>
@@ -106,5 +112,13 @@ else
 <style>
     .d-metavalue-relation-select-dialog__list-item.active {
         background-color: var(--bs-primary);
+    }
+
+    .d-relation-select-thumb {
+        width: 44px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 4px;
+        flex: none;
     }
 </style>

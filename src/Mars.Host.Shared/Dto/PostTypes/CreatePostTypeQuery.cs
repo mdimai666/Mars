@@ -21,5 +21,6 @@ public record CreatePostTypeQuery : IGeneralPostTypeQuery, IGeneralMetaFieldsSup
     public required PostContentSettingsDto PostContentSettings { get; init; }
 
     public required IReadOnlyCollection<MetaFieldDto> MetaFields { get; init; }
+    public string? ImageFieldKey { get; init; }
 
 }

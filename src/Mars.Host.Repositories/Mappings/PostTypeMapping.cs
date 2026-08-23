@@ -19,6 +19,7 @@ internal static class PostTypeMapping
             EnabledFeatures = entity.EnabledFeatures,
             Disabled = entity.Disabled,
             Visibility = (PostTypeVisibility)entity.Visibility,
+            ImageFieldKey = entity.ImageFieldKey,
         };
 
     public static PostTypeDetail ToDetail(this PostTypeEntity entity)
@@ -33,6 +34,7 @@ internal static class PostTypeMapping
             EnabledFeatures = entity.EnabledFeatures,
             Disabled = entity.Disabled,
             Visibility = (PostTypeVisibility)entity.Visibility,
+            ImageFieldKey = entity.ImageFieldKey,
             PostContentSettings = entity.PostContentType.ToDto(),
             PostStatusList = entity.Statuses!.OrderBy(s => s.Order).ToDto(),
             MetaFields = entity.MetaFields!.ToDto(),
@@ -76,6 +78,7 @@ internal static class PostTypeMapping
 
             Disabled = query.Disabled,
             Visibility = (EPostTypeVisibility)query.Visibility,
+            ImageFieldKey = query.ImageFieldKey,
             EnabledFeatures = query.EnabledFeatures.ToList(),
             PostContentType = new()
             {
@@ -106,6 +109,7 @@ internal static class PostTypeMapping
         entity.EnabledFeatures = query.EnabledFeatures.ToList();
         entity.Disabled = query.Disabled;
         entity.Visibility = (EPostTypeVisibility)query.Visibility;
+        entity.ImageFieldKey = query.ImageFieldKey;
         entity.PostContentType = new()
         {
             PostContentType = query.PostContentSettings.PostContentType,

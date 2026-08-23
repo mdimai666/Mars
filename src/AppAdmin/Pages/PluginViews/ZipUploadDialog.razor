@@ -1,3 +1,4 @@
+@using AppFront.Shared.Components.MediaViews
 @using Mars.Core.Exceptions
 @using Mars.Options.Models
 @using Mars.Shared.Contracts.Plugins
@@ -23,22 +24,11 @@ else if (!IsAllowUploadZipManually)
 else
 {
     <div class="">
-        <FluentInputFile Accept=".zip" Multiple="true"
-                         Id="@_fluentInputFileElementId"
-                         Mode="InputFileMode.Stream"
+        <MediaUploadZone AutoUpload="false"
+                         Accept=".zip"
                          MaximumFileCount="10"
-                         @bind-ProgressPercent="@ProgressPercent"
-                         OnInputFileChange="HandleFileChange"
-                         Style="min-height: 100px; ">
-            <ChildContent>
-                <label for="@_fluentInputFileElementId" class="p-3">
-                    <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
-                    <div>
-                        Загрузка файла
-                    </div>
-                </label>
-            </ChildContent>
-        </FluentInputFile>
+                         ZoneStyle="min-height: 100px;"
+                         OnFilesSelected="HandleFileChange" />
         <div class="mx-auto p-2">
             @if (progressActive)
             {
@@ -102,10 +92,7 @@ else
 
     private Task CancelAsync() => Dialog.CancelAsync();
 
-    string _fluentInputFileElementId = "my-file-uploader_" + Guid.NewGuid();
-
     private IReadOnlyList<IBrowserFile>? SelectedFiles;
-    int ProgressPercent = 0;
     bool progressActive;
     PluginsUploadOperationResultResponse? resultResponse;
     bool SuccessResult;

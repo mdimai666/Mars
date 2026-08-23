@@ -1,7 +1,10 @@
 using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Shared.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.FluentUI.AspNetCore.Components;
+
 namespace AppAdmin.Pages.PostTypeViews;
 
 public partial class EditPostTypePage
@@ -11,6 +14,7 @@ public partial class EditPostTypePage
     [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
+    [Inject] IDialogService _dialogService { get; set; } = default!;
 
     [Parameter] public Guid ID { get; set; }
 
@@ -32,6 +36,52 @@ public partial class EditPostTypePage
     {
         int order = f.Model.MetaFields.Any() ? f.Model.MetaFields.Max(s => s.Order) + 1 : 0;
         f.Model.MetaFields.Add(FormMetaField.NewField(order));
+    }
+
+    async Task OnToggleFeatureAsync(PostTypeEditModel context, string feature, bool enabled)
+    {
+        context.ToggleFeature(feature, enabled);
+
+        if (feature != PostTypeConstants.Features.PostImage || !enabled) return;
+
+        var candidates = context.ImagePointerCandidates();
+        if (candidates.Count == 0)
+        {
+            // картинок в типе ещё нет — поле создаётся сразу
+            var created = context.CreateFeatureImageField();
+            context.ImageFieldKey = created.Key;
+            return;
+        }
+
+        // картинки уже есть — выбрать: создать новое поле или взять существующее
+        DialogParameters parameters = new()
+        {
+            Title = "Поле картинки поста",
+            SecondaryAction = null,
+            Width = "500px",
+            Modal = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await _dialogService.ShowDialogAsync<PostImageSelectDialog>(
+            new PostImageSelectDialogData
+            {
+                Options = candidates.Select(s => (s.Key, s.Title)).ToList(),
+            },
+            parameters);
+        var result = await dialog.Result;
+
+        if (result.Cancelled || result.Data is not string choice) return;
+
+        if (choice == PostImageSelectDialog.CreateNewMarker)
+        {
+            var created = context.CreateFeatureImageField();
+            context.ImageFieldKey = created.Key;
+        }
+        else
+        {
+            context.ImageFieldKey = choice;
+        }
     }
 
     void AfterSave()

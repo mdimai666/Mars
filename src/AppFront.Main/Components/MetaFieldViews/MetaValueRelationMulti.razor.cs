@@ -76,6 +76,9 @@ public partial class MetaValueRelationMulti
     string? DescriptionOf(MetaValueEditModel row)
         => _titles.TryGetValue(row.ModelId, out var title) ? title.Description : null;
 
+    string? ImageUrlOf(MetaValueEditModel row)
+        => _titles.TryGetValue(row.ModelId, out var summary) ? summary.ImageUrl : null;
+
     async Task AddAsync()
     {
         DialogParameters parameters = new()

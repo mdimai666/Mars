@@ -453,6 +453,9 @@
   <data name="PostCategoryTypes" xml:space="preserve">
     <value>Типы категорий</value>
   </data>
+  <data name="PostImage" xml:space="preserve">
+    <value>Картинка поста</value>
+  </data>
   <data name="Posts" xml:space="preserve">
     <value>Записи</value>
   </data>

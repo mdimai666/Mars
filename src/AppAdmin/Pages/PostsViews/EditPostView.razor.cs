@@ -27,7 +27,20 @@ public partial class EditPostView : IAiChatPageHandler
     [Parameter, EditorRequired] public Guid ID { get; set; }
     [Parameter, EditorRequired] public string PostTypeName { get; set; } = default!;
 
+    /// <summary>Вызывается после каждого сохранения поста (например, дровером секции детей)</summary>
+    [Parameter] public EventCallback<PostEditModel> OnSaved { get; set; }
+
+    /// <summary>Переход на URL созданной записи после сохранения (false в боковой панели)</summary>
+    [Parameter] public bool NavigateAfterCreate { get; set; } = true;
+
     StandartEditContainer<PostEditModel> f = default!;
+
+    async Task<PostEditModel> SaveWithCallback(PostEditModel post, bool isNew)
+    {
+        var result = await PostEditModel.SaveAction(client, post, isNew);
+        if (OnSaved.HasDelegate) await OnSaved.InvokeAsync(result);
+        return result;
+    }
 
     //OLD
     WysiwygEditor? editor1;

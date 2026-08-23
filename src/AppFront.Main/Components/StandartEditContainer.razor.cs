@@ -29,6 +29,9 @@ public partial class StandartEditContainer<TModel> : ComponentBase
     [Parameter] public bool HideDatesSection { get; set; } = false;
     [Parameter] public bool BlankModelFromGetAction { get; set; } = false;
 
+    /// <summary>Переход на URL созданной записи после сохранения (отключается в боковых панелях)</summary>
+    [Parameter] public bool NavigateAfterCreate { get; set; } = true;
+
     [Parameter] public RenderFragment<TModel>? ChildContent { get; set; }
     [Parameter] public RenderFragment<TModel>? SectionSidePublish { get; set; }
     [Parameter] public RenderFragment<TModel>? SectionExtraSidebar { get; set; }
@@ -153,16 +156,25 @@ public partial class StandartEditContainer<TModel> : ComponentBase
 
             if (_addNewItem)
             {
-                string ss = NavigationManager.Uri.Replace(NavigationManager.BaseUri, "").Trim('/');
-                var sp = ss.Split('?', 2);
-                string newUrl = sp[0];
-                if (newUrl.EndsWith("/new"))
-                {
-                    newUrl = newUrl.Substring(0, newUrl.Length - 4);
-                }
-                string query = sp.Length > 1 ? $"?{sp[1]}" : "";
                 _ = AfterSave.InvokeAsync(a);
-                NavigationManager.NavigateTo($"{newUrl}/{a.Id}{query}");
+
+                if (NavigateAfterCreate)
+                {
+                    string ss = NavigationManager.Uri.Replace(NavigationManager.BaseUri, "").Trim('/');
+                    var sp = ss.Split('?', 2);
+                    string newUrl = sp[0];
+                    if (newUrl.EndsWith("/new"))
+                    {
+                        newUrl = newUrl.Substring(0, newUrl.Length - 4);
+                    }
+                    string query = sp.Length > 1 ? $"?{sp[1]}" : "";
+                    NavigationManager.NavigateTo($"{newUrl}/{a.Id}{query}");
+                }
+                else
+                {
+                    // повторное сохранение созданной записи — уже как обновление
+                    _addNewItem = false;
+                }
             }
             else
             {

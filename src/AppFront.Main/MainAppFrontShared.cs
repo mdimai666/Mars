@@ -26,6 +26,7 @@ public static class MainAppFrontShared
         services.InstallHandlers();
 
         services.TryAddScoped<IAppMediaService, AppMediaService>();
+        services.TryAddScoped<IChildPostEditor, ChildPostEditorService>();
         services.TryAddScoped<Interfaces.IMessageService, FluentMessageServiceBridge>();
 
         BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.Affix).Assembly, true);

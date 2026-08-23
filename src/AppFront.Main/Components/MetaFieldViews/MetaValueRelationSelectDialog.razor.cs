@@ -43,8 +43,14 @@ public partial class MetaValueRelationSelectDialog
     static Icon iconSortUp = new Icons.Regular.Size16.ArrowSortUpLines();
     Icon sortButtonIcon => _sortDirectionDesc ? iconSortDown : iconSortUp;
 
+    HashSet<Guid> _selectedIds = [];
+
+    string GridColumns => Content.MultiSelect ? "40px 3fr 1fr" : "3fr 1fr";
+
     protected override void OnParametersSet()
     {
+        _selectedIds = Content.SelectedIds is null ? [] : [.. Content.SelectedIds];
+
         dataProvider = new GridItemsProvider<MetaValueRelationModelSummaryResponse>(
             async req =>
             {
@@ -88,8 +94,24 @@ public partial class MetaValueRelationSelectDialog
     {
         if (row.Item is null) return;
 
+        if (Content.MultiSelect)
+        {
+            ToggleSelected(row.Item.Id);
+            return;
+        }
+
         await Dialog.CloseAsync(row.Item);
     }
+
+    void ToggleSelected(Guid id)
+    {
+        if (!_selectedIds.Remove(id)) _selectedIds.Add(id);
+    }
+
+    Task AddSelectedAsync() => Dialog.CloseAsync(GetSelectedSummaries());
+
+    /// <summary>Выбранные строки (только загруженные в текущей странице — заголовки дозапрашивает вызывающий)</summary>
+    IReadOnlyCollection<Guid> GetSelectedSummaries() => _selectedIds;
 
     void SelectSortOption(KeyValuePair<string, string> value)
     {
@@ -110,4 +132,10 @@ public class MetaValueRelationSelectDialogData
 {
     public required Guid ValueId { get; init; }
     public required string ModelName { get; init; }
+
+    /// <summary>Мультивыбор: строки с чекбоксами, результат — список Id (<see cref="IReadOnlyCollection{T}"/>)</summary>
+    public bool MultiSelect { get; init; }
+
+    /// <summary>Уже выбранные Id (отмечаются в списке)</summary>
+    public IReadOnlyCollection<Guid>? SelectedIds { get; init; }
 }

@@ -51,12 +51,24 @@
                             ItemSize="66"
                             GenerateHeader="GenerateHeaderOption.None"
                             OnRowClick="OnRowClick"
-                            GridTemplateColumns="3fr 1fr"
+                            GridTemplateColumns="@GridColumns"
                             TGridItem="MetaValueRelationModelSummaryResponse">
+                @if (Content.MultiSelect)
+                {
+                    <TemplateColumn Title="">
+                        @* stopPropagation: клик по чекбоксу не должен дополнительно срабатывать как клик по строке *@
+                        <div class="d-inline-block" @onclick="@(_ => {})" @onclick:stopPropagation>
+                            <FluentCheckbox Value="_selectedIds.Contains(context.Id)"
+                                            ValueChanged="@(_ => ToggleSelected(context.Id))" />
+                        </div>
+                    </TemplateColumn>
+                }
                 <TemplateColumn Title="@AppRes.Title">
 
                     @{
-                        var isActive = Content.ValueId == context.Id;
+                        var isActive = Content.MultiSelect
+                            ? _selectedIds.Contains(context.Id)
+                            : Content.ValueId == context.Id;
                         var _class = isActive ? "active" : "";
                     }
 
@@ -77,7 +89,19 @@
 
     </d-metavalue-relation-select-dialog>
 </FluentDialogBody>
-<FluentDialogFooter Visible=false />
+@if (Content.MultiSelect)
+{
+    <FluentDialogFooter>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="AddSelectedAsync" Disabled="@(_selectedIds.Count == 0)">
+            Добавить выбранные (@_selectedIds.Count)
+        </FluentButton>
+    </FluentDialogFooter>
+}
+else
+{
+    <FluentDialogFooter Visible=false />
+}
 
 <style>
     .d-metavalue-relation-select-dialog__list-item.active {

@@ -1,0 +1,54 @@
+@using Mars.Shared.Contracts.Posts
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+<d-metavalue-children-list class="@Class" style=@Style>
+
+    @if (_busy)
+    {
+        <FluentProgressRing />
+    }
+    else if (_unsupported)
+    {
+        <FluentLabel Color="Color.Neutral">Список объектов: цель поля должна быть типом поста</FluentLabel>
+    }
+    else
+    {
+        @if (_items.Count > 0)
+        {
+            <FluentDataGrid Items="_items.AsQueryable()"
+                            TGridItem="PostListItemResponse"
+                            ShowHover="true"
+                            OnRowClick="OnRowClick"
+                            GridTemplateColumns="@GridColumns">
+                <PropertyColumn Property="@(f => f.Title)" Title="@AppRes.Title" />
+                @foreach (var col in _metaColumns)
+                {
+                    var key = col.Key;
+                    <TemplateColumn Title="@col.Title">
+                        @context.MetaColumns?.GetValueOrDefault(key)
+                    </TemplateColumn>
+                }
+                <PropertyColumn Property="@(f => f.CreatedAt)" Title="@AppRes.CreatedAt" Format="d" Align="Align.End" />
+                <TemplateColumn Title="">
+                    @* stopPropagation: клик по удалению не должен открывать строку (OnRowClick) *@
+                    <div class="d-inline-block" @onclick="@(_ => {})" @onclick:stopPropagation>
+                        <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(context.Id))">
+                            <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                        </FluentButton>
+                    </div>
+                </TemplateColumn>
+            </FluentDataGrid>
+        }
+        else
+        {
+            <FluentLabel Color="Color.Neutral">— пусто —</FluentLabel>
+        }
+
+        <div class="mt-2 d-flex gap-2">
+            <FluentButton OnClick="OpenCreateAsync" IconStart="@(new Icons.Regular.Size16.Add())">Добавить</FluentButton>
+            <FluentButton OnClick="OpenSelectAsync" Appearance="Appearance.Neutral">Привязать существующий…</FluentButton>
+        </div>
+    }
+
+</d-metavalue-children-list>

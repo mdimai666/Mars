@@ -11,7 +11,29 @@
                 @{
                     var field = MetaValues.FirstOrDefault(s => s.MetaField.Key == meta.Key && s.Index == 0);
                 }
-                @if (field is not null)
+                @if (meta.Type == MetaFieldType.Relation)
+                {
+                    <div class="d-flex">
+                        <div class="me-2 d-row-meta-value__left">
+                            @meta.Title
+                            @if (!Client)
+                            {
+                                <div class="text-secondary fz10px">@meta.Type</div>
+                            }
+                        </div>
+                        <div class="d-metafield-metavalue-body flex-fill">
+                            @if (meta.IsListKind)
+                            {
+                                <MetaValueChildrenList Meta=@meta />
+                            }
+                            else
+                            {
+                                <MetaValueRelationMulti Meta=@meta />
+                            }
+                        </div>
+                    </div>
+                }
+                else if (field is not null)
                 {
                     @if (f.IsTypeRelation == false)
                     {
@@ -28,12 +50,7 @@
                                 }
                             </div>
                             <div class="d-metafield-metavalue-body">
-                                @if (field.MetaField.Type == MetaFieldType.Relation)
-                                {
-                                    <MetaValueRelationSelect @bind-Value=field.ModelId ModelName=@meta.ModelName />
-
-                                }
-                                else if (field.MetaField.Type == MetaFieldType.File)
+                                @if (field.MetaField.Type == MetaFieldType.File)
                                 {
                                     <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId />
                                 }

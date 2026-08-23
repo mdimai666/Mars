@@ -1,0 +1,35 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+<d-metavalue-relation-multi class="@Class" style=@Style>
+
+    @if (_rows.Count > 0)
+    {
+        <FluentSortableList Id=@_sortableId Items="_rows" OnUpdate="OnSort" Context="row">
+            <ItemTemplate>
+                <div class="d-flex align-items-center gap-2 py-1" @key="row">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSort())" Style="cursor:grab;" />
+                    <div class="flex-fill text-truncate">
+                        @TitleOf(row)
+                        @if (DescriptionOf(row) is string description)
+                        {
+                            <span class="text-secondary small ms-2">@description</span>
+                        }
+                    </div>
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveAsync(row))">
+                        <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                    </FluentButton>
+                </div>
+            </ItemTemplate>
+        </FluentSortableList>
+    }
+    else
+    {
+        <FluentLabel Color="Color.Neutral">-⚪ Не выбрано-</FluentLabel>
+    }
+
+    <div class="mt-1">
+        <FluentButton OnClick="AddAsync" IconStart="@(new Icons.Regular.Size16.Add())">Выбрать…</FluentButton>
+    </div>
+
+</d-metavalue-relation-multi>

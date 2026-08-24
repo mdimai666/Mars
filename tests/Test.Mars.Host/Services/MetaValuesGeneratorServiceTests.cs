@@ -124,7 +124,7 @@ public class MetaValuesGeneratorServiceTests
         var service = new MetaValuesGeneratorService(
             serviceProvider,
             categoryRepository,
-            new MetaValuesValidator(),
+            new MetaValuesValidator(serviceProvider),
             postRepository ?? Substitute.For<IPostRepository>(),
             sequenceRepository,
             metaModelTypesLocator ?? Substitute.For<IMetaModelTypesLocator>());

@@ -11,16 +11,20 @@ public static class MetaValuesValidationExtensions
 {
     public static void ValidateMetaValues<T>(
         this IRuleBuilder<T, IReadOnlyCollection<ModifyMetaValueDetailQuery>?> ruleBuilder,
-        IMetaValuesValidator validator)
-        => ruleBuilder.Custom((values, context) => AddFailures(values, context, validator));
+        IMetaValuesValidator validator,
+        string ownerModel,
+        Func<T, Guid?>? ownerIdSelector = null)
+        => ruleBuilder.CustomAsync(async (values, context, cancellationToken) =>
+        {
+            if (values is null) return;
 
-    static void AddFailures<T>(IReadOnlyCollection<ModifyMetaValueDetailQuery>? values,
-                               ValidationContext<T> context,
-                               IMetaValuesValidator validator)
-    {
-        if (values is null) return;
+            var ownerContext = new MetaValueValidationContext
+            {
+                ModelName = ownerModel,
+                OwnerId = ownerIdSelector is null ? null : ownerIdSelector(context.InstanceToValidate),
+            };
 
-        foreach (var error in validator.Validate(values))
-            context.AddFailure("MetaValues", $"поле '{error.FieldKey}': {error.Message}");
-    }
+            foreach (var error in await validator.ValidateAsync(values, ownerContext, cancellationToken))
+                context.AddFailure("MetaValues", $"поле '{error.FieldKey}': {error.Message}");
+        });
 }

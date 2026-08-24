@@ -1,5 +1,6 @@
 using FluentValidation;
 using Mars.Core.Extensions;
+using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.PostTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
@@ -13,7 +14,7 @@ public class UpdatePostJsonQueryValidator : AbstractValidator<UpdatePostJsonQuer
                                         IMetaValuesValidator metaValuesValidator)
     {
         RuleFor(x => x)
-            .Custom((x, context) =>
+            .CustomAsync(async (x, context, cancellationToken) =>
             {
                 var postType = metaModelTypesLocator.GetPostTypeByName(x.Type);
 
@@ -43,7 +44,8 @@ public class UpdatePostJsonQueryValidator : AbstractValidator<UpdatePostJsonQuer
                     }
                 }
 
-                foreach (var error in metaValuesValidator.ValidateJson(postType.MetaFields, x.Meta, requireAll: false, postType.ContentField()?.Key))
+                var ownerContext = new MetaValueValidationContext { ModelName = MetaValueOwnerCatalog.Post, OwnerId = x.Id };
+                foreach (var error in await metaValuesValidator.ValidateJsonAsync(postType.MetaFields, x.Meta, requireAll: false, ownerContext, postType.ContentField()?.Key, cancellationToken))
                     context.AddFailure(nameof(x.Meta), $"поле '{error.FieldKey}': {error.Message}");
             });
 

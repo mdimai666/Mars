@@ -77,7 +77,8 @@ internal class MetaValuesGeneratorService : IMetaValuesGeneratorService
 
         if (generated.Count == 0) return query;
 
-        var errors = _metaValuesValidator.Validate(generated);
+        var errors = await _metaValuesValidator.ValidateAsync(generated,
+            new MetaValueValidationContext { ModelName = MetaValueOwnerCatalog.Post }, cancellationToken);
         if (errors.Count > 0)
             throw new MarsValidationException(errors.GroupBy(e => e.FieldKey)
                                                     .ToDictionary(g => g.Key, g => g.Select(e => e.Message).ToArray()));

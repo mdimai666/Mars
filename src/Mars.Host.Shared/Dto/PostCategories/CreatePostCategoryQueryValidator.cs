@@ -13,7 +13,7 @@ public class CreatePostCategoryQueryValidator : AbstractValidator<CreatePostCate
                                             IMetaModelTypesLocator metaModelTypesLocator,
                                             IMetaValuesValidator metaValuesValidator)
     {
-        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator, MetaValueOwnerCatalog.PostCategory, x => x.Id);
 
         RuleFor(x => x.Slug)
             .NotEmpty()

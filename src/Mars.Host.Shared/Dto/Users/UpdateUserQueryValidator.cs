@@ -12,7 +12,7 @@ public class UpdateUserQueryValidator : AbstractValidator<UpdateUserQuery>
                                     IUserRepository userRepository,
                                     IMetaValuesValidator metaValuesValidator)
     {
-        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator, MetaValueOwnerCatalog.User, x => x.Id);
 
         RuleFor(x => x.Roles)
             .NotEmpty()

@@ -77,6 +77,22 @@ public partial class FormMetaField
         }
 
         field.Type = newType;
+
+        // правила, недоступные для нового типа, снимаем
+        var available = MetaFieldValidatorCatalog.For(newType).Select(x => x.Key).ToHashSet();
+        field.Validators.RemoveAll(v => !available.Contains(v.Type));
+    }
+
+    /// <summary>Правила валидации, доступные типу поля</summary>
+    IReadOnlyCollection<(string Key, string Title)> AvailableValidators(MetaFieldEditModel field)
+        => MetaFieldValidatorCatalog.For(field.Type);
+
+    void AddValidatorRule(MetaFieldEditModel field)
+    {
+        var available = AvailableValidators(field);
+        if (available.Count == 0) return;
+
+        field.Validators.Add(new MetaFieldEditModel.MetaFieldValidatorEditRow { Type = available.First().Key });
     }
 
     /// <summary>Группы пикера типа поля: пресеты («Основные») и сырые типы («Технические»)</summary>

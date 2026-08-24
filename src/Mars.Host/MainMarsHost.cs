@@ -67,6 +67,9 @@ public static class MainMarsHost
         services.AddScoped<IPostTypeViewService, PostTypeViewService>();
         services.AddScoped<IPostMetaColumnsService, PostMetaColumnsService>();
         services.AddScoped<IMetaValuesValidator, MetaValuesValidator>();
+        services.AddKeyedScoped<IMetaValueUniquenessProvider, PostMetaValueUniquenessProvider>(MetaValueOwnerCatalog.Post)
+                .AddKeyedScoped<IMetaValueUniquenessProvider, PostCategoryMetaValueUniquenessProvider>(MetaValueOwnerCatalog.PostCategory)
+                .AddKeyedScoped<IMetaValueUniquenessProvider, UserMetaValueUniquenessProvider>(MetaValueOwnerCatalog.User);
         services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();

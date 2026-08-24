@@ -13,6 +13,6 @@ public class CreatePostQueryValidator : AbstractValidator<CreatePostQuery>
     {
         RuleFor(x => x).SetValidator(new GeneralPostQueryValidator(metaModelTypesLocator, postCategoryRepository));
 
-        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator, MetaValueOwnerCatalog.Post, x => x.Id);
     }
 }

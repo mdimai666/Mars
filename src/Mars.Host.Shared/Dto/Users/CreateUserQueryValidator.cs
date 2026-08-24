@@ -14,7 +14,7 @@ public class CreateUserQueryValidator : AbstractValidator<CreateUserQuery>
                                     IUserRepository userRepository,
                                     IMetaValuesValidator metaValuesValidator)
     {
-        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator, MetaValueOwnerCatalog.User);
 
         RuleFor(x => x.Roles)
             .NotEmpty()

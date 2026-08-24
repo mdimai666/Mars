@@ -4,29 +4,42 @@ using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Utils;
 using Mars.Shared.Contracts.MetaFields;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Host.Services;
 
 internal class MetaValuesValidator : IMetaValuesValidator
 {
-    public IReadOnlyCollection<MetaValueValidationError> Validate(IReadOnlyCollection<ModifyMetaValueDetailQuery> values)
+    private readonly IServiceProvider _serviceProvider;
+
+    public MetaValuesValidator(IServiceProvider serviceProvider)
+        => _serviceProvider = serviceProvider;
+
+    public async Task<IReadOnlyCollection<MetaValueValidationError>> ValidateAsync(IReadOnlyCollection<ModifyMetaValueDetailQuery> values,
+                                                                                   MetaValueValidationContext context,
+                                                                                   CancellationToken cancellationToken = default)
     {
         var errors = new List<MetaValueValidationError>();
+        var domainContext = WithDomainProvider(context);
         foreach (var value in values)
         {
-            foreach (var message in ValidateField(value.MetaField, value.GetValueSimple()))
+            var fieldContext = domainContext with { Field = value.MetaField };
+            foreach (var message in await ValidateFieldAsync(value.MetaField, value.GetValueSimple(), fieldContext, cancellationToken))
                 errors.Add(new MetaValueValidationError(value.MetaField.Key, message));
         }
 
         return errors;
     }
 
-    public IReadOnlyCollection<MetaValueValidationError> ValidateJson(IReadOnlyCollection<MetaFieldDto> fields,
-                                                                      IReadOnlyDictionary<string, JsonNode>? meta,
-                                                                      bool requireAll,
-                                                                      string? contentFieldKey = null)
+    public async Task<IReadOnlyCollection<MetaValueValidationError>> ValidateJsonAsync(IReadOnlyCollection<MetaFieldDto> fields,
+                                                                                       IReadOnlyDictionary<string, JsonNode>? meta,
+                                                                                       bool requireAll,
+                                                                                       MetaValueValidationContext context,
+                                                                                       string? contentFieldKey = null,
+                                                                                       CancellationToken cancellationToken = default)
     {
         var errors = new List<MetaValueValidationError>();
+        var domainContext = WithDomainProvider(context);
         foreach (var field in fields)
         {
             if (field.Type == MetaFieldType.Query) continue;
@@ -42,20 +55,34 @@ internal class MetaValuesValidator : IMetaValuesValidator
                 continue;
             }
 
-            foreach (var message in ValidateField(field, JsonToValue(field, node!)))
+            var fieldContext = domainContext with { Field = field };
+            foreach (var message in await ValidateFieldAsync(field, JsonToValue(field, node!), fieldContext, cancellationToken))
                 errors.Add(new MetaValueValidationError(field.Key, message));
         }
 
         return errors;
     }
 
+    /// <summary>Провайдер домена владельца (по ключу модели) — для правил,
+    /// обращающихся к данным; провайдер не зарегистрирован — правила пропускаются</summary>
+    MetaValueValidationContext WithDomainProvider(MetaValueValidationContext context)
+        => context with
+        {
+            UniquenessProvider = context.ModelName is null
+                ? null
+                : _serviceProvider.GetKeyedService<IMetaValueUniquenessProvider>(context.ModelName),
+        };
+
     /// <summary>Обязательность, диапазон Min/Max и правила из Options.validators</summary>
-    static IEnumerable<string> ValidateField(MetaFieldDto field, object? value)
+    static async Task<List<string>> ValidateFieldAsync(MetaFieldDto field, object? value,
+                                                       MetaValueValidationContext context, CancellationToken cancellationToken)
     {
+        var errors = new List<string>();
+
         if (value is null)
         {
-            if (!field.IsNullable) yield return "значение обязательно";
-            yield break;
+            if (!field.IsNullable) errors.Add("значение обязательно");
+            return errors;
         }
 
         if (field.MinValue is not null || field.MaxValue is not null)
@@ -64,26 +91,25 @@ internal class MetaValuesValidator : IMetaValuesValidator
             {
                 case string text:
                     if (field.MinValue is not null && text.Length < field.MinValue)
-                        yield return $"минимальная длина {field.MinValue}";
+                        errors.Add($"минимальная длина {field.MinValue}");
                     if (field.MaxValue is not null && text.Length > field.MaxValue)
-                        yield return $"максимальная длина {field.MaxValue}";
+                        errors.Add($"максимальная длина {field.MaxValue}");
                     break;
 
                 case int or long or double or decimal:
                     var number = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                     if (field.MinValue is not null && number < field.MinValue)
-                        yield return $"минимальное значение {field.MinValue}";
+                        errors.Add($"минимальное значение {field.MinValue}");
                     if (field.MaxValue is not null && number > field.MaxValue)
-                        yield return $"максимальное значение {field.MaxValue}";
+                        errors.Add($"максимальное значение {field.MaxValue}");
                     break;
             }
         }
 
         foreach (var rule in MetaFieldValidatorDefinition.FromOptions(field.Options))
-        {
-            foreach (var message in MetaFieldValueValidators.Validate(rule, value))
-                yield return message;
-        }
+            errors.AddRange(await MetaFieldValueValidators.ValidateAsync(rule, value, context, cancellationToken));
+
+        return errors;
     }
 
     /// <summary>Извлечение типизированного значения из json для проверки; нескалярные узлы — маркер наличия</summary>

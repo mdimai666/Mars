@@ -10,18 +10,23 @@ namespace Mars.Host.Shared.Services;
 /// </summary>
 public interface IMetaValuesValidator
 {
-    /// <summary>Ошибки значений (пусто — валидно); ключ ошибки — Key поля</summary>
-    IReadOnlyCollection<MetaValueValidationError> Validate(IReadOnlyCollection<ModifyMetaValueDetailQuery> values);
+    /// <summary>Ошибки значений (пусто — валидно); ключ ошибки — Key поля.
+    /// Контекст — владелец значений (вид и ид сохраняемого объекта)</summary>
+    Task<IReadOnlyCollection<MetaValueValidationError>> ValidateAsync(IReadOnlyCollection<ModifyMetaValueDetailQuery> values,
+                                                                      MetaValueValidationContext context,
+                                                                      CancellationToken cancellationToken = default);
 
     /// <summary>Ошибки значений из JSON-записи (ключи словаря — Key полей).
     /// requireAll — проверять обязательность и для отсутствующих ключей (создание);
     /// при обновлении meta приходит частично.
     /// contentFieldKey — поле контента фичи: значение хранится в posts.Content
     /// и в мета-значениях не участвует, из проверки исключается.</summary>
-    IReadOnlyCollection<MetaValueValidationError> ValidateJson(IReadOnlyCollection<MetaFieldDto> fields,
-                                                               IReadOnlyDictionary<string, JsonNode>? meta,
-                                                               bool requireAll,
-                                                               string? contentFieldKey = null);
+    Task<IReadOnlyCollection<MetaValueValidationError>> ValidateJsonAsync(IReadOnlyCollection<MetaFieldDto> fields,
+                                                                          IReadOnlyDictionary<string, JsonNode>? meta,
+                                                                          bool requireAll,
+                                                                          MetaValueValidationContext context,
+                                                                          string? contentFieldKey = null,
+                                                                          CancellationToken cancellationToken = default);
 }
 
 public record MetaValueValidationError(string FieldKey, string Message);

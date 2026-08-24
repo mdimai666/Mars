@@ -14,7 +14,7 @@ public class UpdatePostQueryValidator : AbstractValidator<UpdatePostQuery>
     {
         RuleFor(x => x).SetValidator(new GeneralPostQueryValidator(metaModelTypesLocator, postCategoryRepository));
 
-        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator);
+        RuleFor(x => x.MetaValues).ValidateMetaValues(metaValuesValidator, MetaValueOwnerCatalog.Post, x => x.Id);
 
         RuleFor(x => x.Id)
             .MustAsync(postRepository.ExistAsync)

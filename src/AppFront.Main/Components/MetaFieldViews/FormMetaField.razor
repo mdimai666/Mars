@@ -260,7 +260,7 @@
                                             </div>
                                         }
 
-                                        @if (field.IsString)
+                                        @if (AvailableValidators(field).Count > 0)
                                         {
                                             <div class="vstack gap-2">
                                                 <FluentLabel>Валидация</FluentLabel>
@@ -268,7 +268,7 @@
                                                 {
                                                     <div class="hstack gap-2 align-items-center">
                                                         <FluentSelect TOption="string" Width="220px" @bind-Value="v.Type">
-                                                            @foreach (var catalogItem in MetaFieldValidatorCatalog.All)
+                                                            @foreach (var catalogItem in AvailableValidators(field))
                                                             {
                                                                 <FluentOption Value="@catalogItem.Key">@catalogItem.Title</FluentOption>
                                                             }
@@ -289,7 +289,7 @@
                                                     </div>
                                                 }
                                                 <div>
-                                                    <FluentButton OnClick="@(() => field.Validators.Add(new MetaFieldEditModel.MetaFieldValidatorEditRow()))">
+                                                    <FluentButton OnClick="@(() => AddValidatorRule(field))">
                                                         Добавить правило
                                                     </FluentButton>
                                                 </div>

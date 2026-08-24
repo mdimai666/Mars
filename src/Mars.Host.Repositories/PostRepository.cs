@@ -427,4 +427,26 @@ internal class PostRepository : IPostRepository
                         => _marsDbContext.Posts.AsNoTracking().Include(s => s.PostType).AnyAsync(s => s.PostType.TypeName == typeName && s.Slug.ToLower() == slug.ToLower(), cancellationToken);
 #pragma warning restore RCS1155 // Use StringComparison when comparing strings
 
+    public Task<int> CountByTypeAsync(Guid postTypeId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        return _marsDbContext.Posts.AsNoTracking()
+                                   .CountAsync(s => s.PostTypeId == postTypeId, cancellationToken);
+    }
+
+    public async Task<PostDetail?> GetFirstByTypeAsync(string typeName, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+        ArgumentException.ThrowIfNullOrEmpty(typeName, nameof(typeName));
+
+        return (await InternalDetail
+                    .Where(s => s.PostType.TypeName == typeName)
+                    .OrderBy(s => s.CreatedAt)
+                    .FirstOrDefaultAsync(cancellationToken))
+                    ?.ToDetail();
+    }
+
 }

@@ -7,11 +7,10 @@
 
 <ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
     <SectionActions>
-        <FluentButton Appearance="Appearance.Stealth" Title="Перегенерировать значения полей-генераторов"
-                      @onclick="@(() => actApp.Inject(AppAdmin.Shared.RegenerateGeneratedMetaValuesForm.CommandId))">
-            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSync())" />
-        </FluentButton>
-        <XActionsDropDown ContextPart="@POSTTYPE" AlsoShowRootContext="true" />
+        @if (!_isSingle)
+        {
+            <XActionsDropDown ContextPart="@POSTTYPE" AlsoShowRootContext="true" />
+        }
     </SectionActions>
     <ChildContent>
 
@@ -31,6 +30,13 @@
                 @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
                 gallery
             </div>
+        }
+        else if (_isSingle)
+        {
+            @if (_singlePostId != Guid.Empty)
+            {
+                <EditPostView @key="_singlePostId" ID="_singlePostId" PostTypeName="@postType!.TypeName" NavigateAfterCreate="false" HidePublishCard />
+            }
         }
         else
         {

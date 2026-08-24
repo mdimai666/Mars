@@ -35,6 +35,8 @@ public partial class EditPostView : IAiChatPageHandler
     /// <summary>Переход на URL созданной записи после сохранения (false в боковой панели)</summary>
     [Parameter] public bool NavigateAfterCreate { get; set; } = true;
 
+    [Parameter] public bool HidePublishCard { get; set; }
+
     StandartEditContainer<PostEditModel> f = default!;
 
     async Task<PostEditModel> SaveWithCallback(PostEditModel post, bool isNew)

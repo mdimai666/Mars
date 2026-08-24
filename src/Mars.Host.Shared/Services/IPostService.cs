@@ -13,6 +13,7 @@ public interface IPostService
     Task<ListDataResult<PostSummary>> List(ListPostQuery query, CancellationToken cancellationToken);
     Task<PagingResult<PostSummary>> ListTable(ListPostQuery query, CancellationToken cancellationToken);
     Task<PostDetail> Create(CreatePostQuery query, CancellationToken cancellationToken);
+    Task<PostDetail> GetOrCreateSingleAsync(string typeName, CancellationToken cancellationToken);
     Task<PostEditViewModel> GetEditModel(Guid id, CancellationToken cancellationToken);
     Task<PostEditViewModel> GetEditModelBlank(string type, CancellationToken cancellationToken);
     PostEditDetail GetPostBlank(PostTypeDetail postType);

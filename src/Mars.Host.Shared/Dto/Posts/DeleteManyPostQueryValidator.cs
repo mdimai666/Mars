@@ -7,13 +7,13 @@ namespace Mars.Host.Shared.Dto.Posts;
 
 public class DeleteManyPostQueryValidator : AbstractValidator<DeleteManyPostQuery>
 {
-    public DeleteManyPostQueryValidator(IPostRepository postRepository)
+    public DeleteManyPostQueryValidator(IPostRepository postRepository, IMetaModelTypesLocator metaModelTypesLocator)
     {
         RuleFor(x => x.Ids)
             .NotEmpty()
             .WithMessage("post type ids for delete must not be empty");
 
         RuleForEach(x => x.Ids)
-            .SetValidator(new DeletePostQueryValidator(postRepository));
+            .SetValidator(new DeletePostQueryValidator(postRepository, metaModelTypesLocator));
     }
 }

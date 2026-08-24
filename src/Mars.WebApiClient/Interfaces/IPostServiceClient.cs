@@ -27,4 +27,5 @@ public interface IPostServiceClient
 
     Task<PostEditViewModel> GetEditModel(Guid id);
     Task<PostEditViewModel> GetPostBlank(string type);
+    Task<PostDetailResponse> Single(string type);
 }

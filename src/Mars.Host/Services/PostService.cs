@@ -1,5 +1,6 @@
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
+using Mars.Core.Features;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Dto.Posts;
 using Mars.Host.Shared.Dto.PostTypes;
@@ -96,6 +97,57 @@ internal class PostService : IPostService
         _eventManager.TriggerEvent(payload);
 
         return created;
+    }
+
+    /// <summary>
+    /// Single-тип: единственная запись типа — отдаёт существующую, при первом обращении
+    /// создаёт из бланка (заголовок = имя типа, слаг генерируется сервером,
+    /// дефолты мета-полей материализуются значениями).
+    /// </summary>
+    public async Task<PostDetail> GetOrCreateSingleAsync(string typeName, CancellationToken cancellationToken)
+    {
+        var postType = _metaModelTypesLocator.GetPostTypeByName(typeName)
+                        ?? throw new NotFoundException($"post type '{typeName}' not exist");
+
+        if (!postType.EnabledFeatures.Contains(PostTypeConstants.Features.Single))
+            throw MarsValidationException.FromSingleError(nameof(typeName), $"post type '{typeName}' is not single");
+
+        var existing = await _postRepository.GetFirstByTypeAsync(typeName, cancellationToken);
+        if (existing is not null) return existing;
+
+        var blank = GetPostBlank(postType);
+
+        var baseSlug = TextTool.TranslateToPostSlug(postType.Title);
+        if (!TextTool.IsValidSlug(baseSlug)) baseSlug = postType.TypeName;
+
+        var slug = baseSlug;
+        for (var suffix = 2; await _postRepository.ExistAsync(typeName, slug, cancellationToken); suffix++)
+            slug = $"{baseSlug}-{suffix}";
+
+        var contentField = postType.ContentField();
+        var metaValues = postType.MetaFields
+                                 .Where(mf => mf.Type != MetaFieldType.Query)
+                                 .Where(mf => contentField is null || mf.Key != contentField.Key)
+                                 .Where(mf => !mf.Disabled)
+                                 .Select(mf => ModifyMetaValueDetailQuery.GetBlank(mf))
+                                 .ToList();
+
+        var query = new CreatePostQuery
+        {
+            Title = postType.Title,
+            Type = postType.TypeName,
+            Slug = slug,
+            Tags = blank.Tags,
+            UserId = blank.Author.Id,
+            Status = blank.Status,
+            Content = blank.Content,
+            Excerpt = blank.Excerpt,
+            LangCode = blank.LangCode,
+            CategoryIds = blank.CategoryIds,
+            MetaValues = metaValues,
+        };
+
+        return await Create(query, cancellationToken);
     }
 
     public async Task<PostDetail> Update(UpdatePostQuery query, CancellationToken cancellationToken)

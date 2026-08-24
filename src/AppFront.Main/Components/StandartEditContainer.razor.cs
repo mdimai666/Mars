@@ -27,6 +27,9 @@ public partial class StandartEditContainer<TModel> : ComponentBase
     [Parameter] public string Style { get; set; } = "";
     [Parameter] public string? TitleText { get; set; } = null;
     [Parameter] public bool HideDatesSection { get; set; } = false;
+
+    [Parameter] public bool HidePublishCard { get; set; } = false;
+
     [Parameter] public bool BlankModelFromGetAction { get; set; } = false;
 
     /// <summary>Переход на URL созданной записи после сохранения (отключается в боковых панелях)</summary>

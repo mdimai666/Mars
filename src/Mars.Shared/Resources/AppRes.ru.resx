@@ -504,6 +504,9 @@
   <data name="SignIn" xml:space="preserve">
     <value>Вход</value>
   </data>
+  <data name="Single" xml:space="preserve">
+    <value>Единственная запись</value>
+  </data>
   <data name="Slug" xml:space="preserve">
     <value>Slug</value>
   </data>

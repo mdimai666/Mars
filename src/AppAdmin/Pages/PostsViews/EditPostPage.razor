@@ -1,19 +1,25 @@
 @page "/EditPost/{POSTTYPE}"
 @page "/EditPost/{POSTTYPE}/{ID:guid}"
 
+@using Mars.Shared.Contracts.PostTypes
 @using Microsoft.AspNetCore.Authorization
+@inject NavigationManager navigationManager
+@inject Mars.WebApiClient.Interfaces.IMarsWebApiClient client
 
 @attribute [Authorize(Roles = "Admin")]
 
 <ContentWrapper>
 
-    @if (POSTTYPE == "NONE-gallery")
+    @if (!_singleRedirect)
     {
-        @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryEditView ID=@ID QueryPostType=@QueryPostType /> *@
-    }
-    else
-    {
-        <EditPostView ID=@ID PostTypeName=@POSTTYPE />
+        @if (POSTTYPE == "NONE-gallery")
+        {
+            @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryEditView ID=@ID QueryPostType=@QueryPostType /> *@
+        }
+        else
+        {
+            <EditPostView ID=@ID PostTypeName=@POSTTYPE />
+        }
     }
     <div class="spacer-2"></div>
 
@@ -23,4 +29,22 @@
 
     [Parameter] public Guid ID { get; set; }
     [Parameter] public string POSTTYPE { get; set; } = "post";
+
+    bool _singleRedirect;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ID != Guid.Empty)
+        {
+            _singleRedirect = false;
+            return;
+        }
+
+        var type = Q.Site.PostTypes.FirstOrDefault(s => s.TypeName == POSTTYPE);
+        if (type is null || !type.EnabledFeatures.Contains(PostTypeConstants.Features.Single)) return;
+
+        _singleRedirect = true;
+        var single = await client.Post.Single(POSTTYPE);
+        navigationManager.NavigateTo($"/dev/EditPost/{POSTTYPE}/{single.Id}", replace: true);
+    }
 }

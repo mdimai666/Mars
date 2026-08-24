@@ -9,7 +9,7 @@ public sealed class PostTypeConstants
     {
         public static readonly string[] All = [
             Content, Status, ModifyCreatedDate,
-            Language, Tags, Excerpt, Category, PostImage
+            Language, Tags, Excerpt, Category, PostImage, Single
         ];
 
         public const string Content = "Content";
@@ -20,6 +20,7 @@ public sealed class PostTypeConstants
         public const string Excerpt = "Excerpt";
         public const string Category = "Category";
         public const string PostImage = "PostImage";
+        public const string Single = "Single";
     }
 
 }

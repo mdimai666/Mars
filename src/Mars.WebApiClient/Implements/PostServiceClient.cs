@@ -78,4 +78,8 @@ internal class PostServiceClient : BasicServiceClient, IPostServiceClient
         => _client.Request($"{_basePath}{_controllerName}/edit/blank", type)
                     .OnError(OnStatus404ReturnNull)
                     .GetJsonAsync<PostEditViewModel>();
+
+    public Task<PostDetailResponse> Single(string type)
+        => _client.Request($"{_basePath}{_controllerName}/single", type)
+                    .GetJsonAsync<PostDetailResponse>();
 }

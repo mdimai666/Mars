@@ -73,6 +73,10 @@
                     {
                         <FluentBadge Fill="neutral">Компонент</FluentBadge>
                     }
+                    @if (context.EnabledFeatures.Contains(PostTypeConstants.Features.Single))
+                    {
+                        <FluentBadge Fill="accent">Single</FluentBadge>
+                    }
                     <FluentOverflow Style="width: 100%;">
                         @foreach (var tag in context.EnabledFeatures)
                         {

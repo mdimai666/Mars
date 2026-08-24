@@ -90,6 +90,20 @@ public class PostController : ControllerBase
         return _postService.GetEditModelBlank(type, cancellationToken);
     }
 
+    [HttpGet("single/{type}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
+    public async Task<PostDetailResponse> GetOrCreateSingle(string type, CancellationToken cancellationToken)
+    {
+        return (await _postService.GetOrCreateSingleAsync(type, cancellationToken)).ToResponse();
+    }
+
     [HttpPost]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PostDetailResponse))]

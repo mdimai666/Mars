@@ -30,6 +30,7 @@ internal static class MetaFieldMapping
             Disabled = entity.Disabled,
             Hidden = entity.Hidden,
             IsNullable = entity.IsNullable,
+            IsMultiple = entity.IsMultiple,
 
             Variants = entity.Variants.ToDto(),
         };
@@ -48,6 +49,7 @@ internal static class MetaFieldMapping
             MinValue = dto.MinValue,
             Description = dto.Description,
             IsNullable = dto.IsNullable,
+            IsMultiple = dto.IsMultiple,
             Default = dto.Default?.ToOwned(),
             Options = dto.Options,
             Order = dto.Order,

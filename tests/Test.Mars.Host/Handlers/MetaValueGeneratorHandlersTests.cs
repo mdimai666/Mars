@@ -27,6 +27,7 @@ public class MetaValueGeneratorHandlersTests
             MinValue = null,
             Description = "",
             IsNullable = true,
+            IsMultiple = false,
             Default = null,
             Options = options,
             Order = 0,

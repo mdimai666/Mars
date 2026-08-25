@@ -46,6 +46,9 @@ public class MetaFieldEntity : IBasicEntity
     [Comment("IsNullable")]
     public bool IsNullable { get; set; }
 
+    [Comment("Множественное: поле допускает несколько значений")]
+    public bool IsMultiple { get; set; }
+
     [Comment("Значение по умолчанию")]
     public virtual MetaFieldDefaultValue? Default { get; set; }
 

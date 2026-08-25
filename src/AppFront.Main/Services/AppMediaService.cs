@@ -10,6 +10,7 @@ public interface IAppMediaService
     Task<PagingResult<FileListItemResponse>> ListTable(TableFileQueryRequest request);
     Task Delete(Guid id);
     Task<FileListItemResponse> OpenSelectMedia();
+    Task<IReadOnlyCollection<FileListItemResponse>> OpenSelectMediaMany();
     Task<UserActionResult> ExecuteAction(ExecuteActionRequest action);
 
 }
@@ -49,11 +50,15 @@ public class AppMediaService : IAppMediaService
         //    Content = new MediaFilesList()
         //});
 
-
         //await re.OpenAsync();
 
         return (await ModalMediaSelect.ShowModalForSelect())!;
 
+    }
+
+    public async Task<IReadOnlyCollection<FileListItemResponse>> OpenSelectMediaMany()
+    {
+        return await ModalMediaSelect.ShowModalForSelectMany();
     }
 
     public Task<UserActionResult> ExecuteAction(ExecuteActionRequest action)

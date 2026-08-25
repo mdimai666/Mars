@@ -15,6 +15,7 @@ public record MetaFieldDto : IHasId
     public required decimal? MinValue { get; init; }
     public required string Description { get; init; }
     public required bool IsNullable { get; init; }
+    public required bool IsMultiple { get; init; }
     public required MetaFieldDefaultValue? Default { get; init; }
     public required JsonNode? Options { get; init; }
     public required int Order { get; init; }

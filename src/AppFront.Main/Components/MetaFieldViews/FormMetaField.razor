@@ -102,10 +102,16 @@
                                             </div>
                                         </div>
 
-                                        <div>
+                                        <div class="d-flex gap-4">
                                             <FluentSwitch Value="@(!field.IsNullable)"
                                                           ValueChanged="@(v => field.IsNullable = !v)"
                                                           Label="Обязательное" />
+                                            @if (field.IsTypeRelation)
+                                            {
+                                                <FluentSwitch Value="@field.IsMultiple"
+                                                              ValueChanged="@(v => OnToggleIsMultiple(v, field))"
+                                                              Label="Несколько значений" />
+                                            }
                                         </div>
 
                                         <div class="d-flex gap-3">
@@ -179,6 +185,20 @@
                                                     </FormItem2>
                                                 }
                                             </div>
+                                            @if (field.Type == MetaFieldType.Relation && field.IsMultiple)
+                                            {
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Вид поля</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.Kind"
+                                                                      ValueChanged="@(v => field.Kind = v)">
+                                                            <FluentOption TOption="string" Value="">Обычный</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.List">Список объектов</FluentOption>
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                            }
                                             @if (field.Type == MetaFieldType.Relation && field.IsListKind)
                                             {
                                                 <div>
@@ -192,6 +212,20 @@
                                                             <FluentOption Value="@MetaFieldKindCatalog.RemoveModes.DeleteConfirm">Удалить объект (с подтверждением)</FluentOption>
                                                         </FluentSelect>
                                                     </div>
+                                                </div>
+                                                <div>
+                                                    <div class="vstack">
+                                                        <label>Вид списка</label>
+                                                        <FluentSelect TOption="string" Width="250px"
+                                                                      Value="@field.ViewMode"
+                                                                      ValueChanged="@(v => field.ViewMode = v)">
+                                                            <FluentOption TOption="string" Value="">Таблица</FluentOption>
+                                                            <FluentOption Value="@MetaFieldKindCatalog.ViewModes.Cards">Карточки</FluentOption>
+                                                        </FluentSelect>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-end pb-2">
+                                                    <FluentSwitch @bind-Value=field.DropZoneEnabled Label="Дроп-зона загрузки" />
                                                 </div>
                                             }
 
@@ -240,6 +274,21 @@
                                                     {
                                                         <FluentButton Size="small" Appearance="Appearance.Stealth" OnClick="@(() => { field.UploadFolder = ""; })">Сбросить</FluentButton>
                                                     }
+                                                </div>
+                                                <div class="d-flex gap-4 align-items-center">
+                                                    @if (field.IsMultiple)
+                                                    {
+                                                        <div class="vstack">
+                                                            <label>Вид списка</label>
+                                                            <FluentSelect TOption="string" Width="180px"
+                                                                          Value="@field.ViewMode"
+                                                                          ValueChanged="@(v => field.ViewMode = v)">
+                                                                <FluentOption TOption="string" Value="">Таблица</FluentOption>
+                                                                <FluentOption Value="@MetaFieldKindCatalog.ViewModes.Cards">Карточки</FluentOption>
+                                                            </FluentSelect>
+                                                        </div>
+                                                    }
+                                                    <FluentSwitch @bind-Value=field.DropZoneEnabled Label="Дроп-зона загрузки" />
                                                 </div>
                                             </div>
                                         }

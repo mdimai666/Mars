@@ -75,6 +75,7 @@ public static class PostTypeFeatureFields
             MinValue = null,
             Description = "",
             IsNullable = true,
+            IsMultiple = false,
             Default = null,
             Options = new JsonObject
             {
@@ -101,6 +102,7 @@ public static class PostTypeFeatureFields
             MinValue = null,
             Description = "",
             IsNullable = true,
+            IsMultiple = false,
             Default = null,
             Options = new JsonObject
             {

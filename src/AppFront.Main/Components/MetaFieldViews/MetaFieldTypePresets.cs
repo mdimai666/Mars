@@ -9,7 +9,7 @@ namespace AppFront.Shared.Components.MetaFieldViews;
 /// </summary>
 public static class MetaFieldTypePresets
 {
-    public record Preset(string Key, string Title, MetaFieldType Type, string Group, string? Editor = null, string? Kind = null, string? CodeLang = null);
+    public record Preset(string Key, string Title, MetaFieldType Type, string Group, string? Editor = null, string? Kind = null, string? CodeLang = null, bool IsMultiple = false);
 
     const string PresetPrefix = "preset:";
     const string TypePrefix = "type:";
@@ -46,9 +46,11 @@ public static class MetaFieldTypePresets
         new("time", "Время", MetaFieldType.DateTime, GroupDate, MetaFieldEditorCatalog.Time),
 
         new("relation", "Связь", MetaFieldType.Relation, GroupRelation),
-        new("list", "Список объектов", MetaFieldType.Relation, GroupRelation, null, MetaFieldKindCatalog.List),
+        new("relationmulti", "Несколько связей", MetaFieldType.Relation, GroupRelation, IsMultiple: true),
+        new("list", "Список объектов", MetaFieldType.Relation, GroupRelation, null, MetaFieldKindCatalog.List, IsMultiple: true),
         new("file", "Файл", MetaFieldType.File, GroupRelation),
         new("image", "Изображение", MetaFieldType.Image, GroupRelation),
+        new("imageset", "Набор изображений", MetaFieldType.Image, GroupRelation, IsMultiple: true),
     ];
 
     public static string OptionKey(Preset preset) => PresetPrefix + preset.Key;

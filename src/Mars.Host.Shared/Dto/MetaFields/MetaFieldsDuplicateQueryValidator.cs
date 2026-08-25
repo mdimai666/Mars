@@ -40,6 +40,9 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
 
                 metaField.RuleFor(x => x)
                     .Custom((field, context) => ValidateModelName(field!, metaModelTypesLocator, context));
+
+                metaField.RuleFor(x => x)
+                    .Custom((field, context) => ValidateKind(field!, context));
             });
 
         RuleFor(x => x.MetaFields)
@@ -91,6 +94,33 @@ public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaF
         if (root == "Post" && parts.Length > 1 && !metaModelTypesLocator.ExistPostType(parts[1]))
         {
             context.AddFailure(nameof(field.ModelName), $"Тип поста '{parts[1]}' цели связи не существует");
+        }
+    }
+
+    /// <summary>
+    /// Вид «список объектов» (секция детей) доступен только множественному
+    /// Relation-полю с целью-типом поста (<c>Post.&lt;тип&gt;</c>).
+    /// </summary>
+    static void ValidateKind(MetaFieldDto field, ValidationContext<MetaFieldDto> context)
+    {
+        var kind = field.Options.GetKind();
+        if (kind != MetaFieldKindCatalog.List) return;
+
+        if (field.Type != MetaFieldType.Relation)
+        {
+            context.AddFailure(nameof(field.Options), $"Вид '{kind}' доступен только полям типа Relation");
+            return;
+        }
+
+        if (!field.IsMultiple)
+        {
+            context.AddFailure(nameof(field.Options), $"Вид '{kind}' доступен только полям с несколькими значениями");
+            return;
+        }
+
+        if (field.ModelName?.StartsWith("Post.") != true)
+        {
+            context.AddFailure(nameof(field.Options), $"Вид '{kind}' доступен только связям с целью-типом поста (Post.<тип>)");
         }
     }
 }

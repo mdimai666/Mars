@@ -194,9 +194,9 @@ internal class PostCategoryService : IPostCategoryService
                 // все строки поля (мульти-значения), без потери дубликатов
                 enrichMetaValues.AddRange(values);
             }
-            else
+            else if (!mf.IsMultiple)
             {
-                //meta value not set. Create blank
+                //meta value not set. Create blank (множественные поля — ноль строк)
                 var blankMetaValue = GetBlankMetaValue(mf);
                 enrichMetaValues.Add(blankMetaValue);
             }

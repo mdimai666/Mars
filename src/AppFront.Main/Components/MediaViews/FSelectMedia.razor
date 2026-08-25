@@ -1,68 +1,52 @@
-@using System.Linq.Expressions
+@using AppFront.Shared.Components.MediaViews
 @using Mars.Shared.Contracts.Files
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inject IStringLocalizer<AppRes> L
 
-
-@if (Value == Guid.Empty)
-{
-    @if (true)
-    {
-        <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
-            <span>
-                нет
-            </span>
-        </div>
-    }
-    else
-    {
-        <a>filename</a>
-    }
-}
-else
-{
-    @if (previewLoading)
-    {
-        <div class="xcenter" style="background:#ededed;width:102px;height:102px;">
-            <span>
-                <SharedLoader2 />
-            </span>
-        </div>
-    }
-    else if (filePreview is null)
-    {
-        <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
-            <span>
-                нет превью
-            </span>
-        </div>
-    }
-    else
-    {
-        <div class="d-document-uploader">
-            <div class="media-table">
-                <div class="items-container gap-2 d-file-list">
-                    @{
-                        FileSummaryResponse file = filePreview;
+@{
+    // плитка значения: при включённой дроп-зоне она же — приёмник файлов
+    RenderFragment tile =
+    @<text>
+        @if (Value == Guid.Empty)
+        {
+            <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
+                <span>
+                    нет
+                </span>
+            </div>
+        }
+        else if (previewLoading)
+        {
+            <div class="xcenter" style="background:#ededed;width:102px;height:102px;">
+                <span>
+                    <SharedLoader2 />
+                </span>
+            </div>
+        }
+        else if (filePreview is null)
+        {
+            <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
+                <span>
+                    нет превью
+                </span>
+            </div>
+        }
+        else
+        {
+            var file = filePreview;
+            <div class="d-document-uploader">
+                <div class="media-table">
+                    <div class="items-container gap-2 d-file-list">
                         <div class="d-file-item xcenter" title="@file.Name">
                             <div class="d-file-item-actions-top">
-                                @if (Q.User.IsAuth)
+                                @if (Q.User.IsAuth && !ReadOnly)
                                 {
-                                    <div>
-                                        @*<a href="@file.FileUrl" class="btn btn-sm btn-primary xcenter" style="height:23px;">
-                        <Icon Type="link"/>
-                        </a>*@
-                                    </div>
-
-                                    <div>
-                                        @if (!ReadOnly)
-                                        {
-                                            <FluentButton OnClick=@(e=>Value = Guid.Empty)></FluentButton>
-                                        }
-                                    </div>
-                                    @*<Button Icon="delete" Danger OnClick=@(e=>ItemRemoveClick(file)) ></Button>*@
+                                    <FluentButton Appearance="Appearance.Stealth" Title="Убрать файл"
+                                                  OnClick=@(e => Value = Guid.Empty)>
+                                        <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                    </FluentButton>
                                 }
                             </div>
 
@@ -81,24 +65,70 @@ else
                             <div class="d-file-item-actions-bottom">
                                 @if (Q.User.IsAuth)
                                 {
-                                    <FluentButton Appearance="Appearance.Accent" OnClick="ShowModalForSelect">
-                                        выбрать
-                                    </FluentButton>
+                                    <div class="d-flex gap-1">
+                                        <FluentButton Appearance="Appearance.Accent" OnClick="ShowModalForSelect">
+                                            выбрать
+                                        </FluentButton>
+                                        @if (!file.IsImage)
+                                        {
+                                            <a href="@file.Url" target="_blank">
+                                                <FluentButton Appearance="Appearance.Neutral">открыть</FluentButton>
+                                            </a>
+                                        }
+                                    </div>
                                 }
                             </div>
 
                         </div>
-                    }
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </text>;
 }
+
+@if (DropZoneEnabled && !ReadOnly)
+{
+    <MediaUploadZone Class="d-select-media-drop"
+                     FolderPath="@UploadFolder"
+                     Accept="@Accept"
+                     Multiple="false"
+                     ShowResults="false"
+                     ZoneStyle="min-height:unset; width:max-content; height:max-content; padding:0; background:transparent; grid-gap:0;"
+                     OnFilesUploaded="OnDroppedFilesAsync"
+                     ZoneContent="@tile" />
+}
+else
+{
+    @tile
+}
+
+<style>
+    /* дроп-зона ровно по плитке значения: невидимый file-input не должен раздувать
+       зону своей собственной шириной; заливка убрана, пунктирный контур и его
+       сплошная реакция при наведении файла — библиотечные (fluent-inputfile-container) */
+    d-media-upload-zone.d-select-media-drop input[type='file'] {
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    d-media-upload-zone.d-select-media-drop .inputfile-progress {
+        display: none;
+    }
+</style>
 
 @code {
 
     [Inject] public IAppMediaService service { get; set; } = default!;
 
+    /// <summary>Папка загрузки дропа (пусто = папка года)</summary>
+    [Parameter] public string UploadFolder { get; set; } = "";
+
+    /// <summary>Дроп-зона загрузки поверх плитки (дефолт включена)</summary>
+    [Parameter] public bool DropZoneEnabled { get; set; } = true;
+
+    /// <summary>Фильтр файлов дропа/выбора</summary>
+    [Parameter] public string Accept { get; set; } = "*";
 
     Guid _value;
     [Parameter]
@@ -126,15 +156,11 @@ else
 
     async Task LoadPreview()
     {
-        if (Value == Guid.Empty) return;
-
-        //var find = refMediaFilesList?.Files?.FirstOrDefault(s => s.Id == Value);
-
-        //if (find is not null)
-        //{
-        //    filePreview = find;
-        //    return;
-        //}
+        if (Value == Guid.Empty)
+        {
+            filePreview = null;
+            return;
+        }
 
         previewLoading = true;
         StateHasChanged();
@@ -154,6 +180,14 @@ else
         {
             Value = file.Id;
         }
+    }
+
+    /// <summary>Дроп: файл грузится в медиа и становится значением (без поста)</summary>
+    Task OnDroppedFilesAsync(IReadOnlyCollection<FileDetailResponse> files)
+    {
+        var file = files.FirstOrDefault();
+        if (file is not null) Value = file.Id;
+        return Task.CompletedTask;
     }
 
 }

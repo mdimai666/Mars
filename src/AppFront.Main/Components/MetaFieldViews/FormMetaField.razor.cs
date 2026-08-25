@@ -81,6 +81,20 @@ public partial class FormMetaField
         // правила, недоступные для нового типа, снимаем
         var available = MetaFieldValidatorCatalog.For(newType).Select(x => x.Key).ToHashSet();
         field.Validators.RemoveAll(v => !available.Contains(v.Type));
+
+        // кратность доступна только Relation/Файл/Изображение — на прочих типах сбрасываем
+        if (newType is not (MetaFieldType.Relation or MetaFieldType.File or MetaFieldType.Image))
+        {
+            field.IsMultiple = false;
+            field.Kind = "";
+        }
+    }
+
+    /// <summary>Тумблер кратности: выключение снимает вид поля (список объектов недоступен без множественности)</summary>
+    void OnToggleIsMultiple(bool value, MetaFieldEditModel field)
+    {
+        field.IsMultiple = value;
+        if (!value) field.Kind = "";
     }
 
     /// <summary>Правила валидации, доступные типу поля</summary>
@@ -99,11 +113,12 @@ public partial class FormMetaField
     static readonly IEnumerable<IGrouping<string?, MetaFieldTypePresets.PickerItem>> TypePickerGroups
         = MetaFieldTypePresets.PickerItems.GroupBy(i => i.Group);
 
-    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор + вид + язык кода) или «технический» тип</summary>
+    /// <summary>Текущий пункт пикера типа: подходящий пресет (тип + редактор + вид + язык кода + кратность) или «технический» тип</summary>
     string GetTypePickerValue(MetaFieldEditModel field)
     {
         var preset = MetaFieldTypePresets.All.FirstOrDefault(p =>
             p.Type == field.Type
+            && p.IsMultiple == field.IsMultiple
             && (string.IsNullOrEmpty(field.Editor) ? p.Editor is null : p.Editor == field.Editor)
             && (string.IsNullOrEmpty(field.Kind) ? p.Kind is null : p.Kind == field.Kind)
             && (string.IsNullOrEmpty(field.CodeLang) ? p.CodeLang is null : p.CodeLang == field.CodeLang));
@@ -135,6 +150,7 @@ public partial class FormMetaField
             field.Editor = preset.Editor ?? ""; // пресет задаёт редактор целиком
             field.Kind = preset.Kind ?? ""; // и вид поля (список объектов и т.п.)
             field.CodeLang = preset.CodeLang ?? ""; // и язык кода для редактора «Код»
+            field.IsMultiple = preset.IsMultiple; // и кратность
         }
         else if (typeChanged && _editorLocator.GetEditorComponent(field.Editor, field.Type) is null)
             field.Editor = ""; // редактор несовместим с новым типом

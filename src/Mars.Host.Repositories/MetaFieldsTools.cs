@@ -55,6 +55,7 @@ public static class MetaFieldsTools
                 qe.MinValue,
                 qe.Description,
                 qe.IsNullable,
+                qe.IsMultiple,
                 qe.Order,
                 qe.Tags,
                 qe.Hidden,

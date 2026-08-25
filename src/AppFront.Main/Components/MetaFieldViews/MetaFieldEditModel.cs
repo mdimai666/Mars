@@ -30,6 +30,9 @@ public class MetaFieldEditModel
     /// <summary>false = обязательное поле (по умолчанию новые поля необязательные)</summary>
     public bool IsNullable { get; set; } = true;
 
+    /// <summary>Поле допускает несколько значений (дефолт — одинарное)</summary>
+    public bool IsMultiple { get; set; } = false;
+
     public MetaFieldDefaultValue? Default { get; set; }
     public JsonNode? Options { get; set; }
 
@@ -62,6 +65,7 @@ public class MetaFieldEditModel
             MinValue = MinValue,
             Description = Description,
             IsNullable = IsNullable,
+            IsMultiple = IsMultiple,
             Default = Default,
             Options = Options,
             Order = Order,
@@ -90,6 +94,7 @@ public class MetaFieldEditModel
         MinValue = MinValue,
         Description = Description,
         IsNullable = IsNullable,
+        IsMultiple = IsMultiple,
         Default = Default,
         Options = Options,
         Order = Order,
@@ -113,6 +118,7 @@ public class MetaFieldEditModel
             MinValue = response.MinValue,
             Description = response.Description,
             IsNullable = response.IsNullable,
+            IsMultiple = response.IsMultiple,
             Default = response.Default,
             Options = response.Options,
             IsNew = false,
@@ -129,6 +135,8 @@ public class MetaFieldEditModel
         model.CodeLang = ReadCodeLang(response.Options);
         model.Kind = response.Options.GetKind();
         model.RemoveMode = response.Options.GetRemoveMode();
+        model.ViewMode = response.Options.GetViewMode();
+        model.DropZoneEnabled = response.Options.IsDropZoneEnabled();
         return model;
     }
 
@@ -144,6 +152,7 @@ public class MetaFieldEditModel
             MinValue = MinValue,
             Description = Description,
             IsNullable = IsNullable,
+            IsMultiple = IsMultiple,
             Default = Default,
             Options = Options.WithoutFeatureKey(),
             IsNew = true,
@@ -160,6 +169,8 @@ public class MetaFieldEditModel
         clone.CodeLang = ReadCodeLang(Options);
         clone.Kind = Options.GetKind();
         clone.RemoveMode = Options.GetRemoveMode();
+        clone.ViewMode = Options.GetViewMode();
+        clone.DropZoneEnabled = Options.IsDropZoneEnabled();
         return clone;
     }
 
@@ -404,10 +415,16 @@ public class MetaFieldEditModel
     /// <summary>Удаление значений списка (хранится в Options.removeMode); пусто = по видимости типа-цели</summary>
     public string RemoveMode { get; set; } = "";
 
+    /// <summary>Вид отображения списка детей (хранится в Options.viewMode); пусто = таблица</summary>
+    public string ViewMode { get; set; } = "";
+
+    /// <summary>Дроп-зона в редакторах значений (хранится в Options.dropZone); дефолт включена</summary>
+    public bool DropZoneEnabled { get; set; } = true;
+
     /// <summary>Поле — упорядоченный список объектов (дочерних постов)</summary>
     public bool IsListKind => Kind == MetaFieldKindCatalog.List;
 
-    /// <summary>Синхронизирует вид и режим удаления в Options</summary>
+    /// <summary>Синхронизирует вид, режим удаления, вид отображения и дроп-зону в Options</summary>
     public void SyncKindToOptions()
     {
         if (Options is not JsonObject obj)
@@ -421,6 +438,12 @@ public class MetaFieldEditModel
 
         if (string.IsNullOrEmpty(RemoveMode)) obj.Remove(MetaFieldKindCatalog.RemoveModeOption());
         else obj[MetaFieldKindCatalog.RemoveModeOption()] = RemoveMode;
+
+        if (string.IsNullOrEmpty(ViewMode)) obj.Remove(MetaFieldKindCatalog.ViewModeOption());
+        else obj[MetaFieldKindCatalog.ViewModeOption()] = ViewMode;
+
+        if (DropZoneEnabled) obj.Remove(MetaFieldKindCatalog.DropZoneOption());
+        else obj[MetaFieldKindCatalog.DropZoneOption()] = false;
 
         if (obj.Count == 0) Options = null;
     }

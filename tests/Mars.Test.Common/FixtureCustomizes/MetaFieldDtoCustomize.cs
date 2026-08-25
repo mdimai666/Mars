@@ -20,6 +20,7 @@ public sealed class MetaFieldDtoCustomize : ICustomization
                                             Hidden = false,
                                             Description = "Description",
                                             IsNullable = false,
+                                            IsMultiple = false,
                                             MaxValue = null,
                                             MinValue = null,
                                             ModelName = null,

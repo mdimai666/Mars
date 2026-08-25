@@ -21,6 +21,7 @@ public class PostTypeQueryValidatorTests
             MinValue = null,
             Description = "",
             IsNullable = true,
+            IsMultiple = false,
             Default = null,
             Options = null,
             Order = 0,

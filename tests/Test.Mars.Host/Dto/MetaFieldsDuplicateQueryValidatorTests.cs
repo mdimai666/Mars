@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Host.Shared.Dto.MetaFields;
 using Mars.Host.Shared.Services;
@@ -22,7 +23,8 @@ public class MetaFieldsDuplicateQueryValidatorTests
         _validator = new MetaFieldsDuplicateQueryValidator(_locator);
     }
 
-    static MetaFieldDto Field(MetaFieldType type, string? modelName = null, string? key = null)
+    static MetaFieldDto Field(MetaFieldType type, string? modelName = null, string? key = null,
+                              JsonNode? options = null, bool isMultiple = false)
         => new()
         {
             Id = Guid.NewGuid(),
@@ -33,8 +35,9 @@ public class MetaFieldsDuplicateQueryValidatorTests
             MinValue = null,
             Description = "",
             IsNullable = true,
+            IsMultiple = isMultiple,
             Default = null,
-            Options = null,
+            Options = options,
             Order = 0,
             Tags = [],
             Hidden = false,
@@ -42,6 +45,8 @@ public class MetaFieldsDuplicateQueryValidatorTests
             Variants = null,
             ModelName = modelName,
         };
+
+    static JsonObject ListKindOptions() => new() { [MetaFieldKindCatalog.KindOption()] = MetaFieldKindCatalog.List };
 
     [Theory]
     [InlineData("User")]
@@ -105,5 +110,38 @@ public class MetaFieldsDuplicateQueryValidatorTests
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.File, null)] };
 
         _validator.Validate(dto).IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Validate_ListKindOnMultipleRelationPostTarget_ShouldPass()
+    {
+        _locator.ExistPostType("photo").Returns(true);
+        var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "Post.photo", options: ListKindOptions(), isMultiple: true)] };
+
+        _validator.Validate(dto).IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Validate_ListKindOnSingleRelation_ShouldFail()
+    {
+        var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "Post.photo", options: ListKindOptions(), isMultiple: false)] };
+
+        _validator.Validate(dto).IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Validate_ListKindOnNonRelation_ShouldFail()
+    {
+        var dto = new SupportDto { MetaFields = [Field(MetaFieldType.File, options: ListKindOptions(), isMultiple: true)] };
+
+        _validator.Validate(dto).IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Validate_ListKindWithNonPostTarget_ShouldFail()
+    {
+        var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "User", options: ListKindOptions(), isMultiple: true)] };
+
+        _validator.Validate(dto).IsValid.Should().BeFalse();
     }
 }

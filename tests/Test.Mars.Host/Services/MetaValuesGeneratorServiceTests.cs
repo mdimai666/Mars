@@ -32,6 +32,7 @@ public class MetaValuesGeneratorServiceTests
             MinValue = minValue,
             Description = "",
             IsNullable = isNullable,
+            IsMultiple = false,
             Default = null,
             Options = options,
             Order = 0,

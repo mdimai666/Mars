@@ -152,6 +152,7 @@ public class MetaFieldMaterializerServiceTests
             Disabled = false,
             Hidden = false,
             IsNullable = false,
+            IsMultiple = false,
             Description = "",
         };
         return new MetaValueDto

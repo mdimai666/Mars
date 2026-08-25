@@ -41,6 +41,15 @@ public partial class MediaUploadZone
     /// <summary>Ручной режим: выбранные файлы (загрузка — на родителе)</summary>
     [Parameter] public EventCallback<InputFileChangeEventArgs> OnFilesSelected { get; set; }
 
+    /// <summary>Показывать список загруженного после завершения пачки</summary>
+    [Parameter] public bool ShowResults { get; set; } = true;
+
+    /// <summary>Содержимое зоны вместо дефолтной подписи (например, плитка значения — дроп поверх неё)</summary>
+    [Parameter] public RenderFragment? ZoneContent { get; set; }
+
+    /// <summary>Клик по содержимому зоны открывает нативный диалог выбора файлов</summary>
+    [Parameter] public bool ZoneClickable { get; set; }
+
     readonly string _inputFileId = "media-upload-zone_" + Guid.NewGuid().ToString("N");
     readonly List<FileUploadResult> _results = [];
     readonly List<FileDetailResponse> _uploaded = [];

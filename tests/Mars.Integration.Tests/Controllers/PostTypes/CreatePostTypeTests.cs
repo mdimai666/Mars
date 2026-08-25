@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
@@ -153,5 +154,69 @@ public sealed class CreatePostTypeTests : ApplicationTests
         {
             [nameof(CreatePostTypeRequest.MetaFields) + "[1].Key"] = [$"MetaField with key * дублируется*"],
         });
+    }
+
+    static JsonNode ListKindOptions()
+        => new JsonObject { [MetaFieldKindCatalog.KindOption()] = MetaFieldKindCatalog.List };
+
+    [IntegrationFact]
+    public async Task CreatePostType_ListKindOnSingleRelationField_ShouldReturnValidationError()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.Create);
+        _ = nameof(MetaFieldsDuplicateQueryValidator);
+        var client = AppFixture.GetClient();
+
+        var postTypeRequest = _fixture.Create<CreatePostTypeRequest>();
+        var metaFields = postTypeRequest.MetaFields.ToList();
+        metaFields[0] = metaFields[0] with
+        {
+            Type = MetaFieldType.Relation,
+            ModelName = "Post.post",
+            IsMultiple = false,
+            Options = ListKindOptions(),
+        };
+        postTypeRequest = postTypeRequest with { MetaFields = metaFields };
+
+        //Act
+        var result = await client.Request(_apiUrl).PostJsonAsync(postTypeRequest).ReceiveValidationError();
+
+        //Assert
+        result.Errors.ValidateSatisfy(new()
+        {
+            [nameof(CreatePostTypeRequest.MetaFields) + "[0].Options"] = [$"*несколькими значениями*"],
+        });
+    }
+
+    [IntegrationFact]
+    public async Task CreatePostType_ListKindOnMultipleRelationField_ShouldSuccess()
+    {
+        //Arrange
+        _ = nameof(PostTypeController.Create);
+        _ = nameof(PostTypeService.Create);
+        var client = AppFixture.GetClient();
+
+        var postTypeRequest = _fixture.Create<CreatePostTypeRequest>();
+        var metaFields = postTypeRequest.MetaFields.ToList();
+        metaFields[0] = metaFields[0] with
+        {
+            Type = MetaFieldType.Relation,
+            ModelName = "Post.post",
+            IsMultiple = true,
+            Options = ListKindOptions(),
+        };
+        postTypeRequest = postTypeRequest with { MetaFields = metaFields };
+
+        //Act
+        var res = await client.Request(_apiUrl).PostJsonAsync(postTypeRequest).CatchUserActionError();
+
+        //Assert
+        res.StatusCode.Should().Be(StatusCodes.Status201Created);
+        var ef = AppFixture.MarsDbContext();
+        var created = ef.PostTypes.Include(s => s.MetaFields).FirstOrDefault(s => s.Id == postTypeRequest.Id);
+        created.Should().NotBeNull();
+        var createdField = created!.MetaFields.Single(s => s.Id == metaFields[0].Id);
+        createdField.IsMultiple.Should().BeTrue();
+        createdField.Options.GetKind().Should().Be(MetaFieldKindCatalog.List);
     }
 }

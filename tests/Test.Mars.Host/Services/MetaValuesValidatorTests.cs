@@ -11,7 +11,7 @@ namespace Test.Mars.Host.Services;
 
 public class MetaValuesValidatorTests
 {
-    static MetaFieldDto Field(MetaFieldType type, string key, bool isNullable = true, JsonNode? options = null)
+    static MetaFieldDto Field(MetaFieldType type, string key, bool isNullable = true, JsonNode? options = null, bool isMultiple = false)
         => new()
         {
             Id = Guid.NewGuid(),
@@ -22,6 +22,7 @@ public class MetaValuesValidatorTests
             MinValue = null,
             Description = "",
             IsNullable = isNullable,
+            IsMultiple = isMultiple,
             Default = null,
             Options = options,
             Order = 0,
@@ -32,11 +33,11 @@ public class MetaValuesValidatorTests
             ModelName = null,
         };
 
-    static ModifyMetaValueDetailQuery Value(MetaFieldDto field, string? text = null)
+    static ModifyMetaValueDetailQuery Value(MetaFieldDto field, string? text = null, int index = 0)
         => new()
         {
             Id = Guid.NewGuid(),
-            Index = 0,
+            Index = index,
             Bool = null,
             Int = null,
             Float = null,
@@ -134,6 +135,28 @@ public class MetaValuesValidatorTests
         var errors = await Validator(uniqueness).ValidateAsync([Value(field, "abc")], Context());
 
         errors.Should().ContainSingle().Which.Message.Should().Be("значение уже занято");
+    }
+
+    [Fact]
+    public async Task Validate_SingleFieldSecondIndex_ReturnsError()
+    {
+        var field = Field(MetaFieldType.String, "code");
+
+        var errors = await Validator().ValidateAsync(
+            [Value(field, "a", index: 0), Value(field, "b", index: 1)], Context());
+
+        errors.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Validate_MultipleFieldSecondIndex_NoErrors()
+    {
+        var field = Field(MetaFieldType.String, "code", isMultiple: true);
+
+        var errors = await Validator().ValidateAsync(
+            [Value(field, "a", index: 0), Value(field, "b", index: 1)], Context());
+
+        errors.Should().BeEmpty();
     }
 
     [Fact]
@@ -257,5 +280,31 @@ public class MetaValuesValidatorTests
             [field], new Dictionary<string, JsonNode> { ["code"] = "abc" }, requireAll: false, Context());
 
         errors.Should().ContainSingle().Which.Message.Should().Be("значение уже занято");
+    }
+
+    [Fact]
+    public async Task ValidateJson_SingleFieldArrayWithSeveralItems_ReturnsError()
+    {
+        var field = Field(MetaFieldType.File, "docs");
+
+        var errors = await Validator().ValidateJsonAsync(
+            [field],
+            new Dictionary<string, JsonNode> { ["docs"] = new JsonArray(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()) },
+            requireAll: false, Context());
+
+        errors.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task ValidateJson_MultipleFieldArrayWithSeveralItems_NoMultiplicityError()
+    {
+        var field = Field(MetaFieldType.File, "docs", isMultiple: true);
+
+        var errors = await Validator().ValidateJsonAsync(
+            [field],
+            new Dictionary<string, JsonNode> { ["docs"] = new JsonArray(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()) },
+            requireAll: false, Context());
+
+        errors.Should().BeEmpty();
     }
 }

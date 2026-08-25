@@ -24,6 +24,13 @@ internal class MetaValuesValidator : IMetaValuesValidator
         foreach (var value in values)
         {
             var fieldContext = domainContext with { Field = value.MetaField };
+
+            if (!value.MetaField.IsMultiple && value.Index > 0)
+            {
+                errors.Add(new MetaValueValidationError(value.MetaField.Key, "одинарное поле допускает только одно значение"));
+                continue;
+            }
+
             foreach (var message in await ValidateFieldAsync(value.MetaField, value.GetValueSimple(), fieldContext, cancellationToken))
                 errors.Add(new MetaValueValidationError(value.MetaField.Key, message));
         }
@@ -52,6 +59,12 @@ internal class MetaValuesValidator : IMetaValuesValidator
                 // поле с генератором будет заполнено при создании — отсутствие значения не ошибка
                 if (requireAll && !field.IsNullable && MetaFieldGeneratorDefinition.FromOptions(field.Options) is null)
                     errors.Add(new MetaValueValidationError(field.Key, "значение обязательно"));
+                continue;
+            }
+
+            if (!field.IsMultiple && node is JsonArray array && array.Count > 1)
+            {
+                errors.Add(new MetaValueValidationError(field.Key, "одинарное поле допускает только одно значение"));
                 continue;
             }
 

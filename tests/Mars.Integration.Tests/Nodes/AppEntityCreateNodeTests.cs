@@ -60,6 +60,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
                     MinValue = null,
                     Description = "",
                     IsNullable = true,
+                    IsMultiple = false,
                     Default = null,
                     Options = new JsonObject
                     {

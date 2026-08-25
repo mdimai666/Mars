@@ -15,6 +15,7 @@ public static class MetaFieldDetailMapping
             Disabled = entity.Disabled,
             Hidden = entity.Hidden,
             IsNullable = entity.IsNullable,
+            IsMultiple = entity.IsMultiple,
             Key = entity.Key,
             MaxValue = entity.MaxValue,
             MinValue = entity.MinValue,

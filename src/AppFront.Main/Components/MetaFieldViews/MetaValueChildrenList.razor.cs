@@ -38,6 +38,14 @@ public partial class MetaValueChildrenList
     /// <summary>Поле детского типа, принимающее загруженные файлы (указатель картинки, иначе первое Image/File)</summary>
     MetaFieldDetailResponse? _dropField;
 
+    /// <summary>Ключ поля-картинки для превью карточек (указатель картинки типа, иначе первое Image-поле)</summary>
+    string? _cardsImageKey;
+
+    readonly string _cardsSortableId = "children-cards-" + Guid.NewGuid().ToString("N");
+
+    /// <summary>Режим карточек (Options.viewMode)</summary>
+    bool IsCardsView => Meta.ViewMode == MetaFieldKindCatalog.ViewModes.Cards;
+
     string GridColumns => $"minmax(180px, 2fr) {string.Concat(_metaColumns.Select(c => c.Type == MetaFieldType.Image ? "56px " : "1fr "))}100px 40px";
 
     List<MetaValueEditModel> FieldRows()
@@ -77,6 +85,7 @@ public partial class MetaValueChildrenList
             var blank = await client.Post.GetPostBlank(_childTypeName);
             _childType = blank.PostType;
             _dropField = ResolveDropField(_childType);
+            _cardsImageKey = ResolveCardsImageKey(_childType);
             await ReloadAsync();
         }
         catch (FlurlHttpException ex)
@@ -233,6 +242,52 @@ public partial class MetaValueChildrenList
 
         return childType.MetaFields.FirstOrDefault(f => f.Type == MetaFieldType.Image)
             ?? childType.MetaFields.FirstOrDefault(f => f.Type == MetaFieldType.File);
+    }
+
+    /// <summary>Ключ поля-картинки для превью карточек: указатель картинки типа, иначе первое Image-поле</summary>
+    static string? ResolveCardsImageKey(PostTypeDetailResponse childType)
+    {
+        if (!string.IsNullOrEmpty(childType.ImageFieldKey)
+            && childType.MetaFields.Any(f => f.Key == childType.ImageFieldKey))
+        {
+            return childType.ImageFieldKey;
+        }
+
+        return childType.MetaFields.FirstOrDefault(f => f.Type == MetaFieldType.Image)?.Key;
+    }
+
+    string? CardPreviewUrl(PostListItemResponse item)
+        => _cardsImageKey is null
+            ? null
+            : item.MetaColumns?.GetValueOrDefault(_cardsImageKey)?.Split(", ").FirstOrDefault();
+
+    void OpenCard(Guid postId)
+    {
+        if (_editor is null || _childTypeName is null) return;
+
+        _editor.Open(postId, _childTypeName, id => _ = InvokeAsync(async () =>
+        {
+            await ReloadAsync();
+            StateHasChanged();
+        }));
+    }
+
+    /// <summary>Драг-порядок карточек: порядок строк значения следует за списком</summary>
+    void OnSortCards(FluentSortableListEventArgs args)
+    {
+        if (args is null || args.OldIndex == args.NewIndex) return;
+
+        var item = _items[args.OldIndex];
+        _items.RemoveAt(args.OldIndex);
+        _items.Insert(args.NewIndex, item);
+
+        for (var i = 0; i < _items.Count; i++)
+        {
+            var row = FieldRows().FirstOrDefault(r => r.ModelId == _items[i].Id);
+            if (row is not null) row.Index = i;
+        }
+
+        StateHasChanged();
     }
 
     async Task OnFilesUploadedAsync(IReadOnlyCollection<FileDetailResponse> files)

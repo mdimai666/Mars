@@ -26,47 +26,45 @@
                             {
                                 <MetaValueChildrenList Meta=@meta />
                             }
-                            else
+                            else if (meta.IsMultiple)
                             {
                                 <MetaValueRelationMulti Meta=@meta />
+                            }
+                            else
+                            {
+                                <MetaValueRelationSingle Meta=@meta />
+                            }
+                        </div>
+                    </div>
+                }
+                else if (meta.Type is MetaFieldType.File or MetaFieldType.Image)
+                {
+                    <div class="d-flex">
+                        <div class="me-2 d-row-meta-value__left">
+                            @meta.Title
+                            @if (!Client)
+                            {
+                                <div class="text-secondary fz10px">@meta.Type</div>
+                            }
+                        </div>
+                        <div class="d-metafield-metavalue-body">
+                            @if (meta.IsMultiple)
+                            {
+                                <MetaValueFileMulti Meta=@meta />
+                            }
+                            else if (field is not null)
+                            {
+                                <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId
+                                                                                     UploadFolder="@meta.UploadFolder"
+                                                                                     DropZoneEnabled="@meta.DropZoneEnabled"
+                                                                                     Accept="@(meta.Type == MetaFieldType.Image ? "image/*" : "*")" />
                             }
                         </div>
                     </div>
                 }
                 else if (field is not null)
                 {
-                    @if (f.IsTypeRelation == false)
-                    {
-                        <RowMetaValue @bind-Value=@field Client=@Client />
-                    }
-                    else
-                    {
-                        <div class="d-flex">
-                            <div class="me-2 d-row-meta-value__left">
-                                @field.MetaField.Title
-                                @if (!Client)
-                                {
-                                    <div class="text-secondary fz10px">@field.MetaField.Type</div>
-                                }
-                            </div>
-                            <div class="d-metafield-metavalue-body">
-                                @if (field.MetaField.Type == MetaFieldType.File)
-                                {
-                                    <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId />
-                                }
-                                else if (field.MetaField.Type == MetaFieldType.Image)
-                                {
-                                    <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId />
-                                }
-                                else
-                                {
-                                    <div>
-                                        <i>relation type not implement</i>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
+                    <RowMetaValue @bind-Value=@field Client=@Client />
                 }
                 else
                 {

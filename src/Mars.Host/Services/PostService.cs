@@ -129,6 +129,7 @@ internal class PostService : IPostService
                                  .Where(mf => mf.Type != MetaFieldType.Query)
                                  .Where(mf => contentField is null || mf.Key != contentField.Key)
                                  .Where(mf => !mf.Disabled)
+                                 .Where(mf => !mf.IsMultiple) // множественные — бланк из нуля строк
                                  .Select(mf => ModifyMetaValueDetailQuery.GetBlank(mf))
                                  .ToList();
 
@@ -283,9 +284,9 @@ internal class PostService : IPostService
                 // все строки поля (мульти-значения), без потери дубликатов
                 enrichMetaValues.AddRange(values);
             }
-            else
+            else if (!mf.IsMultiple)
             {
-                //meta value not set. Create blank
+                //meta value not set. Create blank (множественные поля — ноль строк)
                 var blankMetaValue = GetBlankMetaValue(mf);
                 enrichMetaValues.Add(blankMetaValue);
             }

@@ -39,7 +39,10 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
-    <Target Name="RunPostCompileDebugScript" AfterTargets="CoreBuild" Condition="'$(Configuration)' == 'Debug'">
+    <!-- При параллельной пересборке источника (полный ребилд) файла может ещё не быть —
+         тогда оставляем прежнюю копию: содержимое обновится следующей сборкой -->
+    <Target Name="RunPostCompileDebugScript" AfterTargets="CoreBuild"
+            Condition="'$(Configuration)' == 'Debug' and Exists('$(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net10.0\Mars.deps.json')">
         <Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net10.0\Mars.deps.json $(ProjectDir)Mars.deps.json" />
         <!--<Exec Command="copy $(ProjectDir)..\..\Mars.WebApp\bin\$(Configuration)\net10.0\Mars.deps.json $(OutDir)Mars.deps.json" />-->
     </Target>

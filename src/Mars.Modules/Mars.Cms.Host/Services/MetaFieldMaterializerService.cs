@@ -1,13 +1,25 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Contracts.MetaFields;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class MetaFieldMaterializerService : IMetaFieldMaterializerService
 {

@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
-using Mars.Shared.Exceptions;
+using Mars.Server.Abstractions.Services;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Mars.Contracts.Exceptions;
 
 namespace Mars.Services;
 

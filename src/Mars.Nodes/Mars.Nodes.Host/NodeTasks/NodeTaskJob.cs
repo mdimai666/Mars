@@ -1,13 +1,13 @@
 using System.Collections.Concurrent;
+using Mars.Nodes.Abstractions.Services;
 using System.Threading.Channels;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Services;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.Dto.NodeTasks;
-using Mars.Nodes.Host.Shared.Services;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Dto.NodeTasks;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Host.NodeTasks;

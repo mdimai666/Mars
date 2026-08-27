@@ -1,22 +1,21 @@
 using System.Collections.ObjectModel;
-using AppAdmin.Pages.FeedbackViews;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.NavMenus;
+using Mars.Admin.Pages.FeedbackViews;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.NavMenus;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Pages.NavMenuViews;
+namespace Mars.Admin.Pages.NavMenuViews;
 
 public partial class ManageNavMenuPage
 {
     string urlEditPage = "/dev/EditNavMenu";
 
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
-
 
     FluentDataGrid<NavMenuSummaryResponse> table = default!;
     string _searchText = "";

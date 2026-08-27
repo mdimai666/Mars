@@ -2,11 +2,11 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mars.Core.Models;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.TemplateEngine;
-using Mars.Shared.Options;
-using Mars.WebSiteProcessor.Interfaces;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.Core.TemplateEngine;
+using Mars.Contracts.Options;
+using Mars.SiteEngine.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.WebSiteProcessor.Services;
+namespace Mars.SiteEngine.Services;
 
 public class WebRenderEngineLocator : IWebRenderEngineLocator
 {

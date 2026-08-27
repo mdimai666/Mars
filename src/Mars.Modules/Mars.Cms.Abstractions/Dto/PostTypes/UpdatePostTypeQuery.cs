@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 /// <summary>
 /// <see cref="UpdatePostTypeRequest"/>

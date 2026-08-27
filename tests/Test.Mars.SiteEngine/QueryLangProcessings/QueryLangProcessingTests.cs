@@ -1,18 +1,18 @@
 using System.Reflection;
 using FluentAssertions;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Host.Templators;
+using Mars.Server.Abstractions.Models;
+using Mars.QueryLang.Services;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Templators;
 using Mars.QueryLang.Host.Services;
-using Mars.Shared.Options;
-using Mars.Shared.Templators;
+using Mars.Contracts.Options;
+using Mars.Contracts.Templators;
 using Mars.Test.Common.Constants;
-using Mars.WebSiteProcessor.Handlebars.TemplateData;
+using Mars.SiteEngine.Handlebars.TemplateData;
 using NSubstitute;
 
-namespace Test.Mars.WebSiteProcessor.QueryLangProcessings;
+namespace Test.Mars.SiteEngine.QueryLangProcessings;
 
 public class QueryLangProcessingTests
 {

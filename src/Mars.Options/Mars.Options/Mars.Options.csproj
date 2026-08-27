@@ -37,7 +37,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
-        <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

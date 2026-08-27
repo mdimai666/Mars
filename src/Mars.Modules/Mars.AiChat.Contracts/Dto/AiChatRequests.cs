@@ -1,4 +1,4 @@
-namespace Mars.AiChat.Shared.Dto;
+namespace Mars.AiChat.Contracts.Dto;
 
 public class AiChatSendRequest
 {

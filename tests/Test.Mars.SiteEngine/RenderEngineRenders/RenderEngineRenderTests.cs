@@ -1,20 +1,20 @@
 using System.Text.Json;
 using Mars.Core.Models;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Shared.Contracts.WebSite.Models;
-using Mars.Shared.Options;
-using Mars.Shared.ViewModels;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.Contracts.WebSite.Models;
+using Mars.Contracts.Options;
+using Mars.Contracts.ViewModels;
 using Mars.Test.Common.Constants;
-using Mars.WebSiteProcessor.Endpoints;
-using Mars.WebSiteProcessor.Handlebars;
-using Mars.WebSiteProcessor.Handlebars.TemplateData;
-using Mars.WebSiteProcessor.Services;
+using Mars.SiteEngine.Endpoints;
+using Mars.SiteEngine.Handlebars;
+using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.SiteEngine.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
-namespace Test.Mars.WebSiteProcessor.RenderEngineRenders;
+namespace Test.Mars.SiteEngine.RenderEngineRenders;
 
 public class RenderEngineRenderTests
 {

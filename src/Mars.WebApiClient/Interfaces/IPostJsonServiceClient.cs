@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.PostJsons;
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Common;
+using Mars.Contracts.PostJsons;
+using Mars.Contracts.Posts;
 
 namespace Mars.WebApiClient.Interfaces;
 

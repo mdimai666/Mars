@@ -1,11 +1,17 @@
 using System.Collections.Frozen;
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Host.Shared.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 internal sealed class UserMetaLocator : IUserMetaLocator
 {

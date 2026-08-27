@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace Mars.Shared.DocumentHelpers.Snils;
+namespace Mars.Contracts.DocumentHelpers.Snils;
 
 internal static class ValidationsHelper
 {

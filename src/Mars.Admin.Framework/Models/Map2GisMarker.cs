@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AppFront.Shared.Models
-{
+namespace Mars.Admin.Framework.Models {
     public class Map2GisMarker
     {
         public string location { get; set; } = default!;

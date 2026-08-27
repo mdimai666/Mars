@@ -4,7 +4,7 @@ using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Functions;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.Nodes.Front.Shared.Editor.Interfaces;
+namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 
 public interface INodeEditorApi
 {

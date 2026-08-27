@@ -1,15 +1,15 @@
 using System.Collections.ObjectModel;
-using AppAdmin.Pages.FeedbackViews;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.Users;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Admin.Pages.FeedbackViews;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.Roles;
+using Mars.Contracts.Users;
+using Mars.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using IMessageService = AppFront.Shared.Interfaces.IMessageService;
+using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public partial class UsersPage
 {

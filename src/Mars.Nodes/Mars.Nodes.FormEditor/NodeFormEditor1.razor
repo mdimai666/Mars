@@ -1,4 +1,4 @@
-@using AppFront.Shared.Services
+@using Mars.Admin.Framework.Services
 @using Microsoft.FluentUI.AspNetCore.Components
 
 @inject INodeFormsLocator _nodeFormsLocator
@@ -15,7 +15,7 @@
                 <span>id: </span>
                 <span>@Node.Id</span>
                 @* etype: @(NodeEditFormType?.FullName ?? "null") *@
-                @if (AppFront.Shared.Q.IsDevelopment)
+                @if (Mars.Admin.Framework.Q.IsDevelopment)
                 {
                     <div class="vr mx-3"></div>
                     <a role="button" class="" @onclick="OpenFormSourceCode">

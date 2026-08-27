@@ -2,7 +2,7 @@ using AutoFixture;
 using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Mars.Test.Common.Helpers;
 using Mars.WebApiClient.Interfaces;
 

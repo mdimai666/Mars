@@ -1,8 +1,8 @@
 using System.Net.Mime;
+using Mars.Server.Abstractions.ExceptionFilters;
 using System.Text.RegularExpressions;
-using Mars.Host.Shared.ExceptionFilters;
 using Mars.Services;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Contracts.Dto.Files;
 
 public record FileHostingInfo
 {

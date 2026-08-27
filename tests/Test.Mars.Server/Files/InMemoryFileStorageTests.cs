@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Services;
 using FluentAssertions;
 
-namespace Test.Mars.Host.Files;
+namespace Test.Mars.Server.Files;
 
 public class InMemoryFileStorageTests
 {

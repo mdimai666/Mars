@@ -1,14 +1,17 @@
 using FluentAssertions;
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.PostTypes;
 using NSubstitute;
 
-namespace Test.Mars.Host.Dto;
+namespace Test.Mars.Server.Dto;
 
 /// <summary>
 /// Правила single-типа (фича <see cref="PostTypeConstants.Features.Single"/>):

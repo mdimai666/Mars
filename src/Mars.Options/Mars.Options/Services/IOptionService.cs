@@ -1,12 +1,13 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.Options;
-using Mars.Host.Shared.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Options;
+using Mars.Contracts.Dto.Files;
+using Mars.Options.Dto.Options;
+using Mars.Options.Exceptions;
+using Mars.Options.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Options;
 using Microsoft.Extensions.Configuration;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Options.Services;
 
 /// <summary>
 /// Singletone service

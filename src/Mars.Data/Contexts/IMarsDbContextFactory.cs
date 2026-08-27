@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Contexts;
+namespace Mars.Data.Contexts;
 
 public interface IMarsDbContextFactory
 {

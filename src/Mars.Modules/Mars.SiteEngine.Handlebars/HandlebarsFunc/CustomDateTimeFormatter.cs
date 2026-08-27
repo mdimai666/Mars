@@ -1,7 +1,7 @@
 using HandlebarsDotNet;
 using HandlebarsDotNet.IO;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public sealed class CustomDateTimeFormatter : IFormatter, IFormatterProvider
 {

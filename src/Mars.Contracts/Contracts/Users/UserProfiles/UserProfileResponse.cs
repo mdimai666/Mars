@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Users.UserProfiles;
+namespace Mars.Contracts.Users.UserProfiles;
 
 public record UserProfileResponse : UserDetailResponse
 {

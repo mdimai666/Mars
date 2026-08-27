@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.WebSite.SourceProviders;
+namespace Mars.SiteEngine.WebSite.SourceProviders;
 
 public class WebTemplateFilesystemSource : IWebTemplateSource
 {

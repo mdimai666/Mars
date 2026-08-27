@@ -1,6 +1,6 @@
 using Mars.Core.Interfaces;
 
-namespace Mars.Host.Shared.Dto.NavMenus;
+namespace Mars.Cms.Abstractions.Dto.NavMenus;
 
 public record NavMenuSummary : IHasId
 {

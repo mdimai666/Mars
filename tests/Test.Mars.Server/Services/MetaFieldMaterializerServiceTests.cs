@@ -1,22 +1,42 @@
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Data.Entities;
+using Mars.Data.Repositories.Mappings;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class MetaFieldMaterializerServiceTests
 {

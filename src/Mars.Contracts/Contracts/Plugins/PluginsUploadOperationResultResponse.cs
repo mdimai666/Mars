@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Plugins;
+namespace Mars.Contracts.Plugins;
 
 public record PluginsUploadOperationResultResponse
 {

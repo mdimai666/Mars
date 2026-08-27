@@ -2,7 +2,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Mars.SSO.Utilities;
+namespace Mars.SSO.Host.Utilities;
 
 public class OidcMetadataCache
 {

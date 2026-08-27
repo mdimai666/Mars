@@ -4,7 +4,7 @@ using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Functions;
 
-namespace Mars.Nodes.Host.Shared;
+namespace Mars.Nodes.Abstractions;
 
 public interface INodeImplementFactory
 {

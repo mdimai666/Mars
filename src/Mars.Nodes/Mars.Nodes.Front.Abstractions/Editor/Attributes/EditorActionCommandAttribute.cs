@@ -1,7 +1,7 @@
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Toolbelt.Blazor.HotKeys2;
 
-namespace Mars.Nodes.Front.Shared.Editor.Attributes;
+namespace Mars.Nodes.Front.Abstractions.Editor.Attributes;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class EditorActionCommandAttribute : Attribute

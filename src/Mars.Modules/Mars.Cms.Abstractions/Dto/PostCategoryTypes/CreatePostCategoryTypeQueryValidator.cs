@@ -1,8 +1,8 @@
 using FluentValidation;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 public class CreatePostCategoryTypeQueryValidator : AbstractValidator<CreatePostCategoryTypeQuery>
 {

@@ -1,6 +1,6 @@
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Contracts.Common;
+using Mars.Contracts.Feedbacks;
 
 namespace Mars.WebApiClient.Interfaces;
 

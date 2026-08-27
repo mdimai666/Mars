@@ -1,7 +1,7 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public class PostTypeNameValidator
 {

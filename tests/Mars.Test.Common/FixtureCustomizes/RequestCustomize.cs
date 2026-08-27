@@ -1,19 +1,19 @@
-﻿using AutoFixture;
+using AutoFixture;
+using Mars.Identity.Abstractions.Utils;
 using Bogus;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Feedbacks;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.Feedbacks;
-using Mars.Shared.Contracts.NavMenus;
-using Mars.Shared.Contracts.PostCategories;
-using Mars.Shared.Contracts.PostCategoryTypes;
-using Mars.Shared.Contracts.PostJsons;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.Users;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Contracts.Feedbacks;
+using Mars.Contracts.NavMenus;
+using Mars.Contracts.PostCategories;
+using Mars.Contracts.PostCategoryTypes;
+using Mars.Contracts.PostJsons;
+using Mars.Contracts.Posts;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Roles;
+using Mars.Contracts.Users;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 
 namespace Mars.Test.Common.FixtureCustomizes;
@@ -60,7 +60,7 @@ public sealed class RequestCustomize : ICustomization
                                     .OmitAutoProperties()
                                     .With(s => s.Id)
                                     .With(s => s.Title)
-                                    .With(s => s.TypeName, TextTool.TranslateToPostSlug(faker.Commerce.ProductName()).Left(Host.Data.Constants.PostTypeConstants.TypeNameMaxLength))
+                                    .With(s => s.TypeName, TextTool.TranslateToPostSlug(faker.Commerce.ProductName()).Left(Mars.Data.Constants.PostTypeConstants.TypeNameMaxLength))
                                     .With(s => s.Tags, Random.Shared.GetItems(TopTags, Random.Shared.Next(0, 3)).ToList())
                                     .With(s => s.EnabledFeatures)
                                     .With(s => s.PostStatusList)

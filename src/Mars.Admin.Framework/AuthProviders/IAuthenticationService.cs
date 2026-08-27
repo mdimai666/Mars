@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.Auth;
-using Mars.Shared.Contracts.SSO;
+using Mars.Contracts.Auth;
+using Mars.Contracts.SSO;
 
-namespace AppFront.Shared.AuthProviders;
+namespace Mars.Admin.Framework.AuthProviders;
 
 public interface IAuthenticationService
 {

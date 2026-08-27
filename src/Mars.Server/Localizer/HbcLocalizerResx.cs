@@ -1,8 +1,8 @@
 using System.Reflection;
-using Mars.Shared.Resources;
+using Mars.Contracts.Resources;
 using Microsoft.Extensions.Localization;
 
-namespace Mars.Host.Shared.Localizer;
+namespace Mars.Server.Localizer;
 
 public class HbcLocalizerResx : IStringLocalizer
 {

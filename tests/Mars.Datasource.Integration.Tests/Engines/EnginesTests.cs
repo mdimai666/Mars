@@ -1,4 +1,4 @@
-using Mars.Datasource.Core;
+using Mars.Datasource;
 using Mars.Integration.Tests.Common;
 
 namespace Mars.Datasource.Integration.Tests.Engines;

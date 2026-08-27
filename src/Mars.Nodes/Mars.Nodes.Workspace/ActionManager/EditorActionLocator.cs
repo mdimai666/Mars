@@ -1,5 +1,5 @@
 using System.Reflection;
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 
 namespace Mars.Nodes.Workspace.ActionManager;
 

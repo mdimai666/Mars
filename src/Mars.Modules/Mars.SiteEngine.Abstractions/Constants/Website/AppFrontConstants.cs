@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Constants.Website;
+namespace Mars.SiteEngine.Abstractions.Constants.Website;
 
 public static class AppFrontConstants
 {

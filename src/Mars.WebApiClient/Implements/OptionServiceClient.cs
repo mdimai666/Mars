@@ -1,7 +1,7 @@
 using Mars.Core.Models;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Sms;
-using Mars.Shared.Options;
+using Mars.Contracts.Common;
+using Mars.Contracts.Sms;
+using Mars.Contracts.Options;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

@@ -1,7 +1,7 @@
-using Mars.Host.Data.Contexts;
+using Mars.Data.Contexts;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Templators.RenderRazor;
+namespace Mars.SiteEngine.Templators.RenderRazor;
 
 public class RenderRazorHost
 {

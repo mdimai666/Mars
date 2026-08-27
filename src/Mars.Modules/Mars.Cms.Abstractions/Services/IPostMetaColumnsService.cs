@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Батч-получение отображаемых значений мета-полей для колонок грида списка постов.

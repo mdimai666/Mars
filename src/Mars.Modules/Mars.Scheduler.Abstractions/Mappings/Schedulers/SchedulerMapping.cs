@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Schedulers;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Schedulers;
+using Mars.Data.Extensions;
+using Mars.Scheduler.Abstractions.Dto.Schedulers;
+using Mars.Contracts.Common;
+using Mars.Contracts.Schedulers;
 
-namespace Mars.Host.Shared.Mappings.Schedulers;
+namespace Mars.Scheduler.Abstractions.Mappings.Schedulers;
 
 public static class SchedulerMapping
 {

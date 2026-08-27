@@ -1,12 +1,12 @@
 using System.Security.Claims;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.SSO.Interfaces;
-using Mars.Host.Shared.SSO.Services;
-using Mars.SSO.Providers;
+using Mars.Identity.Abstractions.Services;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Interfaces;
+using Mars.SSO.Contracts.Services;
+using Mars.SSO.Host.Providers;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Mars.SSO.Services;
+namespace Mars.SSO.Host.Services;
 
 internal class SsoService : ISsoService
 {
@@ -90,7 +90,7 @@ internal class SsoService : ISsoService
             Email = userData.Email,
             Provider = providerName,
             AccessToken = authResult.OAuthResponse.IdToken ?? authResult.AccessToken,
-            UserPrimaryInfo = new Shared.ViewModels.UserPrimaryInfo
+            UserPrimaryInfo = new Mars.Contracts.ViewModels.UserPrimaryInfo
             {
                 Id = internalUser.Id,
                 Username = internalUser.UserName,

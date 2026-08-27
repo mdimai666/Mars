@@ -1,9 +1,11 @@
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class PostBlankMetaValuesTests
 {
@@ -34,7 +36,7 @@ public class PostBlankMetaValuesTests
     {
         var fields = new[] { Field(MetaFieldType.Relation, "docs", isMultiple: true) };
 
-        var result = PostService.EnrichWithBlankMetaValuesFromMetaValues([], fields);
+        var result = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues([], fields);
 
         result.Should().BeEmpty();
     }
@@ -44,7 +46,7 @@ public class PostBlankMetaValuesTests
     {
         var fields = new[] { Field(MetaFieldType.String, "code") };
 
-        var result = PostService.EnrichWithBlankMetaValuesFromMetaValues([], fields);
+        var result = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues([], fields);
 
         result.Should().ContainSingle().Which.MetaField.Key.Should().Be("code");
     }
@@ -66,7 +68,7 @@ public class PostBlankMetaValuesTests
             },
         };
 
-        var result = PostService.EnrichWithBlankMetaValuesFromMetaValues(existing, [field]);
+        var result = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(existing, [field]);
 
         result.Should().ContainSingle().Which.Id.Should().Be(existing[0].Id);
     }

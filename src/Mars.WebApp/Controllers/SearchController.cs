@@ -1,10 +1,11 @@
 using System.Diagnostics;
+using Mars.Server.Abstractions.ExceptionFilters;
 using System.Net.Mime;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Mappings.Search;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Mappings.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

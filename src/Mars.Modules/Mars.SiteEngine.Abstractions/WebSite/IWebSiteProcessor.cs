@@ -1,7 +1,7 @@
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.WebSite;
+namespace Mars.SiteEngine.Abstractions.WebSite;
 
 public interface IWebSiteProcessor
 {

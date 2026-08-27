@@ -21,7 +21,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
-        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource\Mars.Datasource.csproj" />
         <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Host.MsSQL\Mars.Datasource.Host.MsSQL.csproj" />
         <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Host.MySQL\Mars.Datasource.Host.MySQL.csproj" />
         <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />

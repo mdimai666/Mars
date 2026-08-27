@@ -1,4 +1,4 @@
-namespace Mars.AiChat.Shared.Dto;
+namespace Mars.AiChat.Contracts.Dto;
 
 /// <summary>
 /// Файл из медиатеки, приложенный к сообщению чата.

@@ -1,11 +1,13 @@
 using FluentValidation;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 public class UpdatePostTypeQueryValidator : AbstractValidator<UpdatePostTypeQuery>
 {

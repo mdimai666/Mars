@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.WebSite.Models;
+namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
 public class RenderInfo
 {

@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 public record PostCategoryTypeDetail : PostCategoryTypeSummary
 {

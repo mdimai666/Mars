@@ -1,11 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.UserTypes;

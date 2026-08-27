@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 public static class PostTypePresentationRequestExtensions
 {

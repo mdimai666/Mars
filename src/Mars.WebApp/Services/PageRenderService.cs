@@ -1,12 +1,13 @@
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.Renders;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.WebSite.Models;
-using Mars.WebSiteProcessor.Interfaces;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.SiteEngine.Abstractions.Dto.Renders;
+using Mars.Server.Abstractions.Models;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.Contracts.Common;
+using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Interfaces;
 using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Mars.Services;
@@ -45,7 +46,7 @@ internal class PageRenderService : IPageRenderService
         var request = new WebClientRequest(httpContext.Request, replacePath: page.Url);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        WebSiteProcessor.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
+        Mars.SiteEngine.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage(af, request, page, RenderParam(httpContext), cancellationToken);
 
         return AsResult(render, httpContext);
@@ -57,13 +58,13 @@ internal class PageRenderService : IPageRenderService
         var request = new WebClientRequest(httpContext.Request);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        WebSiteProcessor.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
+        Mars.SiteEngine.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage404(af, request, RenderParam(httpContext), cancellationToken);
 
         return AsResult(render, httpContext);
     }
 
-    RenderActionResult<PostRenderDto> AsResult(Host.Shared.WebSite.Models.RenderInfo render, HttpContext httpContext)
+    RenderActionResult<PostRenderDto> AsResult(Mars.SiteEngine.Abstractions.WebSite.Models.RenderInfo render, HttpContext httpContext)
     {
         var _uri = new Uri(httpContext.Request.GetDisplayUrl());
 
@@ -115,7 +116,7 @@ internal class PageRenderService : IPageRenderService
         if (routeValues is not null)
             CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
 
-        var processor = new WebSiteProcessor.Services.WebSiteRequestProcessor(_serviceProvider, tsv.Template);
+        var processor = new Mars.SiteEngine.Services.WebSiteRequestProcessor(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage(af, request, page, renderParam ?? RenderParam(httpContext), cancellationToken);
 
         return AsResult(render, httpContext);

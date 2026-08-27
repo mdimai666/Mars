@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 
-namespace Mars.Host.Shared.Utils;
+namespace Mars.Server.Abstractions.Utils;
 
 public static class RouteUtil
 {

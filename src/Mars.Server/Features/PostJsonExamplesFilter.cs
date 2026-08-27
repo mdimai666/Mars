@@ -1,12 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Mars.Core.Features.JsonConverter;
-using Mars.Shared.Contracts.PostJsons;
+using Mars.Contracts.PostJsons;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mars.Host.Features;
+namespace Mars.Server.Features;
 
 public class PostJsonExamplesFilter : IOperationFilter
 {

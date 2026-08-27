@@ -1,27 +1,27 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using EditorJsBlazored;
 using EditorJsBlazored.Blocks;
 using EditorJsBlazored.Core;
 using Mars.AiChat.Front.Services;
 using Mars.Core.Features;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Interfaces;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
-using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
+using static Mars.Contracts.PostTypes.PostTypeConstants;
 
-namespace AppAdmin.Pages.PostsViews;
+namespace Mars.Admin.Pages.PostsViews;
 
 public partial class EditPostView : IAiChatPageHandler
 {
     [Inject] protected IMarsWebApiClient client { get; set; } = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Inject] IAIToolAppService aiTool { get; set; } = default!;

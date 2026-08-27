@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Mars.Host.Shared.SSO.Dto;
+namespace Mars.SSO.Contracts.Dto;
 
 public record OpenIdTokenResponse
 {

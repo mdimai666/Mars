@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Options.Services;
 using Mars.Plugin.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +9,7 @@ using PluginExample;
 using PluginExample.Data;
 using PluginExample.Data.Seeds;
 using PluginExample.Options;
+using Mars.Server.Abstractions.Services;
 
 [assembly: WebApplicationPlugin(typeof(PluginExamplePlugin))]
 

@@ -4,8 +4,7 @@ using System.Linq;
 using Mars.Core.Extensions;
 using Microsoft.AspNetCore.Components.Routing;
 
-namespace AppFront.Shared.Models
-{
+namespace Mars.Admin.Framework.Models {
     public class BreadcrumbItem
     {
         public string Text { get; set; }

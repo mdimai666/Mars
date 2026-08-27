@@ -1,18 +1,18 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using AppFront.Main.Extensions;
-using AppFront.Shared.Extensions;
-using AppFront.Shared.Services;
+using Mars.Admin.Framework.Extensions;
+using Mars.Admin.Framework.Extensions;
+using Mars.Admin.Framework.Services;
 using Flurl.Http;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Files;
-using Mars.Shared.Resources;
+using Mars.Contracts.Common;
+using Mars.Contracts.Files;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 
-namespace AppFront.Shared.Components.MediaViews;
+namespace Mars.Admin.Framework.Components.MediaViews;
 
 public partial class FluentMediaFilesList
 {

@@ -1,9 +1,9 @@
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Options;
+using Mars.Data.Contexts;
+using Mars.Data.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Mars.Host.Data.InMemory;
+namespace Mars.Data.InMemory;
 
 public class MarsDbContextInMemoryFactory(DatabaseConnectionOpt connectionOpt) : IMarsDbContextFactory
 {

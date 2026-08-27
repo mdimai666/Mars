@@ -1,4 +1,4 @@
-namespace Mars.AiChat.Shared.Options;
+namespace Mars.AiChat.Contracts.Options;
 
 /// <summary>
 /// Тип ИИ-провайдера для подключения.

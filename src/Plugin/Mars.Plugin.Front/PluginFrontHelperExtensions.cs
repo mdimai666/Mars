@@ -1,8 +1,8 @@
 using System.Reflection;
-using AppFront.Main.OptionEditForms;
+using Mars.Admin.Framework.OptionEditForms;
 using Mars.Nodes.Core;
 using Mars.Nodes.FormEditor;
-using Mars.Shared.Options.Attributes;
+using Mars.Contracts.Options.Attributes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 

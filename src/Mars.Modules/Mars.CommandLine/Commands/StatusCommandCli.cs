@@ -1,6 +1,6 @@
 using System.CommandLine;
 using Mars.CommandLine.Remote;
-using Mars.CommandLine.Shared;
+using Mars.CommandLine.Abstractions;
 
 namespace Mars.CommandLine.Commands;
 

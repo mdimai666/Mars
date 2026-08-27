@@ -1,12 +1,12 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Shared.Options;
-using Mars.WebSiteProcessor.Handlebars;
-using Mars.WebSiteProcessor.Services;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.Contracts.Options;
+using Mars.SiteEngine.Handlebars;
+using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +64,7 @@ v1
 
     string IndexFile() => Path.Combine(dir, "index.hbs");
 
-    WebTemplateService Wts() => (WebTemplateService)appFront.Features.Get<Mars.Host.Shared.WebSite.Interfaces.IWebTemplateService>()!;
+    WebTemplateService Wts() => (WebTemplateService)appFront.Features.Get<Mars.SiteEngine.Abstractions.WebSite.Interfaces.IWebTemplateService>()!;
 
     string Render()
     {

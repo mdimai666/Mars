@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 public class UpdatePostTypePresentationQueryValidator : AbstractValidator<UpdatePostTypePresentationQuery>
 {

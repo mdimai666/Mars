@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Feedbacks;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Contracts.Common;
+using Mars.Contracts.Feedbacks;
 
-namespace Mars.Host.Shared.Mappings.Feedbacks;
+namespace Mars.Cms.Abstractions.Mappings.Feedbacks;
 
 public static class FeedbackMapping
 {

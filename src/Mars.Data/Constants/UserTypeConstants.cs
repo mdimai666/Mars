@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.Constants;
+namespace Mars.Data.Constants;
 
 public static class UserTypeConstants
 {

@@ -1,4 +1,4 @@
-﻿namespace Mars.Datasource.Core.Dto;
+namespace Mars.Datasource.Dto;
 
 public record QTableColumnResponse
 {

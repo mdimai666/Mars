@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace AppFront.Shared.Models;
+namespace Mars.Admin.Framework.Models;
 
 /// <summary>
 /// Тип компонента в Blazor-сборке.
@@ -51,7 +51,7 @@ public class BlazorPageInfo
 
     /// <summary>
     /// Путь относительно корня исходников (namespace → папки), например
-    /// <c>AppAdmin/Pages/Index.razor</c>. Заполняется всегда
+    /// <c>Mars.Admin/Pages/Index.razor</c>. Заполняется всегда
     /// (работает и в WASM, где Assembly.Location пуст).
     /// </summary>
     public string? SourceRelativePath { get; init; }

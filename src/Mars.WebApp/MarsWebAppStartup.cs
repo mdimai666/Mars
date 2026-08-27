@@ -1,5 +1,5 @@
-using AppFront.Main.OptionEditForms;
-using AppFront.Shared;
+using Mars.Admin.Framework.OptionEditForms;
+using Mars.Admin.Framework;
 using EditorJsBlazored.Host;
 using Mars.AiChat.Host;
 using Mars.CommandLine;
@@ -7,18 +7,15 @@ using Mars.Datasource.Front;
 using Mars.Datasource.Host;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
-using Mars.Host;
-using Mars.Host.Shared.Extensions;
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.JsonConverters;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
-using Mars.Cms.Host;
+using Mars.Server;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Server.Abstractions.Features;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.JsonConverters;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.Server.Abstractions.Startup;
 using Mars.Identity.Host;
 using Mars.Media.Host;
-using Mars.Nodes.Host;
-using Mars.Nodes.Workspace;
 using Mars.Notifications.Host;
 using Mars.Options.Front;
 using Mars.Options.Host;
@@ -27,19 +24,18 @@ using Mars.Scheduler.Host;
 using Mars.SemanticKernel.CMS;
 using Mars.SemanticKernel.Host;
 using Mars.Setup;
-using Mars.SSO;
+using Mars.SSO.Host;
 using Mars.SSO.Host.OAuth;
 using Mars.Services;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
-using Mars.WebSiteProcessor;
 using Mars.XActions;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
-using Mars.CommandLine.Shared;
+using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
 
 namespace Mars;
@@ -117,7 +113,7 @@ public static class MarsWebAppStartup
         //------------------------------------------
         // CLIENT
 #if !NOADMIN
-        builder.Services.AddAppFrontMain(builder.Configuration, typeof(AppAdmin.App));
+        builder.Services.AddAppFrontMain(builder.Configuration, typeof(Mars.Admin.App));
 #endif
         builder.Services.AddNodeWorkspace();
         builder.Services.AddDatasourceWorkspace();

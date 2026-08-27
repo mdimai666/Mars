@@ -1,20 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using AppFront.Main.OptionEditForms;
-using AppFront.Shared.Interfaces;
-using AppFront.Shared.Models;
-using AppFront.Shared.Services;
+using Mars.Admin.Framework.OptionEditForms;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Models;
+using Mars.Admin.Framework.Services;
 using Blazored.LocalStorage;
 using Mars.AiChat.Front.Services;
-using Mars.Shared.Contracts.Search;
-using Mars.Shared.Contracts.XActions;
-using Mars.Shared.Interfaces;
+using Mars.Contracts.Search;
+using Mars.Contracts.XActions;
+using Mars.Contracts.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Shared.ActionCenter;
+namespace Mars.Admin.Shared.ActionCenter;
 
 public partial class ActionCenter : IDisposable
 {

@@ -1,11 +1,12 @@
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class PostTypeViewServiceSqlTests
 {

@@ -1,4 +1,4 @@
-namespace Mars.SemanticKernel.Host.Shared.Dto;
+namespace Mars.SemanticKernel.Abstractions.Dto;
 
 public record AIConfigNodeDto
 {

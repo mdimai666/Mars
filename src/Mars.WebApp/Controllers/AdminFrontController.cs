@@ -1,7 +1,7 @@
 using System.Net.Mime;
+using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Core.Exceptions;
 using Mars.Handlers;
-using Mars.Host.Shared.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

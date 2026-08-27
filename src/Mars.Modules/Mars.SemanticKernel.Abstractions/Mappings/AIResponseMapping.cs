@@ -1,7 +1,7 @@
-using Mars.SemanticKernel.Host.Shared.Dto;
-using Mars.Shared.Contracts.AIService;
+using Mars.SemanticKernel.Abstractions.Dto;
+using Mars.Contracts.AIService;
 
-namespace Mars.SemanticKernel.Host.Shared.Mappings;
+namespace Mars.SemanticKernel.Abstractions.Mappings;
 
 public static class AIResponseMapping
 {

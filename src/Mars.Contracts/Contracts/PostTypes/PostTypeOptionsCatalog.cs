@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.PostTypes;
+namespace Mars.Contracts.PostTypes;
 
 /// <summary>
 /// Каталог общих настроек типа поста (jsonb-мешок <c>PostTypeEntity.Options</c>).

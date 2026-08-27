@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
-using Mars.Host.Shared.Models;
+using Mars.Server.Abstractions.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Mars.Nodes.Host.Shared.HttpModule;
+namespace Mars.Nodes.Abstractions.HttpModule;
 
 public class HttpInNodeHttpRequestContext : IDisposable
 {

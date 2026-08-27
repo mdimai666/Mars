@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.ObjectPool;
 
-namespace Mars.Nodes.Host.Shared.HttpModule;
+namespace Mars.Nodes.Abstractions.HttpModule;
 
 public class CompiledHttpRouteMatcher
 {

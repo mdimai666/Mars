@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class PostFilesEntity
 {

@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.PostCategories;
+namespace Mars.Cms.Abstractions.Dto.PostCategories;
 
 public class PostCategorySummary
 {

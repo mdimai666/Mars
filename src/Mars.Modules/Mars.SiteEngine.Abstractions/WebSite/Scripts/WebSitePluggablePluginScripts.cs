@@ -1,6 +1,6 @@
 using Mars.Core.Extensions;
 
-namespace Mars.Host.Shared.WebSite.Scripts;
+namespace Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
 public abstract class WebSitePluggablePluginScripts(ISiteScriptsBuilder siteScriptsBuilder) : IWebSitePluggablePluginScripts
 {

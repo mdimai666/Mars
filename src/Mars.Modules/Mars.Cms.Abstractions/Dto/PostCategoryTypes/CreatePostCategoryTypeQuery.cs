@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.PostCategoryTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.PostCategoryTypes;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 /// <summary>
 /// <see cref="CreatePostCategoryTypeRequest"/>

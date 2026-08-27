@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Models;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.Models;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IMetaModelTypesLocator
 {

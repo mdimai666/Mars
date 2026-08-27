@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Models;
+using Mars.Server.Abstractions.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.WebSite;
+namespace Mars.SiteEngine.Abstractions.WebSite;
 
 /// <summary>
 /// Обработчик запроса фронта — шаг пайплайна, который исполняется до статики фронтов

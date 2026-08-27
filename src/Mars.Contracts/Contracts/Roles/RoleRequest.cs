@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.Roles;
+namespace Mars.Contracts.Roles;
 
 public record CreateRoleRequest
 {

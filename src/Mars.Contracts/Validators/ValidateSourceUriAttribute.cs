@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 
-namespace Mars.Shared.Validators;
+namespace Mars.Contracts.Validators;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 public class ValidateSourceUriAttribute : ValidationAttribute

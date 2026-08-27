@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Feedbacks;
 
-namespace Mars.Host.Shared.Dto.Feedbacks;
+namespace Mars.Cms.Abstractions.Dto.Feedbacks;
 
 public static class FeedbackRequestExtensions
 {

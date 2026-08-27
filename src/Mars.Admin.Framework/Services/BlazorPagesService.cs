@@ -2,12 +2,12 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using AppFront.Shared.Interfaces;
-using AppFront.Shared.Models;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 /// <summary>
 /// Рефлексия по сборкам: Blazor-страницы (ComponentBase + [Route]), layout-ы, роли,
@@ -162,7 +162,7 @@ public class BlazorPagesService : IBlazorPagesService
     /// <summary>
     /// Относительный путь к исходнику из namespace: корневое имя сборки остаётся первым
     /// сегментом (папка проекта), остаток namespace превращается в папки.
-    /// <c>AppAdmin.Pages.Index</c> → <c>AppAdmin/Pages/Index.razor</c>.
+    /// <c>Mars.Admin.Pages.Index</c> → <c>Mars.Admin/Pages/Index.razor</c>.
     /// </summary>
     public static string BuildRelativeSourcePath(Type type)
     {

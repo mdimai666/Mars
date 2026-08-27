@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Mappings.PostTypes;
+namespace Mars.Cms.Abstractions.Mappings.PostTypes;
 
 public static class PostTypePresentationMapping
 {

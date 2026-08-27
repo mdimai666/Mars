@@ -1,11 +1,11 @@
 using System.ComponentModel;
+using Mars.Server.Abstractions.ExceptionFilters;
 using System.Net.Mime;
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Dto;
-using Mars.Datasource.Core.Mappings;
+using Mars.Datasource;
+using Mars.Datasource.Dto;
+using Mars.Datasource.Mappings;
 using Mars.Datasource.Host.Services;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

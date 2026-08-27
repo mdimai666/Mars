@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Mappings.MetaFields;
+namespace Mars.Cms.Abstractions.Mappings.MetaFields;
 
 public static class MetaFieldMapping
 {

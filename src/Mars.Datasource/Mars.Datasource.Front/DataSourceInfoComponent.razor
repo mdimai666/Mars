@@ -1,5 +1,5 @@
 @using Mars.Datasource.Front.Services;
-@using Mars.Shared.Common
+@using Mars.Contracts.Common
 @using Mars.WebApiClient.Interfaces
 
 <div class="DataSourceInfoComponent">
@@ -20,7 +20,7 @@
 
     @if (Busy)
     {
-        <AppFront.Shared.Components.SharedLoader2 />
+        <Mars.Admin.Framework.Components.SharedLoader2 />
     }
     else if (lastAction != null)
     {

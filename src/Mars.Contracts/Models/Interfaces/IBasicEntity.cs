@@ -1,6 +1,6 @@
 using Mars.Core.Interfaces;
 
-namespace Mars.Shared.Models.Interfaces;
+namespace Mars.Contracts.Models.Interfaces;
 
 public interface IBasicEntity : IHasId
 {

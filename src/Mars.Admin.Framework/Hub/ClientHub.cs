@@ -1,9 +1,9 @@
 using Mars.Nodes.Core;
-using Mars.Shared.Hubs;
-using Mars.Shared.Interfaces;
+using Mars.Contracts.Hubs;
+using Mars.Contracts.Interfaces;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace AppFront.Shared.Hub;
+namespace Mars.Admin.Framework.Hub;
 
 public class ClientHub : IClientHub
 {

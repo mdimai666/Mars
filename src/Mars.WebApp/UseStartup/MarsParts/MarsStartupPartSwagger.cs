@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using Mars.Host.Features;
-using Mars.Host.Shared.Services;
+using Mars.Server.Features;
+using Mars.Options.Services;
 using Mars.Options.Models;
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;

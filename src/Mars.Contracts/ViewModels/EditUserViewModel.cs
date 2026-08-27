@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.Users;
+using Mars.Contracts.Roles;
+using Mars.Contracts.Users;
 
-namespace Mars.Shared.ViewModels;
+namespace Mars.Contracts.ViewModels;
 
 public class EditUserViewModel
 {

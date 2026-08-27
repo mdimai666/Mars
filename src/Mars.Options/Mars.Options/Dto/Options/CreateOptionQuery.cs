@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.Dto.Options;
+namespace Mars.Options.Dto.Options;
 
 public record CreateOptionQuery<T>
 {

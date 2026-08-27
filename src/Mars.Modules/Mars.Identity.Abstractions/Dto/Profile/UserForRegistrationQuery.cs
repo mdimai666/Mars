@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Resources;
+using Mars.Contracts.Resources;
 
-namespace Mars.Host.Shared.Dto.Profile;
+namespace Mars.Identity.Abstractions.Dto.Profile;
 
 public class UserForRegistrationQuery
 {

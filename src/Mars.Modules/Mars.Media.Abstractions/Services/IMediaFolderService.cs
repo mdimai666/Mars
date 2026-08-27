@@ -1,7 +1,8 @@
-using Mars.Host.Shared.Dto.Files;
-using Mars.Shared.Common;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Media.Abstractions.Services;
 
 /// <summary>
 /// Папки медиа. DB-first: папка существует только при наличии записи в БД,

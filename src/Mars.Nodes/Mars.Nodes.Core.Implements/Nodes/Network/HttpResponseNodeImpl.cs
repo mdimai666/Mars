@@ -1,8 +1,8 @@
 using System.Text;
 using System.Text.Json;
 using Mars.Nodes.Core.Nodes.Network;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.HttpModule;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.HttpModule;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;

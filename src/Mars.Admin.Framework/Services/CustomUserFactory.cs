@@ -3,7 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 public class CustomUserFactory : AccountClaimsPrincipalFactory<RemoteUserAccount>
 {

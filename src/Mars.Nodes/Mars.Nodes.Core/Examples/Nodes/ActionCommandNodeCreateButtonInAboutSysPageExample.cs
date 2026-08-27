@@ -17,7 +17,7 @@ public class ActionCommandNodeCreateButtonInAboutSysPageExample : INodeExample<A
             .AddNext(new ActionCommandNode()
             {
                 Name = "Command example " + nodesCount,
-                FrontContextId = ["AppAdmin.Pages.Settings.SettingsAboutSystemPage"]
+                FrontContextId = ["Mars.Admin.Pages.Settings.SettingsAboutSystemPage"]
             }, new InjectNode())
             .AddNext(new TemplateNode { Name = "Clicked message", Template = $"ActionCommandNode {nodesCount} clicked!" })
             .AddNext(new DevAdminConnectionNode()

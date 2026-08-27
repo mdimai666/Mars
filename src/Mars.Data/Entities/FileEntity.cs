@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.OwnedTypes.Files;
+using Mars.Data.Common;
+using Mars.Data.OwnedTypes.Files;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 [DebuggerDisplay("{FileName}/{Id}")]
 public class FileEntity : IBasicUserEntity

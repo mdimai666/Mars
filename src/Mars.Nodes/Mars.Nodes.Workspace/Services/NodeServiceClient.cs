@@ -1,12 +1,12 @@
 using System.Text.Json;
+using Mars.Nodes.Core;
 using Flurl.Http;
 using Flurl.Http.Configuration;
-using Mars.Nodes.Core;
 using Mars.Nodes.Core.Contracts.Nodes;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
-using Mars.Nodes.Front.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+using Mars.Nodes.Front.Abstractions.Services;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Implements;
 using Microsoft.Extensions.DependencyInjection;
 

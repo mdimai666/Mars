@@ -1,7 +1,8 @@
 using FluentValidation;
-using Mars.Host.Shared.Repositories;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Media.Abstractions.Dto.Files;
 
 public class DeleteManyFileQueryValidator : AbstractValidator<DeleteManyFileQuery>
 {

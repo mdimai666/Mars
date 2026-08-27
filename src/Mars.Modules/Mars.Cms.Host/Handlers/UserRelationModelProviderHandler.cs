@@ -1,12 +1,16 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Resources;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Contracts.Common;
+using Mars.Contracts.Resources;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Cms.Host.Handlers;
 
 internal class UserRelationModelProviderHandler(IUserRepository userRepository) : IMetaRelationModelProviderHandler
 {

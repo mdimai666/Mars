@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Shared.Contracts.NavMenus;
+using Mars.Contracts.NavMenus;
 
-namespace AppAdmin.Pages.NavMenuViews;
+namespace Mars.Admin.Pages.NavMenuViews;
 
 public partial class EditNavMenuPage
 {
@@ -57,7 +57,6 @@ public partial class EditNavMenuPage
         public bool IsSystem { get; set; }
 
         public IEnumerable<string> SetRoles { get => Roles; set => Roles = value.ToList(); }
-
 
         public IEnumerable<NavMenuItem> GetItems(NavMenu nav)
         {

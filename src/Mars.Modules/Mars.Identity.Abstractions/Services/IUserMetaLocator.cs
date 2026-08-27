@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.UserTypes;
+using Mars.Identity.Abstractions.Dto.UserTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Identity.Abstractions.Services;
 
 public interface IUserMetaLocator
 {

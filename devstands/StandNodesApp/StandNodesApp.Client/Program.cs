@@ -1,9 +1,9 @@
-using AppFront.Shared;
+using Mars.Admin.Framework;
 using Flurl.Http;
 using Mars.Nodes.Workspace;
-using Mars.Shared.Contracts.XActions;
-using Mars.Shared.Options;
-using Mars.Shared.ViewModels;
+using Mars.Contracts.XActions;
+using Mars.Contracts.Options;
+using Mars.Contracts.ViewModels;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using StandNodesApp.Client.Startups;
 

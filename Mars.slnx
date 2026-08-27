@@ -6,8 +6,7 @@
     </Project>
   </Folder>
   <Folder Name="/AppFront/">
-    <Project Path="src/AppFront.Main/AppFront.Main.csproj" />
-    <Project Path="src/AppFront.Shared/AppFront.Shared.csproj" />
+    <Project Path="src/Mars.Admin.Framework/Mars.Admin.Framework.csproj" />
   </Folder>
   <Folder Name="/Benchmarks/">
     <Project Path="benchmarks/Benchmark.NodeImplementFactory/Benchmark.NodeImplementFactory.csproj" Id="3a13a07e-b375-4c48-9ee9-246515a69a40">
@@ -23,7 +22,7 @@
   </Folder>
   <Folder Name="/Core/">
     <Project Path="src/Mars.Core/Mars.Core.csproj" />
-    <Project Path="src/Mars.Shared/Mars.Shared.csproj" />
+    <Project Path="src/Mars.Contracts/Mars.Contracts.csproj" />
   </Folder>
   <Folder Name="/DevStands/">
     <Project Path="devstands/DevAdmin.DevServer/DevAdmin.DevServer.csproj" />
@@ -34,41 +33,44 @@
     <Project Path="devstands/StandNodesApp/StandNodesApp/StandNodesApp.csproj" Id="a82544eb-8493-462c-81ce-a27d0d38f4e3" />
   </Folder>
   <Folder Name="/Host/">
-    <Project Path="src/Mars.Host.Data.InMemory/Mars.Host.Data.InMemory.csproj" />
-    <Project Path="src/Mars.Host.Data.PostgreSQL/Mars.Host.Data.PostgreSQL.csproj" />
-    <Project Path="src/Mars.Host.Data/Mars.Host.Data.csproj" />
-    <Project Path="src/Mars.Host.Infrastructure/Mars.Host.Infrastructure.csproj" />
-    <Project Path="src/Mars.Host.Repositories/Mars.Host.Repositories.csproj" />
-    <Project Path="src/Mars.Host.Shared/Mars.Host.Shared.csproj" />
-    <Project Path="src/Mars.Host/Mars.Host.csproj" />
+    <Project Path="src/Mars.Data.InMemory/Mars.Data.InMemory.csproj" />
+    <Project Path="src/Mars.Data.PostgreSQL/Mars.Data.PostgreSQL.csproj" />
+    <Project Path="src/Mars.Data/Mars.Data.csproj" />
+    <Project Path="src/Mars.Data.Infrastructure/Mars.Data.Infrastructure.csproj" />
+    <Project Path="src/Mars.Data.Repositories/Mars.Data.Repositories.csproj" />
+    <Project Path="src/Mars.Server.Abstractions/Mars.Server.Abstractions.csproj" />
+    <Project Path="src/Mars.Server/Mars.Server.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/">
+    <Project Path="src/Mars.Modules/Mars.Excel.Abstractions/Mars.Excel.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Excel.Host/Mars.Excel.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.MetaModelGenerator/Mars.MetaModelGenerator.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang.Host/Mars.QueryLang.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang/Mars.QueryLang.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Scheduler.Abstractions/Mars.Scheduler.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Scheduler.Host/Mars.Scheduler.Host.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine.Abstractions/Mars.SiteEngine.Abstractions.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/AiChat/">
     <Project Path="src/Mars.Modules/Mars.AiChat.Front/Mars.AiChat.Front.csproj" />
-    <Project Path="src/Mars.Modules/Mars.AiChat.Host.Shared/Mars.AiChat.Host.Shared.csproj" />
+    <Project Path="src/Mars.Modules/Mars.AiChat.Abstractions/Mars.AiChat.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.AiChat.Host/Mars.AiChat.Host.csproj" />
-    <Project Path="src/Mars.Modules/Mars.AiChat.Shared/Mars.AiChat.Shared.csproj" />
+    <Project Path="src/Mars.Modules/Mars.AiChat.Contracts/Mars.AiChat.Contracts.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/CommandLine/">
-    <Project Path="src/Mars.Modules/Mars.CommandLine.Shared/Mars.CommandLine.Shared.csproj" Id="a3ad4068-c6db-4cd9-9512-093898a5a06f" />
+    <Project Path="src/Mars.Modules/Mars.CommandLine.Abstractions/Mars.CommandLine.Abstractions.csproj" Id="a3ad4068-c6db-4cd9-9512-093898a5a06f" />
     <Project Path="src/Mars.Modules/Mars.CommandLine/Mars.CommandLine.csproj" Id="6b088378-aa0e-4a8a-a220-3359c86d6106" />
   </Folder>
   <Folder Name="/Mars.Modules/Docker/">
     <Project Path="src/Mars.Modules/Mars.Docker.Front/Mars.Docker.Front.csproj" />
-    <Project Path="src/Mars.Modules/Mars.Docker.Host.Shared/Mars.Docker.Host.Shared.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Docker.Abstractions/Mars.Docker.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Docker.Host/Mars.Docker.Host.csproj" />
-    <Project Path="src/Mars.Modules/Mars.Docker/Mars.Docker.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Docker.Contracts/Mars.Docker.Contracts.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/Mars.Datasource/">
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Core/Mars.Datasource.Core.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource/Mars.Datasource.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Front/Mars.Datasource.Front.csproj" />
-    <Project Path="src/Mars.Datasource/Mars.Datasource.Host.Core/Mars.Datasource.Host.Core.csproj" />
+    <Project Path="src/Mars.Datasource/Mars.Datasource.Abstractions/Mars.Datasource.Abstractions.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host.MsSQL/Mars.Datasource.Host.MsSQL.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host.MySQL/Mars.Datasource.Host.MySQL.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host.PostgreSQL/Mars.Datasource.Host.PostgreSQL.csproj" />
@@ -93,13 +95,14 @@
   <Folder Name="/Mars.Modules/SemanticKernel/">
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.CMS/Mars.SemanticKernel.CMS.csproj" Id="fba0b589-88cb-4c6c-8352-78d27f2e0840" />
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.Front/Mars.SemanticKernel.Front.csproj" />
-    <Project Path="src/Mars.Modules/Mars.SemanticKernel.Host.Shared/Mars.SemanticKernel.Host.Shared.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SemanticKernel.Abstractions/Mars.SemanticKernel.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.Host/Mars.SemanticKernel.Host.csproj" />
-    <Project Path="src/Mars.Modules/Mars.SemanticKernel.Shared/Mars.SemanticKernel.Shared.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SemanticKernel.Contracts/Mars.SemanticKernel.Contracts.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/SSO/">
     <Project Path="src/Mars.Modules/Mars.SSO.Host.OAuth/Mars.SSO.Host.OAuth.csproj" />
-    <Project Path="src/Mars.Modules/Mars.SSO/Mars.SSO.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SSO.Host/Mars.SSO.Host.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SSO.Contracts/Mars.SSO.Contracts.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/TemplateEngines/">
     <Project Path="src/Mars.Modules/Mars.TemplateEngine.Host/Mars.TemplateEngine.Host.csproj" Id="d31af368-bdca-420b-b1e7-c0e1083061ff" />
@@ -112,15 +115,15 @@
     <Project Path="src/Mars.Modules/Mars.WebApp.Nodes/Mars.WebApp.Nodes.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/WebSiteProcessor/">
-    <Project Path="src/Mars.Modules/Mars.WebSiteProcessor.Handlebars/Mars.WebSiteProcessor.Handlebars.csproj" />
-    <Project Path="src/Mars.Modules/Mars.WebSiteProcessor/Mars.WebSiteProcessor.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine.Handlebars/Mars.SiteEngine.Handlebars.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine/Mars.SiteEngine.csproj" />
   </Folder>
   <Folder Name="/Mars.Nodes/">
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core.Implements/Mars.Nodes.Core.Implements.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core/Mars.Nodes.Core.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.FormEditor/Mars.Nodes.FormEditor.csproj" />
-    <Project Path="src/Mars.Nodes/Mars.Nodes.Front.Shared/Mars.Nodes.Front.Shared.csproj" />
-    <Project Path="src/Mars.Nodes/Mars.Nodes.Host.Shared/Mars.Nodes.Host.Shared.csproj" />
+    <Project Path="src/Mars.Nodes/Mars.Nodes.Front.Abstractions/Mars.Nodes.Front.Abstractions.csproj" />
+    <Project Path="src/Mars.Nodes/Mars.Nodes.Abstractions/Mars.Nodes.Abstractions.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Host/Mars.Nodes.Host.csproj" />
     <Project Path="src/Mars.Nodes/Mars.Nodes.Workspace/Mars.Nodes.Workspace.csproj" />
   </Folder>
@@ -186,12 +189,12 @@
     <Project Path="tests/Mars.WebApiClient.Integration.Tests/Mars.WebApiClient.Integration.Tests.csproj" />
     <Project Path="tests/Test.Mars.Core/Test.Mars.Core.csproj" />
     <Project Path="tests/Test.Mars.Datasource.Host/Test.Mars.Datasource.Host.csproj" />
-    <Project Path="tests/Test.Mars.Host/Test.Mars.Host.csproj" />
+    <Project Path="tests/Test.Mars.Server/Test.Mars.Server.csproj" />
     <Project Path="tests/Test.Mars.MetaModelGenerator/Test.Mars.MetaModelGenerator.csproj" />
     <Project Path="tests/Test.Mars.Plugin/Test.Mars.Plugin.csproj" />
-    <Project Path="tests/Test.Mars.WebSiteProcessor/Test.Mars.WebSiteProcessor.csproj" />
-    <Project Path="tests/TestApp.Mars.Host.Data/TestApp.Mars.Host.Data.csproj" />
+    <Project Path="tests/Test.Mars.SiteEngine/Test.Mars.SiteEngine.csproj" />
+    <Project Path="tests/TestApp.Mars.Data/TestApp.Mars.Data.csproj" />
   </Folder>
-  <Project Path="src/AppAdmin/AppAdmin.csproj" />
+  <Project Path="src/Mars.Admin/Mars.Admin.csproj" />
   <Project Path="src/Mars.WebApp/Mars.WebApp.csproj" />
 </Solution>

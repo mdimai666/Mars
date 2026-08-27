@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor;
 
-namespace AppFront.Shared.Features;
+namespace Mars.Admin.Framework.Features;
 
 public class HttpInterceptorService
 {

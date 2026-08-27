@@ -1,10 +1,10 @@
 using System.Collections;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Schedulers;
-using Mars.Shared.Common;
+using Mars.Scheduler.Abstractions.Dto.Schedulers;
+using Mars.Contracts.Common;
 using Quartz;
 
-namespace Mars.Host.Shared.Scheduler;
+namespace Mars.Scheduler.Abstractions;
 
 /// <summary>
 /// Singletone Service

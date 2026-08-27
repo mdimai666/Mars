@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using AppFront.Shared.Interfaces;
-using AppFront.Shared.Models;
-using AppFront.Shared.Services;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Models;
+using Mars.Admin.Framework.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;

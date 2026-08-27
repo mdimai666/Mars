@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.PostTypes;
+namespace Mars.Contracts.PostTypes;
 
 public class PostTypeEditViewModel
 {

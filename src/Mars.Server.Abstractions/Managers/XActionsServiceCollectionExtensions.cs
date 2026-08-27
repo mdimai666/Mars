@@ -1,8 +1,8 @@
 using System.Reflection;
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.Managers;
+namespace Mars.Server.Abstractions.Managers;
 
 public static class XActionsServiceCollectionExtensions
 {

@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
+
 /*
 public class PostCommentEntity : IBasicEntity
 {

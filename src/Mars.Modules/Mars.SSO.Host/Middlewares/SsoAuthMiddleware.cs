@@ -1,13 +1,13 @@
 using System.Diagnostics;
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.SSO.Interfaces;
-using Mars.Host.Shared.SSO.Services;
-using Mars.SSO.Services;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Services;
+using Mars.SSO.Contracts.Interfaces;
+using Mars.SSO.Contracts.Services;
+using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.SSO.Middlewares;
+namespace Mars.SSO.Host.Middlewares;
 
 public class SsoAuthMiddleware
 {

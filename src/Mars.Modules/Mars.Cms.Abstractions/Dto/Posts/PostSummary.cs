@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Shared.Models.Interfaces;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Contracts.Models.Interfaces;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public record PostSummary : IBasicEntity
 {

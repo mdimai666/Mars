@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Templators;
-using Mars.Shared.Options;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.Contracts.Options;
 
-namespace Mars.Host.Shared.WebSite.Models;
+namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
 public class PageRenderContext
 {

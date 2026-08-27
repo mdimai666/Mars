@@ -1,6 +1,6 @@
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.QueryLang.Services;
+namespace Mars.QueryLang.Services;
 
 public interface IQueryLangProcessing
 {

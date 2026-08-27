@@ -1,14 +1,14 @@
 using System.Net.Mime;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.WebSite;
-using Mars.Host.Shared.WebSite.Exceptions;
-using Mars.Host.Shared.WebSite.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.WebSiteProcessor.Services;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.WebSite;
+using Mars.SiteEngine.Abstractions.WebSite.Exceptions;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.WebSiteProcessor.Endpoints;
+namespace Mars.SiteEngine.Endpoints;
 
 public class MapWebSiteProcessor : IWebSiteProcessor
 {

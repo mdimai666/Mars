@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Services;
 using Mars.Options.Interfaces;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.NativeCodecs.Giflib;

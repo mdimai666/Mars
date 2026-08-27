@@ -1,6 +1,6 @@
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.Models;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Models;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Common;
 

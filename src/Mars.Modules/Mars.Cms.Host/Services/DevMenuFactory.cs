@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Resources;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Resources;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 /// <summary>
 /// Дефолтное dev-меню: источник правды дефолтного состояния — код.

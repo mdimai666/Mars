@@ -1,11 +1,11 @@
-using AppFront.Shared.Extensions;
+using Mars.Admin.Framework.Extensions;
 using Flurl.Http;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// Мульти-значения Relation-поля: строки выбранных постов с порядком (драг),
@@ -15,7 +15,7 @@ public partial class MetaValueRelationMulti
 {
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;
     [CascadingParameter] public List<MetaValueEditModel> MetaValues { get; set; } = default!;

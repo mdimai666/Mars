@@ -1,8 +1,8 @@
 @page "/Post"
 @page "/Post/{POSTTYPE}"
-@using AppAdmin.Pages.PageViews
+@using Mars.Admin.Pages.PageViews
 @inject IStringLocalizer<AppRes> L
-@inject Mars.Shared.Interfaces.IActAppService actApp
+@inject Mars.Contracts.Interfaces.IActAppService actApp
 @attribute [Authorize(Roles = "Admin")]
 
 <ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">
@@ -27,7 +27,7 @@
         @if (POSTTYPE == "NONE-gallery")
         {
             <div>
-                @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
+                @* <Mars.Admin.Pages.PostsViews.SpecialViews.GalleryManageView POSTTYPE=@POSTTYPE /> *@
                 gallery
             </div>
         }

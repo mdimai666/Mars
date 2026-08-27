@@ -1,7 +1,7 @@
-using AppFront.Shared.Services;
-using Mars.Shared.Contracts.XActions;
+using Mars.Admin.Framework.Services;
+using Mars.Contracts.XActions;
 
-namespace AppAdmin.Shared;
+namespace Mars.Admin.Shared;
 
 /// <summary>
 /// DEBUG-раннер демонстрационного фронтового действия: исполняется на клиенте

@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Доступ к значениям модели-владельца для правила <c>unique</c> —

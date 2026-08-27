@@ -1,7 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.Tools
-{
+namespace Mars.Admin.Framework.Tools {
     public class MyJS
     {
         private readonly IJSRuntime js;

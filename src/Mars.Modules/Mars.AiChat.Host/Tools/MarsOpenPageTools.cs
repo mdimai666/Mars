@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using Mars.AiChat.Host.Services;
-using Mars.AiChat.Shared.Dto;
+using Mars.AiChat.Contracts.Dto;
 
 namespace Mars.AiChat.Host.Tools;
 

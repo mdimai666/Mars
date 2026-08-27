@@ -1,7 +1,7 @@
 @page "/EditPostCategoryType"
 @page "/EditPostCategoryType/{ID:guid}"
 
-@using Mars.Shared.Contracts.PostCategoryTypes
+@using Mars.Contracts.PostCategoryTypes
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -65,7 +65,7 @@
 
                             <CascadingValue Value="@context.MetaFields">
                                 <CascadingValue Value="@context.MetaRelationModels">
-                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
+                                    <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField />
                                 </CascadingValue>
                             </CascadingValue>
 

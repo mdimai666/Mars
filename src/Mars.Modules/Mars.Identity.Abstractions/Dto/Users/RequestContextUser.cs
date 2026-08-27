@@ -1,7 +1,7 @@
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.Users;
+using Mars.Contracts.Users;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public record RequestContextUser
 {

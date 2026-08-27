@@ -1,18 +1,18 @@
-using AppAdmin.Shared.ActionCenter;
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Features;
-using AppFront.Shared.Models;
-using Mars.Shared.Contracts.NavMenus;
-using Mars.Shared.ViewModels;
+using Mars.Admin.Shared.ActionCenter;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Features;
+using Mars.Admin.Framework.Models;
+using Mars.Contracts.NavMenus;
+using Mars.Contracts.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.HotKeys2;
 
-namespace AppAdmin.Shared;
+namespace Mars.Admin.Shared;
 
-using MenuItem = AppFront.Shared.Models.MenuItem;
+using MenuItem = Mars.Admin.Framework.Models.MenuItem;
 
 public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
 {

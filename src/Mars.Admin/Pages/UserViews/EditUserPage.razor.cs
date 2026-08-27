@@ -1,10 +1,10 @@
-using AppFront.Shared.Components.MetaFieldViews;
-using AppFront.Shared.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Admin.Framework.Components.MetaFieldViews;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public partial class EditUserPage
 {

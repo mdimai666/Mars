@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 using Microsoft.EntityFrameworkCore;
-using static Mars.Host.Data.Constants.PostConstants;
+using static Mars.Data.Constants.PostConstants;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 [DebuggerDisplay("Post/{Slug}/{Id}/{Title}")]
 public class PostEntity : IBasicUserEntity, ISoftDeletable//, IPost, ICommentsSupport, ILikesSupport, IMetaValueSupport

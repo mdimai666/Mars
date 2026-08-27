@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 [DebuggerDisplay("{TypeName}/{Title}/{Id}")]
 public class PostTypeEntity : IBasicEntity

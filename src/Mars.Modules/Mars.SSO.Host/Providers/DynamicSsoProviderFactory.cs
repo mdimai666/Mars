@@ -1,8 +1,8 @@
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.SSO.Interfaces;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.SSO.Providers;
+namespace Mars.SSO.Host.Providers;
 
 /// <summary>
 /// DynamicSsoProvider factory that creates provider instances from descriptors

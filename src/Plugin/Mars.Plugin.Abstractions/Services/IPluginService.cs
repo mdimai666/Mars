@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.Plugins;
-using Mars.Shared.Common;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Plugin.Abstractions.Services;
 
 public interface IPluginService
 {

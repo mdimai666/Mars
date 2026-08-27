@@ -1,6 +1,6 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 
-namespace Test.Mars.Host.Models;
+namespace Test.Mars.Server.Models;
 
 public class testPostUsered : testPost
 {

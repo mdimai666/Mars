@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.UserTypes;
 
-namespace Mars.Host.Shared.Dto.UserTypes;
+namespace Mars.Identity.Abstractions.Dto.UserTypes;
 
 /// <summary>
 /// <see cref="CreateUserTypeRequest"/>

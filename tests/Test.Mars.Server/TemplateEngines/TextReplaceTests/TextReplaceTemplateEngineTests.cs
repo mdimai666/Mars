@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.TemplateEngine.Host.InternalProviders;
 
-namespace Test.Mars.Host.TemplateEngines.TextReplaceTests;
+namespace Test.Mars.Server.TemplateEngines.TextReplaceTests;
 
 public class TextReplaceTemplateEngineTests
 {

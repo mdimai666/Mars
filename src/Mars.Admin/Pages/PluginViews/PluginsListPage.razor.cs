@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using Mars.Shared.Contracts.Plugins;
+using Mars.Contracts.Plugins;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Pages.PluginViews;
+namespace Mars.Admin.Pages.PluginViews;
 
 public partial class PluginsListPage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IJSRuntime jSRuntime { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
 

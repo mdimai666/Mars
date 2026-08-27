@@ -1,6 +1,6 @@
 using Mars.Core.Models;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 public interface IDevAdminConnectionService
 {

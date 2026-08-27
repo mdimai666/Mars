@@ -1,7 +1,6 @@
-namespace Mars.Shared.ViewModels
+namespace Mars.Contracts.ViewModels;
+
+public interface IViewModelService
 {
-    public interface IViewModelService
-    {
-        //Task<ActionResult<EditUserViewModel>> EditUserViewModel(Guid id);
-    }
+    //Task<ActionResult<EditUserViewModel>> EditUserViewModel(Guid id);
 }

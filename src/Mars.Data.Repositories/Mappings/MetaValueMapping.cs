@@ -1,9 +1,9 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class MetaValueMapping
 {

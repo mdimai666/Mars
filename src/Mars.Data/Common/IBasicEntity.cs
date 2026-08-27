@@ -1,7 +1,7 @@
 using Mars.Core.Interfaces;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 
-namespace Mars.Host.Data.Common;
+namespace Mars.Data.Common;
 
 public interface IBasicEntity : IHasId
 {

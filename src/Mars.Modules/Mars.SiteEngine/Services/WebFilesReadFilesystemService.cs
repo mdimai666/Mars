@@ -1,6 +1,6 @@
-using Mars.Host.Shared.WebSite.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.SiteEngine.Services;
 
 public class WebFilesReadFilesystemService : IWebFilesService
 {

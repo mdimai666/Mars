@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Posts;
+namespace Mars.Contracts.Posts;
 
 /// <summary>Операторы фильтров грида постов</summary>
 public static class PostGridFilterOps

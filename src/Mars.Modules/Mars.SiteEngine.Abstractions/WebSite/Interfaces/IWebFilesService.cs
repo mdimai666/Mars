@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.WebSite.Interfaces;
+namespace Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 
 public interface IWebFilesService
 {

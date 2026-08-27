@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 /// <summary>
 /// Показывает форму заполнения аргументов XAction и возвращает введённые значения

@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Shared.Contracts.PostJsons;
+namespace Mars.Contracts.PostJsons;
 
 public record CreatePostJsonRequest
 {

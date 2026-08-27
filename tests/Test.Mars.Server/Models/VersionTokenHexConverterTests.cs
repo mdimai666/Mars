@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Mars.Host.Shared.JsonConverters;
-using Mars.Host.Shared.Models;
+using Mars.Server.Abstractions.JsonConverters;
+using Mars.Server.Abstractions.Models;
 using FluentAssertions;
 
-namespace Test.Mars.Host.Models;
+namespace Test.Mars.Server.Models;
 
 public class VersionTokenHexConverterTests
 {

@@ -1,15 +1,14 @@
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Models;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Models;
 using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
 
-namespace AppAdmin.Pages.Public;
+namespace Mars.Admin.Pages.Public;
 
 public partial class LogoutPage
 {
     [Inject] public IAuthenticationService AuthenticationService { get; set; } = default!;
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
-
 
     protected override async Task OnInitializedAsync()
     {

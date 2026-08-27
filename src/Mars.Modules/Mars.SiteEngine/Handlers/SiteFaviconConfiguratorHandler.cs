@@ -1,8 +1,9 @@
-using Mars.Host.Shared.Handlers;
-using Mars.Host.Shared.Services;
+using Mars.SiteEngine.Handlers;
+using Mars.Options.Services;
+using Mars.SiteEngine.Handlers;
 using Mars.Options.Models;
 
-namespace Mars.Host.Handlers;
+namespace Mars.SiteEngine.Handlers;
 
 public class SiteFaviconConfiguratorHandler
 {

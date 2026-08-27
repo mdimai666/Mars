@@ -1,8 +1,8 @@
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostsViews;
+namespace Mars.Admin.Pages.PostsViews;
 
 public partial class ManagePostPage
 {

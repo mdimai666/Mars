@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Models;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Models;
 
-namespace Mars.Shared.Contracts.PostTypes;
+namespace Mars.Contracts.PostTypes;
 
 public record CreatePostTypeRequest
 {

@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Renders;
+namespace Mars.Contracts.Renders;
 
 public class PostRenderResponse
 {

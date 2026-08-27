@@ -2,7 +2,7 @@ using System.CommandLine;
 using Mars.Core.Models;
 using Microsoft.AspNetCore.Builder;
 
-namespace Mars.CommandLine.Shared;
+namespace Mars.CommandLine.Abstractions;
 
 public interface ICommandLineApi
 {

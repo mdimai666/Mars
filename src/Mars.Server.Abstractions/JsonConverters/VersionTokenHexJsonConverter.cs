@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Mars.Host.Shared.Models;
+using Mars.Server.Abstractions.Models;
 
-namespace Mars.Host.Shared.JsonConverters;
+namespace Mars.Server.Abstractions.JsonConverters;
 
 public class VersionTokenHexJsonConverter : JsonConverter<VersionTokenHex>
 {

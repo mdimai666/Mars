@@ -1,4 +1,4 @@
-namespace Mars.AiChat.Shared.SignalR;
+namespace Mars.AiChat.Contracts.SignalR;
 
 /// <summary>
 /// Имена событий SignalR хаба /_ws/aichat (сервер -> клиент).

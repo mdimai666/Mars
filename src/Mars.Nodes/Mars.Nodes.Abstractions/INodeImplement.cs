@@ -1,8 +1,8 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Host.Shared.Models;
+using Mars.Nodes.Abstractions.Models;
 
-namespace Mars.Nodes.Host.Shared;
+namespace Mars.Nodes.Abstractions;
 
 /// <summary>
 /// use <see cref="ISelfFinalizingNode"/> for control manual ending;

@@ -1,9 +1,9 @@
-using Mars.SemanticKernel.Shared.Nodes;
-using Mars.SemanticKernel.Shared.Options;
+using Mars.SemanticKernel.Contracts.Nodes;
+using Mars.SemanticKernel.Contracts.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace Mars.SemanticKernel.Host.Shared.Interfaces;
+namespace Mars.SemanticKernel.Abstractions.Interfaces;
 
 public interface IKernelFactory
 {

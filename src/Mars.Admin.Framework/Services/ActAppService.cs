@@ -1,10 +1,10 @@
-using AppFront.Shared.Interfaces;
-using Mars.Shared.Contracts.XActions;
-using Mars.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Contracts.XActions;
+using Mars.Contracts.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 internal class ActAppService : IActAppService
 {

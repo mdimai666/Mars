@@ -1,23 +1,36 @@
+using Mars.Cms.Abstractions;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Auth;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Dto.Users.Passwords;
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Mappings.Roles;
-using Mars.Host.Shared.Mappings.Users;
-using Mars.Host.Shared.Mappings.UserTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
+using Mars.Identity.Abstractions.Dto.Auth;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users.Passwords;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Identity.Abstractions.Mappings.Roles;
+using Mars.Identity.Abstractions.Mappings.Users;
+using Mars.Identity.Abstractions.Mappings.UserTypes;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Validators;
 using Mars.Notifications.Abstractions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Users;
+using Mars.Contracts.Common;
+using Mars.Contracts.Users;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 internal class UserService : IUserService
 {
@@ -150,7 +163,7 @@ internal class UserService : IUserService
 
         if (user.MetaValues.Count != user.UserTypeDetail.MetaFields.Count)
         {
-            user = user with { MetaValues = PostService.EnrichWithBlankMetaValuesFromMetaValues(user.MetaValues, user.UserTypeDetail.MetaFields) };
+            user = user with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(user.MetaValues, user.UserTypeDetail.MetaFields) };
         }
 
         var availRoles = await _roleRepository.ListAll(cancellationToken);
@@ -171,7 +184,7 @@ internal class UserService : IUserService
 
         if (user.MetaValues.Count != userType.MetaFields.Count)
         {
-            user = user with { MetaValues = PostService.EnrichWithBlankMetaValuesFromMetaValues(user.MetaValues, userType.MetaFields) };
+            user = user with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(user.MetaValues, userType.MetaFields) };
         }
 
         var availRoles = await _roleRepository.ListAll(cancellationToken);

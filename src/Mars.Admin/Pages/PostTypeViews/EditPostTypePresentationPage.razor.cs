@@ -1,10 +1,10 @@
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Interfaces;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 public partial class EditPostTypePresentationPage
 {
@@ -18,7 +18,7 @@ public partial class EditPostTypePresentationPage
     }
 
     [Inject] protected IMarsWebApiClient _client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] NavigationManager _navigationManager { get; set; } = default!;
     [Inject] ViewModelService _viewModelService { get; set; } = default!;
     [Inject] IActAppService _actAppService { get; set; } = default!;

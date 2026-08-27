@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Managers;
+using Mars.Server.Abstractions.Managers;
 using Mars.Nodes.Core.Nodes.Events;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Events;
 

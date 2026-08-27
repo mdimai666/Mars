@@ -1,8 +1,8 @@
 using Mars.Core.Interfaces;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Validators;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Validators;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 public record PostTypeSummary : IHasId
 {

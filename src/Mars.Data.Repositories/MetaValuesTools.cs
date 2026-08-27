@@ -1,14 +1,14 @@
 using System.Globalization;
 using Mars.Core.Extensions;
 using Mars.Core.Utils;
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Data.Constants;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
+using Mars.Data.Repositories.Mappings;
+using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Mars.Host.Repositories;
+namespace Mars.Data.Repositories;
 
 public static class MetaValuesTools
 {

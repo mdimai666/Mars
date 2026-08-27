@@ -1,4 +1,4 @@
-namespace AppAdmin.Shared.ActionCenter;
+namespace Mars.Admin.Shared.ActionCenter;
 
 /// <summary>
 /// Состояние палитры команд (открыта/закрыта). Мост между триггерами

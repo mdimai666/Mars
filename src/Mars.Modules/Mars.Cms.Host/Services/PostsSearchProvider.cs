@@ -1,9 +1,10 @@
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.Search;
-using Mars.Host.Shared.Services;
-using static Mars.Host.Shared.Dto.Search.SearchFoundElement;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using static Mars.Cms.Abstractions.Dto.Search.SearchFoundElement;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class PostsSearchProvider(
     IPostService _postService

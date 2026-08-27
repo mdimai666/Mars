@@ -1,10 +1,12 @@
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Search;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Dto.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Search;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class CentralSearchServiceTests
 {

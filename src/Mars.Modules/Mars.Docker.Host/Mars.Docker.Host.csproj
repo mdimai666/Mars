@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -9,8 +9,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-        <ProjectReference Include="..\Mars.Docker.Host.Shared\Mars.Docker.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Docker.Abstractions\Mars.Docker.Abstractions.csproj" />
     </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
+  </ItemGroup>
 
 </Project>

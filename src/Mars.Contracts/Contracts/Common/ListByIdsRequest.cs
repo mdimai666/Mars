@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Common;
+namespace Mars.Contracts.Common;
 
 public record ListByIdsRequest
 {

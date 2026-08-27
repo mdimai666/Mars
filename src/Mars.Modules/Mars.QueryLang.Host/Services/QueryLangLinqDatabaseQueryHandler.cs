@@ -1,11 +1,11 @@
 using System.Reflection;
 using Mars.Core.Features;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
+using Mars.Data.Common;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.QueryLang.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Templators;
 using Mars.MetaModelGenerator;
 using Microsoft.EntityFrameworkCore;
 

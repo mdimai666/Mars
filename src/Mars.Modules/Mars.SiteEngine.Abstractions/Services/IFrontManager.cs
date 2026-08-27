@@ -1,6 +1,6 @@
-using Mars.Shared.Options;
+using Mars.Contracts.Options;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.SiteEngine.Abstractions.Services;
 
 /// <summary>
 /// Синглтон. Актуальный список фронтов из <see cref="FrontsOption"/> (без рестарта приложения).

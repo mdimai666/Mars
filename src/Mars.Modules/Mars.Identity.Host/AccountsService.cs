@@ -1,12 +1,16 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Auth;
-using Mars.Host.Shared.Dto.Profile;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.Auth;
+using Mars.Identity.Abstractions.Dto.Profile;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 public class AccountsService : IAccountsService
 {

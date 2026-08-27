@@ -1,10 +1,10 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Repositories;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Repositories;
+namespace Mars.Data.Repositories;
 
 internal class MetaSequenceRepository : IMetaSequenceRepository
 {

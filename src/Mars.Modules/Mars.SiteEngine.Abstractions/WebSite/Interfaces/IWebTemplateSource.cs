@@ -1,6 +1,6 @@
-﻿using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.WebSite.Interfaces;
+namespace Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 
 public interface IWebTemplateSource
 {

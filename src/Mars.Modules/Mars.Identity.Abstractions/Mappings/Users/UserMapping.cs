@@ -1,12 +1,12 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Host.Shared.Mappings.Roles;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Users;
-using Mars.Shared.ViewModels;
+using Mars.Data.Extensions;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Identity.Abstractions.Mappings.Roles;
+using Mars.Contracts.Common;
+using Mars.Contracts.Users;
+using Mars.Contracts.ViewModels;
 
-namespace Mars.Host.Shared.Mappings.Users;
+namespace Mars.Identity.Abstractions.Mappings.Users;
 
 public static class UserMapping
 {

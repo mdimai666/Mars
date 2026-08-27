@@ -1,13 +1,17 @@
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Utils;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Notifications.Abstractions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.ActionHistorys;
-using Mars.Shared.Resources;
+using Mars.Contracts.Common;
+using Mars.Contracts.ActionHistorys;
+using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 

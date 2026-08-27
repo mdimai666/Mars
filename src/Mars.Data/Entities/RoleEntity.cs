@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class RoleEntity : IdentityRole<Guid>, IBasicEntity, IActivatableEntity
 {

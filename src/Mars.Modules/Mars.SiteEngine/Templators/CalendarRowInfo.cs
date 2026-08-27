@@ -1,5 +1,4 @@
-﻿namespace Mars.Host.Templators;
-
+namespace Mars.SiteEngine.Templators;
 
 public class CalendarRowInfo
 {

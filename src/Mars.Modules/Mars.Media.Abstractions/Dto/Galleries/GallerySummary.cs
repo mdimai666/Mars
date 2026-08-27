@@ -1,7 +1,7 @@
 using Mars.Core.Interfaces;
-using Mars.Host.Shared.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
 
-namespace Mars.Host.Shared.Dto.Galleries;
+namespace Mars.Media.Abstractions.Dto.Galleries;
 
 public record GallerySummary : IHasId
 {

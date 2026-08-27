@@ -1,6 +1,6 @@
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Common;
+using Mars.Contracts.Posts;
 
 namespace Mars.WebApiClient.Interfaces;
 

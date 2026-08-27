@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace Mars.Nodes.Front.Shared.Components.NodeViews;
+namespace Mars.Nodes.Front.Abstractions.Components.NodeViews;
 
 public partial class WireComponent
 {

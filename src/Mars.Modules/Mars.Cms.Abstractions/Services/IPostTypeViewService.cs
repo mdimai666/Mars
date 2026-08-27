@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Генерируемые SQL-представления (views) типов постов: разворот мета-значений в колонки.

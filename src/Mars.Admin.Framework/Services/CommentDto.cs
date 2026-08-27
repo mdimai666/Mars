@@ -1,8 +1,8 @@
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.Users;
-using Mars.Shared.Models.Interfaces;
+using Mars.Contracts.Users;
+using Mars.Contracts.Models.Interfaces;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 //Temp: after rework - delete
 public class CommentDto : IBasicEntity

@@ -1,9 +1,9 @@
-using AppFront.Shared.Hub;
+using Mars.Admin.Framework.Hub;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace AppAdmin.Startups;
+namespace Mars.Admin.Startups;
 
 internal static class StartupWebSockets
 {

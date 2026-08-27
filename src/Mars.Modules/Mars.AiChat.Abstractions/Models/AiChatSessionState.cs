@@ -1,6 +1,6 @@
-using Mars.AiChat.Shared.Dto;
+using Mars.AiChat.Contracts.Dto;
 
-namespace Mars.AiChat.Host.Shared.Models;
+namespace Mars.AiChat.Abstractions.Models;
 
 /// <summary>
 /// Серверное состояние чата. Хранится в HybridCache.

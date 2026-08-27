@@ -1,7 +1,7 @@
-using Mars.Host.Shared.QueryLang.Services;
+using Mars.QueryLang.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public class HandlebarsContextBlockProcessor
 {

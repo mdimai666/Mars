@@ -1,12 +1,12 @@
 using HandlebarsDotNet;
 using HandlebarsDotNet.Extension.Json;
 using HandlebarsDotNet.Extension.NewtonsoftJson;
-using Mars.Host.Shared.Templators;
-using static Mars.Host.Shared.Templators.IMarsHtmlTemplator;
-using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsBasicFunctions;
-using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsContextFunctions;
+using Mars.SiteEngine.Abstractions.Templators;
+using static Mars.SiteEngine.Abstractions.Templators.IMarsHtmlTemplator;
+using static Mars.SiteEngine.Handlebars.HandlebarsFunc.MyHandlebarsBasicFunctions;
+using static Mars.SiteEngine.Handlebars.HandlebarsFunc.MyHandlebarsContextFunctions;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public class MyHandlebars : IMarsHtmlTemplator
 {
@@ -14,7 +14,7 @@ public class MyHandlebars : IMarsHtmlTemplator
 
     public MyHandlebars()
     {
-        handlebars = Handlebars.Create();
+        handlebars = HandlebarsDotNet.Handlebars.Create();
         handlebars.Configuration.UseJson();
         handlebars.Configuration.UseNewtonsoftJson();
 

@@ -1,7 +1,7 @@
 using Mars.Core.Exceptions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;

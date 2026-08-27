@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Extensions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Resources;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Resources;
 
-namespace Mars.Shared.Contracts.Users;
+namespace Mars.Contracts.Users;
 
 public record CreateUserRequest
 {

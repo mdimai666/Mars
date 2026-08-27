@@ -1,9 +1,9 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Files;
-using Mars.Shared.Contracts.Galleries;
+using Mars.Contracts.Common;
+using Mars.Contracts.Files;
+using Mars.Contracts.Galleries;
 using Microsoft.AspNetCore.Http;
 
-namespace AppFront.Shared.Services.GallerySpace;
+namespace Mars.Admin.Framework.Services.GallerySpace;
 
 public class GalleryService : BasicClientService<GalleryDetailResponse>
 {

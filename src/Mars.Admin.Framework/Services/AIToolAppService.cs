@@ -1,6 +1,6 @@
-using Mars.Shared.Interfaces;
+using Mars.Contracts.Interfaces;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 public class AIToolAppService : IAIToolAppService
 {

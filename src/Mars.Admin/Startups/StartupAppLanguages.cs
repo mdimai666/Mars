@@ -1,7 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace AppAdmin.Startups;
+namespace Mars.Admin.Startups;
 
 internal static class StartupAppLanguages
 {

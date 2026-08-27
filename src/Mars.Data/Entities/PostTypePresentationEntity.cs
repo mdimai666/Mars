@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Nodes;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class PostTypePresentationEntity
 {

@@ -1,4 +1,4 @@
-namespace Mars.Shared.Interfaces;
+namespace Mars.Contracts.Interfaces;
 
 public interface IAIToolAppService
 {

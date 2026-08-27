@@ -1,4 +1,4 @@
-namespace Mars.Shared.Options.Attributes;
+namespace Mars.Contracts.Options.Attributes;
 
 [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class OptionEditFormForOptionAttribute : Attribute

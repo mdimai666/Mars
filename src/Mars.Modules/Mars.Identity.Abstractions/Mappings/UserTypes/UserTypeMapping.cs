@@ -1,10 +1,10 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Data.Extensions;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.UserTypes;
 
-namespace Mars.Host.Shared.Mappings.UserTypes;
+namespace Mars.Identity.Abstractions.Mappings.UserTypes;
 
 public static class UserTypeMapping
 {

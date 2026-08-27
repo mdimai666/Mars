@@ -1,6 +1,6 @@
-using Mars.Shared.ViewModels;
+using Mars.Contracts.ViewModels;
 
-namespace Mars.Shared.Contracts.SSO;
+namespace Mars.Contracts.SSO;
 
 public record SsoUserInfoResponse
 {

@@ -1,16 +1,16 @@
 using System.Text.Json;
-using AppFront.Main.Extensions;
-using AppFront.Shared.Extensions;
+using Mars.Admin.Framework.Extensions;
+using Mars.Admin.Framework.Extensions;
 using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Contracts.Resources;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using IMessageService = AppFront.Shared.Interfaces.IMessageService;
+using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class StandartEditContainer<TModel> : ComponentBase
         where TModel : IHasId, new()

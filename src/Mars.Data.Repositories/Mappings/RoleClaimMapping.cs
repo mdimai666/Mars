@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Roles;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.Roles;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class RoleClaimMapping
 {

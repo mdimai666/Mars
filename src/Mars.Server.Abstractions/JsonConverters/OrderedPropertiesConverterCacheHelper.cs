@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
-namespace Mars.Host.Shared.JsonConverters;
+namespace Mars.Server.Abstractions.JsonConverters;
 
 public static class OrderedPropertiesConverterCacheHelper
 {

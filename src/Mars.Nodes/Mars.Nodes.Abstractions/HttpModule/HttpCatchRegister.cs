@@ -1,11 +1,11 @@
 using System.Collections.Immutable;
-using Mars.Host.Shared.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Routing.Template;
+using Mars.Server.Abstractions.Utils;
 
-namespace Mars.Nodes.Host.Shared.HttpModule;
+namespace Mars.Nodes.Abstractions.HttpModule;
 
 public class HttpCatchRegister
 {

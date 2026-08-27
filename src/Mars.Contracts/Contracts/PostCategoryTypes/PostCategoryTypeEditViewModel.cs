@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.PostCategoryTypes;
+namespace Mars.Contracts.PostCategoryTypes;
 
 public class PostCategoryTypeEditViewModel
 {

@@ -1,11 +1,11 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
-using Mars.Host.Data.Entities;
-using Mars.Shared.Contracts.Posts;
+using Mars.Data.Entities;
+using Mars.Contracts.Posts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Repositories;
+namespace Mars.Data.Repositories;
 
 /// <summary>
 /// Строит EF-транслируемые предикаты фильтрации постов по значениям мета-полей

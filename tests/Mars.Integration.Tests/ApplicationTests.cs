@@ -1,6 +1,6 @@
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Contexts;
+using Mars.Data.Contexts;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 

@@ -1,10 +1,10 @@
-using Mars.Host.Shared.Dto.Profile;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Dto.Users.Passwords;
-using Mars.Shared.Common;
+using Mars.Identity.Abstractions.Dto.Profile;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users.Passwords;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Identity.Abstractions.Repositories;
 
 public interface IUserRepository : IDisposable
 {

@@ -1,9 +1,9 @@
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Utils;
+namespace Mars.Cms.Abstractions.Utils;
 
 /// <summary>
 /// Реестр валидаторов значений мета-полей. Встроенные — из <see cref="MetaFieldValidatorCatalog"/>;

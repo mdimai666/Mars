@@ -1,10 +1,10 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.Extensions;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Mars.Host.Data.Constants.FileConstants;
+using static Mars.Data.Constants.FileConstants;
 
-namespace Mars.Host.Data.PostgreSQL.Configurations;
+namespace Mars.Data.PostgreSQL.Configurations;
 
 public class FileEntityConfiguration : IEntityTypeConfiguration<FileEntity>
 {

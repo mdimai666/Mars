@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.OwnedTypes.NavMenus;
+namespace Mars.Data.OwnedTypes.NavMenus;
 
 /// <summary>
 /// [jsonb] owned

@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Files;
+using Mars.Data.Entities;
+using Mars.Media.Abstractions.Dto.Files;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class MediaFolderMapping
 {

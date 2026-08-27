@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Globalization;
-using Mars.Host.Shared.Models;
+using Mars.Server.Abstractions.Models;
 
-namespace Mars.Host.Shared.TypeConverters;
+namespace Mars.Server.Abstractions.TypeConverters;
 
 public class StringVersionTokenHexTypeConverter : TypeConverter
 {

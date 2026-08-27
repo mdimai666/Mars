@@ -2,15 +2,15 @@ using System.Globalization;
 using System.Reflection;
 using FluentAssertions;
 using HandlebarsDotNet;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Host.Templators.HandlebarsFunc;
+using Mars.Server.Abstractions.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Localization;
 using NSubstitute;
-using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsContextFunctions;
+using static Mars.SiteEngine.Handlebars.HandlebarsFunc.MyHandlebarsContextFunctions;
 
-namespace Test.Mars.WebSiteProcessor.Templators.HandlebarsEngine;
+namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
 
 [Collection("Culture collection")]
 public class MyHandlebarsContextFunctionsTests

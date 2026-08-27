@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.Common;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IPostTypeService
 {

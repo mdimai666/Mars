@@ -37,8 +37,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Shared\Mars.Shared.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Shared\Mars.AiChat.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

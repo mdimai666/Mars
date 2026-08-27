@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public record UpdatePostQuery : IGeneralPostQuery
 {

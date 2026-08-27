@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Search;
+namespace Mars.Contracts.Search;
 
 public record SearchFoundElementResponse
 {

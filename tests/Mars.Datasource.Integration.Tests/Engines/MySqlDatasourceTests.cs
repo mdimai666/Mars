@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Datasource.Core;
+using Mars.Datasource;
 using Mars.Datasource.Host.MySQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
 using Mars.Integration.Tests.Attributes;

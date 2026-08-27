@@ -1,6 +1,6 @@
-using Mars.Host.Shared.WebSite.Scripts;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
-namespace Mars.Host.WebSite.Scripts;
+namespace Mars.SiteEngine.WebSite.Scripts;
 
 public class AppAdminFooterAssetProvider(AppAdminSpaHtmlScripts appAdminSpaHtmlScripts) : ISiteAssetPrivider
 {

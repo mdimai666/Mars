@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Handlers;
+namespace Mars.Admin.Framework.Handlers;
 
 public interface IListModelHandler<TModel, TQuery>
     where TQuery : IBasicTableRequest

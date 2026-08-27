@@ -1,6 +1,6 @@
 using Mars.Core.Interfaces;
 
-namespace Mars.Host.Shared.Dto.UserTypes;
+namespace Mars.Identity.Abstractions.Dto.UserTypes;
 
 public record UserTypeSummary : IHasId
 {

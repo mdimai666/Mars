@@ -1,10 +1,10 @@
 using System.Drawing;
-using AppFront.Shared.Components;
+using Mars.Admin.Framework.Components;
 using FluentAssertions;
 using HtmlAgilityPack;
 using static Mars.Options.Models.ImagePreviewSizeConfig;
 
-namespace AppFront.Tests.AppFront.Main;
+namespace AppFront.Tests.Mars.Admin.Framework;
 
 public class WysiwygEditorHelperTest
 {

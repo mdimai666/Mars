@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.ActionHistorys;
+namespace Mars.Contracts.ActionHistorys;
 
 public enum ActionHistoryLevel
 {

@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.Roles;
+namespace Mars.Identity.Abstractions.Dto.Roles;
 
 public record ListRoleQuery : BasicListQuery
 {

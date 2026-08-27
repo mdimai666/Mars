@@ -1,8 +1,8 @@
 using FluentValidation;
 using Mars.Core.Constants;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.PostCategories;
+namespace Mars.Cms.Abstractions.Dto.PostCategories;
 
 public class ListPostCategoryQueryValidator : AbstractValidator<ListPostCategoryQuery>
 {

@@ -1,8 +1,9 @@
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Services;
+using Mars.Data.Entities;
+using Mars.QueryLang.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Interfaces;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

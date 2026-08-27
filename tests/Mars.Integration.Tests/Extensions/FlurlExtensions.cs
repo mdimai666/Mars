@@ -3,7 +3,7 @@ using System.Net;
 using System.Text.Json;
 using Mars.Core.Constants;
 using Mars.Core.Extensions;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Flurl.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

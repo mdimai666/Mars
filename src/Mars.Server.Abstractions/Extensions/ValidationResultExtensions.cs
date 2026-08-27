@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Host.Shared.Extensions;
+namespace Mars.Server.Abstractions.Extensions;
 
 public static class ValidationResultExtensions
 {

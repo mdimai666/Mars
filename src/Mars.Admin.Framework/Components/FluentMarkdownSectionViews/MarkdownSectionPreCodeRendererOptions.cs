@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Components.FluentMarkdownSectionViews;
+namespace Mars.Admin.Framework.Components.FluentMarkdownSectionViews;
 
 /// <summary>
 /// Options for MarkdownSectionPreCodeRenderer

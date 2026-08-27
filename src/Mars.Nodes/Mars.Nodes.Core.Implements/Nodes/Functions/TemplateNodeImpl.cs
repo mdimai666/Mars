@@ -1,9 +1,9 @@
 //#define DEBUG_TEMPLATOR_PERFOMANCE
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Host.Shared.TemplateEngine;
+using Mars.Core.TemplateEngine;
 using Mars.Nodes.Core.Nodes.Functions;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 

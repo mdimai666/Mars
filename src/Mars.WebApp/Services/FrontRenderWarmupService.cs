@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
-using Mars.Shared.Options;
-using Mars.WebSiteProcessor.Interfaces;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Startup;
+using Mars.Contracts.Options;
+using Mars.SiteEngine.Interfaces;
 
 namespace Mars.Services;
 

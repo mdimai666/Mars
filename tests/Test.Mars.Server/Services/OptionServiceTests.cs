@@ -1,18 +1,30 @@
 using System.Text.Json;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Options;
-using Mars.Host.Shared.Exceptions;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Repositories;
+using Mars.Options.Dto.Options;
+using Mars.Options.Exceptions;
+using Mars.Options.Host.Services;
+using Mars.Options.Repositories;
+using Mars.Options.Dto.Options;
+using Mars.Options.Exceptions;
+using Mars.Options.Host.Services;
+using Mars.Options.Repositories;
+using Mars.Options.Dto.Options;
+using Mars.Options.Exceptions;
+using Mars.Options.Host.Services;
+using Mars.Options.Repositories;
+using Mars.Server.Abstractions.Managers;
+using Mars.Options.Dto.Options;
+using Mars.Options.Exceptions;
+using Mars.Options.Host.Services;
+using Mars.Options.Repositories;
 using Mars.Options.Models;
-using Mars.Shared.Options;
+using Mars.Contracts.Options;
 using Mars.Test.Common;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class OptionServiceTests
 {

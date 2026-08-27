@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 public interface IAIToolScenarioProvidersLocator
 {

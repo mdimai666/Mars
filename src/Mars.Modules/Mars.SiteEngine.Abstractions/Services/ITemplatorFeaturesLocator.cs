@@ -1,6 +1,7 @@
-using Mars.Host.Shared.Interfaces;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Interfaces;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.SiteEngine.Abstractions.Services;
 
 public interface ITemplatorFeaturesLocator
 {

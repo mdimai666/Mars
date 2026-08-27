@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public record DeleteManyUserQuery
 {

@@ -1,7 +1,7 @@
 using System.Text;
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.SSO.Dto;
+using Mars.Server.Abstractions.Features;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Host.OAuth.interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

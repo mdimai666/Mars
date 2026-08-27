@@ -1,9 +1,11 @@
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 
-namespace Test.Mars.Host.Files;
+namespace Test.Mars.Server.Files;
 
 public class ReadFileStorageTests
 {
@@ -13,7 +15,7 @@ public class ReadFileStorageTests
 
     public ReadFileStorageTests()
     {
-        // C:\Users\D\Documents\VisualStudio\2025\Mars\Tests\Test.Mars.Host\bin\Debug\net8.0\Files\ExampleFiles
+        // C:\Users\D\Documents\VisualStudio\2025\Mars\Tests\Test.Mars.Server\bin\Debug\net8.0\Files\ExampleFiles
         //var filesPath = Path.Join(Directory.GetCurrentDirectory(), "Files", "ExampleFiles");
         _exampleFilesPath = Path.Join(Directory.GetCurrentDirectory(), "Files", "ExampleFiles");
 

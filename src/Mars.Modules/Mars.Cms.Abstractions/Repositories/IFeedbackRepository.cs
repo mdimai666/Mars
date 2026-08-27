@@ -1,8 +1,8 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Feedbacks;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Cms.Abstractions.Repositories;
 
 public interface IFeedbackRepository : IDisposable
 {

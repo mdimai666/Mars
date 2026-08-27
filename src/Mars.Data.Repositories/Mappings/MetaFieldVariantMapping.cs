@@ -1,8 +1,8 @@
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Utils;
+using Mars.Data.OwnedTypes.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Utils;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class MetaFieldVariantMapping
 {

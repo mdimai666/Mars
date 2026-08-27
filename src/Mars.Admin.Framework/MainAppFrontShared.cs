@@ -1,14 +1,22 @@
-using AppFront.Main.OptionEditForms;
-using AppFront.Shared.Bridges;
-using AppFront.Shared.Handlers;
-using AppFront.Shared.OptionEditForms;
-using AppFront.Shared.Services;
+using Mars.Admin.Framework.OptionEditForms;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Bridges;
+using Mars.Admin.Framework.Handlers;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.OptionEditForms;
+using Mars.Admin.Framework.Services;
+using Blazored.LocalStorage;
 using BlazoredHtmlRender;
+using Flurl.Http;
+using Mars.Contracts.Interfaces;
+using Mars.Admin.Framework.Tools;
+using Mars.WebApiClient;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared;
+namespace Mars.Admin.Framework;
 
 public static class MainAppFrontShared
 {
@@ -18,8 +26,8 @@ public static class MainAppFrontShared
         services.AddFluentUIComponents();
 
         services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
-        services.TryAddSingleton<AppFront.Shared.Components.MetaFieldViews.IMetaFieldEditorLocator,
-            AppFront.Shared.Components.MetaFieldViews.MetaFieldEditorLocator>();
+        services.TryAddSingleton<Mars.Admin.Framework.Components.MetaFieldViews.IMetaFieldEditorLocator,
+            Mars.Admin.Framework.Components.MetaFieldViews.MetaFieldEditorLocator>();
 
         if (!OperatingSystem.IsBrowser()) return;
 
@@ -29,7 +37,7 @@ public static class MainAppFrontShared
         services.TryAddScoped<IChildPostEditor, ChildPostEditorService>();
         services.TryAddScoped<Interfaces.IMessageService, FluentMessageServiceBridge>();
 
-        BlazoredHtml.AddComponentsFromAssembly(typeof(AppFront.Shared.Components.Affix).Assembly, true);
+        BlazoredHtml.AddComponentsFromAssembly(typeof(Mars.Admin.Framework.Components.Affix).Assembly, true);
         BlazoredHtml.AddComponentsFromAssembly(typeof(FluentButton).Assembly, true);
 
         if (OperatingSystem.IsBrowser())
@@ -44,5 +52,56 @@ public static class MainAppFrontShared
         optionsFormsLocator.RegisterAssembly(typeof(SmtpSettingsEditForm).Assembly);
 
         return services;
+    }
+
+    public static void AddAppFront(this IServiceCollection services, IConfiguration configuration, Type program)
+    {
+        if (!OperatingSystem.IsBrowser()) return;
+
+        ArgumentNullException.ThrowIfNull(services);
+
+        if (!services.Any(d => d.ServiceType == typeof(HttpClient))
+            || !services.Any(d => d.ServiceType == typeof(IFlurlClient)))
+        {
+            throw new InvalidOperationException("HttpClient and IFlurlClient must be registered.");
+        }
+
+        Q.Program = program;
+
+        services.AddBlazoredLocalStorage();
+        services.AddAuthorizationCore();
+        services.TryAddScoped<IAuthenticationService, AuthenticationService>();
+        services.TryAddScoped<CookieOrLocalStorageAuthStateProvider>();
+        services.TryAddScoped<AuthenticationStateProvider>(sp =>
+            sp.GetRequiredService<CookieOrLocalStorageAuthStateProvider>());
+
+        services.ConfigureLocalizer();
+
+        services.TryAddScoped<ViewModelService>();
+        services.TryAddScoped<AppFrontJs>();
+
+        services.TryAddSingleton<ModelInfoService>();
+        services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
+        services.TryAddScoped<DeveloperControlService>();
+        //services.TryAddScoped<GalleryService>();
+        services.TryAddScoped<IActAppService, ActAppService>();
+        services.TryAddScoped<IXActionFormPresenter, NullXActionFormPresenter>();
+        services.TryAddSingleton<IXActionFormProvider, XActionFormProvider>();
+        services.TryAddScoped<IAIToolAppService, AIToolAppService>();
+
+        services.AddMarsWebApiClient();
+
+        //builder.Logging.SetMinimumLevel(LogLevel.Error);
+
+        BlazoredHtml.AddComponentsFromAssembly(Q.Program.Assembly, true);
+        BlazoredHtml.AddComponentsFromAssembly(typeof(Mars.Admin.Framework.Components.LikeButton).Assembly, true);
+    }
+
+    private static void ConfigureLocalizer(this IServiceCollection services)
+    {
+        services.AddLocalization();
+        //Такое писать не требуется. Оставлено для внимания.
+        //services.TryAddSingleton<IStringLocalizer, StringLocalizer<AppRes>>();
+        //services.TryAddSingleton<IStringLocalizer<AppRes>, StringLocalizer<AppRes>>();
     }
 }

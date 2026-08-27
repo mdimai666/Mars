@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.PostCategories;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Contracts.Common;
+using Mars.Contracts.PostCategories;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IPostCategoryService
 {

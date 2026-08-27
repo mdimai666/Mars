@@ -1,20 +1,51 @@
 using System.Text.Json;
+using Mars.Cms.Abstractions.Utils;
 using AutoFixture;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Data.Entities;
+using Mars.Data.Repositories.Mappings;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using NSubstitute;
 
-namespace Test.Mars.Host.Services.PostJsonServices;
+namespace Test.Mars.Server.Services.PostJsonServices;
 
 public class PostJsonServiceTestBase
 {
@@ -49,7 +80,7 @@ public class PostJsonServiceTestBase
         _metaModelTypesLocator = Substitute.For<IMetaModelTypesLocator>();
 
         var metaQueryFieldResolver = Substitute.For<IMetaQueryFieldResolver>();
-        metaQueryFieldResolver.ResolveAsync(Arg.Any<global::Mars.Host.Shared.Dto.PostTypes.PostTypeDetail>(),
+        metaQueryFieldResolver.ResolveAsync(Arg.Any<global::Mars.Cms.Abstractions.Dto.PostTypes.PostTypeDetail>(),
                                             Arg.Any<IReadOnlyCollection<Guid>>(),
                                             Arg.Any<CancellationToken>())
                               .Returns([]);

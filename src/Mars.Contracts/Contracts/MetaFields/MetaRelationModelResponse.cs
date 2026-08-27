@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 public record MetaRelationModelResponse
 {

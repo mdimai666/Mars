@@ -1,14 +1,14 @@
 using System.Diagnostics;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Contexts.Abstractions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Contexts.Abstractions;
+using Mars.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Data.Contexts;
+namespace Mars.Data.Contexts;
 
 public partial class MarsDbContext : IdentityDbContext<UserEntity, RoleEntity, Guid,
                 UserClaimEntity, UserRoleEntity, UserLoginEntity, RoleClaimEntity, UserTokenEntity, UserPasskeyEntity>

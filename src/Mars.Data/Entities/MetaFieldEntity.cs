@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.OwnedTypes.MetaFields;
+using Mars.Data.Common;
+using Mars.Data.OwnedTypes.MetaFields;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 [DebuggerDisplay("{Type}/{Id}/{Title}")]
 public class MetaFieldEntity : IBasicEntity

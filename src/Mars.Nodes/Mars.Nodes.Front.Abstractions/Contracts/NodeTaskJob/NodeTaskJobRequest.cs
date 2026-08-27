@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
+namespace Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 
 public record ListNodeTaskJobQueryRequest : BasicListQueryRequest
 {

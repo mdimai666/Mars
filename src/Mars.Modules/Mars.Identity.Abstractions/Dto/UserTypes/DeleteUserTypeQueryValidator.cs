@@ -1,8 +1,8 @@
 using FluentValidation;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Repositories;
+using Mars.Identity.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Dto.UserTypes;
+namespace Mars.Identity.Abstractions.Dto.UserTypes;
 
 public class DeleteUserTypeQueryValidator : AbstractValidator<Guid>
 {

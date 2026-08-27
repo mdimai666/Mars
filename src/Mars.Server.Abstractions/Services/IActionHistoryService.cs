@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.ActionHistorys;
+using Mars.Contracts.ActionHistorys;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 public interface IActionHistoryService
 {

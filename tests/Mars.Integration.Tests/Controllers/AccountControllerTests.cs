@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
-using Mars.Host.Shared.Dto.Auth;
+using Mars.Identity.Abstractions.Dto.Auth;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;

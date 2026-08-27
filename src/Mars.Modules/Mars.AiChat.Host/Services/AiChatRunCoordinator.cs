@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Mars.AiChat.Host.Shared.Interfaces;
+using Mars.AiChat.Abstractions.Interfaces;
 using Mars.Core.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

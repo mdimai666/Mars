@@ -1,6 +1,7 @@
 using System.Net.Mime;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Interfaces;
+using Mars.Server.Abstractions.ExceptionFilters;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Abstractions.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Integration.Tests.TestControllers;

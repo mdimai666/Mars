@@ -1,7 +1,7 @@
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.MetaModelGenerator;
 using Mars.Test.Common.FixtureCustomizes;
 using Test.Mars.MetaModelGenerator.Tools;

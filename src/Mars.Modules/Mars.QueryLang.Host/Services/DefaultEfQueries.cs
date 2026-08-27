@@ -1,8 +1,8 @@
 #if !true
-
-using Mars.Host.Services;
-using Mars.Host.Templators;
-using Mars.Host.Templators.HandlebarsFunc;
+using Mars.Cms.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Services;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +14,18 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.Entities;
-using Mars.Shared.Common;
-using Mars.Shared.Templators;
+using Mars.Cms.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Services;
+using Mars.Cms.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Services;
+using Mars.Data.Common;
+using Mars.Data.Entities;
+using Mars.Contracts.Common;
+using Mars.Contracts.Templators;
 
-namespace Mars.Host.QueryLang;
+namespace Mars.QueryLang.Host;
 
 public class DefaultEfQueries : IDefaultEfQueries<IBasicEntity>
 {
@@ -765,8 +768,8 @@ public class TotalResponse2<T> : PagingResult<T>
 
 using System.Collections;
 using System.Linq.Expressions;
-using Mars.Host.Data.Common;
-using Mars.Host.QueryLang;
+using Mars.Data.Common;
+using Mars.QueryLang.Host;
 
 public class DefaultEfQueries : IDefaultEfQueries<IBasicEntity>
 {

@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Plugins;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Plugins;
 
-namespace Mars.Host.Shared.Dto.Plugins;
+namespace Mars.Plugin.Abstractions.Dto.Plugins;
 
 public static class PluginExtensions
 {

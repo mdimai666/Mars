@@ -1,21 +1,38 @@
+using Mars.Cms.Abstractions;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Host.Shared.Dto.PostCategoryTypes;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Mappings.PostCategories;
-using Mars.Host.Shared.Mappings.PostCategoryTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostCategories;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Cms.Abstractions.Mappings.PostCategories;
+using Mars.Cms.Abstractions.Mappings.PostCategoryTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostCategories;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class PostCategoryService : IPostCategoryService
 {
@@ -140,7 +157,7 @@ internal class PostCategoryService : IPostCategoryService
 
         if (category.MetaValues.Count != postCategoryType.MetaFields.Count)
         {
-            category = category with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(category.MetaValues, postCategoryType.MetaFields) };
+            category = category with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(category.MetaValues, postCategoryType.MetaFields) };
         }
 
         return new()
@@ -159,7 +176,7 @@ internal class PostCategoryService : IPostCategoryService
 
         if (category.MetaValues.Count != categoryTypeDetail.MetaFields.Count)
         {
-            category = category with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(category.MetaValues, categoryTypeDetail.MetaFields) };
+            category = category with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(category.MetaValues, categoryTypeDetail.MetaFields) };
         }
 
         return Task.FromResult<PostCategoryEditViewModel>(new()
@@ -167,67 +184,6 @@ internal class PostCategoryService : IPostCategoryService
             PostCategory = category.ToResponse(),
             PostCategoryType = categoryTypeDetail.ToResponse()
         });
-    }
-
-    /// <summary>
-    /// Обогощает незаполненные MataFields
-    /// </summary>
-    /// <param name="metaValues"></param>
-    /// <param name="metaFields"></param>
-    /// <returns></returns>
-    public static IReadOnlyCollection<MetaValueDetailDto> EnrichWithBlankMetaValuesFromMetaValues(
-                                                            IEnumerable<MetaValueDetailDto> metaValues,
-                                                            IReadOnlyCollection<MetaFieldDto> metaFields)
-    {
-
-        var valuesByMfId = metaValues.GroupBy(s => s.MetaField.Id)
-                                     .ToDictionary(g => g.Key, g => g.OrderBy(v => v.Index).ToList());
-
-        var enrichMetaValues = new List<MetaValueDetailDto>(metaFields.Count);
-
-        foreach (var mf in metaFields)
-        {
-            if (mf.Type == MetaFieldType.Query) continue; // вычислимое — хранимых значений нет
-
-            if (valuesByMfId.TryGetValue(mf.Id, out var values))
-            {
-                // все строки поля (мульти-значения), без потери дубликатов
-                enrichMetaValues.AddRange(values);
-            }
-            else if (!mf.IsMultiple)
-            {
-                //meta value not set. Create blank (множественные поля — ноль строк)
-                var blankMetaValue = GetBlankMetaValue(mf);
-                enrichMetaValues.Add(blankMetaValue);
-            }
-        }
-
-        return enrichMetaValues;
-    }
-
-    public static MetaValueDetailDto GetBlankMetaValue(MetaFieldDto metaField)
-    {
-        var def = metaField.Default;
-        return new()
-        {
-            Id = Guid.NewGuid(),
-            Index = 0,
-
-            Bool = def?.Bool,
-            Int = def?.Int,
-            Float = def?.Float,
-            Decimal = def?.Decimal,
-            Long = def?.Long,
-            DateTime = def?.DateTime,
-            ModelId = def?.ModelId,
-            StringShort = metaField.Type == MetaFieldType.String ? def?.StringShort ?? ""
-                        : metaField.Type == MetaFieldType.Select ? metaField.GetDefaultVariantKey()
-                        : def?.StringShort,
-            StringText = metaField.Type == MetaFieldType.Text ? def?.StringText ?? "" : def?.StringText,
-            MetaField = metaField,
-            VariantId = def?.VariantId,
-            VariantsIds = def?.VariantsIds ?? []
-        };
     }
 
     public PostCategoryEditDetail GetPostCategoryBlank(string categoryType, string postType)

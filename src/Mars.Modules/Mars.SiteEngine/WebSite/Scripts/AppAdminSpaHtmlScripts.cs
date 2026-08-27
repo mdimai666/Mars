@@ -1,8 +1,8 @@
 using System.Reflection;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.WebSite.Scripts;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
-namespace Mars.Host.WebSite.Scripts;
+namespace Mars.SiteEngine.WebSite.Scripts;
 
 public class AppAdminSpaHtmlScripts
 {
@@ -49,7 +49,7 @@ public class AppAdminSpaHtmlScripts
 
             new(new Uri(@"css/style.css", UriKind.Relative), placeInHead: true, version:appVersion, order: defaultOrder),
             new(new Uri(@"_content/Mars.Nodes.Workspace/styles.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
-            new(new Uri(@"AppAdmin.styles.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
+            new(new Uri(@"Mars.Admin.styles.css", UriKind.Relative), placeInHead: true, order: defaultOrder),
         ];
 
         HeadStyles = headStyles;
@@ -71,7 +71,7 @@ public class AppAdminSpaHtmlScripts
             new(new Uri(@"/mars/js/emmet-monaco.min.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"/mars/js/language-log.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"/mars/vendor/spotlight/spotlight.bundle.js", UriKind.Relative), order: defaultOrder),
-            new(new Uri(@"_content/mdimai666.Mars.AppFront.Main/js/highlight-extensions.js", UriKind.Relative), order: defaultOrder),
+            new(new Uri(@"_content/mdimai666.Mars.Admin.Framework/js/highlight-extensions.js", UriKind.Relative), order: defaultOrder),
             new(new Uri(@"/mars/vendor/json-viewer/index.js", UriKind.Relative), order: defaultOrder),
 
             new(new Uri(@"js/scripts.js", UriKind.Relative), version:appVersion, order: interactScriptsOrder),

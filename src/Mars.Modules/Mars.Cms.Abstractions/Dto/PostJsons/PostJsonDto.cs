@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
 
-namespace Mars.Host.Shared.Dto.PostJsons;
+namespace Mars.Cms.Abstractions.Dto.PostJsons;
 
 public record PostJsonDto : PostSummary
 {

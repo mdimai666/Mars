@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Interfaces;
 
-namespace Mars.Shared.Contracts.Common;
+namespace Mars.Contracts.Common;
 
 //public class BasicEntityResponse : IBasicEntityResponse
 //{

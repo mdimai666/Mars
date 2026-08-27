@@ -1,7 +1,7 @@
 using System.Reflection;
 using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Core.StringFunctions;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Functions;
 

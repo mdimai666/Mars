@@ -1,4 +1,4 @@
-using Mars.Datasource.Core.Dto;
+using Mars.Datasource.Dto;
 using FluentAssertions;
 
 namespace Test.Mars.Datasource.Host;

@@ -1,10 +1,10 @@
 using System.Text.Json.Nodes;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
 /// Настройка генератора значения мета-поля; хранится в <c>Options.generator</c> (один генератор на поле).
-/// Тип — дискриминатор из каталога <c>Mars.Shared.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>.
+/// Тип — дискриминатор из каталога <c>Mars.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>.
 /// </summary>
 public record MetaFieldGeneratorDefinition
 {

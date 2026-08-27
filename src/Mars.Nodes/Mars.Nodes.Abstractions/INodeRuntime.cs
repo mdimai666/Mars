@@ -1,11 +1,11 @@
-using Mars.Host.Shared.Hubs;
+using Mars.Nodes.Abstractions.Hubs;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Host.Shared.ExceptionModule;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Nodes.Host.Shared.Models;
+using Mars.Nodes.Abstractions.ExceptionModule;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Models;
 
-namespace Mars.Nodes.Host.Shared;
+namespace Mars.Nodes.Abstractions;
 
 public interface INodeRuntime
 {

@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.UserTypes;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.UserTypes;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class UserTypeMapping
 {

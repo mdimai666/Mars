@@ -1,13 +1,28 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Resources;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Handlers;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Handlers;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Handlers;
+using Mars.Contracts.Common;
+using Mars.Contracts.Resources;
 using Microsoft.Extensions.Options;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Media.Host.Handlers;
 
 internal class FileRelationModelProviderHandler(IFileRepository fileRepository, IOptions<FileHostingInfo> hostingInfo, IFileService fileService) : IMetaRelationModelProviderHandler
 {

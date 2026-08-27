@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Host.Shared.Dto.NodeTasks;
+namespace Mars.Nodes.Abstractions.Dto.NodeTasks;
 
 public record NodeTaskResultDetail : NodeTaskResultSummary
 {

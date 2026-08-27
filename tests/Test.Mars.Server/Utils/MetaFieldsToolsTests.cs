@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Repositories;
+using Mars.Data.OwnedTypes.MetaFields;
+using Mars.Data.Repositories;
 
-namespace Test.Mars.Host.Utils;
+namespace Test.Mars.Server.Utils;
 
 public class MetaFieldsToolsTests
 {

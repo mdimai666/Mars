@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Mars.Host.Shared.WebSite.Scripts;
+namespace Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
 public record ScriptFileInfo : IWebSiteInjectContentPart, IWebSiteExternalAssert
 {

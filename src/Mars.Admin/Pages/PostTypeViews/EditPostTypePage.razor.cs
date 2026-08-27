@@ -1,17 +1,17 @@
-using AppFront.Shared.Components.MetaFieldViews;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Admin.Framework.Components.MetaFieldViews;
+using Mars.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 public partial class EditPostTypePage
 {
     [Inject] protected IMarsWebApiClient client { get; set; } = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;

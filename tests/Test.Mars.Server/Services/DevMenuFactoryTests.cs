@@ -1,11 +1,12 @@
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Resources;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Resources;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class DevMenuFactoryTests
 {

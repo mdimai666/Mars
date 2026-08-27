@@ -1,4 +1,4 @@
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.XActions;

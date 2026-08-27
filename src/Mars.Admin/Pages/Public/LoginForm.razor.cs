@@ -1,17 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web;
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Interfaces;
 using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Utils;
 using Mars.Options.Models;
-using Mars.Shared.Contracts.Auth;
-using Mars.Shared.Contracts.SSO;
+using Mars.Contracts.Auth;
+using Mars.Contracts.SSO;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace AppAdmin.Pages.Public;
+namespace Mars.Admin.Pages.Public;
 
 public partial class LoginForm
 {

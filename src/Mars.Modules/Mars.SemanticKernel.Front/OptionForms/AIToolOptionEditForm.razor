@@ -1,8 +1,8 @@
-@using AppFront.Shared.Components
+@using Mars.Admin.Framework.Components
 @using Mars.Options.Attributes
-@using Mars.SemanticKernel.Shared.Options
-@using Mars.Shared.Contracts.AIService
-@using Mars.Shared.Options.Attributes
+@using Mars.SemanticKernel.Contracts.Options
+@using Mars.Contracts.AIService
+@using Mars.Contracts.Options.Attributes
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.ComponentModel.DataAnnotations
@@ -35,7 +35,7 @@
     EditOptionForm<AIToolOption>? form;
 
     [Inject] IMarsWebApiClient _client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     static readonly AIConfigNodeResponse empty = new() { NodeId = "", Title = "--", Description = "" };
 

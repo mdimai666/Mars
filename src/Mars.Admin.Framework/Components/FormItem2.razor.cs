@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 /// <summary>
 /// Component for output [Display(Name, Description)] or Property Name

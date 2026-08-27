@@ -1,6 +1,6 @@
 using Toolbelt.Blazor.HotKeys2;
 
-namespace Mars.Nodes.Front.Shared.Editor.Models;
+namespace Mars.Nodes.Front.Abstractions.Editor.Models;
 
 public readonly struct Hotkey
 {

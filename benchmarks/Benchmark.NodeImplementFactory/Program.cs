@@ -4,7 +4,7 @@ using BenchmarkDotNet.Running;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Factories;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 BenchmarkRunner.Run<InstantiationBenchmark>();

@@ -1,8 +1,10 @@
 using Bogus;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.XActions;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Contracts.XActions;
 
 namespace Mars.XActions.ContentRecipes;
 

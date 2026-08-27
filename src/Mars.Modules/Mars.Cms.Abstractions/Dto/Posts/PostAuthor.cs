@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public record PostAuthor
 {

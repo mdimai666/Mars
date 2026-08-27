@@ -1,7 +1,7 @@
-﻿using System.Drawing;
+using System.Drawing;
 using Mars.Options.Interfaces;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Media.Abstractions.Services;
 
 public interface IImageProcessor
 {

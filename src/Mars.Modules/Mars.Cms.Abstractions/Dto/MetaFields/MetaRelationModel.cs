@@ -1,7 +1,7 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
 /// <see cref="MetaRelationModelResponse"/>

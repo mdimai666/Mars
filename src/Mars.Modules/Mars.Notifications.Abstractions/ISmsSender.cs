@@ -1,5 +1,5 @@
-﻿using Mars.Shared.Common;
-using Mars.Shared.Contracts.Sms;
+using Mars.Contracts.Common;
+using Mars.Contracts.Sms;
 
 namespace Mars.Notifications.Abstractions;
 

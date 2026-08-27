@@ -2,13 +2,19 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mars.Core.Utils;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Handlers;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.SiteEngine.Handlers;
+using Mars.SiteEngine.Handlers;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.SiteEngine.Handlers;
 using Mars.Options.Interfaces;
 using Mars.Options.Models;
 
-namespace Mars.Host.Handlers;
+namespace Mars.SiteEngine.Handlers;
 
 internal class FaviconGeneratorHandler : IFaviconGeneratorHandler
 {

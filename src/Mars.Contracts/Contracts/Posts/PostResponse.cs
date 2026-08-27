@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostCategories;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostCategories;
 
-namespace Mars.Shared.Contracts.Posts;
+namespace Mars.Contracts.Posts;
 
 public record PostSummaryResponse : IBasicEntityResponse
 {

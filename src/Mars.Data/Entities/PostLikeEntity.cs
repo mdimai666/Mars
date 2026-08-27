@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 //public class PostLikeEntity : BasicEntity
 //{

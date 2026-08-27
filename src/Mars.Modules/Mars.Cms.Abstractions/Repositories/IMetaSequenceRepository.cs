@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Cms.Abstractions.Repositories;
 
 /// <summary>
 /// Счётчики генератора «порядковый номер» (таблица meta_sequences):

@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.ViewModels;
+using Mars.Contracts.Common;
+using Mars.Contracts.Roles;
+using Mars.Contracts.ViewModels;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.PostJsons;
+using Mars.Contracts.PostJsons;
 
-namespace Mars.Host.Shared.Dto.PostJsons;
+namespace Mars.Cms.Abstractions.Dto.PostJsons;
 
 public static class PostJsonRequestExtensions
 {

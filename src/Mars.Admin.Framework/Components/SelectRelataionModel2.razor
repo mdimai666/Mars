@@ -1,6 +1,6 @@
-@using AppFront.Shared.Components.MetaFieldViews
+@using Mars.Admin.Framework.Components.MetaFieldViews
 @using Flurl.Http
-@using Mars.Shared.Contracts.MetaFields
+@using Mars.Contracts.MetaFields
 @using Microsoft.FluentUI.AspNetCore.Components
 @inherits FluentComponentBase
 
@@ -46,7 +46,7 @@
 @code {
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     bool Busy = false;
 

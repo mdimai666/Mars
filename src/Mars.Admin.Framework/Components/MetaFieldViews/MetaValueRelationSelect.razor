@@ -1,6 +1,6 @@
 @using System.Diagnostics.CodeAnalysis
-@using Mars.Shared.Contracts.MetaFields
-@using Mars.Shared.Contracts.PostTypes
+@using Mars.Contracts.MetaFields
+@using Mars.Contracts.PostTypes
 @using Flurl.Http
 @using Microsoft.FluentUI.AspNetCore.Components
 
@@ -43,7 +43,7 @@
 @code {
     [Inject] IDialogService _dialogService { get; set; } = default!;
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     [CascadingParameter] FormMetaValue formMetaValue { get; set; } = default!;
 

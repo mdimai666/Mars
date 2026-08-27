@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.TemplateEngine.Providers.ScribanProvider;
 
-namespace Test.Mars.Host.TemplateEngines.ScribanTests;
+namespace Test.Mars.Server.TemplateEngines.ScribanTests;
 
 public class ScribanSyntaxTests : ITemplateEngineSyntaxTests
 {

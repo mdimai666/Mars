@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<IsPackable>false</IsPackable>
@@ -37,7 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
+		<ProjectReference Include="..\..\src\Mars.Server\Mars.Server.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />

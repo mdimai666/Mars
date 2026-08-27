@@ -1,15 +1,15 @@
 using System.Text.Json;
-using AppFront.Shared.Mappings;
-using AppFront.Shared.Models;
+using Mars.Admin.Framework.Mappings;
+using Mars.Admin.Framework.Models;
 using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Features;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Systems;
-using Mars.Shared.ViewModels;
+using Mars.Contracts.Common;
+using Mars.Contracts.Systems;
+using Mars.Contracts.ViewModels;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 public class ViewModelService : IViewModelService
 {

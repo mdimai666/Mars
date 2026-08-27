@@ -1,7 +1,8 @@
-using Mars.Host.Shared.Dto.Options;
-using Mars.Shared.Common;
+using Mars.Options.Dto.Options;
+using Mars.Options.Repositories;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Options.Repositories;
 
 public interface IOptionRepository : IDisposable
 {

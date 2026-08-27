@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Globalization;
 using System.Resources.NetStandard;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Localizer;
+using Mars.Server.Abstractions.Interfaces;
+using Mars.Server.Localizer;
 using Microsoft.Extensions.Localization;
 
 namespace Mars.Localizer.Services;

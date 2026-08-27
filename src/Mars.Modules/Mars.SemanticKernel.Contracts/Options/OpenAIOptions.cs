@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.SemanticKernel.Shared.Options;
+namespace Mars.SemanticKernel.Contracts.Options;
 
 /// <summary>
 /// OpenAI settings.

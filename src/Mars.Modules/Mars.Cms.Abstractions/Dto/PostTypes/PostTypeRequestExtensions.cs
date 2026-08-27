@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 public static class PostTypeRequestExtensions
 {

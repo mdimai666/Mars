@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Mappings.Posts;
+namespace Mars.Cms.Abstractions.Mappings.Posts;
 
 public static class PostStatusMapping
 {

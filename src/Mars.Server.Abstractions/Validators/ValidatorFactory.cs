@@ -3,7 +3,7 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.Validators;
+namespace Mars.Server.Abstractions.Validators;
 
 public class ValidatorFactory : IValidatorFactory
 {

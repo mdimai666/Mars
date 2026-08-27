@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.UserTypes;
 
-namespace Mars.Host.Shared.Dto.UserTypes;
+namespace Mars.Identity.Abstractions.Dto.UserTypes;
 
 public static class UserTypeRequestExtensions
 {

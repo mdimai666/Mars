@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.Options;
+namespace Mars.Data.Options;
 
 public sealed record DatabaseConnectionOpt
 {

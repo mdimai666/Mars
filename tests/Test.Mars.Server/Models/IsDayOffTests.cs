@@ -1,6 +1,6 @@
 using Xunit.Abstractions;
 
-namespace Test.Mars.Host.Models;
+namespace Test.Mars.Server.Models;
 
 #if false
 public class IsDayOffTests

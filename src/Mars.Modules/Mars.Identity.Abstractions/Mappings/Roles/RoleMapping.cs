@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Roles;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Roles;
+using Mars.Data.Extensions;
+using Mars.Identity.Abstractions.Dto.Roles;
+using Mars.Contracts.Common;
+using Mars.Contracts.Roles;
 
-namespace Mars.Host.Shared.Mappings.Roles;
+namespace Mars.Identity.Abstractions.Mappings.Roles;
 
 public static class RoleMapping
 {

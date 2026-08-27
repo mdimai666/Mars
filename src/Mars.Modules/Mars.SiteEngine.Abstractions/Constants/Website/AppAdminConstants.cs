@@ -1,6 +1,6 @@
-namespace Mars.Host.Shared.Constants.Website;
+namespace Mars.SiteEngine.Abstractions.Constants.Website;
 
 public static class AppAdminConstants
 {
-    public const string SiteScriptsBuilderKey = "AppAdmin";
+    public const string SiteScriptsBuilderKey = "Mars.Admin";
 }

@@ -1,6 +1,6 @@
 using Mars.Options.Models;
 
-namespace Mars.Host.Shared.Handlers;
+namespace Mars.SiteEngine.Handlers;
 
 public interface IFaviconGeneratorHandler
 {

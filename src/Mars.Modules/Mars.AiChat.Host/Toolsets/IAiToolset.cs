@@ -1,5 +1,5 @@
 using Mars.AiChat.Host.Tools;
-using Mars.AiChat.Shared.Options;
+using Mars.AiChat.Contracts.Options;
 using Microsoft.Extensions.AI;
 
 namespace Mars.AiChat.Host.Toolsets;

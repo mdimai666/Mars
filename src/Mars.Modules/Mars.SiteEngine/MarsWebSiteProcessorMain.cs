@@ -1,16 +1,20 @@
-using Mars.Host.Handlers;
-using Mars.Host.Shared.Constants.Website;
-using Mars.Host.Shared.Handlers;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Scripts;
-using Mars.Host.Templators;
-using Mars.Host.WebSite.Scripts;
-using Mars.WebSiteProcessor.Interfaces;
-using Mars.WebSiteProcessor.Services;
+using Mars.Options.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Handlers;
+using Mars.SiteEngine.Abstractions.Constants.Website;
+using Mars.SiteEngine.Handlers;
+using Mars.Options.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Handlers;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
+using Mars.SiteEngine.Templators;
+using Mars.SiteEngine.WebSite.Scripts;
+using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.WebSiteProcessor;
+namespace Mars.SiteEngine;
 
 public static class MarsWebSiteProcessorMain
 {
@@ -45,7 +49,7 @@ public static class MarsWebSiteProcessorMain
 
     static void UseSiteScriptsBuilders(IServiceProvider serviceProvider)
     {
-        //AppAdmin
+        //Mars.Admin
         {
             // core
             var appAdminBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);

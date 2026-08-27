@@ -2,12 +2,12 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
-using Mars.Shared.Contracts.SSO;
+using Mars.Contracts.SSO;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.AuthProviders;
+namespace Mars.Admin.Framework.AuthProviders;
 
 public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
 {

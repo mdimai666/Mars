@@ -1,19 +1,19 @@
-using AppAdmin;
-using AppAdmin.Components;
-using AppAdmin.Startups;
-using AppFront.Main.Extensions;
-using AppFront.Main.OptionEditForms;
-using AppFront.Shared.Components.MetaFieldViews;
-using AppFront.Shared.Features;
-using AppFront.Shared.Interfaces;
+using Mars.Admin;
+using Mars.Nodes.Workspace;
+using Mars.Admin.Components;
+using Mars.Admin.Startups;
+using Mars.Admin.Framework.Extensions;
+using Mars.Admin.Framework.OptionEditForms;
+using Mars.Admin.Framework.Components.MetaFieldViews;
+using Mars.Admin.Framework.Features;
+using Mars.Admin.Framework.Interfaces;
 using Flurl.Http;
 using Mars.Datasource.Front;
 using Mars.AiChat.Front;
-using Mars.Nodes.Workspace;
 using Mars.Options.Front;
 using Mars.Plugin.Front;
 using Mars.SemanticKernel.Front;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 using Mars.WebApp.Nodes.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;
@@ -56,19 +56,19 @@ var safeMode = await builder.DetectIsSafeMode(logger);
 builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
 
 // формы аргументов XAction: заменяем null-презентер на диалоги FluentUI
-builder.Services.Replace(ServiceDescriptor.Scoped<AppFront.Shared.Services.IXActionFormPresenter, AppAdmin.Shared.FluentDialogXActionFormPresenter>());
+builder.Services.Replace(ServiceDescriptor.Scoped<Mars.Admin.Framework.Services.IXActionFormPresenter, Mars.Admin.Shared.FluentDialogXActionFormPresenter>());
 
-builder.Services.AddScoped<AppAdmin.Shared.ActionCenter.ActionCenterService>();
-builder.Services.AddScoped<AppAdmin.Shared.ActionCenter.RecentPagesService>();
+builder.Services.AddScoped<Mars.Admin.Shared.ActionCenter.ActionCenterService>();
+builder.Services.AddScoped<Mars.Admin.Shared.ActionCenter.RecentPagesService>();
 
 #if DEBUG
-builder.Services.AddScoped<AppFront.Shared.Services.IFrontActionRunner, AppAdmin.Shared.FrontDemoActionRunner>();
+builder.Services.AddScoped<Mars.Admin.Framework.Services.IFrontActionRunner, Mars.Admin.Shared.FrontDemoActionRunner>();
 #endif
 
 Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
 Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
-ContentWrapper.GeneralSectionActions = typeof(AppAdmin.Shared.GeneralSectionActions);
+ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);
 
 // блочный редактор мета-полей: модуль подключён только в админке
 // (общая фронт-библиотека от EditorJsBlazored не зависит)
@@ -109,8 +109,8 @@ var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>(
 optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
 // кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
-app.Services.GetRequiredService<AppFront.Shared.Services.IXActionFormProvider>()
-            .Register(AppAdmin.Shared.RegenerateGeneratedMetaValuesForm.CommandId, typeof(AppAdmin.Shared.RegenerateGeneratedMetaValuesForm));
+app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()
+            .Register(Mars.Admin.Shared.RegenerateGeneratedMetaValuesForm.CommandId, typeof(Mars.Admin.Shared.RegenerateGeneratedMetaValuesForm));
 
 SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
 

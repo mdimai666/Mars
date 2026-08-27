@@ -1,5 +1,5 @@
 using System.CommandLine;
-using Mars.CommandLine.Shared;
+using Mars.CommandLine.Abstractions;
 using Mars.Options.Host;
 using Mars.UseStartup.MarsParts;
 using Microsoft.EntityFrameworkCore;

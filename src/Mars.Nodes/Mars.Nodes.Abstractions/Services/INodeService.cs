@@ -1,9 +1,9 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Models;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Nodes.Abstractions.Services;
 
 public interface INodeService
 {

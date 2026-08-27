@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Files;
+namespace Mars.Contracts.Files;
 
 public record FileSummaryResponse
 {

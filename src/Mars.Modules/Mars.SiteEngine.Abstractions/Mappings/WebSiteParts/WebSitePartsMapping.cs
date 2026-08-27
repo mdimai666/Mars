@@ -1,7 +1,7 @@
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Shared.Contracts.WebSite.Dto;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.Contracts.WebSite.Dto;
 
-namespace Mars.Host.Shared.Mappings.NavMenus;
+namespace Mars.SiteEngine.Abstractions.Mappings.WebSiteParts;
 
 public static class WebSitePartsMapping
 {

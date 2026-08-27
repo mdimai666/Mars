@@ -1,4 +1,4 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
 namespace Mars.Docker.Contracts;
 

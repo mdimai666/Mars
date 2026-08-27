@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class UserPasskeyEntity : IdentityUserPasskey<Guid>
 {

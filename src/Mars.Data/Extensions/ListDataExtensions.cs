@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Mars.Core.Extensions;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Shared.Dto.Common;
+namespace Mars.Data.Extensions;
 
 public static class ListDataExtensions
 {

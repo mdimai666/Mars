@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Singletone service

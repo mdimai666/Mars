@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Front.Shared.Editor.Interfaces;
+namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 
 public interface ICopyBufferItem
 {

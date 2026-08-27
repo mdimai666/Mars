@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Модели-владельцы мета-значений (ключи провайдеров значений,

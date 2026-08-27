@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Schedulers;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Schedulers;
 
-namespace Mars.Host.Shared.Dto.Schedulers;
+namespace Mars.Scheduler.Abstractions.Dto.Schedulers;
 
 public static class SchedulerRequestExtensions
 {

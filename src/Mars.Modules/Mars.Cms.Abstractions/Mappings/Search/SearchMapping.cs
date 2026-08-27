@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.Search;
-using Mars.Shared.Contracts.Search;
+using Mars.Cms.Abstractions.Dto.Search;
+using Mars.Contracts.Search;
 
-namespace Mars.Host.Shared.Mappings.Search;
+namespace Mars.Cms.Abstractions.Mappings.Search;
 
 public static class SearchMapping
 {

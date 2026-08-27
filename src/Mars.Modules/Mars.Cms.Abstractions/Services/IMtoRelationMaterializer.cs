@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Батч-материализация Relation-навигаций в скомпилированных Mto-моделях

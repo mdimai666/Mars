@@ -1,7 +1,8 @@
-using Mars.Host.Shared.Dto.Search;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 /// <summary>
 /// Агрегатор поиска: опрашивает все зарегистрированные <see cref="ICentralSearchProvider"/>

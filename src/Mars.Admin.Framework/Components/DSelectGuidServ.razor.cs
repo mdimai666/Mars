@@ -1,7 +1,7 @@
 using Mars.Core.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class DSelectGuidServ<TModel, TListQueryRequest>
     where TModel : IHasId

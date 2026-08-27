@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.Galleries;
+namespace Mars.Media.Abstractions.Dto.Galleries;
 
 public record ListGalleryQuery : BasicListQuery
 {

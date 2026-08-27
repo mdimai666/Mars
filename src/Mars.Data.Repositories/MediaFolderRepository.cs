@@ -1,13 +1,17 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.Files;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Repositories;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.Files;
+using Mars.Data.Repositories.Mappings;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Repositories;
+namespace Mars.Data.Repositories;
 
 internal class MediaFolderRepository : IMediaFolderRepository
 {

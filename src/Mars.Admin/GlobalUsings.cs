@@ -1,5 +1,5 @@
-global using AppFront.Shared.Extensions;
-global using AppFront.Shared.Components;
-global using AppFront.Shared.Services;
-global using AppFront.Shared;
-global using Mars.Shared.Common;
+global using Mars.Admin.Framework.Extensions;
+global using Mars.Admin.Framework.Components;
+global using Mars.Admin.Framework.Services;
+global using Mars.Admin.Framework;
+global using Mars.Contracts.Common;

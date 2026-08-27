@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Plugins;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Plugins;
+using Mars.Data.Extensions;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Contracts.Common;
+using Mars.Contracts.Plugins;
 
-namespace Mars.Host.Shared.Mappings.Plugins;
+namespace Mars.Plugin.Abstractions.Mappings.Plugins;
 
 public static class PluginMapping
 {

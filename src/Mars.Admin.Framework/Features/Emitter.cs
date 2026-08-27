@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AppFront.Shared.Features
-{
+namespace Mars.Admin.Framework.Features {
     public class Emitter
     {
         List<KeyValuePair<string, Action<object>>> events = new();

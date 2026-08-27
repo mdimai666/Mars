@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.PostCategoryTypes;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.PostCategoryTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostCategoryTypeViews;
+namespace Mars.Admin.Pages.PostCategoryTypeViews;
 
 public partial class ListPostCategoryTypePage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     string urlEditPage = "/dev/EditPostCategoryType";
 

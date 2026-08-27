@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 /// <summary>
 /// Это надо потому как я переопределил стандартного IdentityUser В User

@@ -1,18 +1,18 @@
 using System.Reflection.Metadata;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Shared.Contracts.Roles;
+using Mars.Contracts.Roles;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace AppAdmin.Pages.NavMenuViews;
+namespace Mars.Admin.Pages.NavMenuViews;
 
 public partial class EditNavMenuPage
 {
     [Inject] protected IMarsWebApiClient client { get; set; } = default!;
     [Inject] IAppMediaService mediaService { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Parameter] public Guid ID { get; set; }
     StandartEditContainer<NavMenu> f = default!;

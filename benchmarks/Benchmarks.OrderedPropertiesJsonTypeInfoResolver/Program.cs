@@ -3,8 +3,8 @@ using System.Text.Json.Serialization.Metadata;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.JsonConverters;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Server.Abstractions.JsonConverters;
 
 var summary = BenchmarkRunner.Run<JsonSerializationBenchmarks>();
 

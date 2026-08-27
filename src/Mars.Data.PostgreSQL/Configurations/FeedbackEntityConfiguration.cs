@@ -1,10 +1,10 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.Extensions;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Mars.Host.Data.Constants.EntityDefaultConstants;
+using static Mars.Data.Constants.EntityDefaultConstants;
 
-namespace Mars.Host.Data.PostgreSQL.Configurations;
+namespace Mars.Data.PostgreSQL.Configurations;
 
 public class FeedbackEntityConfiguration : IEntityTypeConfiguration<FeedbackEntity>
 {

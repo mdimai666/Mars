@@ -1,7 +1,7 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
-namespace Mars.Host.Shared.JsonConverters;
+namespace Mars.Server.Abstractions.JsonConverters;
 
 public class OrderedPropertiesJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
 {

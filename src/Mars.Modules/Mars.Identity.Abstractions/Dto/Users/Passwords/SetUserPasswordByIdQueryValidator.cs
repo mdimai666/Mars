@@ -1,6 +1,6 @@
-﻿using FluentValidation;
+using FluentValidation;
 
-namespace Mars.Host.Shared.Dto.Users.Passwords;
+namespace Mars.Identity.Abstractions.Dto.Users.Passwords;
 
 public class SetUserPasswordByIdQueryValidator : AbstractValidator<SetUserPasswordByIdQuery>
 {

@@ -1,4 +1,4 @@
-﻿namespace Mars.Datasource.Host.Core.Exceptions;
+namespace Mars.Datasource.Abstractions.Exceptions;
 
 public class DatasourceOperationException : Exception
 {

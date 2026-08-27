@@ -1,6 +1,6 @@
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.WebSite.Exceptions;
+namespace Mars.SiteEngine.Abstractions.WebSite.Exceptions;
 
 [Serializable]
 public class RenderPageHtmlException : Exception

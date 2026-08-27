@@ -1,10 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Identity.Abstractions.Services;
 
 public interface ITokenService
 {

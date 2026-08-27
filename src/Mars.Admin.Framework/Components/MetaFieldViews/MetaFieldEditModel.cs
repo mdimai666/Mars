@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Nodes;
 using Mars.Core.Attributes;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// <see cref="MetaFieldDetailResponse"/>

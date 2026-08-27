@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Exceptions;
 using Mars.Core.Interfaces;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Resources;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 /// <summary>
 /// <see cref="PostTypePresentationResponse"/>

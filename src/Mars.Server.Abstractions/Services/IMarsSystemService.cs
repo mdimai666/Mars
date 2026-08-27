@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.Systems;
+using Mars.Contracts.Systems;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 public interface IMarsSystemService
 {

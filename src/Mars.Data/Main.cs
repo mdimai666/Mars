@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Data;
+namespace Mars.Data;
 
 public static class Main
 {

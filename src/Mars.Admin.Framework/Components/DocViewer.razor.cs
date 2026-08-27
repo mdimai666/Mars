@@ -5,7 +5,7 @@ using Mars.Core.Attributes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class DocViewer<TValue>
 {

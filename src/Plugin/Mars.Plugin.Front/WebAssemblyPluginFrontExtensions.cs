@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using Mars.Core.Extensions;
 using Mars.Plugin.Front.Abstractions;
-using Mars.Shared.Contracts.Plugins;
+using Mars.Contracts.Plugins;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Logging;
 

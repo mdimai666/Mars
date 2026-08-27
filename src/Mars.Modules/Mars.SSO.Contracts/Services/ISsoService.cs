@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.SSO.Interfaces;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Interfaces;
 
-namespace Mars.Host.Shared.SSO.Services;
+namespace Mars.SSO.Contracts.Services;
 
 public interface ISsoService
 {

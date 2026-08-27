@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Shared.WebSite.Models;
+namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
 public class RenderContextUser
 {

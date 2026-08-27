@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.PostTypes;
+namespace Mars.Contracts.PostTypes;
 
 /// <summary>
 /// Видимость типа поста.

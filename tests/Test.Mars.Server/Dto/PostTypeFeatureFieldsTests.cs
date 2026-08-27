@@ -1,11 +1,11 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 
-namespace Test.Mars.Host.Dto;
+namespace Test.Mars.Server.Dto;
 
 public class PostTypeFeatureFieldsTests
 {

@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared;
+namespace Mars.Admin.Framework;
 
 public class AppFrontJs : IAsyncDisposable
 {
@@ -11,7 +11,7 @@ public class AppFrontJs : IAsyncDisposable
     public AppFrontJs(IJSRuntime jsRuntime)
     {
         moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/mdimai666.Mars.AppFront.Shared/AppFront.SharedJsInterop.js").AsTask());
+            "import", "./_content/mdimai666.Mars.Admin.Framework/AppFront.SharedJsInterop.js").AsTask());
         _js = jsRuntime;
     }
 

@@ -1,9 +1,9 @@
 using Mars.Core.Utils;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class PostMapping
 {

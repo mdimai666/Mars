@@ -1,13 +1,15 @@
 //#define USE_EXAMPLE_PLUGINS
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Plugins;
-using Mars.Host.Shared.Services;
+using Mars.Data.Extensions;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Options.Services;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Options.Models;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Handlers;
 using Mars.Plugin.Mappings;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 

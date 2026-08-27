@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Host.Data.OwnedTypes.MetaFields;
+namespace Mars.Data.OwnedTypes.MetaFields;
 
 /// <summary>
 /// OWNED MetaFieldTemplate only

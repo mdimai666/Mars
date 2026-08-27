@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core.Implements.JsonConverters;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Common;
 

@@ -1,9 +1,9 @@
 using System;
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Shared.Contracts.Search;
-using Mars.Shared.Contracts.XActions;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Contracts.Search;
+using Mars.Contracts.XActions;
 
-namespace Mars.Host.Shared.Dto.Search;
+namespace Mars.Cms.Abstractions.Dto.Search;
 
 /// <summary>
 /// <see cref="SearchFoundElementResponse"/>

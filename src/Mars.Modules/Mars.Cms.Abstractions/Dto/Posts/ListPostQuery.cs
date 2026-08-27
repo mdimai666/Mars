@@ -1,7 +1,7 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Common;
+using Mars.Contracts.Posts;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public record ListPostQuery : BasicListQuery
 {

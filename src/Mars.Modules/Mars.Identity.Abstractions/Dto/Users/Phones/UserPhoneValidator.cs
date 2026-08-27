@@ -1,8 +1,8 @@
 using FluentValidation;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Resources;
+using Mars.Identity.Abstractions.Utils;
+using Mars.Contracts.Resources;
 
-namespace Mars.Host.Shared.Dto.Users.Phones;
+namespace Mars.Identity.Abstractions.Dto.Users.Phones;
 
 public class UserPhoneValidator : AbstractValidator<string?>
 {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Shared.ViewModels;
+namespace Mars.Contracts.ViewModels;
 
 public static class RoleCaps
 {

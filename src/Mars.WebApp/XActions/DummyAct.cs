@@ -1,6 +1,5 @@
-using Mars.Host.Data.Contexts;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.XActions;
+using Mars.Data.Contexts;
+using Mars.Contracts.XActions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.XActions;

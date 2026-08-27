@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Renders;
+namespace Mars.SiteEngine.Abstractions.Dto.Renders;
 
 public class RenderInfo
 {

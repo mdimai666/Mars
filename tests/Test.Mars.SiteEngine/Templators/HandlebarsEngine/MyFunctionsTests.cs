@@ -1,10 +1,10 @@
 using System.Text.Encodings.Web;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using System.Text.Json;
 using FluentAssertions;
-using Mars.Host.Templators.HandlebarsFunc;
-using static Mars.Host.Templators.HandlebarsFunc.MyHandlebarsBasicFunctions;
+using static Mars.SiteEngine.Handlebars.HandlebarsFunc.MyHandlebarsBasicFunctions;
 
-namespace Test.Mars.WebSiteProcessor.Templators.HandlebarsEngine;
+namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
 
 public class MyFunctionsTests
 {

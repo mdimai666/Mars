@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Cms.Abstractions.Dto.PostTypes;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public record PostDetailWithType : PostDetail
 {

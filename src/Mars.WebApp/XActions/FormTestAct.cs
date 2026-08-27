@@ -1,4 +1,4 @@
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 
 namespace Mars.XActions;
 

@@ -1,4 +1,4 @@
-using Mars.Host.Shared.QueryLang.Services;
+using Mars.QueryLang.Services;
 using Mars.QueryLang.Host.Helpers;
 using Mars.QueryLang.Host.Services;
 using Microsoft.Extensions.DependencyInjection;

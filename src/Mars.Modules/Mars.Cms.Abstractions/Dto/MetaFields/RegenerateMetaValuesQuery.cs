@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>Режим перегенерации значений генераторов у существующих постов</summary>
 public enum MetaValuesRegenerationMode

@@ -1,4 +1,4 @@
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 
 namespace Mars.WebApp.Nodes.Models.AppEntityForms;
 

@@ -1,8 +1,8 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
 

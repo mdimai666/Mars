@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Roles;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Roles;
 
-namespace Mars.Host.Shared.Dto.Roles;
+namespace Mars.Identity.Abstractions.Dto.Roles;
 
 public static class RoleRequestExtensions
 {

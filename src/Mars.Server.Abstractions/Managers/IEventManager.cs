@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Managers;
+namespace Mars.Server.Abstractions.Managers;
 
 public interface IEventManager
 {

@@ -1,2 +1,2 @@
-global using Mars.Nodes.Front.Shared.Editor.Attributes;
-global using Mars.Nodes.Front.Shared.Editor.Interfaces;
+global using Mars.Nodes.Front.Abstractions.Editor.Attributes;
+global using Mars.Nodes.Front.Abstractions.Editor.Interfaces;

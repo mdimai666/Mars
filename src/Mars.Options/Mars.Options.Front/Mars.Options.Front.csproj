@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.csproj" />
     </ItemGroup>

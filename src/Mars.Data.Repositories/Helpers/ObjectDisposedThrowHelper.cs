@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Mars.Host.Repositories.Helpers;
+namespace Mars.Data.Repositories.Helpers;
 
 public static partial class ObjectDisposedThrowHelper
 {

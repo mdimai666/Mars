@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Identity.Abstractions.Services;
 
 public interface IUserManager
 {

@@ -1,4 +1,4 @@
-namespace Mars.Shared.Options;
+namespace Mars.Contracts.Options;
 
 public interface INormalizableBeforeWriteValue
 {

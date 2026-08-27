@@ -1,6 +1,6 @@
 using Mars.Core.Interfaces;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 public record PostCategoryTypeSummary : IHasId
 {

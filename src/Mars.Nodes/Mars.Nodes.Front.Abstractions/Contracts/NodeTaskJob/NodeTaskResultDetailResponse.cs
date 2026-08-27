@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
+namespace Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 
 public record NodeTaskResultDetailResponse : NodeTaskResultSummaryResponse
 {

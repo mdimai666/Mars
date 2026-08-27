@@ -1,9 +1,9 @@
-using Mars.Shared.Contracts.Files;
+using Mars.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MediaViews;
+namespace Mars.Admin.Framework.Components.MediaViews;
 
 /// <summary>
 /// Пикер папки медиа: выбор папки для загрузки (например, в настройках мета-поля

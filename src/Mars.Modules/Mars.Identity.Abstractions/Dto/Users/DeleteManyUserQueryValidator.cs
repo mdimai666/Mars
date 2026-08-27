@@ -1,7 +1,7 @@
 using FluentValidation;
-using Mars.Host.Shared.Repositories;
+using Mars.Identity.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public class DeleteManyUserQueryValidator : AbstractValidator<DeleteManyUserQuery>
 {

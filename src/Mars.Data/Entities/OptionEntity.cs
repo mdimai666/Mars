@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class OptionEntity : IBasicEntity
 {

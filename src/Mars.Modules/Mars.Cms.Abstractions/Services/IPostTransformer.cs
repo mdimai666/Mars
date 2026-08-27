@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.Posts;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IPostTransformer
 {

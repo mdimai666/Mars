@@ -1,7 +1,8 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Utils;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 /// <summary>
 /// Фейк <see cref="IMetaValueUniquenessProvider"/> для юнит-тестов:

@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Contracts.Common;
+using Mars.Contracts.UserTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Identity.Abstractions.Services;
 
 public interface IUserTypeService
 {

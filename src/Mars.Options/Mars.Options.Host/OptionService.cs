@@ -2,23 +2,23 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.Options;
-using Mars.Host.Shared.Exceptions;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Dto.Files;
+using Mars.Contracts.Options;
+using Mars.Options.Dto.Options;
+using Mars.Options.Exceptions;
 using Mars.Options.Models;
-using Mars.Shared.Common;
-using Mars.Shared.Options;
+using Mars.Options.Repositories;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Mars.Host.Services;
+namespace Mars.Options.Host.Services;
 
 // Singletone
 internal class OptionService : IOptionService

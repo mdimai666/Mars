@@ -1,22 +1,24 @@
 using System.Text.Json;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Repositories.Helpers;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Mappings.PostJsons;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Data.Repositories.Helpers;
+using Mars.Data.Repositories.Mappings;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Cms.Abstractions.Mappings.PostJsons;
+using Mars.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using NSubstitute;
 
-namespace Test.Mars.Host.Services.PostJsonServices;
+namespace Test.Mars.Server.Services.PostJsonServices;
 
 public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 {

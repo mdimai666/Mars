@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.Search;
+using Mars.Cms.Abstractions.Dto.Search;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface ICentralSearchService
 {

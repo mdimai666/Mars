@@ -1,15 +1,15 @@
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Mappings.NavMenus;
-using Mars.Host.Shared.Mappings.Options;
-using Mars.Host.Shared.Mappings.PostTypes;
-using Mars.Host.Shared.Mappings.Users;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.ViewModels;
+using Mars.Cms.Abstractions.Mappings.NavMenus;
+using Mars.Cms.Abstractions.Mappings.PostTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.ViewModels;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Abstractions.Mappings.Users;
+using Mars.Options.Mappings.Options;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Managers;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Server.Handlers;
 
 public class InitialSiteDataViewModelHandler(IOptionService optionService,
                                             INavMenuService navMenuService,

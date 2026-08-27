@@ -1,8 +1,8 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.WebSite.Scripts;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Mars.Host.WebSite.Scripts;
+namespace Mars.SiteEngine.WebSite.Scripts;
 
 internal class SiteScriptsBuilder : ISiteScriptsBuilder
 {

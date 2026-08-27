@@ -1,7 +1,7 @@
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.ViewModels;
+using Mars.Contracts.Common;
+using Mars.Contracts.Roles;
+using Mars.Contracts.ViewModels;
 
 namespace Mars.WebApiClient.Interfaces;
 

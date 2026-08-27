@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.SSO.Dto;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.SSO.Contracts.Dto;
 
-namespace Mars.Host.Shared.SSO.Interfaces;
+namespace Mars.SSO.Contracts.Interfaces;
 
 public interface ISsoProvider
 {

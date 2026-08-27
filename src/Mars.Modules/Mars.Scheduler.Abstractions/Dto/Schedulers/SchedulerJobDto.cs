@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Schedulers;
+namespace Mars.Scheduler.Abstractions.Dto.Schedulers;
 
 public class SchedulerJobDto
 {

@@ -1,7 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Options.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Options.Services;
 using Mars.SSO.Host.OAuth.Data;
 using Mars.SSO.Host.OAuth.interfaces;
 using Mars.SSO.Host.OAuth.Models;

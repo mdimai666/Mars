@@ -1,8 +1,8 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;

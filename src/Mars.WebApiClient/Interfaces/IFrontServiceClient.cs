@@ -1,5 +1,5 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.WebSite.Dto;
+using Mars.Contracts.Common;
+using Mars.Contracts.WebSite.Dto;
 
 namespace Mars.WebApiClient.Interfaces;
 

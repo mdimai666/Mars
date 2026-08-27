@@ -1,5 +1,5 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Files;
+using Mars.Contracts.Common;
+using Mars.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 using Flurl.Http.Content;

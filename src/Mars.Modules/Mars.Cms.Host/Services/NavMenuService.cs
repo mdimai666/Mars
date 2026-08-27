@@ -1,17 +1,21 @@
 using System.Data;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Resources;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Resources;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 public class NavMenuService : INavMenuService
 {

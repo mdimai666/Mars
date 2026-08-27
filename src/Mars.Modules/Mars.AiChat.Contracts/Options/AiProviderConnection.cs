@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.AiChat.Shared.Options;
+namespace Mars.AiChat.Contracts.Options;
 
 /// <summary>
 /// Настройка подключения к одному ИИ-сервису (OpenAI, Qwen, DeepSeek, Ollama, любой OpenAI-совместимый).

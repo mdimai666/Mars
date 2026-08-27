@@ -1,7 +1,7 @@
 using HandlebarsDotNet.PathStructure;
 using HandlebarsDotNet.ValueProviders;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public static class MyHandlebarsExtensions
 {

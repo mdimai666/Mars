@@ -1,7 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Mars.Host.Models;
-using Mars.Host.Shared.Dto.Users;
+using Mars.Identity.Host.Models;
+using Mars.Identity.Host.Services;
+using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Test.Common.Constants;
 
 namespace Mars.Integration.Tests.Common;

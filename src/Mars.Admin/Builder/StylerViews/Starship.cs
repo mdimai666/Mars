@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace AppAdmin.Builder.StylerViews;
+namespace Mars.Admin.Builder.StylerViews;
 
 [RequiresUnreferencedCode("Necessary because of RangeAttribute usage")]
 public class Starship

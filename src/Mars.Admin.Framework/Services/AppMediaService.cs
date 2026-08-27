@@ -1,8 +1,8 @@
-using AppFront.Shared.Components.MediaViews;
-using Mars.Shared.Contracts.Files;
+using Mars.Admin.Framework.Components.MediaViews;
+using Mars.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 public interface IAppMediaService
 {

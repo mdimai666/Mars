@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Resources;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Resources;
 
-namespace Mars.Shared.Contracts.UserTypes;
+namespace Mars.Contracts.UserTypes;
 
 public record UserTypeSummaryResponse : IBasicEntityResponse
 {

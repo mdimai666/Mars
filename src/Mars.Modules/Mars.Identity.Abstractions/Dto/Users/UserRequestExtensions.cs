@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Users.Passwords;
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Users;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Identity.Abstractions.Dto.Users.Passwords;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Users;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public static class UserRequestExtensions
 {

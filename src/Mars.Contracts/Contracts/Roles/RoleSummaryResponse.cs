@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Roles;
+namespace Mars.Contracts.Roles;
 
 public class RoleSummaryResponse
 {

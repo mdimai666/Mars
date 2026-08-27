@@ -1,12 +1,12 @@
 using AutoFixture;
+using Mars.Identity.Abstractions.Utils;
 using Bogus;
 using Mars.Core.Utils;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Users;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Test.Common.FixtureCustomizes;

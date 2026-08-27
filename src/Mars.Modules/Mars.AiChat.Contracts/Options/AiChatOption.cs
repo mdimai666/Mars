@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.AiChat.Shared.Options;
+namespace Mars.AiChat.Contracts.Options;
 
 /// <summary>
 /// Настройки ИИ-чата: подключения к ИИ-сервисам и поведение агента.

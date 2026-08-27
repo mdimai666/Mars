@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Shared.Common;
+namespace Mars.Contracts.Common;
 
 public record BasicListQuery : IBasicListQuery
 {

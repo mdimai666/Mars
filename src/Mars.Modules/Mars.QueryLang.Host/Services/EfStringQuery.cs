@@ -3,11 +3,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Host.Data.Entities;
-using Mars.Host.QueryLang;
-using Mars.Host.Shared.Templators;
-using Mars.Shared.Common;
-using Mars.Shared.Templators;
+using Mars.Data.Entities;
+using Mars.QueryLang.Host;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.Contracts.Common;
+using Mars.Contracts.Templators;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.QueryLang.Host.Services;

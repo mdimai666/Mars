@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.OwnedTypes.Feedbacks;
+using Mars.Data.Common;
+using Mars.Data.OwnedTypes.Feedbacks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 [Comment("Обратная связь")]
 public class FeedbackEntity : IBasicEntity

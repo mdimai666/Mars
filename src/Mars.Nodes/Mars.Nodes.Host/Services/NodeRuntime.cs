@@ -3,7 +3,7 @@ using HandlebarsDotNet;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Utils;
-using Mars.Host.Shared.Hubs;
+using Mars.Nodes.Abstractions.Hubs;
 using Mars.HttpSmartAuthFlow;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes;
@@ -11,10 +11,10 @@ using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Host.Helpers;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.ExceptionModule;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Nodes.Host.Shared.Models;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.ExceptionModule;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //for NSubstitute

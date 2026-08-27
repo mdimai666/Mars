@@ -1,7 +1,7 @@
 using Mars.Nodes.Core;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Mars.Host.Shared.Hubs;
+namespace Mars.Nodes.Abstractions.Hubs;
 
 /// <summary>
 /// Broadcast server

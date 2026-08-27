@@ -1,8 +1,7 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
-using Mars.Nodes.Host.NodeTasks;
-using Mars.Nodes.Host.Shared.Dto.NodeTasks;
-using Mars.Shared.Common;
+using Mars.Data.Extensions;
+using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+using Mars.Nodes.Abstractions.Dto.NodeTasks;
+using Mars.Contracts.Common;
 
 namespace Mars.Nodes.Host.Mappings.NodeTaskJobs;
 

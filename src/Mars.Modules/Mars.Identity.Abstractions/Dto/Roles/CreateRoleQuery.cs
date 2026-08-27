@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Roles;
+namespace Mars.Identity.Abstractions.Dto.Roles;
 
 public record CreateRoleQuery
 {

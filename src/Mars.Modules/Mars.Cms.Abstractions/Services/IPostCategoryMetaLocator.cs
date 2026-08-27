@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.PostCategoryTypes;
+using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IPostCategoryMetaLocator
 {

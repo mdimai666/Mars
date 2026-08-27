@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Galleries;
+namespace Mars.Media.Abstractions.Dto.Galleries;
 
 public record CreateGalleryQuery
 {

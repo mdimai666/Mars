@@ -1,10 +1,14 @@
 using FluentValidation;
 using Mars.Core.Features;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Validators;
 
-namespace Mars.Host.Shared.Dto.PostCategories;
+namespace Mars.Cms.Abstractions.Dto.PostCategories;
 
 public class CreatePostCategoryQueryValidator : AbstractValidator<CreatePostCategoryQuery>
 {

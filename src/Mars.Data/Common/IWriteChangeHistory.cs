@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.Common;
+namespace Mars.Data.Common;
 
 public interface IWriteChangeHistory
 {

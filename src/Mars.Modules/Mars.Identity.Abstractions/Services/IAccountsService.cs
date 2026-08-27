@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Services;
+namespace Mars.Identity.Abstractions.Services;
 
 public interface IAccountsService
 {

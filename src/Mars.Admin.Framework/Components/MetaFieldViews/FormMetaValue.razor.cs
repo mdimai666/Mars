@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 public partial class FormMetaValue
 {

@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IMetaRelationModelProviderHandler
 {

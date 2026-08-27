@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 /// <summary>
 /// Значение мета-поля по умолчанию (хранится на определении поля).

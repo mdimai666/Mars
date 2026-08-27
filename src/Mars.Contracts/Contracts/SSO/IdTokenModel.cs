@@ -1,62 +1,62 @@
 using System.Text.Json.Serialization;
 
-namespace Mars.Shared.Contracts.SSO;
+namespace Mars.Contracts.SSO;
 
 public class IdTokenModel
 {
-    // Unique user identifier (всегда обязателен)
+    // Unique user identifier (РІСЃРµРіРґР° РѕР±СЏР·Р°С‚РµР»РµРЅ)
     [JsonPropertyName("sub")]
     public string Subject { get; set; } = default!;
 
-    // Аудитория (кому предназначен токен — обычно client_id)
+    // РђСѓРґРёС‚РѕСЂРёСЏ (РєРѕРјСѓ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ С‚РѕРєРµРЅ вЂ” РѕР±С‹С‡РЅРѕ client_id)
     [JsonPropertyName("aud")]
     public string? Audience { get; set; }
 
-    // Issuer (URL realm'а или Google accounts)
+    // Issuer (URL realm'Р° РёР»Рё Google accounts)
     [JsonPropertyName("iss")]
     public string? Issuer { get; set; }
 
-    // Время выпуска токена (Unix time)
+    // Р’СЂРµРјСЏ РІС‹РїСѓСЃРєР° С‚РѕРєРµРЅР° (Unix time)
     [JsonPropertyName("iat")]
     public long IssuedAt { get; set; }
 
-    // Время истечения токена (Unix time)
+    // Р’СЂРµРјСЏ РёСЃС‚РµС‡РµРЅРёСЏ С‚РѕРєРµРЅР° (Unix time)
     [JsonPropertyName("exp")]
     public long ExpiresAt { get; set; }
 
-    // Email пользователя
+    // Email РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
     [JsonPropertyName("email")]
     public string? Email { get; set; }
 
-    // Подтверждён ли email
+    // РџРѕРґС‚РІРµСЂР¶РґС‘РЅ Р»Рё email
     [JsonPropertyName("email_verified")]
     public bool? EmailVerified { get; set; }
 
-    // Имя
+    // РРјСЏ
     [JsonPropertyName("given_name")]
     public string? FirstName { get; set; }
 
-    // Фамилия
+    // Р¤Р°РјРёР»РёСЏ
     [JsonPropertyName("family_name")]
     public string? LastName { get; set; }
 
-    // Полное имя
+    // РџРѕР»РЅРѕРµ РёРјСЏ
     [JsonPropertyName("name")]
     public string? FullName { get; set; }
 
-    // URL аватара
+    // URL Р°РІР°С‚Р°СЂР°
     [JsonPropertyName("picture")]
     public string? Picture { get; set; }
 
-    // Локаль (например, "ru-RU")
+    // Р›РѕРєР°Р»СЊ (РЅР°РїСЂРёРјРµСЂ, "ru-RU")
     [JsonPropertyName("locale")]
     public string? Locale { get; set; }
 
-    // Nonce, если использовался при запросе (для защиты от replay)
+    // Nonce, РµСЃР»Рё РёСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ РїСЂРё Р·Р°РїСЂРѕСЃРµ (РґР»СЏ Р·Р°С‰РёС‚С‹ РѕС‚ replay)
     [JsonPropertyName("nonce")]
     public string? Nonce { get; set; }
 
-    // Session ID (в Keycloak есть)
+    // Session ID (РІ Keycloak РµСЃС‚СЊ)
     [JsonPropertyName("session_state")]
     public string? SessionState { get; set; }
 }

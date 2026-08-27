@@ -1,8 +1,8 @@
 using System.Collections;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Schedulers;
-using Mars.Host.Shared.Scheduler;
-using Mars.Shared.Common;
+using Mars.Scheduler.Abstractions.Dto.Schedulers;
+using Mars.Scheduler.Abstractions;
+using Mars.Contracts.Common;
 using CronExpressionDescriptor;
 using Quartz;
 using Quartz.Impl.Matchers;

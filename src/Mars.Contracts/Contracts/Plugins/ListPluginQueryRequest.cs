@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.Plugins;
+namespace Mars.Contracts.Plugins;
 
 public record ListPluginQueryRequest : BasicListQueryRequest
 {

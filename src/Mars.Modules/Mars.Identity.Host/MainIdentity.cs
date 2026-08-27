@@ -1,8 +1,10 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Models;
-using Mars.Host.Services;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Services;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Identity.Host.Services;
+using Mars.Server.Abstractions.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,8 @@ public static class MainIdentity
 {
     public static IServiceCollection AddMarsIdentity(this IServiceCollection services, IConfiguration configuration)
     {
+        ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreateUserQueryValidator).Assembly);
+
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.JwtSectionKey));
 
         services.AddSingleton<ITokenService, TokenService>();

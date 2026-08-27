@@ -1,8 +1,9 @@
-using Mars.Host.Shared.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Notifications.Abstractions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.ActionHistorys;
-using Mars.Shared.Options;
+using Mars.Contracts.Common;
+using Mars.Contracts.ActionHistorys;
+using Mars.Contracts.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
 

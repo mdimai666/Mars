@@ -2,10 +2,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Interfaces;
-using Mars.Datasource.Host.Core.Exceptions;
-using Mars.Datasource.Host.Core.Models;
+using Mars.Datasource;
+using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Exceptions;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Core.Extensions;
 using Npgsql;
 

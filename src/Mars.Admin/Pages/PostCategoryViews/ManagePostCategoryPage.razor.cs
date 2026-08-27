@@ -1,8 +1,8 @@
-using Mars.Shared.Contracts.PostCategories;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostCategories;
+using Mars.Contracts.PostTypes;
 using Microsoft.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostCategoryViews;
+namespace Mars.Admin.Pages.PostCategoryViews;
 
 public partial class ManagePostCategoryPage
 {

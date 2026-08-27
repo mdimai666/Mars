@@ -1,17 +1,18 @@
 using System.Collections;
+using Mars.SiteEngine.Abstractions.Templators;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
 using HandlebarsDotNet;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Services;
 using Mars.QueryLang;
-using Mars.WebSiteProcessor.Handlebars.HandlebarsFunc;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public static class MyHandlebarsBasicFunctions
 {

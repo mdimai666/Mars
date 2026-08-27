@@ -1,7 +1,7 @@
 using Mars.Core.Extensions;
 using MarsCodeEditor2;
 
-namespace AppAdmin.Builder.DebugViews;
+namespace Mars.Admin.Builder.DebugViews;
 
 public partial class DebugPage
 {

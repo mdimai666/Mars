@@ -1,10 +1,10 @@
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Dto.Users.Passwords;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Users;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users.Passwords;
+using Mars.Contracts.Common;
+using Mars.Contracts.Users;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Identity.Abstractions.Services;
 
 public interface IUserService
 {

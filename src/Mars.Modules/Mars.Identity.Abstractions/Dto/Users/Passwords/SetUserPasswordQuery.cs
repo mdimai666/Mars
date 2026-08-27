@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Users.Passwords;
+namespace Mars.Identity.Abstractions.Dto.Users.Passwords;
 
 public record SetUserPasswordQuery
 {

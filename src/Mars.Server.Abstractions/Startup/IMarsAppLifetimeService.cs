@@ -1,9 +1,8 @@
-﻿using System.Reflection;
-using Mars.Host.Shared.Services;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.Startup;
+namespace Mars.Server.Abstractions.Startup;
 
 public interface IMarsAppLifetimeService
 {
@@ -18,8 +17,6 @@ public interface IMarsAppLifetimeService
 
     static IReadOnlyCollection<IMarsAppLifetimeService> GetOrderedList(IServiceCollection serviceCollection, WebApplication app)
     {
-        var ss = serviceCollection.FirstOrDefault(s => s.ServiceType == typeof(INodeService));
-
         var servicesTypes = serviceCollection.Where(s => typeof(IMarsAppLifetimeService).IsAssignableFrom(s.ImplementationType))
                 .Where(s => s.Lifetime == ServiceLifetime.Singleton)
                 .Select(s => s.ServiceType).ToList();

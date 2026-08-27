@@ -2,7 +2,7 @@ using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.XActions;
 using Mars.XActions.ContentRecipes;

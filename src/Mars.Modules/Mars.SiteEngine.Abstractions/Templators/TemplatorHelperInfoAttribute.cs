@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Templators;
+namespace Mars.SiteEngine.Abstractions.Templators;
 
 [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 public sealed class TemplatorHelperInfoAttribute : Attribute

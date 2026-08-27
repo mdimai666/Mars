@@ -2,8 +2,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json;
 using Mars.AiChat.Host.Hubs;
-using Mars.AiChat.Shared.Dto;
-using Mars.AiChat.Shared.SignalR;
+using Mars.AiChat.Contracts.Dto;
+using Mars.AiChat.Contracts.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 

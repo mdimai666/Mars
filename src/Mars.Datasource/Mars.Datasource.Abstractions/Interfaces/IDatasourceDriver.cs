@@ -1,4 +1,6 @@
-﻿namespace Mars.Datasource.Core.Interfaces;
+using Mars.Datasource;
+
+namespace Mars.Datasource.Abstractions.Interfaces;
 
 public interface IDatasourceDriver
 {

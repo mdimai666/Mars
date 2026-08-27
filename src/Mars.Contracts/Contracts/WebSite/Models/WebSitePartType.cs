@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.WebSite.Models;
+namespace Mars.Contracts.WebSite.Models;
 
 public enum WebSitePartType
 {

@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 
-namespace Mars.Shared.JsonConverters;
+namespace Mars.Contracts.JsonConverters;
 
 public class SourceUriJsonConverter : JsonConverter<SourceUri?>
 {

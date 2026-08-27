@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class DTreeView<TModel, TKey> : FluentComponentBase where TKey : notnull
 {

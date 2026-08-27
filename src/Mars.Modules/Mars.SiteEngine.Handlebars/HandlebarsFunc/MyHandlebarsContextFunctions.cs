@@ -1,15 +1,17 @@
 using HandlebarsDotNet;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.WebSiteProcessor.Handlebars.Parsers;
+using Mars.Cms.Abstractions.Services;
+using Mars.Server.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.Server.Abstractions.Interfaces;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Handlebars.Parsers;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public static class MyHandlebarsContextFunctions
 {

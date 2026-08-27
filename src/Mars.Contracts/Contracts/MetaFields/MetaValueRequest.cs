@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 public record CreateMetaValueRequest : MetaValueDetailBase
 {

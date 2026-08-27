@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Scheduler;
+using Mars.Scheduler.Abstractions;
 
 namespace Mars.Integration.Tests.Controllers.Schedulers;
 

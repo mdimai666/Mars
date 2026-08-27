@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// <see cref="MetaValueDetailResponse"/>

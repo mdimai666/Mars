@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users;
 
-namespace Mars.Host.Shared.Dto.Profile;
+namespace Mars.Identity.Abstractions.Dto.Profile;
 
 public record UserProfileDto : UserDetail
 {

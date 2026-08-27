@@ -1,18 +1,18 @@
 using AutoFixture;
 using FluentAssertions;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Host.Templators;
-using Mars.Host.Templators.HandlebarsFunc;
+using Mars.Data.Entities;
+using Mars.QueryLang.Services;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Templators;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Mars.QueryLang.Host.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http.Features;
 using NSubstitute;
 
-namespace Test.Mars.WebSiteProcessor.Templators.HandlebarsEngine;
+namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
 
 public class DataQueryScenariosTests
 {

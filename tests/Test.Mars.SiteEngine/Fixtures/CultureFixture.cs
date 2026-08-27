@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Test.Mars.WebSiteProcessor.Fixtures;
+namespace Test.Mars.SiteEngine.Fixtures;
 
 public class CultureFixture : IDisposable
 {

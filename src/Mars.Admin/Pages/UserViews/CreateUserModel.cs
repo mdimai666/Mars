@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.Users;
-using Mars.Shared.Resources;
+using Mars.Contracts.Users;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public class CreateUserModel
 {

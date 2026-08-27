@@ -1,7 +1,7 @@
 using Mars.Docker.Contracts;
-using Mars.Docker.Host.Shared.Dto;
+using Mars.Docker.Abstractions.Dto;
 
-namespace Mars.Docker.Host.Shared.Mapping;
+namespace Mars.Docker.Abstractions.Mapping;
 
 public static class DockerQueryMapping
 {

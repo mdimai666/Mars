@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 /// <summary>
 /// Клиентский исполнитель фронтового действия (<see cref="XActionType.FrontAction"/>).

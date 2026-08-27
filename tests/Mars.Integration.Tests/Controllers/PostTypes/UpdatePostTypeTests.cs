@@ -2,13 +2,13 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 

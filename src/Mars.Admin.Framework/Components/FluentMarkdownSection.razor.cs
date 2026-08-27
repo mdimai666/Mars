@@ -1,5 +1,5 @@
 using System.Net;
-using AppFront.Shared.Components.FluentMarkdownSectionViews;
+using Mars.Admin.Framework.Components.FluentMarkdownSectionViews;
 using Flurl.Http;
 using Markdig;
 using Markdig.Extensions.AutoLinks;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class FluentMarkdownSection : FluentComponentBase
 {
@@ -81,7 +81,7 @@ public partial class FluentMarkdownSection : FluentComponentBase
         {
             // import code for highlighting code blocks
             _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import",
-                "./_content/mdimai666.Mars.AppFront.Main/Components/FluentMarkdownSection.razor.js");
+                "./_content/mdimai666.Mars.Admin.Framework/Components/FluentMarkdownSection.razor.js");
         }
 
         if (firstRender || _markdownChanged)

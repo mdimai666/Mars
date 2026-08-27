@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Renders;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Shared.Common;
+using Mars.SiteEngine.Abstractions.Dto.Renders;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.SiteEngine.Abstractions.Services;
 
 public interface IPageRenderService
 {

@@ -1,8 +1,8 @@
 using Mars.Nodes.Core;
-using Mars.Shared.Utils;
+using Mars.Contracts.Utils;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace Mars.Nodes.Front.Shared.Editor.Interfaces;
+namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 
 public interface INodeWorkspaceApi
 {

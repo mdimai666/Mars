@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public record ListUserQuery : BasicListQuery
 {

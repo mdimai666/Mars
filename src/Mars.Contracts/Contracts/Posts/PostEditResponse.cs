@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.Posts;
+namespace Mars.Contracts.Posts;
 
 public record PostEditResponse : IBasicEntityResponse
 {

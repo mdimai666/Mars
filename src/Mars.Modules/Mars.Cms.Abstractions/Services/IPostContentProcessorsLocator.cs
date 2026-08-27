@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IPostContentProcessorsLocator
 {

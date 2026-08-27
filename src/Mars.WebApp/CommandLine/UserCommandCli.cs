@@ -1,13 +1,15 @@
 using System.CommandLine;
-using Mars.CommandLine.Shared;
+using Mars.CommandLine.Abstractions;
 using Mars.Core.Utils;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Roles;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Dto.Users.Passwords;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Common;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.Roles;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users.Passwords;
+using Mars.Core.Utils;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Core.Utils;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Contracts.Common;
 
 namespace Mars.CommandLine;
 

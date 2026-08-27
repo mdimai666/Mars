@@ -3,11 +3,12 @@ using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Mars.Core.Features;
-using Mars.Host.Data;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.ActionHistorys;
+using Mars.Data;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Services;
+using Mars.Contracts.ActionHistorys;
 
-namespace Mars.Host.Services;
+namespace Mars.Server.Services;
 
 internal class ActionHistoryService : IActionHistoryService
 {

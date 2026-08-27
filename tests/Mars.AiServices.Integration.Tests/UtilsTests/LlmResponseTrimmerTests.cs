@@ -1,4 +1,4 @@
-using Mars.SemanticKernel.Host.Shared.Generators;
+using Mars.SemanticKernel.Abstractions.Generators;
 
 namespace Mars.AiServices.Integration.Tests.UtilsTests;
 

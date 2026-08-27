@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Mars.SSO.Services;
+namespace Mars.SSO.Host.Services;
 
 internal class MemoryTokenCache : ITokenCache
 {

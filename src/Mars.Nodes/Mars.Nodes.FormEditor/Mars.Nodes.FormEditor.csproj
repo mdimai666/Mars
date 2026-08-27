@@ -74,11 +74,11 @@
         <!-- //Для hotreload -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.Front.Shared\Mars.Nodes.Front.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Front.Abstractions\Mars.Nodes.Front.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

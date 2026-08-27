@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Mars.Host.Shared.JsonConverters;
+using Mars.Server.Abstractions.JsonConverters;
 
-namespace Test.Mars.Host.JsonConverters;
+namespace Test.Mars.Server.JsonConverters;
 
 public class OrderedPropertiesJsonTypeInfoResolverTests
 {

@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Posts;
 
-namespace Mars.Shared.Contracts.PostJsons;
+namespace Mars.Contracts.PostJsons;
 
 public record PostJsonResponse : PostSummaryResponse
 {

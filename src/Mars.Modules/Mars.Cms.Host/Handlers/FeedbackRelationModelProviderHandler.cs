@@ -1,12 +1,16 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Feedbacks;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Resources;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Contracts.Common;
+using Mars.Contracts.Resources;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Cms.Host.Handlers;
 
 internal class FeedbackRelationModelProviderHandler(IFeedbackRepository feedbackRepository) : IMetaRelationModelProviderHandler
 {

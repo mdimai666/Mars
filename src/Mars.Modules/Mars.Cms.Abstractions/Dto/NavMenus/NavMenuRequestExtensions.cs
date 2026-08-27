@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.NavMenus;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.NavMenus;
 
-namespace Mars.Host.Shared.Dto.NavMenus;
+namespace Mars.Cms.Abstractions.Dto.NavMenus;
 
 public static class NavMenuRequestExtensions
 {

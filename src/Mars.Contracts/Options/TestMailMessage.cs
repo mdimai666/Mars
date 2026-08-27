@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Resources;
+using Mars.Contracts.Resources;
 
-namespace Mars.Shared.Options;
+namespace Mars.Contracts.Options;
 
 public class TestMailMessage
 {

@@ -1,17 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Roles;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Resources;
-using Mars.Shared.ViewModels;
+using Mars.Identity.Abstractions.Dto.Roles;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Resources;
+using Mars.Contracts.ViewModels;
 using Microsoft.Extensions.Localization;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 public class RoleService : IRoleService
 {

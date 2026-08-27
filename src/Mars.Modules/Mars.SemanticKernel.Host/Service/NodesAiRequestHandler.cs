@@ -1,7 +1,7 @@
 using Mars.Core.Extensions;
-using Mars.SemanticKernel.Host.Shared.Dto;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
-using Mars.SemanticKernel.Shared.Nodes;
+using Mars.SemanticKernel.Abstractions.Dto;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Mars.SemanticKernel.Contracts.Nodes;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Mars.SemanticKernel.Host.Service;

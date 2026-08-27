@@ -1,8 +1,8 @@
 using System.Text.Json;
 using FluentAssertions;
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 
-namespace Test.Mars.Host.Models;
+namespace Test.Mars.Server.Models;
 
 public class SourceUriTests
 {

@@ -38,4 +38,17 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
+  </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+    </ItemGroup>
+
 </Project>

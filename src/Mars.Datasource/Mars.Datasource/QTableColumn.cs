@@ -1,4 +1,4 @@
-namespace Mars.Datasource.Core;
+namespace Mars.Datasource;
 
 public class QTableColumn
 {

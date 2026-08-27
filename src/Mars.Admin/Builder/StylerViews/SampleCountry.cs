@@ -1,4 +1,4 @@
-namespace AppAdmin.Builder.StylerViews;
+namespace Mars.Admin.Builder.StylerViews;
 
 public class SampleCountry
 {

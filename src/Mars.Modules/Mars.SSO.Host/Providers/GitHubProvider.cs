@@ -2,15 +2,15 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Web;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.SSO.Interfaces;
-using Mars.Shared.Contracts.Users;
-using Mars.SSO.Dto;
-using Mars.SSO.Mappings;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Interfaces;
+using Mars.Contracts.Users;
+using Mars.SSO.Host.Dto;
+using Mars.SSO.Host.Mappings;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.SSO.Providers;
+namespace Mars.SSO.Host.Providers;
 
 // GitHub: note GitHub does not use OIDC for all setups; can be OAuth2 + user API
 public class GitHubProvider : ISsoProvider

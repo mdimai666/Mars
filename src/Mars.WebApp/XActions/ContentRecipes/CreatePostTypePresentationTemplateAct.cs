@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
+using Mars.SiteEngine.Abstractions.Services;
 using Mars.Services;
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 
 namespace Mars.XActions.ContentRecipes;
 

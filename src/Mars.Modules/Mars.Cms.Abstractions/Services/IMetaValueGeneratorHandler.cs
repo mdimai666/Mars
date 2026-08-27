@@ -1,8 +1,8 @@
 using System.Text.Json.Nodes;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Контекст генерации значения: создаваемый объект и поле, для которого генерируется значение.
@@ -19,7 +19,7 @@ public record MetaValueGeneratorContext(
 
 /// <summary>
 /// Генератор значения мета-поля. Реализации регистрируются как keyed-сервисы
-/// с ключом из <c>Mars.Shared.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>
+/// с ключом из <c>Mars.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>
 /// (паттерн целей Relation — <c>IMetaRelationModelProviderHandler</c>).
 /// </summary>
 public interface IMetaValueGeneratorHandler

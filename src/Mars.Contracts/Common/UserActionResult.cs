@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Mars.Core.Models;
 
-namespace Mars.Shared.Common;
+namespace Mars.Contracts.Common;
 
 public class UserActionResult : IUserActionResult
 {

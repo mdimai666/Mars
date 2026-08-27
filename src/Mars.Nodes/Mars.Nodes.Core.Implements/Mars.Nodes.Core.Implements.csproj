@@ -45,11 +45,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
         <ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.Host.Shared\Mars.Nodes.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -57,5 +57,18 @@
             <_Parameter1>Mars.Nodes.Implements.Test</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
 
 </Project>

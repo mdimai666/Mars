@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Mars.Host.Shared.Utils;
+namespace Mars.Core.Utils;
 
 /// <summary>
 /// https://github.com/BrunoVT1992/ConsoleTable

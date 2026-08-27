@@ -1,8 +1,10 @@
-using Mars.Host.Shared.Dto.Files;
-using Mars.Shared.Common;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Media.Abstractions.Services;
 
 public interface IFileService
 {

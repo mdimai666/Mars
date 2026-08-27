@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Media.Abstractions.Dto.Files;
 
 /// <summary>
 /// Обновление файла после перемещения/переименования папки

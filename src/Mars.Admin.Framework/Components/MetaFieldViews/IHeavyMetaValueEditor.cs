@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// «Тяжёлый» редактор значения: пока пользователь печатает, значение в модель

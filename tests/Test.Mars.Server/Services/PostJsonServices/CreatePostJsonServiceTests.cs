@@ -1,13 +1,14 @@
 using System.Collections;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
 using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 
-namespace Test.Mars.Host.Services.PostJsonServices;
+namespace Test.Mars.Server.Services.PostJsonServices;
 
 public sealed class CreatePostJsonServiceTests : PostJsonServiceTestBase
 {

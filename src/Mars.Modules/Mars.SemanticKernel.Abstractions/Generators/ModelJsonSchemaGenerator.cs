@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Mars.SemanticKernel.Host.Shared.Generators;
+namespace Mars.SemanticKernel.Abstractions.Generators;
 
 public class ModelJsonSchemaGenerator
 {

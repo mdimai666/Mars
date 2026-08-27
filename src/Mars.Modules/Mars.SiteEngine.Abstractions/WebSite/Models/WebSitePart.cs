@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using Mars.Shared.Contracts.WebSite.Models;
+using Mars.Contracts.WebSite.Models;
 
-namespace Mars.Host.Shared.WebSite.Models;
+namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
 [DebuggerDisplay("[{Type}] {FileName} / {Title}")]
 public class WebSitePart

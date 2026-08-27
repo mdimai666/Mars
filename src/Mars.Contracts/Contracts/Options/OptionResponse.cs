@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Shared.Contracts.Options;
+namespace Mars.Contracts.Options;
 
 public sealed record OptionResponse<T>
 {

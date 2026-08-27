@@ -2,10 +2,10 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-using Mars.Host.Shared.JsonConverters;
-using Mars.Host.Shared.TypeConverters;
+using Mars.Server.Abstractions.JsonConverters;
+using Mars.Server.Abstractions.TypeConverters;
 
-namespace Mars.Host.Shared.Models;
+namespace Mars.Server.Abstractions.Models;
 
 [JsonConverter(typeof(VersionTokenHexJsonConverter))]
 [TypeConverter(typeof(StringVersionTokenHexTypeConverter))]

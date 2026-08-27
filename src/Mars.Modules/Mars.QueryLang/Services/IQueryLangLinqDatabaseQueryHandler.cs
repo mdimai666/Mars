@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Templators;
+using Mars.SiteEngine.Abstractions.Templators;
 
-namespace Mars.Host.Shared.QueryLang.Services;
+namespace Mars.QueryLang.Services;
 
 public interface IQueryLangLinqDatabaseQueryHandler
 {

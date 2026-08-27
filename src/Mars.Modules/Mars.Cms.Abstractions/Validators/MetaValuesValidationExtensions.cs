@@ -1,8 +1,9 @@
 using FluentValidation;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Validators;
 
-namespace Mars.Host.Shared.Validators;
+namespace Mars.Cms.Abstractions.Validators;
 
 /// <summary>
 /// Подключение проверки мета-значений (<see cref="IMetaValuesValidator"/>) к валидаторам запросов

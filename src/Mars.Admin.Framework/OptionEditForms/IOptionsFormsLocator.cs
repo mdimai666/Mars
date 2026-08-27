@@ -1,7 +1,7 @@
 using System.Reflection;
-using Mars.Shared.Options.Attributes;
+using Mars.Contracts.Options.Attributes;
 
-namespace AppFront.Main.OptionEditForms;
+namespace Mars.Admin.Framework.OptionEditForms;
 
 public interface IOptionsFormsLocator
 {

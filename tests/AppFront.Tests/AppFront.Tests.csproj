@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
     </ItemGroup>
 
     <ItemGroup>

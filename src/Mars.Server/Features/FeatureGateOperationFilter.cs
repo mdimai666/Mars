@@ -3,7 +3,7 @@ using Microsoft.FeatureManagement.Mvc;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mars.Host.Features;
+namespace Mars.Server.Features;
 
 public class FeatureGateOperationFilter : IOperationFilter
 {

@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 public record PostStatusEditModel
 {

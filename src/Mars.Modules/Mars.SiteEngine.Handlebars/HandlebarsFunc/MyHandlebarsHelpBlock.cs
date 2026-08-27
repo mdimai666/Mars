@@ -1,13 +1,14 @@
 using System.Reflection;
 using System.Web;
 using HandlebarsDotNet;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
+using Mars.Data.Contexts;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Templators;
 using Mars.QueryLang;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.WebSiteProcessor.Handlebars.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 /// <summary>
 /// при вызове {{#help}} выводит справочную информацию по зарегистрированным хелперам и функциям

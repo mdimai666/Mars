@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.XActions;
+namespace Mars.Contracts.XActions;
 
 /// <summary>
 /// Fluent-сборщик декларативных метаданных XAction с привязкой исполнения

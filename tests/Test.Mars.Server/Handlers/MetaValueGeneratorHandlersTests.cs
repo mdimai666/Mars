@@ -1,16 +1,22 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Handlers;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 using NSubstitute;
 
-namespace Test.Mars.Host.Handlers;
+namespace Test.Mars.Server.Handlers;
 
 public class MetaValueGeneratorHandlersTests
 {

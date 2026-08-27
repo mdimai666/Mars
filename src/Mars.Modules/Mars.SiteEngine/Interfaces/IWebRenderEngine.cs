@@ -1,6 +1,6 @@
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.WebSiteProcessor.Interfaces;
+namespace Mars.SiteEngine.Interfaces;
 
 public interface IWebRenderEngine
 {

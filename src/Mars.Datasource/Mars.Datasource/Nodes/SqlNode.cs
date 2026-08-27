@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 
-namespace Mars.Datasource.Core.Nodes;
+namespace Mars.Datasource.Nodes;
 
 [FunctionApiDocument("./_content/Mars.Datasource.Front/docs/SqlNode/SqlNode{.lang}.md")]
 [Display(GroupName = "database")]

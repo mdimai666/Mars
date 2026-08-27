@@ -1,13 +1,13 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Cms.Host.Handlers;
 
 /// <summary>
 /// Общая проверка уникальности по типизированной колонке значения
-/// для провайдеров доменов (<see cref="Mars.Host.Shared.Services.IMetaValueUniquenessProvider"/>)
+/// для провайдеров доменов (<see cref="Mars.Cms.Abstractions.Services.IMetaValueUniquenessProvider"/>)
 /// </summary>
 internal static class MetaValueUniquenessTool
 {

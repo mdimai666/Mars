@@ -1,16 +1,28 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Host.Shared.Mappings.UserTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Identity.Abstractions.Mappings.UserTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Common;
+using Mars.Contracts.UserTypes;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 internal class UserTypeService : IUserTypeService
 {

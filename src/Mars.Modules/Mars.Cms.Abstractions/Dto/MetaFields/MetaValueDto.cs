@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Mars.Core.Interfaces;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 [DebuggerDisplay("{Type}={Value} /id={Id}")]
 public record MetaValueDto : IHasId

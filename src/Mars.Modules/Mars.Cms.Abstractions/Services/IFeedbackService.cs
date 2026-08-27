@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.Feedbacks;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IFeedbackService
 {

@@ -1,17 +1,17 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostJsons;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Host.Shared.Mappings.PostCategories;
-using Mars.Host.Shared.Mappings.PostJsons;
-using Mars.Host.Shared.Mappings.Posts;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostJsons;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostJsons;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Cms.Abstractions.Mappings.PostCategories;
+using Mars.Cms.Abstractions.Mappings.PostJsons;
+using Mars.Cms.Abstractions.Mappings.Posts;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostJsons;
 
-namespace Mars.Host.Shared.Mappings.PostJsons;
+namespace Mars.Cms.Abstractions.Mappings.PostJsons;
 
 public static class PostJsonMapping
 {
@@ -29,7 +29,7 @@ public static class PostJsonMapping
             Tags = entity.Tags,
 
             ///<see cref="MetaValueMapping.ToDto"/>
-            ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
+            ///<see href="Mars\Mars.Data.Repositories\Mappings\MetaFieldMapping.cs"/>
             Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertMetaValue(v.Value, fillDict)),
             Status = entity.Status,
             Categories = entity.Categories,
@@ -49,7 +49,7 @@ public static class PostJsonMapping
             Tags = entity.Tags,
 
             ///<see cref="MetaValueMapping.ToDto"/>
-            ///<see href="Mars\Mars.Host.Repositories\Mappings\MetaFieldMapping.cs"/>
+            ///<see href="Mars\Mars.Data.Repositories\Mappings\MetaFieldMapping.cs"/>
             Meta = entity.MetaValues.ToDictionary(s => s!.Key, v => ConvertMetaValue(v.Value, fillDict)),
             Status = entity.Status,
             Categories = entity.Categories,

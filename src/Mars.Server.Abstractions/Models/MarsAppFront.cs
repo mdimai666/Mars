@@ -1,8 +1,8 @@
 using Mars.Core.Models;
-using Mars.Shared.Options;
+using Mars.Contracts.Options;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Mars.Host.Shared.Models;
+namespace Mars.Server.Abstractions.Models;
 
 public class MarsAppFront
 {

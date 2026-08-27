@@ -85,7 +85,7 @@ public class PluginManifestProvider
             //.Where(s => !marsOriginalFilesMap.Contains(NormalizePath(s)))
             .Where(s =>
             {
-                //s.AssetFile.Contains("AppFront.Main") && s.AssetFile.EndsWith(".wasm")
+                //s.AssetFile.Contains("Mars.Admin.Framework") && s.AssetFile.EndsWith(".wasm")
                 string v = NormalizePath(s);
                 return !marsOriginalFilesMap.Contains(v);
             })
@@ -116,7 +116,7 @@ public class PluginManifestProvider
     StaticwebassetsEndpointsManifestJson MarsDevAdminEndpoints()
     {
         var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        var manifestFileName = "AppAdmin.staticwebassets.endpoints.json";
+        var manifestFileName = "Mars.Admin.staticwebassets.endpoints.json";
         var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
         if (!File.Exists(manifestFilePath)) throw new FileNotFoundException($"{manifestFileName} not found. File is Required!");
         var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;

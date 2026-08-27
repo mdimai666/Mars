@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Host.Shared.Dto.Options;
+namespace Mars.Options.Dto.Options;
 
 public class SystemImportSettingsFile_v1
 {

@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Interfaces;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 //public interface IMetaFieldService //: IBasicModelService<MetaField>
 //{

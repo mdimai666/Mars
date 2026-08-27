@@ -1,8 +1,8 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared.Dto.NodeTasks;
-using Mars.Shared.Common;
+using Mars.Nodes.Abstractions.Dto.NodeTasks;
+using Mars.Contracts.Common;
 
-namespace Mars.Nodes.Host.Shared.Services;
+namespace Mars.Nodes.Abstractions.Services;
 
 public interface INodeTaskManager
 {

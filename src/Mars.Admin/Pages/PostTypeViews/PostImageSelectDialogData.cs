@@ -1,4 +1,4 @@
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 /// <summary>Данные диалога выбора поля картинки поста при включении фичи</summary>
 public class PostImageSelectDialogData

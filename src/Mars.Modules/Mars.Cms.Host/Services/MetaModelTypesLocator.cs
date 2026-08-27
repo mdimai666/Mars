@@ -2,15 +2,19 @@ using System.Collections.Frozen;
 using System.Collections.Immutable;
 using FluentValidation;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class MetaModelTypesLocator : IMetaModelTypesLocator, IMarsAppLifetimeService
 {

@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
 using Mars.Options.Models;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Validators;
 using Mars.SSO.Host.OAuth.Controllers;
 using Mars.SSO.Host.OAuth.Data;
 using Mars.SSO.Host.OAuth.interfaces;

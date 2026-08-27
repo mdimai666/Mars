@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.Users;
+namespace Mars.Contracts.Users;
 
 public record UserDetailResponse : UserSummaryResponse
 {

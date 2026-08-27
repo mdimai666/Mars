@@ -2,9 +2,9 @@ using System.Diagnostics;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Mars.SemanticKernel.Host.Service;
-using Mars.SemanticKernel.Shared.Nodes;
+using Mars.SemanticKernel.Contracts.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SemanticKernel.Host.Nodes;

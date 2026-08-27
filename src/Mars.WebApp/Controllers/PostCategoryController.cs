@@ -1,15 +1,16 @@
 using System.ComponentModel;
+using Mars.Server.Abstractions.ExceptionFilters;
 using System.Net.Mime;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Mappings.PostCategories;
-using Mars.Host.Shared.Mappings.PostCategoryTypes;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Common;
-using Mars.Shared.Contracts.PostCategories;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Mappings.PostCategories;
+using Mars.Cms.Abstractions.Mappings.PostCategoryTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Common;
+using Mars.Contracts.PostCategories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

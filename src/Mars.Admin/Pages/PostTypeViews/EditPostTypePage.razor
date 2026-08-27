@@ -1,7 +1,7 @@
 @page "/EditPostType"
 @page "/EditPostType/{ID:guid}"
 
-@using Mars.Shared.Contracts.PostTypes
+@using Mars.Contracts.PostTypes
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -203,7 +203,7 @@
 
                             <CascadingValue Value="@context.MetaFields">
                                 <CascadingValue Value="@context.MetaRelationModels">
-                                    <AppFront.Shared.Components.MetaFieldViews.FormMetaField
+                                    <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField
                                         FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
                                         ContentFeatureEnabled="@context.FeatureActivated(PostTypeConstants.Features.Content)"
                                         OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />

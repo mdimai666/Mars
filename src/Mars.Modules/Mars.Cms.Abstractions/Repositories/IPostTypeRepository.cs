@@ -1,9 +1,9 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Cms.Abstractions.Repositories;
 
 public interface IPostTypeRepository
 {

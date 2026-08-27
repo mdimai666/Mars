@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.AIService;
+namespace Mars.Contracts.AIService;
 
 public record AIServiceResponse
 {

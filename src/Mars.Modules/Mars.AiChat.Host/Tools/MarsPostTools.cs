@@ -3,12 +3,12 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Mars.Core.Features;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Hubs;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.AiChat.Host.Tools;

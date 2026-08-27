@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 /// <summary>
 /// Боковая панель редактирования поста (детские объекты в секциях «Список объектов»).

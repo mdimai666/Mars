@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Mars.Host.Data.Contexts.Abstractions;
+namespace Mars.Data.Contexts.Abstractions;
 
 /* see ideas
  https://github.com/dotnet/efcore/issues/26348#issuecomment-1173790018

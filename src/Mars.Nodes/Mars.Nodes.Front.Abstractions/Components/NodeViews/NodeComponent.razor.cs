@@ -1,10 +1,10 @@
 using Mars.Core.Extensions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace Mars.Nodes.Front.Shared.Components.NodeViews;
+namespace Mars.Nodes.Front.Abstractions.Components.NodeViews;
 
 public partial class NodeComponent
 {

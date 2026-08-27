@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 /// <summary>
 /// Мета-значение пользователя (таблица <c>user_meta_values</c>).

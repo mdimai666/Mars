@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 public record DeleteManyPostTypeQuery
 {

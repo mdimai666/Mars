@@ -2,7 +2,7 @@ using Markdig.Renderers;
 using Markdig;
 using Markdig.Renderers.Html;
 
-namespace AppFront.Shared.Components.FluentMarkdownSectionViews;
+namespace Mars.Admin.Framework.Components.FluentMarkdownSectionViews;
 
 internal class MarkdownSectionPreCodeExtension : IMarkdownExtension
 {

@@ -1,10 +1,10 @@
 using System.Text.RegularExpressions;
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.NavMenus;
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.NavMenus;
+using Mars.Contracts.XActions;
 using Microsoft.AspNetCore.Components.Routing;
 
-namespace AppFront.Shared.Models;
+namespace Mars.Admin.Framework.Models;
 
 public class MyNavMenu
 {

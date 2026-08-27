@@ -1,5 +1,5 @@
-using AppFront.Shared;
-using AppFront.Shared.Hub;
+using Mars.Admin.Framework;
+using Mars.Admin.Framework.Hub;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;

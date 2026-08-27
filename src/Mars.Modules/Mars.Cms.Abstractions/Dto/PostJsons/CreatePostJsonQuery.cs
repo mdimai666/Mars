@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace Mars.Host.Shared.Dto.PostJsons;
+namespace Mars.Cms.Abstractions.Dto.PostJsons;
 
 public record CreatePostJsonQuery
 {

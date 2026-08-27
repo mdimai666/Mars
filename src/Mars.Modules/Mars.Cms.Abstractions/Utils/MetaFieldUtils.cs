@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Utils;
+namespace Mars.Cms.Abstractions.Utils;
 
 public static class MetaFieldUtils
 {

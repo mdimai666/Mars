@@ -1,23 +1,40 @@
+using Mars.Cms.Abstractions;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Mappings.Posts;
-using Mars.Host.Shared.Mappings.PostTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Cms.Abstractions.Mappings.Posts;
+using Mars.Cms.Abstractions.Mappings.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Posts;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class PostService : IPostService
 {
@@ -228,7 +245,7 @@ internal class PostService : IPostService
 
         if (post.MetaValues.Count != postType.MetaFields.Count)
         {
-            post = post with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
+            post = post with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
         }
 
         return new()
@@ -246,7 +263,7 @@ internal class PostService : IPostService
 
         if (post.MetaValues.Count != postType.MetaFields.Count)
         {
-            post = post with { MetaValues = EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
+            post = post with { MetaValues = MetaValuesEnricher.EnrichWithBlankMetaValuesFromMetaValues(post.MetaValues, postType.MetaFields, postType.ContentField()?.Key) };
         }
 
         return Task.FromResult<PostEditViewModel>(new()
@@ -254,70 +271,6 @@ internal class PostService : IPostService
             Post = post.ToResponse(),
             PostType = postType.ToResponse()
         });
-    }
-
-    /// <summary>
-    /// Обогощает незаполненные MataFields
-    /// </summary>
-    /// <param name="metaValues"></param>
-    /// <param name="metaFields"></param>
-    /// <param name="contentFieldKey">Поле контента фичи: значения нет в мета-значениях (оно в posts.Content)</param>
-    /// <returns></returns>
-    public static IReadOnlyCollection<MetaValueDetailDto> EnrichWithBlankMetaValuesFromMetaValues(
-                                                            IEnumerable<MetaValueDetailDto> metaValues,
-                                                            IReadOnlyCollection<MetaFieldDto> metaFields,
-                                                            string? contentFieldKey = null)
-    {
-
-        var valuesByMfId = metaValues.GroupBy(s => s.MetaField.Id)
-                                     .ToDictionary(g => g.Key, g => g.OrderBy(v => v.Index).ToList());
-
-        var enrichMetaValues = new List<MetaValueDetailDto>(metaFields.Count);
-
-        foreach (var mf in metaFields)
-        {
-            if (mf.Type == MetaFieldType.Query) continue; // вычислимое — хранимых значений нет
-            if (contentFieldKey is not null && mf.Key == contentFieldKey) continue; // значение — в posts.Content
-
-            if (valuesByMfId.TryGetValue(mf.Id, out var values))
-            {
-                // все строки поля (мульти-значения), без потери дубликатов
-                enrichMetaValues.AddRange(values);
-            }
-            else if (!mf.IsMultiple)
-            {
-                //meta value not set. Create blank (множественные поля — ноль строк)
-                var blankMetaValue = GetBlankMetaValue(mf);
-                enrichMetaValues.Add(blankMetaValue);
-            }
-        }
-
-        return enrichMetaValues;
-    }
-
-    public static MetaValueDetailDto GetBlankMetaValue(MetaFieldDto metaField)
-    {
-        var def = metaField.Default;
-        return new()
-        {
-            Id = Guid.NewGuid(),
-            Index = 0,
-
-            Bool = def?.Bool,
-            Int = def?.Int,
-            Float = def?.Float,
-            Decimal = def?.Decimal,
-            Long = def?.Long,
-            DateTime = def?.DateTime,
-            ModelId = def?.ModelId,
-            StringShort = metaField.Type == MetaFieldType.String ? def?.StringShort ?? ""
-                        : metaField.Type == MetaFieldType.Select ? metaField.GetDefaultVariantKey()
-                        : def?.StringShort,
-            StringText = metaField.Type == MetaFieldType.Text ? def?.StringText ?? "" : def?.StringText,
-            MetaField = metaField,
-            VariantId = def?.VariantId,
-            VariantsIds = def?.VariantsIds ?? []
-        };
     }
 
     public PostEditDetail GetPostBlank(PostTypeDetail postType)

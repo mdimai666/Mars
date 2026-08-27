@@ -1,10 +1,10 @@
 @* Редактор значения «Блочный (Editor.js)» для мета-полей. Живёт в админке,
    а не в общей фронт-библиотеке: регистрируется в реестре редакторов при
-   старте (см. Program), чтобы AppFront.Main не зависел от EditorJsBlazored.
+   старте (см. Program), чтобы Mars.Admin.Framework не зависел от EditorJsBlazored.
    Реактивный: значение пушится в модель по событию изменения; интерфейс
    тяжёлых редакторов — для единообразия и ИИ-моста. *@
-@using AppFront.Shared.Components.MetaFieldViews
-@using Mars.Shared.Contracts.MetaFields
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Contracts.MetaFields
 @using EditorJsBlazored
 @using EditorJsBlazored.Blocks
 @using EditorJsBlazored.Core

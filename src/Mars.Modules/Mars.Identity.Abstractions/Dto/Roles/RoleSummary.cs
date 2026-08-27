@@ -1,6 +1,6 @@
 using Mars.Core.Interfaces;
 
-namespace Mars.Host.Shared.Dto.Roles;
+namespace Mars.Identity.Abstractions.Dto.Roles;
 
 public record RoleSummary : IHasId
 {

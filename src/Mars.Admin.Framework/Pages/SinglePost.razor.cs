@@ -1,11 +1,11 @@
-using AppFront.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Renders;
+using Mars.Admin.Framework.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Renders;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.Pages;
+namespace Mars.Admin.Framework.Pages;
 
 public partial class SinglePost
 {

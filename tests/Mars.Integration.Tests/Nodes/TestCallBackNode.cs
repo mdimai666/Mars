@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 
 namespace Mars.Integration.Tests.Nodes;
 

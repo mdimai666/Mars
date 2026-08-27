@@ -4,7 +4,7 @@ using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using HandlebarsDotNet;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.Posts;
 using Newtonsoft.Json.Linq;
 
 namespace Benchmarks.MyHandlebars;

@@ -3,8 +3,8 @@ using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.Search;
+using Mars.Contracts.Posts;
+using Mars.Contracts.Search;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Searches;

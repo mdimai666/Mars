@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// Доступ к значениям мета-полей по словарному ключу <c>(Key, Index)</c>:

@@ -1,8 +1,8 @@
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 /// <summary>
 /// Каталог доступных валидаторов значений мета-полей (общий для сервера и админки).
-/// Серверный реестр — <c>Mars.Host.Shared.Utils.MetaFieldValueValidators</c>, расширяемый.
+/// Серверный реестр — <c>Mars.Cms.Abstractions.Utils.MetaFieldValueValidators</c>, расширяемый.
 /// </summary>
 public static class MetaFieldValidatorCatalog
 {

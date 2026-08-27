@@ -1,4 +1,4 @@
-namespace Mars.Shared.Hubs;
+namespace Mars.Contracts.Hubs;
 
 /// <summary>
 /// Имена событий, которые сервер отправляет админ-клиенту через ChatHub (/_ws/admin).

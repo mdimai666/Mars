@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 
 namespace Mars.Nodes.Host.Services;
 

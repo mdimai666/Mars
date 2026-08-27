@@ -1,9 +1,9 @@
-@using AppAdmin.Pages.PostCategoryViews
-@using Mars.Shared.Interfaces
+@using Mars.Admin.Pages.PostCategoryViews
+@using Mars.Contracts.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Mars.Shared.Contracts.MetaFields;
-@using Mars.Shared.Contracts.Posts;
-@using Mars.Shared.Contracts.PostTypes;
+@using Mars.Contracts.MetaFields;
+@using Mars.Contracts.Posts;
+@using Mars.Contracts.PostTypes;
 
 @inject IAIToolAppService _aiTool
 
@@ -11,7 +11,7 @@
     @if (!string.IsNullOrEmpty(PostType.Presentation.ListViewTemplate))
     {
         var source = PostType.Presentation.ListViewTemplate;
-        <AppFront.Shared.Pages.RemotePageViewer Url=@($"/api/AdminFront/Render?file={Uri.EscapeDataString(source)}") />
+        <Mars.Admin.Framework.Pages.RemotePageViewer Url=@($"/api/AdminFront/Render?file={Uri.EscapeDataString(source)}") />
     }
     else
     {

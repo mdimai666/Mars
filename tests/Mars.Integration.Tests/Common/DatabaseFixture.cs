@@ -1,7 +1,7 @@
 using DotNet.Testcontainers.Builders;
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.PostgreSQL;
+using Mars.Data.Constants;
+using Mars.Data.Contexts;
+using Mars.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;

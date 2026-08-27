@@ -1,5 +1,5 @@
 using Mars.Nodes.Core.Nodes.Diagnostics;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Diagnostics;

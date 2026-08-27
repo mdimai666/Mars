@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.Files;
+namespace Mars.Contracts.Files;
 
 public record CreateFileRequest
 {

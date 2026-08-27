@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.Search;
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.Search;
+using Mars.Contracts.XActions;
 
-namespace AppAdmin.Shared.ActionCenter;
+namespace Mars.Admin.Shared.ActionCenter;
 
 public enum PaletteItemKind
 {

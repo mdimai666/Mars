@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.Profile;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Shared.Contracts.Users.UserProfiles;
+using Mars.Identity.Abstractions.Dto.Profile;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Contracts.Users.UserProfiles;
 
-namespace Mars.Host.Shared.Mappings.UserProfiles;
+namespace Mars.Identity.Abstractions.Mappings.UserProfiles;
 
 public static class UserProfileMapping
 {

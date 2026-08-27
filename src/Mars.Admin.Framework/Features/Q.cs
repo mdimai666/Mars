@@ -1,12 +1,12 @@
 using System.Security.Claims;
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Features;
-using AppFront.Shared.Mappings;
-using AppFront.Shared.Models;
-using Mars.Shared.Contracts.SSO;
-using Mars.Shared.ViewModels;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Features;
+using Mars.Admin.Framework.Mappings;
+using Mars.Admin.Framework.Models;
+using Mars.Contracts.SSO;
+using Mars.Contracts.ViewModels;
 
-namespace AppFront.Shared;
+namespace Mars.Admin.Framework;
 
 public static class Q
 {

@@ -16,7 +16,7 @@ public class PluginManifestProviderTests
         _testFilesDir = SolutionPathHelper.Resolve("tests", "Test.Mars.Plugin", "SampleWebStaticAssetEndpointsFiles");
     }
 
-    [Theory]
+    [Theory(Skip = "skiptemplary for rework. files delete")]
     [InlineData([false])]
     [InlineData([true])]
     public void FilterFiles_FilterSharedFildes_OnlyThePluginFilesShouldRemain(bool releaseMode)

@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mars.Options.Attributes;
-using Mars.Shared.Options.Attributes;
+using Mars.Contracts.Options.Attributes;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Main.OptionEditForms;
+namespace Mars.Admin.Framework.OptionEditForms;
 
 internal class OptionsFormsLocator : IOptionsFormsLocator
 {

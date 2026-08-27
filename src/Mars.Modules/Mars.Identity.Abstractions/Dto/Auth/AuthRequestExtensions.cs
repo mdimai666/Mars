@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.Profile;
-using Mars.Shared.Contracts.Auth;
+using Mars.Identity.Abstractions.Dto.Profile;
+using Mars.Contracts.Auth;
 
-namespace Mars.Host.Shared.Dto.Auth;
+namespace Mars.Identity.Abstractions.Dto.Auth;
 
 public static class AuthRequestExtensions
 {

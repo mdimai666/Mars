@@ -1,15 +1,16 @@
 using System.ComponentModel;
+using Mars.Server.Abstractions.ExceptionFilters;
 using System.Net.Mime;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Host.Shared.Mappings.Users;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Users;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Services;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Identity.Abstractions.Mappings.Users;
+using Mars.Identity.Abstractions.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

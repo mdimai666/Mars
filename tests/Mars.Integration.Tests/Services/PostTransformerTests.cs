@@ -2,13 +2,13 @@ using AutoFixture;
 using EditorJsBlazored.Blocks;
 using EditorJsBlazored.Core;
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 

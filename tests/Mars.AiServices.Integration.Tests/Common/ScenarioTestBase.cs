@@ -1,10 +1,12 @@
 using System.Text.Json;
 using AutoFixture;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.SemanticKernel.Host.Service;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
-using Mars.SemanticKernel.Shared.Nodes;
-using Mars.SemanticKernel.Shared.Options;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Mars.SemanticKernel.Contracts.Nodes;
+using Mars.SemanticKernel.Contracts.Options;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 

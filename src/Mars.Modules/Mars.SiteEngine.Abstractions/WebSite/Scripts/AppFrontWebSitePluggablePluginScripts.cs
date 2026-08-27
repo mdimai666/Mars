@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Constants.Website;
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.WebSite.Scripts;
+namespace Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
 public class AppFrontWebSitePluggablePluginScripts : WebSitePluggablePluginScripts
 {

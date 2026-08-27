@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.Services;
+namespace Mars.Nodes.Abstractions.Services;
 
 public interface INodeSchedulerService
 {

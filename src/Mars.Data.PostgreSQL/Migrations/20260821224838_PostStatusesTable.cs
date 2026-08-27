@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Mars.Host.Data.PostgreSQL.Migrations
-{
+namespace Mars.Data.PostgreSQL.Migrations {
     /// <inheritdoc />
     public partial class PostStatusesTable : Migration
     {

@@ -1,11 +1,11 @@
-using Mars.Shared.Contracts.NavMenus;
-using Mars.Shared.Contracts.Options;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Contracts.XActions;
-using Mars.Shared.Options;
-using Mars.Shared.ViewModels;
+using Mars.Contracts.NavMenus;
+using Mars.Contracts.Options;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.XActions;
+using Mars.Contracts.Options;
+using Mars.Contracts.ViewModels;
 
-namespace AppFront.Shared.Models;
+namespace Mars.Admin.Framework.Models;
 
 public class AppInitialViewModel
 {

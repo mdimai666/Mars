@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Users;
+namespace Mars.Contracts.Users;
 
 public enum UserGender
 {

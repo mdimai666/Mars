@@ -35,9 +35,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
-        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Front.Shared\Mars.Nodes.Front.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Front.Abstractions\Mars.Nodes.Front.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
     </ItemGroup>
 

@@ -1,10 +1,10 @@
-using AppFront.Shared.Services;
-using Mars.Shared.Contracts.Files;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Admin.Framework.Services;
+using Mars.Contracts.Files;
+using Mars.Contracts.MetaFields;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// Множественные значения поля Файл/Изображение: плитки с превью (каждая запрашивает файл сама),

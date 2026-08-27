@@ -1,12 +1,12 @@
 using System.Text.Json;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.Extensions;
-using Mars.Host.Data.OwnedTypes.Files;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
+using Mars.Data.OwnedTypes.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Mars.Host.Data.Constants.FileConstants;
+using static Mars.Data.Constants.FileConstants;
 
-namespace Mars.Host.Data.InMemory.Configurations;
+namespace Mars.Data.InMemory.Configurations;
 
 public class FileEntityConfiguration : IEntityTypeConfiguration<FileEntity>
 {

@@ -1,4 +1,4 @@
-namespace Mars.Shared.Utils;
+namespace Mars.Contracts.Utils;
 
 /// <summary>
 /// Represents the scroll position and dimensions of an element.

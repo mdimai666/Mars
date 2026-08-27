@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;

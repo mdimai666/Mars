@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Contracts.Roles;
+using Mars.Contracts.UserTypes;
 
-namespace Mars.Shared.Contracts.Users;
+namespace Mars.Contracts.Users;
 
 public record UserEditViewModel
 {

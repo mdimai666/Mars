@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Cms.Abstractions.Repositories;
 
 public interface IPostCategoryRepository : IDisposable
 {

@@ -1,8 +1,10 @@
-using Mars.Host.Data.Contexts;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
+using Mars.Data.Contexts;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Handlers;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Cms.Host.Handlers;
 
 /// <summary>
 /// Уникальность значений мета-полей категорий (домен <see cref="MetaValueOwnerCatalog.PostCategory"/>)

@@ -1,5 +1,5 @@
-﻿using Mars.Host.Shared.Services;
 using Microsoft.Extensions.Logging;
+using Mars.Server.Abstractions.Services;
 using Quartz;
 
 namespace Mars.Nodes.Host.Scheduler;

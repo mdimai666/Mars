@@ -1,10 +1,10 @@
 using FluentValidation;
-using Mars.Host.Shared.Dto.Users.Phones;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Validators;
+using Mars.Identity.Abstractions.Dto.Users.Phones;
+using Mars.Identity.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public class UpdateUserQueryValidator : AbstractValidator<UpdateUserQuery>
 {

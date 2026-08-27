@@ -1,6 +1,6 @@
-using Mars.AiChat.Shared.Options;
+using Mars.AiChat.Contracts.Options;
 
-namespace Mars.AiChat.Shared.Dto;
+namespace Mars.AiChat.Contracts.Dto;
 
 /// <summary>
 /// Публичное представление подключения к ИИ-сервису (без секртов: endpoint/ключ не отдаём).

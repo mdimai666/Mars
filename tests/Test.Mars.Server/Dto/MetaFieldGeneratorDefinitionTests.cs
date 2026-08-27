@@ -1,9 +1,9 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Test.Mars.Host.Dto;
+namespace Test.Mars.Server.Dto;
 
 public class MetaFieldGeneratorDefinitionTests
 {

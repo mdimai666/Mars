@@ -1,8 +1,8 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.Users;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.Users;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public class UserEditProfileDto
 {

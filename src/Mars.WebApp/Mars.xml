@@ -44,7 +44,7 @@
             Root-файлы (_root.hbs) тоже попадают сюда — их URL это StartPath.
             </summary>
         </member>
-        <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Shared.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
             <summary>
             Список меню для админки: несохранённые системные меню подмешиваются виртуальной записью.
             </summary>
@@ -54,13 +54,13 @@
             Сброс системного меню к дефолту: удаляет сохранённую копию из БД.
             </summary>
         </member>
-        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Shared.Common.ListDataResult{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.ListDataResult{Mars.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
         </member>
-        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Shared.Common.PagingResult{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.PagingResult{Mars.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
         </member>
-        <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Shared.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Батч-загрузка значений: тип из маршрута либо группировка по типам самих элементов</summary>
         </member>
         <member name="T:Mars.Handlers.AdminFrontRenderHandler">
@@ -70,7 +70,7 @@
             Рендерит только тело (без _root) — админка имеет собственную обвязку.
             </summary>
         </member>
-        <member name="M:Mars.Handlers.AdminFrontRenderHandler.#ctor(Mars.WebSiteProcessor.Interfaces.IWebRenderEngineLocator)">
+        <member name="M:Mars.Handlers.AdminFrontRenderHandler.#ctor(Mars.SiteEngine.Interfaces.IWebRenderEngineLocator)">
             <summary>
             Рендер страниц специального фронта админки (data/admin/front).
             Не кэширует: форсирует перескан шаблона, чтобы правки в редакторе были видны сразу.
@@ -143,7 +143,7 @@
             чтение на каждый запрос без локов и перебора выключенных фронтов.
             </summary>
         </member>
-        <member name="M:Mars.Services.FrontManager.BakedRoutes.#ctor(Mars.Shared.Options.FrontItem,Mars.Shared.Options.FrontItem[])">
+        <member name="M:Mars.Services.FrontManager.BakedRoutes.#ctor(Mars.Contracts.Options.FrontItem,Mars.Contracts.Options.FrontItem[])">
             <summary>
             Запечённая таблица маршрутов: пересобирается только при изменении FrontsOption,
             чтение на каждый запрос без локов и перебора выключенных фронтов.
@@ -160,7 +160,7 @@
             собирает движок первого фронта и сканирует шаблоны, чтобы первый запрос был быстрее.
             </summary>
         </member>
-        <member name="M:Mars.Services.FrontRenderWarmupService.#ctor(Mars.Host.Shared.Services.IOptionService,Mars.WebSiteProcessor.Interfaces.IWebRenderEngineLocator,Microsoft.Extensions.Logging.ILogger{Mars.Services.FrontRenderWarmupService})">
+        <member name="M:Mars.Services.FrontRenderWarmupService.#ctor(Mars.Options.Services.IOptionService,Mars.SiteEngine.Interfaces.IWebRenderEngineLocator,Microsoft.Extensions.Logging.ILogger{Mars.Services.FrontRenderWarmupService})">
             <summary>
             Прогрев рендера после запуска (FrontsOption.WarmupRenderOnStartup):
             собирает движок первого фронта и сканирует шаблоны, чтобы первый запрос был быстрее.
@@ -340,7 +340,7 @@
             (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
             </summary>
         </member>
-        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.#ctor(Mars.Host.Shared.Services.IFrontFilesService)">
+        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.#ctor(Mars.SiteEngine.Abstractions.Services.IFrontFilesService)">
             <summary>
             Создаёт шаблон представления списка записей в специальном фронте админки
             (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
@@ -357,7 +357,7 @@
             генератор могли добавить позже создания записей — старые посты нужно перенумеровать/дозаполнить.
             </summary>
         </member>
-        <member name="M:Mars.XActions.ContentRecipes.RegenerateGeneratedMetaValuesAct.#ctor(Mars.Host.Shared.Services.IMetaValuesGeneratorService)">
+        <member name="M:Mars.XActions.ContentRecipes.RegenerateGeneratedMetaValuesAct.#ctor(Mars.Cms.Abstractions.Services.IMetaValuesGeneratorService)">
             <summary>
             Перегенерация значений мета-полей с генераторами (порядковые номера, даты) у существующих постов:
             генератор могли добавить позже создания записей — старые посты нужно перенумеровать/дозаполнить.
@@ -371,9 +371,9 @@
         </member>
         <member name="T:Mars.XActions.FrontDemoXAction">
             <summary>
-            Отладочное фронтовое действие (<see cref="F:Mars.Shared.Contracts.XActions.XActionType.FrontAction"/>):
+            Отладочное фронтовое действие (<see cref="F:Mars.Contracts.XActions.XActionType.FrontAction"/>):
             метаданные регистрируются на хосте, исполнение — на клиенте через раннер
-            (см. AppAdmin.Shared.FrontDemoActionRunner). Сами продуктовые фронтовые действия
+            (см. Mars.Admin.Shared.FrontDemoActionRunner). Сами продуктовые фронтовые действия
             (тема, язык) будут регистрироваться по этому образцу.
             </summary>
         </member>

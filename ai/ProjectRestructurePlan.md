@@ -154,3 +154,46 @@
 ## Вне рамок
 
 MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; локализация; функциональные изменения; `Mars.Nodes.Runtime` и альтернативные конфигурации сборок (до бэклога); `src/Modules` (до бэклога).
+
+## Статус фазы 2 — ✅ выполнена (2026-08-27)
+
+Фаза 2 (переименование одним мажорным релизом) завершена. Ветка: `ai/restructure-phase1`.
+
+**`dotnet build Mars.slnx` — зелёный (0 ошибок).** Точечные тесты зелёные: **569 пройдено** (Test.Mars.Core 46, Test.Mars.Server 413, Test.Mars.SiteEngine 61, лёгкий фронт-набор Mars.Integration.Tests 49 — без Docker). `MarsAppVersion` → `0.8.0-alpha.1`. Ссылки в `docs/` обновлены.
+
+Что сделано:
+1. **Фаза A — структурные переезды** (сборка была зелёной до переименований):
+   - `Mars.Host.Shared` распущен: контракты разнесены по `*.Abstractions` модулей, сквозные — в новый `Mars.Server.Abstractions`; `IFileStorage`/`FileStorage`/`InMemoryFileStorage`, `MarsLogger`, `RouteUtil` → `Mars.Server.Abstractions`; `ITemplateEngine`/`ITemplateManager` → `Mars.Core` (ns `Mars.Core.TemplateEngine`); `Dto/Common` (`BasicListQuery`) → `Mars.Contracts`, EF-расширения пагинации → `Mars.Data.Extensions`.
+   - `Mars.Host` → новый `Mars.Server` (тонкое ядро) + `Mars.Server.Abstractions`; `MainMarsHost` остался в `Mars.Server` (переименование метода `AddMarsHost` → `AddMarsServer` не делалось — только неймспейсы).
+   - Регистрация валидаторов разнесена: `ValidatorFactory.AddValidatorsFromAssembly` вызывается в `AddMarsCms`/`AddMarsIdentity`/`AddMarsMedia`; `MainServer` только регистрирует `IValidatorFactory`.
+   - `PostService.EnrichWithBlankMetaValuesFromMetaValues` + `GetBlankMetaValue` вынесены в `Mars.Cms.Abstractions/MetaValuesEnricher.cs`; временная связка `Identity.Host → Cms.Host` (+IVT) снята.
+   - Фронт: `AppFront.Shared` слит в `AppFront.Main` (позже `Mars.Admin.Framework`); два `MainAppFrontShared` объединены.
+   - SSO разрезан: `Mars.SSO` → `Mars.SSO.Contracts` (контракты), реализация → новый `Mars.SSO.Host`.
+   - Новые проекты: `Mars.Server`, `Mars.Server.Abstractions`, `Mars.SiteEngine.Abstractions`, `Mars.Scheduler.Abstractions`, `Mars.Excel.Abstractions`, `Mars.SSO.Host`.
+2. **Фаза B1 — переименование проектов** по карте + тесты: `Test.Mars.Host` → `Test.Mars.Server`, `TestApp.Mars.Host.Data` → `TestApp.Mars.Data`, `Test.Mars.WebSiteProcessor` → `Test.Mars.SiteEngine`. PackageId/Product/IVT/`Mars.slnx` обновлены.
+3. **Фаза B2 — namespace'ы**: скриптовая перезапись деклараций (правило: новый неймспейс = корень проекта-назначения + хвост старого), глобальные подстановки для однозначных неймспейсов, type-driven починка using'ов для расщеплённых (`Mars.Host.Services`, `Mars.Host.Shared.Services` и др.), свип остатков старых токенов, ручные фиксы ~25 раундов. `Mars.WebApp` и `Mars.Integration.Tests` получили новые `GlobalUsings.cs`.
+
+Решения по открытым строкам карты (приняты в ходе выполнения):
+- `TemplateEngine` НЕ сливался с SiteEngine: подсистема осталась как была, интерфейсы переехали в `Mars.Core`; слияние — в бэклог.
+- `Mars.Datasource.Core` → `Mars.Datasource`; `Mars.Datasource.Host.Core` → `Mars.Datasource.Abstractions`.
+- `FrontsOption` остался в `Mars.Contracts` (его ест WASM-админка).
+- `IFileStorage` → `Mars.Server.Abstractions` (не в Core — зависимость от `FileHostingInfo`, который в `Mars.Contracts`, иначе цикл/WASM-граница).
+- Embedded-ресурс `Mars.Host.Options.BlazorScriptsAppend.html` заморожен (логическое имя не меняли).
+- Известная шероховатость: `Mars.SiteEngine.Abstractions/Mappings/WebSiteParts/WebSitePartsMapping.cs` объявлял чужой неймспейс `…Mappings.NavMenus` — исправлен на `…Mappings.WebSiteParts`.
+
+**Инцидент (важно для продолжения):** первый прогон скрипта B2 был сломан (баг PowerShell: массив пар защиты развернулся в строку → глобальная подстановка `'M'→'a'` + порча кодировок кириллицы в ~2900 файлах). Восстановление: `git checkout -- src tests devstands benchmarks` + `Mars.slnx` (одобрено пользователем), повтор ручных правок фазы A, перезапуск исправленного B2. ВСЕ отслеживаемые файлы восстановлены. **Не отслеживаемые/игнорируемые локальные данные остались повреждёнными** (см. ниже).
+
+Итог по пунктам «Осталось»:
+1. **Локальные данные** (`data/nodes/flows*.json`, `wwwroot/upload/*.json`, `_appsettings.Local.json`) — **НЕ чинятся по решению пользователя** (починит сам). Повреждение детерминировано: заглавная `M` → `a` (например `Mars.` → `aars.`, `MyMars…` → `ayaars…`). Резервная копия: `C:\Users\D\.qwen\tmp\mars-data-backup`.
+2. **TODO-RESTRUCTURE-маркеры** — ✅ убраны (5 файлов: 4 в `src` + `devstands/StandNodesApp/Program.cs`). Реальные using'и уже были на месте и корректны (сборка зелёная); маркеры — лишь остаточные комментарии скрипта.
+3. **Дедупликация using'ов** — не делалась (опционально, часть предупреждений).
+4. **Точечные тесты** — ✅ зелёные (569, см. выше). Docker-набор `HandlebarsAppFrontTests` не запускался (не требовался).
+5. **Миграционный гайд для плагинов** — **НЕ делается по решению пользователя**.
+6. **Версия** — ✅ `0.8.0-alpha.1`.
+7. **Доки** — ✅ упоминания в `docs/` обновлены (XActions, CreateFirstNode, HandlebarsAppFront, Expressions); README старых имён не содержал.
+8. **Коммит** — ждёт явной команды пользователя (не коммитить без указания).
+9. **Остаточные ссылки (дочищено)**: в `Mars.Identity.Host.csproj` убрана битая ссылка на удалённый `Mars.Host.Shared` (warning MSB9008) и временная `Mars.Cms.Host` (добавлена прямая `Mars.Cms.Abstractions`); в `Mars.Cms.Host.csproj` снят временный IVT для `Mars.Identity.Host`. Временная связка `Identity.Host → Cms.Host` теперь реально полностью снята.
+10. **Переносы вокруг `namespace` (починено)**: скрипт B2 «съел» пустые строки вокруг file-scoped деклараций `namespace …;`. Нормализовано скриптом по всем `.cs` (src/tests/devstands/benchmarks) к ровно одной пустой строке до и после — изменён 1123 файла. Детекция переносов после — 0 проблем; сборка и точечные тесты зелёные. **Побочный эффект: фикс читал файлы как UTF-8 и повредил один файл в Windows-1251 — см. пункт 11.**
+11. **Кодировки — финальная проверка (обязательно в конце, перед релизом)**: скриптовые правки фазы 2 читают файлы как UTF-8; файл в другой кодировке при этом молча портится — кириллица заменяется на U+FFFD. Прецедент: `src/Mars.Contracts/Contracts/SSO/IdTokenModel.cs` (был в Windows-1251; фикс переносов его испортил, восстановлен из git, переведён в UTF-8 без BOM, неймспейс `Mars.Contracts.SSO` поправлен пользователем вручную). **В конце просканить все файлы на два признака:** (а) байты ≥0x80, не образующие валидный UTF-8 → файл в чужой кодировке (прочитать как Windows-1251/CP1251 и пересохранить в UTF-8 без BOM); (б) последовательность байт `EF BF BD` (U+FFFD) → испорченная кириллица (восстанавливать из git). На 2026-08-27 среди `.cs`/`.razor` других проблемных файлов не найдено.
+
+Правило верификации (напоминание): только точечные тесты затронутых областей, без контрольных прогонов всего набора.

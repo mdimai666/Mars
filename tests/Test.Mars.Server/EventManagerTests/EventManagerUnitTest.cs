@@ -1,8 +1,8 @@
-using Mars.Host.Managers;
-using Mars.Host.Shared.Managers;
+using Mars.Server.Managers;
+using Mars.Server.Abstractions.Managers;
 using FluentAssertions;
 
-namespace Test.Mars.Host.EventManagerTests;
+namespace Test.Mars.Server.EventManagerTests;
 
 public class EventManagerUnitTest
 {

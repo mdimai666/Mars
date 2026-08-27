@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Mars.Core.Extensions;
-using Mars.Shared.Models.Interfaces;
+using Mars.Contracts.Models.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Shared.Dto;
+namespace Mars.Identity.Abstractions.Dto;
 
 public interface IUserBasicInfo : IBasicEntity
 {

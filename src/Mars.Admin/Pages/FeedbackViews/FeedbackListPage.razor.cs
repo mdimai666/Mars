@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.Feedbacks;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Pages.FeedbackViews;
+namespace Mars.Admin.Pages.FeedbackViews;
 
 public partial class FeedbackListPage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
     [Inject] AppFrontJs _appjs { get; set; } = default!;
 

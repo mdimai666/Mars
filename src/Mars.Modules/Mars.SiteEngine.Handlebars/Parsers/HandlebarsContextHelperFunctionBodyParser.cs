@@ -1,6 +1,6 @@
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.WebSiteProcessor.Handlebars.Parsers;
+namespace Mars.SiteEngine.Handlebars.Parsers;
 
 public static class HandlebarsContextHelperFunctionBodyParser
 {

@@ -1,10 +1,10 @@
 using FluentValidation;
 using Mars.Core.Constants;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.Posts;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 public class ListPostQueryValidator : AbstractValidator<ListPostQuery>
 {

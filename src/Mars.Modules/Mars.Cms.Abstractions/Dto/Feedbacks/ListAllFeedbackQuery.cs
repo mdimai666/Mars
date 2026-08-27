@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.Dto.Feedbacks;
+namespace Mars.Cms.Abstractions.Dto.Feedbacks;
 
 public record ListAllFeedbackQuery
 {

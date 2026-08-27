@@ -1,10 +1,10 @@
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Entities;
+using Mars.Data.Constants;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Mars.Host.Data.Constants.PostConstants;
+using static Mars.Data.Constants.PostConstants;
 
-namespace Mars.Host.Data.PostgreSQL.Configurations;
+namespace Mars.Data.PostgreSQL.Configurations;
 
 public class PostCategoryEntityConfiguration : IEntityTypeConfiguration<PostCategoryEntity>
 {

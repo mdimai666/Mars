@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Shared.Models;
-using Mars.Shared.Options;
-using Mars.WebSiteProcessor.Interfaces;
+using Mars.Server.Abstractions.Models;
+using Mars.Contracts.Options;
+using Mars.SiteEngine.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.WebSiteProcessor.Handlebars;
+namespace Mars.SiteEngine.Handlebars;
 
 [Display(Name = "Handlebars", Description = "Рендер фронта из Handlebars-шаблонов в папке")]
 public class HandlebarsRenderEngineFactory : IWebRenderEngineFactory

@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.XActions;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.XActions;
 
 namespace Mars.XActions.ContentRecipes;
 

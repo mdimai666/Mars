@@ -1,10 +1,10 @@
 using FluentValidation;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.PostJsons;
+namespace Mars.Cms.Abstractions.Dto.PostJsons;
 
 public class CreatePostJsonQueryValidator : AbstractValidator<CreatePostJsonQuery>
 {

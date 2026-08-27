@@ -2,7 +2,7 @@ using AutoFixture;
 using FluentAssertions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Posts;

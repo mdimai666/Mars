@@ -1,6 +1,6 @@
-using Mars.Shared.Exceptions;
+using Mars.Contracts.Exceptions;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 public interface IAIToolService
 {

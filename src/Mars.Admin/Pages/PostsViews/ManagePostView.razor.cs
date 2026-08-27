@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
-using AppFront.Shared.Hub;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Admin.Framework.Extensions;
+using Mars.Admin.Framework.Hub;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Posts;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Interfaces;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostsViews;
+namespace Mars.Admin.Pages.PostsViews;
 
 public partial class ManagePostView : IDisposable
 {

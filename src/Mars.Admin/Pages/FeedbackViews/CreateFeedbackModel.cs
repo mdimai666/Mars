@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Contracts.Feedbacks;
 
-namespace AppAdmin.Pages.FeedbackViews;
+namespace Mars.Admin.Pages.FeedbackViews;
 
 public class CreateFeedbackModel
 {

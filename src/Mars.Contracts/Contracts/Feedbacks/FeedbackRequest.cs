@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.Feedbacks;
+namespace Mars.Contracts.Feedbacks;
 
 public record CreateFeedbackRequest
 {

@@ -1,11 +1,11 @@
 @implements IDialogContentComponent<XActionCommand>
 
-@using Mars.Shared.Contracts.PostTypes
-@using Mars.Shared.Contracts.XActions
+@using Mars.Contracts.PostTypes
+@using Mars.Contracts.XActions
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@inject AppFront.Shared.Interfaces.IMessageService _messageService
+@inject Mars.Admin.Framework.Interfaces.IMessageService _messageService
 @inject IMarsWebApiClient _client
 @inject NavigationManager _navigationManager
 

@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Host.Shared.HttpModule;
+namespace Mars.Nodes.Abstractions.HttpModule;
 
 internal readonly struct PathSegment
 {

@@ -1,11 +1,11 @@
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.Extensions;
+using Mars.Data.Constants;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Mars.Host.Data.Constants.PostTypeConstants;
+using static Mars.Data.Constants.PostTypeConstants;
 
-namespace Mars.Host.Data.PostgreSQL.Configurations;
+namespace Mars.Data.PostgreSQL.Configurations;
 
 public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEntity>
 {

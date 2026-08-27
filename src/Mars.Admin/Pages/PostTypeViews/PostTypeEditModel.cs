@@ -1,15 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Models.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Models.Interfaces;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 /// <summary>
 /// <see cref="PostTypeDetailResponse"/>

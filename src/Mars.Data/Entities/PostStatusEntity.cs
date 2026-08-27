@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using Mars.Host.Data.Common;
+using Mars.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 /// <summary>
 /// Статусы постов типа (системная таблица); порядок/цвет = схема канбан-доски

@@ -2,7 +2,7 @@ using Mars.Core.Extensions;
 using Mars.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public record UserSummary : IHasId
 {

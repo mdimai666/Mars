@@ -1,20 +1,20 @@
 using System.Text;
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Host.Templators.HandlebarsFunc;
-using Mars.Shared.Contracts.WebSite.Models;
-using Mars.WebSiteProcessor.Handlebars.TemplateData;
-using Mars.WebSiteProcessor.Interfaces;
-using Mars.WebSiteProcessor.Services;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
+using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Handlebars.TemplateData;
+using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.WebSiteProcessor.Handlebars;
+namespace Mars.SiteEngine.Handlebars;
 
 public class HandlebarsWebRenderEngine : IWebRenderEngine
 {

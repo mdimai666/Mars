@@ -2,7 +2,7 @@ using Mars.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Mars.Host.Shared.ExceptionFilters;
+namespace Mars.Server.Abstractions.ExceptionFilters;
 
 public sealed class NotFoundExceptionFilterAttribute : ExceptionFilterAttribute
 {

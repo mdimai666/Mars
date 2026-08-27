@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -20,4 +20,13 @@
             <_Parameter1>Mars.Integration.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

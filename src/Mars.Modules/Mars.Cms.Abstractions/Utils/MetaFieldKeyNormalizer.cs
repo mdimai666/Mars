@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Mars.Host.Shared.Utils;
+namespace Mars.Cms.Abstractions.Utils;
 
 /// <summary>
 /// Нормализация и формат ключа мета-поля: [a-z_][a-z0-9_]*.

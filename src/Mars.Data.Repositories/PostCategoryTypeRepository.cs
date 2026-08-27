@@ -1,14 +1,14 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.PostCategoryTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Shared.Common;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.Repositories.Mappings;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Contracts.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Repositories;
+namespace Mars.Data.Repositories;
 
 internal class PostCategoryTypeRepository : IPostCategoryTypeRepository
 {

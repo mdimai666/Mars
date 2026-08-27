@@ -1,4 +1,4 @@
-namespace Mars.SemanticKernel.Host.Shared.Generators;
+namespace Mars.SemanticKernel.Abstractions.Generators;
 
 public static class QuickMdQuoteTrim
 {

@@ -1,4 +1,4 @@
-﻿namespace Mars.Datasource.Host.Core.Models;
+namespace Mars.Datasource.Abstractions.Models;
 
 public record BackupSettings
 {

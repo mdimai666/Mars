@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.PostCategoryTypes;
+using Mars.Contracts.PostCategoryTypes;
 
-namespace Mars.Shared.Contracts.PostCategories;
+namespace Mars.Contracts.PostCategories;
 
 public record PostCategoryEditViewModel
 {

@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Host.Shared.Dto.PostTypes;
+namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 /// <summary>Сериализация настроек грида в хранимый json (camelCase) и обратно</summary>
 public static class PostTypeGridSettingsJson

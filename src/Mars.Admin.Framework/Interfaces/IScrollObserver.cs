@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.Interfaces;
+namespace Mars.Admin.Framework.Interfaces;
 
 public interface IScrollObserver
 {

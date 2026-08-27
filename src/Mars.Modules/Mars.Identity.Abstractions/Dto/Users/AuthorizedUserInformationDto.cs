@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.Users;
+using Mars.Contracts.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Shared.Dto.Users;
+namespace Mars.Identity.Abstractions.Dto.Users;
 
 public record AuthorizedUserInformationDto : UserSummary
 {

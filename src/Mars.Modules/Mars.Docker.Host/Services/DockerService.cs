@@ -1,8 +1,8 @@
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Mars.Docker.Host.Shared.Dto;
-using Mars.Host.Shared.Dto.Common;
-using Mars.Shared.Common;
+using Mars.Docker.Abstractions.Dto;
+using Mars.Data.Extensions;
+using Mars.Contracts.Common;
 
 namespace Mars.Docker.Host.Services;
 

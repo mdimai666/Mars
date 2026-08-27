@@ -1,6 +1,8 @@
 using System.Reflection;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
 using Mars.Plugin.Abstractions;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;

@@ -1,7 +1,7 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.WebSiteProcessor.Handlebars.TemplateData;
+namespace Mars.SiteEngine.Handlebars.TemplateData;
 
 public class HandlebarsTmpCtxLanguageDataFiller : ITemplateContextVariblesFiller
 {

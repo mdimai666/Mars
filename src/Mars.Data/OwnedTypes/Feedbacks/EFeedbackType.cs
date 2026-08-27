@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.OwnedTypes.Feedbacks;
+namespace Mars.Data.OwnedTypes.Feedbacks;
 
 public enum EFeedbackType : int
 {

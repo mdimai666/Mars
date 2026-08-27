@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.PostCategories;
+namespace Mars.Contracts.PostCategories;
 
 public record CreatePostCategoryRequest
 {

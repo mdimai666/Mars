@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.UserTypes;
+namespace Mars.Contracts.UserTypes;
 
 public class UserTypeEditViewModel
 {

@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.SSO;
+namespace Mars.Identity.Abstractions.Dto.SSO;
 
 public record SsoProviderInfo
 {

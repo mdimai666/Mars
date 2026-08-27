@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.UserTypes;
+namespace Mars.Contracts.UserTypes;
 
 public record CreateUserTypeRequest
 {

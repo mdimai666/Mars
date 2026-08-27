@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+    <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
   </ItemGroup>
 </Project>

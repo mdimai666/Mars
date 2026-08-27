@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.Files;
+using Mars.Contracts.Dto.Files;
 using FluentAssertions;
 
-namespace Test.Mars.Host.Files;
+namespace Test.Mars.Server.Files;
 
 public class FileHostingInfoTests
 {

@@ -1,8 +1,8 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Feedbacks;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Contracts.Feedbacks;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 

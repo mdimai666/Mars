@@ -1,9 +1,9 @@
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Resources;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostsViews;
+namespace Mars.Admin.Pages.PostsViews;
 
 /// <summary>
 /// Редактор настроек колонок грида постов типа: видимость, порядок, сортировка по умолчанию.
@@ -46,7 +46,6 @@ public partial class PostTypeGridSettingsEditor
             _rows.Add(new GridColumnRow(knownCol.Key, knownCol.Title, knownCol.IsBase, conf.Visible));
             known.Remove(knownCol);
         }
-
 
         // колонки, которых нет в настройке, — в конце видимыми
         _rows.AddRange(known.Select(k => new GridColumnRow(k.Key, k.Title, k.IsBase, true)));

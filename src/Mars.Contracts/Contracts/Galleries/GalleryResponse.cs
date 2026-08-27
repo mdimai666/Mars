@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.Files;
+using Mars.Contracts.Files;
 
-namespace Mars.Shared.Contracts.Galleries;
+namespace Mars.Contracts.Galleries;
 
 public record GalleryListItemResponse
 {

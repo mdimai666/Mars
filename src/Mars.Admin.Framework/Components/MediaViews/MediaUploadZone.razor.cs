@@ -1,12 +1,12 @@
-using AppFront.Main.Extensions;
+using Mars.Admin.Framework.Extensions;
 using Mars.Core.Exceptions;
-using Mars.Shared.Contracts.Files;
+using Mars.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MediaViews;
+namespace Mars.Admin.Framework.Components.MediaViews;
 
 /// <summary>
 /// Общая зона загрузки файлов (перетаскивание или выбор).

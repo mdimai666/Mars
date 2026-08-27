@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Mappings.MetaFields;
+namespace Mars.Cms.Abstractions.Mappings.MetaFields;
 
 public static class MetaRelationModelMapping
 {

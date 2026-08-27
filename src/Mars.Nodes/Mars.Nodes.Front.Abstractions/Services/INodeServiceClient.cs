@@ -1,9 +1,9 @@
-using Mars.Nodes.Core;
 using Mars.Nodes.Core.Contracts.Nodes;
-using Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
-using Mars.Shared.Common;
+using Mars.Nodes.Core;
+using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
+using Mars.Contracts.Common;
 
-namespace Mars.Nodes.Front.Shared.Services;
+namespace Mars.Nodes.Front.Abstractions.Services;
 
 public interface INodeServiceClient
 {

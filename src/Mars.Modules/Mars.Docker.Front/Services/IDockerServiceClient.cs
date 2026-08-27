@@ -1,5 +1,5 @@
 using Mars.Docker.Contracts;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Docker.Front.Services;

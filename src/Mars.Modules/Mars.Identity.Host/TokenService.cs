@@ -2,15 +2,27 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Mars.Core.Exceptions;
-using Mars.Host.Models;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Options;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Identity.Host.Services;
+using Mars.Options.Services;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Identity.Host.Services;
+using Mars.Options.Services;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Identity.Host.Services;
+using Mars.Options.Services;
+using Mars.Contracts.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 public class TokenService : ITokenService
 {

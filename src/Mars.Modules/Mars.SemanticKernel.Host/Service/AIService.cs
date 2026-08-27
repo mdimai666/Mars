@@ -1,8 +1,10 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Services;
-using Mars.SemanticKernel.Host.Shared.Dto;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
-using Mars.SemanticKernel.Shared.Nodes;
+using Mars.Nodes.Abstractions.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.SemanticKernel.Abstractions.Dto;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Mars.SemanticKernel.Contracts.Nodes;
 using Microsoft.SemanticKernel;
 
 namespace Mars.SemanticKernel.Host.Service;

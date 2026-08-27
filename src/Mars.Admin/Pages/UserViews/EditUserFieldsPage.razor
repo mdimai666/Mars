@@ -1,6 +1,6 @@
 @page "/EditUserFields"
 
-@using AppFront.Shared.Components.MetaFieldViews
+@using Mars.Admin.Framework.Components.MetaFieldViews
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
 
@@ -31,8 +31,8 @@
                     Class="form-compact">
             <ValidationSummary />
             <CascadingValue Value="@MetaFields">
-                @*<AppFront.Shared.Components.MetaFieldViews.FormMetaField @bind-Model=model />*@
-                <AppFront.Shared.Components.MetaFieldViews.FormMetaField />
+                @*<Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField @bind-Model=model />*@
+                <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField />
             </CascadingValue>
 
             <hr />

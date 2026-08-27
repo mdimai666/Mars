@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.Extensions;
+namespace Mars.Server.Abstractions.Extensions;
 
 public static class ServiceScopeFactoryExtensions
 {

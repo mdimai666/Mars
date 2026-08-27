@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.UserTypes;
+namespace Mars.Identity.Abstractions.Dto.UserTypes;
 
 public record ListAllUserTypeQuery
 {

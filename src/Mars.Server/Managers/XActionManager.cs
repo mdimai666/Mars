@@ -1,12 +1,12 @@
 using System.Text.RegularExpressions;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Startup;
-using Mars.Shared.Contracts.XActions;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Startup;
+using Mars.Contracts.XActions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.Host.Managers;
+namespace Mars.Server.Managers;
 
 /// <summary>
 /// Singletone service

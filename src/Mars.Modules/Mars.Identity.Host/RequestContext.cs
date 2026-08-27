@@ -1,11 +1,15 @@
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Repositories;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Host.Services;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Host.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.Host.Services;
+namespace Mars.Identity.Host.Services;
 
 internal class RequestContext : IRequestContext
 {

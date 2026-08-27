@@ -1,12 +1,12 @@
 using System.Text.Json;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Shared.Resources;
+using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Mars.Host.Shared.ExceptionFilters;
+namespace Mars.Server.Abstractions.ExceptionFilters;
 
 /// <summary>
 /// <list type="bullet">

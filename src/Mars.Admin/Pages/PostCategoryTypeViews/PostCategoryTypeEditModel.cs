@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostCategoryTypes;
-using Mars.Shared.Models.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostCategoryTypes;
+using Mars.Contracts.Models.Interfaces;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.PostCategoryTypeViews;
+namespace Mars.Admin.Pages.PostCategoryTypeViews;
 
 /// <summary>
 /// <see cref="PostCategoryTypeDetailResponse"/>

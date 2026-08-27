@@ -1,10 +1,11 @@
 using FluentValidation;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Options.Services;
 using Mars.Options.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Media.Abstractions.Dto.Files;
 
 public class UploadMediaFileValidator : AbstractValidator<IFormFile>
 {

@@ -1,13 +1,13 @@
 using System.Net.Mime;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.SSO.Services;
-using Mars.Shared.Contracts.SSO;
-using Mars.SSO.Mappings;
+using Mars.Server.Abstractions.ExceptionFilters;
+using Mars.Server.Abstractions.Features;
+using Mars.SSO.Contracts.Services;
+using Mars.Contracts.SSO;
+using Mars.SSO.Host.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 
-namespace Mars.SSO.Controllers;
+namespace Mars.SSO.Host.Controllers;
 
 [ApiController]
 [Route("api/sso")]

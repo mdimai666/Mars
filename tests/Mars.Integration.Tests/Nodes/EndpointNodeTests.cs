@@ -1,11 +1,10 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
-using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
 using Mars.Test.Common.FixtureCustomizes;

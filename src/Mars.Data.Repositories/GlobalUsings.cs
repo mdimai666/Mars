@@ -1,1 +1,1 @@
-global using Mars.Host.Repositories.Helpers;
+global using Mars.Data.Repositories.Helpers;

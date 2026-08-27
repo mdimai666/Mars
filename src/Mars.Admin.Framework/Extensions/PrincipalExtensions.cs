@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace AppFront.Shared.Extensions;
+namespace Mars.Admin.Framework.Extensions;
 
 /*
  * Copy from - namespace System.Security.Claims;

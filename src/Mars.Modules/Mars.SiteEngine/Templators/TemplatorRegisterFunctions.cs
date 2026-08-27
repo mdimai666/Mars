@@ -1,13 +1,19 @@
 using System.Text.Json.Nodes;
+using Mars.SiteEngine.Abstractions.Templators;
 using Flurl.Http;
-using Mars.Host.Shared.Exceptions;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Shared.Templators;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Exceptions;
+using Mars.SiteEngine.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Exceptions;
+using Mars.SiteEngine.Abstractions.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Exceptions;
+using Mars.SiteEngine.Abstractions.Interfaces;
+using Mars.Contracts.Templators;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Templators;
+namespace Mars.SiteEngine.Templators;
 
 public static class TemplatorRegisterFunctions
 {

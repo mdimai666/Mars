@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Attributes;
+namespace Mars.Server.Abstractions.Attributes;
 
 [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
 public sealed class RegisterAIToolAttribute : Attribute

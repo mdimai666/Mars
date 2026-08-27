@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Cms.Abstractions.Dto.PostTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// locator is <see cref="IPostContentProcessorsLocator"/>

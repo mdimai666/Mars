@@ -1,11 +1,11 @@
-using AppFront.Main.Extensions;
+using Mars.Admin.Framework.Extensions;
 using Mars.Core.Exceptions;
-using Mars.Shared.Resources;
+using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using IMessageService = AppFront.Shared.Interfaces.IMessageService;
+using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class StandartEditForm1<TModel> : ComponentBase
         where TModel : new()

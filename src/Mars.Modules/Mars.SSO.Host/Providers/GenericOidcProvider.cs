@@ -1,12 +1,12 @@
 using System.Security.Claims;
 using System.Text.Json;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.SSO.Interfaces;
-using Mars.SSO.Utilities;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Interfaces;
+using Mars.SSO.Host.Utilities;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.SSO.Providers;
+namespace Mars.SSO.Host.Providers;
 
 public abstract class GenericOidcProvider : ISsoProvider
 {

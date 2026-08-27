@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Shared.Contracts.SSO;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.SSO.Contracts.Dto;
+using Mars.Contracts.SSO;
 
-namespace Mars.SSO.Mappings;
+namespace Mars.SSO.Host.Mappings;
 
 internal static class SsoDtoMapping
 {

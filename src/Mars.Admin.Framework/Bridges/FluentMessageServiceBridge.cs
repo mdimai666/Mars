@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Bridges;
+namespace Mars.Admin.Framework.Bridges;
 
 public class FluentMessageServiceBridge : Interfaces.IMessageService
 {

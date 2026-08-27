@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.Sms;
+namespace Mars.Contracts.Sms;
 
 public class SendSmsModelRequest : IValidatableObject
 {

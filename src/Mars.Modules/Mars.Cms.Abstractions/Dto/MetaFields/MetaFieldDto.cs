@@ -1,8 +1,8 @@
 using System.Text.Json.Nodes;
 using Mars.Core.Interfaces;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 public record MetaFieldDto : IHasId
 {

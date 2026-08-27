@@ -1,6 +1,6 @@
-using Mars.Shared.Models.Interfaces;
+using Mars.Contracts.Models.Interfaces;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 // for Develop
 public class TitleEntity : IBasicEntity

@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Startup;
+namespace Mars.Server.Abstractions.Startup;
 
 public interface IMarsStartupInfo
 {

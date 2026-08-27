@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Shared.Contracts.Users;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Contracts.Users;
 
-namespace Mars.Host.Shared.Mappings.Users;
+namespace Mars.Identity.Abstractions.Mappings.Users;
 
 public static class UserEditProfileMapping
 {

@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Mars.Services;
-using Mars.Shared.Options;
+using Mars.Contracts.Options;
 using Npgsql;
 
 namespace Mars.Setup;

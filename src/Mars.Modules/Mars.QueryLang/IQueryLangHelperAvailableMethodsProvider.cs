@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Templators;
+using Mars.SiteEngine.Abstractions.Templators;
 using Mars.Nodes.Core.Models.EntityQuery;
 
 namespace Mars.QueryLang;

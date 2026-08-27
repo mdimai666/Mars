@@ -1,10 +1,10 @@
 using HandlebarsDotNet;
-using Mars.Host.Shared.Constants.Website;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Scripts;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.Constants.Website;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public static class MyHandlebarsSiteParts
 {

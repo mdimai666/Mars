@@ -3,6 +3,6 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Host.Data\Mars.Host.Data.csproj" />
+        <ProjectReference Include="..\Mars.Data\Mars.Data.csproj" />
     </ItemGroup>
 </Project>

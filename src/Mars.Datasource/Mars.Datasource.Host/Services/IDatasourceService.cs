@@ -1,6 +1,6 @@
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Dto;
-using Mars.Shared.Common;
+using Mars.Datasource;
+using Mars.Datasource.Dto;
+using Mars.Contracts.Common;
 
 namespace Mars.Datasource.Host.Services;
 

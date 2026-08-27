@@ -1,12 +1,12 @@
 using Mars.Core.Extensions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.MetaFields;
-using DefaultValueContract = Mars.Shared.Contracts.MetaFields.MetaFieldDefaultValue;
-using DefaultValueOwned = Mars.Host.Data.OwnedTypes.MetaFields.MetaFieldDefaultValue;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Contracts.MetaFields;
+using DefaultValueContract = Mars.Contracts.MetaFields.MetaFieldDefaultValue;
+using DefaultValueOwned = Mars.Data.OwnedTypes.MetaFields.MetaFieldDefaultValue;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class MetaFieldMapping
 {

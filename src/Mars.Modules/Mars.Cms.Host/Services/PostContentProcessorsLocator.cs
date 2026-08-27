@@ -1,10 +1,14 @@
 using System.Reflection;
-using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Attributes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Attributes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class PostContentProcessorsLocator : IPostContentProcessorsLocator
 {

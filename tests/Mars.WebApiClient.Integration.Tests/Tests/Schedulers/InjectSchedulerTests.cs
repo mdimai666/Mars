@@ -1,6 +1,6 @@
 using Mars.Controllers;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Scheduler;
+using Mars.Scheduler.Abstractions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Schedulers;

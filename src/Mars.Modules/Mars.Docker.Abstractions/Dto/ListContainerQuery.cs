@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Docker.Host.Shared.Dto;
+namespace Mars.Docker.Abstractions.Dto;
 
 public record ListContainerQuery : BasicListQuery
 {

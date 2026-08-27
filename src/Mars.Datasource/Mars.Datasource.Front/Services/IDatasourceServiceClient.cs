@@ -1,8 +1,9 @@
-using Mars.Datasource.Core.Dto;
+using Mars.Datasource.Dto;
 using Mars.Datasource.Front.Services;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
 //namespace Mars.Datasource.Front.Services;
+
 namespace Mars.WebApiClient.Interfaces;
 
 public interface IDatasourceServiceClient

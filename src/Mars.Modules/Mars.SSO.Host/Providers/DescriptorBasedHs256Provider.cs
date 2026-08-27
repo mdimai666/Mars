@@ -1,12 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.SSO.Interfaces;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mars.SSO.Providers;
+namespace Mars.SSO.Host.Providers;
 
 /// <summary>
 /// small adapter that validates HS256 tokens using provided key

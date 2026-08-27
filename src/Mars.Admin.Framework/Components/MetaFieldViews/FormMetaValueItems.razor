@@ -1,4 +1,4 @@
-@using Mars.Shared.Contracts.MetaFields
+@using Mars.Contracts.MetaFields
 
 @if (MetaValues is not null && MetaFields is not null)
 {
@@ -54,7 +54,7 @@
                             }
                             else if (field is not null)
                             {
-                                <AppFront.Shared.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId
+                                <Mars.Admin.Framework.Components.MediaViews.FSelectMedia @bind-Value=field.ModelId
                                                                                      UploadFolder="@meta.UploadFolder"
                                                                                      DropZoneEnabled="@meta.DropZoneEnabled"
                                                                                      Accept="@(meta.Type == MetaFieldType.Image ? "image/*" : "*")" />

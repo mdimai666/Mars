@@ -1,8 +1,8 @@
 using FluentValidation;
-using Mars.Host.Shared.Dto.Users.Phones;
-using Mars.Host.Shared.Repositories;
+using Mars.Identity.Abstractions.Dto.Users.Phones;
+using Mars.Identity.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Dto.SSO;
+namespace Mars.Identity.Abstractions.Dto.SSO;
 
 public class UpsertUserRemoteDataQueryValidator : AbstractValidator<UpsertUserRemoteDataQuery>
 {

@@ -1,9 +1,9 @@
-using AppFront.Shared.Components;
-using Mars.Shared.Resources;
+using Mars.Admin.Framework.Components;
+using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Extensions;
+namespace Mars.Admin.Framework.Extensions;
 
 public static class DialogExtensions
 {

@@ -1,7 +1,7 @@
-using AppFront.Shared.Models;
-using Mars.Shared.ViewModels;
+using Mars.Admin.Framework.Models;
+using Mars.Contracts.ViewModels;
 
-namespace AppFront.Shared.Mappings;
+namespace Mars.Admin.Framework.Mappings;
 
 public static class ViewModelMapping
 {

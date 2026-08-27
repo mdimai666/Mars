@@ -1,5 +1,5 @@
 using System.Net.Mime;
-using Mars.Host.Shared.ExceptionFilters;
+using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.WebApp.Nodes.Front.Models.AppEntityForms;
 using Mars.WebApp.Nodes.Host.Builders;
 using Microsoft.AspNetCore.Authorization;

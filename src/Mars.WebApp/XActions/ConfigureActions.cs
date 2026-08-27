@@ -1,16 +1,16 @@
-using AppAdmin.Builder.DebugViews;
-using AppAdmin.Builder.NodeViews;
+using Mars.Admin.Builder.DebugViews;
+using Mars.Admin.Builder.NodeViews;
 #if !NOADMIN
-using AppAdmin.Pages.FeedbackViews;
-using AppAdmin.Pages.PostsViews;
-using AppAdmin.Pages.PostTypeViews;
-using AppAdmin.Pages.Settings;
+using Mars.Admin.Pages.FeedbackViews;
+using Mars.Admin.Pages.PostsViews;
+using Mars.Admin.Pages.PostTypeViews;
+using Mars.Admin.Pages.Settings;
 #endif
 using Mars.Controllers;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.XActions;
-using Mars.Shared.Resources;
+using Mars.Server.Abstractions.Managers;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.XActions;
+using Mars.Contracts.Resources;
 using Mars.XActions.ContentRecipes;
 
 namespace Mars.XActions;
@@ -143,7 +143,7 @@ internal static class ConfigureActions
             .Link("/dev/builder/debug"));
 
         actionManager.Add(a => a
-            .Id("AppAdmin.Posts.page.TemplateViewer")
+            .Id("Mars.Admin.Posts.page.TemplateViewer")
             .Label("View static template")
             .Category("Контент")
             .FrontContexts(typeof(ManagePostPage).FullName! + "-page")

@@ -1,8 +1,9 @@
-using Mars.Host.Shared.Exceptions;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.Exceptions;
+using Mars.SiteEngine.Abstractions.Interfaces;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.Interfaces;
+namespace Mars.SiteEngine.Abstractions.Interfaces;
 
 /// <summary>
 /// IXTFunctionContext

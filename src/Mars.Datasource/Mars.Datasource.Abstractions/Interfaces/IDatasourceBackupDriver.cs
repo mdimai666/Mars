@@ -1,7 +1,7 @@
-﻿using Mars.Datasource.Host.Core.Exceptions;
-using Mars.Datasource.Host.Core.Models;
+using Mars.Datasource.Abstractions.Exceptions;
+using Mars.Datasource.Abstractions.Models;
 
-namespace Mars.Datasource.Core.Interfaces;
+namespace Mars.Datasource.Abstractions.Interfaces;
 
 public interface IDatasourceBackupDriver
 {

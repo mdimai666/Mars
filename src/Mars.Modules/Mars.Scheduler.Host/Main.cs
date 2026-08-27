@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Scheduler;
+using Mars.Scheduler.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;

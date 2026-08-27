@@ -10,7 +10,7 @@ namespace Mars.Cli.EndToEnd.Tests;
 
 /// <summary>
 /// End-to-end тонкого клиента: реальный процесс Mars.dll против stub-сервера на сокете.
-/// Запускальные тесты вынесены в отдельный проект: Test.Mars.Host — для кодовых тестов, не для запуска процессов.
+/// Запускальные тесты вынесены в отдельный проект: Test.Mars.Server — для кодовых тестов, не для запуска процессов.
 /// Требует собранный Mars.WebApp (Debug), иначе тест пропускается.
 /// </summary>
 public class CliThinClientEndToEndTests

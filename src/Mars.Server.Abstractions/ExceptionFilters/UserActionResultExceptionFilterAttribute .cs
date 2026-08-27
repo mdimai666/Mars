@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Mars.Host.Shared.ExceptionFilters;
+namespace Mars.Server.Abstractions.ExceptionFilters;
 
 public sealed class UserActionResultExceptionFilterAttribute : ExceptionFilterAttribute
 {

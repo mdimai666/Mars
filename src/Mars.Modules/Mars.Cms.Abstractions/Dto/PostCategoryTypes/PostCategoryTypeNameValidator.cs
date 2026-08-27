@@ -1,8 +1,8 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 public class PostCategoryTypeNameValidator
 {

@@ -1,6 +1,6 @@
 using Mars.Nodes.Core.Nodes.Common;
 
-namespace Mars.Nodes.Host.Shared.ExceptionModule;
+namespace Mars.Nodes.Abstractions.ExceptionModule;
 
 public class NodesErrorHandlerRegistry
 {

@@ -1,9 +1,11 @@
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 
-namespace Test.Mars.Host.Files;
+namespace Test.Mars.Server.Files;
 
 public class FileStorageMoveTests : IDisposable
 {

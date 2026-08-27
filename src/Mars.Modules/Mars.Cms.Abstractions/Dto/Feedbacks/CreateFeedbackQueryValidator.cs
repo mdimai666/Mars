@@ -1,7 +1,7 @@
 using Mars.Core.Constants;
 using FluentValidation;
 
-namespace Mars.Host.Shared.Dto.Feedbacks;
+namespace Mars.Cms.Abstractions.Dto.Feedbacks;
 
 public class CreateFeedbackQueryValidator : AbstractValidator<CreateFeedbackQuery>
 {

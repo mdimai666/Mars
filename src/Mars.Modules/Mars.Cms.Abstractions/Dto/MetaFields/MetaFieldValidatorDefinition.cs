@@ -1,10 +1,10 @@
 using System.Text.Json.Nodes;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
 /// Правило валидации значения мета-поля; хранится в массиве <c>Options.validators</c>.
-/// Тип — дискриминатор из реестра <c>Mars.Host.Shared.Utils.MetaFieldValueValidators</c>.
+/// Тип — дискриминатор из реестра <c>Mars.Cms.Abstractions.Utils.MetaFieldValueValidators</c>.
 /// </summary>
 public record MetaFieldValidatorDefinition
 {

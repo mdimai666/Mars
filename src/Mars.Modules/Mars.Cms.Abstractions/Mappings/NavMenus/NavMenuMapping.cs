@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.NavMenus;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Contracts.Common;
+using Mars.Contracts.NavMenus;
 
-namespace Mars.Host.Shared.Mappings.NavMenus;
+namespace Mars.Cms.Abstractions.Mappings.NavMenus;
 
 public static class NavMenuMapping
 {

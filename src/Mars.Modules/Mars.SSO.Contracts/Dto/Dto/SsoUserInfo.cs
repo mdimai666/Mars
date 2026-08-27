@@ -1,6 +1,6 @@
-using Mars.Shared.ViewModels;
+using Mars.Contracts.ViewModels;
 
-namespace Mars.Host.Shared.SSO.Dto;
+namespace Mars.SSO.Contracts.Dto;
 
 public class SsoUserInfo
 {

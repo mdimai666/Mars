@@ -1,14 +1,14 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.PostCategories;
-using Mars.Shared.Contracts.PostCategoryTypes;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.PostCategories;
+using Mars.Contracts.PostCategoryTypes;
+using Mars.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Pages.PostCategoryViews;
+namespace Mars.Admin.Pages.PostCategoryViews;
 
 public partial class ManagePostCategoryView
 {

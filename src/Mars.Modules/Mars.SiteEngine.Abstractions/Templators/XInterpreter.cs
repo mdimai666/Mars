@@ -1,7 +1,7 @@
 using DynamicExpresso;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.Templators;
+namespace Mars.SiteEngine.Abstractions.Templators;
 
 public class XInterpreter
 {

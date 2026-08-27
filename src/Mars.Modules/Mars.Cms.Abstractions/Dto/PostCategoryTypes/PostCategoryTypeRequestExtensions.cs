@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.PostCategoryTypes;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.PostCategoryTypes;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 public static class PostCategoryTypeRequestExtensions
 {

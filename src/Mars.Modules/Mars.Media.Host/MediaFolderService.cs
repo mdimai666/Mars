@@ -1,10 +1,28 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Services;
+namespace Mars.Media.Host.Services;
 
 internal class MediaFolderService : IMediaFolderService
 {

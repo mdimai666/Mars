@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.Options;
-using Mars.Shared.Contracts.Options;
+using Mars.Options.Dto.Options;
+using Mars.Contracts.Options;
 
-namespace Mars.Host.Shared.Mappings.Options;
+namespace Mars.Options.Mappings.Options;
 
 public static class OptionMapping
 {

@@ -1,12 +1,12 @@
-using AppFront.Shared.Components.MediaViews;
-using AppFront.Shared.Extensions;
+using Mars.Admin.Framework.Components.MediaViews;
+using Mars.Admin.Framework.Extensions;
 using Mars.Core.Features;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 public partial class FormMetaField
 {

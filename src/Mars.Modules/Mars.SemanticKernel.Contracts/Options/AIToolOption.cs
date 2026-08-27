@@ -1,4 +1,4 @@
-namespace Mars.SemanticKernel.Shared.Options;
+namespace Mars.SemanticKernel.Contracts.Options;
 
 public sealed class AIToolOption
 {

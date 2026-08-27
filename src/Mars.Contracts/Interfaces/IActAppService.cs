@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.XActions;
+using Mars.Contracts.XActions;
 
-namespace Mars.Shared.Interfaces;
+namespace Mars.Contracts.Interfaces;
 
 public interface IActAppService
 {

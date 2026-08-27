@@ -2,7 +2,7 @@ using System.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Startups;
+namespace Mars.Admin.Startups;
 
 public static class StrartupSafeModeHelper
 {

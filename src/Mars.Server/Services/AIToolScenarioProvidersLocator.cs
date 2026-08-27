@@ -1,10 +1,14 @@
 using System.Reflection;
-using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Attributes;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Services;
+using Mars.Server.Abstractions.Attributes;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Services;
+namespace Mars.Server.Services;
 
 internal class AIToolScenarioProvidersLocator : IAIToolScenarioProvidersLocator
 {

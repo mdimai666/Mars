@@ -1,10 +1,10 @@
-using Mars.Host.Shared.Templators;
-using Mars.Host.Templators.HandlebarsFunc;
-using Mars.WebSiteProcessor.Interfaces;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
+using Mars.SiteEngine.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.WebSiteProcessor.Handlebars;
+namespace Mars.SiteEngine.Handlebars;
 
 public static class MainHandlebarsWRE
 {

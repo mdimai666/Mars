@@ -1,9 +1,9 @@
-using AppFront.Shared.Interfaces;
-using AppFront.Shared.Tools;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Tools;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.Services;
+namespace Mars.Admin.Framework.Services;
 
 public class DeveloperControlService
 {

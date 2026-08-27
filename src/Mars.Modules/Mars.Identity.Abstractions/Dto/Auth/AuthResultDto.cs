@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.Auth;
+namespace Mars.Identity.Abstractions.Dto.Auth;
 
 public record AuthResultDto
 {

@@ -1,17 +1,17 @@
-using Mars.Host.Data;
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.InMemory;
-using Mars.Host.Data.Options;
-using Mars.Host.Data.PostgreSQL;
-using Mars.Host.Repositories;
+using Mars.Data;
+using Mars.Data.Constants;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.InMemory;
+using Mars.Data.Options;
+using Mars.Data.PostgreSQL;
+using Mars.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Infrastructure;
+namespace Mars.Data.Infrastructure;
 
 public static class MainInfrastructure
 {

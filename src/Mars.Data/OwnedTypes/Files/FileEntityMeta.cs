@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.OwnedTypes.Files;
+namespace Mars.Data.OwnedTypes.Files;
 
 // [Jsonb]
 public class FileEntityMeta

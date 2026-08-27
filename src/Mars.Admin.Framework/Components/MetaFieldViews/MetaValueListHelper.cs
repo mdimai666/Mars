@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>Общая логика полей-списков объектов (мульти-значения Relation)</summary>
 public static class MetaValueListHelper

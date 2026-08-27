@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Shared.Contracts.Galleries;
+namespace Mars.Contracts.Galleries;
 
 public record CreateGalleryRequest
 {

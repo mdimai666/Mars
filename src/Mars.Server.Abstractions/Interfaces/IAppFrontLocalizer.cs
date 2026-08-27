@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Localization;
 
-namespace Mars.Host.Shared.Interfaces;
+namespace Mars.Server.Abstractions.Interfaces;
 
 public interface IAppFrontLocalizer
 {

@@ -2,7 +2,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 
-namespace AppAdmin.Shared.ActionCenter;
+namespace Mars.Admin.Shared.ActionCenter;
 
 public class RecentPage
 {

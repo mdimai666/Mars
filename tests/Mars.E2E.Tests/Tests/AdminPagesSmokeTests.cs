@@ -1,18 +1,18 @@
-using AppFront.Shared.Interfaces;
-using AppFront.Shared.Models;
-using AppFront.Shared.Services;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Models;
+using Mars.Admin.Framework.Services;
 using FluentAssertions;
 
 namespace Mars.E2E.Tests.Tests;
 
 /// <summary>
 /// Смоук без поднятия сервера: IBlazorPagesService корректно читает страницы
-/// из сборки админки (AppAdmin) — маршруты, роли, layout, путь к исходнику.
+/// из сборки админки (Mars.Admin) — маршруты, роли, layout, путь к исходнику.
 /// </summary>
 public class AdminPagesSmokeTests
 {
     private readonly IBlazorPagesService _service = new BlazorPagesService();
-    private readonly System.Reflection.Assembly _adminAsm = typeof(AppAdmin.App).Assembly;
+    private readonly System.Reflection.Assembly _adminAsm = typeof(Mars.Admin.App).Assembly;
 
     [Fact]
     public void AppAdmin_ExposesKnownPages()
@@ -65,7 +65,7 @@ public class AdminPagesSmokeTests
         var index = pages.Single(p => p.Name == "Index");
 
         // относительный путь заполнен всегда и указывает на Pages/Index.razor
-        index.SourceRelativePath.Should().Be("AppAdmin/Pages/Index.razor");
+        index.SourceRelativePath.Should().Be("Mars.Admin/Pages/Index.razor");
 
         // в Debug внутри репозитория может резолвиться и абсолютный путь
         var resolved = _service.ResolveSourceFilePath(index.PageType);

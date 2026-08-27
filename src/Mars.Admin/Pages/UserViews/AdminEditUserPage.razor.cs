@@ -3,18 +3,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using AntDesign;
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using AppShared.Dto;
 using AppShared.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using AntDesign.Internal;
-using AppFront.Shared;
+using Mars.Admin.Framework;
 using AppShared.Models;
-using Mars.Shared.Contracts.Users;
+using Mars.Contracts.Users;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public partial class AdminEditUserPage
 {
@@ -34,13 +34,11 @@ public partial class AdminEditUserPage
     [Inject] public ViewModelService viewModelService { get; set; } = default!;
     [Inject] public MediaService mediaService { get; set; } = default!;
 
-
     IForm form = default!;
 
     EditUserViewModel? vm;
 
     public IEnumerable<Guid> UpdUserRoles { get => vm.User.Roles.Select(s => s.Id); set => vm.User.Roles = vm.Roles.Where(s => value.Contains(s.Id)); }
-
 
     async Task<UserEditProfileResponse> Get()
     {

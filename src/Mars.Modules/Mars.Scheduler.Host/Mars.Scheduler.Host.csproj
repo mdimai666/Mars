@@ -10,7 +10,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
 	</ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,9 +1,9 @@
-@using AppAdmin.Pages.PostCategoryViews
-@using AppAdmin.Pages.PostTypeViews
-@using Mars.Shared.Contracts.MetaFields
+@using Mars.Admin.Pages.PostCategoryViews
+@using Mars.Admin.Pages.PostTypeViews
+@using Mars.Contracts.MetaFields
 @using MarsCodeEditor2
 @using Microsoft.FluentUI.AspNetCore.Components
-@using static Mars.Shared.Contracts.PostTypes.PostTypeConstants;
+@using static Mars.Contracts.PostTypes.PostTypeConstants;
 
 @inject IStringLocalizer<AppRes> L
 @implements IDisposable
@@ -161,7 +161,7 @@
 
         <CascadingValue Value="@context.MetaValues">
             <CascadingValue Value="@context.PostType.MetaFields">
-                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
+                <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
             </CascadingValue>
         </CascadingValue>
 

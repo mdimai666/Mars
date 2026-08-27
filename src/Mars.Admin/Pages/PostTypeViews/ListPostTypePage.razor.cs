@@ -1,17 +1,17 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Pages.PostTypeViews;
+namespace Mars.Admin.Pages.PostTypeViews;
 
 public partial class ListPostTypePage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IJSRuntime jSRuntime { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
 

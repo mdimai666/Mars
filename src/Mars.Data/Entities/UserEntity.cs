@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.OwnedTypes.Users;
+using Mars.Data.Common;
+using Mars.Data.OwnedTypes.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 [DebuggerDisplay("{UserName}({Email})/{Id}")]
 public class UserEntity : IdentityUser<Guid>, IBasicEntity

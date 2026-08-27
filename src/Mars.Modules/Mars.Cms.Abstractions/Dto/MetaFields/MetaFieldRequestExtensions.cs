@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Utils;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 public static class MetaFieldRequestExtensions
 {

@@ -1,16 +1,18 @@
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Host.Shared.WebSite.SourceProviders;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Interfaces;
+using Mars.SiteEngine.Services;
+using Mars.Server.Abstractions.Models;
+using Mars.Server.Abstractions.Interfaces;
+using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.WebSite.SourceProviders;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Mars.WebSiteProcessor.Services;
+namespace Mars.SiteEngine.Services;
 
 public class WebTemplateService : IWebTemplateService
 {

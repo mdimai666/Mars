@@ -1,4 +1,4 @@
-namespace Mars.SSO.Dto;
+namespace Mars.SSO.Host.Dto;
 
 internal class GithubUserInfoResponse
 {

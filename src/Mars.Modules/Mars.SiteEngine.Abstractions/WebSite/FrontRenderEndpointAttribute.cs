@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.WebSite;
+namespace Mars.SiteEngine.Abstractions.WebSite;
 
 /// <summary>
 /// Маркер endpoint'а, который рендерит контент фронтов (публичное API рендера).

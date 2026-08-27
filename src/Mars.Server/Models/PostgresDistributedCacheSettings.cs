@@ -1,4 +1,4 @@
-namespace Mars.Host.Models;
+namespace Mars.Server.Models;
 
 public class PostgresDistributedCacheSettings
 {

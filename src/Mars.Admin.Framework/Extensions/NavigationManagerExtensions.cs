@@ -1,7 +1,7 @@
-using AppFront.Shared.Features;
+using Mars.Admin.Framework.Features;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Shared.Extensions;
+namespace Mars.Admin.Framework.Extensions;
 
 public static class NavigationManagerExtensions
 {

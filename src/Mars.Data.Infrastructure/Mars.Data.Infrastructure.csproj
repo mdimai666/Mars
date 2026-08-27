@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Host.Data.InMemory\Mars.Host.Data.InMemory.csproj" />
-        <ProjectReference Include="..\Mars.Host.Data.PostgreSQL\Mars.Host.Data.PostgreSQL.csproj" />
-        <ProjectReference Include="..\Mars.Host.Data\Mars.Host.Data.csproj" />
-        <ProjectReference Include="..\Mars.Host.Repositories\Mars.Host.Repositories.csproj" />
-        <ProjectReference Include="..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Data.InMemory\Mars.Data.InMemory.csproj" />
+        <ProjectReference Include="..\Mars.Data.PostgreSQL\Mars.Data.PostgreSQL.csproj" />
+        <ProjectReference Include="..\Mars.Data\Mars.Data.csproj" />
+        <ProjectReference Include="..\Mars.Data.Repositories\Mars.Data.Repositories.csproj" />
+        <ProjectReference Include="..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     </ItemGroup>
 </Project>

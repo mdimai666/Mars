@@ -1,6 +1,6 @@
-using Mars.Shared.Contracts.Files;
+using Mars.Contracts.Files;
 
-namespace AppFront.Main.Extensions;
+namespace Mars.Admin.Framework.Extensions;
 
 public static class ExtensionFileEntity
 {

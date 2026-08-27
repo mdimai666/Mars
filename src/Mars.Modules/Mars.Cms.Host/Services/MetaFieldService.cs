@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 //public class MetaFieldService : IMetaFieldService
 //{

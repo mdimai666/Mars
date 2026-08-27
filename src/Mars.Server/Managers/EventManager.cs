@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Managers;
+using Mars.Server.Abstractions.Managers;
 
-namespace Mars.Host.Managers;
+namespace Mars.Server.Managers;
 
 /// <summary>
 /// Singletone service
@@ -14,7 +14,7 @@ internal class EventManager : IEventManager
 
     //public delegate void ManagerEventPayloadHandler(ManagerEventPayload payload);
 
-    public event Shared.Managers.IEventManager.ManagerEventPayloadHandler OnTrigger = default!;
+    public event Mars.Server.Abstractions.Managers.IEventManager.ManagerEventPayloadHandler OnTrigger = default!;
 
     EventManagerDefaults _defaults = new();
     public EventManagerDefaults Defaults => _defaults;

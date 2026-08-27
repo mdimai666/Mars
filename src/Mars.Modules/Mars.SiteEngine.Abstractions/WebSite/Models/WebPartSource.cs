@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Mars.Host.Shared.WebSite.Models;
+namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
 [DebuggerDisplay("WebPartSource={Name}/{Title}")]
 public class WebPartSource

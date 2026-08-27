@@ -1,4 +1,4 @@
-namespace Mars.Docker.Host.Shared.Dto;
+namespace Mars.Docker.Abstractions.Dto;
 
 public record CreateVolumeQuery
 {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Shared.Contracts.Users;
+namespace Mars.Contracts.Users;
 
 public class UserProfileInfoResponse : UserEditProfileResponse
 {

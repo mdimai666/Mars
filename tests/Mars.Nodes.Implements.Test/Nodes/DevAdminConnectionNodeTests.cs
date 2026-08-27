@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Connections;
 using Mars.Nodes.Core.Nodes.Connections;

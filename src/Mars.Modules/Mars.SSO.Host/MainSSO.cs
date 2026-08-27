@@ -1,19 +1,19 @@
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Managers.Extensions;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.SSO.Services;
+using Mars.Server.Abstractions.Features;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Options.Services;
+using Mars.SSO.Contracts.Services;
 using Mars.Options.Models;
-using Mars.SSO.Middlewares;
-using Mars.SSO.Providers;
-using Mars.SSO.Services;
-using Mars.SSO.Utilities;
+using Mars.SSO.Host.Middlewares;
+using Mars.SSO.Host.Providers;
+using Mars.SSO.Host.Services;
+using Mars.SSO.Host.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
 
-namespace Mars.SSO;
+namespace Mars.SSO.Host;
 
 public static class MainSSO
 {

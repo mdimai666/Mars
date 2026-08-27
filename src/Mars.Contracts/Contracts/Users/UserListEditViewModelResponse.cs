@@ -1,7 +1,7 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Roles;
+using Mars.Contracts.Common;
+using Mars.Contracts.Roles;
 
-namespace Mars.Shared.Contracts.Users;
+namespace Mars.Contracts.Users;
 
 public class UserListEditViewModelResponse
 {

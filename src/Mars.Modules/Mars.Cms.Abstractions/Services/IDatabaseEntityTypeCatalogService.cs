@@ -1,6 +1,6 @@
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IDatabaseEntityTypeCatalogService
 {

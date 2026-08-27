@@ -1,13 +1,15 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.MetaFields;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class MetaValuesValidatorTests
 {

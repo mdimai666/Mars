@@ -1,12 +1,12 @@
 @page "/front/editor/{Slug}"
 @layout BuilderLayout
 @using System.Text.Json
-@using AppFront.Main.Extensions
-@using AppFront.Shared.Features
-@using AppFront.Shared.Hub
+@using Mars.Admin.Framework.Extensions
+@using Mars.Admin.Framework.Features
+@using Mars.Admin.Framework.Hub
 @using Mars.AiChat.Front.Services
-@using Mars.Shared.Contracts.WebSite.Dto
-@using Mars.Shared.Options
+@using Mars.Contracts.WebSite.Dto
+@using Mars.Contracts.Options
 @using MarsCodeEditor2
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
@@ -17,7 +17,7 @@
 
 @inject IMarsWebApiClient client
 @inject ClientHub clientHub
-@inject AppFront.Shared.Interfaces.IMessageService messageService
+@inject Mars.Admin.Framework.Interfaces.IMessageService messageService
 @inject NavigationManager nav
 @inject IDialogService dialogService
 

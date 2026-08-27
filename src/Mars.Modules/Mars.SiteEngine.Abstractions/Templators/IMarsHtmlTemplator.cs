@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Templators;
+namespace Mars.SiteEngine.Abstractions.Templators;
 
 public interface IMarsHtmlTemplator : IDisposable
 {

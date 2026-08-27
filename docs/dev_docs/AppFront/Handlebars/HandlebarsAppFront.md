@@ -118,14 +118,14 @@ Attribute can contain custom value
 
 
 ### Контекст по умолчанию при отрисовке
-По умолчанию доступны некоторые переменные, которые заданы Марсом [исходник](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.WebSiteProcessor.Handlebars/TemplateData/HandlebarsTmpCtxBasicDataContext.cs)
+По умолчанию доступны некоторые переменные, которые заданы Марсом [исходник](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.SiteEngine.Handlebars/TemplateData/HandlebarsTmpCtxBasicDataContext.cs)
 
 | команда       | описание  |
 |---|---|
 || **HandlebarsTmpCtxBasicDataContext**
-|_user      | Данные текущего авторизованного пользователя [RenderContextUser](https://github.com/mdimai666/Mars/blob/master/src/Mars.Host.Shared/WebSite/Models/RenderContextUser.cs)
-|_req       | Данные о запросе, url, headers и т.д. [WebClientRequest](https://github.com/mdimai666/Mars/blob/master/src/Mars.Host.Shared/Models/WebClientRequest.cs)
-|SysOptions | Системные настройки сайта Имя, домен и т.д. [SysOptions](https://github.com/mdimai666/Mars/blob/master/src/Mars.Shared/Options/SysOptions.cs)
+|_user      | Данные текущего авторизованного пользователя [RenderContextUser](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.SiteEngine.Abstractions/WebSite/Models/RenderContextUser.cs)
+|_req       | Данные о запросе, url, headers и т.д. [WebClientRequest](https://github.com/mdimai666/Mars/blob/master/src/Mars.Server.Abstractions/Models/WebClientRequest.cs)
+|SysOptions | Системные настройки сайта Имя, домен и т.д. [SysOptions](https://github.com/mdimai666/Mars/blob/master/src/Mars.Contracts/Options/SysOptions.cs)
 || **HandlebarsTmpCtxLanguageDataFiller**
 | _lang     | "ru"
 || **HandlebarsTmpCtxAppThemeFiller**

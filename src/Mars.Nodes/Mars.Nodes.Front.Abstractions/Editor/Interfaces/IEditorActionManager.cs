@@ -1,6 +1,6 @@
-using Mars.Nodes.Front.Shared.Editor.Models;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 
-namespace Mars.Nodes.Front.Shared.Editor.Interfaces;
+namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 
 public interface IEditorActionManager
 {

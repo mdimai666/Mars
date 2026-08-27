@@ -1,7 +1,7 @@
-using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Functions;
+using Mars.Nodes.Core;
 
-namespace Mars.Nodes.Host.Shared.Dto;
+namespace Mars.Nodes.Abstractions.Dto;
 
 public class NodesDataDto
 {

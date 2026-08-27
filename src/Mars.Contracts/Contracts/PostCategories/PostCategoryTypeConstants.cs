@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.PostCategories;
+namespace Mars.Contracts.PostCategories;
 
 public sealed class PostCategoryTypeConstants
 {

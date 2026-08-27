@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Проверка значений мета-полей по определению поля: обязательность (IsNullable),

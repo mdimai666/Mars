@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Excel.Abstractions;
 
 public interface IExcelService
 {

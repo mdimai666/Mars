@@ -1,12 +1,12 @@
 using System.Reflection;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Contexts.Abstractions;
-using Mars.Host.Data.Options;
+using Mars.Data.Contexts;
+using Mars.Data.Contexts.Abstractions;
+using Mars.Data.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Npgsql;
 
-namespace Mars.Host.Data.PostgreSQL;
+namespace Mars.Data.PostgreSQL;
 
 public class MarsDbContextPostgreSQLForPluginFactory(DatabaseConnectionOpt connectionOpt, Assembly migrationsAssembly, string schemaName) : IMarsDbContextFactory
 {

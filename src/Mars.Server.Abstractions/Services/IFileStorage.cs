@@ -1,6 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 /// <summary>
 /// Дает доступ к файлам на локальном или удаленном хранилище

@@ -1,4 +1,4 @@
-namespace AppFront.Shared.Interfaces;
+namespace Mars.Admin.Framework.Interfaces;
 
 public interface IMessageService : IDisposable
 {

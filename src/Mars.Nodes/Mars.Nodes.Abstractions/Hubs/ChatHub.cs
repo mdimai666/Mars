@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Services;
-using Mars.Shared.Interfaces;
+using Mars.Contracts.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Mars.Nodes.Abstractions.Services;
 
-namespace Mars.Host.Shared.Hubs;
+namespace Mars.Nodes.Abstractions.Hubs;
 
 /// <summary>
 /// Хаб только получает сообщение  от клиента и вызывает метод в сервисе

@@ -1,4 +1,4 @@
-namespace Mars.Shared.Common;
+namespace Mars.Contracts.Common;
 
 public interface IBasicListQuery
 {

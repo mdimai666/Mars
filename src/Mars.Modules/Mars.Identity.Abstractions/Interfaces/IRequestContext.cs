@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.Users;
+using Mars.Identity.Abstractions.Dto.Users;
 
-namespace Mars.Host.Shared.Interfaces;
+namespace Mars.Identity.Abstractions.Interfaces;
 
 public interface IRequestContext
 {

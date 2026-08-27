@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 
 namespace PluginExample.Data.Entities;
 

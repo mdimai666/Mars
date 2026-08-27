@@ -1,7 +1,7 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Media.Abstractions.Services;
 
 public interface IMediaService : IFileService
 {

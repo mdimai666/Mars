@@ -1,8 +1,8 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Dto.Galleries;
+using Mars.Data.Entities;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Dto.Galleries;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class GalleryMapping
 {

@@ -56,7 +56,7 @@
         if (firstRender)
         {
             selfReference = DotNetObjectReference.Create(this);
-            var module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/mdimai666.Mars.AppFront.Main/Components/SortableList.razor.js");
+            var module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/mdimai666.Mars.Admin.Framework/Components/SortableList.razor.js");
             await module.InvokeAsync<string>("init", Id, Group, Pull, Put, Sort, Handle, Filter, selfReference);
         }
     }

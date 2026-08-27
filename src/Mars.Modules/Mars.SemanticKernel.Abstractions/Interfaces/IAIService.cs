@@ -1,7 +1,7 @@
-using Mars.SemanticKernel.Host.Shared.Dto;
+using Mars.SemanticKernel.Abstractions.Dto;
 using Microsoft.SemanticKernel;
 
-namespace Mars.SemanticKernel.Host.Shared.Interfaces;
+namespace Mars.SemanticKernel.Abstractions.Interfaces;
 
 public interface IMarsAIService
 {

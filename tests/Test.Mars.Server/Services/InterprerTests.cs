@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Templators;
+using Mars.SiteEngine.Abstractions.Templators;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class InterprerTests
 {

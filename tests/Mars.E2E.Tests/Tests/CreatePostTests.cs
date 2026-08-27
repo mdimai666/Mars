@@ -4,7 +4,7 @@ using Flurl.Http;
 using Mars.E2E.Tests.Fixtures;
 using Mars.E2E.Tests.Helpers;
 using Mars.Integration.Tests.Attributes;
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Posts;
 using Microsoft.Playwright;
 
 namespace Mars.E2E.Tests.Tests;

@@ -1,6 +1,6 @@
-using Mars.Host.Options;
+using Mars.Server.Options;
 
-namespace Test.Mars.Host.SomeTests;
+namespace Test.Mars.Server.SomeTests;
 
 public class OptionReaderToolTests
 {

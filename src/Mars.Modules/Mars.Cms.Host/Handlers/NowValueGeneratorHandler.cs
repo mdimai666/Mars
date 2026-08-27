@@ -1,9 +1,10 @@
 using System.Text.Json.Nodes;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Host.Handlers;
+namespace Mars.Cms.Host.Handlers;
 
 /// <summary>
 /// Генератор «текущая дата/время»: автозаполнение моментом создания объекта.

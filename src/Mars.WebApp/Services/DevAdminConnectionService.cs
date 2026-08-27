@@ -1,7 +1,7 @@
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.Services;
@@ -29,7 +29,7 @@ internal class DevAdminConnectionService : IDevAdminConnectionService
 
     public IReadOnlyCollection<PageContextInfo> GetPageContexts()
     {
-        var pages = _pagesService.GetStaticRoutedPages([typeof(AppAdmin.App).Assembly]);
+        var pages = _pagesService.GetStaticRoutedPages([typeof(Mars.Admin.App).Assembly]);
 
         return pages.Select(x => new PageContextInfo(x.PageType.FullName!, x.DisplayName)).ToList();
     }

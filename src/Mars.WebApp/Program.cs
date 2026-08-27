@@ -3,7 +3,7 @@ using System.Text;
 using Mars;
 using Mars.CommandLine;
 using Mars.CommandLine.Remote;
-using Mars.CommandLine.Shared;
+using Mars.CommandLine.Abstractions;
 using Mars.Setup;
 using Mars.UseStartup;
 using static Mars.UseStartup.MarsStartupInfo;

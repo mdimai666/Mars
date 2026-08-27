@@ -1,9 +1,9 @@
-using Mars.AiChat.Host.Shared.Models;
-using Mars.AiChat.Shared.Dto;
-using Mars.AiChat.Shared.Options;
+using Mars.AiChat.Abstractions.Models;
+using Mars.AiChat.Contracts.Dto;
+using Mars.AiChat.Contracts.Options;
 using Microsoft.Extensions.AI;
 
-namespace Mars.AiChat.Host.Shared.Interfaces;
+namespace Mars.AiChat.Abstractions.Interfaces;
 
 /// <summary>
 /// Хранилище чатов (HybridCache).

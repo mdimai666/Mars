@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.OwnedTypes.Users;
+namespace Mars.Data.OwnedTypes.Users;
 
 public enum UserGender
 {

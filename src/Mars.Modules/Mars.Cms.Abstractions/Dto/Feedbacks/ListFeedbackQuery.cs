@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.Feedbacks;
+namespace Mars.Cms.Abstractions.Dto.Feedbacks;
 
 public record ListFeedbackQuery : BasicListQuery
 {

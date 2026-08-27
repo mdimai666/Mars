@@ -1,10 +1,10 @@
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.Schedulers;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.Schedulers;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Builder.SchedulerViews;
+namespace Mars.Admin.Builder.SchedulerViews;
 
 public partial class SchedulerPage
 {
@@ -20,7 +20,6 @@ public partial class SchedulerPage
         base.OnParametersSet();
         _ = Load();
     }
-
 
     async Task Load()
     {

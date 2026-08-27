@@ -1,7 +1,7 @@
 using System.Reflection;
-using AppAdmin.Pages.Public;
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Hub;
+using Mars.Admin.Pages.Public;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Hub;
 using Mars.Options.Models;
 using Mars.Plugin.Front;
 using Microsoft.AspNetCore.Components;
@@ -11,7 +11,7 @@ using Microsoft.JSInterop;
 using Toolbelt.Blazor;
 using Toolbelt.Blazor.HotKeys2;
 
-namespace AppAdmin;
+namespace Mars.Admin;
 
 public partial class App
 {
@@ -26,7 +26,7 @@ public partial class App
     [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Inject] ILogger<App> _logger { get; set; } = default!;
     [Inject] ClientHub hub { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] DeveloperControlService controlService { get; set; } = default!;
     [Inject] HotKeys HotKeys { get; set; } = default!;
 
@@ -56,7 +56,7 @@ public partial class App
 
     private void Interceptor_AfterSend(object sender, HttpClientInterceptorEventArgs e)
     {
-        bool isPublicPage = PageType.Namespace.StartsWith("AppAdmin.Pages.Public");
+        bool isPublicPage = PageType.Namespace.StartsWith("Mars.Admin.Pages.Public");
 
         //!NavigationManager.Path().Equals("Login", StringComparison.OrdinalIgnoreCase)
 

@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.Posts;
+using Mars.Contracts.PostTypes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PostTypes;
 

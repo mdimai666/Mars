@@ -1,4 +1,4 @@
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 /// <summary>
 /// Мета-значение поста (таблица <c>post_meta_values</c>).

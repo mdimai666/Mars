@@ -1,7 +1,7 @@
-using AppFront.Shared.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Contracts.Resources;
 
-namespace AppFront.Main.Extensions;
+namespace Mars.Admin.Framework.Extensions;
 
 public static class SmartSaveExtensions
 {

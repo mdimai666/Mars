@@ -1,12 +1,12 @@
 using System.ComponentModel;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Mappings.Posts;
-using Mars.Host.Shared.Mappings.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Mappings.Posts;
+using Mars.Cms.Abstractions.Mappings.PostTypes;
+using Mars.Cms.Abstractions.Services;
 using Mars.SemanticKernel.CMS.Posts;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.Common;
+using Mars.Contracts.Posts;
+using Mars.Contracts.PostTypes;
 using Microsoft.SemanticKernel;
 
 namespace Mars.SemanticKernel.CMS.Plugins;

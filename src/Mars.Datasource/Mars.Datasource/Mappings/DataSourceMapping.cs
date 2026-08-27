@@ -1,6 +1,6 @@
-using Mars.Datasource.Core.Dto;
+using Mars.Datasource.Dto;
 
-namespace Mars.Datasource.Core.Mappings;
+namespace Mars.Datasource.Mappings;
 
 public static class DataSourceMapping
 {

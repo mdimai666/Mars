@@ -1,16 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.SSO.Dto;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.Users;
-using Mars.SSO.Mappings;
-using Mars.SSO.Utilities;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.SSO.Contracts.Dto;
+using Mars.Contracts.Users;
+using Mars.SSO.Host.Mappings;
+using Mars.SSO.Host.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Mars.Identity.Abstractions.Utils;
 
-namespace Mars.SSO.Providers;
+namespace Mars.SSO.Host.Providers;
 
 // Microsoft (Azure AD) provider using OIDC
 /*

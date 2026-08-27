@@ -1,8 +1,8 @@
 using FluentValidation;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Repositories;
+using Mars.Cms.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Dto.PostCategoryTypes;
+namespace Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
 public class DeletePostCategoryTypeQueryValidator : AbstractValidator<Guid>
 {

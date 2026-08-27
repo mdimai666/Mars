@@ -1,4 +1,4 @@
-namespace Mars.SemanticKernel.Shared.Options;
+namespace Mars.SemanticKernel.Contracts.Options;
 
 public interface ILLMOptions
 {

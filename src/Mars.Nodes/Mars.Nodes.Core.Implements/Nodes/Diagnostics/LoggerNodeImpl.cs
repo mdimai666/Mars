@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core.Nodes.Diagnostics;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Diagnostics;

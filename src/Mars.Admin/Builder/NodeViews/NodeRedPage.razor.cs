@@ -1,13 +1,13 @@
-using AppFront.Shared.Hub;
+using Mars.Admin.Framework.Hub;
+using Mars.Nodes.Core.Nodes.Mappings.Nodes;
 using Mars.Core.Models;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Functions;
-using Mars.Nodes.Core.Nodes.Mappings.Nodes;
-using Mars.Nodes.Front.Shared.Services;
+using Mars.Nodes.Front.Abstractions.Services;
 using Mars.Nodes.Workspace;
 using Microsoft.AspNetCore.Components;
 
-namespace AppAdmin.Builder.NodeViews;
+namespace Mars.Admin.Builder.NodeViews;
 
 public partial class NodeRedPage
 {

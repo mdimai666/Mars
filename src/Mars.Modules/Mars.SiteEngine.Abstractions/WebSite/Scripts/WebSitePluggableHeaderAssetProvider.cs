@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.WebSite.Scripts;
+namespace Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
 public class WebSitePluggableHeaderAssetProvider(IWebSitePluggablePluginScripts webSitePluggablePluginScripts) : ISiteAssetPrivider
 {

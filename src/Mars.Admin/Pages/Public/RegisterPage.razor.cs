@@ -1,14 +1,14 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using AppFront.Shared.AuthProviders;
+using Mars.Admin.Framework.AuthProviders;
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.Auth;
-using Mars.Shared.Resources;
+using Mars.Contracts.Auth;
+using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace AppAdmin.Pages.Public;
+namespace Mars.Admin.Pages.Public;
 
 public partial class RegisterPage
 {
@@ -62,7 +62,6 @@ public partial class RegisterPage
     private bool IsAlreadyAuth = false;
 
     bool regiterComplete = false;
-
 
     protected override async Task<Task> OnInitializedAsync()
     {

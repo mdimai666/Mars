@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
 /// Точечная запись значения мета-поля поста: существующая строка значения

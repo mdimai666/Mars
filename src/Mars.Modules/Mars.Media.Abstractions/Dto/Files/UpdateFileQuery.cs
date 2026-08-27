@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Media.Abstractions.Dto.Files;
 
 public record UpdateFileQuery
 {

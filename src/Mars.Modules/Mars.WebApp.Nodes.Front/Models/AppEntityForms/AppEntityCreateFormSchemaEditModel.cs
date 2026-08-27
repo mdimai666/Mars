@@ -1,5 +1,5 @@
 using System.Data;
-using Mars.Shared.Models;
+using Mars.Contracts.Models;
 using Mars.WebApp.Nodes.Models.AppEntityForms;
 
 namespace Mars.WebApp.Nodes.Front.Models.AppEntityForms;

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Mars.Host.Data.InMemory;
+namespace Mars.Data.InMemory;
 
 public static class PropertyBuilderJsonExtensions
 {

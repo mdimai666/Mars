@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.PostTypes;
+namespace Mars.Contracts.PostTypes;
 
 /// <summary>
 /// Настройки грида постов типа в админке: порядок и видимость колонок, сортировка по умолчанию.

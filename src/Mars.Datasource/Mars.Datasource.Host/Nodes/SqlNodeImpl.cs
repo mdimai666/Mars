@@ -1,7 +1,7 @@
-using Mars.Datasource.Core.Nodes;
+using Mars.Datasource.Nodes;
 using Mars.Datasource.Host.Services;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Datasource.Host.Nodes;

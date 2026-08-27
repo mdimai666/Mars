@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Models;
+using Mars.Server.Abstractions.Models;
 using FluentAssertions;
 
-namespace Test.Mars.Host.Models;
+namespace Test.Mars.Server.Models;
 
 public class VersionTokenHexTests
 {

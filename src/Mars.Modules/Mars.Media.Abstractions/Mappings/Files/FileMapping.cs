@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Files;
+using Mars.Data.Extensions;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Contracts.Common;
+using Mars.Contracts.Files;
 
-namespace Mars.Host.Shared.Mappings.Files;
+namespace Mars.Media.Abstractions.Mappings.Files;
 
 public static class FileMapping
 {

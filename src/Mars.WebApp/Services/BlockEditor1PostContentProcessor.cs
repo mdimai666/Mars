@@ -1,10 +1,14 @@
 using EditorJsBlazored.Core;
+using Mars.Cms.Abstractions.Attributes;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.MetaFields;
 
 namespace Mars.Services;
 

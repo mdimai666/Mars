@@ -1,8 +1,8 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Test.Mars.Host.Utils;
+namespace Test.Mars.Server.Utils;
 
 public class MetaFieldQueryDefinitionTests
 {

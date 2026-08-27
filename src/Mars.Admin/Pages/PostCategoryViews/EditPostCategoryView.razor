@@ -1,7 +1,7 @@
-@using AppAdmin.Pages.PostCategoriesViews
-@using AppAdmin.Pages.PostCategoryTypeViews
-@using AppFront.Shared.Tools
-@using Mars.Shared.Contracts.PostCategoryTypes
+@using Mars.Admin.Pages.PostCategoriesViews
+@using Mars.Admin.Pages.PostCategoryTypeViews
+@using Mars.Admin.Framework.Tools
+@using Mars.Contracts.PostCategoryTypes
 @using MarsCodeEditor2
 @using Blazored.TextEditor
 @using Microsoft.AspNetCore.Authorization
@@ -46,7 +46,7 @@
 
         <CascadingValue Value="@context.MetaValues">
             <CascadingValue Value="@context.PostCategoryType.MetaFields">
-                <AppFront.Shared.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
+                <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
             </CascadingValue>
         </CascadingValue>
 

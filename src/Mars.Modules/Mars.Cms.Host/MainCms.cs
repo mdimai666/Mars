@@ -1,9 +1,11 @@
 using System.Reflection;
-using Mars.Host.Handlers;
-using Mars.Host.Services;
-using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Attributes;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Handlers;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.MetaFields;
+using Mars.Server.Abstractions.Validators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Cms.Host;
@@ -12,6 +14,8 @@ public static class MainCms
 {
     public static IServiceCollection AddMarsCms(this IServiceCollection services)
     {
+        ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
+
         services.AddSingleton<INavMenuService, NavMenuService>();
         services.AddSingleton<IMetaModelTypesLocator, MetaModelTypesLocator>();
         services.AddSingleton<IPostCategoryMetaLocator, PostCategoryMetaLocator>();

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public partial class ChangePasswordModal
 {

@@ -1,12 +1,12 @@
 using System.Text.Json.Nodes;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.NavMenus;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.NavMenus;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
-using Feature = Mars.Shared.Contracts.PostTypes.PostTypeConstants.Features;
+using Feature = Mars.Contracts.PostTypes.PostTypeConstants.Features;
 
 namespace Mars.Factories.Seeds;
 

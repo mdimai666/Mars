@@ -1,5 +1,5 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;

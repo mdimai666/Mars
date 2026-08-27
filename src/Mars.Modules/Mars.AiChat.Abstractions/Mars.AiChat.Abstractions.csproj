@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mars.AiChat.Shared\Mars.AiChat.Shared.csproj" />
+    <ProjectReference Include="..\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

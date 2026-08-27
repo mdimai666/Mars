@@ -1,11 +1,11 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.Users;
-using Mars.Host.Shared.Dto.Profile;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.Dto.Users;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.Users;
+using Mars.Identity.Abstractions.Dto.Profile;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.Identity.Abstractions.Dto.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class UserMapping
 {
@@ -108,10 +108,10 @@ internal static class UserMapping
             MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
         };
 
-    public static Mars.Shared.Contracts.Users.UserGender ToMap(this Mars.Host.Data.OwnedTypes.Users.UserGender gender)
-        => (Mars.Shared.Contracts.Users.UserGender)gender;
-    public static Mars.Host.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Shared.Contracts.Users.UserGender gender)
-        => (Mars.Host.Data.OwnedTypes.Users.UserGender)gender;
+    public static Mars.Contracts.Users.UserGender ToMap(this Mars.Data.OwnedTypes.Users.UserGender gender)
+        => (Mars.Contracts.Users.UserGender)gender;
+    public static Mars.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Contracts.Users.UserGender gender)
+        => (Mars.Data.OwnedTypes.Users.UserGender)gender;
 
     public static UserEntity ToEntity(this CreateUserQuery query, Guid userTypeId, ILookupNormalizer lookupNormalizer)
         => new()
@@ -156,12 +156,12 @@ internal static class UserMapping
         return entity;
     }
 
-    public static UserGender ParseGender(Mars.Shared.Contracts.Users.UserGender gender)
+    public static UserGender ParseGender(Mars.Contracts.Users.UserGender gender)
         => gender switch
         {
-            Mars.Shared.Contracts.Users.UserGender.None => UserGender.None,
-            Mars.Shared.Contracts.Users.UserGender.Male => UserGender.Male,
-            Mars.Shared.Contracts.Users.UserGender.Female => UserGender.Female,
+            Mars.Contracts.Users.UserGender.None => UserGender.None,
+            Mars.Contracts.Users.UserGender.Male => UserGender.Male,
+            Mars.Contracts.Users.UserGender.Female => UserGender.Female,
             _ => throw new NotImplementedException(),
         };
 

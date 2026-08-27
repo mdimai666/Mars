@@ -1,12 +1,12 @@
 using FluentAssertions;
 using Mars.AiChat.Host.Tools;
 using Mars.Core.Models;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Interfaces;
+using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.Services;
-using Mars.Shared.Options;
-using Mars.WebSiteProcessor.Interfaces;
+using Mars.Contracts.Options;
+using Mars.SiteEngine.Interfaces;
 using Microsoft.AspNetCore.Http.Features;
 using NSubstitute;
 

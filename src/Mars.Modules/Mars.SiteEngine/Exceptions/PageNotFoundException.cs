@@ -1,4 +1,4 @@
-namespace Mars.Host.Exceptions;
+namespace Mars.SiteEngine.Exceptions;
 
 public class PageNotFoundException : Exception
 {

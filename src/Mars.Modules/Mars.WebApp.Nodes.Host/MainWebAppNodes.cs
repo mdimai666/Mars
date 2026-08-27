@@ -1,4 +1,4 @@
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using Mars.WebApp.Nodes.Front;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Host.Nodes;

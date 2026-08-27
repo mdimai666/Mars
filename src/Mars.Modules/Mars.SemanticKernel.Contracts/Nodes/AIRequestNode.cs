@@ -3,7 +3,7 @@ using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Fields;
 
-namespace Mars.SemanticKernel.Shared.Nodes;
+namespace Mars.SemanticKernel.Contracts.Nodes;
 
 //https://learn.microsoft.com/ru-ru/semantic-kernel/get-started/quick-start-guide?pivots=programming-language-csharp
 [FunctionApiDocument("./_content/Mars.SemanticKernel.Front/docs/nodes/AIRequestNode/AIRequestNode{.lang}.md")]

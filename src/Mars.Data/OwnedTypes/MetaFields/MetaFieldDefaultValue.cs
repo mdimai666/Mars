@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Host.Data.OwnedTypes.MetaFields;
+namespace Mars.Data.OwnedTypes.MetaFields;
 
 /// <summary>
 /// OWNED Значение мета-поля по умолчанию (хранится на определении поля, owned-json).

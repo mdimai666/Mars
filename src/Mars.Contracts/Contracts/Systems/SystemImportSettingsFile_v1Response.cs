@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Systems;
+namespace Mars.Contracts.Systems;
 
 public class SystemImportSettingsFile_v1Response
 {

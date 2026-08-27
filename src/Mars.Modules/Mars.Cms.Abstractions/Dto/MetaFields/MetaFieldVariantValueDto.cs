@@ -1,4 +1,4 @@
-﻿namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 public record MetaFieldVariantValueDto
 {

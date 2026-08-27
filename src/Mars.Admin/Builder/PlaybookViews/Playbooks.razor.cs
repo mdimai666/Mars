@@ -1,4 +1,4 @@
-namespace AppAdmin.Builder.PlaybookViews;
+namespace Mars.Admin.Builder.PlaybookViews;
 
 public partial class Playbooks
 {

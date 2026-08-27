@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Interfaces;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Interfaces;
 
 namespace StandNodesApp.Mocks;
 
@@ -34,7 +34,7 @@ internal class RequestContextMock : IRequestContext
             FirstName = "Admin",
             LastName = "A",
             MiddleName = null,
-            Gender = Mars.Shared.Contracts.Users.UserGender.Male,
+            Gender = Mars.Contracts.Users.UserGender.Male,
             BirthDate = null,
             PhoneNumber = null,
             AvatarUrl = null,

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Shared.Extensions;
+namespace Mars.Server.Abstractions.Extensions;
 
 public static class FeatureExtensions
 {

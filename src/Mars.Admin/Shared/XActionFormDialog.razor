@@ -1,10 +1,10 @@
 @implements IDialogContentComponent<XActionCommand>
 
-@using Mars.Shared.Contracts.XActions
+@using Mars.Contracts.XActions
 @using Mars.WebApiClient.Interfaces
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@inject AppFront.Shared.Interfaces.IMessageService _messageService
+@inject Mars.Admin.Framework.Interfaces.IMessageService _messageService
 @inject IMarsWebApiClient _client
 
 @* Генерик-форма вызова XAction: рисуется по схеме аргументов из метаданных команды.

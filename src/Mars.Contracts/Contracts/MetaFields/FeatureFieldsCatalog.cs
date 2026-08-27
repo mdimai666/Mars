@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 /// <summary>
 /// Каталог мета-полей, требуемых фичами типа поста (общий для сервера и админки).

@@ -1,4 +1,5 @@
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;

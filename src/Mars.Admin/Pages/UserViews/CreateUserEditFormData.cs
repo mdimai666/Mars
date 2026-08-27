@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Contracts.Roles;
+using Mars.Contracts.UserTypes;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public class CreateUserEditFormData
 {

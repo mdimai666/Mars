@@ -1,11 +1,12 @@
 using System.Reflection;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Models;
+using Mars.Data.Contexts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 public class DatabaseEntityTypeCatalogService : IDatabaseEntityTypeCatalogService
 {

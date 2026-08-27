@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Shared.Contracts.Feedbacks;
+using Mars.Contracts.Feedbacks;
 
-namespace AppFront.Shared.Models;
+namespace Mars.Admin.Framework.Models;
 
 public class FeedbackEdit
 {

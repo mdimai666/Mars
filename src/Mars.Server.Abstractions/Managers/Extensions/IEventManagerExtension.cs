@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Managers.Extensions;
+namespace Mars.Server.Abstractions.Managers.Extensions;
 
 public static class EventManagerExtension
 {

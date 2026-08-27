@@ -1,7 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Host.Shared.Dto.Auth;
+namespace Mars.Identity.Abstractions.Dto.Auth;
 
 public class AuthCreditionalsDto
 {

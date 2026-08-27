@@ -1,7 +1,7 @@
 using System.Reflection;
-using AppFront.Shared.Models;
+using Mars.Admin.Framework.Models;
 
-namespace AppFront.Shared.Interfaces;
+namespace Mars.Admin.Framework.Interfaces;
 
 /// <summary>
 /// Извлекает Blazor-страницы (компоненты с [Route]) из сборок:

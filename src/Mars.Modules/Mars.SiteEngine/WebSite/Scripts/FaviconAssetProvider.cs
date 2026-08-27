@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Scripts;
+using Mars.Options.Services;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 using Mars.Options.Models;
 
-namespace Mars.Host.WebSite.Scripts;
+namespace Mars.SiteEngine.WebSite.Scripts;
 
 public class FaviconAssetProvider(IOptionService optionService) : ISiteAssetPrivider
 {

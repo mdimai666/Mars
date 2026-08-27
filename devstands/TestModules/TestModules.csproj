@@ -31,7 +31,7 @@
         <!-- //Для hotreload -->
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Mars.Shared\Mars.Shared.csproj" />
+      <ProjectReference Include="..\..\src\Mars.Contracts\Mars.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

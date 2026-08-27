@@ -1,8 +1,8 @@
 using System.Reflection;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
-using TestApp.Mars.Host.Data;
+using TestApp.Mars.Data;
 
 Console.WriteLine("Hello, World!");
 

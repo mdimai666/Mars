@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Pages.UserTypeViews;
+namespace Mars.Admin.Pages.UserTypeViews;
 
 public partial class ListUserTypePage
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
 
     string urlEditPage = "/dev/EditUserType";
 

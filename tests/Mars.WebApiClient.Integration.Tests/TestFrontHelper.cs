@@ -1,5 +1,5 @@
-using Mars.Host.Shared.Services;
-using Mars.Shared.Options;
+using Mars.Options.Services;
+using Mars.Contracts.Options;
 using Mars.Test.Common.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 

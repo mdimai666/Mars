@@ -1,7 +1,7 @@
 using System.Web;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Renders;
-using Mars.Shared.Contracts.WebSite.Dto;
+using Mars.Contracts.Common;
+using Mars.Contracts.Renders;
+using Mars.Contracts.WebSite.Dto;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Text;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Contracts.WebSite.Dto;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.Contracts.WebSite.Dto;
 
 namespace Mars.AiChat.Host.Tools;
 

@@ -1,7 +1,7 @@
 using System.IO.Compression;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Plugins;
-using Mars.Host.Shared.Services;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Server.Abstractions.Services;
 using Mars.Plugin.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

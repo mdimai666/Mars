@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Mars.Core.Features.JsonConverter;
-using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Services;
-using Mars.SemanticKernel.Host.Shared.Generators;
+using Mars.Server.Abstractions.Services;
+using Mars.SemanticKernel.Abstractions.Generators;
+using Mars.Server.Abstractions.Attributes;
 
 namespace Mars.SemanticKernel.CMS.Posts;
 

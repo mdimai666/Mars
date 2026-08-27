@@ -1,9 +1,10 @@
 using FluentValidation;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Utils;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Utils;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 public class MetaFieldsDuplicateQueryValidator : AbstractValidator<IGeneralMetaFieldsSupportDto>
 {

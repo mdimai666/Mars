@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.PostJsons;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Dto.PostJsons;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IPostJsonService
 {

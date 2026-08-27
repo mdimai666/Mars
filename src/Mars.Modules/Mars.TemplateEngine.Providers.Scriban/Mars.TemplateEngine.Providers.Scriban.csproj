@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <RootNamespace>Mars.TemplateEngine.Providers.ScribanProvider</RootNamespace>
@@ -13,7 +13,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
     </ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+	</ItemGroup>
 
 </Project>

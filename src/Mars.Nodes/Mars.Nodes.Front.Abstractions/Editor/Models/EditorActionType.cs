@@ -1,6 +1,6 @@
-using Mars.Nodes.Front.Shared.Editor.Attributes;
+using Mars.Nodes.Front.Abstractions.Editor.Attributes;
 
-namespace Mars.Nodes.Front.Shared.Editor.Models;
+namespace Mars.Nodes.Front.Abstractions.Editor.Models;
 
 public record EditorActionType
 {

@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using AppFront.Shared.Extensions;
-using Mars.Shared.Contracts.SSO;
-using Mars.Shared.ViewModels;
+using Mars.Admin.Framework.Extensions;
+using Mars.Contracts.SSO;
+using Mars.Contracts.ViewModels;
 
-namespace AppFront.Shared.AuthProviders;
+namespace Mars.Admin.Framework.AuthProviders;
 
 public class UserFromClaims
 {

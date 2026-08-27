@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Dto.Search;
+using Mars.Cms.Abstractions.Dto.Search;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
 /// Источник поиска для палитры команд. Любой модуль или плагин может зарегистрировать

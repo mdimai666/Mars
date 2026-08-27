@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Datasource.Core;
+namespace Mars.Datasource;
 
 public class DatasourceConfig
 {

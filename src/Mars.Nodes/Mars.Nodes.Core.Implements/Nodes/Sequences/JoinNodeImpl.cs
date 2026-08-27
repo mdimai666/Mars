@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Mars.Nodes.Core.Implements.Nodes.TaskNodes;
 using Mars.Nodes.Core.Nodes.Sequences;
-using Mars.Nodes.Host.Shared;
+using Mars.Nodes.Abstractions;
 using static Mars.Nodes.Core.Nodes.Sequences.JoinNode;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Sequences;

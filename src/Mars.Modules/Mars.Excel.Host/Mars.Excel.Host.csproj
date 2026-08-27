@@ -15,7 +15,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>

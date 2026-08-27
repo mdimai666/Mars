@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 /// <summary>
 /// Каталог доступных генераторов значений мета-полей (общий для сервера и админки).

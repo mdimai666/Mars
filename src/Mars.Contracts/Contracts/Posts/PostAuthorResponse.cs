@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Posts;
+namespace Mars.Contracts.Posts;
 
 public class PostAuthorResponse
 {

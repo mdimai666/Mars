@@ -1,5 +1,5 @@
-using Mars.Host.Shared.Scheduler;
-using Mars.Host.Shared.Startup;
+using Mars.Scheduler.Abstractions;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Services;

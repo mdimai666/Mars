@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.Auth;
+namespace Mars.Contracts.Auth;
 
 public record AuthResultResponse
 {

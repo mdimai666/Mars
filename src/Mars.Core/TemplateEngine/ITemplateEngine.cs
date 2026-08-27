@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.TemplateEngine;
+namespace Mars.Core.TemplateEngine;
 
 public interface ITemplateEngine
 {

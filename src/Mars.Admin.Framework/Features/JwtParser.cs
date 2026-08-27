@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace AppFront.Shared.Features;
+namespace Mars.Admin.Framework.Features;
 
 public static class JwtParser
 {

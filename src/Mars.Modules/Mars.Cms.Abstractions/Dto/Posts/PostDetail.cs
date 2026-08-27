@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.Posts;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Contracts.Posts;
 
-namespace Mars.Host.Shared.Dto.Posts;
+namespace Mars.Cms.Abstractions.Dto.Posts;
 
 /// <summary>
 /// <see cref="PostDetailResponse"/>

@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Resources;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 public partial class MetaValueRelationSelectDialog
 {

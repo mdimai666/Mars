@@ -1,16 +1,16 @@
 using System.ComponentModel.DataAnnotations;
-using AppAdmin.Pages.UserTypeViews;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Pages.UserTypeViews;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.Users;
-using Mars.Shared.Contracts.UserTypes;
-using Mars.Shared.Resources;
+using Mars.Contracts.Roles;
+using Mars.Contracts.Users;
+using Mars.Contracts.UserTypes;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public class UserEditModel
 {

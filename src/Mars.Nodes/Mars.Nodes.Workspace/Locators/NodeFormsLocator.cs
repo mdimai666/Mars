@@ -1,7 +1,7 @@
 using System.Reflection;
 using Mars.Nodes.Core.Attributes;
 using Mars.Nodes.FormEditor;
-using Mars.Nodes.Front.Shared.Components.NodeViews;
+using Mars.Nodes.Front.Abstractions.Components.NodeViews;
 
 namespace Mars.Nodes.Workspace.Locators;
 

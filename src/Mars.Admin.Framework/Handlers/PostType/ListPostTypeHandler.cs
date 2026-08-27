@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppFront.Shared.Handlers.PostType;
+namespace Mars.Admin.Framework.Handlers.PostType;
 
 public class ListPostTypeHandler(IMarsWebApiClient client) : IListModelHandler<PostTypeListItemResponse, TablePostTypeQueryRequest>
 {

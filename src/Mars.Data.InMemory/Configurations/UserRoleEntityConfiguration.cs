@@ -1,8 +1,8 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Mars.Host.Data.InMemory.Configurations;
+namespace Mars.Data.InMemory.Configurations;
 
 public class UserRoleEntityConfiguration : IEntityTypeConfiguration<UserRoleEntity>
 {

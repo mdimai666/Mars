@@ -1,15 +1,18 @@
 using FluentAssertions;
+using Mars.Cms.Abstractions.Utils;
 using Mars.Core.Exceptions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.NavMenus;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Repositories;
-using Mars.Shared.Common;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Dto.NavMenus;
+using Mars.Server.Abstractions.Managers;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Host.Services;
+using Mars.Contracts.Common;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Test.Mars.Host.Services;
+namespace Test.Mars.Server.Services;
 
 public class NavMenuServiceTests
 {

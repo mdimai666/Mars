@@ -1,12 +1,12 @@
-using Mars.Host.Data.Constants;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.PostgreSQL;
+using Mars.Data.Constants;
+using Mars.Data.Contexts;
+using Mars.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-namespace TestApp.Mars.Host.Data;
+namespace TestApp.Mars.Data;
 
 public class MarsDbContextFactory : IDesignTimeDbContextFactory<MarsDbContext>
 {

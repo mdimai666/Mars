@@ -1,8 +1,8 @@
-using AppFront.Shared.Services;
-using Mars.Shared.Contracts.XActions;
+using Mars.Admin.Framework.Services;
+using Mars.Contracts.XActions;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppAdmin.Shared;
+namespace Mars.Admin.Shared;
 
 /// <summary>
 /// Показ формы аргументов XAction диалогом FluentUI: кастомная форма из

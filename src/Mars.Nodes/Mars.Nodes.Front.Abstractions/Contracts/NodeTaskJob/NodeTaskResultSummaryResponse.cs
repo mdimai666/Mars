@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Front.Shared.Contracts.NodeTaskJob;
+namespace Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 
 public record NodeTaskResultSummaryResponse
 {

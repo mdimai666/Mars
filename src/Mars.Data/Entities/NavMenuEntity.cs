@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.OwnedTypes.NavMenus;
+using Mars.Data.Common;
+using Mars.Data.OwnedTypes.NavMenus;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class NavMenuEntity : IBasicEntity
 {

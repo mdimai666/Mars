@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Interfaces;
+namespace Mars.Server.Abstractions.Interfaces;
 
 public interface IActivatable
 {

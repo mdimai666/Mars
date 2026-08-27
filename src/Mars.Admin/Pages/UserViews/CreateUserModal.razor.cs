@@ -1,11 +1,11 @@
 using Mars.Core.Utils;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.Contracts.UserTypes;
+using Mars.Contracts.Roles;
+using Mars.Contracts.UserTypes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 
-namespace AppAdmin.Pages.UserViews;
+namespace Mars.Admin.Pages.UserViews;
 
 public partial class CreateUserModal
 {

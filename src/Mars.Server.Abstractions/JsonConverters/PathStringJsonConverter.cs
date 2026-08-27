@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Host.Shared.JsonConverters;
+namespace Mars.Server.Abstractions.JsonConverters;
 
 public class PathStringJsonConverter : JsonConverter<PathString>
 {

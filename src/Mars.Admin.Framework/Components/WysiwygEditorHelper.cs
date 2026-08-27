@@ -3,7 +3,7 @@ using System.Globalization;
 using HtmlAgilityPack;
 using static Mars.Options.Models.ImagePreviewSizeConfig;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public static class WysiwygEditorHelper
 {

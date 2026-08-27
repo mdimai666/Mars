@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <Nullable>enable</Nullable>
@@ -24,7 +24,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.CMS\Mars.SemanticKernel.CMS.csproj" />
-        <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.Host.Shared\Mars.SemanticKernel.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.Abstractions\Mars.SemanticKernel.Abstractions.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.SemanticKernel.Host\Mars.SemanticKernel.Host.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
     </ItemGroup>

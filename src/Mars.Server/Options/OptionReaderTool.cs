@@ -1,4 +1,4 @@
-namespace Mars.Host.Options;
+namespace Mars.Server.Options;
 
 public static class OptionReaderTool
 {

@@ -1,7 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Galleries;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Galleries;
 
-namespace Mars.Host.Shared.Dto.Galleries;
+namespace Mars.Media.Abstractions.Dto.Galleries;
 
 public static class GalleryRequestExtensions
 {

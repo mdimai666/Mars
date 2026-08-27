@@ -1,10 +1,10 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Fields;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Nodes.Host.Shared.Models;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Models;
 
-namespace Mars.Nodes.Host.Shared;
+namespace Mars.Nodes.Abstractions;
 
 public interface IRuntimeNodeScope
 {

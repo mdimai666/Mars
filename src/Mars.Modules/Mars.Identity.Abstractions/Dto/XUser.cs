@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Shared.Contracts.Users;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Contracts.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Shared.Dto;
+namespace Mars.Identity.Abstractions.Dto;
 
 //public interface IXUser : IUserBasicInfo
 //{

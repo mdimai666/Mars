@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
 using Mars.Core.Extensions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Interfaces;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Interfaces;
 
 namespace Mars.MetaModelGenerator;
 

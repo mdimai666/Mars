@@ -1,8 +1,10 @@
 using System.CommandLine;
 using System.Text.RegularExpressions;
-using Mars.CommandLine.Shared;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Utils;
+using Mars.CommandLine.Abstractions;
+using Mars.Core.Utils;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Core.Utils;
+using Mars.Identity.Abstractions.Repositories;
 using Microsoft.Extensions.Localization;
 
 namespace Mars.CommandLine;

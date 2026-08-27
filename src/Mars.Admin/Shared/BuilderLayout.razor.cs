@@ -1,14 +1,14 @@
-using AppFront.Shared.AuthProviders;
-using AppFront.Shared.Features;
-using Mars.Shared.Contracts.Systems;
+using Mars.Admin.Framework.AuthProviders;
+using Mars.Admin.Framework.Features;
+using Mars.Contracts.Systems;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 
-namespace AppAdmin.Shared;
+namespace Mars.Admin.Shared;
 
-using MenuItem = AppFront.Shared.Models.MenuItem;
+using MenuItem = Mars.Admin.Framework.Models.MenuItem;
 
 public partial class BuilderLayout
 {

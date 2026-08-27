@@ -1,8 +1,16 @@
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Options.Repositories;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Options.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Repositories;
+namespace Mars.Data.Repositories;
 
 public static class MainRepositories
 {

@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
 using Microsoft.AspNetCore.Builder;

@@ -1,5 +1,6 @@
-using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Attributes;
+using Mars.Server.Abstractions.Services;
 
 namespace Mars.Datasource.Host.Services;
 

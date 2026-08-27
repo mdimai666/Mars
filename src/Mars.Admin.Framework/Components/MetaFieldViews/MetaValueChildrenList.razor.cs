@@ -1,16 +1,16 @@
-using AppFront.Shared.Extensions;
-using AppFront.Shared.Services;
+using Mars.Admin.Framework.Extensions;
+using Mars.Admin.Framework.Services;
 using Flurl.Http;
 using Mars.Core.Features;
-using Mars.Shared.Contracts.Files;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Contracts.Posts;
+using Mars.Contracts.Files;
+using Mars.Contracts.MetaFields;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Posts;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 
-namespace AppFront.Shared.Components.MetaFieldViews;
+namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
 /// Секция «Список объектов» в карточке родителя: таблица детей (колонки — поля детского типа),
@@ -21,7 +21,7 @@ public partial class MetaValueChildrenList
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IDialogService _dialogService { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IServiceProvider _services { get; set; } = default!;
 
     [Parameter, EditorRequired] public MetaFieldEditModel Meta { get; set; } = default!;

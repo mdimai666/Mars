@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Mars.Host.Data.Extensions;
+namespace Mars.Data.Extensions;
 
 public static class EfEntityBuilderExtensions
 {

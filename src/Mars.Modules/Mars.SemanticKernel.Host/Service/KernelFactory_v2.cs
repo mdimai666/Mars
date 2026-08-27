@@ -1,11 +1,12 @@
 using System.Text.Json;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
+using Mars.Options.Services;
 using Mars.SemanticKernel.Host.Plugins;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
-using Mars.SemanticKernel.Shared.Nodes;
-using Mars.SemanticKernel.Shared.Options;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Mars.SemanticKernel.Contracts.Nodes;
+using Mars.SemanticKernel.Contracts.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

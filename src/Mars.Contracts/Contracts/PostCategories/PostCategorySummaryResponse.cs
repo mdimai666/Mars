@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Interfaces;
-using Mars.Shared.Contracts.Common;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.MetaFields;
 
-namespace Mars.Shared.Contracts.PostCategories;
+namespace Mars.Contracts.PostCategories;
 
 public record PostCategorySummaryResponse : IHasId
 {

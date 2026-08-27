@@ -2,10 +2,10 @@ using System.Text.Json;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.SemanticKernel.Shared.Options;
+using Mars.SemanticKernel.Contracts.Options;
 using JsonNode = System.Text.Json.Nodes.JsonNode;
 
-namespace Mars.SemanticKernel.Shared.Nodes;
+namespace Mars.SemanticKernel.Contracts.Nodes;
 
 [FunctionApiDocument("./_content/Mars.SemanticKernel.Front/docs/nodes/SemanticKernelModelConfigNode/SemanticKernelModelConfigNode{.lang}.md")]
 public class SemanticKernelModelConfigNode : ConfigNode

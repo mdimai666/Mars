@@ -1,8 +1,7 @@
-using Mars.Host.Shared.Extensions;
-using Mars.Shared.Contracts.Files;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Contracts.Files;
 
-
-namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Media.Abstractions.Dto.Files;
 
 public static class FileRequestExtensions
 {

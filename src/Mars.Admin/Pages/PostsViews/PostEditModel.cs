@@ -1,15 +1,15 @@
 using System.ComponentModel.DataAnnotations;
-using AppAdmin.Pages.PostTypeViews;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Pages.PostTypeViews;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
-using Mars.Shared.Models.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Contracts.Posts;
+using Mars.Contracts.PostTypes;
+using Mars.Contracts.Models.Interfaces;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.PostsViews;
+namespace Mars.Admin.Pages.PostsViews;
 
 /// <summary>
 /// <see cref="PostEditResponse"/>

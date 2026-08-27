@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Exceptions;
+namespace Mars.SiteEngine.Abstractions.Exceptions;
 
 public class XTFunctionException : Exception
 {

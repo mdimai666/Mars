@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.NavMenus;
+namespace Mars.Cms.Abstractions.Dto.NavMenus;
 
 public record ListNavMenuQuery : BasicListQuery
 {

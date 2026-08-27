@@ -1,10 +1,10 @@
-using Mars.Host.Shared.Dto.Common;
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Host.Shared.Mappings.MetaFields;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.PostCategories;
+using Mars.Data.Extensions;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Cms.Abstractions.Mappings.MetaFields;
+using Mars.Contracts.Common;
+using Mars.Contracts.PostCategories;
 
-namespace Mars.Host.Shared.Mappings.PostCategories;
+namespace Mars.Cms.Abstractions.Mappings.PostCategories;
 
 public static class PostCategoryMapping
 {

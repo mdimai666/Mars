@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.SSO;
+namespace Mars.Contracts.SSO;
 
 public record SsoProviderItemResponse
 {

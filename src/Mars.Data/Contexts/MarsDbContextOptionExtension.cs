@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Data.Contexts;
+namespace Mars.Data.Contexts;
 
 public class MarsDbContextOptionExtension : IDbContextOptionsExtension
 {

@@ -1,11 +1,11 @@
 using System.Text.Json;
-using AppFront.Main.Extensions;
+using Mars.Admin.Framework.Extensions;
 using Mars.Core.Exceptions;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Shared.Components;
+namespace Mars.Admin.Framework.Components;
 
 public partial class EditOptionForm<TModel> where TModel : class, new()
 {

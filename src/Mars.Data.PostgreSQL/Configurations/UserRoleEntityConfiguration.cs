@@ -1,8 +1,8 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Mars.Host.Data.PostgreSQL.Configurations;
+namespace Mars.Data.PostgreSQL.Configurations;
 
 public class UserRoleEntityConfiguration : IEntityTypeConfiguration<UserRoleEntity>
 {

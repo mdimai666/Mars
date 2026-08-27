@@ -1,7 +1,7 @@
 @page "/EditPost/{POSTTYPE}"
 @page "/EditPost/{POSTTYPE}/{ID:guid}"
 
-@using Mars.Shared.Contracts.PostTypes
+@using Mars.Contracts.PostTypes
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager navigationManager
 @inject Mars.WebApiClient.Interfaces.IMarsWebApiClient client
@@ -14,7 +14,7 @@
     {
         @if (POSTTYPE == "NONE-gallery")
         {
-            @* <AppAdmin.Pages.PostsViews.SpecialViews.GalleryEditView ID=@ID QueryPostType=@QueryPostType /> *@
+            @* <Mars.Admin.Pages.PostsViews.SpecialViews.GalleryEditView ID=@ID QueryPostType=@QueryPostType /> *@
         }
         else
         {

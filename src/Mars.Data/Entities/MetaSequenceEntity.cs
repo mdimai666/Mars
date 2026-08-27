@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 /// <summary>
 /// Счётчик генератора «порядковый номер»: на пару (мета-поле, скоуп) — последний выданный номер.

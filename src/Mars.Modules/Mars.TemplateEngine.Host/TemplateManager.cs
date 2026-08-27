@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Reflection;
-using Mars.Host.Shared.TemplateEngine;
+using Mars.Core.TemplateEngine;
 
 namespace Mars.TemplateEngine.Host;
 

@@ -1,5 +1,5 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.NavMenus;
+using Mars.Contracts.Common;
+using Mars.Contracts.NavMenus;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

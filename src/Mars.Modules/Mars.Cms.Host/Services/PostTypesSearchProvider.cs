@@ -1,10 +1,11 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Dto.Search;
-using Mars.Host.Shared.Services;
-using static Mars.Host.Shared.Dto.Search.SearchFoundElement;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Dto.Search;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Services;
+using static Mars.Cms.Abstractions.Dto.Search.SearchFoundElement;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal class PostTypesSearchProvider(
     IPostTypeService _postTypeService

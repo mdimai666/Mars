@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Features;
+namespace Mars.Server.Abstractions.Features;
 
 public static class FeatureFlags
 {

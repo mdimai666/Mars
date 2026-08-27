@@ -1,8 +1,9 @@
 using FluentValidation;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Services;
+using Mars.Identity.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.UserTypes;
+namespace Mars.Identity.Abstractions.Dto.UserTypes;
 
 public class CreateUserTypeQueryValidator : AbstractValidator<CreateUserTypeQuery>
 {

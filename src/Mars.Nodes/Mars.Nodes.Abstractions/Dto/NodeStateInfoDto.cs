@@ -1,4 +1,4 @@
-namespace Mars.Nodes.Host.Shared.Dto;
+namespace Mars.Nodes.Abstractions.Dto;
 
 public class NodeStateInfoDto
 {

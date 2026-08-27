@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
-using Mars.Host.Shared.JsonConverters;
+using Mars.Server.Abstractions.JsonConverters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Mars.Host.Shared.Models;
+namespace Mars.Server.Abstractions.Models;
 
 public class WebClientRequest
 {

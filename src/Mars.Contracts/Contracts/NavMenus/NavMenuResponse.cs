@@ -1,4 +1,4 @@
-namespace Mars.Shared.Contracts.NavMenus;
+namespace Mars.Contracts.NavMenus;
 
 public record NavMenuSummaryResponse
 {

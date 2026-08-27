@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Dto.NavMenus;
+namespace Mars.Cms.Abstractions.Dto.NavMenus;
 
 public record DeleteManyNavMenuQuery
 {

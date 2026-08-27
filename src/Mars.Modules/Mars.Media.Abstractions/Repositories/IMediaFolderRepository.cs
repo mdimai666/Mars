@@ -1,6 +1,8 @@
-using Mars.Host.Shared.Dto.Files;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Media.Abstractions.Repositories;
 
 public interface IMediaFolderRepository
 {

@@ -1,9 +1,9 @@
 using System.Collections;
-using Mars.Host.Shared.Dto.Files;
+using Mars.Contracts.Dto.Files;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Server.Abstractions.Services;
 
 public class FileStorage : IFileStorage
 {

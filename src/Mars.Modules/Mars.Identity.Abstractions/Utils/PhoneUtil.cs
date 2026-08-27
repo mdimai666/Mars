@@ -1,6 +1,6 @@
 using PhoneNumbers;
 
-namespace Mars.Host.Shared.Utils;
+namespace Mars.Identity.Abstractions.Utils;
 
 public static class PhoneUtil
 {

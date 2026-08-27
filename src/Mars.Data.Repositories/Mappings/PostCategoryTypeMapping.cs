@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.PostCategoryTypes;
+using Mars.Data.Entities;
+using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 
-namespace Mars.Host.Repositories.Mappings;
+namespace Mars.Data.Repositories.Mappings;
 
 internal static class PostCategoryTypeMapping
 {

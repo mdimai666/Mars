@@ -1,15 +1,50 @@
 using System.Text;
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Validators;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Validators;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Media.Abstractions.Services;
+using Mars.Media.Host.Services;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Validators;
 using Mars.Options.Models;
 using Mars.Test.Common.Constants;
 using NSubstitute;
 
-namespace Test.Mars.Host.Files;
+namespace Test.Mars.Server.Files;
 
 public class FileServiceTests
 {

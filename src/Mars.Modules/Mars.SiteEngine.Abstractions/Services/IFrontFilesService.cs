@@ -1,7 +1,7 @@
-using Mars.Shared.Contracts.WebSite.Dto;
-using Mars.Shared.Options;
+using Mars.Contracts.WebSite.Dto;
+using Mars.Contracts.Options;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.SiteEngine.Abstractions.Services;
 
 /// <summary>
 /// Файловые операции над папкой фронта. Используется REST-контроллером (админка)

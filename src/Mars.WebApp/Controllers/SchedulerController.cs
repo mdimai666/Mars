@@ -1,11 +1,11 @@
 using System.Net.Mime;
+using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Core.Constants;
-using Mars.Host.Shared.Dto.Schedulers;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Mappings.Schedulers;
-using Mars.Host.Shared.Scheduler;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Schedulers;
+using Mars.Scheduler.Abstractions.Dto.Schedulers;
+using Mars.Scheduler.Abstractions.Mappings.Schedulers;
+using Mars.Scheduler.Abstractions;
+using Mars.Contracts.Common;
+using Mars.Contracts.Schedulers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

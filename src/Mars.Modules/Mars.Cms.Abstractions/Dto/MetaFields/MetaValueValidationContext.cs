@@ -1,6 +1,6 @@
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 
-namespace Mars.Host.Shared.Dto.MetaFields;
+namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
 /// Контекст проверки значений мета-полей: модель-владелец значений и его ид

@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Data.OwnedTypes.NavMenus;
-using Mars.Host.Data.Entities;
+using System.Collections.Generic;
+using Mars.Data.OwnedTypes.MetaFields;
+using Mars.Data.OwnedTypes.NavMenus;
+using Mars.Data.Entities;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Mars.Host.Data.PostgreSQL.Migrations
-{
+namespace Mars.Data.PostgreSQL.Migrations {
     /// <inheritdoc />
     public partial class ReplaceJsonbToAddToJson : Migration
     {

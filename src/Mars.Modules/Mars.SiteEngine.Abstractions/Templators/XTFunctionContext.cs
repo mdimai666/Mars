@@ -1,8 +1,8 @@
 using Mars.Core.Features;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.Host.Shared.Templators;
+namespace Mars.SiteEngine.Abstractions.Templators;
 
 public class XTFunctionContext : IXTFunctionContext
 {

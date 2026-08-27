@@ -1,8 +1,8 @@
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.UserTypes;
-using Mars.Shared.Common;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Identity.Abstractions.Repositories;
 
 public interface IUserTypeRepository : IDisposable
 {

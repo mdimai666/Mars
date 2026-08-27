@@ -1,10 +1,10 @@
-using AppAdmin.Pages.PostCategoriesViews;
-using AppFront.Shared.Components.MetaFieldViews;
+using Mars.Admin.Pages.PostCategoriesViews;
+using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Features;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace AppAdmin.Pages.PostCategoryViews;
+namespace Mars.Admin.Pages.PostCategoryViews;
 
 public partial class EditPostCategoryView
 {

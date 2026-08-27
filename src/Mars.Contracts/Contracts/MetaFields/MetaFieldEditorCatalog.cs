@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 /// <summary>
 /// Каталог доступных редакторов значений мета-полей (общий для сервера и админки).

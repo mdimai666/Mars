@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.Plugins;
+namespace Mars.Plugin.Abstractions.Dto.Plugins;
 
 public record ListPluginQuery : BasicListQuery
 {

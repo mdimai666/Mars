@@ -1,9 +1,9 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.Extensions;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Mars.Host.Data.InMemory.Configurations;
+namespace Mars.Data.InMemory.Configurations;
 
 public class PostCategoryMetaValueEntityConfiguration : IEntityTypeConfiguration<PostCategoryMetaValueEntity>
 {

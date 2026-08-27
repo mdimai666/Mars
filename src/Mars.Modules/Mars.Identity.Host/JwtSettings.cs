@@ -1,4 +1,4 @@
-namespace Mars.Host.Models;
+namespace Mars.Identity.Host.Models;
 
 public class JwtSettings
 {

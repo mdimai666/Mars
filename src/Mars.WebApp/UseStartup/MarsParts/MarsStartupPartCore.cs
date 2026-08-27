@@ -1,16 +1,22 @@
 using System.IO.Compression;
 using System.Net;
 using Flurl.Http;
-using Mars.Host.Data.Entities;
-using Mars.Host.Infrastructure;
-using Mars.Host.Models;
-using Mars.Host.Services;
-using Mars.Host.Shared.Extensions;
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.SSO.Services;
+using Mars.Data.Entities;
+using Mars.Data.Infrastructure;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Options.Services;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Options.Services;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Server.Abstractions.Features;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Options.Services;
+using Mars.Contracts.Common;
+using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
@@ -47,7 +53,7 @@ internal static class MarsStartupPartCore
 
         //TODO: think
         //AppSharedSettings.BackendUrl = "";
-        //AppSharedSettings.Program = typeof(AppAdmin.Program);
+        //AppSharedSettings.Program = typeof(Mars.Admin.Program);
         var conn = configuration.GetConnectionString("DefaultConnection");
 
         services.AddMarsHostInfrastructure(configuration);

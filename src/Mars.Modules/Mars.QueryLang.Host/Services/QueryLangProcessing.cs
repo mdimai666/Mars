@@ -2,10 +2,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DynamicExpresso;
 using Mars.Core.Features;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.QueryLang.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
 namespace Mars.QueryLang.Host.Services;
 

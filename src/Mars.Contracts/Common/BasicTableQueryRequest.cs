@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Shared.Common;
+namespace Mars.Contracts.Common;
 
 public record BasicTableQueryRequest : IBasicTableRequest
 {

@@ -1,4 +1,4 @@
-using Mars.Datasource.Core;
+using Mars.Datasource;
 using Mars.Datasource.Host.PostgreSQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
 using Mars.Datasource.Integration.Tests.SqlCommands;

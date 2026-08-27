@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Exceptions;
-using Mars.Shared.Contracts.NavMenus;
-using Mars.Shared.Models.Interfaces;
-using Mars.Shared.Resources;
+using Mars.Contracts.NavMenus;
+using Mars.Contracts.Models.Interfaces;
+using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
-namespace AppAdmin.Pages.NavMenuViews;
+namespace Mars.Admin.Pages.NavMenuViews;
 
 public partial class EditNavMenuPage
 {
@@ -21,7 +21,6 @@ public partial class EditNavMenuPage
         [Display(Name = nameof(AppRes.DateModified), ResourceType = typeof(AppRes))]
         public DateTimeOffset? ModifiedAt { get; set; }
 
-
         [Required]
         [Display(Name = nameof(AppRes.Title), ResourceType = typeof(AppRes))]
         public string Title { get; set; } = "";
@@ -29,7 +28,6 @@ public partial class EditNavMenuPage
         [Required]
         [Display(Name = nameof(AppRes.Slug), ResourceType = typeof(AppRes))]
         public virtual string Slug { get; set; } = Guid.NewGuid().ToString();
-
 
         [Display(Name = "Элементы")]
         public IEnumerable<NavMenuItem> MenuItems { get; set; } = new ObservableCollection<NavMenuItem>();
@@ -70,7 +68,6 @@ public partial class EditNavMenuPage
         public bool IsSystem => Tags.Contains("system");
 
         public IEnumerable<string> SetRoles { get => Roles; set => Roles = value.ToList(); }
-
 
         public static async Task<NavMenu> GetAction(IMarsWebApiClient client, Guid id)
         {

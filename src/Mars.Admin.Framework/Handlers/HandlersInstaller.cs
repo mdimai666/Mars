@@ -1,7 +1,7 @@
-using AppFront.Shared.Handlers.PostType;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.Admin.Framework.Handlers.PostType;
+using Mars.Contracts.PostTypes;
 
-namespace AppFront.Shared.Handlers;
+namespace Mars.Admin.Framework.Handlers;
 
 public static class HandlersInstaller
 {

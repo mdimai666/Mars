@@ -1,11 +1,12 @@
 using System.Net.Mime;
-using Mars.Host.Shared.Dto.Plugins;
-using Mars.Host.Shared.Dto.Schedulers;
-using Mars.Host.Shared.ExceptionFilters;
-using Mars.Host.Shared.Mappings.Plugins;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Plugins;
+using Mars.Server.Abstractions.ExceptionFilters;
+using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Scheduler.Abstractions.Dto.Schedulers;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Abstractions.Mappings.Plugins;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Contracts.Common;
+using Mars.Contracts.Plugins;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

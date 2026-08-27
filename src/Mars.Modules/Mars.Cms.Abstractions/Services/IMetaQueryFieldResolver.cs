@@ -1,9 +1,9 @@
-using Mars.Host.Shared.Dto.PostTypes;
+using Mars.Cms.Abstractions.Dto.PostTypes;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
-/// Батч-резолв вычислимых полей <see cref="Mars.Shared.Contracts.MetaFields.MetaFieldType.Query"/>
+/// Батч-резолв вычислимых полей <see cref="Mars.Contracts.MetaFields.MetaFieldType.Query"/>
 /// </summary>
 public interface IMetaQueryFieldResolver
 {

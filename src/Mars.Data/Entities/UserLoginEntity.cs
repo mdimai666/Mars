@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Mars.Host.Data.Entities;
+namespace Mars.Data.Entities;
 
 public class UserLoginEntity : IdentityUserLogin<Guid>
 {

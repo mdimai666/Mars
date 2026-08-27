@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+    <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
     <ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
-    <ProjectReference Include="..\Mars.AiChat.Shared\Mars.AiChat.Shared.csproj" />
+    <ProjectReference Include="..\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

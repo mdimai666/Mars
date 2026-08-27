@@ -1,10 +1,10 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.SSO.Dto;
+using Mars.Options.Services;
+using Mars.SSO.Contracts.Dto;
 using Mars.Options.Models;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Mars.SSO.Services;
+namespace Mars.SSO.Host.Services;
 
 public interface ISsoProviderRepository
 {

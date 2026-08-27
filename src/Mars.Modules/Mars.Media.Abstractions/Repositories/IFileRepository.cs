@@ -1,7 +1,9 @@
-using Mars.Host.Shared.Dto.Files;
-using Mars.Shared.Common;
+using Mars.Contracts.Dto.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Repositories;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Repositories;
+namespace Mars.Media.Abstractions.Repositories;
 
 public interface IFileRepository : IDisposable
 {

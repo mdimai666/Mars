@@ -1,6 +1,6 @@
 using Mars.Core.Interfaces;
 
-namespace Mars.Host.Shared.Dto.Files;
+namespace Mars.Media.Abstractions.Dto.Files;
 
 public record FileSummary : IHasId
 {

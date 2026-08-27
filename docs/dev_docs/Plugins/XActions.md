@@ -69,7 +69,7 @@ public override void ConfigureWebApplication(WebApplication app, PluginSettings 
         .Id(DeleteAllOrdersAct.CommandId)
         .Label("Delete all orders")
         .Category("Заказы")
-        .FrontContexts("AppAdmin.Pages.Settings.SettingsAboutSystemPage")
+        .FrontContexts("Mars.Admin.Pages.Settings.SettingsAboutSystemPage")
         .Handler<DeleteAllOrdersAct>());
 }
 ```
@@ -127,7 +127,7 @@ a.Argument("status", "Статус", XActionArgumentType.Choice, optionsSource: 
 actionManager.Add(a => a
     .Id("my_prefix.example.link")
     .Label("My link 1")
-    .FrontContexts("AppAdmin.Pages.Settings.SettingsAboutSystemPage")
+    .FrontContexts("Mars.Admin.Pages.Settings.SettingsAboutSystemPage")
     .Link("https://example.com"));
 ```
 

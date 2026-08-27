@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace Mars.Shared.Contracts.MetaFields;
+namespace Mars.Contracts.MetaFields;
 
 public abstract record MetaFieldDetailBase
 {

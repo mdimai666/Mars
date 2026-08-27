@@ -1,8 +1,8 @@
-using Mars.Host.Shared.Dto.Renders;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Renders;
+using Mars.SiteEngine.Abstractions.Dto.Renders;
+using Mars.Contracts.Common;
+using Mars.Contracts.Renders;
 
-namespace Mars.Host.Shared.Mappings.Renders;
+namespace Mars.SiteEngine.Abstractions.Mappings.Renders;
 
 public static class PostRenderMapping
 {

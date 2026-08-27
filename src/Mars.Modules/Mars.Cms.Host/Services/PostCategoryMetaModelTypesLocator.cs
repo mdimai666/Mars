@@ -1,12 +1,18 @@
 using System.Collections.Frozen;
-using Mars.Host.Shared.Dto.PostCategoryTypes;
-using Mars.Host.Shared.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
+using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Abstractions.Utils;
+using Mars.Cms.Host.Services;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Host.Services;
+namespace Mars.Cms.Host.Services;
 
 internal sealed class PostCategoryMetaLocator : IPostCategoryMetaLocator, IMarsAppLifetimeService
 {

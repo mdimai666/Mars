@@ -1,7 +1,7 @@
 using System.Web;
 using Mars.Core.Extensions;
 
-namespace AppFront.Shared.Features;
+namespace Mars.Admin.Framework.Features;
 
 public class BackendHostingInfo
 {

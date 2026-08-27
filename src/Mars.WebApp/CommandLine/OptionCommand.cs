@@ -2,10 +2,14 @@ using System.CommandLine;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Mars.CommandLine.Shared;
+using Mars.CommandLine.Abstractions;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Core.Utils;
+using Mars.Options.Repositories;
+using Mars.Options.Services;
+using Mars.Core.Utils;
+using Mars.Options.Repositories;
+using Mars.Options.Services;
 using Mars.Options.Models;
 
 namespace Mars.CommandLine;

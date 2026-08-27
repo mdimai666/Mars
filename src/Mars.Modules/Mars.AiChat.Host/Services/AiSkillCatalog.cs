@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Dto.Files;
+using Mars.Contracts.Dto.Files;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

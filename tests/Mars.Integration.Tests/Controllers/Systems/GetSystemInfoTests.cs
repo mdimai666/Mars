@@ -3,7 +3,7 @@ using Flurl.Http;
 using Mars.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Systems;
+using Mars.Contracts.Systems;
 using Mars.UseStartup;
 using Microsoft.AspNetCore.Http;
 

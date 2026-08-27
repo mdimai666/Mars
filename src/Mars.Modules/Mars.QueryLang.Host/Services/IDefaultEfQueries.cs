@@ -1,4 +1,4 @@
-namespace Mars.Host.QueryLang;
+namespace Mars.QueryLang.Host;
 
 public interface IDefaultEfQueries<T>: IQueryable<T>, IDynamicEfQuery
 {

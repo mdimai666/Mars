@@ -1,4 +1,4 @@
-namespace Mars.Host.Shared.Interfaces;
+namespace Mars.Cms.Abstractions.Interfaces;
 
 public interface IMtoStatusProp
 {

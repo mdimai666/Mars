@@ -1,6 +1,6 @@
 using Mars.Core.Exceptions;
 
-namespace Mars.Host.Shared.Exceptions;
+namespace Mars.Options.Exceptions;
 
 public class OptionNotRegisteredException : NotFoundException
 {

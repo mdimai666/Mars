@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Options.Services;
 using Mars.Integration.Tests.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;

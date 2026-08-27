@@ -9,7 +9,7 @@ using Markdig.Renderers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
 
-namespace AppFront.Shared.Components.FluentMarkdownSectionViews;
+namespace Mars.Admin.Framework.Components.FluentMarkdownSectionViews;
 
 /// <summary>
 /// Modified version of original markdig CodeBlockRenderer

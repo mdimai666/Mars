@@ -1,7 +1,7 @@
-using Mars.Host.Shared.WebSite.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Mars.Host.Templators.HandlebarsFunc;
+namespace Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
 public class HandlebarsHelperFunctionContext : IDisposable
 {

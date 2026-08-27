@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using Mars.Shared.JsonConverters;
+using Mars.Contracts.JsonConverters;
 
-namespace Mars.Shared.Models;
+namespace Mars.Contracts.Models;
 
 /// <summary>
 /// /{type}/{name}

@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Managers;
+using Mars.Options.Services;
 using Mars.Services;
-using Mars.Shared.Options;
+using Mars.Contracts.Options;
 using Microsoft.AspNetCore.Hosting;
 using NSubstitute;
 

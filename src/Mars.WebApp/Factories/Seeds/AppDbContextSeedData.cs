@@ -1,7 +1,7 @@
-using Mars.Host.Data.Contexts;
-using Mars.Host.Options;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Options;
+using Mars.Data.Contexts;
+using Mars.Server.Options;
+using Mars.Options.Services;
+using Mars.Contracts.Options;
 
 namespace Mars.Factories.Seeds;
 

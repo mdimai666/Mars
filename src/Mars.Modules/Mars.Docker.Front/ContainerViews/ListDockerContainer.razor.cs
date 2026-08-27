@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
-using AppFront.Main.Extensions;
+using Mars.Admin.Framework.Extensions;
 using Mars.Docker.Contracts;
 using Mars.Docker.Front.Services;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -12,7 +12,7 @@ namespace Mars.Docker.Front.ContainerViews;
 public partial class ListDockerContainer
 {
     [Inject] IMarsWebApiClient client { get; set; } = default!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
 
     string urlEditPage = "/dev/builder/docker/ID";

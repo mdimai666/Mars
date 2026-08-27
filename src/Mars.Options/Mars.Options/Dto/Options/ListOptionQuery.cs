@@ -1,6 +1,6 @@
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
 
-namespace Mars.Host.Shared.Dto.Options;
+namespace Mars.Options.Dto.Options;
 
 public record ListOptionQuery : BasicListQuery
 {

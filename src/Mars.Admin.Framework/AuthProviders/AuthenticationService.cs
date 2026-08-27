@@ -1,12 +1,12 @@
 using System.Net.Http.Headers;
-using AppFront.Shared.Tools;
+using Mars.Admin.Framework.Tools;
 using Blazored.LocalStorage;
-using Mars.Shared.Contracts.Auth;
-using Mars.Shared.Contracts.SSO;
+using Mars.Contracts.Auth;
+using Mars.Contracts.SSO;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.JSInterop;
 
-namespace AppFront.Shared.AuthProviders;
+namespace Mars.Admin.Framework.AuthProviders;
 
 public class AuthenticationService : IAuthenticationService
 {

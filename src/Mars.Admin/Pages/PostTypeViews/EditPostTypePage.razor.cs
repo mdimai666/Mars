@@ -18,7 +18,7 @@ public partial class EditPostTypePage
 
     [Parameter] public Guid ID { get; set; }
 
-    StandartEditContainer<PostTypeEditModel> f = default!;
+    StandardEditContainer<PostTypeEditModel> f = default!;
 
     bool importButtonDisabled;
     string url = "";

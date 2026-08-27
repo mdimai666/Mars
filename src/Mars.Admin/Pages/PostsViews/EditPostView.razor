@@ -8,7 +8,7 @@
 @inject IStringLocalizer<AppRes> L
 @implements IDisposable
 
-<StandartEditContainer ID=@ID
+<StandardEditContainer ID=@ID
                        TitleText="@AppRes.Post"
                        TModel=PostEditModel
                        GetAction="@(()=>PostEditModel.GetAction(client,ID,PostTypeName))"
@@ -251,4 +251,4 @@
             </div>
         </div>
     </SectionExtraSidebar>
-</StandartEditContainer>
+</StandardEditContainer>

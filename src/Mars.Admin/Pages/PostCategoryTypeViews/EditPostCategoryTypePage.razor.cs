@@ -16,7 +16,7 @@ public partial class EditPostCategoryTypePage
 
     [Parameter] public Guid ID { get; set; }
 
-    StandartEditContainer<PostCategoryTypeEditModel> f = default!;
+    StandardEditContainer<PostCategoryTypeEditModel> f = default!;
 
     void AddNewField()
     {

@@ -16,7 +16,7 @@ public partial class EditUserTypePage
 
     [Parameter] public Guid ID { get; set; }
 
-    StandartEditContainer<UserTypeEditModel> f = default!;
+    StandardEditContainer<UserTypeEditModel> f = default!;
 
     void AddNewField()
     {

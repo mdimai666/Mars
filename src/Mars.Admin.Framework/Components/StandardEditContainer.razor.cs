@@ -12,7 +12,7 @@ using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
 namespace Mars.Admin.Framework.Components;
 
-public partial class StandartEditContainer<TModel> : ComponentBase
+public partial class StandardEditContainer<TModel> : ComponentBase
         where TModel : IHasId, new()
 {
     [Inject] NavigationManager NavigationManager { get; set; } = default!;

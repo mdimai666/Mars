@@ -37,7 +37,7 @@ public partial class EditPostView : IAiChatPageHandler
 
     [Parameter] public bool HidePublishCard { get; set; }
 
-    StandartEditContainer<PostEditModel> f = default!;
+    StandardEditContainer<PostEditModel> f = default!;
 
     async Task<PostEditModel> SaveWithCallback(PostEditModel post, bool isNew)
     {

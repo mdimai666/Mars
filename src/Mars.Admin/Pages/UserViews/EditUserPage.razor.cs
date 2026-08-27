@@ -16,7 +16,7 @@ public partial class EditUserPage
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
 
-    StandartEditForm1<UserEditModel> _editForm1 = default!;
+    StandardEditForm1<UserEditModel> _editForm1 = default!;
     FormMetaValue? metaValueForm;
     bool isCreateNew => ID == Guid.Empty;
 

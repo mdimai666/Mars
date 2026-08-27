@@ -7,7 +7,7 @@ using IMessageService = Mars.Admin.Framework.Interfaces.IMessageService;
 
 namespace Mars.Admin.Framework.Components;
 
-public partial class StandartEditForm1<TModel> : ComponentBase
+public partial class StandardEditForm1<TModel> : ComponentBase
         where TModel : new()
 {
     [Inject] IMessageService _messageService { get; set; } = default!;

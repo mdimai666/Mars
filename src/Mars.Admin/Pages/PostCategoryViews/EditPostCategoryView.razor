@@ -7,7 +7,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
 
-<StandartEditForm1 TModel="PostCategoryEditModel"
+<StandardEditForm1 TModel="PostCategoryEditModel"
                    @ref=_editForm1
                    IsAddNew="@(ID == Guid.Empty)"
                    GetAction="@(()=>PostCategoryEditModel.GetAction(client, ID, PostCategoryTypeName, PostTypeName))"
@@ -52,4 +52,4 @@
 
     </div>
 
-</StandartEditForm1>
+</StandardEditForm1>

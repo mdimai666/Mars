@@ -12,7 +12,7 @@ public partial class CreateUserModal
     [Parameter]
     public CreateUserEditFormData Content { get; set; } = default!;
 
-    StandartEditForm1<CreateUserModel> _editForm1 = default!;
+    StandardEditForm1<CreateUserModel> _editForm1 = default!;
 
     bool _visible;
     [Parameter]

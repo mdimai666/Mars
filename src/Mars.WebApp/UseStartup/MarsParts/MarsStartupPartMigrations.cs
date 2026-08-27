@@ -63,7 +63,7 @@ public static class MarsStartupPartMigrations
         return false;
     }
 
-    // replace by Standart Entity framework migrations
+    // replace by Standard Entity framework migrations
     public static IServiceProvider SeedData(this IServiceProvider services, IConfiguration configuration, ILogger logger, bool migrated)
     {
         using var serviceScope = services.CreateScope();

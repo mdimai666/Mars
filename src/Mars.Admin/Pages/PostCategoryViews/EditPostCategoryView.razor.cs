@@ -19,7 +19,7 @@ public partial class EditPostCategoryView
     [Parameter] public EventCallback<PostCategoryEditModel> AfterSave { get; set; }
     [Parameter] public EventCallback AfterDelete { get; set; }
 
-    StandartEditForm1<PostCategoryEditModel> _editForm1 = default!;
+    StandardEditForm1<PostCategoryEditModel> _editForm1 = default!;
     FormMetaValue? metaValueForm;
 
     async Task OnBeforeSave(PostCategoryEditModel model)

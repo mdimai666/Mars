@@ -16,7 +16,7 @@
         </div>
     </FluentDialogHeader>
     <FluentDialogBody>
-        <StandartEditForm1 TModel="CreateUserModel"
+        <StandardEditForm1 TModel="CreateUserModel"
                            @ref=_editForm1
                            GetAction="@(()=>Task.FromResult(model))"
                            AfterSave="AfterSave"
@@ -64,6 +64,6 @@
                                     KeepOpen
                                     @bind-SelectedOptions="@SelRoles" />
             </FormItem2>
-        </StandartEditForm1>
+        </StandardEditForm1>
     </FluentDialogBody>
 </FluentDialog>

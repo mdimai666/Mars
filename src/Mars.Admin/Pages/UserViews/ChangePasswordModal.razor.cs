@@ -10,7 +10,7 @@ public partial class ChangePasswordModal
     [Parameter]
     public ChangePasswordModel Content { get; set; } = default!;
 
-    StandartEditForm1<ChangePasswordModel> _editForm1 = default!;
+    StandardEditForm1<ChangePasswordModel> _editForm1 = default!;
 
     bool _visible;
     [Parameter]

@@ -2,7 +2,7 @@
 @typeparam TModel
 @inject IStringLocalizer<AppRes> L
 
-<section class="@("StandartEditForm1 " + Class)" style="@(Style)">
+<section class="@("StandardEditForm1 " + Class)" style="@(Style)">
     <ErrorBoundary>
         <ChildContent>
 
@@ -13,7 +13,7 @@
                       novalidate>
                 <ObjectGraphDataAnnotationsValidator />
 
-                <div class="StandartEditForm1-main d-flex flex-row">
+                <div class="StandardEditForm1-main d-flex flex-row">
 
                     @if (OperationError is not null)
                     {
@@ -30,7 +30,7 @@
                             }
                             else
                             {
-                                <section class="StandartEditForm1-main__fields d-flex flex-column">
+                                <section class="StandardEditForm1-main__fields d-flex flex-column">
                                     <FluentMessageBar Title="@AppRes.ValidationErrorsOccurredTitle" Intent="@MessageIntent.Warning" Visible="_isInvalidState" Class="mb-3">
                                         <FluentValidationSummary />
                                     </FluentMessageBar>

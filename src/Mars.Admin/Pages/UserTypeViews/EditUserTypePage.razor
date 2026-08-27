@@ -10,7 +10,7 @@
 @inject IStringLocalizer<AppRes> L
 
 <ContentWrapper>
-    <StandartEditContainer ID=@ID
+    <StandardEditContainer ID=@ID
                            TModel=UserTypeEditModel
                            GetAction="@(()=>UserTypeEditModel.GetAction(client,ID))"
                            SaveAction="@((s,create)=>UserTypeEditModel.SaveAction(client,s,create))"
@@ -82,6 +82,6 @@
         </ChildContent>
         <SectionExtraSidebar>
         </SectionExtraSidebar>
-    </StandartEditContainer>
+    </StandardEditContainer>
 
 </ContentWrapper>

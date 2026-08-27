@@ -8,7 +8,7 @@
 
 @typeparam TModel
 
-<section class="@("StandartEditContainer " + Class)" style="@(Style)">
+<section class="@("StandardEditContainer " + Class)" style="@(Style)">
     <ErrorBoundary>
         <ChildContent>
 
@@ -68,7 +68,7 @@
                           FormName="@($"edit-{ID}")"
                           novalidate>
                     <ObjectGraphDataAnnotationsValidator />
-                    <div class="StandartEditContainer-main d-flex flex-column flex-lg-row flex-reverse">
+                    <div class="StandardEditContainer-main d-flex flex-column flex-lg-row flex-reverse">
 
                         @if (OperationError is not null)
                         {
@@ -85,7 +85,7 @@
                                 }
                                 else
                                 {
-                                    <section class="StandartEditContainer-main__fields d-flex flex-column">
+                                    <section class="StandardEditContainer-main__fields d-flex flex-column">
                                         <FluentMessageBar Title="@AppRes.ValidationErrorsOccurredTitle" Intent="@MessageIntent.Warning" Visible="_isInvalidState" Class="mb-3">
                                             <FluentValidationSummary />
                                         </FluentMessageBar>

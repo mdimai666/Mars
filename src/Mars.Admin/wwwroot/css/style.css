@@ -720,10 +720,10 @@ fluent-dialog h6 {
 .btn-backbutton:active span {
   color: var(--mars-color-accent);
 }
-.layout-standart-title {
+.layout-standard-title {
   position: relative;
 }
-.layout-standart-title .layout-backbutton-pull-left {
+.layout-standard-title .layout-backbutton-pull-left {
   position: absolute;
 }
 /*@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');*/

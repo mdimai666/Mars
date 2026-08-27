@@ -15,7 +15,7 @@
         @*<TabsProfile />*@
     </CascadingValue>
 
-    <StandartEditForm1 TModel="UserEditModel"
+    <StandardEditForm1 TModel="UserEditModel"
                        GetAction="@(()=>UserEditModel.GetAction(client, ID, UserTypeName))"
                        Context="model"
                        SaveAction="@((model,create)=>UserEditModel.SaveAction(client, model, isCreateNew))"
@@ -91,6 +91,6 @@
 
         </div>
 
-    </StandartEditForm1>
+    </StandardEditForm1>
 
 </ContentWrapper>

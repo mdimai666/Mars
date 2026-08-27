@@ -25,7 +25,7 @@ public partial class EditPostTypePresentationPage
 
     [Parameter] public Guid ID { get; set; }
 
-    StandartEditContainer<PostTypePresentationEditModel> f = default!;
+    StandardEditContainer<PostTypePresentationEditModel> f = default!;
 
     void AfterSave()
     {

@@ -15,7 +15,7 @@ public partial class EditNavMenuPage
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Parameter] public Guid ID { get; set; }
-    StandartEditContainer<NavMenu> f = default!;
+    StandardEditContainer<NavMenu> f = default!;
 
     NavMenuItem? _selMenu => _selNode?.Node;
 

@@ -158,7 +158,6 @@ internal class NotifyService : INotifyService
 
         var body = new Dictionary<string, string>()
         {
-            //["ID"] = $"{zayavka.Id}",
             //["Новый статус"] = $"{status}",
             //["Комментарий"] = comment,
             ["Url"] = $"{_optionService.SysOption.SiteUrl}",

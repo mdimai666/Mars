@@ -1545,22 +1545,5 @@ namespace Mars.Contracts.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Zayavka.
-        /// </summary>
-        public static string Zayavka {
-            get {
-                return ResourceManager.GetString("Zayavka", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Zayavkas.
-        /// </summary>
-        public static string Zayavka_many {
-            get {
-                return ResourceManager.GetString("Zayavka.many", resourceCulture);
-            }
-        }
     }
 }

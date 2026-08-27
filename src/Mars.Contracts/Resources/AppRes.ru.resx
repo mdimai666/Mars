@@ -597,12 +597,6 @@
   <data name="v_required" xml:space="preserve">
     <value>Поле {0} обязательно для заполнения.</value>
   </data>
-  <data name="Zayavka" xml:space="preserve">
-    <value>Заявка</value>
-  </data>
-  <data name="Zayavka.many" xml:space="preserve">
-    <value>Заявки</value>
-  </data>
   <data name="Value" xml:space="preserve">
     <value>Значение</value>
   </data>

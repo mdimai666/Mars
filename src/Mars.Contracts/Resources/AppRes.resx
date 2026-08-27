@@ -597,12 +597,6 @@
   <data name="v_required" xml:space="preserve">
     <value>Field {0} is required.</value>
   </data>
-  <data name="Zayavka" xml:space="preserve">
-    <value>Zayavka</value>
-  </data>
-  <data name="Zayavka.many" xml:space="preserve">
-    <value>Zayavkas</value>
-  </data>
   <data name="Value" xml:space="preserve">
     <value>Value</value>
   </data>

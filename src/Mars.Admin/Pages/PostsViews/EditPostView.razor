@@ -136,25 +136,6 @@
             </div>
         }
 
-        @*
-        @if (postType.EnabledFeatures.Contains(nameof(Post.FileList)))
-        {
-            <div>
-                <div class="">
-                    Файлы
-                </div>
-                <div class="">
-                    <ZayavkaFileUploadViewTmp ID="@context.Id"
-                                              @bind-Files="@context.FileList"
-                                              ActionUrl='@Q.ServerUrlJoin("api/Post/Upload?file_group=files")'
-                                              ViewFiltergroup=""
-                                              MinCount="0" MaxCount="10" ReadOnly=false />
-
-                </div>
-            </div>
-        }
-        *@
-
         <div class="spacer-1"></div>
 
         @* <h5>MetaValues = @context.MetaValues.Count</h5> *@

@@ -85,7 +85,6 @@ public class FileEntity : IBasicUserEntity
 //    ApplicationAttachment,
 //    Document,
 //    PostAttachment,
-//    ZayavkaReport,
 //    PacientAttachment,
 //    Media,
 //    Meeting

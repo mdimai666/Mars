@@ -3,7 +3,7 @@ using Mars.Contracts.Models.Interfaces;
 
 namespace Mars.Admin.Framework.Tools;
 
-public class ModelProperySel
+public class ModelPropertySel
 {
     public required ModelInfo Model { get; init; }
     public required PropertyInfo Property { get; init; }

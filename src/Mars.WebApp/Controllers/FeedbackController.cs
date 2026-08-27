@@ -118,7 +118,7 @@ public class FeedbackController : ControllerBase
         using var stream = new MemoryStream();
         await _feedbackService.ExcelFeedbackList(stream, cancellationToken);
 
-        return this.ExcelRespone(stream, "Feedback.xlsx");
+        return this.ExcelResponse(stream, "Feedback.xlsx");
     }
 
 }

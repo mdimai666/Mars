@@ -26,7 +26,7 @@ public partial class FluentMediaFilesList
     [Parameter] public static int PageSize { get; set; } = 55;
 
     public string? ViewFiltergroup { get; set; } = null;
-    public const string AllowExternsionsDefault = ".jpg,.png,.jpeg,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.jfif,.svg,.heic";
+    public const string AllowExtensionsDefault = ".jpg,.png,.jpeg,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.jfif,.svg,.heic";
 
     //table data
     FluentDataGrid<FileListItemResponse> table = default!;

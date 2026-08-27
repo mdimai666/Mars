@@ -38,9 +38,9 @@ else
 }
 
 @code {
-    ModelProperySel _value = default!;
+    ModelPropertySel _value = default!;
     [Parameter]
-    public ModelProperySel Value
+    public ModelPropertySel Value
     {
         get => _value;
         set
@@ -52,5 +52,5 @@ else
     }
 
     [Parameter]
-    public EventCallback<ModelProperySel> ValueChanged { get; set; }
+    public EventCallback<ModelPropertySel> ValueChanged { get; set; }
 }

@@ -75,7 +75,7 @@
 
     IEnumerable<ModelInfo> Models = new List<ModelInfo>();
 
-    ModelProperySel propSel1 = default!;
+    ModelPropertySel propSel1 = default!;
 
     protected override void OnInitialized()
     {
@@ -91,7 +91,7 @@
 
         if (option is not null)
         {
-            propSel1 = new ModelProperySel
+            propSel1 = new ModelPropertySel
             {
                 Model = option,
                 Property = option.Properties.FirstOrDefault()!

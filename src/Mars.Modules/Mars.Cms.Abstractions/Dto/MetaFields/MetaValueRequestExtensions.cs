@@ -2,7 +2,7 @@ using Mars.Contracts.MetaFields;
 
 namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
-public static class MetaValueRequestExternsions
+public static class MetaValueRequestExtensions
 {
     public static ModifyMetaValueDetailDto ToDto(this CreateMetaValueRequest request)
         => new()

@@ -160,7 +160,7 @@ public class ConsoleTable
         return formattedTable;
     }
 
-    private StringBuilder CreateSeperatorLine(int[] maximumCellWidths, int previousRowColumnCount, int rowColumnCount, StringBuilder formattedTable)
+    private StringBuilder CreateSeparatorLine(int[] maximumCellWidths, int previousRowColumnCount, int rowColumnCount, StringBuilder formattedTable)
     {
         var maximumCells = Math.Max(previousRowColumnCount, rowColumnCount);
 
@@ -245,7 +245,7 @@ public class ConsoleTable
             if (rowIndex != lastRowIndex)
             {
                 nextRow = table[rowIndex + 1];
-                formattedTable = CreateSeperatorLine(maximumCellWidths, previousRow.Count(), nextRow.Count(), formattedTable);
+                formattedTable = CreateSeparatorLine(maximumCellWidths, previousRow.Count(), nextRow.Count(), formattedTable);
             }
 
             rowIndex++;

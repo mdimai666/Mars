@@ -1,6 +1,6 @@
 namespace Mars.Core.Extensions;
 
-public static class FileSizeExstension
+public static class FileSizeExtension
 {
     public static string ToHumanizedSize(this long size)
     {

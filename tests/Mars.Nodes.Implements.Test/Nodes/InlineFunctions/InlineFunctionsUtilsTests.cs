@@ -47,7 +47,7 @@ public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void ParseMethods_RetriveOnlyMethodWithPrimitiveParams_ShouldReturnSingleDefinition()
+    public void ParseMethods_RetrieveOnlyMethodWithPrimitiveParams_ShouldReturnSingleDefinition()
     {
         //Arrange
         //Act

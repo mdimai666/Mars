@@ -33,7 +33,7 @@ public class PostTransformerTests : ApplicationTests
         _ = nameof(PostTransformer.Transform);
         var postType = _metaModelTypesLocator.GetPostTypeByName("post")!;
         if (postType.ContentEditorKey() != MetaFieldEditorCatalog.BlockEditor)
-            throw new NotSupportedException($"PostType must be '{MetaFieldEditorCatalog.BlockEditor}'. Retrived '{postType.TypeName}'.");
+            throw new NotSupportedException($"PostType must be '{MetaFieldEditorCatalog.BlockEditor}'. Retrieved '{postType.TypeName}'.");
 
         var content = new EditorJsContent()
         {

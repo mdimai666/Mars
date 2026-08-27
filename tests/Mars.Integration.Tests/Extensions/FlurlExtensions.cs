@@ -50,9 +50,9 @@ public static class FlurlExtensions
         try
         {
             using var response = await flurlResponse.ConfigureAwait(false);
-            var messsage = $"Response should be fail, but it is successful. Status = {response.StatusCode}";
-            Assert.Fail(messsage);
-            throw new Exception(messsage);
+            var message = $"Response should be fail, but it is successful. Status = {response.StatusCode}";
+            Assert.Fail(message);
+            throw new Exception(message);
         }
         catch (FlurlHttpException ex) when (ex.StatusCode == StatusCodes.Status400BadRequest)
         {

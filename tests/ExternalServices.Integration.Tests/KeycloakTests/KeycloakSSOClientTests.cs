@@ -54,7 +54,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     {
         var requestQuery = new { redirectUri = marsClient.BaseUrl };
 
-        //Act - retrive jump Link
+        //Act - retrieve jump Link
         var res = await marsClient.Request(_apiUrl, "login", "keycloak1")
                                 .WithSettings(s => s.Redirects.Enabled = false)
                                 .AppendQueryParam(requestQuery)

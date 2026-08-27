@@ -27,7 +27,7 @@ internal class BlockEditor1PostContentProcessor(IPostRepository postRepository, 
     public Task<string?> RenderPostContent(PostTypeDetail postType, string content, CancellationToken cancellationToken)
     {
         if (postType.ContentEditorKey() != MetaFieldEditorCatalog.BlockEditor)
-            throw new NotSupportedException($"{nameof(BlockEditor1PostContentProcessor)} is support only '{MetaFieldEditorCatalog.BlockEditor}'. Retrive PostType '{postType.TypeName}'");
+            throw new NotSupportedException($"{nameof(BlockEditor1PostContentProcessor)} is support only '{MetaFieldEditorCatalog.BlockEditor}'. Retrieved PostType '{postType.TypeName}'");
 
         if (string.IsNullOrEmpty(content)) return Task.FromResult<string?>(null);
 

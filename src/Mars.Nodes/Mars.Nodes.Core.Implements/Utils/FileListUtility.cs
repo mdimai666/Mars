@@ -9,7 +9,7 @@ public class FileListUtility
     public bool EnableDebugOutput { get; set; } = false;
 
     /// <summary>
-    /// Retrive file list by path
+    /// Retrieve file list by path
     /// </summary>
     /// <param name="path">dir</param>
     /// <param name="includeFilter">

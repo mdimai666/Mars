@@ -7,7 +7,7 @@ namespace Test.EditorJsBlazored;
 public class BlockEditorContentTests
 {
     [Fact]
-    public void ToJson_ProperyCaseMustLower_ExpecetValueNameLower()
+    public void ToJson_PropertyCaseMustLower_ExpectedValueNameLower()
     {
         //Arrange
         var content = new EditorJsContent

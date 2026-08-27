@@ -54,7 +54,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void GetOutputNodes_RetriveRootOutputChilds_ShouldSuccess()
+    public void GetOutputNodes_RetrieveRootOutputChilds_ShouldSuccess()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()

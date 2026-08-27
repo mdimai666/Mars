@@ -17,7 +17,7 @@ public class WebPageTests
     }
 
     [Fact]
-    public void WebPage_CorrectParse_ShuldSuccess()
+    public void WebPage_CorrectParse_ShouldSuccess()
     {
         // Arrange
         var content = """

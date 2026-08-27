@@ -23,7 +23,7 @@ namespace Test.Mars.Server.Services.PostJsonServices;
 public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 {
     [Fact]
-    public async Task GetDetailFromRepository_RetriveMetaFields_PrimitivesValuesSuccess()
+    public async Task GetDetailFromRepository_RetrieveMetaFields_PrimitivesValuesSuccess()
     {
         //Arrange
         _ = nameof(PostRepository.GetDetail);

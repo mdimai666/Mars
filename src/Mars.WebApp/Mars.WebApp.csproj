@@ -43,11 +43,7 @@
         <Content Remove="wwwroot\upload\**" />
         <EmbeddedResource Remove="wwwroot\upload\**" />
         <None Remove="wwwroot\upload\**" />
-    </ItemGroup>
-    <ItemGroup>
         <Content Remove="compilerconfig.json" />
-    </ItemGroup>
-    <ItemGroup>
         <None Include="compilerconfig.json" />
     </ItemGroup>
 
@@ -135,6 +131,7 @@
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Host\Mars.Nodes.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host\Mars.SSO.Host.csproj" />
 
     </ItemGroup>
 
@@ -259,10 +256,5 @@
             <_Parameter1>Mars.WebApiClient.Integration.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mars.Modules\Mars.SSO.Host\Mars.SSO.Host.csproj" />
-  </ItemGroup>
 
 </Project>

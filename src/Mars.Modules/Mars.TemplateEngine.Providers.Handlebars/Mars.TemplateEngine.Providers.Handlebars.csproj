@@ -13,9 +13,6 @@
         <PackageReference Include="Handlebars.Net.Extension.NewtonsoftJson" />
     </ItemGroup>
 
-    <ItemGroup>
-    </ItemGroup>
-
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />

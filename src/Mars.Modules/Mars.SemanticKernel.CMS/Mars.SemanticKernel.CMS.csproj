@@ -2,6 +2,8 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.SemanticKernel.Abstractions\Mars.SemanticKernel.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="Skills\**\*.md">
@@ -13,13 +15,5 @@
             <_Parameter1>Mars.AiServices.Integration.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
-  </ItemGroup>
 
 </Project>

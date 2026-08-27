@@ -6,11 +6,9 @@
         <PackageReference Include="AutoFixture" />
         <PackageReference Include="BenchmarkDotNet" />
     </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
-    </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
   </ItemGroup>
 

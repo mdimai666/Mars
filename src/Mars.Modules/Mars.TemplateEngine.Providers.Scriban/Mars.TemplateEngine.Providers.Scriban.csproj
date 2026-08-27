@@ -12,9 +12,6 @@
         <PackageReference Include="Scriban" />
     </ItemGroup>
 
-    <ItemGroup>
-    </ItemGroup>
-
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />

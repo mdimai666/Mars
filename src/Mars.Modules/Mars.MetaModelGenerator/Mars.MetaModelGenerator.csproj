@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <Compile Remove="EmitVariantExample.cs" />
+        <Compile Remove="EmitVariantExample.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -9,17 +9,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
-      <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
+        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
     </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
-  </ItemGroup>
 
 </Project>

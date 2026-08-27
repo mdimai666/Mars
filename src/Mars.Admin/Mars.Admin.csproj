@@ -48,15 +48,12 @@
         <Compile Remove="Pages\PostsViews\SpecialViews\**" />
         <EmbeddedResource Remove="Pages\PostsViews\SpecialViews\**" />
         <None Remove="Pages\PostsViews\SpecialViews\**" />
+        <Compile Remove="Pages\UserViews\AdminEditUserPage.razor.cs" />
     </ItemGroup>
 
     <PropertyGroup>
         <NoWarn>BL0007</NoWarn>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Compile Remove="Pages\UserViews\AdminEditUserPage.razor.cs" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" />

@@ -28,10 +28,6 @@
     <ProjectReference Include="..\..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
     <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.AiChat.Abstractions\Mars.AiChat.Abstractions.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
   </ItemGroup>
 

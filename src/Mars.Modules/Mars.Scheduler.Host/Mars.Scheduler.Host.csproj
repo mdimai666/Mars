@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="CronExpressionDescriptor" />
-		<PackageReference Include="Quartz.AspNetCore" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CronExpressionDescriptor" />
+        <PackageReference Include="Quartz.AspNetCore" />
+    </ItemGroup>
 
-	<ItemGroup>
-	</ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
+    </ItemGroup>
 
 </Project>

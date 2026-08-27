@@ -7,11 +7,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Mars.TemplateEngine.Providers.Handlebars\Mars.TemplateEngine.Providers.Handlebars.csproj" />
         <ProjectReference Include="..\Mars.TemplateEngine.Providers.Scriban\Mars.TemplateEngine.Providers.Scriban.csproj" />
+        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
     </ItemGroup>
-
-
-	<ItemGroup>
-		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
-	</ItemGroup>
 
 </Project>

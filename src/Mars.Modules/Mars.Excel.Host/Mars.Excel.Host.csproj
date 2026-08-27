@@ -3,24 +3,20 @@
     <PropertyGroup>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
-		<PackageReference Include="ClosedXML" PrivateAssets="All" />
-		<PackageReference Include="ClosedXML.Report" PrivateAssets="All" />
+        <PackageReference Include="ClosedXML" PrivateAssets="All" />
+        <PackageReference Include="ClosedXML.Report" PrivateAssets="All" />
         <PackageReference Include="System.IO.Packaging" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
     </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
-  </ItemGroup>
 
 </Project>

@@ -13,11 +13,8 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Mars.Data\Mars.Data.csproj" />
         <ProjectReference Include="..\..\src\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
     </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />

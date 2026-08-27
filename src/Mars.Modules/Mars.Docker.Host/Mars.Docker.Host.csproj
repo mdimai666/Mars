@@ -11,11 +11,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Docker.Abstractions\Mars.Docker.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
     </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
-  </ItemGroup>
 
 </Project>

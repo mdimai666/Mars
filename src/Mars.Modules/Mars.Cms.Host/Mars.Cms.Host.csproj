@@ -15,6 +15,7 @@
     <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +26,5 @@
       <_Parameter1>Mars.Integration.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-
-
-    <ItemGroup>
-        <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
-    </ItemGroup>
 
 </Project>

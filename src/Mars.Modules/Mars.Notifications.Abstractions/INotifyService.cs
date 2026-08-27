@@ -1,6 +1,6 @@
 using Mars.Shared.Common;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Notifications.Abstractions;
 
 public interface INotifyService
 {

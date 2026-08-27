@@ -1,7 +1,7 @@
 ﻿using Mars.Shared.Common;
 using Mars.Shared.Contracts.Sms;
 
-namespace Mars.Host.Shared.Services;
+namespace Mars.Notifications.Abstractions;
 
 public interface ISmsSender
 {

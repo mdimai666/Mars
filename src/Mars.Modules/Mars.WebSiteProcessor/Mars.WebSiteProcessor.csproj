@@ -5,7 +5,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Flurl.Http" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Options\BlazorScriptsAppend.html" />
+		<!-- логическое имя заморожено: ресурс читается по нему из кода -->
+		<EmbeddedResource Include="Options\BlazorScriptsAppend.html" LogicalName="Mars.Host.Options.BlazorScriptsAppend.html" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+		<ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj" />
+		<ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+		<ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -14,15 +14,19 @@
           "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.10",
           "Mars.AiChat.Host": "1.0.0",
+          "Mars.Cms.Host": "1.0.0",
           "Mars.CommandLine": "1.0.0",
           "Mars.Datasource.Front": "1.0.0",
           "Mars.Datasource.Host": "1.0.0",
           "Mars.Docker.Host": "1.0.0",
           "Mars.Excel.Host": "1.0.0",
           "Mars.Host.Infrastructure": "1.0.0",
+          "Mars.Identity.Host": "1.0.0",
+          "Mars.Media.Host": "1.0.0",
           "Mars.MetaModelGenerator": "1.0.0",
           "Mars.Nodes.Host": "1.0.0",
           "Mars.Nodes.Workspace": "1.0.0",
+          "Mars.Notifications.Host": "1.0.0",
           "Mars.Options.Host": "1.0.0",
           "Mars.Plugin": "1.0.0",
           "Mars.QueryLang": "1.0.0",
@@ -2337,6 +2341,37 @@
           }
         }
       },
+      "Mars.Cms.Abstractions/1.0.0": {
+        "dependencies": {
+          "FluentValidation": "12.1.1",
+          "Mars.Media.Abstractions": "1.0.0",
+          "mdimai666.Mars.Core": "0.7.8-alpha.42",
+          "mdimai666.Mars.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Cms.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Cms.Host/1.0.0": {
+        "dependencies": {
+          "Handlebars.Net": "2.1.6",
+          "Mars.Cms.Abstractions": "1.0.0",
+          "Mars.Host.Repositories": "1.0.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
+          "mdimai666.Mars.Host.Data": "0.7.8-alpha.42",
+          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Cms.Host.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.CommandLine/1.0.0": {
         "dependencies": {
           "mdimai666.Mars.CommandLine.Shared": "0.7.8-alpha.42",
@@ -2534,7 +2569,10 @@
       },
       "Mars.Host.Repositories/1.0.0": {
         "dependencies": {
+          "Mars.Cms.Abstractions": "1.0.0",
           "Mars.Host.Data.InMemory": "1.0.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
           "mdimai666.Mars.Core": "0.7.8-alpha.42",
           "mdimai666.Mars.Host.Data": "0.7.8-alpha.42",
           "mdimai666.Mars.Host.Data.PostgreSQL": "0.7.8-alpha.42",
@@ -2542,6 +2580,63 @@
         },
         "runtime": {
           "Mars.Host.Repositories.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Identity.Abstractions/1.0.0": {
+        "dependencies": {
+          "Mars.Cms.Abstractions": "1.0.0",
+          "System.IdentityModel.Tokens.Jwt": "8.19.1",
+          "libphonenumber-csharp": "9.0.32",
+          "mdimai666.Mars.Core": "0.7.8-alpha.42",
+          "mdimai666.Mars.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Identity.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Identity.Host/1.0.0": {
+        "dependencies": {
+          "Mars.Cms.Host": "1.0.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Notifications.Abstractions": "1.0.0",
+          "System.IdentityModel.Tokens.Jwt": "8.19.1",
+          "mdimai666.Mars.Host.Data": "0.7.8-alpha.42",
+          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Identity.Host.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Media.Abstractions/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Core": "0.7.8-alpha.42",
+          "mdimai666.Mars.Options": "0.7.8-alpha.42",
+          "mdimai666.Mars.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Media.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Media.Host/1.0.0": {
+        "dependencies": {
+          "Mars.Media.Abstractions": "1.0.0",
+          "mdimai666.Mars.Host": "0.7.8-alpha.42",
+          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Media.Host.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2592,6 +2687,33 @@
           }
         }
       },
+      "Mars.Notifications.Abstractions/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Core": "0.7.8-alpha.42",
+          "mdimai666.Mars.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Notifications.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Notifications.Host/1.0.0": {
+        "dependencies": {
+          "MailKit": "4.17.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Notifications.Abstractions": "1.0.0",
+          "MimeKit": "4.17.0",
+          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42"
+        },
+        "runtime": {
+          "Mars.Notifications.Host.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.Options.Front/1.0.0": {
         "dependencies": {
           "mdimai666.Mars.AppFront.Main": "0.7.8-alpha.42",
@@ -2607,7 +2729,8 @@
       },
       "Mars.Options.Host/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host": "0.7.8-alpha.42",
+          "Mars.WebSiteProcessor": "1.0.0",
+          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42",
           "mdimai666.Mars.Options": "0.7.8-alpha.42"
         },
         "runtime": {
@@ -2737,6 +2860,7 @@
       },
       "Mars.SSO/1.0.0": {
         "dependencies": {
+          "Mars.Identity.Abstractions": "1.0.0",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.19.1",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
           "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42"
@@ -2750,6 +2874,7 @@
       },
       "Mars.SSO.Host.OAuth/1.0.0": {
         "dependencies": {
+          "Mars.SSO": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.9",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.19.1",
@@ -2845,7 +2970,11 @@
       },
       "Mars.WebSiteProcessor/1.0.0": {
         "dependencies": {
-          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42"
+          "Flurl.Http": "4.0.2",
+          "Mars.Cms.Abstractions": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
+          "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42",
+          "mdimai666.Mars.Options": "0.7.8-alpha.42"
         },
         "runtime": {
           "Mars.WebSiteProcessor.dll": {
@@ -2953,12 +3082,13 @@
         "dependencies": {
           "AngleSharp": "1.5.0",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
-          "Flurl.Http": "4.0.2",
           "Handlebars.Net": "2.1.6",
-          "MailKit": "4.17.0",
+          "Mars.Cms.Abstractions": "1.0.0",
           "Mars.Host.Repositories": "1.0.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
+          "Mars.Notifications.Abstractions": "1.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.9",
-          "MimeKit": "4.17.0",
           "Swashbuckle.AspNetCore": "10.2.1",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
           "mdimai666.Mars.Host.Data": "0.7.8-alpha.42",
@@ -3006,6 +3136,9 @@
           "DynamicExpresso.Core": "2.19.3",
           "FluentValidation": "12.1.1",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
+          "Mars.Cms.Abstractions": "1.0.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
           "Microsoft.EntityFrameworkCore": "10.0.9",
           "Microsoft.FeatureManagement.AspNetCore": "4.5.0",
           "Quartz": "3.18.1",
@@ -3072,6 +3205,7 @@
           "Handlebars.Net": "2.1.6",
           "MQTTnet": "5.1.0.1559",
           "MQTTnet.Extensions.TopicTemplate": "5.1.0.1559",
+          "Mars.Notifications.Abstractions": "1.0.0",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
           "Newtonsoft.Json": "13.0.4",
           "mdimai666.Mars.Host.Shared": "0.7.8-alpha.42",
@@ -3129,7 +3263,8 @@
       },
       "mdimai666.Mars.Options/0.7.8-alpha.42": {
         "dependencies": {
-          "mdimai666.Mars.Core": "0.7.8-alpha.42"
+          "mdimai666.Mars.Core": "0.7.8-alpha.42",
+          "mdimai666.Mars.Shared": "0.7.8-alpha.42"
         },
         "runtime": {
           "Mars.Options.dll": {
@@ -4742,6 +4877,16 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Mars.Cms.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Cms.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mars.CommandLine/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -4822,6 +4967,26 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Mars.Identity.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Identity.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Media.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Media.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mars.MetaModelGenerator/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -4833,6 +4998,16 @@
       "sha512": ""
     },
     "Mars.Nodes.Workspace/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Notifications.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Notifications.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Utils;
 
-namespace Mars.Host.Shared.Dto.Emails;
+namespace Mars.Notifications.Abstractions;
 
 public class EmailSendMessageDto : IValidatableObject
 {

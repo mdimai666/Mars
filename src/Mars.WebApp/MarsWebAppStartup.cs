@@ -14,8 +14,12 @@ using Mars.Host.Shared.Hubs;
 using Mars.Host.Shared.JsonConverters;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Startup;
+using Mars.Cms.Host;
+using Mars.Identity.Host;
+using Mars.Media.Host;
 using Mars.Nodes.Host;
 using Mars.Nodes.Workspace;
+using Mars.Notifications.Host;
 using Mars.Options.Front;
 using Mars.Options.Host;
 using Mars.Plugin;
@@ -87,6 +91,10 @@ public static class MarsWebAppStartup
         // Mars
         builder.Services.MarsAddSwagger()
                         .AddMarsOptions()
+                        .AddMarsNotifications()
+                        .AddMarsIdentity(builder.Configuration)
+                        .AddMarsMedia()
+                        .AddMarsCms()
                         .AddMarsHostServices(builder.Environment)
                         .MarsAddTemplator()
                         .AddPostgresDistributedCache(builder.Configuration)

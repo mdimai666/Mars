@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
+    <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+    <!-- временно: статический вызов PostService.EnrichWithBlankMetaValuesFromMetaValues в UserService; helper уйдёт в Cms.Abstractions -->
+    <ProjectReference Include="..\Mars.Cms.Host\Mars.Cms.Host.csproj" />
+    <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mars.Integration.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

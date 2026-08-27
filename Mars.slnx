@@ -74,6 +74,22 @@
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host.PostgreSQL/Mars.Datasource.Host.PostgreSQL.csproj" />
     <Project Path="src/Mars.Datasource/Mars.Datasource.Host/Mars.Datasource.Host.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/Cms/">
+    <Project Path="src/Mars.Modules/Mars.Cms.Abstractions/Mars.Cms.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Cms.Host/Mars.Cms.Host.csproj" />
+  </Folder>
+  <Folder Name="/Mars.Modules/Identity/">
+    <Project Path="src/Mars.Modules/Mars.Identity.Abstractions/Mars.Identity.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Identity.Host/Mars.Identity.Host.csproj" />
+  </Folder>
+  <Folder Name="/Mars.Modules/Media/">
+    <Project Path="src/Mars.Modules/Mars.Media.Abstractions/Mars.Media.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Media.Host/Mars.Media.Host.csproj" />
+  </Folder>
+  <Folder Name="/Mars.Modules/Notifications/">
+    <Project Path="src/Mars.Modules/Mars.Notifications.Abstractions/Mars.Notifications.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Notifications.Host/Mars.Notifications.Host.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/SemanticKernel/">
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.CMS/Mars.SemanticKernel.CMS.csproj" Id="fba0b589-88cb-4c6c-8352-78d27f2e0840" />
     <Project Path="src/Mars.Modules/Mars.SemanticKernel.Front/Mars.SemanticKernel.Front.csproj" />

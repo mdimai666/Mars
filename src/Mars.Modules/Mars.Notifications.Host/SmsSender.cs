@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Mars.Host.Shared.Services;
+using Mars.Notifications.Abstractions;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Sms;
 
-namespace Mars.Host.Services;
+namespace Mars.Notifications.Host;
 
 internal class SmsSender : ISmsSender
 {

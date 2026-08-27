@@ -109,9 +109,13 @@
         <ProjectReference Include="..\Mars.Host\Mars.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Host\Mars.AiChat.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Host\Mars.Docker.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Excel.Host\Mars.Excel.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Identity.Host\Mars.Identity.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Notifications.Host\Mars.Notifications.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Host\Mars.Scheduler.Host.csproj" />

@@ -39,6 +39,9 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Mars.Host\Mars.Host.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
+		<ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
+		<ProjectReference Include="..\..\src\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />
+		<ProjectReference Include="..\..\src\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
 		<ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
 	</ItemGroup>

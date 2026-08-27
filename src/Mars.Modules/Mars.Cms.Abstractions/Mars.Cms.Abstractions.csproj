@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+    <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+    <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

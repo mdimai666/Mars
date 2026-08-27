@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+    <ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj" />
+    <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

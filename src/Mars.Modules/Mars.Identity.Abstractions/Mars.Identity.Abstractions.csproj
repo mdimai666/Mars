@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="libphonenumber-csharp" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+    <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj" />
+    <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

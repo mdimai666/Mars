@@ -4,13 +4,14 @@ using Mars.Core.Utils;
 using Mars.Host.Shared.Dto.Users;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
+using Mars.Notifications.Abstractions;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.ActionHistorys;
 using Mars.Shared.Resources;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 
-namespace Mars.Host.Services;
+namespace Mars.Notifications.Host;
 
 internal class NotifyService : INotifyService
 {

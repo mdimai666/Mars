@@ -18,9 +18,3 @@ public class GeneralPostTypeQueryValidator : AbstractValidator<IGeneralPostTypeQ
             .WithMessage(v => $"'{v.TypeName}' is Invalid TypeName");
     }
 }
-
-public interface IGeneralPostTypeQuery
-{
-    string Title { get; }
-    string TypeName { get; }
-}

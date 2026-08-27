@@ -3,22 +3,16 @@ using FluentValidation;
 using Mars.Host.Handlers;
 using Mars.Host.Managers;
 using Mars.Host.Services;
-using Mars.Host.Services.GallerySpace;
 using Mars.Host.Shared.Attributes;
-using Mars.Host.Shared.Constants.Website;
 using Mars.Host.Shared.Dto.Files;
 using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Handlers;
 using Mars.Host.Shared.Interfaces;
 using Mars.Host.Shared.Managers;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
-using Mars.Host.Shared.WebSite.Scripts;
-using Mars.Host.WebSite.Scripts;
 using Mars.Shared.Contracts.MetaFields;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MOptions = Microsoft.Extensions.Options.Options;
@@ -30,53 +24,12 @@ public static class MainMarsHost
     public static IServiceCollection AddMarsHost(this IServiceCollection services, IWebHostEnvironment wenv)
     {
         services.AddSingleton<IActionManager, XActionManager>();
-        services.AddSingleton<IOptionService, OptionService>();
         services.AddSingleton<IEventManager, EventManager>();
-        services.AddSingleton<INavMenuService, NavMenuService>();
-        services.AddSingleton<IMetaModelTypesLocator, MetaModelTypesLocator>();
-        services.AddSingleton<IPostCategoryMetaLocator, PostCategoryMetaLocator>();
-        services.AddSingleton<IUserMetaLocator, UserMetaLocator>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Shared\Tools\ModelInfoService.cs
 
-        services.AddTransient<IMarsEmailSender, EmailSender>();
-        services.AddTransient<IEmailSender, EmailSender>();
-        services.AddTransient<ISmsSender, SmsSender>();
-        services.AddTransient<INotifyService, NotifyService>();
-
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IUserTypeService, UserTypeService>();
-        services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IFileService, FileService>();
-        services.AddScoped<IMediaFolderService, MediaFolderService>();
-        services.AddScoped<IMediaService, MediaService>();
-        services.AddScoped<IPostService, PostService>();
-        services.AddScoped<IPostTypeService, PostTypeService>();
-        services.AddScoped<IPostJsonService, PostJsonService>();
-        services.AddScoped<IPostCategoryService, PostCategoryService>();
-        services.AddScoped<IPostCategoryTypeService, PostCategoryTypeService>();
-        services.AddScoped<IRequestContext, RequestContext>();
-        services.AddScoped<IFeedbackService, FeedbackService>();
-
         services.AddScoped<InitialSiteDataViewModelHandler>();
-        services.AddScoped<IGalleryService, GalleryService>();
-        services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
-        services.AddScoped<IMetaQueryFieldResolver, MetaQueryFieldResolver>();
-        services.AddScoped<IMtoRelationMaterializer, MtoRelationMaterializer>();
-        services.AddScoped<IPostTypeViewService, PostTypeViewService>();
-        services.AddScoped<IPostMetaColumnsService, PostMetaColumnsService>();
-        services.AddScoped<IMetaValuesValidator, MetaValuesValidator>();
-        services.AddKeyedScoped<IMetaValueUniquenessProvider, PostMetaValueUniquenessProvider>(MetaValueOwnerCatalog.Post)
-                .AddKeyedScoped<IMetaValueUniquenessProvider, PostCategoryMetaValueUniquenessProvider>(MetaValueOwnerCatalog.PostCategory)
-                .AddKeyedScoped<IMetaValueUniquenessProvider, UserMetaValueUniquenessProvider>(MetaValueOwnerCatalog.User);
-        services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
-        services.AddScoped<ICentralSearchService, CentralSearchService>();
-        services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();
-        services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();
-        services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
-        services.AddScoped<SiteFaviconConfiguratorHandler>();
-        services.AddSingleton<IDatabaseEntityTypeCatalogService, DatabaseEntityTypeCatalogService>();
 
         ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
 
@@ -88,41 +41,14 @@ public static class MainMarsHost
         services.AddValidatorsFromAssemblyContaining<UpdatePostQueryValidator>();
         services.AddScoped<Shared.Validators.IValidatorFactory, ValidatorFactory>();
 
-        UseIMetaRelationModelProviderHandler(services);
-        UseIMetaValueGeneratorHandler(services);
         RegisterAIToolScenarioProviders(services);
-        services.AddScoped<IPostTransformer, PostTransformer>();
-        RegisterPostContentProcessorsLocator(services);
-
-        AddSiteScriptsBuilders(services);
 
         return services;
     }
 
     public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
     {
-        UseSiteScriptsBuilders(app.Services);
-
         return app;
-    }
-
-    static void UseIMetaRelationModelProviderHandler(IServiceCollection services)
-    {
-        services
-            .AddKeyedScoped<IMetaRelationModelProviderHandler, UserRelationModelProviderHandler>("User")
-            .AddKeyedScoped<IMetaRelationModelProviderHandler, FileRelationModelProviderHandler>("File")
-            .AddKeyedScoped<IMetaRelationModelProviderHandler, PostRelationModelProviderHandler>("Post")
-            .AddKeyedScoped<IMetaRelationModelProviderHandler, FeedbackRelationModelProviderHandler>("Feedback")
-            .AddKeyedScoped<IMetaRelationModelProviderHandler, NavMenuRelationModelProviderHandler>("NavMenu")
-            ;
-    }
-
-    static void UseIMetaValueGeneratorHandler(IServiceCollection services)
-    {
-        services
-            .AddKeyedScoped<IMetaValueGeneratorHandler, SequenceValueGeneratorHandler>(MetaFieldGeneratorCatalog.Sequence)
-            .AddKeyedScoped<IMetaValueGeneratorHandler, NowValueGeneratorHandler>(MetaFieldGeneratorCatalog.Now)
-            ;
     }
 
     static void UseFileStorages(IServiceCollection services, IWebHostEnvironment wenv)
@@ -170,74 +96,5 @@ public static class MainMarsHost
         }
 
         return services;
-    }
-
-    static IServiceCollection RegisterPostContentProcessorsLocator(this IServiceCollection services)
-    {
-        services.AddSingleton<IPostContentProcessorsLocator, PostContentProcessorsLocator>();
-        //var toolMap = new Dictionary<string, Type>();
-
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location));
-
-        foreach (var type in assemblies.SelectMany(a => a.GetTypes()))
-        {
-            if (!type.IsClass || type.IsAbstract)
-                continue;
-
-            var attr = type.GetCustomAttribute<KeyredHandlerAttribute>();
-            if (attr == null)
-                continue;
-
-            if (typeof(IPostContentProcessor).IsAssignableFrom(type))
-            {
-                var key = attr.Key ?? type.Name;
-                services.AddKeyedScoped(typeof(IPostContentProcessor), key, type);
-            }
-
-            //toolMap[attr.Key] = type;
-        }
-
-        return services;
-    }
-
-    static void AddSiteScriptsBuilders(IServiceCollection services)
-    {
-        services.AddKeyedSingleton<ISiteScriptsBuilder, SiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
-        services.AddKeyedSingleton<ISiteScriptsBuilder, SiteScriptsBuilder>(AppFrontConstants.SiteScriptsBuilderKey);
-
-        services.AddKeyedSingleton<IWebSitePluggablePluginScripts, AppAdminWebSitePluggablePluginScripts>(AppAdminConstants.SiteScriptsBuilderKey);
-        services.AddKeyedSingleton<IWebSitePluggablePluginScripts, AppFrontWebSitePluggablePluginScripts>(AppFrontConstants.SiteScriptsBuilderKey);
-    }
-
-    static void UseSiteScriptsBuilders(IServiceProvider serviceProvider)
-    {
-        //AppAdmin
-        {
-            // core
-            var appAdminBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
-            appAdminBuilder.RegisterProvider("favicon", new FaviconAssetProvider(serviceProvider.GetRequiredService<IOptionService>()), order: 8f, placeInHead: true);
-            var appAdminSpaHtmlScripts = new AppAdminSpaHtmlScripts();
-            appAdminBuilder.RegisterProvider("appadmin_head", new AppAdminHeadAssetProvider(appAdminSpaHtmlScripts), order: 9f, placeInHead: true);
-            appAdminBuilder.RegisterProvider("appadmin_footer", new AppAdminFooterAssetProvider(appAdminSpaHtmlScripts), order: 9f, placeInHead: false);
-
-            // pluggable
-            var appAdminWebSitePluggablePluginScripts = serviceProvider.GetRequiredKeyedService<IWebSitePluggablePluginScripts>(AppAdminConstants.SiteScriptsBuilderKey);
-            appAdminBuilder.RegisterProvider("appadmin_scripts_head", new WebSitePluggableHeaderAssetProvider(appAdminWebSitePluggablePluginScripts), order: 10, placeInHead: true);
-            appAdminBuilder.RegisterProvider("appadmin_scripts_footer", new WebSitePluggableFooterAssetProvider(appAdminWebSitePluggablePluginScripts), order: 10, placeInHead: false);
-        }
-
-        //AppFront
-        {
-            // core
-            var appFrontBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppFrontConstants.SiteScriptsBuilderKey);
-            appFrontBuilder.RegisterProvider("favicon", new FaviconAssetProvider(serviceProvider.GetRequiredService<IOptionService>()), order: 9f, placeInHead: true);
-
-            // pluggable
-            var appFrontWebSitePluggablePluginScripts = serviceProvider.GetRequiredKeyedService<IWebSitePluggablePluginScripts>(AppFrontConstants.SiteScriptsBuilderKey);
-            appFrontBuilder.RegisterProvider("appfront_scripts_head", new WebSitePluggableHeaderAssetProvider(appFrontWebSitePluggablePluginScripts), order: 10, placeInHead: true);
-            appFrontBuilder.RegisterProvider("appfront_scripts_footer", new WebSitePluggableFooterAssetProvider(appFrontWebSitePluggablePluginScripts), order: 10, placeInHead: false);
-        }
-
     }
 }

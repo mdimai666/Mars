@@ -37,19 +37,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Options\BlazorScriptsAppend.html" />
-        <EmbeddedResource Include="Options\BlazorScriptsAppend.html" />
-    </ItemGroup>
-
-    <ItemGroup>
         <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.2" />-->
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
-        <PackageReference Include="Flurl.Http" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-        <PackageReference Include="MailKit" />
-        <PackageReference Include="MimeKit" />
         <PackageReference Include="Handlebars.Net" />
         <PackageReference Include="AngleSharp" />
         <PackageReference Include="Humanizer">
@@ -62,6 +54,10 @@
         <ProjectReference Include="..\Mars.Host.Data\Mars.Host.Data.csproj" />
         <ProjectReference Include="..\Mars.Host.Repositories\Mars.Host.Repositories.csproj" />
         <ProjectReference Include="..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

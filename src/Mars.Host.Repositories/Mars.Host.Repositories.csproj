@@ -5,6 +5,9 @@
         <ProjectReference Include="..\Mars.Host.Data.PostgreSQL\Mars.Host.Data.PostgreSQL.csproj" />
         <ProjectReference Include="..\Mars.Host.Data\Mars.Host.Data.csproj" />
         <ProjectReference Include="..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

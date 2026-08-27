@@ -9,7 +9,6 @@ internal static class MarsStartupPartTemplator
     public static IServiceCollection MarsAddTemplator(this IServiceCollection services)
     {
         services.MarsAddTemplateEngines();
-        services.AddSingleton<ITemplatorFeaturesLocator, TemplatorFeaturesLocator>();
         return services;
     }
 

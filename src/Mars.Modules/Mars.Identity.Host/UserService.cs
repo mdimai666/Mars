@@ -13,6 +13,7 @@ using Mars.Host.Shared.Mappings.UserTypes;
 using Mars.Host.Shared.Repositories;
 using Mars.Host.Shared.Services;
 using Mars.Host.Shared.Validators;
+using Mars.Notifications.Abstractions;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.Users;
 

@@ -55,9 +55,6 @@ internal static class MarsStartupPartCore
         // https://source.dot.net/#Microsoft.AspNetCore.Identity.EntityFrameworkCore/IdentityEntityFrameworkBuilderExtensions.cs,90
         // services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
 
-        services.AddScoped<IUserClaimsPrincipalFactory<UserEntity>, AppClaimsPrincipalFactory>();
-
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.JwtSectionKey));
         var jwtSettings = configuration.GetSection(JwtSettings.JwtSectionKey).Get<JwtSettings>();
 
         services

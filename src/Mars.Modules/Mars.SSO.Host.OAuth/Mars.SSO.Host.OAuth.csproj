@@ -18,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.SSO\Mars.SSO.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,11 +1,12 @@
 using Mars.Host.Shared.Services;
+using Mars.Notifications.Abstractions;
 using Mars.Shared.Common;
 using Mars.Shared.Contracts.ActionHistorys;
 using Mars.Shared.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
 
-namespace Mars.Host.Services;
+namespace Mars.Notifications.Host;
 
 internal class EmailSender : IEmailSender, IMarsEmailSender
 {

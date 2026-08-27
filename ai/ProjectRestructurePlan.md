@@ -71,6 +71,9 @@
 | `Mars.Host.Repositories` | `Mars.Data.Repositories` | |
 | `Mars.Host.Infrastructure` | `Mars.Data.Infrastructure` | аудит содержимого при углублении |
 | `Mars.WebApiClient` | без изменений | ссылается на Contracts |
+| — | **`Mars.Notifications.Abstractions`**, **`Mars.Notifications.Host`** (новые) | вынесено из `Mars.Host`/`Host.Shared`, фаза 1 |
+| — | **`Mars.Cms.Abstractions`** (новый) | мета-контракты, фаза 1 |
+| — | **`Mars.Identity.Abstractions`**, **`Mars.Identity.Host`** (новые) | вынесено из `Mars.Host`/`Host.Shared`, фаза 1 |
 | `AppAdmin` | **`Mars.Admin`** | |
 | `AppFront.Main` | **`Mars.Admin.Framework`** | сливается с `AppFront.Shared` |
 | `AppFront.Shared` | → `Mars.Admin.Framework` | слияние; вынос переиспользуемого — позже |
@@ -101,15 +104,24 @@
 ## Фазы
 
 ### Фаза 1 — Разрезание Mars.Host (+ разнос опций)
-Порядок от простого к сложному:
-1. `Mars.Notifications` (email/sms/notify); сюда же `SmtpSettingsModel`.
-2. `Mars.Identity` (users/roles/tokens/claims).
-3. `Mars.Media` (files/media/galleries); сюда же `MediaOption`, `FaviconOption`(+GeneratedValues), `IImageConverOption`, `ProcessImageResult`.
-4. `Mars.Cms` (posts/posttypes/metafields/categories/navmenus/feedback + метамодель).
-5. `Mars.SiteEngine` (Templators, WebSite-скрипты, слияние WebSiteProcessor; решение по TemplateEngine); сюда же `SEOOption`.
-6. Движок опций: `OptionService` + Dto/Options переезжают из `Mars.Host`/`Host.Shared` в `Mars.Options(.Host)`; оставшиеся модели разносятся по владельцам (см. карту); регистрация каждой опции — в `AddXxx()` её модуля.
-7. Остаток → `Mars.Server` + `Mars.Server.Abstractions`; `MainMarsHost` превращается в тонкую композицию.
-8. Починить нарушения: `Scheduler.Host` и `Options.Host` больше не ссылаются на реализацию ядра.
+
+Тактика больших срезов: файлы переносятся в новые проекты **без смены namespace** — namespace'ы меняются разом в фазе 2 (одним мажорным релизом). Новые файлы (точки регистрации `AddXxx`) сразу пишутся в финальных namespace'ах.
+
+Порядок (фактический):
+1. ✅ `Mars.Notifications` (`Abstractions` + `Host`): email/sms/notify.
+2. ✅ `Mars.Cms.Abstractions` — мета-контракты (`Dto/MetaFields`, `IMetaValueUniquenessProvider`, `MetaValueOwnerCatalog`, мета-утилиты): фундамент, нужен всем владельцам мета-значений (пользователи, файлы, посты).
+3. ✅ `Mars.Identity` (`Abstractions` + `Host`): users/roles/usertypes/accounts/tokens/claims + `IRequestContext`; SSO-контракты из `Host.Shared/SSO` переехали в `Mars.SSO`. Валидаторы/маппинги/`RequestExtensions` временно остались в `Host.Shared` (зависят от его остатков) — разносятся по ходу следующих срезов и в фазе 2.
+4. ✅ `Mars.Media` (`Abstractions` + `Host`): files/mediafolders/galleries. `IFileStorage` остаётся общесистемным (уйдёт в ядро), `FileHostingInfo` уехал с медиа-контрактами; медиа-опции — на шаге движка опций; фавикон-цепочка — в SiteEngine.
+5. ✅ `Mars.Cms` (`Abstractions` пополнен + `Host`): posts/posttypes/categories/navmenus/feedback + мета-движок + поиск. `UserMetaLocator` уехал в `Identity.Host`; keyed-провайдеры уникальности и `UserRelationModelProviderHandler` — в `Cms.Host`; инлайн-валидаторы из DTO вынесены отдельными файлами в `Host.Shared` (сканирование сборки). `InitialSiteDataViewModelHandler` временно остался в `Mars.Host` (владелец — ядро, решится на шаге 8).
+6. ✅ `Mars.SiteEngine` — рендер-подсистема влита в `Mars.WebSiteProcessor` (переименование в `Mars.SiteEngine` — фаза 2): скрипты/ассеты сайта (`WebSite/Scripts` + `SiteScriptsBuilder`), темплейтор-функции и локатор, фавикон-цепочка; регистрации в `AddMarsWebSiteProcessor`/`UseMarsWebSiteProcessor`; embedded-ресурс сохранён с замороженным логическим именем. `Options.Host` больше не ссылается на `Mars.Host`. Рендер-контракты (`PageRenderContext`, `XInterpreter` и др.) остались в `Host.Shared` до роспуска — ими пользуются QueryLang/Nodes. TemplateEngine-подсистема самодостаточна, не тронута.
+7. ✅ Движок опций — самостоятельный модуль: `IOptionService`/`OptionService`/`Dto/Options`/`IOptionRepository`/`OptionNotRegisteredException` в семействе `Mars.Options`; `FileHostingInfo` уехал в `Mars.Shared` (разрыв цикла). Каталог `RegisterOption` пока централизован в `UseMarsOptions` (это стартап модуля опций); разнос регистраций по `AddXxx()` владельцев — отдельный шаг, когда появятся модульные Use-хуки. Модели опций физически в `Mars.Options`, разнос по владельцам — вместе с шагом выше.
+8. ✅ Ядро «похудело» само по себе: в `Mars.Host` остались только сквозные вещи (EventManager, XActionManager, ActionHistoryService, AI-локатор, валидатор-фактории, `UseFileStorages`, `InitialSiteDataViewModelHandler`, feature-gates, EF-расширения) + мёртвый код. Физический переезд остатка в `Mars.Server` делаем в фазе 2 вместе с общим переименованием (не плодим лишние смены сборок до мажорного релиза).
+9. Починить нарушения: `Scheduler.Host` и `Options.Host` больше не ссылаются на реализацию ядра. (`Options.Host` — исправлено в шаге 6.)
+
+Временные связки (снять по ходу срезов):
+- `Mars.Identity.Host → Mars.Cms.Host` (+ `InternalsVisibleTo`): статический вызов `PostService.EnrichWithBlankMetaValuesFromMetaValues` в `UserService` — helper уйдёт в `Cms.Abstractions`.
+- `Host.Shared → Identity.Abstractions/Cms.Abstractions`: остаточные валидаторы/маппинги и рендер-контракты (`RenderContextUser`) — рассасываются по ходу срезов.
+- `Mars.Media.Host → Mars.Host`: `EfEntityBuilderExtensions` для полумёртвого `GalleryService` — уйдёт при разборе галерей.
 
 Развязка `Mars.Host.Shared → Mars.Nodes.Core` происходит по ходу роспуска `Host.Shared` (типы уезжают с владельцами).
 

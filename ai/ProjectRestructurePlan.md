@@ -137,7 +137,73 @@
 - Фронт: выделение стабильного ядра и переиспользуемых компонентов из `Mars.Admin.Framework` (под мобилку и другие проекты со своей WASM-мордой), варианты — `Mars.Ui.*` / тонкое ядро; там же распутать зависимость `Nodes.Workspace` от каркаса админки.
 - Аудит однородности сервисов/репозиториев/handler'ов (без MediatR).
 - Владение сущностями общего контекста (регистрации конфигураций из модулей) — если потребуется.
-- Чистка имён: опечатки (`MetaValueRequestExternsions`, `AuthCreditionals`, `FileSizeExstension`), `MockClass2`, и т.п.
+- Чистка имён: опечатки (`MetaValueRequestExternsions`, `AuthCreditionals`, `FileSizeExstension`), `MockClass2`, и т.п. — **выполняется как отдельный проход**, см. секцию «Чистка имён (опечатки)».
+
+## Чистка имён (опечатки) — план прохода (2026-08-28)
+
+Статус: ✅ выполнен (2026-08-28). Окно: мажорный релиз 0.8.0 ещё не закрыт.
+
+Принципы: меняются только имена типов/методов/файлов/тестов и пользовательские надписи; свойства сериализуемых DTO не трогаются (wire-формат не ломается); неймспейсы не меняются (опечаток в них нет).
+
+### Ярус 1 — типы и файлы
+
+| Сейчас | Станет | Где |
+|---|---|---|
+| `MetaValueRequestExternsions` | `MetaValueRequestExtensions` | `Mars.Cms.Abstractions/Dto/MetaFields/` (+ файл) |
+| `AuthCreditionalsRequest` | `AuthCredentialsRequest` | `Mars.Contracts/Contracts/Auth/` (+ файл) |
+| `AuthCreditionalsDto` | `AuthCredentialsDto` | `Mars.Identity.Abstractions/Dto/Auth/` (+ файл) |
+| `AuthCreditionalsModel` | `AuthCredentialsModel` | `Mars.Admin/Pages/Public/LoginForm.razor.cs` |
+| `FileSizeExstension` | `FileSizeExtension` | `Mars.Core/Extensions/` (+ файл) |
+| константа `AllowExternsionsDefault` | `AllowExtensionsDefault` | `FluentMediaFilesList.razor.cs` (без ссылок — можно удалить) |
+| `CreateSeperatorLine` (private) | `CreateSeparatorLine` | `Mars.Core/Utils/ConsoleTable.cs` |
+| `ModelProperySel` | `ModelPropertySel` | `Mars.Admin.Framework/Services/ModelInfoService.cs` |
+| `ExcelRespone` (интерфейс + реализации) | `ExcelResponse` | `Mars.Excel.Abstractions`, `Mars.Excel.Host`, `FeedbackController` |
+| `initalCommands` / `_initalCommands` | `initialCommands` / `_initialCommands` | `Mars.CommandLine/CommandLineApi.cs` |
+| `MockClass2.cs` | удалить | `Mars.Server/Options/` — пустой файл |
+| надпись `Creditionals` | `Credentials` | `Mars.Nodes.FormEditor/EditForms/AuthFlowConfigNodeForm.razor` |
+
+### Ярус 2 — имена тестов
+
+| Сейчас | Станет |
+|---|---|
+| `Login_InvalidCreditional_Fail` | `Login_InvalidCredentials_Fail` |
+| `ToJson_ProperyCaseMustLower_ExpecetValueNameLower` | `ToJson_PropertyCaseMustLower_ExpectedValueNameLower` |
+| 3 имени тестов с `Retrive…` | `Retrieve…` (Test.Mars.Server, Mars.Nodes.Implements.Test) |
+| локальная переменная `messsage` | `message` (`tests/Mars.Integration.Tests/Extensions/FlurlExtensions.cs`) |
+
+### Ярус 3 — строки и комментарии (косметика)
+
+- Сообщения исключений «Retrived»/«Retrive PostType» → «Retrieved» (`PostTransformerTests`, `BlockEditor1PostContentProcessor`).
+- Док-комментарий `/// Retrive file list by path` → «Retrieve» (`FileListUtility.cs`), комментарий «//Act - retrive jump Link» (`KeycloakSSOClientTests`).
+- Комментарий «BOOL attrubute» → «attribute» (`BlazoredHtml.razor.cs`).
+- Тестовая строка `"invalid_passwrod"` → `"invalid_password"` (`BearerTokenStrategyTests`).
+
+### Семейство Standart → Standard
+
+- Файлы+классы: `StandartEditForm1`, `StandartEditContainer` (`Mars.Admin.Framework/Components/`, вместе с `.razor`/`.razor.cs`) → `StandardEditForm1`, `StandardEditContainer`; ~40 использований в страницах `Mars.Admin`; CSS-классы в разметке компонентов (`StandartEditForm1-main` и т.п.) тоже.
+- CSS: `.layout-standart-title` → `.layout-standard-title` в `src/Mars.Admin/wwwroot/css/layout.less` (правится только .less, компилирует пользователь) + использование в `ContentWrapper.razor`.
+- Комментарии «Standart…» — вместе с Ярусом 3.
+
+### Удаление мёртвого «Zayavka» (решение пользователя: удалить всё связанное)
+
+- `ViewUserPage.razor`: убрать стат-карточку «Заявок» с `@user.ZayavkaCount` (определения свойства в репо нет).
+- `EditPostView.razor`: удалить закомментированный блок с `<ZayavkaFileUploadViewTmp>`.
+- `FileEntity.cs:88`: удалить закомментированную строку `//    ZayavkaReport,`.
+- `NotifyService.cs:161`: удалить закомментированную строку с `zayavka.Id`.
+- `AppRes.resx` + `AppRes.ru.resx` + `AppRes.Designer.cs`: удалить ресурсы `Zayavka`, `Zayavka.many` (использований нет).
+
+### Не трогаем
+
+- `ETotalResponeResult` — используется в `QueryLang.Host`/`Media.Host`, но определение в репо не найдено (вероятно, внешний пакет); при углублении проверить.
+- `_appsettings.Local.json` — локальная регистрация плагина `ZayavkaHostPlugin`; файл вне git, чистит пользователь сам.
+
+### Верификация
+
+Точечно: сборка `dotnet build Mars.slnx` + тесты затронутого контракта логина (`Mars.WebApiClient.Integration.Tests` — LoginAccountTests, `Mars.Integration.Tests` — AccountControllerTests). Без контрольных прогонов всего набора.
+
+### Итог выполнения (2026-08-28)
+
+Всё по карте выполнено. Сверх карты найдено и исправлено: `Account_LoginValidRequest_ShuldSuccess` и `WebPage_CorrectParse_ShuldSuccess` → `ShouldSuccess`. `AllowExternsionsDefault` переименован (не удалён). `dotnet build Mars.slnx` — 0 ошибок; точечные тесты логина — 4/4 зелёные (оба прогона с Testcontainers PostgreSQL). Осталось за пользователем: скомпилировать `layout.less` → `style.css`; убрать регистрацию `ZayavkaHostPlugin` из локального `_appsettings.Local.json` (вне git).
 
 ## Верификация (на все фазы)
 

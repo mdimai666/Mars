@@ -21,7 +21,7 @@ public class LoginAccountTests : BaseWebApiClientTests
         //Arrange
         _ = nameof(AccountController.Login);
         var client = GetWebApiClient(isAnonymous: true);
-        var request = new AuthCreditionalsRequest { Login = TestUserUsername, Password = TestUserPassword };
+        var request = new AuthCredentialsRequest { Login = TestUserUsername, Password = TestUserPassword };
 
         //Act
         var result = await client.Account.Login(request);
@@ -34,12 +34,12 @@ public class LoginAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Login_InvalidCreditional_Fail()
+    public async Task Login_InvalidCredentials_Fail()
     {
         //Arrange
         _ = nameof(AccountController.Login);
         var client = GetWebApiClient(isAnonymous: true);
-        var request = new AuthCreditionalsRequest { Login = TestUserUsername, Password = "invalid_password" };
+        var request = new AuthCredentialsRequest { Login = TestUserUsername, Password = "invalid_password" };
 
         //Act
         var result = await client.Account.Login(request);

@@ -14,11 +14,11 @@ internal class AccountServiceClient : BasicServiceClient, IAccountServiceClient
         _controllerName = "Account";
     }
 
-    public Task<AuthResultResponse> Login(AuthCreditionalsRequest authCreditionals)
+    public Task<AuthResultResponse> Login(AuthCredentialsRequest authCredentials)
         => _client.Request($"{_basePath}{_controllerName}", "Login")
                     .AllowAnyHttpStatus()
                     .WithOAuthBearerToken("")
-                    .PostJsonAsync(authCreditionals)
+                    .PostJsonAsync(authCredentials)
                     .ReceiveJson<AuthResultResponse>();
 
     public async Task<RegistrationResultResponse> RegisterUser(UserForRegistrationRequest userData)

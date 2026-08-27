@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Mars.Contracts.Auth;
 
-public record AuthCreditionalsRequest
+public record AuthCredentialsRequest
 {
 
     [Required(ErrorMessage = "Заполните Логин/Почту")]

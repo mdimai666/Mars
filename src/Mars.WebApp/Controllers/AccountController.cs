@@ -75,12 +75,12 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(AuthResultResponse), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AuthResultResponse>> Login([FromBody] AuthCreditionalsDto authCreditionals, CancellationToken cancellationToken)
+    public async Task<ActionResult<AuthResultResponse>> Login([FromBody] AuthCredentialsDto authCredentials, CancellationToken cancellationToken)
     {
-        if (authCreditionals == null || !ModelState.IsValid)
+        if (authCredentials == null || !ModelState.IsValid)
             return BadRequest();
 
-        var result = await _accountsService.Login(authCreditionals, cancellationToken);
+        var result = await _accountsService.Login(authCredentials, cancellationToken);
 
         if (result.IsAuthSuccessful)
         {

@@ -36,11 +36,11 @@ public class AccountsService : IAccountsService
         _userTypeRepository = userTypeRepository;
     }
 
-    public async Task<AuthResultDto> Login(AuthCreditionalsDto authCreditionals, CancellationToken cancellationToken)
+    public async Task<AuthResultDto> Login(AuthCredentialsDto authCredentials, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByNameAsync(authCreditionals.Login);
+        var user = await _userManager.FindByNameAsync(authCredentials.Login);
 
-        if (user == null || !await _userManager.CheckPasswordAsync(user, authCreditionals.Password))
+        if (user == null || !await _userManager.CheckPasswordAsync(user, authCredentials.Password))
         {
             return AuthResultDto.InvalidDataResponse();
         }

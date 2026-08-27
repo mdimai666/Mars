@@ -25,7 +25,7 @@ public partial class LoginForm
     [Parameter] public string AfterLoginUrl { get; set; } = "/dev";
     [Parameter] public string? ProviderPassedInUriPart { get; set; }
 
-    private AuthCreditionalsModel auth = new();
+    private AuthCredentialsModel auth = new();
 
     public bool ShowAuthError { get; set; }
     public string? Error;
@@ -205,13 +205,13 @@ public partial class LoginForm
         StateHasChanged();
     }
 
-    class AuthCreditionalsModel
+    class AuthCredentialsModel
     {
         [Required(ErrorMessage = "Заполните Логин/Почту")]
         public string Login { get; set; } = "";
         [Required(ErrorMessage = "Заполните Пароль")]
         public string Password { get; set; } = "";
 
-        public AuthCreditionalsRequest ToRequest() => new() { Login = Login, Password = Password };
+        public AuthCredentialsRequest ToRequest() => new() { Login = Login, Password = Password };
     }
 }

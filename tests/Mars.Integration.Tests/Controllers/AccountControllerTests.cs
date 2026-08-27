@@ -10,7 +10,7 @@ using static Mars.Test.Common.Constants.UserConstants;
 
 namespace Mars.Integration.Tests.Controllers;
 
-/// <seealso cref="AccountController.Login(AuthCreditionalsDto)"/>
+/// <seealso cref="AccountController.Login(AuthCredentialsDto)"/>
 public sealed class AccountControllerTests : ApplicationTests
 {
     const string _apiUrl = "/api/Account";
@@ -20,12 +20,12 @@ public sealed class AccountControllerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Account_LoginValidRequest_ShuldSuccess()
+    public async Task Account_LoginValidRequest_ShouldSuccess()
     {
         //Arrange
         _ = nameof(AccountController.Login);
         var client = AppFixture.GetClient(true);
-        var request = new AuthCreditionalsDto { Login = TestUserUsername, Password = TestUserPassword };
+        var request = new AuthCredentialsDto { Login = TestUserUsername, Password = TestUserPassword };
 
         //Act
         var result = await client.Request(_apiUrl).AppendPathSegment("Login").PostJsonAsync(request).CatchUserActionError().ReceiveJson<AuthResultDto>();
@@ -43,7 +43,7 @@ public sealed class AccountControllerTests : ApplicationTests
         //Arrange
         _ = nameof(AccountController.Login);
         var client = AppFixture.GetClient(true);
-        var request = new AuthCreditionalsDto { Login = TestUserUsername, Password = "invalid_password" };
+        var request = new AuthCredentialsDto { Login = TestUserUsername, Password = "invalid_password" };
 
         //Act
         var result = await client.Request(_apiUrl).AppendPathSegment("Login").AllowAnyHttpStatus().PostJsonAsync(request);

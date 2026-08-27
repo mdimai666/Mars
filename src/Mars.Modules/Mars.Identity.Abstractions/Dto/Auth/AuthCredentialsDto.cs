@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Mars.Identity.Abstractions.Dto.Auth;
 
-public class AuthCreditionalsDto
+public class AuthCredentialsDto
 {
 
     [Required(ErrorMessage = "Заполните Логин/Почту")]

@@ -23,7 +23,7 @@ public class AuthenticationService : IAuthenticationService
         _js = new MyJS(jsRuntime);
     }
 
-    public virtual async Task<AuthResultResponse> Login(AuthCreditionalsRequest userForAuthentication)
+    public virtual async Task<AuthResultResponse> Login(AuthCredentialsRequest userForAuthentication)
     {
         var result = await _client.Account.Login(userForAuthentication);
 

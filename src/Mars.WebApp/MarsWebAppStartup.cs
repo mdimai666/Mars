@@ -196,6 +196,8 @@ public static class MarsWebAppStartup
 
         app.MarsUseMetrics();
         app.UseMarsHost(builder.Services);
+        app.UseMarsIdentity();
+        app.UseMarsOptions();
         app.UseHostFiles();
         app.UseConfigureActions();
         app.MarsUseTemplator();

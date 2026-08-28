@@ -3,15 +3,14 @@ using System.Text.RegularExpressions;
 using Mars.CommandLine.Abstractions;
 using Mars.Core.Utils;
 using Mars.Identity.Abstractions.Repositories;
-using Mars.Core.Utils;
-using Mars.Identity.Abstractions.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace Mars.CommandLine;
+namespace Mars.Identity.Host.CommandLine;
 
 public class RoleCommandCli : CommandCli
 {
-    public RoleCommandCli(CommandLineApi cli) : base(cli)
+    public RoleCommandCli(ICommandLineApi cli) : base(cli)
     {
         var optionFilter = new Option<string>("--filter", "-f") { Description = "Reg ex filter result" };
 

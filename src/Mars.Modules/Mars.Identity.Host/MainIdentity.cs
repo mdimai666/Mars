@@ -1,10 +1,13 @@
+using Mars.CommandLine.Abstractions;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.CommandLine;
 using Mars.Identity.Host.Models;
 using Mars.Identity.Host.Services;
 using Mars.Server.Abstractions.Validators;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,5 +36,14 @@ public static class MainIdentity
         services.AddScoped<IUserClaimsPrincipalFactory<UserEntity>, AppClaimsPrincipalFactory>();
 
         return services;
+    }
+
+    public static IApplicationBuilder UseMarsIdentity(this WebApplication app)
+    {
+        var cli = app.Services.GetService<ICommandLineApi>();
+        cli?.Register<UserCommandCli>();
+        cli?.Register<RoleCommandCli>();
+
+        return app;
     }
 }

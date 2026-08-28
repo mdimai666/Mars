@@ -1,21 +1,19 @@
 using System.CommandLine;
 using Mars.CommandLine.Abstractions;
+using Mars.Contracts.Common;
 using Mars.Core.Utils;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
-using Mars.Core.Utils;
 using Mars.Identity.Abstractions.Repositories;
-using Mars.Core.Utils;
-using Mars.Identity.Abstractions.Repositories;
-using Mars.Contracts.Common;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.CommandLine;
+namespace Mars.Identity.Host.CommandLine;
 
 public class UserCommandCli : CommandCli
 {
-    public UserCommandCli(CommandLineApi cli) : base(cli)
+    public UserCommandCli(ICommandLineApi cli) : base(cli)
     {
         var argumentUsername = new Argument<string>("username");
         var optionUsername = new Option<string>("--username") { Required = true };

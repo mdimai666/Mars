@@ -4,19 +4,16 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Mars.CommandLine.Abstractions;
 using Mars.Core.Extensions;
-using Mars.Core.Utils;
-using Mars.Options.Repositories;
-using Mars.Options.Services;
-using Mars.Core.Utils;
 using Mars.Options.Repositories;
 using Mars.Options.Services;
 using Mars.Server.Contracts.Options;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.CommandLine;
+namespace Mars.Options.Host.CommandLine;
 
 public class OptionCommand : CommandCli
 {
-    public OptionCommand(CommandLineApi cli) : base(cli)
+    public OptionCommand(ICommandLineApi cli) : base(cli)
     {
         var optionFilter = new Option<string>("--filter", "-f") { Description = "Reg ex filter result" };
 

@@ -3,7 +3,7 @@ using Flurl.Http;
 using Mars.Nodes.Workspace;
 using Mars.Contracts.XActions;
 using Mars.Contracts.Options;
-using Mars.Contracts.ViewModels;
+using Mars.Identity.Contracts.ViewModels;
 using Mars.Server.Contracts.ViewModels;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using StandNodesApp.Client.Startups;

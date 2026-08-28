@@ -8,7 +8,7 @@ using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
 using Mars.Contracts.MetaFields;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

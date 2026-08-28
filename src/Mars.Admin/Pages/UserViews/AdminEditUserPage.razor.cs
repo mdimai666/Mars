@@ -12,7 +12,7 @@ using System.Linq;
 using AntDesign.Internal;
 using Mars.Admin.Framework;
 using AppShared.Models;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 
 namespace Mars.Admin.Pages.UserViews;
 

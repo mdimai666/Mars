@@ -1,5 +1,5 @@
-using Mars.Contracts.Roles;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.Users;
 
 namespace Mars.Identity.Contracts.ViewModels;
 

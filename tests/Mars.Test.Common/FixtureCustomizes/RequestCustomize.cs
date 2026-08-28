@@ -12,8 +12,8 @@ using Mars.Contracts.PostCategoryTypes;
 using Mars.Contracts.PostJsons;
 using Mars.Contracts.Posts;
 using Mars.Contracts.PostTypes;
-using Mars.Contracts.Roles;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.Users;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 
 namespace Mars.Test.Common.FixtureCustomizes;

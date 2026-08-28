@@ -28,7 +28,7 @@ using Mars.Options.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 
 namespace Mars.Identity.Host.Services;
 

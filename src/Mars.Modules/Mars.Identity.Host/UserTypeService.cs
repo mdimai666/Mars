@@ -20,7 +20,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Contracts.Common;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.UserTypes;
 
 namespace Mars.Identity.Host.Services;
 

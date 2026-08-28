@@ -4,9 +4,9 @@ using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Contracts.Roles;
-using Mars.Contracts.Users;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.UserTypes;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 

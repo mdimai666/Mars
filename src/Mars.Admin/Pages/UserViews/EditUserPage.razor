@@ -1,8 +1,8 @@
 @page "/EditUser/{ID:guid}"
 @* @page "/EditUser" *@
 
-@using Mars.Contracts.Roles
-@using Mars.Contracts.Users
+@using Mars.Identity.Contracts.Roles
+@using Mars.Identity.Contracts.Users
 @using Microsoft.FluentUI.AspNetCore.Components
 @attribute [Authorize(Roles = "Admin")]
 @attribute [Display(Name = "Редактирования профиля")]

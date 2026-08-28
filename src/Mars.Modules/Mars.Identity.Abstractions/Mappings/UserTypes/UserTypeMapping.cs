@@ -2,7 +2,7 @@ using Mars.Data.Extensions;
 using Mars.Identity.Abstractions.Dto.UserTypes;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Contracts.Common;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.UserTypes;
 
 namespace Mars.Identity.Abstractions.Mappings.UserTypes;
 

@@ -2,7 +2,7 @@ using AutoFixture;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 using FluentAssertions;

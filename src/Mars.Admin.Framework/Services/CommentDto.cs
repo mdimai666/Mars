@@ -1,5 +1,5 @@
 using Mars.Core.Extensions;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Mars.Contracts.Models.Interfaces;
 
 namespace Mars.Admin.Framework.Services;

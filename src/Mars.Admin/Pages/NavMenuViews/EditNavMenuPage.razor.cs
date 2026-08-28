@@ -1,7 +1,7 @@
 using System.Reflection.Metadata;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Contracts.Roles;
+using Mars.Identity.Contracts.Roles;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;

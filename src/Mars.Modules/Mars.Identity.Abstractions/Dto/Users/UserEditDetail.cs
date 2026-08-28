@@ -1,6 +1,6 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Identity.Abstractions.Dto.UserTypes;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace Mars.Identity.Abstractions.Dto.Users;

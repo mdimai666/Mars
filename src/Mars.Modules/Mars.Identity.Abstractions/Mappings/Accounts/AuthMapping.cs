@@ -1,5 +1,5 @@
 using Mars.Identity.Abstractions.Dto.Auth;
-using Mars.Contracts.Auth;
+using Mars.Identity.Contracts.Auth;
 
 namespace Mars.Identity.Abstractions.Mappings.Accounts;
 

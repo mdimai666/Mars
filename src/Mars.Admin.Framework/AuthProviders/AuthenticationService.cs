@@ -1,8 +1,8 @@
 using System.Net.Http.Headers;
 using Mars.Admin.Framework.Tools;
 using Blazored.LocalStorage;
-using Mars.Contracts.Auth;
-using Mars.Contracts.SSO;
+using Mars.Identity.Contracts.Auth;
+using Mars.SSO.Contracts.Dto;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.JSInterop;
 

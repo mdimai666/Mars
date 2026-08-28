@@ -1,6 +1,6 @@
 using Flurl.Http;
 using Mars.Contracts.Common;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;

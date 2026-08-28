@@ -6,7 +6,7 @@ using Mars.Data.Contexts;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Contracts.MetaFields;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Test.Common.FixtureCustomizes;

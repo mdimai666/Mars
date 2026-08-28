@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Mars.Identity.Abstractions.Services;
 using Mars.SSO.Contracts.Dto;
-using Mars.SSO.Contracts.Interfaces;
-using Mars.SSO.Contracts.Services;
+using Mars.SSO.Abstractions.Interfaces;
+using Mars.SSO.Abstractions.Services;
 using Mars.SSO.Host.Providers;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -90,7 +90,7 @@ internal class SsoService : ISsoService
             Email = userData.Email,
             Provider = providerName,
             AccessToken = authResult.OAuthResponse.IdToken ?? authResult.AccessToken,
-            UserPrimaryInfo = new Mars.Contracts.ViewModels.UserPrimaryInfo
+            UserPrimaryInfo = new Mars.Identity.Contracts.ViewModels.UserPrimaryInfo
             {
                 Id = internalUser.Id,
                 Username = internalUser.UserName,

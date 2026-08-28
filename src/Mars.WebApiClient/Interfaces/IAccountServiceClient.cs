@@ -1,4 +1,4 @@
-using Mars.Contracts.Auth;
+using Mars.Identity.Contracts.Auth;
 
 namespace Mars.WebApiClient.Interfaces;
 

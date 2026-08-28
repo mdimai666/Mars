@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.SSO.Contracts.Dto;
-using Mars.SSO.Contracts.Interfaces;
+using Mars.SSO.Abstractions.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.SSO.Host.Providers;

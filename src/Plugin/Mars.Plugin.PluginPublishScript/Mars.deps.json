@@ -37,6 +37,7 @@
           "Mars.Scheduler.Host": "1.0.0",
           "Mars.SemanticKernel.CMS": "1.0.0",
           "Mars.SemanticKernel.Host": "1.0.0",
+          "Mars.Server.Contracts": "1.0.0",
           "Mars.SiteEngine": "1.0.0",
           "Mars.SiteEngine.Handlebars": "1.0.0",
           "Mars.TemplateEngine.Host": "1.0.0",
@@ -2612,10 +2613,22 @@
           }
         }
       },
+      "Mars.Identity.Contracts/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.Identity.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.Identity.Host/1.0.0": {
         "dependencies": {
           "Mars.Cms.Abstractions": "1.0.0",
           "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Identity.Contracts": "1.0.0",
           "Mars.Notifications.Abstractions": "1.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
           "mdimai666.Mars.Data": "0.8.0-alpha.1",
@@ -2900,6 +2913,17 @@
           }
         }
       },
+      "Mars.Server.Contracts/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.Server.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.SiteEngine/1.0.0": {
         "dependencies": {
           "Flurl.Http": "4.0.2",
@@ -3105,6 +3129,8 @@
           "Blazored.TextEditor": "1.1.3",
           "Flurl.Http": "4.0.2",
           "Markdig": "1.2.0",
+          "Mars.Identity.Contracts": "1.0.0",
+          "Mars.Server.Contracts": "1.0.0",
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.9",
           "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.9",
           "Microsoft.FluentUI.AspNetCore.Components": "4.14.2",
@@ -3357,6 +3383,7 @@
           "AngleSharp": "1.5.0",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "Mars.Data.Repositories": "1.0.0",
+          "Mars.Server.Contracts": "1.0.0",
           "Microsoft.FeatureManagement.AspNetCore": "4.5.0",
           "Swashbuckle.AspNetCore": "10.2.1",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
@@ -3390,6 +3417,7 @@
         "dependencies": {
           "Flurl.Http": "4.0.2",
           "Mars.AiChat.Contracts": "1.0.0",
+          "Mars.Identity.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -5033,6 +5061,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Mars.Identity.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mars.Identity.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -5129,6 +5162,11 @@
       "sha512": ""
     },
     "Mars.SemanticKernel.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Server.Contracts/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

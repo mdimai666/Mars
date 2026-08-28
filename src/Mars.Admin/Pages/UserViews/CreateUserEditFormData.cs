@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Contracts.Roles;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.UserTypes;
 
 namespace Mars.Admin.Pages.UserViews;
 

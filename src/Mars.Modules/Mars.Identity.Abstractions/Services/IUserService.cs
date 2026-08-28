@@ -2,7 +2,7 @@ using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
 using Mars.Contracts.Common;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 
 namespace Mars.Identity.Abstractions.Services;
 

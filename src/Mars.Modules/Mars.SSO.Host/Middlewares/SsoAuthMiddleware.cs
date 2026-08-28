@@ -2,8 +2,8 @@ using System.Diagnostics;
 using System.Security.Claims;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Services;
-using Mars.SSO.Contracts.Interfaces;
-using Mars.SSO.Contracts.Services;
+using Mars.SSO.Abstractions.Interfaces;
+using Mars.SSO.Abstractions.Services;
 using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Http;
 

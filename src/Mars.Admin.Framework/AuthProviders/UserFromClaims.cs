@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Mars.Admin.Framework.Extensions;
-using Mars.Contracts.SSO;
-using Mars.Contracts.ViewModels;
+using Mars.SSO.Contracts.Dto;
+using Mars.Identity.Contracts.ViewModels;
 
 namespace Mars.Admin.Framework.AuthProviders;
 

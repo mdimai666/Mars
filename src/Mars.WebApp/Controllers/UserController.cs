@@ -10,7 +10,7 @@ using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Identity.Abstractions.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

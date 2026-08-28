@@ -1,7 +1,7 @@
 using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Identity.Abstractions.Dto.Users;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 
 namespace Mars.Test.Common.Constants;
 

@@ -1,7 +1,7 @@
 using Mars.Data.Extensions;
 using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Contracts.Common;
-using Mars.Contracts.Roles;
+using Mars.Identity.Contracts.Roles;
 
 namespace Mars.Identity.Abstractions.Mappings.Roles;
 

@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.Roles;
+using Mars.Identity.Contracts.Roles;
 using Mars.Identity.Contracts.ViewModels;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;

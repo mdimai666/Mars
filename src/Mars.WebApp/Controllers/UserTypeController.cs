@@ -10,7 +10,7 @@ using Mars.Cms.Abstractions.Mappings.Search;
 using Mars.Identity.Abstractions.Mappings.UserTypes;
 using Mars.Identity.Abstractions.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.UserTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -108,9 +108,9 @@ internal static class UserMapping
             MetaValues = entity.MetaValues!.ToDictionaryDetailDto(),
         };
 
-    public static Mars.Contracts.Users.UserGender ToMap(this Mars.Data.OwnedTypes.Users.UserGender gender)
-        => (Mars.Contracts.Users.UserGender)gender;
-    public static Mars.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Contracts.Users.UserGender gender)
+    public static Mars.Identity.Contracts.Users.UserGender ToMap(this Mars.Data.OwnedTypes.Users.UserGender gender)
+        => (Mars.Identity.Contracts.Users.UserGender)gender;
+    public static Mars.Data.OwnedTypes.Users.UserGender ToMap(this Mars.Identity.Contracts.Users.UserGender gender)
         => (Mars.Data.OwnedTypes.Users.UserGender)gender;
 
     public static UserEntity ToEntity(this CreateUserQuery query, Guid userTypeId, ILookupNormalizer lookupNormalizer)
@@ -156,12 +156,12 @@ internal static class UserMapping
         return entity;
     }
 
-    public static UserGender ParseGender(Mars.Contracts.Users.UserGender gender)
+    public static UserGender ParseGender(Mars.Identity.Contracts.Users.UserGender gender)
         => gender switch
         {
-            Mars.Contracts.Users.UserGender.None => UserGender.None,
-            Mars.Contracts.Users.UserGender.Male => UserGender.Male,
-            Mars.Contracts.Users.UserGender.Female => UserGender.Female,
+            Mars.Identity.Contracts.Users.UserGender.None => UserGender.None,
+            Mars.Identity.Contracts.Users.UserGender.Male => UserGender.Male,
+            Mars.Identity.Contracts.Users.UserGender.Female => UserGender.Female,
             _ => throw new NotImplementedException(),
         };
 

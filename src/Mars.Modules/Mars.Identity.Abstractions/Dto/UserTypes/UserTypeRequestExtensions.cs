@@ -1,6 +1,6 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.UserTypes;
 
 namespace Mars.Identity.Abstractions.Dto.UserTypes;
 

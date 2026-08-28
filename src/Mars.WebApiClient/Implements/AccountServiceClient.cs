@@ -2,7 +2,7 @@ using System.Net;
 using Flurl.Http;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Contracts.Auth;
+using Mars.Identity.Contracts.Auth;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;

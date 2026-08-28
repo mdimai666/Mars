@@ -2,6 +2,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

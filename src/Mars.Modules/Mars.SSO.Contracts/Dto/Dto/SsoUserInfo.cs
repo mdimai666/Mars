@@ -1,4 +1,4 @@
-using Mars.Contracts.ViewModels;
+using Mars.Identity.Contracts.ViewModels;
 
 namespace Mars.SSO.Contracts.Dto;
 

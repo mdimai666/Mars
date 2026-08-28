@@ -1,8 +1,8 @@
 using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Features;
-using Mars.SSO.Contracts.Services;
-using Mars.Contracts.SSO;
+using Mars.SSO.Abstractions.Services;
+using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Host.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;

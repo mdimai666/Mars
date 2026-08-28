@@ -1,5 +1,5 @@
-using Mars.Contracts.Auth;
-using Mars.Contracts.SSO;
+using Mars.Identity.Contracts.Auth;
+using Mars.SSO.Contracts.Dto;
 
 namespace Mars.Admin.Framework.AuthProviders;
 

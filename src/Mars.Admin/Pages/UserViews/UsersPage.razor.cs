@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using Mars.Admin.Pages.FeedbackViews;
 using Mars.Admin.Framework.Extensions;
-using Mars.Contracts.Roles;
-using Mars.Contracts.Users;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.Users;
+using Mars.Identity.Contracts.UserTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

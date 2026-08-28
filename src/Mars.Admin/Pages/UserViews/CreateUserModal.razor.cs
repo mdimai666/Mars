@@ -1,6 +1,6 @@
 using Mars.Core.Utils;
-using Mars.Contracts.Roles;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.UserTypes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;

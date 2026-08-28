@@ -1,5 +1,5 @@
 using Mars.SSO.Contracts.Dto;
-using Mars.SSO.Contracts.Interfaces;
+using Mars.SSO.Abstractions.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SSO.Host.Providers;

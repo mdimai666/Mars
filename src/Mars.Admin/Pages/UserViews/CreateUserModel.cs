@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
-using Mars.Contracts.Users;
+using Mars.Identity.Contracts.Users;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 

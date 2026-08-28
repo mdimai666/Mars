@@ -1,6 +1,6 @@
 using Mars.Identity.Abstractions.Dto.UserTypes;
 using Mars.Contracts.Common;
-using Mars.Contracts.UserTypes;
+using Mars.Identity.Contracts.UserTypes;
 
 namespace Mars.Identity.Abstractions.Services;
 

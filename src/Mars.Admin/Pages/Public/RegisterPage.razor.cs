@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Mars.Admin.Framework.AuthProviders;
 using Mars.Core.Extensions;
-using Mars.Contracts.Auth;
+using Mars.Identity.Contracts.Auth;
 using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;

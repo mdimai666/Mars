@@ -2,7 +2,7 @@ using Mars.Contracts.NavMenus;
 using Mars.Contracts.Options;
 using Mars.Contracts.PostTypes;
 using Mars.Contracts.XActions;
-using Mars.Contracts.ViewModels;
+using Mars.Identity.Contracts.ViewModels;
 
 namespace Mars.Server.Contracts.ViewModels;
 

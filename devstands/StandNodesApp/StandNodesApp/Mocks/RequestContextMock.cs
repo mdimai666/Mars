@@ -34,7 +34,7 @@ internal class RequestContextMock : IRequestContext
             FirstName = "Admin",
             LastName = "A",
             MiddleName = null,
-            Gender = Mars.Contracts.Users.UserGender.Male,
+            Gender = Mars.Identity.Contracts.Users.UserGender.Male,
             BirthDate = null,
             PhoneNumber = null,
             AvatarUrl = null,

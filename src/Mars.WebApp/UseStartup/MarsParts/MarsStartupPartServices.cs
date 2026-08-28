@@ -37,7 +37,6 @@ internal static class MarsStartupPartServices
 
         // basic services
         services.AddSingleton<IMarsSystemService, MarsSystemService>()
-                .AddSingleton<IImageProcessor, ImageProcessor>()
                 .AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
                 .AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 

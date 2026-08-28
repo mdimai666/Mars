@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Media.Host.Controllers;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Services;
 using Mars.Contracts.Dto.Files;

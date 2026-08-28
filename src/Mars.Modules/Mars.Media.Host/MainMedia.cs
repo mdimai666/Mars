@@ -21,6 +21,7 @@ public static class MainMedia
         services.AddScoped<IMediaFolderService, MediaFolderService>();
         services.AddScoped<IMediaService, MediaService>();
         services.AddScoped<IGalleryService, GalleryService>();
+        services.AddSingleton<IImageProcessor, ImageProcessor>();
         services.AddKeyedScoped<IMetaRelationModelProviderHandler, FileRelationModelProviderHandler>("File");
         return services;
     }

@@ -5,7 +5,18 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="PhotoSauce.MagicScaler" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Giflib" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjpeg" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libpng" />
+        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
         <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />

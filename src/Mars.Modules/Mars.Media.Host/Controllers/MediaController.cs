@@ -6,29 +6,14 @@ using Mars.Identity.Abstractions.Interfaces;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Services;
-using Mars.Server.Abstractions.Validators;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Services;
-using Mars.Server.Abstractions.Validators;
 using Mars.Media.Abstractions.Mappings.Files;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Services;
-using Mars.Server.Abstractions.Validators;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Services;
-using Mars.Server.Abstractions.Validators;
 using Mars.Contracts.Common;
 using Mars.Media.Contracts.Files;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Media.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

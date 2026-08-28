@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Media.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Medias;
 
-/// <seealso cref="Mars.Controllers.MediaController"/>
+/// <seealso cref="Mars.Media.Host.Controllers.MediaController"/>
 public sealed class ListFileTests : ApplicationTests
 {
     const string _apiUrl = "/api/Media";

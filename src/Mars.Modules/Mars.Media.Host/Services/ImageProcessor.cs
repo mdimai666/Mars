@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts;
 using PhotoSauce.MagicScaler;
@@ -16,7 +10,7 @@ using PhotoSauce.NativeCodecs.Libpng;
 using PhotoSauce.NativeCodecs.Libwebp;
 using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
-namespace Mars.Services;
+namespace Mars.Media.Host.Services;
 
 /// <summary>
 /// Singletone.

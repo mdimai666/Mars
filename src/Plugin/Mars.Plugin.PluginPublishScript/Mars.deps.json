@@ -2661,9 +2661,12 @@
           "Mars.Cms.Abstractions": "1.0.0",
           "Mars.Identity.Abstractions": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
+          "Mars.Media.Contracts": "1.0.0",
           "Mars.Notifications.Abstractions": "1.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
           "mdimai666.Mars.Data": "0.8.0-alpha.1",
+          "mdimai666.Mars.Options": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {

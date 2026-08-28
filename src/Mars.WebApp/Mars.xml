@@ -21,11 +21,6 @@
             <param name="lineCount">The number of lines to return.</param>
             <returns>The last lneCount lines from the reader.</returns>
         </member>
-        <member name="T:Mars.Services.ImageProcessor">
-            <summary>
-            Singletone.
-            </summary>
-        </member>
         <member name="T:Mars.Services.LogCleanupJob">
             <summary>
             Удаляет дневные файлы логов app_*.log старше периода хранения

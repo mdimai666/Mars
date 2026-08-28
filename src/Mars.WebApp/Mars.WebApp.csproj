@@ -78,13 +78,6 @@
         <PackageReference Include="OpenTelemetry.Resources.Container" />
         <PackageReference Include="OpenTelemetry.Resources.Host" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
-        <PackageReference Include="PhotoSauce.MagicScaler" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Giflib" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libheif" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libjpeg" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libjxl" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libpng" />
-        <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" />
         <PackageReference Include="ResXResourceReader.NetStandard" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.CodeAnalysis.Common" />

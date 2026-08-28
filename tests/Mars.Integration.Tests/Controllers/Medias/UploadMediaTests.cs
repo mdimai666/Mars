@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Media.Host.Controllers;
 using Mars.Contracts.Dto.Files;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Options.Services;
@@ -22,7 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Medias;
 
-/// <seealso cref="Mars.Controllers.MediaController"/>
+/// <seealso cref="Mars.Media.Host.Controllers.MediaController"/>
 public sealed class UploadMediaTests : ApplicationTests
 {
     private const string _apiUrl = "/api/Media/Upload";

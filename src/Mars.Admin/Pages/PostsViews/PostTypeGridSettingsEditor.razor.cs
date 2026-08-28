@@ -1,5 +1,5 @@
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 

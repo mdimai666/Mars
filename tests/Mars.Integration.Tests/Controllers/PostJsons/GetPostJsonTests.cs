@@ -6,8 +6,8 @@ using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostJsons;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.PostJsons;
+using Mars.Cms.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 

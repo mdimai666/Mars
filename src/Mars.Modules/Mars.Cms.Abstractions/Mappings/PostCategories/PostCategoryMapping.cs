@@ -2,7 +2,7 @@ using Mars.Data.Extensions;
 using Mars.Cms.Abstractions.Dto.PostCategories;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostCategories;
 
 namespace Mars.Cms.Abstractions.Mappings.PostCategories;
 

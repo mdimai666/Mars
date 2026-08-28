@@ -2,7 +2,7 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using NSubstitute;
 
 namespace Test.Mars.Server.Dto;

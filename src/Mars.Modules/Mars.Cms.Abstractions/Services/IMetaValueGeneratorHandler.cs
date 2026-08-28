@@ -19,7 +19,7 @@ public record MetaValueGeneratorContext(
 
 /// <summary>
 /// Генератор значения мета-поля. Реализации регистрируются как keyed-сервисы
-/// с ключом из <c>Mars.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>
+/// с ключом из <c>Mars.Cms.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>
 /// (паттерн целей Relation — <c>IMetaRelationModelProviderHandler</c>).
 /// </summary>
 public interface IMetaValueGeneratorHandler

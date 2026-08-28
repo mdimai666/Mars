@@ -1,4 +1,4 @@
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Framework.Handlers.PostType;

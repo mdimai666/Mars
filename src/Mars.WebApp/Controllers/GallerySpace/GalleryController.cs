@@ -14,7 +14,7 @@ using Mars.Media.Abstractions.Services;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Media.Abstractions.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

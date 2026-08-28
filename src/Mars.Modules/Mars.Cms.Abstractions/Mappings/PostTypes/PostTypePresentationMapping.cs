@@ -1,5 +1,5 @@
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Cms.Abstractions.Mappings.PostTypes;
 

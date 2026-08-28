@@ -3,7 +3,7 @@ using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
 

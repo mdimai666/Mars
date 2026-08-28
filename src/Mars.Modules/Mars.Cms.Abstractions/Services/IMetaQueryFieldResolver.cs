@@ -3,7 +3,7 @@ using Mars.Cms.Abstractions.Dto.PostTypes;
 namespace Mars.Cms.Abstractions.Services;
 
 /// <summary>
-/// Батч-резолв вычислимых полей <see cref="Mars.Contracts.MetaFields.MetaFieldType.Query"/>
+/// Батч-резолв вычислимых полей <see cref="Mars.Cms.Contracts.MetaFields.MetaFieldType.Query"/>
 /// </summary>
 public interface IMetaQueryFieldResolver
 {

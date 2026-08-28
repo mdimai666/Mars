@@ -1,7 +1,7 @@
 using FluentValidation;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Abstractions.Utils;
 
 namespace Mars.Cms.Abstractions.Dto.MetaFields;

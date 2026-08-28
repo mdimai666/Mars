@@ -3,7 +3,7 @@ using Mars.Cms.Abstractions.Utils;
 using Mars.Cms.Host.Services;
 using Mars.Cms.Abstractions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Test.Mars.Server.Services;
 

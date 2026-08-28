@@ -5,7 +5,7 @@ using Mars.Core.Utils;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Identity.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
 

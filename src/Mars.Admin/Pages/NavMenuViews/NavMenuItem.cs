@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 
 namespace Mars.Admin.Pages.NavMenuViews;
 

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using Mars.Core.Extensions;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Contracts.XActions;
 using Microsoft.AspNetCore.Components.Routing;
 

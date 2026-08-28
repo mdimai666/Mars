@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using Mars.Admin.Pages.FeedbackViews;
 using Mars.Admin.Framework.Extensions;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

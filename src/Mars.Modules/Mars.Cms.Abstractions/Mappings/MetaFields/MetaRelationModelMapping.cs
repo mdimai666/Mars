@@ -1,7 +1,7 @@
 using Mars.Data.Extensions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Cms.Abstractions.Mappings.MetaFields;
 

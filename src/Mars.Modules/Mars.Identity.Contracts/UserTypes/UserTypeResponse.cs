@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Resources;
 
 namespace Mars.Identity.Contracts.UserTypes;

@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using Mars.Admin.Framework.Extensions;
-using Mars.Contracts.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

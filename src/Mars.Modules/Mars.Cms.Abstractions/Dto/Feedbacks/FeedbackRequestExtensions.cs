@@ -1,5 +1,5 @@
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
 
 namespace Mars.Cms.Abstractions.Dto.Feedbacks;
 

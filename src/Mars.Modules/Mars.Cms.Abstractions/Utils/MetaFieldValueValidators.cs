@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Cms.Abstractions.Utils;
 

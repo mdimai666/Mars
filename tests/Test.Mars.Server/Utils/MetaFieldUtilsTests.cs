@@ -5,7 +5,7 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Test.Mars.Server.Utils;

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Identity.Contracts.UserTypes;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;

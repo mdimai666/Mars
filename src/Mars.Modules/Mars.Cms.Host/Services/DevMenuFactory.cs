@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Mars.Cms.Abstractions.Dto.NavMenus;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Resources;
 
 namespace Mars.Cms.Host.Services;

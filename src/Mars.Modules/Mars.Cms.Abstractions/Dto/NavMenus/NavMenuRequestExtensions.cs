@@ -1,5 +1,5 @@
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 
 namespace Mars.Cms.Abstractions.Dto.NavMenus;
 

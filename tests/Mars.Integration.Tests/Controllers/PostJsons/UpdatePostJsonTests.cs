@@ -13,7 +13,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.PostJsons;
+using Mars.Cms.Contracts.PostJsons;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

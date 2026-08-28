@@ -1,7 +1,7 @@
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Contracts.Common;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
 
 namespace Mars.Cms.Abstractions.Services;
 

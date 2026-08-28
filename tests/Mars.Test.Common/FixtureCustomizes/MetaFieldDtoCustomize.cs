@@ -1,6 +1,6 @@
 using AutoFixture;
 using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Test.Common.FixtureCustomizes;
 

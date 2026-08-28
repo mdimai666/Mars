@@ -1,4 +1,4 @@
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Admin.Pages.PostTypeViews;
 

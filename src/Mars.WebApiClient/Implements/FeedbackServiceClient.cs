@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

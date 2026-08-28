@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Mars.Data.Entities;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Data.Repositories;

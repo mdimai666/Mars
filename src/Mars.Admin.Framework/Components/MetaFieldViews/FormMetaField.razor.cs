@@ -1,7 +1,7 @@
 using Mars.Admin.Framework.Components.MediaViews;
 using Mars.Admin.Framework.Extensions;
 using Mars.Core.Features;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

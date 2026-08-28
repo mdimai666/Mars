@@ -1,6 +1,6 @@
 using System;
 using Mars.Cms.Abstractions.Dto.NavMenus;
-using Mars.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 using Mars.Contracts.XActions;
 
 namespace Mars.Cms.Abstractions.Dto.Search;

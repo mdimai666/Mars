@@ -1,0 +1,98 @@
+using System.ComponentModel.DataAnnotations;
+using Mars.Contracts.Common;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
+
+namespace Mars.Cms.Contracts.Posts;
+
+public record CreatePostRequest
+{
+    public required Guid? Id { get; init; }
+
+    [Required]
+    public required string Title { get; init; }
+
+    [StringLength(PostTypeConstants.TypeNameMaxLength, MinimumLength = PostTypeConstants.TypeNameMinLength)]
+    [Required]
+    public required string Type { get; init; }
+
+    [Required]
+    public required string Slug { get; init; }
+    public required IReadOnlyCollection<string> Tags { get; init; }
+
+    public required string? Content { get; init; }
+    public required string? Status { get; init; }
+    public required string? Excerpt { get; init; }
+    public required string LangCode { get; init; }
+
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
+
+    public required IReadOnlyCollection<CreateMetaValueRequest> MetaValues { get; init; }
+
+}
+
+public record UpdatePostRequest
+{
+    public required Guid Id { get; init; }
+
+    [Required]
+    public required string Title { get; init; }
+
+    [StringLength(PostTypeConstants.TypeNameMaxLength, MinimumLength = PostTypeConstants.TypeNameMinLength)]
+    [Required]
+    public required string Type { get; init; }
+
+    [Required]
+    public required string Slug { get; init; }
+    public required IReadOnlyCollection<string> Tags { get; init; }
+
+    public required string? Content { get; init; }
+    public required string? Status { get; init; }
+
+    public required string? Excerpt { get; init; }
+    public required string LangCode { get; init; }
+
+    public required IReadOnlyCollection<Guid> CategoryIds { get; init; }
+
+    public required IReadOnlyCollection<UpdateMetaValueRequest> MetaValues { get; init; }
+
+}
+
+public record ListPostQueryRequest : BasicListQueryRequest
+{
+    public bool IncludeCategory { get; init; }
+    public Guid? CategoryId { get; init; }
+    /// <summary>
+    /// включить дочерние категории (потомков)
+    /// </summary>
+    public bool FilterIncludeDescendantsCategories { get; init; }
+
+    /// <summary>Вернуть только посты с этими Id (таблицы выбранных элементов, секции детей)</summary>
+    public Guid[]? Ids { get; init; }
+
+    /// <summary>
+    /// Ключи мета-полей, значения которых приложить к элементам списка (колонки грида)
+    /// </summary>
+    public string[]? MetaFields { get; init; }
+
+    /// <summary>Фильтры колонок грида</summary>
+    public PostGridFilter[]? Filters { get; init; }
+}
+
+public record TablePostQueryRequest : BasicTableQueryRequest
+{
+    public bool IncludeCategory { get; init; }
+    public Guid? CategoryId { get; init; }
+    /// <summary>
+    /// включить дочерние категории (потомков)
+    /// </summary>
+    public bool FilterIncludeDescendantsCategories { get; init; }
+
+    /// <summary>
+    /// Ключи мета-полей, значения которых приложить к элементам списка (колонки грида)
+    /// </summary>
+    public string[]? MetaFields { get; init; }
+
+    /// <summary>Фильтры колонок грида</summary>
+    public PostGridFilter[]? Filters { get; init; }
+}

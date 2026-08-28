@@ -55,9 +55,9 @@ using Mars.Server.Abstractions.Validators;
 using Mars.Cms.Abstractions.Utils;
 using Mars.Contracts.Common;
 using Mars.Cms.Abstractions.Utils;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Abstractions.Utils;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Cms.Host.Services;
 

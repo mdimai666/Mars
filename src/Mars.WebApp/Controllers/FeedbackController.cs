@@ -12,7 +12,7 @@ using Mars.Cms.Abstractions.Mappings.Feedbacks;
 using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Contracts.Common;
-using Mars.Contracts.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Mars.Core.Features.JsonConverter;
-using Mars.Contracts.PostJsons;
+using Mars.Cms.Contracts.PostJsons;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;

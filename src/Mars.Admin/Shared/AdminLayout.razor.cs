@@ -2,7 +2,7 @@ using Mars.Admin.Shared.ActionCenter;
 using Mars.Admin.Framework.AuthProviders;
 using Mars.Admin.Framework.Features;
 using Mars.Admin.Framework.Models;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Server.Contracts.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;

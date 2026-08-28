@@ -39,6 +39,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
     </ItemGroup>
 

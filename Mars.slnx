@@ -80,6 +80,7 @@
   </Folder>
   <Folder Name="/Mars.Modules/Cms/">
     <Project Path="src/Mars.Modules/Mars.Cms.Abstractions/Mars.Cms.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Cms.Contracts/Mars.Cms.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Cms.Host/Mars.Cms.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/Identity/">

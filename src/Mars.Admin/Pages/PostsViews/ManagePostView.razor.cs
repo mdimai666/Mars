@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Hub;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.Posts;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Admin.Framework.Services;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;

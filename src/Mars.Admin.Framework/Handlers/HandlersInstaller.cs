@@ -1,5 +1,5 @@
 using Mars.Admin.Framework.Handlers.PostType;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Admin.Framework.Handlers;
 

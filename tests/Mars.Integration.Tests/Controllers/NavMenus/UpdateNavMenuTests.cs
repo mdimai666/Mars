@@ -7,7 +7,7 @@ using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 

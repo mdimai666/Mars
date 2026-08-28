@@ -30,9 +30,9 @@ using Mars.Cms.Host.Services;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Server.Abstractions.Validators;
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.Posts;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Cms.Host.Services;
 

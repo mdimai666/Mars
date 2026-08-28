@@ -13,7 +13,7 @@ using Mars.AiChat.Front;
 using Mars.Options.Front;
 using Mars.Plugin.Front;
 using Mars.SemanticKernel.Front;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.WebApp.Nodes.Front;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components.Web;

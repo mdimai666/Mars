@@ -1,7 +1,7 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostCategories;
 
 namespace Mars.Cms.Abstractions.Dto.PostCategories;
 

@@ -1,6 +1,6 @@
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Contracts.Options;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.XActions;
 using Mars.Contracts.Options;
 using Mars.Identity.Contracts.ViewModels;

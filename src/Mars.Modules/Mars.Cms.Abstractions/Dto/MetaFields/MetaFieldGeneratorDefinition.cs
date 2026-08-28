@@ -4,7 +4,7 @@ namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
 /// Настройка генератора значения мета-поля; хранится в <c>Options.generator</c> (один генератор на поле).
-/// Тип — дискриминатор из каталога <c>Mars.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>.
+/// Тип — дискриминатор из каталога <c>Mars.Cms.Contracts.MetaFields.MetaFieldGeneratorCatalog</c>.
 /// </summary>
 public record MetaFieldGeneratorDefinition
 {

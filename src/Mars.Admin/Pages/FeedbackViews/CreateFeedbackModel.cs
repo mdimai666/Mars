@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Contracts.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
 
 namespace Mars.Admin.Pages.FeedbackViews;
 

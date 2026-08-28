@@ -2,8 +2,8 @@ using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Test.Mars.Server.Dto;
 

@@ -1,4 +1,4 @@
-using Mars.Contracts.PostJsons;
+using Mars.Cms.Contracts.PostJsons;
 
 namespace Mars.Cms.Abstractions.Dto.PostJsons;
 

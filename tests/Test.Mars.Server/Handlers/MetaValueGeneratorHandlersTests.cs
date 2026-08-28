@@ -12,8 +12,8 @@ using Mars.Cms.Host.Handlers;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Handlers;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using NSubstitute;
 
 namespace Test.Mars.Server.Handlers;

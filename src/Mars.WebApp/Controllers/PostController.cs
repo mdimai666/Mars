@@ -25,7 +25,7 @@ using Mars.Media.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Contracts.Common;
 using Mars.Contracts.Files;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

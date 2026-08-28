@@ -5,7 +5,7 @@ using Mars.Controllers;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Contracts.PostCategoryTypes;
+using Mars.Cms.Contracts.PostCategoryTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 

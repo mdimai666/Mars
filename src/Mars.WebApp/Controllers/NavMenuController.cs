@@ -7,7 +7,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

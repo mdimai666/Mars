@@ -8,7 +8,7 @@ using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 

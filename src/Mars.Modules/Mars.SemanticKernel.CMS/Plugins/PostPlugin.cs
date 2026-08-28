@@ -5,8 +5,8 @@ using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Services;
 using Mars.SemanticKernel.CMS.Posts;
 using Mars.Contracts.Common;
-using Mars.Contracts.Posts;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
 using Microsoft.SemanticKernel;
 
 namespace Mars.SemanticKernel.CMS.Plugins;

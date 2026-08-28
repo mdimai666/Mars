@@ -6,7 +6,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Services;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;

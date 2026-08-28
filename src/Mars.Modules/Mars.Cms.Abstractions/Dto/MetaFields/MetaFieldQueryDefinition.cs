@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
 /// <summary>
-/// Определение вычислимого поля <see cref="Mars.Contracts.MetaFields.MetaFieldType.Query"/>,
+/// Определение вычислимого поля <see cref="Mars.Cms.Contracts.MetaFields.MetaFieldType.Query"/>,
 /// хранится в <see cref="MetaFieldDto.Options"/>
 /// </summary>
 public record MetaFieldQueryDefinition

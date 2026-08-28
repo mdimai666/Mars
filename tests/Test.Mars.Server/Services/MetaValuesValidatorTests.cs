@@ -5,7 +5,7 @@ using Mars.Cms.Host.Services;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Services;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 

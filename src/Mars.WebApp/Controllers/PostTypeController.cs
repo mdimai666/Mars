@@ -11,8 +11,8 @@ using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Mappings.Search;
 using Mars.Cms.Abstractions.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

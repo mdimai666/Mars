@@ -1,5 +1,5 @@
 using Mars.Cms.Abstractions.Dto.Search;
-using Mars.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 
 namespace Mars.Cms.Abstractions.Mappings.Search;
 

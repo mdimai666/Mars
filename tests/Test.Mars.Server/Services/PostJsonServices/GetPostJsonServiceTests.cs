@@ -13,7 +13,7 @@ using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Cms.Abstractions.Mappings.PostJsons;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using NSubstitute;

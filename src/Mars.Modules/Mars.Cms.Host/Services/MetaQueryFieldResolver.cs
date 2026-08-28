@@ -2,7 +2,7 @@ using Mars.Data.Contexts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Services;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Cms.Host.Services;

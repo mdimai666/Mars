@@ -1,6 +1,6 @@
 using Mars.Cms.Abstractions.Dto.PostCategories;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostCategories;
 
 namespace Mars.Cms.Abstractions.Services;
 

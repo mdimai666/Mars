@@ -11,7 +11,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Identity.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;

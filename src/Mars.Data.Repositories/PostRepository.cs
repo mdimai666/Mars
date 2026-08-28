@@ -8,8 +8,8 @@ using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Contracts.Common;
-using Mars.Contracts.Posts;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Data.Repositories;

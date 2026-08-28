@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Exceptions;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;

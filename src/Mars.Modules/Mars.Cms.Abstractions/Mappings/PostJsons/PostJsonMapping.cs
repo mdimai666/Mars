@@ -8,8 +8,8 @@ using Mars.Cms.Abstractions.Mappings.PostCategories;
 using Mars.Cms.Abstractions.Mappings.PostJsons;
 using Mars.Cms.Abstractions.Mappings.Posts;
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostJsons;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostJsons;
 
 namespace Mars.Cms.Abstractions.Mappings.PostJsons;
 

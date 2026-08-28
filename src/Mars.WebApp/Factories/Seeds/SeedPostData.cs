@@ -3,10 +3,10 @@ using Mars.Core.Extensions;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.NavMenus;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
-using Feature = Mars.Contracts.PostTypes.PostTypeConstants.Features;
+using Feature = Mars.Cms.Contracts.PostTypes.PostTypeConstants.Features;
 
 namespace Mars.Factories.Seeds;
 

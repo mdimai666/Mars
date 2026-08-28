@@ -1,4 +1,4 @@
-using Mars.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 using Mars.Contracts.XActions;
 
 namespace Mars.Admin.Shared.ActionCenter;

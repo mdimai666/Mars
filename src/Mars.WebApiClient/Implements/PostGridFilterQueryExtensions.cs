@@ -1,5 +1,5 @@
 using Flurl.Http;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
 
 namespace Mars.WebApiClient.Implements;
 

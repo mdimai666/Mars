@@ -2,8 +2,8 @@ using Mars.Core.Extensions;
 using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Utils;
-using Mars.Contracts.MetaFields;
-using DefaultValueContract = Mars.Contracts.MetaFields.MetaFieldDefaultValue;
+using Mars.Cms.Contracts.MetaFields;
+using DefaultValueContract = Mars.Cms.Contracts.MetaFields.MetaFieldDefaultValue;
 using DefaultValueOwned = Mars.Data.OwnedTypes.MetaFields.MetaFieldDefaultValue;
 
 namespace Mars.Data.Repositories.Mappings;

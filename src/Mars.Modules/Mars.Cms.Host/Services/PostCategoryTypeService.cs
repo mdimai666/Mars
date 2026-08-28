@@ -17,7 +17,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostCategoryTypes;
+using Mars.Cms.Contracts.PostCategoryTypes;
 
 namespace Mars.Cms.Host.Services;
 

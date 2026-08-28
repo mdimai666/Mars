@@ -1,6 +1,6 @@
 using Mars.Admin.Framework.Extensions;
 using Flurl.Http;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

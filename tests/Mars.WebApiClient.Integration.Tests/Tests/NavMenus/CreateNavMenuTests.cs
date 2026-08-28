@@ -1,7 +1,7 @@
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Contracts.NavMenus;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 

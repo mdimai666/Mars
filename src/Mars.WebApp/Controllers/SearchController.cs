@@ -5,7 +5,7 @@ using Mars.Core.Exceptions;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Mappings.Search;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -6,8 +6,8 @@ using Mars.Core.Features;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Hubs;
 using Microsoft.AspNetCore.SignalR;
 

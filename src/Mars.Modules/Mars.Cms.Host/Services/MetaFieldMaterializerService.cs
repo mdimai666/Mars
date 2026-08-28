@@ -15,7 +15,7 @@ using Mars.Cms.Host.Services;
 using Mars.Contracts.Dto.Files;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Repositories;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

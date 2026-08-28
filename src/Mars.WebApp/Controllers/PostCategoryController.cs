@@ -10,7 +10,7 @@ using Mars.Cms.Abstractions.Mappings.PostCategoryTypes;
 using Mars.Cms.Abstractions.Services;
 using Mars.Contracts.Common;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostCategories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

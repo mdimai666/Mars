@@ -6,7 +6,7 @@ using Mars.Core.Features;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.NavMenus;
 using Mars.Data.OwnedTypes.Users;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Test.Common.Constants;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 

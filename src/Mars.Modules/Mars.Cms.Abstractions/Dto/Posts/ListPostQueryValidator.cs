@@ -2,7 +2,7 @@ using FluentValidation;
 using Mars.Core.Constants;
 using Mars.Core.Extensions;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.Posts;
+using Mars.Cms.Contracts.Posts;
 
 namespace Mars.Cms.Abstractions.Dto.Posts;
 

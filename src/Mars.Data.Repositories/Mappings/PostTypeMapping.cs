@@ -1,7 +1,7 @@
 using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Data.Repositories.Mappings;
 

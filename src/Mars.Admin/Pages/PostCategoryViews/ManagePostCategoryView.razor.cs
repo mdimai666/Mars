@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using Mars.Admin.Framework.Extensions;
-using Mars.Contracts.PostCategories;
-using Mars.Contracts.PostCategoryTypes;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostCategoryTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

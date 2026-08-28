@@ -13,7 +13,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Utils;
 using Mars.Cms.Host.Services;
 using Mars.Cms.Abstractions.Utils;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Abstractions.Utils;
 using Microsoft.Extensions.DependencyInjection;
 

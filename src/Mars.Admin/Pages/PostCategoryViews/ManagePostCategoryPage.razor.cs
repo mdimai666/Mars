@@ -1,5 +1,5 @@
-using Mars.Contracts.PostCategories;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostTypes;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Pages.PostCategoryViews;

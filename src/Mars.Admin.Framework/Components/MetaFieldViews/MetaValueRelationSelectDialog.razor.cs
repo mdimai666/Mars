@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;

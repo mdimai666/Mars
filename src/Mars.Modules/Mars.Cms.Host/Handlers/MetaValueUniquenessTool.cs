@@ -1,6 +1,6 @@
 using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Cms.Host.Handlers;

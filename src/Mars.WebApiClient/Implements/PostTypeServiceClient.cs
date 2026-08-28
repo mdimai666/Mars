@@ -1,6 +1,6 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

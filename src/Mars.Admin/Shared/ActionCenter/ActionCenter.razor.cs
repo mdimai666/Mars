@@ -6,7 +6,7 @@ using Mars.Admin.Framework.Models;
 using Mars.Admin.Framework.Services;
 using Blazored.LocalStorage;
 using Mars.AiChat.Front.Services;
-using Mars.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 using Mars.Contracts.XActions;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;

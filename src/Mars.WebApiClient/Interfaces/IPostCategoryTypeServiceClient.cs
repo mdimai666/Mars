@@ -1,6 +1,6 @@
 using Mars.Core.Exceptions;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostCategoryTypes;
+using Mars.Cms.Contracts.PostCategoryTypes;
 
 namespace Mars.WebApiClient.Interfaces;
 

@@ -7,13 +7,13 @@ using EditorJsBlazored.Blocks;
 using EditorJsBlazored.Core;
 using Mars.AiChat.Front.Services;
 using Mars.Core.Features;
-using Mars.Contracts.MetaFields;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Admin.Framework.Services;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
-using static Mars.Contracts.PostTypes.PostTypeConstants;
+using static Mars.Cms.Contracts.PostTypes.PostTypeConstants;
 
 namespace Mars.Admin.Pages.PostsViews;
 

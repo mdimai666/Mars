@@ -2601,6 +2601,7 @@
       "Mars.Identity.Abstractions/1.0.0": {
         "dependencies": {
           "Mars.Cms.Abstractions": "1.0.0",
+          "Mars.Identity.Contracts": "1.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
           "libphonenumber-csharp": "9.0.32",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
@@ -2915,6 +2916,7 @@
       },
       "Mars.Server.Contracts/1.0.0": {
         "dependencies": {
+          "Mars.Identity.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -2985,9 +2987,21 @@
           }
         }
       },
-      "Mars.SSO.Contracts/1.0.0": {
+      "Mars.SSO.Abstractions/1.0.0": {
         "dependencies": {
           "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.SSO.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "Mars.SSO.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.SSO.Contracts/1.0.0": {
+        "dependencies": {
+          "Mars.Identity.Contracts": "1.0.0",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.19.1",
           "System.IdentityModel.Tokens.Jwt": "8.19.1"
         },
@@ -3001,6 +3015,7 @@
       "Mars.SSO.Host/1.0.0": {
         "dependencies": {
           "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.SSO.Abstractions": "1.0.0",
           "Mars.SSO.Contracts": "1.0.0",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.19.1",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
@@ -3015,11 +3030,13 @@
       },
       "Mars.SSO.Host.OAuth/1.0.0": {
         "dependencies": {
+          "Mars.Identity.Abstractions": "1.0.0",
           "Mars.SSO.Contracts": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.9",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.19.1",
           "System.IdentityModel.Tokens.Jwt": "8.19.1",
+          "mdimai666.Mars.Options": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3130,6 +3147,7 @@
           "Flurl.Http": "4.0.2",
           "Markdig": "1.2.0",
           "Mars.Identity.Contracts": "1.0.0",
+          "Mars.SSO.Contracts": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.9",
           "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.9",
@@ -5187,6 +5205,11 @@
       "sha512": ""
     },
     "Mars.SiteEngine.Templators/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.SSO.Abstractions/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

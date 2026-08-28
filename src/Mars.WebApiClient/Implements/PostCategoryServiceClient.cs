@@ -1,7 +1,7 @@
 using Flurl.Http;
 using Mars.Contracts.Common;
 using Mars.Contracts.Common;
-using Mars.Contracts.PostCategories;
+using Mars.Cms.Contracts.PostCategories;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;

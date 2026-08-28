@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 using Mars.Core.Interfaces;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Cms.Abstractions.Dto.MetaFields;
 

@@ -20,7 +20,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Nodes.Core;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Models;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;

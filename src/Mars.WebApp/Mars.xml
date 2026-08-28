@@ -44,7 +44,7 @@
             Root-файлы (_root.hbs) тоже попадают сюда — их URL это StartPath.
             </summary>
         </member>
-        <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Cms.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
             <summary>
             Список меню для админки: несохранённые системные меню подмешиваются виртуальной записью.
             </summary>
@@ -54,13 +54,13 @@
             Сброс системного меню к дефолту: удаляет сохранённую копию из БД.
             </summary>
         </member>
-        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.ListDataResult{Mars.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.ListDataResult{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
         </member>
-        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.PagingResult{Mars.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.PagingResult{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
         </member>
-        <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Батч-загрузка значений: тип из маршрута либо группировка по типам самих элементов</summary>
         </member>
         <member name="T:Mars.Handlers.AdminFrontRenderHandler">

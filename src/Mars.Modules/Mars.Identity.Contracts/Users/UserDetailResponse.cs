@@ -1,4 +1,4 @@
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Identity.Contracts.Users;
 

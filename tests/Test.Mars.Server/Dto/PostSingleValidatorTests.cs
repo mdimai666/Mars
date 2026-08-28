@@ -8,7 +8,7 @@ using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using NSubstitute;
 
 namespace Test.Mars.Server.Dto;

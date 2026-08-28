@@ -40,7 +40,7 @@ using Mars.Contracts.Dto.Files;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Media.Abstractions.Repositories;
 using Mars.Server.Abstractions.Validators;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using NSubstitute;

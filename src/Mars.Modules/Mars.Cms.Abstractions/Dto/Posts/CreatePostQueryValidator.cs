@@ -5,7 +5,7 @@ using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Cms.Abstractions.Validators;
 
 namespace Mars.Cms.Abstractions.Dto.Posts;

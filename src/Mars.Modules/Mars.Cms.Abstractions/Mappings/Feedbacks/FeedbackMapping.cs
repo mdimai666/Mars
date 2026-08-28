@@ -1,7 +1,7 @@
 using Mars.Data.Extensions;
 using Mars.Cms.Abstractions.Dto.Feedbacks;
 using Mars.Contracts.Common;
-using Mars.Contracts.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
 
 namespace Mars.Cms.Abstractions.Mappings.Feedbacks;
 

@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
 
 namespace Mars.Cms.Abstractions.Dto.MetaFields;
 

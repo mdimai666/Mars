@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Exceptions;
 using Mars.Core.Interfaces;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 

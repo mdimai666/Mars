@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Contracts.PostTypes;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Test.Mars.Server.Dto;
 

@@ -1,4 +1,4 @@
-using Mars.Controllers;
+using Mars.Scheduler.Host.Controllers;
 using Mars.Core.Exceptions;
 using Mars.Scheduler.Abstractions;
 using Mars.Integration.Tests.Attributes;

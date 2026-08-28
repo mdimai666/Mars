@@ -1,21 +1,19 @@
 using System.Net.Mime;
-using Mars.Options.Host;
-using Mars.Server.Abstractions.ExceptionFilters;
 using System.Text.Json.Nodes;
 using Mars.Core.Constants;
 using Mars.Core.Models;
 using Mars.Options.Services;
-using Mars.Server.Abstractions.Services;
-using Mars.Options.Services;
+using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Options.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

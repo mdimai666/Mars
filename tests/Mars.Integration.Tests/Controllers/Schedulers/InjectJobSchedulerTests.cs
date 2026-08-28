@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Scheduler.Host.Controllers;
 using Mars.Scheduler.Abstractions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;

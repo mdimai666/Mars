@@ -1,16 +1,15 @@
 using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Plugin.Abstractions.Dto.Plugins;
-using Mars.Scheduler.Abstractions.Dto.Schedulers;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Abstractions.Mappings.Plugins;
-using Mars.Plugin.Abstractions.Services;
 using Mars.Contracts.Common;
 using Mars.Plugin.Contracts.Plugins;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Plugin.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

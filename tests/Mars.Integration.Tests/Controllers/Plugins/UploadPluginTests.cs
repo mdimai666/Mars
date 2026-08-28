@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Plugin.Controllers;
 using Mars.Options.Services;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Server.Abstractions.Services;

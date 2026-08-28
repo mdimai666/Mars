@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Options.Host.Controllers;
 using Mars.Data.Repositories;
 using Mars.Options.Repositories;
 using Mars.Options.Services;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Options;
 
-/// <seealso cref="Mars.Controllers.OptionController"/>
+/// <seealso cref="Mars.Options.Host.Controllers.OptionController"/>
 public class UpdateOptionTests : ApplicationTests
 {
     const string _apiUrl = "/api/Option";

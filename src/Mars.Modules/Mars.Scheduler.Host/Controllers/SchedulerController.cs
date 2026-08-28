@@ -7,9 +7,10 @@ using Mars.Scheduler.Abstractions;
 using Mars.Contracts.Common;
 using Mars.Scheduler.Contracts.Schedulers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Scheduler.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -1,4 +1,7 @@
+using Mars.Admin.Contracts.Options;
+using Mars.Options.Services;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.UseStartup;
 
@@ -9,6 +12,8 @@ internal static class StartupDevAdmin
 #if NOADMIN
         return app;
 #endif
+
+        app.ApplicationServices.GetRequiredService<IOptionService>().RegisterOption<DevAdminStyleOption>(appendToInitialSiteData: true);
 
         app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/dev"), first =>
         {

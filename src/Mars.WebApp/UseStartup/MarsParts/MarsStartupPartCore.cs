@@ -9,6 +9,7 @@ using Mars.Options.Services;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.Models;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Mars.Server.Abstractions.Extensions;
 using Mars.Server.Abstractions.Features;
 using Mars.Nodes.Abstractions.Hubs;
@@ -104,7 +105,7 @@ internal static class MarsStartupPartCore
 
                     IssuerValidator = (issuer, token, parameters) =>
                     {
-                        if (issuer == ops.SysOption.SiteUrl)
+                        if (issuer == ops.GetOption<SiteSettings>().SiteUrl)
                             return issuer;
                         else if (isSsoEnabled && sso.TryValidateIssuer(issuer, out var validIssuer))
                             return issuer;

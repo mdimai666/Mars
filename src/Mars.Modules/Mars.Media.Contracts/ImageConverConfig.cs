@@ -1,6 +1,6 @@
-using static Mars.Options.Models.ImagePreviewSizeConfig;
+using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
-namespace Mars.Options.Interfaces;
+namespace Mars.Media.Contracts;
 
 public interface IImageConverConfig
 {
@@ -14,7 +14,6 @@ public interface IProcessImageResult
 {
     public int Width { get; }
     public int Height { get; }
-    //public bool HasAlpha { get; }
     public long FileSize { get; }
     public double ProcessingTime { get; }
 
@@ -25,4 +24,12 @@ public class ImageConverConfig : IImageConverConfig
     public required int Height { get; set; }
     public required CropScaleMode ResizeMode { get; set; }
     public required EncoderCompression Compression { get; set; }
+}
+
+public class ProcessImageResult : IProcessImageResult
+{
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public long FileSize { get; set; }
+    public double ProcessingTime { get; set; }
 }

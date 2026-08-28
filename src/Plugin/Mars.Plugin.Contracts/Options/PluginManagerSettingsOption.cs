@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Options.Models;
+namespace Mars.Plugin.Contracts.Options;
 
 [Display(Name = "Настройки менеджера плагинов")]
 public class PluginManagerSettingsOption

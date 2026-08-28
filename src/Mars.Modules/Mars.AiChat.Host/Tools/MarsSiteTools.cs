@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 
 namespace Mars.AiChat.Host.Tools;
 
@@ -21,7 +22,7 @@ public class MarsSiteTools
     [Description("Получить текущие настройки сайта: имя сайта, описание, адрес (URL), email администратора.")]
     public string GetSiteSettings()
     {
-        var opt = _optionService.SysOption;
+        var opt = _optionService.GetOption<SiteSettings>();
 
         return JsonSerializer.Serialize(new
         {
@@ -39,7 +40,7 @@ public class MarsSiteTools
         [Description("Новое описание сайта. Пустая строка — не менять.")] string siteDescription = "",
         [Description("Новый email администратора. Пустая строка — не менять.")] string adminEmail = "")
     {
-        var opt = _optionService.SysOption;
+        var opt = _optionService.GetOption<SiteSettings>();
 
         if (!string.IsNullOrWhiteSpace(siteName)) opt.SiteName = siteName.Trim();
         if (!string.IsNullOrWhiteSpace(siteDescription)) opt.SiteDescription = siteDescription.Trim();

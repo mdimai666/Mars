@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Globalization;
 using HtmlAgilityPack;
-using static Mars.Options.Models.ImagePreviewSizeConfig;
+using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
 namespace Mars.Admin.Framework.Components;
 

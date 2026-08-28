@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using Flurl.Http;
 using Mars.Data.Contexts;
 using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Server.Contracts.Options;
 using Mars.Server.Abstractions.Models;
 using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Repositories;
@@ -150,8 +151,8 @@ public class E2EServerFixture : IAsyncLifetime
         MarsStartupPartMigrations.SeedData(ServiceProvider, Configuration, logger, true);
 
         var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
-        optionService.SysOption.SiteUrl = BaseUrl;
-        optionService.SaveOption(optionService.SysOption);
+        optionService.GetOption<SiteSettings>().SiteUrl = BaseUrl;
+        optionService.SaveOption(optionService.GetOption<SiteSettings>());
 
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 

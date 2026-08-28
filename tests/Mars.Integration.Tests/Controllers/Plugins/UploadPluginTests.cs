@@ -8,7 +8,7 @@ using Mars.Server.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.Plugin.Contracts.Options;
 using Mars.Plugin;
 using Mars.Plugin.Services;
 using Mars.Contracts.Common;

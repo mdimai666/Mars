@@ -1,4 +1,6 @@
+using Mars.Options.Services;
 using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +34,8 @@ public static class ApplicationPluginExtensions
 
     public static void UsePlugins(this WebApplication app)
     {
+        app.Services.GetRequiredService<IOptionService>().RegisterOption<PluginManagerSettingsOption>();
+
         var pluginManager = app.Services.GetRequiredService<PluginManager>();
         pluginManager.UsePlugins(app);
     }

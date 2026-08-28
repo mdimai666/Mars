@@ -3,7 +3,7 @@ using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.Files;
 using Mars.Contracts.Dto.Files;
 using Mars.Media.Abstractions.Dto.Files;
-using Mars.Options.Models;
+using Mars.Media.Contracts.Options;
 using Mars.Test.Common.Constants;
 
 namespace Mars.Test.Common.FixtureCustomizes;

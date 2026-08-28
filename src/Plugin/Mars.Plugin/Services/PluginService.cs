@@ -5,7 +5,7 @@ using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Options.Services;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Server.Abstractions.Services;
-using Mars.Options.Models;
+using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Handlers;
 using Mars.Plugin.Mappings;

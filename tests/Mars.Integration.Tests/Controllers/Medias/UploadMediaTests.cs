@@ -13,7 +13,7 @@ using Mars.Server.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.Media.Contracts.Options;
 using Mars.Media.Contracts.Files;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;

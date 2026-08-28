@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Options.Models;
+namespace Mars.SiteEngine.Contracts.Options;
 
 [Display(Name = "SEO")]
 public class SEOOption

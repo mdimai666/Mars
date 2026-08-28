@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mars.Media.Abstractions.Services;
-using Mars.Options.Interfaces;
+using Mars.Media.Contracts;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.NativeCodecs.Giflib;
 using PhotoSauce.NativeCodecs.Libheif;
@@ -14,7 +14,7 @@ using PhotoSauce.NativeCodecs.Libjpeg;
 using PhotoSauce.NativeCodecs.Libjxl;
 using PhotoSauce.NativeCodecs.Libpng;
 using PhotoSauce.NativeCodecs.Libwebp;
-using static Mars.Options.Models.ImagePreviewSizeConfig;
+using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
 namespace Mars.Services;
 
@@ -59,11 +59,11 @@ public class ImageProcessor : IImageProcessor
         return settings;
     }
 
-    IProcessImageResult _result(ProcessImageResult result)
+    IProcessImageResult _result(PhotoSauce.MagicScaler.ProcessImageResult result)
     {
         PixelSourceStats? st = result.Stats.FirstOrDefault();
 
-        return new Mars.Options.Models.ProcessImageResult
+        return new Mars.Media.Contracts.ProcessImageResult
         {
             ProcessingTime = st?.ProcessingTime ?? 0,
             FileSize = 0,
@@ -99,15 +99,15 @@ public class ImageProcessor : IImageProcessor
         return _result(result);
     }
 
-    PhotoSauce.MagicScaler.CropScaleMode ConvertScale(Options.Models.ImagePreviewSizeConfig.CropScaleMode mode)
+    PhotoSauce.MagicScaler.CropScaleMode ConvertScale(Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode mode)
     {
         return mode switch
         {
-            Options.Models.ImagePreviewSizeConfig.CropScaleMode.Crop => PhotoSauce.MagicScaler.CropScaleMode.Crop,
-            Options.Models.ImagePreviewSizeConfig.CropScaleMode.Contain => PhotoSauce.MagicScaler.CropScaleMode.Contain,
-            Options.Models.ImagePreviewSizeConfig.CropScaleMode.Stretch => PhotoSauce.MagicScaler.CropScaleMode.Stretch,
-            Options.Models.ImagePreviewSizeConfig.CropScaleMode.Pad => PhotoSauce.MagicScaler.CropScaleMode.Pad,
-            Options.Models.ImagePreviewSizeConfig.CropScaleMode.Max => PhotoSauce.MagicScaler.CropScaleMode.Max,
+            Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode.Crop => PhotoSauce.MagicScaler.CropScaleMode.Crop,
+            Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode.Contain => PhotoSauce.MagicScaler.CropScaleMode.Contain,
+            Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode.Stretch => PhotoSauce.MagicScaler.CropScaleMode.Stretch,
+            Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode.Pad => PhotoSauce.MagicScaler.CropScaleMode.Pad,
+            Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode.Max => PhotoSauce.MagicScaler.CropScaleMode.Max,
             _ => throw new NotSupportedException()
         };
     }

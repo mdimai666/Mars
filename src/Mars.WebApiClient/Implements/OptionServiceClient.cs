@@ -14,12 +14,12 @@ internal class OptionServiceClient : BasicServiceClient, IOptionServiceClient
         _controllerName = "Option";
     }
 
-    public Task<SysOptions> GetSysOptions()
+    public Task<SiteSettings> GetSysOptions()
         => _client.Request($"{_basePath}{_controllerName}", "SysOptions")
                     .OnError(OnStatus404ReturnNull)
-                    .GetJsonAsync<SysOptions>();
+                    .GetJsonAsync<SiteSettings>();
 
-    public Task SaveSysOptions(SysOptions value)
+    public Task SaveSysOptions(SiteSettings value)
         => _client.Request($"{_basePath}{_controllerName}", "SysOptions")
                     .PutJsonAsync(value);
 

@@ -2,6 +2,7 @@
 @namespace Mars.Pages
 @using Mars.Admin.Framework
 @using Mars.Options.Services
+@using Mars.Server.Contracts.Options
 @using Mars.Identity.Abstractions.Interfaces
 @using Mars.Core.Features
 @using Mars.Server.Handlers
@@ -48,7 +49,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@optionService.SysOption.SiteName</title>
+    <title>@optionService.GetOption<SiteSettings>().SiteName</title>
     <base href="/dev/" />
 
     @* все скрипты админки собираются в AppAdminSpaHtmlScripts *@

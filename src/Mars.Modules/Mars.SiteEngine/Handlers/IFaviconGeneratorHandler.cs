@@ -1,4 +1,4 @@
-using Mars.Options.Models;
+using Mars.SiteEngine.Contracts.Options;
 
 namespace Mars.SiteEngine.Handlers;
 

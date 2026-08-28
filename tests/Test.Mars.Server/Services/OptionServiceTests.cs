@@ -17,7 +17,6 @@ using Mars.Options.Contracts.Dto.Options;
 using Mars.Options.Exceptions;
 using Mars.Options.Host.Services;
 using Mars.Options.Repositories;
-using Mars.Options.Models;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common;
 using FluentAssertions;
@@ -51,7 +50,7 @@ public class OptionServiceTests
         var mm = Substitute.For<IMemoryCache>();
         _optionService = new OptionService(mockServiceScopeFactory, em, mm, new TestHostEnvironment());
 
-        _optionService.RegisterOption<SysOptions>();
+        _optionService.RegisterOption<SiteSettings>();
     }
 
     [Fact]
@@ -60,7 +59,7 @@ public class OptionServiceTests
         // Arrange
 
         // Act
-        var opt = _optionService.GetOption<SysOptions>();
+        var opt = _optionService.GetOption<SiteSettings>();
 
         // Assert
         opt.Should().NotBeNull();
@@ -70,41 +69,41 @@ public class OptionServiceTests
     public void GetOption_GetSysOptionsMustSaveInLocalCache_LocalCacheExist()
     {
         // Arrange
-        var tKey = typeof(SysOptions);
+        var tKey = typeof(SiteSettings);
 
         // Act
-        var opt = _optionService.GetOption<SysOptions>();
+        var opt = _optionService.GetOption<SiteSettings>();
 
         // Assert
         opt.Should().NotBeNull();
         _optionService.localCache.Should().ContainKey(tKey);
-        var cachedOpt = (_optionService.localCache[tKey] as SysOptions);
+        var cachedOpt = (_optionService.localCache[tKey] as SiteSettings);
         cachedOpt.Should().NotBeNull();
         cachedOpt.Should().Be(opt);
         _optionRepository.Received()
-                            .GetKey<SysOptions>(tKey.Name, Arg.Any<CancellationToken>());
+                            .GetKey<SiteSettings>(tKey.Name, Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public void GetOption_GetSysOptionFromRepo_ShouldReturnFromRepoValue()
     {
         // Arrange
-        var tKey = typeof(SysOptions);
-        var repoOpt = new SysOptions()
+        var tKey = typeof(SiteSettings);
+        var repoOpt = new SiteSettings()
         {
             SiteName = "test-site-" + Guid.NewGuid(),
         };
-        _optionRepository.GetKey<SysOptions>(tKey.Name)
+        _optionRepository.GetKey<SiteSettings>(tKey.Name)
             .Returns(repoOpt);
 
         // Act
-        var opt = _optionService.GetOption<SysOptions>();
+        var opt = _optionService.GetOption<SiteSettings>();
 
         // Assert
         opt.Should().NotBeNull();
         _optionService.localCache.Should().ContainKey(tKey);
         _optionRepository.Received()
-                            .GetKey<SysOptions>(tKey.Name, Arg.Any<CancellationToken>());
+                            .GetKey<SiteSettings>(tKey.Name, Arg.Any<CancellationToken>());
 
         opt.SiteName.Should().Be(repoOpt.SiteName);
     }
@@ -113,7 +112,7 @@ public class OptionServiceTests
     public void GetOption_GetSysOptionsByClassName_NotBeNull()
     {
         // Arrange
-        var tKey = typeof(SysOptions);
+        var tKey = typeof(SiteSettings);
         var key = tKey.Name;
 
         // Act
@@ -127,7 +126,7 @@ public class OptionServiceTests
     public void SetOption_SaveOptionMustSaveInLocalCache_ShouldSaveLocal()
     {
         // Arrange
-        var opt = new SysOptions()
+        var opt = new SiteSettings()
         {
             SiteName = "test-site-" + Guid.NewGuid(),
         };
@@ -135,13 +134,13 @@ public class OptionServiceTests
         // Act
         _ = nameof(OptionService.SaveOptionAsync);
         _optionService.SaveOption(opt);
-        var savedOpt = _optionService.GetOption<SysOptions>();
+        var savedOpt = _optionService.GetOption<SiteSettings>();
 
         // Assert
         savedOpt.Should().NotBeNull();
         savedOpt.SiteName.Should().Be(opt.SiteName);
         _optionRepository.Received()
-                            .Create(Arg.Any<CreateOptionQuery<SysOptions>>(), Arg.Any<CancellationToken>());
+                            .Create(Arg.Any<CreateOptionQuery<SiteSettings>>(), Arg.Any<CancellationToken>());
     }
 
 
@@ -149,11 +148,11 @@ public class OptionServiceTests
     public void SetOption_SetSysOptionsByClassName_NotBeNull()
     {
         // Arrange
-        var tKey = typeof(SysOptions);
+        var tKey = typeof(SiteSettings);
         var key = tKey.Name;
         var newName = "test-site-" + Guid.NewGuid();
 
-        var opt = _optionService.GetOption<SysOptions>();
+        var opt = _optionService.GetOption<SiteSettings>();
         opt.SiteName = newName;
         var json = JsonSerializer.Serialize(opt);
 
@@ -161,7 +160,7 @@ public class OptionServiceTests
         _optionService.SetOptionByClass(key, json);
 
         // Assert
-        var savedOpt = _optionService.localCache[tKey] as SysOptions;
+        var savedOpt = _optionService.localCache[tKey] as SiteSettings;
         savedOpt.Should().NotBeNull();
         savedOpt.SiteName.Should().Be(newName);
     }

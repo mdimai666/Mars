@@ -40,7 +40,7 @@ using Mars.Media.Host.Services;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
-using Mars.Options.Models;
+using Mars.Media.Contracts.Options;
 using Mars.Test.Common.Constants;
 using NSubstitute;
 

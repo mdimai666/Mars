@@ -60,6 +60,8 @@ internal static class MarsStartupPartServices
 
     public static IServiceProvider UseMarsHostServices(this IServiceProvider services)
     {
+        services.UseMarsServerOptions();
+
         var nodeImplementFactory = services.GetRequiredService<INodeImplementFactory>();
         nodeImplementFactory.RegisterAssembly(typeof(RenderPageNodeImpl).Assembly);
 

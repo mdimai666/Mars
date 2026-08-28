@@ -1,5 +1,5 @@
 using System.Drawing;
-using Mars.Options.Interfaces;
+using Mars.Media.Contracts;
 
 namespace Mars.Media.Abstractions.Services;
 

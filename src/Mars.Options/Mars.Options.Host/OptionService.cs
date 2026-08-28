@@ -2,15 +2,12 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Mars.Contracts.Common;
 using Mars.Contracts.Dto.Files;
 using Mars.Server.Contracts.Options;
-using Mars.Notifications.Abstractions;
 using Mars.Options.Dto.Options;
 using Mars.Options.Contracts.Dto.Options;
 using Mars.Options.Exceptions;
 using Mars.Options.Interfaces;
-using Mars.Options.Models;
 using Mars.Options.Repositories;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Managers;
@@ -29,7 +26,6 @@ internal class OptionService : IOptionService
     internal ConcurrentDictionary<Type, object> localCache = [];
     internal static JsonSerializerOptions serializerOptions = new();
 
-    public SysOptions SysOption => ((SysOptions)localCache[typeof(SysOptions)]) ?? new();
     public bool IsDevelopment { get; }
     public event Action<object> OnOptionUpdate = default!;
 
@@ -108,7 +104,7 @@ internal class OptionService : IOptionService
         var eventTopic = _eventManager.Defaults.OptionUpdate(typeof(T).Name);
         _eventManager.TriggerEvent(new ManagerEventPayload(eventTopic, option));
 
-        if (typeof(T) == typeof(SysOptions)) _fileHostingInfo = null;
+        if (typeof(T) == typeof(SiteSettings)) _fileHostingInfo = null;
         OnOptionUpdate?.Invoke(option);
     }
 
@@ -186,7 +182,7 @@ internal class OptionService : IOptionService
             localCache[t] = option;
         }
 
-        if (typeof(T) == typeof(SysOptions)) _fileHostingInfo = null;
+        if (typeof(T) == typeof(SiteSettings)) _fileHostingInfo = null;
     }
 
     public void RegisterOption<T>(Action<T>? onChangeHook = null, bool appendToInitialSiteData = false)
@@ -328,31 +324,10 @@ internal class OptionService : IOptionService
         }
     }
 
-    public UserActionResult<SmtpSettingsModel> SaveSmtpSettings(SmtpSettingsModel form)
-    {
-        try
-        {
-            SaveOption(form);
-            return UserActionResult<SmtpSettingsModel>.Success(form, "Успешно сохранено");
-        }
-        catch (Exception ex)
-        {
-            return UserActionResult<SmtpSettingsModel>.Exception(ex);
-        }
-    }
-
-    public string RobotsTxt()
-    {
-        return ((SEOOption)localCache[typeof(SEOOption)]).RobotsTxt;
-    }
-
-    public SmtpSettingsModel MailSettings =>
-        ((SmtpSettingsModel)localCache[typeof(SmtpSettingsModel)]);
-
     public FileHostingInfo FileHostingInfo()
         => _fileHostingInfo ??= new()
         {
-            Backend = new Uri(SysOption.SiteUrl),
+            Backend = new Uri(GetOption<SiteSettings>().SiteUrl),
             PhysicalPath = new Uri(Path.Join(_environment.ContentRootPath, "wwwroot", "upload"), UriKind.Absolute),
             RequestPath = "upload"
         };

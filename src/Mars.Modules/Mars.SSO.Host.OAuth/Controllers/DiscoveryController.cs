@@ -1,5 +1,6 @@
 using Mars.Server.Abstractions.Features;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.FeatureManagement.Mvc;
@@ -22,7 +23,7 @@ public class DiscoveryController : Controller
     [HttpGet("openid-configuration")]
     public IActionResult GetConfig()
     {
-        var issuer = _optionService.SysOption.SiteUrl;
+        var issuer = _optionService.GetOption<SiteSettings>().SiteUrl;
         var baseUrl = issuer.TrimEnd('/');
 
         return Ok(new

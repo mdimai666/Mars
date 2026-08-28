@@ -1,5 +1,8 @@
+using Mars.Core.Models;
 using Mars.Options.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Handlers;
 using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Handlers;
@@ -35,7 +38,52 @@ public static class MarsWebSiteProcessorMain
     {
         UseSiteScriptsBuilders(app.Services);
 
+        var optionService = app.Services.GetRequiredService<IOptionService>();
+        optionService.RegisterOption<SEOOption>();
+        optionService.GetOption<SEOOption>();
+        optionService.RegisterOption<FaviconOption>(opt => _ = OnChangeFaviconOption(opt, app.Services));
+        optionService.RegisterOption<FaviconOptionGenaratedValues>();
+
         return app;
+    }
+
+    static readonly SemaphoreSlim _faviconLock = new(1, 1);
+
+    static async Task OnChangeFaviconOption(FaviconOption opt, IServiceProvider rootServiceProvider)
+    {
+        using var scope = rootServiceProvider.CreateScope();
+        var serviceProvider = scope.ServiceProvider;
+        var messageService = serviceProvider.GetRequiredService<IDevAdminConnectionService>();
+
+        if (!await _faviconLock.WaitAsync(0))
+        {
+            _ = messageService.ShowNotifyMessageForAll("Favicons generation is already in progress", MessageIntent.Warning);
+            return;
+        }
+
+        var faviconHandler = serviceProvider.GetRequiredService<SiteFaviconConfiguratorHandler>();
+        try
+        {
+            await faviconHandler.Handle(opt, CancellationToken.None);
+            ClearCacheAllSiteScriptsBuilders(serviceProvider);
+            _ = messageService.ShowNotifyMessageForAll("Favicons generated successfully", MessageIntent.Success);
+        }
+        catch (Exception ex)
+        {
+            _ = messageService.ShowNotifyMessageForAll("Error generating favicons: " + ex.Message, MessageIntent.Error);
+        }
+        finally
+        {
+            _faviconLock.Release();
+        }
+    }
+
+    static void ClearCacheAllSiteScriptsBuilders(IServiceProvider serviceProvider)
+    {
+        var appAdminBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);
+        var appFrontBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppFrontConstants.SiteScriptsBuilderKey);
+        appAdminBuilder.ClearCache();
+        appFrontBuilder.ClearCache();
     }
 
     static void AddSiteScriptsBuilders(IServiceCollection services)

@@ -2,7 +2,6 @@ using Mars.Core.Exceptions;
 using Mars.Options.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Options.Models;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
@@ -59,7 +58,7 @@ public sealed class UpdateOptionTests : BaseWebApiClientTests
     {
         //Arrange
         var client = GetWebApiClient(true);
-        var optionValue = new SysOptions();
+        var optionValue = new SiteSettings();
 
         //Act
         var action = () => client.Option.SaveSysOptions(optionValue);

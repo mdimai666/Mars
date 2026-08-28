@@ -5,7 +5,6 @@ using Mars.Options.Services;
 using Mars.Options.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Options.Models;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
@@ -83,19 +82,17 @@ public class GetOptionTests : ApplicationTests
     {
         //Arrange
         _ = nameof(OptionController.GetSysOptions);
-        _ = nameof(OptionService.SysOption);
         var client = AppFixture.GetClient(true);
-        var opt = typeof(SysOptions);
-        var optionValue = _optionService.SysOption;
+        var optionValue = _optionService.GetOption<SiteSettings>();
 
         //Act
-        var result = await client.Request(_apiUrl, opt.Name).GetJsonAsync<SysOptions>();
+        var result = await client.Request(_apiUrl, "SysOptions").GetJsonAsync<SiteSettings>();
 
         //Assert
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(optionValue, options => options
             .ComparingRecordsByValue()
-            .ComparingByMembers<SysOptions>()
+            .ComparingByMembers<SiteSettings>()
             .ExcludingMissingMembers());
     }
 }

@@ -6,6 +6,7 @@ using Mars.Server.Abstractions.Models;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.WebSite.Exceptions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Interfaces;
@@ -140,7 +141,7 @@ public class WebSiteRequestProcessor
             var pageRenderContext = new PageRenderContext()
             {
                 Request = request,
-                SysOptions = optionService.SysOption,
+                SysOptions = optionService.GetOption<SiteSettings>(),
                 User = userDetail == null ? null : new RenderContextUser(userDetail),
                 RenderParam = param,
                 IsDevelopment = optionService.IsDevelopment,

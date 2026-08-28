@@ -1,7 +1,8 @@
 using Mars.SiteEngine.Handlers;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Handlers;
-using Mars.Options.Models;
+using Mars.SiteEngine.Contracts.Options;
 
 namespace Mars.SiteEngine.Handlers;
 
@@ -18,7 +19,7 @@ public class SiteFaviconConfiguratorHandler
 
     public async Task Handle(FaviconOption faviconOption, CancellationToken cancellationToken)
     {
-        var appName = _optionService.SysOption.SiteName;
+        var appName = _optionService.GetOption<SiteSettings>().SiteName;
         var metaTags = await _faviconGeneratorHandler.Handle(faviconOption, appName, cancellationToken);
 
         var generatedValue = _optionService.GetOption<FaviconOptionGenaratedValues>();

@@ -8,6 +8,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.Services;
 using Mars.Media.Abstractions.Services;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Mars.Identity.Abstractions.Dto.Auth;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
@@ -103,7 +104,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RegistrationResultResponse>> RegisterUser([FromBody] UserForRegistrationRequest userData, CancellationToken cancellationToken)
     {
-        if (_optionService.SysOption.AllowUsersSelfRegister == false)
+        if (_optionService.GetOption<SiteSettings>().AllowUsersSelfRegister == false)
         {
             return new RegistrationResultResponse
             {
@@ -160,7 +161,7 @@ public class AccountController : ControllerBase
 <head>
     <meta charset=""utf-8"" />
     <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
-    <title>{_optionService.SysOption.SiteName}</title>
+    <title>{_optionService.GetOption<SiteSettings>().SiteName}</title>
 </head>
 <body class="""" >
     {body}

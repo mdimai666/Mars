@@ -1,4 +1,4 @@
-namespace Mars.Options.Models;
+namespace Mars.Admin.Contracts.Options;
 
 public class DevAdminStyleOption
 {
@@ -7,7 +7,6 @@ public class DevAdminStyleOption
 
 public class StylerStyle
 {
-    //public string AccentBaseColor { get; set; } = "#0078d4"; //default fluent color
     public string AccentBaseColor { get; set; } = "#009d9d";
     public string NeutralBaseColor { get; set; } = "#808080";
     public string FillColor { get; set; } = "#fbfbfb";

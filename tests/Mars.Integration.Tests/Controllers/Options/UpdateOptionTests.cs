@@ -9,7 +9,6 @@ using Mars.Options.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
@@ -84,7 +83,7 @@ public class UpdateOptionTests : ApplicationTests
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl, "SysOptions").AllowAnyHttpStatus().PutJsonAsync(new SysOptions());
+        var result = await client.Request(_apiUrl, "SysOptions").AllowAnyHttpStatus().PutJsonAsync(new SiteSettings());
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);

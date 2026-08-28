@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text.Json.Nodes;
 using Mars.Server.Features;
 using Mars.Options.Services;
-using Mars.Options.Models;
+using Mars.Server.Contracts.Options;
 using Mars.Contracts.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;

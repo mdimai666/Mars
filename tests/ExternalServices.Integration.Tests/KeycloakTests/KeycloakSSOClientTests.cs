@@ -10,7 +10,7 @@ using Mars.SSO.Contracts.Dto;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.SSO.Contracts.Options;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.SSO.Contracts.Dto;
 using Mars.Identity.Contracts.Users.UserProfiles;

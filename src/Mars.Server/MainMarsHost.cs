@@ -5,8 +5,10 @@ using Mars.Server.Abstractions.Attributes;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
+using Mars.Server.Contracts.Options;
 using Mars.Server.Handlers;
 using Mars.Server.Managers;
+using Mars.Server.Seeding;
 using Mars.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +32,8 @@ public static class MainMarsHost
 
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
 
+        services.AddSingleton<ISeedFirstOptionHandler, SeedFirstOptionHandler>();
+
         UseFileStorages(services, wenv);
 
         //read (may object viewer)
@@ -43,6 +47,16 @@ public static class MainMarsHost
     public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
     {
         return app;
+    }
+
+    public static IServiceProvider UseMarsServerOptions(this IServiceProvider services)
+    {
+        var optionService = services.GetRequiredService<IOptionService>();
+        optionService.RegisterOption<SiteSettings>();
+        optionService.RegisterOption<ApiOption>();
+        optionService.RegisterOption<MaintenanceModeOption>();
+        optionService.GetOption<SiteSettings>();
+        return services;
     }
 
     static void UseFileStorages(IServiceCollection services, IWebHostEnvironment wenv)

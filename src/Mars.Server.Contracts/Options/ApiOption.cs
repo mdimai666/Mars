@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Options.Models;
+namespace Mars.Server.Contracts.Options;
 
 [Display(Name = "Настройки Api")]
 public class ApiOption

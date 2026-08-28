@@ -10,7 +10,7 @@ using Mars.Options.Services;
 using Mars.Core.Utils;
 using Mars.Options.Repositories;
 using Mars.Options.Services;
-using Mars.Options.Models;
+using Mars.Server.Contracts.Options;
 
 namespace Mars.CommandLine;
 

@@ -2,10 +2,6 @@ using Mars.Core.Exceptions;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Dto.Options;
 using Mars.Options.Exceptions;
-using Mars.Options.Services;
-using Mars.Contracts.Common;
-using Mars.Server.Contracts.Options;
-using Mars.Notifications.Abstractions;
 using Microsoft.Extensions.Configuration;
 
 namespace Mars.Options.Services;
@@ -17,7 +13,6 @@ public interface IOptionService
 {
     static ConfigurationManager Configuration { get; set; } = default!;
 
-    SysOptions SysOption { get; }
     bool IsDevelopment { get; }
 
     event Action<object> OnOptionUpdate;
@@ -56,14 +51,11 @@ public interface IOptionService
     List<OptionSummary> GetOptionsForInitialSiteData();
 
     /// <summary>
-    /// SaveSmtpSettings
+    /// Обновить опцию по имени класса (см. GetRegisteredOptionClasses).
     /// </summary>
     /// <exception cref="MarsValidationException" />
     /// <exception cref="OptionNotRegisteredException" />
     void SetOptionByClass(string className, string jsonString);
-    UserActionResult<SmtpSettingsModel> SaveSmtpSettings(SmtpSettingsModel form);
-    string RobotsTxt();
-    SmtpSettingsModel MailSettings { get; }
 
     /// <summary>
     /// Настройки пути к /upload

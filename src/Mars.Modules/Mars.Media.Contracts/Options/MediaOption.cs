@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Mars.Options.Interfaces;
-using Mars.Core.Extensions;
 
-namespace Mars.Options.Models;
+namespace Mars.Media.Contracts.Options;
 
 [Display(Name = "Настройки Media")]
 public class MediaOption
@@ -36,7 +34,7 @@ public class MediaOption
     [Display(Name = "Allowed File Extensions")]
     public string AllowedFileExtensionsSetter
     {
-        get => _allowedFileExtensions.JoinStr(",");
+        get => string.Join(",", _allowedFileExtensions);
         set => AllowedFileExtensions
             = value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
@@ -86,12 +84,6 @@ public class ImagePreviewSizeConfig : IImageConverConfig
     public CropScaleMode ResizeMode { get; set; }
 
     public EncoderCompression Compression { get; set; }
-
-    //public enum ImageResizeMode
-    //{
-    //    Fit,
-    //    Cover
-    //}
 
     public enum EncoderCompression
     {

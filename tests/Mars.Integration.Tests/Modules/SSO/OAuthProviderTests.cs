@@ -5,7 +5,7 @@ using Mars.SSO.Contracts.Dto;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.OAuth.Controllers;
 using Mars.SSO.Host.OAuth.interfaces;
 using Mars.SSO.Host.OAuth.Services;

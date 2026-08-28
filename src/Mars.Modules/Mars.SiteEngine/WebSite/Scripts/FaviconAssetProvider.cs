@@ -1,6 +1,6 @@
 using Mars.Options.Services;
 using Mars.SiteEngine.Abstractions.WebSite.Scripts;
-using Mars.Options.Models;
+using Mars.SiteEngine.Contracts.Options;
 
 namespace Mars.SiteEngine.WebSite.Scripts;
 

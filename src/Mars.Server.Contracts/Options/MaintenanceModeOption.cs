@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Options.Models;
+namespace Mars.Server.Contracts.Options;
 
 [Display(Name = "Режим обслуживания")]
 public class MaintenanceModeOption
@@ -48,4 +48,3 @@ public enum EMaintenancePageSource
     StaticHtml,
     FrontPage
 }
-

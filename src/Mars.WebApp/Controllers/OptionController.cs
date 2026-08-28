@@ -47,9 +47,9 @@ public class OptionController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("SysOptions")]
-    public SysOptions GetSysOptions()
+    public SiteSettings GetSysOptions()
     {
-        return _optionService.SysOption;
+        return _optionService.GetOption<SiteSettings>();
     }
 
     [HttpPut("SysOptions")]
@@ -59,17 +59,11 @@ public class OptionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public IActionResult SaveSysOptions(SysOptions val)
+    public IActionResult SaveSysOptions(SiteSettings val)
     {
         _optionService.SaveOption(val);
         return Ok();
     }
-
-    //[HttpPost(nameof(SaveSmtpSettings))]
-    //public async Task<ActionResult<UserActionResult<SmtpSettingsModel>>> SaveSmtpSettings(SmtpSettingsModel val)
-    //{
-    //    return _optionService.SaveSmtpSettings(val);
-    //}
 
     [HttpPost("SendTestEmail")]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
-namespace Mars.Options.Models;
+namespace Mars.SSO.Contracts.Options;
 
 [Display(Name = "OpenID Server")]
 

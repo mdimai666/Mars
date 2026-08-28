@@ -100,6 +100,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
         <ProjectReference Include="..\Mars.Server\Mars.Server.csproj" />

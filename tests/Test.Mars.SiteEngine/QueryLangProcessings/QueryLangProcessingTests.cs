@@ -24,7 +24,7 @@ public class QueryLangProcessingTests
 
     public QueryLangProcessingTests()
     {
-        var sysOptions = new SysOptions() { SiteUrl = "http://localhost" };
+        var sysOptions = new SiteSettings() { SiteUrl = "http://localhost" };
         _pageContext = new PageRenderContext()
         {
             Request = new WebClientRequest(new Uri(sysOptions.SiteUrl)),

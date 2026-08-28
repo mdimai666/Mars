@@ -72,7 +72,7 @@ v1
         var ctx = new PageRenderContext
         {
             Request = new WebClientRequest(new Uri("http://localhost/")),
-            SysOptions = new SysOptions { SiteUrl = "http://localhost" },
+            SysOptions = new SiteSettings { SiteUrl = "http://localhost" },
             User = null,
             IsDevelopment = false,
             RenderParam = new RenderParam(), // UseCache = true

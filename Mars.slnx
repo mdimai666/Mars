@@ -7,6 +7,7 @@
   </Folder>
   <Folder Name="/AppFront/">
     <Project Path="src/Mars.Admin.Framework/Mars.Admin.Framework.csproj" />
+    <Project Path="src/Mars.Admin.Contracts/Mars.Admin.Contracts.csproj" />
   </Folder>
   <Folder Name="/Benchmarks/">
     <Project Path="benchmarks/Benchmark.NodeImplementFactory/Benchmark.NodeImplementFactory.csproj" Id="3a13a07e-b375-4c48-9ee9-246515a69a40">

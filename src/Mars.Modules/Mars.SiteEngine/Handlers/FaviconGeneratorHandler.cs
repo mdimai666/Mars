@@ -9,10 +9,11 @@ using Mars.SiteEngine.Handlers;
 using Mars.SiteEngine.Handlers;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Services;
+using Mars.Media.Contracts;
+using Mars.Media.Contracts.Options;
 using Mars.Server.Abstractions.Services;
 using Mars.SiteEngine.Handlers;
-using Mars.Options.Interfaces;
-using Mars.Options.Models;
+using Mars.SiteEngine.Contracts.Options;
 
 namespace Mars.SiteEngine.Handlers;
 

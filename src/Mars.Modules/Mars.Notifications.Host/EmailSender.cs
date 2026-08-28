@@ -18,7 +18,7 @@ internal class EmailSender : IEmailSender, IMarsEmailSender
     {
         _actionHistoryService = actionHistoryService;
         _optionService = optionService;
-        _smtpSettings = _optionService.MailSettings;
+        _smtpSettings = _optionService.GetOption<SmtpSettingsModel>();
     }
 
     public async Task SendEmailAsync(string email, string subject, string message)

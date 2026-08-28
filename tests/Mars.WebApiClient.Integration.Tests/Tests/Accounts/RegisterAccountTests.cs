@@ -4,6 +4,7 @@ using Mars.Core.Constants;
 using Mars.Core.Utils;
 using Mars.Data.Entities;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Identity.Contracts.Auth;
@@ -110,8 +111,8 @@ public class RegisterAccountTests : BaseWebApiClientTests
     private void SetupSelfRegistration(bool allowUsersSelfRegister)
     {
         var optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        var sys = optionService.SysOption;
+        var sys = optionService.GetOption<SiteSettings>();
         sys.AllowUsersSelfRegister = allowUsersSelfRegister;
-        optionService.SaveOption(optionService.SysOption);
+        optionService.SaveOption(optionService.GetOption<SiteSettings>());
     }
 }

@@ -40,14 +40,14 @@ public class TokenService : ITokenService
         _jwtSettings = jwtSettings.Value;
         _keys = keys;
         _optionService = optionService;
-        _validIssuer = _optionService.SysOption.SiteUrl.TrimEnd('/');
+        _validIssuer = _optionService.GetOption<SiteSettings>().SiteUrl.TrimEnd('/');
 
         _optionService.OnOptionUpdate += OptionService_OnOptionUpdate;
     }
 
     private void OptionService_OnOptionUpdate(object obj)
     {
-        if (obj is SysOptions sysOptions)
+        if (obj is SiteSettings sysOptions)
             _validIssuer = sysOptions.SiteUrl;
     }
 

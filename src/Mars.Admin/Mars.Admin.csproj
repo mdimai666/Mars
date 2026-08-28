@@ -69,6 +69,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource\Mars.Datasource.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />

@@ -3,6 +3,7 @@ using Mars.Server.Abstractions.Models;
 using Mars.Options.Services;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.Services;
 using Mars.UseStartup.MarsParts;
 using Mars.SiteEngine.Interfaces;
@@ -235,7 +236,7 @@ public static class StartupFront
         app.Map("robots.txt", (HttpContext context) =>
         {
             context.Response.StatusCode = 200;
-            return context.RequestServices.GetRequiredService<IOptionService>().RobotsTxt();
+            return context.RequestServices.GetRequiredService<IOptionService>().GetOption<SEOOption>().RobotsTxt;
         }).ShortCircuit();
     }
 

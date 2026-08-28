@@ -79,7 +79,7 @@ public static class MarsStartupPartMigrations
 
     static async Task SeedDataAsync(MarsDbContext marsDbContext, IServiceProvider services, IConfiguration configuration, ILogger logger)
     {
-        AppDbContextSeedData.SeedFirstOption(marsDbContext, services, configuration);
+        AppDbContextSeedData.SeedFirstOption(services, configuration);
 
         UserManager<UserEntity> userManager = services.GetRequiredService<UserManager<UserEntity>>();
 

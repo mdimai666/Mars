@@ -3,6 +3,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
     </ItemGroup>
 

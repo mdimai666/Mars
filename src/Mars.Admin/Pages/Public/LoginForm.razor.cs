@@ -5,7 +5,7 @@ using Mars.Admin.Framework.Interfaces;
 using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Utils;
-using Mars.Options.Models;
+using Mars.SSO.Contracts.Options;
 using Mars.Identity.Contracts.Auth;
 using Mars.SSO.Contracts.Dto;
 using Microsoft.AspNetCore.Components;

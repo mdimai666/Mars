@@ -8,6 +8,7 @@ using Mars.Server.Abstractions.Services;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
+using Mars.Server.Contracts.Options;
 using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
 using Mars.Server.Abstractions;
@@ -54,7 +55,7 @@ internal class NotifyService : INotifyService
 
     private string GetLogo()
     {
-        return _optionService.SysOption.SiteUrl + "/img/logo.png";
+        return _optionService.GetOption<SiteSettings>().SiteUrl + "/img/logo.png";
     }
 
     public async Task<UserActionResult> SendNotifyTest(Guid userId, CancellationToken cancellationToken)
@@ -68,7 +69,7 @@ internal class NotifyService : INotifyService
 
         try
         {
-            await _emailSender.SendEmailForce(email, _optionService.MailSettings.FromName, "TestNotify", html, true);
+            await _emailSender.SendEmailForce(email, _optionService.GetOption<SmtpSettingsModel>().FromName, "TestNotify", html, true);
 
         }
         catch (Exception ex)
@@ -128,7 +129,7 @@ internal class NotifyService : INotifyService
         {
             try
             {
-                await _emailSender.SendEmailForce(email, _optionService.MailSettings.FromName, title.Left(250), html, true);
+                await _emailSender.SendEmailForce(email, _optionService.GetOption<SmtpSettingsModel>().FromName, title.Left(250), html, true);
 
             }
             catch (Exception ex)
@@ -160,7 +161,7 @@ internal class NotifyService : INotifyService
         {
             //["Новый статус"] = $"{status}",
             //["Комментарий"] = comment,
-            ["Url"] = $"{_optionService.SysOption.SiteUrl}",
+            ["Url"] = $"{_optionService.GetOption<SiteSettings>().SiteUrl}",
             ["Логин"] = $"{user.Email}",
         };
 

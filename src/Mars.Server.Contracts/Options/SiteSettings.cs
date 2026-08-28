@@ -3,7 +3,7 @@ using Mars.Contracts.Resources;
 
 namespace Mars.Server.Contracts.Options;
 
-public class SysOptions
+public class SiteSettings
 {
     // General
     [Url]

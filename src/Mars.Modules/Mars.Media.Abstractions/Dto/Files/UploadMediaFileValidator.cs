@@ -2,7 +2,7 @@ using FluentValidation;
 using Mars.Core.Extensions;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Options.Services;
-using Mars.Options.Models;
+using Mars.Media.Contracts.Options;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Media.Abstractions.Dto.Files;

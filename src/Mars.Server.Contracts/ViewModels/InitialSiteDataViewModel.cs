@@ -9,7 +9,7 @@ namespace Mars.Server.Contracts.ViewModels;
 
 public class InitialSiteDataViewModel
 {
-    public required SysOptions SysOptions { get; init; }
+    public required SiteSettings SysOptions { get; init; }
     public required UserPrimaryInfo? UserPrimaryInfo { get; init; }
     public required IReadOnlyCollection<PostTypeAdminPanelItemResponse> PostTypes { get; init; }
     public required IReadOnlyCollection<NavMenuDetailResponse> NavMenus { get; init; }

@@ -1,7 +1,7 @@
 using Mars.Core.Extensions;
 using Mars.Options.Services;
 using Mars.SSO.Contracts.Dto;
-using Mars.Options.Models;
+using Mars.SSO.Contracts.Options;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Mars.SSO.Host.Services;

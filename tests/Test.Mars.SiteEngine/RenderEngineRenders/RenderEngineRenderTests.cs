@@ -55,7 +55,7 @@ public class RenderEngineRenderTests
 
     RenderEngineRenderRequestContext GetRenderContext(string content, object? data = null)
     {
-        var sys = new SysOptions { SiteUrl = "http://localhost" };
+        var sys = new SiteSettings { SiteUrl = "http://localhost" };
         var dataDict = JsonSerializer.SerializeToNode(data).Deserialize<Dictionary<string, object?>>();
         var user = UserConstants.AuthorizedUserInfo;
 

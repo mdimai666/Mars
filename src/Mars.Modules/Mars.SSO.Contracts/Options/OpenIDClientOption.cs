@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Mars.Core.Attributes;
 
-namespace Mars.Options.Models;
+namespace Mars.SSO.Contracts.Options;
 
 [Display(Name = "OpenID Client")]
 
@@ -125,12 +125,6 @@ public class OpenIDClientConfig
 
     [Display(Name = "CallbackPath", Description = "The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.")]
     public string CallbackPath { get; set; } = "/signin-oidc"; // /signin-oidc
-
-    //[Display(Name = "SignedOutCallbackPath", Description = "The request path within the application's base path where the user agent will be returned after sign out from the identity provider. See post_logout_redirect_uri from http://openid.net/specs/openid-connect-session-1_0.html#RedirectionAfterLogout")]
-    //public string SignedOutCallbackPath { get; set; } = "/signout-callback-oidc"; // /signout-callback-oidc
-
-    //[Display(Name = "SignedOut Redirect Uri", Description = "The uri where the user agent will be redirected to after application is signed out from the identity provider. The redirect will happen after the SignedOutCallbackPath is invoked.")]
-    //public string SignedOutRedirectUri { get; set; } = "/"; // /
 
     [Display(Name = "Scopes", Description = "extra scopes except openid and profile")]
     public string Scopes { get; set; } = "openid email profile";

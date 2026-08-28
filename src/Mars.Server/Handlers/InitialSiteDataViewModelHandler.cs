@@ -6,6 +6,7 @@ using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Options.Mappings.Options;
 using Mars.Options.Services;
+using Mars.Server.Contracts.Options;
 using Mars.Server.Abstractions.Managers;
 using Microsoft.AspNetCore.Http;
 
@@ -31,7 +32,7 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
 
         return Task.FromResult(new InitialSiteDataViewModel
         {
-            SysOptions = optionService.SysOption,
+            SysOptions = optionService.GetOption<SiteSettings>(),
             UserPrimaryInfo = userPrimaryInfo,
             PostTypes = postTypes,
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Options.Models;
+namespace Mars.SSO.Contracts.Options;
 
 [Display(Name = "Варианты авторизации")]
 public class AuthVariantConstOption

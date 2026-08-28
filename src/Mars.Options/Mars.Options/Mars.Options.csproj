@@ -38,9 +38,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
-        <ProjectReference Include="..\..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
-        <ProjectReference Include="..\..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

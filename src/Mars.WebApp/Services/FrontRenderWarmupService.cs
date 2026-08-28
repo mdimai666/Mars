@@ -1,6 +1,6 @@
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Startup;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Interfaces;
 
 namespace Mars.Services;

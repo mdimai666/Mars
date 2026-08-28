@@ -154,9 +154,9 @@ public static class MarsWebAppStartup
 
         app.Services.MarsAutoMigrateCheck(builder.Configuration, _logger, out var migrated);
         app.Services.UseMarsHostServices();
-        app.Services.UseMarsOptions();
         app.Services.UseMarsMedia();
         app.Services.UseMarsNotifications();
+        app.Services.UseMarsSiteEngineOptions();
         app.Services.SeedData(builder.Configuration, _logger, migrated);
         app.Services.MigrateAppFrontToOption(builder.Configuration);
         app.Services.EnsureDefaultFront(builder.Configuration);

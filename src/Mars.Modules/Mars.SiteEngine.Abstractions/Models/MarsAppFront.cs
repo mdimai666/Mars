@@ -1,8 +1,8 @@
 using Mars.Core.Models;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Mars.Server.Abstractions.Models;
+namespace Mars.SiteEngine.Abstractions.Models;
 
 public class MarsAppFront
 {

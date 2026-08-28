@@ -38,13 +38,18 @@ public static class MarsWebSiteProcessorMain
     {
         UseSiteScriptsBuilders(app.Services);
 
-        var optionService = app.Services.GetRequiredService<IOptionService>();
+        return app;
+    }
+
+    public static IServiceProvider UseMarsSiteEngineOptions(this IServiceProvider services)
+    {
+        var optionService = services.GetRequiredService<IOptionService>();
+        optionService.RegisterOption<FrontsOption>();
         optionService.RegisterOption<SEOOption>();
         optionService.GetOption<SEOOption>();
-        optionService.RegisterOption<FaviconOption>(opt => _ = OnChangeFaviconOption(opt, app.Services));
+        optionService.RegisterOption<FaviconOption>(opt => _ = OnChangeFaviconOption(opt, services));
         optionService.RegisterOption<FaviconOptionGenaratedValues>();
-
-        return app;
+        return services;
     }
 
     static readonly SemaphoreSlim _faviconLock = new(1, 1);

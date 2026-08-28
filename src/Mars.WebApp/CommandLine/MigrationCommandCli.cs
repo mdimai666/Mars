@@ -1,6 +1,6 @@
 using System.CommandLine;
 using Mars.CommandLine.Abstractions;
-using Mars.Options.Host;
+using Mars.Server;
 using Mars.UseStartup.MarsParts;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -24,7 +24,7 @@ public class MigrationCommandCli : CommandCli
         var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
         NpgsqlConnectionStringBuilder npgsqlConnectionStringBuilder = new(connectionString);
         app.MarsRequireMigrate(_logger, npgsqlConnectionStringBuilder);
-        app.Services.UseMarsOptions();
+        app.Services.UseMarsServerOptions();
         app.Services.SeedData(app.Configuration, _logger, true);
     }
 }

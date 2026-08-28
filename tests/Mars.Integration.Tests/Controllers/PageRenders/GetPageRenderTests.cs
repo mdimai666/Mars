@@ -13,7 +13,7 @@ using Mars.Services;
 using Mars.Contracts.Common;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.SiteEngine.Contracts.Renders;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;

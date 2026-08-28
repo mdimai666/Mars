@@ -76,6 +76,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Front\Mars.AiChat.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Docker.Front\Mars.Docker.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Front\Mars.SemanticKernel.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />

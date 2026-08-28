@@ -13,6 +13,7 @@
           "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.10",
           "Mars.Admin": "0.8.0-alpha.1",
+          "Mars.Admin.Contracts": "1.0.0",
           "Mars.AiChat.Host": "1.0.0",
           "Mars.Cms.Host": "1.0.0",
           "Mars.CommandLine": "1.0.0",
@@ -2262,6 +2263,7 @@
           "Blazored.LocalStorage": "4.5.0",
           "Blazored.TextEditor": "1.1.3",
           "EditorJsBlazored": "1.0.0",
+          "Mars.Admin.Contracts": "1.0.0",
           "Mars.AiChat.Front": "0.8.0-alpha.1",
           "Mars.Datasource": "1.0.0",
           "Mars.Datasource.Front": "1.0.0",
@@ -2286,6 +2288,17 @@
           "Mars.Admin.dll": {
             "assemblyVersion": "0.8.0.0",
             "fileVersion": "0.8.0.0"
+          }
+        }
+      },
+      "Mars.Admin.Contracts/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.Admin.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       },
@@ -2790,6 +2803,11 @@
       },
       "Mars.Options.Front/1.0.0": {
         "dependencies": {
+          "Mars.Media.Contracts": "1.0.0",
+          "Mars.Plugin.Contracts": "1.0.0",
+          "Mars.SSO.Contracts": "1.0.0",
+          "Mars.Server.Contracts": "1.0.0",
+          "Mars.SiteEngine.Contracts": "1.0.0",
           "mdimai666.Mars.Admin.Framework": "0.8.0-alpha.1",
           "mdimai666.Mars.MarsCodeEditor2": "0.8.0-alpha.1",
           "mdimai666.Mars.Options": "0.8.0-alpha.1"
@@ -2803,7 +2821,8 @@
       },
       "Mars.Options.Host/1.0.0": {
         "dependencies": {
-          "Mars.SiteEngine": "1.0.0",
+          "Mars.Server.Contracts": "1.0.0",
+          "Mars.SiteEngine.Abstractions": "1.0.0",
           "mdimai666.Mars.Options": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
@@ -2816,6 +2835,7 @@
       },
       "Mars.Plugin/1.0.0": {
         "dependencies": {
+          "Mars.Plugin.Contracts": "1.0.0",
           "Microsoft.Extensions.DependencyModel": "10.0.9",
           "mdimai666.Mars.Plugin.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Plugin.Front": "0.8.0-alpha.1",
@@ -2997,6 +3017,7 @@
           "Mars.Identity.Abstractions": "1.0.0",
           "Mars.Media.Abstractions": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Mars.SiteEngine.Contracts": "1.0.0",
           "Mars.SiteEngine.Templators": "1.0.0",
           "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Options": "0.8.0-alpha.1",
@@ -3428,9 +3449,7 @@
       },
       "mdimai666.Mars.Options/0.8.0-alpha.1": {
         "dependencies": {
-          "Mars.Notifications.Abstractions": "1.0.0",
           "Mars.Options.Contracts": "1.0.0",
-          "Mars.Server.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1"
         },
@@ -5051,6 +5070,11 @@
       "sha512": ""
     },
     "Mars.Admin/0.8.0-alpha.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Admin.Contracts/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

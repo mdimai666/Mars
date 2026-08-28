@@ -1,7 +1,7 @@
 using System.Text;
 using Mars.Options.Services;
 using Mars.Setup;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.UseStartup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

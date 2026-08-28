@@ -280,6 +280,19 @@ MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; лок�
 
 Верификация: `dotnet build Mars.slnx` — 0 ошибок. Точечно: Test.Mars.Server (OptionService/OptionReaderTool) 36/36; Mars.Integration.Tests (Controllers.Options/Medias/Plugins + Modules.SSO) 37/37; WebApiClient.Integration.Tests (Options + RegisterAccount) 13/13; Mars.Plugin.Integration.Tests 7/7; Test.Mars.SiteEngine (рендер/QueryLang) 8/8. Docker-набор не гонялся (не требовался). Коммит — по команде пользователя.
 
-Открытые хвосты: `FrontsOption` остаётся в `UseMarsOptions` (владелец не определён); `UserService.cs` — закомментированная строка со старым `SysOption`.
+Открытые хвосты: `UserService.cs` — закомментированная строка со старым `SysOption`.
 
 Правило верификации (напоминание): только точечные тесты затронутых областей, без контрольных прогонов всего набора.
+
+## Фронтовая подсистема → SiteEngine (FrontsOption, MarsAppFront) — ✅ выполнен (2026-08-28)
+
+Принцип (пользователь): «всё фронтовое — в SiteEngine».
+
+- **`FrontsOption` + `FrontItem`** → `Mars.SiteEngine.Contracts.Options` (WASM-safe; едят админка, рендер, `IFrontManager`). `Mars.Contracts/Options/` удалён (был только `FrontsOption`).
+- **`MarsAppFront`** → `Mars.SiteEngine.Abstractions.Models` (это рендер-понятие: создаёт `WebRenderEngineLocator`, едят конвейер и `IFrontRequestHandler`). Поле `Front : FrontItem` осталось как есть — `SiteEngine.Abstractions` уже ссылается на `SiteEngine.Contracts`, DTO не понадобился. `Server.Abstractions` потерял фронт-модель (единственная связь «ядро → фронт-модель» снята).
+- **Регистрация**: `FrontsOption` ушёл из `UseMarsOptions` в новый **ранний** хук `UseMarsSiteEngineOptions` (регистрация до `MigrateAppFrontToOption`/`EnsureDefaultFront`/`IFrontManager`, т.к. поздний `UseMarsWebSiteProcessor` не успевает). Туда же консолидированы `SEOOption`/`FaviconOption`(+хук)/`FaviconOptionGenaratedValues`; `UseMarsWebSiteProcessor` оставлен только под `UseSiteScriptsBuilders`. `UseMarsOptions` **удалён** (движок больше не владеет опциями) — вызов в `MarsWebAppStartup` убран, `MigrationCommandCli` переведён на `UseMarsServerOptions` (ему для `SeedData` нужен `SiteSettings`).
+- Ссылки: `Mars.Admin` + прямая `SiteEngine.Contracts`; потребителям `MarsAppFront` добавлен `using Mars.SiteEngine.Abstractions.Models` (рядом с `Server.Abstractions.Models`, где остались `WebClientRequest` и др.).
+
+Верификация: `dotnet build Mars.slnx` — 0 ошибок. Точечно: Test.Mars.SiteEngine 61/61; Mars.Integration.Tests (FrontManager/FrontRender/AiFrontFiles/HandlebarsEngineCache/WebTemplateService + Controllers.Options/PageRenders) 56/56. Docker-набор не гонялся. Коммит — по команде пользователя.
+
+Открытые хвосты: реализация `FrontManager` и фронтовый сетап (`MigrateAppFrontToOption`/`EnsureDefaultFront`) пока в `Mars.WebApp` — перенос в SiteEngine отдельным шагом.

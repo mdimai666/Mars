@@ -143,7 +143,7 @@
             чтение на каждый запрос без локов и перебора выключенных фронтов.
             </summary>
         </member>
-        <member name="M:Mars.Services.FrontManager.BakedRoutes.#ctor(Mars.Contracts.Options.FrontItem,Mars.Contracts.Options.FrontItem[])">
+        <member name="M:Mars.Services.FrontManager.BakedRoutes.#ctor(Mars.SiteEngine.Contracts.Options.FrontItem,Mars.SiteEngine.Contracts.Options.FrontItem[])">
             <summary>
             Запечённая таблица маршрутов: пересобирается только при изменении FrontsOption,
             чтение на каждый запрос без локов и перебора выключенных фронтов.

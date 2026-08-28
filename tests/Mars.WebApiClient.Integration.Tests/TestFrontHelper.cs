@@ -1,5 +1,5 @@
 using Mars.Options.Services;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.Test.Common.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -7,7 +7,7 @@ using Mars.Data.Entities;
 using Mars.Nodes.Abstractions.Services;
 using Mars.Options.Services;
 using Mars.SiteEngine.Abstractions.Interfaces;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.Helpers;
 using Microsoft.EntityFrameworkCore;

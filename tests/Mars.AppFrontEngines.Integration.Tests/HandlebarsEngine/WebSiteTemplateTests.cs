@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Mars.AppFrontEngines.Integration.Tests.Common;
 using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Services;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;

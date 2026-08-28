@@ -2,7 +2,7 @@ using FluentAssertions;
 using Mars.Server.Abstractions.Managers;
 using Mars.Options.Services;
 using Mars.Services;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Contracts.Options;
 using Microsoft.AspNetCore.Hosting;
 using NSubstitute;
 

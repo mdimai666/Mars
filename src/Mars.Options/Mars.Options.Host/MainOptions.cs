@@ -1,4 +1,3 @@
-using Mars.Contracts.Options;
 using Mars.Options.Host.Services;
 using Mars.Options.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
@@ -13,11 +12,5 @@ public static class MainOptions
         services.AddSingleton<IOptionService, OptionService>();
         services.AddSingleton<IFrontRequestHandler, MaintenanceFrontRequestHandler>();
         return services;
-    }
-
-    public static IServiceProvider UseMarsOptions(this IServiceProvider serviceProvider)
-    {
-        serviceProvider.GetRequiredService<IOptionService>().RegisterOption<FrontsOption>();
-        return serviceProvider;
     }
 }

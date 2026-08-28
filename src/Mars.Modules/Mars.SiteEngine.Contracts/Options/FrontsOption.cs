@@ -1,4 +1,4 @@
-namespace Mars.Contracts.Options;
+namespace Mars.SiteEngine.Contracts.Options;
 
 /// <summary>
 /// Список фронтов сайта (файловые фронты в data/fronts или внешние папки).

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Server.Abstractions.Models;
-using Mars.Contracts.Options;
+using Mars.SiteEngine.Abstractions.Models;
+using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 

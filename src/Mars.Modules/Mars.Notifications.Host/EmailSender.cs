@@ -3,7 +3,6 @@ using Mars.Server.Abstractions.Services;
 using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
 using Mars.Server.Abstractions;
-using Mars.Contracts.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
 

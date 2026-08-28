@@ -1,7 +1,7 @@
 using Mars.Data.Contexts;
 using Mars.Server.Options;
 using Mars.Options.Services;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 
 namespace Mars.Factories.Seeds;
 

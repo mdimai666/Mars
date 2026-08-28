@@ -3,7 +3,7 @@ using Mars.Options.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Options.Models;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;

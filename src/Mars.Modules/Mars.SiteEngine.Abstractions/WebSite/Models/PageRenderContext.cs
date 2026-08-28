@@ -1,6 +1,6 @@
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Templators;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 
 namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 

@@ -1,7 +1,7 @@
 using Mars.Core.Models;
 using Mars.Contracts.Common;
+using Mars.Server.Contracts.Options;
 using Mars.Notifications.Abstractions;
-using Mars.Contracts.Options;
 
 namespace Mars.WebApiClient.Interfaces;
 

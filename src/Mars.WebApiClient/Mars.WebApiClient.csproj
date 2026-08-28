@@ -46,6 +46,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Contracts\Mars.SemanticKernel.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Contracts\Mars.Scheduler.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Options\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
     </ItemGroup>

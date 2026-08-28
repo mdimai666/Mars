@@ -6,7 +6,7 @@ using Mars.Options.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Options.Models;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

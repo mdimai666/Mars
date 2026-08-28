@@ -6,7 +6,7 @@ using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Templators;
 using Mars.QueryLang.Host.Services;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.Constants;
 using Mars.SiteEngine.Handlebars.TemplateData;
 using NSubstitute;

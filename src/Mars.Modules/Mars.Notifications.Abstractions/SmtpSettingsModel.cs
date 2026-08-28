@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Contracts.Resources;
 
-namespace Mars.Contracts.Options;
+namespace Mars.Notifications.Abstractions;
 
 public class SmtpSettingsModel
 {

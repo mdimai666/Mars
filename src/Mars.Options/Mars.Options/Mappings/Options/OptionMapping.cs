@@ -1,5 +1,5 @@
 using Mars.Options.Dto.Options;
-using Mars.Contracts.Options;
+using Mars.Options.Contracts.Dto.Options;
 
 namespace Mars.Options.Mappings.Options;
 

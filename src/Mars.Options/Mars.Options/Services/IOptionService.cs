@@ -4,7 +4,8 @@ using Mars.Options.Dto.Options;
 using Mars.Options.Exceptions;
 using Mars.Options.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
+using Mars.Notifications.Abstractions;
 using Microsoft.Extensions.Configuration;
 
 namespace Mars.Options.Services;

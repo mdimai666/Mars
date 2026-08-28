@@ -3,7 +3,6 @@ using Mars.Options.Services;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Abstractions;
 using Mars.Notifications.Abstractions;
-using Mars.Contracts.Options;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;

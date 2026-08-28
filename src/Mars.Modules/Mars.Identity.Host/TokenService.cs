@@ -18,7 +18,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.Models;
 using Mars.Identity.Host.Services;
 using Mars.Options.Services;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

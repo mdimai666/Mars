@@ -4,7 +4,7 @@ using Mars.Core.Models;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.Contracts.Options;
+using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.SignalR;

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Contracts.Common;
 
-namespace Mars.Contracts.Options;
+namespace Mars.Options.Contracts.Dto.Options;
 
 public class OptionRequest
 {

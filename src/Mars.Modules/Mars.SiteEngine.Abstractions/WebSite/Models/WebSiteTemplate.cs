@@ -1,5 +1,5 @@
 using Mars.Core.Exceptions;
-using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Contracts.WebSite.Models;
 
 namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 

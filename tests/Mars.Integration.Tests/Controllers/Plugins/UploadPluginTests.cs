@@ -12,7 +12,7 @@ using Mars.Options.Models;
 using Mars.Plugin;
 using Mars.Plugin.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

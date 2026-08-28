@@ -1,6 +1,6 @@
 using Mars.Admin.Framework.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.Renders;
+using Mars.SiteEngine.Contracts.Renders;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;

@@ -10,7 +10,7 @@ using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
-using Mars.Contracts.ActionHistorys;
+using Mars.Server.Abstractions;
 using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;

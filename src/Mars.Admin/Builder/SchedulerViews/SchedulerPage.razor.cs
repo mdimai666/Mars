@@ -1,5 +1,5 @@
 using Mars.Admin.Framework.Extensions;
-using Mars.Contracts.Schedulers;
+using Mars.Scheduler.Contracts.Schedulers;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

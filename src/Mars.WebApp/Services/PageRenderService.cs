@@ -6,7 +6,7 @@ using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.Contracts.Common;
-using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Interfaces;
 using Microsoft.AspNetCore.Http.Extensions;
 

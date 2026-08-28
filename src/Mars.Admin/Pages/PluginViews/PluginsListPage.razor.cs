@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Mars.Contracts.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

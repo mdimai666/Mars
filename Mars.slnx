@@ -49,8 +49,10 @@
     <Project Path="src/Mars.Modules/Mars.QueryLang.Host/Mars.QueryLang.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.QueryLang/Mars.QueryLang.csproj" />
     <Project Path="src/Mars.Modules/Mars.Scheduler.Abstractions/Mars.Scheduler.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Scheduler.Contracts/Mars.Scheduler.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Scheduler.Host/Mars.Scheduler.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Abstractions/Mars.SiteEngine.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine.Contracts/Mars.SiteEngine.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Templators/Mars.SiteEngine.Templators.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/AiChat/">
@@ -135,6 +137,7 @@
   </Folder>
   <Folder Name="/Mars.Plugin/">
     <Project Path="src/Plugin/Mars.Plugin.Abstractions/Mars.Plugin.Abstractions.csproj" />
+    <Project Path="src/Plugin/Mars.Plugin.Contracts/Mars.Plugin.Contracts.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Front.Abstractions/Mars.Plugin.Front.Abstractions.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Front/Mars.Plugin.Front.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Kit.Front/Mars.Plugin.Kit.Front.csproj" />

@@ -9,6 +9,7 @@
         <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Scheduler.Contracts\Mars.Scheduler.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

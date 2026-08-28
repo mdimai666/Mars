@@ -10,7 +10,7 @@ using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
-using Mars.Contracts.Sms;
+using Mars.Notifications.Abstractions;
 using Mars.Contracts.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Localization;

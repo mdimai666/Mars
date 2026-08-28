@@ -1,4 +1,4 @@
-namespace Mars.Contracts.Renders;
+namespace Mars.SiteEngine.Contracts.Renders;
 
 public class RenderInfoResponse
 {

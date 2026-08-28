@@ -5,7 +5,7 @@ using Mars.Scheduler.Abstractions.Dto.Schedulers;
 using Mars.Scheduler.Abstractions.Mappings.Schedulers;
 using Mars.Scheduler.Abstractions;
 using Mars.Contracts.Common;
-using Mars.Contracts.Schedulers;
+using Mars.Scheduler.Contracts.Schedulers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.Schedulers;
+using Mars.Scheduler.Contracts.Schedulers;
 
 namespace Mars.Scheduler.Abstractions.Dto.Schedulers;
 

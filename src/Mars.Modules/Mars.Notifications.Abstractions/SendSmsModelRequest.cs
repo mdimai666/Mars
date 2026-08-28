@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Mars.Contracts.Common;
 
-namespace Mars.Contracts.Sms;
+namespace Mars.Notifications.Abstractions;
 
 public class SendSmsModelRequest : IValidatableObject
 {

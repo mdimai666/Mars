@@ -4,7 +4,7 @@ using Humanizer;
 using Mars.Core.Extensions;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
-using Mars.Contracts.Systems;
+using Mars.Server.Contracts.Systems;
 using Mars.UseStartup;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;

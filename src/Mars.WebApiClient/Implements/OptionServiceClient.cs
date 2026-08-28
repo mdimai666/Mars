@@ -1,6 +1,6 @@
 using Mars.Core.Models;
 using Mars.Contracts.Common;
-using Mars.Contracts.Sms;
+using Mars.Notifications.Abstractions;
 using Mars.Contracts.Options;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;

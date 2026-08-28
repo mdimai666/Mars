@@ -1,7 +1,7 @@
 using Mars.Data.Extensions;
 using Mars.Scheduler.Abstractions.Dto.Schedulers;
 using Mars.Contracts.Common;
-using Mars.Contracts.Schedulers;
+using Mars.Scheduler.Contracts.Schedulers;
 
 namespace Mars.Scheduler.Abstractions.Mappings.Schedulers;
 

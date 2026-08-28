@@ -1,4 +1,4 @@
-namespace Mars.Contracts.Schedulers;
+namespace Mars.Scheduler.Contracts.Schedulers;
 
 public record SchedulerJobResponse
 {

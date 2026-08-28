@@ -1,5 +1,5 @@
 using Mars.SemanticKernel.Abstractions.Dto;
-using Mars.Contracts.AIService;
+using Mars.SemanticKernel.Contracts.AIService;
 
 namespace Mars.SemanticKernel.Abstractions.Mappings;
 

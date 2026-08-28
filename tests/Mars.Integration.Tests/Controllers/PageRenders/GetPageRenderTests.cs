@@ -12,7 +12,7 @@ using Mars.Integration.Tests.Common;
 using Mars.Services;
 using Mars.Contracts.Common;
 using Mars.Cms.Contracts.PostTypes;
-using Mars.Contracts.Renders;
+using Mars.SiteEngine.Contracts.Renders;
 using Mars.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;

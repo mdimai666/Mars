@@ -1,6 +1,6 @@
-using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Contracts.WebSite.Models;
 
-namespace Mars.Contracts.WebSite.Dto;
+namespace Mars.SiteEngine.Contracts.WebSite.Dto;
 
 public record FMarsAppFrontTemplateSummaryResponse
 {

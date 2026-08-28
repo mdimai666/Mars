@@ -6,7 +6,7 @@ using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
-using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars.TemplateData;
 using Mars.SiteEngine.Interfaces;
 using Mars.SiteEngine.Services;

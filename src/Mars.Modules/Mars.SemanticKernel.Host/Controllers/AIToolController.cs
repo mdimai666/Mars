@@ -6,7 +6,7 @@ using Mars.Server.Abstractions.Features;
 using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.Abstractions.Mappings;
 using Mars.Contracts.Common;
-using Mars.Contracts.AIService;
+using Mars.SemanticKernel.Contracts.AIService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

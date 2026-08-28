@@ -1,4 +1,4 @@
-using Mars.Contracts.Systems;
+using Mars.Server.Contracts.Systems;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

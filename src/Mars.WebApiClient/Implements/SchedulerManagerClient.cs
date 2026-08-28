@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.Schedulers;
+using Mars.Scheduler.Contracts.Schedulers;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 

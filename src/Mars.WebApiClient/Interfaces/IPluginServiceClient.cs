@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 
 namespace Mars.WebApiClient.Interfaces;
 

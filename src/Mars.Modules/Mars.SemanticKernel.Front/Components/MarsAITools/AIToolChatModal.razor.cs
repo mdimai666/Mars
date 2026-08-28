@@ -1,7 +1,7 @@
 using Mars.Admin.Framework.Services;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
-using Mars.Contracts.AIService;
+using Mars.SemanticKernel.Contracts.AIService;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

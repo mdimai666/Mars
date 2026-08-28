@@ -42,6 +42,7 @@
         <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

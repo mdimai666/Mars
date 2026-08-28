@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.Contracts.WebSite.Models;
+using Mars.SiteEngine.Contracts.WebSite.Models;
 
 namespace Test.Mars.SiteEngine.WebSiteParts;
 

@@ -6,7 +6,7 @@ using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Abstractions.Mappings.Plugins;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Contracts.Common;
-using Mars.Contracts.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

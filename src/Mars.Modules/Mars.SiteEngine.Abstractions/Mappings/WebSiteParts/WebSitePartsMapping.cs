@@ -1,5 +1,5 @@
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.Contracts.WebSite.Dto;
+using Mars.SiteEngine.Contracts.WebSite.Dto;
 
 namespace Mars.SiteEngine.Abstractions.Mappings.WebSiteParts;
 

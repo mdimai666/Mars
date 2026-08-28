@@ -1,7 +1,7 @@
 using Mars.Data.Extensions;
 using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Contracts.Common;
-using Mars.Contracts.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 
 namespace Mars.Plugin.Abstractions.Mappings.Plugins;
 

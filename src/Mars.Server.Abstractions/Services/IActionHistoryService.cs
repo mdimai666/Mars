@@ -1,4 +1,4 @@
-using Mars.Contracts.ActionHistorys;
+using Mars.Server.Abstractions;
 
 namespace Mars.Server.Abstractions.Services;
 

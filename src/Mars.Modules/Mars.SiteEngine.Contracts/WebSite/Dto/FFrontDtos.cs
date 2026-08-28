@@ -1,4 +1,4 @@
-namespace Mars.Contracts.WebSite.Dto;
+namespace Mars.SiteEngine.Contracts.WebSite.Dto;
 
 public class FFrontEngineResponse
 {

@@ -1,6 +1,6 @@
 using Mars.Contracts.Common;
 
-namespace Mars.Contracts.Schedulers;
+namespace Mars.Scheduler.Contracts.Schedulers;
 
 public record ListSchedulerJobQueryRequest : BasicListQueryRequest
 {

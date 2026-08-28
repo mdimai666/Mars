@@ -1,4 +1,4 @@
-namespace Mars.Contracts.ActionHistorys;
+namespace Mars.Server.Abstractions;
 
 public enum ActionHistoryLevel
 {

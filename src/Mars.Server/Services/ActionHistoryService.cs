@@ -6,7 +6,7 @@ using Mars.Core.Features;
 using Mars.Data;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Services;
-using Mars.Contracts.ActionHistorys;
+using Mars.Server.Abstractions;
 
 namespace Mars.Server.Services;
 

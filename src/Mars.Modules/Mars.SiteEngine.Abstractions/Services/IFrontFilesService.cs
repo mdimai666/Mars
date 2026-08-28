@@ -1,4 +1,4 @@
-using Mars.Contracts.WebSite.Dto;
+using Mars.SiteEngine.Contracts.WebSite.Dto;
 using Mars.Contracts.Options;
 
 namespace Mars.SiteEngine.Abstractions.Services;

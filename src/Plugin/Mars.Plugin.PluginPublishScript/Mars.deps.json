@@ -2385,6 +2385,7 @@
       },
       "Mars.Cms.Host/1.0.0": {
         "dependencies": {
+          "EditorJsBlazored": "1.0.0",
           "Handlebars.Net": "2.1.6",
           "Mars.Cms.Abstractions": "1.0.0",
           "Mars.Cms.Contracts": "1.0.0",
@@ -2392,6 +2393,7 @@
           "Mars.Excel.Abstractions": "1.0.0",
           "Mars.Identity.Abstractions": "1.0.0",
           "Mars.Media.Abstractions": "1.0.0",
+          "Mars.Media.Contracts": "1.0.0",
           "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },

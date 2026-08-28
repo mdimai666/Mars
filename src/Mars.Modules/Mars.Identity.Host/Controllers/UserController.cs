@@ -8,13 +8,13 @@ using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Services;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Identity.Abstractions.Mappings.Users;
-using Mars.Identity.Abstractions.Services;
 using Mars.Contracts.Common;
 using Mars.Identity.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Identity.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

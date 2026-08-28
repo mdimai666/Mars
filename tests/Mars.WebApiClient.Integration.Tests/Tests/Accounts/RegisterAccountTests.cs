@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Controllers;
+using Mars.Identity.Host.Controllers;
 using Mars.Core.Constants;
 using Mars.Core.Utils;
 using Mars.Data.Entities;

@@ -8,13 +8,13 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Cms.Abstractions.Mappings.Search;
 using Mars.Identity.Abstractions.Mappings.UserTypes;
-using Mars.Identity.Abstractions.Services;
 using Mars.Contracts.Common;
 using Mars.Identity.Contracts.UserTypes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Identity.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -58,7 +58,6 @@ public class UserTypeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserTypeSummaryResponse))]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]

@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Identity.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Integration.Tests.Attributes;

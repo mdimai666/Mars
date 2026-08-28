@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Identity.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.Users;
 
-/// <seealso cref="Mars.Controllers.UserController"/>
+/// <seealso cref="Mars.Identity.Host.Controllers.UserController"/>
 public sealed class UpdateUserTests : ApplicationTests
 {
     const string _apiUrl = "/api/User";

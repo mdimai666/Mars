@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Controllers;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Identity.Contracts.Auth;

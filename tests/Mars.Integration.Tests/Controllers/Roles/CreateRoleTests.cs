@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Identity.Host.Controllers;
 using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.Roles;
 
-/// <seealso cref="Mars.Controllers.RoleController"/>
+/// <seealso cref="Mars.Identity.Host.Controllers.RoleController"/>
 public class CreateRoleTests : ApplicationTests
 {
     const string _apiUrl = "/api/Role";

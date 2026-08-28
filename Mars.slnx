@@ -90,6 +90,7 @@
   </Folder>
   <Folder Name="/Mars.Modules/Media/">
     <Project Path="src/Mars.Modules/Mars.Media.Abstractions/Mars.Media.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Media.Contracts/Mars.Media.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Media.Host/Mars.Media.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/Notifications/">

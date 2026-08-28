@@ -1,5 +1,5 @@
 using Mars.Admin.Framework.Services;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.Cms.Contracts.MetaFields;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

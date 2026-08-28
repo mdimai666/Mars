@@ -1,6 +1,6 @@
 using Mars.Admin.Framework.Extensions;
 using Mars.Core.Exceptions;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;

@@ -5,7 +5,7 @@ using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Services;
 using Flurl.Http;
 using Mars.Contracts.Common;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;

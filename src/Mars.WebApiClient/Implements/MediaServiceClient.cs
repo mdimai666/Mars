@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 using Flurl.Http.Content;

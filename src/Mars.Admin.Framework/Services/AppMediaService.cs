@@ -1,5 +1,5 @@
 using Mars.Admin.Framework.Components.MediaViews;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Framework.Services;

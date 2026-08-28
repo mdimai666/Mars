@@ -1,4 +1,4 @@
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 
 namespace Mars.Admin.Framework.Extensions;
 

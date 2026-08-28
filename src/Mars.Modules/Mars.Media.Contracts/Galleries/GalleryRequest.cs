@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Mars.Contracts.Common;
 
-namespace Mars.Contracts.Galleries;
+namespace Mars.Media.Contracts.Galleries;
 
 public record CreateGalleryRequest
 {

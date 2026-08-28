@@ -6,7 +6,7 @@ using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Contracts.Common;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 

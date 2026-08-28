@@ -7,6 +7,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
         <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
         <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />

@@ -1,5 +1,5 @@
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 
 namespace Mars.Media.Abstractions.Dto.Files;
 

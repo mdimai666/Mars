@@ -1,7 +1,7 @@
 using Mars.Data.Extensions;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Contracts.Common;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 
 namespace Mars.Media.Abstractions.Mappings.Files;
 

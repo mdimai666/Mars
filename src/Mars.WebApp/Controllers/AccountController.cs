@@ -27,7 +27,7 @@ using Mars.Identity.Host.Services;
 using Mars.Media.Abstractions.Services;
 using Mars.Options.Services;
 using Mars.Identity.Contracts.Auth;
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.Identity.Contracts.Users.UserProfiles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

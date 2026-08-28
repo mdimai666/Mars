@@ -2346,6 +2346,7 @@
       "Mars.Cms.Abstractions/1.0.0": {
         "dependencies": {
           "FluentValidation": "12.1.1",
+          "Mars.Cms.Contracts": "1.0.0",
           "Mars.Media.Abstractions": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1"
@@ -2357,10 +2358,22 @@
           }
         }
       },
+      "Mars.Cms.Contracts/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.Cms.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Mars.Cms.Host/1.0.0": {
         "dependencies": {
           "Handlebars.Net": "2.1.6",
           "Mars.Cms.Abstractions": "1.0.0",
+          "Mars.Cms.Contracts": "1.0.0",
           "Mars.Data.Repositories": "1.0.0",
           "Mars.Excel.Abstractions": "1.0.0",
           "Mars.Identity.Abstractions": "1.0.0",
@@ -2616,6 +2629,7 @@
       },
       "Mars.Identity.Contracts/1.0.0": {
         "dependencies": {
+          "Mars.Cms.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -2916,6 +2930,7 @@
       },
       "Mars.Server.Contracts/1.0.0": {
         "dependencies": {
+          "Mars.Cms.Contracts": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
@@ -3146,6 +3161,7 @@
           "Blazored.TextEditor": "1.1.3",
           "Flurl.Http": "4.0.2",
           "Markdig": "1.2.0",
+          "Mars.Cms.Contracts": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
           "Mars.SSO.Contracts": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
@@ -3435,6 +3451,7 @@
         "dependencies": {
           "Flurl.Http": "4.0.2",
           "Mars.AiChat.Contracts": "1.0.0",
+          "Mars.Cms.Contracts": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
@@ -4980,6 +4997,11 @@
       "sha512": ""
     },
     "Mars.Cms.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Cms.Contracts/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

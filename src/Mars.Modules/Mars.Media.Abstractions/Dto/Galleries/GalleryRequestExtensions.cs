@@ -1,5 +1,5 @@
 using Mars.Server.Abstractions.Extensions;
-using Mars.Contracts.Galleries;
+using Mars.Media.Contracts.Galleries;
 
 namespace Mars.Media.Abstractions.Dto.Galleries;
 

@@ -1,4 +1,4 @@
-using Mars.Contracts.Files;
+using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;

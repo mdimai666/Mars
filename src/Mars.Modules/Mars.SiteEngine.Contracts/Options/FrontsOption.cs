@@ -6,6 +6,11 @@ namespace Mars.SiteEngine.Contracts.Options;
 /// </summary>
 public class FrontsOption
 {
+    /// <summary>
+    /// Значение выбора фронта в визарде: существующая папка с шаблонами (путь + движок).
+    /// </summary>
+    public const string ExistingFrontChoice = "existing";
+
     public List<FrontItem> Fronts { get; set; } = [];
 
     /// <summary>

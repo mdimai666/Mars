@@ -1,6 +1,6 @@
-using Mars.SiteEngine.Services;
+using Microsoft.AspNetCore.Hosting;
 
-namespace Mars.Services;
+namespace Mars.SiteEngine.Services;
 
 /// <summary>
 /// Создание фронтов из стартовых шаблонов (Res/front_templates/&lt;name&gt; → data/fronts/&lt;slug&gt;)

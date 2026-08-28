@@ -1,12 +1,11 @@
 using System.Text;
 using Mars.Options.Services;
-using Mars.Setup;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.UseStartup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-namespace Mars.Services;
+namespace Mars.SiteEngine.Services;
 
 /// <summary>
 /// Разовая миграция фронтов из секции "AppFront" (appsettings) в опцию FrontsOption
@@ -48,7 +47,8 @@ public static class AppFrontMigration //TODO: аотом убрать
     /// </summary>
     public static void EnsureDefaultFront(this IServiceProvider services, IConfiguration configuration)
     {
-        if (MarsStartupInfo.IsTesting) return;
+        var hostEnvironment = services.GetRequiredService<IHostEnvironment>();
+        if (hostEnvironment.EnvironmentName.Equals("Test", StringComparison.OrdinalIgnoreCase)) return;
 
         var optionService = services.GetRequiredService<IOptionService>();
         var option = optionService.GetOption<FrontsOption>();
@@ -80,7 +80,7 @@ public static class AppFrontMigration //TODO: аотом убрать
         var templateService = services.GetRequiredService<FrontTemplateService>();
         var templateName = configuration["Setup:FrontChoice"];
         if (string.IsNullOrWhiteSpace(templateName)
-            || templateName == SetupService.ExistingFrontChoice
+            || templateName == FrontsOption.ExistingFrontChoice
             || !Directory.Exists(templateService.GetTemplatePath(templateName)))
         {
             templateName = FrontTemplateService.DefaultTemplateName;

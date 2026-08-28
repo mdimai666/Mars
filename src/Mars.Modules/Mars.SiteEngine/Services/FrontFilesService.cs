@@ -5,7 +5,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Contracts.WebSite.Dto;
 using Mars.SiteEngine.Interfaces;
 
-namespace Mars.Services;
+namespace Mars.SiteEngine.Services;
 
 /// <summary>
 /// Файловые операции над папкой фронта. Используется REST-контроллером (админка)

@@ -77,101 +77,6 @@
             Рендерит только тело (без _root) — админка имеет собственную обвязку.
             </summary>
         </member>
-        <member name="T:Mars.Services.AppFrontMigration">
-            <summary>
-            Разовая миграция фронтов из секции "AppFront" (appsettings) в опцию FrontsOption
-            и бутстрап дефолтного фронта при чистом старте.
-            </summary>
-        </member>
-        <member name="T:Mars.Services.AppFrontMigration.LegacyAppFrontCfg">
-            <summary>
-            Легаси-запись секции "AppFront" из appsettings (до FrontsOption).
-            Mode — строка с именем значения старого перечисления AppFrontMode.
-            </summary>
-        </member>
-        <member name="M:Mars.Services.AppFrontMigration.EnsureDefaultFront(System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Чистый старт: если фронтов нет совсем — создаёт фронт по выбору из визарда
-            (Setup:FrontChoice/FrontPath/FrontEngineId): стартовый шаблон (default/landing/...)
-            или подключение существующей папки с шаблонами; без выбора — дефолтный шаблон.
-            </summary>
-        </member>
-        <member name="T:Mars.Services.FrontFilesService">
-            <summary>
-            Файловые операции над папкой фронта. Используется REST-контроллером (админка)
-            и ИИ-инструментами. Все пути — только относительные, с проверкой выхода за корень фронта.
-            После изменяющих операций явно уведомляет движок рендера фронта (детерминированная
-            инвалидация кеша и reload предпросмотра — не только через FileSystemWatcher).
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontFilesService.ResolveSafePath(System.String,System.String)">
-            <summary>
-            Резолвит относительный путь внутри корня фронта; бросается при выходе за его пределы.
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontFilesService.IsHiddenDirectory(System.String)">
-            <summary>
-            Стандартные папки (.git, .vscode, node_modules, bin/obj и любые скрытые),
-            которые не показываются в дереве файлов фронта.
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontFilesService.NotifyFrontChanged(System.String,System.String)">
-            <summary>
-            Движок рендера (если уже создан) перечитывает шаблон, чистит кеш и шлёт reload
-            в предпросмотр. Ошибки уведомления не ломают файловую операцию: FileSystemWatcher
-            остаётся страховкой.
-            </summary>
-        </member>
-        <member name="T:Mars.Services.FrontRenderWarmupService">
-            <summary>
-            Прогрев рендера после запуска (FrontsOption.WarmupRenderOnStartup):
-            собирает движок первого фронта и сканирует шаблоны, чтобы первый запрос был быстрее.
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontRenderWarmupService.#ctor(Mars.Options.Services.IOptionService,Mars.SiteEngine.Interfaces.IWebRenderEngineLocator,Microsoft.Extensions.Logging.ILogger{Mars.Services.FrontRenderWarmupService})">
-            <summary>
-            Прогрев рендера после запуска (FrontsOption.WarmupRenderOnStartup):
-            собирает движок первого фронта и сканирует шаблоны, чтобы первый запрос был быстрее.
-            </summary>
-        </member>
-        <member name="T:Mars.Services.FrontTemplateService">
-            <summary>
-            Создание фронтов из стартовых шаблонов (Res/front_templates/&lt;name&gt; → data/fronts/&lt;slug&gt;)
-            </summary>
-        </member>
-        <member name="P:Mars.Services.FrontTemplateService.FrontsBasePath">
-            <summary>
-            Базовая папка фронтов: data/fronts
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontTemplateService.GetStarterTemplates">
-            <summary>
-            Стартовые шаблоны для новых фронтов (папки Res/front_templates).
-            Специальные шаблоны (админ-фронта) не входят в список.
-            </summary>
-        </member>
-        <member name="P:Mars.Services.FrontTemplateService.AdminFrontPath">
-            <summary>
-            Папка специального фронта админки: data/admin/front
-            </summary>
-        </member>
-        <member name="F:Mars.Services.FrontTemplateService.AdminTemplateName">
-            <summary>
-            Имя стартового шаблона админ-фронта в Res/front_templates.
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontTemplateService.EnsureAdminFront">
-            <summary>
-            Создаёт специальный фронт админки (data/admin/front) из шаблона Res/front_templates/admin,
-            дозаполняя отсутствующие файлы (_root.hbs, admin_index.hbs и др.).
-            Вызывается при старте; существующие файлы не затирает.
-            </summary>
-        </member>
-        <member name="M:Mars.Services.FrontTemplateService.CopyMissingFiles(System.String,System.String)">
-            <summary>
-            Рекурсивно копирует только отсутствующие в назначении файлы (не затирая правки пользователя).
-            </summary>
-        </member>
         <member name="T:Mars.Services.ImageProcessor">
             <summary>
             Singletone.
@@ -243,14 +148,9 @@
             ежедневная чистка файлов старше периода хранения.
             </summary>
         </member>
-        <member name="F:Mars.Setup.SetupService.ExistingFrontChoice">
-            <summary>
-            Значение выбора фронта в визарде: существующая папка с шаблонами (путь + движок).
-            </summary>
-        </member>
         <member name="P:Mars.Setup.SetupService.FrontChoice">
             <summary>
-            Выбор фронта: имя стартового шаблона (default/landing/...) или <see cref="F:Mars.Setup.SetupService.ExistingFrontChoice"/>.
+            Выбор фронта: имя стартового шаблона (default/landing/...) или <see cref="F:Mars.SiteEngine.Contracts.Options.FrontsOption.ExistingFrontChoice"/>.
             </summary>
         </member>
         <member name="M:Mars.Setup.SetupService.GetAvailableFrontTemplates">

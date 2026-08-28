@@ -1,5 +1,5 @@
 using Mars.SiteEngine.Contracts.Options;
-using Mars.Services;
+using Mars.SiteEngine.Services;
 using Mars.Setup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -71,7 +71,7 @@ public class SiteModel : PageModel
     {
         AvailableTemplates = _setupService.GetAvailableFrontTemplates();
 
-        if (FrontChoice == SetupService.ExistingFrontChoice && string.IsNullOrWhiteSpace(FrontPath))
+        if (FrontChoice == FrontsOption.ExistingFrontChoice && string.IsNullOrWhiteSpace(FrontPath))
         {
             ModelState.AddModelError(nameof(FrontPath), "Укажите путь к папке с шаблонами");
             return Page();

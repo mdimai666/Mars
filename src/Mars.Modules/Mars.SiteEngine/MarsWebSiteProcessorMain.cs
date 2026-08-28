@@ -15,6 +15,7 @@ using Mars.SiteEngine.WebSite.Scripts;
 using Mars.SiteEngine.Interfaces;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SiteEngine;
@@ -26,6 +27,9 @@ public static class MarsWebSiteProcessorMain
         services.AddSingleton<IWebRenderEngineLocator, WebRenderEngineLocator>();
         services.AddSingleton<ITemplatorFeaturesLocator, TemplatorFeaturesLocator>();
         services.AddSingleton<IFrontManager, FrontManager>();
+        services.AddSingleton<FrontTemplateService>();
+        services.AddSingleton<IFrontFilesService, FrontFilesService>();
+        services.AddSingleton<FrontRenderWarmupService>();
 
         services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
         services.AddScoped<SiteFaviconConfiguratorHandler>();
@@ -37,6 +41,9 @@ public static class MarsWebSiteProcessorMain
 
     public static IApplicationBuilder UseMarsWebSiteProcessor(this WebApplication app)
     {
+        // специальный фронт админки (data/admin/front) — создаётся один раз при старте
+        app.Services.GetRequiredService<FrontTemplateService>().EnsureAdminFront();
+
         UseSiteScriptsBuilders(app.Services);
 
         return app;
@@ -50,6 +57,10 @@ public static class MarsWebSiteProcessorMain
         optionService.GetOption<SEOOption>();
         optionService.RegisterOption<FaviconOption>(opt => _ = OnChangeFaviconOption(opt, services));
         optionService.RegisterOption<FaviconOptionGenaratedValues>();
+
+        var configuration = services.GetRequiredService<IConfiguration>();
+        services.MigrateAppFrontToOption(configuration);
+        services.EnsureDefaultFront(configuration);
         return services;
     }
 

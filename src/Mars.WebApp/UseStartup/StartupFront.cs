@@ -2,10 +2,8 @@ using System.Diagnostics;
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.Options.Services;
-using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.Services;
 using Mars.UseStartup.MarsParts;
 using Mars.SiteEngine.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +14,6 @@ public static class StartupFront
 {
     public static WebApplicationBuilder AddFront(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<FrontTemplateService>();
-        builder.Services.AddSingleton<IFrontFilesService, FrontFilesService>();
-        builder.Services.AddSingleton<FrontRenderWarmupService>();
-
         builder.AddWREHandlebars();
 
         return builder;
@@ -47,9 +41,6 @@ public static class StartupFront
 
     public static IApplicationBuilder UseFront(this WebApplication app)
     {
-        // специальный фронт админки (data/admin/front) — создаётся один раз при старте
-        app.Services.GetRequiredService<FrontTemplateService>().EnsureAdminFront();
-
         UseRobotsTxt(app);
         app.Use(AppendMarsAppFrontInRequestContextItems);
         app.Use(FrontRequestHandlersMiddleware);

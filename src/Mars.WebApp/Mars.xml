@@ -36,23 +36,6 @@
             но env-переменные и явно примонтированный appsettings.Production.json перекрывают его.
             </summary>
         </member>
-        <member name="M:Mars.UseStartup.StartupFront.FrontRequestHandlersMiddleware(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">
-             <summary>
-             Пайплайн обработчиков фронтов (IFrontRequestHandler из DI, по возрастанию Order).
-             Исполняется до статики фронтов и fallback-рендера: обработчик может перехватить запрос
-             (например, режим обслуживания), не встраиваясь в код фронтов.
-            
-             Запросы с endpoint'ом проходят через обработчики только если endpoint помечен
-             FrontRenderEndpointAttribute (публичное API рендера фронтов); админка и прочие API
-             не затрагиваются. Файловые запросы (ассеты) идут мимо, кроме html-страниц в wwwroot.
-             </summary>
-        </member>
-        <member name="M:Mars.UseStartup.StartupFront.FrontStaticFilesMiddleware(Microsoft.AspNetCore.Http.HttpContext,System.Func{System.Threading.Tasks.Task})">
-            <summary>
-            Статика wwwroot фронтов. До endpoints — как UseStaticFiles в старой схеме.
-            (Fallback-запросы с точкой в пути — файлы — пропускаются и тут, и в FrontRenderFallbackMiddleware)
-            </summary>
-        </member>
         <member name="F:Mars.XActions.ContentRecipes.CreateMockPostsAct.PostTypesOptionsSource">
             <summary>
             Ключ динамического источника вариантов выбора типа записей.

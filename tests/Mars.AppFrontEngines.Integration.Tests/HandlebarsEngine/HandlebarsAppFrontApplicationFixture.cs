@@ -3,8 +3,8 @@ using System.Text.Json;
 using Mars.Core.Models;
 using Mars.SiteEngine.Services;
 using Mars.Integration.Tests.Common;
+using Mars.SiteEngine;
 using Mars.Test.Common.Helpers;
-using Mars.UseStartup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -30,7 +30,7 @@ public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
 
     protected virtual internal AppFrontSettingsCfg[] GetAppFrontConfigs()
     {
-        _ = nameof(StartupFront.AddFront);
+        _ = nameof(MarsSiteEngineFrontStartup.UseMarsSiteEngineFront);
 
         var themeRoot = SolutionPathHelper.Resolve("tests", "Mars.AppFrontEngines.Integration.Tests", "HandlebarsEngine", "appTheme");
 

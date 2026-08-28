@@ -1,24 +1,17 @@
 using System.Diagnostics;
-using Mars.Server.Abstractions.Models;
-using Mars.SiteEngine.Abstractions.Models;
 using Mars.Options.Services;
+using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.UseStartup.MarsParts;
 using Mars.SiteEngine.Interfaces;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.UseStartup;
+namespace Mars.SiteEngine;
 
-public static class StartupFront
+public static class MarsSiteEngineFrontStartup
 {
-    public static WebApplicationBuilder AddFront(this WebApplicationBuilder builder)
-    {
-        builder.AddWREHandlebars();
-
-        return builder;
-    }
-
     [DebuggerStepThrough]
     static Task AppendMarsAppFrontInRequestContextItems(HttpContext context, Func<Task> next)
     {
@@ -39,7 +32,7 @@ public static class StartupFront
         return next.Invoke();
     }
 
-    public static IApplicationBuilder UseFront(this WebApplication app)
+    public static IApplicationBuilder UseMarsSiteEngineFront(this WebApplication app)
     {
         UseRobotsTxt(app);
         app.Use(AppendMarsAppFrontInRequestContextItems);

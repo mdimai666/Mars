@@ -62,7 +62,7 @@ public static class MarsWebAppStartup
                         .MarsAddMetrics(builder.Configuration)
                         .AddConfigureActions()
                         .AddMarsWebSiteProcessor();
-        builder.AddFront();
+        builder.AddWREHandlebars();
 
         builder.WebHost.UseStaticWebAssets();
         builder.Services.AddControllers()
@@ -221,7 +221,7 @@ public static class MarsWebAppStartup
         app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());
 
         app.UseMarsScheduler();
-        app.UseFront();
+        app.UseMarsSiteEngineFront();
 
         IMarsAppLifetimeService.UseAppLifetime(builder.Services, app);
     }

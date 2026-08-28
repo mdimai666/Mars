@@ -2367,6 +2367,7 @@
       },
       "Mars.Cms.Contracts/1.0.0": {
         "dependencies": {
+          "Mars.Media.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {

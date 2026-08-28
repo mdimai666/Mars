@@ -41,6 +41,7 @@
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="AngleSharp" />
+        <PackageReference Include="Npgsql" />
         <PackageReference Include="Humanizer">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -53,7 +54,19 @@
         <ProjectReference Include="..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>SourceRevisionId</_Parameter1>
+            <_Parameter2>$(SourceRevisionId)</_Parameter2>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>RepositoryUrl</_Parameter1>
+            <_Parameter2>$(RepositoryUrl)</_Parameter2>
+        </AssemblyAttribute>
     </ItemGroup>
 
     <ItemGroup>

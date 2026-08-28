@@ -36,8 +36,7 @@ internal static class MarsStartupPartServices
                 .AddMetaModelGenerator();
 
         // basic services
-        services.AddSingleton<IMarsSystemService, MarsSystemService>()
-                .AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
+        services.AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
                 .AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
         services.AddMarsHost(wenv);

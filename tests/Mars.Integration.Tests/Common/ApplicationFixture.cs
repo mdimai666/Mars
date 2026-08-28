@@ -19,7 +19,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Abstractions;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.UseStartup.MarsParts;
+using Mars.Server.Startup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -202,7 +202,7 @@ public class ApplicationFixture : IAsyncLifetime
         var ef = ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance();
         ef.ChangeTracker.Clear();
         var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
-        MarsStartupPartMigrations.SeedData(ApplicationFactory.Services, Configuration, logger, true);
+        MarsDbStartup.SeedData(ApplicationFactory.Services, Configuration, logger, true);
 
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 

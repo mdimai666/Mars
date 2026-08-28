@@ -1,15 +1,16 @@
 using System.CommandLine;
 using Mars.CommandLine.Abstractions;
-using Mars.Server;
-using Mars.UseStartup.MarsParts;
-using Microsoft.EntityFrameworkCore;
+using Mars.Server.Startup;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace Mars.CommandLine;
+namespace Mars.Server.CommandLine;
 
 public class MigrationCommandCli : CommandCli
 {
-    public MigrationCommandCli(CommandLineApi cli) : base(cli)
+    public MigrationCommandCli(ICommandLineApi cli) : base(cli)
     {
         //var optionMigrate = new Option<bool>("-migrate", "run migrate script");
 
@@ -20,7 +21,7 @@ public class MigrationCommandCli : CommandCli
 
     void RunMigrateCommand(ParseResult _)
     {
-        ILogger<Program> _logger = app.Services.GetRequiredService<ILogger<Program>>();
+        ILogger<MigrationCommandCli> _logger = app.Services.GetRequiredService<ILogger<MigrationCommandCli>>();
         var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
         NpgsqlConnectionStringBuilder npgsqlConnectionStringBuilder = new(connectionString);
         app.MarsRequireMigrate(_logger, npgsqlConnectionStringBuilder);

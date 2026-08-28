@@ -10,6 +10,8 @@ using Mars.Excel.Host;
 using Mars.Server;
 using Mars.Server.Abstractions.Extensions;
 using Mars.Server.Abstractions.Features;
+using Mars.Server.CommandLine;
+using Mars.Server.Startup;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Server.Abstractions.JsonConverters;
 using Mars.SiteEngine.Abstractions.Services;
@@ -43,7 +45,7 @@ public static class MarsWebAppStartup
 {
     public static void ConfigureBuilder(WebApplicationBuilder builder, string[] args)
     {
-        var commandsApi = new CommandLineApi(typeof(Program).Assembly, [typeof(InfoCommand)]);
+        var commandsApi = new CommandLineApi(typeof(Program).Assembly, [typeof(InfoCommand), typeof(MigrationCommandCli)]);
         builder.Services.AddSingleton<ICommandLineApi>(commandsApi);
 
         if (!IsTesting && !IsRunningInDocker)
@@ -55,6 +57,7 @@ public static class MarsWebAppStartup
             // конфиг, записанный setup-визардом на том ./config; приоритет ниже env-переменных
             builder.Configuration.AddWizardConfigSource();
         }
+        builder.Services.AddSingleton<IMarsStartupInfo>(MarsStartupInfo.Instance);
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection(FeatureExtensions.SectionName));
         builder.Services.MarsAddLocalization()
                         .MarsAddCore(builder.Configuration)

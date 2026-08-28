@@ -4,6 +4,7 @@ using Mars;
 using Mars.CommandLine;
 using Mars.CommandLine.Remote;
 using Mars.CommandLine.Abstractions;
+using Mars.Server.Startup;
 using Mars.Setup;
 using Mars.UseStartup;
 using static Mars.UseStartup.MarsStartupInfo;

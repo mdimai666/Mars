@@ -21,8 +21,7 @@ using Mars.Integration.Tests.Interfaces;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
-using Mars.UseStartup;
-using Mars.UseStartup.MarsParts;
+using Mars.Server.Startup;
 using Mars.SiteEngine.Interfaces;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -148,7 +147,7 @@ public class E2EServerFixture : IAsyncLifetime
         var ef = ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance();
         ef.ChangeTracker.Clear();
         var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
-        MarsStartupPartMigrations.SeedData(ServiceProvider, Configuration, logger, true);
+        MarsDbStartup.SeedData(ServiceProvider, Configuration, logger, true);
 
         var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
         optionService.GetOption<SiteSettings>().SiteUrl = BaseUrl;

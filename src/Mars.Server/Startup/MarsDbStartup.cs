@@ -1,14 +1,18 @@
 using Mars.Core.Extensions;
-using Mars.Factories.Seeds;
 using Mars.Data.Contexts;
-using Mars.Data.Entities;
-using Microsoft.AspNetCore.Identity;
+using Mars.Data.Seeding;
+using Mars.Server.Models;
+using Mars.Server.Seeding;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace Mars.UseStartup.MarsParts;
+namespace Mars.Server.Startup;
 
-public static class MarsStartupPartMigrations
+public static class MarsDbStartup
 {
     public static WebApplication MarsRequireMigrate(this WebApplication app, ILogger logger, NpgsqlConnectionStringBuilder dbx)
     {
@@ -79,20 +83,10 @@ public static class MarsStartupPartMigrations
 
     static async Task SeedDataAsync(MarsDbContext marsDbContext, IServiceProvider services, IConfiguration configuration, ILogger logger)
     {
-        AppDbContextSeedData.SeedFirstOption(services, configuration);
+        services.GetRequiredService<ISeedFirstOptionHandler>().Seed(configuration);
 
-        UserManager<UserEntity> userManager = services.GetRequiredService<UserManager<UserEntity>>();
-
-        SeedRoles.SeedFirstData(marsDbContext);
-        SeedUsers.SeedFirstData(userManager, marsDbContext, configuration);
-        await SeedPostData.SeedFirstData(marsDbContext, services, configuration);
-        SeedPostCategories.SeedFirstData(marsDbContext);
+        var handlers = services.GetServices<ISeedDataHandler>().OrderBy(h => h.Order);
+        foreach (var handler in handlers)
+            await handler.SeedAsync(marsDbContext, services, configuration);
     }
-}
-
-public class AppDatabaseMigrationOptions
-{
-    public const string SectionName = "AppDatabaseMigrationOptions";
-
-    public bool AutoMigrate { get; set; }
 }

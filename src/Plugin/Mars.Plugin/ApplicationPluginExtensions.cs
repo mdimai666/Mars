@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.Options.Services;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Contracts.Options;
@@ -15,6 +16,8 @@ public static class ApplicationPluginExtensions
 
     public static WebApplicationBuilder AddPlugins(this WebApplicationBuilder builder)
     {
+        builder.Services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         var pluginManager = new PluginManager(builder.Environment.ContentRootPath);
         pluginManager.ConfigureBuilder(builder);
         builder.Services.AddSingleton(pluginManager);

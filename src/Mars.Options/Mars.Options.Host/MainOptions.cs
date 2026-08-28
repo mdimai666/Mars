@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.CommandLine.Abstractions;
 using Mars.Options.Host.CommandLine;
 using Mars.Options.Host.Services;
@@ -12,6 +13,8 @@ public static class MainOptions
 {
     public static IServiceCollection AddMarsOptions(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddSingleton<IOptionService, OptionService>();
         services.AddSingleton<IFrontRequestHandler, MaintenanceFrontRequestHandler>();
         return services;

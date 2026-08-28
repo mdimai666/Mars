@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.CommandLine.Abstractions;
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Dto.Users;
@@ -18,6 +19,8 @@ public static class MainIdentity
 {
     public static IServiceCollection AddMarsIdentity(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreateUserQueryValidator).Assembly);
 
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.JwtSectionKey));

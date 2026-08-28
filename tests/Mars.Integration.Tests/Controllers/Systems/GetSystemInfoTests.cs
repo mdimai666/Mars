@@ -4,8 +4,9 @@ using Mars.Server.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Server.Contracts.Systems;
-using Mars.UseStartup;
+using Mars.Server.Startup;
 using Microsoft.AspNetCore.Http;
+using Mars.UseStartup;
 
 namespace Mars.Integration.Tests.Controllers.Systems;
 

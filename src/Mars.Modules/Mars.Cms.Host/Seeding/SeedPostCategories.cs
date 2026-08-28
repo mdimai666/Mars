@@ -1,9 +1,7 @@
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
-namespace Mars.Factories.Seeds;
+namespace Mars.Cms.Host.Seeding;
 
 public static class SeedPostCategories
 {

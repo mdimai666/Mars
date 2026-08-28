@@ -78,7 +78,6 @@
         <PackageReference Include="OpenTelemetry.Resources.Container" />
         <PackageReference Include="OpenTelemetry.Resources.Host" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
-        <PackageReference Include="ResXResourceReader.NetStandard" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.CodeAnalysis.Common" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />

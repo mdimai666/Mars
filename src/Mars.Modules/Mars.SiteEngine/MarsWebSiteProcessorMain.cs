@@ -1,19 +1,20 @@
+using System.Reflection;
 using Mars.Core.Models;
 using Mars.Options.Services;
+using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Handlers;
-using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Handlers;
-using Mars.Options.Services;
-using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Handlers;
-using Mars.SiteEngine.Abstractions.WebSite.Scripts;
-using Mars.SiteEngine.Templators;
-using Mars.SiteEngine.WebSite.Scripts;
 using Mars.SiteEngine.Interfaces;
 using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Templators;
+using Mars.SiteEngine.WebSite.Scripts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,8 @@ public static class MarsWebSiteProcessorMain
 {
     public static IServiceCollection AddMarsWebSiteProcessor(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddSingleton<IWebRenderEngineLocator, WebRenderEngineLocator>();
         services.AddSingleton<ITemplatorFeaturesLocator, TemplatorFeaturesLocator>();
         services.AddSingleton<IFrontManager, FrontManager>();

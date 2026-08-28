@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.Cms.Abstractions.Services;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Services;
@@ -14,6 +15,8 @@ public static class MainMedia
 {
     public static IServiceCollection AddMarsMedia(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         ValidatorFactory.AddValidatorsFromAssembly(services, typeof(UploadMediaFileValidator).Assembly);
 
         services.AddScoped<IFileService, FileService>();

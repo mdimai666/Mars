@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.Scheduler.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,8 @@ public static class Main
 {
     public static IServiceCollection AddMarsScheduler(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddQuartz(q =>
         {
             // base Quartz scheduler, job and trigger configuration

@@ -1,10 +1,12 @@
 using System.Reflection;
+using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Attributes;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
+using Mars.Server.CommandLine;
 using Mars.Server.Contracts.Options;
 using Mars.Server.Handlers;
 using Mars.Server.Managers;
@@ -22,11 +24,14 @@ public static class MainMarsHost
 {
     public static IServiceCollection AddMarsHost(this IServiceCollection services, IWebHostEnvironment wenv)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddSingleton<IActionManager, XActionManager>();
         services.AddSingleton<IEventManager, EventManager>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
         services.AddSingleton<LogMaintenanceStartupService>();
+        services.AddSingleton<IMarsSystemService, MarsSystemService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Contracts\Tools\ModelInfoService.cs
 
         services.AddScoped<InitialSiteDataViewModelHandler>();
@@ -47,6 +52,8 @@ public static class MainMarsHost
 
     public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
     {
+        app.Services.GetRequiredService<ICommandLineApi>().Register<MigrationCommandCli>();
+
         return app;
     }
 

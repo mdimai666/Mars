@@ -3,9 +3,11 @@ using Mars.Cms.Abstractions.Attributes;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Handlers;
+using Mars.Cms.Host.Seeding;
 using Mars.Cms.Host.Services;
 using Mars.Cms.Host.Services.GallerySpace;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Data.Seeding;
 using Mars.Server.Abstractions.Validators;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +17,8 @@ public static class MainCms
 {
     public static IServiceCollection AddMarsCms(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         ValidatorFactory.AddValidatorsFromAssembly(services, typeof(CreatePostQueryValidator).Assembly);
 
         services.AddSingleton<INavMenuService, NavMenuService>();
@@ -39,6 +43,7 @@ public static class MainCms
                 .AddKeyedScoped<IMetaValueUniquenessProvider, PostCategoryMetaValueUniquenessProvider>(MetaValueOwnerCatalog.PostCategory)
                 .AddKeyedScoped<IMetaValueUniquenessProvider, UserMetaValueUniquenessProvider>(MetaValueOwnerCatalog.User);
         services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
+        services.AddSingleton<ISeedDataHandler, CmsSeedDataHandler>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();
         services.AddScoped<ICentralSearchProvider, PostsSearchProvider>();

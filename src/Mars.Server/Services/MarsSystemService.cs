@@ -4,23 +4,27 @@ using Humanizer;
 using Mars.Core.Extensions;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Startup;
 using Mars.Server.Contracts.Systems;
-using Mars.UseStartup;
+using Mars.Server.Startup;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace Mars.Services;
+namespace Mars.Server.Services;
 
 internal class MarsSystemService : IMarsSystemService
 {
     private readonly IMemoryCache _memoryCache;
     private readonly IOptionService _optionService;
+    private readonly IMarsStartupInfo _marsStartupInfo;
     private static List<KeyValuePair<string, string>>? _aboutSystem;
 
-    public MarsSystemService(IMemoryCache memoryCache, IOptionService optionService)
+    public MarsSystemService(IMemoryCache memoryCache, IOptionService optionService, IMarsStartupInfo marsStartupInfo)
     {
         _memoryCache = memoryCache;
         _optionService = optionService;
+        _marsStartupInfo = marsStartupInfo;
     }
 
     public IEnumerable<KeyValuePair<string, string>> AboutSystem()
@@ -60,9 +64,9 @@ internal class MarsSystemService : IMarsSystemService
         add("ProcessArchitecture", ProcessArchitecture.ToString());
         add("", "");
         //add("ParentProcess", ParentProcess());
-        add("Environment", MarsStartupInfo.ASPNETCORE_ENVIRONMENT);
+        add("Environment", _marsStartupInfo.ASPNETCORE_ENVIRONMENT);
         add("IsPM2", IsPM2().ToString());
-        add("IsRunningInDocker", MarsStartupInfo.IsRunningInDocker.ToString());
+        add("IsRunningInDocker", _marsStartupInfo.IsRunningInDocker.ToString());
 
         var timezone = GetTimeZone().ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -102,7 +106,7 @@ internal class MarsSystemService : IMarsSystemService
         return ev.Contains(p1) && ev.Contains(p2);
 
         //var dd = Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
-        //    .Select(x => (string)x.Key + "=" + (string)x.Value);
+        //    .Select(x => (string)x.Key + "=" + (string)x.Value).ToList();
         //var s = string.Join(";\n", dd);
         //return s;
     }
@@ -111,12 +115,12 @@ internal class MarsSystemService : IMarsSystemService
     {
         //return (DateTime.Now - Program.StartDateTime).hum
         //return (DateTime.Now - Program.StartDateTime).Humanize(utcDate: false);
-        return (DateTime.Now - MarsStartupInfo.StartDateTime).Humanize();
+        return (DateTime.Now - _marsStartupInfo.StartDateTime).Humanize();
     }
 
     public DateTimeOffset AppStartDateTime()
     {
-        return MarsStartupInfo.StartDateTime;
+        return _marsStartupInfo.StartDateTime;
     }
 
     public IEnumerable<KeyValuePair<string, string>> HostCacheSettings()
@@ -218,12 +222,12 @@ internal class MarsSystemService : IMarsSystemService
         await using (var cmd = new NpgsqlCommand("SHOW timezone", connection))
         {
             var timeZone = (string)(await cmd.ExecuteScalarAsync())!;
-            //Console.WriteLine($"PostgreSQL TimeZone: {timeZone}");
+            //Console.WriteLine("PostgreSQL TimeZone: " + timeZone);
             return timeZone;
         }
 
         // Вариант 2: через current_setting
-        // await using (var cmd = new NpgsqlCommand("SELECT current_setting('TimeZone')", connection))
+        // await using var cmd = new NpgsqlCommand("SELECT current_setting('TimeZone')", connection);
         // {
         //     return (string)await cmd.ExecuteScalarAsync();
         // }

@@ -1,10 +1,10 @@
+using System.Reflection;
 using System.Text;
-using Mars.Nodes.Workspace;
 using Mars.CommandLine.Abstractions;
-using Mars.Server.Abstractions.Managers;
-using Mars.Nodes.Abstractions.Services;
-using Mars.SiteEngine.Abstractions.Services;
 using Mars.HttpSmartAuthFlow;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Services;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
@@ -16,9 +16,10 @@ using Mars.Nodes.Host.Middlewares;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Scheduler;
 using Mars.Nodes.Host.Services;
-using Mars.Nodes.Abstractions;
-using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Host.Templator;
+using Mars.Nodes.Workspace;
+using Mars.Server.Abstractions.Managers;
+using Mars.SiteEngine.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,6 +29,8 @@ public static class MainMarsNodes
 {
     public static IServiceCollection AddMarsNodes(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddMemoryCache();
 
         services.AddSingleton<INodeImplementFactory, NodeImplementFactory>();

@@ -6,9 +6,10 @@ using Mars.Data.OwnedTypes.NavMenus;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Feature = Mars.Cms.Contracts.PostTypes.PostTypeConstants.Features;
 
-namespace Mars.Factories.Seeds;
+namespace Mars.Cms.Host.Seeding;
 
 public static class SeedPostData
 {

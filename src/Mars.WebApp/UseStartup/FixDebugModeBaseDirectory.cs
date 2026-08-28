@@ -1,3 +1,5 @@
+using Mars.Server.Startup;
+
 namespace Mars.UseStartup;
 
 public static class FixDebugModeBaseDirectory

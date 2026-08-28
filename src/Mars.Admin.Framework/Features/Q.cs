@@ -5,6 +5,7 @@ using Mars.Admin.Framework.Mappings;
 using Mars.Admin.Framework.Models;
 using Mars.Contracts.SSO;
 using Mars.Contracts.ViewModels;
+using Mars.Server.Contracts.ViewModels;
 
 namespace Mars.Admin.Framework;
 

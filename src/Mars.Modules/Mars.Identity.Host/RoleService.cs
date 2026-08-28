@@ -12,7 +12,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.Services;
 using Mars.Contracts.Common;
 using Mars.Contracts.Resources;
-using Mars.Contracts.ViewModels;
+using Mars.Identity.Contracts.ViewModels;
 using Microsoft.Extensions.Localization;
 
 namespace Mars.Identity.Host.Services;

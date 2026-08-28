@@ -1,6 +1,6 @@
 using Mars.Contracts.XActions;
 
-namespace Mars.Contracts.Interfaces;
+namespace Mars.Admin.Framework.Services;
 
 public interface IActAppService
 {

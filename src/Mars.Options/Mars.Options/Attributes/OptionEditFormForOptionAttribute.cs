@@ -1,9 +1,9 @@
-namespace Mars.Contracts.Options.Attributes;
+namespace Mars.Options.Attributes;
 
 [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class OptionEditFormForOptionAttribute : Attribute
 {
-    // See the attribute guidelines at 
+    // See the attribute guidelines at
     //  http://go.microsoft.com/fwlink/?LinkId=85236
     readonly Type forOptionType;
 

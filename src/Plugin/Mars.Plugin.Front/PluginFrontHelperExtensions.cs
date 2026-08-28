@@ -2,7 +2,7 @@ using System.Reflection;
 using Mars.Admin.Framework.OptionEditForms;
 using Mars.Nodes.Core;
 using Mars.Nodes.FormEditor;
-using Mars.Contracts.Options.Attributes;
+using Mars.Options.Attributes;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -40,6 +40,7 @@
     <Project Path="src/Mars.Data.Repositories/Mars.Data.Repositories.csproj" />
     <Project Path="src/Mars.Server.Abstractions/Mars.Server.Abstractions.csproj" />
     <Project Path="src/Mars.Server/Mars.Server.csproj" />
+    <Project Path="src/Mars.Server.Contracts/Mars.Server.Contracts.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/">
     <Project Path="src/Mars.Modules/Mars.Excel.Abstractions/Mars.Excel.Abstractions.csproj" />
@@ -50,6 +51,7 @@
     <Project Path="src/Mars.Modules/Mars.Scheduler.Abstractions/Mars.Scheduler.Abstractions.csproj" />
     <Project Path="src/Mars.Modules/Mars.Scheduler.Host/Mars.Scheduler.Host.csproj" />
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Abstractions/Mars.SiteEngine.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine.Templators/Mars.SiteEngine.Templators.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/AiChat/">
     <Project Path="src/Mars.Modules/Mars.AiChat.Front/Mars.AiChat.Front.csproj" />
@@ -82,6 +84,7 @@
   </Folder>
   <Folder Name="/Mars.Modules/Identity/">
     <Project Path="src/Mars.Modules/Mars.Identity.Abstractions/Mars.Identity.Abstractions.csproj" />
+    <Project Path="src/Mars.Modules/Mars.Identity.Contracts/Mars.Identity.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.Identity.Host/Mars.Identity.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/Media/">

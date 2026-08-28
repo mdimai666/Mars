@@ -1,4 +1,4 @@
-namespace Mars.Contracts.ViewModels;
+namespace Mars.Server.Contracts.ViewModels;
 
 public class StatisticPageViewModel
 {

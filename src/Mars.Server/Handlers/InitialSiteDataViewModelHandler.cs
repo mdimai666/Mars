@@ -1,7 +1,7 @@
 using Mars.Cms.Abstractions.Mappings.NavMenus;
 using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.ViewModels;
+using Mars.Server.Contracts.ViewModels;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Options.Mappings.Options;

@@ -1,4 +1,4 @@
-namespace Mars.Contracts.Templators;
+namespace Mars.SiteEngine.Templators;
 
 public class PaginatorHelper
 {

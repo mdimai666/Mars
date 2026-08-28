@@ -4,7 +4,7 @@ using Mars.Admin.Framework.Hub;
 using Mars.Contracts.MetaFields;
 using Mars.Contracts.Posts;
 using Mars.Contracts.PostTypes;
-using Mars.Contracts.Interfaces;
+using Mars.Admin.Framework.Services;
 using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;

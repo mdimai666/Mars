@@ -1,5 +1,5 @@
 using Mars.Nodes.Core;
-using Mars.Contracts.Utils;
+using Mars.Nodes.Front.Abstractions.Editor.Models;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace Mars.Nodes.Front.Abstractions.Editor.Interfaces;

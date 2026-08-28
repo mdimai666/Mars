@@ -1,7 +1,7 @@
 using Mars.Contracts.Roles;
 using Mars.Contracts.Users;
 
-namespace Mars.Contracts.ViewModels;
+namespace Mars.Identity.Contracts.ViewModels;
 
 public class EditUserViewModel
 {

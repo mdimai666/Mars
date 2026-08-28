@@ -1,4 +1,4 @@
-namespace Mars.Contracts.Utils;
+namespace Mars.Nodes.Front.Abstractions.Editor.Models;
 
 /// <summary>
 /// Represents the scroll position and dimensions of an element.

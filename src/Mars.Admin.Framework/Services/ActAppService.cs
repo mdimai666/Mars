@@ -1,6 +1,5 @@
 using Mars.Admin.Framework.Interfaces;
 using Mars.Contracts.XActions;
-using Mars.Contracts.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 

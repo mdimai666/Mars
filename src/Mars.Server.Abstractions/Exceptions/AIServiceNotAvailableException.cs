@@ -1,4 +1,4 @@
-namespace Mars.Contracts.Exceptions;
+namespace Mars.Server.Abstractions.Exceptions;
 
 public class AIServiceNotAvailableException : Exception
 {

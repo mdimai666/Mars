@@ -1,4 +1,4 @@
-namespace Mars.Contracts.ViewModels;
+namespace Mars.Admin.Framework.Services;
 
 public interface IViewModelService
 {

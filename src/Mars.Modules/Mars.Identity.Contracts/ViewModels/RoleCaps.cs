@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Mars.Contracts.ViewModels;
+namespace Mars.Identity.Contracts.ViewModels;
 
 public static class RoleCaps
 {
@@ -62,7 +62,7 @@ public class RoleCapElement
 {
     public string Id { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
-    public string? Description { get; set; } 
+    public string? Description { get; set; }
 
     public RoleCapElement()
     {

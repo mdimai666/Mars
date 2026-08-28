@@ -9,7 +9,7 @@ using Mars.AiChat.Front.Services;
 using Mars.Core.Features;
 using Mars.Contracts.MetaFields;
 using Mars.Contracts.PostTypes;
-using Mars.Contracts.Interfaces;
+using Mars.Admin.Framework.Services;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;

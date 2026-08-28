@@ -2,7 +2,7 @@ using Mars.Admin.Framework.Interfaces;
 using Mars.Core.Extensions;
 using Mars.Datasource.Dto;
 using Mars.Contracts.Common;
-using Mars.Contracts.Interfaces;
+using Mars.Admin.Framework.Services;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;

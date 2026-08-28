@@ -1,5 +1,5 @@
 using System.Reflection;
-using Mars.Contracts.Options.Attributes;
+using Mars.Options.Attributes;
 
 namespace Mars.Admin.Framework.OptionEditForms;
 

@@ -6,7 +6,8 @@ using Mars.Core.Exceptions;
 using Mars.Core.Features;
 using Mars.Contracts.Common;
 using Mars.Contracts.Systems;
-using Mars.Contracts.ViewModels;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.Server.Contracts.ViewModels;
 using Microsoft.JSInterop;
 
 namespace Mars.Admin.Framework.Services;

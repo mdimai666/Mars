@@ -3,7 +3,7 @@ using Mars.Admin.Framework.AuthProviders;
 using Mars.Admin.Framework.Features;
 using Mars.Admin.Framework.Models;
 using Mars.Contracts.NavMenus;
-using Mars.Contracts.ViewModels;
+using Mars.Server.Contracts.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.FluentUI.AspNetCore.Components;

@@ -1,4 +1,4 @@
-namespace Mars.Contracts.ViewModels;
+namespace Mars.Identity.Contracts.ViewModels;
 
 public class EditRolesViewModelDto
 {

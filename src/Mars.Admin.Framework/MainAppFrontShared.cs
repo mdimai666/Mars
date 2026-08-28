@@ -8,7 +8,6 @@ using Mars.Admin.Framework.Services;
 using Blazored.LocalStorage;
 using BlazoredHtmlRender;
 using Flurl.Http;
-using Mars.Contracts.Interfaces;
 using Mars.Admin.Framework.Tools;
 using Mars.WebApiClient;
 using Microsoft.AspNetCore.Components.Authorization;

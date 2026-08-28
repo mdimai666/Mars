@@ -8,7 +8,6 @@ using Blazored.LocalStorage;
 using Mars.AiChat.Front.Services;
 using Mars.Contracts.Search;
 using Mars.Contracts.XActions;
-using Mars.Contracts.Interfaces;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

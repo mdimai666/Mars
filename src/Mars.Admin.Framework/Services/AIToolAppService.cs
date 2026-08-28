@@ -1,5 +1,3 @@
-using Mars.Contracts.Interfaces;
-
 namespace Mars.Admin.Framework.Services;
 
 public class AIToolAppService : IAIToolAppService

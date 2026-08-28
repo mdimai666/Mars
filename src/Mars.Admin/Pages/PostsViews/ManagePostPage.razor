@@ -2,7 +2,7 @@
 @page "/Post/{POSTTYPE}"
 @using Mars.Admin.Pages.PageViews
 @inject IStringLocalizer<AppRes> L
-@inject Mars.Contracts.Interfaces.IActAppService actApp
+@inject Mars.Admin.Framework.Services.IActAppService actApp
 @attribute [Authorize(Roles = "Admin")]
 
 <ContentWrapper Title="@(postType?.Title)" WrapperClass="vstack">

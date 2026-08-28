@@ -7,7 +7,7 @@ using Mars.Data.Entities;
 using Mars.QueryLang.Host;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.Contracts.Common;
-using Mars.Contracts.Templators;
+using Mars.SiteEngine.Templators;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.QueryLang.Host.Services;

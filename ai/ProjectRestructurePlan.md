@@ -13,7 +13,7 @@
 2. **`.Host`** — остаётся конвенцией серверной реализации модуля, `.Front` — фронтовой.
 3. **Правило направленности:** модуль ссылается только на чужие `Abstractions`/`Contracts`, ссылки на чужие реализации (`*.Host`) запрещены. Сборка модулей — только в корне композиции (`Mars.WebApp`).
 4. **Mars.Host распускается** по модулям: `Mars.Cms`, `Mars.Media`, `Mars.Identity`, `Mars.Notifications`, `Mars.SiteEngine`; остаток — тонкое ядро **`Mars.Server`** (+ `Mars.Server.Abstractions` для сквозных интерфейсов вроде `IRequestContext`, `IActionManager`, `IEventManager`). Каждый модуль регистрируется своим `AddXxx()`.
-5. **Рендеринг сайта** — модуль **`Mars.SiteEngine`**: Templators, WebSite-скрипты/ассет-провайдеры, вливание `Mars.WebSiteProcessor`; провайдеры шаблонизации подключаются отдельно (вопрос слияния `Mars.TemplateEngine.*` — открытый).
+5. **Рендеринг сайта** — модуль **`Mars.SiteEngine`**: Templators, WebSite-скрипты/ассет-провайдеры, вливание `Mars.WebSiteProcessor`; провайдеры шаблонизации подключаются отдельно. **Слияния `Mars.TemplateEngine.*` с SiteEngine не будет** — SiteEngine будет потреблять TemplateEngine как отдельную подсистему (решение 2026-08-28).
 6. **Фронт (упрощённо):** `AppAdmin` → `Mars.Admin`; `AppFront.Main` и `AppFront.Shared` сливаются в **`Mars.Admin.Framework`**. Выделение стабильного ядра и переиспользуемых компонентов (под мобилку и другие проекты) — отложено до появления необходимости.
 7. **MarsDbContext не режется.** Контекст остаётся общим; семейство `Mars.Host.Data*` переименовывается в `Mars.Data*`. Модули ходят в контекст напрямую только там, где оправдано (рендер, метагенератор).
 8. **Без MediatR.** Остаёмся на репозиториях/сервисах, точечные handler'ы как сейчас; позже — аудит однородности и согласованности.
@@ -87,7 +87,7 @@
 | `Mars.CommandLine.Shared` | `Mars.CommandLine.Abstractions` | аудит: серверные контракты |
 | `Mars.WebSiteProcessor` | вливается в **`Mars.SiteEngine`** | |
 | `Mars.WebSiteProcessor.Handlebars` | `Mars.SiteEngine.Handlebars` | |
-| `Mars.TemplateEngine.Host`, `.Providers.*` | открыто | кандидат на слияние с SiteEngine как провайдеры |
+| `Mars.TemplateEngine.Host`, `.Providers.*` | без изменений | отдельная подсистема; SiteEngine будет её потреблять, слияния не будет (решение 2026-08-28) |
 | `Mars.Nodes.Host.Shared` | `Mars.Nodes.Abstractions` | |
 | `Mars.Nodes.Front.Shared` | `Mars.Nodes.Front.Abstractions` | аудит содержимого |
 | `Mars.Datasource.Core` | открыто | вероятно `Mars.Datasource` |
@@ -240,7 +240,8 @@ MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; лок�
 3. **Фаза B2 — namespace'ы**: скриптовая перезапись деклараций (правило: новый неймспейс = корень проекта-назначения + хвост старого), глобальные подстановки для однозначных неймспейсов, type-driven починка using'ов для расщеплённых (`Mars.Host.Services`, `Mars.Host.Shared.Services` и др.), свип остатков старых токенов, ручные фиксы ~25 раундов. `Mars.WebApp` и `Mars.Integration.Tests` получили новые `GlobalUsings.cs`.
 
 Решения по открытым строкам карты (приняты в ходе выполнения):
-- `TemplateEngine` НЕ сливался с SiteEngine: подсистема осталась как была, интерфейсы переехали в `Mars.Core`; слияние — в бэклог.
+- `TemplateEngine` НЕ сливался с SiteEngine: подсистема осталась как была, интерфейсы переехали в `Mars.Core`. **Решение (2026-08-28): слияния не будет** — SiteEngine будет использовать TemplateEngine как внешнюю подсистему.
+- `ViewModels/*` — 2026-08-28 созданы `Mars.Identity.Contracts` и `Mars.Server.Contracts`: `EditUserViewModel`/`EditRolesViewModelDto`/`RoleCaps` → `Mars.Identity.Contracts.ViewModels`; `InitialSiteDataViewModel`/`StatisticPageViewModel` → `Mars.Server.Contracts.ViewModels`; `IViewModelService` → `Mars.Admin.Framework.Services`. `UserPrimaryInfo` остаётся в `Mars.Contracts` (его едят SSO-контракты; переедет вместе с `SsoUserInfoResponse` → `Mars.SSO.Contracts`).
 - `Mars.Datasource.Core` → `Mars.Datasource`; `Mars.Datasource.Host.Core` → `Mars.Datasource.Abstractions`.
 - `FrontsOption` остался в `Mars.Contracts` (его ест WASM-админка).
 - `IFileStorage` → `Mars.Server.Abstractions` (не в Core — зависимость от `FileHostingInfo`, который в `Mars.Contracts`, иначе цикл/WASM-граница).

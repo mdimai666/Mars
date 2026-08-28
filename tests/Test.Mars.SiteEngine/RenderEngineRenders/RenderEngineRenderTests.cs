@@ -4,7 +4,7 @@ using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.Contracts.WebSite.Models;
 using Mars.Contracts.Options;
-using Mars.Contracts.ViewModels;
+using Mars.Server.Contracts.ViewModels;
 using Mars.Test.Common.Constants;
 using Mars.SiteEngine.Endpoints;
 using Mars.SiteEngine.Handlebars;

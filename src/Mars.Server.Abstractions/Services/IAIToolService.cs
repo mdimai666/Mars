@@ -1,4 +1,4 @@
-using Mars.Contracts.Exceptions;
+using Mars.Server.Abstractions.Exceptions;
 
 namespace Mars.Server.Abstractions.Services;
 

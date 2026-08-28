@@ -23,7 +23,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Data.Common;
 using Mars.Data.Entities;
 using Mars.Contracts.Common;
-using Mars.Contracts.Templators;
+using Mars.SiteEngine.Templators;
 
 namespace Mars.QueryLang.Host;
 

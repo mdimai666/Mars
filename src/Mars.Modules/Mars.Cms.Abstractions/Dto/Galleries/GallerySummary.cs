@@ -1,8 +1,9 @@
-using Mars.Media.Contracts.Files;
+using Mars.Core.Interfaces;
+using Mars.Media.Abstractions.Dto.Files;
 
-namespace Mars.Media.Contracts.Galleries;
+namespace Mars.Cms.Abstractions.Dto.Galleries;
 
-public record GalleryListItemResponse
+public record GallerySummary : IHasId
 {
     public required Guid Id { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
@@ -12,17 +13,16 @@ public record GalleryListItemResponse
     public required string Slug { get; init; }
     public required IReadOnlyCollection<string> Tags { get; init; }
 
-    public required GalleryPhotoResponse? GalleryImage { get; init; }
+    public required GalleryPhoto? GalleryImage { get; init; }
     public required int GalleryPhotosCount { get; init; }
-
 }
 
-public record GalleryDetailResponse : GalleryListItemResponse
+public record GalleryDetail : GallerySummary
 {
-    public required IReadOnlyCollection<GalleryPhotoResponse> Photos { get; init; }
+    public required IReadOnlyCollection<GalleryPhoto> Photos { get; init; }
 }
 
-public record GalleryPhotoResponse : FileDetailResponse
+public record GalleryPhoto : FileDetail
 {
 
 }

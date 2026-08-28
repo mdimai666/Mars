@@ -1,6 +1,6 @@
 using Mars.Contracts.Common;
 using Mars.Media.Contracts.Files;
-using Mars.Media.Contracts.Galleries;
+using Mars.Cms.Contracts.Galleries;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Admin.Framework.Services.GallerySpace;

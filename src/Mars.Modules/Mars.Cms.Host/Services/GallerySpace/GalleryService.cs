@@ -1,13 +1,7 @@
 using System.Linq.Expressions;
 using Mars.Data.Extensions;
-using Mars.Media.Abstractions.Dto.Galleries;
+using Mars.Cms.Abstractions.Dto.Galleries;
 using Mars.Cms.Abstractions.Dto.Posts;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Media.Abstractions.Services;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Media.Abstractions.Services;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Media.Abstractions.Services;
@@ -16,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Mars.Media.Host.Services.GallerySpace;
+namespace Mars.Cms.Host.Services.GallerySpace;
 
 internal class GalleryService : IGalleryService
 {
@@ -443,4 +437,3 @@ public async Task<UserActionResult> GalleryDeletePhotos(Guid[] photosIds)
 }
 */
 }
-

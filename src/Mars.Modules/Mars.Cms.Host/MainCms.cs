@@ -4,6 +4,7 @@ using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Handlers;
 using Mars.Cms.Host.Services;
+using Mars.Cms.Host.Services.GallerySpace;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Server.Abstractions.Validators;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ public static class MainCms
         services.AddScoped<IPostCategoryService, PostCategoryService>();
         services.AddScoped<IPostCategoryTypeService, PostCategoryTypeService>();
         services.AddScoped<IFeedbackService, FeedbackService>();
+        services.AddScoped<IGalleryService, GalleryService>();
 
         services.AddScoped<IMetaFieldMaterializerService, MetaFieldMaterializerService>();
         services.AddScoped<IMetaQueryFieldResolver, MetaQueryFieldResolver>();

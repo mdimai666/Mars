@@ -1,7 +1,7 @@
-using Mars.Media.Abstractions.Dto.Galleries;
+using Mars.Cms.Abstractions.Dto.Galleries;
 using Mars.Contracts.Common;
 
-namespace Mars.Media.Abstractions.Services;
+namespace Mars.Cms.Abstractions.Services;
 
 public interface IGalleryService
 {

@@ -1,25 +1,11 @@
-using System;
-using Mars.Server.Abstractions.ExceptionFilters;
-using System.Collections.Generic;
 using System.Net.Mime;
-using System.Threading.Tasks;
-using Mars.Core.Constants;
-using Mars.Core.Exceptions;
-using Mars.Media.Host.Services.GallerySpace;
-using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Server.Abstractions.ExceptionFilters;
+using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Media.Abstractions.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Media.Abstractions.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Media.Abstractions.Services;
-using Mars.Contracts.Common;
-using Mars.Cms.Contracts.Posts;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers.GallerySpace;
+namespace Mars.Cms.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -1,6 +1,6 @@
 using Mars.Data.Entities;
 using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Dto.Galleries;
+using Mars.Cms.Abstractions.Dto.Galleries;
 
 namespace Mars.Data.Repositories.Mappings;
 

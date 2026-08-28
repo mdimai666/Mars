@@ -4,7 +4,6 @@ using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Handlers;
 using Mars.Media.Host.Services;
-using Mars.Media.Host.Services.GallerySpace;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Validators;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +19,6 @@ public static class MainMedia
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IMediaFolderService, MediaFolderService>();
         services.AddScoped<IMediaService, MediaService>();
-        services.AddScoped<IGalleryService, GalleryService>();
         services.AddSingleton<IImageProcessor, ImageProcessor>();
         services.AddKeyedScoped<IMetaRelationModelProviderHandler, FileRelationModelProviderHandler>("File");
         return services;

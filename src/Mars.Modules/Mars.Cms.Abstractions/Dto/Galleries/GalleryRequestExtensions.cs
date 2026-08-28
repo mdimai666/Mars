@@ -1,7 +1,7 @@
 using Mars.Server.Abstractions.Extensions;
-using Mars.Media.Contracts.Galleries;
+using Mars.Cms.Contracts.Galleries;
 
-namespace Mars.Media.Abstractions.Dto.Galleries;
+namespace Mars.Cms.Abstractions.Dto.Galleries;
 
 public static class GalleryRequestExtensions
 {

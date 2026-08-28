@@ -3,8 +3,9 @@ using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Options.Services;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Contracts.Options;
+using Microsoft.AspNetCore.Hosting;
 
-namespace Mars.Services;
+namespace Mars.SiteEngine.Services;
 
 public class FrontManager : IFrontManager
 {

@@ -16,7 +16,6 @@ public static class StartupFront
 {
     public static WebApplicationBuilder AddFront(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<IFrontManager, FrontManager>();
         builder.Services.AddSingleton<FrontTemplateService>();
         builder.Services.AddSingleton<IFrontFilesService, FrontFilesService>();
         builder.Services.AddSingleton<FrontRenderWarmupService>();

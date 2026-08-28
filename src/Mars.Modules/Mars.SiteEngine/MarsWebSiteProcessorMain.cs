@@ -25,6 +25,7 @@ public static class MarsWebSiteProcessorMain
     {
         services.AddSingleton<IWebRenderEngineLocator, WebRenderEngineLocator>();
         services.AddSingleton<ITemplatorFeaturesLocator, TemplatorFeaturesLocator>();
+        services.AddSingleton<IFrontManager, FrontManager>();
 
         services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
         services.AddScoped<SiteFaviconConfiguratorHandler>();

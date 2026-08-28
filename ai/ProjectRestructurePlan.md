@@ -295,4 +295,6 @@ MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; лок�
 
 Верификация: `dotnet build Mars.slnx` — 0 ошибок. Точечно: Test.Mars.SiteEngine 61/61; Mars.Integration.Tests (FrontManager/FrontRender/AiFrontFiles/HandlebarsEngineCache/WebTemplateService + Controllers.Options/PageRenders) 56/56. Docker-набор не гонялся. Коммит — по команде пользователя.
 
-Открытые хвосты: реализация `FrontManager` и фронтовый сетап (`MigrateAppFrontToOption`/`EnsureDefaultFront`) пока в `Mars.WebApp` — перенос в SiteEngine отдельным шагом.
+**`FrontManager` → SiteEngine (2026-08-28, в том же направлении):** реализация `FrontManager` переехала `Mars.WebApp/Services` → `Mars.Modules/Mars.SiteEngine/Services` (namespace `Mars.SiteEngine.Services`), регистрация `AddSingleton<IFrontManager, FrontManager>` перенесена из `StartupFront.AddFront` в `AddMarsWebSiteProcessor`. Потребителям статиков (`FrontManager.IsValidSlug`/`AdminFrontSlug`/`FrontsDirName`) добавлен `using Mars.SiteEngine.Services`. Верификация: сборка 0 ошибок; Test.Mars.SiteEngine 61/61; Mars.Integration.Tests (фронтовые + PageRenders) 49/49.
+
+Открытые хвосты: фронтовый сетап (`MigrateAppFrontToOption`/`EnsureDefaultFront`) и сервисы `FrontFilesService`/`FrontTemplateService`/`FrontRenderWarmupService` пока в `Mars.WebApp` — перенос в SiteEngine отдельным шагом.

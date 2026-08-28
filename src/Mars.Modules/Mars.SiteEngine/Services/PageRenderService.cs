@@ -9,9 +9,11 @@ using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.Contracts.Common;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Services;
+namespace Mars.SiteEngine.Services;
 
 internal class PageRenderService : IPageRenderService
 {
@@ -47,7 +49,7 @@ internal class PageRenderService : IPageRenderService
         var request = new WebClientRequest(httpContext.Request, replacePath: page.Url);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        Mars.SiteEngine.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
+        WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage(af, request, page, RenderParam(httpContext), cancellationToken);
 
         return AsResult(render, httpContext);
@@ -59,7 +61,7 @@ internal class PageRenderService : IPageRenderService
         var request = new WebClientRequest(httpContext.Request);
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        Mars.SiteEngine.Services.WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
+        WebSiteRequestProcessor processor = new(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage404(af, request, RenderParam(httpContext), cancellationToken);
 
         return AsResult(render, httpContext);
@@ -117,7 +119,7 @@ internal class PageRenderService : IPageRenderService
         if (routeValues is not null)
             CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
 
-        var processor = new Mars.SiteEngine.Services.WebSiteRequestProcessor(_serviceProvider, tsv.Template);
+        var processor = new WebSiteRequestProcessor(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage(af, request, page, renderParam ?? RenderParam(httpContext), cancellationToken);
 
         return AsResult(render, httpContext);

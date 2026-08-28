@@ -1,7 +1,6 @@
 //using Mars.Areas.Identity;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Framework.Services;
-using Mars.Handlers;
 using Mars.Server;
 using Mars.Identity.Host.Models;
 using Mars.Media.Abstractions.Services;
@@ -40,14 +39,12 @@ internal static class MarsStartupPartServices
         services.AddSingleton<IMarsSystemService, MarsSystemService>()
                 .AddSingleton<IImageProcessor, ImageProcessor>()
                 .AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
-                .AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>()
-                .AddScoped<IPageRenderService, PageRenderService>();
+                .AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
         services.AddMarsHost(wenv);
 
         // additional components
         services.AddSingleton<IAIToolService, AIToolService>();
-        services.AddScoped<AdminFrontRenderHandler>();
 
         //services.AddSingleton<DebugService>();
         services.TryAddSingleton<ModelInfoService>();

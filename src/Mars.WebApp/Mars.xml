@@ -15,34 +15,11 @@
             перед отрисовкой формы.
             </summary>
         </member>
-        <member name="T:Mars.Controllers.AdminFrontController">
-            <summary>
-            Отдельные эндпоинты для отрисовки специального фронта админки (data/admin/front).
-            Эти шаблоны отображаются только в админ-панели и не роутятся публично.
-            </summary>
-        </member>
-        <member name="M:Mars.Controllers.AdminFrontController.Render(System.String,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Рендер страницы админ-фронта по относительному пути файла (например admin_index.hbs).
-            queryString пробрасывается в шаблон как _req.Query (используется RemotePageViewer).
-            </summary>
-        </member>
         <member name="M:Mars.Controllers.FileReaderExtensions.Tail(System.IO.TextReader,System.Int32)">
             <summary>Returns the end of a text reader.</summary>
             <param name="reader">The reader to read from.</param>
             <param name="lineCount">The number of lines to return.</param>
             <returns>The last lneCount lines from the reader.</returns>
-        </member>
-        <member name="M:Mars.Controllers.FrontController.FrontTemplates">
-            <summary>
-            Стартовые шаблоны для новых фронтов (папки Res/front_templates, без специальных).
-            </summary>
-        </member>
-        <member name="M:Mars.Controllers.FrontController.FrontPages(System.String)">
-            <summary>
-            Страницы фронта: файл → URL из атрибута @page (для «открыть в предпросмотре» в редакторе).
-            Root-файлы (_root.hbs) тоже попадают сюда — их URL это StartPath.
-            </summary>
         </member>
         <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Cms.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
             <summary>
@@ -62,20 +39,6 @@
         </member>
         <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
             <summary>Батч-загрузка значений: тип из маршрута либо группировка по типам самих элементов</summary>
-        </member>
-        <member name="T:Mars.Handlers.AdminFrontRenderHandler">
-            <summary>
-            Рендер страниц специального фронта админки (data/admin/front).
-            Не кэширует: форсирует перескан шаблона, чтобы правки в редакторе были видны сразу.
-            Рендерит только тело (без _root) — админка имеет собственную обвязку.
-            </summary>
-        </member>
-        <member name="M:Mars.Handlers.AdminFrontRenderHandler.#ctor(Mars.SiteEngine.Interfaces.IWebRenderEngineLocator)">
-            <summary>
-            Рендер страниц специального фронта админки (data/admin/front).
-            Не кэширует: форсирует перескан шаблона, чтобы правки в редакторе были видны сразу.
-            Рендерит только тело (без _root) — админка имеет собственную обвязку.
-            </summary>
         </member>
         <member name="T:Mars.Services.ImageProcessor">
             <summary>

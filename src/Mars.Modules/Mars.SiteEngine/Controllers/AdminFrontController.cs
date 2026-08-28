@@ -1,11 +1,11 @@
 using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Core.Exceptions;
-using Mars.Handlers;
+using Mars.SiteEngine.Handlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.SiteEngine.Controllers;
 
 /// <summary>
 /// Отдельные эндпоинты для отрисовки специального фронта админки (data/admin/front).

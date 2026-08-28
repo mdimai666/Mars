@@ -2,11 +2,11 @@ using Mars.Core.Exceptions;
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.Services;
 using Mars.SiteEngine.Interfaces;
 using Mars.SiteEngine.Services;
+using Microsoft.AspNetCore.Http;
 
-namespace Mars.Handlers;
+namespace Mars.SiteEngine.Handlers;
 
 /// <summary>
 /// Рендер страниц специального фронта админки (data/admin/front).

@@ -1,4 +1,4 @@
-using Mars.Controllers;
+using Mars.SiteEngine.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.WebApiClient.Interfaces;

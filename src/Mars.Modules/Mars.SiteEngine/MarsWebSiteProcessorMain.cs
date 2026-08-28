@@ -30,8 +30,10 @@ public static class MarsWebSiteProcessorMain
         services.AddSingleton<FrontTemplateService>();
         services.AddSingleton<IFrontFilesService, FrontFilesService>();
         services.AddSingleton<FrontRenderWarmupService>();
+        services.AddScoped<IPageRenderService, PageRenderService>();
 
         services.AddScoped<IFaviconGeneratorHandler, FaviconGeneratorHandler>();
+        services.AddScoped<AdminFrontRenderHandler>();
         services.AddScoped<SiteFaviconConfiguratorHandler>();
 
         AddSiteScriptsBuilders(services);

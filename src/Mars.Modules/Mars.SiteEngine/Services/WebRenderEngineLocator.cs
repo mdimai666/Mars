@@ -7,7 +7,7 @@ using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.Core.TemplateEngine;
-using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

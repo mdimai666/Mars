@@ -1,9 +1,9 @@
+using Mars.Core.TemplateEngine;
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Models;
-using Mars.Core.TemplateEngine;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.SiteEngine.Interfaces;
+namespace Mars.SiteEngine.Abstractions.WebSite;
 
 /// <summary>
 /// Синглтон. Резолвит фронт и его движок рендера по URL запроса из актуальных настроек (FrontsOption).

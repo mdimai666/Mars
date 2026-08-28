@@ -52,8 +52,8 @@ public static class MainMarsHost
 
     public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
     {
-        app.Services.GetRequiredService<ICommandLineApi>().Register<MigrationCommandCli>();
-
+        // MigrationCommandCli не регистрируется здесь: «migrate» — базовая команда,
+        // исполняется до ConfigureApp и берётся из initialCommands в MarsWebAppStartup.
         return app;
     }
 

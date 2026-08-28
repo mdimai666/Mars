@@ -1,6 +1,6 @@
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
-using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

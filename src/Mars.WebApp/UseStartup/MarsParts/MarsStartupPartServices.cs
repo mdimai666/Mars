@@ -12,8 +12,6 @@ using Mars.Server.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.MetaModelGenerator;
-using Mars.Nodes;
-using Mars.Nodes.Abstractions;
 using Mars.QueryLang.Host;
 using Mars.Services;
 using Mars.Admin.Framework.Tools;
@@ -56,9 +54,6 @@ internal static class MarsStartupPartServices
     public static IServiceProvider UseMarsHostServices(this IServiceProvider services)
     {
         services.UseMarsServerOptions();
-
-        var nodeImplementFactory = services.GetRequiredService<INodeImplementFactory>();
-        nodeImplementFactory.RegisterAssembly(typeof(RenderPageNodeImpl).Assembly);
 
         return services;
     }

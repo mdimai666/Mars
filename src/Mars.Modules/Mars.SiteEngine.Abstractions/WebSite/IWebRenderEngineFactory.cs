@@ -1,7 +1,7 @@
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Models;
 
-namespace Mars.SiteEngine.Interfaces;
+namespace Mars.SiteEngine.Abstractions.WebSite;
 
 /// <summary>
 /// Фабрика движков рендера фронта. Регистрируется в DI (IEnumerable) — встроенные и плагинные.

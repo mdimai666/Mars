@@ -3216,6 +3216,7 @@
           "Mars.Cms.Abstractions": "1.0.0",
           "Mars.Excel.Abstractions": "1.0.0",
           "Mars.QueryLang": "1.0.0",
+          "Mars.SiteEngine.Abstractions": "1.0.0",
           "Mars.WebApp.Nodes.Front": "1.0.0",
           "System.Drawing.Common": "10.0.9",
           "dotless.Core": "1.6.7",

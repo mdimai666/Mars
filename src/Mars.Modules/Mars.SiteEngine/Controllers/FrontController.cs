@@ -9,7 +9,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.Contracts.Common;
 using Mars.SiteEngine.Contracts.WebSite.Dto;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Services;
 using Mars.SiteEngine.Abstractions.Mappings.WebSiteParts;
 using Microsoft.AspNetCore.Authorization;

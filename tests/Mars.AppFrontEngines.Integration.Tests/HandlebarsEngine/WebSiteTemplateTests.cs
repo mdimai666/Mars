@@ -9,7 +9,7 @@ using Mars.Integration.Tests.Attributes;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.SiteEngine.Handlebars.TemplateData;
-using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;

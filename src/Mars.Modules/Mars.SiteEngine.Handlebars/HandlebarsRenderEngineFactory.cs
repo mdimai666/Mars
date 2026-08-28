@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.SiteEngine.Interfaces;
+using Mars.SiteEngine.Abstractions.WebSite;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SiteEngine.Handlebars;

@@ -2,21 +2,18 @@ using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Excel.Host.Services;
+using Mars.Excel.Abstractions;
 using Mars.Cms.Abstractions.Dto.Feedbacks;
 using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Interfaces;
-using Mars.Cms.Abstractions.Services;
-using Mars.Identity.Abstractions.Interfaces;
 using Mars.Cms.Abstractions.Mappings.Feedbacks;
-using Mars.Cms.Abstractions.Services;
-using Mars.Identity.Abstractions.Interfaces;
 using Mars.Contracts.Common;
 using Mars.Cms.Contracts.Feedbacks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Cms.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -30,13 +27,16 @@ public class FeedbackController : ControllerBase
 {
     private readonly IFeedbackService _feedbackService;
     private readonly IRequestContext _requestContext;
+    private readonly IExcelService _excelService;
 
     public FeedbackController(
         IFeedbackService feedbackService,
-        IRequestContext requestContext)
+        IRequestContext requestContext,
+        IExcelService excelService)
     {
         _feedbackService = feedbackService;
         _requestContext = requestContext;
+        _excelService = excelService;
     }
 
     [HttpGet("{id:guid}")]
@@ -118,7 +118,7 @@ public class FeedbackController : ControllerBase
         using var stream = new MemoryStream();
         await _feedbackService.ExcelFeedbackList(stream, cancellationToken);
 
-        return this.ExcelResponse(stream, "Feedback.xlsx");
+        return _excelService.ExcelResponse(this, stream, "Feedback.xlsx");
     }
 
 }

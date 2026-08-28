@@ -16,7 +16,9 @@
     <ProjectReference Include="..\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
     <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
     <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />
   </ItemGroup>
 
   <ItemGroup>

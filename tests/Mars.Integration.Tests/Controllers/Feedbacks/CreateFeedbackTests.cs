@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.Feedbacks;
 
-/// <seealso cref="Mars.Controllers.FeedbackController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.FeedbackController"/>
 public class CreateFeedbackTests : ApplicationTests
 {
     const string _apiUrl = "/api/Feedback";

@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Core.Extensions;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.PostCategories;
 
-/// <seealso cref="Mars.Controllers.PostCategoryController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.PostCategoryController"/>
 public sealed class UpdatePostCategoryTests : ApplicationTests
 {
     const string _apiUrl = "/api/PostCategory";

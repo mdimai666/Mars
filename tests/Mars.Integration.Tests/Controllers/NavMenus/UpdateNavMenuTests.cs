@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.NavMenus;
 
-/// <seealso cref="Mars.Controllers.NavMenuController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.NavMenuController"/>
 public class UpdateNavMenuTests : ApplicationTests
 {
     const string _apiUrl = "/api/NavMenu";

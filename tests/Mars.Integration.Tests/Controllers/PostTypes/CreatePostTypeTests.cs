@@ -2,7 +2,7 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Integration.Tests.Attributes;

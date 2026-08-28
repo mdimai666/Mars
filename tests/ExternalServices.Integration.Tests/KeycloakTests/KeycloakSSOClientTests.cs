@@ -3,7 +3,7 @@ using Mars.Admin.Pages.Public;
 using ExternalServices.TestContainers.Fixtures;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Identity.Abstractions.Services;
 using Mars.Options.Services;
 using Mars.SSO.Contracts.Dto;

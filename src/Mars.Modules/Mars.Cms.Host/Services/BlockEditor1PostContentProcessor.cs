@@ -4,13 +4,9 @@ using Mars.Core.Exceptions;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.MetaFields;
 
-namespace Mars.Services;
+namespace Mars.Cms.Host.Services;
 
 [KeyredHandler(key: MetaFieldEditorCatalog.BlockEditor, Tags = ["post"])]
 internal class BlockEditor1PostContentProcessor(IPostRepository postRepository, IMetaModelTypesLocator metaModelTypesLocator) : IPostContentProcessor

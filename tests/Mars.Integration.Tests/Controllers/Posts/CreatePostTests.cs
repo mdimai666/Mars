@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
 using Mars.Cms.Abstractions.Dto.Posts;
@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Posts;
 
-/// <seealso cref="Mars.Controllers.PostController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.PostController"/>
 public sealed class CreatePostTests : ApplicationTests
 {
     const string _apiUrl = "/api/Post";

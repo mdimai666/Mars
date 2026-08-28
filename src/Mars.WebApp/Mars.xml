@@ -21,25 +21,6 @@
             <param name="lineCount">The number of lines to return.</param>
             <returns>The last lneCount lines from the reader.</returns>
         </member>
-        <member name="M:Mars.Controllers.NavMenuController.ListForAdmin(Mars.Cms.Contracts.NavMenus.ListNavMenuQueryRequest,System.Threading.CancellationToken)">
-            <summary>
-            Список меню для админки: несохранённые системные меню подмешиваются виртуальной записью.
-            </summary>
-        </member>
-        <member name="M:Mars.Controllers.NavMenuController.Reset(System.Guid,System.Threading.CancellationToken)">
-            <summary>
-            Сброс системного меню к дефолту: удаляет сохранённую копию из БД.
-            </summary>
-        </member>
-        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.ListDataResult{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
-            <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
-        </member>
-        <member name="M:Mars.Controllers.PostController.EnrichMetaColumnsAsync(Mars.Contracts.Common.PagingResult{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
-            <summary>Прикладывает к элементам списка отображаемые значения запрошенных мета-полей (колонки грида)</summary>
-        </member>
-        <member name="M:Mars.Controllers.PostController.LoadMetaColumnsAsync(System.Collections.Generic.IEnumerable{Mars.Cms.Contracts.Posts.PostListItemResponse},System.String,System.String[],System.Threading.CancellationToken)">
-            <summary>Батч-загрузка значений: тип из маршрута либо группировка по типам самих элементов</summary>
-        </member>
         <member name="T:Mars.Services.ImageProcessor">
             <summary>
             Singletone.

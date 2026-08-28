@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Dto.PostTypes;

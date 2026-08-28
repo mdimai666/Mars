@@ -7,6 +7,7 @@ using Mars.Admin.Pages.PostTypeViews;
 using Mars.Admin.Pages.Settings;
 #endif
 using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Server.Abstractions.Managers;
 using Mars.Cms.Abstractions.Services;
 using Mars.Contracts.XActions;

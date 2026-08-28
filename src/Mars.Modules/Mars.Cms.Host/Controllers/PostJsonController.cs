@@ -7,19 +7,16 @@ using Mars.Cms.Abstractions.Dto.PostJsons;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Services;
 using Mars.Identity.Abstractions.Interfaces;
-using Mars.Cms.Abstractions.Services;
-using Mars.Identity.Abstractions.Interfaces;
 using Mars.Cms.Abstractions.Mappings.PostJsons;
 using Mars.Cms.Abstractions.Mappings.Posts;
-using Mars.Cms.Abstractions.Services;
-using Mars.Identity.Abstractions.Interfaces;
 using Mars.Contracts.Common;
 using Mars.Cms.Contracts.PostJsons;
 using Mars.Cms.Contracts.Posts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Cms.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

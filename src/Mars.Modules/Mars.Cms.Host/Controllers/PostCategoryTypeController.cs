@@ -9,13 +9,13 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Cms.Abstractions.Mappings.PostCategoryTypes;
 using Mars.Cms.Abstractions.Mappings.Search;
-using Mars.Cms.Abstractions.Services;
 using Mars.Contracts.Common;
 using Mars.Cms.Contracts.PostCategoryTypes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Cms.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

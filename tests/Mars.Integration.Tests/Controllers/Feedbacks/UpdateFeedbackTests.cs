@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Data.Repositories;
 using Mars.Cms.Abstractions.Dto.Feedbacks;
@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Feedbacks;
 
-/// <seealso cref="Mars.Controllers.FeedbackController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.FeedbackController"/>
 public class UpdateFeedbackTests : ApplicationTests
 {
     const string _apiUrl = "/api/Feedback";

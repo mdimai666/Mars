@@ -32,8 +32,6 @@ internal static class MarsStartupPartLogging
             });
         });
 
-        builder.Services.AddSingleton<LogMaintenanceStartupService>();
-
         return builder;
     }
 

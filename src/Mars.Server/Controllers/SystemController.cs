@@ -1,13 +1,12 @@
 using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Services;
-using Mars.Server.Abstractions.Services;
 using Mars.Server.Contracts.Systems;
-using Mars.UseStartup;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
@@ -41,7 +40,7 @@ public class SystemController : ControllerBase
     [ProducesErrorResponseType(typeof(void))]
     public string HealthCheck2()
     {
-        return "StartDateTime - " + MarsStartupInfo.StartDateTime.ToString("dd.MM.yyyy dd:mm:ss zz");
+        return "StartDateTime - " + _marsSystemService.AppStartDateTime().ToString("dd.MM.yyyy dd:mm:ss zz");
     }
 
     [HttpGet]
@@ -68,7 +67,7 @@ public class SystemController : ControllerBase
 
     [HttpGet]
     [Produces(MediaTypeNames.Text.Plain)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

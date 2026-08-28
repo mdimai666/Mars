@@ -26,6 +26,7 @@ public static class MainMarsHost
         services.AddSingleton<IEventManager, EventManager>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
+        services.AddSingleton<LogMaintenanceStartupService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Contracts\Tools\ModelInfoService.cs
 
         services.AddScoped<InitialSiteDataViewModelHandler>();

@@ -1,12 +1,14 @@
 using System.Net.Mime;
-using Mars.Server.Abstractions.ExceptionFilters;
 using System.Text.RegularExpressions;
-using Mars.Services;
+using Mars.Server.Abstractions.ExceptionFilters;
+using Mars.Server.Services;
 using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
-namespace Mars.Controllers;
+namespace Mars.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace Mars.Services;
+namespace Mars.Server.Services;
 
 /// <summary>
 /// Удаляет дневные файлы логов app_*.log старше периода хранения

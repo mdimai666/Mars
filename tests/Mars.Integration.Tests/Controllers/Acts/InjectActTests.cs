@@ -1,7 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Server.Controllers;
 using Mars.Server.Managers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Acts;
 
-/// <seealso cref="Mars.Controllers.ActController"/>
+/// <seealso cref="Mars.Server.Controllers.ActController"/>
 public class InjectActTests : ApplicationTests
 {
     const string _apiUrl = "/api/Act";

@@ -4,9 +4,10 @@ using Mars.Core.Constants;
 using Mars.Server.Abstractions.Managers;
 using Mars.Contracts.Common;
 using Mars.Contracts.XActions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Controllers;
+namespace Mars.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Mars.Services;
+namespace Mars.Server.Services;
 
 /// <summary>
 /// Разбор и фильтрация записей лога приложения (формат NReco.Logging.File:

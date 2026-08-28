@@ -2,7 +2,7 @@ using Mars.Scheduler.Abstractions;
 using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Services;
+namespace Mars.Server.Services;
 
 /// <summary>
 /// Регистрирует системную Quartz-джобу обслуживания логов:

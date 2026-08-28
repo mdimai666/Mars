@@ -1,5 +1,6 @@
 using FluentAssertions;
-using Mars.Controllers;
+using Mars.Server.Controllers;
+using Mars.Cms.Host.Controllers;
 using Mars.Core.Exceptions;
 using Mars.Server.Abstractions.Managers;
 using Mars.Integration.Tests.Attributes;

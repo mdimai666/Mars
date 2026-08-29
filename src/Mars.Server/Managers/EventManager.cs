@@ -7,10 +7,10 @@ namespace Mars.Server.Managers;
 /// </summary>
 internal class EventManager : IEventManager
 {
-    Dictionary<string, List<Action<ManagerEventPayload>>> _events = new();
+    Dictionary<string, List<Action<ManagerEventPayload>>> _events = [];
 
     // <startSegment<topic,action>>
-    Dictionary<string, Dictionary<string, List<Action<ManagerEventPayload>>>> _groupedByStartSegmentEvents = new();
+    Dictionary<string, Dictionary<string, List<Action<ManagerEventPayload>>>> _groupedByStartSegmentEvents = [];
 
     //public delegate void ManagerEventPayloadHandler(ManagerEventPayload payload);
 
@@ -29,7 +29,7 @@ internal class EventManager : IEventManager
     {
         if (!_events.TryGetValue(eventName, out var listeners))
         {
-            listeners = new List<Action<ManagerEventPayload>>();
+            listeners = [];
             _events.Add(eventName, listeners);
         }
 

@@ -1,5 +1,3 @@
-using System.Net.Http;
-
 namespace Mars.Core.Exceptions;
 
 public class HttpRequestExceptionAdditional : HttpRequestException

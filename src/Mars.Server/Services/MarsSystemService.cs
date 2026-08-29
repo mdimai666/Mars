@@ -6,7 +6,6 @@ using Mars.Options.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.Contracts.Systems;
-using Mars.Server.Startup;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Npgsql;

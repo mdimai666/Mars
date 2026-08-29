@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 
-namespace Mars.Admin.Shared;
-
 using MenuItem = Mars.Admin.Framework.Models.MenuItem;
+
+namespace Mars.Admin.Shared;
 
 public partial class BuilderLayout
 {
@@ -17,7 +17,7 @@ public partial class BuilderLayout
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [CascadingParameter] public Task<AuthenticationState> AuthState { get; set; } = default!;
 
-    private List<MenuItem> menu_items = new();
+    private List<MenuItem> menu_items = [];
 
     public SystemMinStatResponse hostAppStat = SystemMinStatResponse.Empty();
 

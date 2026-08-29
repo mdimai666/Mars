@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using Mars.Server.Features;
+using Mars.Contracts.Models;
 using Mars.Options.Services;
 using Mars.Server.Contracts.Options;
-using Mars.Contracts.Models;
+using Mars.Server.Features;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -77,7 +77,7 @@ internal static class MarsStartupPartSwagger
 
     public static IApplicationBuilder MarsUseSwagger(this IApplicationBuilder app)
     {
-        IOptionService optionService = app.ApplicationServices.GetRequiredService<IOptionService>()!;
+        var optionService = app.ApplicationServices.GetRequiredService<IOptionService>();
 
         app.Use([DebuggerStepThrough] async (context, next) =>
         {

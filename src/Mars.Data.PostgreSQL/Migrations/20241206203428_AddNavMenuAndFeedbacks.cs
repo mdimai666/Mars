@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Mars.Data.OwnedTypes.NavMenus;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Mars.Data.PostgreSQL.Migrations {
+namespace Mars.Data.PostgreSQL.Migrations
+{
     /// <inheritdoc />
     public partial class AddNavMenuAndFeedbacks : Migration
     {

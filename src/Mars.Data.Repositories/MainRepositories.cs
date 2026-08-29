@@ -3,11 +3,6 @@ using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
 using Mars.Media.Abstractions.Repositories;
 using Mars.Options.Repositories;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Identity.Abstractions.Repositories;
-using Mars.Identity.Abstractions.Services;
-using Mars.Media.Abstractions.Repositories;
-using Mars.Options.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Data.Repositories;

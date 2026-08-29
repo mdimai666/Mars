@@ -1,5 +1,3 @@
-using System;
-
 namespace Mars.Core.Extensions;
 
 public static class DateTimeExtensions

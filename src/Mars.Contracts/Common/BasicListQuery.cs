@@ -19,7 +19,7 @@ public record BasicListQuery : IBasicListQuery
 
 
     public static BasicListQuery FromPage(int page, int? pageSize = DefaultPageSize, string? sort = null, string? search = null)
-        => new BasicListQuery
+        => new()
         {
             Skip = (page - 1) * (pageSize ?? DefaultPageSize),
             Take = pageSize ?? DefaultPageSize,

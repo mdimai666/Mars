@@ -1,5 +1,5 @@
-using Mars.Data.Entities;
 using Mars.Contracts.Dto.Files;
+using Mars.Data.Entities;
 using Mars.Media.Abstractions.Dto.Files;
 
 namespace Mars.Data.Repositories.Helpers;
@@ -12,7 +12,7 @@ public class ImagePreviewResolver(ImagePreviewConfig config, FileHostingInfo hos
     {
         var isImage = HostingInfo.ExtIsImage(file.FileExt);
 
-        if(isImage && file.Meta is not null && file.Meta.Thumbnails is not null)
+        if (isImage && file.Meta is not null && file.Meta.Thumbnails is not null)
         {
             if (file.Meta.Thumbnails.TryGetValue(config.PrefererImageSize, out var thumbnail))
             {
@@ -21,7 +21,7 @@ public class ImagePreviewResolver(ImagePreviewConfig config, FileHostingInfo hos
             else if (HostingInfo.ExtIsSvg(file.FileExt) && file.FileSize < 100_000)
             {
                 var first = file.Meta.Thumbnails.Values.FirstOrDefault();
-                if(first is not null)
+                if (first is not null)
                 {
                     return first.FileUrl;
                 }

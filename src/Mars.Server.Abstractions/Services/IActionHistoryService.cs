@@ -1,5 +1,3 @@
-using Mars.Server.Abstractions;
-
 namespace Mars.Server.Abstractions.Services;
 
 public interface IActionHistoryService

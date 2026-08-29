@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Mars.Admin.Framework.Components.MetaFieldViews;
-using Mars.Core.Attributes;
-using Mars.Core.Exceptions;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
+using Mars.Core.Attributes;
+using Mars.Core.Exceptions;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.PostTypeViews;
@@ -162,8 +162,8 @@ public class PostTypeEditModel : IBasicEntity
                 [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
                 [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
             },
+            Editor = MetaFieldEditorCatalog.BlockEditor
         };
-        field.Editor = MetaFieldEditorCatalog.BlockEditor;
 
         MetaFields.Add(field);
         return field;

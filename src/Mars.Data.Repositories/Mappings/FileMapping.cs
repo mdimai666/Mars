@@ -1,8 +1,8 @@
+using Mars.Contracts.Common;
+using Mars.Contracts.Dto.Files;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.Files;
-using Mars.Contracts.Dto.Files;
 using Mars.Media.Abstractions.Dto.Files;
-using Mars.Contracts.Common;
 
 namespace Mars.Data.Repositories.Mappings;
 
@@ -116,7 +116,7 @@ internal static class FileMapping
     //Entity
 
     public static FileEntity ToEntity(this CreateFileQuery query, FileHostingInfo hostingInfo)
-        => new FileEntity
+        => new()
         {
             FileName = query.Name,
             FileExt = hostingInfo.GetExtension(query.FilePathFromUpload),

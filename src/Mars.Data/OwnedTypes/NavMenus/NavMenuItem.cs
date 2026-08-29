@@ -24,7 +24,7 @@ public class NavMenuItem
     public string? Icon { get; set; }
 
     [Comment("Роли")]
-    public List<string> Roles { get; set; } = new();
+    public List<string> Roles { get; set; } = [];
 
     /// <summary>
     /// Не для ролей

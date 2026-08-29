@@ -1,15 +1,15 @@
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
-using Mars.Data.Repositories.Mappings;
 using Mars.Data.Extensions;
-using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Cms.Abstractions.Dto.Posts;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Contracts.Common;
-using Mars.Cms.Contracts.Posts;
-using Mars.Cms.Contracts.PostTypes;
+using Mars.Data.Repositories.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Data.Repositories;
@@ -387,7 +387,7 @@ internal class PostRepository : IPostRepository
         ArgumentNullException.ThrowIfNull(query, nameof(query));
 
         IQueryable<PostEntity> queryable = (await ListFilterQueryAsync(query, cancellationToken)).Include(s => s.MetaValues!).ThenInclude(s => s.MetaField)
-                                                                .Include(s=>s.Categories);
+                                                                .Include(s => s.Categories);
         query = RewriteSorting(query, ref queryable);
 
         var list = await queryable.ToListDataResult(query, cancellationToken);

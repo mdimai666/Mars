@@ -2,7 +2,6 @@ using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Contracts.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Server.Controllers;

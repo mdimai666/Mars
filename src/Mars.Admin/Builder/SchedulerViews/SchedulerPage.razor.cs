@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Extensions;
 using Mars.Scheduler.Contracts.Schedulers;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -11,7 +10,7 @@ public partial class SchedulerPage
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] IMessageService messageService { get; set; } = default!;
 
-    PaginationState pagination = new PaginationState { ItemsPerPage = 20 };
+    PaginationState pagination = new() { ItemsPerPage = 20 };
 
     PagingResult<SchedulerJobResponse>? res;
 

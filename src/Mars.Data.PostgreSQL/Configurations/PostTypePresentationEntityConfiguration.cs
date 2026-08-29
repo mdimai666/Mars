@@ -1,5 +1,4 @@
 using Mars.Data.Entities;
-using Mars.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Mars.Data.Constants.PostTypeConstants;

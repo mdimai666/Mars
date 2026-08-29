@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using Mars.Contracts.Resources;
 using Mars.Core.Attributes;
 using Mars.Core.Extensions;
 using Mars.Identity.Contracts.Users;
-using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.UserViews;

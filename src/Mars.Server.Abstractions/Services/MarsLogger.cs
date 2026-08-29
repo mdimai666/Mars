@@ -12,7 +12,7 @@ public static class MarsLogger
     public static void Initialize(ILoggerFactory loggerFactory)
     {
         if (_loggerFactory is not null) return;
-            //throw new InvalidOperationException("MarsLogger already initialized!");
+        //throw new InvalidOperationException("MarsLogger already initialized!");
 
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }

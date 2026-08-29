@@ -1,5 +1,4 @@
 using System.Reflection;
-using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Attributes;
@@ -7,7 +6,6 @@ using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
-using Mars.Server.CommandLine;
 using Mars.Server.Contracts.Options;
 using Mars.Server.Handlers;
 using Mars.Server.Managers;

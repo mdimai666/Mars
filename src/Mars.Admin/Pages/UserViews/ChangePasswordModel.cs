@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Identity.Contracts.Users;
 using Mars.Contracts.Resources;
+using Mars.Identity.Contracts.Users;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.UserViews;

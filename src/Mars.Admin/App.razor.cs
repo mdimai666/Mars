@@ -1,8 +1,8 @@
 using System.Reflection;
-using Mars.Admin.Pages.Public;
+using Mars.Admin.Contracts.Options;
 using Mars.Admin.Framework.AuthProviders;
 using Mars.Admin.Framework.Hub;
-using Mars.Admin.Contracts.Options;
+using Mars.Admin.Pages.Public;
 using Mars.Plugin.Front;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;

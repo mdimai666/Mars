@@ -1,7 +1,7 @@
 using System.Text.Json;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

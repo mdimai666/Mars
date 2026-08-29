@@ -1,6 +1,6 @@
+using Mars.Cms.Abstractions.Dto.NavMenus;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.NavMenus;
-using Mars.Cms.Abstractions.Dto.NavMenus;
 
 namespace Mars.Data.Repositories.Mappings;
 

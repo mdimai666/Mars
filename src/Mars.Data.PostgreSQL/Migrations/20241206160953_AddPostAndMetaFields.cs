@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using Mars.Data.OwnedTypes.MetaFields;
 using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Mars.Data.PostgreSQL.Migrations {
+namespace Mars.Data.PostgreSQL.Migrations
+{
     /// <inheritdoc />
     public partial class AddPostAndMetaFields : Migration
     {

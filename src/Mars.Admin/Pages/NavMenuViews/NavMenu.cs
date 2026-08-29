@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using Mars.Core.Exceptions;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
+using Mars.Core.Exceptions;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.NavMenuViews;
@@ -39,7 +39,7 @@ public partial class EditNavMenuPage
         public string Style { get; set; } = "";
 
         [Display(Name = nameof(AppRes.Roles), ResourceType = typeof(AppRes))]
-        public List<string> Roles { get; set; } = new();
+        public List<string> Roles { get; set; } = [];
 
         //[NotMapped]
         //[JsonIgnore]

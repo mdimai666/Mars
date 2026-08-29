@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using static Mars.UseStartup.MarsStartupInfo;
 
 namespace Mars.Setup;

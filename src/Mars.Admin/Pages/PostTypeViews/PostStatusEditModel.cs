@@ -42,8 +42,8 @@ public record PostStatusEditModel
 
     public static List<PostStatusEditModel> DefaultStatuses()
     {
-        return new List<PostStatusEditModel>
-        {
+        return
+        [
             new ()
             {
                 Id = Guid.NewGuid(),
@@ -79,6 +79,6 @@ public record PostStatusEditModel
                 Slug = "trash",
                 Order = 4,
             },
-        };
+        ];
     }
 }

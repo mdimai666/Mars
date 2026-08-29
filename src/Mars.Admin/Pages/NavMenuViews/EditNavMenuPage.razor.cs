@@ -280,7 +280,7 @@ public partial class EditNavMenuPage
         importButtonDisabled = true;
         StateHasChanged();
 
-        using MemoryStream ms = new MemoryStream();
+        using MemoryStream ms = new();
         await e.File.OpenReadStream().CopyToAsync(ms);
         var bytes = ms.ToArray();
         string json = System.Text.Encoding.UTF8.GetString(bytes);

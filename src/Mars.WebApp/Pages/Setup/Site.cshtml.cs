@@ -1,6 +1,6 @@
+using Mars.Setup;
 using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Services;
-using Mars.Setup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

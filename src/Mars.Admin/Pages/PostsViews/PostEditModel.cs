@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Admin.Pages.PostTypeViews;
 using Mars.Admin.Framework.Components.MetaFieldViews;
-using Mars.Core.Exceptions;
-using Mars.Core.Extensions;
+using Mars.Admin.Pages.PostTypeViews;
 using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
+using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.PostsViews;
@@ -58,7 +58,7 @@ public class PostEditModel : IBasicEntity
     public string[] Tags { get; set; } = [];
 
     [ValidateComplexType]
-    public List<MetaValueEditModel> MetaValues { get; set; } = new();
+    public List<MetaValueEditModel> MetaValues { get; set; } = [];
     public Guid[] CategoryIds { get; set; } = [];
 
     Dictionary<(string Key, int Index), MetaValueEditModel>? _metaValuesByIndex;

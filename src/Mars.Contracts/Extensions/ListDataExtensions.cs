@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Mars.Core.Extensions;
 using Mars.Contracts.Common;
+using Mars.Core.Extensions;
 
 namespace Mars.Data.Extensions;
 

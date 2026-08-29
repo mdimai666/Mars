@@ -15,10 +15,10 @@ public class ImageThumbnail
 
     public ImageThumbnail(ImageThumbnail thumb)
     {
-        this.Name = thumb.Name;
-        this.Width = thumb.Width;
-        this.Height = thumb.Height;
-        this.FilePath = thumb.FilePath;
-        this.FileUrl = thumb.FileUrl;
+        Name = thumb.Name;
+        Width = thumb.Width;
+        Height = thumb.Height;
+        FilePath = thumb.FilePath;
+        FileUrl = thumb.FileUrl;
     }
 }

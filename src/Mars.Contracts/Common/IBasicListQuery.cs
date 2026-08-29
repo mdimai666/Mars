@@ -13,7 +13,7 @@ public interface IBasicListQuery
     /// </list>
     /// </example>
     /// </summary>
-    public string? Sort { get;  }
+    public string? Sort { get; }
     public string? Search { get; }
 
     bool IncludeTotalCount { get; }

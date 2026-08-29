@@ -1,12 +1,12 @@
-using Mars.Core.Exceptions;
-using Mars.Data.Contexts;
-using Mars.Data.Entities;
-using Mars.Data.OwnedTypes.NavMenus;
-using Mars.Data.Repositories.Mappings;
-using Mars.Data.Extensions;
 using Mars.Cms.Abstractions.Dto.NavMenus;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Contracts.Common;
+using Mars.Core.Exceptions;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.Extensions;
+using Mars.Data.OwnedTypes.NavMenus;
+using Mars.Data.Repositories.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Data.Repositories;
@@ -85,7 +85,7 @@ internal class NavMenuRepository : INavMenuRepository
     }
 
     NavMenuItem MapItem(NavMenuItemDto item)
-        => new NavMenuItem
+        => new()
         {
             Id = item.Id,
             ParentId = item.ParentId,
@@ -204,5 +204,5 @@ internal class NavMenuRepository : INavMenuRepository
         return list.ToMap(NavMenuMapping.ToSummaryList);
 
     }
-    
+
 }

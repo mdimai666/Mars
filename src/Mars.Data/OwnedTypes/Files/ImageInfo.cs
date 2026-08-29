@@ -13,7 +13,7 @@ public class ImageInfo
 
     public ImageInfo(ImageInfo imageInfo)
     {
-        this.Width = imageInfo.Width;
-        this.Height = imageInfo.Height;
+        Width = imageInfo.Width;
+        Height = imageInfo.Height;
     }
 }

@@ -1,11 +1,9 @@
 using System.Collections.ObjectModel;
 using Mars.Admin.Pages.FeedbackViews;
-using Mars.Admin.Framework.Extensions;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace Mars.Admin.Pages.NavMenuViews;
 

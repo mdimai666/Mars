@@ -23,7 +23,7 @@ public partial class EditNavMenuPage
         public string? Icon { get; set; }
 
         [Display(Name = "Роли")]
-        public List<string> Roles { get; set; } = new();
+        public List<string> Roles { get; set; } = [];
 
         /// <summary>
         /// Не для ролей

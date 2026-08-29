@@ -1,10 +1,10 @@
-using System;
 using System.Text.Json.Nodes;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Mars.Data.PostgreSQL.Migrations {
+namespace Mars.Data.PostgreSQL.Migrations
+{
     /// <inheritdoc />
     public partial class MetaFieldsOneToNOwnership : Migration
     {

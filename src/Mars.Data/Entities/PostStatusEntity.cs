@@ -42,8 +42,8 @@ public class PostStatusEntity : IBasicEntity
 
     public static List<PostStatusEntity> DefaultStatuses()
     {
-        return new List<PostStatusEntity>
-        {
+        return
+        [
             new PostStatusEntity
             {
                 Id = Guid.NewGuid(),
@@ -84,6 +84,6 @@ public class PostStatusEntity : IBasicEntity
                 Order = 4,
                 CreatedAt = DateTime.Now,
             },
-        };
+        ];
     }
 }

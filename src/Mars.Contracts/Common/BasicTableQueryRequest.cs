@@ -18,5 +18,5 @@ public record BasicTableQueryRequest : IBasicTableRequest
 
     [DefaultValue(null)]
     public virtual string? Sort { get; init; }
-    
+
 }

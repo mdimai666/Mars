@@ -1,5 +1,5 @@
-using Mars.Core.Extensions;
 using Mars.Contracts.Common;
+using Mars.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Data.Extensions;

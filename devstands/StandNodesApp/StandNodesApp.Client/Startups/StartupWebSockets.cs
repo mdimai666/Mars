@@ -1,4 +1,4 @@
-using Mars.Admin.Framework;
+using Mars.Admin.Framework.Features;
 using Mars.Admin.Framework.Hub;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Http.Connections;

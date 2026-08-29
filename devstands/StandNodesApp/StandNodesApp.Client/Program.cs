@@ -1,5 +1,6 @@
 using Flurl.Http;
 using Mars.Admin.Framework;
+using Mars.Admin.Framework.Features;
 using Mars.Contracts.XActions;
 using Mars.Nodes.Workspace;
 using Mars.Server.Contracts.Options;

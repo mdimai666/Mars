@@ -1,13 +1,12 @@
 using System.Security.Claims;
 using Mars.Admin.Framework.AuthProviders;
-using Mars.Admin.Framework.Features;
 using Mars.Admin.Framework.Mappings;
 using Mars.Admin.Framework.Models;
 using Mars.Identity.Contracts.ViewModels;
 using Mars.Server.Contracts.ViewModels;
 using Mars.SSO.Contracts.Dto;
 
-namespace Mars.Admin.Framework;
+namespace Mars.Admin.Framework.Features;
 
 public static class Q
 {

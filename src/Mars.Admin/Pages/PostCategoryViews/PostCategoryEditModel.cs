@@ -8,7 +8,7 @@ using Mars.Contracts.Resources;
 using Mars.Core.Exceptions;
 using Mars.WebApiClient.Interfaces;
 
-namespace Mars.Admin.Pages.PostCategoriesViews;
+namespace Mars.Admin.Pages.PostCategoryViews;
 
 /// <summary>
 /// <see cref="PostCategoryEditResponse"/>

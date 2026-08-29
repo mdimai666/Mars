@@ -1,4 +1,4 @@
-using Mars.Admin.Framework;
+using Mars.Admin.Framework.Features;
 using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Contracts.SignalR;
 using Microsoft.AspNetCore.Http.Connections;

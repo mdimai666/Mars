@@ -1,7 +1,7 @@
 using System.Reflection;
 using Mars.Contracts.Models.Interfaces;
 
-namespace Mars.Admin.Framework.Tools;
+namespace Mars.Admin.Framework.Services;
 
 public class ModelPropertySel
 {

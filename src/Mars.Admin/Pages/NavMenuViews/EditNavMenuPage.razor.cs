@@ -285,7 +285,6 @@ public partial class EditNavMenuPage
         var bytes = ms.ToArray();
         string json = System.Text.Encoding.UTF8.GetString(bytes);
         import_json = json;
-        //importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
 
         importButtonDisabled = false;
         StateHasChanged();
@@ -294,8 +293,6 @@ public partial class EditNavMenuPage
 
     async void OnImportClick()
     {
-        //importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
-        //var result = await viewModelService.SystemImportSettings(importVal);
         var result = await client.NavMenu.Import(ID, import_json);
 
         if (result.Ok)

@@ -43,7 +43,7 @@
         <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.FormEditor\Mars.Nodes.FormEditor.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front.Abstractions\Mars.Plugin.Front.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
-        <ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj" />
+        <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

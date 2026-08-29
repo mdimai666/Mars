@@ -18,6 +18,7 @@
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
         <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />

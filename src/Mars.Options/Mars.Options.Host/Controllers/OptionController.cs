@@ -4,9 +4,7 @@ using Mars.Core.Constants;
 using Mars.Core.Models;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.ExceptionFilters;
-using Mars.Server.Abstractions.Services;
 using Mars.Server.Contracts.Options;
-using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,20 +25,10 @@ namespace Mars.Options.Host.Controllers;
 public class OptionController : ControllerBase
 {
     private readonly IOptionService _optionService;
-    private readonly IMarsEmailSender _emailSender;
-    private readonly ISmsSender _smsSender;
-    private readonly IActionHistoryService _actionHistoryService;
 
-    public OptionController(
-        IOptionService optionService,
-        IMarsEmailSender emailSender,
-        ISmsSender smsSender,
-        IActionHistoryService actionHistoryService)
+    public OptionController(IOptionService optionService)
     {
         _optionService = optionService;
-        _emailSender = emailSender;
-        _smsSender = smsSender;
-        _actionHistoryService = actionHistoryService;
     }
 
     [AllowAnonymous]
@@ -61,30 +49,6 @@ public class OptionController : ControllerBase
     {
         _optionService.SaveOption(val);
         return Ok();
-    }
-
-    [HttpPost("SendTestEmail")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesErrorResponseType(typeof(void))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public Task<UserActionResult> SendTestEmail(TestMailMessage form)
-    {
-        return _emailSender.SendTestEmail(form);
-    }
-
-    [HttpPost("SendTestSms")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesErrorResponseType(typeof(void))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public Task<UserActionResult> SendTestSms(SendSmsModelRequest form)
-    {
-        return _smsSender.SendTestSms(form);
     }
 
     [HttpGet("Option/{optionClass}")]

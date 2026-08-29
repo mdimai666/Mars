@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
+  <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Mars.Notifications.Abstractions;
 using Mars.Options.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -9,6 +10,8 @@ public static class MainNotifications
 {
     public static IServiceCollection AddMarsNotifications(this IServiceCollection services)
     {
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         services.AddTransient<IMarsEmailSender, EmailSender>();
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddTransient<ISmsSender, SmsSender>();

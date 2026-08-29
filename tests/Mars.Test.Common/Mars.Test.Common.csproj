@@ -20,7 +20,7 @@
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\Mars.Options\Mars.Options\Mars.Options.csproj" />
+    <ProjectReference Include="..\..\src\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
   </ItemGroup>
 

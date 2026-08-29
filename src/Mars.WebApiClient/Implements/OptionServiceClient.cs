@@ -1,7 +1,5 @@
 using Mars.Core.Models;
-using Mars.Contracts.Common;
 using Mars.Server.Contracts.Options;
-using Mars.Notifications.Abstractions;
 using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
 
@@ -36,15 +34,5 @@ internal class OptionServiceClient : BasicServiceClient, IOptionServiceClient
     {
         throw new NotImplementedException();
     }
-
-    public Task<UserActionResult> SendTestEmail(TestMailMessage request)
-        => _client.Request($"{_basePath}{_controllerName}", "SendTestEmail")
-                    .PostJsonAsync(request)
-                    .ReceiveJson<UserActionResult>();
-
-    public Task<UserActionResult> SendTestSms(SendSmsModelRequest request)
-        => _client.Request($"{_basePath}{_controllerName}", "SendTestSms")
-                    .PostJsonAsync(request)
-                    .ReceiveJson<UserActionResult>();
 
 }

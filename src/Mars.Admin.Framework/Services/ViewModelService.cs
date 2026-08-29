@@ -5,7 +5,6 @@ using Flurl.Http;
 using Mars.Core.Exceptions;
 using Mars.Core.Features;
 using Mars.Contracts.Common;
-using Mars.Server.Contracts.Systems;
 using Mars.Identity.Contracts.ViewModels;
 using Mars.Server.Contracts.ViewModels;
 using Microsoft.JSInterop;
@@ -65,20 +64,6 @@ public class ViewModelService : IViewModelService
     public async Task<EditUserViewModel> EditUserViewModel(Guid id)
     {
         return await Get<EditUserViewModel>($"id={id}");
-    }
-
-    public string SystemExportSettingsUrl()
-    {
-        string url = _client.BaseUrl + "vm/ViewModel/SystemExportSettings";
-        return url;
-    }
-
-    public async Task<UserActionResult> SystemImportSettings(SystemImportSettingsFile_v1Request val)
-    {
-        var result = await _client.Request($"{_basePath}{_controllerName}/SystemImportSettings")
-            .PostJsonAsync(val)
-            .ReceiveJson<UserActionResult>();
-        return result;
     }
 
     public async Task<StatisticPageViewModel> StatisticPageViewModel()

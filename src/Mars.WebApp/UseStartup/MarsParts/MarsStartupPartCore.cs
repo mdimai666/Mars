@@ -34,9 +34,6 @@ internal static class MarsStartupPartCore
 {
     public static IServiceCollection MarsAddCore(this IServiceCollection services, ConfigurationManager configuration)
     {
-        //ConfigurationManager configuration = sonfiguration;
-        IOptionService.Configuration = configuration;
-
         services.AddHttpClient();
         services.AddHttpClient<IFlurlClient, FlurlClient>();
 

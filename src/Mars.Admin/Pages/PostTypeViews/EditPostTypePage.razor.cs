@@ -114,7 +114,6 @@ public partial class EditPostTypePage
         var bytes = ms.ToArray();
         string json = System.Text.Encoding.UTF8.GetString(bytes);
         import_json = json;
-        //importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
 
         importButtonDisabled = false;
         StateHasChanged();
@@ -123,8 +122,6 @@ public partial class EditPostTypePage
 
     void OnImportClick()
     {
-        ////importVal = JsonConvert.DeserializeObject<SystemImportSettingsFile_v1>(import_json);
-        ////var result = await viewModelService.SystemImportSettings(importVal);
         //string asPostType = f!.Model.TypeName;
         //var result = await f!.service.PostTypeImport(import_json, asPostType);
 

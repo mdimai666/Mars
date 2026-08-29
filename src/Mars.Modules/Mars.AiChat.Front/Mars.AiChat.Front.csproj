@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
     <ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
     <ProjectReference Include="..\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
+    <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

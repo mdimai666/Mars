@@ -37,6 +37,7 @@ internal class OptionService : IOptionService
     private readonly IEventManager _eventManager;
     private readonly IMemoryCache _memoryCache;
     private readonly IHostEnvironment _environment;
+    private readonly IConfiguration _configuration;
     private Dictionary<Type, Action<object>> onChangeActions = [];
 
     private FileHostingInfo? _fileHostingInfo;
@@ -45,13 +46,15 @@ internal class OptionService : IOptionService
         IServiceScopeFactory scopeFactory,
         IEventManager eventManager,
         IMemoryCache memoryCache,
-        IHostEnvironment environment)
+        IHostEnvironment environment,
+        IConfiguration configuration)
     {
         IsDevelopment = environment.IsDevelopment();
         _scopeFactory = scopeFactory;
         _eventManager = eventManager;
         _memoryCache = memoryCache;
         _environment = environment;
+        _configuration = configuration;
     }
 
     private async Task<TResult> WithRepository<TResult>(Func<IOptionRepository, Task<TResult>> action)
@@ -331,6 +334,6 @@ internal class OptionService : IOptionService
             RequestPath = "upload"
         };
 
-    public string GetDefaultDatabaseConnectionString() => IOptionService.Configuration.GetConnectionString("DefaultConnection")!;
+    public string GetDefaultDatabaseConnectionString() => _configuration.GetConnectionString("DefaultConnection")!;
 
 }

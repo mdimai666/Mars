@@ -21,6 +21,7 @@ public class MarsWebApiClient : IMarsWebApiClient
     public IRoleServiceClient Role { get; }
     public INavMenuServiceClient NavMenu { get; }
     public IOptionServiceClient Option { get; }
+    public INotificationsServiceClient Notifications { get; }
     public IActServiceClient Act { get; }
     public ISearchServiceClient Search { get; }
     public IAppDebugServiceClient AppDebug { get; }
@@ -50,6 +51,7 @@ public class MarsWebApiClient : IMarsWebApiClient
         Role = new RoleServiceClient(serviceProvider, targetClient);
         NavMenu = new NavMenuServiceClient(serviceProvider, targetClient);
         Option = new OptionServiceClient(serviceProvider, targetClient);
+        Notifications = new NotificationsServiceClient(serviceProvider, targetClient);
         Act = new ActServiceClient(serviceProvider, targetClient);
         Search = new SearchServiceClient(serviceProvider, targetClient);
         AppDebug = new AppDebugServiceClient(serviceProvider, targetClient);

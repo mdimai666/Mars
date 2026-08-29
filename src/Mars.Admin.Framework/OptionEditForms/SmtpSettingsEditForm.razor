@@ -92,7 +92,7 @@
     async void SendTestMail()
     {
         testMailLoading = true;
-        await client.Option.SendTestEmail(testMailMessage).SmartActionResult();
+        await client.Notifications.SendTestEmail(testMailMessage).SmartActionResult();
 
         testMailLoading = false;
         StateHasChanged();

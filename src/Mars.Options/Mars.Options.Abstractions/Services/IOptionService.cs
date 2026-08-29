@@ -2,7 +2,6 @@ using Mars.Core.Exceptions;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Dto.Options;
 using Mars.Options.Exceptions;
-using Microsoft.Extensions.Configuration;
 
 namespace Mars.Options.Services;
 
@@ -11,8 +10,6 @@ namespace Mars.Options.Services;
 /// </summary>
 public interface IOptionService
 {
-    static ConfigurationManager Configuration { get; set; } = default!;
-
     bool IsDevelopment { get; }
 
     event Action<object> OnOptionUpdate;

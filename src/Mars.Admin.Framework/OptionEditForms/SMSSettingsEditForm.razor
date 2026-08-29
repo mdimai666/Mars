@@ -46,7 +46,7 @@
     async void SendTestSms()
     {
         testSmsLoading = true;
-        var result = await client.Option.SendTestSms(testSmsMessage);
+        var result = await client.Notifications.SendTestSms(testSmsMessage);
 
         testSmsLoading = false;
         StateHasChanged();

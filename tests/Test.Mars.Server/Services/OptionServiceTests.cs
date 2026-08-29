@@ -21,6 +21,7 @@ using Mars.Server.Contracts.Options;
 using Mars.Test.Common;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
@@ -48,7 +49,7 @@ public class OptionServiceTests
 
         var em = Substitute.For<IEventManager>();
         var mm = Substitute.For<IMemoryCache>();
-        _optionService = new OptionService(mockServiceScopeFactory, em, mm, new TestHostEnvironment());
+        _optionService = new OptionService(mockServiceScopeFactory, em, mm, new TestHostEnvironment(), new ConfigurationManager());
 
         _optionService.RegisterOption<SiteSettings>();
     }

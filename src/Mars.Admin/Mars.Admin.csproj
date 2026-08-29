@@ -40,7 +40,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Remove="Pages\Settings\SettingsImportPage.razor" />
         <Content Remove="Pages\UserViews\AdminEditUserPage.razor" />
         <Content Remove="Pages\UserViews\EditUserFieldsPage.razor" />
         <Content Remove="Pages\UserViews\ViewUserPage.razor" />
@@ -80,6 +79,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
+        <ProjectReference Include="..\Mars.Options\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />
         <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />

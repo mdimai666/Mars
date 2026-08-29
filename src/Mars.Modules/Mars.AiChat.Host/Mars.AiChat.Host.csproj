@@ -31,6 +31,7 @@
     <ProjectReference Include="..\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.AiChat.Abstractions\Mars.AiChat.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

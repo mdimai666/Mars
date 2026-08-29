@@ -9,7 +9,7 @@
 
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
-        <ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj" />
+        <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
 
@@ -43,7 +43,7 @@
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
-        <ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj">
+        <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>

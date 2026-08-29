@@ -7,6 +7,7 @@ using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Options.Mappings.Options;
 using Mars.Options.Services;
 using Mars.Server.Contracts.Options;
+using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Abstractions.Managers;
 using Microsoft.AspNetCore.Http;
 
@@ -17,6 +18,7 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
                                             IMetaModelTypesLocator metaModelTypesLocator,
                                             IRequestContext requestContext,
                                             IActionManager actionManager)
+    : IInitialSiteDataViewModelHandler
 {
     public Task<InitialSiteDataViewModel> Handle(HttpRequest httpRequest, bool devAdminPageData, CancellationToken cancellationToken)
     {

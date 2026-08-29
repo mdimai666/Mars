@@ -1,5 +1,6 @@
 using Mars.Admin.Framework.OptionEditForms;
 using Mars.Admin.Framework;
+using Mars.Admin.Host;
 using EditorJsBlazored.Host;
 using Mars.AiChat.Host;
 using Mars.CommandLine;
@@ -12,7 +13,6 @@ using Mars.Server.Abstractions.Extensions;
 using Mars.Server.Abstractions.Features;
 using Mars.Server.CommandLine;
 using Mars.Server.Startup;
-using Mars.Nodes.Abstractions.Hubs;
 using Mars.Server.Abstractions.JsonConverters;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
@@ -34,7 +34,6 @@ using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
 using Mars.XActions;
-using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
@@ -118,9 +117,7 @@ public static class MarsWebAppStartup
 
         //------------------------------------------
         // CLIENT
-#if !NOADMIN
-        builder.Services.AddAppFrontMain(builder.Configuration, typeof(Mars.Admin.App));
-#endif
+        builder.Services.AddMarsAdminHost(builder.Configuration);
         builder.Services.AddNodeWorkspace();
         builder.Services.AddDatasourceWorkspace();
         // end CLIENT
@@ -196,28 +193,23 @@ public static class MarsWebAppStartup
 
         app.UseMarsCliSocket(Instance);
 
-        app.MapHub<ChatHub>("/_ws/admin", options =>
-        {
-            options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
-        });
-
         app.MarsUseMetrics();
         app.UseMarsHost(builder.Services);
         app.UseMarsIdentity();
         app.UseMarsOptions();
-        app.UseHostFiles();
+        app.UseMarsAdminHost();
+        app.UseStaticFiles();
         app.UseConfigureActions();
         app.MarsUseTemplator();
         //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
         app.Services.UseNodeWorkspace()
-                    .UseDatasourceWorkspace()
-                    .UseAppFrontMain();
+                    .UseDatasourceWorkspace();
 
         var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
         optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
         app.UsePlugins();
-        app.UseDevAdmin();
+        app.UseMarsAdmin();
         app.UseMarsNodes()
            .UseMarsWebAppNodes();
         app.UseDatasourceHost();

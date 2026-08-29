@@ -1,6 +1,6 @@
 using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
-using Mars.Server.Handlers;
+using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Contracts.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +17,11 @@ namespace Mars.Server.Controllers;
 public class ViewModelController : ControllerBase //MinimalControllerBase, IViewModelService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly InitialSiteDataViewModelHandler _initialSiteDataViewModelHandler;
+    private readonly IInitialSiteDataViewModelHandler _initialSiteDataViewModelHandler;
 
     public ViewModelController(
         IServiceProvider serviceProvider,
-        InitialSiteDataViewModelHandler initialSiteDataViewModelHandler)
+        IInitialSiteDataViewModelHandler initialSiteDataViewModelHandler)
     {
         _serviceProvider = serviceProvider;
         _initialSiteDataViewModelHandler = initialSiteDataViewModelHandler;

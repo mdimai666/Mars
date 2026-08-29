@@ -3,6 +3,7 @@ using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Attributes;
+using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
@@ -34,7 +35,7 @@ public static class MainMarsHost
         services.AddSingleton<IMarsSystemService, MarsSystemService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Contracts\Tools\ModelInfoService.cs
 
-        services.AddScoped<InitialSiteDataViewModelHandler>();
+        services.AddScoped<IInitialSiteDataViewModelHandler, InitialSiteDataViewModelHandler>();
 
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
 

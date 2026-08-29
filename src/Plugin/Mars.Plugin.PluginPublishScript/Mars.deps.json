@@ -14,6 +14,7 @@
           "Humanizer": "3.0.10",
           "Mars.Admin": "0.8.0-alpha.1",
           "Mars.Admin.Contracts": "1.0.0",
+          "Mars.Admin.Host": "1.0.0",
           "Mars.AiChat.Host": "1.0.0",
           "Mars.Cms.Host": "1.0.0",
           "Mars.CommandLine": "1.0.0",
@@ -2282,6 +2283,25 @@
         },
         "runtime": {
           "Mars.Admin.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Admin.Host/1.0.0": {
+        "dependencies": {
+          "Mars.Admin": "0.8.0-alpha.1",
+          "Mars.Admin.Contracts": "1.0.0",
+          "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.9",
+          "mdimai666.Mars.Admin.Framework": "0.8.0-alpha.1",
+          "mdimai666.Mars.Core": "0.8.0-alpha.1",
+          "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
+          "mdimai666.Mars.Options": "0.8.0-alpha.1",
+          "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.Admin.Host.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -5074,6 +5094,11 @@
       "sha512": ""
     },
     "Mars.Admin.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Admin.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

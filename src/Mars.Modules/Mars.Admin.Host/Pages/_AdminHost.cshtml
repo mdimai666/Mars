@@ -5,12 +5,12 @@
 @using Mars.Server.Contracts.Options
 @using Mars.Identity.Abstractions.Interfaces
 @using Mars.Core.Features
-@using Mars.Server.Handlers
+@using Mars.Server.Abstractions.Handlers
 @using Mars.SiteEngine.Abstractions.Constants.Website
 @using Mars.Server.Abstractions.Interfaces
 @using Mars.Server.Abstractions.Services
 @using Mars.SiteEngine.Abstractions.WebSite.Scripts
-@using Mars.SiteEngine.WebSite.Scripts
+@using Microsoft.Extensions.DependencyInjection
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
@@ -18,7 +18,7 @@
 @inject IOptionService optionService
 @inject IServiceProvider serviceProvider;
 @inject IRequestContext requestContext;
-@inject InitialSiteDataViewModelHandler _initialSiteDataHandler;
+@inject IInitialSiteDataViewModelHandler _initialSiteDataHandler;
 
 @{
     var scriptsBuilder = serviceProvider.GetRequiredKeyedService<ISiteScriptsBuilder>(AppAdminConstants.SiteScriptsBuilderKey);

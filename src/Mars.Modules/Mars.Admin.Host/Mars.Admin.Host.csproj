@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <!--<DefineConstants>$(DefineConstants);NOADMIN</DefineConstants>-->
+        <!-- в модуле есть Razor Pages (_AdminHost) с MVC-тег-хелперами -->
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    </ItemGroup>
+
+    <ItemGroup Condition="!$(DefineConstants.Contains('NOADMIN'))">
+        <ProjectReference Include="..\..\Mars.Admin\Mars.Admin.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj" />
+        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Mars.Integration.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+</Project>

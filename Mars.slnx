@@ -56,6 +56,9 @@
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Contracts/Mars.SiteEngine.Contracts.csproj" />
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Templators/Mars.SiteEngine.Templators.csproj" />
   </Folder>
+  <Folder Name="/Mars.Modules/Admin/">
+    <Project Path="src/Mars.Modules/Mars.Admin.Host/Mars.Admin.Host.csproj" />
+  </Folder>
   <Folder Name="/Mars.Modules/AiChat/">
     <Project Path="src/Mars.Modules/Mars.AiChat.Front/Mars.AiChat.Front.csproj" />
     <Project Path="src/Mars.Modules/Mars.AiChat.Abstractions/Mars.AiChat.Abstractions.csproj" />

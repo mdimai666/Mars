@@ -25,7 +25,7 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
     {
         templateContextVaribles.Add(UserParamKey, pageContext.User);
         templateContextVaribles.Add(RequestParamKey, pageContext.Request);
-        templateContextVaribles.Add(SysOptionsParamKey, pageContext.SysOptions);
+        templateContextVaribles.Add(SysOptionsParamKey, pageContext.SiteSettings);
         templateContextVaribles.Add(IsDevelopmentParamKey, pageContext.IsDevelopment);
 
         if (pageContext.User is not null)

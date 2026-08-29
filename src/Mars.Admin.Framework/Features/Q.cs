@@ -89,7 +89,7 @@ public static class Q
 
     public static string ClientUrlJoin(string path)
     {
-        string domain = $"{Q.Site.SysOptions.SiteUrl.TrimEnd('/')}/";
+        string domain = $"{Q.Site.SiteSettings.SiteUrl.TrimEnd('/')}/";
 
         if (path.Contains("://"))
         {

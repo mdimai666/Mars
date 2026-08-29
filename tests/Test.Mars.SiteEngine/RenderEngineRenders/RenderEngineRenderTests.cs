@@ -74,7 +74,7 @@ public class RenderEngineRenderTests
         var ctx = new PageRenderContext()
         {
             Request = webClientRequest,
-            SysOptions = sys,
+            SiteSettings = sys,
             User = new RenderContextUser(user),
             IsDevelopment = true,
             TemplateContextVaribles = dataDict ?? new(),
@@ -117,7 +117,7 @@ public class RenderEngineRenderTests
         {
             ["_user.FullName"] = context.PageContext.User.FullName,
             ["_req.Host"] = context.PageContext.Request.Host.ToString(),
-            ["SysOptions.SiteUrl"] = context.PageContext.SysOptions.SiteUrl,
+            ["SysOptions.SiteUrl"] = context.PageContext.SiteSettings.SiteUrl,
         };
 
         // Act

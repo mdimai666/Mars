@@ -34,7 +34,7 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
 
         return Task.FromResult(new InitialSiteDataViewModel
         {
-            SysOptions = optionService.GetOption<SiteSettings>(),
+            SiteSettings = optionService.GetOption<SiteSettings>(),
             UserPrimaryInfo = userPrimaryInfo,
             PostTypes = postTypes,
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),

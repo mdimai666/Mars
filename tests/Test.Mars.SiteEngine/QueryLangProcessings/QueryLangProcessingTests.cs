@@ -28,7 +28,7 @@ public class QueryLangProcessingTests
         _pageContext = new PageRenderContext()
         {
             Request = new WebClientRequest(new Uri(sysOptions.SiteUrl)),
-            SysOptions = sysOptions,
+            SiteSettings = sysOptions,
             User = new RenderContextUser(UserConstants.AuthorizedUserInfo),
             RenderParam = new RenderParam(),
             IsDevelopment = true,

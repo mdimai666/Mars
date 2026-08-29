@@ -142,7 +142,7 @@ public class WebSiteRequestProcessor
             var pageRenderContext = new PageRenderContext()
             {
                 Request = request,
-                SysOptions = optionService.GetOption<SiteSettings>(),
+                SiteSettings = optionService.GetOption<SiteSettings>(),
                 User = userDetail == null ? null : new RenderContextUser(userDetail),
                 RenderParam = param,
                 IsDevelopment = optionService.IsDevelopment,

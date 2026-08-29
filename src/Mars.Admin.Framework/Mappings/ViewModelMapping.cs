@@ -9,7 +9,7 @@ public static class ViewModelMapping
     public static AppInitialViewModel ToModel(this InitialSiteDataViewModel vm)
         => new()
         {
-            SysOptions = vm.SysOptions,
+            SiteSettings = vm.SiteSettings,
             InitailUserPrimaryInfo = vm.UserPrimaryInfo,
             Options = vm.Options.ToList(),
             NavMenus = vm.NavMenus.ToList(),

@@ -7,7 +7,7 @@
 @attribute [Display(Name = "Страница")]
 @implements IDisposable
 
-<PageTitle>@(CurrentPageTitle ?? Q.Site?.SysOptions.SiteName)</PageTitle>
+<PageTitle>@(CurrentPageTitle ?? Q.Site?.SiteSettings.SiteName)</PageTitle>
 
 @*<HeadContent>
     <meta name="description" content="@CurrentPageTitle">

@@ -4,7 +4,7 @@
 @*@attribute [Display(Name = "Запись"), DParentPage(typeof(SettingsPage))]*@
 @attribute [Display(Name = "Запись")]
 
-<PageTitle>@(CurrentPageTitle ?? Q.Site?.SysOptions.SiteName)</PageTitle>
+<PageTitle>@(CurrentPageTitle ?? Q.Site?.SiteSettings.SiteName)</PageTitle>
 
 <ContentWrapper>
     @*Title="@(CurrentPageTitle??"Запись")" Breadcrumb=""

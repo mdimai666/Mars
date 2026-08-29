@@ -45,7 +45,7 @@ public class DataQueryScenariosTests
         {
             IsDevelopment = true,
             RenderParam = new(),
-            SysOptions = new(),
+            SiteSettings = new(),
             Request = new(new Uri("http://localhost")),
             User = null,
             TemplateContextVaribles = data ?? new()

@@ -2254,7 +2254,6 @@
           "Mars.Docker.Front": "1.0.0",
           "Mars.Nodes.Workspace": "1.0.0",
           "Mars.Options.Contracts": "1.0.0",
-          "Mars.Options.Front": "1.0.0",
           "Mars.SemanticKernel.Front": "1.0.0",
           "Mars.SiteEngine.Contracts": "1.0.0",
           "Mars.WebApp.Nodes.Front": "1.0.0",
@@ -2849,24 +2848,6 @@
           }
         }
       },
-      "Mars.Options.Front/1.0.0": {
-        "dependencies": {
-          "Mars.Media.Contracts": "1.0.0",
-          "Mars.Plugin.Contracts": "1.0.0",
-          "Mars.SSO.Contracts": "1.0.0",
-          "Mars.Server.Contracts": "1.0.0",
-          "Mars.SiteEngine.Contracts": "1.0.0",
-          "mdimai666.Mars.Admin.Framework": "0.8.0-alpha.1",
-          "mdimai666.Mars.MarsCodeEditor2": "0.8.0-alpha.1",
-          "mdimai666.Mars.Options.Abstractions": "0.8.0-alpha.1"
-        },
-        "runtime": {
-          "Mars.Options.Front.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "Mars.Options.Host/1.0.0": {
         "dependencies": {
           "Mars.Server.Contracts": "1.0.0",
@@ -3337,6 +3318,7 @@
           "Mars.Identity.Contracts": "1.0.0",
           "Mars.Media.Contracts": "1.0.0",
           "Mars.Notifications.Abstractions": "1.0.0",
+          "Mars.Plugin.Contracts": "1.0.0",
           "Mars.SSO.Contracts": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
           "Mars.SiteEngine.Contracts": "1.0.0",
@@ -5355,11 +5337,6 @@
       "sha512": ""
     },
     "Mars.Options.Contracts/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Mars.Options.Front/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -28,7 +28,7 @@ var vm = new InitialSiteDataViewModel()
     NavMenus = [],
     Options = [],
     PostTypes = [],
-    SysOptions = new SiteSettings(),
+    SiteSettings = new SiteSettings(),
     UserPrimaryInfo = null,
     XActions = new Dictionary<string, XActionCommand>(),
 };

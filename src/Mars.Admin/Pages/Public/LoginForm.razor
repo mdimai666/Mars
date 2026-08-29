@@ -26,7 +26,7 @@ else if (!_isAlreadyAuth)
             <div class="spacer-1"></div>
             <FluentButton Appearance=@Appearance.Accent Type="ButtonType.Submit" Class="w-100">Войти</FluentButton>
 
-            @if (Q.Site.SysOptions.AllowUsersSelfRegister)
+            @if (Q.Site.SiteSettings.AllowUsersSelfRegister)
             {
                 <hr class="mx-auto my-4" style="width: 120px;" />
                 <div class="text-center">

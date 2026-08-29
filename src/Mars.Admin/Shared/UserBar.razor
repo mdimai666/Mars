@@ -12,7 +12,7 @@
             <a class="nav-link btn btn-outline-light px-4 cursor-pointer" href="/dev/login">Вход</a>
         </li>
 
-        @if (Q.Site.SysOptions.AllowUsersSelfRegister)
+        @if (Q.Site.SiteSettings.AllowUsersSelfRegister)
         {
             <li class="nav-item d-flex ms-2">
                 <a class="nav-link btn btn-outline-light px-4 cursor-pointer" href="/Register">Регистрация</a>

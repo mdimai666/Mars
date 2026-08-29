@@ -34,7 +34,7 @@ public class MyHandlebarsContextFunctionsTests
         {
             IsDevelopment = true,
             RenderParam = new(),
-            SysOptions = new(),
+            SiteSettings = new(),
             Request = new(new Uri("http://localhost")),
             User = null,
             TemplateContextVaribles = ObjectToDictionary(data ?? new { })

@@ -39,6 +39,7 @@
         <PackageReference Include="Flurl.Http" />
         <PackageReference Include="Handlebars.Net" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="MQTTnet" />
         <PackageReference Include="MQTTnet.Extensions.TopicTemplate" />
         <PackageReference Include="Newtonsoft.Json" />

@@ -12,7 +12,6 @@ using Mars.Options.Repositories;
 using Mars.Options.Services;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

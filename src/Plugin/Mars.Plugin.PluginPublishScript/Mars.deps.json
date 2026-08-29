@@ -38,8 +38,8 @@
           "Mars.SemanticKernel.CMS": "1.0.0",
           "Mars.SemanticKernel.Host": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
-          "Mars.SiteEngine": "1.0.0",
           "Mars.SiteEngine.Handlebars": "1.0.0",
+          "Mars.SiteEngine.Host": "1.0.0",
           "Mars.TemplateEngine.Host": "1.0.0",
           "Mars.WebApp.Nodes.Host": "1.0.0",
           "Mars.XActions.Host": "1.0.0",
@@ -3052,26 +3052,6 @@
           }
         }
       },
-      "Mars.SiteEngine/1.0.0": {
-        "dependencies": {
-          "Flurl.Http": "4.0.2",
-          "Mars.Cms.Abstractions": "1.0.0",
-          "Mars.Identity.Abstractions": "1.0.0",
-          "Mars.Media.Abstractions": "1.0.0",
-          "Mars.SiteEngine.Abstractions": "1.0.0",
-          "Mars.SiteEngine.Contracts": "1.0.0",
-          "Mars.SiteEngine.Templators": "1.0.0",
-          "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
-          "mdimai666.Mars.Options": "0.8.0-alpha.1",
-          "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
-        },
-        "runtime": {
-          "Mars.SiteEngine.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "Mars.SiteEngine.Abstractions/1.0.0": {
         "dependencies": {
           "DynamicExpresso.Core": "2.19.3",
@@ -3109,11 +3089,31 @@
           "Handlebars.Net.Extension.Json": "1.0.0",
           "Handlebars.Net.Extension.NewtonsoftJson": "1.0.3",
           "Mars.QueryLang": "1.0.0",
-          "Mars.SiteEngine": "1.0.0",
+          "Mars.SiteEngine.Host": "1.0.0",
           "mdimai666.Mars.Data": "0.8.0-alpha.1"
         },
         "runtime": {
           "Mars.SiteEngine.Handlebars.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.SiteEngine.Host/1.0.0": {
+        "dependencies": {
+          "Flurl.Http": "4.0.2",
+          "Mars.Cms.Abstractions": "1.0.0",
+          "Mars.Identity.Abstractions": "1.0.0",
+          "Mars.Media.Abstractions": "1.0.0",
+          "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Mars.SiteEngine.Contracts": "1.0.0",
+          "Mars.SiteEngine.Templators": "1.0.0",
+          "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
+          "mdimai666.Mars.Options": "0.8.0-alpha.1",
+          "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.SiteEngine.Host.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -5419,11 +5419,6 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.SiteEngine/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "Mars.SiteEngine.Abstractions/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -5435,6 +5430,11 @@
       "sha512": ""
     },
     "Mars.SiteEngine.Handlebars/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.SiteEngine.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

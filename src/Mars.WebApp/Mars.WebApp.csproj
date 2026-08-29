@@ -52,7 +52,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bogus" />
         <PackageReference Include="Duende.IdentityServer" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
@@ -87,16 +86,13 @@
         <PackageReference Include="System.Security.Cryptography.Pkcs" />
     </ItemGroup>
 
-    <ItemGroup Condition="!$(DefineConstants.Contains('NOADMIN'))">
-        <ProjectReference Include="..\Mars.Admin\Mars.Admin.csproj" />
-    </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
         <ProjectReference Include="..\Mars.Server\Mars.Server.csproj" />
         <ProjectReference Include="..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.XActions\Mars.XActions.Host\Mars.XActions.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Admin.Host\Mars.Admin.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Host\Mars.AiChat.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />

@@ -209,6 +209,10 @@
     <Project Path="tests/Test.Mars.SiteEngine/Test.Mars.SiteEngine.csproj" />
     <Project Path="tests/TestApp.Mars.Data/TestApp.Mars.Data.csproj" />
   </Folder>
+  <Folder Name="/XActions/">
+    <Project Path="src/Mars.XActions/Mars.XActions.Host/Mars.XActions.Host.csproj" />
+    <Project Path="src/Mars.XActions/Mars.XActions/Mars.XActions.csproj" />
+  </Folder>
   <Project Path="src/Mars.Admin/Mars.Admin.csproj" />
   <Project Path="src/Mars.WebApp/Mars.WebApp.csproj" />
 </Solution>

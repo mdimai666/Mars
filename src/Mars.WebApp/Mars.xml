@@ -36,54 +36,6 @@
             но env-переменные и явно примонтированный appsettings.Production.json перекрывают его.
             </summary>
         </member>
-        <member name="F:Mars.XActions.ContentRecipes.CreateMockPostsAct.PostTypesOptionsSource">
-            <summary>
-            Ключ динамического источника вариантов выбора типа записей.
-            </summary>
-        </member>
-        <member name="T:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct">
-            <summary>
-            Создаёт шаблон представления списка записей в специальном фронте админки
-            (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
-            </summary>
-        </member>
-        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.#ctor(Mars.SiteEngine.Abstractions.Services.IFrontFilesService)">
-            <summary>
-            Создаёт шаблон представления списка записей в специальном фронте админки
-            (data/admin/front) по пути postTypes/&lt;typeName&gt;/listView.hbs.
-            </summary>
-        </member>
-        <member name="M:Mars.XActions.ContentRecipes.CreatePostTypePresentationTemplateAct.ListViewRelPath(System.String)">
-            <summary>
-            Правило именования шаблона списка: postTypes/&lt;typeName&gt;/listView.hbs
-            </summary>
-        </member>
-        <member name="T:Mars.XActions.ContentRecipes.RegenerateGeneratedMetaValuesAct">
-            <summary>
-            Перегенерация значений мета-полей с генераторами (порядковые номера, даты) у существующих постов:
-            генератор могли добавить позже создания записей — старые посты нужно перенумеровать/дозаполнить.
-            </summary>
-        </member>
-        <member name="M:Mars.XActions.ContentRecipes.RegenerateGeneratedMetaValuesAct.#ctor(Mars.Cms.Abstractions.Services.IMetaValuesGeneratorService)">
-            <summary>
-            Перегенерация значений мета-полей с генераторами (порядковые номера, даты) у существующих постов:
-            генератор могли добавить позже создания записей — старые посты нужно перенумеровать/дозаполнить.
-            </summary>
-        </member>
-        <member name="T:Mars.XActions.FormTestAct">
-            <summary>
-            Отладочная команда для проверки генерик-формы XActions:
-            строка, число, bool и выбор из списка; по выполнению показывает тостом введённые значения.
-            </summary>
-        </member>
-        <member name="T:Mars.XActions.FrontDemoXAction">
-            <summary>
-            Отладочное фронтовое действие (<see cref="F:Mars.Contracts.XActions.XActionType.FrontAction"/>):
-            метаданные регистрируются на хосте, исполнение — на клиенте через раннер
-            (см. Mars.Admin.Shared.FrontDemoActionRunner). Сами продуктовые фронтовые действия
-            (тема, язык) будут регистрироваться по этому образцу.
-            </summary>
-        </member>
         <member name="T:Program">
             <summary>
             Auto-generated public partial Program class for top-level statement apps.

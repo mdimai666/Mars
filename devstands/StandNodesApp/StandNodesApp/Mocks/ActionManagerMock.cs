@@ -12,6 +12,11 @@ internal class ActionManagerMock : IActionManager
         //throw new NotImplementedException();
     }
 
+    public void AddFrontContexts(string id, params string[] frontContexts)
+    {
+        //throw new NotImplementedException();
+    }
+
     public void AddActionsProvider(IXActionCommandsProvider actionCommandsProvider)
     {
         //throw new NotImplementedException();

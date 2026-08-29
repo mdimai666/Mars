@@ -92,6 +92,8 @@ public static class MainAdminHost
             first.UseStaticFiles();
         });
 
+        app.UseMarsAdminXActions();
+
         return app;
     }
 }

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

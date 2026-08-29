@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.Server.Abstractions.ExceptionFilters;
 using System.Web;
@@ -80,7 +81,7 @@ public class PageRenderController : ControllerBase
         {
             // Админ-фронт рендерится только через /api/AdminFront/Render —
             // наружу отдаём 404, чтобы не раскрывать его существование.
-            if (string.Equals(frontSlug, FrontManager.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(frontSlug, AppAdminConstants.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
                 throw new NotFoundException($"Front '{frontSlug}' not found");
 
             app = _renderEngineLocator.GetAppFrontBySlug(frontSlug)

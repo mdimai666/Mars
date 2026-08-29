@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Core.Exceptions;
 using Mars.Options.Services;
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Models;
@@ -135,7 +136,7 @@ public class FrontController : ControllerBase
         if (!FrontManager.IsValidSlug(request.Slug))
             return UserActionResult.Exception($"Некорректный slug '{request.Slug}'", null);
 
-        if (string.Equals(request.Slug, FrontManager.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(request.Slug, AppAdminConstants.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
             return UserActionResult.Exception($"Slug '{request.Slug}' зарезервирован для специального фронта админки", null);
 
         var option = _optionService.GetOption<FrontsOption>();

@@ -1,6 +1,7 @@
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Options.Services;
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Contracts.Options;
 using Microsoft.AspNetCore.Hosting;
@@ -13,11 +14,6 @@ public class FrontManager : IFrontManager
     /// Папка фронтов по умолчанию: data/fronts/&lt;slug&gt;
     /// </summary>
     public const string FrontsDirName = "fronts";
-
-    /// <summary>
-    /// Зарезервированный slug специального фронта админки.
-    /// </summary>
-    public const string AdminFrontSlug = "admin";
 
     /// <summary>
     /// Папка фронта админки относительно ContentRoot: data/admin/front
@@ -82,7 +78,7 @@ public class FrontManager : IFrontManager
 
     public FrontItem AdminFront => adminFront ??= new FrontItem
     {
-        Slug = AdminFrontSlug,
+        Slug = AppAdminConstants.AdminFrontSlug,
         Title = "Admin",
         Url = "",
         Path = AdminFrontDirName,
@@ -92,7 +88,7 @@ public class FrontManager : IFrontManager
 
     public FrontItem? FindBySlug(string slug)
     {
-        if (string.Equals(slug, AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(slug, AppAdminConstants.AdminFrontSlug, StringComparison.OrdinalIgnoreCase))
             return AdminFront;
 
         return snapshot.Fronts.FirstOrDefault(s => string.Equals(s.Slug, slug, StringComparison.OrdinalIgnoreCase));

@@ -2,6 +2,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.XActions\Mars.XActions\Mars.XActions.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />

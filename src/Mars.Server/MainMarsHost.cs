@@ -13,6 +13,7 @@ using Mars.Server.Handlers;
 using Mars.Server.Managers;
 using Mars.Server.Seeding;
 using Mars.Server.Services;
+using Mars.XActions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +28,6 @@ public static class MainMarsHost
     {
         services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
 
-        services.AddSingleton<IActionManager, XActionManager>();
         services.AddSingleton<IEventManager, EventManager>();
 
         services.AddSingleton<IActionHistoryService, ActionHistoryService>();
@@ -40,6 +40,8 @@ public static class MainMarsHost
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
 
         services.AddSingleton<ISeedFirstOptionHandler, SeedFirstOptionHandler>();
+
+        services.AddXActionHandlers(typeof(ClearCacheAct).Assembly);
 
         // Потребители: FunctionNodeImpl (Nodes) и KernelFactory_v2 (SemanticKernel.Host)
         services.AddSingleton<IServiceCollection>(services);

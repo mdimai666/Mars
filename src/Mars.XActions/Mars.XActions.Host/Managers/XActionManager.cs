@@ -50,6 +50,23 @@ internal partial class XActionManager : IActionManager, IMarsAppLifetimeService
         invalide = true;
     }
 
+    public void AddFrontContexts(string id, params string[] frontContexts)
+    {
+        if (!_registeredActions.TryGetValue(id, out var registered))
+        {
+            _logger.LogWarning($"AddFrontContexts: команда '{id}' не зарегистрирована");
+            return;
+        }
+
+        var merged = (registered.Command.FrontContextId ?? [])
+            .Concat(frontContexts)
+            .Distinct()
+            .ToArray();
+
+        _registeredActions[id] = registered with { Command = registered.Command with { FrontContextId = merged } };
+        invalide = true;
+    }
+
     public void AddActionsProvider(IXActionCommandsProvider actionCommandsProvider)
     {
         _xActionCommandsProviders.Add(actionCommandsProvider);

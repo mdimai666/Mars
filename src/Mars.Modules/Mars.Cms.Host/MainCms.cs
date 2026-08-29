@@ -54,6 +54,8 @@ public static class MainCms
         services.AddScoped<IPostTransformer, PostTransformer>();
         RegisterPostContentProcessorsLocator(services);
 
+        services.AddCmsXActions();
+
         return services;
     }
 

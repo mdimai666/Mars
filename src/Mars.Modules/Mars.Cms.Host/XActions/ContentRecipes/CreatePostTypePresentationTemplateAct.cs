@@ -1,7 +1,6 @@
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Services;
-using Mars.Services;
 using Mars.Contracts.XActions;
-using Mars.SiteEngine.Services;
 
 namespace Mars.XActions.ContentRecipes;
 
@@ -22,11 +21,11 @@ public class CreatePostTypePresentationTemplateAct(IFrontFilesService frontFiles
 
         var relPath = ListViewRelPath(postTypeName);
 
-        var fullPath = frontFilesService.ResolveSafePath(FrontManager.AdminFrontSlug, relPath);
+        var fullPath = frontFilesService.ResolveSafePath(AppAdminConstants.AdminFrontSlug, relPath);
         if (File.Exists(fullPath))
             return Task.FromResult(XActResult.ToastWarning($"file '{relPath}' already exists"));
 
-        frontFilesService.SaveFile(FrontManager.AdminFrontSlug, relPath, GeneratePageTemplate(postTypeName));
+        frontFilesService.SaveFile(AppAdminConstants.AdminFrontSlug, relPath, GeneratePageTemplate(postTypeName));
 
         return Task.FromResult(XActResult.ToastSuccess($"created '{relPath}' in admin front"));
     }

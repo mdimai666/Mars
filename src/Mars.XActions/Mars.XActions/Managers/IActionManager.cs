@@ -12,6 +12,13 @@ public interface IActionManager
     /// </summary>
     void Add(Action<XActionBuilder> configure);
 
+    /// <summary>
+    /// Дозаявить фронтовые контексты для уже зарегистрированной команды:
+    /// команду регистрирует доменный владелец без привязки к админке,
+    /// контексты навешивает сторона, знающая страницы админ-панели.
+    /// </summary>
+    void AddFrontContexts(string id, params string[] frontContexts);
+
     void AddActionsProvider(IXActionCommandsProvider actionCommandsProvider);
     IReadOnlyDictionary<string, XActionCommand> XActions { get; }
     Task<XActResult> Inject(string id, IReadOnlyDictionary<string, string> args, CancellationToken cancellationToken);

@@ -33,7 +33,7 @@ using Mars.SSO.Host.OAuth;
 using Mars.UseStartup;
 using Mars.UseStartup.MarsParts;
 using Mars.WebApp.Nodes.Host;
-using Mars.XActions;
+using Mars.XActions.Host;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FeatureManagement;
 using static Mars.UseStartup.MarsStartupInfo;
@@ -64,7 +64,6 @@ public static class MarsWebAppStartup
                         .MarsAddCore(builder.Configuration)
                         .AddAspNetTools()
                         .MarsAddMetrics(builder.Configuration)
-                        .AddConfigureActions()
                         .AddMarsWebSiteProcessor();
         builder.AddWREHandlebars();
 
@@ -96,6 +95,7 @@ public static class MarsWebAppStartup
                         .AddMarsCms()
                         .AddMarsQueryLang()
                         .AddMetaModelGenerator()
+                        .AddMarsXActionsHost()
                         .AddMarsHostServices(builder.Environment)
                         .MarsAddTemplator()
                         .AddPostgresDistributedCache(builder.Configuration)
@@ -199,7 +199,8 @@ public static class MarsWebAppStartup
         app.UseMarsOptions();
         app.UseMarsAdminHost();
         app.UseStaticFiles();
-        app.UseConfigureActions();
+        app.UseMarsHostXActions();
+        app.UseCmsXActions();
         app.MarsUseTemplator();
         //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
         app.Services.UseNodeWorkspace()

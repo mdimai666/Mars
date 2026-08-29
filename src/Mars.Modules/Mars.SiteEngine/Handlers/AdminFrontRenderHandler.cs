@@ -1,5 +1,6 @@
 using Mars.Core.Exceptions;
 using Mars.Server.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Abstractions.WebSite;
@@ -17,8 +18,8 @@ public class AdminFrontRenderHandler(IWebRenderEngineLocator renderEngineLocator
 {
     public async Task<string?> RenderByFile(string fileRelPath, string? queryString, HttpContext httpContext, CancellationToken cancellationToken)
     {
-        var app = renderEngineLocator.GetAppFrontBySlug(FrontManager.AdminFrontSlug)
-            ?? throw new NotFoundException($"Admin front '{FrontManager.AdminFrontSlug}' not found");
+        var app = renderEngineLocator.GetAppFrontBySlug(AppAdminConstants.AdminFrontSlug)
+            ?? throw new NotFoundException($"Admin front '{AppAdminConstants.AdminFrontSlug}' not found");
 
         var tsv = app.Features.Get<IWebTemplateService>();
 

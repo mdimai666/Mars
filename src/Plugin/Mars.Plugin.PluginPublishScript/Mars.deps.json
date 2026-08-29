@@ -8,11 +8,9 @@
     ".NETCoreApp,Version=v10.0": {
       "Mars/0.8.0-alpha.1": {
         "dependencies": {
-          "Bogus": "35.6.5",
           "Duende.IdentityServer": "7.4.7",
           "EditorJsBlazored.Host": "1.0.0",
           "Humanizer": "3.0.10",
-          "Mars.Admin": "0.8.0-alpha.1",
           "Mars.Admin.Contracts": "1.0.0",
           "Mars.Admin.Host": "1.0.0",
           "Mars.AiChat.Host": "1.0.0",
@@ -44,6 +42,7 @@
           "Mars.SiteEngine.Handlebars": "1.0.0",
           "Mars.TemplateEngine.Host": "1.0.0",
           "Mars.WebApp.Nodes.Host": "1.0.0",
+          "Mars.XActions.Host": "1.0.0",
           "Microsoft.AspNetCore.ApiAuthorization.IdentityServer": "7.0.20",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
           "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.9",
@@ -2390,6 +2389,7 @@
       },
       "Mars.Cms.Host/1.0.0": {
         "dependencies": {
+          "Bogus": "35.6.5",
           "EditorJsBlazored": "1.0.0",
           "Handlebars.Net": "2.1.6",
           "Mars.Cms.Abstractions": "1.0.0",
@@ -2399,6 +2399,8 @@
           "Mars.Identity.Abstractions": "1.0.0",
           "Mars.Media.Abstractions": "1.0.0",
           "Mars.Media.Contracts": "1.0.0",
+          "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Mars.XActions": "1.0.0",
           "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
@@ -3023,6 +3025,7 @@
           "Mars.Cms.Contracts": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
           "Mars.Options.Contracts": "1.0.0",
+          "Mars.XActions": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3244,6 +3247,29 @@
         },
         "runtime": {
           "Mars.WebApp.Nodes.Host.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.XActions/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.XActions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.XActions.Host/1.0.0": {
+        "dependencies": {
+          "Mars.XActions": "1.0.0",
+          "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.XActions.Host.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -5429,6 +5455,16 @@
       "sha512": ""
     },
     "Mars.WebApp.Nodes.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.XActions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.XActions.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

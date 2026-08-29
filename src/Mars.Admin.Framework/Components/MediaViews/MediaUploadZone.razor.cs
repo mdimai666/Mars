@@ -1,4 +1,3 @@
-using Mars.Admin.Framework.Extensions;
 using Mars.Core.Exceptions;
 using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;

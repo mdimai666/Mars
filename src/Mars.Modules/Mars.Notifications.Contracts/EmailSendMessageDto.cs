@@ -16,14 +16,14 @@ public class EmailSendMessageDto : IValidatableObject
 
     public EmailSendMessageDto(string toemail, string subject, string message)
     {
-        this.ToEmail = toemail;
-        this.Subject = subject;
-        this.Message = message;
+        ToEmail = toemail;
+        Subject = subject;
+        Message = message;
     }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        List<ValidationResult> errors = new List<ValidationResult>();
+        List<ValidationResult> errors = [];
 
         if (string.IsNullOrWhiteSpace(Message))
             errors.Add(new ValidationResult("Сообщение не может быть пустым"));

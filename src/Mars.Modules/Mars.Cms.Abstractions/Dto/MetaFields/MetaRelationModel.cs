@@ -1,5 +1,5 @@
-using Mars.Contracts.Common;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Contracts.Common;
 
 namespace Mars.Cms.Abstractions.Dto.MetaFields;
 
@@ -20,7 +20,7 @@ public record MetaRelationModel
 /// </summary>
 public record RelationModelSubType
 {
-    
+
     public required string Title { get; init; }
     public required string TitlePlural { get; init; }
     public required string Key { get; init; }

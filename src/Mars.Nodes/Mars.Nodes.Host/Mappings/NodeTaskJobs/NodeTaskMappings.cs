@@ -1,5 +1,5 @@
-using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Abstractions.Dto.NodeTasks;
+using Mars.Nodes.Host.NodeTasks;
 
 namespace Mars.Nodes.Host.Mappings.NodeTaskJobs;
 

@@ -41,11 +41,11 @@ public class CoreAttributesTests
         Assert.False(validator.IsValid(user92notValid.Email));
 
         //Check attribute functionality
-        ValidationContext vx1 = new ValidationContext(user1valid);
-        ValidationContext vx2 = new ValidationContext(user2valid);
-        ValidationContext vx3 = new ValidationContext(user3valid);
-        ValidationContext vx4 = new ValidationContext(user91notValid);
-        ValidationContext vx5 = new ValidationContext(user92notValid);
+        ValidationContext vx1 = new(user1valid);
+        ValidationContext vx2 = new(user2valid);
+        ValidationContext vx3 = new(user3valid);
+        ValidationContext vx4 = new(user91notValid);
+        ValidationContext vx5 = new(user92notValid);
 
         Assert.True(Validator.TryValidateObject(user1valid, vx1, null, true));
         Assert.True(Validator.TryValidateObject(user2valid, vx2, null, true));

@@ -1,7 +1,7 @@
 using AutoFixture;
 using Bogus;
-using Mars.Core.Features;
 using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Core.Features;
 using Mars.Test.Common.Constants;
 
 namespace Mars.Test.Common.FixtureCustomizes;

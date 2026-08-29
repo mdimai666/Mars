@@ -1,10 +1,10 @@
+using FluentAssertions;
 using Mars.Data.Entities;
+using Mars.Identity.Contracts.Users;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Identity.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Users;
 

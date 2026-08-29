@@ -92,7 +92,7 @@ public class ModelInfoService
             return _registeredModels;
         }
     }
-    public List<IBasicEntity> Palette { get; set; } = new List<IBasicEntity>();
+    public List<IBasicEntity> Palette { get; set; } = [];
 
     public ModelInfoService()
     {
@@ -134,15 +134,11 @@ public class ModelInfoService
 
     public static IEnumerable<Type> GetEnumerableOfType<T>(params object[] constructorArgs) where T : class
     {
-        List<Type> objects = new List<Type>();
-        foreach (Type type in
-            Assembly.GetAssembly(typeof(T)).GetTypes()
-            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))))
-        {
-            //objects.Add((T)Activator.CreateInstance(type, constructorArgs));
-            //return typeof(T);
-            objects.Add(type);
-        }
+        List<Type> objects =
+        [
+            .. Assembly.GetAssembly(typeof(T)).GetTypes()
+            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))),
+        ];
         //objects.Sort();
         return objects;
     }

@@ -1,6 +1,6 @@
-using Mars.Integration.Tests.Attributes;
 using FluentAssertions;
 using Flurl.Http;
+using Mars.Integration.Tests.Attributes;
 using PluginExample.Controllers;
 
 namespace Mars.Plugin.Integration.Tests.Tests;

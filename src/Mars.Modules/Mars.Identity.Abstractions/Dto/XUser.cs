@@ -1,10 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Mars.Identity.Abstractions.Dto.Users;
-using Mars.Identity.Contracts.Users;
-using Microsoft.AspNetCore.Identity;
-
 namespace Mars.Identity.Abstractions.Dto;
 
 //public interface IXUser : IUserBasicInfo

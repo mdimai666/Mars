@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using Mars.Cms.Abstractions.Services;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
-using Mars.Cms.Abstractions.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.MetaModelGenerator;

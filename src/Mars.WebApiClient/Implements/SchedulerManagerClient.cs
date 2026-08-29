@@ -1,7 +1,7 @@
+using Flurl.Http;
 using Mars.Contracts.Common;
 using Mars.Scheduler.Contracts.Schedulers;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -22,7 +22,7 @@ internal class SchedulerManagerClient : BasicServiceClient, ISchedulerManagerCli
         => _client.Request($"{_basePath}{_controllerName}/Job/list/offset")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<ListDataResult<SchedulerJobResponse>>();
-    
+
     public Task<PagingResult<SchedulerJobResponse>> JobListTable(TableSchedulerJobQueryRequest filter)
         => _client.Request($"{_basePath}{_controllerName}/Job/list/page")
                     .AppendQueryParam(filter)

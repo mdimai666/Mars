@@ -1,6 +1,6 @@
-using Mars.Excel.Abstractions;
 using ClosedXML.Excel;
 using ClosedXML.Report;
+using Mars.Excel.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Excel.Host.Services;
@@ -25,7 +25,7 @@ internal class ExcelService : IExcelService
             throw new FileNotFoundException($"templateFileName: ({templateFileName}) not found", templateFileName);
 
 
-        XLTemplate template = new XLTemplate(templateFileName);
+        XLTemplate template = new(templateFileName);
 
         template.AddVariable(viewModel);
         template.Generate();

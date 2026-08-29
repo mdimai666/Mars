@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Models;
-using Mars.Identity.Contracts.ViewModels;
 using Mars.Server.Contracts.ViewModels;
 
 namespace Mars.Admin.Framework.Mappings;

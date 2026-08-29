@@ -42,7 +42,7 @@ public record CreateNavMenuItemRequest
     public required string Title { get; init; }
     public required string Url { get; init; }
     public required string? Icon { get; init; }
-    public required List<string> Roles { get; init; } = new();
+    public required List<string> Roles { get; init; } = [];
     public required bool RolesInverse { get; init; }
     public required string Class { get; init; }
     public required string Style { get; init; }
@@ -59,7 +59,7 @@ public record UpdateNavMenuItemRequest
     public required string Title { get; init; }
     public required string Url { get; init; }
     public required string? Icon { get; init; }
-    public required List<string> Roles { get; init; } = new();
+    public required List<string> Roles { get; init; } = [];
     public required bool RolesInverse { get; init; }
     public required string Class { get; init; }
     public required string Style { get; init; }

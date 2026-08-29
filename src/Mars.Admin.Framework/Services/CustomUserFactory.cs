@@ -12,7 +12,7 @@ public class CustomUserFactory : AccountClaimsPrincipalFactory<RemoteUserAccount
     {
     }
 
-    public async override ValueTask<ClaimsPrincipal> CreateUserAsync(
+    public override async ValueTask<ClaimsPrincipal> CreateUserAsync(
         RemoteUserAccount account,
         RemoteAuthenticationUserOptions options)
     {

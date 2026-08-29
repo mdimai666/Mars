@@ -1,7 +1,7 @@
+using Mars.Options.Services;
 using Mars.Server.Abstractions.Features;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
-using Mars.Options.Services;
 using Mars.SSO.Abstractions.Services;
 using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.Middlewares;

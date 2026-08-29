@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 
-namespace Mars.Admin.Framework.Components {
+namespace Mars.Admin.Framework.Components
+{
     public partial class BasicPage<TModel>
     {
 
@@ -54,7 +55,7 @@ namespace Mars.Admin.Framework.Components {
         //    _ = StartLoad();
         //}
 
-        public async virtual Task StartLoad()
+        public virtual async Task StartLoad()
         {
             if (Busy) return;
             Busy = true;

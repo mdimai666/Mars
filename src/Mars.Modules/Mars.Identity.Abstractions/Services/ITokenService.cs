@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Repositories;
-using Mars.Identity.Abstractions.Services;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.Identity.Abstractions.Services;

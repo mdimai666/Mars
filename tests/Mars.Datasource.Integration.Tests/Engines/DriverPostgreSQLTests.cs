@@ -1,4 +1,3 @@
-using Mars.Datasource;
 using Mars.Datasource.Host.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +6,7 @@ namespace Mars.Datasource.Integration.Tests.Engines;
 public class DriverPostgreSQLTests
 {
 #if DEBUG
-    public static Dictionary<string, DatasourceConfig> configs = new Dictionary<string, DatasourceConfig>()
+    public static Dictionary<string, DatasourceConfig> configs = new()
     {
         ["psql"] = new DatasourceConfig
         {
@@ -60,7 +59,7 @@ public class DriverPostgreSQLTests
         //var conn = ef.Database.GetDbConnection();
         DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder<DbContext>();
         optionsBuilder.UseNpgsql(configs["psql"].ConnectionString);
-        using DbContext db = new DbContext(optionsBuilder.Options);
+        using DbContext db = new(optionsBuilder.Options);
 
         using System.Data.Common.DbConnection conn = db.Database.GetDbConnection();
 

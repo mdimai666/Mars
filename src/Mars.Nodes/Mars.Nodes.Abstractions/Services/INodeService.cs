@@ -1,6 +1,6 @@
+using Mars.Contracts.Common;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Models;
-using Mars.Contracts.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Abstractions.Services;

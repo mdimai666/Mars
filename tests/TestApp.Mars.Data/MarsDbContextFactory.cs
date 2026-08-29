@@ -4,7 +4,6 @@ using Mars.Data.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Npgsql;
 
 namespace TestApp.Mars.Data;
 

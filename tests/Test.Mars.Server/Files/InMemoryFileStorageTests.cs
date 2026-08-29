@@ -1,11 +1,11 @@
-using Mars.Server.Abstractions.Services;
 using FluentAssertions;
+using Mars.Server.Abstractions.Services;
 
 namespace Test.Mars.Server.Files;
 
 public class InMemoryFileStorageTests
 {
-    InMemoryFileStorage GetStorage() => new InMemoryFileStorage(new Dictionary<string, string>()
+    InMemoryFileStorage GetStorage() => new(new Dictionary<string, string>()
     {
         ["files/text.txt"] = "OK",
         ["files/second file.txt"] = "second",

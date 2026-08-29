@@ -2,7 +2,6 @@ using System.Diagnostics;
 using FluentAssertions;
 using Mars.Core.Models;
 using Mars.Nodes.Abstractions.Hubs;
-using Mars.Server.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.SignalR;

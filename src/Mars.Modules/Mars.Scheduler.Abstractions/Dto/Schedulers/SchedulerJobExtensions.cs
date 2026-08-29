@@ -1,5 +1,5 @@
-using Mars.Server.Abstractions.Extensions;
 using Mars.Scheduler.Contracts.Schedulers;
+using Mars.Server.Abstractions.Extensions;
 
 namespace Mars.Scheduler.Abstractions.Dto.Schedulers;
 
@@ -13,7 +13,7 @@ public static class SchedulerRequestExtensions
             Search = request.Search,
             Sort = request.Sort,
         };
-    
+
     public static ListSchedulerJobQuery ToQuery(this TableSchedulerJobQueryRequest request)
         => new()
         {

@@ -1,8 +1,8 @@
+using Mars.Contracts.Common;
 using Mars.Identity.Abstractions.Dto.Profile;
 using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Dto.Users.Passwords;
-using Mars.Contracts.Common;
 
 namespace Mars.Identity.Abstractions.Repositories;
 

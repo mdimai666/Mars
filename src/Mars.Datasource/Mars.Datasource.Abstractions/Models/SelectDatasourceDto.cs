@@ -21,9 +21,9 @@ public class SelectDatasourceDto
 
     public SelectDatasourceDto(DatasourceConfig config)
     {
-        this.Title = config.Label;
-        this.Slug = config.Slug;
-        this.Driver = config.Driver;
+        Title = config.Label;
+        Slug = config.Slug;
+        Driver = config.Driver;
     }
 
     public char EscapeQuotationMark => Driver switch

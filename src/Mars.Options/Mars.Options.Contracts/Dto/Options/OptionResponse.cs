@@ -8,7 +8,7 @@ public sealed record OptionResponse<T>
     public required string Key { get; init; }
 
     [Display(Name = "Тип")]
-    public required string Type { get; init; } 
+    public required string Type { get; init; }
 
     [Display(Name = "Значение")]
     public required T Value { get; init; }

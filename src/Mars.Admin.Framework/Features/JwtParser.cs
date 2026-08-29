@@ -7,7 +7,7 @@ public static class JwtParser
 {
     public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
-        List<Claim> claims = new();
+        List<Claim> claims = [];
         var payload = jwt.Split('.')[1];
 
         payload = payload.Replace('_', '/').Replace('-', '+');

@@ -1,7 +1,7 @@
+using Flurl.Http;
 using Mars.Contracts.Common;
 using Mars.Notifications.Abstractions;
 using Mars.WebApiClient.Interfaces;
-using Flurl.Http;
 
 namespace Mars.WebApiClient.Implements;
 

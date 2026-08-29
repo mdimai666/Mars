@@ -1,7 +1,7 @@
 using System.Drawing;
-using Mars.Admin.Framework.Components;
 using FluentAssertions;
 using HtmlAgilityPack;
+using Mars.Admin.Framework.Components;
 using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
 namespace AppFront.Tests.Mars.Admin.Framework;

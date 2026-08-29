@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
-using Mars.Identity.Abstractions.Repositories;
-using Mars.Identity.Abstractions.Services;
 
 namespace Mars.SSO.Host.Services;
 

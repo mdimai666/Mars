@@ -1,6 +1,5 @@
 using Mars.Identity.Abstractions.Dto.SSO;
 using Mars.SSO.Contracts.Dto;
-using Mars.SSO.Contracts.Dto;
 
 namespace Mars.SSO.Host.Mappings;
 

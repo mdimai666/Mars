@@ -1,13 +1,10 @@
 using System.CommandLine;
 using Mars.CommandLine.Abstractions;
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Core.Utils;
 using Mars.Nodes.Abstractions.Services;
-using Mars.Core.Utils;
-using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Abstractions.Services;
-using Mars.Contracts.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Host.CommandLine;

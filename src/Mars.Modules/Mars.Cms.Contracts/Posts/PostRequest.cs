@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Contracts.Common;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
 
 namespace Mars.Cms.Contracts.Posts;
 

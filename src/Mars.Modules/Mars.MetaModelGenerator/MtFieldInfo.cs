@@ -7,7 +7,7 @@ namespace Mars.MetaModelGenerator;
 public class MtFieldInfo
 {
     string keyName;
-    List<string> attributes = new();
+    List<string> attributes = [];
     string comment = "";
     Type type;
     public bool TypeRelation => metaField.TypeRelation;

@@ -15,9 +15,9 @@ public class ActionCommandNode : Node
     {
         Inputs = [];
         Color = "#7dd0d4";
-        Outputs = new List<NodeOutput> {
+        Outputs = [
             new NodeOutput(){ Label = "" },
-        };
+        ];
         Icon = "_content/Mars.Nodes.Workspace/nodes/usercase-64.png";
     }
 

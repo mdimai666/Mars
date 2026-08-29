@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Mars.Identity.Abstractions.Services;
-using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Abstractions.Interfaces;
 using Mars.SSO.Abstractions.Services;
+using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Host.Providers;
 using Microsoft.Extensions.Caching.Memory;
 

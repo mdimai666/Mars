@@ -1,8 +1,7 @@
-using Mars.Core.Extensions;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Dto.Search;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
+using Mars.Core.Extensions;
 using static Mars.Cms.Abstractions.Dto.Search.SearchFoundElement;
 
 namespace Mars.Cms.Host.Services;

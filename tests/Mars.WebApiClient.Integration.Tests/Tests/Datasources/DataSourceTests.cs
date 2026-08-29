@@ -1,12 +1,11 @@
+using FluentAssertions;
 using Mars.Datasource;
 using Mars.Datasource.Dto;
 using Mars.Datasource.Host.Controllers;
 using Mars.Datasource.Host.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Datasources;

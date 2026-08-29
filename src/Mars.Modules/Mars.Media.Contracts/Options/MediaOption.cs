@@ -39,18 +39,18 @@ public class MediaOption
             = value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
-    static Dictionary<string, string> _allowedDict = new();
+    static Dictionary<string, string> _allowedDict = [];
 
     [Display(Name = "Image Preview Size Configs")]
     public ImagePreviewSizeConfig[] ImagePreviewSizeConfigs { get; set; } = DefaultImagePreviewSizeConfigs;
 
     public static readonly ImagePreviewSizeConfig[] DefaultImagePreviewSizeConfigs =
     {
-        new ImagePreviewSizeConfig {
+        new() {
             Name = "xs", Width=130, Height=80, ResizeMode = ImagePreviewSizeConfig.CropScaleMode.Max },
-        new ImagePreviewSizeConfig {
+        new() {
             Name = "sm", Width=300, Height=225, ResizeMode = ImagePreviewSizeConfig.CropScaleMode.Max },
-        new ImagePreviewSizeConfig {
+        new() {
             Name = "md", Width=500, Height=500, ResizeMode = ImagePreviewSizeConfig.CropScaleMode.Max },
     };
 

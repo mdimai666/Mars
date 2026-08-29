@@ -1,7 +1,6 @@
-using Mars.Core.Exceptions;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Cms.Abstractions.Repositories;
 using Mars.Contracts.Common;
+using Mars.Core.Exceptions;
 
 namespace Mars.Cms.Abstractions.Repositories;
 
@@ -37,7 +36,7 @@ public interface IPostTypeRepository
 
     Task<IReadOnlyCollection<PostTypeSummary>> ListAll(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<PostTypeSummary>> ListAllActive(CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<PostTypeDetail>>  ListAllDetail(CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<PostTypeDetail>> ListAllDetail(CancellationToken cancellationToken);
     Task<ListDataResult<PostTypeSummary>> List(ListPostTypeQuery query, CancellationToken cancellationToken);
     Task<PagingResult<PostTypeSummary>> ListTable(ListPostTypeQuery query, CancellationToken cancellationToken);
     Task<bool> TypeNameExist(string name, CancellationToken cancellationToken);

@@ -1,7 +1,7 @@
 using Microsoft.JSInterop;
-using System;
 
-namespace Mars.Admin.Framework.Models {
+namespace Mars.Admin.Framework.Models
+{
     public class MessageUpdateInvokeHelper
     {
         private Action action;

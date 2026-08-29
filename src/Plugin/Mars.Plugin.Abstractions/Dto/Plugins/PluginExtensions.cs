@@ -1,5 +1,5 @@
-using Mars.Server.Abstractions.Extensions;
 using Mars.Plugin.Contracts.Plugins;
+using Mars.Server.Abstractions.Extensions;
 
 namespace Mars.Plugin.Abstractions.Dto.Plugins;
 

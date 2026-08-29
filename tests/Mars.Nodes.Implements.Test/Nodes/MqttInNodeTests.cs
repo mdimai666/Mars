@@ -1,7 +1,6 @@
 using System.Text.Json;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Nodes.Core.Implements.Nodes;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using MQTTnet;
 using MQTTnet.Packets;

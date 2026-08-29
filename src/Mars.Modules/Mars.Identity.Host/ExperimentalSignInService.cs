@@ -1,6 +1,5 @@
 using Mars.Data.Entities;
 using Mars.Identity.Abstractions.Services;
-using Mars.Identity.Host.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace Mars.Identity.Host.Services;

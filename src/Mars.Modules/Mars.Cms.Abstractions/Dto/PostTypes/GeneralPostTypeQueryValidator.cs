@@ -1,6 +1,6 @@
 using FluentValidation;
-using Mars.Core.Features;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Core.Features;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 

@@ -1,12 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Server.Controllers;
-using Mars.Server.Managers;
+using Mars.Contracts.XActions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.XActions;
+using Mars.Server.Controllers;
+using Mars.Server.Managers;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.XActions;
 using Microsoft.AspNetCore.Http;

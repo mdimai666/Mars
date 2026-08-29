@@ -3,10 +3,10 @@ using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Nodes.Abstractions.Services;
 using Mars.Options.Services;
-using Mars.SemanticKernel.Host.Plugins;
 using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.Contracts.Nodes;
 using Mars.SemanticKernel.Contracts.Options;
+using Mars.SemanticKernel.Host.Plugins;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ internal class KernelFactory_v2 : IKernelFactory
     private readonly IServiceCollection _services;
     private SemanticKernelModelConfigNode? _configNode;
 
-    private KernelPluginCollection _plugins = new();
+    private KernelPluginCollection _plugins = [];
 
     public KernelPluginCollection Plugins => _plugins;
 

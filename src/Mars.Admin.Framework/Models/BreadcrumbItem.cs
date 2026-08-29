@@ -1,10 +1,7 @@
-
-using System.Collections.Generic;
-using System.Linq;
 using Mars.Core.Extensions;
-using Microsoft.AspNetCore.Components.Routing;
 
-namespace Mars.Admin.Framework.Models {
+namespace Mars.Admin.Framework.Models
+{
     public class BreadcrumbItem
     {
         public string Text { get; set; }
@@ -18,7 +15,7 @@ namespace Mars.Admin.Framework.Models {
 
         public static List<BreadcrumbItem> ListFromString(string path)
         {
-            if (string.IsNullOrWhiteSpace(path)) return new();
+            if (string.IsNullOrWhiteSpace(path)) return [];
 
             return path.Split('|').Select(s =>
             {

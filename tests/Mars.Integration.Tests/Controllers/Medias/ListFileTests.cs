@@ -1,12 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Media.Host.Controllers;
+using Mars.Contracts.Common;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Contracts.Common;
 using Mars.Media.Contracts.Files;
+using Mars.Media.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 

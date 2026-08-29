@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
+using Mars.Cms.Abstractions.Services;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
-using Mars.Cms.Abstractions.Services;
-using Mars.SiteEngine.Abstractions.Templators;
 using Mars.QueryLang.Host.Services;
+using Mars.SiteEngine.Abstractions.Templators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.QueryLang.Host;
@@ -74,8 +74,8 @@ class QCount : QueryGetter<PostEntity, int>
 
 public static class EfDynQueryDict
 {
-    static List<QDict> getters = new();
-    static List<QDict> filters = new();
+    static List<QDict> getters = [];
+    static List<QDict> filters = [];
 
     class QDict
     {
@@ -109,18 +109,18 @@ public static class EfDynQueryDict
             MarsDbContext ef, XInterpreter ppt, Dictionary<string, object?> pageContext, List<PostTypeEntity> postTypes,
             UserEntity? user)
         {
-            this.serviceProvider = sp;
+            serviceProvider = sp;
             this.postTypeName = postTypeName;
             this.entityType = entityType;
             this.ef = ef;
             this.ppt = ppt;
-            this.context = pageContext;
+            context = pageContext;
             this.postTypes = postTypes;
             this.user = user;
 
-            this.mlocator = sp.GetRequiredService<IMetaModelTypesLocator>();
+            mlocator = sp.GetRequiredService<IMetaModelTypesLocator>();
 
-            this.postTypesDict = postTypes.ToDictionary(s => s.TypeName);
+            postTypesDict = postTypes.ToDictionary(s => s.TypeName);
         }
 
     }

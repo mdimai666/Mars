@@ -1,7 +1,7 @@
 using AutoFixture;
-using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Repositories;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;

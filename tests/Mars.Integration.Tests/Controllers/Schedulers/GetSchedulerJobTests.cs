@@ -1,12 +1,12 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Scheduler.Host.Controllers;
-using Mars.Scheduler.Abstractions;
+using Mars.Contracts.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.Common;
+using Mars.Scheduler.Abstractions;
 using Mars.Scheduler.Contracts.Schedulers;
+using Mars.Scheduler.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

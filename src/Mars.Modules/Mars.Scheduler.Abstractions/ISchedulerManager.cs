@@ -1,7 +1,7 @@
 using System.Collections;
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Scheduler.Abstractions.Dto.Schedulers;
-using Mars.Contracts.Common;
 using Quartz;
 
 namespace Mars.Scheduler.Abstractions;

@@ -1,12 +1,10 @@
-using System.Diagnostics;
-using Mars.Server.Abstractions.ExceptionFilters;
 using System.Net.Mime;
-using Mars.Core.Exceptions;
-using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Mappings.Search;
+using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.Search;
+using Mars.Core.Exceptions;
+using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mars.Cms.Host.Controllers;

@@ -1,4 +1,3 @@
-using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Abstractions;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Common;
@@ -11,8 +10,8 @@ public class VarNodeImpl : INodeImplement<VarNode>
 
     public VarNodeImpl(VarNode node, IRuntimeNodeScope rns)
     {
-        this.Node = node;
-        this.RNS = rns;
+        Node = node;
+        RNS = rns;
     }
 
     public Task Execute(NodeMsg input, ExecuteAction callback, ExecutionParameters parameters)

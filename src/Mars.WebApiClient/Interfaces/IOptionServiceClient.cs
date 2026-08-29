@@ -1,4 +1,3 @@
-using Mars.Core.Models;
 using Mars.Server.Contracts.Options;
 
 namespace Mars.WebApiClient.Interfaces;

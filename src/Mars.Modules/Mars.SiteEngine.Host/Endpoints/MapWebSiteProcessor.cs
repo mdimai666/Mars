@@ -7,7 +7,6 @@ using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SiteEngine.Endpoints;
 
@@ -109,7 +108,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var tsv = af.Features.Get<IWebTemplateService>();
         var serviceProvider = httpContext.RequestServices;
-        WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
+        WebSiteRequestProcessor processor = new(serviceProvider, tsv.Template);
         return await processor.RenderRequest(httpContext, param ?? new(), cancellationToken);
 
     }
@@ -121,7 +120,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
 
         var tsv = af.Features.Get<IWebTemplateService>();
         var serviceProvider = httpContext.RequestServices;
-        WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
+        WebSiteRequestProcessor processor = new(serviceProvider, tsv.Template);
         return await processor.RenderPage(af, request, page, param ?? new(), cancellationToken);
     }
 
@@ -132,7 +131,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
 
         var tsv = af.Features.Get<IWebTemplateService>();
         var serviceProvider = httpContext.RequestServices;
-        WebSiteRequestProcessor processor = new WebSiteRequestProcessor(serviceProvider, tsv.Template);
+        WebSiteRequestProcessor processor = new(serviceProvider, tsv.Template);
         return await processor.RenderPage404(af, request, param ?? new(), cancellationToken);
     }
 }

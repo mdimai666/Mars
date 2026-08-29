@@ -1,5 +1,3 @@
-using Mars.Cms.Contracts.PostTypes;
-
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
 //public record ModelTypeInfo

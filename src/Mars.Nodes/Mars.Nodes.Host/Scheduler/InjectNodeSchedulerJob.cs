@@ -16,9 +16,9 @@ internal class InjectNodeSchedulerJob : IJob
 
     public InjectNodeSchedulerJob(INodeService nodeService, IServiceProvider serviceProvider)
     {
-        this._nodeService = nodeService;
+        _nodeService = nodeService;
         this.serviceProvider = serviceProvider;
-        this._logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
+        _logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
     }
 
     public async Task Execute(IJobExecutionContext context)

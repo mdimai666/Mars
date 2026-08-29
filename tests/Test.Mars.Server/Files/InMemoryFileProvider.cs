@@ -10,7 +10,7 @@ namespace Test.Mars.Server.Files;
 /// </summary>
 internal sealed class InMemoryFileProvider : IFileProvider
 {
-    
+
     public InMemoryFileProvider(IDictionary<string, string> filePathsAndContents)
     {
         ArgumentNullException.ThrowIfNull(filePathsAndContents);

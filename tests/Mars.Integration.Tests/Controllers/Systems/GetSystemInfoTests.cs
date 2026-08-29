@@ -1,12 +1,11 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Server.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Server.Contracts.Systems;
-using Mars.Server.Startup;
-using Microsoft.AspNetCore.Http;
+using Mars.Server.Controllers;
 using Mars.UseStartup;
+using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Systems;
 

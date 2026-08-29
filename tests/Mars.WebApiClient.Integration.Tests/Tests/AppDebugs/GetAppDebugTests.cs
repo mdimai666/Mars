@@ -1,8 +1,8 @@
+using FluentAssertions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Mars.Server.Controllers;
+using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.AppDebugs;
 

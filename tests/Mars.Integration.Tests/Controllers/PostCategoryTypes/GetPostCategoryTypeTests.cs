@@ -1,11 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
+using Mars.Cms.Contracts.PostCategoryTypes;
 using Mars.Cms.Host.Controllers;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Cms.Contracts.PostCategoryTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 

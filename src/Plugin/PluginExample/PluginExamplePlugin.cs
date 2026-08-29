@@ -1,5 +1,6 @@
 using Mars.Options.Services;
 using Mars.Plugin.Abstractions;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +10,6 @@ using PluginExample;
 using PluginExample.Data;
 using PluginExample.Data.Seeds;
 using PluginExample.Options;
-using Mars.Server.Abstractions.Services;
 
 [assembly: WebApplicationPlugin(typeof(PluginExamplePlugin))]
 

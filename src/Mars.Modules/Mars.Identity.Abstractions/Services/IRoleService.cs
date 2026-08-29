@@ -1,5 +1,5 @@
-using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Contracts.Common;
+using Mars.Identity.Abstractions.Dto.Roles;
 
 namespace Mars.Identity.Abstractions.Services;
 

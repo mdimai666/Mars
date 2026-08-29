@@ -6,7 +6,6 @@ using Flurl.Http;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
-using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Implements.Test.NodesForTesting;
 using Mars.Nodes.Implements.Test.Services;

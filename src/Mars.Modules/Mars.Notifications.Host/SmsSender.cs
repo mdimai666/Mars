@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Mars.Notifications.Abstractions;
 using Mars.Contracts.Common;
 using Mars.Notifications.Abstractions;
 
@@ -31,7 +30,7 @@ internal class SmsSender : ISmsSender
         var valiidate = form.EnsureValidate(form);
         if (valiidate != null) return valiidate;
 
-        using HttpClient client = new HttpClient();
+        using HttpClient client = new();
         client.BaseAddress = new Uri("https://sms.ru");
 
 

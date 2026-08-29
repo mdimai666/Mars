@@ -19,7 +19,7 @@ public class AppClaimsPrincipalFactory : UserClaimsPrincipalFactory<UserEntity, 
 
     }
 
-    public async override Task<ClaimsPrincipal> CreateAsync(UserEntity user)
+    public override async Task<ClaimsPrincipal> CreateAsync(UserEntity user)
     {
         var principal = await base.CreateAsync(user);
 

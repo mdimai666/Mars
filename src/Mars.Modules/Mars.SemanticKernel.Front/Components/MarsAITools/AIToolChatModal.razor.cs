@@ -1,5 +1,4 @@
 using Mars.Admin.Framework.Services;
-using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.SemanticKernel.Contracts.AIService;
 using Mars.WebApiClient.Interfaces;

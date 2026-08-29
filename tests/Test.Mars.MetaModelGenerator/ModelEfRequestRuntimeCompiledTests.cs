@@ -1,12 +1,12 @@
 using System.Reflection;
 using AutoFixture;
 using FluentAssertions;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Repositories;
 using Mars.Data.Common;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.MetaFields;
-using Mars.Cms.Abstractions.Dto.Posts;
-using Mars.Cms.Abstractions.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.MetaModelGenerator;

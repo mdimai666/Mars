@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Contracts.MetaFields;
-using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 

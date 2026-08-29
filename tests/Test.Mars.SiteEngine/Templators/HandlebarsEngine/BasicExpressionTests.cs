@@ -107,9 +107,11 @@ public class BasicExpressionTests
     [Fact]
     public void EqBlock_DictionaryCaseInsensevity_ShouldWorkExpect()
     {
-        var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        data.Add("False", false);
-        data.Add("Count", 123);
+        var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "False", false },
+            { "Count", 123 }
+        };
         //data.Add("count", new { False = false, Count = 123 });
 
         string html1 = @"{{#eq Count 123}}1{{else}}0{{/eq}}";
@@ -126,8 +128,10 @@ public class BasicExpressionTests
     [Fact]
     public void OutputVariable_CaseInsensetive_ShouldWorkExpect()
     {
-        var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        data.Add("Title", "dima");
+        var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Title", "dima" }
+        };
 
         string html1 = @"{{Title}}";
         string html2 = @"{{title}}";

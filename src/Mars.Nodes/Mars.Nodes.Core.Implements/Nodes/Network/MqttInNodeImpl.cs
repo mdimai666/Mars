@@ -1,8 +1,8 @@
 using System.Buffers;
 using System.Text;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Implements.Managers.Mqtt;
 using Mars.Nodes.Core.Nodes.Network;
-using Mars.Nodes.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet;

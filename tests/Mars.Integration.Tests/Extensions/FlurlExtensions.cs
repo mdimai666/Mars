@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using Flurl.Http;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Extensions;
-using Mars.Contracts.Common;
-using Flurl.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace Mars.Integration.Tests.Extensions;
 
 public static class FlurlExtensions
 {
-    private static JsonSerializerOptions _options = new JsonSerializerOptions()
+    private static JsonSerializerOptions _options = new()
     {
         WriteIndented = true,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,

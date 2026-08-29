@@ -1,8 +1,8 @@
 using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Services;
+using Mars.Contracts.Common;
 using Mars.Core.Extensions;
 using Mars.Datasource.Dto;
-using Mars.Contracts.Common;
-using Mars.Admin.Framework.Services;
 using Mars.WebApiClient.Interfaces;
 using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
@@ -46,7 +46,7 @@ public partial class DatabaseQueryWorkspace
 
     CodeEditor2? _editor = default!;
 
-    IReadOnlyCollection<SelectDatasourceDto> listDatasources = new List<SelectDatasourceDto>();
+    IReadOnlyCollection<SelectDatasourceDto> listDatasources = [];
 
     string thisurl = "";
 

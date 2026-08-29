@@ -1,12 +1,10 @@
 using System.Reflection;
 using Mars.Contracts.Dto.Files;
-using Mars.Server.Abstractions.Services;
-using Mars.Contracts.Dto.Files;
-using Mars.Server.Abstractions.Services;
 using Mars.Plugin.Abstractions;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginProvider.Providers;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

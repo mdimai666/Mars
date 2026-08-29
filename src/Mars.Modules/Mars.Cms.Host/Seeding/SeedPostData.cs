@@ -1,10 +1,9 @@
 using System.Text.Json.Nodes;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Core.Extensions;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.NavMenus;
-using Mars.Cms.Contracts.MetaFields;
-using Mars.Cms.Contracts.PostTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Feature = Mars.Cms.Contracts.PostTypes.PostTypeConstants.Features;
@@ -30,36 +29,37 @@ public static class SeedPostData
         int count = ef.PostTypes.Count();
         if (count > 0) return;
 
-        List<PostTypeEntity> list = new();
-
-        list.Add(new PostTypeEntity
-        {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Title = "Записи",
-            TypeName = "post",
-            Statuses = PostStatusEntity.DefaultStatuses(),
-            EnabledFeatures = [Feature.Content, Feature.Status, Feature.Tags],
-            MetaFields =
-            [
-                new MetaFieldEntity
-                {
-                    Id = Guid.NewGuid(),
-                    CreatedAt = DateTimeOffset.Now,
-                    Title = FeatureFieldsCatalog.ContentFieldTitle,
-                    Key = FeatureFieldsCatalog.ContentFieldKey,
-                    Type = EMetaFieldType.Text,
-                    IsNullable = true,
-                    Options = new JsonObject
+        List<PostTypeEntity> list =
+        [
+            new PostTypeEntity
+            {
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                Title = "Записи",
+                TypeName = "post",
+                Statuses = PostStatusEntity.DefaultStatuses(),
+                EnabledFeatures = [Feature.Content, Feature.Status, Feature.Tags],
+                MetaFields =
+                [
+                    new MetaFieldEntity
                     {
-                        [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
-                        [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTimeOffset.Now,
+                        Title = FeatureFieldsCatalog.ContentFieldTitle,
+                        Key = FeatureFieldsCatalog.ContentFieldKey,
+                        Type = EMetaFieldType.Text,
+                        IsNullable = true,
+                        Options = new JsonObject
+                        {
+                            [FeatureFieldsCatalog.FeatureKeyOption()] = FeatureFieldsCatalog.Content,
+                            [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.BlockEditor,
+                        },
+                        Order = 0,
+                        Tags = [],
+                        Variants = [],
                     },
-                    Order = 0,
-                    Tags = [],
-                    Variants = [],
-                },
-            ],
-        });
+                ],
+            },
+        ];
 
         await ef.PostTypes.AddRangeAsync(list);
         await ef.SaveChangesAsync();
@@ -71,29 +71,30 @@ public static class SeedPostData
         int count = ef.NavMenus.Count();
         if (count > 0) return;
 
-        List<NavMenuEntity> list = new();
-
-        list.Add(new NavMenuEntity
-        {
-            Id = Guid.NewGuid(),
-            Title = "Главное меню",
-            Slug = "top",
-            MenuItems = new List<NavMenuItem>
+        List<NavMenuEntity> list =
+        [
+            new NavMenuEntity
             {
-                new NavMenuItem
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Главная",
-                    Url = "/",
-                },
-                new NavMenuItem
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Контакты",
-                    Url = "/contacts",
-                },
-            }
-        });
+                Id = Guid.NewGuid(),
+                Title = "Главное меню",
+                Slug = "top",
+                MenuItems =
+                [
+                    new NavMenuItem
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "Главная",
+                        Url = "/",
+                    },
+                    new NavMenuItem
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "Контакты",
+                        Url = "/contacts",
+                    },
+                ]
+            },
+        ];
 
         await ef.NavMenus.AddRangeAsync(list);
         await ef.SaveChangesAsync();
@@ -105,7 +106,7 @@ public static class SeedPostData
         int count = ef.Posts.Count();
         if (count > 0) return;
 
-        List<PostEntity> list = new();
+        List<PostEntity> list = [];
 
         UserEntity user = ef.Users.First();
 

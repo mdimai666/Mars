@@ -1,7 +1,7 @@
 using System.Text.Json;
+using FluentAssertions;
 using Mars.Server.Abstractions.JsonConverters;
 using Mars.Server.Abstractions.Models;
-using FluentAssertions;
 
 namespace Test.Mars.Server.Models;
 

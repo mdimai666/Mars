@@ -9,8 +9,10 @@ public record AuthResultDto
     public required string? RefreshToken { get; init; }
 
     public static AuthResultDto InvalidDataResponse()
-        => new AuthResultDto { ErrorMessage = "Неверные данные", ExpiresIn = 0, Token = null, RefreshToken = null };
+        => new()
+        { ErrorMessage = "Неверные данные", ExpiresIn = 0, Token = null, RefreshToken = null };
 
     public static AuthResultDto ErrorResponse(string errorMessage)
-        => new AuthResultDto { ErrorMessage = errorMessage, ExpiresIn = 0, Token = null, RefreshToken = null };
+        => new()
+        { ErrorMessage = errorMessage, ExpiresIn = 0, Token = null, RefreshToken = null };
 }

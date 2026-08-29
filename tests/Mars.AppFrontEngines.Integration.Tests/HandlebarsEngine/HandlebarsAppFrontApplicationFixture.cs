@@ -1,9 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using Mars.Core.Models;
-using Mars.SiteEngine.Services;
 using Mars.Integration.Tests.Common;
 using Mars.SiteEngine;
+using Mars.SiteEngine.Services;
 using Mars.Test.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +28,7 @@ public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
         builder.AddJsonStream(new MemoryStream(Encoding.ASCII.GetBytes(json)));
     }
 
-    protected virtual internal AppFrontSettingsCfg[] GetAppFrontConfigs()
+    protected internal virtual AppFrontSettingsCfg[] GetAppFrontConfigs()
     {
         _ = nameof(MarsSiteEngineFrontStartup.UseMarsSiteEngineFront);
 

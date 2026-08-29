@@ -2,10 +2,6 @@ using System.Security.Claims;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Repositories;
-using Mars.Identity.Host.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Identity.Abstractions.Repositories;
-using Mars.Identity.Host.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

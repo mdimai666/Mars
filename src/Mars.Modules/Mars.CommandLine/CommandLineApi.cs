@@ -1,7 +1,7 @@
 using System.CommandLine;
 using System.Reflection;
-using Mars.CommandLine.Commands;
 using Mars.CommandLine.Abstractions;
+using Mars.CommandLine.Commands;
 using Mars.Core.Extensions;
 using Mars.Core.Models;
 using Microsoft.AspNetCore.Builder;

@@ -1,17 +1,14 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Media.Host.Controllers;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
-using Mars.Server.Abstractions.Services;
-using Mars.Server.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Contracts.Common;
 using Mars.Media.Contracts.Files;
+using Mars.Media.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Medias;

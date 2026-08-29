@@ -1,5 +1,4 @@
 using Mars.Contracts.Common;
-using Mars.Notifications.Abstractions;
 
 namespace Mars.Notifications.Abstractions;
 

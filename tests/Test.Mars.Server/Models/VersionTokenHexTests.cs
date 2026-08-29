@@ -1,5 +1,5 @@
-using Mars.Server.Abstractions.Models;
 using FluentAssertions;
+using Mars.Server.Abstractions.Models;
 
 namespace Test.Mars.Server.Models;
 

@@ -1,25 +1,12 @@
 using System.Text.Json;
+using FluentAssertions;
 using Mars.Options.Dto.Options;
-using Mars.Options.Contracts.Dto.Options;
-using Mars.Options.Exceptions;
-using Mars.Options.Host.Services;
-using Mars.Options.Repositories;
-using Mars.Options.Contracts.Dto.Options;
-using Mars.Options.Exceptions;
-using Mars.Options.Host.Services;
-using Mars.Options.Repositories;
-using Mars.Options.Contracts.Dto.Options;
 using Mars.Options.Exceptions;
 using Mars.Options.Host.Services;
 using Mars.Options.Repositories;
 using Mars.Server.Abstractions.Managers;
-using Mars.Options.Contracts.Dto.Options;
-using Mars.Options.Exceptions;
-using Mars.Options.Host.Services;
-using Mars.Options.Repositories;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common;
-using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -143,7 +130,6 @@ public class OptionServiceTests
         _optionRepository.Received()
                             .Create(Arg.Any<CreateOptionQuery<SiteSettings>>(), Arg.Any<CancellationToken>());
     }
-
 
     [Fact]
     public void SetOption_SetSysOptionsByClassName_NotBeNull()

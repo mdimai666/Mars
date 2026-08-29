@@ -2,7 +2,7 @@ namespace Mars.SiteEngine.Templators;
 
 public class CalendarRowInfo
 {
-    public List<CalendarMonthInfo> Months { get; set; } = new();
+    public List<CalendarMonthInfo> Months { get; set; } = [];
 }
 
 

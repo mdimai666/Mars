@@ -1,8 +1,8 @@
 using FluentAssertions;
+using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Identity.Contracts.Auth;
 using Mars.Test.Common.FixtureCustomizes;
 using static Mars.Test.Common.Constants.UserConstants;
 

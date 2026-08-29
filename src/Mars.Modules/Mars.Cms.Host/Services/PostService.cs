@@ -1,38 +1,22 @@
 using Mars.Cms.Abstractions;
-using Mars.Core.Exceptions;
-using Mars.Core.Extensions;
-using Mars.Core.Features;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Server.Abstractions.Validators;
-using Mars.Server.Abstractions.Managers;
-using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.Cms.Abstractions.Mappings.Posts;
 using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Server.Abstractions.Validators;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Server.Abstractions.Validators;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
-using Mars.Identity.Abstractions.Interfaces;
-using Mars.Server.Abstractions.Validators;
-using Mars.Contracts.Common;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Contracts.Common;
+using Mars.Core.Exceptions;
+using Mars.Core.Extensions;
+using Mars.Core.Features;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Managers.Extensions;
+using Mars.Server.Abstractions.Validators;
 
 namespace Mars.Cms.Host.Services;
 
@@ -225,7 +209,7 @@ internal class PostService : IPostService
     {
         await _validatorFactory.ValidateAndThrowAsync(query, cancellationToken);
 
-        var posts = await _postRepository.ListAll(new () { Type = null, Ids = query.Ids  }, cancellationToken);
+        var posts = await _postRepository.ListAll(new() { Type = null, Ids = query.Ids }, cancellationToken);
 
         await _postRepository.DeleteMany(query, cancellationToken);
 

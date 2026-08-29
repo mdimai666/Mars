@@ -1,8 +1,8 @@
+using Mars.Contracts.XActions;
 using Mars.Core.Exceptions;
-using Mars.Server.Abstractions.Managers;
 using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Nodes.Connections;
-using Mars.Contracts.XActions;
+using Mars.Server.Abstractions.Managers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Host.Services;
@@ -34,7 +34,7 @@ internal class CommandNodesActionProvider : IXActionCommandsProvider, IDisposabl
     public Task<IReadOnlyCollection<XActionCommand>> ReadCommands()
     {
         var nodes = _nodeService.BaseNodes.Values.Where(node => node is ActionCommandNode && !node.Disabled)
-                                                    .Select(s=>s as ActionCommandNode)
+                                                    .Select(s => s as ActionCommandNode)
                                                     .ToList();
 
         return Task.FromResult<IReadOnlyCollection<XActionCommand>>(nodes.Select(node => new XActionCommand

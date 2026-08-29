@@ -18,8 +18,8 @@ public class TextHelperTests
 
         BracketPair[] expect = new BracketPair[]
         {
-            new BracketPair(3, 7, 1),
-            new BracketPair(0, 8, 0),
+            new(3, 7, 1),
+            new(0, 8, 0),
         };
 
         Assert.Equivalent(expect, result);
@@ -39,8 +39,8 @@ public class TextHelperTests
         //  38  39  0   ToList
         ChainPair[] expect = new ChainPair[]
         {
-            new ChainPair(14,30,0,"Where","s=>s == 1+(2+3)"),
-            new ChainPair(38,39,0,"ToList",""),
+            new(14,30,0,"Where","s=>s == 1+(2+3)"),
+            new(38,39,0,"ToList",""),
         };
 
         Assert.Equivalent(expect, result);
@@ -58,8 +58,8 @@ public class TextHelperTests
 
         KeyValuePair<string, string>[] expect = new KeyValuePair<string, string>[]
         {
-            new KeyValuePair<string, string>("Where","s=>s == 1+(2+3)"),
-            new KeyValuePair<string, string>("ToList","")
+            new("Where","s=>s == 1+(2+3)"),
+            new("ToList","")
         };
         Assert.Equivalent(expect, result);
 

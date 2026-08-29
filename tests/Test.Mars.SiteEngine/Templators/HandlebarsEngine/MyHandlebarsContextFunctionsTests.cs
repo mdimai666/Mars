@@ -39,15 +39,17 @@ public class MyHandlebarsContextFunctionsTests
             User = null,
             TemplateContextVaribles = ObjectToDictionary(data ?? new { })
         };
-        var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None);
-        rctx.Features = _featureCollection;
+        var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None)
+        {
+            Features = _featureCollection
+        };
         return template(data ?? new { }, new { rctx });
     }
 
     public static Dictionary<string, object?> ObjectToDictionary(object obj)
     {
         if (obj == null)
-            return new Dictionary<string, object?>();
+            return [];
 
         return obj.GetType()
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -103,7 +105,7 @@ public class MyHandlebarsContextFunctionsTests
     }
 
     WebSiteTemplate EmptyWebSiteTemplate(WebPartSource[] parts) =>
-        new WebSiteTemplate([
+        new([
             new WebPartSource("<div>@Body</div>", "_root.hbs","","",""),
             new WebPartSource("@page /", "index.hbs","","",""),
             ..parts

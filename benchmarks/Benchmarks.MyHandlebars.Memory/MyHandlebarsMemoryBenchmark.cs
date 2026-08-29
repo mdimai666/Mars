@@ -3,8 +3,8 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using HandlebarsDotNet;
-using Mars.Core.Extensions;
 using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Core.Extensions;
 using Newtonsoft.Json.Linq;
 
 namespace Benchmarks.MyHandlebars;

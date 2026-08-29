@@ -1,12 +1,12 @@
 using AutoFixture;
+using FluentAssertions;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
-using Mars.SiteEngine.Abstractions.Templators;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.QueryLang.Host.Services;
+using Mars.SiteEngine.Abstractions.Templators;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.Integration.Tests.Handlers;
 

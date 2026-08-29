@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
-using Mars.Core.Extensions;
-using Mars.Data.Entities;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Interfaces;
+using Mars.Core.Extensions;
+using Mars.Data.Entities;
 
 namespace Mars.MetaModelGenerator;
 
@@ -53,7 +53,7 @@ public class GenSourceCodeMaster
         PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.CanRead && p.CanWrite).ToArray();
 
-        List<string> result = new List<string>();
+        List<string> result = [];
 
         foreach (var prop in props)
         {

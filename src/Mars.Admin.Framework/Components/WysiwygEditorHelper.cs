@@ -8,7 +8,7 @@ namespace Mars.Admin.Framework.Components;
 public static class WysiwygEditorHelper
 {
 
-    public static ImageNodeInfo NodeToImageInfo(HtmlNode node) => new ImageNodeInfo(node.GetAttributeValue("width", (string)null!), node.GetAttributeValue("height", (string)null!));
+    public static ImageNodeInfo NodeToImageInfo(HtmlNode node) => new(node.GetAttributeValue("width", (string)null!), node.GetAttributeValue("height", (string)null!));
 
     /// <summary>
     /// Не хватает информации с рендера картинок (ширина/высота картинок)

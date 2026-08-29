@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Mars.Core.Extensions;
 using Mars.Contracts.Models.Interfaces;
+using Mars.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 
 namespace Mars.Identity.Abstractions.Dto;

@@ -84,10 +84,10 @@ public class WebSitePart
 
     public static (Dictionary<string, string> attributes, string content) ParseContent(string htmlContent)
     {
-        Dictionary<string, string> attrs = new();
+        Dictionary<string, string> attrs = [];
         int stopIndex = 0;
 
-        using (StringReader sr = new StringReader(htmlContent))
+        using (StringReader sr = new(htmlContent))
         {
             string? line;
             while ((line = sr.ReadLine()) != null)

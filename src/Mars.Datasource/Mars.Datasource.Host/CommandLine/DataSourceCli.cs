@@ -1,8 +1,8 @@
 using System.CommandLine;
 using Mars.CommandLine.Abstractions;
+using Mars.Contracts.Common;
 using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.Services;
-using Mars.Contracts.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Datasource.Host.CommandLine;

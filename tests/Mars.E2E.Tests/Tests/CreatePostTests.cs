@@ -1,10 +1,10 @@
 using System.Text.Json;
 using FluentAssertions;
 using Flurl.Http;
+using Mars.Cms.Contracts.Posts;
 using Mars.E2E.Tests.Fixtures;
 using Mars.E2E.Tests.Helpers;
 using Mars.Integration.Tests.Attributes;
-using Mars.Cms.Contracts.Posts;
 using Microsoft.Playwright;
 
 namespace Mars.E2E.Tests.Tests;
@@ -108,7 +108,7 @@ public class CreatePostTests : BaseE2ETests
             // Add a paragraph block with the content
             editorJs.blocks.insert('paragraph', { text: content });
         }", content);
-        
+
         // Wait for Editor.js to process the change
         await Task.Delay(500);
     }

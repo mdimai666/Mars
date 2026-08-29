@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Nodes;
-using Mars.Core.Attributes;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Core.Attributes;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
@@ -86,23 +86,23 @@ public class MetaFieldEditModel
         SyncKindToOptions();
         return new()
         {
-        Id = Id,
-        Title = Title,
-        Key = Key,
-        Type = Type,
-        MaxValue = MaxValue,
-        MinValue = MinValue,
-        Description = Description,
-        IsNullable = IsNullable,
-        IsMultiple = IsMultiple,
-        Default = Default,
-        Options = Options,
-        Order = Order,
-        Tags = Tags,
-        Hidden = Hidden,
-        Disabled = Disabled,
-        Variants = Variants?.Select(s => s.ToUpdateRequest()).ToList(),
-        ModelName = ModelName,
+            Id = Id,
+            Title = Title,
+            Key = Key,
+            Type = Type,
+            MaxValue = MaxValue,
+            MinValue = MinValue,
+            Description = Description,
+            IsNullable = IsNullable,
+            IsMultiple = IsMultiple,
+            Default = Default,
+            Options = Options,
+            Order = Order,
+            Tags = Tags,
+            Hidden = Hidden,
+            Disabled = Disabled,
+            Variants = Variants?.Select(s => s.ToUpdateRequest()).ToList(),
+            ModelName = ModelName,
         };
     }
 
@@ -273,7 +273,7 @@ public class MetaFieldEditModel
 
         if (Options is not JsonObject obj)
         {
-            obj = new JsonObject();
+            obj = [];
             Options = obj;
         }
         obj["validators"] = array;
@@ -351,7 +351,7 @@ public class MetaFieldEditModel
 
         if (Options is not JsonObject obj)
         {
-            obj = new JsonObject();
+            obj = [];
             Options = obj;
         }
         obj["generator"] = generator;
@@ -384,7 +384,7 @@ public class MetaFieldEditModel
 
         if (Options is not JsonObject obj)
         {
-            obj = new JsonObject();
+            obj = [];
             Options = obj;
         }
         obj[MetaFieldEditorCatalog.EditorOption()] = Editor;
@@ -401,7 +401,7 @@ public class MetaFieldEditModel
 
         if (Options is not JsonObject obj)
         {
-            obj = new JsonObject();
+            obj = [];
             Options = obj;
         }
         obj[MetaFieldEditorCatalog.CodeLangOption()] = CodeLang;
@@ -429,7 +429,7 @@ public class MetaFieldEditModel
     {
         if (Options is not JsonObject obj)
         {
-            obj = new JsonObject();
+            obj = [];
             Options = obj;
         }
 
@@ -493,7 +493,7 @@ public class MetaFieldEditModel
     {
         if (Options is not JsonObject obj)
         {
-            obj = new JsonObject();
+            obj = [];
             Options = obj;
         }
         obj[name] = optionValue;

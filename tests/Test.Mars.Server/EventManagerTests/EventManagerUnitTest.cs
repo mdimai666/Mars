@@ -1,6 +1,6 @@
-using Mars.Server.Managers;
-using Mars.Server.Abstractions.Managers;
 using FluentAssertions;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Managers;
 
 namespace Test.Mars.Server.EventManagerTests;
 

@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Mars.Data.Entities;
-using Mars.QueryLang.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.QueryLang.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

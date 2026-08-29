@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Mars.Admin.Framework.Features {
+namespace Mars.Admin.Framework.Features
+{
     public class Emitter
     {
-        List<KeyValuePair<string, Action<object>>> events = new();
+        List<KeyValuePair<string, Action<object>>> events = [];
 
         public void On(string eventName, Action<dynamic> action)
         {
@@ -49,7 +45,7 @@ namespace Mars.Admin.Framework.Features {
                 _actions = events.Where(s => s.Key.StartsWith(type.FullName + "::"));
             if (mode == EmitTypeMode.Update)//add,update,delete
             {
-                List<EmitTypeMode> modes = new() { EmitTypeMode.Add, EmitTypeMode.Update, EmitTypeMode.Delete };
+                List<EmitTypeMode> modes = [EmitTypeMode.Add, EmitTypeMode.Update, EmitTypeMode.Delete];
                 List<string> variants = modes.Select(s => type.FullName + "::" + s.ToString()).ToList();
                 _actions = events.Where(s => variants.Contains(s.Key));
             }

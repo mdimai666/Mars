@@ -1,12 +1,12 @@
 using AutoFixture;
+using FluentAssertions;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Core.Exceptions;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Cms.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PostTypes;
 

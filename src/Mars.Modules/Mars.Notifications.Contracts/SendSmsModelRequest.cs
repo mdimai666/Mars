@@ -17,7 +17,7 @@ public class SendSmsModelRequest : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        List<ValidationResult> errors = new List<ValidationResult>();
+        List<ValidationResult> errors = [];
 
         if (IsValidPhoneNumber(Phone) == false)
         {

@@ -1,6 +1,6 @@
+using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Identity.Abstractions.Dto.UserTypes;
-using Mars.Contracts.Common;
 
 namespace Mars.Identity.Abstractions.Repositories;
 

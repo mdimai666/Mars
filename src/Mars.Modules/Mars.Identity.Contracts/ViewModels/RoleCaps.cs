@@ -88,9 +88,9 @@ public class RoleCapElementCheckable : RoleCapElement
 
     public RoleCapElementCheckable(RoleCapElement cap)
     {
-        this.Id = cap.Id;
-        this.Title = cap.Title;
-        this.Description = cap.Description;
+        Id = cap.Id;
+        Title = cap.Title;
+        Description = cap.Description;
 
     }
 }
@@ -114,8 +114,8 @@ public class RoleCapGroupCheckable
     }
     public RoleCapGroupCheckable(RoleCapGroup roleCapGroup)
     {
-        this.Title = roleCapGroup.Title;
-        this.Description = roleCapGroup.Description;
-        this.RoleCapElements = roleCapGroup.RoleCapElements.Select(cap => new RoleCapElementCheckable(cap)).ToArray();
+        Title = roleCapGroup.Title;
+        Description = roleCapGroup.Description;
+        RoleCapElements = roleCapGroup.RoleCapElements.Select(cap => new RoleCapElementCheckable(cap)).ToArray();
     }
 }

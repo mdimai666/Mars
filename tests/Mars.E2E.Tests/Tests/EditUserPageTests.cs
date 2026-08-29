@@ -2,8 +2,8 @@ using FluentAssertions;
 using Flurl.Http;
 using Mars.E2E.Tests.Fixtures;
 using Mars.E2E.Tests.Helpers;
-using Mars.Integration.Tests.Attributes;
 using Mars.Identity.Contracts.Users;
+using Mars.Integration.Tests.Attributes;
 using Mars.Test.Common.Constants;
 using Microsoft.Playwright;
 

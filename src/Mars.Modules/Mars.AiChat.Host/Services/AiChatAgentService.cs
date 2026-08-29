@@ -1,21 +1,16 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using Mars.AiChat.Host.Hubs;
 using Mars.AiChat.Abstractions.Interfaces;
 using Mars.AiChat.Abstractions.Models;
-using Mars.AiChat.Host.Tools;
-using Mars.AiChat.Host.Toolsets;
 using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Contracts.Options;
 using Mars.AiChat.Contracts.SignalR;
+using Mars.AiChat.Host.Hubs;
+using Mars.AiChat.Host.Tools;
+using Mars.AiChat.Host.Toolsets;
+using Mars.Contracts.Dto.Files;
 using Mars.Core.Exceptions;
-using Mars.Contracts.Dto.Files;
-using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Services;
-using Mars.Options.Services;
-using Mars.Server.Abstractions.Services;
-using Mars.Contracts.Dto.Files;
 using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Services;
 using Mars.Options.Services;
@@ -398,12 +393,12 @@ public class AiChatAgentService
             switch (el.ValueKind)
             {
                 case JsonValueKind.Array:
-                {
-                    using var e = el.EnumerateArray();
-                    if (e.MoveNext() && e.Current.ValueKind == JsonValueKind.Object && e.Current.TryGetProperty("role", out _))
-                        return el;
-                    break;
-                }
+                    {
+                        using var e = el.EnumerateArray();
+                        if (e.MoveNext() && e.Current.ValueKind == JsonValueKind.Object && e.Current.TryGetProperty("role", out _))
+                            return el;
+                        break;
+                    }
                 case JsonValueKind.Object:
                     foreach (var p in el.EnumerateObject()) queue.Enqueue((p.Value, depth + 1));
                     break;
@@ -425,15 +420,15 @@ public class AiChatAgentService
 
     static AiChatMessageDto NewMessage(AiChatMessageRole role, string content, string? toolName = null, bool isToolResult = false,
         List<AiChatAttachmentDto>? attachments = null) => new()
-    {
-        Id = Guid.NewGuid(),
-        Role = role,
-        Content = content,
-        ToolName = toolName,
-        IsToolResult = isToolResult,
-        Attachments = attachments,
-        CreatedAtUtc = DateTime.UtcNow,
-    };
+        {
+            Id = Guid.NewGuid(),
+            Role = role,
+            Content = content,
+            ToolName = toolName,
+            IsToolResult = isToolResult,
+            Attachments = attachments,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
 
     /// <summary>
     /// Разрешает идентификаторы вложений в метаданные медиафайлов; отсутствующие пропускает.

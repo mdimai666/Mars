@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Abstractions.Interfaces;
+using Mars.SSO.Contracts.Dto;
 
 namespace Mars.SSO.Abstractions.Services;
 

@@ -29,7 +29,7 @@ public class MyHandlebarsCompileBenchmark
     [GlobalSetup]
     public void GlobalSetup()
     {
-        
+
         post = new Fixture().Create<PostDetail>();
         list = Enumerable.Range(0, 100).ToArray();
 

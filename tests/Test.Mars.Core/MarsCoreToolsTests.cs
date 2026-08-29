@@ -7,7 +7,7 @@ public class MarsCoreToolsTests
     [Fact]
     public void TestTranslateToPostSlug()
     {
-        Dictionary<string, string> values = new Dictionary<string, string>
+        Dictionary<string, string> values = new()
         {
             ["test"] = "test",
             ["тест"] = "test",

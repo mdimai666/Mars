@@ -1,12 +1,8 @@
 using FluentValidation;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Contracts.PostTypes;
 using Mars.Cms.Abstractions.Validators;
+using Mars.Cms.Contracts.PostTypes;
 
 namespace Mars.Cms.Abstractions.Dto.Posts;
 

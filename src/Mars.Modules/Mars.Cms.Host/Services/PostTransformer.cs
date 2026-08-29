@@ -1,8 +1,7 @@
-using Mars.Core.Exceptions;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
+using Mars.Core.Exceptions;
 
 namespace Mars.Cms.Host.Services;
 

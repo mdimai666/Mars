@@ -14,8 +14,8 @@ public class QueryLangProcessing(
     IServiceProvider serviceProvider,
     IQueryLangLinqDatabaseQueryHandler queryLangLinqDatabaseQueryHandler) : IQueryLangProcessing
 {
-    private static readonly Regex regexLinqFunctionDetect = new Regex(@"^\w+\.\w+");
-    private static readonly Regex regexFunctionDetect = new Regex(@"^\w+\(");
+    private static readonly Regex regexLinqFunctionDetect = new(@"^\w+\.\w+");
+    private static readonly Regex regexFunctionDetect = new(@"^\w+\(");
 
     public async Task<Dictionary<string, object?>> Process(
         PageRenderContext pageContext,
@@ -33,7 +33,7 @@ public class QueryLangProcessing(
         //Action<string> addErr = err => renderContext.PageContext.Errors.Add(err);
         Action<string> addErr = err => { pageContext.Errors.Add(new(err)); };
 
-        Dictionary<string, object?> resultDict = new();
+        Dictionary<string, object?> resultDict = [];
 
         Action<string, object?> addToContext = (string key, object? value) =>
         {
@@ -134,7 +134,7 @@ public class QueryLangProcessing(
         {
 #if DEBUG
 
-            if(ex.GetType() == typeof(TargetInvocationException))
+            if (ex.GetType() == typeof(TargetInvocationException))
             {
                 // Это чтобы при ошибке рефлексии показало ошибку нормально.
                 pageContext.Errors.Add(new($"error on add #context. {ex.InnerException.Message}\n\nReflection error: {ex.Message}", ex.StackTrace));

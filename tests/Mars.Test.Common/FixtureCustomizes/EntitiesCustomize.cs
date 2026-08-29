@@ -1,12 +1,10 @@
 using AutoFixture;
-using Mars.Identity.Abstractions.Utils;
 using Bogus;
-using Mars.Core.Extensions;
 using Mars.Core.Features;
 using Mars.Data.Entities;
 using Mars.Data.OwnedTypes.NavMenus;
 using Mars.Data.OwnedTypes.Users;
-using Mars.Cms.Contracts.PostTypes;
+using Mars.Identity.Abstractions.Utils;
 using Mars.Test.Common.Constants;
 using static Mars.Test.Common.FixtureCustomizes.FixtureCustomize;
 

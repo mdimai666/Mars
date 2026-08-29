@@ -34,7 +34,7 @@ public class PaginatorHelper
         int _prev = page - 1;
         int _next = page + 1;
 
-        Dictionary<int, string> items = new();
+        Dictionary<int, string> items = [];
         for (int p = Start; p <= End; p++)
         {
             string url = $"page={p}";

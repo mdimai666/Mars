@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Mars.Core.Extensions;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Resources;
+using Mars.Core.Extensions;
 
 namespace Mars.Identity.Contracts.Users;
 

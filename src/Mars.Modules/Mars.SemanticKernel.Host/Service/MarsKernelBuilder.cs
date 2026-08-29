@@ -10,12 +10,12 @@ internal sealed class MarsKernelBuilder : IKernelBuilder, IKernelBuilderPlugins
 
     public MarsKernelBuilder()
     {
-        this.AllowBuild = true;
+        AllowBuild = true;
     }
 
     public MarsKernelBuilder(IServiceCollection services)
     {
-        this._services = services;
+        _services = services;
     }
 
     /// <summary>Whether to allow a call to Build.</summary>
@@ -23,7 +23,7 @@ internal sealed class MarsKernelBuilder : IKernelBuilder, IKernelBuilderPlugins
     internal bool AllowBuild { get; }
 
     /// <summary>Gets the collection of services to be built into the <see cref="Kernel"/>.</summary>
-    public IServiceCollection Services => this._services ??= new ServiceCollection();
+    public IServiceCollection Services => _services ??= new ServiceCollection();
 
     /// <summary>Gets a builder for plugins to be built as services into the <see cref="Kernel"/>.</summary>
     public IKernelBuilderPlugins Plugins => this;

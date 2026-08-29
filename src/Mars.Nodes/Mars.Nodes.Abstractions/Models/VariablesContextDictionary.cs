@@ -2,7 +2,7 @@ namespace Mars.Nodes.Abstractions.Models;
 
 public class VariablesContextDictionary
 {
-    protected Dictionary<string, object?> values = new();
+    protected Dictionary<string, object?> values = [];
 
     //Remote as Redis
 

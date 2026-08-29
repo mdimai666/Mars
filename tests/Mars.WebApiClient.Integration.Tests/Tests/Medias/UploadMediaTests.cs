@@ -1,9 +1,9 @@
 using System.Text;
+using FluentAssertions;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Medias;
 

@@ -1,12 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
+using Mars.Cms.Contracts.NavMenus;
 using Mars.Cms.Host.Controllers;
 using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Cms.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

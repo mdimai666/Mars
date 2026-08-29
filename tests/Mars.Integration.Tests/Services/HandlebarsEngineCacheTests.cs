@@ -3,9 +3,9 @@ using FluentAssertions;
 using Mars.Core.Models;
 using Mars.Nodes.Abstractions.Hubs;
 using Mars.Server.Abstractions.Models;
+using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -77,7 +77,7 @@ v1
             User = null,
             IsDevelopment = false,
             RenderParam = new RenderParam(), // UseCache = true
-            TemplateContextVaribles = new(),
+            TemplateContextVaribles = [],
         };
 
         return engine.RenderPage(appFront, ctx, template.Roots.Values.First(), template.IndexPage, template.Parts, services, default);

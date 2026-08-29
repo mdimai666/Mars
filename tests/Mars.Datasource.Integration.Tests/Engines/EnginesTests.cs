@@ -1,11 +1,10 @@
-using Mars.Datasource;
 using Mars.Integration.Tests.Common;
 
 namespace Mars.Datasource.Integration.Tests.Engines;
 
 public class EnginesTests : BaseDatasourceTestAppTests
 {
-    public static Dictionary<string, DatasourceConfig> configs = new Dictionary<string, DatasourceConfig>()
+    public static Dictionary<string, DatasourceConfig> configs = new()
     {
         ["psql"] = new DatasourceConfig
         {

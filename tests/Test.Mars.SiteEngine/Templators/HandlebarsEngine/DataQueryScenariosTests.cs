@@ -2,12 +2,12 @@ using AutoFixture;
 using FluentAssertions;
 using Mars.Core.Extensions;
 using Mars.Data.Entities;
+using Mars.QueryLang.Host.Services;
 using Mars.QueryLang.Services;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.SiteEngine.Templators;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
-using Mars.QueryLang.Host.Services;
+using Mars.SiteEngine.Templators;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http.Features;
 using NSubstitute;
@@ -48,10 +48,12 @@ public class DataQueryScenariosTests
             SiteSettings = new(),
             Request = new(new Uri("http://localhost")),
             User = null,
-            TemplateContextVaribles = data ?? new()
+            TemplateContextVaribles = data ?? []
         };
-        var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None);
-        rctx.Features = _featureCollection;
+        var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None)
+        {
+            Features = _featureCollection
+        };
         return template(pageRenderContext.TemplateContextVaribles, new { rctx });
     }
 

@@ -107,7 +107,7 @@ internal class MarkdownSectionPreCodeRenderer : HtmlObjectRenderer<CodeBlock>
 
         WriteElementAttributes(renderer, orig, codeGenericAttributes);
     }
-    static private void WriteElementAttributes(HtmlRenderer renderer, HtmlAttributes? fromCodeBlock, string? genericAttributes)
+    private static void WriteElementAttributes(HtmlRenderer renderer, HtmlAttributes? fromCodeBlock, string? genericAttributes)
     {
         // origin code block had no attributes
         fromCodeBlock ??= new HtmlAttributes();

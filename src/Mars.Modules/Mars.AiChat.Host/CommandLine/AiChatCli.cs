@@ -1,12 +1,12 @@
 using System.CommandLine;
-using Mars.AiChat.Host.Services;
 using Mars.AiChat.Abstractions.Interfaces;
 using Mars.AiChat.Abstractions.Models;
 using Mars.AiChat.Contracts.Dto;
+using Mars.AiChat.Host.Services;
 using Mars.CommandLine.Abstractions;
+using Mars.Contracts.Common;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Services;
-using Mars.Contracts.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.AiChat.Host.CommandLine;

@@ -1,6 +1,5 @@
 using Mars.Contracts.Dto.Files;
 using Mars.Media.Abstractions.Dto.Files;
-using Mars.Media.Abstractions.Repositories;
 
 namespace Mars.Media.Abstractions.Repositories;
 

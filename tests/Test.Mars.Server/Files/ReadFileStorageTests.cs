@@ -1,8 +1,6 @@
-using Mars.Contracts.Dto.Files;
-using Mars.Server.Abstractions.Services;
-using Mars.Contracts.Dto.Files;
-using Mars.Server.Abstractions.Services;
 using FluentAssertions;
+using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.Options;
 
 namespace Test.Mars.Server.Files;

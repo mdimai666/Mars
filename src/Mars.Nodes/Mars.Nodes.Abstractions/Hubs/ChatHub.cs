@@ -1,7 +1,7 @@
 using Mars.Contracts.Interfaces;
+using Mars.Nodes.Abstractions.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using Mars.Nodes.Abstractions.Services;
 
 namespace Mars.Nodes.Abstractions.Hubs;
 

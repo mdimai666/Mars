@@ -1,4 +1,3 @@
-using System.CommandLine;
 using Mars.CommandLine.Commands;
 using Mars.CommandLine.Remote;
 

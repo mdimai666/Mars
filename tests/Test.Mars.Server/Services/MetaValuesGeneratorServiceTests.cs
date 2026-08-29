@@ -1,29 +1,16 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Core.Exceptions;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
-using Mars.Cms.Host.Services;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
-using Mars.Cms.Host.Services;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostCategories;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
-using Mars.Cms.Host.Services;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
-using Mars.Cms.Host.Services;
 using Mars.Cms.Contracts.MetaFields;
-using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Handlers;
+using Mars.Cms.Host.Services;
+using Mars.Core.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
@@ -236,7 +223,7 @@ public class MetaValuesGeneratorServiceTests
             Categories = null,
             Content = null,
             MetaValues = value is null
-                ? new Dictionary<string, MetaValueDto>()
+                ? []
                 : new Dictionary<string, MetaValueDto>
                 {
                     [field.Key] = new MetaValueDto

@@ -1,17 +1,17 @@
 using System.Text.Json;
+using FluentAssertions;
 using Mars.Core.Models;
 using Mars.Server.Abstractions.Models;
+using Mars.Server.Contracts.Options;
+using Mars.Server.Contracts.ViewModels;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
-using Mars.Server.Contracts.Options;
-using Mars.Server.Contracts.ViewModels;
-using Mars.Test.Common.Constants;
 using Mars.SiteEngine.Endpoints;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Handlebars.TemplateData;
 using Mars.SiteEngine.Services;
-using FluentAssertions;
+using Mars.Test.Common.Constants;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
@@ -49,7 +49,7 @@ public class RenderEngineRenderTests
         var pageAttr = new Dictionary<string, string>();
         var rootAttr = new Dictionary<string, string>();
         WebPage index = new(new WebSitePart(WebSitePartType.Page, "index", "index.hbs", "", content, pageAttr, title), "/", title);
-        WebRoot root = new WebRoot(new WebSitePart(WebSitePartType.Root, "_root", "_root.hbs", "", "@Body", rootAttr, "Root"));
+        WebRoot root = new(new WebSitePart(WebSitePartType.Root, "_root", "_root.hbs", "", "@Body", rootAttr, "Root"));
 
         return new WebSiteTemplate(new Dictionary<string, WebRoot>() { ["/"] = root }, [index], index);
     }
@@ -77,7 +77,7 @@ public class RenderEngineRenderTests
             SiteSettings = sys,
             User = new RenderContextUser(user),
             IsDevelopment = true,
-            TemplateContextVaribles = dataDict ?? new(),
+            TemplateContextVaribles = dataDict ?? [],
             RenderParam = new RenderParam()
         };
         var renderParam = new RenderParam() { AllowLayout = false };

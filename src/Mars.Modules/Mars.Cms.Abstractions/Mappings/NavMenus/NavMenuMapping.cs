@@ -1,7 +1,7 @@
-using Mars.Data.Extensions;
 using Mars.Cms.Abstractions.Dto.NavMenus;
-using Mars.Contracts.Common;
 using Mars.Cms.Contracts.NavMenus;
+using Mars.Contracts.Common;
+using Mars.Data.Extensions;
 
 namespace Mars.Cms.Abstractions.Mappings.NavMenus;
 
@@ -53,7 +53,7 @@ public static class NavMenuMapping
             IsHeader = entity.IsHeader,
             OpenInNewTab = entity.OpenInNewTab,
             ParentId = entity.ParentId,
-            RolesInverse    = entity.RolesInverse,
+            RolesInverse = entity.RolesInverse,
             IsSystem = entity.IsSystem,
         };
 

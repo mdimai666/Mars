@@ -23,7 +23,7 @@ public record FileDetailResponse : FileSummaryResponse
     public required DateTimeOffset? ModifiedAt { get; init; }
     public required string FilePhysicalPath { get; init; }
     public required string FileVirtualPath { get; init; }
-    public required virtual FileEntityMetaResponse Meta { get; init; }
+    public virtual required FileEntityMetaResponse Meta { get; init; }
     public required Guid UserId { get; init; }
 }
 

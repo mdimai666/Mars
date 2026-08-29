@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Factories;
-using Mars.Nodes.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 BenchmarkRunner.Run<InstantiationBenchmark>();

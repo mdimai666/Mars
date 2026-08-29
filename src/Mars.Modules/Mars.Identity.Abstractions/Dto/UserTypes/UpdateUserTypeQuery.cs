@@ -5,7 +5,7 @@ namespace Mars.Identity.Abstractions.Dto.UserTypes;
 /// <summary>
 /// <see cref="UpdateUserTypeRequest"/>
 /// </summary>
-public record UpdateUserTypeQuery: IGeneralMetaFieldsSupportDto
+public record UpdateUserTypeQuery : IGeneralMetaFieldsSupportDto
 {
     public required Guid Id { get; init; }
     public required string Title { get; init; }

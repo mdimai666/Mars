@@ -1,6 +1,6 @@
-using Mars.Core.Interfaces;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Validators;
+using Mars.Core.Interfaces;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 

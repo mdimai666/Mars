@@ -1,13 +1,12 @@
 using System.Globalization;
-using Mars.Data.Contexts;
-using Mars.Data.Entities;
-using Mars.Data.Repositories.Helpers;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Services;
-using Mars.Options.Services;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.Repositories.Helpers;
+using Mars.Options.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Cms.Host.Services;
@@ -148,19 +147,19 @@ internal class PostMetaColumnsService : IPostMetaColumnsService
             case MetaFieldType.DateTime: return first.DateTime?.ToString("g", CultureInfo.InvariantCulture);
 
             case MetaFieldType.Select:
-            {
-                var variant = field.Variants?.FirstOrDefault(v => v.Id == first.VariantId);
-                return variant is null ? null : VariantDisplay(variant);
-            }
+                {
+                    var variant = field.Variants?.FirstOrDefault(v => v.Id == first.VariantId);
+                    return variant is null ? null : VariantDisplay(variant);
+                }
 
             case MetaFieldType.SelectMany:
-            {
-                var variantTitles = (first.VariantsIds ?? [])
-                    .Select(id => field.Variants?.FirstOrDefault(v => v.Id == id))
-                    .Where(v => v is not null)
-                    .Select(v => VariantDisplay(v!));
-                return string.Join(", ", variantTitles);
-            }
+                {
+                    var variantTitles = (first.VariantsIds ?? [])
+                        .Select(id => field.Variants?.FirstOrDefault(v => v.Id == id))
+                        .Where(v => v is not null)
+                        .Select(v => VariantDisplay(v!));
+                    return string.Join(", ", variantTitles);
+                }
 
             case MetaFieldType.Relation:
                 return string.Join(", ", fieldValues

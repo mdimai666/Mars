@@ -1,7 +1,6 @@
-using Mars.Admin.Framework.Interfaces;
-using Mars.Admin.Framework.Models;
-using Mars.Admin.Framework.Services;
 using FluentAssertions;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Services;
 
 namespace Mars.E2E.Tests.Tests;
 

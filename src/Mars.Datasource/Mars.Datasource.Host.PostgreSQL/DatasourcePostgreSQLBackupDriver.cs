@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
-using Mars.Datasource;
-using Mars.Datasource.Abstractions.Interfaces;
-using Mars.Datasource.Abstractions.Exceptions;
-using Mars.Datasource.Abstractions.Models;
 using Mars.Core.Extensions;
+using Mars.Datasource.Abstractions.Exceptions;
+using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Models;
 using Npgsql;
 
 namespace Mars.Datasource.Host.PostgreSQL;
@@ -25,7 +23,7 @@ public class DatasourcePostgreSQLBackupDriver : IDatasourceBackupDriver
     /// <exception cref="NotImplementedException"></exception>
     public async Task Backup(string connectionString, BackupSettings settings, CancellationToken cancellationToken = default)
     {
-        NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(connectionString);
+        NpgsqlConnectionStringBuilder builder = new(connectionString);
 
         var db = new DatasourcePostgreSQLDriver(new DatasourceConfig { ConnectionString = connectionString, Driver = "psql" });
         var pgDumpPath = settings.DumpBinaryPath ?? await PgDumpBinPath(db);

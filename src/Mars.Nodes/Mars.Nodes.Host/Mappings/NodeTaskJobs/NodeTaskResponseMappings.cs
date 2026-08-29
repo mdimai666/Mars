@@ -1,7 +1,7 @@
-using Mars.Data.Extensions;
-using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
-using Mars.Nodes.Abstractions.Dto.NodeTasks;
 using Mars.Contracts.Common;
+using Mars.Data.Extensions;
+using Mars.Nodes.Abstractions.Dto.NodeTasks;
+using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 
 namespace Mars.Nodes.Host.Mappings.NodeTaskJobs;
 

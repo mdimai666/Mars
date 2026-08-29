@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using FluentAssertions;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Framework.Models;
 using Mars.Admin.Framework.Services;
-using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 

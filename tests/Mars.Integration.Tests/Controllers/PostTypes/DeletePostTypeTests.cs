@@ -1,11 +1,10 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Cms.Host.Controllers;
-using Mars.Data.Entities;
-using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;

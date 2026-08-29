@@ -1,12 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using Mars.Admin.Framework.Extensions;
+using Flurl.Http;
 using Mars.Admin.Framework.Extensions;
 using Mars.Admin.Framework.Services;
-using Flurl.Http;
-using Mars.Contracts.Common;
-using Mars.Media.Contracts.Files;
 using Mars.Contracts.Resources;
+using Mars.Media.Contracts.Files;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -33,7 +31,7 @@ public partial class FluentMediaFilesList
     string _searchText = "";
     PagingResult<FileListItemResponse> data = PagingResult<FileListItemResponse>.Empty();
     GridItemsProvider<FileListItemResponse> dataProvider = default!;
-    PaginationState pagination = new PaginationState { ItemsPerPage = PageSize };
+    PaginationState pagination = new() { ItemsPerPage = PageSize };
 
     //FluentInputFileEventArgs[] Files2 = Array.Empty<FluentInputFileEventArgs>();
 

@@ -1,5 +1,5 @@
-using Mars.Nodes.Core.Nodes.Sequences;
 using Mars.Nodes.Abstractions;
+using Mars.Nodes.Core.Nodes.Sequences;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Sequences;
 

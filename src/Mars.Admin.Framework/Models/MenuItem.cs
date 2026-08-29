@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Routing;
-using System.Collections.Generic;
 
-namespace Mars.Admin.Framework.Models {
+namespace Mars.Admin.Framework.Models
+{
     public class MenuItem
     {
         public string Title { get; set; } = default!;

@@ -10,7 +10,7 @@ namespace Mars.SemanticKernel.Contracts.Nodes;
 [FunctionApiDocument("./_content/Mars.SemanticKernel.Front/docs/nodes/SemanticKernelModelConfigNode/SemanticKernelModelConfigNode{.lang}.md")]
 public class SemanticKernelModelConfigNode : ConfigNode
 {
-    public readonly static string[] AvailModelTypes = [OllamaOptions.SectionName, OpenAIOptions.SectionName];
+    public static readonly string[] AvailModelTypes = [OllamaOptions.SectionName, OpenAIOptions.SectionName];
 
     public string ModelType { get; set; } = OllamaOptions.SectionName;
     public JsonNode ModelConfig { get; set; } = JsonSerializer.SerializeToNode(new OllamaOptions())!;

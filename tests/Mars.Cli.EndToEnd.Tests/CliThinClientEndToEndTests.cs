@@ -3,7 +3,6 @@ using System.Text;
 using Mars.CommandLine.Remote;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Cli.EndToEnd.Tests;

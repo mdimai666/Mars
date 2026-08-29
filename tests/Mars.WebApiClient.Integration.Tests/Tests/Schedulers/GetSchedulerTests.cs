@@ -1,10 +1,10 @@
+using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Scheduler.Abstractions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Schedulers;
+using Mars.Scheduler.Abstractions;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Schedulers;

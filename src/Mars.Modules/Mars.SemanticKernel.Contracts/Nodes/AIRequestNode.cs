@@ -22,7 +22,7 @@ public class AIRequestNode : Node
     {
         Inputs = [new()];
         Color = "#aeb3fa";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.SemanticKernel.Front/img/icon-128.png";
     }
 }

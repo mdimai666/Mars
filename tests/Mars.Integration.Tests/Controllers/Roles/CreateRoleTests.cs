@@ -1,12 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Identity.Host.Controllers;
 using Mars.Data.Repositories;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Identity.Contracts.Roles;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

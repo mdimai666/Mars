@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Mars.Identity.Abstractions.Dto.SSO;
-using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Abstractions.Interfaces;
+using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Host.Utilities;
 using Microsoft.Extensions.Logging;
 

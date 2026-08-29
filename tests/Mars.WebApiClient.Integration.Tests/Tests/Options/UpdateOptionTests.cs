@@ -1,10 +1,10 @@
+using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Options.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Options.Repositories;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Options;

@@ -1,4 +1,3 @@
-using System.Net.Http;
 using Flurl.Http;
 using Mars.Cms.Contracts.Search;
 using Mars.WebApiClient.Interfaces;

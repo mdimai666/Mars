@@ -1,11 +1,10 @@
 using System.ComponentModel;
-using Mars.Server.Abstractions.ExceptionFilters;
 using System.Net.Mime;
-using Mars.Datasource;
-using Mars.Datasource.Dto;
-using Mars.Datasource.Mappings;
-using Mars.Datasource.Host.Services;
 using Mars.Contracts.Common;
+using Mars.Datasource.Dto;
+using Mars.Datasource.Host.Services;
+using Mars.Datasource.Mappings;
+using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,7 +59,7 @@ public class DatasourceController : ControllerBase
     }
 
     [HttpPost]
-    public Task<UserActionResult<string[][]>> ExecuteAction([DefaultValue("default")]string slug, DatasourceActionRequest action, CancellationToken cancellationToken)
+    public Task<UserActionResult<string[][]>> ExecuteAction([DefaultValue("default")] string slug, DatasourceActionRequest action, CancellationToken cancellationToken)
     {
         return ds.ExecuteAction(action, cancellationToken);
     }

@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
 using Mars.Identity.Abstractions.Dto.SSO;
-using Mars.SSO.Contracts.Dto;
+using Mars.Identity.Abstractions.Utils;
 using Mars.Identity.Contracts.Users;
+using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Host.Mappings;
 using Mars.SSO.Host.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Mars.Identity.Abstractions.Utils;
 
 namespace Mars.SSO.Host.Providers;
 

@@ -19,7 +19,7 @@ public class SqlNode : Node
     {
         Inputs = [new()];
         Color = "#faeaae";
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/db-48.png";
     }
 

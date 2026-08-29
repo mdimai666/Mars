@@ -1,19 +1,13 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Core.Exceptions;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
-using Mars.Cms.Abstractions.Repositories;
-using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Host.Handlers;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Handlers;
+using Mars.Core.Exceptions;
 using NSubstitute;
 
 namespace Test.Mars.Server.Handlers;
@@ -144,7 +138,7 @@ public class MetaValueGeneratorHandlersTests
         var field = Field(MetaFieldType.DateTime, "number");
         var handler = new SequenceValueGeneratorHandler(Substitute.For<IMetaSequenceRepository>());
 
-        var act = () => handler.GenerateAsync(Context(field), new JsonObject(), CancellationToken.None);
+        var act = () => handler.GenerateAsync(Context(field), [], CancellationToken.None);
 
         await act.Should().ThrowAsync<MarsValidationException>();
     }

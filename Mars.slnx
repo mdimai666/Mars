@@ -166,7 +166,6 @@
     <Project Path="tests/Modules/Test.EditorJsBlazored/Test.EditorJsBlazored.csproj" />
   </Folder>
   <Folder Name="/Options/">
-    <Project Path="src/Mars.Options/Mars.Options.Front/Mars.Options.Front.csproj" />
     <Project Path="src/Mars.Options/Mars.Options.Contracts/Mars.Options.Contracts.csproj" />
     <Project Path="src/Mars.Options/Mars.Options.Host/Mars.Options.Host.csproj" />
     <Project Path="src/Mars.Options/Mars.Options.Abstractions/Mars.Options.Abstractions.csproj" />

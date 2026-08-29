@@ -78,7 +78,6 @@
         <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
-        <ProjectReference Include="..\Mars.Options\Mars.Options.Front\Mars.Options.Front.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />

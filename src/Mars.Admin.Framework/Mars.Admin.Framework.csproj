@@ -80,6 +80,7 @@
 		<ProjectReference Include="..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
 		<ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
 		<ProjectReference Include="..\Mars.Modules\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
+		<ProjectReference Include="..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
 		<ProjectReference Include="..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
 		<ProjectReference Include="..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
 		<ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />

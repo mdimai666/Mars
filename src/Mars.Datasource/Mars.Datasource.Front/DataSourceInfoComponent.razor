@@ -1,3 +1,4 @@
+@using Mars.Datasource
 @using Mars.Datasource.Front.Services;
 @using Mars.Contracts.Common
 @using Mars.WebApiClient.Interfaces
@@ -82,7 +83,7 @@
         Busy = true;
         StateHasChanged();
 
-        var res = await service.ExecuteAction("default", new ExecuteActionRequest { ActionId = actionName, Arguments = [] });
+        var res = await service.ExecuteAction("default", new DatasourceActionRequest { ActionId = actionName, Arguments = [] });
 
         lastAction = res;
 

@@ -15,7 +15,7 @@ public interface IDatasourceService
     public Task<QDatabaseStructure> DatabaseStructure(string slug);
     public Task<SqlQueryResultActionDto> SqlQuery(string slug, string sql);
     public Task<SqlNonQueryResultActionDto> SqlNonQuery(string slug, string sql);
-    public Task<UserActionResult<string[][]>> ExecuteAction(ExecuteActionRequest action, CancellationToken cancellationToken);
+    public Task<UserActionResult<string[][]>> ExecuteAction(DatasourceActionRequest action, CancellationToken cancellationToken);
     public IEnumerable<SelectDatasourceDto> ListSelectDatasource();
 
 }

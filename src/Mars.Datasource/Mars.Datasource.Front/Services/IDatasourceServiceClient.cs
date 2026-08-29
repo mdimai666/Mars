@@ -1,3 +1,4 @@
+using Mars.Datasource;
 using Mars.Datasource.Dto;
 using Mars.Datasource.Front.Services;
 using Mars.Contracts.Common;
@@ -13,7 +14,7 @@ public interface IDatasourceServiceClient
     Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug);
     Task<QDatabaseStructureResponse> DatabaseStructure(string slug);
     Task<UserActionResult<string[][]>> SqlQuery(string slug, string sql);
-    Task<UserActionResult<string[][]>> ExecuteAction(string slug, ExecuteActionRequest action);
+    Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action);
     Task<IReadOnlyCollection<SelectDatasourceDto>> ListSelectDatasource();
 
 }

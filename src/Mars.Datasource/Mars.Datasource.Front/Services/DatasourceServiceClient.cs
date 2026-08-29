@@ -1,3 +1,4 @@
+using Mars.Datasource;
 using Mars.Datasource.Dto;
 using Mars.Contracts.Common;
 using Mars.WebApiClient.Interfaces;
@@ -44,7 +45,7 @@ internal class DatasourceServiceClient : IDatasourceServiceClient
                     .PostJsonAsync(new string[] { sql })
                     .ReceiveJson<UserActionResult<string[][]>>();
 
-    public Task<UserActionResult<string[][]>> ExecuteAction(string slug, ExecuteActionRequest action)
+    public Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action)
         => _client.Request($"{_basePath}{_controllerName}", "ExecuteAction")
                     .AppendQueryParam(new { slug })
                     .PostJsonAsync(action)

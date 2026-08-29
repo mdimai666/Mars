@@ -2344,7 +2344,7 @@
       "Mars.AiChat.Host/1.0.0": {
         "dependencies": {
           "Mars.AiChat.Abstractions": "1.0.0",
-          "Mars.Datasource.Host": "1.0.0",
+          "Mars.Datasource.Abstractions": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
           "Microsoft.Agents.AI": "1.17.0",
           "Microsoft.Agents.AI.Harness": "1.17.0",
@@ -2352,6 +2352,8 @@
           "Microsoft.Extensions.AI.OpenAI": "10.7.0",
           "Microsoft.Extensions.Caching.Hybrid": "10.7.0",
           "OpenAI": "2.12.0",
+          "mdimai666.Mars.CommandLine.Abstractions": "0.8.0-alpha.1",
+          "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -2486,6 +2488,7 @@
       },
       "Mars.Datasource.Abstractions/1.0.0": {
         "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -2691,9 +2694,9 @@
         "dependencies": {
           "FluentValidation": "12.1.1",
           "Mars.Media.Contracts": "1.0.0",
+          "Mars.XActions.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1",
-          "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Options": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
@@ -2936,7 +2939,6 @@
           "Quartz": "3.18.1",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1",
-          "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3108,6 +3110,7 @@
           "Mars.SiteEngine.Abstractions": "1.0.0",
           "Mars.SiteEngine.Contracts": "1.0.0",
           "Mars.SiteEngine.Templators": "1.0.0",
+          "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Options": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
@@ -3328,6 +3331,7 @@
           "Mars.SSO.Contracts": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
           "Mars.SiteEngine.Contracts": "1.0.0",
+          "Mars.XActions.Contracts": "1.0.0",
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "10.0.9",
           "Microsoft.AspNetCore.SignalR.Client.Core": "10.0.9",
           "Microsoft.FluentUI.AspNetCore.Components": "4.14.2",
@@ -3483,6 +3487,7 @@
           "Mars.SiteEngine.Abstractions": "1.0.0",
           "Mars.XActions.Abstractions": "1.0.0",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
+          "Microsoft.EntityFrameworkCore": "10.0.9",
           "Newtonsoft.Json": "13.0.4",
           "mdimai666.Mars.HttpSmartAuthFlow": "0.8.0-alpha.1",
           "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
@@ -3542,7 +3547,6 @@
         "dependencies": {
           "Mars.Plugin.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
-          "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3633,6 +3637,7 @@
           "Mars.SemanticKernel.Contracts": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
           "Mars.SiteEngine.Contracts": "1.0.0",
+          "Mars.XActions.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {

@@ -1,3 +1,4 @@
+using Mars.Datasource;
 using Mars.Datasource.Dto;
 using Mars.Datasource.Host.Controllers;
 using Mars.Datasource.Host.Services;
@@ -104,7 +105,7 @@ public class DataSourceTests : BaseWebApiClientTests
         _ = nameof(DatasourceController.ExecuteAction);
         _ = nameof(IDatasourceService.ExecuteAction);
         var client = GetWebApiClient();
-        var request = new ExecuteActionRequest { ActionId = "check_db_timezone", Arguments = [] };
+        var request = new DatasourceActionRequest { ActionId = "check_db_timezone", Arguments = [] };
         //Act
         var result = await client.Datasource().ExecuteAction("default", request);
 

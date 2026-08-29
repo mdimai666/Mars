@@ -160,7 +160,7 @@ internal class DatasourceService : IDatasourceService
         return result;
     }
 
-    public async Task<UserActionResult<string[][]>> ExecuteAction(ExecuteActionRequest action, CancellationToken cancellationToken)
+    public async Task<UserActionResult<string[][]>> ExecuteAction(DatasourceActionRequest action, CancellationToken cancellationToken)
     {
         try
         {

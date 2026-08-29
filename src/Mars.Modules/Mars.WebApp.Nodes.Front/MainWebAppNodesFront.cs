@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApp.Nodes.Front;
 
-public static class MainMarsWebAppNodesFront
+public static class MainWebAppNodesFront
 {
     public static IServiceCollection AddMarsWebAppNodesFront(this IServiceCollection services)
         => services.AddScoped<INodeEditorToolServiceClient, NodeEditorToolServiceClient>();

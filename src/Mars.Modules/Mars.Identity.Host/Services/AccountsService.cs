@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Mars.Identity.Host.Services;
 
-public class AccountsService : IAccountsService
+internal class AccountsService : IAccountsService
 {
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
@@ -114,7 +114,8 @@ public class AccountsService : IAccountsService
 
         return await RegisterUser(user, userData.Password, cancellationToken);
     }
-    public async Task<RegistrationResponseDto> RegisterUser(UserEntity user, string password, CancellationToken cancellationToken)
+
+    private async Task<RegistrationResponseDto> RegisterUser(UserEntity user, string password, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(password, nameof(password));
         if (user.UserTypeId == Guid.Empty)

@@ -30,7 +30,7 @@ public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
 
     protected internal virtual AppFrontSettingsCfg[] GetAppFrontConfigs()
     {
-        _ = nameof(MarsSiteEngineFrontStartup.UseMarsSiteEngineFront);
+        _ = nameof(MainSiteEngine.UseMarsSiteEngine);
 
         var themeRoot = SolutionPathHelper.Resolve("tests", "Mars.AppFrontEngines.Integration.Tests", "HandlebarsEngine", "appTheme");
 

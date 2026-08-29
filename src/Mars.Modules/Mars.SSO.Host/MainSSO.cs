@@ -30,19 +30,19 @@ public static class MainSSO
         return services;
     }
 
-    public static IApplicationBuilder UseMarsSSOMiddlewares(this IApplicationBuilder app)
+    /// <summary>
+    /// Вызывается между UseAuthentication и UseAuthorization: SsoAuthMiddleware
+    /// подменяет principal по внешнему токену до проверки авторизации.
+    /// </summary>
+    public static IApplicationBuilder UseMarsSSO(this WebApplication app)
     {
-        return app.UseMiddlewareForFeature<SsoAuthMiddleware>(FeatureFlags.SingleSignOn);
-    }
+        app.UseMiddlewareForFeature<SsoAuthMiddleware>(FeatureFlags.SingleSignOn);
 
-    public static IServiceProvider UseMarsSSO(this IServiceProvider services)
-    {
-        _memoryCache = services.GetRequiredService<IMemoryCache>();
-        //var op = app.Services.GetRequiredService<IOptionService>();
+        var services = app.Services;
+        var memoryCache = services.GetRequiredService<IMemoryCache>();
         var eventManager = services.GetRequiredService<IEventManager>();
         var eventTopic = eventManager.Defaults.OptionUpdate(typeof(OpenIDClientOption).Name);
-        //op.on
-        eventManager.AddEventListener(eventTopic, OnSSOOptionUpdate);
+        eventManager.AddEventListener(eventTopic, _ => memoryCache.Remove("sso:providers:descriptors"));
 
         var optionService = services.GetRequiredService<IOptionService>();
 
@@ -50,15 +50,7 @@ public static class MainSSO
         var openIdClient = optionService.GetOption<OpenIDClientOption>();
         ChangeOpenIDClientOption(openIdClient, optionService);
 
-        return services;
-    }
-
-    static IMemoryCache _memoryCache = default!;
-
-    static void OnSSOOptionUpdate(ManagerEventPayload _)
-    {
-        //_memoryCache.Remove("sso:providers:instances");
-        _memoryCache.Remove("sso:providers:descriptors");
+        return app;
     }
 
     static void ChangeOpenIDClientOption(OpenIDClientOption opt, IOptionService optionService)

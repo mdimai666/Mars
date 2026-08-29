@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
         <ProjectReference Include="..\Mars.Data.InMemory\Mars.Data.InMemory.csproj" />
         <ProjectReference Include="..\Mars.Data.PostgreSQL\Mars.Data.PostgreSQL.csproj" />

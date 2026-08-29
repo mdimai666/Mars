@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Datasource.Host;
 
-public static class DatasourceHostExtensions
+public static class MainDatasource
 {
     public static IServiceCollection AddDatasourceHost(this IServiceCollection services)
     {

@@ -15,9 +15,9 @@ using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Framework;
 
-public static class MainAppFrontShared
+public static class MainAdminFramework
 {
-    public static void AddAppFrontMain(this IServiceCollection services, IConfiguration configuration, Type program)
+    public static void AddMarsAdminFramework(this IServiceCollection services, IConfiguration configuration, Type program)
     {
         services.AddAppFront(configuration, program);
         services.AddFluentUIComponents();
@@ -43,7 +43,7 @@ public static class MainAppFrontShared
         }
     }
 
-    public static IServiceProvider UseAppFrontMain(this IServiceProvider services)
+    public static IServiceProvider UseMarsAdminFramework(this IServiceProvider services)
     {
         var optionsFormsLocator = services.GetRequiredService<IOptionsFormsLocator>();
         optionsFormsLocator.RegisterAssembly(typeof(SmtpSettingsEditForm).Assembly);

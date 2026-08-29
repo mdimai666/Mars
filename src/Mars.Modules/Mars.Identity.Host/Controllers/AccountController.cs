@@ -32,7 +32,7 @@ namespace Mars.Identity.Host.Controllers;
 public class AccountController : ControllerBase
 {
     protected readonly UserManager<UserEntity> _userManager;
-    protected readonly AccountsService _accountsService;
+    protected readonly IAccountsService _accountsService;
     protected readonly IUserService _userService;
     protected readonly IFileService _fileService;
     protected readonly IOptionService _optionService;
@@ -40,7 +40,7 @@ public class AccountController : ControllerBase
 
     public AccountController(
         UserManager<UserEntity> userManager,
-        AccountsService accountsService,
+        IAccountsService accountsService,
         IUserService userService,
         IFileService fileService,
         IOptionService optionService,

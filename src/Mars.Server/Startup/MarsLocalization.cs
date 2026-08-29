@@ -1,12 +1,14 @@
 using System.Globalization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Mars.UseStartup.MarsParts;
+namespace Mars.Server;
 
-internal static class MarsStartupPartLocalization
+public static class MarsLocalization
 {
-    public static IServiceCollection MarsAddLocalization(this IServiceCollection services)
+    public static IServiceCollection AddMarsLocalization(this IServiceCollection services)
     {
         var defaultCulture = new CultureInfo("ru-RU");
 
@@ -35,7 +37,7 @@ internal static class MarsStartupPartLocalization
         return services;
     }
 
-    public static WebApplication MarsUseLocalization(this WebApplication app)
+    public static WebApplication UseMarsLocalization(this WebApplication app)
     {
 
         var localizationOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>().Value;
@@ -43,5 +45,4 @@ internal static class MarsStartupPartLocalization
 
         return app;
     }
-
 }

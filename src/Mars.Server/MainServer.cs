@@ -13,6 +13,7 @@ using Mars.Server.Seeding;
 using Mars.Server.Services;
 using Mars.Server.XActions;
 using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,11 +22,14 @@ using MOptions = Microsoft.Extensions.Options.Options;
 
 namespace Mars.Server;
 
-public static class MainMarsHost
+public static class MainServer
 {
-    public static IServiceCollection AddMarsHost(this IServiceCollection services, IWebHostEnvironment wenv)
+    public static IServiceCollection AddMarsServer(this IServiceCollection services, IWebHostEnvironment wenv)
     {
         services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
+        //Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore
+        //services.AddDatabaseDeveloperPageExceptionFilter();
 
         services.AddSingleton<IEventManager, EventManager>();
 
@@ -55,13 +59,18 @@ public static class MainMarsHost
         return services;
     }
 
-    public static IApplicationBuilder UseMarsHost(this WebApplication app, IServiceCollection serviceCollection)
+    public static IApplicationBuilder UseMarsServer(this WebApplication app)
     {
         // MigrationCommandCli не регистрируется здесь: «migrate» — базовая команда,
         // исполняется до ConfigureApp и берётся из initialCommands в MarsWebAppStartup.
+        app.RegisterHostXActions();
         return app;
     }
 
+    /// <summary>
+    /// Регистрация кор-опций. Вызывается в бутстрапе до сидов
+    /// (MigrationCommandCli дублирует порядок: миграции → опции → сид).
+    /// </summary>
     public static IServiceProvider UseMarsServerOptions(this IServiceProvider services)
     {
         var optionService = services.GetRequiredService<IOptionService>();
@@ -70,6 +79,66 @@ public static class MainMarsHost
         optionService.RegisterOption<MaintenanceModeOption>();
         optionService.GetOption<SiteSettings>();
         return services;
+    }
+
+    /// <summary>
+    /// Хостовые XActions: кеш, отладочные команды. Регистрируются без контекстов
+    /// админки — контексты навешивает оверлеем сторона, знающая админку (Mars.Admin.Host).
+    /// </summary>
+    static IApplicationBuilder RegisterHostXActions(this WebApplication app)
+    {
+        var actionManager = app.Services.GetRequiredService<IActionManager>();
+
+        actionManager.Add(a =>
+        {
+            a.Id(ClearCacheAct.CommandId)
+             .Label("Очистить кеш")
+             .Category("Хост")
+             .Recommended(10)
+             .Handler<ClearCacheAct>();
+        });
+
+        actionManager.Add(a => a
+            .Id("App.Logs")
+            .Label("App logs")
+            .Category("Разработка")
+            .Link("/dev/builder/debug"));
+
+#if DEBUG
+        actionManager.Add(a =>
+        {
+            a.Id(DummyAct.CommandId)
+             .Label("DummyAct")
+             .Category("Отладка")
+             .System()
+             .Handler<DummyAct>();
+        });
+
+        actionManager.Add(a => a
+            .Id(FormTestAct.CommandId)
+            .Label("Тест формы XAction")
+            .Description("Строка, число, bool и выбор из списка — тост покажет введённое")
+            .Category("Отладка")
+            .Argument(FormTestAct.TextArg, "Строка", required: true)
+            .Argument(FormTestAct.NumberArg, "Число", XActionArgumentType.Number, defaultValue: "42")
+            .Argument(FormTestAct.BoolArg, "Флаг", XActionArgumentType.Bool, defaultValue: "true")
+            .Argument(FormTestAct.ChoiceArg, "Выбор из списка", XActionArgumentType.Choice, options:
+            [
+                new() { Key = "one", Label = "Первый" },
+                new() { Key = "two", Label = "Второй" },
+                new() { Key = "three", Label = "Третий" },
+            ])
+            .Handler<FormTestAct>());
+
+        actionManager.Add(a => a
+            .Id(FrontDemoXAction.CommandId)
+            .Label(FrontDemoXAction.Label)
+            .Description("Исполняется на клиенте, хост такую команду не выполняет")
+            .Category("Отладка")
+            .FrontAction());
+#endif
+
+        return app;
     }
 
     static void UseFileStorages(IServiceCollection services, IWebHostEnvironment wenv)

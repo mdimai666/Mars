@@ -12,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Data.Infrastructure;
 
-public static class MainInfrastructure
+public static class MainDataInfrastructure
 {
-    public static IServiceCollection AddMarsHostInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddMarsDataInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         ArgumentException.ThrowIfNullOrEmpty(connectionString, nameof(connectionString));
@@ -57,8 +57,7 @@ public static class MainInfrastructure
             .AddEntityFrameworkStores<MarsDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddMarsHostData(connectionString!);
-        services.AddMarsHostRepositories();
+        services.AddMarsDataRepositories();
 
         return services;
     }

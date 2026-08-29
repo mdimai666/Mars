@@ -1,13 +1,12 @@
 using System.Reflection;
 using Mars.Scheduler.Abstractions;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.AspNetCore;
 
 namespace Mars.Scheduler.Host;
 
-public static class Main
+public static class MainScheduler
 {
     public static IServiceCollection AddMarsScheduler(this IServiceCollection services)
     {
@@ -29,11 +28,5 @@ public static class Main
         services.AddSingleton<ISchedulerManager, SchedulerManager>();
 
         return services;
-    }
-
-    public static IApplicationBuilder UseMarsScheduler(this WebApplication app)
-    {
-
-        return app;
     }
 }

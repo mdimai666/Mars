@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using System.Net;
 using Flurl.Http;
 using Mars.Contracts.Common;
@@ -13,11 +12,7 @@ using Mars.Server.Contracts.Options;
 using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -47,7 +42,7 @@ internal static class MarsStartupPartCore
         //AppSharedSettings.Program = typeof(Mars.Admin.Program);
         var conn = configuration.GetConnectionString("DefaultConnection");
 
-        services.AddMarsHostInfrastructure(configuration);
+        services.AddMarsDataInfrastructure(configuration);
 
         // https://source.dot.net/#Microsoft.AspNetCore.Identity.EntityFrameworkCore/IdentityEntityFrameworkBuilderExtensions.cs,90
         // services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
@@ -141,38 +136,6 @@ internal static class MarsStartupPartCore
                     });
                 }
             };
-        });
-
-        return services;
-    }
-
-    public static IServiceCollection AddAspNetTools(this IServiceCollection services)
-    {
-        services.AddResponseCaching()
-                .AddMemoryCache(options =>
-                {
-                    options.TrackStatistics = true;
-                })
-                .AddLogging();
-
-        services.AddResponseCompression(opts =>
-        {
-            opts.Providers.Add<BrotliCompressionProvider>();
-            opts.Providers.Add<GzipCompressionProvider>();
-            opts.EnableForHttps = true;
-            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]);
-        })
-            .Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal)
-            .Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
-
-        services.Configure<KestrelServerOptions>(options =>
-        {
-            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // if don't set default value is: 30 MB
-        });
-
-        services.Configure<FormOptions>(x =>
-        {
-            x.MultipartBodyLengthLimit = 2L * 1024 * 1024 * 1024;// 2GB
         });
 
         return services;

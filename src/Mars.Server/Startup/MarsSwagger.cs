@@ -6,16 +6,18 @@ using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Mars.Server.Features;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mars.UseStartup.MarsParts;
+namespace Mars.Server;
 
-internal static class MarsStartupPartSwagger
+public static class MarsSwagger
 {
-    public static IServiceCollection MarsAddSwagger(this IServiceCollection services)
+    public static IServiceCollection AddMarsSwagger(this IServiceCollection services)
     {
         //TODO: replace with https://devblogs.microsoft.com/dotnet/dotnet9-openapi/
 
@@ -75,7 +77,7 @@ internal static class MarsStartupPartSwagger
         return services;
     }
 
-    public static IApplicationBuilder MarsUseSwagger(this IApplicationBuilder app)
+    public static IApplicationBuilder UseMarsSwagger(this IApplicationBuilder app)
     {
         var optionService = app.ApplicationServices.GetRequiredService<IOptionService>();
 
@@ -129,18 +131,6 @@ internal static class MarsStartupPartSwagger
         return app;
     }
 
-    public static IEndpointRouteBuilder MarsUseEndpointApiFallback(this IEndpointRouteBuilder endpoints)
-    {
-        endpoints.MapFallback("/api/{**slug}", ctx =>
-        {
-            ctx.Response.StatusCode = StatusCodes.Status404NotFound;
-            ctx.Response.WriteAsJsonAsync(new { Ok = false, Message = "ApiNotFound" });
-            return Task.CompletedTask;
-        });
-
-        return endpoints;
-    }
-
     // Добавляет возможно группировки по Name="group1", основанным на RouteAttribute контроллера
     static IList<string> ControllersGroupingByName(Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription apiDesc)
     {
@@ -179,8 +169,8 @@ internal static class MarsStartupPartSwagger
             },
             Example = new JsonObject
             {
-                ["key1"] = 123,
-                ["key2"] = "value",
+                ["key1"] = "value",
+                ["key2"] = 10,
                 ["key3"] = true
             }
         });

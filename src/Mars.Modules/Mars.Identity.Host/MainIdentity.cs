@@ -33,7 +33,6 @@ public static class MainIdentity
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserTypeService, UserTypeService>();
         services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<AccountsService>();
         services.AddScoped<IAccountsService, AccountsService>();
         services.AddScoped<IExperimentalSignInService, ExperimentalSignInService>();
         services.AddScoped<IRequestContext, RequestContext>();

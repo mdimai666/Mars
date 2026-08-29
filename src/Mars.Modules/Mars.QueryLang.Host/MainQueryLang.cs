@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.QueryLang.Host;
 
-public static class MarsQueryLangMain
+public static class MainQueryLang
 {
     public static IServiceCollection AddMarsQueryLang(this IServiceCollection services)
     {

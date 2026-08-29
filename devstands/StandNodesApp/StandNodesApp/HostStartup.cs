@@ -45,7 +45,7 @@ public static class HostStartup
         builder.Services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
         builder.Services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
-        builder.Services.MarsAddTemplateEngines();
+        builder.Services.AddMarsTemplateEngines();
 
         builder.Services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
         builder.Services.AddHybridCache(options =>

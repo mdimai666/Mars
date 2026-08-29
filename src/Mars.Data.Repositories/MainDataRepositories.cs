@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Data.Repositories;
 
-public static class MainRepositories
+public static class MainDataRepositories
 {
-    public static IServiceCollection AddMarsHostRepositories(this IServiceCollection services)
+    public static IServiceCollection AddMarsDataRepositories(this IServiceCollection services)
         => services
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<IUserRepository, UserRepository>()

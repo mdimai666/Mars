@@ -1,9 +1,7 @@
 using EditorJsBlazored.Host;
-using Mars.Admin.Framework.OptionEditForms;
 using Mars.Admin.Host;
 using Mars.AiChat.Host;
 using Mars.Cms.Host;
-using Mars.Cms.Host.XActions;
 using Mars.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
@@ -31,9 +29,7 @@ using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.CommandLine;
 using Mars.Server.Startup;
-using Mars.Server.XActions;
 using Mars.Setup;
-using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Handlebars;
 using Mars.SiteEngine.Host;
 using Mars.SSO.Host;
@@ -66,12 +62,10 @@ public static class MarsWebAppStartup
         }
         builder.Services.AddSingleton<IMarsStartupInfo>(MarsStartupInfo.Instance);
         builder.Services.AddFeatureManagement(builder.Configuration.GetSection(FeatureExtensions.SectionName));
-        builder.Services.MarsAddLocalization()
+        builder.Services.AddMarsLocalization()
                         .MarsAddCore(builder.Configuration)
                         .AddAspNetTools()
-                        .MarsAddMetrics(builder.Configuration)
-                        .AddMarsWebSiteProcessor();
-        builder.AddWREHandlebars();
+                        .MarsAddMetrics(builder.Configuration);
 
         builder.WebHost.UseStaticWebAssets();
         builder.Services.AddControllers()
@@ -93,7 +87,7 @@ public static class MarsWebAppStartup
 
         //------------------------------------------
         // Mars
-        builder.Services.MarsAddSwagger()
+        builder.Services.AddMarsSwagger()
                         .AddMarsOptions()
                         .AddMarsNotifications()
                         .AddMarsIdentity(builder.Configuration)
@@ -102,28 +96,29 @@ public static class MarsWebAppStartup
                         .AddMarsQueryLang()
                         .AddMetaModelGenerator()
                         .AddMarsXActionsHost()
-                        .AddMarsHostServices(builder.Environment)
-                        .MarsAddTemplator()
+                        .AddMarsServer(builder.Environment)
                         .AddPostgresDistributedCache(builder.Configuration)
                         .AddMarsNodes()
                         .AddMarsWebAppNodes()
                         .AddDatasourceHost()
                         .AddMarsScheduler()
                         .AddMarsExcel()
+                        .AddMarsSiteEngine()
+                        .AddMarsSiteEngineHandlebars()
                         .AddEditorJsBlazored();
 
         builder.AddIfFeatureEnabled(FeatureFlags.DockerAgent, b => b.Services.AddMarsDocker());
         builder.AddIfFeatureEnabled(FeatureFlags.AITool, builder =>
         {
             builder.Services.AddMarsSemanticKernel();
-            builder.AddAiCmsHost();
+            builder.AddMarsAiCms();
         });
         builder.AddIfFeatureEnabled(FeatureFlags.AiChat, b => b.Services.AddMarsAiChat());
-        builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuthHost());
+        builder.AddIfFeatureEnabled(FeatureFlags.SingleSignOn, b => b.Services.AddMarsSSO().AddMarsOAuth());
 
         //------------------------------------------
         // CLIENT
-        builder.Services.AddMarsAdminHost(builder.Configuration);
+        builder.Services.AddMarsAdmin(builder.Configuration);
         builder.Services.AddNodeWorkspace();
         builder.Services.AddDatasourceWorkspace();
         // end CLIENT
@@ -162,20 +157,15 @@ public static class MarsWebAppStartup
         }
 
         app.Services.MarsAutoMigrateCheck(builder.Configuration, _logger, out var migrated);
-        app.Services.UseMarsHostServices();
-        app.Services.UseMarsMedia();
-        app.Services.UseMarsNotifications();
-        app.Services.UseMarsSiteEngineOptions();
+        app.Services.UseMarsServerOptions();
         app.Services.SeedData(builder.Configuration, _logger, migrated);
-        app.Services.GetRequiredService<IFrontManager>();
-        app.ApplyPluginMigrations();
 
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
         });
 
-        app.MarsUseLocalization();
+        app.UseMarsLocalization();
 
         if (!IsDevelopment)
         {
@@ -188,49 +178,48 @@ public static class MarsWebAppStartup
         app.UseRouting();
         //app.UseAntiforgery();
         app.UseAuthentication();
-        app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.UseMarsSSOMiddlewares());
+        app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.UseMarsSSO());
 #pragma warning disable ASP0001 // Authorization middleware is incorrectly configured
         app.UseAuthorization();
 #pragma warning restore ASP0001 // Authorization middleware is incorrectly configured
 
-        app.MarsUseSwagger();
+        app.UseMarsSwagger();
         app.MapControllers();
         app.MapRazorPages();
 
         app.UseMarsCliSocket(Instance);
 
         app.MarsUseMetrics();
-        app.UseMarsHost(builder.Services);
+
         app.UseMarsIdentity();
         app.UseMarsOptions();
-        app.UseMarsAdminHost();
+        app.Services.UseMarsNotifications();
+
         app.UseStaticFiles();
-        app.UseMarsHostXActions();
-        app.UseCmsXActions();
-        app.UseMediaXActions();
-        app.MarsUseTemplator();
-        //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
+
+        app.UseMarsServer();
+        app.UseMarsCms();
+        app.UseMarsMedia();
+
         app.Services.UseNodeWorkspace()
                     .UseDatasourceWorkspace();
-
-        var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
-        optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
         app.UsePlugins();
         app.UseMarsAdmin();
         app.UseMarsNodes()
            .UseMarsWebAppNodes();
         app.UseDatasourceHost();
-        app.UseMarsWebSiteProcessor();
-        app.UseMarsExcel();
         app.UseEditorJsBlazored();
-        app.UseIfFeatureEnabled(FeatureFlags.DockerAgent, app => app.UseMarsDocker());
-        app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel().UseAiCmsHost());
-        app.UseIfFeatureEnabled(FeatureFlags.AiChat, app => app.UseMarsAiChat());
-        app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsSSO().UseMarsOAuthHost());
+        app.Services.UseMarsSiteEngineStartup();
+        //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
 
-        app.UseMarsScheduler();
-        app.UseMarsSiteEngineFront();
+        app.UseIfFeatureEnabled(FeatureFlags.AITool, app => app.UseMarsSemanticKernel());
+        app.UseIfFeatureEnabled(FeatureFlags.AiChat, app => app.UseMarsAiChat());
+        app.UseIfFeatureEnabled(FeatureFlags.SingleSignOn, app => app.ApplicationServices.UseMarsOAuth());
+
+        app.UseMarsSiteEngine();
+
+        app.ApplyPluginMigrations();
 
         IMarsAppLifetimeService.UseAppLifetime(builder.Services, app);
     }

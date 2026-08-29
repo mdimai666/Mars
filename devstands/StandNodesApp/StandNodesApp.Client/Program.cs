@@ -20,7 +20,7 @@ builder.Services.AddLocalization();
 builder.ConfigureAppLanguage();
 
 builder.ConfigureWebSockets(backendUrl);
-builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
+builder.Services.AddMarsAdminFramework(builder.Configuration, typeof(Program));
 builder.Services.AddNodeWorkspace();
 
 var vm = new InitialSiteDataViewModel()

@@ -3,7 +3,6 @@ using Mars.Admin;
 using Mars.Admin.Components;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Framework.Interfaces;
-using Mars.Admin.Framework.OptionEditForms;
 using Mars.Admin.Startups;
 using Mars.AiChat.Front;
 using Mars.Cms.Contracts.MetaFields;
@@ -50,7 +49,7 @@ builder.Services.AddHttpClientInterceptor();
 
 var safeMode = await builder.DetectIsSafeMode(logger);
 
-builder.Services.AddAppFrontMain(builder.Configuration, typeof(Program));
+builder.Services.AddMarsAdminFramework(builder.Configuration, typeof(Program));
 
 // формы аргументов XAction: заменяем null-презентер на диалоги FluentUI
 builder.Services.Replace(ServiceDescriptor.Scoped<Mars.Admin.Framework.Services.IXActionFormPresenter, Mars.Admin.Shared.FluentDialogXActionFormPresenter>());
@@ -95,15 +94,12 @@ logger.LogTrace("Building application...");
 var app = builder.Build();
 
 logger.LogTrace("Initializing services...");
-app.Services.UseAppFrontMain()
+app.Services.UseMarsAdminFramework()
             .UseNodeWorkspace()
             .UseMarsWebAppNodesFront()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront()
             .UseAiChatFront();
-
-var optionsFormsLocator = app.Services.GetRequiredService<IOptionsFormsLocator>();
-optionsFormsLocator.RegisterAssembly(typeof(ApiOptionEditForm).Assembly);
 
 // кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
 app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()

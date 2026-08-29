@@ -13,7 +13,7 @@ namespace Mars.SSO.Host.OAuth;
 
 public static class MainOAuth
 {
-    public static IServiceCollection AddMarsOAuthHost(this IServiceCollection services)
+    public static IServiceCollection AddMarsOAuth(this IServiceCollection services)
     {
         services.AddDbContext<SsoAuthDbContext>(opt => opt.UseInMemoryDatabase("oauth"));
 
@@ -28,7 +28,7 @@ public static class MainOAuth
         return services;
     }
 
-    public static IServiceProvider UseMarsOAuthHost(this IServiceProvider serviceProvider)
+    public static IServiceProvider UseMarsOAuth(this IServiceProvider serviceProvider)
     {
         var optionService = serviceProvider.GetRequiredService<IOptionService>();
 

@@ -25,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Host;
 
-public static class MainMarsNodes
+public static class MainNodes
 {
     public static IServiceCollection AddMarsNodes(this IServiceCollection services)
     {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Datasource.Front;
 
-public static class MainMarsDatasourceFront
+public static class MainDatasourceFront
 {
     public static IServiceCollection AddDatasourceWorkspace(this IServiceCollection services)
     {

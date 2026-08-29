@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.TemplateEngine.Host;
 
-public static class MainMarsTemplateEngine
+public static class MainTemplateEngine
 {
-    public static IServiceCollection MarsAddTemplateEngines(this IServiceCollection services)
+    public static IServiceCollection AddMarsTemplateEngines(this IServiceCollection services)
     {
         return services
             .AddSingleton<ITemplateManager, TemplateManager>()

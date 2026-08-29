@@ -2694,7 +2694,6 @@
         "dependencies": {
           "FluentValidation": "12.1.1",
           "Mars.Media.Contracts": "1.0.0",
-          "Mars.XActions.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1",
           "mdimai666.Mars.Options": "0.8.0-alpha.1",
@@ -2725,6 +2724,7 @@
           "Mars.Media.Abstractions": "1.0.0",
           "Mars.Media.Contracts": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Mars.XActions.Abstractions": "1.0.0",
           "PhotoSauce.MagicScaler": "0.15.0",
           "PhotoSauce.NativeCodecs.Giflib": "5.2.2-preview3",
           "PhotoSauce.NativeCodecs.Libheif": "1.19.5-preview1",

@@ -101,46 +101,6 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         return await WriteUpload(formFile, folder.Path, userId, cancellationToken, folder.Id);
     }
 
-    public async Task<UserActionResult> ExecuteAction(ExecuteActionRequest action, Guid userId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (action.ActionId == "test")
-            {
-                return new UserActionResult
-                {
-                    Message = "test successfully",
-                    Ok = true
-                };
-            }
-            else if (action.ActionId == "ScanFiles")
-            {
-                return await ScanFilesAndSaveInDB(userId, cancellationToken);
-            }
-            else if (action.ActionId == "GenerateThumbnails")
-            {
-                return await GenerateThumbnails(false, cancellationToken);
-            }
-            else
-            {
-                return new UserActionResult
-                {
-                    Message = $"Action \"{action.ActionId}\" not found",
-                    Ok = true
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine(ex.Message);
-            //throw;
-            return new UserActionResult
-            {
-                Message = ex.Message
-            };
-        }
-    }
-
     public async Task<UserActionResult> ScanFilesAndSaveInDB(Guid userId, CancellationToken cancellationToken)
     {
         string uploadPath = _hostingInfo.AbsoluteUploadPath();
@@ -221,7 +181,7 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
         };
     }
 
-    async Task<UserActionResult> GenerateThumbnails(bool onlyWithEmptyMeta, CancellationToken cancellationToken)
+    public async Task<UserActionResult> GenerateThumbnails(bool onlyWithEmptyMeta, CancellationToken cancellationToken)
     {
         FileDetail? currentFileForException = null;
         try

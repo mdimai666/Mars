@@ -20,7 +20,6 @@ public interface IMediaServiceClient
     Task<ListDataResult<FileListItemResponse>> List(ListFileQueryRequest filter);
     Task<PagingResult<FileListItemResponse>> ListTable(TableFileQueryRequest filter);
     Task Delete(Guid id);
-    Task<UserActionResult> ExecuteAction(ExecuteActionRequest action);
     Task DeleteMany(Guid[] ids);
 
     /// <summary>Папки непосредственно в указанном родителе (null — верхний уровень Media)</summary>

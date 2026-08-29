@@ -11,7 +11,6 @@ public interface IAppMediaService
     Task Delete(Guid id);
     Task<FileListItemResponse> OpenSelectMedia();
     Task<IReadOnlyCollection<FileListItemResponse>> OpenSelectMediaMany();
-    Task<UserActionResult> ExecuteAction(ExecuteActionRequest action);
 
 }
 
@@ -59,10 +58,5 @@ public class AppMediaService : IAppMediaService
     public async Task<IReadOnlyCollection<FileListItemResponse>> OpenSelectMediaMany()
     {
         return await ModalMediaSelect.ShowModalForSelectMany();
-    }
-
-    public Task<UserActionResult> ExecuteAction(ExecuteActionRequest action)
-    {
-        return _client.Media.ExecuteAction(action);
     }
 }

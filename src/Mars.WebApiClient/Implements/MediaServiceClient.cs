@@ -62,11 +62,6 @@ internal class MediaServiceClient : BasicServiceClient, IMediaServiceClient
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<FileListItemResponse>>();
 
-    public Task<UserActionResult> ExecuteAction(ExecuteActionRequest action)
-        => _client.Request($"{_basePath}{_controllerName}", "ExecuteAction")
-                    .PostJsonAsync(action)
-                    .ReceiveJson<UserActionResult>();
-
     public Task<List<FolderResponse>> ListFolders(Guid? parentId)
     {
         var request = _client.Request($"{_basePath}{_controllerName}", "folders");

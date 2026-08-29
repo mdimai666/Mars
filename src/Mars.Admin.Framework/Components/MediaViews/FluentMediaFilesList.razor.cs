@@ -329,7 +329,9 @@ public partial class FluentMediaFilesList
         _loadingActionExecuting = true;
         StateHasChanged();
 
-        actionResult = await mediaService.ExecuteAction(new ExecuteActionRequest { ActionId = actionId, Arguments = args ?? [] });
+        // Медийные действия исполняются как XActions через /api/Act
+        var result = await client.Act.Inject(actionId, args);
+        actionResult = new UserActionResult { Ok = result.Ok, Message = result.Message };
 
         _loadingActionExecuting = false;
         StateHasChanged();

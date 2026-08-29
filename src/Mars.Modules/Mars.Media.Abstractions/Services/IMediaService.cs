@@ -5,6 +5,7 @@ namespace Mars.Media.Abstractions.Services;
 
 public interface IMediaService : IFileService
 {
-    Task<UserActionResult> ExecuteAction(ExecuteActionRequest action, Guid userId, CancellationToken cancellationToken);
+    Task<UserActionResult> ScanFilesAndSaveInDB(Guid userId, CancellationToken cancellationToken);
+    Task<UserActionResult> GenerateThumbnails(bool onlyWithEmptyMeta, CancellationToken cancellationToken);
     Task<Guid> WriteUploadToMedia(IFormFile formFile, Guid userId, CancellationToken cancellationToken, Guid? folderId = null, string? folderPath = null);
 }

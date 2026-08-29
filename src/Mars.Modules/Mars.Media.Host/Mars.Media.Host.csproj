@@ -22,6 +22,7 @@
         <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
         <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.XActions\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

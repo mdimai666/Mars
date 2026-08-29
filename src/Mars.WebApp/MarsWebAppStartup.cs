@@ -201,6 +201,7 @@ public static class MarsWebAppStartup
         app.UseStaticFiles();
         app.UseMarsHostXActions();
         app.UseCmsXActions();
+        app.UseMediaXActions();
         app.MarsUseTemplator();
         //app.UseMiddleware<Mars.Middlewares.DebugObjectsLifetimeMiddleware>();
         app.Services.UseNodeWorkspace()

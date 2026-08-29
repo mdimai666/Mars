@@ -207,10 +207,4 @@ public class MediaController : ControllerBase
     //{
     //    return await modelService.Delete(id);
     //}
-
-    [HttpPost("ExecuteAction")]
-    public async Task<UserActionResult> ExecuteAction(ExecuteActionRequest action, CancellationToken cancellationToken)
-    {
-        return await _mediaService.ExecuteAction(action, _requestContext.User.Id, cancellationToken);
-    }
 }

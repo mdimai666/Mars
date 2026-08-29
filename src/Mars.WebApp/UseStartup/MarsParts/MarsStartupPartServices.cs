@@ -1,22 +1,8 @@
 //using Mars.Areas.Identity;
-using Mars.Admin.Framework.Interfaces;
-using Mars.Admin.Framework.Services;
+using Mars.Admin.Framework;
 using Mars.Server;
-using Mars.Identity.Host.Models;
-using Mars.Media.Abstractions.Services;
 using Mars.Server.Abstractions.Services;
-using Mars.SiteEngine.Abstractions.Services;
-using Mars.Identity.Host.Models;
-using Mars.Media.Abstractions.Services;
-using Mars.Server.Abstractions.Services;
-using Mars.SiteEngine.Abstractions.Services;
-using Mars.SiteEngine.Abstractions.WebSite;
-using Mars.MetaModelGenerator;
-using Mars.QueryLang.Host;
 using Mars.Services;
-using Mars.Admin.Framework.Tools;
-using Mars.SiteEngine.Endpoints;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Mars.UseStartup.MarsParts;
 
@@ -30,23 +16,12 @@ internal static class MarsStartupPartServices
 
         services.AddDatabaseDeveloperPageExceptionFilter();//from clear template
 
-        services.AddMarsQueryLang()
-                .AddMetaModelGenerator();
-
         // basic services
-        services.AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>()
-                .AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
+        services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
         services.AddMarsHost(wenv);
 
-        // additional components
-        services.AddSingleton<IAIToolService, AIToolService>();
-
-        //services.AddSingleton<DebugService>();
-        services.TryAddSingleton<ModelInfoService>();
-        services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
-
-        services.AddSingleton<IServiceCollection>(services);
+        services.AddAdminFrameworkServerServices();
 
         return services;
     }

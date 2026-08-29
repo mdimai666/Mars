@@ -15,6 +15,7 @@ using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Services;
 using Mars.SiteEngine.Templators;
 using Mars.SiteEngine.WebSite.Scripts;
+using Mars.SiteEngine.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ public static class MarsWebSiteProcessorMain
     {
         services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
 
+        services.AddSingleton<IWebSiteProcessor, MapWebSiteProcessor>();
         services.AddSingleton<IWebRenderEngineLocator, WebRenderEngineLocator>();
         services.AddSingleton<ITemplatorFeaturesLocator, TemplatorFeaturesLocator>();
         services.AddSingleton<IFrontManager, FrontManager>();

@@ -53,6 +53,18 @@ public static class MainAppFrontShared
         return services;
     }
 
+    /// <summary>
+    /// Серверные регистрации: двойники регистраций из <see cref="AddAppFront"/>,
+    /// который на сервере не выполняется (ранний выход по !IsBrowser()).
+    /// </summary>
+    public static IServiceCollection AddAdminFrameworkServerServices(this IServiceCollection services)
+    {
+        services.TryAddSingleton<ModelInfoService>();
+        services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
+
+        return services;
+    }
+
     public static void AddAppFront(this IServiceCollection services, IConfiguration configuration, Type program)
     {
         if (!OperatingSystem.IsBrowser()) return;

@@ -21,7 +21,9 @@ using Mars.Media.Host;
 using Mars.Notifications.Host;
 using Mars.Options.Front;
 using Mars.Options.Host;
+using Mars.MetaModelGenerator;
 using Mars.Plugin;
+using Mars.QueryLang.Host;
 using Mars.Scheduler.Host;
 using Mars.SemanticKernel.CMS;
 using Mars.SemanticKernel.Host;
@@ -93,6 +95,8 @@ public static class MarsWebAppStartup
                         .AddMarsIdentity(builder.Configuration)
                         .AddMarsMedia()
                         .AddMarsCms()
+                        .AddMarsQueryLang()
+                        .AddMetaModelGenerator()
                         .AddMarsHostServices(builder.Environment)
                         .MarsAddTemplator()
                         .AddPostgresDistributedCache(builder.Configuration)

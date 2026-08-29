@@ -1,6 +1,8 @@
 using Mars.Options.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Abstractions;
+using Mars.Server.Abstractions.Services;
+using Mars.Services;
 using Mars.SemanticKernel.Host.Nodes;
 using Mars.SemanticKernel.Host.Service;
 using Mars.SemanticKernel.Abstractions.Interfaces;
@@ -20,6 +22,7 @@ public static class MainSemanticKernel
         services.AddTransient<GeneralAiRequestHandler>();
         services.AddTransient<NodesAiRequestHandler>();
         services.AddSingleton<IMarsAIService, MarsAIService>();
+        services.AddSingleton<IAIToolService, AIToolService>();
 
         return services;
     }

@@ -40,6 +40,9 @@ public static class MainMarsHost
 
         services.AddSingleton<ISeedFirstOptionHandler, SeedFirstOptionHandler>();
 
+        // Потребители: FunctionNodeImpl (Nodes) и KernelFactory_v2 (SemanticKernel.Host)
+        services.AddSingleton<IServiceCollection>(services);
+
         UseFileStorages(services, wenv);
 
         //read (may object viewer)

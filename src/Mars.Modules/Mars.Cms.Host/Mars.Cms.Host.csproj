@@ -13,7 +13,8 @@
     <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
     <ProjectReference Include="..\..\Mars.Data.Repositories\Mars.Data.Repositories.csproj" />
     <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Mars.XActions\Mars.XActions\Mars.XActions.csproj" />
+    <ProjectReference Include="..\..\Mars.XActions\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.XActions\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
     <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
     <ProjectReference Include="..\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />

@@ -54,6 +54,7 @@
         <ProjectReference Include="..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.XActions\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
     </ItemGroup>

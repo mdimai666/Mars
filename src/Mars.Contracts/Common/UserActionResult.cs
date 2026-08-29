@@ -42,12 +42,6 @@ public class UserLikeResult : UserActionResult
     public int TotalLikes { get; set; }
 }
 
-public class ExecuteActionRequest
-{
-    public required string ActionId { get; set; }
-    public required Dictionary<string, string> Arguments { get; set; }
-}
-
 //public static class UserActionResultExtensions
 //{
 //    public static UserActionResult<TData> AsUserActionResultSuccess<TData>(this TData data) where TData : IBasicEntity

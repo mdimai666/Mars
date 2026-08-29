@@ -5,7 +5,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mars.XActions\Mars.XActions.csproj" />
+        <ProjectReference Include="..\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     </ItemGroup>
 

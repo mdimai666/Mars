@@ -2,7 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using Mars.Core.Attributes;
 using Mars.Nodes.Core;
-using Mars.Nodes.Workspace.Locators;
+using Mars.Nodes.Core.Locators;
 
 namespace Mars.Nodes.Implements.Test.Docs;
 

@@ -8,7 +8,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using Mars.SiteEngine.Handlebars.TemplateData;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;

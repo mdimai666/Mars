@@ -1,7 +1,8 @@
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Mars.Admin.Framework.Components
 @using Mars.Datasource
+@using Mars.Datasource.Abstractions.Models
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 
 <div class="vstack gap-4">
     @foreach (var _config in opt.Configs)
@@ -45,7 +46,6 @@
                                                                                                Items="DatasourceConfig.DriverList"
                                                                                                @bind-Value:after=@(()=>AfterChangeDriverSuggestConnectionString(config))
                                                                                                Style="width: 250px;">
-
 
                                         </Microsoft.FluentUI.AspNetCore.Components.FluentSelect>
                                     </div>

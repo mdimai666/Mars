@@ -1,3 +1,4 @@
+@using Mars.Admin.Framework.Features
 @using Mars.Admin.Framework.Services
 @using Microsoft.FluentUI.AspNetCore.Components
 
@@ -15,7 +16,7 @@
                 <span>id: </span>
                 <span>@Node.Id</span>
                 @* etype: @(NodeEditFormType?.FullName ?? "null") *@
-                @if (Mars.Admin.Framework.Q.IsDevelopment)
+                @if (Q.IsDevelopment)
                 {
                     <div class="vr mx-3"></div>
                     <a role="button" class="" @onclick="OpenFormSourceCode">

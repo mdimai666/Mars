@@ -6,7 +6,7 @@ using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Services;
 using NSubstitute;
 
 namespace Mars.Integration.Tests.Services;

@@ -7,7 +7,7 @@ using Mars.QueryLang.Services;
 using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
-using Mars.SiteEngine.Templators;
+using Mars.SiteEngine.Host.Templators;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http.Features;
 using NSubstitute;

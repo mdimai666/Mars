@@ -15,7 +15,7 @@ using Mars.Server.Contracts.Options;
 using Mars.Server.Startup;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Services;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;

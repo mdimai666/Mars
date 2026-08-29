@@ -2,7 +2,7 @@ using System.Text.Json;
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Workspace.Locators;
+using Mars.Nodes.Core.Locators;
 using Mars.WebApp.Nodes.Nodes;
 
 namespace Mars.Nodes.Implements.Test.JsonConverters;

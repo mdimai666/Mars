@@ -4,7 +4,7 @@ using HtmlAgilityPack;
 using Mars.Admin.Framework.Components;
 using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
-namespace AppFront.Tests.Mars.Admin.Framework;
+namespace AppFront.Tests.AppFront.Main;
 
 public class WysiwygEditorHelperTest
 {

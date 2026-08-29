@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Data.Extensions;
+using Mars.Contracts.Extensions;
 using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Contracts.Plugins;
 

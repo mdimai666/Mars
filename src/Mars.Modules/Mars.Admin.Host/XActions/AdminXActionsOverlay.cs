@@ -5,11 +5,11 @@ using Mars.Admin.Pages.PostsViews;
 using Mars.Admin.Pages.PostTypeViews;
 using Mars.Admin.Pages.Settings;
 #endif
-using Mars.Server.Abstractions.Managers;
+using Mars.XActions.Abstractions.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Admin.Host;
+namespace Mars.Admin.Host.XActions;
 
 /// <summary>
 /// Оверлей привязки XActions к страницам админки: команды регистрируют доменные

@@ -4,7 +4,7 @@ using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.SemanticKernel.Contracts.Nodes;
-using Mars.SemanticKernel.Host.Service;
+using Mars.SemanticKernel.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.SemanticKernel.Host.Nodes;

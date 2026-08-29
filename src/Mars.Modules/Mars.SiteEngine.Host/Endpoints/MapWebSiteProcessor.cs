@@ -5,10 +5,10 @@ using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Exceptions;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.SiteEngine.Endpoints;
+namespace Mars.SiteEngine.Host.Endpoints;
 
 public class MapWebSiteProcessor : IWebSiteProcessor
 {

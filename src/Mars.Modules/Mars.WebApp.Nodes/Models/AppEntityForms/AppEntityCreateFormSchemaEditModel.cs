@@ -1,8 +1,7 @@
 using System.Data;
 using Mars.Contracts.Models;
-using Mars.WebApp.Nodes.Models.AppEntityForms;
 
-namespace Mars.WebApp.Nodes.Front.Models.AppEntityForms;
+namespace Mars.WebApp.Nodes.Models.AppEntityForms;
 
 public class AppEntityCreateFormSchemaEditModel
 {

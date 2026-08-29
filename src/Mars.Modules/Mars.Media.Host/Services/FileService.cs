@@ -6,7 +6,7 @@ using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Abstractions.Repositories;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.Abstractions.Validators;

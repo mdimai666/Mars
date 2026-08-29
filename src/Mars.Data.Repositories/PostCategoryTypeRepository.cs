@@ -1,6 +1,7 @@
 using Mars.Cms.Abstractions.Dto.PostCategoryTypes;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;

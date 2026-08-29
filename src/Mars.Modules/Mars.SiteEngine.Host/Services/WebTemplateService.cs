@@ -3,12 +3,13 @@ using Mars.Server.Abstractions.Interfaces;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Services;
 using Mars.SiteEngine.WebSite.SourceProviders;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.SiteEngine.Services;
+namespace Mars.SiteEngine.Host.Services;
 
 public class WebTemplateService : IWebTemplateService
 {

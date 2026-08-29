@@ -7,7 +7,7 @@ using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.HttpModule;
 using Mars.Nodes.Core.Implements.Utils;
 using Mars.Nodes.Core.Nodes.Network;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 

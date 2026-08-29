@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Data.Extensions;
+using Mars.Contracts.Extensions;
 using Mars.Nodes.Abstractions.Dto.NodeTasks;
 using Mars.Nodes.Front.Abstractions.Contracts.NodeTaskJob;
 

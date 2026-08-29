@@ -4,7 +4,7 @@ using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.Contracts.Nodes;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace Mars.SemanticKernel.Host.Service;
+namespace Mars.SemanticKernel.Host.Services;
 
 internal class NodesAiRequestHandler
 {

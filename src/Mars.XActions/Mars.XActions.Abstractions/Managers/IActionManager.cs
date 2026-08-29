@@ -1,6 +1,6 @@
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 
-namespace Mars.Server.Abstractions.Managers;
+namespace Mars.XActions.Abstractions.Managers;
 
 public interface IActionManager
 {

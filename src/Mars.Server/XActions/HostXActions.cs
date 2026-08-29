@@ -1,10 +1,9 @@
-using Mars.Contracts.XActions;
-using Mars.Server.Abstractions.Managers;
-using Mars.XActions;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Server;
+namespace Mars.Server.XActions;
 
 /// <summary>
 /// Хостовые XActions: кеш, отладочные команды. Регистрируются без контекстов

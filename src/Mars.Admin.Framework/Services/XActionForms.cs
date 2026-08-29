@@ -1,4 +1,4 @@
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 
 namespace Mars.Admin.Framework.Services;
 

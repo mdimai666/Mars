@@ -1,12 +1,12 @@
 using System.Net.Mime;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Options.Host;
+namespace Mars.Options.Host.Services;
 
 /// <summary>
 /// Обработчик пайплайна фронтов для режима обслуживания: закрывает фронты страницей обслуживания.

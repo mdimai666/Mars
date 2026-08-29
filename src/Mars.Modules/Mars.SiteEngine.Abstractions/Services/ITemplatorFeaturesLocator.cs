@@ -1,4 +1,4 @@
-using Mars.SiteEngine.Abstractions.Interfaces;
+using Mars.SiteEngine.Abstractions.Templators;
 
 namespace Mars.SiteEngine.Abstractions.Services;
 

@@ -1,4 +1,5 @@
 using Mars.Nodes.Core;
+using Mars.Nodes.Core.Locators;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.FormEditor;
 using Mars.Nodes.FormEditor.EditForms;

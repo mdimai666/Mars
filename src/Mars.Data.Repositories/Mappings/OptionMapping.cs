@@ -1,5 +1,5 @@
 using Mars.Data.Entities;
-using Mars.Options.Dto.Options;
+using Mars.Options.Abstractions.Dto;
 
 namespace Mars.Data.Repositories.Mappings;
 

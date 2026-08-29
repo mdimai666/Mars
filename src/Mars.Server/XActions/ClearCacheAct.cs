@@ -1,7 +1,7 @@
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Mars.XActions;
+namespace Mars.Server.XActions;
 
 public class ClearCacheAct : IAct
 {

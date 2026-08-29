@@ -2,7 +2,7 @@ using System.Reflection;
 using Mars.Core.Extensions;
 using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 
-namespace Mars.SiteEngine.WebSite.Scripts;
+namespace Mars.SiteEngine.Host.WebSite.Scripts;
 
 public class AppAdminSpaHtmlScripts
 {

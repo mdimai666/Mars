@@ -9,7 +9,7 @@ using Mars.AiChat.Host.Tools;
 using Mars.AiChat.Host.Toolsets;
 using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Dto.Files;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Microsoft.Agents.AI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Connections;

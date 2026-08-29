@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 
-namespace Mars.SemanticKernel.Host.Service;
+namespace Mars.SemanticKernel.Host.Services;
 
 // Not used
 internal sealed class MarsKernelBuilder : IKernelBuilder, IKernelBuilderPlugins

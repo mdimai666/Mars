@@ -1,4 +1,4 @@
-namespace Mars.Options.Dto.Options;
+namespace Mars.Options.Abstractions.Dto;
 
 public record OptionSummary
 {

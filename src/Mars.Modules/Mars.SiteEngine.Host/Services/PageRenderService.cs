@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.SiteEngine.Services;
+namespace Mars.SiteEngine.Host.Services;
 
 internal class PageRenderService : IPageRenderService
 {
@@ -67,7 +67,7 @@ internal class PageRenderService : IPageRenderService
         return AsResult(render, httpContext);
     }
 
-    RenderActionResult<PostRenderDto> AsResult(Mars.SiteEngine.Abstractions.WebSite.Models.RenderInfo render, HttpContext httpContext)
+    RenderActionResult<PostRenderDto> AsResult(Abstractions.WebSite.Models.RenderInfo render, HttpContext httpContext)
     {
         var _uri = new Uri(httpContext.Request.GetDisplayUrl());
 

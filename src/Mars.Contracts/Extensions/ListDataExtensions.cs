@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Mars.Contracts.Common;
 using Mars.Core.Extensions;
 
-namespace Mars.Data.Extensions;
+namespace Mars.Contracts.Extensions;
 
 public static class ListDataExtensions
 {

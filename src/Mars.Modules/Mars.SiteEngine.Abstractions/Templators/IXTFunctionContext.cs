@@ -1,8 +1,6 @@
-using Mars.SiteEngine.Abstractions.Exceptions;
-using Mars.SiteEngine.Abstractions.Templators;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Mars.SiteEngine.Abstractions.Interfaces;
+namespace Mars.SiteEngine.Abstractions.Templators;
 
 /// <summary>
 /// IXTFunctionContext

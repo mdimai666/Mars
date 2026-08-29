@@ -5,7 +5,7 @@ using FluentAssertions;
 using Mars.Admin.Framework.Components;
 using Mars.Core.Attributes;
 
-namespace AppFront.Tests.Mars.Admin.Framework;
+namespace AppFront.Tests.AppFront.Main;
 
 public class DocViewerTests
 {

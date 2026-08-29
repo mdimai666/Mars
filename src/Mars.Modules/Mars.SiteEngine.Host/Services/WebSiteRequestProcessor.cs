@@ -1,7 +1,7 @@
 using Mars.Core.Features;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Models;
 using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Models;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using RenderInfo = Mars.SiteEngine.Abstractions.WebSite.Models.RenderInfo;
 
-namespace Mars.SiteEngine.Services;
+namespace Mars.SiteEngine.Host.Services;
 
 public class WebSiteRequestProcessor
 {

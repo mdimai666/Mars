@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using Mars.Options.Attributes;
+using Mars.Options.Abstractions.Attributes;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.OptionEditForms;

@@ -3,6 +3,7 @@ using Mars.Cms.Abstractions.Dto.NavMenus;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
 using Mars.Contracts.Resources;
 using Mars.Data.Extensions;
 

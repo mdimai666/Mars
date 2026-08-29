@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Datasource.Dto;
+using Mars.Datasource.Abstractions.Models;
 
 namespace Test.Mars.Datasource.Host;
 

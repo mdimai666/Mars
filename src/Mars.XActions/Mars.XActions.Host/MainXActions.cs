@@ -1,6 +1,6 @@
 using System.Reflection;
-using Mars.Server.Abstractions.Managers;
 using Mars.Server.Managers;
+using Mars.XActions.Abstractions.Managers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.XActions.Host;

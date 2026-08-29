@@ -1,7 +1,9 @@
-namespace Mars.XActions;
+using Mars.XActions.Contracts;
+
+namespace Mars.Server.XActions;
 
 /// <summary>
-/// Отладочное фронтовое действие (<see cref="Mars.Contracts.XActions.XActionType.FrontAction"/>):
+/// Отладочное фронтовое действие (<see cref="XActionType.FrontAction"/>):
 /// метаданные регистрируются на хосте, исполнение — на клиенте через раннер
 /// (см. Mars.Admin.Shared.FrontDemoActionRunner). Сами продуктовые фронтовые действия
 /// (тема, язык) будут регистрироваться по этому образцу.

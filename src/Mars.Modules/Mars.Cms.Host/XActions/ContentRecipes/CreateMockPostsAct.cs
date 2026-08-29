@@ -1,10 +1,10 @@
 using Bogus;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.XActions;
 using Mars.Identity.Abstractions.Interfaces;
+using Mars.XActions.Contracts;
 
-namespace Mars.XActions.ContentRecipes;
+namespace Mars.Cms.Host.XActions.ContentRecipes;
 
 public class CreateMockPostsAct(
     IPostService postService,

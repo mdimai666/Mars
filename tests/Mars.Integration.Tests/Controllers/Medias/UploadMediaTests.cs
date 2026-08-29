@@ -9,7 +9,7 @@ using Mars.Media.Abstractions.Dto.Files;
 using Mars.Media.Contracts.Files;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Controllers;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;

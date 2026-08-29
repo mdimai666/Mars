@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Mars.Core.Features.JsonConverter;
+using Mars.Core.Features;
 using Mars.SemanticKernel.Abstractions.Generators;
 using Mars.Server.Abstractions.Attributes;
 using Mars.Server.Abstractions.Services;

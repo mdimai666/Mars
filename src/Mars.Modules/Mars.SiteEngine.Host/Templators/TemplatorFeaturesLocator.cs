@@ -1,7 +1,7 @@
-using Mars.SiteEngine.Abstractions.Interfaces;
 using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Templators;
 
-namespace Mars.SiteEngine.Templators;
+namespace Mars.SiteEngine.Host.Templators;
 
 public class TemplatorFeaturesLocator : ITemplatorFeaturesLocator
 {

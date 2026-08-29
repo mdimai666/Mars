@@ -2,11 +2,10 @@ using System.Linq.Expressions;
 using Mars.Cms.Abstractions.Services;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;
-using Mars.QueryLang.Host.Services;
 using Mars.SiteEngine.Abstractions.Templators;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.QueryLang.Host;
+namespace Mars.QueryLang.Host.Services;
 
 //experiments file
 interface IQueryChainFilter

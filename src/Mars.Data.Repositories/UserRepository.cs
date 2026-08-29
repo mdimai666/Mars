@@ -1,4 +1,5 @@
 using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Utils;

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Contracts.Options;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.SiteEngine;
+namespace Mars.SiteEngine.Host;
 
 public static class MarsSiteEngineFrontStartup
 {

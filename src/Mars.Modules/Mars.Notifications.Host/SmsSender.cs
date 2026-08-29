@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Mars.Contracts.Common;
 using Mars.Notifications.Abstractions;
+using Mars.Notifications.Contracts;
 
 namespace Mars.Notifications.Host;
 

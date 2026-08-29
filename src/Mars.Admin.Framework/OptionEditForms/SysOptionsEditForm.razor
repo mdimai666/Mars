@@ -1,9 +1,7 @@
 @using Mars.Server.Contracts.Options;
-@using Mars.Options.Attributes
 @using Microsoft.FluentUI.AspNetCore.Components
 @attribute [OptionEditFormForOptionAttribute(typeof(SiteSettings))]
 @attribute [Display(Name = "Основные")]
-
 
 <EditOptionForm @ref=form TModel="SiteSettings"
                 FormClass="col-12 col-lg-8 mx-lg-5 compact"

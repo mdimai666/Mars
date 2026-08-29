@@ -1,4 +1,4 @@
-namespace Mars.Datasource.Dto
+namespace Mars.Datasource.Abstractions.Models
 {
     public class ConnectionStringTestDto
     {

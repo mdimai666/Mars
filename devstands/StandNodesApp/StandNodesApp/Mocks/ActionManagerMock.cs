@@ -1,5 +1,5 @@
-using Mars.Contracts.XActions;
-using Mars.Server.Abstractions.Managers;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 
 namespace StandNodesApp.Mocks;
 

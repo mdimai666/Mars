@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.PostgreSQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
 using Mars.Datasource.Integration.Tests.SqlCommands;

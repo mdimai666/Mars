@@ -6,7 +6,7 @@ using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.Models;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

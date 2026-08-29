@@ -1,7 +1,7 @@
 using Mars.Cms.Abstractions.Dto.NavMenus;
 using Mars.Cms.Contracts.NavMenus;
 using Mars.Contracts.Common;
-using Mars.Data.Extensions;
+using Mars.Contracts.Extensions;
 
 namespace Mars.Cms.Abstractions.Mappings.NavMenus;
 

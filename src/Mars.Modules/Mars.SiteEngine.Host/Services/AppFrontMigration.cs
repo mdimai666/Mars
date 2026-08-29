@@ -1,11 +1,11 @@
 using System.Text;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.SiteEngine.Contracts.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Mars.SiteEngine.Services;
+namespace Mars.SiteEngine.Host.Services;
 
 /// <summary>
 /// Разовая миграция фронтов из секции "AppFront" (appsettings) в опцию FrontsOption

@@ -1,4 +1,4 @@
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.OAuth.Controllers;

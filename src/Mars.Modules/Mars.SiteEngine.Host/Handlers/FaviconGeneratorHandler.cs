@@ -9,7 +9,7 @@ using Mars.Media.Contracts.Options;
 using Mars.Server.Abstractions.Services;
 using Mars.SiteEngine.Contracts.Options;
 
-namespace Mars.SiteEngine.Handlers;
+namespace Mars.SiteEngine.Host.Handlers;
 
 internal class FaviconGeneratorHandler : IFaviconGeneratorHandler
 {

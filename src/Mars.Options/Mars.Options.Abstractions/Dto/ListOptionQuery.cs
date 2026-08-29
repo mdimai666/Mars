@@ -1,6 +1,6 @@
 using Mars.Contracts.Common;
 
-namespace Mars.Options.Dto.Options;
+namespace Mars.Options.Abstractions.Dto;
 
 public record ListOptionQuery : BasicListQuery
 {

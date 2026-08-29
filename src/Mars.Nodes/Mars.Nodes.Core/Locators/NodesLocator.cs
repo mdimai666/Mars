@@ -6,7 +6,7 @@ using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Converters;
 
-namespace Mars.Nodes.Workspace.Locators;
+namespace Mars.Nodes.Core.Locators;
 
 internal class NodesLocator : INodesLocator
 {

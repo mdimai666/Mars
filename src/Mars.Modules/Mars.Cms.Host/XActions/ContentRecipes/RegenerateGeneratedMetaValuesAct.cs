@@ -1,8 +1,8 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Services;
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 
-namespace Mars.XActions.ContentRecipes;
+namespace Mars.Cms.Host.XActions.ContentRecipes;
 
 /// <summary>
 /// Перегенерация значений мета-полей с генераторами (порядковые номера, даты) у существующих постов:

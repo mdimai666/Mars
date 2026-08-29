@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Mars.Datasource;
+namespace Mars.Datasource.Abstractions.Models;
 
 public class QTableSchema
 {

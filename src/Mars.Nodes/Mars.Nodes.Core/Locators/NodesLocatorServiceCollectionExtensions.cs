@@ -1,9 +1,8 @@
 using System.Text.Json;
 using Mars.Nodes.Core.Converters;
-using Mars.Nodes.Workspace.Locators;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Nodes.Core;
+namespace Mars.Nodes.Core.Locators;
 
 public static class NodesLocatorServiceCollectionExtensions
 {

@@ -2,6 +2,7 @@ using System.CommandLine;
 using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Common;
 using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
 

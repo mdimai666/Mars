@@ -1,9 +1,9 @@
 using System.Text.Json;
 using FluentAssertions;
-using Mars.Options.Dto.Options;
-using Mars.Options.Exceptions;
+using Mars.Options.Abstractions.Dto;
+using Mars.Options.Abstractions.Exceptions;
+using Mars.Options.Abstractions.Repositories;
 using Mars.Options.Host.Services;
-using Mars.Options.Repositories;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common;

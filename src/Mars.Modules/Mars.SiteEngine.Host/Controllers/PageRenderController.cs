@@ -11,7 +11,7 @@ using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Contracts.Renders;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.SiteEngine.Controllers;
+namespace Mars.SiteEngine.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

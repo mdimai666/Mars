@@ -1,9 +1,9 @@
 using Mars.Cms.Contracts.NavMenus;
 using Mars.Cms.Contracts.PostTypes;
-using Mars.Contracts.XActions;
 using Mars.Identity.Contracts.ViewModels;
 using Mars.Options.Contracts.Dto.Options;
 using Mars.Server.Contracts.Options;
+using Mars.XActions.Contracts;
 
 namespace Mars.Server.Contracts.ViewModels;
 

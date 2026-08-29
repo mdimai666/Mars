@@ -1,3 +1,5 @@
+using Mars.Datasource.Abstractions.Models;
+
 namespace Mars.Datasource.Abstractions.Interfaces;
 
 public interface IDatasourceDriver

@@ -1,7 +1,7 @@
+using Mars.Options.Abstractions.Dto;
 using Mars.Options.Contracts.Dto.Options;
-using Mars.Options.Dto.Options;
 
-namespace Mars.Options.Mappings.Options;
+namespace Mars.Options.Abstractions.Mappings;
 
 public static class OptionMapping
 {

@@ -5,6 +5,7 @@ using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Host.CommandLine;
+using Mars.Identity.Host.Locators;
 using Mars.Identity.Host.Models;
 using Mars.Identity.Host.Services;
 using Mars.Server.Abstractions.Validators;

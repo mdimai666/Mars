@@ -1,5 +1,5 @@
 using Mars.Core.Extensions;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Contracts.Options;
 using Microsoft.Extensions.Caching.Memory;

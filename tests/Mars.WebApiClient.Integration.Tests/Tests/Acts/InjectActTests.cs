@@ -1,14 +1,14 @@
 using FluentAssertions;
 using Mars.Cms.Host.Controllers;
-using Mars.Contracts.XActions;
+using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Server.Abstractions.Managers;
-using Mars.Server.Controllers;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
-using Mars.XActions.ContentRecipes;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
+using Mars.XActions.Host.Controllers;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 

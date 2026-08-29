@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Notifications.Abstractions;
+using Mars.Notifications.Contracts;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

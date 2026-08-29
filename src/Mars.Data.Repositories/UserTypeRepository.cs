@@ -1,4 +1,5 @@
 using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
 using Mars.Data.Contexts;
 using Mars.Data.Entities;

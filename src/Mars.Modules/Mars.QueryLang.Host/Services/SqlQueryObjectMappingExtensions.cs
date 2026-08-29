@@ -2,7 +2,7 @@ using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Mars.QueryLang.Host;
+namespace Mars.QueryLang.Host.Services;
 
 public static class SqlQueryObjectMappingExtensions
 {

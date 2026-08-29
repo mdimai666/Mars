@@ -8,7 +8,7 @@ using Mars.Identity.Abstractions.Repositories;
 using Mars.Identity.Abstractions.Services;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Interfaces;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Models;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Contracts.Options;

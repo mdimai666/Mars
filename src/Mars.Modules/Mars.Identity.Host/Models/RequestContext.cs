@@ -5,7 +5,7 @@ using Mars.Identity.Abstractions.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.Identity.Host.Services;
+namespace Mars.Identity.Host.Models;
 
 internal class RequestContext : IRequestContext
 {

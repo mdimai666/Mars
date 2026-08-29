@@ -1,10 +1,10 @@
-using Mars.Contracts.XActions;
 using Mars.Data.Contexts;
 using Mars.Server.Abstractions.Services;
+using Mars.XActions.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.XActions;
+namespace Mars.Server.XActions;
 
 #if DEBUG
 public class DummyAct(MarsDbContext ef) : IAct

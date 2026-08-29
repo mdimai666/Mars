@@ -1,6 +1,6 @@
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
-using Mars.WebApp.Nodes.Front.Models.AppEntityForms;
+using Mars.WebApp.Nodes.Models.AppEntityForms;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 

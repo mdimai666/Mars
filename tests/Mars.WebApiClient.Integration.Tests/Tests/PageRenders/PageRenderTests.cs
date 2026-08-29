@@ -6,8 +6,8 @@ using Mars.Cms.Contracts.PostTypes;
 using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.SiteEngine.Controllers;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Controllers;
+using Mars.SiteEngine.Host.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 

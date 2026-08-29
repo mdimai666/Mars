@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using Mars.Core.Models;
 
-namespace Mars.Datasource;
+namespace Mars.Datasource.Abstractions.Models;
 
 public class SqlQueryResultActionDto : IUserActionResult<string[][]?>
 {

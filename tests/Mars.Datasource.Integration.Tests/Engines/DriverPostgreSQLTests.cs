@@ -1,3 +1,4 @@
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,6 +1,6 @@
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Nodes.Connections;
-using Mars.Server.Abstractions.Managers;
+using Mars.XActions.Abstractions.Managers;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Connections;
 

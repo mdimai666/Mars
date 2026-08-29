@@ -1,7 +1,7 @@
 using Mars.Contracts.Common;
-using Mars.Datasource.Dto;
+using Mars.Datasource.Abstractions.Models;
 
-namespace Mars.Datasource.Host.Services;
+namespace Mars.Datasource.Abstractions.Services;
 
 public interface IDatasourceService
 {

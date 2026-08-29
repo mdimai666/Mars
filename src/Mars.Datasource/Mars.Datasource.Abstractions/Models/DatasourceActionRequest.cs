@@ -1,4 +1,4 @@
-namespace Mars.Datasource;
+namespace Mars.Datasource.Abstractions.Models;
 
 /// <summary>
 /// Запрос на выполнение действия источника данных (полезные SQL-запросы, бэкап и т.п.).

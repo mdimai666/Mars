@@ -1,6 +1,6 @@
 using Mars.Core.Models;
 
-namespace Mars.Contracts.XActions;
+namespace Mars.XActions.Contracts;
 
 public record XActionCommand
 {

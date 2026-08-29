@@ -1,11 +1,11 @@
 using FluentAssertions;
-using Mars.Contracts.XActions;
+using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
-using Mars.XActions.ContentRecipes;
+using Mars.XActions.Contracts;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 

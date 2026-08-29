@@ -1,3 +1,4 @@
+using Mars.Datasource.Abstractions.Models;
 using Mars.Integration.Tests.Common;
 
 namespace Mars.Datasource.Integration.Tests.Engines;

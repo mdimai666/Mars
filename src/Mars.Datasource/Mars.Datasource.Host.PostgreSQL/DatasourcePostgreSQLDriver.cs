@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Models;
 using Npgsql;
 using Npgsql.Schema;
 

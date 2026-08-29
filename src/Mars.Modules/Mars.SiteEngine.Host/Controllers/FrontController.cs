@@ -1,7 +1,7 @@
 using System.Net.Mime;
 using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Mappings.WebSiteParts;
@@ -11,12 +11,12 @@ using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Contracts.Options;
 using Mars.SiteEngine.Contracts.WebSite.Dto;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.SiteEngine.Controllers;
+namespace Mars.SiteEngine.Host.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

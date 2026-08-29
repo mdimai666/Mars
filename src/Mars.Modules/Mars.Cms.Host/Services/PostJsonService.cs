@@ -11,10 +11,10 @@ using Mars.Cms.Abstractions.Utils;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
+using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Utils;
-using Mars.Data.Extensions;
 using Mars.Server.Abstractions.Validators;
 
 namespace Mars.Cms.Host.Services;

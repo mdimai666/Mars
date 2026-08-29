@@ -1,11 +1,11 @@
 using Mars.Contracts.Common;
-using Mars.Datasource;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Dto;
-using Mars.Datasource.Front.Services;
+using Mars.WebApiClient.Interfaces;
 
 //namespace Mars.Datasource.Front.Services;
 
-namespace Mars.WebApiClient.Interfaces;
+namespace Mars.Datasource.Front.Services;
 
 public interface IDatasourceServiceClient
 {

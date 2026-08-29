@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Notifications.Abstractions;
+using Mars.Notifications.Contracts;
 
 namespace Mars.WebApiClient.Interfaces;
 

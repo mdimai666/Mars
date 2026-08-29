@@ -4,7 +4,7 @@ using Mars.Nodes.Abstractions.Hubs;
 using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Mars.Services;
+namespace Mars.Admin.Host.Services;
 
 internal class DevAdminConnectionService : IDevAdminConnectionService
 {
@@ -29,7 +29,7 @@ internal class DevAdminConnectionService : IDevAdminConnectionService
 
     public IReadOnlyCollection<PageContextInfo> GetPageContexts()
     {
-        var pages = _pagesService.GetStaticRoutedPages([typeof(Mars.Admin.App).Assembly]);
+        var pages = _pagesService.GetStaticRoutedPages([typeof(App).Assembly]);
 
         return pages.Select(x => new PageContextInfo(x.PageType.FullName!, x.DisplayName)).ToList();
     }

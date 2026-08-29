@@ -10,7 +10,7 @@ using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 

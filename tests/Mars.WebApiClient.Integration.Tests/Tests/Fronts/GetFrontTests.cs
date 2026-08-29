@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.SiteEngine.Controllers;
+using Mars.SiteEngine.Host.Controllers;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Fronts;

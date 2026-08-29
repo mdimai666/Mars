@@ -1,22 +1,22 @@
 using System.Reflection;
 using Mars.Core.Models;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Abstractions.WebSite.Scripts;
 using Mars.SiteEngine.Contracts.Options;
-using Mars.SiteEngine.Endpoints;
-using Mars.SiteEngine.Handlers;
-using Mars.SiteEngine.Services;
-using Mars.SiteEngine.Templators;
-using Mars.SiteEngine.WebSite.Scripts;
+using Mars.SiteEngine.Host.Endpoints;
+using Mars.SiteEngine.Host.Handlers;
+using Mars.SiteEngine.Host.Services;
+using Mars.SiteEngine.Host.Templators;
+using Mars.SiteEngine.Host.WebSite.Scripts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.SiteEngine;
+namespace Mars.SiteEngine.Host;
 
 public static class MarsWebSiteProcessorMain
 {

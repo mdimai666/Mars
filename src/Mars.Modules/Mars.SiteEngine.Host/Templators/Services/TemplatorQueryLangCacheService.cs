@@ -1,4 +1,4 @@
-namespace Mars.SiteEngine.Templators.Services;
+namespace Mars.SiteEngine.Host.Templators.Services;
 
 public class TemplatorQueryLangCacheService
 {

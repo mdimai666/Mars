@@ -12,7 +12,7 @@ using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Identity.Host.Services;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.Server.Contracts.Options;
 using Microsoft.AspNetCore.Authorization;

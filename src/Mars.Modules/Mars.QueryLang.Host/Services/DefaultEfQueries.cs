@@ -769,7 +769,7 @@ public class TotalResponse2<T> : PagingResult<T>
 using System.Collections;
 using System.Linq.Expressions;
 using Mars.Data.Common;
-using Mars.QueryLang.Host;
+using Mars.QueryLang.Host.Services;
 
 public class DefaultEfQueries : IDefaultEfQueries<IBasicEntity>
 {

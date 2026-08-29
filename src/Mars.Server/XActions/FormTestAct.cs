@@ -1,6 +1,6 @@
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 
-namespace Mars.XActions;
+namespace Mars.Server.XActions;
 
 #if DEBUG
 /// <summary>

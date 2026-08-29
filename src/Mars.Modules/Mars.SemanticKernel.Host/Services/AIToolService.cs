@@ -2,7 +2,7 @@ using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.Server.Abstractions.Exceptions;
 using Mars.Server.Abstractions.Services;
 
-namespace Mars.Services;
+namespace Mars.SemanticKernel.Host.Services;
 
 internal class AIToolService : IAIToolService
 {

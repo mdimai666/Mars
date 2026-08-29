@@ -1,19 +1,19 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Contracts.XActions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Server.Controllers;
 using Mars.Server.Managers;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
+using Mars.XActions.Contracts;
+using Mars.XActions.Host.Controllers;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Acts;
 
-/// <seealso cref="Mars.Server.Controllers.ActController"/>
+/// <seealso cref="XActions.Host.Controllers.ActController"/>
 public class InjectActTests : ApplicationTests
 {
     const string _apiUrl = "/api/Act";

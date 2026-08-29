@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Contracts.Resources;
 
-namespace Mars.Notifications.Abstractions;
+namespace Mars.Notifications.Contracts;
 
 public class TestMailMessage
 {

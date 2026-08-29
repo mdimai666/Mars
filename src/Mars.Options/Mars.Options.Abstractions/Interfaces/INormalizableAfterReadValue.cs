@@ -1,4 +1,4 @@
-namespace Mars.Options.Interfaces;
+namespace Mars.Options.Abstractions.Interfaces;
 
 public interface INormalizableAfterReadValue
 {

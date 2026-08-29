@@ -6,7 +6,7 @@ using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;

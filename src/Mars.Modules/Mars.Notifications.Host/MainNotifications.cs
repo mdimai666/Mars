@@ -1,6 +1,7 @@
 using System.Reflection;
 using Mars.Notifications.Abstractions;
-using Mars.Options.Services;
+using Mars.Notifications.Contracts;
+using Mars.Options.Abstractions.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,8 +1,8 @@
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Contracts.Options;
 
-namespace Mars.SiteEngine.Handlers;
+namespace Mars.SiteEngine.Host.Handlers;
 
 public class SiteFaviconConfiguratorHandler
 {

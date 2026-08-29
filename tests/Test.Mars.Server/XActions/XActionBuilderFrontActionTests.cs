@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 
 namespace Test.Mars.Server.XActions;
 

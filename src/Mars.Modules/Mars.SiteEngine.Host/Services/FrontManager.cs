@@ -1,4 +1,4 @@
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
 using Mars.SiteEngine.Abstractions.Constants.Website;
@@ -6,7 +6,7 @@ using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Contracts.Options;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Mars.SiteEngine.Services;
+namespace Mars.SiteEngine.Host.Services;
 
 public class FrontManager : IFrontManager
 {

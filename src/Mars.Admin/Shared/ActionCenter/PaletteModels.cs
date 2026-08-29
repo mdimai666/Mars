@@ -1,5 +1,5 @@
 using Mars.Cms.Contracts.Search;
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 
 namespace Mars.Admin.Shared.ActionCenter;
 

@@ -3,7 +3,7 @@ using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Mappings.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
-using Mars.Data.Extensions;
+using Mars.Contracts.Extensions;
 
 namespace Mars.Cms.Abstractions.Mappings.PostTypes;
 

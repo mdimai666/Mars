@@ -1,8 +1,8 @@
-using Mars.Contracts.XActions;
 using Mars.SiteEngine.Abstractions.Constants.Website;
 using Mars.SiteEngine.Abstractions.Services;
+using Mars.XActions.Contracts;
 
-namespace Mars.XActions.ContentRecipes;
+namespace Mars.Cms.Host.XActions.ContentRecipes;
 
 /// <summary>
 /// Создаёт шаблон представления списка записей в специальном фронте админки

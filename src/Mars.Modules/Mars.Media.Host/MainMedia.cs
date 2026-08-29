@@ -5,7 +5,7 @@ using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Handlers;
 using Mars.Media.Host.Services;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Microsoft.Extensions.DependencyInjection;
 

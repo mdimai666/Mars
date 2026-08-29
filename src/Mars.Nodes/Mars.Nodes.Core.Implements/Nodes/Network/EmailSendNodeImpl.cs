@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Notifications.Abstractions;
-using Mars.Options.Services;
+using Mars.Notifications.Contracts;
+using Mars.Options.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Core.Implements.Nodes.Network;

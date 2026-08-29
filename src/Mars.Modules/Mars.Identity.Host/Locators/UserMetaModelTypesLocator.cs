@@ -5,7 +5,7 @@ using Mars.Identity.Abstractions.Services;
 using Mars.Server.Abstractions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Identity.Host.Services;
+namespace Mars.Identity.Host.Locators;
 
 internal sealed class UserMetaLocator : IUserMetaLocator
 {

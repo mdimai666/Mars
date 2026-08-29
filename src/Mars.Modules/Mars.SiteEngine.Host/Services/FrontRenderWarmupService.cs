@@ -1,10 +1,10 @@
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.SiteEngine.Abstractions.WebSite;
 using Mars.SiteEngine.Contracts.Options;
 using Microsoft.Extensions.Logging;
 
-namespace Mars.SiteEngine.Services;
+namespace Mars.SiteEngine.Host.Services;
 
 /// <summary>
 /// Прогрев рендера после запуска (FrontsOption.WarmupRenderOnStartup):

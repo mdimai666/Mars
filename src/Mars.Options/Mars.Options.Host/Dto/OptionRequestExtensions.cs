@@ -1,8 +1,8 @@
+using Mars.Options.Abstractions.Dto;
 using Mars.Options.Contracts.Dto.Options;
-using Mars.Options.Dto.Options;
 using Mars.Server.Abstractions.Extensions;
 
-namespace Mars.Options.Host.Dto.Options;
+namespace Mars.Options.Host.Dto;
 
 public static class OptionRequestExtensions
 {

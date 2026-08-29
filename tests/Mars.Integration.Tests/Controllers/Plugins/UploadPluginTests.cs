@@ -5,7 +5,7 @@ using Mars.Contracts.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Plugin;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Contracts.Options;

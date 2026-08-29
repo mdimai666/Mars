@@ -1,5 +1,5 @@
 using Mars.Media.Host.XActions;
-using Mars.Server.Abstractions.Managers;
+using Mars.XActions.Abstractions.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

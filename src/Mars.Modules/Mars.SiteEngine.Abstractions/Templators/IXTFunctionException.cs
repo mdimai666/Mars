@@ -1,4 +1,4 @@
-namespace Mars.SiteEngine.Abstractions.Exceptions;
+namespace Mars.SiteEngine.Abstractions.Templators;
 
 public class XTFunctionException : Exception
 {

@@ -3,7 +3,7 @@ using Flurl.Http;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.SSO.Contracts.Dto;
 using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.OAuth.Controllers;

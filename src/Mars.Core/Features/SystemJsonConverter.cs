@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Mars.Core.Features.JsonConverter;
+namespace Mars.Core.Features;
 
 public static class SystemJsonConverter
 {

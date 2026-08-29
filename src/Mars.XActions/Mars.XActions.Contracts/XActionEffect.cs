@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Mars.Contracts.XActions;
+namespace Mars.XActions.Contracts;
 
 /// <summary>
 /// Рекомендованный следующий шаг после выполнения действия. Эффекты — рекомендации,

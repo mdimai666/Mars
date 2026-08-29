@@ -1,7 +1,7 @@
 using Mars.Contracts.Common;
-using Mars.Options.Dto.Options;
+using Mars.Options.Abstractions.Dto;
 
-namespace Mars.Options.Repositories;
+namespace Mars.Options.Abstractions.Repositories;
 
 public interface IOptionRepository : IDisposable
 {

@@ -4,8 +4,8 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Mars.CommandLine.Abstractions;
 using Mars.Core.Extensions;
-using Mars.Options.Repositories;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Repositories;
+using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Microsoft.Extensions.DependencyInjection;
 

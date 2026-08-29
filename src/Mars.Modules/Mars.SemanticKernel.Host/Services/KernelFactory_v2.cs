@@ -2,7 +2,7 @@ using System.Text.Json;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Nodes.Abstractions.Services;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.Contracts.Nodes;
 using Mars.SemanticKernel.Contracts.Options;
@@ -16,7 +16,7 @@ using Microsoft.SemanticKernel.Connectors.Ollama;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OllamaSharp;
 
-namespace Mars.SemanticKernel.Host.Service;
+namespace Mars.SemanticKernel.Host.Services;
 
 //not used. Это raw использование. Сохранено чтобы вспомнить просто.
 internal class KernelFactory_v2 : IKernelFactory

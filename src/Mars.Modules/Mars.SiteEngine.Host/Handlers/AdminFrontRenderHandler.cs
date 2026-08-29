@@ -7,7 +7,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Services;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.SiteEngine.Handlers;
+namespace Mars.SiteEngine.Host.Handlers;
 
 /// <summary>
 /// Рендер страниц специального фронта админки (data/admin/front).

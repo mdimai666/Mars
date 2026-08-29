@@ -7,7 +7,7 @@ using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Core.Extensions;
 using Newtonsoft.Json.Linq;
 
-namespace Benchmarks.MyHandlebars;
+namespace Benchmarks.MyHandlebars.Memory;
 
 [MemoryDiagnoser, ShortRunJob]
 public class MyHandlebarsMemoryBenchmark

@@ -1,5 +1,5 @@
 using Mars.SiteEngine.Abstractions.Services;
-using Mars.SiteEngine.Templators;
+using Mars.SiteEngine.Host.Templators;
 using Mars.TemplateEngine.Host;
 
 namespace Mars.UseStartup.MarsParts;

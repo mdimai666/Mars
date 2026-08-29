@@ -1,9 +1,9 @@
 using Mars.Contracts.Dto.Files;
 using Mars.Core.Exceptions;
-using Mars.Options.Dto.Options;
-using Mars.Options.Exceptions;
+using Mars.Options.Abstractions.Dto;
+using Mars.Options.Abstractions.Exceptions;
 
-namespace Mars.Options.Services;
+namespace Mars.Options.Abstractions.Services;
 
 /// <summary>
 /// Singletone service

@@ -1,5 +1,5 @@
 using Mars.Contracts.Common;
-using Mars.Data.Extensions;
+using Mars.Contracts.Extensions;
 using Mars.Identity.Abstractions.Dto.Roles;
 using Mars.Identity.Contracts.Roles;
 

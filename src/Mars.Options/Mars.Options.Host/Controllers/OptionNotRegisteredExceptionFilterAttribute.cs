@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Mars.Contracts.Common;
-using Mars.Options.Exceptions;
+using Mars.Options.Abstractions.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Mars.Options.Host;
+namespace Mars.Options.Host.Controllers;
 
 public sealed class OptionNotRegisteredExceptionFilterAttribute : ExceptionFilterAttribute
 {

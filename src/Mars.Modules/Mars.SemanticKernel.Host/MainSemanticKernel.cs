@@ -1,13 +1,12 @@
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
-using Mars.Options.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.Contracts.Nodes;
 using Mars.SemanticKernel.Contracts.Options;
 using Mars.SemanticKernel.Host.Nodes;
-using Mars.SemanticKernel.Host.Service;
+using Mars.SemanticKernel.Host.Services;
 using Mars.Server.Abstractions.Services;
-using Mars.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

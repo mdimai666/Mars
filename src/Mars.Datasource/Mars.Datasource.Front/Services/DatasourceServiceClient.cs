@@ -1,7 +1,7 @@
 using Flurl.Http;
 using Mars.Contracts.Common;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Dto;
-using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Datasource.Front.Services;
 

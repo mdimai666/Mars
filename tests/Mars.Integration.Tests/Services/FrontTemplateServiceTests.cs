@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.SiteEngine.Services;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.Hosting;
 using NSubstitute;
 

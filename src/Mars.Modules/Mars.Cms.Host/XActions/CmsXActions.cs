@@ -1,13 +1,13 @@
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Host.Controllers;
+using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Contracts.Resources;
-using Mars.Contracts.XActions;
-using Mars.Server.Abstractions.Managers;
-using Mars.XActions.ContentRecipes;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Cms.Host;
+namespace Mars.Cms.Host.XActions;
 
 /// <summary>
 /// XActions контентной области. Команды регистрируются без привязки к страницам

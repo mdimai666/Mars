@@ -1,6 +1,6 @@
 using Mars.SiteEngine.Contracts.Options;
 
-namespace Mars.SiteEngine.Handlers;
+namespace Mars.SiteEngine.Host.Handlers;
 
 public interface IFaviconGeneratorHandler
 {

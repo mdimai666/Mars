@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using Mars.Contracts.Common;
-using Mars.Data.Extensions;
+using Mars.Contracts.Extensions;
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Abstractions.Dto.NodeTasks;
 using Mars.Nodes.Abstractions.Services;

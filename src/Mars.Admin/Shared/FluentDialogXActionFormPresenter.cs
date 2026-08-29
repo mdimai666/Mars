@@ -1,4 +1,4 @@
-using Mars.Contracts.XActions;
+using Mars.XActions.Contracts;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Shared;

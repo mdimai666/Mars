@@ -1,6 +1,6 @@
 using Mars.Contracts.Models;
 
-namespace Mars.WebApp.Nodes.Front.Models.AppEntityForms;
+namespace Mars.WebApp.Nodes.Models.AppEntityForms;
 
 public record AppEntityCreateFormSchema
 {

@@ -2292,6 +2292,7 @@
           "Mars.Admin": "0.8.0-alpha.1",
           "Mars.Admin.Contracts": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Mars.XActions.Abstractions": "1.0.0",
           "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.9",
           "mdimai666.Mars.Admin.Framework": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1",
@@ -2400,7 +2401,8 @@
           "Mars.Media.Abstractions": "1.0.0",
           "Mars.Media.Contracts": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
-          "Mars.XActions": "1.0.0",
+          "Mars.XActions.Abstractions": "1.0.0",
+          "Mars.XActions.Contracts": "1.0.0",
           "mdimai666.Mars.Data": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
@@ -2752,7 +2754,6 @@
       },
       "Mars.Nodes.Host/1.0.0": {
         "dependencies": {
-          "Mars.Nodes.Workspace": "1.0.0",
           "Mars.Scheduler.Abstractions": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
           "Microsoft.AspNet.WebApi.Client": "6.0.0",
@@ -2760,6 +2761,7 @@
           "mdimai666.Mars.CommandLine.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Nodes.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Nodes.Core.Implements": "0.8.0-alpha.1",
+          "mdimai666.Mars.Nodes.Front.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -2787,11 +2789,24 @@
       },
       "Mars.Notifications.Abstractions/1.0.0": {
         "dependencies": {
+          "Mars.Notifications.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
           "mdimai666.Mars.Core": "0.8.0-alpha.1"
         },
         "runtime": {
           "Mars.Notifications.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.Notifications.Contracts/1.0.0": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.0-alpha.1",
+          "mdimai666.Mars.Core": "0.8.0-alpha.1"
+        },
+        "runtime": {
+          "Mars.Notifications.Contracts.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2861,8 +2876,9 @@
         "dependencies": {
           "Mars.Plugin.Contracts": "1.0.0",
           "Microsoft.Extensions.DependencyModel": "10.0.9",
+          "mdimai666.Mars.Options": "0.8.0-alpha.1",
           "mdimai666.Mars.Plugin.Abstractions": "0.8.0-alpha.1",
-          "mdimai666.Mars.Plugin.Front": "0.8.0-alpha.1",
+          "mdimai666.Mars.Plugin.Front.Abstractions": "0.8.0-alpha.1",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3025,7 +3041,7 @@
           "Mars.Cms.Contracts": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
           "Mars.Options.Contracts": "1.0.0",
-          "Mars.XActions": "1.0.0",
+          "Mars.XActions.Contracts": "1.0.0",
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3240,7 +3256,7 @@
           "Mars.Excel.Abstractions": "1.0.0",
           "Mars.QueryLang": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
-          "Mars.WebApp.Nodes.Front": "1.0.0",
+          "Mars.WebApp.Nodes": "1.0.0",
           "System.Drawing.Common": "10.0.9",
           "dotless.Core": "1.6.7",
           "mdimai666.Mars.Nodes.Core.Implements": "0.8.0-alpha.1"
@@ -3252,12 +3268,23 @@
           }
         }
       },
-      "Mars.XActions/1.0.0": {
+      "Mars.XActions.Abstractions/1.0.0": {
+        "dependencies": {
+          "Mars.XActions.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "Mars.XActions.Abstractions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mars.XActions.Contracts/1.0.0": {
         "dependencies": {
           "mdimai666.Mars.Contracts": "0.8.0-alpha.1"
         },
         "runtime": {
-          "Mars.XActions.dll": {
+          "Mars.XActions.Contracts.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -3265,7 +3292,7 @@
       },
       "Mars.XActions.Host/1.0.0": {
         "dependencies": {
-          "Mars.XActions": "1.0.0",
+          "Mars.XActions.Abstractions": "1.0.0",
           "mdimai666.Mars.Server.Abstractions": "0.8.0-alpha.1"
         },
         "runtime": {
@@ -3453,6 +3480,7 @@
           "Mars.Media.Abstractions": "1.0.0",
           "Mars.Notifications.Abstractions": "1.0.0",
           "Mars.SiteEngine.Abstractions": "1.0.0",
+          "Mars.XActions.Abstractions": "1.0.0",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "5.3.0",
           "Newtonsoft.Json": "13.0.4",
           "mdimai666.Mars.HttpSmartAuthFlow": "0.8.0-alpha.1",
@@ -3557,6 +3585,7 @@
           "Mars.Data.Repositories": "1.0.0",
           "Mars.Scheduler.Abstractions": "1.0.0",
           "Mars.Server.Contracts": "1.0.0",
+          "Mars.XActions.Abstractions": "1.0.0",
           "Microsoft.FeatureManagement.AspNetCore": "4.5.0",
           "Npgsql": "10.0.3",
           "Swashbuckle.AspNetCore": "10.2.1",
@@ -3596,7 +3625,7 @@
           "Mars.Cms.Contracts": "1.0.0",
           "Mars.Identity.Contracts": "1.0.0",
           "Mars.Media.Contracts": "1.0.0",
-          "Mars.Notifications.Abstractions": "1.0.0",
+          "Mars.Notifications.Contracts": "1.0.0",
           "Mars.Options.Contracts": "1.0.0",
           "Mars.Plugin.Contracts": "1.0.0",
           "Mars.Scheduler.Contracts": "1.0.0",
@@ -5299,6 +5328,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Mars.Notifications.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mars.Notifications.Host/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -5459,7 +5493,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Mars.XActions/1.0.0": {
+    "Mars.XActions.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.XActions.Contracts/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

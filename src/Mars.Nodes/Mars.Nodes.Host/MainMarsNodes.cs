@@ -17,7 +17,7 @@ using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Scheduler;
 using Mars.Nodes.Host.Services;
 using Mars.Nodes.Host.Templator;
-using Mars.Nodes.Workspace;
+using Mars.Nodes.Core.Nodes.Common;
 using Mars.Server.Abstractions.Managers;
 using Mars.SiteEngine.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
@@ -53,7 +53,10 @@ public static class MainMarsNodes
                     options.JsonSerializerOptions.Converters.Add(new NodeJsonConverter(locator));
                 });
 
-        services.AddNodeWorkspace();
+        // Серверная часть воркспейса: локатор типов нод. Фронтовые регистрации
+        // (формы нод, EditorActionLocator, js-интероп) добавляет AddNodeWorkspace
+        // из браузерного процесса.
+        services.AddNodesLocator();
 
         //Dependies
         var authClientManager = new AuthClientManager();
@@ -64,7 +67,7 @@ public static class MainMarsNodes
 
     public static IApplicationBuilder UseMarsNodes(this WebApplication app)
     {
-        app.Services.UseNodeWorkspace();
+        app.Services.GetRequiredService<INodesLocator>().RegisterAssembly(typeof(InjectNode).Assembly);
 
         var nodeImplementFactory = app.Services.GetRequiredService<INodeImplementFactory>();
         nodeImplementFactory.RegisterAssembly(typeof(InjectNodeImpl).Assembly);

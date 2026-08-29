@@ -113,7 +113,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.TemplateEngine.Host\Mars.TemplateEngine.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Host\Mars.WebApp.Nodes.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Handlebars\Mars.SiteEngine.Handlebars.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine\Mars.SiteEngine.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
         <ProjectReference Include="..\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored.Host\EditorJsBlazored.Host.csproj" />

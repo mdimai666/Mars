@@ -13,7 +13,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
 		<ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
-		<ProjectReference Include="..\Mars.SiteEngine\Mars.SiteEngine.csproj" />
+		<ProjectReference Include="..\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
 	</ItemGroup>
 
 </Project>

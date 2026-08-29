@@ -129,7 +129,7 @@
   </Folder>
   <Folder Name="/Mars.Modules/WebSiteProcessor/">
     <Project Path="src/Mars.Modules/Mars.SiteEngine.Handlebars/Mars.SiteEngine.Handlebars.csproj" />
-    <Project Path="src/Mars.Modules/Mars.SiteEngine/Mars.SiteEngine.csproj" />
+    <Project Path="src/Mars.Modules/Mars.SiteEngine.Host/Mars.SiteEngine.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Nodes/">
     <Project Path="src/Mars.Nodes/Mars.Nodes.Core.Implements/Mars.Nodes.Core.Implements.csproj" />

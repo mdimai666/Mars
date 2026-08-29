@@ -2473,6 +2473,7 @@
       },
       "Mars.Datasource/1.0.0": {
         "dependencies": {
+          "Mars.Datasource.Abstractions": "1.0.0",
           "mdimai666.Mars.Core": "0.8.0-alpha.1",
           "mdimai666.Mars.Nodes.Core": "0.8.0-alpha.1"
         },
@@ -2485,7 +2486,7 @@
       },
       "Mars.Datasource.Abstractions/1.0.0": {
         "dependencies": {
-          "Mars.Datasource": "1.0.0"
+          "mdimai666.Mars.Core": "0.8.0-alpha.1"
         },
         "runtime": {
           "Mars.Datasource.Abstractions.dll": {

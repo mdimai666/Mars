@@ -1,0 +1,18 @@
+<!--BlazorScriptsAppend-->
+<script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
+<script src="_framework/blazor.webassembly.js" autostart="false"></script>
+<script type="module">
+    Blazor.start({
+        applicationCulture: 'ru-RU'
+    }).catch(err => {
+        console.error('=== BLAZOR STARTUP FAILED ===', err);
+
+        document.body.innerHTML = `
+            <div style="padding: 20px; background: #fee; font-family: monospace;">
+                <h2>❌ Blazor Startup Failed</h2>
+                <pre style="background: white; padding: 10px; overflow: auto;">${String(err && err.message || err)}</pre>
+            </div>
+        `;
+    });
+</script>
+<!--//BlazorScriptsAppend-->

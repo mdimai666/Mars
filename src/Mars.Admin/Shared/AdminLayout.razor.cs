@@ -36,7 +36,7 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
     [Inject] ActionCenterService ActionCenterService { get; set; } = default!;
     HotKeysContext HotKeysContext = default!;
 
-    HeaderAdmin1 headerAdmin = default!;
+    AdminHeader headerAdmin = default!;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -99,7 +99,7 @@ public partial class AdminLayout : LayoutComponentBase, IAsyncDisposable
         {
             devMenu = devMenu with { MenuItems = devMenu.MenuItems.Take(devMenu.MenuItems.Count - 1).ToList() };
         }
-        menu_items = MyNavMenu.Convert(devMenu);
+        menu_items = MenuItem.Convert(devMenu);
 
     }
 

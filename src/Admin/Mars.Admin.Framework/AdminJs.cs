@@ -26,6 +26,21 @@ public class AdminJs : IAsyncDisposable
         return _js.InvokeVoidAsync("navigator.clipboard.writeText", text);
     }
 
+    public ValueTask BeautyJsonInSelector(string selector, string? value = null)
+    {
+        return _js.InvokeVoidAsync("BeautyJsonInSelector", selector, value);
+    }
+
+    public ValueTask OpenNewTab(string url)
+    {
+        return _js.InvokeVoidAsync("blazor_newTab", url);
+    }
+
+    public ValueTask CookieRemove(string key)
+    {
+        return _js.InvokeVoidAsync("d_cookie_remove", key);
+    }
+
     public Task DownloadContentAsFile(string content, string filename)
     {
         byte[] fileBytes = Encoding.UTF8.GetBytes(content);

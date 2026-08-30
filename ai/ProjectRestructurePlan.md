@@ -467,3 +467,13 @@ MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; лок�
 - Отложено: компонентные имена (`D*`, `Shared*`, `*2`, `My*`, `HeaderAdmin1`, свалка `Features/`) — отдельный заход; галерейный стек (`GallerySpace/GalleryService.cs` под `Compile Remove` — решение «чинить или удалять» за пользователем).
 
 Верификация: `dotnet build Mars.slnx` — 0 ошибок. Точечно: `Mars.Admin.Framework.Tests` 26/26; `Mars.Integration.Tests` (GetSystemInfoTests + InjectAct + FrontManager + FrontRender — полный хост, Testcontainers PostgreSQL) 43/43. Docker-регрессия рендера не гонялась (рендер не затронут). Коммит — по команде пользователя.
+
+**Админка — мини-проход имён (2026-08-30, после коммита `84890c1a`→`823bad34`).** Решение пользователя: из отложенного переименования компонентов сделать только `MyNavMenu`/`HeaderAdmin1` + влить `MyJS` в `AdminJs`. Остальное из карты (`D*`, `Shared*`, `*2`, `StandardEditForm1`, `MTypeBadge`, `MModelPropSel`, `DSelectGuidServ`) — остаётся отложенным.
+
+- `MyJS` (`Tools/`) влит в **`AdminJs`**: перенесены `BeautyJsonInSelector`, `OpenNewTab`, `CookieRemove`; мёртвый `PostMessage` (только закомментированные вызовы) удалён; потребители (`AuthenticationService`, `DeveloperControlService`, `JsonDump.razor`) переведены на DI-инъекцию `AdminJs`; JS-функция `MyJS_Cookie_Remove` → `d_cookie_remove` (`scripts.js`); папка `Tools/` удалена.
+- `MyNavMenu` — удалён целиком: класс был наполовину мёртв (живой только конвертер `Convert(NavMenuDetailResponse) → List<MenuItem>`); конвертер переехал в `MenuItem.Convert`, `AdminLayout` переключён на него.
+- `HeaderAdmin1` → **`AdminHeader`** (git mv + `AdminLayout.razor(.cs)`).
+- Хвосты: мёртвые `@using Mars.Admin.Framework.Tools` вычищены из `_Imports.razor` фреймворка и админки, `MTypeBadge`, `ASideOptions`, `ViewComponentsPage`, `MModelPropSel`, `ClassModelListPage`, `ActionCommandNodeForm`, `InlineFunctionNodeForm`; в девстендах исправлен пропущенный в прошлый проход тег `AppFrontSharedContainer` → `AdminSharedContainer` (`StandNodesApp.Client/Routes.razor` + комментарий в `TestModules/App.razor`).
+- `MarsAppVersion` → `0.8.0-alpha.3` (правка `scripts.js`).
+
+Верификация: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Admin.Framework.Tests` 26/26. Коммит — по команде пользователя.

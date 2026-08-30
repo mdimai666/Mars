@@ -1,10 +1,8 @@
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
-using Mars.Admin.Framework.Tools;
 using Mars.Identity.Contracts.Auth;
 using Mars.SSO.Contracts.Dto;
 using Mars.WebApiClient.Interfaces;
-using Microsoft.JSInterop;
 
 namespace Mars.Admin.Framework.AuthProviders;
 
@@ -13,14 +11,14 @@ public class AuthenticationService : IAuthenticationService
     protected readonly IMarsWebApiClient _client;
     protected readonly CookieOrLocalStorageAuthStateProvider _authStateProvider;
     protected readonly ILocalStorageService _localStorage;
-    protected MyJS _js;
+    protected AdminJs _js;
 
-    public AuthenticationService(IMarsWebApiClient client, CookieOrLocalStorageAuthStateProvider authStateProvider, ILocalStorageService localStorage, IJSRuntime jsRuntime)
+    public AuthenticationService(IMarsWebApiClient client, CookieOrLocalStorageAuthStateProvider authStateProvider, ILocalStorageService localStorage, AdminJs adminJs)
     {
         _client = client;
         _authStateProvider = authStateProvider;
         _localStorage = localStorage;
-        _js = new MyJS(jsRuntime);
+        _js = adminJs;
     }
 
     public virtual async Task<AuthResultResponse> Login(AuthCredentialsRequest userForAuthentication)

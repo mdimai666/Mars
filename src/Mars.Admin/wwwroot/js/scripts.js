@@ -218,7 +218,7 @@ function set_theme_darklight(setdark) {
     }
 }
 
-function MyJS_Cookie_Remove(key) {
+function d_cookie_remove(key) {
     docCookies.removeItem(key)
 }
 

@@ -1,7 +1,5 @@
 using Mars.Admin.Framework.Interfaces;
-using Mars.Admin.Framework.Tools;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace Mars.Admin.Framework.Services;
 
@@ -10,14 +8,14 @@ public class DeveloperControlService
     private readonly NavigationManager navigationManager;
     private readonly IBlazorPagesService pagesService;
 
-    MyJS js;
+    AdminJs js;
 
-    public DeveloperControlService(NavigationManager navigationManager, IBlazorPagesService pagesService, IJSRuntime JS)
+    public DeveloperControlService(NavigationManager navigationManager, IBlazorPagesService pagesService, AdminJs js)
     {
         this.navigationManager = navigationManager;
         this.pagesService = pagesService;
 
-        js = new MyJS(JS);
+        this.js = js;
     }
 
     public void OpenPageSource()

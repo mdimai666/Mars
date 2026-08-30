@@ -171,7 +171,7 @@ namespace Mars.Admin.Framework.Tests.Services
 }
 
 // Фейковые компоненты для рефлексии — имитируют страницы/layout/компоненты Blazor
-namespace AppFront.Tests.Fakes
+namespace Mars.Admin.Framework.Tests.Fakes
 {
     public class MainLayout : LayoutComponentBase
     {

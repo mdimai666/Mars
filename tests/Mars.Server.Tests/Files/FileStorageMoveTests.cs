@@ -21,7 +21,7 @@ public class FileStorageMoveTests : IDisposable
             PhysicalPath = new Uri(_rootPath),
         };
 
-        _fileStorage = new FileStorage(Options.Create(fileHostingInfo));
+        _fileStorage = new FileStorage(Microsoft.Extensions.Options.Options.Create(fileHostingInfo));
     }
 
     public void Dispose()

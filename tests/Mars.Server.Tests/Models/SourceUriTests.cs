@@ -44,7 +44,7 @@ public class SourceUriTests
     }
 
     [Fact]
-    public void AsJson()
+    public void SerializeDeserialize_ValidUri_RoundTrips()
     {
         //Arrange
         string value = "/template/myTemplate-1";
@@ -65,7 +65,7 @@ public class SourceUriTests
     }
 
     [Fact]
-    public void SegmentsTest()
+    public void Segments_TemplatePath_ExposeRootAndIndexes()
     {
         //Arrange
         SourceUri sourceUri = "/template/top/myTemplate-1";

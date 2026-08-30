@@ -5,7 +5,7 @@ namespace Mars.Core.Tests;
 public class MarsCoreToolsTests
 {
     [Fact]
-    public void TestTranslateToPostSlug()
+    public void TranslateToPostSlug_CyrillicAndSpecialChars_ReturnsLatinSlug()
     {
         Dictionary<string, string> values = new()
         {

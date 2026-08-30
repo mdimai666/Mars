@@ -4,7 +4,7 @@ using Testcontainers.PostgreSql;
 
 namespace Mars.Integration.Tests.PostgreSql;
 
-public sealed class PostgreSqlContainerTest : IAsyncLifetime
+public sealed class PostgreSqlContainerTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:14").Build();
 
@@ -19,7 +19,7 @@ public sealed class PostgreSqlContainerTest : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ExecuteCommand()
+    public async Task ExecuteCommand_SelectOne_ReturnsOne()
     {
         using var connection = new NpgsqlConnection(_postgreSqlContainer.GetConnectionString());
 

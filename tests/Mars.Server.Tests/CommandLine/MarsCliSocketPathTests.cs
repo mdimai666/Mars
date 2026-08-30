@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Mars.CommandLine.Remote;
 
-namespace Test.Mars.Server.CommandLine;
+namespace Mars.Server.Tests.CommandLine;
 
 public partial class MarsCliSocketPathTests
 {

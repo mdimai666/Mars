@@ -32,10 +32,10 @@ public class BasicExpressionTests
             no = false
         };
 
-        var templateOk = Handlebars.Compile(htmlTemplateOk);
+        var templateOk = HandlebarsDotNet.Handlebars.Compile(htmlTemplateOk);
         templateOk(data).Trim().Should().Be("ok");
 
-        var templateNo = Handlebars.Compile(htmlTemplateNo);
+        var templateNo = HandlebarsDotNet.Handlebars.Compile(htmlTemplateNo);
         templateNo(data).Trim().Should().Be("ok");
     }
 
@@ -49,13 +49,13 @@ public class BasicExpressionTests
 
         string htmlArrLength = @"{{arr.length}}";
 
-        var templateArrLength = Handlebars.Compile(htmlArrLength);
+        var templateArrLength = HandlebarsDotNet.Handlebars.Compile(htmlArrLength);
 
         templateArrLength(data).Trim().Should().Be("4");
 
         string htmlArrEach = @"{{#each arr}} {{.}} {{/each}}";
 
-        var templateArrEach = Handlebars.Compile(htmlArrEach);
+        var templateArrEach = HandlebarsDotNet.Handlebars.Compile(htmlArrEach);
 
         templateArrEach(data).Trim().Should().Be("1  2  3  4");
     }
@@ -68,7 +68,7 @@ public class BasicExpressionTests
 
         string html = @"{{#unless false}}1{{else}}0{{/unless}}";
 
-        var template = Handlebars.Compile(html);
+        var template = HandlebarsDotNet.Handlebars.Compile(html);
 
         template(data).Trim().Should().Be("1");
     }
@@ -81,7 +81,7 @@ public class BasicExpressionTests
 
         string html = @"{{#unless false}}1{{else}}0{{/unless}}";
 
-        var template = Handlebars.Compile(html);
+        var template = HandlebarsDotNet.Handlebars.Compile(html);
 
         template(data).Trim().Should().Be("1");
     }

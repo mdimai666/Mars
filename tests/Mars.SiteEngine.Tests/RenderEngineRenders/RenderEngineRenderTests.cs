@@ -20,7 +20,7 @@ namespace Mars.SiteEngine.Tests.RenderEngineRenders;
 public class RenderEngineRenderTests
 {
     [Fact]
-    public void Test1()
+    public void Nameof_RenderPipelineTypes_Compiles()
     {
         _ = nameof(HandlebarsWebRenderEngine);
         _ = nameof(MapWebSiteProcessor);

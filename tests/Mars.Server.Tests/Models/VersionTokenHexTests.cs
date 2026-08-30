@@ -6,7 +6,7 @@ namespace Mars.Server.Tests.Models;
 public class VersionTokenHexTests
 {
     [Fact]
-    public void VersionToken()
+    public void ToString_Version255_ReturnsFF()
     {
         // Arrange
         uint entityVersion = 255;
@@ -23,7 +23,7 @@ public class VersionTokenHexTests
     }
 
     [Fact]
-    public void Convert()
+    public void ConvertFrom_HexString_EqualsOriginal()
     {
         // Arrange
         var request = "FF";

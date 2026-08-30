@@ -24,7 +24,7 @@ public class VersionTokenHexConverterTests
     };
 
     [Fact]
-    public void FromJson()
+    public void Deserialize_WithAndWithoutToken_MapsVersion()
     {
         // Arrange
         var inputWithToken = @"{""name"":""username"",""version"":""FF""}";
@@ -50,7 +50,7 @@ public class VersionTokenHexConverterTests
     }
 
     [Fact]
-    public void ToJson()
+    public void Serialize_WithAndWithoutToken_WritesHexOrNull()
     {
         // Arrange
         var expectedWithToken = @"{""name"":""username"",""version"":""FF""}";

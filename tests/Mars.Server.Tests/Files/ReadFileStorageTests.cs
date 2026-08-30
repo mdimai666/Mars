@@ -23,7 +23,7 @@ public class ReadFileStorageTests
             PhysicalPath = new Uri(_exampleFilesPath),
         };
 
-        _fileStorage = new FileStorage(Options.Create(_fileHostingInfo));
+        _fileStorage = new FileStorage(Microsoft.Extensions.Options.Options.Create(_fileHostingInfo));
     }
 
     [Fact]

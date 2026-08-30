@@ -6,14 +6,14 @@ using Xunit.Abstractions;
 
 namespace ExternalServices.Integration.Tests.WordPressTests;
 
-public class WordPressPerformanceTest : IClassFixture<WordPressFixture>
+public class WordPressPerformanceTests : IClassFixture<WordPressFixture>
 {
     private readonly WordPressFixture _fixture;
     private readonly ITestOutputHelper _testOutputHelper;
 
     public const string? SkipTest = "not require every time";
 
-    public WordPressPerformanceTest(WordPressFixture fixture, ITestOutputHelper testOutputHelper)
+    public WordPressPerformanceTests(WordPressFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _fixture = fixture;
         _testOutputHelper = testOutputHelper;
@@ -33,7 +33,7 @@ public class WordPressPerformanceTest : IClassFixture<WordPressFixture>
     }
 
     [IntegrationFact(Skip = SkipTest)]
-    public async Task TestResponseTimeFor10000RandomPostPages()
+    public async Task RenderRandomPostPages_1000Requests_MeasuresResponseTime()
     {
         var random = new Random();
 

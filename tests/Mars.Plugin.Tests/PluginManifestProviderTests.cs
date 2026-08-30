@@ -19,7 +19,7 @@ public class PluginManifestProviderTests
     [Theory(Skip = "skiptemplary for rework. files delete")]
     [InlineData([false])]
     [InlineData([true])]
-    public void FilterFiles_FilterSharedFildes_OnlyThePluginFilesShouldRemain(bool releaseMode)
+    public void FilterFiles_SharedFilesPresent_OnlyPluginFilesRemain(bool releaseMode)
     {
         _ = nameof(PluginManifestProvider.FilterFiles);
         // Arrange

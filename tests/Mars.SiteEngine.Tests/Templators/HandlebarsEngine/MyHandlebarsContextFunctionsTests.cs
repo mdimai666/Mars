@@ -61,7 +61,7 @@ public class MyHandlebarsContextFunctionsTests
     }
 
     [Fact]
-    public void CultureCheck()
+    public void CurrentCulture_TestEnvironment_IsRuRU()
     {
         Assert.Equal("ru-RU", CultureInfo.CurrentCulture.Name);
     }

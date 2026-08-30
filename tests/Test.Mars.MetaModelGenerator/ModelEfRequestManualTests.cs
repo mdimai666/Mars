@@ -84,7 +84,7 @@ public class ModelEfRequestManualTests : MetaModelGeneratorTests
     #endregion
 
     [IntegrationFact]
-    public async Task TestEfQuery()
+    public async Task Select_PostTypeWithMetaFields_MapsStrAndVariant()
     {
         var (postTypeDetail, posts) = await SetupPostType();
         var mf = postTypeDetail.MetaFields.First();

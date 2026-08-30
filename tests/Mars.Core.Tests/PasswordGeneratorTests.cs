@@ -10,7 +10,7 @@ public class PasswordGeneratorTests
     [InlineData(16, 6)]
     [InlineData(5, 5)]
     [InlineData(6, 2)]
-    public void PasswordGenerator(int length, int numberOfNonAlphanumericCharacters)
+    public void Generate_VariousLengths_ReturnsRequestedLength(int length, int numberOfNonAlphanumericCharacters)
     {
         var result = Password.Generate(length, numberOfNonAlphanumericCharacters);
 

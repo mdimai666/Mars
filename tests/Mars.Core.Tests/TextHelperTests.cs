@@ -8,7 +8,7 @@ public class TextHelperTests
     /// <see cref="TextHelper.ParseBracketPairs(string)"/>
     /// </summary>
     [Fact]
-    public void ParseBracketPairs()
+    public void ParseBracketPairs_NestedExpression_ReturnsPairsWithDepth()
     {
         string input = "(1+(2+3))";
         var result = TextHelper.ParseBracketPairs(input);
@@ -29,7 +29,7 @@ public class TextHelperTests
     /// <see cref="TextHelper.ParseChainPair(string)"/>
     /// </summary>
     [Fact]
-    public void ParseChainPair()
+    public void ParseChainPair_LinqChain_ReturnsMethodSegments()
     {
         string input = "ef.Posts.Where(s=>s == 1+(2+3)).ToList()";
         var result = TextHelper.ParseChainPair(input);
@@ -51,7 +51,7 @@ public class TextHelperTests
     /// <see cref="TextHelper.ParseChainPairKeyValue(string)"/>
     /// </summary>
     [Fact]
-    public void ParseChainPairKeyValue()
+    public void ParseChainPairKeyValue_LinqChain_ReturnsMethodArgumentPairs()
     {
         string input = "ef.Posts.Where(s=>s == 1+(2+3)).ToList()";
         var result = TextHelper.ParseChainPairKeyValue(input);
@@ -70,7 +70,7 @@ public class TextHelperTests
     /// <see cref="TextHelper.ParseArguments(string)"/>
     /// </summary>
     [Fact]
-    public void ParseArguments()
+    public void ParseArguments_LambdaAndNumber_SplitsByComma()
     {
         string input = "Func1(s=>s == 1+(2+3), 777)";
         var result = TextHelper.ParseArguments(input);
@@ -85,7 +85,7 @@ public class TextHelperTests
     }
 
     [Fact]
-    public void SplitArguments()
+    public void SplitArguments_NestedBracketsAndCommas_KeepsGroupsIntact()
     {
         string input = "(\"Hello, world!\"),post.Title==\"testPost1\", (333,111)";
         var result = TextHelper.SplitArguments(input);
@@ -118,7 +118,7 @@ public class TextHelperTests
     }
 
     [Fact]
-    public void IsSlug()
+    public void IsValidSlug_MixedValidAndInvalidStrings_ClassifiesCorrectly()
     {
         string[] valid = ["post", "post-name", "post_name01", "post.1", "_post_", "1post2"];
         string[] notValis = [null!, "", "-post", ".post.", "пост", "a__!@#$%^&*()+=__z", "(z)"];

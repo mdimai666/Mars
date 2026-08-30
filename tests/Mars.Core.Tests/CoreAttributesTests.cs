@@ -22,7 +22,7 @@ public class CoreAttributesTests
     }
 
     [Fact]
-    public void TestEmailAddressThatAllowsBlanks()
+    public void Validate_EmailAddress_BlankAndValidPassInvalidFail()
     {
         var user1valid = new TestUser("Dima", "user@example.com");
         var user2valid = new TestUser("Aina", "");
@@ -61,7 +61,7 @@ public class CoreAttributesTests
     }
 
     [Fact]
-    public void SlugStringValidator()
+    public void Validate_Slug_EmptyNullOrLeadingDot_Fails()
     {
         TestPostClass[] validPosts = [
             new(){ Slug = "slug1" },

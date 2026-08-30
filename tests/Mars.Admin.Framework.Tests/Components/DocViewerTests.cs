@@ -5,7 +5,7 @@ using Mars.Admin.Framework.Components;
 using Mars.Admin.Framework.Tests.Utils;
 using Mars.Core.Attributes;
 
-namespace Mars.Admin.Framework.Tests.AppFront.Main;
+namespace Mars.Admin.Framework.Tests.Components;
 
 public class DocViewerTests
 {

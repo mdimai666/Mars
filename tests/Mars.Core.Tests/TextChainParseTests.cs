@@ -19,7 +19,7 @@ public class TextChainParseTests
     }
 
     [Fact]
-    public void ChainParse()
+    public void ParseChainPair_WhereWithIncludes_ReturnsSingleSegment()
     {
 
         var parse = TextHelper.ParseChainPair(exp1).ToList();

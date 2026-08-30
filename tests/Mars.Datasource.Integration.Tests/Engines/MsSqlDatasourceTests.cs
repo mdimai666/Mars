@@ -29,7 +29,7 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
     }
 
     [IntegrationFact]
-    public async Task CheckConnection()
+    public async Task Open_ValidConnectionString_Connects()
     {
         await using var connection = new SqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -49,7 +49,7 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
     }
 
     [IntegrationFact]
-    public async Task MsSqlEngineTests()
+    public async Task Driver_CreatedTodoTable_ReturnsRowsColumnsAndStructure()
     {
         await using var connection = new SqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -108,7 +108,7 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
     }
 
     [IntegrationFact]
-    public async Task ClearTest()
+    public async Task RemoveAllTables_CreatedTable_TableDoesNotExist()
     {
         await using var connection = new SqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();

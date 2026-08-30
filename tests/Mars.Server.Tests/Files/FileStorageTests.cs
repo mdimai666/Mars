@@ -18,7 +18,7 @@ public class FileStorageTests
             PhysicalPath = new Uri("C:\\www\\mars\\wwwRoot\\upload"),
         };
 
-        _fileStorage = new FileStorage(Options.Create(_fileHostingInfo));
+        _fileStorage = new FileStorage(Microsoft.Extensions.Options.Options.Create(_fileHostingInfo));
     }
 
     [Theory]

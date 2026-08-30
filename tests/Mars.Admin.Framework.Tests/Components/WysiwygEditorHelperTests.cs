@@ -4,9 +4,9 @@ using HtmlAgilityPack;
 using Mars.Admin.Framework.Components;
 using static Mars.Media.Contracts.Options.ImagePreviewSizeConfig;
 
-namespace Mars.Admin.Framework.Tests.AppFront.Main;
+namespace Mars.Admin.Framework.Tests.Components;
 
-public class WysiwygEditorHelperTest
+public class WysiwygEditorHelperTests
 {
     string html = """
         <h1>Title</h1>
@@ -75,7 +75,7 @@ public class WysiwygEditorHelperTest
     }
 
     [Fact]
-    public void NewSizeTest()
+    public void NewSize_ContainMode_FitsTargetKeepingRatio()
     {
         var source = new SizeF(1920, 1080);
         var sourceRatio = source.Width / source.Height;

@@ -4,10 +4,10 @@ using Mars.Server.Managers;
 
 namespace Mars.Server.Tests.EventManagerTests;
 
-public class EventManagerUnitTest
+public class EventManagerTests
 {
     [Fact]
-    public void PatternTest()
+    public void TestTopic_WildcardMiddleSegment_Matches()
     {
         //var postAdd = eventManager.Defaults.PostAdd("post");
         var postAdd = "entity.post/post/add";
@@ -26,7 +26,7 @@ public class EventManagerUnitTest
     [InlineData(true, "entity.post/**", "entity.post/post/add")]
     [InlineData(true, "option/*", "option/update")]
     [InlineData(true, "option/update", "option/update")]
-    public void TestMany_Success(bool result, string pattern, string value)
+    public void TestTopic_MatchingPatterns_ReturnsTrue(bool result, string pattern, string value)
     {
         IEventManager.TestTopic(pattern, value).Should().Be(result);
     }
@@ -38,7 +38,7 @@ public class EventManagerUnitTest
     [InlineData(false, "entity.post/post/update", "entity.post/post/update/1")]
     [InlineData(false, "entity.post/post/update/1", "entity.post/post/update")]
     [InlineData(false, "option/update", "entity.post/post/add")]
-    public void TestMany_Fail(bool result, string pattern, string value)
+    public void TestTopic_NonMatchingPatterns_ReturnsFalse(bool result, string pattern, string value)
     {
         IEventManager.TestTopic(pattern, value).Should().Be(result);
     }
@@ -50,7 +50,7 @@ public class EventManagerUnitTest
     [InlineData(true, "entity.post/post/[add,update]", "entity.post/post/add")]
     [InlineData(false, "entity.post/post/[add,update]", "entity.post/page/add")]
     [InlineData(false, "[add,update]/page/add", "entity.post/page/add")]
-    public void TestSpecials(bool result, string pattern, string value)
+    public void TestTopic_BracketChoicePatterns_MatchesByChoice(bool result, string pattern, string value)
     {
         IEventManager.TestTopic(pattern, value).Should().Be(result);
     }

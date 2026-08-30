@@ -65,7 +65,7 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task TestConnection_Request_Success()
+    public async Task TestConnection_DefaultPsqlConnection_DoesNotThrow()
     {
         //Arrange
         _ = nameof(DatasourceController.TestConnection);

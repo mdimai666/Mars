@@ -48,7 +48,7 @@ public class MetaFieldMaterializerServiceTests
         _serviceProvider.GetService(typeof(IUserRepository)).Returns(_userRepository);
         _serviceProvider.GetService(typeof(IFileRepository)).Returns(_fileRepository);
 
-        _metaFieldMaterializerService = new MetaFieldMaterializerService(_metaModelTypesLocator, _serviceProvider, Options.Create(_hostingInfo));
+        _metaFieldMaterializerService = new MetaFieldMaterializerService(_metaModelTypesLocator, _serviceProvider, Microsoft.Extensions.Options.Options.Create(_hostingInfo));
 
     }
 

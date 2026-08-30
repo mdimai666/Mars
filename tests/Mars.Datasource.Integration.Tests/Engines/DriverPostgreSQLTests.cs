@@ -37,7 +37,7 @@ public class DriverPostgreSQLTests
 #endif
 
     [Fact]
-    public async Task QueryAsJson()
+    public async Task SqlQueryJson_PostsUsersJoin_ReturnsRowsAsJson()
     {
         var se = new DatasourcePostgreSQLDriver(configs["psql"]);
         //string query = @"SELECT ""Id"",""Title"" FROM ""posts"" LIMIT 10;";
@@ -54,7 +54,7 @@ public class DriverPostgreSQLTests
     }
 
     [Fact]
-    public void CheckEfClass()
+    public void GetSchema_PostsTable_ReadsColumnsSchema()
     {
         //TestMarsDbContext ef = default!;
         //var conn = ef.Database.GetDbConnection();

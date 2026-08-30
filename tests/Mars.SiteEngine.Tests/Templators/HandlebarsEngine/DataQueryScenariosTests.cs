@@ -48,13 +48,13 @@ public class DataQueryScenariosTests
             SiteSettings = new(),
             Request = new(new Uri("http://localhost")),
             User = null,
-            TemplateContextVaribles = data ?? []
+            TemplateContextVariables = data ?? []
         };
         var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None)
         {
             Features = _featureCollection
         };
-        return template(pageRenderContext.TemplateContextVaribles, new { rctx });
+        return template(pageRenderContext.TemplateContextVariables, new { rctx });
     }
 
     [Fact]

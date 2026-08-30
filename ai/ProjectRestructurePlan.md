@@ -444,5 +444,12 @@ MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; лок�
 - Закомментированный блок `ListTable` с `ETotalResponeResult` убран из `MediaController`.
 - Опечатка `localVaribles` → `localVariables`: параметр `IQueryLangProcessing.Process` + реализация `QueryLangProcessing`, комментарий в `QueryLangLinqDatabaseQueryHandler`, параметр `PageRenderContext.CreateInterpreter`. Вызовы позиционные — правка только именований.
 - Живое ядро модуля не тронуто: `IQueryLangProcessing`/`QueryLangProcessing` (`$context` рендера), `IQueryLangLinqDatabaseQueryHandler`/`EfStringQuery<T>`, `IQueryLangHelperAvailableMethodsProvider`, `IDefaultEfQueries<T>`/`IDynamicEfQuery`, `MyThrowHelper`.
-- Открытый кандидат на будущую чистку: семейство опечатки `Varibles` (33 вхождения) — свойство `PageRenderContext.TemplateContextVaribles`, интерфейс `ITemplateContextVariblesFiller` + 4 реализации, надпись «global Varibles» в `NodeEditor1.razor`, `VarNode.md`.
+- ~~Открытый кандидат: семейство опечатки `Varibles`~~ — ✅ вычищено 2026-08-30 (см. секцию ниже).
 - Верификация: сборка 0 ошибок; `Mars.SiteEngine.Tests` (QueryLangProcessingTests + RenderEngineRenderTests) 8/8; Docker-регрессия рендера `HandlebarsAppFrontTests` 17/17.
+
+**Чистка семейства опечатки `Varibles` → `Variables` (2026-08-30).** 43 вхождения по репо, всё в `Variables`:
+- Свойство `PageRenderContext.TemplateContextVaribles` → `TemplateContextVariables` (потребители: `WebSiteRequestProcessor`, `XInterpreter`, `HandlebarsWebRenderEngine`, `HandlebarsContextBlockProcessor`, 5 тестовых файлов).
+- Интерфейс `ITemplateContextVariblesFiller` → `ITemplateContextVariablesFiller` (`git mv` файла + 4 реализации-филлера; параметры `templateContextVaribles` → `templateContextVariables`).
+- Имена тестов: `FlowContextVaribles_SetValueFromFunctionNode_Succeeds` / `GlobalContextVaribles_…` → `…Variables…` (`Mars.Nodes.Tests/FunctionNodeTests`).
+- Пользовательская надпись «global Varibles» → «global Variables» (`NodeEditor1.razor`); док `VarNode.md` «Declared varibles» → «Declared variables».
+- Верификация: сборка 0 ошибок; `Mars.SiteEngine.Tests` 61/61 (весь проект); `Mars.Nodes.Tests` FunctionNodeTests 11/11; `Mars.Integration.Tests` лёгкий фронт-набор 49/49; Docker-регрессия рендера `HandlebarsAppFrontTests` 17/17. Коммит — по команде пользователя.

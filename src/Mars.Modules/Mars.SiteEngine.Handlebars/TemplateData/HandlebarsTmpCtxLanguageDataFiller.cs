@@ -3,11 +3,11 @@ using Mars.SiteEngine.Abstractions.WebSite.Models;
 
 namespace Mars.SiteEngine.Handlebars.TemplateData;
 
-public class HandlebarsTmpCtxLanguageDataFiller : ITemplateContextVariblesFiller
+public class HandlebarsTmpCtxLanguageDataFiller : ITemplateContextVariablesFiller
 {
     public const string LanguageParamKey = "_lang";
 
-    public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVaribles)
+    public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVariables)
     {
         var headers = pageContext.Request.Headers;
 
@@ -44,7 +44,7 @@ public class HandlebarsTmpCtxLanguageDataFiller : ITemplateContextVariblesFiller
         //    new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
         //);
 
-        templateContextVaribles.Add(LanguageParamKey, langTwo);
+        templateContextVariables.Add(LanguageParamKey, langTwo);
 
     }
 }

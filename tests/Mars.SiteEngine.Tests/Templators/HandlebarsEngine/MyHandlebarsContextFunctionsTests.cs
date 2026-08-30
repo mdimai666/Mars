@@ -37,7 +37,7 @@ public class MyHandlebarsContextFunctionsTests
             SiteSettings = new(),
             Request = new(new Uri("http://localhost")),
             User = null,
-            TemplateContextVaribles = ObjectToDictionary(data ?? new { })
+            TemplateContextVariables = ObjectToDictionary(data ?? new { })
         };
         var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None)
         {

@@ -3,7 +3,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Models;
 
 namespace Mars.SiteEngine.Handlebars.TemplateData;
 
-public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
+public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariablesFiller
 {
     public const string UserParamKey = "_user";
     public const string RequestParamKey = "_req";
@@ -21,12 +21,12 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
     public const string MauiPlatformParamKey = "$maui_platform";
     public const string MauiIdiomParamKey = "$maui_idiom";
 
-    public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVaribles)
+    public void FillTemplateDictionary(PageRenderContext pageContext, Dictionary<string, object?> templateContextVariables)
     {
-        templateContextVaribles.Add(UserParamKey, pageContext.User);
-        templateContextVaribles.Add(RequestParamKey, pageContext.Request);
-        templateContextVaribles.Add(SiteSettingsParamKey, pageContext.SiteSettings);
-        templateContextVaribles.Add(IsDevelopmentParamKey, pageContext.IsDevelopment);
+        templateContextVariables.Add(UserParamKey, pageContext.User);
+        templateContextVariables.Add(RequestParamKey, pageContext.Request);
+        templateContextVariables.Add(SiteSettingsParamKey, pageContext.SiteSettings);
+        templateContextVariables.Add(IsDevelopmentParamKey, pageContext.IsDevelopment);
 
         if (pageContext.User is not null)
         {
@@ -38,25 +38,25 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
             }
         }
 
-        templateContextVaribles.Add(BodyClassParamKey, pageContext.BodyClass.JoinStr(" "));
-        templateContextVaribles.Add(BodyAttrsParamKey, pageContext.BodyAttrs.JoinStr(" "));
+        templateContextVariables.Add(BodyClassParamKey, pageContext.BodyClass.JoinStr(" "));
+        templateContextVariables.Add(BodyAttrsParamKey, pageContext.BodyAttrs.JoinStr(" "));
 
         if (pageContext.Request.Headers.TryGetValue(MarsAppHeaderKey, out var bapp))
         {
             if (bapp == "maui")
             {
-                templateContextVaribles.Add(MauiParamKey, true);
+                templateContextVariables.Add(MauiParamKey, true);
             }
         }
 
         if (pageContext.Request.Headers.TryGetValue(MauiPlatformHeaderKey, out var mauiPLatform))
         {
-            templateContextVaribles.Add(MauiPlatformParamKey, mauiPLatform);
+            templateContextVariables.Add(MauiPlatformParamKey, mauiPLatform);
         }
 
         if (pageContext.Request.Headers.TryGetValue(MauiIdiomHeaderKey, out var mauiIdiom))
         {
-            templateContextVaribles.Add(MauiIdiomParamKey, mauiIdiom);
+            templateContextVariables.Add(MauiIdiomParamKey, mauiIdiom);
         }
 
     }

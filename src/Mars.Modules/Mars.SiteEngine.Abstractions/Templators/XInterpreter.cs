@@ -49,9 +49,9 @@ public class XInterpreter
 
         if (pageContext is not null)
         {
-            e.SetVariable("this", pageContext.TemplateContextVaribles); // TODO: тут надо подумать куда ссылку оставлять
+            e.SetVariable("this", pageContext.TemplateContextVariables); // TODO: тут надо подумать куда ссылку оставлять
 
-            foreach (var v in pageContext.TemplateContextVaribles)
+            foreach (var v in pageContext.TemplateContextVariables)
             {
                 if (!v.Key.StartsWith('$') && v.Value is not null)
                 {

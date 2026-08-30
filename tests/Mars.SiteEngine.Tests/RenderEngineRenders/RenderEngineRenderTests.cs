@@ -77,7 +77,7 @@ public class RenderEngineRenderTests
             SiteSettings = sys,
             User = new RenderContextUser(user),
             IsDevelopment = true,
-            TemplateContextVaribles = dataDict ?? [],
+            TemplateContextVariables = dataDict ?? [],
             RenderParam = new RenderParam()
         };
         var renderParam = new RenderParam() { AllowLayout = false };

@@ -155,7 +155,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 #endif
         }
 
-        var tmpFillers = (ITemplateContextVariblesFiller[])[
+        var tmpFillers = (ITemplateContextVariablesFiller[])[
             new HandlebarsTmpCtxBasicDataContext(),
             new HandlebarsTmpCtxLanguageDataFiller(),
             new HandlebarsTmpCtxAppThemeFiller(),
@@ -164,7 +164,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
 
         foreach (var filler in tmpFillers)
         {
-            filler.FillTemplateDictionary(ctx, ctx.TemplateContextVaribles);
+            filler.FillTemplateDictionary(ctx, ctx.TemplateContextVariables);
         }
 
         _ = nameof(HandlebarsHelperFunctionContext.HelperFunctionContextKey);
@@ -172,7 +172,7 @@ public class HandlebarsWebRenderEngine : IWebRenderEngine
         // Без принудительного =null шаблонизатор не отпускает объекты.
         using var hctx = new HandlebarsHelperFunctionContext(ctx, serviceProvider, cancellationToken);
 
-        var result = template_compiled(ctx.TemplateContextVaribles, new { rctx = hctx } /*это необходимо для зарегестированных функций*/);
+        var result = template_compiled(ctx.TemplateContextVariables, new { rctx = hctx } /*это необходимо для зарегестированных функций*/);
 
         return result;
     }

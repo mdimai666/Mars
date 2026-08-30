@@ -35,7 +35,7 @@ public class QueryLangProcessingTests
             IsDevelopment = true,
         };
         var dataFiller = new HandlebarsTmpCtxBasicDataContext();
-        dataFiller.FillTemplateDictionary(_pageContext, _pageContext.TemplateContextVaribles);
+        dataFiller.FillTemplateDictionary(_pageContext, _pageContext.TemplateContextVariables);
 
         tfLocator = new TemplatorFeaturesLocator();
         _serviceProvider = Substitute.For<IServiceProvider>();

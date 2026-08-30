@@ -18,7 +18,7 @@ public class HandlebarsContextBlockProcessor
 
             foreach (var (key, val) in result)
             {
-                pageRenderContext.TemplateContextVaribles.TryAdd(key, val);
+                pageRenderContext.TemplateContextVariables.TryAdd(key, val);
             }
         }
     }

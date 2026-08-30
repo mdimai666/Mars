@@ -11,7 +11,7 @@ public class PageRenderContext
     public List<string> BodyAttrs { get; init; } = [];
     public required SiteSettings SiteSettings { get; init; }
     public required WebClientRequest Request { get; init; } = default!;
-    public Dictionary<string, object?> TemplateContextVaribles { get; init; } = [];
+    public Dictionary<string, object?> TemplateContextVariables { get; init; } = [];
     public required bool IsDevelopment { get; init; }
 
     public Dictionary<string, DataQueryRequest>? DataQueries { get; init; } = [];

@@ -149,7 +149,7 @@ public class WebSiteRequestProcessor
 
             //PageRenderContextOld ctx = await PrepareHostHtml.PreparePageContext(httpContext, serviceProvider, requestContext, cancellationToken);
 
-            pageRenderContext.TemplateContextVaribles.Add("$attr", page.Attributes);
+            pageRenderContext.TemplateContextVariables.Add("$attr", page.Attributes);
 
             if (page.UrlIsContainCurlyBracket)
             {
@@ -166,7 +166,7 @@ public class WebSiteRequestProcessor
                         var seg = surl.Segments[i].Parts[0].Text;
                         var key = pa.Name;
                         //httpContext.Request.RouteValues.Add(key, seg); //TODO: rgis - slug conflict
-                        pageRenderContext.TemplateContextVaribles.TryAdd(key, seg!);
+                        pageRenderContext.TemplateContextVariables.TryAdd(key, seg!);
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class WebSiteRequestProcessor
 
             if (request.Items.TryGetValue(typeof(RenderPageHtmlException), out var ex))
             {
-                renderContext.PageContext.TemplateContextVaribles.Add("ex", ex);
+                renderContext.PageContext.TemplateContextVariables.Add("ex", ex);
             }
 
             var result = renderEngine.RenderPage(renderContext, serviceProvider, cancellationToken);

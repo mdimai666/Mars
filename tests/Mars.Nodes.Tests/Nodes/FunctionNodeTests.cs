@@ -26,7 +26,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task FlowContextVaribles_SetValueFromFunctionNode_Succeeds()
+    public async Task FlowContextVariables_SetValueFromFunctionNode_Succeeds()
     {
         //Arrange
         _ = nameof(FunctionNodeImpl.Execute);
@@ -48,7 +48,7 @@ public class FunctionNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task GlobalContextVaribles_SetValueFromFunctionNode_Succeeds()
+    public async Task GlobalContextVariables_SetValueFromFunctionNode_Succeeds()
     {
         //Arrange
         _ = nameof(FunctionNodeImpl.Execute);

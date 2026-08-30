@@ -77,7 +77,7 @@ v1
             User = null,
             IsDevelopment = false,
             RenderParam = new RenderParam(), // UseCache = true
-            TemplateContextVaribles = [],
+            TemplateContextVariables = [],
         };
 
         return engine.RenderPage(appFront, ctx, template.Roots.Values.First(), template.IndexPage, template.Parts, services, default);

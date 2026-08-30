@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
         <!--Author-->
@@ -68,8 +68,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
-        <ProjectReference Include="..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource\Mars.Datasource.csproj" />
         <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Front\Mars.AiChat.Front.csproj" />
@@ -78,7 +78,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
-        <ProjectReference Include="..\Mars.Options\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />
         <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />

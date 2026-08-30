@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -6,7 +6,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
-        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

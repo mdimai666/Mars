@@ -22,7 +22,6 @@ internal static class TestingScriptCompiler
                     "Microsoft.EntityFrameworkCore",
                     "System.Linq.Expressions",
                     ..((Type[])[
-                        typeof(global::Mars.Nodes.Core.Node),
                         typeof(PostEntity),
                         typeof(DisplayAttribute),
                         typeof(IMtoMarker),

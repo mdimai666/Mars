@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <UserSecretsId>aspnet-Mars-56F29B15-4FE5-4248-9243-0A24943CC689</UserSecretsId>
@@ -87,13 +87,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
-        <ProjectReference Include="..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
-        <ProjectReference Include="..\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
-        <ProjectReference Include="..\Mars.Server\Mars.Server.csproj" />
-        <ProjectReference Include="..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
-        <ProjectReference Include="..\Mars.XActions\Mars.XActions.Host\Mars.XActions.Host.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.Admin.Host\Mars.Admin.Host.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\Server\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
+        <ProjectReference Include="..\Server\Mars.Server\Mars.Server.csproj" />
+        <ProjectReference Include="..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.XActions.Host\Mars.XActions.Host.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Host\Mars.Admin.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Host\Mars.AiChat.Host.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
@@ -115,7 +115,7 @@
         <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Handlebars\Mars.SiteEngine.Handlebars.csproj" />
         <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
         <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
-        <ProjectReference Include="..\Mars.Options\Mars.Options.Host\Mars.Options.Host.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Options.Host\Mars.Options.Host.csproj" />
         <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored.Host\EditorJsBlazored.Host.csproj" />
         <ProjectReference Include="..\Plugin\Mars.Plugin\Mars.Plugin.csproj" />
 

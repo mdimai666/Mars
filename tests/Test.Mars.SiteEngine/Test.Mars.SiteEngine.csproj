@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Server\Mars.Server.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Server\Mars.Server.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang.Host\Mars.QueryLang.Host.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.QueryLang\Mars.QueryLang.csproj" />
         <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Handlebars\Mars.SiteEngine.Handlebars.csproj" />

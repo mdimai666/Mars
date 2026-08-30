@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -9,12 +9,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
+		<ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
-		<ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
 		<ProjectReference Include="..\Mars.Datasource\Mars.Datasource.csproj" />
-		<ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Host.MsSQL\Mars.Datasource.Host.MsSQL.csproj" />
 		<ProjectReference Include="..\Mars.Datasource.Host.MySQL\Mars.Datasource.Host.MySQL.csproj" />

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <!--Project-->
@@ -66,7 +66,7 @@
         <!-- //Для hotreload -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />

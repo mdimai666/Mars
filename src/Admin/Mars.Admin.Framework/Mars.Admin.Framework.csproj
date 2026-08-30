@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<!--Project-->
@@ -31,7 +31,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
@@ -69,23 +69,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-		<ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
-		<ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.XActions\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Modules\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
-		<ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Modules\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
-		<ProjectReference Include="..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
-		<ProjectReference Include="..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
-		<ProjectReference Include="..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
-		<ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
-		<ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
-		<ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
+		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+		<ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
+		<ProjectReference Include="..\..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
+		<ProjectReference Include="..\..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
+		<ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+		<ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
+		<ProjectReference Include="..\..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
 	</ItemGroup>
 
 </Project>

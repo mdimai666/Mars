@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Excel.Abstractions\Mars.Excel.Abstractions.csproj" />
     </ItemGroup>
 

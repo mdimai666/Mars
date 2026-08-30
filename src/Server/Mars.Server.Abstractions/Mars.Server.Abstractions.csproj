@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <!--Project-->
@@ -30,7 +30,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
@@ -42,8 +42,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
-        <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
     </ItemGroup>
 

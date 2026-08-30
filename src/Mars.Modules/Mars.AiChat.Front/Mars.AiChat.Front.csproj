@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+    <ProjectReference Include="..\..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
     <ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
     <ProjectReference Include="..\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
-    <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

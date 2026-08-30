@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -16,8 +16,8 @@
         <ProjectReference Include="..\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
-        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
-        <ProjectReference Include="..\..\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

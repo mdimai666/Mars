@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Data\Mars.Data.csproj" />
-        <ProjectReference Include="..\..\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
-        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Data.Infrastructure\Mars.Data.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.MetaModelGenerator\Mars.MetaModelGenerator.csproj" />
         <ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
     </ItemGroup>

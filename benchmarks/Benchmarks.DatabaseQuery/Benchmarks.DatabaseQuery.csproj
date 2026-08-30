@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -9,7 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Server\Mars.Server.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Server\Mars.Server.csproj" />
         <ProjectReference Include="..\..\tests\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
     </ItemGroup>
 

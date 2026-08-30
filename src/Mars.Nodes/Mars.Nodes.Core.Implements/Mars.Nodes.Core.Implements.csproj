@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <!--Project-->
@@ -46,8 +46,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
-        <ProjectReference Include="..\..\Mars.XActions\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
         <ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
@@ -56,7 +56,7 @@
         <ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

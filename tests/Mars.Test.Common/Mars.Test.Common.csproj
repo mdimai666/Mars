@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
@@ -11,8 +11,8 @@
         <PackageReference Include="FluentAssertions" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Data\Mars.Data.csproj" />
-        <ProjectReference Include="..\..\src\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Data\Mars.Data.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\..\src\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
     </ItemGroup>
 
@@ -20,7 +20,7 @@
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
   </ItemGroup>
 

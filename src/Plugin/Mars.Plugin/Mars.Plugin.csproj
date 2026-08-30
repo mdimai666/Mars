@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front.Abstractions\Mars.Plugin.Front.Abstractions.csproj" />
-        <ProjectReference Include="..\..\Mars.Options\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

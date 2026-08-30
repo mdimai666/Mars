@@ -1,4 +1,4 @@
-﻿namespace Mars.Nodes.FormEditor;
+namespace Mars.Nodes.FormEditor;
 
 public interface INodeEditForm
 {

@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Running;
 using Benchmarks.MyHandlebars;
 
 Console.WriteLine("Start!");

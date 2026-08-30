@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <NoWarn>$(NoWarn),VSTHRD111,CA2007,CA5399,SKEXP0001,SKEXP0010,SKEXP0050,SKEXP0070</NoWarn>

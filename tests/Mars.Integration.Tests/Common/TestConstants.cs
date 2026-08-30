@@ -1,4 +1,4 @@
-﻿namespace Mars.Integration.Tests.Common;
+namespace Mars.Integration.Tests.Common;
 
 public static class TestConstants
 {

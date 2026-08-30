@@ -1,4 +1,4 @@
-﻿namespace Mars.Core.Exceptions;
+namespace Mars.Core.Exceptions;
 
 public class UnauthorizedException : Exception
 {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- harness-память и скиллы (FileMemoryStore, AgentSkillsSource) — experimental API Microsoft.Agents.AI -->

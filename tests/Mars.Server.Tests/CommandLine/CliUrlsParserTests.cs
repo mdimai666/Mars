@@ -12,7 +12,7 @@ public class CliUrlsParserTests
     [InlineData("http://127.0.0.1:9000", CliUrlHostKind.Ip, 9000)]
     [InlineData("http://[::]:88", CliUrlHostKind.Ip, 88)]
     [InlineData("localhost:5003", CliUrlHostKind.Localhost, 5003)] // схема по умолчанию http
-    public void Parse_SingleUrl(string url, CliUrlHostKind kind, int port)
+    public void Parse_SingleUrl_ReturnsOneEndpoint(string url, CliUrlHostKind kind, int port)
     {
         var plan = CliUrlsParser.Parse(url);
 
@@ -23,7 +23,7 @@ public class CliUrlsParserTests
     }
 
     [Fact]
-    public void Parse_MultipleUrls()
+    public void Parse_MultipleUrls_ReturnsAllEndpoints()
     {
         var plan = CliUrlsParser.Parse("http://localhost:5003;http://*:8080");
 

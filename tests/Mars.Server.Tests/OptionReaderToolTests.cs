@@ -15,7 +15,7 @@ public class OptionReaderToolTests
     [InlineData(["http://127.0.0.1:81", 81])]
     [InlineData(["http://[::]:88", 88])]
     [InlineData(["http://[::]", 80])]
-    public void ExtractPortFromUrls_ShouldReturnCorrectPort(string url, int expectPort)
+    public void ExtractPortFromUrls_VariousUrls_ReturnsCorrectPort(string url, int expectPort)
     {
         //Arrange
         //Act
@@ -51,7 +51,7 @@ public class OptionReaderToolTests
     [InlineData(["http://[::]:801", "http://localhost:801"])]
     [InlineData(["http://[::1]:801", "http://[::1]:801"])]
     [InlineData(["https://[2001:db8::1]", "https://[2001:db8::1]"])]
-    public void NormalizeUrl_ShouldReturnNormalizedUrl(string urls, string expectUrl)
+    public void NormalizeUrl_VariousUrls_ReturnsNormalizedUrl(string urls, string expectUrl)
     {
         //Arrange
         //Act

@@ -35,7 +35,7 @@ public class NuspecHelperTests
         """;
 
     [Fact]
-    public void ReadFromFileContent_ReturnsCorrectValues()
+    public void ReadFromFileContent_ValidNuspec_ReturnsAllFields()
     {
         // Arrange
         // Act

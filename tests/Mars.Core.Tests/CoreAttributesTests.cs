@@ -22,36 +22,47 @@ public class CoreAttributesTests
     }
 
     [Fact]
-    public void Validate_EmailAddress_BlankAndValidPassInvalidFail()
+    public void IsValid_BlankValidAndInvalidEmails_PassesBlankAndValid()
     {
-        var user1valid = new TestUser("Dima", "user@example.com");
-        var user2valid = new TestUser("Aina", "");
-        var user3valid = new TestUser("Alex", null!);
-        var user91notValid = new TestUser("Vasya", "xxxx");
-        var user92notValid = new TestUser("Zen", "1");
-
         var validator = new EmailAddressThatAllowsBlanks();
+        string[] validEmails = ["user@example.com", "", null!];
+        string[] invalidEmails = ["xxxx", "1"];
 
+        foreach (var email in validEmails)
+        {
+            Assert.True(validator.IsValid(email));
+        }
 
-        //Check alhoritm
-        Assert.True(validator.IsValid(user1valid.Email));
-        Assert.True(validator.IsValid(user2valid.Email));
-        Assert.True(validator.IsValid(user3valid.Email));
-        Assert.False(validator.IsValid(user91notValid.Email));
-        Assert.False(validator.IsValid(user92notValid.Email));
+        foreach (var email in invalidEmails)
+        {
+            Assert.False(validator.IsValid(email));
+        }
+    }
 
-        //Check attribute functionality
-        ValidationContext vx1 = new(user1valid);
-        ValidationContext vx2 = new(user2valid);
-        ValidationContext vx3 = new(user3valid);
-        ValidationContext vx4 = new(user91notValid);
-        ValidationContext vx5 = new(user92notValid);
+    [Fact]
+    public void TryValidateObject_UsersWithEmailAttribute_PassesBlankAndValid()
+    {
+        TestUser[] valid =
+        [
+            new("Dima", "user@example.com"),
+            new("Aina", ""),
+            new("Alex", null!),
+        ];
+        TestUser[] invalid =
+        [
+            new("Vasya", "xxxx"),
+            new("Zen", "1"),
+        ];
 
-        Assert.True(Validator.TryValidateObject(user1valid, vx1, null, true));
-        Assert.True(Validator.TryValidateObject(user2valid, vx2, null, true));
-        Assert.True(Validator.TryValidateObject(user3valid, vx3, null, true));
-        Assert.False(Validator.TryValidateObject(user91notValid, vx4, null, true));
-        Assert.False(Validator.TryValidateObject(user92notValid, vx5, null, true));
+        foreach (var user in valid)
+        {
+            Assert.True(Validator.TryValidateObject(user, new ValidationContext(user), null, true));
+        }
+
+        foreach (var user in invalid)
+        {
+            Assert.False(Validator.TryValidateObject(user, new ValidationContext(user), null, true));
+        }
     }
 
     class TestPostClass

@@ -32,11 +32,11 @@ public class BasicExpressionTests
             no = false
         };
 
-        var templateOk = HandlebarsDotNet.Handlebars.Compile(htmlTemplateOk);
-        templateOk(data).Trim().Should().Be("ok");
+        var resultOk = HandlebarsDotNet.Handlebars.Compile(htmlTemplateOk)(data).Trim();
+        var resultNo = HandlebarsDotNet.Handlebars.Compile(htmlTemplateNo)(data).Trim();
 
-        var templateNo = HandlebarsDotNet.Handlebars.Compile(htmlTemplateNo);
-        templateNo(data).Trim().Should().Be("ok");
+        resultOk.Should().Be("ok");
+        resultNo.Should().Be("ok");
     }
 
     [Fact]
@@ -46,18 +46,14 @@ public class BasicExpressionTests
         {
             arr = new string[] { "1", "2", "3", "4" },
         };
-
         string htmlArrLength = @"{{arr.length}}";
-
-        var templateArrLength = HandlebarsDotNet.Handlebars.Compile(htmlArrLength);
-
-        templateArrLength(data).Trim().Should().Be("4");
-
         string htmlArrEach = @"{{#each arr}} {{.}} {{/each}}";
 
-        var templateArrEach = HandlebarsDotNet.Handlebars.Compile(htmlArrEach);
+        var resultArrLength = HandlebarsDotNet.Handlebars.Compile(htmlArrLength)(data).Trim();
+        var resultArrEach = HandlebarsDotNet.Handlebars.Compile(htmlArrEach)(data).Trim();
 
-        templateArrEach(data).Trim().Should().Be("1  2  3  4");
+        resultArrLength.Should().Be("4");
+        resultArrEach.Should().Be("1  2  3  4");
     }
 
     [Fact]
@@ -111,7 +107,6 @@ public class BasicExpressionTests
             { "False", false },
             { "Count", 123 }
         };
-        //data.Add("count", new { False = false, Count = 123 });
 
         string html1 = @"{{#eq Count 123}}1{{else}}0{{/eq}}";
         string html2 = @"{{#eq count 123}}1{{else}}0{{/eq}}";

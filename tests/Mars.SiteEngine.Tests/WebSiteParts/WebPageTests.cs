@@ -76,7 +76,7 @@ public class WebPageTests
     [InlineData("/page-1", false)]
     [InlineData("/page1/exe", false)]
     [InlineData("/page1 space", false)]
-    public void MatchUrl_MatchUrl_ShouldExpect(string url, bool result)
+    public void MatchUrl_PlainPageUrl_ReturnsExpectedMatch(string url, bool result)
     {
         // Arrange
         var pageUrl = "/page1";
@@ -97,7 +97,7 @@ public class WebPageTests
     [InlineData("/post/22/123", false)]
     [InlineData("/post-88/33/", false)]
     [InlineData("/POST\\44/", false)]
-    public void MatchUrl_MatchTemplateUrl_ShouldExpect(string url, bool result)
+    public void MatchUrl_TemplateUrlPattern_ReturnsExpectedMatch(string url, bool result)
     {
         // Arrange
         var pageUrl = "/post/{id}";
@@ -120,7 +120,7 @@ public class WebPageTests
     [InlineData("/post/{id:int:max(10)}", "/post/strPar/", false)]
     //[InlineData("/post/{id:int:max(10)}", "/POST\\44/22xx", false)] // тут надо подумать
     [InlineData("/post/{id:int:max(10)}", "/post/99/", false)]
-    public void MatchUrl_TypedMatchTemplateUrl_ShouldExpect(string pageUrl, string url, bool result)
+    public void MatchUrl_TypedTemplateUrlPattern_ReturnsExpectedMatch(string pageUrl, string url, bool result)
     {
         // Arrange
         // Act

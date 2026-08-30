@@ -68,7 +68,6 @@ public class DataQueryScenariosTests
             """;
 
         var posts = _fixture.CreateMany<PostEntity>(3).ToList();
-
         _queryLangLinqDatabaseQueryHandler.Handle("posts.Take(3)", Arg.Any<XInterpreter>(), default)
                                             .Returns(posts);
 

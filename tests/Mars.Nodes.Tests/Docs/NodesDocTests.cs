@@ -32,7 +32,7 @@ public class NodesDocTests
     }
 
     [Fact]
-    public void Check_FunctionApiDocumentAttribute_Exists()
+    public void NodeTypes_AllRegistered_HaveFunctionApiDocumentAttribute()
     {
         var nodes = GetNodes();
 
@@ -44,7 +44,7 @@ public class NodesDocTests
     }
 
     [Fact]
-    public void Check_DocsForNodesFiles_Exists()
+    public void DocFiles_AllAttributedNodesAndLangs_ExistOnDisk()
     {
         var cd = GetMarsPath();
 

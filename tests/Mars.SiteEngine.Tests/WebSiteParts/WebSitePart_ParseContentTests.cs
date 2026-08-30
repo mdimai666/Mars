@@ -25,11 +25,11 @@ public class WebSitePart_ParseContentTests
         attrs.Count.Should().Be(2);
         attrs["page"].Should().Be("/");
         attrs["title"].Should().Be("Title 1");
-        content.TrimStart().StartsWith("<h1>Title</h1>");
+        content.TrimStart().Should().StartWith("<h1>Title</h1>");
     }
 
     [Fact]
-    public void ParseContent_NonHeaderAttributeIgnore_MustIgnored()
+    public void ParseContent_NonHeaderAttribute_IsIgnored()
     {
         // Arrange
         var fileContent = """
@@ -47,7 +47,7 @@ public class WebSitePart_ParseContentTests
 
         // Assert
         attrs.Count.Should().Be(2);
-        content.TrimStart().StartsWith("<h1>Title</h1>");
+        content.TrimStart().Should().StartWith("<h1>Title</h1>");
     }
 
     [Fact]

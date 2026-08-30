@@ -23,55 +23,39 @@ public class WysiwygEditorHelperTests
     """;
 
     [Fact]
-    public void WysiwygEditorHelper_GetImages()
+    public void NodeToImageInfo_HtmlWithVariousImages_ReturnsCountAndMinMaxSizes()
     {
-        var doc = new HtmlDocument();
-        doc.LoadHtml(html);
-
         int expectImgCount = 4;
-
-        var imgs = doc.DocumentNode.Descendants("img").ToList();
-        var infos = imgs.Select(WysiwygEditorHelper.NodeToImageInfo).Where(s => s.WidthPx != null || s.HeightPx != null).ToList();
-
-        var maxWidth = infos.Max(s => s.WidthPx);
-        var maxHeight = infos.Max(s => s.HeightPx);
-
-        var minWidth = infos.Min(s => s.WidthPx);
-        var minHeight = infos.Min(s => s.HeightPx);
-
         int expectMaxWidth = 400;
         int expectMaxHeight = 300;
         int expectMinWidth = 139;
         int expectMinHeight = 76;
 
-        imgs.Count.Should().Be(expectImgCount);
-
-        maxWidth.Should().Be(expectMaxWidth);
-        maxHeight.Should().Be(expectMaxHeight);
-        minWidth.Should().Be(expectMinWidth);
-        minHeight.Should().Be(expectMinHeight);
-
-    }
-
-    [Fact]
-    public void WysiwygEditorHelper_ModifyImages()
-    {
-        var html2 = WysiwygEditorHelper.ModifyImages(html, ImageCollectionModify.ByFirst)!;
-
         var doc = new HtmlDocument();
-        doc.LoadHtml(html2);
+        doc.LoadHtml(html);
         var imgs = doc.DocumentNode.Descendants("img").ToList();
         var infos = imgs.Select(WysiwygEditorHelper.NodeToImageInfo).Where(s => s.WidthPx != null || s.HeightPx != null).ToList();
 
-        int expectImgCount = 4;
         imgs.Count.Should().Be(expectImgCount);
+        infos.Max(s => s.WidthPx).Should().Be(expectMaxWidth);
+        infos.Max(s => s.HeightPx).Should().Be(expectMaxHeight);
+        infos.Min(s => s.WidthPx).Should().Be(expectMinWidth);
+        infos.Min(s => s.HeightPx).Should().Be(expectMinHeight);
+    }
 
+    [Fact]
+    public void ModifyImages_ByFirstImage_AllImagesGetFirstWidth()
+    {
+        int expectImgCount = 4;
+
+        var modifiedHtml = WysiwygEditorHelper.ModifyImages(html, ImageCollectionModify.ByFirst)!;
+        var doc = new HtmlDocument();
+        doc.LoadHtml(modifiedHtml);
+        var imgs = doc.DocumentNode.Descendants("img").ToList();
+
+        imgs.Count.Should().Be(expectImgCount);
         var firstWidth = imgs.First().GetAttributeValue("width", (string)null!);
-
-        var widthS = imgs.Select(node => node.GetAttributeValue("width", (string)null!)).ToList();
-
-        widthS.Should().AllBe(firstWidth);
-
+        imgs.Select(node => node.GetAttributeValue("width", (string)null!)).Should().AllBe(firstWidth);
     }
 
     [Fact]

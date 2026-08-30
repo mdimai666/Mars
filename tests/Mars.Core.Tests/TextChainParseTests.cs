@@ -1,41 +1,22 @@
 using Mars.Core.Features;
-using Xunit.Abstractions;
 
 namespace Mars.Core.Tests;
 
 public class TextChainParseTests
 {
-    private readonly ITestOutputHelper output;
-
-
     string exp1 = "post.Where(post.Tags.Includes(\"адаптация\"))";
-    //string exp2 = "post.Where(post.Tags.Includes(\"адаптация\") && 1>2)";
-
-    KeyValuePair<string, string>[] chain1 = new[] { new KeyValuePair<string, string>("Where", "post.Tags.Includes(\"адаптация\")") };
-
-    public TextChainParseTests(ITestOutputHelper output)
-    {
-        this.output = output;
-    }
 
     [Fact]
     public void ParseChainPair_WhereWithIncludes_ReturnsSingleSegment()
     {
+        ChainPair[] expect =
+        [
+            new(0, 0, 0, "Where", "post.Tags.Includes(\"адаптация\")")
+        ];
 
         var parse = TextHelper.ParseChainPair(exp1).ToList();
 
-        output.WriteLine($"Method[0] = {parse[0].Method}");
         Assert.Equal("Where", parse[0].Method);
-
-        ChainPair[] expect = new[]
-        {
-            new ChainPair(0, 0, 0, "Where", "post.Tags.Includes(\"адаптация\")")
-        };
-
         Assert.Equal(expect[0].Method, parse[0].Method);
     }
-
-
 }
-
-

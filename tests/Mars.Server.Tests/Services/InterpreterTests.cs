@@ -2,7 +2,7 @@ using Mars.SiteEngine.Abstractions.Templators;
 
 namespace Mars.Server.Tests.Services;
 
-public class InterprerTests
+public class InterpreterTests
 {
 
     [Fact]

@@ -31,20 +31,20 @@ public class OptionController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("SysOptions")]
-    public SiteSettings GetSysOptions()
+    [HttpGet("SiteSettings")]
+    public SiteSettings GetSiteSettings()
     {
         return _optionService.GetOption<SiteSettings>();
     }
 
-    [HttpPut("SysOptions")]
+    [HttpPut("SiteSettings")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(HttpConstants.UserActionErrorCode466, Type = typeof(UserActionResult))]
-    public IActionResult SaveSysOptions(SiteSettings val)
+    public IActionResult SaveSiteSettings(SiteSettings val)
     {
         _optionService.SaveOption(val);
         return Ok();

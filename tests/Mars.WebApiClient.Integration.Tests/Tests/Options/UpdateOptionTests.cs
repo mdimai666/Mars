@@ -54,14 +54,14 @@ public sealed class UpdateOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task SaveSysOptions_AnonimRequest_Unauthorized()
+    public async Task SaveSiteSettings_AnonimRequest_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);
         var optionValue = new SiteSettings();
 
         //Act
-        var action = () => client.Option.SaveSysOptions(optionValue);
+        var action = () => client.Option.SaveSiteSettings(optionValue);
 
         //Assert
         await action.Should().ThrowAsync<UnauthorizedException>();

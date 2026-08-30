@@ -77,15 +77,15 @@ public class GetOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetSysOptions_AnonimRequest_Succeeds()
+    public async Task GetSiteSettings_AnonimRequest_Succeeds()
     {
         //Arrange
-        _ = nameof(OptionController.GetSysOptions);
+        _ = nameof(OptionController.GetSiteSettings);
         var client = AppFixture.GetClient(true);
         var optionValue = _optionService.GetOption<SiteSettings>();
 
         //Act
-        var result = await client.Request(_apiUrl, "SysOptions").GetJsonAsync<SiteSettings>();
+        var result = await client.Request(_apiUrl, "SiteSettings").GetJsonAsync<SiteSettings>();
 
         //Assert
         result.Should().NotBeNull();

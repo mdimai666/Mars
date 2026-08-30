@@ -7,7 +7,7 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
 {
     public const string UserParamKey = "_user";
     public const string RequestParamKey = "_req";
-    public const string SysOptionsParamKey = "SysOptions";
+    public const string SiteSettingsParamKey = "SiteSettings";
     public const string IsDevelopmentParamKey = "_dev";
 
     public const string BodyClassParamKey = "bodyClass";
@@ -25,7 +25,7 @@ public class HandlebarsTmpCtxBasicDataContext : ITemplateContextVariblesFiller
     {
         templateContextVaribles.Add(UserParamKey, pageContext.User);
         templateContextVaribles.Add(RequestParamKey, pageContext.Request);
-        templateContextVaribles.Add(SysOptionsParamKey, pageContext.SiteSettings);
+        templateContextVaribles.Add(SiteSettingsParamKey, pageContext.SiteSettings);
         templateContextVaribles.Add(IsDevelopmentParamKey, pageContext.IsDevelopment);
 
         if (pageContext.User is not null)

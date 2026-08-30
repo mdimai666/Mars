@@ -125,7 +125,7 @@ Attribute can contain custom value
 || **HandlebarsTmpCtxBasicDataContext**
 |_user      | Данные текущего авторизованного пользователя [RenderContextUser](https://github.com/mdimai666/Mars/blob/master/src/Mars.Modules/Mars.SiteEngine.Abstractions/WebSite/Models/RenderContextUser.cs)
 |_req       | Данные о запросе, url, headers и т.д. [WebClientRequest](https://github.com/mdimai666/Mars/blob/master/src/Mars.Server.Abstractions/Models/WebClientRequest.cs)
-|SysOptions | Системные настройки сайта Имя, домен и т.д. [SysOptions](https://github.com/mdimai666/Mars/blob/master/src/Mars.Contracts/Options/SysOptions.cs)
+|SiteSettings | Системные настройки сайта Имя, домен и т.д. [SiteSettings](https://github.com/mdimai666/Mars/blob/master/src/Server/Mars.Server.Contracts/Options/SiteSettings.cs)
 || **HandlebarsTmpCtxLanguageDataFiller**
 | _lang     | "ru"
 || **HandlebarsTmpCtxAppThemeFiller**

@@ -36,8 +36,8 @@ public class TokenService : ITokenService
 
     private void OptionService_OnOptionUpdate(object obj)
     {
-        if (obj is SiteSettings sysOptions)
-            _validIssuer = sysOptions.SiteUrl;
+        if (obj is SiteSettings siteSettings)
+            _validIssuer = siteSettings.SiteUrl;
     }
 
     public SigningCredentials GetSigningCredentials()

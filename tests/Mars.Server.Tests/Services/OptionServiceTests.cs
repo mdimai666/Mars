@@ -42,7 +42,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void GetOption_GetSysOptions_NotBeNull()
+    public void GetOption_GetSiteSettings_NotBeNull()
     {
         // Arrange
 
@@ -54,7 +54,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void GetOption_GetSysOptionsMustSaveInLocalCache_LocalCacheExist()
+    public void GetOption_GetSiteSettingsMustSaveInLocalCache_LocalCacheExist()
     {
         // Arrange
         var tKey = typeof(SiteSettings);
@@ -73,7 +73,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void GetOption_GetSysOptionFromRepo_ReturnsFromRepoValue()
+    public void GetOption_GetSiteSettingsFromRepo_ReturnsFromRepoValue()
     {
         // Arrange
         var tKey = typeof(SiteSettings);
@@ -97,7 +97,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void GetOption_GetSysOptionsByClassName_NotBeNull()
+    public void GetOption_GetSiteSettingsByClassName_NotBeNull()
     {
         // Arrange
         var tKey = typeof(SiteSettings);
@@ -132,7 +132,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void SetOption_SetSysOptionsByClassName_NotBeNull()
+    public void SetOption_SetSiteSettingsByClassName_NotBeNull()
     {
         // Arrange
         var tKey = typeof(SiteSettings);

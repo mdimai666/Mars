@@ -125,7 +125,7 @@ public class MyController { ... }
 - Ошибки для пользователя: бросать `UserActionException` (→ HTTP 466 + текст), `NotFoundException` (→ 404).
 - Текущий пользователь в HTTP-запросе: `IRequestContext` (`User.Id`, `Roles`).
   В фоновых задачах/хабах его НЕТ — передавай userId явно.
-- Настройки сайта и вообще любые опции: `IOptionService` (`SysOption`, `GetOption<T>`, `SaveOption`).
+- Настройки сайта и вообще любые опции: `IOptionService` (`GetOption<T>`, `SaveOption`; настройки сайта — `GetOption<SiteSettings>()`).
 
 ### 4. Опции и их формы в админке
 

@@ -6,7 +6,7 @@ using Mars.Server.Contracts.Options;
 namespace Mars.AiChat.Host.Tools;
 
 /// <summary>
-/// Инструменты агента для работы с настройками сайта (SysOptions).
+/// Инструменты агента для работы с настройками сайта (SiteSettings).
 /// </summary>
 public class MarsSiteTools
 {

@@ -73,15 +73,15 @@ public class UpdateOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task SaveSysOptions_AnonimRequest_Unauthorized()
+    public async Task SaveSiteSettings_AnonimRequest_Unauthorized()
     {
         //Arrange
-        _ = nameof(OptionController.SaveSysOptions);
+        _ = nameof(OptionController.SaveSiteSettings);
         _ = nameof(OptionRepository.Update);
         var client = AppFixture.GetClient(true);
 
         //Act
-        var result = await client.Request(_apiUrl, "SysOptions").AllowAnyHttpStatus().PutJsonAsync(new SiteSettings());
+        var result = await client.Request(_apiUrl, "SiteSettings").AllowAnyHttpStatus().PutJsonAsync(new SiteSettings());
 
         //Assert
         result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);

@@ -4,8 +4,8 @@ namespace Mars.WebApiClient.Interfaces;
 
 public interface IOptionServiceClient
 {
-    Task<SiteSettings> GetSysOptions();
-    Task SaveSysOptions(SiteSettings value);
+    Task<SiteSettings> GetSiteSettings();
+    Task SaveSiteSettings(SiteSettings value);
     Task<T?> GetOption<T>();
     Task SaveOption<T>(T value);
     Task SetLanguage(string culture, string returnUrl);

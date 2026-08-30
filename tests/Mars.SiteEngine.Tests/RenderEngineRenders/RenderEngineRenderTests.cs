@@ -108,7 +108,7 @@ public class RenderEngineRenderTests
     public void Render_ContextHaveBasicData_HasData()
     {
         // Arrange
-        var content = @"{{_user.FullName}}|{{_req.Host}}|{{SysOptions.SiteUrl}}";
+        var content = @"{{_user.FullName}}|{{_req.Host}}|{{SiteSettings.SiteUrl}}";
         var context = GetRenderContext(content);
         var renderEngine = new HandlebarsWebRenderEngine(null, context.AppFront);
 
@@ -117,7 +117,7 @@ public class RenderEngineRenderTests
         {
             ["_user.FullName"] = context.PageContext.User.FullName,
             ["_req.Host"] = context.PageContext.Request.Host.ToString(),
-            ["SysOptions.SiteUrl"] = context.PageContext.SiteSettings.SiteUrl,
+            ["SiteSettings.SiteUrl"] = context.PageContext.SiteSettings.SiteUrl,
         };
 
         // Act

@@ -57,13 +57,13 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetSysOptions_RequestAnonim_Succeeds()
+    public async void GetSiteSettings_RequestAnonim_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient(true);
 
         //Act
-        var action = () => client.Option.GetSysOptions();
+        var action = () => client.Option.GetSiteSettings();
 
         //Assert
         await action.Should().NotThrowAsync<UnauthorizedException>();

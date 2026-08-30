@@ -25,11 +25,11 @@ public class QueryLangProcessingTests
 
     public QueryLangProcessingTests()
     {
-        var sysOptions = new SiteSettings() { SiteUrl = "http://localhost" };
+        var siteSettings = new SiteSettings() { SiteUrl = "http://localhost" };
         _pageContext = new PageRenderContext()
         {
-            Request = new WebClientRequest(new Uri(sysOptions.SiteUrl)),
-            SiteSettings = sysOptions,
+            Request = new WebClientRequest(new Uri(siteSettings.SiteUrl)),
+            SiteSettings = siteSettings,
             User = new RenderContextUser(UserConstants.AuthorizedUserInfo),
             RenderParam = new RenderParam(),
             IsDevelopment = true,

@@ -1,4 +1,5 @@
 using Mars.Admin.Framework.Interfaces;
+using Mars.Server.Contracts.Options;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Services;
@@ -63,7 +64,8 @@ public class DeveloperControlService
         }
         else
         {
-            target = Q.HostingInfo.NormalizedPathJoin(Q.Site.ServerWorkDirectory, prependPath, filename);
+            var workDirectory = Q.Site.GetOption<ServerWorkDirectoryOption>()?.WorkDirectory ?? "";
+            target = Q.HostingInfo.NormalizedPathJoin(workDirectory, prependPath, filename);
         }
 
         _ = js.OpenNewTab($"vs2026://{target}");

@@ -5,6 +5,7 @@ using Mars.Server.Abstractions.Attributes;
 using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Startup;
 using Mars.Server.Abstractions.Validators;
 using Mars.Server.Contracts.Options;
 using Mars.Server.Handlers;
@@ -78,6 +79,16 @@ public static class MainServer
         optionService.RegisterOption<ApiOption>();
         optionService.RegisterOption<MaintenanceModeOption>();
         optionService.GetOption<SiteSettings>();
+
+        if (optionService.IsDevelopment)
+        {
+            var startupInfo = services.GetRequiredService<IMarsStartupInfo>();
+            optionService.SetConstOption(new ServerWorkDirectoryOption
+            {
+                WorkDirectory = startupInfo.StartWorkDirectory,
+            }, appendToInitialSiteData: true);
+        }
+
         return services;
     }
 

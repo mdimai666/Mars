@@ -10,7 +10,6 @@ namespace Mars.Admin.Framework.Models;
 public class AppInitialViewModel
 {
     public SiteSettings SiteSettings { get; set; } = new();
-    public string ServerWorkDirectory { get; set; } = "";
     public required UserPrimaryInfo? InitialUserPrimaryInfo { get; set; }
     public List<NavMenuDetailResponse> NavMenus { get; set; } = [];
     public IReadOnlyCollection<PostTypeAdminPanelItemResponse> PostTypes { get; set; } = [];

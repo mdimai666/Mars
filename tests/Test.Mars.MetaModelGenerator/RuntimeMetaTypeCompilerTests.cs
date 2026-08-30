@@ -52,7 +52,7 @@ public class RuntimeMetaTypeCompilerTests : MetaModelGeneratorTests
         //Arrange
         var (postType, _) = await SetupPostType(createPostCount: 0);
         var newClassName = GenSourceCodeMasterHelper.GetNormalizedTypeName(postType.TypeName);
-        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields.ToArray(), new());
+        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields!.ToArray(), new());
 
         //Act
         var dict = await _runtimeMetaTypeCompiler.Compile([mti], null);

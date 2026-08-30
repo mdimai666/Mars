@@ -60,8 +60,8 @@ public static class MyHandlebarsBasicFunctions
             throw new HandlebarsException("{{#gt}} helper must have exactly two arguments");
         }
 
-        int left = (int)arguments[0];
-        int right = (int)arguments[1];
+        int left = (int)arguments[0]!;
+        int right = (int)arguments[1]!;
         if (left > right) options.Template(output, context);
         else options.Inverse(output, context);
     }
@@ -74,8 +74,8 @@ public static class MyHandlebarsBasicFunctions
             throw new HandlebarsException("{{#gte}} helper must have exactly two arguments");
         }
 
-        int left = (int)arguments[0];
-        int right = (int)arguments[1];
+        int left = (int)arguments[0]!;
+        int right = (int)arguments[1]!;
         if (left >= right) options.Template(output, context);
         else options.Inverse(output, context);
     }
@@ -88,8 +88,8 @@ public static class MyHandlebarsBasicFunctions
             throw new HandlebarsException("{{#lt}} helper must have exactly two arguments");
         }
 
-        int left = (int)arguments[0];
-        int right = (int)arguments[1];
+        int left = (int)arguments[0]!;
+        int right = (int)arguments[1]!;
         if (left < right) options.Template(output, context);
         else options.Inverse(output, context);
     }
@@ -102,8 +102,8 @@ public static class MyHandlebarsBasicFunctions
             throw new HandlebarsException("{{#lte}} helper must have exactly two arguments");
         }
 
-        int left = (int)arguments[0];
-        int right = (int)arguments[1];
+        int left = (int)arguments[0]!;
+        int right = (int)arguments[1]!;
         if (left <= right) options.Template(output, context);
         else options.Inverse(output, context);
     }
@@ -218,7 +218,7 @@ public static class MyHandlebarsBasicFunctions
         }
     }
 
-    private static bool IsTruthy(object value)
+    private static bool IsTruthy(object? value)
     {
         return value switch
         {
@@ -535,15 +535,10 @@ public static class MyHandlebarsBasicFunctions
             if (step < 1) throw new HandlebarsException("#for step cannot be less than 1");
         }
 
-        HandlebarsDotNet.Iterators.ArrayIterator<int> arrayIterator = new();
-
-        List<int> list = [];
         for (int i = start; i <= end; i += step)
         {
-            list.Add(i);
+            options.Template(output, i);
         }
-
-        arrayIterator.Iterate(output, options.Frame, context.Properties.ToArray(), list.ToArray(), options.Template, null);
     }
 
     [TemplatorHelperInfo("ToHumanizedSize", "{{#ToHumanizedSize @size}}", "Converts a size in bytes to a human-readable format.")]

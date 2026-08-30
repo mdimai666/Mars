@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using HandlebarsDotNet;
 using HandlebarsDotNet.IO;
 
@@ -17,7 +18,7 @@ public sealed class CustomDateTimeFormatter : IFormatter, IFormatterProvider
         writer.Write($"{dateTime.ToString(_format)}");
     }
 
-    public bool TryCreateFormatter(Type type, out IFormatter? formatter)
+    public bool TryCreateFormatter(Type type, [NotNullWhen(true)] out IFormatter? formatter)
     {
         if (type != typeof(DateTime))
         {

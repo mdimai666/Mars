@@ -68,6 +68,14 @@ public class MyFunctionsTests
     }
 
     [Fact]
+    public void ForLoopBlock_Tests()
+    {
+        _ = nameof(ForLoopBlock);
+        Render("{{#for 1 3}}{{this}} {{/for}}").Should().Be("1 2 3 ");
+        Render("{{#for 1 6 2}}{{this}} {{/for}}").Should().Be("1 3 5 ");
+    }
+
+    [Fact]
     public void TextEllipsisHelper_Tests()
     {
         _ = nameof(TextEllipsisHelper);

@@ -112,7 +112,7 @@ public class MyHandlebarsHelpBlock
 
             if (helper.Value.Value is not HandlebarsDotNet.Helpers.BlockHelpers.DelegateBlockHelperDescriptor)
             {
-                list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath, HandlebarsHelperType.Block, null, null));
+                list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath!, HandlebarsHelperType.Block, null, null));
                 continue;
             }
 
@@ -123,7 +123,7 @@ public class MyHandlebarsHelpBlock
             var _helperMethod = prop.GetValue(helper.Value.Value) as Delegate;
             var displayAttr = _helperMethod.Method.GetCustomAttribute<TemplatorHelperInfoAttribute>();
             //var t = _helper.GetType();
-            list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath, HandlebarsHelperType.Block, displayAttr, _helperMethod));
+            list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath!, HandlebarsHelperType.Block, displayAttr, _helperMethod));
         }
 
         foreach (var helper in configuration.Helpers/*.OrderBy(h => h.Key)*/)
@@ -140,7 +140,7 @@ public class MyHandlebarsHelpBlock
 
             if (helper.Value.Value is not HandlebarsDotNet.Helpers.DelegateHelperDescriptor and not HandlebarsDotNet.Helpers.DelegateHelperWithOptionsDescriptor)
             {
-                list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath, HandlebarsHelperType.Inline, null, null));
+                list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath!, HandlebarsHelperType.Inline, null, null));
                 continue;
             }
 
@@ -150,7 +150,7 @@ public class MyHandlebarsHelpBlock
             var _helperMethod = prop.GetValue(helper.Value.Value) as Delegate;
             var displayAttr = _helperMethod.Method.GetCustomAttribute<TemplatorHelperInfoAttribute>();
             //var t = _helper.GetType();
-            list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath, HandlebarsHelperType.Inline, displayAttr, _helperMethod));
+            list.Add(new HbsHelperItem(helper.Key.PathInfo.TrimmedPath!, HandlebarsHelperType.Inline, displayAttr, _helperMethod));
         }
 
         return list;

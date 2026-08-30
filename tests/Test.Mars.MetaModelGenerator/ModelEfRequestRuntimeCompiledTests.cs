@@ -65,7 +65,7 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
         }
 
         var (postType, _) = await SetupPostType2(typeName, [mf], [mv]);
-        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields.ToArray(), new());
+        var mti = new MetaTypeInfo(newClassName, typeof(PostEntity), postType.MetaFields!.ToArray(), new());
         var dict = await _runtimeMetaTypeCompiler.Compile([mti], null);
         var compiledType = dict[newClassName];
 

@@ -5,6 +5,7 @@
 @using Mars.Identity.Abstractions.Interfaces
 @using Mars.Options.Abstractions.Services
 @using Mars.Server.Abstractions.Handlers
+@using Mars.Server.Contracts.Options
 @using Mars.SiteEngine.Abstractions.Constants.Website
 @using Mars.SiteEngine.Abstractions.WebSite.Scripts
 @using Microsoft.Extensions.DependencyInjection
@@ -46,7 +47,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@optionService.GetOption<SiteSettings>().SiteName</title>
+    <title>@(optionService.GetOption<SiteSettings>().SiteName)</title>
     <base href="/dev/" />
 
     @* все скрипты админки собираются в AppAdminSpaHtmlScripts *@

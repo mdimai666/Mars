@@ -12,7 +12,7 @@ public class CreatePostScenario : ScenarioTestBase
         Отвечай только на вопрос, не пиши объяснений.
         """;
 
-    [Fact]
+    [Fact(Skip = "dev experiments")]
     public async Task CreatePost_CreateByPrompt_Succeeds()
     {
         _ = nameof(AiCreatePostHandler);

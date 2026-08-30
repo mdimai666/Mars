@@ -150,7 +150,7 @@ public static class MyHandlebarsContextFunctions
         }
         else
         {
-            localized = L[stringKey, args.Skip(1).ToArray()];
+            localized = L[stringKey, args.Skip(1).ToArray()!];
         }
 
         output.WriteSafeString(localized);

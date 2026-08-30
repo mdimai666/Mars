@@ -24,7 +24,7 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 
 ```
 dotnet build Mars.slnx                                        # full solution build
-dotnet test tests/Test.Mars.Host --verbosity minimal          # fast unit tests
+dotnet test tests/Mars.Server.Tests --verbosity minimal       # fast unit tests
 dotnet test tests/Mars.Integration.Tests --verbosity minimal  # integration tests
 ```
 
@@ -32,7 +32,7 @@ dotnet test tests/Mars.Integration.Tests --verbosity minimal  # integration test
 
 - **Solution**: `Mars.slnx` — everything builds from here
 - **Modules**: `src/Mars.Modules/<ModuleName>/` — each module is a self-contained project
-- **Tests**: `tests/Test.Mars.*` (unit) and `tests/Mars.*.Integration.Tests` (integration)
+- **Tests**: `tests/Mars.*.Tests` (unit) and `tests/Mars.*.Integration.Tests` (integration)
 
 ## Mars CLI — thin client to a running instance
 

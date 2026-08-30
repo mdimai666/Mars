@@ -193,7 +193,7 @@ app.Services.UseAppFrontMain()...UseSemanticKernelFront().Use<Feature>Front();  
 
 ```
 dotnet build Mars.slnx                                   # собирается всё, включая тесты
-dotnet test tests/Test.Mars.Core --verbosity minimal     # быстрые юнит-тесты
+dotnet test tests/Mars.Core.Tests --verbosity minimal    # быстрые юнит-тесты
 ```
 
 E2E — `tests/Mars.E2E.Tests` (Playwright + Testcontainers), см. `ai/E2ETestingGuide.md`.

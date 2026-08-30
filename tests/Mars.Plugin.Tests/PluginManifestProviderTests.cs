@@ -13,7 +13,7 @@ public class PluginManifestProviderTests
 
     public PluginManifestProviderTests()
     {
-        _testFilesDir = SolutionPathHelper.Resolve("tests", "Test.Mars.Plugin", "SampleWebStaticAssetEndpointsFiles");
+        _testFilesDir = SolutionPathHelper.Resolve("tests", "Mars.Plugin.Tests", "SampleWebStaticAssetEndpointsFiles");
     }
 
     [Theory(Skip = "skiptemplary for rework. files delete")]

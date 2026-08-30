@@ -11,7 +11,7 @@ public class DirReadNodeTests : NodeServiceUnitTestBase
 
     public DirReadNodeTests()
     {
-        _testFilesDir = SolutionPathHelper.Resolve("tests", "Mars.Nodes.Implements.Test", "TestFiles");
+        _testFilesDir = SolutionPathHelper.Resolve("tests", "Mars.Nodes.Tests", "TestFiles");
     }
 
     private string FP(string path) => Path.GetFullPath(Path.Combine(_testFilesDir, path));

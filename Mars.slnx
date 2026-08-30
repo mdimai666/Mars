@@ -198,26 +198,26 @@
     <File Path="Trubles.md" />
   </Folder>
   <Folder Name="/Tests/">
-    <Project Path="tests/AppFront.Tests/AppFront.Tests.csproj" />
     <Project Path="tests/ExternalServices.Integration.Tests/ExternalServices.Integration.Tests.csproj" />
     <Project Path="tests/ExternalServices.TestContainers/ExternalServices.TestContainers.csproj" Id="1518dc0b-e596-4243-9d6a-f125f44f360c" />
+    <Project Path="tests/Mars.Admin.Framework.Tests/Mars.Admin.Framework.Tests.csproj" />
     <Project Path="tests/Mars.AiServices.Integration.Tests/Mars.AiServices.Integration.Tests.csproj" Id="e654a783-6cf4-43c1-bc16-f6ca5a18907d" />
-    <Project Path="tests/Mars.AppFrontEngines.Integration.Tests/Mars.AppFrontEngines.Integration.Tests.csproj" />
     <Project Path="tests/Mars.Cli.EndToEnd.Tests/Mars.Cli.EndToEnd.Tests.csproj" />
+    <Project Path="tests/Mars.Core.Tests/Mars.Core.Tests.csproj" />
     <Project Path="tests/Mars.Datasource.Integration.Tests/Mars.Datasource.Integration.Tests.csproj" />
-    <Project Path="tests/Mars.DockerContainer.Tests/Mars.DockerContainer.Tests.csproj" />
+    <Project Path="tests/Mars.DockerImage.Tests/Mars.DockerImage.Tests.csproj" />
     <Project Path="tests/Mars.E2E.Tests/Mars.E2E.Tests.csproj" Id="c46baa26-4b58-4734-895a-15cf4183f29d" />
     <Project Path="tests/Mars.HttpSmartAuthFlow.Integration.Tests/Mars.HttpSmartAuthFlow.Integration.Tests.csproj" Id="25ae82d2-c596-4840-a5f0-24539b970fda" />
     <Project Path="tests/Mars.Integration.Tests/Mars.Integration.Tests.csproj" />
-    <Project Path="tests/Mars.Nodes.Implements.Test/Mars.Nodes.Implements.Test.csproj" />
+    <Project Path="tests/Mars.Nodes.Tests/Mars.Nodes.Tests.csproj" />
     <Project Path="tests/Mars.Plugin.Integration.Tests/Mars.Plugin.Integration.Tests.csproj" />
+    <Project Path="tests/Mars.Plugin.Tests/Mars.Plugin.Tests.csproj" />
+    <Project Path="tests/Mars.Server.Tests/Mars.Server.Tests.csproj" />
+    <Project Path="tests/Mars.SiteEngine.Integration.Tests/Mars.SiteEngine.Integration.Tests.csproj" />
+    <Project Path="tests/Mars.SiteEngine.Tests/Mars.SiteEngine.Tests.csproj" />
     <Project Path="tests/Mars.Test.Common/Mars.Test.Common.csproj" />
     <Project Path="tests/Mars.WebApiClient.Integration.Tests/Mars.WebApiClient.Integration.Tests.csproj" />
-    <Project Path="tests/Test.Mars.Core/Test.Mars.Core.csproj" />
     <Project Path="tests/Test.Mars.MetaModelGenerator/Test.Mars.MetaModelGenerator.csproj" />
-    <Project Path="tests/Test.Mars.Plugin/Test.Mars.Plugin.csproj" />
-    <Project Path="tests/Test.Mars.Server/Test.Mars.Server.csproj" />
-    <Project Path="tests/Test.Mars.SiteEngine/Test.Mars.SiteEngine.csproj" />
   </Folder>
   <Project Path="src/Mars.Admin/Mars.Admin.csproj" />
   <Project Path="src/Mars.WebApp/Mars.WebApp.csproj" />

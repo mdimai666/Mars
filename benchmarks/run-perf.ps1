@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Нагрузочный прогон Mars: герметичный стенд (Kestrel + Testcontainers PostgreSQL) + k6.
 

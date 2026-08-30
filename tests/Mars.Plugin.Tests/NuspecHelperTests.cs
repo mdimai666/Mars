@@ -35,7 +35,7 @@ public class NuspecHelperTests
         """;
 
     [Fact]
-    public void ReadFromFileContent_ShouldReturnCorrectValues()
+    public void ReadFromFileContent_ReturnsCorrectValues()
     {
         // Arrange
         // Act
@@ -67,7 +67,7 @@ public class NuspecHelperTests
     }
 
     [Fact]
-    public void ReadFromFileContent_InvalidXml_ShouldThrowException()
+    public void ReadFromFileContent_InvalidXml_ThrowsException()
     {
         // Arrange
         string invalidNuspec = "{}123";
@@ -78,7 +78,7 @@ public class NuspecHelperTests
     }
 
     [Fact]
-    public void CreateNuspec_ShouldSuccess()
+    public void CreateNuspec_Succeeds()
     {
         // Arrange
         var manifest = new NuspecManifest

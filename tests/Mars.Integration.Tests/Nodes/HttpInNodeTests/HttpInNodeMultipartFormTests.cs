@@ -37,7 +37,7 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task AcceptForm_ValidFormReadFields_ShouldSuccess()
+    public async Task AcceptForm_ValidFormReadFields_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -72,7 +72,7 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UploadFile_ValidFile_ShouldSuccess()
+    public async Task UploadFile_ValidFile_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -105,7 +105,7 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UploadFile_DisallowMultipartNode_ShouldUnsupportedStatusError()
+    public async Task UploadFile_DisallowMultipartNode_ReturnsUnsupportedStatusError()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

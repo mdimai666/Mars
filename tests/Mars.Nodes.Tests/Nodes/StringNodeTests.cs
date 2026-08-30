@@ -59,7 +59,7 @@ public partial class StringNodeUtilTests
     }
 
     [Fact]
-    public void ToUpper_ShouldSuccess()
+    public void ToUpper_Succeeds()
     {
         _ = nameof(StringNodeOperationUtilsMethodParser);
         var operation = new StringOperation() { Method = nameof(StringNodeOperationUtils.ToUpper) };

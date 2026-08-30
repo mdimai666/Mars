@@ -20,7 +20,7 @@ public class JsonNodeTests : NodeServiceUnitTestBase
                 """;
 
     [Fact]
-    public async Task Execute_AccessToObjectField_ShouldReturnField()
+    public async Task Execute_AccessToObjectField_ReturnsField()
     {
         //Arrange
         _ = nameof(JsonNodeImpl.ParseString);
@@ -45,7 +45,7 @@ public class JsonNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task DirectCallSetExpression_AccessToObjectField_ShouldReturnField()
+    public async Task DirectCallSetExpression_AccessToObjectField_ReturnsField()
     {
         //Arrange
         _ = nameof(JsonNodeImpl.Execute);
@@ -66,7 +66,7 @@ public class JsonNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ChainCallWithVariableSetNode_AccessToObjectField_ShouldReturnField()
+    public async Task ChainCallWithVariableSetNode_AccessToObjectField_ReturnsField()
     {
         //Arrange
         _ = nameof(JsonNodeImpl.ParseString);

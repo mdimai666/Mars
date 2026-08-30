@@ -25,7 +25,7 @@ public class InjectActTests : ApplicationTests
 
 #if DEBUG
     [IntegrationFact]
-    public async Task Inject_Request_ShouldSuccess()
+    public async Task Inject_Request_Succeeds()
     {
         //Arrange
         _ = nameof(ActController.Inject);

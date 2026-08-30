@@ -31,7 +31,7 @@ public sealed class CreateUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateUserType_ValidRequest_ShouldSuccess()
+    public async Task CreateUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

@@ -25,7 +25,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RemoteUserUpsert_CreateUserRequest_ShouldSuccess()
+    public async Task RemoteUserUpsert_CreateUserRequest_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Callback);
@@ -50,7 +50,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RemoteUserUpsert_UpdateExistUserRequest_ShouldSuccess()
+    public async Task RemoteUserUpsert_UpdateExistUserRequest_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Callback);

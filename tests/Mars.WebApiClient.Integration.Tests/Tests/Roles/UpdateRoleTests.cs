@@ -27,7 +27,7 @@ public sealed class UpdateRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateRole_ValidRequest_ShouldSuccess()
+    public async Task UpdateRole_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

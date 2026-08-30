@@ -48,7 +48,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_ValidRequest_ShouldSuccess()
+    public async Task CreatePost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostRepository.Create);
@@ -109,7 +109,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_ValidateQueryValidator_ShouldFail()
+    public async Task CreatePost_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostRepository.Create);
@@ -128,7 +128,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "on test mode Kestrel settings overrided")]
-    public async Task CreatePost_BodyTooLarge_ShouldReturnPayloadTooLarge()
+    public async Task CreatePost_BodyTooLarge_ReturnsPayloadTooLarge()
     {
         //Arrange
         var client = AppFixture.GetClient();
@@ -157,7 +157,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_ForDisabledType_ShouldFail400()
+    public async Task CreatePost_ForDisabledType_Fails400()
     {
         //Arrange
         _ = nameof(PostRepository.Create);

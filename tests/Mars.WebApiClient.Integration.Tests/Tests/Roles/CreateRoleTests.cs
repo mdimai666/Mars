@@ -25,7 +25,7 @@ public class CreateRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateRole_ValidRequest_ShouldSuccess()
+    public async Task CreateRole_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

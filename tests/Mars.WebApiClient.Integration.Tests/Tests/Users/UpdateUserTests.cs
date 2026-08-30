@@ -27,7 +27,7 @@ public sealed class UpdateUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUser_ValidRequest_ShouldSuccess()
+    public async Task UpdateUser_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

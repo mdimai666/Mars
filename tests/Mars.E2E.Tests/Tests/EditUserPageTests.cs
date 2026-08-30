@@ -16,7 +16,7 @@ public class EditUserPageTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task EditUserPage_UpdateFields_ShouldPersist()
+    public async Task EditUserPage_UpdateFields_Persists()
     {
         // Arrange
         var tracker = new BrowserErrorTracker(Page);

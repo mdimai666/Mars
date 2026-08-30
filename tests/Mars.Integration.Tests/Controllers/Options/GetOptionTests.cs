@@ -39,7 +39,7 @@ public class GetOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetOption_ValidRequest_ShouldSuccess()
+    public async Task GetOption_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(OptionController.GetOption);
@@ -77,7 +77,7 @@ public class GetOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetSysOptions_AnonimRequest_ShouldSuccess()
+    public async Task GetSysOptions_AnonimRequest_Succeeds()
     {
         //Arrange
         _ = nameof(OptionController.GetSysOptions);

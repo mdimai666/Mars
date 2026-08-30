@@ -28,7 +28,7 @@ public class OptionReaderToolTests
     [Theory]
     [InlineData(["www|s"])]
     [InlineData(["x.x::984984"])]
-    public void ExtractPortFromUrls_InvalidUrls_ShouldReturnLocalhost80(string invalidUrl)
+    public void ExtractPortFromUrls_InvalidUrls_ReturnsLocalhost80(string invalidUrl)
     {
         //Act
         var isValid = OptionReaderTool.ExtractPortFromUrls(invalidUrl, out var port);
@@ -65,7 +65,7 @@ public class OptionReaderToolTests
     [Theory]
     [InlineData(["77y87y+xsx"])]
     [InlineData(["65465464+1"])]
-    public void NormalizeUrl_InvalidUrls_ShouldReturnLocalhost80(string invalidUrl)
+    public void NormalizeUrl_InvalidUrls_ReturnsLocalhost80(string invalidUrl)
     {
         //Act
         var isValid = OptionReaderTool.NormalizeUrl(invalidUrl, out var url);

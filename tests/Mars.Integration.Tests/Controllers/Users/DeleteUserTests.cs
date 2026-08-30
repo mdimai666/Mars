@@ -24,7 +24,7 @@ public class DeleteUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUser_ValidRequest_ShouldSuccess()
+    public async Task DeleteUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.Delete);
@@ -77,7 +77,7 @@ public class DeleteUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyUser_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.DeleteMany);
@@ -100,7 +100,7 @@ public class DeleteUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUser_TryDeleteSingleAdmin_ShouldValidationErrorOfDisallowDeleteSingleAdmin()
+    public async Task DeleteUser_TryDeleteSingleAdmin_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserController.Delete);

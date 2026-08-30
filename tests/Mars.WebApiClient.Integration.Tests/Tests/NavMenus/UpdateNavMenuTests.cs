@@ -25,7 +25,7 @@ public sealed class UpdateNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task UpdateNavMenu_ValidRequest_Succeeds()
     {
         await _updateTest.ValidRequest_ShouldSuccess(req => req with { Title = "new title" });
     }

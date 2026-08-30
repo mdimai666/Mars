@@ -26,7 +26,7 @@ public class HttpResponseNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Execute_StatusCodeSetup_ShouldReturnCode()
+    public async Task Execute_StatusCodeSetup_ReturnsCode()
     {
         //Arrange
         _ = nameof(HttpResponseNodeImpl.Execute);

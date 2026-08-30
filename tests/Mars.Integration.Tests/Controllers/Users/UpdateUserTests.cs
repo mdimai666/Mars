@@ -43,7 +43,7 @@ public sealed class UpdateUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUser_ValidRequest_ShouldSuccess()
+    public async Task UpdateUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.Update);

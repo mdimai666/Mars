@@ -22,7 +22,7 @@ public sealed class GetPostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostType_ValidRequest_ShouldSuccess()
+    public async Task GetPostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Get);

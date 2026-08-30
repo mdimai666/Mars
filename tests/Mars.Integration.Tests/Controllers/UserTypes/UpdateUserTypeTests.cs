@@ -47,7 +47,7 @@ public class UpdateUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUserType_ValidRequest_ShouldSuccess()
+    public async Task UpdateUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Update);
@@ -112,7 +112,7 @@ public class UpdateUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateUserType_WithDuplicateName_ShouldReturnValidationError()
+    public async Task UpdateUserType_WithDuplicateName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserTypeController.Update);

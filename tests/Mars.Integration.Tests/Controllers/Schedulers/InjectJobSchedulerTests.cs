@@ -41,7 +41,7 @@ public class InjectJobSchedulerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task InjectJob_Request_ShouldSuccess()
+    public async Task InjectJob_Request_Succeeds()
     {
         //Arrange
         _ = nameof(SchedulerController.InjectJob);

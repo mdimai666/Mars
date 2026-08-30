@@ -6,7 +6,7 @@ namespace Mars.Nodes.Tests.Services;
 public class NodeTaskManagerTests : NodeServiceUnitTestBase
 {
     [Fact]
-    public async Task CurrentTasks_HaveCount_ShouldCreateTaskAndReturnCount()
+    public async Task CurrentTasks_HaveCount_CreatesTaskAndReturnsCount()
     {
         //Arrange
         var input = new NodeMsg() { Payload = 123 };
@@ -23,7 +23,7 @@ public class NodeTaskManagerTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task CompletedTasks_HaveCount_ShouldCreateTaskAndReturnCount()
+    public async Task CompletedTasks_HaveCount_CreatesTaskAndReturnsCount()
     {
         //Arrange
         var input = new NodeMsg() { Payload = 123 };

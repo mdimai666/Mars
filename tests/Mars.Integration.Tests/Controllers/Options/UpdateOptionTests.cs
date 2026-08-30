@@ -47,7 +47,7 @@ public class UpdateOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateOption_ValidRequest_ShouldSuccess()
+    public async Task UpdateOption_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(OptionController.SaveOption);

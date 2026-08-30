@@ -22,7 +22,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_ValidRequest_ShouldSuccess()
+    public async Task Register_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -42,7 +42,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_ValidRequestWhenRegisterDisallowed_ShouldFail()
+    public async Task Register_ValidRequestWhenRegisterDisallowed_Fails()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -60,7 +60,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_BadRequest_ShouldFail()
+    public async Task Register_BadRequest_Fails()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -78,7 +78,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_BadRequestEmptyFirstName_ShouldCreateFirstNameFromEmail()
+    public async Task Register_BadRequestEmptyFirstName_CreatesFirstNameFromEmail()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);

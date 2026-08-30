@@ -14,7 +14,7 @@ public class FilePathGeneratorDateTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceYearTokensCorrectly()
+    public void Generate_ReplacesYearTokensCorrectly()
     {
         // Arrange
         string template = "archive/{yyyy}/{yy}/file.txt";
@@ -32,7 +32,7 @@ public class FilePathGeneratorDateTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceMonthTokensCorrectly()
+    public void Generate_ReplacesMonthTokensCorrectly()
     {
         // Arrange
         string template = "months/{MM}/{M}/file.txt";
@@ -50,7 +50,7 @@ public class FilePathGeneratorDateTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceDayTokensCorrectly()
+    public void Generate_ReplacesDayTokensCorrectly()
     {
         // Arrange
         string template = "days/{DD}/{D}/file.txt";
@@ -68,7 +68,7 @@ public class FilePathGeneratorDateTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceHourTokensCorrectly()
+    public void Generate_ReplacesHourTokensCorrectly()
     {
         // Arrange
         string template = "hours/{HH}/{H}/file.txt";
@@ -86,7 +86,7 @@ public class FilePathGeneratorDateTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceMinutesAndSecondsTokensCorrectly()
+    public void Generate_ReplacesMinutesAndSecondsTokensCorrectly()
     {
         // Arrange
         string template = "time/{mm}/{ss}/file.txt";
@@ -116,7 +116,7 @@ public class FilePathGeneratorDateTests
     }
 
     [Fact]
-    public void Generate_ShouldHandleComplexDateTimeTemplateCombined()
+    public void Generate_HandlesComplexDateTimeTemplateCombined()
     {
         // Arrange
         string template = "{yyyy}-{MM}-{DD}_{HH}h{mm}m/file.txt";

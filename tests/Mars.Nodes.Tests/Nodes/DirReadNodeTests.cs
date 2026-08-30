@@ -18,7 +18,7 @@ public class DirReadNodeTests : NodeServiceUnitTestBase
     private string[] FP(string[] paths) => [.. paths.Select(FP)];
 
     [Fact]
-    public async Task ReadFiles_ListRootFiles_ShouldSuccess()
+    public async Task ReadFiles_ListRootFiles_Succeeds()
     {
         //Arrange
         _ = nameof(DirReadNodeImpl.Execute);
@@ -34,7 +34,7 @@ public class DirReadNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ReadFiles_ListRecurseFiles_ShouldSuccess()
+    public async Task ReadFiles_ListRecurseFiles_Succeeds()
     {
         //Arrange
         _ = nameof(DirReadNodeImpl.Execute);
@@ -50,7 +50,7 @@ public class DirReadNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ReadFiles_Depth2_ShouldSuccess()
+    public async Task ReadFiles_Depth2_Succeeds()
     {
         //Arrange
         _ = nameof(DirReadNodeImpl.Execute);
@@ -66,7 +66,7 @@ public class DirReadNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ReadFiles_ListByPattern_ShouldSuccess()
+    public async Task ReadFiles_ListByPattern_Succeeds()
     {
         //Arrange
         _ = nameof(DirReadNodeImpl.Execute);

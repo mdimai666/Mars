@@ -22,7 +22,7 @@ public class DeleteNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteNavMenu_ValidRequest_ShouldSuccess()
+    public async Task DeleteNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Delete);

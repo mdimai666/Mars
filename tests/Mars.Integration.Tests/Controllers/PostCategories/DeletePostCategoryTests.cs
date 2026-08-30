@@ -22,7 +22,7 @@ public class DeletePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostCategory_ValidRequest_ShouldSuccess()
+    public async Task DeletePostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.Delete);
@@ -75,7 +75,7 @@ public class DeletePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPostCategory_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.DeleteMany);

@@ -45,7 +45,7 @@ public sealed class CreatePostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategoryType_ValidRequest_ShouldSuccess()
+    public async Task CreatePostCategoryType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Create);
@@ -116,7 +116,7 @@ public sealed class CreatePostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategoryType_WithDuplicateName_ShouldReturnValidationError()
+    public async Task CreatePostCategoryType_WithDuplicateName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Create);

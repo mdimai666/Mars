@@ -29,7 +29,7 @@ public class NodeLifecycleTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Deploy_OnNodeAssigned_ShouldCallAfterAssign()
+    public async Task Deploy_OnNodeAssigned_CallsAfterAssign()
     {
         //Arrange
 
@@ -41,7 +41,7 @@ public class NodeLifecycleTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Deploy_OnNodeDelete_ShouldCallAfterDelete()
+    public async Task Deploy_OnNodeDelete_CallsAfterDelete()
     {
         //Arrange
         _nodeService.Deploy(_nodes);
@@ -54,7 +54,7 @@ public class NodeLifecycleTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Deploy_Dispose_ShouldCallOnRecreate()
+    public async Task Deploy_Dispose_CallsOnRecreate()
     {
         //Arrange
         _nodeService.Deploy(_nodes);

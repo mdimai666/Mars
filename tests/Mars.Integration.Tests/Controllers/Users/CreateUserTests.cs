@@ -42,7 +42,7 @@ public sealed class CreateUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateUser_ValidRequest_ShouldSuccess()
+    public async Task CreateUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserRepository.Create);
@@ -95,7 +95,7 @@ public sealed class CreateUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateUser_UsernameInvalidByBlacklist_ShouldFail()
+    public async Task CreateUser_UsernameInvalidByBlacklist_Fails()
     {
         //Arrange
         _ = nameof(UserService.Create);

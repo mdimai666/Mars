@@ -13,7 +13,7 @@ public sealed class ListMetaValueRelationModelsTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task ListMetaValueRelationModels_PostSubType_ShouldFilterByTypeName()
+    public async Task ListMetaValueRelationModels_PostSubType_FiltersByTypeName()
     {
         //Arrange
         var client = GetWebApiClient();

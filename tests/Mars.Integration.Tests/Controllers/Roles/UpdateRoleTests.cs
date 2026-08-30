@@ -41,7 +41,7 @@ public class UpdateRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateRole_ValidRequest_ShouldSuccess()
+    public async Task UpdateRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Update);

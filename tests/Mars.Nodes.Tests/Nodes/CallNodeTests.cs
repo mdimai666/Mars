@@ -22,7 +22,7 @@ public class CallNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_ValidRequest_ShouldSuccess()
+    public async Task Execute_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(CallNodeImpl.Execute);

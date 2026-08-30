@@ -73,7 +73,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task MemoryUsage_AnonimRequest_ShouldUnauthorized()
+    public Task MemoryUsage_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("MemoryUsage");
 
     [IntegrationFact]
@@ -93,7 +93,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task AppUptime_AnonimRequest_ShouldUnauthorized()
+    public Task AppUptime_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("AppUptime");
 
     [IntegrationFact]
@@ -113,7 +113,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task AppStartDateTime_AnonimRequest_ShouldUnauthorized()
+    public Task AppStartDateTime_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("AppStartDateTime");
 
     [IntegrationFact]
@@ -133,7 +133,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task SystemUptime_AnonimRequest_ShouldUnauthorized()
+    public Task SystemUptime_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("SystemUptime");
 
     [IntegrationFact]
@@ -153,7 +153,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task SystemUptimeMillis_AnonimRequest_ShouldUnauthorized()
+    public Task SystemUptimeMillis_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("SystemUptimeMillis");
 
     [IntegrationFact]
@@ -173,7 +173,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task SystemMinStat_AnonimRequest_ShouldUnauthorized()
+    public Task SystemMinStat_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("SystemMinStat");
 
     [IntegrationFact]
@@ -193,7 +193,7 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task AboutSystem_AnonimRequest_ShouldUnauthorized()
+    public Task AboutSystem_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("AboutSystem");
 
     [IntegrationFact]
@@ -213,6 +213,6 @@ public class GetSystemInfoTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public Task HostCacheSettings_AnonimRequest_ShouldUnauthorized()
+    public Task HostCacheSettings_AnonimRequest_ReturnsUnauthorized()
         => ActionShouldUnauthorized("HostCacheSettings");
 }

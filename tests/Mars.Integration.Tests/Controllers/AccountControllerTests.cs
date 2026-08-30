@@ -20,7 +20,7 @@ public sealed class AccountControllerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Account_LoginValidRequest_ShouldSuccess()
+    public async Task Account_LoginValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.Login);

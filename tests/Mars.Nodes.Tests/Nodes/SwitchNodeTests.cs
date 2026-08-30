@@ -62,7 +62,7 @@ public class SwitchNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_ObjectPropertyAccess_ShouldSuccess()
+    public async Task Execute_ObjectPropertyAccess_Succeeds()
     {
         //Arrange
         _ = nameof(SwitchNodeImpl.Execute);
@@ -88,7 +88,7 @@ public class SwitchNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ChainAfterJsonNode_ObjectPropertyAccess_ShouldSuccess()
+    public async Task ChainAfterJsonNode_ObjectPropertyAccess_Succeeds()
     {
         //Arrange
         _ = nameof(SwitchNodeImpl.Execute);

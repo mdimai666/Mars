@@ -45,7 +45,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategory_ValidRequest_ShouldSuccess()
+    public async Task CreatePostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Create);
@@ -110,7 +110,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategory_ValidateQueryValidator_ShouldFail()
+    public async Task CreatePostCategory_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Create);
@@ -129,7 +129,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategory_CreateChildElement_ShouldValidPath()
+    public async Task CreatePostCategory_CreateChildElement_BuildsValidPath()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Create);

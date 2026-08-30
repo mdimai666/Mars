@@ -31,13 +31,13 @@ public class GetMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetFile_ValidRequest_ShouldSuccess()
+    public async void GetFile_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public void GetFile_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetFile_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
@@ -49,7 +49,7 @@ public class GetMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListFile_ValidRequest_ShouldSuccess()
+    public async void ListFile_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

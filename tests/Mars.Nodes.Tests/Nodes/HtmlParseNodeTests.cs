@@ -25,7 +25,7 @@ public class HtmlParseNodeTests : NodeServiceUnitTestBase
         """;
 
     [Fact]
-    public async Task Execute_EmptyHtml_ShouldReturnEmptyArray()
+    public async Task Execute_EmptyHtml_ReturnsEmptyArray()
     {
         //Arrange
         _ = nameof(HtmlParseNodeImpl.Execute);
@@ -40,7 +40,7 @@ public class HtmlParseNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_TextSelector_ShouldReturnTextArray()
+    public async Task Execute_TextSelector_ReturnsTextArray()
     {
         //Arrange
         _ = nameof(HtmlParseNodeImpl.Execute);
@@ -55,7 +55,7 @@ public class HtmlParseNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_HtmlSelector_ShouldReturnHtmlArray()
+    public async Task Execute_HtmlSelector_ReturnsHtmlArray()
     {
         //Arrange
         _ = nameof(HtmlParseNodeImpl.Execute);
@@ -70,7 +70,7 @@ public class HtmlParseNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_MapToObjectsText_ShouldReturnDictionary()
+    public async Task Execute_MapToObjectsText_ReturnsDictionary()
     {
         //Arrange
         _ = nameof(HtmlParseNodeImpl.Execute);

@@ -25,7 +25,7 @@ public class FileStorageTests
     [InlineData("file1.txt")]
     [InlineData("Media/file1.txt")]
     [InlineData("./Media/file1.txt")]
-    public void AbsolutePath_ValidFilePath_ShouldReturnAbsolutePath(string filename)
+    public void AbsolutePath_ValidFilePath_ReturnsAbsolutePath(string filename)
     {
         // Arrange
         var expectPath = "C:/www/mars/wwwRoot/upload/" + filename;

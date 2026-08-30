@@ -24,7 +24,7 @@ public sealed class DeleteRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteRole_ValidRequest_ShouldSuccess()
+    public async Task DeleteRole_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }

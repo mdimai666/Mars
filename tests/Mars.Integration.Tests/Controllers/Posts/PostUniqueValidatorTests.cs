@@ -68,7 +68,7 @@ public sealed class PostUniqueValidatorTests : ApplicationTests
         };
 
     [IntegrationFact]
-    public async Task CreatePost_DuplicateUniqueValue_ShouldFail400()
+    public async Task CreatePost_DuplicateUniqueValue_Fails400()
     {
         //Arrange
         var (typeName, fieldId) = await CreateTypeWithUniqueFieldAsync();

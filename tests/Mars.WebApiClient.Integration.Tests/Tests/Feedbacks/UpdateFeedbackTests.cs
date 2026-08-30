@@ -26,7 +26,7 @@ public sealed class UpdateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateFeedback_ValidRequest_ShouldSuccess()
+    public async Task UpdateFeedback_ValidRequest_Succeeds()
     {
         await _updateTest.ValidRequest_ShouldSuccess(req => req with { Type = FeedbackType.BugReport.ToString() });
     }

@@ -48,7 +48,7 @@ public class BlockEditorContentTests
     }
 
     [Fact]
-    public void EditorJsContent_ModifiedTimestamp_ShouldToDateTime()
+    public void EditorJsContent_ModifiedTimestamp_ConvertsToDateTime()
     {
         //Arrange
         //1739976214843 - 19.02.2025 23:43:40

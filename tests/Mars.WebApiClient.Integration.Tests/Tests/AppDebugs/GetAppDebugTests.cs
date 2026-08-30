@@ -29,7 +29,7 @@ public class GetAppDebugTests : BaseWebApiClientTests
     //}
 
     [IntegrationFact]
-    public async Task LogFiles_Request_ShouldSuccess()
+    public async Task LogFiles_Request_Succeeds()
     {
         //Arrange
         _ = nameof(AppDebugController.LogFiles);

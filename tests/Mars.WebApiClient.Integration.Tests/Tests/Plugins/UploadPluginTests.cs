@@ -29,7 +29,7 @@ public class UploadPluginTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UploadPlugin_ValidRequest_ShouldSuccess()
+    public async Task UploadPlugin_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

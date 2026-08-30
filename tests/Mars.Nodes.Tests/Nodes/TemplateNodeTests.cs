@@ -36,7 +36,7 @@ public class TemplateNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_SetResultToProperty_ShouldDidntChangePayload()
+    public async Task Execute_SetResultToProperty_DoesNotChangePayload()
     {
         //Arrange
         _ = nameof(TemplateNodeImpl.Execute);

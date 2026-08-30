@@ -25,7 +25,7 @@ public class DeletePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostType_ValidRequest_ShouldSuccess()
+    public async Task DeletePostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Delete);
@@ -79,7 +79,7 @@ public class DeletePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostType_InternalTypeCannotBeDelete_Should400()
+    public async Task DeletePostType_InternalTypeCannotBeDelete_Fails400()
     {
         //Arrange
         _ = nameof(PostTypeController.Delete);
@@ -98,7 +98,7 @@ public class DeletePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPostType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.DeleteMany);

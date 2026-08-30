@@ -37,7 +37,7 @@ public class GetUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetUser_ValidRequest_ShouldSuccess()
+    public async Task GetUser_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.Get);
@@ -86,7 +86,7 @@ public class GetUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListUser_Request_ShouldSuccess()
+    public async Task ListUser_Request_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.List);
@@ -110,7 +110,7 @@ public class GetUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListUser_SearchRequest_ShouldSuccess()
+    public async Task ListUser_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.List);
@@ -143,7 +143,7 @@ public class GetUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetEditModel_ValidRequest_ShouldSuccess()
+    public async Task GetEditModel_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.GetEditModel);
@@ -160,7 +160,7 @@ public class GetUserTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetEditModelBlank_ValidRequest_ShouldSuccess()
+    public async Task GetEditModelBlank_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserController.GetEditModelBlank);

@@ -42,7 +42,7 @@ public class DeleteMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Delete_ValidRequest_ShouldSuccess()
+    public async Task Delete_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Delete);
@@ -70,7 +70,7 @@ public class DeleteMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteMany_ValidRequest_ShouldSuccess()
+    public async Task DeleteMany_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.DeleteMany);

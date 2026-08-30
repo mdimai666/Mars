@@ -41,7 +41,7 @@ public class UpdateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task UpdateNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Update);
@@ -78,7 +78,7 @@ public class UpdateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_MenuItems_ShouldBePersisted()
+    public async Task UpdateNavMenu_MenuItems_IsPersisted()
     {
         //Arrange
         _ = nameof(NavMenuController.Update);

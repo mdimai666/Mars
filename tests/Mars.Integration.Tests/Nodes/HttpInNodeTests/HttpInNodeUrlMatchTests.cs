@@ -36,7 +36,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_InvalidUrlRequest_ShouldNotOK()
+    public async Task TryMatch_InvalidUrlRequest_Fails()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -53,7 +53,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_StaticUrlRequest_ShouldOK()
+    public async Task TryMatch_StaticUrlRequest_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -70,7 +70,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_PatternUrlRequest_ShouldOK()
+    public async Task TryMatch_PatternUrlRequest_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -87,7 +87,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_StaticUrlShouldBePrioritizedOverPatternUrl_ShouldMatchStatic()
+    public async Task TryMatch_StaticAndPatternUrlBothMatch_StaticWins()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -112,7 +112,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_TypedPatternUrlRequest_ShouldOK()
+    public async Task TryMatch_TypedPatternUrlRequest_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -129,7 +129,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_TypedPatternUrlInvalidTypeRequest_ShouldNotOK()
+    public async Task TryMatch_TypedPatternUrlInvalidTypeRequest_Fails()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

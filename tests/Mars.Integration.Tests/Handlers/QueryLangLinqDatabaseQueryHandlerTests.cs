@@ -58,7 +58,7 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Handle_LinqForMetaField_ShouldWork()
+    public async Task Handle_LinqForMetaField_Works()
     {
         // Arrange
         _ = nameof(QueryLangLinqDatabaseQueryHandler.Handle);
@@ -82,7 +82,7 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Handle_LinqUnionOnDirectEntities_ShouldWork()
+    public async Task Handle_LinqUnionOnDirectEntities_Works()
     {
         // Arrange
         var postTypeName = "myType";

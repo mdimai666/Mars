@@ -7,7 +7,7 @@ namespace Mars.Nodes.Tests.Utils;
 public class NodesWorkflowBuilderTests
 {
     [Fact]
-    public void AddNext_AddSome_ShouldSuccess()
+    public void AddNext_AddSome_Succeeds()
     {
         //Arrange
         Node[] nodesList = [new InjectNode(), new TemplateNode(), new DebugNode()];
@@ -43,7 +43,7 @@ public class NodesWorkflowBuilderTests
     }
 
     [Fact]
-    public void GetLastGenerationOutputables_TryGetWithoutOutputNodes_ShouldException()
+    public void GetLastGenerationOutputables_TryGetWithoutOutputNodes_Throws()
     {
         //Act
         var action = () => NodesWorkflowBuilder.Create()
@@ -55,7 +55,7 @@ public class NodesWorkflowBuilderTests
     }
 
     [Fact]
-    public void AddNext_UsingBuilderArgument_ShouldAddNodesCorrectly()
+    public void AddNext_UsingBuilderArgument_AddsNodesCorrectly()
     {
         //Assert
         var injectNode = new InjectNode();

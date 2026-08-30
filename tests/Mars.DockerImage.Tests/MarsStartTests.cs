@@ -15,7 +15,7 @@ public class MarsStartTests : IClassFixture<MarsFixture>
     }
 
     [DockerContainerFact]
-    public async Task MarsStart_EmptyDb_ShouldSuccessAsync()
+    public async Task MarsStart_EmptyDb_SucceedsAsync()
     {
         var req = await _fixture.Client.Request("/dev").AllowAnyHttpStatus().GetAsync();
 

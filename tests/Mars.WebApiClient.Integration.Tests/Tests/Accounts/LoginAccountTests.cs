@@ -16,7 +16,7 @@ public class LoginAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Login_ValidRequest_ShouldSuccess()
+    public async Task Login_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.Login);

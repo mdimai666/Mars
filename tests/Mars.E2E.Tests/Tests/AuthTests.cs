@@ -16,7 +16,7 @@ public class AuthTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task LoginPage_ValidData_ShouldSuccess()
+    public async Task LoginPage_ValidData_Succeeds()
     {
         // Arrange
         var tracker = new BrowserErrorTracker(Page);

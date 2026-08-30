@@ -37,7 +37,7 @@ public class MsSqlDatasourceTests : IClassFixture<MsSqlFixture>
     }
 
     [IntegrationFact]
-    public async Task CreateTable_Valid_ShouldSuccess()
+    public async Task CreateTable_Valid_Succeeds()
     {
         await using var connection = new SqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();

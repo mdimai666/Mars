@@ -31,7 +31,7 @@ public sealed class CreatePostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_ValidRequest_ShouldSuccess()
+    public async Task CreatePostType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

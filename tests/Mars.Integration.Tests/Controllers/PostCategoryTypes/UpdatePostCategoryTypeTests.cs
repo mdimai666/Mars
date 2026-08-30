@@ -47,7 +47,7 @@ public class UpdatePostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategoryType_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostCategoryType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Update);
@@ -112,7 +112,7 @@ public class UpdatePostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategoryType_WithDuplicateName_ShouldReturnValidationError()
+    public async Task UpdatePostCategoryType_WithDuplicateName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Update);

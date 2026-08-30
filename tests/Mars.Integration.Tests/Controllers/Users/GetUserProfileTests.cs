@@ -35,7 +35,7 @@ public class GetUserProfileTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetUserProfile_ValidRequest_ShouldSuccess()
+    public async Task GetUserProfile_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.Profile);

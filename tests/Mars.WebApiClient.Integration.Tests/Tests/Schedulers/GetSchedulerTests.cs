@@ -32,7 +32,7 @@ public class GetSchedulerTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task ListSchedulerJob_ValidRequest_ShouldSuccess()
+    public async Task ListSchedulerJob_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

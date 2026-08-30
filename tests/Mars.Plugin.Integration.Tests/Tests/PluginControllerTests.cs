@@ -14,7 +14,7 @@ public class PluginControllerTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public async Task PluginEndpoint_ControllerWorked_ShouldResponseOK()
+    public async Task PluginEndpoint_ControllerWorked_RespondsOk()
     {
         //Arrange
         _ = nameof(MyPluginController.PluginEndpoint);

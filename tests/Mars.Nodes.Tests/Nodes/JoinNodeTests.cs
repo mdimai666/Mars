@@ -38,7 +38,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ExecuteForCountAggregation_ValidCount_ShouldOnePack()
+    public async Task ExecuteForCountAggregation_ValidCount_EmitsSinglePack()
     {
         //Arrange
         _ = nameof(JoinNodeImpl.ExecuteForCountAggregation);
@@ -66,7 +66,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ExecuteForCountAggregation_CountBelowMinimum_ShouldBeEmpty()
+    public async Task ExecuteForCountAggregation_CountBelowMinimum_IsEmpty()
     {
         //Arrange
         _ = nameof(JoinNodeImpl.ExecuteForCountAggregation);
@@ -93,7 +93,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ExecuteForTimeAggregation_TimeElapsed_ShouldReturnMessagePack()
+    public async Task ExecuteForTimeAggregation_TimeElapsed_ReturnsMessagePack()
     {
         //Arrange
         _ = nameof(JoinNodeImpl.ExecuteForTimeAggregation);
@@ -152,7 +152,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ExecuteForInputAggregation_AllInputsReceived_ShouldReturnAggregatedMessage()
+    public async Task ExecuteForInputAggregation_AllInputsReceived_ReturnsAggregatedMessage()
     {
         //Arrange
         _ = nameof(JoinNodeImpl.ExecuteForInputAggregation);
@@ -183,7 +183,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ExecuteForInputAggregation_NotAllInputsReceived_ShouldNotNextReturn()
+    public async Task ExecuteForInputAggregation_NotAllInputsReceived_DoesNotReturnNext()
     {
         //Arrange
         _ = nameof(JoinNodeImpl.ExecuteForInputAggregation);
@@ -214,7 +214,7 @@ public class JoinNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task ExecuteForInputAggregation_WhenTimeoutExpiresNotAllInputsReceived_ShouldTimeoutAndReturnAggregated()
+    public async Task ExecuteForInputAggregation_TimeoutWithMissingInputs_TimesOutAndReturnsAggregated()
     {
         //Arrange
         _ = nameof(JoinNodeImpl.ExecuteForInputAggregation);

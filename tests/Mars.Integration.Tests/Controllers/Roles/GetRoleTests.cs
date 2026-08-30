@@ -37,7 +37,7 @@ public class GetRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetRole_ValidRequest_ShouldSuccess()
+    public async Task GetRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Get);
@@ -92,7 +92,7 @@ public class GetRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListRole_Request_ShouldSuccess()
+    public async Task ListRole_Request_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.List);
@@ -116,7 +116,7 @@ public class GetRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListRole_SearchRequest_ShouldSuccess()
+    public async Task ListRole_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.List);

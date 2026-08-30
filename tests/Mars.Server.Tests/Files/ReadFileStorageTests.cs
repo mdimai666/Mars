@@ -44,7 +44,7 @@ public class ReadFileStorageTests
     }
 
     [Fact]
-    public void Read_FileContent_ShouldRead()
+    public void Read_FileContent_Reads()
     {
         // Arrange
         var filename = "file1.txt";
@@ -58,7 +58,7 @@ public class ReadFileStorageTests
     }
 
     [Fact]
-    public void Read_NotExistFile_ShouldException()
+    public void Read_NotExistFile_Throws()
     {
         // Arrange
         var filename = "invalid_file_name.ttt";
@@ -71,7 +71,7 @@ public class ReadFileStorageTests
     }
 
     [Fact]
-    public void Read_FileContentFromBytes_ShouldRead()
+    public void Read_FileContentFromBytes_Reads()
     {
         // Arrange
         var filename = "file1.txt";
@@ -85,7 +85,7 @@ public class ReadFileStorageTests
     }
 
     [Fact]
-    public void Read_FileContentFromStream_ShouldRead()
+    public void Read_FileContentFromStream_Reads()
     {
         // Arrange
         var filename = "file1.txt";

@@ -42,7 +42,7 @@ public class UpdateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateFeedback_ValidRequest_ShouldSuccess()
+    public async Task UpdateFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Update);

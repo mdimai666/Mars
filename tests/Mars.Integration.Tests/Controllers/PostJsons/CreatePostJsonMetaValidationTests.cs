@@ -26,7 +26,7 @@ public class CreatePostJsonMetaValidationTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_MetaValueAgainstValidator_ShouldRejectInvalidAndAcceptValid()
+    public async Task CreatePostJson_MetaValueAgainstValidator_RejectsInvalidAndAcceptsValid()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);

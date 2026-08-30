@@ -7,7 +7,7 @@ namespace Mars.Server.Tests.JsonConverters;
 public class OrderedPropertiesJsonTypeInfoResolverTests
 {
     [Fact]
-    public void Serialize_WithInheritance_ShouldPlaceBasePropertiesFirst()
+    public void Serialize_WithInheritance_PlacesBasePropertiesFirst()
     {
         // Arrange
         var options = new JsonSerializerOptions

@@ -29,7 +29,7 @@ public sealed class UpdatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePost_ValidRequest_ShouldSuccess()
+    public async Task UpdatePost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Update);

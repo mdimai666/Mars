@@ -61,7 +61,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void ExpandoObject_BoolField_ShouldRecognizeCorrect()
+    public void ExpandoObject_BoolField_RecognizesCorrect()
     {
         var data = new ExpandoObject();
         data.TryAdd("false", false);
@@ -74,7 +74,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void DictionaryObject_BoolField_ShouldRecognizeCorrect()
+    public void DictionaryObject_BoolField_RecognizesCorrect()
     {
         var data = new Dictionary<string, object>();
         data.TryAdd("false", false);
@@ -87,7 +87,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void EqBlock_ExpandoObjectCaseInsensevity_ShouldWorkExpect()
+    public void EqBlock_ExpandoObjectCaseInsensitivity_Works()
     {
         var data = new ExpandoObject();
         data.TryAdd("dima", new { False = false, Count = 123 });
@@ -104,7 +104,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void EqBlock_DictionaryCaseInsensevity_ShouldWorkExpect()
+    public void EqBlock_DictionaryCaseInsensitivity_Works()
     {
         var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
         {
@@ -125,7 +125,7 @@ public class BasicExpressionTests
     }
 
     [Fact]
-    public void OutputVariable_CaseInsensetive_ShouldWorkExpect()
+    public void OutputVariable_CaseInsensitive_Works()
     {
         var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
         {

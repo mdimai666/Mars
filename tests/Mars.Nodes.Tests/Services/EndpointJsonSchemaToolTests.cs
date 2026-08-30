@@ -14,7 +14,7 @@ public class EndpointJsonSchemaToolTests
                     """;
 
     [Fact]
-    public void ValidateAndFilter_FilterField_ShouldWork()
+    public void ValidateAndFilter_FilterField_Works()
     {
         //Arrange
         var schema = new EndpointJsonSchemaTool.SimpleJsonSchema
@@ -40,7 +40,7 @@ public class EndpointJsonSchemaToolTests
     }
 
     [Fact]
-    public void ValidateAndFilter_MissingRequiredField_ShouldFail()
+    public void ValidateAndFilter_MissingRequiredField_Fails()
     {
         //Arrange
         var schema = new EndpointJsonSchemaTool.SimpleJsonSchema
@@ -67,7 +67,7 @@ public class EndpointJsonSchemaToolTests
     }
 
     [Fact]
-    public void ValidateAndFilter_UsingJsonSchemaFromString_ShouldOk()
+    public void ValidateAndFilter_UsingJsonSchemaFromString_Succeeds()
     {
         //Arrange
         var schemaJson = """

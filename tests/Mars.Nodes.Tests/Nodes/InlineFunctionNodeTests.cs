@@ -27,7 +27,7 @@ public class InlineFunctionNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_DelegateWithoutArgument_ShouldSuccess()
+    public async Task Execute_DelegateWithoutArgument_Succeeds()
     {
         //Arrange
         _ = nameof(DebugNodeImpl.Execute);
@@ -42,7 +42,7 @@ public class InlineFunctionNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_DelegateWithMsgAndExecuteParams_ShouldSuccess()
+    public async Task Execute_DelegateWithMsgAndExecuteParams_Succeeds()
     {
         //Arrange
         _ = nameof(DebugNodeImpl.Execute);
@@ -57,7 +57,7 @@ public class InlineFunctionNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_AsyncDelegateWithParams_ShouldSuccess()
+    public async Task Execute_AsyncDelegateWithParams_Succeeds()
     {
         //Arrange
         _ = nameof(DebugNodeImpl.Execute);
@@ -76,7 +76,7 @@ public class InlineFunctionNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_DelegatePassArguments_ShouldSuccess()
+    public async Task Execute_DelegatePassArguments_Succeeds()
     {
         //Arrange
         _ = nameof(DebugNodeImpl.Execute);

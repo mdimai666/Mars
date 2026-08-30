@@ -22,7 +22,7 @@ public sealed class GetUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetUserType_ValidRequest_ShouldSuccess()
+    public async Task GetUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Get);

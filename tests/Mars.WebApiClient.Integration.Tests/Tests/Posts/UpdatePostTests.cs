@@ -27,7 +27,7 @@ public sealed class UpdatePostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePost_ValidRequest_ShouldSuccess()
+    public async Task UpdatePost_ValidRequest_Succeeds()
     {
         //await _updateTest.ValidRequest_ShouldSuccess(req => req with { Title = "new Title", Type = "post" });
 

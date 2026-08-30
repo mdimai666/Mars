@@ -21,7 +21,7 @@ public class QuerySearchTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Query_ValidText_ShouldFindCreatedPost()
+    public async Task Query_ValidText_FindsCreatedPost()
     {
         //Arrange
         var client = GetWebApiClient();

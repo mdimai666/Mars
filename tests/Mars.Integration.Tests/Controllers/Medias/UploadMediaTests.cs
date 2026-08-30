@@ -55,7 +55,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_TextFileUploadRequest_ShouldSuccess()
+    public async Task Upload_TextFileUploadRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -89,7 +89,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_ImageUploadMustCreateThumbnails_ShouldSuccess()
+    public async Task Upload_ImageUploadMustCreateThumbnails_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -167,7 +167,7 @@ public sealed class UploadMediaTests : ApplicationTests
     ulong _fileTooLargeSize = 15 * 1024 * 1024;
 
     [IntegrationFact]
-    public async Task Upload_FileTooLarge_ShouldValidateError()
+    public async Task Upload_FileTooLarge_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -191,7 +191,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_FileTooLargeCheckAspNetConfiguration_ShouldSuccess()
+    public async Task Upload_FileTooLargeCheckAspNetConfiguration_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -215,7 +215,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_FileNotAllowedExtensions_ShouldValidateError()
+    public async Task Upload_FileNotAllowedExtensions_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(MediaController.Upload);

@@ -28,7 +28,7 @@ public class GetPluginTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task ListPlugin_ValidRequest_ShouldSuccess()
+    public async Task ListPlugin_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

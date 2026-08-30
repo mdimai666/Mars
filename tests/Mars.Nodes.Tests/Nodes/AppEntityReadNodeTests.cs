@@ -9,7 +9,7 @@ namespace Mars.Nodes.Tests.Nodes;
 public class AppEntityReadNodeTests : NodeServiceUnitTestBase
 {
     [Fact]
-    public void BuildString__ShouldOk()
+    public void BuildString__Succeeds()
     {
         //Arrange
         var qs = new NodeEntityQueryRequestModel

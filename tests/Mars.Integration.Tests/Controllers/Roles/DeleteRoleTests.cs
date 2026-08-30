@@ -22,7 +22,7 @@ public class DeleteRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteRole_ValidRequest_ShouldSuccess()
+    public async Task DeleteRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Delete);

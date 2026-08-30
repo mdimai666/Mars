@@ -18,7 +18,7 @@ public class FileHostingInfoTests
     [InlineData("image.JPG", "jpg")]
     [InlineData("image.dot..png", "png")]
     [InlineData("/path/zuzu/image.dot.png", "png")]
-    public void GetExtension_PassPath_ShouldExpectExt(string path, string expect)
+    public void GetExtension_VariousPaths_ReturnsExpectedExtension(string path, string expect)
     {
         // Arrange
         var hostingInfo = GetFileHostingInfo();
@@ -35,7 +35,7 @@ public class FileHostingInfoTests
     [InlineData("image.JPG", true)]
     [InlineData("image.dot..png", true)]
     [InlineData("/path/zuzu/image.dot.png", true)]
-    public void IsImage_PassPath_ShouldExpectResult(string path, bool expect)
+    public void IsImage_VariousPaths_ReturnsExpected(string path, bool expect)
     {
         // Arrange
         var hostingInfo = GetFileHostingInfo();
@@ -58,7 +58,7 @@ public class FileHostingInfoTests
     [InlineData("path\\zuzu\\", "path/zuzu")]
     [InlineData("path\\zuzu/", "path/zuzu")]
     [InlineData("/path\\zuzu/", "path/zuzu")]
-    public void NormalizePathSlash_PassPath_ShouldExpectResult(string path, string expect)
+    public void NormalizePathSlash_VariousPaths_ReturnsExpected(string path, string expect)
     {
         // Arrange
         // Act
@@ -74,7 +74,7 @@ public class FileHostingInfoTests
     [InlineData("text.txt", localhostUpload + "text.txt")]
     [InlineData("/2024/document.docx", localhostUpload + "2024/document.docx")]
     [InlineData("\\2024\\file.xlsx", localhostUpload + "2024/file.xlsx")]
-    public void FileAbsoluteUrlFromPath_PassPath_ShouldExpectResult(string filePath, string expectUrl)
+    public void FileAbsoluteUrlFromPath_VariousPaths_ReturnsExpected(string filePath, string expectUrl)
     {
         // Arrange
         var hostingInfo = GetFileHostingInfo();
@@ -92,7 +92,7 @@ public class FileHostingInfoTests
     [InlineData("text.txt", localhostRelativeUpload + "text.txt")]
     [InlineData("/2024/document.docx", localhostRelativeUpload + "2024/document.docx")]
     [InlineData("\\2024\\file.xlsx", localhostRelativeUpload + "2024/file.xlsx")]
-    public void FileRelativeUrlFromPath_PassPath_ShouldExpectResult(string filePath, string expectUrl)
+    public void FileRelativeUrlFromPath_VariousPaths_ReturnsExpected(string filePath, string expectUrl)
     {
         // Arrange
         var hostingInfo = new FileHostingInfo
@@ -115,7 +115,7 @@ public class FileHostingInfoTests
     [InlineData("text.txt", absoluteUploadPath + "text.txt")]
     [InlineData("/2024/document.docx", absoluteUploadPath + "2024/document.docx")]
     [InlineData("\\2024\\file.xlsx", absoluteUploadPath + "2024/file.xlsx")]
-    public void FileAbsolutePath_PassPath_ShouldExpectResult(string filePath, string expectUrl)
+    public void FileAbsolutePath_VariousPaths_ReturnsExpected(string filePath, string expectUrl)
     {
         // Arrange
         var hostingInfo = GetFileHostingInfo();

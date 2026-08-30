@@ -61,7 +61,7 @@ public sealed class PostMultiplicityValidatorTests : ApplicationTests
         };
 
     [IntegrationFact]
-    public async Task CreatePost_SecondValueForSingleField_ShouldFail400()
+    public async Task CreatePost_SecondValueForSingleField_Fails400()
     {
         //Arrange
         var (typeName, fieldId) = await CreateTypeWithFieldAsync(isMultiple: false);
@@ -78,7 +78,7 @@ public sealed class PostMultiplicityValidatorTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_SeveralValuesForMultipleField_ShouldSuccess()
+    public async Task CreatePost_SeveralValuesForMultipleField_Succeeds()
     {
         //Arrange
         var (typeName, fieldId) = await CreateTypeWithFieldAsync(isMultiple: true);

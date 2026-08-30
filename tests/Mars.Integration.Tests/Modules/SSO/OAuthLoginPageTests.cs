@@ -44,7 +44,7 @@ public class OAuthLoginPageTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task AuthorizationUrl_Request_ShouldSuccess()
+    public async Task AuthorizationUrl_Request_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Authorize);

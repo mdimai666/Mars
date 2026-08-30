@@ -46,7 +46,7 @@ public class OAuthProviderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task AuthorizationUrl_Request_ShouldSuccess()
+    public async Task AuthorizationUrl_Request_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Authorize);
@@ -83,7 +83,7 @@ public class OAuthProviderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ExchangeCodeForToken_Valid_ShouldSuccess()
+    public async Task ExchangeCodeForToken_Valid_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Token);
@@ -121,7 +121,7 @@ public class OAuthProviderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task PasswordGrantAsync_GetAccessTokenByPassword_ShouldSuccess()
+    public async Task PasswordGrantAsync_GetAccessTokenByPassword_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Token);

@@ -33,7 +33,7 @@ public class HttpInNodeBasicAuthTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ValidateRequestRequirements_IsRequireAuthorize_ShouldStatus401()
+    public async Task ValidateRequestRequirements_IsRequireAuthorize_ReturnsStatus401()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -53,7 +53,7 @@ public class HttpInNodeBasicAuthTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ValidateRequestRequirements_AllowedRoles_ShouldStatus403()
+    public async Task ValidateRequestRequirements_AllowedRoles_ReturnsStatus403()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

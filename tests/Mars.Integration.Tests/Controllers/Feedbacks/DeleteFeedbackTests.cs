@@ -22,7 +22,7 @@ public class DeleteFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFeedback_ValidRequest_ShouldSuccess()
+    public async Task DeleteFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Delete);
@@ -75,7 +75,7 @@ public class DeleteFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyFeedback_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.DeleteMany);

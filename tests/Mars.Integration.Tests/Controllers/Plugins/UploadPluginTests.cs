@@ -61,7 +61,7 @@ public class UploadPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UploadPlugin_Request_ShouldSuccess()
+    public async Task UploadPlugin_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PluginController.UploadPlugin);
@@ -107,7 +107,7 @@ public class UploadPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public void UploadPlugin_BadContentType_Should400()
+    public void UploadPlugin_BadContentType_Fails400()
     {
         //Arrange
         _ = nameof(PluginController.UploadPlugin);
@@ -128,7 +128,7 @@ public class UploadPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public void UploadPlugin_OnDisallowUploadZipManually_Should466Denied()
+    public void UploadPlugin_OnDisallowUploadZipManually_FailsWith466Denied()
     {
         //Arrange
         SetAllowUploadZipManually(false);

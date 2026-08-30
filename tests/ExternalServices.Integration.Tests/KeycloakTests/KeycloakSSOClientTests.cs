@@ -98,7 +98,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task ListProviders_List_ShouldSuccess()
+    public async Task ListProviders_List_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.ListProviders);
@@ -116,7 +116,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task Login_RequestRedirectUrl_ShouldSuccess()
+    public async Task Login_RequestRedirectUrl_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -145,7 +145,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact(Skip = "не требуется")]
-    public async Task Callback_UserInfo_ShouldSuccess()
+    public async Task Callback_UserInfo_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -188,7 +188,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task SignUp_UsingKeycloackToken_ShouldSuccess()
+    public async Task SignUp_UsingKeycloackToken_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -211,7 +211,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task SignUp_InvalidSignToken_Should401()
+    public async Task SignUp_InvalidSignToken_Fails401()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -231,7 +231,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task SignUp_AdminEndpointRequest_ShouldWork()
+    public async Task SignUp_AdminEndpointRequest_Works()
     {
         //Arrange
         _ = nameof(SsoController.Login);

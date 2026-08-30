@@ -20,7 +20,7 @@ public class SetupWizardTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task SetupWizard_DatabasePage_InvalidConnection_ShouldShowError()
+    public async Task SetupWizard_DatabasePage_InvalidConnection_ShowsError()
     {
         // Arrange
         await Page.GotoAsync($"{BaseUrl}/setup/database");
@@ -41,7 +41,7 @@ public class SetupWizardTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task SetupWizard_DatabasePage_TestConnection_ShouldShowError()
+    public async Task SetupWizard_DatabasePage_TestConnection_ShowsError()
     {
         // Arrange
         await Page.GotoAsync($"{BaseUrl}/setup/database");
@@ -64,7 +64,7 @@ public class SetupWizardTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task SetupWizard_FullFlow_ShouldReachCompletePage()
+    public async Task SetupWizard_FullFlow_ReachesCompletePage()
     {
         // Parse connection string from test fixture
         var connStr = AppFixture.DbFixture.ConnectionString;

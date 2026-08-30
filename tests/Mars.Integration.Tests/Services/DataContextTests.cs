@@ -20,7 +20,7 @@ public sealed class DataContextTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DataContext_AuthorizedUserDataResponse_ShouldResponseDataContext()
+    public async Task DataContext_AuthorizedUserDataResponse_RespondsWithDataContext()
     {
         //Arrange
         _ = nameof(TestApi1Controller.CheckRequestContext);
@@ -44,7 +44,7 @@ public sealed class DataContextTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DataContext_NonAuthorizedUser_ShouldEmpty()
+    public async Task DataContext_NonAuthorizedUser_IsEmpty()
     {
         //Arrange
         _ = nameof(TestApi1Controller.CheckRequestContext);

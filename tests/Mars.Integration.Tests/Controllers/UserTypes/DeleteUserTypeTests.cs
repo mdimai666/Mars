@@ -23,7 +23,7 @@ public class DeleteUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Delete);
@@ -77,7 +77,7 @@ public class DeleteUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUserType_TryDeleteDefaultUserType_ShouldValidationError()
+    public async Task DeleteUserType_TryDeleteDefaultUserType_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserTypeController.Delete);
@@ -99,7 +99,7 @@ public class DeleteUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.DeleteMany);

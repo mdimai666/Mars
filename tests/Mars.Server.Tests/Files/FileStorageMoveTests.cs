@@ -33,7 +33,7 @@ public class FileStorageMoveTests : IDisposable
     }
 
     [Fact]
-    public void MoveFile_ReadNewPath_ShouldSuccess()
+    public void MoveFile_ReadNewPath_Succeeds()
     {
         // Arrange
         _fileStorage.CreateDirectory("Media");
@@ -49,7 +49,7 @@ public class FileStorageMoveTests : IDisposable
     }
 
     [Fact]
-    public void MoveDirectory_NestedContent_ShouldMoveAll()
+    public void MoveDirectory_NestedContent_MovesAll()
     {
         // Arrange
         _fileStorage.CreateDirectory("Media/2026");

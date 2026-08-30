@@ -10,7 +10,7 @@ namespace Mars.Nodes.Tests.Nodes.InlineFunctions;
 public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
 {
     [Fact]
-    public async Task ParseAndExecute_ShouldSuccess()
+    public async Task ParseAndExecute_Succeeds()
     {
         //Arrange
         _ = nameof(InlineFunctionNodeImpl.Execute);
@@ -47,7 +47,7 @@ public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void ParseMethods_RetrieveOnlyMethodWithPrimitiveParams_ShouldReturnSingleDefinition()
+    public void ParseMethods_RetrieveOnlyMethodWithPrimitiveParams_ReturnsSingleDefinition()
     {
         //Arrange
         //Act
@@ -58,7 +58,7 @@ public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void ParseMethods_IfExistNonPrimitiveArguments_ShouldException()
+    public void ParseMethods_IfExistNonPrimitiveArguments_Throws()
     {
         //Arrange
         //Act
@@ -69,7 +69,7 @@ public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithoutOneParam_ShouldUseDefaultValueAsync()
+    public async Task Execute_WithoutOneParam_UsesDefaultValueAsync()
     {
         //Arrange
         _ = nameof(InlineFunctionNodeImpl.Execute);

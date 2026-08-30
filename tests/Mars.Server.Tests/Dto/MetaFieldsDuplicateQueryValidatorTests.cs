@@ -52,7 +52,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     [InlineData("User")]
     [InlineData("Post")]
     [InlineData("File")]
-    public void Validate_RelationWithKnownTargetRoot_ShouldPass(string modelName)
+    public void Validate_RelationWithKnownTargetRoot_Passes(string modelName)
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, modelName)] };
 
@@ -60,7 +60,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_RelationPostSubtype_ExistType_ShouldPass()
+    public void Validate_RelationPostSubtype_ExistType_Passes()
     {
         _locator.ExistPostType("comment").Returns(true);
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "Post.comment")] };
@@ -69,7 +69,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_RelationPostSubtype_TypeNotExist_ShouldFail()
+    public void Validate_RelationPostSubtype_TypeNotExist_Fails()
     {
         _locator.ExistPostType("unknown").Returns(false);
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "Post.unknown")] };
@@ -81,7 +81,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_RelationWithUnknownRoot_ShouldFail()
+    public void Validate_RelationWithUnknownRoot_Fails()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "External")] };
 
@@ -89,7 +89,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_RelationWithoutModelName_ShouldFail()
+    public void Validate_RelationWithoutModelName_Fails()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, null)] };
 
@@ -97,7 +97,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_FileWithModelName_ShouldFail()
+    public void Validate_FileWithModelName_Fails()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.File, "User")] };
 
@@ -105,7 +105,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_FileWithoutModelName_ShouldPass()
+    public void Validate_FileWithoutModelName_Passes()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.File, null)] };
 
@@ -113,7 +113,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_ListKindOnMultipleRelationPostTarget_ShouldPass()
+    public void Validate_ListKindOnMultipleRelationPostTarget_Passes()
     {
         _locator.ExistPostType("photo").Returns(true);
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "Post.photo", options: ListKindOptions(), isMultiple: true)] };
@@ -122,7 +122,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_ListKindOnSingleRelation_ShouldFail()
+    public void Validate_ListKindOnSingleRelation_Fails()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "Post.photo", options: ListKindOptions(), isMultiple: false)] };
 
@@ -130,7 +130,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_ListKindOnNonRelation_ShouldFail()
+    public void Validate_ListKindOnNonRelation_Fails()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.File, options: ListKindOptions(), isMultiple: true)] };
 
@@ -138,7 +138,7 @@ public class MetaFieldsDuplicateQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_ListKindWithNonPostTarget_ShouldFail()
+    public void Validate_ListKindWithNonPostTarget_Fails()
     {
         var dto = new SupportDto { MetaFields = [Field(MetaFieldType.Relation, "User", options: ListKindOptions(), isMultiple: true)] };
 

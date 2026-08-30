@@ -39,7 +39,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_SaveInMediaFiles_ShouldSaveFile()
+    public async Task Execute_SaveInMediaFiles_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -77,7 +77,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_AllowSaveFileOutsideUploads_ShouldSaveFile()
+    public async Task Execute_AllowSaveFileOutsideUploads_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -108,7 +108,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_IFileStorage_ShouldSaveFile()
+    public async Task Execute_IFileStorage_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

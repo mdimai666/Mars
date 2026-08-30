@@ -25,7 +25,7 @@ public class CreateUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateUser_ValidRequest_ShouldSuccess()
+    public async Task CreateUser_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

@@ -6,7 +6,7 @@ namespace Mars.Datasource.Integration.Tests;
 public class SourceBuilderTests
 {
     [Fact]
-    public void SelectDatasourceDto_HelperLinkExist_ShouldExist()
+    public void SelectDatasourceDto_HelperLinkExist_Exists()
     {
         _ = nameof(SelectDatasourceDto);
 

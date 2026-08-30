@@ -22,7 +22,7 @@ public sealed class GetPostCategoryTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostCategoryType_ValidRequest_ShouldSuccess()
+    public async Task GetPostCategoryType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryTypeController.Get);

@@ -24,7 +24,7 @@ public sealed class DeleteNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteNavMenu_ValidRequest_ShouldSuccess()
+    public async Task DeleteNavMenu_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }
@@ -36,7 +36,7 @@ public sealed class DeleteNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyNavMenu_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyNavMenu_ValidRequest_Succeeds()
     {
         await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }

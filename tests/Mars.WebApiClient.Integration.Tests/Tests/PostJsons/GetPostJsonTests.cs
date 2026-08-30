@@ -28,14 +28,14 @@ public class GetPostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetPostJson_ValidRequest_ShouldSuccess()
+    public async void GetPostJson_ValidRequest_Succeeds()
     {
         _ = nameof(MarsWebApiClient.PostJson.Get);
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public async void GetPostJsonBySlug_ValidRequest_ShouldSuccess()
+    public async void GetPostJsonBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.PostJson.GetBySlug);
@@ -50,13 +50,13 @@ public class GetPostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void GetPostJson_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetPostJson_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
 
     [IntegrationFact]
-    public async void ListPostJson_ValidRequest_ShouldSuccess()
+    public async void ListPostJson_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

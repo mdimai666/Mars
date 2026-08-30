@@ -26,7 +26,7 @@ public class PostTransformerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Transform_BlockEditorJsonContentRender_ShouldReturnHtmlContent()
+    public async Task Transform_BlockEditorJsonContentRender_ReturnsHtmlContent()
     {
         //Arrange
         _ = nameof(PostTransformer.Transform);

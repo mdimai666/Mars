@@ -28,7 +28,7 @@ public class UploadMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Upload_ValidRequest_ShouldSuccess()
+    public async Task Upload_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

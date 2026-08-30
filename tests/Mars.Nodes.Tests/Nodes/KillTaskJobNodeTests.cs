@@ -12,7 +12,7 @@ public class KillTaskJobNodeTests : NodeServiceUnitTestBase
     /// Тут проблема. При порождении задачи KillTaskJobNode создает в том же контексте, и это вызывает проблемы scope. Это надо подумать.
     /// </summary>
     [Fact]
-    public async Task Execute_TerminalteJobsShouldWorkCorrectly_SuccessWithoutException()
+    public async Task Execute_TerminateJobs_SucceedsWithoutException()
     {
         //Arrange
         _ = nameof(KillTaskJobNodeImpl.Execute);

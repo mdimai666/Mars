@@ -30,7 +30,7 @@ public sealed class DeleteUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public sealed class DeleteUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

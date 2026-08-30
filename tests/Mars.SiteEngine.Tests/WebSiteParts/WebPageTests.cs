@@ -17,7 +17,7 @@ public class WebPageTests
     }
 
     [Fact]
-    public void WebPage_CorrectParse_ShouldSuccess()
+    public void WebPage_CorrectParse_Succeeds()
     {
         // Arrange
         var content = """
@@ -35,7 +35,7 @@ public class WebPageTests
     }
 
     [Fact]
-    public void WebPage_InvalidPareAttribute_ShouldException()
+    public void WebPage_InvalidPareAttribute_Throws()
     {
         // Arrange
         var content = """
@@ -52,7 +52,7 @@ public class WebPageTests
     }
 
     [Fact]
-    public void Url_UrlisEqualSlash_ShouldTrue()
+    public void Url_UrlisEqualSlash_ReturnsTrue()
     {
         // Arrange
         var content = """

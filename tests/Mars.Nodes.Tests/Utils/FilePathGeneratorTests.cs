@@ -20,7 +20,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceFileTokensCorrectly_WhenValidTemplateProvided()
+    public void Generate_ValidTemplateWithFileTokens_ReplacesFileTokensCorrectly()
     {
         // Arrange (Подготовка)
         string template = "uploads/{field_name}/{file_name_only}{file_ext}";
@@ -37,7 +37,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceDateTimeTokensWithCurrentTime()
+    public void Generate_ReplacesDateTimeTokensWithCurrentTime()
     {
         // Arrange
         string template = "{yyyy}/{MM}/{DD}/{HH}{mm}";
@@ -59,7 +59,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceGuidTokenWithValid32CharHash()
+    public void Generate_ReplacesGuidTokenWithValid32CharHash()
     {
         // Arrange
         string template = "files/{guid}.dat";
@@ -77,7 +77,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldReplaceUniqueSuffixToken()
+    public void Generate_ReplacesUniqueSuffixToken()
     {
         // Arrange
         string template = "files/{unique_suffix}.dat";
@@ -95,7 +95,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldCleanForbiddenCharacters_ToPreventPathTraversal()
+    public void Generate_ForbiddenCharacters_CleansThemToPreventPathTraversal()
     {
         // Arrange
         string template = "storage/{field_name}/{file_name}";
@@ -114,7 +114,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldThrowArgumentNullException_WhenTemplateIsEmpty()
+    public void Generate_EmptyTemplate_ThrowsArgumentNullException()
     {
         // Arrange
         string nullTemplate = null!;
@@ -126,7 +126,7 @@ public class FilePathGeneratorTests
     }
 
     [Fact]
-    public void Generate_ShouldNormalizePathSeparatorsForCurrentOperatingSystem()
+    public void Generate_NormalizesPathSeparatorsForCurrentOperatingSystem()
     {
         // Arrange
         string template = "root/sub\\folder/file.txt";

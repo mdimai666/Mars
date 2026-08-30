@@ -27,7 +27,7 @@ public class UpdatePostTypePresentationTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostTypePresentation_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostTypePresentation_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.UpdatePresentation);
@@ -68,7 +68,7 @@ public class UpdatePostTypePresentationTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostTypePresentation_WithGridSettings_ShouldStoreAndReturnThem()
+    public async Task UpdatePostTypePresentation_WithGridSettings_StoresAndReturnsThem()
     {
         //Arrange
         _ = nameof(PostTypeController.UpdatePresentation);

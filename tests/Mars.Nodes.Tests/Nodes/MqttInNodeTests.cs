@@ -17,7 +17,7 @@ public class MqttInNodeTests
     }
 
     [Fact]
-    public void MqttIncomingMessagePayload_ToJson_ShouldSuccess()
+    public void MqttIncomingMessagePayload_ToJson_Succeeds()
     {
         //Arrange
         _ = nameof(MqttApplicationMessageReceivedEventArgs);

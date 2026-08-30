@@ -37,7 +37,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithGetRequest_ShouldReturnStringResponse()
+    public async Task Execute_WithGetRequest_ReturnsStringResponse()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -59,7 +59,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithGetRequest_ShouldReturnJsonResponse()
+    public async Task Execute_WithGetRequest_ReturnsJsonResponse()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -81,7 +81,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithPostJsonPayload_ShouldSendJsonBody()
+    public async Task Execute_WithPostJsonPayload_SendsJsonBody()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -106,7 +106,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithStringPayload_ShouldSendStringBody()
+    public async Task Execute_WithStringPayload_SendsStringBody()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -129,7 +129,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithBinaryResponse_ShouldReturnByteArray()
+    public async Task Execute_WithBinaryResponse_ReturnsByteArray()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -152,7 +152,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithStreamPayload_ShouldSendStreamBody()
+    public async Task Execute_WithStreamPayload_SendsStreamBody()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -177,7 +177,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithHttpError_ShouldHandleException()
+    public async Task Execute_WithHttpError_HandlesException()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -200,7 +200,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithEmptyUrl_ShouldThrowException()
+    public async Task Execute_WithEmptyUrl_ThrowsException()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -220,7 +220,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithHeaders_ShouldAddHeadersToRequest()
+    public async Task Execute_WithHeaders_AddsHeadersToRequest()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -249,7 +249,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithPutMethod_ShouldSendPutRequest()
+    public async Task Execute_WithPutMethod_SendsPutRequest()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);
@@ -272,7 +272,7 @@ public class HttpRequestNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_WithDeleteMethod_ShouldSendDeleteRequest()
+    public async Task Execute_WithDeleteMethod_SendsDeleteRequest()
     {
         // Arrange
         _ = nameof(HttpRequestNodeImpl.Execute);

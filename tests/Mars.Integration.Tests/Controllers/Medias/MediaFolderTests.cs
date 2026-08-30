@@ -26,7 +26,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFolder_ValidRequest_ShouldCreateDbRecordAndPhysicalDirectory()
+    public async Task CreateFolder_ValidRequest_CreatesDbRecordAndPhysicalDirectory()
     {
         //Arrange
         _ = nameof(MediaController.CreateFolder);
@@ -118,7 +118,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RenameFolder_ShouldMovePhysicalDirectoryAndRewritePaths()
+    public async Task RenameFolder_MovesPhysicalDirectoryAndRewritePaths()
     {
         //Arrange
         _ = nameof(MediaController.RenameFolder);
@@ -152,7 +152,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task MoveFiles_ToAnotherFolder_ShouldMoveFileAndUpdateFolderId()
+    public async Task MoveFiles_ToAnotherFolder_MovesFileAndUpdatesFolderId()
     {
         //Arrange
         _ = nameof(MediaController.MoveFiles);
@@ -182,7 +182,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFolder_EmptyFolder_ShouldDelete()
+    public async Task DeleteFolder_EmptyFolder_Deletes()
     {
         //Arrange
         _ = nameof(MediaController.DeleteFolder);
@@ -201,7 +201,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFolder_FolderWithFiles_ShouldError466()
+    public async Task DeleteFolder_FolderWithFiles_FailsWithError466()
     {
         //Arrange
         _ = nameof(MediaController.DeleteFolder);

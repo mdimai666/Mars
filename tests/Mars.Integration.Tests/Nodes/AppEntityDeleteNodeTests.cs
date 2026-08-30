@@ -27,7 +27,7 @@ public class AppEntityDeleteNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Execute_DeletePostItems_ShouldReturnCode()
+    public async Task Execute_DeletePostItems_ReturnsCode()
     {
         //Arrange
         _ = nameof(AppEntityReadNodeImpl.Execute);

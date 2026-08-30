@@ -23,7 +23,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostJson_ValidRequest_ShouldSuccess()
+    public async Task GetPostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Get);
@@ -46,7 +46,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostJsonBySlug_ValidRequest_ShouldSuccess()
+    public async Task GetPostJsonBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.GetBySlug);
@@ -86,7 +86,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostJson_Request_ShouldSuccess()
+    public async Task ListPostJson_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.List);
@@ -110,7 +110,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostJson_SearchRequest_ShouldSuccess()
+    public async Task ListPostJson_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.List);
@@ -143,7 +143,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "not yet")]
-    public async Task GetPostJson__NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetPostJson__NonFilledMetaField_ReturnsBlankMetaValues()
     {
         throw new NotImplementedException();
     }

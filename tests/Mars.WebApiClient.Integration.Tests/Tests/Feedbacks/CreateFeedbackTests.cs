@@ -22,7 +22,7 @@ public class CreateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_UnauthorizedRequest_ShouldSuccess()
+    public async Task CreateFeedback_UnauthorizedRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient(true);
@@ -38,7 +38,7 @@ public class CreateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_AuthorizedRequest_ShouldSaveUser()
+    public async Task CreateFeedback_AuthorizedRequest_SavesUser()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -54,7 +54,7 @@ public class CreateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_ValidRequest_ShouldSuccess()
+    public async Task CreateFeedback_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

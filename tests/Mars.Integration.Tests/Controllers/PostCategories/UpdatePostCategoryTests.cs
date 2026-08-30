@@ -29,7 +29,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategory_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.Update);
@@ -125,7 +125,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategory_UpdateParentSlug_ShouldChildElementRecalcPath()
+    public async Task UpdatePostCategory_UpdateParentSlug_RecalcsChildPaths()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Update);
@@ -178,7 +178,7 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostCategory_UpdateParentElement_ShouldRecalcChildTree()
+    public async Task UpdatePostCategory_UpdateParentElement_RecalcsChildTree()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Update);

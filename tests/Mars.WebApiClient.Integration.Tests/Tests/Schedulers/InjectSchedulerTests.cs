@@ -19,7 +19,7 @@ public class InjectSchedulerTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task InjectJob_ValidRequest_ShouldSuccess()
+    public async Task InjectJob_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(SchedulerController.InjectJob);

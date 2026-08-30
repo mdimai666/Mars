@@ -41,7 +41,7 @@ public class GetSchedulerJobTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListSchedulerJob_Request_ShouldSuccess()
+    public async Task ListSchedulerJob_Request_Succeeds()
     {
         //Arrange
         _ = nameof(SchedulerController.JobListTable);

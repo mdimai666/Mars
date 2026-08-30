@@ -16,7 +16,7 @@ public class InMemoryFileStorageTests
 
 
     [Fact]
-    public void ReadFile_ExistFile_ShouldSuccess()
+    public void ReadFile_ExistFile_Succeeds()
     {
         // Arrange
         var storage = GetStorage();
@@ -56,7 +56,7 @@ public class InMemoryFileStorageTests
     }
 
     [Fact]
-    public void CreateFile_ReadContent_ShouldSuccess()
+    public void CreateFile_ReadContent_Succeeds()
     {
         // Arrange
         var storage = GetStorage();
@@ -89,7 +89,7 @@ public class InMemoryFileStorageTests
     [Theory]
     [InlineData("files/text.txt")]
     [InlineData("files\\text.txt")]
-    public void ReadFile_PassAnySlashed_ShouldSuccess(string filepath)
+    public void ReadFile_PassAnySlashed_Succeeds(string filepath)
     {
         // Arrange
         var storage = GetStorage();
@@ -104,7 +104,7 @@ public class InMemoryFileStorageTests
     [Theory]
     [InlineData("files/text.txt")]
     [InlineData("files\\text.txt")]
-    public void FileInfo_FileLength_ShouldGreaterThanZero(string filepath)
+    public void FileInfo_FileLength_IsGreaterThanZero(string filepath)
     {
         // Arrange
         var storage = GetStorage();
@@ -117,7 +117,7 @@ public class InMemoryFileStorageTests
     }
 
     [Fact]
-    public void MoveFile_ReadNewPath_ShouldSuccess()
+    public void MoveFile_ReadNewPath_Succeeds()
     {
         // Arrange
         var storage = GetStorage();
@@ -133,7 +133,7 @@ public class InMemoryFileStorageTests
     }
 
     [Fact]
-    public void MoveFile_NotExistFile_ShouldException()
+    public void MoveFile_NotExistFile_Throws()
     {
         // Arrange
         var storage = GetStorage();
@@ -146,7 +146,7 @@ public class InMemoryFileStorageTests
     }
 
     [Fact]
-    public void MoveDirectory_ReadMovedContent_ShouldSuccess()
+    public void MoveDirectory_ReadMovedContent_Succeeds()
     {
         // Arrange
         var storage = GetStorage();

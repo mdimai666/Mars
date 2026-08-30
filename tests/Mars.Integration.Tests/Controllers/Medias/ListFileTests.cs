@@ -38,7 +38,7 @@ public sealed class ListFileTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFiles_ValidRequest_ShouldSuccess()
+    public async Task ListFiles_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.List);

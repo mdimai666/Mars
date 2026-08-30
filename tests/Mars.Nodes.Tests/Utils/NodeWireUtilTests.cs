@@ -8,7 +8,7 @@ namespace Mars.Nodes.Tests.Utils;
 public class NodeWireUtilTests
 {
     [Fact]
-    public void GetLinkedNodes_BothSide_ShouldSuccess()
+    public void GetLinkedNodes_BothSide_Succeeds()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -27,7 +27,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void GetLinkedNodes_ShouldHandleCyclicGraph()
+    public void GetLinkedNodes_HandlesCyclicGraph()
     {
         _ = nameof(NodeWireUtil.GetLinkedNodes);
 
@@ -54,7 +54,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void GetOutputNodes_RetrieveRootOutputChilds_ShouldSuccess()
+    public void GetOutputNodes_RetrieveRootOutputChilds_Succeeds()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -74,7 +74,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void GetInputNodes_ShouldReturnParents()
+    public void GetInputNodes_ReturnsParents()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -93,7 +93,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void AreDirectlyConnected_ShouldReturnTrue_WhenConnected()
+    public void AreDirectlyConnected_Connected_ReturnsTrue()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -111,7 +111,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void AreDirectlyConnected_ShouldReturnFalse_WhenNotConnected()
+    public void AreDirectlyConnected_NotConnected_ReturnsFalse()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -129,7 +129,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void AreConnected_ShouldReturnTrue_WhenPathExists()
+    public void AreConnected_PathExists_ReturnsTrue()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -148,7 +148,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void AreConnected_ShouldReturnFalse_WhenNoPath()
+    public void AreConnected_NoPath_ReturnsFalse()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -166,7 +166,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void GetLeafNodes_ShouldReturnNodesWithoutOutputs()
+    public void GetLeafNodes_ReturnsNodesWithoutOutputs()
     {
         //Arrange
         var builder = NodesWorkflowBuilder.Create()
@@ -183,7 +183,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void GetRootNodes_ShouldReturnNodesWithoutInputs()
+    public void GetRootNodes_ReturnsNodesWithoutInputs()
     {
         _ = nameof(NodeWireUtil.GetRootNodes);
 
@@ -202,7 +202,7 @@ public class NodeWireUtilTests
     }
 
     [Fact]
-    public void DrawWires_ShouldCreateCorrectCoordinates()
+    public void DrawWires_CreatesCorrectCoordinates()
     {
         _ = nameof(NodeWireUtil.DrawWires);
 

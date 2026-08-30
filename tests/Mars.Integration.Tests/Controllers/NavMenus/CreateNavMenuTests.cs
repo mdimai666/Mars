@@ -41,7 +41,7 @@ public class CreateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task CreateNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Create);

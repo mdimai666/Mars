@@ -33,7 +33,7 @@ public class CreatePostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_ValidRequest_ShouldSuccess()
+    public async Task CreatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(IPostJsonServiceClient.Create);
@@ -57,7 +57,7 @@ public class CreatePostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_FromJson_ShouldSuccess()
+    public async Task CreatePostJson_FromJson_Succeeds()
     {
         //Arrange
         _ = nameof(IPostJsonServiceClient.Create);

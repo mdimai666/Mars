@@ -26,7 +26,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPost_ValidRequest_ShouldSuccess()
+    public async Task GetPost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Get);
@@ -49,7 +49,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostBySlug_ValidRequest_ShouldSuccess()
+    public async Task GetPostBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.GetBySlug);
@@ -89,7 +89,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_Request_ShouldSuccess()
+    public async Task ListPost_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.List);
@@ -113,7 +113,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_RequestByPostTypeName_ShouldSuccess()
+    public async Task ListPost_RequestByPostTypeName_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.List);
@@ -137,7 +137,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_SearchRequest_ShouldSuccess()
+    public async Task ListPost_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.List);
@@ -170,7 +170,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "not yet")]
-    public async Task GetPost__NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetPost__NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostController.Get);
@@ -200,7 +200,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetEditModel_NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetEditModel_NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostController.GetEditModel);
@@ -229,7 +229,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPost_WithCategory_ShouldSuccess()
+    public async Task GetPost_WithCategory_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Get);

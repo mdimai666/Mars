@@ -43,7 +43,7 @@ public class GetPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPlugin_Request_ShouldSuccess()
+    public async Task ListPlugin_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PluginController.ListTable);

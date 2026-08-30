@@ -22,7 +22,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetFeedback_ValidRequest_ShouldSuccess()
+    public async Task GetFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Get);
@@ -62,7 +62,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFeedback_Request_ShouldSuccess()
+    public async Task ListFeedback_Request_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.List);
@@ -91,7 +91,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFeedback_SearchRequest_ShouldSuccess()
+    public async Task ListFeedback_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.List);
@@ -124,7 +124,7 @@ public class GetFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListFeedbackPagination_Request_ShouldValidTotalCount()
+    public async Task ListFeedbackPagination_Request_ReturnsValidTotalCount()
     {
         //Arrange
         _ = nameof(FeedbackController.List);

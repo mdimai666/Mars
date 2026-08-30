@@ -65,7 +65,7 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
             ]);
 
     [IntegrationFact]
-    public async Task Basic_RenderUsername_ShouldAuthUserName()
+    public async Task Basic_RenderUsername_RendersAuthenticatedUserName()
     {
         //Arrange
         _ = nameof(HandlebarsTmpCtxBasicDataContext.UserParamKey);
@@ -80,7 +80,7 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
     }
 
     [IntegrationFact]
-    public async Task Basic_Page404_ShouldStatusCode404()
+    public async Task Basic_Page404_ReturnsStatusCode404()
     {
         //Arrange
         var template = "index_page";

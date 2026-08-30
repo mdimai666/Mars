@@ -6,7 +6,7 @@ namespace Mars.SiteEngine.Tests.WebSiteParts;
 public class WebSitePart_ParseContentTests
 {
     [Fact]
-    public void ParseContent_ValidContent_ShouldSuccess()
+    public void ParseContent_ValidContent_Succeeds()
     {
         // Arrange
         var fileContent = """
@@ -51,7 +51,7 @@ public class WebSitePart_ParseContentTests
     }
 
     [Fact]
-    public void ParseContent_ParseSpacedTextAttributeWithQuote_ShouldSuccess()
+    public void ParseContent_ParseSpacedTextAttributeWithQuote_Succeeds()
     {
         // Arrange
         var fileContent = """
@@ -67,7 +67,7 @@ public class WebSitePart_ParseContentTests
     }
 
     [Fact]
-    public void ParseContent_ParseSpacedTextAttributeWithoutQuote_ShouldSuccess()
+    public void ParseContent_ParseSpacedTextAttributeWithoutQuote_Succeeds()
     {
         // Arrange
         var fileContent = """

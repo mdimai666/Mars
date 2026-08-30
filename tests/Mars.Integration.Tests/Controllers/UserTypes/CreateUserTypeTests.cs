@@ -45,7 +45,7 @@ public sealed class CreateUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateUserType_ValidRequest_ShouldSuccess()
+    public async Task CreateUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Create);
@@ -116,7 +116,7 @@ public sealed class CreateUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateUserType_WithDuplicateName_ShouldReturnValidationError()
+    public async Task CreateUserType_WithDuplicateName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserTypeController.Create);

@@ -25,7 +25,7 @@ public class UpdatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostType_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Update);

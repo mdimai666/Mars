@@ -6,7 +6,7 @@ public class InterprerTests
 {
 
     [Fact]
-    public void Eval_SimpleExpression_ShouldSuccess()
+    public void Eval_SimpleExpression_Succeeds()
     {
         XInterpreter ppt = new();
 
@@ -16,7 +16,7 @@ public class InterprerTests
     }
 
     [Fact]
-    public void Eval_UseVariable_ShouldSuccess()
+    public void Eval_UseVariable_Succeeds()
     {
         XInterpreter ppt = new();
 

@@ -46,7 +46,7 @@ public class FileServiceTests
     }
 
     [Fact]
-    public async Task WriteFile_SuccessWritedAndRead_ShouldRead()
+    public async Task WriteFile_SuccessWritedAndRead_Reads()
     {
         // Arrange
         CancellationToken cancellationToken = CancellationToken.None;

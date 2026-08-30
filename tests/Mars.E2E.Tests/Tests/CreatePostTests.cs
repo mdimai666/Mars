@@ -16,7 +16,7 @@ public class CreatePostTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task CreatePost_WithRequiredFields_ShouldPersist()
+    public async Task CreatePost_WithRequiredFields_Persists()
     {
         // Arrange
         var tracker = new BrowserErrorTracker(Page);

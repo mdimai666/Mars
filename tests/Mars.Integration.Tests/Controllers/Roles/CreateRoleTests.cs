@@ -41,7 +41,7 @@ public class CreateRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateRole_ValidRequest_ShouldSuccess()
+    public async Task CreateRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Create);

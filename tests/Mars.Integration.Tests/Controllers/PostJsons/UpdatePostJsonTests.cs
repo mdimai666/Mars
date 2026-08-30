@@ -47,7 +47,7 @@ public class UpdatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Update);
@@ -115,7 +115,7 @@ public class UpdatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_UpdateNonWrittedValueMetaValueRequest_ShouldSuccess()
+    public async Task UpdatePostJson_UpdateNonWrittedValueMetaValueRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Update);
@@ -183,7 +183,7 @@ public class UpdatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_ValidateQueryValidator_ShouldFail()
+    public async Task UpdatePostJson_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostRepository.Update);

@@ -37,7 +37,7 @@ public class GetNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetNavMenu_ValidRequest_ShouldSuccess()
+    public async Task GetNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Get);
@@ -92,7 +92,7 @@ public class GetNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListNavMenu_Request_ShouldSuccess()
+    public async Task ListNavMenu_Request_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.List);
@@ -116,7 +116,7 @@ public class GetNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListNavMenu_SearchRequest_ShouldSuccess()
+    public async Task ListNavMenu_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.List);

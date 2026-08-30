@@ -7,7 +7,7 @@ namespace Mars.Nodes.Tests.Services;
 public class NodesLocatorTests : NodeServiceUnitTestBase
 {
     [Fact]
-    public void CreateExamplesList_ShouldReturnExamples()
+    public void CreateExamplesList_ReturnsExamples()
     {
         //Arrange
         //Act

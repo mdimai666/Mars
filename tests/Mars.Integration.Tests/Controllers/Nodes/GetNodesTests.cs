@@ -22,7 +22,7 @@ public class GetNodesTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task LoadNodes_ResponseJsonDeserializer_ShouldSuccess()
+    public async Task LoadNodes_ResponseJsonDeserializer_Succeeds()
     {
         //Arrange
         _ = nameof(NodeController.Load);

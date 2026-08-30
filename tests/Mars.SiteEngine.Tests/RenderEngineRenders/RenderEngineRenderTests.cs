@@ -85,7 +85,7 @@ public class RenderEngineRenderTests
     }
 
     [Fact]
-    public void Render_SimpleTemplateRender_ShouldOk()
+    public void Render_SimpleTemplateRender_Succeeds()
     {
         // Arrange
         var data = new
@@ -105,7 +105,7 @@ public class RenderEngineRenderTests
     }
 
     [Fact]
-    public void Render_ContextHaveBasicData_ShouldHaveData()
+    public void Render_ContextHaveBasicData_HasData()
     {
         // Arrange
         var content = @"{{_user.FullName}}|{{_req.Host}}|{{SysOptions.SiteUrl}}";

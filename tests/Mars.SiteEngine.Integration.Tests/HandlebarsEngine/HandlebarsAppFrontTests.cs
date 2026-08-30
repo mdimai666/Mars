@@ -24,7 +24,7 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
     }
 
     [IntegrationFact]
-    public async Task Basic_IndexPage_ShouldOk()
+    public async Task Basic_IndexPage_Succeeds()
     {
         //Arrange
         var expectText = "Hello, world! from appTheme!";
@@ -38,7 +38,7 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
     }
 
     [IntegrationFact]
-    public async Task Basic_SecondPage_ShouldOk()
+    public async Task Basic_SecondPage_Succeeds()
     {
         //Arrange
         var expectText = "SecondPage";
@@ -118,7 +118,7 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
     }
 
     [IntegrationFact]
-    public async Task Basic_Page404_ShouldStatusCode404()
+    public async Task Basic_Page404_ReturnsStatusCode404()
     {
         //Act
         // appTheme/pages/404.hbs
@@ -130,7 +130,7 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
     }
 
     [IntegrationFact]
-    public async Task Basic_DevAdmin_ShouldNotBeInterceptedByFrontFallback()
+    public async Task Basic_DevAdmin_IsNotInterceptedByFrontFallback()
     {
         //Act
         var (html, status) = await RenderRequestPageEx("/dev/settings");

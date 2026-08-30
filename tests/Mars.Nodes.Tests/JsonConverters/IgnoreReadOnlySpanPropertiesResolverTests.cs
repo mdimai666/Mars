@@ -17,7 +17,7 @@ public class IgnoreReadOnlySpanPropertiesResolverTests
     }
 
     [Fact]
-    public void Serialize_SerializeSpanBytes_ShouldSuccess()
+    public void Serialize_SerializeSpanBytes_Succeeds()
     {
         //Arrange
         _ = nameof(MqttApplicationMessageReceivedEventArgs);

@@ -25,7 +25,7 @@ public class ListPostMetaColumnsTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_WithMetaFields_ShouldReturnFormattedMetaColumns()
+    public async Task ListPost_WithMetaFields_ReturnsFormattedMetaColumns()
     {
         //Arrange
         _ = nameof(PostController.List);

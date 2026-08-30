@@ -173,7 +173,7 @@ public class GetPageRenderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RenderUrl_NonExistUrl_ShouldStatus200Instead404()
+    public async Task RenderUrl_NonExistUrl_ReturnsStatus200Instead404()
     {
         //Arrange
         _ = nameof(PageRenderController.RenderUrl);

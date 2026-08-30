@@ -34,7 +34,7 @@ public sealed class CreatePostJsonServiceTests : PostJsonServiceTestBase
 
     [Theory]
     [ClassData(typeof(MetaValuesJsonDictTestData))]
-    public void JsonMetaValuesToModifyDto_ConvertJsonValuesToMetaValueDto_ShouldOk(ModifyMetaValueDetailQuery mmf, Dictionary<string, JsonNode> updateDict)
+    public void JsonMetaValuesToModifyDto_ConvertJsonValuesToMetaValueDto_Succeeds(ModifyMetaValueDetailQuery mmf, Dictionary<string, JsonNode> updateDict)
     {
         //Arrange
         _ = nameof(PostJsonService.CreateJsonMetaValuesToModifyDto);
@@ -51,7 +51,7 @@ public sealed class CreatePostJsonServiceTests : PostJsonServiceTestBase
     }
 
     [Fact]
-    public void CreateJsonMetaValues_RelationArray_ShouldCreateMultiValuesWithOrder()
+    public void CreateJsonMetaValues_RelationArray_CreatesMultiValuesWithOrder()
     {
         //Arrange
         _ = nameof(PostJsonService.CreateJsonMetaValuesToModifyDto);
@@ -78,7 +78,7 @@ public sealed class CreatePostJsonServiceTests : PostJsonServiceTestBase
     }
 
     [Fact]
-    public void CreateJsonMetaValues_ArrayForNonRelationField_ShouldThrow()
+    public void CreateJsonMetaValues_ArrayForNonRelationField_Throws()
     {
         //Arrange
         var metaField = _fixture.Create<MetaFieldDto>() with { Type = MetaFieldType.String, Key = "str1" };

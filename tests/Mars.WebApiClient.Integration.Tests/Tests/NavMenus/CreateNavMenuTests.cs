@@ -26,7 +26,7 @@ public class CreateNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task CreateNavMenu_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

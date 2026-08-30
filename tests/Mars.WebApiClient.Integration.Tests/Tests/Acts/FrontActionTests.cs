@@ -16,7 +16,7 @@ public class FrontActionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldContainFrontActionCommand()
+    public async Task List_ContainsFrontActionCommand()
     {
         //Arrange
         var client = GetWebApiClient();

@@ -50,7 +50,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_ValidRequest_ShouldSuccess()
+    public async Task CreatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);
@@ -110,7 +110,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_ValidateQueryValidator_ShouldFail()
+    public async Task CreatePostJson_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostRepository.Create);
@@ -140,7 +140,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_PassSimpleJsonString_ShouldSuccess()
+    public async Task CreatePostJson_PassSimpleJsonString_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);
@@ -171,7 +171,7 @@ public class CreatePostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_PassSimpleJsonStringWithInvalidProp_ShouldFail400()
+    public async Task CreatePostJson_PassSimpleJsonStringWithInvalidProp_Fails400()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);

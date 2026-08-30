@@ -27,14 +27,14 @@ public class GetPostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetPost_ValidRequest_ShouldSuccess()
+    public async void GetPost_ValidRequest_Succeeds()
     {
         _ = nameof(MarsWebApiClient.Post.Get);
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public async void GetPostBySlug_ValidRequest_ShouldSuccess()
+    public async void GetPostBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.Post.GetBySlug);
@@ -49,19 +49,19 @@ public class GetPostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void GetPost_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetPost_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
 
     [IntegrationFact]
-    public async void ListPost_ValidRequest_ShouldSuccess()
+    public async void ListPost_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }
 
     [IntegrationFact]
-    public async void GetEditModel_ValidRequest_ShouldSuccess()
+    public async void GetEditModel_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.Post.GetEditModel);

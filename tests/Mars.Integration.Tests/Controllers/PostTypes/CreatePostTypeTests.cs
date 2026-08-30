@@ -46,7 +46,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_ValidRequest_ShouldSuccess()
+    public async Task CreatePostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);
@@ -128,7 +128,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_WithMetafieldDuplicateKeyName_ShouldReturnValidationError()
+    public async Task CreatePostType_WithMetafieldDuplicateKeyName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);
@@ -158,7 +158,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
         => new JsonObject { [MetaFieldKindCatalog.KindOption()] = MetaFieldKindCatalog.List };
 
     [IntegrationFact]
-    public async Task CreatePostType_ListKindOnSingleRelationField_ShouldReturnValidationError()
+    public async Task CreatePostType_ListKindOnSingleRelationField_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);
@@ -187,7 +187,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_ListKindOnMultipleRelationField_ShouldSuccess()
+    public async Task CreatePostType_ListKindOnMultipleRelationField_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);

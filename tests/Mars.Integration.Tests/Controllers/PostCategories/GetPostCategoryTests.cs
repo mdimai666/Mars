@@ -27,7 +27,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostCategory_ValidRequest_ShouldSuccess()
+    public async Task GetPostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.Get);
@@ -50,7 +50,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostCategoryBySlug_ValidRequest_ShouldSuccess()
+    public async Task GetPostCategoryBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.GetBySlug);
@@ -90,7 +90,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_Request_ShouldSuccess()
+    public async Task ListPostCategory_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);
@@ -114,7 +114,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_RequestByPostCategoryTypeName_ShouldSuccess()
+    public async Task ListPostCategory_RequestByPostCategoryTypeName_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);
@@ -139,7 +139,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_SearchRequest_ShouldSuccess()
+    public async Task ListPostCategory_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);
@@ -173,7 +173,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "not yet")]
-    public async Task GetPostCategory__NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetPostCategory__NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostCategoryController.Get);
@@ -204,7 +204,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetEditModel_NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetEditModel_NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostCategoryController.GetEditModel);
@@ -234,7 +234,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_ReturnAsSortedByPath_ShouldSuccess()
+    public async Task ListPostCategory_ReturnAsSortedByPath_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);

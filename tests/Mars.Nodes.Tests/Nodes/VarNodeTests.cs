@@ -40,7 +40,7 @@ public class VarNodeTests
     }
 
     [Fact]
-    public void ResolveClrType_InvalidVarType_ShouldException()
+    public void ResolveClrType_InvalidVarType_Throws()
     {
         //Arrange
         _ = nameof(VarNode.ResolveClrType);
@@ -54,7 +54,7 @@ public class VarNodeTests
 
     [Theory]
     [MemberData(nameof(TypesData))]
-    public void ResolveDefault_ClrType_ShouldReturnValidClrType(string varType, Type expectClrType)
+    public void ResolveDefault_ClrType_ReturnsValidClrType(string varType, Type expectClrType)
     {
         //Arrange
         _ = nameof(VarNode.ResolveDefault);

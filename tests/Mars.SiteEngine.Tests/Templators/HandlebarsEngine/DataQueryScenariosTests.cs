@@ -58,7 +58,7 @@ public class DataQueryScenariosTests
     }
 
     [Fact]
-    public void ListPostQuery_RenderList_ShouldListNames()
+    public void ListPostQuery_RenderList_ListsNames()
     {
         var template = """
             {{#context}}

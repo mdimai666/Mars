@@ -26,7 +26,7 @@ public class CreatePostTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async Task CreatePost_ValidRequest_ShouldSuccess()
+    public async Task CreatePost_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

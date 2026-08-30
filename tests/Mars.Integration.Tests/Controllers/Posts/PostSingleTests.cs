@@ -102,7 +102,7 @@ public sealed class PostSingleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateSecondPost_SingleType_ShouldFail400()
+    public async Task CreateSecondPost_SingleType_Fails400()
     {
         //Arrange
         var postType = await CreateTypeAsync([PostTypeConstants.Features.Single]);
@@ -121,7 +121,7 @@ public sealed class PostSingleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteSinglePost_ShouldFail400()
+    public async Task DeleteSinglePost_Fails400()
     {
         //Arrange
         var postType = await CreateTypeAsync([PostTypeConstants.Features.Single]);
@@ -140,7 +140,7 @@ public sealed class PostSingleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task EnableSingle_TypeWithTwoPosts_ShouldFail400()
+    public async Task EnableSingle_TypeWithTwoPosts_Fails400()
     {
         //Arrange
         var postType = await CreateTypeAsync([]);

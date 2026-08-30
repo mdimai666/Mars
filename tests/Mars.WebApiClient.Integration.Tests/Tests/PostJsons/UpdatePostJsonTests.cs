@@ -32,7 +32,7 @@ public sealed class UpdatePostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(IPostJsonServiceClient.Update);

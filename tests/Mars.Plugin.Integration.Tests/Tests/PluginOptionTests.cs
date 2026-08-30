@@ -17,7 +17,7 @@ public class PluginOptionTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public void RegisterOption_CheckPluginOptionExist_ShouldSuccess()
+    public void RegisterOption_CheckPluginOptionExist_Succeeds()
     {
         //Arrange
         _ = nameof(PluginExampleOption1);
@@ -31,7 +31,7 @@ public class PluginOptionTests : BasePluginTests
     }
 
     [IntegrationFact]
-    public void SetConstOption_HasInInitialSiteData_ShouldSuccess()
+    public void SetConstOption_HasInInitialSiteData_Succeeds()
     {
         //Arrange
         _ = nameof(PluginConstOption2);

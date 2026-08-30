@@ -24,7 +24,7 @@ public class DeleteMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteMedia_ValidRequest_ShouldSuccess()
+    public async Task DeleteMedia_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }
@@ -36,7 +36,7 @@ public class DeleteMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyMedia_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyMedia_ValidRequest_Succeeds()
     {
         await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }

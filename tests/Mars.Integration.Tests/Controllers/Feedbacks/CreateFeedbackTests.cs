@@ -24,7 +24,7 @@ public class CreateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_RequestAnonim_ShouldSuccess()
+    public async Task CreateFeedback_RequestAnonim_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackRepository.Create);
@@ -47,7 +47,7 @@ public class CreateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_ValidRequest_ShouldSuccess()
+    public async Task CreateFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackRepository.Create);
@@ -98,7 +98,7 @@ public class CreateFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_EmptyEmail_ShouldSuccess()
+    public async Task CreateFeedback_EmptyEmail_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Create);

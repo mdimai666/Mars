@@ -33,7 +33,7 @@ public sealed class UpdateOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateOption_ValidRequest_ShouldSuccess()
+    public async Task UpdateOption_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

@@ -30,7 +30,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetOption_ValidRequest_ShouldSuccess()
+    public async void GetOption_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -43,7 +43,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void GetOption_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetOption_NotExistEntity_Fails404ReturnsNull()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetSysOptions_RequestAnonim_ShouldSuccess()
+    public async void GetSysOptions_RequestAnonim_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient(true);

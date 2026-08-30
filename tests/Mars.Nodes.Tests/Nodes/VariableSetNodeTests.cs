@@ -236,7 +236,7 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     #endregion
 
     [Fact]
-    public async Task Execute_SetExtraField_FieldShouldWriteInNodeMsg()
+    public async Task Execute_SetExtraField_WritesFieldToNodeMsg()
     {
         //Arrange
         _ = nameof(VariableSetNodeImpl.Execute);
@@ -251,7 +251,7 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Execute_SetExtraFieldByPropertyPath_FieldShouldWriteInNodeMsg()
+    public async Task Execute_SetExtraFieldByPropertyPath_WritesFieldToNodeMsg()
     {
         //Arrange
         _ = nameof(VariableSetNodeImpl.Execute);
@@ -273,7 +273,7 @@ public class VariableSetNodeTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public async Task Env_GetEnvironmentVariable_ShouldSuccess()
+    public async Task Env_GetEnvironmentVariable_Succeeds()
     {
         //Arrange
         Environment.SetEnvironmentVariable("X_VALUE", "123");

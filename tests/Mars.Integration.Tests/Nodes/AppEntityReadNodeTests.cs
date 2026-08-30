@@ -29,7 +29,7 @@ public class AppEntityReadNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Execute_WithExpressionString_ShouldReturnCode()
+    public async Task Execute_WithExpressionString_ReturnsCode()
     {
         //Arrange
         _ = nameof(AppEntityReadNodeImpl.Execute);
@@ -51,7 +51,7 @@ public class AppEntityReadNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Execute_WithNodeEntityQueryBuilder_ShouldReturnCode()
+    public async Task Execute_WithNodeEntityQueryBuilder_ReturnsCode()
     {
         //Arrange
         _ = nameof(AppEntityReadNodeImpl.Execute);

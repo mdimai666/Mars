@@ -10,7 +10,7 @@ namespace Mars.Nodes.Tests.Services;
 public class NodeServiceUnitTests : NodeServiceUnitTestBase
 {
     [Fact]
-    public void OrderNodesForInitialize_FirstFlowsAndConfigNodes_ShouldReturnSorted()
+    public void OrderNodesForInitialize_FirstFlowsAndConfigNodes_ReturnsSorted()
     {
         //Arrange
         _ = nameof(NodeService.OrderNodesForInitialize);
@@ -29,7 +29,7 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void DeserializeNodes_UnknownNodes_ShouldSuccessAsUnknownNodes()
+    public void DeserializeNodes_UnknownNodes_SucceedsAsUnknownNodes()
     {
         //Arrange
         _ = nameof(NodeJsonConverter);
@@ -58,7 +58,7 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void SerializeNodes_UnknownNodes_ShouldSaveInitialNodeBody()
+    public void SerializeNodes_UnknownNodes_SavesInitialNodeBody()
     {
         //Arrange
         _ = nameof(NodeJsonConverter);
@@ -86,7 +86,7 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void ReplaceDefaultFieldsToEmptyString_DefaultValuesMustEmpty_ShouldReturnEmptyFields()
+    public void ReplaceDefaultFieldsToEmptyString_DefaultValuesMustEmpty_ReturnsEmptyFields()
     {
         //Arrange
         _ = nameof(NodeService.ReplaceDefaultFieldsToEmptyString);
@@ -108,7 +108,7 @@ public class NodeServiceUnitTests : NodeServiceUnitTestBase
     }
 
     [Fact]
-    public void ReplaceDefaultFieldsToEmptyString_DifferentOutputCount_ShouldNotThrowError()
+    public void ReplaceDefaultFieldsToEmptyString_DifferentOutputCount_DoesNotThrowError()
     {
         //Arrange
         _ = nameof(NodeService.ReplaceDefaultFieldsToEmptyString);

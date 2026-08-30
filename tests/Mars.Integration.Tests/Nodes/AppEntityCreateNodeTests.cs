@@ -90,7 +90,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     [IntegrationFact]
-    public async Task Execute_CreatePostFromFormLiterallyFields_ShouldCreateEntity()
+    public async Task Execute_CreatePostFromFormLiterallyFields_CreatesEntity()
     {
         //Arrange
         _ = nameof(AppEntityCreateNodeImpl.Execute);
@@ -141,7 +141,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
     }
 
     [IntegrationFact]
-    public async Task Execute_CreatePostFromFormAsExpressionAndAuto_ShouldCreateEntity()
+    public async Task Execute_CreatePostFromFormAsExpressionAndAuto_CreatesEntity()
     {
         //Arrange
         _ = nameof(AppEntityCreateNodeImpl.Execute);

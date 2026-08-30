@@ -24,7 +24,7 @@ public sealed class DeletePostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeletePost_ValidRequest_ShouldSuccess()
+    public async Task DeletePost_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }
@@ -36,7 +36,7 @@ public sealed class DeletePostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPost_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPost_ValidRequest_Succeeds()
     {
         await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }

@@ -73,7 +73,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void GetOption_GetSysOptionFromRepo_ShouldReturnFromRepoValue()
+    public void GetOption_GetSysOptionFromRepo_ReturnsFromRepoValue()
     {
         // Arrange
         var tKey = typeof(SiteSettings);
@@ -111,7 +111,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void SetOption_SaveOptionMustSaveInLocalCache_ShouldSaveLocal()
+    public void SetOption_SaveOptionMustSaveInLocalCache_SavesLocal()
     {
         // Arrange
         var opt = new SiteSettings()
@@ -153,7 +153,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void SetOption_SetUnregisteredOptionByClassName_ShouldOptionNotRegisteredException()
+    public void SetOption_SetUnregisteredOptionByClassName_ThrowsOptionNotRegisteredException()
     {
         // Arrange
         var tKey = typeof(ApiOption);
@@ -167,7 +167,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void RegisterOption_GetUnregisteredOption_ShouldOptionNotRegisteredException()
+    public void RegisterOption_GetUnregisteredOption_ThrowsOptionNotRegisteredException()
     {
         // Arrange
         var tKey = typeof(ApiOption);
@@ -180,7 +180,7 @@ public class OptionServiceTests
     }
 
     [Fact]
-    public void RegisterOption_GetRegisteredOption_ShouldSuccess()
+    public void RegisterOption_GetRegisteredOption_Succeeds()
     {
         // Arrange
         var tKey = typeof(ApiOption);

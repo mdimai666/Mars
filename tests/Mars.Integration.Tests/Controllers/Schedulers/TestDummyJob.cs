@@ -1,4 +1,3 @@
-using Mars.Host.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Quartz;
 

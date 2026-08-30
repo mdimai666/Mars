@@ -1,6 +1,6 @@
 using System.Data.Common;
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Interfaces;
+using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Models;
 using MySqlConnector;
 
 namespace Mars.Datasource.Host.MySQL;

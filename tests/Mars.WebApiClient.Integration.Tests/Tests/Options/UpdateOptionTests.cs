@@ -1,11 +1,10 @@
+using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Options.Models;
-using Mars.Shared.Options;
+using Mars.Options.Abstractions.Repositories;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Options;
@@ -34,7 +33,7 @@ public sealed class UpdateOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateOption_ValidRequest_ShouldSuccess()
+    public async Task UpdateOption_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -55,14 +54,14 @@ public sealed class UpdateOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task SaveSysOptions_AnonimRequest_Unauthorized()
+    public async Task SaveSiteSettings_AnonimRequest_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);
-        var optionValue = new SysOptions();
+        var optionValue = new SiteSettings();
 
         //Act
-        var action = () => client.Option.SaveSysOptions(optionValue);
+        var action = () => client.Option.SaveSiteSettings(optionValue);
 
         //Assert
         await action.Should().ThrowAsync<UnauthorizedException>();

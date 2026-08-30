@@ -104,7 +104,7 @@ Program.cs
 }
 ```
 
-**SysOptions** (SiteUrl, SiteName, SiteDescription) записываются в БД через `OptionService.SaveOption()` в `AppDbContextSeedData.SeedFirstOption()`, а не в конфиг. Данные берутся из секции `Setup` конфига.
+**SiteSettings** (SiteUrl, SiteName, SiteDescription) записываются в БД через `OptionService.SaveOption()` в `SeedFirstOptionHandler` (Mars.Server, вызывается из `AppDbContextSeedData.SeedFirstOption()`), а не в конфиг. Данные берутся из секции `Setup` конфига.
 
 ### AppFront Mode
 

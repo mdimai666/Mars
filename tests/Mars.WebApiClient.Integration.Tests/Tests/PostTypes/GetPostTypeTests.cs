@@ -1,10 +1,10 @@
-using Mars.Host.Data.Entities;
+using FluentAssertions;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PostTypes;
 
@@ -16,7 +16,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetPostType_ValidRequest_ShouldSuccess()
+    public async void GetPostType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -30,7 +30,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void GetPostType_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetPostType_NotExistEntity_Fails404ReturnsNull()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -46,7 +46,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async void ListPostType_ValidRequest_ShouldSuccess()
+    public async void ListPostType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -59,7 +59,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetEditModel_ValidRequest_ShouldSuccess()
+    public async void GetEditModel_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.PostType.GetEditModel);
@@ -74,7 +74,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void AllMetaRelationsStructure_ValidRequest_ShouldSuccess()
+    public async void AllMetaRelationsStructure_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.PostType.AllMetaRelationsStructure);
@@ -88,7 +88,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListMetaValueRelationModels_ValidRequest_ShouldSuccess()
+    public async void ListMetaValueRelationModels_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.PostType.ListMetaValueRelationModels);
@@ -103,7 +103,7 @@ public class GetPostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetMetaValueRelationModels_ValidRequest_ShouldSuccess()
+    public async void GetMetaValueRelationModels_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.PostType.GetMetaValueRelationModels);

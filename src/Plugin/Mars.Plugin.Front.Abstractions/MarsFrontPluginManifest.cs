@@ -5,7 +5,7 @@ public class MarsFrontPluginManifest
     public const string DefaultManifestFileName = "_front_plugins.json";
     public string Version { get; set; } = "0.2";
     public bool IsDebug { get; set; }
-    public Dictionary<string, FrontPluginInfo> Plugins { get; set; } = new();
+    public Dictionary<string, FrontPluginInfo> Plugins { get; set; } = [];
 }
 
 public class EndpointJsonDtoSimplified

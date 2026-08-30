@@ -1,5 +1,5 @@
+using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Host.Services;
-using Mars.AiChat.Shared.Dto;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Mars.AiChat.Host.Hubs;

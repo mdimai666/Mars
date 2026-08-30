@@ -1,15 +1,14 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Host.Controllers;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +26,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPost_ValidRequest_ShouldSuccess()
+    public async Task GetPost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Get);
@@ -50,7 +49,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostBySlug_ValidRequest_ShouldSuccess()
+    public async Task GetPostBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.GetBySlug);
@@ -90,7 +89,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_Request_ShouldSuccess()
+    public async Task ListPost_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.List);
@@ -114,7 +113,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_RequestByPostTypeName_ShouldSuccess()
+    public async Task ListPost_RequestByPostTypeName_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.List);
@@ -138,7 +137,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_SearchRequest_ShouldSuccess()
+    public async Task ListPost_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.List);
@@ -171,7 +170,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "not yet")]
-    public async Task GetPost__NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetPost__NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostController.Get);
@@ -201,7 +200,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetEditModel_NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetEditModel_NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostController.GetEditModel);
@@ -230,7 +229,7 @@ public class GetPostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPost_WithCategory_ShouldSuccess()
+    public async Task GetPost_WithCategory_Succeeds()
     {
         //Arrange
         _ = nameof(PostController.Get);

@@ -1,0 +1,48 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<StandardEditForm1 TModel="PostCategoryEditModel"
+                   @ref=_editForm1
+                   IsAddNew="@(ID == Guid.Empty)"
+                   GetAction="@(()=>PostCategoryEditModel.GetAction(client, ID, PostCategoryTypeName, PostTypeName))"
+                   SaveAction="@((model, isCreate)=>PostCategoryEditModel.SaveAction(client, model, isCreate))"
+                   OnLoadData="OnLoadData"
+                   BeforeSave="OnBeforeSave"
+                   AfterSave="AfterSave">
+
+    <div class="vstack gap-3">
+
+        <FormItem2 For="@(() => context.Id)">
+            @context.Id
+        </FormItem2>
+
+        <div class="vstack">
+            <FluentTextField @bind-Value=@context.Title
+                             @bind-Value:after="OnChangeTitle"
+                             Label="@AppRes.Title"
+                             Appearance="@FluentInputAppearance.Filled"
+                             Required
+                             Style="zoom:1.1" />
+            <FluentValidationMessage For="@(() => context.Title)" />
+        </div>
+        <div class="">
+            <FluentTextField @bind-Value=@context.Slug Label="@AppRes.Slug" />
+            <FluentValidationMessage For="@(() => context.Slug)" />
+        </div>
+
+        <FormItem2 For="@(() => context.ParentId)">
+            <SelectParentCategoryDropDown @bind-Value="context.ParentId" OriginalId="context.Id" PostType="post" />
+        </FormItem2>
+
+        <FormItem2 For="@(() => context.Tags)">
+            <InputTags2 @bind-Value=context.Tags />
+        </FormItem2>
+
+        <CascadingValue Value="@context.MetaValues">
+            <CascadingValue Value="@context.PostCategoryType.MetaFields">
+                <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaValue @ref=metaValueForm />
+            </CascadingValue>
+        </CascadingValue>
+
+    </div>
+
+</StandardEditForm1>

@@ -1,21 +1,24 @@
 using System.Net;
 using System.Net.Sockets;
 using Flurl.Http;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Interfaces;
+using Mars.Cms.Abstractions.Services;
+using Mars.Data.Contexts;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Interfaces;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Models;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Contracts.Options;
+using Mars.Server.Startup;
+using Mars.SiteEngine.Abstractions.WebSite;
+using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
+using Mars.SiteEngine.Host.Services;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
-using Mars.UseStartup;
-using Mars.UseStartup.MarsParts;
-using Mars.WebSiteProcessor.Interfaces;
-using Mars.WebSiteProcessor.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -139,11 +142,11 @@ public class E2EServerFixture : IAsyncLifetime
         var ef = ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance();
         ef.ChangeTracker.Clear();
         var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
-        MarsStartupPartMigrations.SeedData(ServiceProvider, Configuration, logger, true);
+        MarsDbStartup.SeedData(ServiceProvider, Configuration, logger, true);
 
         var optionService = scope.ServiceProvider.GetRequiredService<IOptionService>();
-        optionService.SysOption.SiteUrl = BaseUrl;
-        optionService.SaveOption(optionService.SysOption);
+        optionService.GetOption<SiteSettings>().SiteUrl = BaseUrl;
+        optionService.SaveOption(optionService.GetOption<SiteSettings>());
 
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 

@@ -1,4 +1,4 @@
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
 using Mars.E2E.Tests.Fixtures;
 using Mars.E2E.Tests.Helpers;
 using Mars.Integration.Tests.Attributes;
@@ -43,7 +43,7 @@ public class CaptureDemoPages : BaseE2ETests
     {
         var pagesService = AppFixture.ServiceProvider.GetRequiredService<IBlazorPagesService>();
 
-        return pagesService.GetStaticRoutedPages([typeof(AppAdmin.App).Assembly])
+        return pagesService.GetStaticRoutedPages([typeof(Mars.Admin.App).Assembly])
             .Select(p => p.Routes
                 .Where(r => !r.Contains('{'))
                 .OrderBy(r => r.Length)

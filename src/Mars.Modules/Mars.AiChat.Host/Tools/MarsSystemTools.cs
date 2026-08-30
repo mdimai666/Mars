@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Text.Json;
-using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Services;
 
 namespace Mars.AiChat.Host.Tools;
 

@@ -1,6 +1,5 @@
 using Flurl.Http;
 using Mars.Nodes.Core.Models.EntityQuery;
-using Mars.Nodes.Front.Shared.Services;
 
 namespace Mars.WebApp.Nodes.Front.Services;
 

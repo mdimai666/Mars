@@ -1,4 +1,4 @@
-﻿namespace EditorJsBlazored.Blocks;
+namespace EditorJsBlazored.Blocks;
 
 public interface IEditorJsBlock
 {

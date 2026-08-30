@@ -1,4 +1,4 @@
-using Mars.Shared.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 
 namespace Mars.WebApiClient.Interfaces;
 

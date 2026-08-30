@@ -6,7 +6,7 @@ namespace Mars.Integration.Tests.Common;
 internal static class NpgsqlGlobalSetup
 {
     // Npgsql читает EnableLegacyTimestampBehavior один раз при первом использовании в процессе.
-    // Если тест вне фикстуры (например, PostgreSqlContainerTest) откроет соединение раньше,
+    // Если тест вне фикстуры (например, PostgreSqlContainerTests) откроет соединение раньше,
     // чем DatabaseFixture.InitializeAsync выставит переключатель, запись DateTimeOffset
     // с локальным оффсетом в 'timestamp with time zone' начинает падать с ArgumentException.
     [ModuleInitializer]

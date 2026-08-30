@@ -68,18 +68,18 @@ public class Dependency
         Version = sp[1];
         KeyPath = key;
 
-        Runtime = dependencyJsonDto.runtime?.ToDictionary(s => Path.GetFileName(s.Key), s => new AssemblyVersionInfo(key, s.Value)) ?? new();
+        Runtime = dependencyJsonDto.runtime?.ToDictionary(s => Path.GetFileName(s.Key), s => new AssemblyVersionInfo(key, s.Value)) ?? [];
 
         Dependencies = dependencyJsonDto.dependencies
                             ?.ToDictionary(s => s.Key, s => new DependencyItem() { Name = s.Key, Version = s.Value })
-                            ?? new();
+                            ?? [];
 
         Resources = dependencyJsonDto.resources?.ToDictionary(s => s.Key, s => new ResourceInfo
         {
             Locale = s.Value.locale,
             DllFilePath = s.Key,
             DllFileName = Path.GetFileName(s.Key),
-        }) ?? new();
+        }) ?? [];
     }
 }
 

@@ -1,4 +1,4 @@
-using Mars.AiChat.Shared.Options;
+using Mars.AiChat.Contracts.Options;
 
 namespace Mars.AiChat.Host;
 

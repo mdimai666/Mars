@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Shared.TemplateEngine;
+using Mars.Core.TemplateEngine;
 using Scriban;
 using Scriban.Runtime;
 

@@ -1,21 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-using System.Net.Http;
-using System.Net.Http.Json;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
-using TestModules;
-using TestModules.Shared;
 using Mars.Core.Extensions;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace TestModules.Pages.Constructor
 {
     public partial class ConstructorEditor1
     {
-        List<TBlock> Blocks = new();
+        List<TBlock> Blocks = [];
         bool doDrag;
         protected override void OnInitialized()
         {
@@ -30,7 +20,7 @@ namespace TestModules.Pages.Constructor
         string[] colors = new string[] { "var(--bs-primary)", "var(--bs-success)", "var(--bs-danger)", "var(--bs-warning)", "var(--bs-secondary)", };
         void AddTestBlock()
         {
-            TBlock newblock = new TBlock();
+            TBlock newblock = new();
             int order = Blocks.Any() ? Blocks.Max(s => s.Order) : 0;
             newblock.Order = order + 1;
             newblock.Color = colors.TakeRandom();
@@ -78,7 +68,7 @@ namespace TestModules.Pages.Constructor
             //Color = String.Format("#{0:X6}", random.Next(0x1000000));
         }
 
-        List<DragElement> dragElements = new();
+        List<DragElement> dragElements = [];
 
         public void BlockMouseDown(MouseEventArgs e, TBlock block)
         {

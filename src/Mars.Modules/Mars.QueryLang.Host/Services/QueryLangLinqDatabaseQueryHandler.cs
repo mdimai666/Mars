@@ -1,12 +1,12 @@
 using System.Reflection;
+using Mars.Cms.Abstractions.Services;
 using Mars.Core.Features;
-using Mars.Host.Data.Common;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
+using Mars.Data.Common;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
 using Mars.MetaModelGenerator;
+using Mars.QueryLang.Services;
+using Mars.SiteEngine.Abstractions.Templators;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.QueryLang.Host.Services;
@@ -40,7 +40,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
 
         var efPropertyName = linqExpression.Trim().Split('.', 2)[0];
 
-        //var ppt = new XInterpreter(pageContext, localVaribles);
+        //var ppt = new XInterpreter(pageContext, localVariables);
         var chains = TextHelper.ParseChainPairKeyValue(linqExpression);
 
         //var resolveResult = _databaseEntityTypeCatalogService.ResolveName(efPropertyName);

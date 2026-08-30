@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Dto.Plugins;
+using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Dto;
 
 namespace Mars.Plugin.Mappings;

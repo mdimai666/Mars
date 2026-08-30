@@ -1,0 +1,40 @@
+using Mars.Contracts.Common;
+using Mars.Nodes.Abstractions.Dto.NodeTasks;
+using Mars.Nodes.Core;
+
+namespace Mars.Nodes.Abstractions.Services;
+
+public interface INodeTaskManager
+{
+    int CurrentTasksCount { get; }
+    event Action<int>? OnCurrentTasksCountChanged;
+    event NodeTaskExecutionHandler OnTaskNodeExecute;
+    event NodeTaskExceptionHandler OnError;
+
+    IReadOnlyCollection<NodeTaskResultSummary> CurrentTasks();
+    IReadOnlyCollection<NodeTaskResultDetail> CurrentTasksDetails();
+    IReadOnlyCollection<NodeTaskResultSummary> CompletedTasks();
+    IReadOnlyCollection<NodeTaskResultDetail> CompletedTasksDetails();
+
+    /// <summary>
+    /// Create and start job. And return TaskId;
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <param name="injectNodeId"></param>
+    /// <param name="msg"></param>
+    /// <returns>TaskId</returns>
+    Task<Guid> CreateJob(IServiceProvider serviceProvider, string injectNodeId, NodeMsg? msg = null, int injectPortIndex = 0, bool throwOnError = false);
+    NodeTaskResultSummary? Get(Guid taskId);
+    NodeTaskResultDetail? GetDetail(Guid taskId);
+    void TryKillTaskJob(Guid taskId);
+    void TerminateAllJobs();
+    ListDataResult<NodeTaskResultSummary> List(ListNodeTaskJobQuery query);
+    PagingResult<NodeTaskResultSummary> ListTable(ListNodeTaskJobQuery query);
+}
+
+public delegate void NodeExecutionHandler(string nodeId, NodeExecutionTrigger trigger);
+public delegate void NodeExceptionHandler(string nodeId, string flowId, Exception exception);
+
+public delegate void NodeTaskExecutionHandler(Guid taskId, string nodeId, NodeExecutionTrigger trigger);
+
+public delegate void NodeTaskExceptionHandler(Guid taskId, string nodeId, string flowId, Exception exception);

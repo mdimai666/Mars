@@ -85,14 +85,14 @@ internal class PreparePublishData
     private static readonly string[] MarsNugetsDefinition = [
         // shared
         "Mars.Core",
-        "Mars.Shared",
+        "Mars.Contracts",
         "Mars.Options/Mars.Options",
-        "AppFront.Shared",
-        "AppFront.Main",
+        "Mars.Admin.Framework",
+        "Mars.Admin.Framework",
         // host
-        "Mars.Host.Shared",
-        "Mars.Host.Data",
-        "Mars.Shared",
+        "Mars.Server.Abstractions",
+        "Mars.Data",
+        "Mars.Contracts",
         // nodes
         "Mars.Nodes/Mars.Nodes.Core",
         "Mars.Nodes/Mars.Nodes.Core.Implements",
@@ -113,7 +113,7 @@ internal class PreparePublishData
         "Plugin/Mars.Plugin.PluginPublishScript"
         ];
 
-    //private static readonly string[] MarsReferenceProjects = ["AppAdmin"];
+    //private static readonly string[] MarsReferenceProjects = ["Mars.Admin"];
 
     private static readonly HashSet<string> MarsNugets = MarsNugetsDefinition.Select(s => "mdimai666." + (s.Contains('/') ? s.Split("/", 2)[1] : s)).ToHashSet();
 

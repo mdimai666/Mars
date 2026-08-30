@@ -1,0 +1,84 @@
+using FluentAssertions;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+
+namespace Mars.SiteEngine.Tests.WebSiteParts;
+
+public class WebSitePart_ParseContentTests
+{
+    [Fact]
+    public void ParseContent_ValidContent_Succeeds()
+    {
+        // Arrange
+        var fileContent = """
+            @page ""/""
+            @title ""Title 1""
+            {{!-- commented; must ignored --}}
+            <h1>Title</h1>
+
+            <p>content</p>
+            """;
+
+        // Act
+        var (attrs, content) = WebSitePart.ParseContent(fileContent);
+
+        // Assert
+        attrs.Count.Should().Be(2);
+        attrs["page"].Should().Be("/");
+        attrs["title"].Should().Be("Title 1");
+        content.TrimStart().Should().StartWith("<h1>Title</h1>");
+    }
+
+    [Fact]
+    public void ParseContent_NonHeaderAttribute_IsIgnored()
+    {
+        // Arrange
+        var fileContent = """
+            @page ""/""
+            @title ""Title 1""
+            {{!-- commented; must ignored --}}
+            <h1>Title</h1>
+
+            @nonHeader to Be ignored 
+            <p>content</p>
+            """;
+
+        // Act
+        var (attrs, content) = WebSitePart.ParseContent(fileContent);
+
+        // Assert
+        attrs.Count.Should().Be(2);
+        content.TrimStart().Should().StartWith("<h1>Title</h1>");
+    }
+
+    [Fact]
+    public void ParseContent_ParseSpacedTextAttributeWithQuote_Succeeds()
+    {
+        // Arrange
+        var fileContent = """
+            @title ""Title 1 text""
+            <p>content</p>
+            """;
+
+        // Act
+        var (attrs, content) = WebSitePart.ParseContent(fileContent);
+
+        // Assert
+        attrs["title"].Should().Be("Title 1 text");
+    }
+
+    [Fact]
+    public void ParseContent_ParseSpacedTextAttributeWithoutQuote_Succeeds()
+    {
+        // Arrange
+        var fileContent = """
+            @title Title 1 text
+            <p>content</p>
+            """;
+
+        // Act
+        var (attrs, content) = WebSitePart.ParseContent(fileContent);
+
+        // Assert
+        attrs["title"].Should().Be("Title 1 text");
+    }
+}

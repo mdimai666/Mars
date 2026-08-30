@@ -1,4 +1,7 @@
-using Mars.Host.Shared.Services;
+using System.Reflection;
+using Mars.Options.Abstractions.Services;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +16,8 @@ public static class ApplicationPluginExtensions
 
     public static WebApplicationBuilder AddPlugins(this WebApplicationBuilder builder)
     {
+        builder.Services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
+
         var pluginManager = new PluginManager(builder.Environment.ContentRootPath);
         pluginManager.ConfigureBuilder(builder);
         builder.Services.AddSingleton(pluginManager);
@@ -32,6 +37,8 @@ public static class ApplicationPluginExtensions
 
     public static void UsePlugins(this WebApplication app)
     {
+        app.Services.GetRequiredService<IOptionService>().RegisterOption<PluginManagerSettingsOption>();
+
         var pluginManager = app.Services.GetRequiredService<PluginManager>();
         pluginManager.UsePlugins(app);
     }

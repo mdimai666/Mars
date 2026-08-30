@@ -1,11 +1,11 @@
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Media.Abstractions.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
 using Microsoft.Extensions.DependencyInjection;

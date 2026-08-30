@@ -1,0 +1,24 @@
+using Mars.Identity.Abstractions.Dto.Auth;
+using Mars.Identity.Contracts.Auth;
+
+namespace Mars.Identity.Abstractions.Mappings.Accounts;
+
+public static class AuthMapping
+{
+    public static AuthResultResponse ToResponse(this AuthResultDto entity)
+        => new()
+        {
+            ErrorMessage = entity.ErrorMessage,
+            ExpiresIn = entity.ExpiresIn,
+            RefreshToken = entity.RefreshToken,
+            Token = entity.Token,
+        };
+
+    public static RegistrationResultResponse ToResponse(this RegistrationResponseDto entity)
+        => new()
+        {
+            Errors = entity.Errors,
+            IsSuccessfulRegistration = entity.IsSuccessfulRegistration,
+            Code = entity.Code,
+        };
+}

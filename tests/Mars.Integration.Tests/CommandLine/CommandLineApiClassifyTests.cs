@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mars.CommandLine;
+using Mars.Server.CommandLine;
 
 namespace Mars.Integration.Tests.CommandLine;
 
@@ -11,7 +12,7 @@ public class CommandLineApiClassifyTests
 {
     static CliInvocationKind Classify(params string[] args)
     {
-        return new CommandLineApi(typeof(Program).Assembly, [typeof(InfoCommand)]).Remote.ClassifyInvocation(args);
+        return new CommandLineApi(typeof(Program).Assembly, [typeof(InfoCommand), typeof(MigrationCommandCli)]).Remote.ClassifyInvocation(args);
     }
 
     [Fact]

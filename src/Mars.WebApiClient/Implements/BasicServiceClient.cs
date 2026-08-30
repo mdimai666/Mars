@@ -1,7 +1,7 @@
 using Flurl.Http;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Exceptions;
-using Mars.Shared.Common;
 using Mars.WebApiClient.Models;
 
 namespace Mars.WebApiClient.Implements;

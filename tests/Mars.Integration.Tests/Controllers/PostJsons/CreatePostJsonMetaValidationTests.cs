@@ -2,13 +2,12 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostJsons;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.PostJsons;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +26,7 @@ public class CreatePostJsonMetaValidationTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostJson_MetaValueAgainstValidator_ShouldRejectInvalidAndAcceptValid()
+    public async Task CreatePostJson_MetaValueAgainstValidator_RejectsInvalidAndAcceptsValid()
     {
         //Arrange
         _ = nameof(PostJsonController.Create);

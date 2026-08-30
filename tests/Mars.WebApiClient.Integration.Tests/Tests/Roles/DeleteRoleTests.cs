@@ -1,4 +1,4 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
@@ -24,7 +24,7 @@ public sealed class DeleteRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteRole_ValidRequest_ShouldSuccess()
+    public async Task DeleteRole_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }

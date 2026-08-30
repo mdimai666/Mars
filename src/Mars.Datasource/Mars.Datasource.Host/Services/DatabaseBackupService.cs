@@ -1,6 +1,5 @@
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Interfaces;
-using Mars.Datasource.Host.Core.Models;
+using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.PostgreSQL;
 
 namespace Mars.Datasource.Host.Services;

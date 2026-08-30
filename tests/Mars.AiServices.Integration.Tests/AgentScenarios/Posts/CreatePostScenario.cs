@@ -13,7 +13,7 @@ public class CreatePostScenario : ScenarioTestBase
         """;
 
     [Fact]
-    public async Task CreatePost_CreateByPrompt_ShouldSuccess()
+    public async Task CreatePost_CreateByPrompt_Succeeds()
     {
         _ = nameof(AiCreatePostHandler);
 

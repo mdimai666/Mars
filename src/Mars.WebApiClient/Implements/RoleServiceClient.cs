@@ -1,8 +1,8 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Roles;
-using Mars.Shared.ViewModels;
-using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
+using Mars.Contracts.Common;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Contracts.ViewModels;
+using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
 

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -30,7 +30,7 @@ public sealed class DeleteUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public sealed class DeleteUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

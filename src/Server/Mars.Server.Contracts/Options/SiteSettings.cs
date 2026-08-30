@@ -1,0 +1,31 @@
+using System.ComponentModel.DataAnnotations;
+using Mars.Contracts.Resources;
+
+namespace Mars.Server.Contracts.Options;
+
+public class SiteSettings
+{
+    // General
+    [Url]
+    [Display(Name = "Адрес сайта")]
+    [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
+    public string SiteUrl { get => _siteUrl; set => _siteUrl = value.Trim('/'); }
+    string _siteUrl = "";
+
+    [Display(Name = "Имя сайта")]
+    [Required(ErrorMessageResourceName = nameof(AppRes.v_required), ErrorMessageResourceType = typeof(AppRes))]
+    public string SiteName { get; set; } = "";
+
+    [Display(Name = "Описание сайта")]
+    public string SiteDescription { get; set; } = "";
+
+    [EmailAddress]
+    [Display(Name = "Email админа")]
+    public string AdminEmail { get; set; } = "";
+
+    [Display(Name = "Разрешить самостоятельную регистрацию")]
+    public bool AllowUsersSelfRegister { get; set; }
+    [Display(Name = "Роль по умолчанию для новых пользователей")]
+    public Guid Default_Role { get; set; }
+
+}

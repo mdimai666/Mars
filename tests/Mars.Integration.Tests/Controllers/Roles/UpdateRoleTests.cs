@@ -1,20 +1,19 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Identity.Contracts.Roles;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.Roles;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Roles;
 
-/// <seealso cref="Mars.Controllers.RoleController"/>
+/// <seealso cref="Mars.Identity.Host.Controllers.RoleController"/>
 public class UpdateRoleTests : ApplicationTests
 {
     const string _apiUrl = "/api/Role";
@@ -42,7 +41,7 @@ public class UpdateRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateRole_ValidRequest_ShouldSuccess()
+    public async Task UpdateRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Update);

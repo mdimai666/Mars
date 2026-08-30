@@ -3,12 +3,12 @@ using System.Text.Json;
 using Flurl.Http;
 using Mars.Core.Extensions;
 using Mars.HttpSmartAuthFlow;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Mapping;
 using Mars.Nodes.Core.Implements.Models;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Nodes.Network;
-using Mars.Nodes.Host.Shared;
 using static Mars.Nodes.Core.Nodes.Network.HttpRequestNode;
 using JsonNode = System.Text.Json.Nodes.JsonNode;
 

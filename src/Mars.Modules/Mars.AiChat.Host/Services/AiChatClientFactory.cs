@@ -1,6 +1,6 @@
 using System.ClientModel;
-using Mars.AiChat.Host.Shared.Interfaces;
-using Mars.AiChat.Shared.Options;
+using Mars.AiChat.Abstractions.Interfaces;
+using Mars.AiChat.Contracts.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using OpenAI;

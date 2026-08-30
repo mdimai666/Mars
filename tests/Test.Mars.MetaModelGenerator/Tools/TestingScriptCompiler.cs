@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Shared.Interfaces;
+using Mars.Cms.Abstractions.Interfaces;
+using Mars.Data.Contexts;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 using Mars.Integration.Tests.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -22,7 +22,6 @@ internal static class TestingScriptCompiler
                     "Microsoft.EntityFrameworkCore",
                     "System.Linq.Expressions",
                     ..((Type[])[
-                        typeof(global::Mars.Nodes.Core.Node),
                         typeof(PostEntity),
                         typeof(DisplayAttribute),
                         typeof(IMtoMarker),

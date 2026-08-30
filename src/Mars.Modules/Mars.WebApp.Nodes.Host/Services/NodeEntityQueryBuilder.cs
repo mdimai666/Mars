@@ -1,4 +1,4 @@
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 using Mars.Nodes.Core.Models.EntityQuery;
 using Mars.QueryLang;
 

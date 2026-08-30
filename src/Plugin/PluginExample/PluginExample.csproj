@@ -8,19 +8,20 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj" />
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Abstractions\Mars.Plugin.Abstractions.csproj" />
 
         <!--EXTRA DEPS CONFIG-->
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)'=='Release'">
-        <ProjectReference Include="..\..\Mars.Host.Data\Mars.Host.Data.csproj">
+        <ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj">
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
@@ -34,15 +35,15 @@
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
-        <ProjectReference Include="..\..\Mars.Shared\Mars.Shared.csproj">
+        <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
-        <ProjectReference Include="..\..\Mars.Nodes\Core\Mars.Nodes.Core\Mars.Nodes.Core.csproj">
+        <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
-        <ProjectReference Include="..\..\Mars.Options\Mars.Options\Mars.Options.csproj">
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
@@ -89,7 +90,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Mars.Host.Data.PostgreSQL\Mars.Host.Data.PostgreSQL.csproj" />
+      <ProjectReference Include="..\..\Server\Mars.Data.PostgreSQL\Mars.Data.PostgreSQL.csproj" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

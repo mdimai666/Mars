@@ -1,12 +1,10 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Services;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Options.Models;
-using Mars.Shared.Options;
+using Mars.Options.Abstractions.Services;
+using Mars.Options.Host.Controllers;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +39,7 @@ public class GetOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetOption_ValidRequest_ShouldSuccess()
+    public async Task GetOption_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(OptionController.GetOption);
@@ -79,23 +77,21 @@ public class GetOptionTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetSysOptions_AnonimRequest_ShouldSuccess()
+    public async Task GetSiteSettings_AnonimRequest_Succeeds()
     {
         //Arrange
-        _ = nameof(OptionController.GetSysOptions);
-        _ = nameof(OptionService.SysOption);
+        _ = nameof(OptionController.GetSiteSettings);
         var client = AppFixture.GetClient(true);
-        var opt = typeof(SysOptions);
-        var optionValue = _optionService.SysOption;
+        var optionValue = _optionService.GetOption<SiteSettings>();
 
         //Act
-        var result = await client.Request(_apiUrl, opt.Name).GetJsonAsync<SysOptions>();
+        var result = await client.Request(_apiUrl, "SiteSettings").GetJsonAsync<SiteSettings>();
 
         //Assert
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(optionValue, options => options
             .ComparingRecordsByValue()
-            .ComparingByMembers<SysOptions>()
+            .ComparingByMembers<SiteSettings>()
             .ExcludingMissingMembers());
     }
 }

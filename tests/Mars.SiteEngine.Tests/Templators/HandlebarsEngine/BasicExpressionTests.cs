@@ -1,0 +1,141 @@
+using System.Dynamic;
+using FluentAssertions;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
+
+namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
+
+public class BasicExpressionTests
+{
+    [Fact]
+
+    public void IfBlock_Renders_WorksCorrectly()
+    {
+        string htmlTemplateOk = """
+            {{#if ok}}
+            ok
+            {{else}}
+            no
+            {{/if}}
+            """;
+
+        string htmlTemplateNo = """
+            {{#unless no }}
+            ok
+            {{else}}
+            no
+            {{/unless}}
+            """;
+
+        var data = new
+        {
+            ok = true,
+            no = false
+        };
+
+        var resultOk = HandlebarsDotNet.Handlebars.Compile(htmlTemplateOk)(data).Trim();
+        var resultNo = HandlebarsDotNet.Handlebars.Compile(htmlTemplateNo)(data).Trim();
+
+        resultOk.Should().Be("ok");
+        resultNo.Should().Be("ok");
+    }
+
+    [Fact]
+    public void EachBlock_Renders_WorksCorrectly()
+    {
+        var data = new
+        {
+            arr = new string[] { "1", "2", "3", "4" },
+        };
+        string htmlArrLength = @"{{arr.length}}";
+        string htmlArrEach = @"{{#each arr}} {{.}} {{/each}}";
+
+        var resultArrLength = HandlebarsDotNet.Handlebars.Compile(htmlArrLength)(data).Trim();
+        var resultArrEach = HandlebarsDotNet.Handlebars.Compile(htmlArrEach)(data).Trim();
+
+        resultArrLength.Should().Be("4");
+        resultArrEach.Should().Be("1  2  3  4");
+    }
+
+    [Fact]
+    public void ExpandoObject_BoolField_RecognizesCorrect()
+    {
+        var data = new ExpandoObject();
+        data.TryAdd("false", false);
+
+        string html = @"{{#unless false}}1{{else}}0{{/unless}}";
+
+        var template = HandlebarsDotNet.Handlebars.Compile(html);
+
+        template(data).Trim().Should().Be("1");
+    }
+
+    [Fact]
+    public void DictionaryObject_BoolField_RecognizesCorrect()
+    {
+        var data = new Dictionary<string, object>();
+        data.TryAdd("false", false);
+
+        string html = @"{{#unless false}}1{{else}}0{{/unless}}";
+
+        var template = HandlebarsDotNet.Handlebars.Compile(html);
+
+        template(data).Trim().Should().Be("1");
+    }
+
+    [Fact]
+    public void EqBlock_ExpandoObjectCaseInsensitivity_Works()
+    {
+        var data = new ExpandoObject();
+        data.TryAdd("dima", new { False = false, Count = 123 });
+
+        string html1 = @"{{#eq dima.Count 123}}1{{else}}0{{/eq}}";
+        string html2 = @"{{#eq dima.count 123}}1{{else}}0{{/eq}}";
+
+        var handlebars = new MyHandlebars();
+
+        var template1 = handlebars.Compile(html1);
+        var template2 = handlebars.Compile(html2);
+
+        Assert.Equal(template1(data).Trim(), template2(data).Trim());
+    }
+
+    [Fact]
+    public void EqBlock_DictionaryCaseInsensitivity_Works()
+    {
+        var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "False", false },
+            { "Count", 123 }
+        };
+
+        string html1 = @"{{#eq Count 123}}1{{else}}0{{/eq}}";
+        string html2 = @"{{#eq count 123}}1{{else}}0{{/eq}}";
+
+        var handlebars = new MyHandlebars();
+
+        var template1 = handlebars.Compile(html1);
+        var template2 = handlebars.Compile(html2);
+
+        Assert.Equal(template1(data).Trim(), template2(data).Trim());
+    }
+
+    [Fact]
+    public void OutputVariable_CaseInsensitive_Works()
+    {
+        var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Title", "dima" }
+        };
+
+        string html1 = @"{{Title}}";
+        string html2 = @"{{title}}";
+
+        var handlebars = new MyHandlebars();
+
+        var template1 = handlebars.Compile(html1);
+        var template2 = handlebars.Compile(html2);
+
+        Assert.Equal(template1(data).Trim(), template2(data).Trim());
+        Assert.NotEqual("", template2(data).Trim());
+    }
+}

@@ -1,20 +1,19 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.NavMenus;
 
-/// <seealso cref="Mars.Controllers.NavMenuController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.NavMenuController"/>
 public class UpdateNavMenuTests : ApplicationTests
 {
     const string _apiUrl = "/api/NavMenu";
@@ -42,7 +41,7 @@ public class UpdateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task UpdateNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Update);
@@ -79,7 +78,7 @@ public class UpdateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_MenuItems_ShouldBePersisted()
+    public async Task UpdateNavMenu_MenuItems_IsPersisted()
     {
         //Arrange
         _ = nameof(NavMenuController.Update);

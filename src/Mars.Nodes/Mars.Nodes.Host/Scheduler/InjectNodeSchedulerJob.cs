@@ -1,4 +1,5 @@
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -15,9 +16,9 @@ internal class InjectNodeSchedulerJob : IJob
 
     public InjectNodeSchedulerJob(INodeService nodeService, IServiceProvider serviceProvider)
     {
-        this._nodeService = nodeService;
+        _nodeService = nodeService;
         this.serviceProvider = serviceProvider;
-        this._logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
+        _logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
     }
 
     public async Task Execute(IJobExecutionContext context)

@@ -1,8 +1,7 @@
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Files;
-using Mars.WebApiClient.Interfaces;
 using Flurl.Http;
-using Flurl.Http.Content;
+using Mars.Contracts.Common;
+using Mars.Media.Contracts.Files;
+using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;
 
@@ -61,11 +60,6 @@ internal class MediaServiceClient : BasicServiceClient, IMediaServiceClient
         => _client.Request($"{_basePath}{_controllerName}/list/page")
                     .AppendQueryParam(filter)
                     .GetJsonAsync<PagingResult<FileListItemResponse>>();
-
-    public Task<UserActionResult> ExecuteAction(ExecuteActionRequest action)
-        => _client.Request($"{_basePath}{_controllerName}", "ExecuteAction")
-                    .PostJsonAsync(action)
-                    .ReceiveJson<UserActionResult>();
 
     public Task<List<FolderResponse>> ListFolders(Guid? parentId)
     {

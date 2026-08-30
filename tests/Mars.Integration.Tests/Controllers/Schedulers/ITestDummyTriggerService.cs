@@ -1,4 +1,4 @@
-﻿namespace Mars.Integration.Tests.Controllers.Schedulers;
+namespace Mars.Integration.Tests.Controllers.Schedulers;
 
 public interface ITestDummyTriggerService
 {

@@ -2,13 +2,12 @@ using AutoFixture;
 using EditorJsBlazored.Blocks;
 using EditorJsBlazored.Core;
 using FluentAssertions;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,13 +26,13 @@ public class PostTransformerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Transform_BlockEditorJsonContentRender_ShouldReturnHtmlContent()
+    public async Task Transform_BlockEditorJsonContentRender_ReturnsHtmlContent()
     {
         //Arrange
         _ = nameof(PostTransformer.Transform);
         var postType = _metaModelTypesLocator.GetPostTypeByName("post")!;
         if (postType.ContentEditorKey() != MetaFieldEditorCatalog.BlockEditor)
-            throw new NotSupportedException($"PostType must be '{MetaFieldEditorCatalog.BlockEditor}'. Retrived '{postType.TypeName}'.");
+            throw new NotSupportedException($"PostType must be '{MetaFieldEditorCatalog.BlockEditor}'. Retrieved '{postType.TypeName}'.");
 
         var content = new EditorJsContent()
         {

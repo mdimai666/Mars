@@ -1,12 +1,12 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
+using FluentAssertions;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Feedbacks;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Feedbacks;
 
@@ -22,7 +22,7 @@ public class CreateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_UnauthorizedRequest_ShouldSuccess()
+    public async Task CreateFeedback_UnauthorizedRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient(true);
@@ -38,7 +38,7 @@ public class CreateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_AuthorizedRequest_ShouldSaveUser()
+    public async Task CreateFeedback_AuthorizedRequest_SavesUser()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -54,7 +54,7 @@ public class CreateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task CreateFeedback_ValidRequest_ShouldSuccess()
+    public async Task CreateFeedback_ValidRequest_Succeeds()
     {
         await _createTest.ValidRequest_ShouldSuccess();
     }

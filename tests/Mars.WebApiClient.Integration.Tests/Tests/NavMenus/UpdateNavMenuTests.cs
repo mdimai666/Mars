@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -25,7 +25,7 @@ public sealed class UpdateNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task UpdateNavMenu_ValidRequest_Succeeds()
     {
         await _updateTest.ValidRequest_ShouldSuccess(req => req with { Title = "new title" });
     }

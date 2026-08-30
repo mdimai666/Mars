@@ -1,13 +1,14 @@
 using FluentAssertions;
-using Mars.Controllers;
+using Mars.Cms.Host.Controllers;
+using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Managers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.XActions;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
-using Mars.XActions.ContentRecipes;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
+using Mars.XActions.Host.Controllers;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 
@@ -19,7 +20,7 @@ public class InjectActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Inject_ValidRequest_ShouldSuccess()
+    public async Task Inject_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(ActController.Inject);
@@ -52,7 +53,7 @@ public class InjectActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Inject_NamedArgs_ShouldSuccess()
+    public async Task Inject_NamedArgs_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -71,7 +72,7 @@ public class InjectActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Inject_MissingRequiredArg_ShouldFailResult()
+    public async Task Inject_MissingRequiredArg_ReturnsFailResult()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -85,7 +86,7 @@ public class InjectActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Inject_LinkCommand_ShouldReturnWarningResult()
+    public async Task Inject_LinkCommand_ReturnsWarningResult()
     {
         //Arrange
         var client = GetWebApiClient();

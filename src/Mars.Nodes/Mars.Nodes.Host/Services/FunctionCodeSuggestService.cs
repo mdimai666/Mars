@@ -1,6 +1,8 @@
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.TemplateEngine;
+using Mars.Core.TemplateEngine;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Services;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Nodes.Host.Services;
@@ -61,7 +63,7 @@ public class FunctionCodeSuggestService
         else if (f_action == "XActions.dict")
         {
             var actionManager = _serviceProvider.GetRequiredService<IActionManager>();
-            list = actionManager.XActions.Where(s => s.Value.Type == Mars.Shared.Contracts.XActions.XActionType.HostAction
+            list = actionManager.XActions.Where(s => s.Value.Type == XActionType.HostAction
                                                     && (string.IsNullOrEmpty(search)
                                                         || s.Key.Contains(search, StringComparison.OrdinalIgnoreCase)
                                                         || s.Value.Label.Contains(search, StringComparison.OrdinalIgnoreCase)))

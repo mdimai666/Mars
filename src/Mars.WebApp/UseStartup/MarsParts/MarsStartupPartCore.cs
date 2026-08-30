@@ -1,23 +1,18 @@
-using System.IO.Compression;
 using System.Net;
 using Flurl.Http;
-using Mars.Host.Data.Entities;
-using Mars.Host.Infrastructure;
-using Mars.Host.Models;
-using Mars.Host.Services;
-using Mars.Host.Shared.Extensions;
-using Mars.Host.Shared.Features;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
-using Mars.SSO.Services;
+using Mars.Contracts.Common;
+using Mars.Data.Infrastructure;
+using Mars.Identity.Abstractions.Services;
+using Mars.Identity.Host.Models;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Extensions;
+using Mars.Server.Abstractions.Features;
+using Mars.Server.Contracts.Options;
+using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -27,9 +22,6 @@ internal static class MarsStartupPartCore
 {
     public static IServiceCollection MarsAddCore(this IServiceCollection services, ConfigurationManager configuration)
     {
-        //ConfigurationManager configuration = sonfiguration;
-        IOptionService.Configuration = configuration;
-
         services.AddHttpClient();
         services.AddHttpClient<IFlurlClient, FlurlClient>();
 
@@ -47,17 +39,14 @@ internal static class MarsStartupPartCore
 
         //TODO: think
         //AppSharedSettings.BackendUrl = "";
-        //AppSharedSettings.Program = typeof(AppAdmin.Program);
+        //AppSharedSettings.Program = typeof(Mars.Admin.Program);
         var conn = configuration.GetConnectionString("DefaultConnection");
 
-        services.AddMarsHostInfrastructure(configuration);
+        services.AddMarsDataInfrastructure(configuration);
 
         // https://source.dot.net/#Microsoft.AspNetCore.Identity.EntityFrameworkCore/IdentityEntityFrameworkBuilderExtensions.cs,90
         // services.TryAddScoped(typeof(IUserStore<>).MakeGenericType(userType), userStoreType);
 
-        services.AddScoped<IUserClaimsPrincipalFactory<UserEntity>, AppClaimsPrincipalFactory>();
-
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.JwtSectionKey));
         var jwtSettings = configuration.GetSection(JwtSettings.JwtSectionKey).Get<JwtSettings>();
 
         services
@@ -101,7 +90,7 @@ internal static class MarsStartupPartCore
 
                     IssuerValidator = (issuer, token, parameters) =>
                     {
-                        if (issuer == ops.SysOption.SiteUrl)
+                        if (issuer == ops.GetOption<SiteSettings>().SiteUrl)
                             return issuer;
                         else if (isSsoEnabled && sso.TryValidateIssuer(issuer, out var validIssuer))
                             return issuer;
@@ -147,38 +136,6 @@ internal static class MarsStartupPartCore
                     });
                 }
             };
-        });
-
-        return services;
-    }
-
-    public static IServiceCollection AddAspNetTools(this IServiceCollection services)
-    {
-        services.AddResponseCaching()
-                .AddMemoryCache(options =>
-                {
-                    options.TrackStatistics = true;
-                })
-                .AddLogging();
-
-        services.AddResponseCompression(opts =>
-        {
-            opts.Providers.Add<BrotliCompressionProvider>();
-            opts.Providers.Add<GzipCompressionProvider>();
-            opts.EnableForHttps = true;
-            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]);
-        })
-            .Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal)
-            .Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
-
-        services.Configure<KestrelServerOptions>(options =>
-        {
-            options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // if don't set default value is: 30 MB
-        });
-
-        services.Configure<FormOptions>(x =>
-        {
-            x.MultipartBodyLengthLimit = 2L * 1024 * 1024 * 1024;// 2GB
         });
 
         return services;

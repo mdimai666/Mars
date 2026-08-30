@@ -1,4 +1,4 @@
-﻿using Mars.Host.Shared.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
@@ -10,7 +10,7 @@ internal class DummyJob : IJob
 
     public DummyJob()
     {
-        this._logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
+        _logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
     }
 
     public Task Execute(IJobExecutionContext context)

@@ -1,6 +1,6 @@
 using Flurl.Http;
+using Mars.Contracts.Common;
 using Mars.Docker.Contracts;
-using Mars.Shared.Common;
 
 namespace Mars.Docker.Front.Services;
 

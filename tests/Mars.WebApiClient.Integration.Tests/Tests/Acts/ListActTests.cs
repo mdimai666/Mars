@@ -1,11 +1,11 @@
 using FluentAssertions;
+using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.XActions;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
-using Mars.XActions.ContentRecipes;
+using Mars.XActions.Contracts;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 
@@ -21,7 +21,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldReturnCommandsWithArgumentSchema()
+    public async Task List_ReturnsCommandsWithArgumentSchema()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -39,7 +39,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldDeclareDynamicOptionsSource()
+    public async Task List_DeclaresDynamicOptionsSource()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldDeclareStaticOptions()
+    public async Task List_DeclaresStaticOptions()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -74,7 +74,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldHideSystemCommands()
+    public async Task List_HidesSystemCommands()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -87,7 +87,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldCarryRecommendedPriority()
+    public async Task List_CarriesRecommendedPriority()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -104,7 +104,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Options_ShouldReturnDynamicOptions()
+    public async Task Options_ReturnsDynamicOptions()
     {
         //Arrange
         var client = GetWebApiClient();

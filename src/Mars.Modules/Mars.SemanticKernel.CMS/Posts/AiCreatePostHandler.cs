@@ -1,8 +1,8 @@
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Services;
 
 namespace Mars.SemanticKernel.CMS.Posts;
 

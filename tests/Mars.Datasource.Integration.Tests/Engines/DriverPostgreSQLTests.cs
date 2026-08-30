@@ -1,4 +1,4 @@
-using Mars.Datasource.Core;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +7,7 @@ namespace Mars.Datasource.Integration.Tests.Engines;
 public class DriverPostgreSQLTests
 {
 #if DEBUG
-    public static Dictionary<string, DatasourceConfig> configs = new Dictionary<string, DatasourceConfig>()
+    public static Dictionary<string, DatasourceConfig> configs = new()
     {
         ["psql"] = new DatasourceConfig
         {
@@ -37,7 +37,7 @@ public class DriverPostgreSQLTests
 #endif
 
     [Fact]
-    public async Task QueryAsJson()
+    public async Task SqlQueryJson_PostsUsersJoin_ReturnsRowsAsJson()
     {
         var se = new DatasourcePostgreSQLDriver(configs["psql"]);
         //string query = @"SELECT ""Id"",""Title"" FROM ""posts"" LIMIT 10;";
@@ -54,13 +54,13 @@ public class DriverPostgreSQLTests
     }
 
     [Fact]
-    public void CheckEfClass()
+    public void GetSchema_PostsTable_ReadsColumnsSchema()
     {
         //TestMarsDbContext ef = default!;
         //var conn = ef.Database.GetDbConnection();
         DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder<DbContext>();
         optionsBuilder.UseNpgsql(configs["psql"].ConnectionString);
-        using DbContext db = new DbContext(optionsBuilder.Options);
+        using DbContext db = new(optionsBuilder.Options);
 
         using System.Data.Common.DbConnection conn = db.Database.GetDbConnection();
 

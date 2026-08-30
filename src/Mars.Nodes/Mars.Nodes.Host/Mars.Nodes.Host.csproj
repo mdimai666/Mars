@@ -1,25 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNet.WebApi.Client" />
-		<PackageReference Include="System.Text.Encoding.CodePages" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" />
+        <PackageReference Include="System.Text.Encoding.CodePages" />
+        <PackageReference Include="Quartz" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-		<ProjectReference Include="..\..\Mars.Modules\Mars.CommandLine.Shared\Mars.CommandLine.Shared.csproj" />
-		<ProjectReference Include="..\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
-		<ProjectReference Include="..\Mars.Nodes.Host.Shared\Mars.Nodes.Host.Shared.csproj" />
-		<ProjectReference Include="..\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Front.Abstractions\Mars.Nodes.Front.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
+    </ItemGroup>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>Mars.Nodes.Implements.Test</_Parameter1>
+            <_Parameter1>Mars.Nodes.Tests</_Parameter1>
         </AssemblyAttribute>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>Mars.Integration.Tests</_Parameter1>

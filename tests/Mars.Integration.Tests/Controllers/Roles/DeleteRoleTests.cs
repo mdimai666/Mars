@@ -1,9 +1,8 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Data.Entities;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -23,7 +22,7 @@ public class DeleteRoleTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteRole_ValidRequest_ShouldSuccess()
+    public async Task DeleteRole_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(RoleController.Delete);

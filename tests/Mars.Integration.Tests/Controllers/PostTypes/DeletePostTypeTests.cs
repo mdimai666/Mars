@@ -1,11 +1,10 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -26,7 +25,7 @@ public class DeletePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostType_ValidRequest_ShouldSuccess()
+    public async Task DeletePostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Delete);
@@ -80,7 +79,7 @@ public class DeletePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeletePostType_InternalTypeCannotBeDelete_Should400()
+    public async Task DeletePostType_InternalTypeCannotBeDelete_Fails400()
     {
         //Arrange
         _ = nameof(PostTypeController.Delete);
@@ -99,7 +98,7 @@ public class DeletePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyPostType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyPostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.DeleteMany);

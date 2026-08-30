@@ -1,6 +1,5 @@
 using Flurl.Http;
-using Flurl.Http.Content;
-using Mars.AiChat.Shared.Dto;
+using Mars.AiChat.Contracts.Dto;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;

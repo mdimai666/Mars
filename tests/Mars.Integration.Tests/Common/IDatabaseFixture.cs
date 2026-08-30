@@ -1,4 +1,4 @@
-using Mars.Host.Data.Contexts;
+using Mars.Data.Contexts;
 
 namespace Mars.Integration.Tests.Common;
 

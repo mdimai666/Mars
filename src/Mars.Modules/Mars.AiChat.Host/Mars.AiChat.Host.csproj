@@ -25,9 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
-    <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-    <ProjectReference Include="..\Mars.AiChat.Host.Shared\Mars.AiChat.Host.Shared.csproj" />
+    <ProjectReference Include="..\..\Mars.Datasource\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.AiChat.Abstractions\Mars.AiChat.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

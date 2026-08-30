@@ -4,7 +4,6 @@ using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Plugins;
-using Mars.Plugin;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Plugins;
@@ -30,7 +29,7 @@ public class UploadPluginTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UploadPlugin_ValidRequest_ShouldSuccess()
+    public async Task UploadPlugin_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

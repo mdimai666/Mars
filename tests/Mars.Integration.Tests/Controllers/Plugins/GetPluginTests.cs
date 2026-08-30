@@ -1,15 +1,15 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Plugin.Abstractions;
+using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Plugins;
+using Mars.Plugin.Controllers;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Plugins;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +43,7 @@ public class GetPluginTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPlugin_Request_ShouldSuccess()
+    public async Task ListPlugin_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PluginController.ListTable);

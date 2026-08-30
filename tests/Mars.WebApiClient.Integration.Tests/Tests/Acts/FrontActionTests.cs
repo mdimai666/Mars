@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.XActions;
-using Mars.XActions;
+using Mars.Server.XActions;
+using Mars.XActions.Contracts;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Acts;
 
@@ -16,7 +16,7 @@ public class FrontActionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task List_ShouldContainFrontActionCommand()
+    public async Task List_ContainsFrontActionCommand()
     {
         //Arrange
         var client = GetWebApiClient();

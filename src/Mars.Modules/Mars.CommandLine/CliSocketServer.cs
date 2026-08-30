@@ -1,6 +1,6 @@
+using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Remote;
-using Mars.CommandLine.Shared;
-using Mars.Host.Shared.Startup;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Hosting;

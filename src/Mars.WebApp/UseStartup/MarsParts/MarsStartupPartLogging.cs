@@ -1,4 +1,3 @@
-using Mars.Services;
 using NReco.Logging.File;
 
 namespace Mars.UseStartup.MarsParts;
@@ -31,8 +30,6 @@ internal static class MarsStartupPartLogging
                 };
             });
         });
-
-        builder.Services.AddSingleton<LogMaintenanceStartupService>();
 
         return builder;
     }

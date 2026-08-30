@@ -191,11 +191,11 @@ internal class ManifestProcessing
                 /* props:
                 "[fingerprint, ay8p6mgwfm]"
                 "[integrity, sha256-biiaW6VwbTj5drYOl5nmJ60gRVK7u+814lRjsgvU5XM=]"
-                "[label, _framework/AppFront.Main.wasm]"
+                "[label, _framework/Mars.Admin.Framework.wasm]"
                  */
 
-                string extractedName; //like AppFront.Main
-                string extractedFilename; //like AppFront.Main.wasm
+                string extractedName; //like Mars.Admin.Framework
+                string extractedFilename; //like Mars.Admin.Framework.wasm
 
                 if (props.ContainsKey("label"))
                     extractedFilename = extractFileName(props["label"]);
@@ -208,7 +208,7 @@ internal class ManifestProcessing
 
                 if (extractedName.EndsWith(".resources"))
                 {
-                    // "_framework/ru/Mars.Shared.resources.9r8ny6eq1l.wasm"
+                    // "_framework/ru/Mars.Contracts.resources.9r8ny6eq1l.wasm"
                     var prefix = e.AssetFile.Substring("_framework/".Length).Split(extractedName, 2)[0];
                     var resName = prefix + extractedName + ".dll";
                     if (marsDlls.Contains(resName))

@@ -1,8 +1,9 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
 using Mars.QueryLang;
@@ -28,7 +29,7 @@ public class AppEntityReadNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Execute_WithExpressionString_ShouldReturnCode()
+    public async Task Execute_WithExpressionString_ReturnsCode()
     {
         //Arrange
         _ = nameof(AppEntityReadNodeImpl.Execute);
@@ -50,7 +51,7 @@ public class AppEntityReadNodeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Execute_WithNodeEntityQueryBuilder_ShouldReturnCode()
+    public async Task Execute_WithNodeEntityQueryBuilder_ReturnsCode()
     {
         //Arrange
         _ = nameof(AppEntityReadNodeImpl.Execute);

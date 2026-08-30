@@ -1,7 +1,7 @@
 using FluentAssertions;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Host.Shared.WebSite.SourceProviders;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Host.Services;
+using Mars.SiteEngine.Host.WebSite.SourceProviders;
 using Mars.Test.Common.Helpers;
 
 namespace Mars.Integration.Tests.Services;

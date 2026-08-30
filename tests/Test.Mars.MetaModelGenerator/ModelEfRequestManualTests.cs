@@ -1,15 +1,15 @@
 using System.Linq.Expressions;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Repositories;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.MetaModelGenerator;
+using Mars.QueryLang.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -84,7 +84,7 @@ public class ModelEfRequestManualTests : MetaModelGeneratorTests
     #endregion
 
     [IntegrationFact]
-    public async Task TestEfQuery()
+    public async Task Select_PostTypeWithMetaFields_MapsStrAndVariant()
     {
         var (postTypeDetail, posts) = await SetupPostType();
         var mf = postTypeDetail.MetaFields.First();

@@ -1,11 +1,11 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.SSO.Dto;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
+using Mars.Options.Abstractions.Services;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.OAuth.Controllers;
 using Mars.SSO.Host.OAuth.interfaces;
 using Mars.SSO.Host.OAuth.Services;
@@ -46,7 +46,7 @@ public class OAuthProviderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task AuthorizationUrl_Request_ShouldSuccess()
+    public async Task AuthorizationUrl_Request_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Authorize);
@@ -83,7 +83,7 @@ public class OAuthProviderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ExchangeCodeForToken_Valid_ShouldSuccess()
+    public async Task ExchangeCodeForToken_Valid_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Token);
@@ -121,7 +121,7 @@ public class OAuthProviderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task PasswordGrantAsync_GetAccessTokenByPassword_ShouldSuccess()
+    public async Task PasswordGrantAsync_GetAccessTokenByPassword_Succeeds()
     {
         //Arrange
         _ = nameof(OAuthHostController.Token);

@@ -2,15 +2,13 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +46,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_ValidRequest_ShouldSuccess()
+    public async Task CreatePostType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);
@@ -130,7 +128,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_WithMetafieldDuplicateKeyName_ShouldReturnValidationError()
+    public async Task CreatePostType_WithMetafieldDuplicateKeyName_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);
@@ -160,7 +158,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
         => new JsonObject { [MetaFieldKindCatalog.KindOption()] = MetaFieldKindCatalog.List };
 
     [IntegrationFact]
-    public async Task CreatePostType_ListKindOnSingleRelationField_ShouldReturnValidationError()
+    public async Task CreatePostType_ListKindOnSingleRelationField_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);
@@ -189,7 +187,7 @@ public sealed class CreatePostTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostType_ListKindOnMultipleRelationField_ShouldSuccess()
+    public async Task CreatePostType_ListKindOnMultipleRelationField_Succeeds()
     {
         //Arrange
         _ = nameof(PostTypeController.Create);

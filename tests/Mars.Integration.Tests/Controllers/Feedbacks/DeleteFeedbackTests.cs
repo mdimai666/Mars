@@ -1,9 +1,8 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -23,7 +22,7 @@ public class DeleteFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFeedback_ValidRequest_ShouldSuccess()
+    public async Task DeleteFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.Delete);
@@ -76,7 +75,7 @@ public class DeleteFeedbackTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyFeedback_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyFeedback_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(FeedbackController.DeleteMany);

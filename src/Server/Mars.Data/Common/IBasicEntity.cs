@@ -1,0 +1,21 @@
+using Mars.Core.Interfaces;
+using Mars.Data.Entities;
+
+namespace Mars.Data.Common;
+
+public interface IBasicEntity : IHasId
+{
+    //[Key]
+    //Guid Id { get; set; }
+
+    DateTimeOffset CreatedAt { get; set; }
+
+    DateTimeOffset? ModifiedAt { get; set; }
+
+}
+
+public interface IBasicUserEntity : IBasicEntity
+{
+    Guid UserId { get; set; }
+    UserEntity? User { get; set; }
+}

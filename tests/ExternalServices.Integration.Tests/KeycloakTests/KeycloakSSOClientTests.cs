@@ -1,22 +1,21 @@
 using System.Web;
-using AppAdmin.Pages.Public;
 using ExternalServices.TestContainers.Fixtures;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.SSO.Dto;
+using Mars.Admin.Pages.Public;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Cms.Host.Controllers;
+using Mars.Identity.Contracts.Users.UserProfiles;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
-using Mars.Shared.Contracts.NavMenus;
-using Mars.Shared.Contracts.SSO;
-using Mars.Shared.Contracts.Users.UserProfiles;
-using Mars.SSO.Controllers;
-using Mars.SSO.Middlewares;
-using Mars.SSO.Providers;
-using Mars.SSO.Services;
+using Mars.Options.Abstractions.Services;
+using Mars.SSO.Contracts.Dto;
+using Mars.SSO.Contracts.Options;
+using Mars.SSO.Host.Controllers;
+using Mars.SSO.Host.Middlewares;
+using Mars.SSO.Host.Providers;
+using Mars.SSO.Host.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +52,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     {
         var requestQuery = new { redirectUri = marsClient.BaseUrl };
 
-        //Act - retrive jump Link
+        //Act - retrieve jump Link
         var res = await marsClient.Request(_apiUrl, "login", "keycloak1")
                                 .WithSettings(s => s.Redirects.Enabled = false)
                                 .AppendQueryParam(requestQuery)
@@ -99,7 +98,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task ListProviders_List_ShouldSuccess()
+    public async Task ListProviders_List_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.ListProviders);
@@ -117,7 +116,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task Login_RequestRedirectUrl_ShouldSuccess()
+    public async Task Login_RequestRedirectUrl_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -146,7 +145,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact(Skip = "не требуется")]
-    public async Task Callback_UserInfo_ShouldSuccess()
+    public async Task Callback_UserInfo_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -189,7 +188,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task SignUp_UsingKeycloackToken_ShouldSuccess()
+    public async Task SignUp_UsingKeycloackToken_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -212,7 +211,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task SignUp_InvalidSignToken_Should401()
+    public async Task SignUp_InvalidSignToken_Fails401()
     {
         //Arrange
         _ = nameof(SsoController.Login);
@@ -232,7 +231,7 @@ public class KeycloakSSOClientTests : KeycloakIntegrationTestBase
     }
 
     [IntegrationFact]
-    public async Task SignUp_AdminEndpointRequest_ShouldWork()
+    public async Task SignUp_AdminEndpointRequest_Works()
     {
         //Arrange
         _ = nameof(SsoController.Login);

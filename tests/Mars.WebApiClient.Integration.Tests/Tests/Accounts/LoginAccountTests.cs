@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Mars.Controllers;
+using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Auth;
 using Mars.Test.Common.FixtureCustomizes;
 using static Mars.Test.Common.Constants.UserConstants;
 
@@ -16,12 +16,12 @@ public class LoginAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Login_ValidRequest_ShouldSuccess()
+    public async Task Login_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.Login);
         var client = GetWebApiClient(isAnonymous: true);
-        var request = new AuthCreditionalsRequest { Login = TestUserUsername, Password = TestUserPassword };
+        var request = new AuthCredentialsRequest { Login = TestUserUsername, Password = TestUserPassword };
 
         //Act
         var result = await client.Account.Login(request);
@@ -34,12 +34,12 @@ public class LoginAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Login_InvalidCreditional_Fail()
+    public async Task Login_InvalidCredentials_Fail()
     {
         //Arrange
         _ = nameof(AccountController.Login);
         var client = GetWebApiClient(isAnonymous: true);
-        var request = new AuthCreditionalsRequest { Login = TestUserUsername, Password = "invalid_password" };
+        var request = new AuthCredentialsRequest { Login = TestUserUsername, Password = "invalid_password" };
 
         //Act
         var result = await client.Account.Login(request);

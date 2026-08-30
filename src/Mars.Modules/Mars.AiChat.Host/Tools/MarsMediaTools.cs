@@ -1,8 +1,9 @@
 using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.AiChat.Host.Tools;

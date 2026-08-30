@@ -1,10 +1,10 @@
 using AutoFixture;
 using FluentAssertions;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.Search;
 using Mars.Core.Exceptions;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.Search;
 using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Searches;
@@ -21,7 +21,7 @@ public class QuerySearchTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Query_ValidText_ShouldFindCreatedPost()
+    public async Task Query_ValidText_FindsCreatedPost()
     {
         //Arrange
         var client = GetWebApiClient();

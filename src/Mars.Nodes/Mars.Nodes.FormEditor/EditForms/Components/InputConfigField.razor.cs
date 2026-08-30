@@ -1,6 +1,6 @@
 using Mars.Nodes.Core.Fields;
 using Mars.Nodes.Core.Nodes.Common;
-using Mars.Nodes.Front.Shared.Editor.Interfaces;
+using Mars.Nodes.Front.Abstractions.Editor.Interfaces;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Nodes.FormEditor.EditForms.Components;

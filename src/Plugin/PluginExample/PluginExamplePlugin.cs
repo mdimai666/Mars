@@ -1,5 +1,6 @@
-using Mars.Host.Shared.Services;
+using Mars.Options.Abstractions.Services;
 using Mars.Plugin.Abstractions;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -1,18 +1,18 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Posts;
 
-/// <seealso cref="Mars.Controllers.PostController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.PostController"/>
 public sealed class CreatePostTests : ApplicationTests
 {
     const string _apiUrl = "/api/Post";
@@ -48,7 +48,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_ValidRequest_ShouldSuccess()
+    public async Task CreatePost_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostRepository.Create);
@@ -109,7 +109,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_ValidateQueryValidator_ShouldFail()
+    public async Task CreatePost_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostRepository.Create);
@@ -128,7 +128,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "on test mode Kestrel settings overrided")]
-    public async Task CreatePost_BodyTooLarge_ShouldReturnPayloadTooLarge()
+    public async Task CreatePost_BodyTooLarge_ReturnsPayloadTooLarge()
     {
         //Arrange
         var client = AppFixture.GetClient();
@@ -157,7 +157,7 @@ public sealed class CreatePostTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_ForDisabledType_ShouldFail400()
+    public async Task CreatePost_ForDisabledType_Fails400()
     {
         //Arrange
         _ = nameof(PostRepository.Create);

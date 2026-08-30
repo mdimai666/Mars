@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Text.Json;
+using Mars.Contracts.Common;
 using Mars.Core.Features;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
 using Mars.Nodes.Core.Implements.Nodes.Events;
@@ -14,12 +14,12 @@ using Mars.Nodes.Core.Nodes.Common;
 using Mars.Nodes.Host.Helpers;
 using Mars.Nodes.Host.Mappings;
 using Mars.Nodes.Host.Mappings.Nodes;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using static Mars.Host.Shared.Services.INodeService;
+using static Mars.Nodes.Abstractions.Services.INodeService;
 
 namespace Mars.Nodes.Host.Services;
 

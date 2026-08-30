@@ -17,7 +17,7 @@ public class ExecNode : Node
     public ExecNode()
     {
         Inputs = [new()];
-        Outputs = new List<NodeOutput> { new NodeOutput() };
+        Outputs = [new NodeOutput()];
         Icon = "_content/Mars.Nodes.Workspace/nodes/terminal-fill.svg";
     }
 

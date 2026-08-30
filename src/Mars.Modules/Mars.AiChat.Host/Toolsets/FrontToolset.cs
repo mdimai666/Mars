@@ -1,5 +1,5 @@
 using Mars.AiChat.Host.Tools;
-using Mars.Host.Shared.Services;
+using Mars.SiteEngine.Abstractions.Services;
 using Microsoft.Extensions.AI;
 
 namespace Mars.AiChat.Host.Toolsets;

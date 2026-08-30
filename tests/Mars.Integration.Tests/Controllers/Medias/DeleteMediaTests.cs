@@ -1,14 +1,14 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
-using Mars.Shared.Contracts.Files;
+using Mars.Media.Contracts.Files;
+using Mars.Media.Contracts.Options;
+using Mars.Media.Host.Controllers;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +42,7 @@ public class DeleteMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Delete_ValidRequest_ShouldSuccess()
+    public async Task Delete_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Delete);
@@ -70,7 +70,7 @@ public class DeleteMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteMany_ValidRequest_ShouldSuccess()
+    public async Task DeleteMany_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.DeleteMany);

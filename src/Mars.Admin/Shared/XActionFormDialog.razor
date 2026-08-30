@@ -1,0 +1,120 @@
+@implements IDialogContentComponent<XActionCommand>
+
+@using Mars.WebApiClient.Interfaces
+@using Mars.XActions.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject Mars.Admin.Framework.Interfaces.IMessageService _messageService
+@inject IMarsWebApiClient _client
+
+@* Генерик-форма вызова XAction: рисуется по схеме аргументов из метаданных команды.
+    Статические варианты выбора берутся из схемы, динамические (OptionsSource)
+    запрашиваются перед отрисовкой. Кастомные формы из IXActionFormProvider
+    перекрывают этот диалог. *@
+
+<FluentStack Orientation="Orientation.Vertical">
+    @foreach (var argument in Content.Arguments ?? [])
+    {
+        @switch (argument.Type)
+        {
+            case XActionArgumentType.Bool:
+                <FluentCheckbox Label="@argument.Label" Value="@GetBool(argument)"
+                                ValueChanged="@(v => SetValue(argument, v ? "true" : "false"))" Class="w-100" />
+                break;
+            case XActionArgumentType.Choice:
+                @if (argument.OptionsSource != null && !_dynamicOptions.ContainsKey(argument.Name))
+                {
+                    <div class="text-secondary small py-2">Загрузка вариантов «@argument.Label»…</div>
+                }
+                else
+                {
+                    var options = GetOptions(argument);
+
+                    <FluentSelect Label="@argument.Label" TOption="string" Value="@GetValue(argument)"
+                                  ValueChanged="@(v => SetValue(argument, v))" Class="w-100">
+                        @foreach (var option in options)
+                        {
+                            <FluentOption TOption="string" Value="@option.Key">@(option.Label ?? option.Key)</FluentOption>
+                        }
+                    </FluentSelect>
+                }
+                break;
+            default:
+                <FluentTextField Label="@argument.Label" Value="@GetValue(argument)"
+                                 ValueChanged="@(v => SetValue(argument, v))"
+                                 Type="@(argument.Type == XActionArgumentType.Number ? TextFieldType.Number : TextFieldType.Text)"
+                                 Required="@argument.Required" Class="w-100" />
+                break;
+        }
+    }
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
+        <FluentButton Appearance="Appearance.Neutral" @onclick="Cancel">Отмена</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" @onclick="Submit">Выполнить</FluentButton>
+    </FluentStack>
+</FluentStack>
+<FluentDialogFooter Visible="false" />
+
+@code {
+    [Parameter]
+    public XActionCommand Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog? Dialog { get; set; }
+
+    readonly Dictionary<string, string> _values = [];
+    readonly Dictionary<string, IReadOnlyCollection<XActionOption>> _dynamicOptions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var argument in Content.Arguments ?? [])
+        {
+            if (argument.DefaultValue != null)
+                _values[argument.Name] = argument.DefaultValue;
+
+            if (!string.IsNullOrEmpty(argument.OptionsSource))
+            {
+                try
+                {
+                    _dynamicOptions[argument.Name] = await _client.Act.Options(argument.OptionsSource);
+                }
+                catch (Exception ex)
+                {
+                    _ = _messageService.Error($"не удалось загрузить варианты '{argument.OptionsSource}': {ex.Message}");
+                    _dynamicOptions[argument.Name] = [];
+                }
+            }
+        }
+    }
+
+    IReadOnlyCollection<XActionOption> GetOptions(XActionArgument argument)
+        => (argument.OptionsSource != null && _dynamicOptions.TryGetValue(argument.Name, out var dynamicOptions)
+            ? dynamicOptions
+            : argument.Options) ?? [];
+
+    string GetValue(XActionArgument argument)
+        => _values.GetValueOrDefault(argument.Name) ?? "";
+
+    bool GetBool(XActionArgument argument)
+        => bool.TryParse(GetValue(argument), out var parsed) && parsed;
+
+    void SetValue(XActionArgument argument, string? value)
+        => _values[argument.Name] = value ?? "";
+
+    void Cancel()
+        => Dialog?.CancelAsync();
+
+    void Submit()
+    {
+        foreach (var argument in Content.Arguments ?? [])
+        {
+            if (argument.Required && string.IsNullOrWhiteSpace(_values.GetValueOrDefault(argument.Name)))
+            {
+                _ = _messageService.Error($"заполните обязательный аргумент '{argument.Label}'");
+                return;
+            }
+        }
+
+        Dialog?.CloseAsync(new Dictionary<string, string>(_values));
+    }
+}

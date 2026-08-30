@@ -95,7 +95,7 @@ API (проверено по NuGet-докам `Microsoft.Agents.AI` 1.17.0): `Fi
   (`Create().AddNext(node).AddNext([n], catchAllWires: true).BuildWithFlowNode()`).
 - `NodeRuntime`/`NodeTaskManager` — **internal** (InternalsVisibleTo только тестам/бенчам) →
   песочница для разовых запусков реализуется **внутри Mars.Nodes.Host**.
-- Паттерны one-shot (из `tests/Mars.Nodes.Implements.Test/Services/NodeServiceUnitTestBase.cs`):
+- Паттерны one-shot (из `tests/Mars.Nodes.Tests/Services/NodeServiceUnitTestBase.cs`):
   временные `NodeRuntime`+`NodeTaskManager`; прямой `impl.Execute(input, capture, new ExecutionParameters(...))`;
   прогон через `NodeTaskManager.CreateJob` + callback-нода в конце (catch-all wires).
   Запрос-ответ с ожиданием результата — паттерн `NodeService.CallNode`

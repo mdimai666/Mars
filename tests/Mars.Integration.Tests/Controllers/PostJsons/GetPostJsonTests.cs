@@ -1,14 +1,13 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.PostJsons;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Host.Controllers;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.PostJsons;
-using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
@@ -24,7 +23,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostJson_ValidRequest_ShouldSuccess()
+    public async Task GetPostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.Get);
@@ -47,7 +46,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostJsonBySlug_ValidRequest_ShouldSuccess()
+    public async Task GetPostJsonBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.GetBySlug);
@@ -87,7 +86,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostJson_Request_ShouldSuccess()
+    public async Task ListPostJson_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.List);
@@ -111,7 +110,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostJson_SearchRequest_ShouldSuccess()
+    public async Task ListPostJson_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostJsonController.List);
@@ -144,7 +143,7 @@ public class GetPostJsonTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "not yet")]
-    public async Task GetPostJson__NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetPostJson__NonFilledMetaField_ReturnsBlankMetaValues()
     {
         throw new NotImplementedException();
     }

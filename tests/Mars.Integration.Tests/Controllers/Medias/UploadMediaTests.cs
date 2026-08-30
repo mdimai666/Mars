@@ -1,14 +1,15 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Contracts.Dto.Files;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Options.Models;
-using Mars.Shared.Contracts.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Contracts.Files;
+using Mars.Media.Contracts.Options;
+using Mars.Media.Host.Controllers;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Medias;
 
-/// <seealso cref="Mars.Controllers.MediaController"/>
+/// <seealso cref="Mars.Media.Host.Controllers.MediaController"/>
 public sealed class UploadMediaTests : ApplicationTests
 {
     private const string _apiUrl = "/api/Media/Upload";
@@ -54,7 +55,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_TextFileUploadRequest_ShouldSuccess()
+    public async Task Upload_TextFileUploadRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -88,7 +89,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_ImageUploadMustCreateThumbnails_ShouldSuccess()
+    public async Task Upload_ImageUploadMustCreateThumbnails_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -166,7 +167,7 @@ public sealed class UploadMediaTests : ApplicationTests
     ulong _fileTooLargeSize = 15 * 1024 * 1024;
 
     [IntegrationFact]
-    public async Task Upload_FileTooLarge_ShouldValidateError()
+    public async Task Upload_FileTooLarge_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -190,7 +191,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_FileTooLargeCheckAspNetConfiguration_ShouldSuccess()
+    public async Task Upload_FileTooLargeCheckAspNetConfiguration_Succeeds()
     {
         //Arrange
         _ = nameof(MediaController.Upload);
@@ -214,7 +215,7 @@ public sealed class UploadMediaTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task Upload_FileNotAllowedExtensions_ShouldValidateError()
+    public async Task Upload_FileNotAllowedExtensions_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(MediaController.Upload);

@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Shared.Scheduler;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Scheduler.Abstractions;
+using Mars.Scheduler.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +41,7 @@ public class InjectJobSchedulerTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task InjectJob_Request_ShouldSuccess()
+    public async Task InjectJob_Request_Succeeds()
     {
         //Arrange
         _ = nameof(SchedulerController.InjectJob);

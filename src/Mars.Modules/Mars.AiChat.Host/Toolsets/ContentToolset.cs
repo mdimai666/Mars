@@ -1,6 +1,6 @@
 using Mars.AiChat.Host.Tools;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Nodes.Abstractions.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.AI;
 

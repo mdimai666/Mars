@@ -1,0 +1,106 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <!--Author-->
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+        <StaticWebAssetBasePath>dev</StaticWebAssetBasePath>
+
+        <BlazorEnableCompression>true</BlazorEnableCompression>
+        <!--for plugins support-->
+        <PublishTrimmed>false</PublishTrimmed>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Remove="compilerconfig.json" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Content Remove="wwwroot\css\**\*.less" />
+        <Content Remove="wwwroot\css\**\*.css.map" />
+        <!-- //Для hotreload -->
+        <None Include="compilerconfig.json" />
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <None Include="wwwroot\css\**\*.less" />
+        <!-- //Для hotreload -->
+        <!-- Для hotreload, чтобы сам блзор не перезагружался -->
+        <Watch Remove="wwwroot\**\*.less" />
+        <Watch Remove="wwwroot\**\*.css.map" />
+        <!-- //Для hotreload -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\Mars.WebApp\wwwroot\mars\vendor\bootstrap\bootstrap5.min.css" Link="wwwroot\css\bootstrap5.min.css" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <NoWarn>BL0007</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" />
+        <PackageReference Include="Blazored.TextEditor" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+        <PackageReference Include="Microsoft.Extensions.Localization" />
+        <PackageReference Include="Toolbelt.Blazor.HotKeys2" />
+        <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Admin\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
+        <ProjectReference Include="..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
+        <ProjectReference Include="..\Mars.Datasource\Mars.Datasource\Mars.Datasource.csproj" />
+        <ProjectReference Include="..\Mars.Datasource\Mars.Datasource.Front\Mars.Datasource.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Front\Mars.AiChat.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Docker.Front\Mars.Docker.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Front\Mars.SemanticKernel.Front.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.WebApp.Nodes.Front\Mars.WebApp.Nodes.Front.csproj" />
+        <ProjectReference Include="..\Mars.Nodes\Mars.Nodes.Workspace\Mars.Nodes.Workspace.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Core\Mars.Core.csproj" />
+        <ProjectReference Include="..\Modules\EditorJsBlazored\EditorJsBlazored\EditorJsBlazored.csproj" />
+        <ProjectReference Include="..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+        <ProjectReference Include="..\Modules\MarsEditors\MarsEditors.csproj" />
+        <ProjectReference Include="..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
+        <ProjectReference Include="..\Plugin\Mars.Plugin.Front\Mars.Plugin.Front.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+            <_Parameter1>RepositoryUrl</_Parameter1>
+            <_Parameter2>$(RepositoryUrl)</_Parameter2>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
+        <DebugSymbols>False</DebugSymbols>
+        <DebugType>None</DebugType>
+
+        <WasmStripILAfterAOT>false</WasmStripILAfterAOT>
+        <PublishTrimmed>false</PublishTrimmed>
+        <RunAOTCompilation>false</RunAOTCompilation>
+        <InvariantGlobalization>false</InvariantGlobalization>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'DevRelease' ">
+        <BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
+        <InvariantGlobalization>true</InvariantGlobalization>
+
+        <BlazorWebAssemblyPreserveCollationData>false</BlazorWebAssemblyPreserveCollationData>
+        <!--<PublishTrimmed>true</PublishTrimmed>-->
+        <BlazorEnableCompression>true</BlazorEnableCompression>
+    </PropertyGroup>
+
+</Project>

@@ -1,13 +1,13 @@
 using Mars.Core.Extensions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 
 namespace Mars.MetaModelGenerator;
 
 public class MtFieldInfo
 {
     string keyName;
-    List<string> attributes = new();
+    List<string> attributes = [];
     string comment = "";
     Type type;
     public bool TypeRelation => metaField.TypeRelation;

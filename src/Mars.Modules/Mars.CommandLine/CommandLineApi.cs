@@ -1,7 +1,7 @@
 using System.CommandLine;
 using System.Reflection;
+using Mars.CommandLine.Abstractions;
 using Mars.CommandLine.Commands;
-using Mars.CommandLine.Shared;
 using Mars.Core.Extensions;
 using Mars.Core.Models;
 using Microsoft.AspNetCore.Builder;
@@ -23,13 +23,13 @@ public class CommandLineApi : ICommandLineApi
     private bool _commandCliTypesLoaded = false;
     private bool _baseCommandCliTypesLoaded = false;
 
-    //Type[] initalCommands = [typeof(InfoCommand)];
+    //Type[] initialCommands = [typeof(InfoCommand)];
 
     internal static readonly string[] AllowedBaseCommands = ["info", "migrate"];
     private readonly Option _versionOption;
     private readonly Option _helpOption;
     private readonly Assembly _mainProgramAssembly;
-    private readonly Type[] _initalCommands;
+    private readonly Type[] _initialCommands;
 
     /// <summary>Удалённые команды (тонкий клиент + исполнение пришедших по UDS) — см. <see cref="CliRemoteCommands"/>.</summary>
     public CliRemoteCommands Remote { get; }
@@ -37,7 +37,7 @@ public class CommandLineApi : ICommandLineApi
     internal Option HelpOption => _helpOption;
     internal Option VersionOption => _versionOption;
 
-    public CommandLineApi(Assembly mainProgramAssembly, Type[] initalCommands)
+    public CommandLineApi(Assembly mainProgramAssembly, Type[] initialCommands)
     {
         rootCommand = new RootCommand("Mars command line interface");
 
@@ -53,7 +53,7 @@ public class CommandLineApi : ICommandLineApi
         var noUdsOption = new Option<bool>("--no-uds") { Description = "start without the CLI unix domain socket (allows a second instance for the same directory)" };
         rootCommand.Add(noUdsOption);
 
-        InitializeCliTypes(initalCommands);
+        InitializeCliTypes(initialCommands);
 
         var builtInHelpOption = rootCommand.Options.First(s => s.Name == "--help");
         _helpOption = builtInHelpOption;
@@ -69,7 +69,7 @@ public class CommandLineApi : ICommandLineApi
 
         Remote = new CliRemoteCommands(this);
         _mainProgramAssembly = mainProgramAssembly;
-        _initalCommands = initalCommands;
+        _initialCommands = initialCommands;
     }
 
     public void Setup(WebApplication app)
@@ -83,7 +83,7 @@ public class CommandLineApi : ICommandLineApi
     void LoadBaseCommandCliTypes()
     {
         if (_baseCommandCliTypesLoaded) return;
-        var cliTypes = GetEnumerableOfType<CommandCli>(_mainProgramAssembly).Except(_initalCommands);
+        var cliTypes = GetEnumerableOfType<CommandCli>(_mainProgramAssembly).Except(_initialCommands);
         InitializeCliTypes([.. cliTypes, typeof(StatusCommandCli)]);
         _baseCommandCliTypesLoaded = true;
     }

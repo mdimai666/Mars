@@ -1,8 +1,8 @@
 @using System.Text.Json
-@using AppFront.Shared
-@using AppFront.Shared.Components
+@using Mars.Admin.Framework
+@using Mars.Admin.Framework.Components
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
-@using Mars.Shared.Resources
+@using Mars.Contracts.Resources
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.FluentUI.AspNetCore.Components
 
@@ -52,8 +52,8 @@
     public string Content { get; set; } = default!;
 
     INodeEditorApi _editor => NodeEditor1.Instance!;
-    [Inject] AppFront.Shared.Interfaces.IMessageService _messageService { get; set; } = default!;
-    [Inject] AppFrontJs _appjs { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
+    [Inject] AdminJs _appjs { get; set; } = default!;
 
     string _json = "";
     ExportNodesScope _scope;

@@ -29,25 +29,17 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
-    <ItemGroup>
-        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    </ItemGroup>
-
     <PropertyGroup>
         <NoWarn>BL0007</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Remove="compilerconfig.json" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="compilerconfig.json" />
-    </ItemGroup>
-
-    <ItemGroup>
         <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
@@ -74,11 +66,11 @@
         <!-- //Для hotreload -->
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\AppFront.Main\AppFront.Main.csproj" />
+        <ProjectReference Include="..\..\Admin\Mars.Admin.Framework\Mars.Admin.Framework.csproj" />
         <ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
         <ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.Front.Shared\Mars.Nodes.Front.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Front.Abstractions\Mars.Nodes.Front.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

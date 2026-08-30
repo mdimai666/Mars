@@ -1,20 +1,19 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mars.Integration.Tests.Controllers.NavMenus;
 
-/// <seealso cref="Mars.Controllers.NavMenuController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.NavMenuController"/>
 public class CreateNavMenuTests : ApplicationTests
 {
     const string _apiUrl = "/api/NavMenu";
@@ -42,7 +41,7 @@ public class CreateNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateNavMenu_ValidRequest_ShouldSuccess()
+    public async Task CreateNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Create);

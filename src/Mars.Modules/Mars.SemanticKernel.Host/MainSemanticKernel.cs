@@ -1,11 +1,12 @@
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
+using Mars.Options.Abstractions.Services;
+using Mars.SemanticKernel.Abstractions.Interfaces;
+using Mars.SemanticKernel.Contracts.Nodes;
+using Mars.SemanticKernel.Contracts.Options;
 using Mars.SemanticKernel.Host.Nodes;
-using Mars.SemanticKernel.Host.Service;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
-using Mars.SemanticKernel.Shared.Nodes;
-using Mars.SemanticKernel.Shared.Options;
+using Mars.SemanticKernel.Host.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,7 @@ public static class MainSemanticKernel
         services.AddTransient<GeneralAiRequestHandler>();
         services.AddTransient<NodesAiRequestHandler>();
         services.AddSingleton<IMarsAIService, MarsAIService>();
+        services.AddSingleton<IAIToolService, AIToolService>();
 
         return services;
     }

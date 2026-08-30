@@ -1,6 +1,5 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using Mars.Core.Features.JsonConverter;
+using Mars.Core.Features;
 
 namespace Mars.Core.Extensions;
 
@@ -9,7 +8,7 @@ public static class Tools
 
     public static List<E> ShuffleList<E>(List<E> inputList)
     {
-        List<E> randomList = new List<E>();
+        List<E> randomList = [];
         Random random = new();
 
         int randomIndex = 0;
@@ -42,7 +41,7 @@ public static class Tools
     public static IEnumerable<int> RandomShuffledInt(int count)
     {
         List<int> arr = IntRange(count).ToList();
-        List<int> list = new List<int>();
+        List<int> list = [];
         Random random = new();
 
         //System.Random r = new System.Random();
@@ -69,7 +68,7 @@ public static class Tools
         //IEnumerable<E> shuffled = inputList.OrderBy(s => Guid.NewGuid()).Take(returnItemsCount).ToList();
         //return shuffled;
         int[] e = RandomShuffledInt(inputList.Count()).Take(returnItemsCount).ToArray();
-        List<E> list = new List<E>();
+        List<E> list = [];
 
         for (int i = 0; i < e.Length; i++)
         {
@@ -93,7 +92,7 @@ public static class Tools
 
     public static IEnumerable<T> UniqueItems<T, TKey>(this IEnumerable<T> items, Func<T, TKey> property)
     {
-        QGeneralPropertyComparer<T, TKey> comparer = new QGeneralPropertyComparer<T, TKey>(property);
+        QGeneralPropertyComparer<T, TKey> comparer = new(property);
         return items.Distinct(comparer);
     }
 

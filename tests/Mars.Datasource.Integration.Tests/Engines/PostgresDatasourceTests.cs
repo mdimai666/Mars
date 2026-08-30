@@ -1,9 +1,9 @@
-using Mars.Datasource.Core;
+using FluentAssertions;
+using Mars.Datasource.Abstractions.Models;
 using Mars.Datasource.Host.PostgreSQL;
 using Mars.Datasource.Integration.Tests.Fixtures;
 using Mars.Datasource.Integration.Tests.SqlCommands;
 using Mars.Integration.Tests.Attributes;
-using FluentAssertions;
 using Npgsql;
 
 namespace Mars.Datasource.Integration.Tests.Engines;
@@ -30,7 +30,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
-    public async Task CheckConnection()
+    public async Task Open_ValidConnectionString_Connects()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -38,7 +38,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
-    public async Task CreateTable_Valid_ShouldSuccess()
+    public async Task CreateTable_Valid_Succeeds()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -51,7 +51,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
-    public async void PostgresEngineTests()
+    public async void Driver_CreatedTodoTable_ReturnsRowsColumnsAndStructure()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();
@@ -103,7 +103,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
-    public async Task ClearTest()
+    public async Task RemoveAllTables_CreatedTable_TableDoesNotExist()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();

@@ -17,7 +17,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
+        <ProjectReference Include="..\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

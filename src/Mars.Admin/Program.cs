@@ -1,0 +1,116 @@
+using Flurl.Http;
+using Mars.Admin;
+using Mars.Admin.Components;
+using Mars.Admin.Framework.Components.MetaFieldViews;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Startups;
+using Mars.AiChat.Front;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Datasource.Front;
+using Mars.Nodes.Workspace;
+using Mars.Plugin.Front;
+using Mars.SemanticKernel.Front;
+using Mars.WebApp.Nodes.Front;
+using MarsCodeEditor2;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
+
+//Info: Для быстрой разработки через dotnet watch запускайте Dev/DevAdmin.DevServer
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+
+builder.Logging.SetMinimumLevel(LogLevel.Trace);
+builder.Logging.AddFilter("System", LogLevel.Warning);
+builder.Logging.AddFilter("Microsoft", LogLevel.Error);
+
+var logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+logger.LogTrace("=== Application startup begin ===");
+
+string? backendUrl = builder.Configuration["BackendUrl"];
+if (string.IsNullOrEmpty(backendUrl))
+{
+    backendUrl = builder.HostEnvironment.BaseAddress.TrimEnd('/').Replace("/dev", "", StringComparison.OrdinalIgnoreCase).TrimEnd('/');
+    if (backendUrl == "http://localhost:5185") backendUrl = "http://localhost:5003";
+    logger.LogTrace("BackendUrl from BaseAddress: {BackendUrl}", backendUrl);
+    Q.BackendUrl = backendUrl;
+}
+
+builder.ConfigureAppLanguage();
+
+var httpClient = new HttpClient() { BaseAddress = new Uri(backendUrl) };
+builder.Services.AddScoped(sp => httpClient.EnableIntercept(sp));
+builder.Services.AddScoped<IFlurlClient>(sp => new FlurlClient(httpClient));
+
+builder.Services.AddHttpClientInterceptor();
+
+var safeMode = await builder.DetectIsSafeMode(logger);
+
+builder.Services.AddMarsAdminFramework(builder.Configuration, typeof(Program));
+
+// формы аргументов XAction: заменяем null-презентер на диалоги FluentUI
+builder.Services.Replace(ServiceDescriptor.Scoped<Mars.Admin.Framework.Services.IXActionFormPresenter, Mars.Admin.Shared.FluentDialogXActionFormPresenter>());
+
+builder.Services.AddScoped<Mars.Admin.Shared.ActionCenter.ActionCenterService>();
+builder.Services.AddScoped<Mars.Admin.Shared.ActionCenter.RecentPagesService>();
+
+#if DEBUG
+builder.Services.AddScoped<Mars.Admin.Framework.Services.IFrontActionRunner, Mars.Admin.Shared.FrontDemoActionRunner>();
+#endif
+
+Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
+CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
+ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);
+
+// блочный редактор мета-полей: модуль подключён только в админке
+// (общая фронт-библиотека от EditorJsBlazored не зависит)
+MetaFieldEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor), MetaFieldType.String, MetaFieldType.Text);
+
+logger.LogTrace("Adding workspace services...");
+builder.Services.AddHotKeys2();
+builder.Services.AddNodeWorkspace()
+                .AddMarsWebAppNodesFront()
+                .AddDatasourceWorkspace()
+                .AddSemanticKernelFront()
+                .AddAiChatFront();
+
+builder.ConfigureWebSockets(backendUrl);
+
+if (safeMode)
+{
+    logger.LogTrace("Loading remote plugin assemblies disabled on safe mode");
+}
+else
+{
+    logger.LogTrace("Loading remote plugin assemblies...");
+    await builder.AddRemotePluginAssemblies(Q.BackendUrl, logger);
+}
+
+logger.LogTrace("Building application...");
+var app = builder.Build();
+
+logger.LogTrace("Initializing services...");
+app.Services.UseMarsAdminFramework()
+            .UseNodeWorkspace()
+            .UseMarsWebAppNodesFront()
+            .UseDatasourceWorkspace()
+            .UseSemanticKernelFront()
+            .UseAiChatFront();
+
+// кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
+app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()
+            .Register(Mars.Admin.Shared.RegenerateGeneratedMetaValuesForm.CommandId, typeof(Mars.Admin.Shared.RegenerateGeneratedMetaValuesForm));
+
+SmartSaveExtensions.Setup(app.Services.GetRequiredService<IMessageService>());
+
+if (!safeMode)
+{
+    logger.LogTrace("Using remote plugin assemblies...");
+    app.UseRemotePluginAssemblies();
+}
+
+logger.LogTrace("=== Application startup complete, running... ===");
+await app.RunAsync();

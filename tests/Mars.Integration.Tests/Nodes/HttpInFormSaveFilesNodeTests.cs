@@ -2,16 +2,16 @@ using System.Text;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Implements.Nodes.Network;
-using Mars.Nodes.Core.Nodes;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
+using Mars.Options.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Nodes;
@@ -39,7 +39,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_SaveInMediaFiles_ShouldSaveFile()
+    public async Task Execute_SaveInMediaFiles_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -77,7 +77,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_AllowSaveFileOutsideUploads_ShouldSaveFile()
+    public async Task Execute_AllowSaveFileOutsideUploads_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -108,7 +108,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
     }
 
     [IntegrationFact]
-    public async Task Execute_IFileStorage_ShouldSaveFile()
+    public async Task Execute_IFileStorage_SavesFile()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

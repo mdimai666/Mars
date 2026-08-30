@@ -1,7 +1,7 @@
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using HandlebarsDotNet;
-using Mars.Host.Shared.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.Posts;
 
 namespace Benchmarks.MyHandlebars;
 
@@ -29,7 +29,7 @@ public class MyHandlebarsCompileBenchmark
     [GlobalSetup]
     public void GlobalSetup()
     {
-        
+
         post = new Fixture().Create<PostDetail>();
         list = Enumerable.Range(0, 100).ToArray();
 

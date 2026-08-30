@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using Flurl.Http;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
 using Mars.Core.Extensions;
-using Mars.Shared.Common;
-using Flurl.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace Mars.Integration.Tests.Extensions;
 
 public static class FlurlExtensions
 {
-    private static JsonSerializerOptions _options = new JsonSerializerOptions()
+    private static JsonSerializerOptions _options = new()
     {
         WriteIndented = true,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -50,9 +50,9 @@ public static class FlurlExtensions
         try
         {
             using var response = await flurlResponse.ConfigureAwait(false);
-            var messsage = $"Response should be fail, but it is successful. Status = {response.StatusCode}";
-            Assert.Fail(messsage);
-            throw new Exception(messsage);
+            var message = $"Response should be fail, but it is successful. Status = {response.StatusCode}";
+            Assert.Fail(message);
+            throw new Exception(message);
         }
         catch (FlurlHttpException ex) when (ex.StatusCode == StatusCodes.Status400BadRequest)
         {

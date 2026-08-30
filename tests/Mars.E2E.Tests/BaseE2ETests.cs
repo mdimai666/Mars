@@ -2,8 +2,8 @@ using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.E2E.Tests.Fixtures;
+using Mars.Identity.Contracts.Auth;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.Auth;
 using Mars.Test.Common.Constants;
 using Microsoft.Playwright;
 
@@ -83,7 +83,7 @@ public class BaseE2ETests : IAsyncLifetime
         if (_cookie is null)
         {
             var response = await AppFixture.GetClient(true).Request("/api/Account/Login")
-                                        .PostJsonAsync(new AuthCreditionalsRequest
+                                        .PostJsonAsync(new AuthCredentialsRequest
                                         {
                                             Login = UserConstants.TestUserUsername,
                                             Password = UserConstants.TestUserPassword

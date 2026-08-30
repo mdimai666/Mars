@@ -1,6 +1,6 @@
-using AppFront.Shared;
-using Mars.AiChat.Shared.Dto;
-using Mars.AiChat.Shared.SignalR;
+using Mars.Admin.Framework.Features;
+using Mars.AiChat.Contracts.Dto;
+using Mars.AiChat.Contracts.SignalR;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;

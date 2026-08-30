@@ -1,10 +1,9 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.UserTypes;
+using Mars.Data.Entities;
+using Mars.Identity.Abstractions.Dto.UserTypes;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -24,7 +23,7 @@ public class DeleteUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Delete);
@@ -78,7 +77,7 @@ public class DeleteUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteUserType_TryDeleteDefaultUserType_ShouldValidationError()
+    public async Task DeleteUserType_TryDeleteDefaultUserType_ReturnsValidationError()
     {
         //Arrange
         _ = nameof(UserTypeController.Delete);
@@ -100,7 +99,7 @@ public class DeleteUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyUserType_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.DeleteMany);

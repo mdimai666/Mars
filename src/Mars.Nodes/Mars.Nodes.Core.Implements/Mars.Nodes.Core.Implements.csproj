@@ -39,21 +39,29 @@
         <PackageReference Include="Flurl.Http" />
         <PackageReference Include="Handlebars.Net" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="MQTTnet" />
         <PackageReference Include="MQTTnet.Extensions.TopicTemplate" />
         <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Mars.Host.Shared\Mars.Host.Shared.csproj" />
+        <ProjectReference Include="..\..\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.XActions.Abstractions\Mars.XActions.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
         <ProjectReference Include="..\..\Modules\Mars.HttpSmartAuthFlow\Mars.HttpSmartAuthFlow.csproj" />
         <ProjectReference Include="..\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
-        <ProjectReference Include="..\Mars.Nodes.Host.Shared\Mars.Nodes.Host.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Nodes.Abstractions\Mars.Nodes.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Cms.Abstractions\Mars.Cms.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Abstractions\Mars.Identity.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>Mars.Nodes.Implements.Test</_Parameter1>
+            <_Parameter1>Mars.Nodes.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

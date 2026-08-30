@@ -1,12 +1,12 @@
-using AppFront.Shared.Interfaces;
-using AppFront.Shared.Services;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Interfaces;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Tools;
+using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Framework.Services;
+using Mars.Contracts.Dto.Files;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Managers;
+using Mars.Server.Abstractions.Services;
 using Mars.TemplateEngine.Host;
+using Mars.XActions.Abstractions.Managers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -45,7 +45,7 @@ public static class HostStartup
         builder.Services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();
         builder.Services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
 
-        builder.Services.MarsAddTemplateEngines();
+        builder.Services.AddMarsTemplateEngines();
 
         builder.Services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
         builder.Services.AddHybridCache(options =>

@@ -1,0 +1,27 @@
+using FluentAssertions;
+using Mars.Nodes.Core;
+using NSubstitute;
+
+namespace Mars.Nodes.Tests.Services;
+
+public class NodesLocatorTests : NodeServiceUnitTestBase
+{
+    [Fact]
+    public void CreateExamplesList_ReturnsExamples()
+    {
+        //Arrange
+        //Act
+        var dict = _nodesLocator.CreateExamplesList();
+
+        //Assert
+        dict.Should().HaveCountGreaterThan(0);
+        var item = dict.First();
+        item.Name.Should().NotBeNullOrEmpty();
+        item.Description.Should().NotBeNullOrEmpty();
+        item.NodeType.Should().NotBeNull();
+        item.ExampleHandlerInstance.Should().NotBeNull();
+
+        var examples = item.ExampleHandlerInstance.Handle(Substitute.For<IEditorState>());
+        examples.Should().HaveCountGreaterThan(0);
+    }
+}

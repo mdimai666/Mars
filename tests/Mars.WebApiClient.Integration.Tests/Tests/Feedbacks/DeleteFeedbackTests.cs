@@ -1,4 +1,4 @@
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
@@ -24,7 +24,7 @@ public sealed class DeleteFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFeedback_ValidRequest_ShouldSuccess()
+    public async Task DeleteFeedback_ValidRequest_Succeeds()
     {
         await _deleteTest.ValidRequest_ShouldSuccess();
     }
@@ -36,7 +36,7 @@ public sealed class DeleteFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task DeleteManyFeedback_ValidRequest_ShouldSuccess()
+    public async Task DeleteManyFeedback_ValidRequest_Succeeds()
     {
         await _deleteTest.DeleteMany_ValidRequest_ShouldSuccess();
     }

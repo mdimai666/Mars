@@ -1,5 +1,5 @@
 using System.Reflection;
-using Mars.Host.Shared.Startup;
+using Mars.Server.Abstractions.Startup;
 
 namespace Mars.UseStartup;
 

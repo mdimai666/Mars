@@ -1,6 +1,6 @@
 using System.Reflection;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Plugin.Kit.Host;

@@ -1,12 +1,11 @@
-using Mars.Datasource.Core;
-using Mars.Datasource.Core.Dto;
-using Mars.Datasource.Core.Interfaces;
-using Mars.Datasource.Host.Core.Models;
+using Mars.Contracts.Common;
+using Mars.Datasource.Abstractions.Interfaces;
+using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Abstractions.Services;
 using Mars.Datasource.Host.MsSQL;
 using Mars.Datasource.Host.MySQL;
 using Mars.Datasource.Host.PostgreSQL;
-using Mars.Host.Shared.Services;
-using Mars.Shared.Common;
+using Mars.Options.Abstractions.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace Mars.Datasource.Host.Services;
@@ -160,7 +159,7 @@ internal class DatasourceService : IDatasourceService
         return result;
     }
 
-    public async Task<UserActionResult<string[][]>> ExecuteAction(ExecuteActionRequest action, CancellationToken cancellationToken)
+    public async Task<UserActionResult<string[][]>> ExecuteAction(DatasourceActionRequest action, CancellationToken cancellationToken)
     {
         try
         {
@@ -204,7 +203,7 @@ internal class DatasourceService : IDatasourceService
                 string templateFilename = string.Format("{0}_{1}.sql", DefaultConfig.GetDatabaseName(), DateTime.Now.ToString(dateTimeFormat));
                 string filePath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", templateFilename);
 
-                await _databaseBackupService.Backup(_defaultConfig, new Core.Models.BackupSettings
+                await _databaseBackupService.Backup(_defaultConfig, new Mars.Datasource.Abstractions.Models.BackupSettings
                 {
                     DumpMode = DumpMode.SchemaAndData,
                     Mode = BackupOutputMode.PlainSql,

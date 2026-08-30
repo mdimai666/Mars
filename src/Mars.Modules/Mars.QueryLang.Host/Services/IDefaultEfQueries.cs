@@ -1,6 +1,6 @@
-namespace Mars.Host.QueryLang;
+namespace Mars.QueryLang.Host.Services;
 
-public interface IDefaultEfQueries<T>: IQueryable<T>, IDynamicEfQuery
+public interface IDefaultEfQueries<T> : IQueryable<T>, IDynamicEfQuery
 {
     //IQueryable<T> Where(IQueryable<T> query, string expr);
     //IQueryable<T> OrderBy(IQueryable<T> query, string expr);

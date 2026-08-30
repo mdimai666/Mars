@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
@@ -26,10 +26,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Host.Repositories\Mars.Host.Repositories.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Data.Repositories\Mars.Data.Repositories.csproj" />
         <ProjectReference Include="..\..\src\Mars.WebApp\Mars.WebApp.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
-        <ProjectReference Include="..\Test.Mars.Plugin\Test.Mars.Plugin.csproj" />
+        <ProjectReference Include="..\Mars.Plugin.Tests\Mars.Plugin.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>

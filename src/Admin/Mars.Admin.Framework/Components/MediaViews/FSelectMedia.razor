@@ -1,0 +1,193 @@
+@using Mars.Admin.Framework.Components.MediaViews
+@using Mars.Media.Contracts.Files
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@inject IStringLocalizer<AppRes> L
+
+@{
+    // плитка значения: при включённой дроп-зоне она же — приёмник файлов
+    RenderFragment tile =
+    @<text>
+        @if (Value == Guid.Empty)
+        {
+            <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
+                <span>
+                    нет
+                </span>
+            </div>
+        }
+        else if (previewLoading)
+        {
+            <div class="xcenter" style="background:#ededed;width:102px;height:102px;">
+                <span>
+                    <SharedLoader2 />
+                </span>
+            </div>
+        }
+        else if (filePreview is null)
+        {
+            <div class="xcenter cursor-pointer" style="background:#ededed;width:102px;height:102px;" @onclick=ShowModalForSelect>
+                <span>
+                    нет превью
+                </span>
+            </div>
+        }
+        else
+        {
+            var file = filePreview;
+            <div class="d-document-uploader">
+                <div class="media-table">
+                    <div class="items-container gap-2 d-file-list">
+                        <div class="d-file-item xcenter" title="@file.Name">
+                            <div class="d-file-item-actions-top">
+                                @if (Q.User.IsAuth && !ReadOnly)
+                                {
+                                    <FluentButton Appearance="Appearance.Stealth" Title="Убрать файл"
+                                                  OnClick=@(e => Value = Guid.Empty)>
+                                        <FluentIcon Color="Color.Error" Value="@(new Icons.Regular.Size16.Delete())" />
+                                    </FluentButton>
+                                }
+                            </div>
+
+                            @if (file.IsImage)
+                            {
+                                <Image2 Width="102px" PreviewSrc=@(file.Url)
+                                        Src="@(file.PreviewIcon)"
+                                        Title="@file.Name"
+                                        Class="cursor-pointer" />
+                            }
+                            else
+                            {
+                                <div class="d-file-preview-icon" style="background-image:url('@(file.PreviewIcon)')"></div>
+                            }
+
+                            <div class="d-file-item-actions-bottom">
+                                @if (Q.User.IsAuth)
+                                {
+                                    <div class="d-flex gap-1">
+                                        <FluentButton Appearance="Appearance.Accent" OnClick="ShowModalForSelect">
+                                            выбрать
+                                        </FluentButton>
+                                        @if (!file.IsImage)
+                                        {
+                                            <a href="@file.Url" target="_blank">
+                                                <FluentButton Appearance="Appearance.Neutral">открыть</FluentButton>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </text>;
+}
+
+@if (DropZoneEnabled && !ReadOnly)
+{
+    <MediaUploadZone Class="d-select-media-drop"
+                     FolderPath="@UploadFolder"
+                     Accept="@Accept"
+                     Multiple="false"
+                     ShowResults="false"
+                     ZoneStyle="min-height:unset; width:max-content; height:max-content; padding:0; background:transparent; grid-gap:0;"
+                     OnFilesUploaded="OnDroppedFilesAsync"
+                     ZoneContent="@tile" />
+}
+else
+{
+    @tile
+}
+
+<style>
+    /* дроп-зона ровно по плитке значения: невидимый file-input не должен раздувать
+       зону своей собственной шириной; заливка убрана, пунктирный контур и его
+       сплошная реакция при наведении файла — библиотечные (fluent-inputfile-container) */
+    d-media-upload-zone.d-select-media-drop input[type='file'] {
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    d-media-upload-zone.d-select-media-drop .inputfile-progress {
+        display: none;
+    }
+</style>
+
+@code {
+
+    [Inject] public IAppMediaService service { get; set; } = default!;
+
+    /// <summary>Папка загрузки дропа (пусто = папка года)</summary>
+    [Parameter] public string UploadFolder { get; set; } = "";
+
+    /// <summary>Дроп-зона загрузки поверх плитки (дефолт включена)</summary>
+    [Parameter] public bool DropZoneEnabled { get; set; } = true;
+
+    /// <summary>Фильтр файлов дропа/выбора</summary>
+    [Parameter] public string Accept { get; set; } = "*";
+
+    Guid _value;
+    [Parameter]
+    public Guid Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(_value).Wait();
+            OnValueChange.InvokeAsync(_value);
+            _ = LoadPreview();
+        }
+    }
+    [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
+    [Parameter] public EventCallback<Guid> OnValueChange { get; set; }
+
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+
+    FileSummaryResponse? filePreview = null;
+    bool previewLoading = false;
+
+
+    async Task LoadPreview()
+    {
+        if (Value == Guid.Empty)
+        {
+            filePreview = null;
+            return;
+        }
+
+        previewLoading = true;
+        StateHasChanged();
+
+        this.filePreview = await service.Get(Value);
+
+        previewLoading = false;
+        StateHasChanged();
+    }
+
+    async void ShowModalForSelect()
+    {
+
+        FileSummaryResponse file = await service.OpenSelectMedia();
+
+        if (file is not null)
+        {
+            Value = file.Id;
+        }
+    }
+
+    /// <summary>Дроп: файл грузится в медиа и становится значением (без поста)</summary>
+    Task OnDroppedFilesAsync(IReadOnlyCollection<FileDetailResponse> files)
+    {
+        var file = files.FirstOrDefault();
+        if (file is not null) Value = file.Id;
+        return Task.CompletedTask;
+    }
+
+}

@@ -3,11 +3,11 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using BenchmarkDotNet.Attributes;
 using HandlebarsDotNet;
+using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Posts;
 using Newtonsoft.Json.Linq;
 
-namespace Benchmarks.MyHandlebars;
+namespace Benchmarks.MyHandlebars.Memory;
 
 [MemoryDiagnoser, ShortRunJob]
 public class MyHandlebarsMemoryBenchmark

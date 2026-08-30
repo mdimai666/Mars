@@ -12,8 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Mars.Host.Shared\Mars.Host.Shared.csproj" />
-        <ProjectReference Include="..\..\src\Mars.Shared\Mars.Shared.csproj" />
+        <ProjectReference Include="..\..\src\Server\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
+        <ProjectReference Include="..\..\src\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\..\tests\Mars.Test.Common\Mars.Test.Common.csproj" />
     </ItemGroup>
 

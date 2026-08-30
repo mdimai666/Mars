@@ -36,7 +36,7 @@ public record CliFrame
 
     [JsonPropertyName("t")] public string Type { get; init; } = "";
     [JsonPropertyName("d")] public string? Data { get; init; }
-    [JsonPropertyName("code")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Code { get; init; }
+    [JsonPropertyName("code")][JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Code { get; init; }
 }
 
 /// <summary>

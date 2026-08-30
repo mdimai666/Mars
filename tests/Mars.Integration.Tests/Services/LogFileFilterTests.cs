@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Services;
+using Mars.Server.Services;
 
 namespace Mars.Integration.Tests.Services;
 

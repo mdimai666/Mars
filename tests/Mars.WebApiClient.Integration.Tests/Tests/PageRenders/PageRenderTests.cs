@@ -1,14 +1,14 @@
-﻿using AutoFixture;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Services;
+using AutoFixture;
+using FluentAssertions;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Services;
-using Mars.Shared.Contracts.PostTypes;
+using Mars.SiteEngine.Host.Controllers;
+using Mars.SiteEngine.Host.Services;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PageRenders;

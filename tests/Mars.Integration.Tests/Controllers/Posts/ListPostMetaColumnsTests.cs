@@ -1,15 +1,13 @@
-using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.MetaFields;
-using Mars.Host.Services;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Host.Controllers;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.MetaFields;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Posts;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +25,7 @@ public class ListPostMetaColumnsTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPost_WithMetaFields_ShouldReturnFormattedMetaColumns()
+    public async Task ListPost_WithMetaFields_ReturnsFormattedMetaColumns()
     {
         //Arrange
         _ = nameof(PostController.List);

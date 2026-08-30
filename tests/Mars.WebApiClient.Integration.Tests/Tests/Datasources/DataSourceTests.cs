@@ -1,11 +1,10 @@
-using Mars.Datasource.Core.Dto;
+using FluentAssertions;
+using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Abstractions.Services;
+using Mars.Datasource.Front.Services;
 using Mars.Datasource.Host.Controllers;
-using Mars.Datasource.Host.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.WebApiClient.Interfaces;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Datasources;
@@ -66,7 +65,7 @@ public class DataSourceTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task TestConnection_Request_Success()
+    public async Task TestConnection_DefaultPsqlConnection_DoesNotThrow()
     {
         //Arrange
         _ = nameof(DatasourceController.TestConnection);
@@ -104,7 +103,7 @@ public class DataSourceTests : BaseWebApiClientTests
         _ = nameof(DatasourceController.ExecuteAction);
         _ = nameof(IDatasourceService.ExecuteAction);
         var client = GetWebApiClient();
-        var request = new ExecuteActionRequest { ActionId = "check_db_timezone", Arguments = [] };
+        var request = new DatasourceActionRequest { ActionId = "check_db_timezone", Arguments = [] };
         //Act
         var result = await client.Datasource().ExecuteAction("default", request);
 

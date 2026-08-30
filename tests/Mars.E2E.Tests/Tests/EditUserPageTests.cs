@@ -2,8 +2,8 @@ using FluentAssertions;
 using Flurl.Http;
 using Mars.E2E.Tests.Fixtures;
 using Mars.E2E.Tests.Helpers;
+using Mars.Identity.Contracts.Users;
 using Mars.Integration.Tests.Attributes;
-using Mars.Shared.Contracts.Users;
 using Mars.Test.Common.Constants;
 using Microsoft.Playwright;
 
@@ -16,7 +16,7 @@ public class EditUserPageTests : BaseE2ETests
     }
 
     [IntegrationFact(Skip = SkipE2ETests)]
-    public async Task EditUserPage_UpdateFields_ShouldPersist()
+    public async Task EditUserPage_UpdateFields_Persists()
     {
         // Arrange
         var tracker = new BrowserErrorTracker(Page);

@@ -1,5 +1,6 @@
-using Mars.Host.Shared.Services;
-using Mars.Options.Models;
+using Mars.Identity.Abstractions.Services;
+using Mars.Options.Abstractions.Services;
+using Mars.SSO.Contracts.Options;
 using Mars.SSO.Host.OAuth.interfaces;
 using Mars.SSO.Host.OAuth.Models;
 

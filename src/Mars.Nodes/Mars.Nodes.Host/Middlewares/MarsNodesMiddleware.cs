@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using Mars.Host.Shared.Interfaces;
+using Mars.Identity.Abstractions.Interfaces;
+using Mars.Nodes.Abstractions;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Host.Mappings;
-using Mars.Nodes.Host.Shared;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Nodes.Host.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 

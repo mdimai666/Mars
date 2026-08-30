@@ -1,0 +1,78 @@
+using AutoFixture;
+using FluentAssertions;
+using Mars.Core.Extensions;
+using Mars.Data.Entities;
+using Mars.QueryLang.Host.Services;
+using Mars.QueryLang.Services;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Handlebars.HandlebarsFunc;
+using Mars.SiteEngine.Host.Templators;
+using Mars.Test.Common.FixtureCustomizes;
+using Microsoft.AspNetCore.Http.Features;
+using NSubstitute;
+
+namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
+
+public class DataQueryScenariosTests
+{
+    private readonly IFixture _fixture;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IFeatureCollection _featureCollection;
+    private readonly IQueryLangProcessing _queryLangProcessing;
+    private readonly IQueryLangLinqDatabaseQueryHandler _queryLangLinqDatabaseQueryHandler;
+
+    public DataQueryScenariosTests()
+    {
+        _fixture = new Fixture();
+        EntitiesCustomize.PostTypeDict = new Dictionary<string, PostTypeEntity> { ["post"] = new PostTypeEntity() };
+        EntitiesCustomize.PostCategoryTypeDict = new Dictionary<string, PostCategoryTypeEntity> { ["default"] = new PostCategoryTypeEntity() };
+        _fixture.Customize(new FixtureCustomize());
+        _serviceProvider = Substitute.For<IServiceProvider>();
+        _featureCollection = Substitute.For<IFeatureCollection>();
+        _queryLangLinqDatabaseQueryHandler = Substitute.For<IQueryLangLinqDatabaseQueryHandler>();
+        _queryLangProcessing = new QueryLangProcessing(new TemplatorFeaturesLocator(), _serviceProvider, _queryLangLinqDatabaseQueryHandler);
+        _serviceProvider.GetService(typeof(IQueryLangProcessing)).Returns(_queryLangProcessing);
+    }
+
+    string Render(string html, Dictionary<string, object?>? data = null, Action<MyHandlebars>? builder = null)
+    {
+        using var hbs = new MyHandlebars();
+        hbs.RegisterContextFunctions();
+        builder?.Invoke(hbs);
+        var template = hbs.Compile(html);
+        var pageRenderContext = new PageRenderContext()
+        {
+            IsDevelopment = true,
+            RenderParam = new(),
+            SiteSettings = new(),
+            Request = new(new Uri("http://localhost")),
+            User = null,
+            TemplateContextVariables = data ?? []
+        };
+        var rctx = new HandlebarsHelperFunctionContext(pageRenderContext, _serviceProvider, CancellationToken.None)
+        {
+            Features = _featureCollection
+        };
+        return template(pageRenderContext.TemplateContextVariables, new { rctx });
+    }
+
+    [Fact]
+    public void ListPostQuery_RenderList_ListsNames()
+    {
+        var template = """
+            {{#context}}
+            posts = ef.posts.Take(3)
+            {{/context}}
+            {{#each posts}}{{Title}}{{/each}}
+            """;
+
+        var posts = _fixture.CreateMany<PostEntity>(3).ToList();
+        _queryLangLinqDatabaseQueryHandler.Handle("posts.Take(3)", Arg.Any<XInterpreter>(), default)
+                                            .Returns(posts);
+
+        var html = Render(template);
+
+        html.Should().Contain(posts.Select(s => s.Title).JoinStr(""));
+    }
+}

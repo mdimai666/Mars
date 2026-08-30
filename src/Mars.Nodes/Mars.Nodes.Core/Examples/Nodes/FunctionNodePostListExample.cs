@@ -1,5 +1,3 @@
-using Mars.Nodes.Core.Nodes;
-using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Core.Utils;
 
 namespace Mars.Nodes.Core.Examples.Nodes;
@@ -16,7 +14,8 @@ public class FunctionNodePostListExample : INodeExample<FunctionNode>
             .AddNext(new FunctionNode()
             {
                 Code = """
-                        using Mars.Host.Shared.Services;
+                        using Mars.Cms.Abstractions.Services;
+                        using Mars.Cms.Host.Services;
 
                         var ps = RNS.ServiceProvider.GetRequiredService<IPostService>();
                         var posts = await ps.List(new () { Type = "post", Skip = 0, Take = 2 }, default);

@@ -5,7 +5,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Mars.Datasource.Core\Mars.Datasource.Core.csproj" />
-		<ProjectReference Include="..\Mars.Datasource.Host.Core\Mars.Datasource.Host.Core.csproj" />
+		<ProjectReference Include="..\Mars.Datasource\Mars.Datasource.csproj" />
+		<ProjectReference Include="..\Mars.Datasource.Abstractions\Mars.Datasource.Abstractions.csproj" />
 	</ItemGroup>
 </Project>

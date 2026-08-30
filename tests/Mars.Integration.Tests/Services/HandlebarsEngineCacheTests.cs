@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Models;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.Shared.Options;
-using Mars.WebSiteProcessor.Handlebars;
-using Mars.WebSiteProcessor.Services;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Models;
+using Mars.Server.Contracts.Options;
+using Mars.SiteEngine.Abstractions.Models;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
+using Mars.SiteEngine.Handlebars;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +65,7 @@ v1
 
     string IndexFile() => Path.Combine(dir, "index.hbs");
 
-    WebTemplateService Wts() => (WebTemplateService)appFront.Features.Get<Mars.Host.Shared.WebSite.Interfaces.IWebTemplateService>()!;
+    WebTemplateService Wts() => (WebTemplateService)appFront.Features.Get<Mars.SiteEngine.Abstractions.WebSite.Interfaces.IWebTemplateService>()!;
 
     string Render()
     {
@@ -72,11 +73,11 @@ v1
         var ctx = new PageRenderContext
         {
             Request = new WebClientRequest(new Uri("http://localhost/")),
-            SysOptions = new SysOptions { SiteUrl = "http://localhost" },
+            SiteSettings = new SiteSettings { SiteUrl = "http://localhost" },
             User = null,
             IsDevelopment = false,
             RenderParam = new RenderParam(), // UseCache = true
-            TemplateContextVaribles = new(),
+            TemplateContextVariables = [],
         };
 
         return engine.RenderPage(appFront, ctx, template.Roots.Values.First(), template.IndexPage, template.Parts, services, default);

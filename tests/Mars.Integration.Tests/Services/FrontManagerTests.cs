@@ -1,8 +1,9 @@
 using FluentAssertions;
-using Mars.Host.Shared.Managers;
-using Mars.Host.Shared.Services;
-using Mars.Services;
-using Mars.Shared.Options;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Managers;
+using Mars.SiteEngine.Abstractions.Constants.Website;
+using Mars.SiteEngine.Contracts.Options;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.Hosting;
 using NSubstitute;
 
@@ -225,7 +226,7 @@ public class FrontManagerTests
         var manager = CreateManager(new FrontsOption(), out _, out _);
 
         var admin = manager.AdminFront;
-        admin.Slug.Should().Be(FrontManager.AdminFrontSlug);
+        admin.Slug.Should().Be(AppAdminConstants.AdminFrontSlug);
         admin.EngineId.Should().Be(FrontItem.HandlebarsEngine);
         admin.Path.Should().Be(FrontManager.AdminFrontDirName);
         admin.Enabled.Should().BeTrue();

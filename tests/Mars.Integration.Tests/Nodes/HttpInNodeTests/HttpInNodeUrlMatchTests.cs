@@ -1,14 +1,14 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using Mars.Nodes.Core.Nodes.Functions;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Middlewares;
-using Mars.Nodes.Host.Shared.HttpModule;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,7 +36,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_InvalidUrlRequest_ShouldNotOK()
+    public async Task TryMatch_InvalidUrlRequest_Fails()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -53,7 +53,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_StaticUrlRequest_ShouldOK()
+    public async Task TryMatch_StaticUrlRequest_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -70,7 +70,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_PatternUrlRequest_ShouldOK()
+    public async Task TryMatch_PatternUrlRequest_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -87,7 +87,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_StaticUrlShouldBePrioritizedOverPatternUrl_ShouldMatchStatic()
+    public async Task TryMatch_StaticAndPatternUrlBothMatch_StaticWins()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -112,7 +112,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_TypedPatternUrlRequest_ShouldOK()
+    public async Task TryMatch_TypedPatternUrlRequest_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -129,7 +129,7 @@ public class HttpInNodeUrlMatchTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task TryMatch_TypedPatternUrlInvalidTypeRequest_ShouldNotOK()
+    public async Task TryMatch_TypedPatternUrlInvalidTypeRequest_Fails()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

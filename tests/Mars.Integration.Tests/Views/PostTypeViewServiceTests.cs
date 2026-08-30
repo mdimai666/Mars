@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Services;
+using FluentAssertions;
+using Mars.Cms.Abstractions.Services;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Microsoft.EntityFrameworkCore;

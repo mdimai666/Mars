@@ -1,6 +1,6 @@
 using FluentAssertions;
-using Mars.Host.Shared.WebSite.Models;
-using Mars.XActions.ContentRecipes;
+using Mars.Cms.Host.XActions.ContentRecipes;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
 namespace Mars.Integration.Tests.Services;
 

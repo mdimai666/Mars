@@ -1,0 +1,42 @@
+using FluentAssertions;
+using Mars.Nodes.Core;
+
+namespace Mars.Nodes.Tests.Services;
+
+public class NodeTaskManagerTests : NodeServiceUnitTestBase
+{
+    [Fact]
+    public async Task CurrentTasks_HaveCount_CreatesTaskAndReturnsCount()
+    {
+        //Arrange
+        var input = new NodeMsg() { Payload = 123 };
+        var node = new DelayNode { DelayMillis = 100 };
+
+        //Act
+        _ /*we are not waiting*/ = RunUsingTaskManager(node, input);
+        await Task.Delay(10);
+
+        //Assert
+        var currentTasks = _nodeTaskManager.CurrentTasks();
+        currentTasks.Count.Should().Be(1);
+        _nodeTaskManager.CompletedTasks().Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task CompletedTasks_HaveCount_CreatesTaskAndReturnsCount()
+    {
+        //Arrange
+        var input = new NodeMsg() { Payload = 123 };
+        var node = new DelayNode { DelayMillis = 100 };
+
+        //Act
+        await RunUsingTaskManager(node, input);
+        await Task.Delay(10);
+
+        //Assert
+        var currentTasks = _nodeTaskManager.CurrentTasks();
+        currentTasks.Count.Should().Be(0);
+        _nodeTaskManager.CompletedTasks().Count.Should().Be(1);
+    }
+
+}

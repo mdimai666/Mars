@@ -2,9 +2,9 @@ using System.Text;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using Mars.Nodes.Core.Nodes.Network;
@@ -37,7 +37,7 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task AcceptForm_ValidFormReadFields_ShouldSuccess()
+    public async Task AcceptForm_ValidFormReadFields_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -72,7 +72,7 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UploadFile_ValidFile_ShouldSuccess()
+    public async Task UploadFile_ValidFile_Succeeds()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);
@@ -105,7 +105,7 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task UploadFile_DisallowMultipartNode_ShouldUnsupportedStatusError()
+    public async Task UploadFile_DisallowMultipartNode_ReturnsUnsupportedStatusError()
     {
         //Arrange
         _ = nameof(HttpInNodeImpl.Execute);

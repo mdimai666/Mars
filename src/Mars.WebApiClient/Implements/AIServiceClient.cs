@@ -1,5 +1,5 @@
 using Flurl.Http;
-using Mars.Shared.Contracts.AIService;
+using Mars.SemanticKernel.Contracts.AIService;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;

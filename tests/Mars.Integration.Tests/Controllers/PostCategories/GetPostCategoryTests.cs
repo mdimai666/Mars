@@ -1,16 +1,15 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Services;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostCategories;
+using Mars.Cms.Host.Controllers;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.PostCategories;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +27,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostCategory_ValidRequest_ShouldSuccess()
+    public async Task GetPostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.Get);
@@ -51,7 +50,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetPostCategoryBySlug_ValidRequest_ShouldSuccess()
+    public async Task GetPostCategoryBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.GetBySlug);
@@ -91,7 +90,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_Request_ShouldSuccess()
+    public async Task ListPostCategory_Request_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);
@@ -115,7 +114,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_RequestByPostCategoryTypeName_ShouldSuccess()
+    public async Task ListPostCategory_RequestByPostCategoryTypeName_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);
@@ -140,7 +139,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_SearchRequest_ShouldSuccess()
+    public async Task ListPostCategory_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);
@@ -174,7 +173,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact(Skip = "not yet")]
-    public async Task GetPostCategory__NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetPostCategory__NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostCategoryController.Get);
@@ -205,7 +204,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetEditModel_NonFilledMetaField_ShouldReturnBlankMetaValues()
+    public async Task GetEditModel_NonFilledMetaField_ReturnsBlankMetaValues()
     {
         //Arrange
         _ = nameof(PostCategoryController.GetEditModel);
@@ -235,7 +234,7 @@ public class GetPostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListPostCategory_ReturnAsSortedByPath_ShouldSuccess()
+    public async Task ListPostCategory_ReturnAsSortedByPath_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryController.List);

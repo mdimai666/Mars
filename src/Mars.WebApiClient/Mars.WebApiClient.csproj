@@ -37,8 +37,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mars.Shared\Mars.Shared.csproj" />
-        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Shared\Mars.AiChat.Shared.csproj" />
+        <ProjectReference Include="..\Mars.Contracts\Mars.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
+        <ProjectReference Include="..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Notifications.Contracts\Mars.Notifications.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SemanticKernel.Contracts\Mars.SemanticKernel.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Scheduler.Contracts\Mars.Scheduler.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.Options.Contracts\Mars.Options.Contracts.csproj" />
+        <ProjectReference Include="..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
+        <ProjectReference Include="..\Mars.Modules\Mars.AiChat.Contracts\Mars.AiChat.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

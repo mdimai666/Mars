@@ -1,7 +1,7 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Shared.Contracts.MetaFields;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Data.Entities;
 
 namespace Mars.Test.Common.FixtureCustomizes;
 

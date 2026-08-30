@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Models;
-using Mars.WebSiteProcessor.Services;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.SiteEngine.Abstractions.Models;
+using Mars.SiteEngine.Host.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;

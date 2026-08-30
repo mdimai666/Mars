@@ -1,9 +1,11 @@
-using Mars.Datasource.Core.Dto;
-using Mars.Datasource.Front.Services;
-using Mars.Shared.Common;
+using Mars.Contracts.Common;
+using Mars.Datasource.Abstractions.Models;
+using Mars.Datasource.Dto;
+using Mars.WebApiClient.Interfaces;
 
 //namespace Mars.Datasource.Front.Services;
-namespace Mars.WebApiClient.Interfaces;
+
+namespace Mars.Datasource.Front.Services;
 
 public interface IDatasourceServiceClient
 {
@@ -12,7 +14,7 @@ public interface IDatasourceServiceClient
     Task<IReadOnlyCollection<QTableSchemaResponse>> Tables(string slug);
     Task<QDatabaseStructureResponse> DatabaseStructure(string slug);
     Task<UserActionResult<string[][]>> SqlQuery(string slug, string sql);
-    Task<UserActionResult<string[][]>> ExecuteAction(string slug, ExecuteActionRequest action);
+    Task<UserActionResult<string[][]>> ExecuteAction(string slug, DatasourceActionRequest action);
     Task<IReadOnlyCollection<SelectDatasourceDto>> ListSelectDatasource();
 
 }

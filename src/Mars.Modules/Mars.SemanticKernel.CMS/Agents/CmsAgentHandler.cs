@@ -1,8 +1,8 @@
 using System.Reflection;
 using Mars.Core.Extensions;
+using Mars.SemanticKernel.Abstractions.Dto;
+using Mars.SemanticKernel.Abstractions.Interfaces;
 using Mars.SemanticKernel.CMS.Plugins;
-using Mars.SemanticKernel.Host.Shared.Dto;
-using Mars.SemanticKernel.Host.Shared.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;

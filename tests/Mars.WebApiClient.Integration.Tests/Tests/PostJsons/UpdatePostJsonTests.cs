@@ -1,11 +1,11 @@
 using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.PostJsons;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.PostJsons;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 using Mars.WebApiClient.Interfaces;
@@ -32,7 +32,7 @@ public sealed class UpdatePostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostJson_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostJson_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(IPostJsonServiceClient.Update);

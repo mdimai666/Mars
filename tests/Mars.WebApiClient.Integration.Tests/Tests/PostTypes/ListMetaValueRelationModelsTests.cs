@@ -1,8 +1,8 @@
 using FluentAssertions;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PostTypes;
 
@@ -13,7 +13,7 @@ public sealed class ListMetaValueRelationModelsTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task ListMetaValueRelationModels_PostSubType_ShouldFilterByTypeName()
+    public async Task ListMetaValueRelationModels_PostSubType_FiltersByTypeName()
     {
         //Arrange
         var client = GetWebApiClient();

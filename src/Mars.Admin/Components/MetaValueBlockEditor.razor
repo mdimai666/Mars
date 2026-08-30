@@ -1,0 +1,70 @@
+@* Редактор значения «Блочный (Editor.js)» для мета-полей. Живёт в админке,
+   а не в общей фронт-библиотеке: регистрируется в реестре редакторов при
+   старте (см. Program), чтобы Mars.Admin.Framework не зависел от EditorJsBlazored.
+   Реактивный: значение пушится в модель по событию изменения; интерфейс
+   тяжёлых редакторов — для единообразия и ИИ-моста. *@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+@using EditorJsBlazored
+@using EditorJsBlazored.Blocks
+@using EditorJsBlazored.Core
+@implements IHeavyMetaValueEditor
+
+<div class="vstack">
+    <label>@Value.MetaField.Title</label>
+    <BlockEditor1 @ref=_editor
+                  ContentJson="@TextValue"
+                  ContentJsonChanged="OnContentJsonChanged"
+                  OnImageFileRequest="OnImageFileRequest"
+                  OnAttachmentFileRequest="OnImageFileRequest" />
+</div>
+
+@code {
+    [Parameter] public MetaValueEditModel Value { get; set; } = default!;
+    [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
+
+    [CascadingParameter] FormMetaValue formMetaValue { get; set; } = default!;
+
+    [Inject] IAppMediaService mediaService { get; set; } = default!;
+
+    BlockEditor1? _editor;
+
+    string TextValue => Value.MetaField.Type == MetaFieldType.Text ? Value.StringText : Value.StringShort;
+
+    protected override void OnInitialized() => formMetaValue?.RegisterHeavyEditor(this);
+
+    async Task OnContentJsonChanged(string json)
+    {
+        if (Value.MetaField.Type == MetaFieldType.Text) Value.StringText = json;
+        else Value.StringShort = json;
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    public Task<string?> GetValueAsync() => Task.FromResult<string?>(TextValue); // реактивный — модель всегда актуальна
+
+    public Task SetValueAsync(string? value)
+    {
+        if (_editor is null) return Task.CompletedTask;
+        _editor.Content = EditorJsContent.FromJson(value ?? "");
+        return _editor.SetContent();
+    }
+
+    public Task CommitAsync() => Task.CompletedTask; // реактивный — коммитить нечего
+
+    async Task<BlockImage.ImageFileData?> OnImageFileRequest()
+    {
+        var mediaFile = await mediaService.OpenSelectMedia();
+
+        if (mediaFile is null) return null;
+
+        return new BlockImage.ImageFileData
+        {
+            Url = mediaFile.Url,
+            FileName = mediaFile.Name,
+            Size = (long)mediaFile.Size,
+        };
+    }
+
+    public void Dispose() => formMetaValue?.UnregisterHeavyEditor(this);
+}

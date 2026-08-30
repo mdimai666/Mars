@@ -1,19 +1,19 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Managers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.XActions;
+using Mars.Server.Managers;
+using Mars.Server.XActions;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.XActions;
+using Mars.XActions.Contracts;
+using Mars.XActions.Host.Controllers;
 using Microsoft.AspNetCore.Http;
 
 namespace Mars.Integration.Tests.Controllers.Acts;
 
-/// <seealso cref="Mars.Controllers.ActController"/>
+/// <seealso cref="XActions.Host.Controllers.ActController"/>
 public class InjectActTests : ApplicationTests
 {
     const string _apiUrl = "/api/Act";
@@ -25,7 +25,7 @@ public class InjectActTests : ApplicationTests
 
 #if DEBUG
     [IntegrationFact]
-    public async Task Inject_Request_ShouldSuccess()
+    public async Task Inject_Request_Succeeds()
     {
         //Arrange
         _ = nameof(ActController.Inject);

@@ -1,13 +1,13 @@
 using AutoFixture;
 using FluentAssertions;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Shared.Dto.SSO;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
+using Mars.Identity.Abstractions.Dto.SSO;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.SSO.Controllers;
+using Mars.SSO.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +25,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RemoteUserUpsert_CreateUserRequest_ShouldSuccess()
+    public async Task RemoteUserUpsert_CreateUserRequest_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Callback);
@@ -50,7 +50,7 @@ public class SSOUpdateUserEntityTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RemoteUserUpsert_UpdateExistUserRequest_ShouldSuccess()
+    public async Task RemoteUserUpsert_UpdateExistUserRequest_Succeeds()
     {
         //Arrange
         _ = nameof(SsoController.Callback);

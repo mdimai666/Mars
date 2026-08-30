@@ -1,11 +1,11 @@
-using Mars.Controllers;
+using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Scheduler;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Schedulers;
+using Mars.Scheduler.Abstractions;
+using Mars.Scheduler.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Schedulers;
@@ -19,7 +19,7 @@ public class InjectSchedulerTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task InjectJob_ValidRequest_ShouldSuccess()
+    public async Task InjectJob_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(SchedulerController.InjectJob);

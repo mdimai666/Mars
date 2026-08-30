@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Running;
 using Benchmarks.QueryLang;
 
 Console.WriteLine("Start!");

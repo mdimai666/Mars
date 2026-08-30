@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+        <PackageReference Include="Handlebars.Net" />
+        <PackageReference Include="Handlebars.Net.Extension.Json" />
+        <PackageReference Include="Handlebars.Net.Extension.NewtonsoftJson" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
+		<ProjectReference Include="..\Mars.QueryLang\Mars.QueryLang.csproj" />
+		<ProjectReference Include="..\Mars.SiteEngine.Host\Mars.SiteEngine.Host.csproj" />
+	</ItemGroup>
+
+</Project>

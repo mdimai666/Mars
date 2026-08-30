@@ -1,10 +1,10 @@
+using FluentAssertions;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Scheduler;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Schedulers;
+using Mars.Scheduler.Abstractions;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Schedulers;
@@ -32,7 +32,7 @@ public class GetSchedulerTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task ListSchedulerJob_ValidRequest_ShouldSuccess()
+    public async Task ListSchedulerJob_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

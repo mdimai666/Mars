@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using Mars.Host.Data.Entities;
-
 namespace PluginExample.Data.Entities;
 
 //public class PluginNewsFilesEntity

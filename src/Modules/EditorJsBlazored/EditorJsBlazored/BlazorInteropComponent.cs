@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace EditorJsBlazored;
@@ -15,7 +15,7 @@ public class BlazorInteropComponent : ComponentBase
     {
         if (firstRender)
         {
-            await this.InitializeClientComponent();
+            await InitializeClientComponent();
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -43,11 +43,11 @@ public class BlazorInteropComponent : ComponentBase
     [JSInvokable]
     public Task<object> GetBlazorProperty(string propertyName)
     {
-        var property = this.GetType().GetProperty(propertyName);
+        var property = GetType().GetProperty(propertyName);
 
         if (property == null)
         {
-            throw new ApplicationException($"Property {propertyName} not found on {this.GetType().Name}");
+            throw new ApplicationException($"Property {propertyName} not found on {GetType().Name}");
         }
 
         return Task.FromResult(property.GetValue(this))!;

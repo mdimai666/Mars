@@ -1,6 +1,5 @@
-using System.Net.Http;
 using Flurl.Http;
-using Mars.Shared.Contracts.Search;
+using Mars.Cms.Contracts.Search;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.WebApiClient.Implements;

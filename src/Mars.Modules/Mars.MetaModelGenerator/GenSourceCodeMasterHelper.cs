@@ -50,7 +50,7 @@ public static class GenSourceCodeMasterHelper
         if (string.IsNullOrEmpty(input))
             return input;
 
-        string tabs = new string('\t', tabsCount);
+        string tabs = new('\t', tabsCount);
         string[] lines = input.Split('\n', StringSplitOptions.None);
 
         return string.Join("\n",

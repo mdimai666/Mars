@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
@@ -15,7 +15,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetUserType_ValidRequest_ShouldSuccess()
+    public async void GetUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -29,7 +29,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public void GetUserType_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetUserType_NotExistEntity_Fails404ReturnsNull()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -44,7 +44,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListUserType_ValidRequest_ShouldSuccess()
+    public async void ListUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetEditModel_ValidRequest_ShouldSuccess()
+    public async void GetEditModel_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.UserType.GetEditModel);

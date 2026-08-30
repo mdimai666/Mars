@@ -1,8 +1,7 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Services;
-using Mars.Host.Shared.Dto.Profile;
+using Mars.Identity.Abstractions.Dto.Profile;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.Constants;
@@ -36,7 +35,7 @@ public class GetUserProfileTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetUserProfile_ValidRequest_ShouldSuccess()
+    public async Task GetUserProfile_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.Profile);

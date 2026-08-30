@@ -1,15 +1,15 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.Posts;
+using Mars.Cms.Contracts.PostTypes;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.Posts;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +61,7 @@ public sealed class PostMultiplicityValidatorTests : ApplicationTests
         };
 
     [IntegrationFact]
-    public async Task CreatePost_SecondValueForSingleField_ShouldFail400()
+    public async Task CreatePost_SecondValueForSingleField_Fails400()
     {
         //Arrange
         var (typeName, fieldId) = await CreateTypeWithFieldAsync(isMultiple: false);
@@ -78,7 +78,7 @@ public sealed class PostMultiplicityValidatorTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePost_SeveralValuesForMultipleField_ShouldSuccess()
+    public async Task CreatePost_SeveralValuesForMultipleField_Succeeds()
     {
         //Arrange
         var (typeName, fieldId) = await CreateTypeWithFieldAsync(isMultiple: true);

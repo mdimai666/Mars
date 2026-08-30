@@ -1,19 +1,20 @@
 using System.Net.Http.Headers;
 using Flurl.Http;
-using Mars.Host.Data.Contexts;
-using Mars.Host.Repositories.Mappings;
-using Mars.Host.Shared.Dto.Users;
-using Mars.Host.Shared.Repositories;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Services;
+using Mars.Data.Contexts;
+using Mars.Data.Repositories.Mappings;
+using Mars.Identity.Abstractions.Dto.Users;
+using Mars.Identity.Abstractions.Repositories;
+using Mars.Identity.Abstractions.Services;
 using Mars.Integration.Tests.Controllers.Schedulers;
 using Mars.Integration.Tests.Interfaces;
 using Mars.Integration.Tests.Nodes;
 using Mars.Integration.Tests.TestControllers;
+using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
-using Mars.Nodes.Host.Shared;
+using Mars.Server.Startup;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.UseStartup.MarsParts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -196,7 +197,7 @@ public class ApplicationFixture : IAsyncLifetime
         var ef = ServiceProvider.GetRequiredService<IMarsDbContextFactory>().CreateInstance();
         ef.ChangeTracker.Clear();
         var logger = ServiceProvider.GetRequiredService<ILogger<Program>>();
-        MarsStartupPartMigrations.SeedData(ApplicationFactory.Services, Configuration, logger, true);
+        MarsDbStartup.SeedData(ApplicationFactory.Services, Configuration, logger, true);
 
         var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 

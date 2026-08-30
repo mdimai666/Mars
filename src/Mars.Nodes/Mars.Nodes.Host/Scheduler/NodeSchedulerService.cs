@@ -1,13 +1,13 @@
-using Mars.Host.Shared.Scheduler;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Startup;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
+using Mars.Scheduler.Abstractions;
+using Mars.Server.Abstractions.Services;
+using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Nodes.Host.Scheduler;
-
 
 internal class NodeSchedulerService : INodeSchedulerService, IMarsAppLifetimeService
 {

@@ -1,7 +1,8 @@
 using System.CommandLine;
-using Mars.CommandLine.Shared;
-using Mars.Host.Data.Constants;
-using Mars.Host.Shared.Services;
+using Mars.CommandLine.Abstractions;
+using Mars.Data.Constants;
+using Mars.Options.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Services;
 using Mars.UseStartup;
 using Npgsql;
 

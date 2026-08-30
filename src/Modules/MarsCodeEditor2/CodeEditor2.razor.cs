@@ -44,7 +44,7 @@ public partial class CodeEditor2 : IDisposable
     [Parameter] public EventCallback<string> OnSave { get; set; }
     [Parameter] public EventCallback OnInit { get; set; }
 
-    public static List<Type> ToolbarComponents { get; set; } = new();
+    public static List<Type> ToolbarComponents { get; set; } = [];
 
     [Inject]
     IJSRuntime JSRuntime { get; set; } = default!;
@@ -115,9 +115,9 @@ public partial class CodeEditor2 : IDisposable
         return new StandaloneEditorConstructionOptions
         {
             AutomaticLayout = true,
-            Language = this.Lang,
+            Language = Lang,
             //Language = "html",
-            Value = this.Value,
+            Value = Value,
         };
     }
 

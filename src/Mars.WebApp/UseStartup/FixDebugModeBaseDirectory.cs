@@ -4,7 +4,7 @@ public static class FixDebugModeBaseDirectory
 {
     public static void SetBaseDirectory()
     {
-        //FIX for NET7 AppAdmin serve WebAssembly files
+        //FIX for NET7 Mars.Admin serve WebAssembly files
         if (Environment.GetEnvironmentVariable("DOTNET_WATCH") == "1")
         {
             Console.WriteLine("DOTNET_WATCH");

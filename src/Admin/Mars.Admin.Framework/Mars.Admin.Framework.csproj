@@ -1,0 +1,91 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<!--Project-->
+		<RootNamespace>Mars.Admin.Framework</RootNamespace>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+
+		<!--Author-->
+		<PackageId>mdimai666.Mars.Admin.Framework</PackageId>
+		<PackageVersion>$(MarsAppVersion)</PackageVersion>
+        <Version>$(MarsAppVersion)</Version>
+		<Authors>mdimai666</Authors>
+		<Company>mdimai666</Company>
+		<Product>Mars.Admin.Framework</Product>
+		<PackageTags>Mars;</PackageTags>
+		<Description>
+            Common models and services for the front and themes. With UI framework and shared visual components.
+        </Description>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    </ItemGroup>
+
+	<PropertyGroup>
+        <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+        <PackageReference Include="Markdig" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <PackageReference Include="Blazored.LocalStorage" />
+        <PackageReference Include="Blazored.TextEditor" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+        <PackageReference Include="Microsoft.Extensions.Localization" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+        <PackageReference Include="Flurl.Http" />
+        <PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Services\GallerySpace\GalleryService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Services\GallerySpace\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
+		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
+		<ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
+		<ProjectReference Include="..\..\Server\Mars.Server.Contracts\Mars.Server.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Media.Contracts\Mars.Media.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Notifications.Abstractions\Mars.Notifications.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Contracts\Mars.SiteEngine.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
+		<ProjectReference Include="..\..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
+		<ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
+		<ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />
+		<ProjectReference Include="..\..\Modules\BlazoredHtmlRender\BlazoredHtmlRender.csproj" />
+	</ItemGroup>
+
+</Project>

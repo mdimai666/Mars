@@ -1,7 +1,7 @@
-using Mars.Host.Data.Entities;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -31,13 +31,13 @@ public class GetNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetNavMenu_ValidRequest_ShouldSuccess()
+    public async void GetNavMenu_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public void GetNavMenu_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetNavMenu_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
@@ -50,7 +50,7 @@ public class GetNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListNavMenu_ValidRequest_ShouldSuccess()
+    public async void ListNavMenu_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

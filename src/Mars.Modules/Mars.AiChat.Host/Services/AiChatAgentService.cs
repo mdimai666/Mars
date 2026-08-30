@@ -1,17 +1,20 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using Mars.AiChat.Abstractions.Interfaces;
+using Mars.AiChat.Abstractions.Models;
+using Mars.AiChat.Contracts.Dto;
+using Mars.AiChat.Contracts.Options;
+using Mars.AiChat.Contracts.SignalR;
 using Mars.AiChat.Host.Hubs;
-using Mars.AiChat.Host.Shared.Interfaces;
-using Mars.AiChat.Host.Shared.Models;
 using Mars.AiChat.Host.Tools;
 using Mars.AiChat.Host.Toolsets;
-using Mars.AiChat.Shared.Dto;
-using Mars.AiChat.Shared.Options;
-using Mars.AiChat.Shared.SignalR;
+using Mars.Contracts.Dto.Files;
 using Mars.Core.Exceptions;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Abstractions.Services;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Microsoft.Agents.AI;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.AI;
@@ -390,12 +393,12 @@ public class AiChatAgentService
             switch (el.ValueKind)
             {
                 case JsonValueKind.Array:
-                {
-                    using var e = el.EnumerateArray();
-                    if (e.MoveNext() && e.Current.ValueKind == JsonValueKind.Object && e.Current.TryGetProperty("role", out _))
-                        return el;
-                    break;
-                }
+                    {
+                        using var e = el.EnumerateArray();
+                        if (e.MoveNext() && e.Current.ValueKind == JsonValueKind.Object && e.Current.TryGetProperty("role", out _))
+                            return el;
+                        break;
+                    }
                 case JsonValueKind.Object:
                     foreach (var p in el.EnumerateObject()) queue.Enqueue((p.Value, depth + 1));
                     break;
@@ -417,15 +420,15 @@ public class AiChatAgentService
 
     static AiChatMessageDto NewMessage(AiChatMessageRole role, string content, string? toolName = null, bool isToolResult = false,
         List<AiChatAttachmentDto>? attachments = null) => new()
-    {
-        Id = Guid.NewGuid(),
-        Role = role,
-        Content = content,
-        ToolName = toolName,
-        IsToolResult = isToolResult,
-        Attachments = attachments,
-        CreatedAtUtc = DateTime.UtcNow,
-    };
+        {
+            Id = Guid.NewGuid(),
+            Role = role,
+            Content = content,
+            ToolName = toolName,
+            IsToolResult = isToolResult,
+            Attachments = attachments,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
 
     /// <summary>
     /// Разрешает идентификаторы вложений в метаданные медиафайлов; отсутствующие пропускает.

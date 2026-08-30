@@ -1,7 +1,7 @@
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
 using Mars.Core.Models;
-using Mars.Host.Shared.Hubs;
-using Mars.Host.Shared.Services;
+using Mars.Nodes.Abstractions.Hubs;
+using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace StandNodesApp.Services;

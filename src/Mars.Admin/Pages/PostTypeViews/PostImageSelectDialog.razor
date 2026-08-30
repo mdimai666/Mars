@@ -1,0 +1,36 @@
+@using Mars.Cms.Contracts.MetaFields
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<PostImageSelectDialogData>
+
+<FluentDialogBody>
+    <d-post-image-select-dialog>
+        <div class="vstack gap-2">
+            <FluentButton Class="w-100" Appearance="Appearance.Accent" OnClick="@(() => Dialog.CloseAsync(CreateNewMarker))">
+                Создать новое поле «@FeatureFieldsCatalog.PostImageFieldKey»
+            </FluentButton>
+
+            @foreach (var option in Content.Options)
+            {
+                var item = option;
+                <FluentButton Class="w-100" Appearance="Appearance.Neutral" OnClick="@(() => Dialog.CloseAsync(item.Key))">
+                    @item.Title <span class="text-secondary">(@item.Key)</span>
+                </FluentButton>
+            }
+        </div>
+    </d-post-image-select-dialog>
+</FluentDialogBody>
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    /// <summary>Результат-маркер: создать новое поле фичи</summary>
+    public const string CreateNewMarker = "__create_new__";
+
+    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter] public PostImageSelectDialogData Content { get; set; } = default!;
+
+    Task CancelAsync() => Dialog.CancelAsync();
+}

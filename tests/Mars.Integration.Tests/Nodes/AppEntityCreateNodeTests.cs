@@ -2,21 +2,22 @@ using System.Text.Json.Nodes;
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Host.Shared.Dto.MetaFields;
-using Mars.Host.Shared.Dto.Posts;
-using Mars.Host.Shared.Dto.PostTypes;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.MetaFields;
+using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
+using Mars.Nodes.Abstractions.HttpModule;
+using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core.Nodes.Network;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Host.Shared.HttpModule;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
-using Mars.WebApp.Nodes.Front.Models.AppEntityForms;
 using Mars.WebApp.Nodes.Host.Builders;
 using Mars.WebApp.Nodes.Host.Nodes;
+using Mars.WebApp.Nodes.Models.AppEntityForms;
 using Mars.WebApp.Nodes.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -89,7 +90,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     [IntegrationFact]
-    public async Task Execute_CreatePostFromFormLiterallyFields_ShouldCreateEntity()
+    public async Task Execute_CreatePostFromFormLiterallyFields_CreatesEntity()
     {
         //Arrange
         _ = nameof(AppEntityCreateNodeImpl.Execute);
@@ -140,7 +141,7 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
     }
 
     [IntegrationFact]
-    public async Task Execute_CreatePostFromFormAsExpressionAndAuto_ShouldCreateEntity()
+    public async Task Execute_CreatePostFromFormAsExpressionAndAuto_CreatesEntity()
     {
         //Arrange
         _ = nameof(AppEntityCreateNodeImpl.Execute);

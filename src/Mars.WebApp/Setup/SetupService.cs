@@ -1,17 +1,12 @@
 using System.Text.Json;
-using Mars.Services;
-using Mars.Shared.Options;
+using Mars.SiteEngine.Contracts.Options;
+using Mars.SiteEngine.Host.Services;
 using Npgsql;
 
 namespace Mars.Setup;
 
 public class SetupService
 {
-    /// <summary>
-    /// Значение выбора фронта в визарде: существующая папка с шаблонами (путь + движок).
-    /// </summary>
-    public const string ExistingFrontChoice = "existing";
-
     // Intermediate data collected during wizard steps
     public string DbHost { get; set; } = "127.0.0.1";
     public int DbPort { get; set; } = 5432;
@@ -25,7 +20,7 @@ public class SetupService
     public string LoggingLevel { get; set; } = "Information";
 
     /// <summary>
-    /// Выбор фронта: имя стартового шаблона (default/landing/...) или <see cref="ExistingFrontChoice"/>.
+    /// Выбор фронта: имя стартового шаблона (default/landing/...) или <see cref="FrontsOption.ExistingFrontChoice"/>.
     /// </summary>
     public string FrontChoice { get; set; } = FrontTemplateService.DefaultTemplateName;
     public string FrontPath { get; set; } = "";

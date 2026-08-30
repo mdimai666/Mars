@@ -1,4 +1,4 @@
-using Mars.Host.Models;
+using Mars.Server.Models;
 
 namespace Mars.UseStartup.MarsParts;
 

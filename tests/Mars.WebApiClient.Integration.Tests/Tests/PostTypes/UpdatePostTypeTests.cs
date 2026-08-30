@@ -1,12 +1,12 @@
 using AutoFixture;
+using FluentAssertions;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Core.Exceptions;
-using Mars.Host.Data.Entities;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.PostTypes;
 using Mars.Test.Common.FixtureCustomizes;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.PostTypes;
 
@@ -32,7 +32,7 @@ public sealed class UpdatePostTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdatePostType_ValidRequest_ShouldSuccess()
+    public async Task UpdatePostType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

@@ -1,6 +1,6 @@
-using Mars.AiChat.Host.Shared.Interfaces;
-using Mars.AiChat.Host.Shared.Models;
-using Mars.AiChat.Shared.Dto;
+using Mars.AiChat.Abstractions.Interfaces;
+using Mars.AiChat.Abstractions.Models;
+using Mars.AiChat.Contracts.Dto;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 

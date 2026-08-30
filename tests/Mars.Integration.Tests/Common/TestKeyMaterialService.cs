@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text.Json;
-using Mars.Host.Shared.Services;
+using Mars.Identity.Abstractions.Services;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mars.Integration.Tests.Common;

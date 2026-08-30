@@ -1,13 +1,12 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Cms.Contracts.NavMenus;
+using Mars.Cms.Host.Controllers;
+using Mars.Contracts.Common;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.NavMenus;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
@@ -38,7 +37,7 @@ public class GetNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetNavMenu_ValidRequest_ShouldSuccess()
+    public async Task GetNavMenu_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.Get);
@@ -93,7 +92,7 @@ public class GetNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListNavMenu_Request_ShouldSuccess()
+    public async Task ListNavMenu_Request_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.List);
@@ -117,7 +116,7 @@ public class GetNavMenuTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task ListNavMenu_SearchRequest_ShouldSuccess()
+    public async Task ListNavMenu_SearchRequest_Succeeds()
     {
         //Arrange
         _ = nameof(NavMenuController.List);

@@ -1,4 +1,4 @@
-using Mars.AiChat.Shared.Dto;
+using Mars.AiChat.Contracts.Dto;
 
 namespace Mars.WebApiClient.Interfaces;
 

@@ -1,10 +1,10 @@
-using Mars.Host.Data.Entities;
+using FluentAssertions;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Users;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Users;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
-using FluentAssertions;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Users;
 
@@ -32,13 +32,13 @@ public class GetUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetUser_ValidRequest_ShouldSuccess()
+    public async void GetUser_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public void GetUser_NotExistEntity_Fail404ShouldReturnNullInsteadException()
+    public void GetUser_NotExistEntity_Fails404ReturnsNull()
     {
         _getTest.GetDetail_NotExistEntity_Fail404ShouldReturnNullInsteadException();
     }
@@ -51,13 +51,13 @@ public class GetUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListUser_ValidRequest_ShouldSuccess()
+    public async void ListUser_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }
 
     [IntegrationFact]
-    public async void ListDetailUser_ValidRequest_ShouldSuccess()
+    public async void ListDetailUser_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -70,7 +70,7 @@ public class GetUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void TableListDetailUser_ValidRequest_ShouldSuccess()
+    public async void TableListDetailUser_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

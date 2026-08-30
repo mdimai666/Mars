@@ -3,13 +3,12 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using AppFront.Shared.Interfaces;
+using Mars.Admin.Framework.Interfaces;
+using Mars.AiChat.Contracts.Dto;
 using Mars.AiChat.Front.Services;
-using Mars.AiChat.Shared.Dto;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 

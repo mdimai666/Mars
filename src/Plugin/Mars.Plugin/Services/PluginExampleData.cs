@@ -1,5 +1,5 @@
 using Mars.Core.Extensions;
-using Mars.Host.Shared.Dto.Plugins;
+using Mars.Plugin.Abstractions.Dto.Plugins;
 
 namespace Mars.Plugin.Services;
 

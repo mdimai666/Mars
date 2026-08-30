@@ -1,17 +1,14 @@
 using System.Text;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
+using Mars.Contracts.Common;
 using Mars.Core.Constants;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Host.Shared.Services;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Common;
-using Mars.Shared.Contracts.Files;
+using Mars.Media.Contracts.Files;
+using Mars.Media.Host.Controllers;
 using Mars.Test.Common.FixtureCustomizes;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.Medias;
@@ -29,7 +26,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreateFolder_ValidRequest_ShouldCreateDbRecordAndPhysicalDirectory()
+    public async Task CreateFolder_ValidRequest_CreatesDbRecordAndPhysicalDirectory()
     {
         //Arrange
         _ = nameof(MediaController.CreateFolder);
@@ -121,7 +118,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task RenameFolder_ShouldMovePhysicalDirectoryAndRewritePaths()
+    public async Task RenameFolder_MovesPhysicalDirectoryAndRewritePaths()
     {
         //Arrange
         _ = nameof(MediaController.RenameFolder);
@@ -155,7 +152,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task MoveFiles_ToAnotherFolder_ShouldMoveFileAndUpdateFolderId()
+    public async Task MoveFiles_ToAnotherFolder_MovesFileAndUpdatesFolderId()
     {
         //Arrange
         _ = nameof(MediaController.MoveFiles);
@@ -185,7 +182,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFolder_EmptyFolder_ShouldDelete()
+    public async Task DeleteFolder_EmptyFolder_Deletes()
     {
         //Arrange
         _ = nameof(MediaController.DeleteFolder);
@@ -204,7 +201,7 @@ public sealed class MediaFolderTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task DeleteFolder_FolderWithFiles_ShouldError466()
+    public async Task DeleteFolder_FolderWithFiles_FailsWithError466()
     {
         //Arrange
         _ = nameof(MediaController.DeleteFolder);

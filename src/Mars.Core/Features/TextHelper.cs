@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 namespace Mars.Core.Features;
 
 public struct BracketPair
@@ -155,7 +150,7 @@ public static class TextHelper
     public static string[] ParseArguments(string text)
     {
         var chain = ParseChainPair(text);
-        List<string> args = new();
+        List<string> args = [];
 
         if (chain.Count() != 1) throw new ArgumentException($"ParseArguments BracketPair must be 1, give {chain.Count()}");
 

@@ -1,8 +1,8 @@
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Dto.Feedbacks;
+using Mars.Cms.Abstractions.Dto.Feedbacks;
+using Mars.Cms.Contracts.Feedbacks;
+using Mars.Data.Entities;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Feedbacks;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.WebApiClient.Integration.Tests.GeneralTestAbstractions;
 
@@ -26,7 +26,7 @@ public sealed class UpdateFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task UpdateFeedback_ValidRequest_ShouldSuccess()
+    public async Task UpdateFeedback_ValidRequest_Succeeds()
     {
         await _updateTest.ValidRequest_ShouldSuccess(req => req with { Type = FeedbackType.BugReport.ToString() });
     }

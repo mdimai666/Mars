@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Nodes.Core.Nodes;
 
 namespace Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
 

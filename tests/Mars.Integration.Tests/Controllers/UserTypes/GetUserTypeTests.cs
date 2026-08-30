@@ -1,12 +1,11 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Services;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.UserTypes;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.UserTypes;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 
@@ -23,7 +22,7 @@ public sealed class GetUserTypeTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task GetUserType_ValidRequest_ShouldSuccess()
+    public async Task GetUserType_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(UserTypeController.Get);

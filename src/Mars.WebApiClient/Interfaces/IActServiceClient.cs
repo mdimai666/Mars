@@ -1,4 +1,4 @@
-using Mars.Shared.Contracts.XActions;
+using Mars.XActions.Contracts;
 
 namespace Mars.WebApiClient.Interfaces;
 

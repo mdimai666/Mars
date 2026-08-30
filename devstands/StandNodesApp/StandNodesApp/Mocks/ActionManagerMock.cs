@@ -1,5 +1,5 @@
-using Mars.Host.Shared.Managers;
-using Mars.Shared.Contracts.XActions;
+using Mars.XActions.Abstractions.Managers;
+using Mars.XActions.Contracts;
 
 namespace StandNodesApp.Mocks;
 
@@ -8,6 +8,11 @@ internal class ActionManagerMock : IActionManager
     public IReadOnlyDictionary<string, XActionCommand> XActions { get; } = new Dictionary<string, XActionCommand>();
 
     public void Add(Action<XActionBuilder> configure)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void AddFrontContexts(string id, params string[] frontContexts)
     {
         //throw new NotImplementedException();
     }

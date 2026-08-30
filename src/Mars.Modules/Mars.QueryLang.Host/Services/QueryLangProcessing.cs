@@ -2,10 +2,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DynamicExpresso;
 using Mars.Core.Features;
-using Mars.Host.Shared.QueryLang.Services;
-using Mars.Host.Shared.Services;
-using Mars.Host.Shared.Templators;
-using Mars.Host.Shared.WebSite.Models;
+using Mars.QueryLang.Services;
+using Mars.SiteEngine.Abstractions.Services;
+using Mars.SiteEngine.Abstractions.Templators;
+using Mars.SiteEngine.Abstractions.WebSite.Models;
 
 namespace Mars.QueryLang.Host.Services;
 
@@ -14,16 +14,16 @@ public class QueryLangProcessing(
     IServiceProvider serviceProvider,
     IQueryLangLinqDatabaseQueryHandler queryLangLinqDatabaseQueryHandler) : IQueryLangProcessing
 {
-    private static readonly Regex regexLinqFunctionDetect = new Regex(@"^\w+\.\w+");
-    private static readonly Regex regexFunctionDetect = new Regex(@"^\w+\(");
+    private static readonly Regex regexLinqFunctionDetect = new(@"^\w+\.\w+");
+    private static readonly Regex regexFunctionDetect = new(@"^\w+\(");
 
     public async Task<Dictionary<string, object?>> Process(
         PageRenderContext pageContext,
         IReadOnlyCollection<KeyValuePair<string, string>> Queries,
-        Dictionary<string, object>? localVaribles,
+        Dictionary<string, object>? localVariables,
         CancellationToken cancellationToken)
     {
-        XInterpreter ppt = new(pageContext, localVaribles);
+        XInterpreter ppt = new(pageContext, localVariables);
 
         var functions = tflocator.Functions;
 
@@ -33,7 +33,7 @@ public class QueryLangProcessing(
         //Action<string> addErr = err => renderContext.PageContext.Errors.Add(err);
         Action<string> addErr = err => { pageContext.Errors.Add(new(err)); };
 
-        Dictionary<string, object?> resultDict = new();
+        Dictionary<string, object?> resultDict = [];
 
         Action<string, object?> addToContext = (string key, object? value) =>
         {
@@ -134,7 +134,7 @@ public class QueryLangProcessing(
         {
 #if DEBUG
 
-            if(ex.GetType() == typeof(TargetInvocationException))
+            if (ex.GetType() == typeof(TargetInvocationException))
             {
                 // Это чтобы при ошибке рефлексии показало ошибку нормально.
                 pageContext.Errors.Add(new($"error on add #context. {ex.InnerException.Message}\n\nReflection error: {ex.Message}", ex.StackTrace));

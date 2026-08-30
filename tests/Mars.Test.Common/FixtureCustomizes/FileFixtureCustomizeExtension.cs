@@ -1,8 +1,9 @@
 using AutoFixture;
-using Mars.Host.Data.Entities;
-using Mars.Host.Data.OwnedTypes.Files;
-using Mars.Host.Shared.Dto.Files;
-using Mars.Options.Models;
+using Mars.Contracts.Dto.Files;
+using Mars.Data.Entities;
+using Mars.Data.OwnedTypes.Files;
+using Mars.Media.Abstractions.Dto.Files;
+using Mars.Media.Contracts.Options;
 using Mars.Test.Common.Constants;
 
 namespace Mars.Test.Common.FixtureCustomizes;

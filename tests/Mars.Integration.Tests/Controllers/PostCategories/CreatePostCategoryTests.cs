@@ -1,16 +1,16 @@
 using AutoFixture;
 using FluentAssertions;
 using Flurl.Http;
-using Mars.Controllers;
-using Mars.Host.Data.Entities;
-using Mars.Host.Repositories;
-using Mars.Host.Shared.Dto.PostCategories;
-using Mars.Host.Shared.Services;
+using Mars.Cms.Abstractions.Dto.PostCategories;
+using Mars.Cms.Abstractions.Services;
+using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostCategories;
+using Mars.Cms.Host.Controllers;
+using Mars.Data.Entities;
+using Mars.Data.Repositories;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
-using Mars.Shared.Contracts.MetaFields;
-using Mars.Shared.Contracts.PostCategories;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.Integration.Tests.Controllers.PostCategories;
 
-/// <seealso cref="Mars.Controllers.PostCategoryController"/>
+/// <seealso cref="Mars.Cms.Host.Controllers.PostCategoryController"/>
 public sealed class CreatePostCategoryTests : ApplicationTests
 {
     const string _apiUrl = "/api/PostCategory";
@@ -45,7 +45,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategory_ValidRequest_ShouldSuccess()
+    public async Task CreatePostCategory_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Create);
@@ -110,7 +110,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategory_ValidateQueryValidator_ShouldFail()
+    public async Task CreatePostCategory_ValidateQueryValidator_Fails()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Create);
@@ -129,7 +129,7 @@ public sealed class CreatePostCategoryTests : ApplicationTests
     }
 
     [IntegrationFact]
-    public async Task CreatePostCategory_CreateChildElement_ShouldValidPath()
+    public async Task CreatePostCategory_CreateChildElement_BuildsValidPath()
     {
         //Arrange
         _ = nameof(PostCategoryRepository.Create);

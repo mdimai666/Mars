@@ -1,4 +1,4 @@
-using Mars.Shared.Contracts.Systems;
+using Mars.Server.Contracts.Systems;
 
 namespace Mars.WebApiClient.Interfaces;
 

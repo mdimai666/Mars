@@ -1,12 +1,13 @@
 using FluentAssertions;
-using Mars.Controllers;
 using Mars.Core.Constants;
 using Mars.Core.Utils;
-using Mars.Host.Data.Entities;
-using Mars.Host.Shared.Services;
+using Mars.Data.Entities;
+using Mars.Identity.Contracts.Auth;
+using Mars.Identity.Host.Controllers;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
-using Mars.Shared.Contracts.Auth;
+using Mars.Options.Abstractions.Services;
+using Mars.Server.Contracts.Options;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_ValidRequest_ShouldSuccess()
+    public async Task Register_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -41,7 +42,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_ValidRequestWhenRegisterDisallowed_ShouldFail()
+    public async Task Register_ValidRequestWhenRegisterDisallowed_Fails()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -59,7 +60,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_BadRequest_ShouldFail()
+    public async Task Register_BadRequest_Fails()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -77,7 +78,7 @@ public class RegisterAccountTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async Task Register_BadRequestEmptyFirstName_ShouldCreateFirstNameFromEmail()
+    public async Task Register_BadRequestEmptyFirstName_CreatesFirstNameFromEmail()
     {
         //Arrange
         _ = nameof(AccountController.RegisterUser);
@@ -110,8 +111,8 @@ public class RegisterAccountTests : BaseWebApiClientTests
     private void SetupSelfRegistration(bool allowUsersSelfRegister)
     {
         var optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        var sys = optionService.SysOption;
+        var sys = optionService.GetOption<SiteSettings>();
         sys.AllowUsersSelfRegister = allowUsersSelfRegister;
-        optionService.SaveOption(optionService.SysOption);
+        optionService.SaveOption(optionService.GetOption<SiteSettings>());
     }
 }

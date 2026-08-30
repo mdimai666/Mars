@@ -1,4 +1,3 @@
-using BenchmarkDotNet.Attributes;
 using Mars.Integration.Tests.Common;
 
 public abstract class BenchmarkBase

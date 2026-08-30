@@ -1,4 +1,4 @@
-﻿timestamp,commit,version,mode,scenario,rps,avg_ms,p95_ms,failed_pct
+timestamp,commit,version,mode,scenario,rps,avg_ms,p95_ms,failed_pct
 2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_static_anon,51079,0.33,1.44,0
 2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_static_auth,3877,5.03,7.62,0
 2026-08-15 23:47:00,3c886a3,0.7.7-alpha.34,full,render_db_anon,1207,16.36,22.34,0

@@ -87,28 +87,6 @@ public class MediaController : ControllerBase
         return _mediaService.DeleteMany(new DeleteManyFileQuery { Ids = ids }, cancellationToken);
     }
 
-    //public async override Task<ActionResult<TotalResponse<FileEntity>>> ListTable([NotNull] QueryFilter filter)
-    //{
-    //    var (user, isAdmin) = await modelService.GetCurrentUserIsAdmin();
-    //    if (isAdmin)
-    //    {
-    //        return await modelService.ListTable(filter, null, s => s.User);
-    //    }
-    //    else if (user is not null)
-    //    {
-    //        return await modelService.ListTable(filter, s => s.UserId == user.Id, s => s.User);
-    //    }
-    //    else
-    //    {
-    //        return new TotalResponse<FileEntity>
-    //        {
-    //            Records = Array.Empty<FileEntity>(),
-    //            Result = ETotalResponeResult.OK,
-    //            TotalCount = 0,
-    //        };
-    //    }
-    //}
-
     [HttpPost("Upload")]
     [RequestSizeLimit(2_147_483_648)]//2GB
     public async Task<ActionResult<FileDetailResponse>> Upload(

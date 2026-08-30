@@ -20,5 +20,5 @@ public class PageRenderContext
 
     public List<PageRenderError> Errors { get; init; } = [];
 
-    public XInterpreter CreateInterpreter(Dictionary<string, object>? localVaribles = null) => new(this, localVaribles);
+    public XInterpreter CreateInterpreter(Dictionary<string, object>? localVariables = null) => new(this, localVariables);
 }

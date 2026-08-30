@@ -40,7 +40,7 @@ public class QueryLangLinqDatabaseQueryHandler : IQueryLangLinqDatabaseQueryHand
 
         var efPropertyName = linqExpression.Trim().Split('.', 2)[0];
 
-        //var ppt = new XInterpreter(pageContext, localVaribles);
+        //var ppt = new XInterpreter(pageContext, localVariables);
         var chains = TextHelper.ParseChainPairKeyValue(linqExpression);
 
         //var resolveResult = _databaseEntityTypeCatalogService.ResolveName(efPropertyName);

@@ -195,7 +195,7 @@
 
 ### Не трогаем
 
-- `ETotalResponeResult` — используется в `QueryLang.Host`/`Media.Host`, но определение в репо не найдено (вероятно, внешний пакет); при углублении проверить.
+- ~~`ETotalResponeResult`~~ — ✅ удалено (2026-08-30): определение в репо не находилось (старый внешний тип); активные использования отсутствовали — вырезана мёртвая ветка `#if !true` в `DefaultEfQueries.cs` и закомментированный блок в `MediaController`; остаток только в галерейном стеке (вне компиляции).
 - `_appsettings.Local.json` — локальная регистрация плагина `ZayavkaHostPlugin`; файл вне git, чистит пользователь сам.
 
 ### Верификация
@@ -437,4 +437,12 @@ MediatR/CQRS-фреймворки; разрезание `MarsDbContext`; лок�
 - Косметика: локальная `sysOptions` → `siteSettings` (`TokenService`, `QueryLangProcessingTests`), комментарии (`MarsSiteTools`, `HeaderAdmin1`).
 - Тесты: имена/вызовы/строки маршрутов — `Mars.Server.Tests` (OptionServiceTests, включая `GetSysOptionFromRepo`), `Mars.SiteEngine.Tests` (`Render_ContextHaveBasicData_HasData` — шаблон и словарь), `Mars.Integration.Tests` и `Mars.WebApiClient.Integration.Tests` (Controllers/Options: имена, `nameof(OptionController.*)`, путь `"SiteSettings"`).
 - Доки: `docs/dev_docs/AppFront/Handlebars/HandlebarsAppFront.md` — таблица контекста (`SiteSettings` + актуальный путь файла); `ai/FeatureIntegrationGuide.md` — убрано упоминание удалённого спецкейса `SysOption`.
-- Верификация: сборка 0 ошибок; `Mars.Server.Tests` OptionServiceTests 9/9; `Mars.SiteEngine.Tests` (RenderEngineRenderTests + QueryLangProcessingTests) 8/8; `Mars.Integration.Tests` (Controllers.Options + лёгкий фронт-набор + GetPageRenderTests) 62/62; `Mars.WebApiClient.Integration.Tests` (Options) 11/11; Docker-регрессия рендера `HandlebarsAppFrontTests` 17/17. Коммит — по команде пользователя.
+- Верификация: сборка 0 ошибок; `Mars.Server.Tests` OptionServiceTests 9/9; `Mars.SiteEngine.Tests` (RenderEngineRenderTests + QueryLangProcessingTests) 8/8; `Mars.Integration.Tests` (Controllers.Options + лёгкий фронт-набор + GetPageRenderTests) 62/62; `Mars.WebApiClient.Integration.Tests` (Options) 11/11; Docker-регрессия рендера `HandlebarsAppFrontTests` 17/17. ✅ Коммит `7fd1d24`.
+
+**QueryLang — чистка мёртвого кода (2026-08-30).** Решение пользователя: контрактный проект остаётся **`Mars.QueryLang` без суффикса `.Abstractions`** (в отличие от Cms/Identity/Media и др.).
+- Удалены мёртвые файлы `Mars.QueryLang.Host` (0 внешних ссылок по всему репо): `DefaultEfQueries.cs` (stub из `NotImplementedException`, предок `EfStringQuery`; вместе с ним ушли остатки `ETotalResponeResult`/`TotalResponse` из мёртвой ветки `#if !true`), `IQueryChainFilter.cs` (эксперимент `QueryBase`/`QueryChainFilter<T>`/`QueryGetter`/`QWhere`/`RegisterFilter` — ссылки только внутри файла), `SqlQueryObjectMappingExtensions.cs` (сниппет `SqlQuery<T>` с захардкоженным Npgsql).
+- Закомментированный блок `ListTable` с `ETotalResponeResult` убран из `MediaController`.
+- Опечатка `localVaribles` → `localVariables`: параметр `IQueryLangProcessing.Process` + реализация `QueryLangProcessing`, комментарий в `QueryLangLinqDatabaseQueryHandler`, параметр `PageRenderContext.CreateInterpreter`. Вызовы позиционные — правка только именований.
+- Живое ядро модуля не тронуто: `IQueryLangProcessing`/`QueryLangProcessing` (`$context` рендера), `IQueryLangLinqDatabaseQueryHandler`/`EfStringQuery<T>`, `IQueryLangHelperAvailableMethodsProvider`, `IDefaultEfQueries<T>`/`IDynamicEfQuery`, `MyThrowHelper`.
+- Открытый кандидат на будущую чистку: семейство опечатки `Varibles` (33 вхождения) — свойство `PageRenderContext.TemplateContextVaribles`, интерфейс `ITemplateContextVariblesFiller` + 4 реализации, надпись «global Varibles» в `NodeEditor1.razor`, `VarNode.md`.
+- Верификация: сборка 0 ошибок; `Mars.SiteEngine.Tests` (QueryLangProcessingTests + RenderEngineRenderTests) 8/8; Docker-регрессия рендера `HandlebarsAppFrontTests` 17/17.

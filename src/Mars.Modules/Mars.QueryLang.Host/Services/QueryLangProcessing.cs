@@ -20,10 +20,10 @@ public class QueryLangProcessing(
     public async Task<Dictionary<string, object?>> Process(
         PageRenderContext pageContext,
         IReadOnlyCollection<KeyValuePair<string, string>> Queries,
-        Dictionary<string, object>? localVaribles,
+        Dictionary<string, object>? localVariables,
         CancellationToken cancellationToken)
     {
-        XInterpreter ppt = new(pageContext, localVaribles);
+        XInterpreter ppt = new(pageContext, localVariables);
 
         var functions = tflocator.Functions;
 

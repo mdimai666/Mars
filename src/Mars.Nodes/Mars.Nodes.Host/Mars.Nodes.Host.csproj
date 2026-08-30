@@ -6,7 +6,6 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" />
-        <PackageReference Include="System.Text.Encoding.CodePages" />
         <PackageReference Include="Quartz" />
     </ItemGroup>
 

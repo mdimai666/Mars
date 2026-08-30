@@ -52,13 +52,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Duende.IdentityServer" />
-        <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" />
+        <!-- Roslyn-пин: без прямых ссылок EFCore.Design даёт конфликт CodeAnalysis 5.0.0/5.3.0 (NU1107) -->
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-        <!--<PackageReference Include="Microsoft.AspNetCore.Identity.UI" -> -->
-        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -77,13 +82,6 @@
         <PackageReference Include="OpenTelemetry.Resources.Container" />
         <PackageReference Include="OpenTelemetry.Resources.Host" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
-        <PackageReference Include="Humanizer" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Common" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
-        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
-        <PackageReference Include="System.Security.Cryptography.Pkcs" />
     </ItemGroup>
 
     <ItemGroup>

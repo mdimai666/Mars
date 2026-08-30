@@ -5,10 +5,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Text.Encoding.CodePages" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\..\Server\Mars.Data\Mars.Data.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.CommandLine.Abstractions\Mars.CommandLine.Abstractions.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core.Implements\Mars.Nodes.Core.Implements.csproj" />

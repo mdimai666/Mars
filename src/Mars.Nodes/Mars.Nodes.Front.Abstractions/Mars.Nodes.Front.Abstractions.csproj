@@ -40,7 +40,6 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
-        <PackageReference Include="Flurl.Http" />
         <PackageReference Include="Toolbelt.Blazor.HotKeys2" />
     </ItemGroup>
 

@@ -5,7 +5,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AutoFixture" />
-        <PackageReference Include="AutoFixture.AutoNSubstitute" />
         <PackageReference Include="AutoFixture.SeedExtensions" />
         <PackageReference Include="Bogus" />
         <PackageReference Include="FluentAssertions" />

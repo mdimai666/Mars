@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <PackageReference Include="dotless.Core" />
+        <!-- Пин: без него транзитивно подтягивается уязвимый System.Drawing.Common 4.5.0 (NU1904) -->
         <PackageReference Include="System.Drawing.Common" />
     </ItemGroup>
 

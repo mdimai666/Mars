@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <!--Project-->
@@ -44,7 +44,6 @@
     <ItemGroup>
         <Using Include="System" />
     </ItemGroup>
-
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />

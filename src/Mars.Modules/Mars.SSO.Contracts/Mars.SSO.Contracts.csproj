@@ -1,11 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Mars.Identity.Contracts\Mars.Identity.Contracts.csproj" />
     </ItemGroup>
 

@@ -13,12 +13,25 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 
 ## Key Directories
 
-- `src/Mars.WebApp` — main application
+- `src/Mars.WebApp` — composition root (main application)
+- `src/Server` — core `Mars.Server` and data `Mars.Data*`
+- `src/Mars.Modules` — platform modules (flat on disk, virtual folders in `Mars.slnx`)
 - `src/Mars.Nodes` — visual programming engine
-- `src/AppAdmin` — admin panel (Blazor WASM)
+- `src/Admin` — admin panel libraries; `src/Mars.Admin` — admin WASM app
 - `src/Plugin` — plugin system
 - `docs/` — documentation site
 - `ai/` — AI agent context files
+
+## Структура решения и правила агентам
+
+Карта решения, конвенция суффиксов (`.Contracts`/`.Abstractions`/`.Host`/`.Front`), правила
+направленности и добавления модулей — в `ai/ProjectStructureGuide.md`.
+
+Правила:
+- Определи, какой модуль владеет задачей, и работай в его пределах (модуль + его тесты); не сканируй весь проект без необходимости.
+- Старых имён (`Mars.Host*`, `Mars.Shared`, `AppFront.*`, `AppAdmin`) в репо больше нет — они только в дореструктуризационных доках.
+- Новые проекты модулей — плоско в `src/Mars.Modules/<ИмяПроекта>/`; группировка только виртуальными папками `Mars.slnx`.
+- Проверка точечная: `dotnet build Mars.slnx` + тесты затронутых областей.
 
 ## Build & Test
 

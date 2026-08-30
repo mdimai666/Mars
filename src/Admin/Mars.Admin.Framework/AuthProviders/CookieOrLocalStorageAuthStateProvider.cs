@@ -32,7 +32,7 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
         if (string.IsNullOrEmpty(token))
             return new AuthenticationState(_anonymous);
 
-        if (Q.Site.InitailUserPrimaryInfo is null)
+        if (Q.Site.InitialUserPrimaryInfo is null)
             return new AuthenticationState(_anonymous);
 
         // Настроим HTTP заголовок
@@ -183,15 +183,15 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
 
     private void EnrichUserClaims(ClaimsPrincipal principal)
     {
-        if (Q.Site.InitailUserPrimaryInfo is null) return;
+        if (Q.Site.InitialUserPrimaryInfo is null) return;
 
         var marsIdentity = new ClaimsIdentity([
-            new (ClaimTypes.NameIdentifier, Q.Site.InitailUserPrimaryInfo.Id.ToString()),
-            new (ClaimTypes.Email, Q.Site.InitailUserPrimaryInfo.Email??""),
-            new (ClaimTypes.GivenName, Q.Site.InitailUserPrimaryInfo.FirstName),
-            new (ClaimTypes.Surname, Q.Site.InitailUserPrimaryInfo.LastName),
+            new (ClaimTypes.NameIdentifier, Q.Site.InitialUserPrimaryInfo.Id.ToString()),
+            new (ClaimTypes.Email, Q.Site.InitialUserPrimaryInfo.Email??""),
+            new (ClaimTypes.GivenName, Q.Site.InitialUserPrimaryInfo.FirstName),
+            new (ClaimTypes.Surname, Q.Site.InitialUserPrimaryInfo.LastName),
         ]);
-        foreach (var role in Q.Site.InitailUserPrimaryInfo.Roles)
+        foreach (var role in Q.Site.InitialUserPrimaryInfo.Roles)
         {
             marsIdentity.AddClaim(new Claim(ClaimTypes.Role, role));
         }
@@ -200,7 +200,7 @@ public class CookieOrLocalStorageAuthStateProvider : AuthenticationStateProvider
 
     private void UpdateQUserDataFromJwt()
     {
-        if (Q.Site.InitailUserPrimaryInfo != null && Q.User.Id == Guid.Empty)
-            Q.UpdateUserByInitailVM(Q.Site.InitailUserPrimaryInfo, null);
+        if (Q.Site.InitialUserPrimaryInfo != null && Q.User.Id == Guid.Empty)
+            Q.UpdateUserByInitialVM(Q.Site.InitialUserPrimaryInfo, null);
     }
 }

@@ -4,7 +4,6 @@ using Mars.Core.Exceptions;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Mars.SiteEngine.Abstractions.Constants.Website;
-using Mars.SiteEngine.Abstractions.Mappings.WebSiteParts;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Abstractions.WebSite;
@@ -41,67 +40,6 @@ public class FrontController : ControllerBase
         _frontFilesService = frontFilesService;
         _renderEngineLocator = renderEngineLocator;
         _optionService = optionService;
-    }
-
-    MarsAppFront FirstApp() => _renderEngineLocator.GetAppFrontForUrl("/")
-        ?? throw new NotFoundException("Default front not found");
-
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public FMarsAppFrontTemplateMinimumResponse FrontMinimal()
-    {
-        var app = FirstApp();
-        var ts = app.Features.Get<IWebTemplateService>();
-
-        return ts.Template.ToMinimumResponse();
-    }
-
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public FMarsAppFrontTemplateSummaryResponse FrontFiles()
-    {
-        var app = FirstApp();
-        var ts = app.Features.Get<IWebTemplateService>();
-
-        return ts.Template.ToSummaryResponse();
-    }
-
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public FrontSummaryInfoResponse FrontSummaryInfo()
-    {
-        var app = FirstApp();
-        var ts = app.Features.Get<IWebTemplateService>();
-
-        return new FrontSummaryInfoResponse
-        {
-            EngineId = app.Front?.EngineId ?? "",
-            PagesCount = ts.Template.Pages.Count,
-            PartsCount = ts.Template.Parts.Count,
-        };
-    }
-
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesErrorResponseType(typeof(void))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public FWebPartResponse? GetPart(string fileRelPath)
-    {
-        var app = FirstApp();
-        var ts = app.Features.Get<IWebTemplateService>();
-
-        var page = ts.Template.Pages.FirstOrDefault(x => x.FileRelPath == fileRelPath);
-
-        if (page != null)
-        {
-            return page.ToPartResponse();
-        }
-
-        var part = ts.Template.Parts.FirstOrDefault(x => x.FileRelPath == fileRelPath);
-
-        if (part == null) throw new NotFoundException();
-
-        return part.ToResponse();
     }
 
     [HttpGet]

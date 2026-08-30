@@ -11,7 +11,7 @@ public partial class FeedbackListPage
     [Inject] IMarsWebApiClient client { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
-    [Inject] AppFrontJs _appjs { get; set; } = default!;
+    [Inject] AdminJs _appjs { get; set; } = default!;
 
     FluentDataGrid<FeedbackSummaryResponse> table = default!;
     string _searchText = "";

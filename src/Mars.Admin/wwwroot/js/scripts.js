@@ -2,7 +2,7 @@ window.d_onPageLoad = function () {
     //console.log('d_onPageLoad');
 }
 
-window.BeauityJsonInSelector = function (selector, value) {
+window.BeautyJsonInSelector = function (selector, value) {
     setTimeout(() => {
         const div = document.querySelector(selector);
         if (!div) return;
@@ -10,12 +10,12 @@ window.BeauityJsonInSelector = function (selector, value) {
         const content = value || div.innerHTML;
         div.innerHTML = '';
         const pre = document.createElement('pre');
-        pre.innerHTML = beauityJSON(content);
+        pre.innerHTML = beautyJSON(content);
         div.appendChild(pre);
     }, 10);
 }
 
-function beauityJSON(data) {
+function beautyJSON(data) {
     if (!data) return '';
 
     // Parse if input is string
@@ -216,13 +216,6 @@ function set_theme_darklight(setdark) {
         document.body.classList.remove('dark')
         docCookies.setItem('dark', false)
     }
-}
-
-function NavFromJs(url) {
-    DotNet.invokeMethodAsync('AppFront', 'NavFromJs', url)
-        .then(data => {
-            //console.log(data);
-        });
 }
 
 function MyJS_Cookie_Remove(key) {

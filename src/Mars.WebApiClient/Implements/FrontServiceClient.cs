@@ -12,21 +12,6 @@ internal class FrontServiceClient : BasicServiceClient, IFrontServiceClient
         _controllerName = "Front";
     }
 
-    public Task<FMarsAppFrontTemplateMinimumResponse> FrontMinimal()
-        => _client.Request($"{_basePath}{_controllerName}", "FrontMinimal")
-                    .GetJsonAsync<FMarsAppFrontTemplateMinimumResponse>();
-    public Task<FMarsAppFrontTemplateSummaryResponse> FrontFiles()
-        => _client.Request($"{_basePath}{_controllerName}", "FrontFiles")
-                    .GetJsonAsync<FMarsAppFrontTemplateSummaryResponse>();
-    public Task<FrontSummaryInfoResponse> FrontSummaryInfo()
-        => _client.Request($"{_basePath}{_controllerName}", "FrontSummaryInfo")
-                    .GetJsonAsync<FrontSummaryInfoResponse>();
-    public Task<FWebPartResponse?> GetPart(string fileRelPath)
-        => _client.Request($"{_basePath}{_controllerName}", "GetPart")
-                    .AppendQueryParam(new { fileRelPath })
-                    .OnError(OnStatus404ReturnNull)
-                    .GetJsonAsync<FWebPartResponse?>();
-
     public Task<IReadOnlyCollection<FFrontEngineResponse>> Engines()
         => _client.Request($"{_basePath}{_controllerName}", "Engines")
                     .GetJsonAsync<IReadOnlyCollection<FFrontEngineResponse>>();

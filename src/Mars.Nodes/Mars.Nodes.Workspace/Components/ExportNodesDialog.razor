@@ -53,7 +53,7 @@
 
     INodeEditorApi _editor => NodeEditor1.Instance!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
-    [Inject] AppFrontJs _appjs { get; set; } = default!;
+    [Inject] AdminJs _appjs { get; set; } = default!;
 
     string _json = "";
     ExportNodesScope _scope;

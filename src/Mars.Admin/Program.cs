@@ -61,7 +61,6 @@ builder.Services.AddScoped<Mars.Admin.Shared.ActionCenter.RecentPagesService>();
 builder.Services.AddScoped<Mars.Admin.Framework.Services.IFrontActionRunner, Mars.Admin.Shared.FrontDemoActionRunner>();
 #endif
 
-Q.WorkDir = "C:\\Users\\D\\Documents\\VisualStudio\\2025\\Mars\\src\\";
 Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
 ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);

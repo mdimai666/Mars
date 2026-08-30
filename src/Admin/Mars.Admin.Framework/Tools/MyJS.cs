@@ -11,9 +11,9 @@ namespace Mars.Admin.Framework.Tools
             this.js = js;
         }
 
-        public async ValueTask BeauityJsonInSelector(string selector, string? value = null)
+        public async ValueTask BeautyJsonInSelector(string selector, string? value = null)
         {
-            await js.InvokeVoidAsync("BeauityJsonInSelector", selector, value);
+            await js.InvokeVoidAsync("BeautyJsonInSelector", selector, value);
         }
 
         public void Dispose()

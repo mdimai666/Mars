@@ -39,7 +39,7 @@
         try
         {
             jsonString = JsonSerializer.Serialize(_model);
-            await myJS.BeauityJsonInSelector($"#{id} .json", jsonString);
+            await myJS.BeautyJsonInSelector($"#{id} .json", jsonString);
         }
         catch (System.Exception ex)
         {

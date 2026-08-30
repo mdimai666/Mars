@@ -12,7 +12,6 @@ public static class Q
 {
     public static string BackendUrl = "";
     public static Type Program = default!;
-    public static string WorkDir = default!;
 
     public static Emitter Root = new();
 
@@ -60,9 +59,8 @@ public static class Q
         _user = new UserFromClaims(ssoUserInfo); //Тут проблема что токен имеен другие клеймы
     }
 
-    public static void UpdateUserByInitailVM(UserPrimaryInfo userPrimaryInfo, string? externalId)
+    public static void UpdateUserByInitialVM(UserPrimaryInfo userPrimaryInfo, string? externalId)
     {
-        //Console.WriteLine(">UpdateUserByInitailVM");
         _user = new UserFromClaims(userPrimaryInfo, externalId);
     }
 

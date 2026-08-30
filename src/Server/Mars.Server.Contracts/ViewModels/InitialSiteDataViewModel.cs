@@ -10,6 +10,11 @@ namespace Mars.Server.Contracts.ViewModels;
 public class InitialSiteDataViewModel
 {
     public required SiteSettings SiteSettings { get; init; }
+
+    /// <summary>
+    /// Рабочая директория серверного процесса (для дев-инструментов админки вида «открыть исходник в IDE»).
+    /// </summary>
+    public string ServerWorkDirectory { get; init; } = "";
     public required UserPrimaryInfo? UserPrimaryInfo { get; init; }
     public required IReadOnlyCollection<PostTypeAdminPanelItemResponse> PostTypes { get; init; }
     public required IReadOnlyCollection<NavMenuDetailResponse> NavMenus { get; init; }

@@ -3,15 +3,15 @@ using Microsoft.JSInterop;
 
 namespace Mars.Admin.Framework;
 
-public class AppFrontJs : IAsyncDisposable
+public class AdminJs : IAsyncDisposable
 {
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
     private readonly IJSRuntime _js;
 
-    public AppFrontJs(IJSRuntime jsRuntime)
+    public AdminJs(IJSRuntime jsRuntime)
     {
         moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/mdimai666.Mars.Admin.Framework/AppFront.SharedJsInterop.js").AsTask());
+            "import", "./_content/mdimai666.Mars.Admin.Framework/AdminJsInterop.js").AsTask());
         _js = jsRuntime;
     }
 

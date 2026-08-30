@@ -1,10 +1,10 @@
-@page "/builder/styler"
+@page "/builder/styledesigner"
 @using Mars.Admin.Contracts.Options
 @using Mars.Options.Contracts.Dto.Options;
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.Text.Json
 
-<ContentWrapper Title="Styler">
+<ContentWrapper Title="Style Designer">
     <div class="row">
         <div class="col-9">
             <div class="me-4">
@@ -41,7 +41,7 @@
                                 <FluentButton Loading="@true" Appearance="Appearance.Accent">Loading</FluentButton>
                             </FluentStack>
 
-                            <FormFieldsSample />
+                            <StyleSampleForm />
 
                             <h4>Card</h4>
 

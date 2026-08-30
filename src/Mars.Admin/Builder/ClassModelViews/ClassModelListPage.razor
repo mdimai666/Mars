@@ -102,7 +102,7 @@
     void OpenModelFile(ModelInfo model)
     {
 
-        string path = Q.WorkDir;
+        string path = Q.Site.ServerWorkDirectory;
 
         string ff = Path.GetFullPath(Path.Combine(path, model.SourceFilePath));
 

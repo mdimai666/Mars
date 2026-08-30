@@ -120,12 +120,6 @@ public static class MainCms
         });
 
         actionManager.Add(a => a
-            .Id("Mars.Admin.Posts.page.TemplateViewer")
-            .Label("View static template")
-            .Category("Контент")
-            .Link("template/view"));
-
-        actionManager.Add(a => a
             .Id("Feedback.DownloadExcelList")
             .Label(AppRes.DownloadExcel)
             .Category("Обратная связь")

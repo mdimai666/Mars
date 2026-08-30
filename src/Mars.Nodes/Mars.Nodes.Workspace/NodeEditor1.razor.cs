@@ -38,7 +38,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
     [Inject] INodesLocator _nodesLocator { get; set; } = default!;
     [Inject] EditorActionLocator _edittorActionLocator { get; set; } = default!;
     [Inject(Key = typeof(NodeJsonConverter))] JsonSerializerOptions _jsonSerializerOptions { get; set; } = default!;
-    [Inject] AppFrontJs _appFrontJs { get; set; } = default!;
+    [Inject] AdminJs _adminJs { get; set; } = default!;
     [Inject] NodeWorkspaceJsInterop _js { get; set; } = default!;
     [Inject] INodeFormsLocator _nodeFormsLocator { get; set; } = default!;
 
@@ -147,7 +147,7 @@ public partial class NodeEditor1 : ComponentBase, IAsyncDisposable, INodeEditorA
 
         NodesJsonSerializerOptionsFormatted = _nodesLocator.CreateJsonSerializerOptions(writeIndented: true);
 
-        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _appFrontJs);
+        _actionManager = new EditorActionManager(this, _serviceProvider, _hotKeysContext, _edittorActionLocator, _adminJs);
         _actionManager.PropertyChanged += (_, __) => InvokeAsync(OnChildComponentPropertyChangedRepaint);
 
         RegisteredNodes = _nodesLocator.RegisteredNodes();

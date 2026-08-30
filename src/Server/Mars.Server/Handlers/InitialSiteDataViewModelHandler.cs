@@ -6,6 +6,7 @@ using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Options.Abstractions.Mappings;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Handlers;
+using Mars.Server.Abstractions.Startup;
 using Mars.Server.Contracts.Options;
 using Mars.Server.Contracts.ViewModels;
 using Mars.XActions.Abstractions.Managers;
@@ -17,7 +18,8 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
                                             INavMenuService navMenuService,
                                             IMetaModelTypesLocator metaModelTypesLocator,
                                             IRequestContext requestContext,
-                                            IActionManager actionManager)
+                                            IActionManager actionManager,
+                                            IMarsStartupInfo startupInfo)
     : IInitialSiteDataViewModelHandler
 {
     public Task<InitialSiteDataViewModel> Handle(HttpRequest httpRequest, bool devAdminPageData, CancellationToken cancellationToken)
@@ -35,6 +37,7 @@ public class InitialSiteDataViewModelHandler(IOptionService optionService,
         return Task.FromResult(new InitialSiteDataViewModel
         {
             SiteSettings = optionService.GetOption<SiteSettings>(),
+            ServerWorkDirectory = startupInfo.StartWorkDirectory,
             UserPrimaryInfo = userPrimaryInfo,
             PostTypes = postTypes,
             NavMenus = menus.Select(NavMenuMapping.ToResponse).ToList(),

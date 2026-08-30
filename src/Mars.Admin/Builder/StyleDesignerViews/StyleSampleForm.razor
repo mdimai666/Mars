@@ -1,0 +1,81 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<h4>Entry Form</h4>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit" FormName="style_sample_form" novalidate>
+    <DataAnnotationsValidator />
+    <FluentValidationSummary />
+
+    <AntiforgeryToken />
+
+    <FluentStack Orientation="Orientation.Vertical">
+        <div>
+            <FluentTextField Name="name" @bind-Value="model.Name" Label="Name" Required />
+            <FluentValidationMessage For="@(() => model.Name)" />
+        </div>
+        <div>
+            <FluentTextArea Name="description" Rows=5 Cols=60 @bind-Value="model.Description" Label="Description (optional)" />
+        </div>
+        <div>
+            <FluentAutocomplete TOption="StyleSampleOption"
+                                AutoComplete="off"
+                                Label="Select options"
+                                Width="250px"
+                                Placeholder="Select options"
+                                OnOptionsSearch="@OnSearchAsync"
+                                MaximumSelectedOptions="3"
+                                OptionText="@(item => item.Name)"
+                                @bind-SelectedOptions="@SelectedItems" />
+        </div>
+        <div>
+            <FluentSelect name="category" Id="category" @bind-Value="model.Category" TOption="string" Required Label="Category">
+                <FluentOption Value="">Select category ...</FluentOption>
+                <FluentOption Value="Option A">Option A</FluentOption>
+                <FluentOption Value="Option B">Option B</FluentOption>
+                <FluentOption Value="Option C">Option C</FluentOption>
+            </FluentSelect>
+            <FluentValidationMessage For="@(() => model.Category)" />
+        </div>
+        <div>
+            <FluentNumberField Name="amount" @bind-Value="model.Amount" Label="Amount" Required />
+            <FluentValidationMessage For="@(() => model.Amount)" />
+        </div>
+        <div>
+            <FluentCheckbox Name="approved" @bind-Value="model.Approved" Required Label="Approved" />
+            <FluentValidationMessage For="@(() => model.Approved)" />
+        </div>
+        <div>
+            <FluentDatePicker Name="date" Id="date" @bind-Value="model.Date" Label="Date" Required />
+            <FluentValidationMessage For="@(() => model.Date)" />
+        </div>
+        <div>
+            <FluentSwitch Name="enabled" @bind-value="model.Enabled" Label="Enabled" CheckedMessage="On" UncheckedMessage="Off" />
+            <FluentValidationMessage For="@(() => model.Enabled)" />
+        </div>
+        <FluentButton Type="Microsoft.FluentUI.AspNetCore.Components.ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+    </FluentStack>
+</EditForm>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        model.Date = DateTime.Now;
+    }
+
+    IEnumerable<StyleSampleOption> SelectedItems = Array.Empty<StyleSampleOption>();
+
+    private void OnSearchAsync(OptionsSearchEventArgs<StyleSampleOption> e)
+    {
+        var allItems = StyleSampleOption.Items();
+        e.Items = allItems.Where(i => i.Name.StartsWith(e.Text, StringComparison.OrdinalIgnoreCase))
+                          .OrderBy(i => i.Name);
+    }
+
+    private StyleSampleModel model { get; set; } = new();
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("HandleValidSubmit called");
+    }
+}

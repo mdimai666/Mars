@@ -1,6 +1,5 @@
 @page "/Post"
 @page "/Post/{POSTTYPE}"
-@using Mars.Admin.Pages.PageViews
 @inject IStringLocalizer<AppRes> L
 @inject Mars.Admin.Framework.Services.IActAppService actApp
 @attribute [Authorize(Roles = "Admin")]
@@ -14,16 +13,6 @@
     </SectionActions>
     <ChildContent>
 
-        @if (postType?.Presentation.ListViewTemplate == null)
-        {
-            @if (POSTTYPE == "page")
-            {
-                <div class="p-2 d-flex position-relative">
-                    <AppFrontInfoBadge />
-                    <a href="template/view" class="stretched-link"></a>
-                </div>
-            }
-        }
         @if (POSTTYPE == "NONE-gallery")
         {
             <div>

@@ -39,17 +39,6 @@
         <None Include="..\Mars.WebApp\wwwroot\mars\vendor\bootstrap\bootstrap5.min.css" Link="wwwroot\css\bootstrap5.min.css" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Content Remove="Pages\UserViews\AdminEditUserPage.razor" />
-        <Content Remove="Pages\UserViews\EditUserFieldsPage.razor" />
-        <Content Remove="Pages\UserViews\ViewUserPage.razor" />
-        <Content Remove="Pages\PostsViews\SpecialViews\**" />
-        <Compile Remove="Pages\PostsViews\SpecialViews\**" />
-        <EmbeddedResource Remove="Pages\PostsViews\SpecialViews\**" />
-        <None Remove="Pages\PostsViews\SpecialViews\**" />
-        <Compile Remove="Pages\UserViews\AdminEditUserPage.razor.cs" />
-    </ItemGroup>
-
     <PropertyGroup>
         <NoWarn>BL0007</NoWarn>
     </PropertyGroup>

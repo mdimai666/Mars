@@ -19,7 +19,7 @@ public static class MainAdminFramework
 {
     public static void AddMarsAdminFramework(this IServiceCollection services, IConfiguration configuration, Type program)
     {
-        services.AddAppFront(configuration, program);
+        services.AddWasmServices(configuration, program);
         services.AddFluentUIComponents();
 
         services.AddSingleton<IOptionsFormsLocator, OptionsFormsLocator>();
@@ -52,7 +52,7 @@ public static class MainAdminFramework
     }
 
     /// <summary>
-    /// Серверные регистрации: двойники регистраций из <see cref="AddAppFront"/>,
+    /// Серверные регистрации: двойники регистраций из <see cref="AddWasmServices"/>,
     /// который на сервере не выполняется (ранний выход по !IsBrowser()).
     /// </summary>
     public static IServiceCollection AddAdminFrameworkServerServices(this IServiceCollection services)
@@ -63,7 +63,7 @@ public static class MainAdminFramework
         return services;
     }
 
-    public static void AddAppFront(this IServiceCollection services, IConfiguration configuration, Type program)
+    static void AddWasmServices(this IServiceCollection services, IConfiguration configuration, Type program)
     {
         if (!OperatingSystem.IsBrowser()) return;
 
@@ -87,7 +87,7 @@ public static class MainAdminFramework
         services.ConfigureLocalizer();
 
         services.TryAddScoped<ViewModelService>();
-        services.TryAddScoped<AppFrontJs>();
+        services.TryAddScoped<AdminJs>();
 
         services.TryAddSingleton<ModelInfoService>();
         services.TryAddSingleton<IBlazorPagesService, BlazorPagesService>();

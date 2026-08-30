@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 
 namespace Mars.Admin.Startups;
 
-public static class StrartupSafeModeHelper
+public static class StartupSafeModeHelper
 {
     public static ValueTask<string> ReadUrlFromBuilder(this WebAssemblyHostBuilder builder)
     {

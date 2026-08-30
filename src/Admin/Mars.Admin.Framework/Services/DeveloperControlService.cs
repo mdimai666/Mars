@@ -65,7 +65,7 @@ public class DeveloperControlService
         }
         else
         {
-            target = Q.HostingInfo.NormalizedPathJoin(Q.WorkDir, prependPath, filename);
+            target = Q.HostingInfo.NormalizedPathJoin(Q.Site.ServerWorkDirectory, prependPath, filename);
         }
 
         _ = js.OpenNewTab($"vs2026://{target}");

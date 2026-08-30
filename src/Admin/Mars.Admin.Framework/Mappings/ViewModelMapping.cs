@@ -9,7 +9,8 @@ public static class ViewModelMapping
         => new()
         {
             SiteSettings = vm.SiteSettings,
-            InitailUserPrimaryInfo = vm.UserPrimaryInfo,
+            ServerWorkDirectory = vm.ServerWorkDirectory,
+            InitialUserPrimaryInfo = vm.UserPrimaryInfo,
             Options = vm.Options.ToList(),
             NavMenus = vm.NavMenus.ToList(),
             PostTypes = vm.PostTypes.ToList(),

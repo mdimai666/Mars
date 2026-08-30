@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
+namespace Mars.SiteEngine.Integration.Tests.HandlebarsEngine;
 
 public class HandlebarsAppFrontApplicationFixture : ApplicationFixture
 {

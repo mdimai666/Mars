@@ -7,7 +7,7 @@ using Mars.Cms.Host.Services;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class MetaValuesValidatorTests
 {

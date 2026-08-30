@@ -4,7 +4,7 @@ using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Contracts.MetaFields;
 
-namespace Test.Mars.Server.Dto;
+namespace Mars.Server.Tests.Dto;
 
 public class PostTypeFeatureFieldsTests
 {

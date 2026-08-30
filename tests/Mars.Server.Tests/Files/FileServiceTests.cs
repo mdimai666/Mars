@@ -12,7 +12,7 @@ using Mars.Server.Abstractions.Validators;
 using Mars.Test.Common.Constants;
 using NSubstitute;
 
-namespace Test.Mars.Server.Files;
+namespace Mars.Server.Tests.Files;
 
 public class FileServiceTests
 {

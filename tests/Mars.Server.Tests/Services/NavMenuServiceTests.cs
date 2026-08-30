@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class NavMenuServiceTests
 {

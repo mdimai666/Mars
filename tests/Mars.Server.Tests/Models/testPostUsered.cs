@@ -1,6 +1,6 @@
 using Mars.Data.Entities;
 
-namespace Test.Mars.Server.Models;
+namespace Mars.Server.Tests.Models;
 
 public class testPostUsered : testPost
 {

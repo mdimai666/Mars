@@ -1,4 +1,4 @@
-namespace Mars.AppFrontEngines.Integration.Tests.Common;
+namespace Mars.SiteEngine.Integration.Tests.Common;
 
 public interface IDefaultRenderEngineTests
 {

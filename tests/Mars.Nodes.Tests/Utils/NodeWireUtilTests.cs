@@ -3,7 +3,7 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Workspace.EditorParts;
 
-namespace Mars.Nodes.Implements.Test.Utils;
+namespace Mars.Nodes.Tests.Utils;
 
 public class NodeWireUtilTests
 {

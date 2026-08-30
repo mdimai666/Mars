@@ -4,7 +4,7 @@ using Mars.Core.Attributes;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Locators;
 
-namespace Mars.Nodes.Implements.Test.Docs;
+namespace Mars.Nodes.Tests.Docs;
 
 public class NodesDocTests
 {

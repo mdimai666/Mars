@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 
-namespace Test.Mars.Server.Files;
+namespace Mars.Server.Tests.Files;
 
 /// <summary>
 /// https://source.dot.net/#Microsoft.AspNetCore.Components.WebView.Test/StaticContentProviderTests.cs,44

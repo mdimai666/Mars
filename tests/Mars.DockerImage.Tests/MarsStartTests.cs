@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.DockerContainer.Tests.Fixtures;
+using Mars.DockerImage.Tests.Fixtures;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.DockerContainer.Tests;
+namespace Mars.DockerImage.Tests;
 
 public class MarsStartTests : IClassFixture<MarsFixture>
 {

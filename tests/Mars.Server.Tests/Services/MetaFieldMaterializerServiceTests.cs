@@ -15,10 +15,9 @@ using Mars.Media.Abstractions.Repositories;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class MetaFieldMaterializerServiceTests
 {

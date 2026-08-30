@@ -7,7 +7,7 @@ using Mars.Cms.Abstractions.Utils;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Test.Common.FixtureCustomizes;
 
-namespace Test.Mars.Server.Utils;
+namespace Mars.Server.Tests.Utils;
 
 public class MetaFieldUtilsTests
 {

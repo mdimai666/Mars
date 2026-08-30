@@ -2,7 +2,7 @@ using System.Text.Json;
 using FluentAssertions;
 using Mars.Contracts.Models;
 
-namespace Test.Mars.Server.Models;
+namespace Mars.Server.Tests.Models;
 
 public class SourceUriTests
 {

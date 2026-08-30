@@ -1,6 +1,6 @@
 using Mars.Core.Utils;
 
-namespace Test.Mars.Core;
+namespace Mars.Core.Tests;
 
 public class DiffListTests
 {

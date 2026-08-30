@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Mars.Server;
+namespace Mars.Server.Startup;
 
 public static class MarsSwagger
 {

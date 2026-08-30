@@ -5,7 +5,7 @@ using Mars.Cms.Contracts.PostTypes;
 using Mars.Cms.Host.Services;
 using Mars.Contracts.Resources;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class DevMenuFactoryTests
 {

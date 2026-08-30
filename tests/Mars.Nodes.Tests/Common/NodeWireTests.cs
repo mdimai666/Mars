@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Text.Json;
 using Mars.Nodes.Core;
 
-namespace Mars.Nodes.Implements.Test.Common;
+namespace Mars.Nodes.Tests.Common;
 
 public class NodeWireTests
 {

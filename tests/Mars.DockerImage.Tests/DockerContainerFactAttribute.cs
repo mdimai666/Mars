@@ -1,6 +1,6 @@
-using Mars.DockerContainer.Tests.Fixtures;
+using Mars.DockerImage.Tests.Fixtures;
 
-namespace Mars.DockerContainer.Tests;
+namespace Mars.DockerImage.Tests;
 
 public class DockerContainerFactAttribute : FactAttribute
 {

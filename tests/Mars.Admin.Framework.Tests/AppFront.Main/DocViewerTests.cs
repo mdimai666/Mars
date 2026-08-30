@@ -1,11 +1,11 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using AppFront.Tests.Utils;
 using FluentAssertions;
 using Mars.Admin.Framework.Components;
+using Mars.Admin.Framework.Tests.Utils;
 using Mars.Core.Attributes;
 
-namespace AppFront.Tests.AppFront.Main;
+namespace Mars.Admin.Framework.Tests.AppFront.Main;
 
 public class DocViewerTests
 {

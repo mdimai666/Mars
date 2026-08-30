@@ -1,11 +1,11 @@
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Connections;
 using Mars.Nodes.Core.Nodes.Connections;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 using Mars.Server.Abstractions.Services;
 using NSubstitute;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class DevAdminConnectionNodeTests : NodeServiceUnitTestBase
 {

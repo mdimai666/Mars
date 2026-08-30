@@ -1,7 +1,7 @@
 using System.Collections;
 using Mars.Nodes.Core.StringFunctions;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class StringNodeOperationTestData : IEnumerable<object[]>
 {

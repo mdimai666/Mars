@@ -1,6 +1,4 @@
-using Mars.Plugin;
-
-namespace Test.Mars.Plugin.Extensions;
+namespace Mars.Plugin.Tests.Extensions;
 
 public static class NuspecExtension
 {

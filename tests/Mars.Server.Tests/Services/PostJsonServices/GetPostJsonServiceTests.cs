@@ -16,7 +16,7 @@ using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using NSubstitute;
 
-namespace Test.Mars.Server.Services.PostJsonServices;
+namespace Mars.Server.Tests.Services.PostJsonServices;
 
 public sealed class GetPostJsonServiceTests : PostJsonServiceTestBase
 {

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.Server.Abstractions.Services;
 
-namespace Test.Mars.Server.Files;
+namespace Mars.Server.Tests.Files;
 
 public class InMemoryFileStorageTests
 {

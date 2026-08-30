@@ -7,7 +7,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Host.Services;
 using Mars.Test.Common.FixtureCustomizes;
 
-namespace Test.Mars.Server.Services.PostJsonServices;
+namespace Mars.Server.Tests.Services.PostJsonServices;
 
 public sealed class CreatePostJsonServiceTests : PostJsonServiceTestBase
 {

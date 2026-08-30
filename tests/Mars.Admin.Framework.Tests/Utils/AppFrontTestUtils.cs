@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using NSubstitute;
 
-namespace AppFront.Tests.Utils;
+namespace Mars.Admin.Framework.Tests.Utils;
 
 public static class AppFrontTestUtils
 {

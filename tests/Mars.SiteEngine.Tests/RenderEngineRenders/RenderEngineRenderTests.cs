@@ -15,7 +15,7 @@ using Mars.Test.Common.Constants;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
-namespace Test.Mars.SiteEngine.RenderEngineRenders;
+namespace Mars.SiteEngine.Tests.RenderEngineRenders;
 
 public class RenderEngineRenderTests
 {

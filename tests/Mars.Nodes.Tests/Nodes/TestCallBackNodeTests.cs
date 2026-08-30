@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Mars.Nodes.Implements.Test.NodesForTesting;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.NodesForTesting;
+using Mars.Nodes.Tests.Services;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class TestCallBackNodeTests : NodeServiceUnitTestBase
 {

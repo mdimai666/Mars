@@ -5,7 +5,7 @@ using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Locators;
 using Mars.WebApp.Nodes.Nodes;
 
-namespace Mars.Nodes.Implements.Test.JsonConverters;
+namespace Mars.Nodes.Tests.JsonConverters;
 
 public class NodeJsonConverterTests
 {

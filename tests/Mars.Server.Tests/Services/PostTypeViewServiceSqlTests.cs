@@ -5,7 +5,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Cms.Host.Services;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class PostTypeViewServiceSqlTests
 {

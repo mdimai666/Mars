@@ -1,4 +1,4 @@
-namespace Test.Mars.Server.Models;
+namespace Mars.Server.Tests.Models;
 
 #if false
 public class IsDayOffTests

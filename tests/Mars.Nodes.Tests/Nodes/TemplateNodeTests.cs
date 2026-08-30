@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 using Mars.TemplateEngine.Providers.HandlebarsProvider;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class TemplateNodeTests : NodeServiceUnitTestBase
 {

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.Nodes.Core.StringFunctions;
 
-namespace Mars.Nodes.Implements.Test.Utils;
+namespace Mars.Nodes.Tests.Utils;
 
 public class StringValueParserTests
 {

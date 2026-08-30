@@ -1,10 +1,10 @@
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
-using Mars.Nodes.Implements.Test.NodesForTesting;
+using Mars.Nodes.Tests.NodesForTesting;
 using NSubstitute;
 
-namespace Mars.Nodes.Implements.Test.Services;
+namespace Mars.Nodes.Tests.Services;
 
 public class NodeLifecycleTests : NodeServiceUnitTestBase
 {

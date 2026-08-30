@@ -2,7 +2,7 @@ using FluentAssertions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Contracts.WebSite.Models;
 
-namespace Test.Mars.SiteEngine.WebSiteParts;
+namespace Mars.SiteEngine.Tests.WebSiteParts;
 
 public class WebSitePartTests
 {

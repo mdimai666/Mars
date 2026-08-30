@@ -6,7 +6,7 @@ using Mars.Admin.Framework.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 
-namespace AppFront.Tests.Services
+namespace Mars.Admin.Framework.Tests.Services
 {
     public class BlazorPagesServiceTests
     {

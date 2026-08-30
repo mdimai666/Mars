@@ -12,7 +12,7 @@ using Mars.SiteEngine.Templators;
 using Mars.Test.Common.Constants;
 using NSubstitute;
 
-namespace Test.Mars.SiteEngine.QueryLangProcessings;
+namespace Mars.SiteEngine.Tests.QueryLangProcessings;
 
 public class QueryLangProcessingTests
 {

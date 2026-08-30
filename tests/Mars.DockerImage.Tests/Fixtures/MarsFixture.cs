@@ -6,7 +6,7 @@ using DotNet.Testcontainers.Networks;
 using Flurl.Http;
 using Testcontainers.PostgreSql;
 
-namespace Mars.DockerContainer.Tests.Fixtures;
+namespace Mars.DockerImage.Tests.Fixtures;
 
 public class MarsFixture : IAsyncLifetime
 {

@@ -12,11 +12,11 @@ using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Contracts.Plugins;
 using Mars.Plugin.Controllers;
 using Mars.Plugin.Services;
+using Mars.Plugin.Tests.Extensions;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Test.Mars.Plugin.Extensions;
 
 namespace Mars.Integration.Tests.Controllers.Plugins;
 

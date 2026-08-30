@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 
-namespace Test.Mars.SiteEngine.WebSiteParts;
+namespace Mars.SiteEngine.Tests.WebSiteParts;
 
 public class WebSitePart_ParseContentTests
 {

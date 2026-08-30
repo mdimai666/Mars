@@ -1,6 +1,6 @@
 using Mars.Cms.Abstractions.Dto.MetaFields;
 
-namespace Test.Mars.Server.Models;
+namespace Mars.Server.Tests.Models;
 
 //db has 3 post with tpyeName: "testPost". content 1,2,3, meta 11,22,33
 

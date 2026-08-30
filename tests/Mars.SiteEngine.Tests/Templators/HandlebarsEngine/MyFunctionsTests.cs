@@ -4,7 +4,7 @@ using FluentAssertions;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 using static Mars.SiteEngine.Handlebars.HandlebarsFunc.MyHandlebarsBasicFunctions;
 
-namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
+namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
 
 public class MyFunctionsTests
 {

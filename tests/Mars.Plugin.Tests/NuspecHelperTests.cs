@@ -1,8 +1,7 @@
 using System.Xml;
 using FluentAssertions;
-using Mars.Plugin;
 
-namespace Test.Mars.Plugin;
+namespace Mars.Plugin.Tests;
 
 public class NuspecHelperTests
 {

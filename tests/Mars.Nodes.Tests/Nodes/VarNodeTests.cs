@@ -1,6 +1,6 @@
 using FluentAssertions;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class VarNodeTests
 {

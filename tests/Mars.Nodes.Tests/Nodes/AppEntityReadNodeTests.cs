@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Mars.Data.Entities;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 using Mars.QueryLang.Host.Services;
 using Mars.WebApp.Nodes.Models.NodeEntityQuery;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class AppEntityReadNodeTests : NodeServiceUnitTestBase
 {

@@ -12,7 +12,7 @@ using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http.Features;
 using NSubstitute;
 
-namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
+namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
 
 public class DataQueryScenariosTests
 {

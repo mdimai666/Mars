@@ -5,7 +5,7 @@ using Mars.Integration.Tests.Extensions;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 
-namespace Mars.AppFrontEngines.Integration.Tests.Common;
+namespace Mars.SiteEngine.Integration.Tests.Common;
 
 /// <summary>
 /// Фикстура одна на весь сьют (коллекция xUnit): два отдельных IClassFixture-инстанса

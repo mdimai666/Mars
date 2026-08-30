@@ -1,7 +1,7 @@
 using Mars.Nodes.Abstractions;
 using Mars.Nodes.Core;
 
-namespace Mars.Nodes.Implements.Test.NodesForTesting;
+namespace Mars.Nodes.Tests.NodesForTesting;
 
 public class NodeLifecycleTestNode : Node
 {

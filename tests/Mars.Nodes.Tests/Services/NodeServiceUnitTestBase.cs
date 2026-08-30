@@ -18,7 +18,7 @@ using Mars.Nodes.Core.Utils;
 using Mars.Nodes.Host.Factories;
 using Mars.Nodes.Host.NodeTasks;
 using Mars.Nodes.Host.Services;
-using Mars.Nodes.Implements.Test.NodesForTesting;
+using Mars.Nodes.Tests.NodesForTesting;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.TemplateEngine.Host;
@@ -34,7 +34,7 @@ using NSubstitute;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)] //TODO: Убрать и пофиксить парраллелизацию
 
-namespace Mars.Nodes.Implements.Test.Services;
+namespace Mars.Nodes.Tests.Services;
 
 public class NodeServiceUnitTestBase
 {

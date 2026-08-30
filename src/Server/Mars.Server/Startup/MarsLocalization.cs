@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Mars.Server;
+namespace Mars.Server.Startup;
 
 public static class MarsLocalization
 {

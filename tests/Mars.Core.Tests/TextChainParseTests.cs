@@ -1,7 +1,7 @@
 using Mars.Core.Features;
 using Xunit.Abstractions;
 
-namespace Test.Mars.Core;
+namespace Mars.Core.Tests;
 
 public class TextChainParseTests
 {

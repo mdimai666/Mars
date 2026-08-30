@@ -6,7 +6,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.PostTypes;
 using NSubstitute;
 
-namespace Test.Mars.Server.Dto;
+namespace Mars.Server.Tests.Dto;
 
 /// <summary>
 /// Правила single-типа (фича <see cref="PostTypeConstants.Features.Single"/>):

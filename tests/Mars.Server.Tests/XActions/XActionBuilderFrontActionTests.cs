@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.XActions.Contracts;
 
-namespace Test.Mars.Server.XActions;
+namespace Mars.Server.Tests.XActions;
 
 public class XActionBuilderFrontActionTests
 {

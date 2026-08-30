@@ -7,11 +7,10 @@ using Mars.Nodes.Core;
 using Mars.Nodes.Core.Exceptions;
 using Mars.Nodes.Core.Implements.Nodes.Network;
 using Mars.Nodes.Core.Utils;
-using Mars.Nodes.Implements.Test.NodesForTesting;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 using NSubstitute;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class HttpRequestNodeTests : NodeServiceUnitTestBase
 {

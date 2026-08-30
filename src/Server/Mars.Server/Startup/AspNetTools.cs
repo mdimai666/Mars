@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.Server;
+namespace Mars.Server.Startup;
 
 public static class AspNetTools
 {

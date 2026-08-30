@@ -10,7 +10,7 @@ using Mars.Cms.Host.Handlers;
 using Mars.Core.Exceptions;
 using NSubstitute;
 
-namespace Test.Mars.Server.Handlers;
+namespace Mars.Server.Tests.Handlers;
 
 public class MetaValueGeneratorHandlersTests
 {

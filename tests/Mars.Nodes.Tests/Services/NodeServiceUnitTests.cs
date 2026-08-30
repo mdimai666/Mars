@@ -5,7 +5,7 @@ using Mars.Nodes.Core.Converters;
 using Mars.Nodes.Core.Locators;
 using Mars.Nodes.Host.Services;
 
-namespace Mars.Nodes.Implements.Test.Services;
+namespace Mars.Nodes.Tests.Services;
 
 public class NodeServiceUnitTests : NodeServiceUnitTestBase
 {

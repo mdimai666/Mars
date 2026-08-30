@@ -2,7 +2,7 @@ using FluentAssertions;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Managers;
 
-namespace Test.Mars.Server.EventManagerTests;
+namespace Mars.Server.Tests.EventManagerTests;
 
 public class EventManagerUnitTest
 {

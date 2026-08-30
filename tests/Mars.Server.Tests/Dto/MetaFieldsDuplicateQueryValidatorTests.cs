@@ -5,7 +5,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.MetaFields;
 using NSubstitute;
 
-namespace Test.Mars.Server.Dto;
+namespace Mars.Server.Tests.Dto;
 
 public class MetaFieldsDuplicateQueryValidatorTests
 {

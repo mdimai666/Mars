@@ -6,7 +6,7 @@ using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using NSubstitute;
 
-namespace Test.Mars.Server.Dto;
+namespace Mars.Server.Tests.Dto;
 
 public class PostTypeQueryValidatorTests
 {

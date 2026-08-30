@@ -1,6 +1,6 @@
 using Mars.CommandLine.Remote;
 
-namespace Test.Mars.Server.CommandLine;
+namespace Mars.Server.Tests.CommandLine;
 
 public class CliUrlsParserTests
 {

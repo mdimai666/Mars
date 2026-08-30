@@ -1,6 +1,6 @@
 using Mars.Core.Features;
 
-namespace Test.Mars.Core;
+namespace Mars.Core.Tests;
 
 public class TextHelperTests
 {

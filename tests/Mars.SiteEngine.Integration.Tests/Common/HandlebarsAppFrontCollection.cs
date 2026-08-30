@@ -1,6 +1,6 @@
-using Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
+using Mars.SiteEngine.Integration.Tests.HandlebarsEngine;
 
-namespace Mars.AppFrontEngines.Integration.Tests.Common;
+namespace Mars.SiteEngine.Integration.Tests.Common;
 
 [CollectionDefinition(CollectionName)]
 public class HandlebarsAppFrontCollection : ICollectionFixture<HandlebarsAppFrontApplicationFixture>

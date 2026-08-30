@@ -1,16 +1,16 @@
 using FluentAssertions;
 using Flurl.Http;
-using Mars.AppFrontEngines.Integration.Tests.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Contracts.Options;
 using Mars.SiteEngine.Abstractions.Services;
 using Mars.SiteEngine.Host.Services;
+using Mars.SiteEngine.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
+namespace Mars.SiteEngine.Integration.Tests.HandlebarsEngine;
 
 [Collection(HandlebarsAppFrontCollection.CollectionName)]
 public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontApplicationFixture>, IDefaultRenderEngineTests

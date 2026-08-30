@@ -16,7 +16,7 @@ using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using NSubstitute;
 
-namespace Test.Mars.Server.Services.PostJsonServices;
+namespace Mars.Server.Tests.Services.PostJsonServices;
 
 public class PostJsonServiceTestBase
 {
@@ -51,7 +51,7 @@ public class PostJsonServiceTestBase
         _metaModelTypesLocator = Substitute.For<IMetaModelTypesLocator>();
 
         var metaQueryFieldResolver = Substitute.For<IMetaQueryFieldResolver>();
-        metaQueryFieldResolver.ResolveAsync(Arg.Any<global::Mars.Cms.Abstractions.Dto.PostTypes.PostTypeDetail>(),
+        metaQueryFieldResolver.ResolveAsync(Arg.Any<Cms.Abstractions.Dto.PostTypes.PostTypeDetail>(),
                                             Arg.Any<IReadOnlyCollection<Guid>>(),
                                             Arg.Any<CancellationToken>())
                               .Returns([]);

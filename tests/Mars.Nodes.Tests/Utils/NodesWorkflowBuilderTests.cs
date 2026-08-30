@@ -2,7 +2,7 @@ using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Utils;
 
-namespace Mars.Nodes.Implements.Test.Utils;
+namespace Mars.Nodes.Tests.Utils;
 
 public class NodesWorkflowBuilderTests
 {

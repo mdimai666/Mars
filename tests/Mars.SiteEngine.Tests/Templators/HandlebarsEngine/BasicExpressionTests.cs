@@ -1,9 +1,8 @@
 using System.Dynamic;
 using FluentAssertions;
-using HandlebarsDotNet;
 using Mars.SiteEngine.Handlebars.HandlebarsFunc;
 
-namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
+namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
 
 public class BasicExpressionTests
 {

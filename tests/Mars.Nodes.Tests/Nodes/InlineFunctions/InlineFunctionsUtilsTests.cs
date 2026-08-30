@@ -3,9 +3,9 @@ using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Functions;
 using Mars.Nodes.Core.Implements.Nodes.InlineFunctions;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 
-namespace Mars.Nodes.Implements.Test.Nodes.InlineFunctions;
+namespace Mars.Nodes.Tests.Nodes.InlineFunctions;
 
 public class InlineFunctionsUtilsTests : NodeServiceUnitTestBase
 {

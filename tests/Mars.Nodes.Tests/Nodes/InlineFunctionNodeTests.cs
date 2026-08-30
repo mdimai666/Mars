@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Common;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class InlineFunctionNodeTests : NodeServiceUnitTestBase
 {

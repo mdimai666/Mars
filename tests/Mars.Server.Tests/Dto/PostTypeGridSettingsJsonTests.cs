@@ -3,7 +3,7 @@ using FluentAssertions;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Contracts.PostTypes;
 
-namespace Test.Mars.Server.Dto;
+namespace Mars.Server.Tests.Dto;
 
 public class PostTypeGridSettingsJsonTests
 {

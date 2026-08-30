@@ -5,7 +5,7 @@ using Mars.Nodes.Core.Implements.JsonConverters;
 using MQTTnet;
 using MQTTnet.Packets;
 
-namespace Mars.Nodes.Implements.Test.JsonConverters;
+namespace Mars.Nodes.Tests.JsonConverters;
 
 public class IgnoreReadOnlySpanPropertiesResolverTests
 {

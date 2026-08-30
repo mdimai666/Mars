@@ -3,7 +3,7 @@ using Mars.Cms.Abstractions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Contracts.MetaFields;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class PostBlankMetaValuesTests
 {

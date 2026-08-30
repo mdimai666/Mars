@@ -2,7 +2,7 @@ using Mars.Nodes.Core.Implements.Utils;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
-namespace Mars.Nodes.Implements.Test.Utils;
+namespace Mars.Nodes.Tests.Utils;
 
 public class FilePathGeneratorDateTests
 {

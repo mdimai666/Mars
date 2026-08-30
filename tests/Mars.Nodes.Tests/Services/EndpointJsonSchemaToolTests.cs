@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.Nodes.Core.Implements.Utils;
 
-namespace Mars.Nodes.Implements.Test.Services;
+namespace Mars.Nodes.Tests.Services;
 
 public class EndpointJsonSchemaToolTests
 {

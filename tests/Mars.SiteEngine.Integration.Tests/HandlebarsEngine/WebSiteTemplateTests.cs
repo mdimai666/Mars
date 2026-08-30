@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Mars.AppFrontEngines.Integration.Tests.Common;
 using Mars.Integration.Tests.Attributes;
 using Mars.SiteEngine.Abstractions.Models;
 using Mars.SiteEngine.Abstractions.WebSite;
@@ -7,6 +6,7 @@ using Mars.SiteEngine.Abstractions.WebSite.Interfaces;
 using Mars.SiteEngine.Abstractions.WebSite.Models;
 using Mars.SiteEngine.Handlebars.TemplateData;
 using Mars.SiteEngine.Host.Services;
+using Mars.SiteEngine.Integration.Tests.Common;
 using Mars.Test.Common.Constants;
 using Mars.Test.Common.FixtureCustomizes;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Mars.AppFrontEngines.Integration.Tests.HandlebarsEngine;
+namespace Mars.SiteEngine.Integration.Tests.HandlebarsEngine;
 
 [Collection(HandlebarsAppFrontCollection.CollectionName)]
 public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicationFixture>, IDisposable

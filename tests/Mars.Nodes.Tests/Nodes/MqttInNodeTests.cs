@@ -5,7 +5,7 @@ using Mars.Nodes.Core.Implements.Nodes.Network;
 using MQTTnet;
 using MQTTnet.Packets;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class MqttInNodeTests
 {

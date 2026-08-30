@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 using NSubstitute;
 using static Mars.SiteEngine.Handlebars.HandlebarsFunc.MyHandlebarsContextFunctions;
 
-namespace Test.Mars.SiteEngine.Templators.HandlebarsEngine;
+namespace Mars.SiteEngine.Tests.Templators.HandlebarsEngine;
 
 [Collection("Culture collection")]
 public class MyHandlebarsContextFunctionsTests

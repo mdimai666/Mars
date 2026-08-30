@@ -2,13 +2,12 @@ using FluentAssertions;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Implements.Nodes.Events;
 using Mars.Nodes.Core.Nodes.Events;
-using Mars.Nodes.Implements.Test.NodesForTesting;
-using Mars.Nodes.Implements.Test.Services;
+using Mars.Nodes.Tests.Services;
 using Mars.Server.Abstractions.Managers;
 using NSubstitute;
 using static Mars.Server.Abstractions.Managers.IEventManager;
 
-namespace Mars.Nodes.Implements.Test.Nodes;
+namespace Mars.Nodes.Tests.Nodes;
 
 public class EventListenerNodeTests : NodeServiceUnitTestBase
 {

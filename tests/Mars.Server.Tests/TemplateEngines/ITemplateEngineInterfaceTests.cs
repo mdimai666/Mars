@@ -1,4 +1,4 @@
-namespace Test.Mars.Server.TemplateEngines;
+namespace Mars.Server.Tests.TemplateEngines;
 
 internal interface ITemplateEngineInterfaceTests
 {

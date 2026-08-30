@@ -5,7 +5,7 @@ using Mars.Plugin.PluginProvider.Dto;
 using Mars.Plugin.PluginProvider.Providers;
 using Mars.Test.Common.Helpers;
 
-namespace Test.Mars.Plugin;
+namespace Mars.Plugin.Tests;
 
 public class PluginManifestProviderTests
 {

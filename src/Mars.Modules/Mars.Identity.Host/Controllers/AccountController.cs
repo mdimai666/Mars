@@ -9,7 +9,6 @@ using Mars.Identity.Abstractions.Mappings.UserProfiles;
 using Mars.Identity.Abstractions.Services;
 using Mars.Identity.Contracts.Auth;
 using Mars.Identity.Contracts.Users.UserProfiles;
-using Mars.Identity.Host.Services;
 using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Files;
 using Mars.Options.Abstractions.Services;

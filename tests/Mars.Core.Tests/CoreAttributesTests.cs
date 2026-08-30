@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Core.Attributes;
 
-namespace Test.Mars.Core;
+namespace Mars.Core.Tests;
 
 public class CoreAttributesTests
 {

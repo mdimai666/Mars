@@ -4,7 +4,7 @@ using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.Search;
 using Mars.Cms.Host.Services;
 
-namespace Test.Mars.Server.Services;
+namespace Mars.Server.Tests.Services;
 
 public class CentralSearchServiceTests
 {

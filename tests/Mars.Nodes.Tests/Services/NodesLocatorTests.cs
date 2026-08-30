@@ -2,7 +2,7 @@ using FluentAssertions;
 using Mars.Nodes.Core;
 using NSubstitute;
 
-namespace Mars.Nodes.Implements.Test.Services;
+namespace Mars.Nodes.Tests.Services;
 
 public class NodesLocatorTests : NodeServiceUnitTestBase
 {

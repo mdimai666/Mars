@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.TemplateEngine.Providers.HandlebarsProvider;
 
-namespace Test.Mars.Server.TemplateEngines.HandlebarsTests;
+namespace Mars.Server.Tests.TemplateEngines.HandlebarsTests;
 
 public class HandlebarsTemplateEngineTests : ITemplateEngineInterfaceTests
 {

@@ -25,6 +25,9 @@ public class PostTypeEntityConfiguration : IEntityTypeConfiguration<PostTypeEnti
             .HasFilter("\"disabled\" IS true"); ;
 
         //entity.Property(x => x.EnabledFeatures).HasColumnType("jsonb");
+        entity.Property(x => x.Options)
+            .HasColumnType("jsonb")
+            .HasJsonConversion();
 
         // Relations
 

@@ -26,7 +26,9 @@ public class MetaFieldEntityConfiguration : IEntityTypeConfiguration<MetaFieldEn
         // https://www.npgsql.org/efcore/mapping/json.html?tabs=data-annotations%2Cjsondocument#tojson-owned-entity-mapping
         entity.OwnsMany(x => x.Variants, f => { f.ToJson(); });
         entity.OwnsOne(x => x.Default, f => { f.ToJson(); });
-        entity.Property(x => x.Options).HasColumnType("jsonb");
+        entity.Property(x => x.Options)
+            .HasColumnType("jsonb")
+            .HasJsonConversion();
 
         // Relations
         // Поле принадлежит ровно одному типу (1:N); каскад: тип -> его поля -> значения.

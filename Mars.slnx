@@ -214,12 +214,10 @@
     <Project Path="tests/Mars.Test.Common/Mars.Test.Common.csproj" />
     <Project Path="tests/Mars.WebApiClient.Integration.Tests/Mars.WebApiClient.Integration.Tests.csproj" />
     <Project Path="tests/Test.Mars.Core/Test.Mars.Core.csproj" />
-    <Project Path="tests/Test.Mars.Datasource.Host/Test.Mars.Datasource.Host.csproj" />
     <Project Path="tests/Test.Mars.MetaModelGenerator/Test.Mars.MetaModelGenerator.csproj" />
     <Project Path="tests/Test.Mars.Plugin/Test.Mars.Plugin.csproj" />
     <Project Path="tests/Test.Mars.Server/Test.Mars.Server.csproj" />
     <Project Path="tests/Test.Mars.SiteEngine/Test.Mars.SiteEngine.csproj" />
-    <Project Path="tests/TestApp.Mars.Data/TestApp.Mars.Data.csproj" />
   </Folder>
   <Project Path="src/Mars.Admin/Mars.Admin.csproj" />
   <Project Path="src/Mars.WebApp/Mars.WebApp.csproj" />

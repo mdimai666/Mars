@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Mars.Datasource.Abstractions.Models;
 
-namespace Test.Mars.Datasource.Host;
+namespace Mars.Datasource.Integration.Tests;
 
 public class SourceBuilderTests
 {

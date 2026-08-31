@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Identity.Contracts</PackageId>
+        <Description>Mars identity wire contracts: users, roles and auth DTOs.</Description>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />

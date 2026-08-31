@@ -1,5 +1,10 @@
 <Project>
     <PropertyGroup>
+        <!-- App version: single source of truth for all projects (pack, scripts, CI). -->
+        <MarsAppVersion>0.8.1-alpha.4</MarsAppVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <RepositoryType>Git</RepositoryType>
         <!--The Implicit usings feature automatically adds common global using directives for the type of project you are building. For more information, see this implicit usings article https://aka.ms/csharp-implicit-usings.-->
@@ -30,4 +35,27 @@
     <PropertyGroup>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
+
+    <!-- Common NuGet packaging metadata: default for all packable projects. Override per project (Version/Product/Description/PackageTags) when needed. -->
+    <PropertyGroup>
+        <Version>$(MarsAppVersion)</Version>
+        <Authors>mdimai666</Authors>
+        <Company>mdimai666</Company>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year) mdimai666</Copyright>
+        <Product>Mars</Product>
+        <PackageTags>Mars</PackageTags>
+        <PackageIcon>icon-nuget.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)assets\icon-nuget.png" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    </ItemGroup>
 </Project>

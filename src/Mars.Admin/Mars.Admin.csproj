@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
-        <!--Author-->
-        <Version>$(MarsAppVersion)</Version>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <Authors>mdimai666</Authors>
         <Company>mdimai666</Company>
 

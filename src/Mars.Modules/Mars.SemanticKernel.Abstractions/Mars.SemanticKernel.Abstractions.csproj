@@ -1,6 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>mdimai666.Mars.SemanticKernel.Abstractions</PackageId>
+        <Description>Mars Semantic Kernel server abstractions: services and extension points.</Description>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <NoWarn>$(NoWarn),VSTHRD111,CA2007,CA5399,SKEXP0001,SKEXP0010,SKEXP0050,SKEXP0070</NoWarn>
     </PropertyGroup>
 

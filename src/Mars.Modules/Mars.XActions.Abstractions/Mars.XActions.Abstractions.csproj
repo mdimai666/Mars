@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.XActions.Abstractions</PackageId>
+        <Description>Mars XActions server abstractions: services and extension points.</Description>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>

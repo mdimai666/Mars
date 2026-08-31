@@ -1,37 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <!--Project-->
-        <EnableDynamicLoading>true</EnableDynamicLoading>
-
-        <!--Author-->
         <PackageId>mdimai666.Mars.Data</PackageId>
-        <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <Version>$(MarsAppVersion)</Version>
-        <Authors>mdimai666</Authors>
-        <Company>mdimai666</Company>
         <Product>Mars.Data</Product>
-        <PackageTags>Mars</PackageTags>
         <Description>
-            Mars Host Data. Database entities;
+            Mars data layer: database entities and the shared MarsDbContext.
         </Description>
-        <PackageIcon>icon-nuget.png</PackageIcon>
-        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <IncludeSymbols>true</IncludeSymbols>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 

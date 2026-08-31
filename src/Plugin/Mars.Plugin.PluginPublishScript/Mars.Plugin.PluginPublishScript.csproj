@@ -3,40 +3,19 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
 
-        <!--Author-->
         <PackageId>mdimai666.Mars.Plugin.PluginPublishScript</PackageId>
-        <PackageVersion>$(MarsAppVersion)</PackageVersion>
-        <Version>$(MarsAppVersion)</Version>
-        <Authors>mdimai666</Authors>
-        <Company>mdimai666</Company>
         <Product>Mars.Plugin.PluginPublishScript</Product>
-        <PackageTags>Mars;Plugin;</PackageTags>
         <Description>
             Tool for developing and publishing plugins;
         </Description>
-        <PackageIcon>icon-nuget.png</PackageIcon>
-        <PackageProjectUrl>https://github.com/mdimai666/Mars</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-
         <GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <IncludeSymbols>true</IncludeSymbols>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
-
     <ItemGroup>
-        <None Include="..\..\..\assets\icon-nuget.png" Pack="true" PackagePath="\" />
         <None Include="Mars.deps.json" Pack="true" PackagePath="\lib\net10.0\" />
         <None Include="$(OutDir)Mars.Plugin.Front.Abstractions.dll" Pack="true" PackagePath="\lib\net10.0\" />
         <None Include="$(OutDir)Microsoft.AspNetCore.Components.WebAssembly.dll" Pack="true" PackagePath="\lib\net10.0\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     </ItemGroup>
 
     <!-- При параллельной пересборке источника (полный ребилд) файла может ещё не быть —

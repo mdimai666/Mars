@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 
 # Пути от корня репозитория (рядом со скриптом), а не от текущей директории
 $root = $PSScriptRoot
-$propsPath = Join-Path $root "Directory.Packages.props"
+$propsPath = Join-Path $root "Directory.Build.props"
 
 # Парсим XML, чтобы получить значение MarsAppVersion
 [xml]$xml = Get-Content $propsPath
@@ -26,7 +26,7 @@ if (git status --porcelain) {
     Write-Warning "Рабочее дерево не чистое - содержимое сборки может не совпадать с коммитом $GIT_SHA"
 }
 
-Write-Host "Версия из Directory.Packages.props: $version"
+Write-Host "Версия из Directory.Build.props: $version"
 Write-Host "GIT_SHA: $GIT_SHA"
 
 # Имя Docker-образа

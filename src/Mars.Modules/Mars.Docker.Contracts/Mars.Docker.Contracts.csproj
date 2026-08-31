@@ -1,4 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Docker.Contracts</PackageId>
+        <Description>Mars Docker integration wire contracts: containers, images and volumes DTOs.</Description>
+    </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
   </ItemGroup>

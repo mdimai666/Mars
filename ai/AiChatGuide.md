@@ -81,7 +81,7 @@ UI: плавающая кнопка «ИИ агент» внизу экрана 
 - `mars-aichat.js` и `mars-aichat.css` грузятся с `?v=<версия сборки>` (`AiChatAssets`):
   статика отдаётся без `Cache-Control`, и без версии в урле браузер держит старые ассеты
   в эвристическом кеше — .NET и JS рассинхронизируются (так «не сохранялась» позиция FAB).
-- После правок js/css модуля обязательно поднимать `MarsAppVersion` в `Directory.Packages.props`
+- После правок js/css модуля обязательно поднимать `MarsAppVersion` в `Directory.Build.props`
   (конвенция та же, что `AppAdminSpaHtmlScripts`/`ScriptFileInfo` с `?v=`).
 
 ### Память, скиллы и рабочая папка агента (/data/ai)

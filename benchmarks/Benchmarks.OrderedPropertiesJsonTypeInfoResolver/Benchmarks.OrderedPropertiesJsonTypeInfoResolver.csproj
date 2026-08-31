@@ -1,4 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
     <PropertyGroup>
         <OutputType>Exe</OutputType>
     </PropertyGroup>

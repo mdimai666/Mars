@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <NoWarn>BL0007;CSS102;CSS104;</NoWarn>
-    <Version>$(MarsAppVersion)</Version>
   </PropertyGroup>
 
   <ItemGroup>

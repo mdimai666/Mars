@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
         <ProjectReference Include="..\Mars.Data.InMemory\Mars.Data.InMemory.csproj" />

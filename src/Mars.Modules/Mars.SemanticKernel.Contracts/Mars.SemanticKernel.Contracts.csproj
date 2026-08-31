@@ -1,4 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.SemanticKernel.Contracts</PackageId>
+        <Description>Mars Semantic Kernel wire contracts: AI chat and skills DTOs.</Description>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />

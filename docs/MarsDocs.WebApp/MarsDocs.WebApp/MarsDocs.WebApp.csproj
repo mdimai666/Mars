@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
-        <Version>$(MarsAppVersion)</Version>
         <TargetFrameworks>net10.0</TargetFrameworks>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <IsPackable>true</IsPackable>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <PropertyGroup>

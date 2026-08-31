@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Options.Contracts</PackageId>
+        <Description>Mars options wire contracts: options models DTOs.</Description>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
     </ItemGroup>

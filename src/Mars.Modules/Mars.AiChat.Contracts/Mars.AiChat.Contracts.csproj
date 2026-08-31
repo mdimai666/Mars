@@ -1,3 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.AiChat.Contracts</PackageId>
+        <Description>Mars AI chat wire contracts: chat sessions and messages DTOs.</Description>
+    </PropertyGroup>
+
 </Project>

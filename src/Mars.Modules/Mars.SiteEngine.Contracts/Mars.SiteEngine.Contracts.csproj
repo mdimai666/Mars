@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.SiteEngine.Contracts</PackageId>
+        <Description>Mars site engine wire contracts: sites and templates DTOs.</Description>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
     </ItemGroup>

@@ -332,7 +332,7 @@ wwwroot/css/
 это артефакт компиляции, ручные правки разойдутся с less при следующей компиляции.
 Компиляцию `style.css` выполняет пользователь (VS Web Compiler или lessc) — агент её
 не запускает, если пользователь явно не попросил. После коммита css/js-изменений —
-поднять `MarsAppVersion` в `Directory.Packages.props`.
+поднять `MarsAppVersion` в `Directory.Build.props`.
 
 ### Проверка
 

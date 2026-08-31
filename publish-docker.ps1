@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 # Пути от корня репозитория (рядом со скриптом), а не от текущей директории
 $root = $PSScriptRoot
-$propsPath = Join-Path $root "Directory.Packages.props"
+$propsPath = Join-Path $root "Directory.Build.props"
 
 # Парсим XML, чтобы получить значение MarsAppVersion
 [xml]$xml = Get-Content $propsPath
@@ -33,7 +33,7 @@ if ($LASTEXITCODE -ne 0 -or -not $userName) {
     exit 1
 }
 
-Write-Host "Версия из Directory.Packages.props: $version"
+Write-Host "Версия из Directory.Build.props: $version"
 Write-Host "GIT_SHA: $GIT_SHA"
 
 # Имя Docker-образа

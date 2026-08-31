@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Datasource.Abstractions</PackageId>
+        <Description>Mars external database connections: abstractions and contracts for datasource providers.</Description>
+    </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
     <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />

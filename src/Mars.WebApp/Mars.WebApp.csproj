@@ -217,16 +217,17 @@
         <RemoveDir Directories="$(PublishUrl.Remove($(PublishDir.LastIndexOf('$([System.IO.Path]::DirectorySeparatorChar)'))))"></RemoveDir>
     </Target>
 
-    <Target Name="CopyAppAdminStaticWebAssets" AfterTargets="Publish">
+    <!-- Файл нужен рантайму (PluginManifestProvider) рядом со сборками для фильтрации фронт-ассетов плагинов -->
+    <Target Name="CopyMarsAdminStaticWebAssets" AfterTargets="Publish">
         <PropertyGroup>
-            <AppAdminEndpointsPath>$(OutputPath)AppAdmin.staticwebassets.endpoints.json</AppAdminEndpointsPath>
+            <MarsAdminEndpointsPath>$(OutputPath)Mars.Admin.staticwebassets.endpoints.json</MarsAdminEndpointsPath>
         </PropertyGroup>
 
-        <Copy SourceFiles="$(AppAdminEndpointsPath)" DestinationFolder="$(PublishDir)" Condition="Exists('$(AppAdminEndpointsPath)')" />
+        <Copy SourceFiles="$(MarsAdminEndpointsPath)" DestinationFolder="$(PublishDir)" Condition="Exists('$(MarsAdminEndpointsPath)')" />
 
-        <Message Text="Copied AppAdmin.staticwebassets.endpoints.json to $(PublishDir)" Importance="high" Condition="Exists('$(AppAdminEndpointsPath)')" />
+        <Message Text="Copied Mars.Admin.staticwebassets.endpoints.json to $(PublishDir)" Importance="high" Condition="Exists('$(MarsAdminEndpointsPath)')" />
 
-        <Warning Text="AppAdmin.staticwebassets.endpoints.json not found at $(AppAdminEndpointsPath)" Condition="!Exists('$(AppAdminEndpointsPath)')" />
+        <Warning Text="Mars.Admin.staticwebassets.endpoints.json not found at $(MarsAdminEndpointsPath)" Condition="!Exists('$(MarsAdminEndpointsPath)')" />
     </Target>
 
     <ItemGroup>

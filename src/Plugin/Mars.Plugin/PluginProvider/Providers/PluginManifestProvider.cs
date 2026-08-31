@@ -5,6 +5,7 @@ using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginProvider.Dto;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.PluginProvider.Providers;
@@ -144,11 +145,9 @@ public class PluginManifestProvider
             }
         };
 
-        var isDebug = true;
-
         var manifest = new MarsFrontPluginManifest()
         {
-            IsDebug = isDebug,
+            IsDebug = app.Environment.IsDevelopment(),
         };
         manifest.Plugins[pluginData.Info.KeyName] = pluginInfo;
 

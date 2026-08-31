@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 
 namespace Mars.TemplateEngine.Host.InternalProviders;
 

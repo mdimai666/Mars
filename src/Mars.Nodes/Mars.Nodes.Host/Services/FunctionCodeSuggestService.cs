@@ -1,4 +1,4 @@
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.XActions.Abstractions.Managers;

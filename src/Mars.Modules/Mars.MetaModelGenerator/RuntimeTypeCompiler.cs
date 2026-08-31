@@ -19,7 +19,7 @@ public class RuntimeMetaTypeCompiler
     private (string fullcode, string[] namespaces, Type[] usingTypes, MetaTypeResultItem[] metaTypeItems)
         PrepareData(MetaTypeInfo[] entityWithMetaFields, IReadOnlyDictionary<string, MetaModelResolveTypeInfo>? metaModelTypesResolverDict, bool useNamespace = true)
     {
-        var _namespace = "AppFront.Host.Data";
+        var _namespace = "Mars.MetaModel";
 
         var master = new GenSourceCodeMaster();
 

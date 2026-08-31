@@ -3,7 +3,7 @@
         <PackageId>mdimai666.Mars.Nodes.Abstractions</PackageId>
         <Product>Mars.Nodes.Abstractions</Product>
         <Description>
-            Mars Nodes Host Shared lib;
+            Mars Nodes server abstractions: services, runtime contracts and extension points.
         </Description>
     </PropertyGroup>
 

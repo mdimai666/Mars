@@ -1,5 +1,7 @@
+using System.Reflection;
 using Mars.Admin.Contracts.Options;
 using Mars.Admin.Framework;
+using Mars.Admin.Host.Handlers;
 using Mars.Admin.Host.Services;
 using Mars.Admin.Host.XActions;
 using Mars.Nodes.Abstractions.Hubs;
@@ -23,6 +25,10 @@ public static class MainAdmin
 #endif
 
         services.AddSingleton<IDevAdminConnectionService, DevAdminConnectionService>();
+
+        // стартовые данные админки агрегируются на сервере из сервисов модулей
+        services.AddScoped<IInitialSiteDataViewModelHandler, InitialSiteDataViewModelHandler>();
+        services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
 
         // серверные двойники WASM-регистраций (ранний выход по !IsBrowser() в аддон-фронте)
         services.AddAdminFrameworkServerServices();

@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AutoFixture;
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 using Mars.HttpSmartAuthFlow;
 using Mars.Identity.Abstractions.Dto.Users;
 using Mars.Identity.Abstractions.Interfaces;

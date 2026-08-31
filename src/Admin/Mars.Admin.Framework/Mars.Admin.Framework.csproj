@@ -43,6 +43,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Mars.Admin.Contracts\Mars.Admin.Contracts.csproj" />
 		<ProjectReference Include="..\..\Mars.Nodes\Mars.Nodes.Core\Mars.Nodes.Core.csproj" />
 		<ProjectReference Include="..\..\Mars.Core\Mars.Core.csproj" />
 		<ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />

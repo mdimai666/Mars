@@ -1,3 +1,4 @@
+using Mars.Admin.Contracts.ViewModels;
 using Mars.Cms.Abstractions.Mappings.NavMenus;
 using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Services;
@@ -5,13 +6,11 @@ using Mars.Identity.Abstractions.Interfaces;
 using Mars.Identity.Abstractions.Mappings.Users;
 using Mars.Options.Abstractions.Mappings;
 using Mars.Options.Abstractions.Services;
-using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Contracts.Options;
-using Mars.Server.Contracts.ViewModels;
 using Mars.XActions.Abstractions.Managers;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Server.Handlers;
+namespace Mars.Admin.Host.Handlers;
 
 public class InitialSiteDataViewModelHandler(IOptionService optionService,
                                             INavMenuService navMenuService,

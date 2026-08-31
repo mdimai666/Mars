@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.TemplateEngine.Abstractions</PackageId>
+        <Description>Mars template engines abstractions: ITemplateEngine/ITemplateManager contracts.</Description>
+    </PropertyGroup>
+
+</Project>

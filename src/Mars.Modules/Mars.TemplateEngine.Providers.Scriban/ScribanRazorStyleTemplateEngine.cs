@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 using Scriban;
 using Scriban.Runtime;
 

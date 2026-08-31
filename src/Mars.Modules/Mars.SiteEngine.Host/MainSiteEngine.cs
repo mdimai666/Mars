@@ -14,7 +14,6 @@ using Mars.SiteEngine.Host.Handlers;
 using Mars.SiteEngine.Host.Services;
 using Mars.SiteEngine.Host.Templators;
 using Mars.SiteEngine.Host.WebSite.Scripts;
-using Mars.TemplateEngine.Host;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -42,9 +41,6 @@ public static class MainSiteEngine
         services.AddScoped<SiteFaviconConfiguratorHandler>();
 
         AddSiteScriptsBuilders(services);
-
-        // подсистема TemplateEngine потребляется SiteEngine'ом как внешняя
-        services.AddMarsTemplateEngines();
 
         return services;
     }

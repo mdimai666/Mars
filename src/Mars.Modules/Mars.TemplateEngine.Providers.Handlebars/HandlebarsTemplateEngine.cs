@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using HandlebarsDotNet;
 using HandlebarsDotNet.Extension.Json;
 using HandlebarsDotNet.Extension.NewtonsoftJson;
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 
 namespace Mars.TemplateEngine.Providers.HandlebarsProvider;
 

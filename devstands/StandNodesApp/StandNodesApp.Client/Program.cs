@@ -1,9 +1,9 @@
 using Flurl.Http;
+using Mars.Admin.Contracts.ViewModels;
 using Mars.Admin.Framework;
 using Mars.Admin.Framework.Features;
 using Mars.Nodes.Workspace;
 using Mars.Server.Contracts.Options;
-using Mars.Server.Contracts.ViewModels;
 using Mars.XActions.Contracts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using StandNodesApp.Client.Startups;

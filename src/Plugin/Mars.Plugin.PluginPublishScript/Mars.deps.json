@@ -113,6 +113,7 @@
           "Mars.SiteEngine.Contracts": "0.8.1.0",
           "Mars.SSO.Abstractions": "0.8.1.0",
           "Mars.SSO.Contracts": "0.8.1.0",
+          "Mars.TemplateEngine.Abstractions": "0.8.1.0",
           "Mars.WebApiClient": "0.8.1.0",
           "Mars.XActions.Abstractions": "0.8.1.0",
           "Mars.XActions.Contracts": "0.8.1.0",
@@ -2132,10 +2133,13 @@
           "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.11",
           "mdimai666.Mars.Admin.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Admin.Framework": "0.8.1-alpha.4",
+          "mdimai666.Mars.Cms.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Core": "0.8.1-alpha.4",
+          "mdimai666.Mars.Identity.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Nodes.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Options.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
+          "mdimai666.Mars.Server.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.SiteEngine.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.XActions.Abstractions": "0.8.1-alpha.4"
         },
@@ -2454,7 +2458,8 @@
           "mdimai666.Mars.Nodes.Front.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Scheduler.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
-          "mdimai666.Mars.SiteEngine.Abstractions": "0.8.1-alpha.4"
+          "mdimai666.Mars.SiteEngine.Abstractions": "0.8.1-alpha.4",
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.Nodes.Host.dll": {
@@ -2655,7 +2660,6 @@
         "dependencies": {
           "Flurl.Http": "4.0.2",
           "Mars.SiteEngine.Templators": "0.8.1-alpha.4",
-          "Mars.TemplateEngine.Host": "0.8.1-alpha.4",
           "mdimai666.Mars.Cms.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Data": "0.8.1-alpha.4",
           "mdimai666.Mars.Identity.Abstractions": "0.8.1-alpha.4",
@@ -2664,7 +2668,8 @@
           "mdimai666.Mars.Options.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.SiteEngine.Abstractions": "0.8.1-alpha.4",
-          "mdimai666.Mars.SiteEngine.Contracts": "0.8.1-alpha.4"
+          "mdimai666.Mars.SiteEngine.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.SiteEngine.Host.dll": {
@@ -2718,7 +2723,7 @@
         "dependencies": {
           "Mars.TemplateEngine.Providers.Handlebars": "0.8.1-alpha.4",
           "Mars.TemplateEngine.Providers.Scriban": "0.8.1-alpha.4",
-          "mdimai666.Mars.Core": "0.8.1-alpha.4"
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.TemplateEngine.Host.dll": {
@@ -2732,7 +2737,7 @@
           "Handlebars.Net": "2.4.3",
           "Handlebars.Net.Extension.Json": "1.0.0",
           "Handlebars.Net.Extension.NewtonsoftJson": "1.0.3",
-          "mdimai666.Mars.Core": "0.8.1-alpha.4"
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.TemplateEngine.Providers.Handlebars.dll": {
@@ -2744,7 +2749,7 @@
       "Mars.TemplateEngine.Providers.Scriban/0.8.1-alpha.4": {
         "dependencies": {
           "Scriban": "7.2.6",
-          "mdimai666.Mars.Core": "0.8.1-alpha.4"
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.TemplateEngine.Providers.Scriban.dll": {
@@ -2823,7 +2828,12 @@
       },
       "mdimai666.Mars.Admin.Contracts/0.8.1-alpha.4": {
         "dependencies": {
-          "mdimai666.Mars.Contracts": "0.8.1-alpha.4"
+          "mdimai666.Mars.Cms.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.Identity.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.Options.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.Server.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.XActions.Contracts": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.Admin.Contracts.dll": {
@@ -2844,6 +2854,7 @@
           "Microsoft.FluentUI.AspNetCore.Components.Icons": "4.14.4",
           "Toolbelt.Blazor.HttpClientInterceptor": "10.2.0",
           "mdimai666.BlazoredHtmlRender": "0.8.1-alpha.4",
+          "mdimai666.Mars.Admin.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Cms.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Core": "0.8.1-alpha.4",
@@ -2894,7 +2905,8 @@
           "mdimai666.Mars.Cms.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Core": "0.8.1-alpha.4",
-          "mdimai666.Mars.Media.Abstractions": "0.8.1-alpha.4"
+          "mdimai666.Mars.Media.Abstractions": "0.8.1-alpha.4",
+          "mdimai666.Mars.XActions.Contracts": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.Cms.Abstractions.dll": {
@@ -3164,6 +3176,7 @@
           "mdimai666.Mars.Options.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.SiteEngine.Abstractions": "0.8.1-alpha.4",
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.XActions.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
@@ -3370,11 +3383,7 @@
       },
       "mdimai666.Mars.Server.Contracts/0.8.1-alpha.4": {
         "dependencies": {
-          "mdimai666.Mars.Cms.Contracts": "0.8.1-alpha.4",
-          "mdimai666.Mars.Contracts": "0.8.1-alpha.4",
-          "mdimai666.Mars.Identity.Contracts": "0.8.1-alpha.4",
-          "mdimai666.Mars.Options.Contracts": "0.8.1-alpha.4",
-          "mdimai666.Mars.XActions.Contracts": "0.8.1-alpha.4"
+          "mdimai666.Mars.Contracts": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.Server.Contracts.dll": {
@@ -3394,7 +3403,8 @@
           "mdimai666.Mars.Nodes.Core": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Contracts": "0.8.1-alpha.4",
-          "mdimai666.Mars.SiteEngine.Contracts": "0.8.1-alpha.4"
+          "mdimai666.Mars.SiteEngine.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.TemplateEngine.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.SiteEngine.Abstractions.dll": {
@@ -3432,6 +3442,14 @@
         },
         "runtime": {
           "Mars.SSO.Contracts.dll": {
+            "assemblyVersion": "0.8.1.0",
+            "fileVersion": "0.8.1.0"
+          }
+        }
+      },
+      "mdimai666.Mars.TemplateEngine.Abstractions/0.8.1-alpha.4": {
+        "runtime": {
+          "Mars.TemplateEngine.Abstractions.dll": {
             "assemblyVersion": "0.8.1.0",
             "fileVersion": "0.8.1.0"
           }
@@ -3856,6 +3874,14 @@
       "Mars.SSO.Contracts/0.8.1.0": {
         "runtime": {
           "Mars.SSO.Contracts.dll": {
+            "assemblyVersion": "0.8.1.0",
+            "fileVersion": "0.8.1.0"
+          }
+        }
+      },
+      "Mars.TemplateEngine.Abstractions/0.8.1.0": {
+        "runtime": {
+          "Mars.TemplateEngine.Abstractions.dll": {
             "assemblyVersion": "0.8.1.0",
             "fileVersion": "0.8.1.0"
           }
@@ -5553,6 +5579,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "mdimai666.Mars.TemplateEngine.Abstractions/0.8.1-alpha.4": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "mdimai666.Mars.WebApiClient/0.8.1-alpha.4": {
       "type": "project",
       "serviceable": false,
@@ -5794,6 +5825,11 @@
       "sha512": ""
     },
     "Mars.SSO.Contracts/0.8.1.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.TemplateEngine.Abstractions/0.8.1.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

@@ -2,13 +2,11 @@ using System.Reflection;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Abstractions.Services;
 using Mars.Server.Abstractions.Attributes;
-using Mars.Server.Abstractions.Handlers;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.Abstractions.Validators;
 using Mars.Server.Contracts.Options;
-using Mars.Server.Handlers;
 using Mars.Server.Managers;
 using Mars.Server.Seeding;
 using Mars.Server.Services;
@@ -38,8 +36,6 @@ public static class MainServer
         services.AddSingleton<LogMaintenanceStartupService>();
         services.AddSingleton<IMarsSystemService, MarsSystemService>();
         //services.AddSingleton<ModelInfoService>(); // Mars\Mars.Contracts\Tools\ModelInfoService.cs
-
-        services.AddScoped<IInitialSiteDataViewModelHandler, InitialSiteDataViewModelHandler>();
 
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
 

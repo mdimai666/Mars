@@ -1,4 +1,4 @@
-namespace Mars.Core.TemplateEngine;
+namespace Mars.TemplateEngine.Abstractions;
 
 public interface ITemplateManager
 {

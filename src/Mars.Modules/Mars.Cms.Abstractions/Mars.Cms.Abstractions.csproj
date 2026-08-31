@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />
     <ProjectReference Include="..\Mars.Cms.Contracts\Mars.Cms.Contracts.csproj" />
     <ProjectReference Include="..\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\Mars.XActions.Contracts\Mars.XActions.Contracts.csproj" />
   </ItemGroup>
 
 

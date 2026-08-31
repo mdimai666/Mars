@@ -5,7 +5,7 @@ using Mars.Options.Contracts.Dto.Options;
 using Mars.Server.Contracts.Options;
 using Mars.XActions.Contracts;
 
-namespace Mars.Server.Contracts.ViewModels;
+namespace Mars.Admin.Contracts.ViewModels;
 
 public class InitialSiteDataViewModel
 {

@@ -1,4 +1,4 @@
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 using Mars.TemplateEngine.Host.InternalProviders;
 using Mars.TemplateEngine.Providers.HandlebarsProvider;
 using Mars.TemplateEngine.Providers.ScribanProvider;

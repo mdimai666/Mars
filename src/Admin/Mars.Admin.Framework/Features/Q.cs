@@ -3,7 +3,7 @@ using Mars.Admin.Framework.AuthProviders;
 using Mars.Admin.Framework.Mappings;
 using Mars.Admin.Framework.Models;
 using Mars.Identity.Contracts.ViewModels;
-using Mars.Server.Contracts.ViewModels;
+using Mars.Admin.Contracts.ViewModels;
 using Mars.SSO.Contracts.Dto;
 
 namespace Mars.Admin.Framework.Features;

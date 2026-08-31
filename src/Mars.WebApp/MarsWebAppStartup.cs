@@ -28,6 +28,7 @@ using Mars.Server.Abstractions.JsonConverters;
 using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Mars.Server.CommandLine;
+using Mars.TemplateEngine.Host;
 using Mars.Server.Startup;
 using Mars.Setup;
 using Mars.SiteEngine.Handlebars;
@@ -103,6 +104,7 @@ public static class MarsWebAppStartup
                         .AddDatasourceHost()
                         .AddMarsScheduler()
                         .AddMarsExcel()
+                        .AddMarsTemplateEngines()
                         .AddMarsSiteEngine()
                         .AddMarsSiteEngineHandlebars()
                         .AddEditorJsBlazored();

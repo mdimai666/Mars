@@ -121,6 +121,7 @@
     <Project Path="src/Mars.Modules/Mars.SSO.Host/Mars.SSO.Host.csproj" />
   </Folder>
   <Folder Name="/Mars.Modules/TemplateEngines/">
+    <Project Path="src/Mars.Modules/Mars.TemplateEngine.Abstractions/Mars.TemplateEngine.Abstractions.csproj" Id="f2691f12-32a4-4cd3-aec6-964c803d5531" />
     <Project Path="src/Mars.Modules/Mars.TemplateEngine.Host/Mars.TemplateEngine.Host.csproj" Id="d31af368-bdca-420b-b1e7-c0e1083061ff" />
     <Project Path="src/Mars.Modules/Mars.TemplateEngine.Providers.Handlebars/Mars.TemplateEngine.Providers.Handlebars.csproj" Id="07eb6e2e-91a2-42b9-85f3-17e351bf9806" />
     <Project Path="src/Mars.Modules/Mars.TemplateEngine.Providers.Scriban/Mars.TemplateEngine.Providers.Scriban.csproj" Id="7de4fbbd-2ea3-44d6-bcaa-8e0ce4534996" />

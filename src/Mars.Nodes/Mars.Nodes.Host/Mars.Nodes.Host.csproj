@@ -17,6 +17,7 @@
         <ProjectReference Include="..\Mars.Nodes.Front.Abstractions\Mars.Nodes.Front.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Scheduler.Abstractions\Mars.Scheduler.Abstractions.csproj" />
+        <ProjectReference Include="..\..\Mars.Modules\Mars.TemplateEngine.Abstractions\Mars.TemplateEngine.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

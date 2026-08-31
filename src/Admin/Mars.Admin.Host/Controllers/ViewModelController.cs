@@ -1,10 +1,10 @@
 using System.Net.Mime;
+using Mars.Admin.Contracts.ViewModels;
+using Mars.Admin.Host.Handlers;
 using Mars.Server.Abstractions.ExceptionFilters;
-using Mars.Server.Abstractions.Handlers;
-using Mars.Server.Contracts.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mars.Server.Controllers;
+namespace Mars.Admin.Host.Controllers;
 
 [ApiController]
 [Route("vm/[controller]/[action]")]

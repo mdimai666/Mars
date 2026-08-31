@@ -4,7 +4,7 @@
         <PackageId>mdimai666.Mars.Contracts</PackageId>
         <Product>Mars.Contracts</Product>
         <Description>
-            Mars Shared lib contains contracts and abstractions;
+            Mars global wire contracts: shared DTOs, interfaces and WASM-safe helpers.
         </Description>
     </PropertyGroup>
 

@@ -1,7 +1,7 @@
-using Mars.Server.Contracts.ViewModels;
+using Mars.Admin.Contracts.ViewModels;
 using Microsoft.AspNetCore.Http;
 
-namespace Mars.Server.Abstractions.Handlers;
+namespace Mars.Admin.Host.Handlers;
 
 public interface IInitialSiteDataViewModelHandler
 {

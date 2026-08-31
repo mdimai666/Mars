@@ -32,6 +32,7 @@
         <ProjectReference Include="..\..\Mars.Modules\Mars.Media.Abstractions\Mars.Media.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.SiteEngine.Abstractions\Mars.SiteEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Mars.Modules\Mars.TemplateEngine.Abstractions\Mars.TemplateEngine.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

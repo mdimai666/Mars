@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 
 namespace Mars.TemplateEngine.Host.InternalProviders;
 

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Reflection;
-using Mars.Core.TemplateEngine;
+using Mars.TemplateEngine.Abstractions;
 
 namespace Mars.TemplateEngine.Host;
 

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Mars.Contracts.Dto.Files;
-using Mars.Server.Abstractions.Services;
+using Mars.Storage.Services;
 
 namespace Mars.Server.Tests.Files;
 

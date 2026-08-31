@@ -1,6 +1,6 @@
 namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
-public class RenderInfo
+public class RenderResult
 {
     public int Code;
     public string html = default!;

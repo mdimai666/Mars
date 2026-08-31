@@ -4,7 +4,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Mars.SiteEngine.Abstractions.WebSite.Models;
 
-public class CompiledHttpRouteMatcher
+public class WebPageRouteMatcher
 {
     public static readonly ObjectPool<RouteValueDictionary> RouteValuePools =
         ObjectPool.Create(new RouteValueDictionaryPolicy());
@@ -19,7 +19,7 @@ public class CompiledHttpRouteMatcher
 
     private WebPage IndexPage { get; }
 
-    public CompiledHttpRouteMatcher(IReadOnlyCollection<WebPage> pages, WebPage indexPage)
+    public WebPageRouteMatcher(IReadOnlyCollection<WebPage> pages, WebPage indexPage)
     {
         var exact = new Dictionary<string, WebPage>();
         var templates = new Dictionary<int, List<WebPage>>();

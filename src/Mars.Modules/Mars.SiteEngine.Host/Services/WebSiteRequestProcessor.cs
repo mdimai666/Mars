@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using RenderInfo = Mars.SiteEngine.Abstractions.WebSite.Models.RenderInfo;
 
 namespace Mars.SiteEngine.Host.Services;
 
@@ -32,11 +31,11 @@ public class WebSiteRequestProcessor
         requestContext = serviceProvider.GetRequiredService<IRequestContext>();
     }
 
-    public async Task<RenderInfo> RenderRequest(HttpContext httpContext, RenderParam param, CancellationToken cancellationToken)
+    public async Task<RenderResult> RenderRequest(HttpContext httpContext, RenderParam param, CancellationToken cancellationToken)
     {
         var appFront = (httpContext.Items[nameof(MarsAppFront)] as MarsAppFront)!;
 
-        WebPage? page = template.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
+        WebPage? page = template.WebPageRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
         var request = new WebClientRequest(httpContext.Request, routeValues: routeValues);
 
         try
@@ -45,7 +44,7 @@ public class WebSiteRequestProcessor
 
             var html = await RenderPageHtml(appFront, request, page, param, cancellationToken);
 
-            return new RenderInfo
+            return new RenderResult
             {
                 Code = 200,
                 html = html,
@@ -56,13 +55,13 @@ public class WebSiteRequestProcessor
         {
             // Возвращаем в пул после использования!
             if (routeValues is not null)
-                CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+                WebPageRouteMatcher.RouteValuePools.Return(routeValues);
         }
     }
 
-    public async Task<RenderInfo> RenderPage(MarsAppFront appFront, WebClientRequest request, WebPage page, RenderParam param, CancellationToken cancellationToken)
+    public async Task<RenderResult> RenderPage(MarsAppFront appFront, WebClientRequest request, WebPage page, RenderParam param, CancellationToken cancellationToken)
     {
-        return new RenderInfo
+        return new RenderResult
         {
             Code = 200,
             html = await RenderPageHtml(appFront, request, page, param, cancellationToken),
@@ -70,9 +69,9 @@ public class WebSiteRequestProcessor
         };
     }
 
-    public async Task<RenderInfo> RenderPage404(MarsAppFront appFront, WebClientRequest request, RenderParam param, CancellationToken cancellationToken)
+    public async Task<RenderResult> RenderPage404(MarsAppFront appFront, WebClientRequest request, RenderParam param, CancellationToken cancellationToken)
     {
-        return new RenderInfo
+        return new RenderResult
         {
             Code = 404,
             html = await RenderPageHtml(appFront, request, template.Page404 ?? template.IndexPage, param, cancellationToken),
@@ -82,7 +81,7 @@ public class WebSiteRequestProcessor
 
     //public WebPage? ResolveUrl(PathString path)
     //{
-    //    return template.CompiledHttpRouteMatcher.Match(path);
+    //    return template.WebPageRouteMatcher.Match(path);
     //}
 
     /// <summary>

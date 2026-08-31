@@ -4,7 +4,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Mars.Nodes.Abstractions.HttpModule;
 
-public class CompiledHttpRouteMatcher
+public class HttpCatchRouteMatcher
 {
     public static readonly ObjectPool<RouteValueDictionary> RouteValuePools =
         ObjectPool.Create(new RouteValueDictionaryPolicy());
@@ -18,7 +18,7 @@ public class CompiledHttpRouteMatcher
 
     private bool _empty;
 
-    public CompiledHttpRouteMatcher(IReadOnlyCollection<HttpCatchRegister> httpCatches)
+    public HttpCatchRouteMatcher(IReadOnlyCollection<HttpCatchRegister> httpCatches)
     {
         var exact = new Dictionary<string, HttpCatchRegister>();
         var templates = new Dictionary<int, List<HttpCatchRegister>>();
@@ -47,7 +47,7 @@ public class CompiledHttpRouteMatcher
 
         _empty = _exactRoutes.Count + _templateRoutes.Count == 0;
 
-        //return new CompiledHttpRouteMatcher
+        //return new HttpCatchRouteMatcher
         //{
         //    ExactRoutes = exact,
         //    TemplateRoutes = templates // можно сортировать один раз, если нужно

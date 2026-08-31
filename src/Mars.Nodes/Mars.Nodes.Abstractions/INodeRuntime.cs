@@ -19,7 +19,7 @@ public interface INodeRuntime
     IReadOnlyDictionary<string, VarNode> VarNodesDict { get; }
     IReadOnlyDictionary<string, ConfigNode> ConfigNodesDict { get; }
     IReadOnlyDictionary<string, Node> BasicNodesDict { get; }
-    CompiledHttpRouteMatcher CompiledHttpRouteMatcher { get; }
+    HttpCatchRouteMatcher HttpCatchRouteMatcher { get; }
     event NodeImplDoneEvent OnNodeImplDone;
     NodesErrorHandlerRegistry ErrorHandlerRegistry { get; }
     void AssignNodes(IReadOnlyCollection<Node> nodes, CancellationToken cancellationToken);

@@ -83,7 +83,7 @@ public class WebPage : WebSitePart
             return path == Url;
 
         if (TemplateMatcher is null) return false;
-        routeValues = CompiledHttpRouteMatcher.RouteValuePools.Get();
+        routeValues = WebPageRouteMatcher.RouteValuePools.Get();
 
         try
         {
@@ -100,7 +100,7 @@ public class WebPage : WebSitePart
         catch
         {
             // Если что-то пошло не так — возвращаем в пул
-            CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+            WebPageRouteMatcher.RouteValuePools.Return(routeValues);
             throw;
         }
     }

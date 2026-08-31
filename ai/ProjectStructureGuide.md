@@ -69,6 +69,26 @@ SSO, Scheduler, Docker, Excel, QueryLang, AiChat, SemanticKernel, TemplateEngine
 Легаси-суффиксы `.Shared` / `.Host.Shared` не используются.
 Роли-образцы: `.Abstractions` = контракт, `.Kit` (`Mars.Plugin.Kit.Host/Front`) = тяжёлые готовые помощники для плагинов.
 
+### Что живёт в `Contracts` vs `Abstractions` (де-факто конвенция)
+
+Граница между `Mars.X.Contracts` и `Mars.X.Abstractions` — **WASM**: типы, которые видит
+браузер (фронт `Mars.Admin`/`.Front`, WebApiClient), живут в `Contracts`; всё, что нужно
+только серверу, — в `Abstractions`. Критерий размещения — «кто это видит».
+
+| Проект / папка | Что кладём |
+|---|---|
+| `Mars.X.Contracts` | wire-DTO через клиент↔сервер, модели запросов/ответов API, типы для WASM-фронта и WebApiClient. Никаких EF / AspNetCore / DI-зависимостей |
+| `Mars.X.Abstractions/Dto/` | серверные query/command-объекты и их валидаторы (`CreatePostQuery`, `UpdateUserQuery`), серверные DTO, не уходящие в браузер |
+| `Mars.X.Abstractions/Mappings/` | маппинги entity/DTO → Contracts-ответы (`PostMapping`, `OptionMapping`) |
+| `Mars.X.Abstractions/Services/` | интерфейсы сервисов модуля (`IPostService`, `IOptionService`) |
+| `Mars.X.Abstractions/Interfaces/` | прочие сквозные интерфейсы (например `IRequestContext`) |
+| `Mars.X.Abstractions/` (остальное) | точки расширения, модели, валидаторы — без тяжёлой имплементации (DI-граф, EF) |
+
+Query-объекты и маппинги лежат в `Abstractions` (не в `Contracts`), даже если их имена
+похожи на wire-DTO: фронт их не использует, и тащить их в WASM-пакет незачем.
+Внутри модуля допустимо отклоняться от набора папок (например `SiteEngine.Abstractions`
+добавляет `WebSite/`, `Templators/`) — главное, чтобы `Contracts` оставались WASM-чистыми.
+
 ## Правила направленности и композиции
 
 1. Модуль ссылается только на чужие `Contracts`/`Abstractions`. Ссылки на чужие `.Host` запрещены.

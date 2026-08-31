@@ -38,6 +38,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Server\Mars.Server\Mars.Server.csproj" />
+		<ProjectReference Include="..\..\src\Server\Mars.Storage\Mars.Storage.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.CommandLine\Mars.CommandLine.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.Cms.Host\Mars.Cms.Host.csproj" />
 		<ProjectReference Include="..\..\src\Mars.Modules\Mars.Media.Host\Mars.Media.Host.csproj" />

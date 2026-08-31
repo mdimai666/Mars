@@ -104,7 +104,7 @@ public class HttpCatchRegister
             return false;
 
         // Выделяем словарь только если совпадение возможно
-        var dict = CompiledHttpRouteMatcher.RouteValuePools.Get();
+        var dict = HttpCatchRouteMatcher.RouteValuePools.Get();
 
         try
         {
@@ -151,7 +151,7 @@ public class HttpCatchRegister
         catch
         {
             // Если что-то пошло не так — возвращаем в пул
-            CompiledHttpRouteMatcher.RouteValuePools.Return(dict);
+            HttpCatchRouteMatcher.RouteValuePools.Return(dict);
             throw;
         }
     }

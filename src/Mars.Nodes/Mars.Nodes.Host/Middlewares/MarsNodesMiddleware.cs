@@ -41,7 +41,7 @@ internal class MarsNodesMiddleware
 
         if (_runtime.HttpRegisterdCatchers.Count > 0)
         {
-            var foundRoute = _runtime.CompiledHttpRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
+            var foundRoute = _runtime.HttpCatchRouteMatcher.Match(httpContext.Request.Path, out var routeValues);
 
             if (foundRoute is not null)
             {
@@ -72,7 +72,7 @@ internal class MarsNodesMiddleware
                 {
                     // Возвращаем в пул после использования!
                     if (routeValues is not null)
-                        CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+                        HttpCatchRouteMatcher.RouteValuePools.Return(routeValues);
                 }
                 return;
             }

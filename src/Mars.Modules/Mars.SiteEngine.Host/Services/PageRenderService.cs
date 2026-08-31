@@ -67,7 +67,7 @@ internal class PageRenderService : IPageRenderService
         return AsResult(render, httpContext);
     }
 
-    RenderActionResult<PostRenderDto> AsResult(Abstractions.WebSite.Models.RenderInfo render, HttpContext httpContext)
+    RenderActionResult<PostRenderDto> AsResult(RenderResult render, HttpContext httpContext)
     {
         var _uri = new Uri(httpContext.Request.GetDisplayUrl());
 
@@ -107,7 +107,7 @@ internal class PageRenderService : IPageRenderService
         if (IsRenderNotSupport(af)) return RenderNotSupportError();
 
         var tsv = af.Features.Get<IWebTemplateService>();
-        WebPage? page = tsv.Template.CompiledHttpRouteMatcher.Match(url, out var routeValues);
+        WebPage? page = tsv.Template.WebPageRouteMatcher.Match(url, out var routeValues);
 
         if (page is null)
             return await RenderPage404(httpContext, cancellationToken);
@@ -117,7 +117,7 @@ internal class PageRenderService : IPageRenderService
         var request = new WebClientRequest(httpContext.Request, replacePath: url, routeValues: routeValues);
 
         if (routeValues is not null)
-            CompiledHttpRouteMatcher.RouteValuePools.Return(routeValues);
+            WebPageRouteMatcher.RouteValuePools.Return(routeValues);
 
         var processor = new WebSiteRequestProcessor(_serviceProvider, tsv.Template);
         var render = await processor.RenderPage(af, request, page, renderParam ?? RenderParam(httpContext), cancellationToken);

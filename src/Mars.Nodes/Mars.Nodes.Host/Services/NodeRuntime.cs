@@ -51,7 +51,7 @@ internal class NodeRuntime : INodeRuntime
 
     private int _assignedCount = 0;
 
-    public CompiledHttpRouteMatcher CompiledHttpRouteMatcher { get; private set; } = default!;
+    public HttpCatchRouteMatcher HttpCatchRouteMatcher { get; private set; } = default!;
 
     public event NodeImplDoneEvent OnNodeImplDone = default!;
 
@@ -141,7 +141,7 @@ internal class NodeRuntime : INodeRuntime
         _assignedCount++;
         _basicNodesDict = Nodes.ToDictionary(s => s.Key, s => s.Value.Node);
 
-        CompiledHttpRouteMatcher = new CompiledHttpRouteMatcher(HttpRegisterdCatchers);
+        HttpCatchRouteMatcher = new HttpCatchRouteMatcher(HttpRegisterdCatchers);
         ErrorHandlerRegistry = new NodesErrorHandlerRegistry(_basicNodesDict.Values.OfType<CatchErrorNode>().Where(node => !node.Disabled));
 
         NodeLifecycleOnAssigned(Nodes, cancellationToken);

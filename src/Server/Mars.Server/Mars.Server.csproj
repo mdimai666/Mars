@@ -26,6 +26,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Mars.Data\Mars.Data.csproj" />
         <ProjectReference Include="..\Mars.Data.Repositories\Mars.Data.Repositories.csproj" />
+        <ProjectReference Include="..\Mars.Storage\Mars.Storage.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
         <ProjectReference Include="..\Mars.Server.Abstractions\Mars.Server.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Contracts\Mars.Contracts.csproj" />

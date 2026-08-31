@@ -178,6 +178,9 @@
     <Project Path="src/Server/Mars.Data.Repositories/Mars.Data.Repositories.csproj" />
     <Project Path="src/Server/Mars.Data/Mars.Data.csproj" />
   </Folder>
+  <Folder Name="/Server/Storage/">
+    <Project Path="src/Server/Mars.Storage/Mars.Storage.csproj" Id="7388ed9c-b1a1-4203-8268-ce94ac1f7182" />
+  </Folder>
   <Folder Name="/Server/Server/">
     <Project Path="src/Server/Mars.Server.Abstractions/Mars.Server.Abstractions.csproj" />
     <Project Path="src/Server/Mars.Server.Contracts/Mars.Server.Contracts.csproj" />

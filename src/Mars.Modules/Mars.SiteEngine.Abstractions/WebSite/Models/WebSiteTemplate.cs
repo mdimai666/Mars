@@ -16,7 +16,7 @@ public class WebSiteTemplate
     public WebPage IndexPage { get; init; }
 
     public Guid Hash { get; init; } = Guid.NewGuid();
-    public CompiledHttpRouteMatcher CompiledHttpRouteMatcher { get; }
+    public WebPageRouteMatcher WebPageRouteMatcher { get; }
 
     public WebSiteTemplate(
         IReadOnlyDictionary<string, WebRoot> roots,
@@ -36,7 +36,7 @@ public class WebSiteTemplate
         Page404 = page404;
         Page500 = page500;
 
-        CompiledHttpRouteMatcher = new(Pages, indexPage: IndexPage);
+        WebPageRouteMatcher = new(Pages, indexPage: IndexPage);
     }
 
     public WebSiteTemplate(IEnumerable<WebSitePart> w_parts)
@@ -51,7 +51,7 @@ public class WebSiteTemplate
         IndexPage = Pages.FirstOrDefault(s => s.Url == "/") ?? Pages.FirstOrDefault(s => s.Name == "index") ?? throw new NotFoundException("index page not found");
         RootPage = Roots.Values.FirstOrDefault(s => s.StartPath == "/") ?? throw new NotFoundException("web site Root file not found");
 
-        CompiledHttpRouteMatcher = new(Pages, indexPage: IndexPage);
+        WebPageRouteMatcher = new(Pages, indexPage: IndexPage);
 
         CheckParts();
     }

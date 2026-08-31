@@ -113,6 +113,7 @@
           "Mars.SiteEngine.Contracts": "0.8.1.0",
           "Mars.SSO.Abstractions": "0.8.1.0",
           "Mars.SSO.Contracts": "0.8.1.0",
+          "Mars.Storage": "0.8.1.0",
           "Mars.TemplateEngine.Abstractions": "0.8.1.0",
           "Mars.WebApiClient": "0.8.1.0",
           "Mars.XActions.Abstractions": "0.8.1.0",
@@ -2521,7 +2522,8 @@
           "mdimai666.Mars.Plugin.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Plugin.Contracts": "0.8.1-alpha.4",
           "mdimai666.Mars.Plugin.Front.Abstractions": "0.8.1-alpha.4",
-          "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4"
+          "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
+          "mdimai666.Mars.Storage": "0.8.1-alpha.4"
         },
         "runtime": {
           "Mars.Plugin.dll": {
@@ -2631,6 +2633,7 @@
           "mdimai666.Mars.Scheduler.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4",
           "mdimai666.Mars.Server.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.Storage": "0.8.1-alpha.4",
           "mdimai666.Mars.XActions.Abstractions": "0.8.1-alpha.4"
         },
         "runtime": {
@@ -3447,6 +3450,18 @@
           }
         }
       },
+      "mdimai666.Mars.Storage/0.8.1-alpha.4": {
+        "dependencies": {
+          "mdimai666.Mars.Contracts": "0.8.1-alpha.4",
+          "mdimai666.Mars.Server.Abstractions": "0.8.1-alpha.4"
+        },
+        "runtime": {
+          "Mars.Storage.dll": {
+            "assemblyVersion": "0.8.1.0",
+            "fileVersion": "0.8.1.0"
+          }
+        }
+      },
       "mdimai666.Mars.TemplateEngine.Abstractions/0.8.1-alpha.4": {
         "runtime": {
           "Mars.TemplateEngine.Abstractions.dll": {
@@ -3874,6 +3889,14 @@
       "Mars.SSO.Contracts/0.8.1.0": {
         "runtime": {
           "Mars.SSO.Contracts.dll": {
+            "assemblyVersion": "0.8.1.0",
+            "fileVersion": "0.8.1.0"
+          }
+        }
+      },
+      "Mars.Storage/0.8.1.0": {
+        "runtime": {
+          "Mars.Storage.dll": {
             "assemblyVersion": "0.8.1.0",
             "fileVersion": "0.8.1.0"
           }
@@ -5579,6 +5602,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "mdimai666.Mars.Storage/0.8.1-alpha.4": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "mdimai666.Mars.TemplateEngine.Abstractions/0.8.1-alpha.4": {
       "type": "project",
       "serviceable": false,
@@ -5825,6 +5853,11 @@
       "sha512": ""
     },
     "Mars.SSO.Contracts/0.8.1.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mars.Storage/0.8.1.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

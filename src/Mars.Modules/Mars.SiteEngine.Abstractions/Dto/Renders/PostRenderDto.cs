@@ -15,16 +15,4 @@ public class PostRenderDto
     {
 
     }
-
-    public PostRenderDto(RenderInfo renderInfo)
-    {
-        Title = renderInfo.Title;
-        Html = renderInfo.Template;
-        PostSlug = renderInfo.PostSlug;
-        PostType = renderInfo.PostType;
-        Date = renderInfo.Date;
-        DataId = renderInfo.DataId;
-        TemplateId = renderInfo.TemplateId;
-        EditUrl = "";
-    }
 }

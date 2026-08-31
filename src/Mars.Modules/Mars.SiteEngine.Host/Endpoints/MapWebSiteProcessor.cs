@@ -103,7 +103,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         }
     }
 
-    public async Task<RenderInfo> RenderRequest(HttpContext httpContext, RenderParam? param, CancellationToken cancellationToken)
+    public async Task<RenderResult> RenderRequest(HttpContext httpContext, RenderParam? param, CancellationToken cancellationToken)
     {
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var tsv = af.Features.Get<IWebTemplateService>();
@@ -113,7 +113,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
 
     }
 
-    public async Task<RenderInfo> RenderPage(WebPage page, HttpContext httpContext, RenderParam? param, CancellationToken cancellationToken)
+    public async Task<RenderResult> RenderPage(WebPage page, HttpContext httpContext, RenderParam? param, CancellationToken cancellationToken)
     {
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var request = new WebClientRequest(httpContext.Request);
@@ -124,7 +124,7 @@ public class MapWebSiteProcessor : IWebSiteProcessor
         return await processor.RenderPage(af, request, page, param ?? new(), cancellationToken);
     }
 
-    public async Task<RenderInfo> RenderPage404(HttpContext httpContext, RenderParam? param, CancellationToken cancellationToken)
+    public async Task<RenderResult> RenderPage404(HttpContext httpContext, RenderParam? param, CancellationToken cancellationToken)
     {
         var af = httpContext.Items[nameof(MarsAppFront)] as MarsAppFront;
         var request = new WebClientRequest(httpContext.Request);

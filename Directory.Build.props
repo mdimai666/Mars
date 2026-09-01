@@ -27,9 +27,13 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <BlazorWebAssemblyOmitDebugProxyOutput>true</BlazorWebAssemblyOmitDebugProxyOutput>
-        <DebugType>none</DebugType>
-        <DebugSymbols>false</DebugSymbols>
         <SatelliteResourceLanguages>en;ru;en-US;ru-RU</SatelliteResourceLanguages>
+        <!-- Обычная Release-сборка/publish без PDB (лёгкий вывод). Символы для NuGet включаются
+             явной паковкой с символами: CI передаёт -p:PackWithSymbols=true. -->
+        <DebugType Condition=" '$(PackWithSymbols)' == 'true' ">portable</DebugType>
+        <DebugSymbols Condition=" '$(PackWithSymbols)' == 'true' ">true</DebugSymbols>
+        <DebugType Condition=" '$(PackWithSymbols)' != 'true' ">none</DebugType>
+        <DebugSymbols Condition=" '$(PackWithSymbols)' != 'true' ">false</DebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -49,7 +53,9 @@
         <RepositoryUrl>https://github.com/mdimai666/Mars</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <IncludeSymbols>true</IncludeSymbols>
+        <!-- Символьный пакет только когда реально есть PDB: Debug, либо Release с -p:PackWithSymbols=true
+             (иначе пустой snupkg роняет pack ошибкой NU5017). -->
+        <IncludeSymbols Condition=" '$(DebugType)' != 'none' ">true</IncludeSymbols>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>

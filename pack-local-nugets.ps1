@@ -106,7 +106,7 @@ foreach ($p in $packables) {
     Draw-ProgressBar -Current $currentIndex -Total $totalDirs -CurrentItem "$pname v$version" -Status "📦 Упаковка..."
 
     $ErrorActionPreference = "Continue"
-    $processResult = dotnet pack $p.FullName --configuration Release -o $outDir --include-source -p:DebugType=portable -p:DebugSymbols=true 2>&1
+    $processResult = dotnet pack $p.FullName --configuration Release -o $outDir --include-source -p:PackWithSymbols=true 2>&1
     $exitCode = $LASTEXITCODE
     $ErrorActionPreference = "Stop"
 

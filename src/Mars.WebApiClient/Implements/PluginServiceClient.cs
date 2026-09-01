@@ -30,4 +30,9 @@ internal class PluginServiceClient : BasicServiceClient, IPluginServiceClient
                        mp.AddFile("files", file, filename, "application/zip");
                })
                .ReceiveJson<PluginsUploadOperationResultResponse>();
+
+    public Task<PluginInstallResponse> InstallFromNuget(string packageId, string? version = null)
+        => _client.Request($"{_basePath}{_controllerName}", "InstallFromNuget")
+                  .PostJsonAsync(new InstallPluginRequest { PackageId = packageId, Version = version })
+                  .ReceiveJson<PluginInstallResponse>();
 }

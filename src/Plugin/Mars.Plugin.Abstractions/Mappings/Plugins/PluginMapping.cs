@@ -60,4 +60,14 @@ public static class PluginMapping
 
     public static IReadOnlyCollection<PluginsUploadOperationItemResponse> ToResponse(this IEnumerable<PluginsUploadOperationItemDto> list)
         => list.Select(ToResponse).ToArray();
+
+    public static PluginInstallResponse ToResponse(this PluginInstallResultDto entity)
+        => new()
+        {
+            PackageId = entity.PackageId,
+            Version = entity.Version,
+            InstalledAtUtc = entity.InstalledAtUtc,
+            RestartRequired = true,
+            Message = "Installed. Restart the server to activate the plugin.",
+        };
 }

@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Security;
+using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Sdk.Models;
 
 namespace Mars.Plugin.Sdk;
@@ -46,7 +47,7 @@ internal static class PluginPackageBuilder
                 zip.CreateEntryFromFile(file.FullName, $"mars/front/{rel}", CompressionLevel.Optimal);
             }
 
-        zip.CreateEntryFromFile(descriptorPath, $"mars/{PluginDescriptorWriter.DescriptorFileName}", CompressionLevel.Optimal);
+        zip.CreateEntryFromFile(descriptorPath, $"mars/{PluginPackageDescriptor.FileName}", CompressionLevel.Optimal);
 
         if (!string.IsNullOrWhiteSpace(settings.Icon))
         {

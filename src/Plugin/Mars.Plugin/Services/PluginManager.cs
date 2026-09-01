@@ -1,7 +1,9 @@
 using System.Reflection;
 using Mars.Plugin.Abstractions;
+using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
+using Mars.Plugin.Handlers;
 using Mars.Plugin.PluginProvider.Providers;
 using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
@@ -286,6 +288,34 @@ internal class PluginManager
             logger.LogDebug("Found potential plugin folder: {PluginDir}", pluginDir.Name);
             var path = Path.Combine(dir, pluginDir.Name);
             var pluginRootFiles = fileStorage.GetDirectoryContents(path);
+
+            // Новый лейаут: дескриптор марс-plugin.json указывает входную сборку
+            var descriptorFile = pluginRootFiles.FirstOrDefault(s => s.Name == PluginPackageDescriptor.FileName);
+            if (descriptorFile is not null)
+            {
+                var descriptor = PluginDescriptorHelper.TryRead(descriptorFile.PhysicalPath!);
+                if (descriptor is null)
+                {
+                    logger.LogWarning("Cannot parse descriptor {Descriptor} in {PluginDir}. Skipping.", descriptorFile.PhysicalPath, pluginDir.PhysicalPath);
+                    continue;
+                }
+
+                var pluginPhysicalDir = Path.GetDirectoryName(descriptorFile.PhysicalPath)!;
+                var entryPhysical = Path.Combine(pluginPhysicalDir, descriptor.EntryAssembly);
+                if (!File.Exists(entryPhysical))
+                {
+                    logger.LogWarning("Descriptor entry assembly '{Entry}' not found in {PluginDir}. Skipping.", descriptor.EntryAssembly, pluginDir.PhysicalPath);
+                    continue;
+                }
+
+                logger.LogDebug("Found plugin by descriptor: {Entry}", entryPhysical);
+                yield return new PluginConfig
+                {
+                    AssemblyPath = entryPhysical,
+                    ContentRootPath = pluginPhysicalDir,
+                };
+                continue;
+            }
 
             var runtimeFiles = pluginRootFiles.Where(s => s.Name.EndsWith(".runtimeconfig.json") && !s.Name.EndsWith(".dev.runtimeconfig.json")).ToList();
 

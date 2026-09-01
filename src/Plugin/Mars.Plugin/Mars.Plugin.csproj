@@ -23,6 +23,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyModel" />
+        <PackageReference Include="NuGet.Protocol" />
     </ItemGroup>
 
 </Project>

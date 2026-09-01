@@ -62,4 +62,16 @@ public class PluginController : ControllerBase
 
         return (await _pluginService.UploadPlugin(files, cancellationToken)).ToResponse();
     }
+
+    [HttpPost("InstallFromNuget")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    public async Task<ActionResult<PluginInstallResponse>> InstallFromNuget(
+            [FromBody] InstallPluginRequest request,
+            CancellationToken cancellationToken)
+    {
+        var result = await _pluginService.InstallFromNuget(request.PackageId, request.Version, cancellationToken);
+        return result.ToResponse();
+    }
 }

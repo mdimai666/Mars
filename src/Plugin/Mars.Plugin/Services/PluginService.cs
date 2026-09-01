@@ -21,6 +21,7 @@ internal class PluginService : IPluginService
     private readonly IOptionService _optionService;
 
     public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
+    public static readonly string ErrorPluginBlockedMessage = "Plugin installation is blocked by settings";
     internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
     public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService)
@@ -59,6 +60,24 @@ internal class PluginService : IPluginService
 
         var handler = new PluginZipInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginZipInstaller>());
         return handler.Handle(files, cancellationToken);
+    }
+
+    public async Task<PluginInstallResultDto> InstallFromNuget(string packageId, string? version, CancellationToken cancellationToken)
+    {
+        var pluginOptions = _optionService.GetOption<PluginManagerSettingsOption>();
+        if (pluginOptions.GetBlockedPackageIds().Contains(packageId))
+            throw new UserActionException(ErrorPluginBlockedMessage);
+
+        var sources = pluginOptions.GetNugetSources().ToList();
+        var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>());
+        var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
+
+        return new PluginInstallResultDto
+        {
+            PackageId = result.PackageId,
+            Version = result.Version,
+            InstalledAtUtc = DateTimeOffset.UtcNow,
+        };
     }
 
 }

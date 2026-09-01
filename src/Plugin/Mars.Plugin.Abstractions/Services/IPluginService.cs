@@ -10,4 +10,5 @@ public interface IPluginService
     PagingResult<PluginInfoDto> ListTable(ListPluginQuery query);
     IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests();
     Task<PluginsUploadOperationResultDto> UploadPlugin(IFormFileCollection files, CancellationToken cancellationToken);
+    Task<PluginInstallResultDto> InstallFromNuget(string packageId, string? version, CancellationToken cancellationToken);
 }

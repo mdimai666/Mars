@@ -99,7 +99,7 @@ public class PluginNugetInstallerTests : IDisposable
             """;
         BuildPluginNupkg(packageId, version, DescriptorJson(packageId, version), dependenciesXml);
 
-        var installer = new PluginNugetInstaller(_fileStorage, NullLogger.Instance, marsDepsJson);
+        var installer = new PluginNugetInstaller(_fileStorage, NullLogger.Instance, null, marsDepsJson);
 
         // Act
         await installer.InstallAsync(packageId, null, [_feed.FullName], CancellationToken.None);

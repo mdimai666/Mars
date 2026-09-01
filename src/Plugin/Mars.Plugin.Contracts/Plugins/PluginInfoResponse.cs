@@ -13,4 +13,6 @@ public record PluginInfoResponse
     public required string[] PackageTags { get; init; }
     public required string? RepositoryUrl { get; init; }
     public required string? PackageIconUrl { get; init; }
+    public required PluginSource Source { get; init; }
+    public required bool Locked { get; init; }
 }

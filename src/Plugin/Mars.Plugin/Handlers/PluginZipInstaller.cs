@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using Mars.Core.Exceptions;
 using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 using Mars.Plugin.Services;
 using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +15,13 @@ internal class PluginZipInstaller
     internal readonly string[] AllowedContentTypes = ["application/zip", "application/x-zip-compressed"];
     private readonly IFileStorage _fileStorage;
     private readonly ILogger<PluginZipInstaller> _logger;
+    private readonly PluginRegistry _registry;
 
-    public PluginZipInstaller([FromKeyedServices("data")] IFileStorage fileStorage, ILogger<PluginZipInstaller> logger)
+    public PluginZipInstaller([FromKeyedServices("data")] IFileStorage fileStorage, ILogger<PluginZipInstaller> logger, PluginRegistry registry)
     {
         _fileStorage = fileStorage;
         _logger = logger;
+        _registry = registry;
     }
 
     public async Task<PluginsUploadOperationResultDto> Handle(IFormFileCollection files, CancellationToken cancellationToken)
@@ -115,6 +118,7 @@ internal class PluginZipInstaller
 
         var descriptorPath = Path.Combine(stagingDir, PluginPackageDescriptor.FileName);
         string targetName;
+        string version = "0";
 
         if (_fileStorage.FileExists(descriptorPath))
         {
@@ -124,6 +128,7 @@ internal class PluginZipInstaller
 
             PluginDescriptorHelper.Validate(descriptor, Path.GetDirectoryName(physicalStaging)!);
             targetName = string.IsNullOrWhiteSpace(descriptor.PackageId) ? fallbackName : descriptor.PackageId;
+            version = descriptor.Version;
         }
         else
         {
@@ -144,6 +149,7 @@ internal class PluginZipInstaller
         }
 
         _fileStorage.MoveDirectory(stagingDir, finalDir);
+        _registry.MarkInstalled(targetName, PluginSource.Zip, version, DateTimeOffset.UtcNow);
         return finalDir;
     }
 

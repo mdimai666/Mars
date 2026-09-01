@@ -9,4 +9,6 @@ public interface IPluginServiceClient
     Task<PagingResult<PluginInfoResponse>> ListTable(TablePluginQueryRequest filter);
     Task<PluginsUploadOperationResultResponse> UploadPlugin(params IReadOnlyCollection<(Stream file, string filename)> files);
     Task<PluginInstallResponse> InstallFromNuget(string packageId, string? version = null);
+    Task SetEnabled(string packageId, bool enabled);
+    Task Uninstall(string packageId);
 }

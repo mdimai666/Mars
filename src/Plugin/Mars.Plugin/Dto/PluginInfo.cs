@@ -1,4 +1,5 @@
 using System.Reflection;
+using Mars.Plugin.Contracts.Plugins;
 
 namespace Mars.Plugin.Dto;
 
@@ -19,6 +20,12 @@ public class PluginInfo
     public string? ManifestFile { get; set; }
     public string? RepositoryUrl { get; set; }
     public string? PackageIcon { get; set; }
+
+    /// <summary>Откуда плагин: конфигурация инстанса (Locked) или установлен из zip/nuget.</summary>
+    public PluginSource Source { get; set; } = PluginSource.Unknown;
+    public bool Locked => Source == PluginSource.Config;
+    public bool Enabled { get; set; } = true;
+    public DateTimeOffset InstalledAt { get; set; } = DateTimeOffset.MinValue;
 
     public PluginInfo()
     {

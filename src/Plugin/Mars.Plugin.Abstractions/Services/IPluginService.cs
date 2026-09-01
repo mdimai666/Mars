@@ -11,4 +11,6 @@ public interface IPluginService
     IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests();
     Task<PluginsUploadOperationResultDto> UploadPlugin(IFormFileCollection files, CancellationToken cancellationToken);
     Task<PluginInstallResultDto> InstallFromNuget(string packageId, string? version, CancellationToken cancellationToken);
+    Task SetEnabled(string packageId, bool enabled);
+    Task Uninstall(string packageId);
 }

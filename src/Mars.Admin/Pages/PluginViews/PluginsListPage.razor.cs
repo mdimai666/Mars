@@ -86,15 +86,57 @@ public partial class PluginsListPage
 
     }
 
-    public Task Delete(PluginInfoResponse context)
+    public async Task Delete(PluginInfoResponse context)
     {
-        //await client.Feedback.Delete(id).SmartDelete();
-        //_ = table.RefreshDataAsync();
-        throw new NotImplementedException("Delete method is not implemented yet.");
+        try
+        {
+            await client.Plugin.Uninstall(context.PackageId);
+            _ = _messageService.Success($"Плагин '{context.PackageId}' удалён. Изменения применятся после рестарта.");
+            _ = table.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+        }
+    }
+
+    public async Task ToggleEnabled(PluginInfoResponse context)
+    {
+        try
+        {
+            await client.Plugin.SetEnabled(context.PackageId, !context.Enabled);
+            _ = _messageService.Success($"Плагин '{context.PackageId}' {(context.Enabled ? "отключён" : "включён")}. Изменения применятся после рестарта.");
+            _ = table.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+        }
+    }
+
+    public async Task Update(PluginInfoResponse context)
+    {
+        try
+        {
+            var result = await client.Plugin.InstallFromNuget(context.PackageId);
+            _ = _messageService.Success($"{result.Message}");
+            _ = table.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.Message);
+        }
     }
 
     public async Task OnClickUploadFromZipFile()
     {
         var result = await ZipUploadDialog.ShowAsync(dialogService);
+        _ = table.RefreshDataAsync();
+    }
+
+    public async Task OnClickInstallFromNuget()
+    {
+        var result = await NugetInstallDialog.ShowAsync(dialogService);
+        _ = table.RefreshDataAsync();
     }
 }

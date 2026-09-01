@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.Services;
@@ -20,14 +21,18 @@ internal class PluginManager
     private readonly IFileStorage _fileStorage;
     private readonly bool isTesting;
     private readonly ILogger<PluginManager> _logger;
+    private readonly PluginRegistry _registry;
 
     public IReadOnlyCollection<LoadedPlugin> Plugins => _plugins;
     public const string PluginsDefaultPath = "plugins";
+
+    internal PluginRegistry Registry => _registry;
 
     public PluginManager(ILogger<PluginManager> logger, IFileStorage dataFileStorage)
     {
         _logger = logger;
         _fileStorage = dataFileStorage;
+        _registry = new PluginRegistry(dataFileStorage);
         isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Test", StringComparison.OrdinalIgnoreCase) ?? false;
 
         _logger.LogDebug("PluginManager initialized. IsTesting: {IsTesting}", isTesting);
@@ -47,6 +52,8 @@ internal class PluginManager
     {
         _logger.LogInformation("=== Starting plugins configuration ===");
 
+        // тестовое окружение определяется хостингом, а не переменной окружения процесса
+        var isTestEnv = builder.Environment.EnvironmentName == "Test";
         var plugins = new List<LoadedPlugin>();
         var pluginsSection = builder.Configuration.GetSection(pluginSection);
 
@@ -70,20 +77,34 @@ internal class PluginManager
             }
 
             _logger.LogDebug("Processing plugin from configuration: {Name}", name);
-            var instances = InstantiatePlugin(pluginConfig, _logger);
+            var instances = InstantiatePlugin(pluginConfig, _logger, isolate: !isTestEnv);
+            foreach (var instance in instances)
+                instance.Info.Source = Contracts.Plugins.PluginSource.Config;
             plugins.AddRange(instances);
         }
 
         // Read from /data/plugins dir
-        if (!isTesting)
+        if (!isTestEnv)
         {
             _logger.LogDebug("Scanning directory '{Dir}' for plugins...", PluginsDefaultPath);
             foreach (var pluginConfig in ReadPluginsFromDirectory(_fileStorage, PluginsDefaultPath, _logger))
             {
                 try
                 {
-                    var instances = InstantiatePlugin(pluginConfig, _logger);
-                    plugins.AddRange(instances);
+                    var instances = InstantiatePlugin(pluginConfig, _logger, isolate: !isTestEnv);
+                    foreach (var instance in instances)
+                    {
+                        var entry = _registry.Get(instance.Info.PackageId);
+                        if (entry?.Disabled == true)
+                        {
+                            _logger.LogInformation("Plugin '{PackageId}' is disabled in registry — skipping.", instance.Info.PackageId);
+                            continue;
+                        }
+
+                        instance.Info.Source = entry?.Source ?? Contracts.Plugins.PluginSource.Zip;
+                        instance.Info.InstalledAt = entry?.InstalledAtUtc ?? DateTimeOffset.MinValue;
+                        plugins.Add(instance);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -215,7 +236,9 @@ internal class PluginManager
 
     internal void AddPlugin(LoadedPlugin pluginData) => _plugins.Add(pluginData);
 
-    internal static List<LoadedPlugin> InstantiatePlugin(PluginConfig pluginConfig, ILogger logger)
+    internal void RemovePlugin(string packageId) => _plugins.RemoveAll(p => p.Info.PackageId == packageId);
+
+    internal static List<LoadedPlugin> InstantiatePlugin(PluginConfig pluginConfig, ILogger logger, bool isolate = true)
     {
         var result = new List<LoadedPlugin>();
         var assemblyFile = Path.GetFullPath(pluginConfig.AssemblyPath);
@@ -228,10 +251,19 @@ internal class PluginManager
         Assembly currentAssembly;
         try
         {
-            // изолированный контекст: свои зависимости у плагина, сборки Марса — из хоста
-            var loadContext = new PluginLoadContext(assemblyFile);
-            currentAssembly = loadContext.LoadFromAssemblyPath(assemblyFile);
-            logger.LogDebug("Assembly {AssemblyName} successfully loaded into plugin load context.", currentAssembly.FullName);
+            if (isolate)
+            {
+                // изолированный контекст: свои зависимости у плагина, сборки Марса — из хоста
+                var loadContext = new PluginLoadContext(assemblyFile);
+                currentAssembly = loadContext.LoadFromAssemblyPath(assemblyFile);
+                logger.LogDebug("Assembly {AssemblyName} successfully loaded into plugin load context.", currentAssembly.FullName);
+            }
+            else
+            {
+                // тестовое окружение: тип-идентичность с тестами важнее изоляции
+                currentAssembly = Assembly.LoadFrom(assemblyFile);
+                logger.LogDebug("Assembly {AssemblyName} successfully loaded into default context.", currentAssembly.FullName);
+            }
         }
         catch (Exception ex)
         {

@@ -21,6 +21,8 @@ public static class PluginMapping
             PackageTags = entity.PackageTags,
             RepositoryUrl = entity.RepositoryUrl,
             PackageIconUrl = entity.PackageIconUrl,
+            Source = entity.Source,
+            Locked = entity.Locked,
         };
 
     public static PluginManifestInfoResponse ToResponse(this PluginManifestInfoDto entity)

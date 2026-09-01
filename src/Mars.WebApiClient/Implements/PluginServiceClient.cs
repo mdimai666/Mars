@@ -35,4 +35,12 @@ internal class PluginServiceClient : BasicServiceClient, IPluginServiceClient
         => _client.Request($"{_basePath}{_controllerName}", "InstallFromNuget")
                   .PostJsonAsync(new InstallPluginRequest { PackageId = packageId, Version = version })
                   .ReceiveJson<PluginInstallResponse>();
+
+    public Task SetEnabled(string packageId, bool enabled)
+        => _client.Request($"{_basePath}{_controllerName}", "SetEnabled")
+                  .PostJsonAsync(new SetPluginEnabledRequest { PackageId = packageId, Enabled = enabled });
+
+    public Task Uninstall(string packageId)
+        => _client.Request($"{_basePath}{_controllerName}", "Uninstall")
+                  .PostJsonAsync(new UninstallPluginRequest { PackageId = packageId });
 }

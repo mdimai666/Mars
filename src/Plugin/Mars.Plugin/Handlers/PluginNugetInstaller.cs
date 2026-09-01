@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using Mars.Core.Exceptions;
 using Mars.Plugin.Abstractions.Dto.Plugins;
+using Mars.Plugin.Contracts.Plugins;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.Services;
@@ -27,11 +28,13 @@ internal class PluginNugetInstaller
     private readonly IFileStorage _fileStorage;
     private readonly ILogger _logger;
     private readonly string _marsDepsJsonPath;
+    private readonly PluginRegistry _registry;
 
-    public PluginNugetInstaller(IFileStorage fileStorage, ILogger logger, string? marsDepsJsonPath = null)
+    public PluginNugetInstaller(IFileStorage fileStorage, ILogger logger, PluginRegistry? registry = null, string? marsDepsJsonPath = null)
     {
         _fileStorage = fileStorage;
         _logger = logger;
+        _registry = registry ?? new PluginRegistry(fileStorage);
         _marsDepsJsonPath = marsDepsJsonPath ?? Path.Combine(AppContext.BaseDirectory, "Mars.deps.json");
     }
 
@@ -76,6 +79,7 @@ internal class PluginNugetInstaller
             }
 
             _fileStorage.MoveDirectory(staging, finalDir);
+            _registry.MarkInstalled(descriptor.PackageId, PluginSource.NuGet, resolvedVersion.ToNormalizedString(), DateTimeOffset.UtcNow);
             return new PluginInstallResult(descriptor.PackageId, resolvedVersion.ToNormalizedString(), finalDir);
         }
         catch

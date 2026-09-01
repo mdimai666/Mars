@@ -74,4 +74,22 @@ public class PluginController : ControllerBase
         var result = await _pluginService.InstallFromNuget(request.PackageId, request.Version, cancellationToken);
         return result.ToResponse();
     }
+
+    [HttpPost("SetEnabled")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    public async Task<ActionResult> SetEnabled([FromBody] SetPluginEnabledRequest request)
+    {
+        await _pluginService.SetEnabled(request.PackageId, request.Enabled);
+        return Ok();
+    }
+
+    [HttpPost("Uninstall")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
+    public async Task<ActionResult> Uninstall([FromBody] UninstallPluginRequest request)
+    {
+        await _pluginService.Uninstall(request.PackageId);
+        return Ok();
+    }
 }

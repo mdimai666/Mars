@@ -9,6 +9,7 @@
     <SectionActions>
         <XActionsDropDown>
             <FluentMenuItem Label="Upload from zip-file" OnClick="OnClickUploadFromZipFile" />
+            <FluentMenuItem Label="Install from NuGet" OnClick="OnClickInstallFromNuget" />
         </XActionsDropDown>
     </SectionActions>
     <ChildContent>
@@ -78,6 +79,26 @@
                                 <div class="mt-1" title="@context.Description">
                                     @context.Description?.TextEllipsis(100)
                                 </div>
+                                <div class="hstack gap-2 mt-2">
+                                    @if (context.Locked)
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral">Locked (config)</FluentBadge>
+                                    }
+                                    else
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral">
+                                            @(context.Source == PluginSource.NuGet ? "NuGet" : "Zip")
+                                        </FluentBadge>
+                                    }
+                                    @if (context.Enabled)
+                                    {
+                                        <FluentBadge Appearance="Appearance.Accent">Enabled</FluentBadge>
+                                    }
+                                    else
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral">Disabled</FluentBadge>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </TemplateColumn>
@@ -92,7 +113,15 @@
                         @context.InstalledAt.ToString("d")
                     </TemplateColumn>
                     <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
-                        <DFluentDeleteButton OnConfirm=@(e => Delete(context)) Disabled />
+                        <div class="hstack gap-2">
+                            <FluentButton Appearance="Appearance.Lightweight" Disabled="@context.Locked" OnClick="() => ToggleEnabled(context)">
+                                @(context.Enabled ? "Disable" : "Enable")
+                            </FluentButton>
+                            <FluentButton Appearance="Appearance.Lightweight" Disabled="@(context.Locked || context.Source != PluginSource.NuGet)" OnClick="() => Update(context)">
+                                Update
+                            </FluentButton>
+                            <DFluentDeleteButton OnConfirm=@(e => Delete(context)) Disabled="@context.Locked" />
+                        </div>
                     </TemplateColumn>
                     @*
                 <div class="card shadow">

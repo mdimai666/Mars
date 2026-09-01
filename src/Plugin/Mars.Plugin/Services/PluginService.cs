@@ -22,6 +22,7 @@ internal class PluginService : IPluginService
 
     public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
     public static readonly string ErrorPluginBlockedMessage = "Plugin installation is blocked by settings";
+    public static readonly string ErrorPluginLockedMessage = "Plugin is locked by configuration — cannot be modified.";
     internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
     public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService)
@@ -58,7 +59,7 @@ internal class PluginService : IPluginService
         if (!pluginOptions.AllowUploadZipManually)
             throw new UserActionException(ErrorNotAllowUploadZipManuallyMessage);
 
-        var handler = new PluginZipInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginZipInstaller>());
+        var handler = new PluginZipInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginZipInstaller>(), _pluginManager.Registry);
         return handler.Handle(files, cancellationToken);
     }
 
@@ -69,7 +70,7 @@ internal class PluginService : IPluginService
             throw new UserActionException(ErrorPluginBlockedMessage);
 
         var sources = pluginOptions.GetNugetSources().ToList();
-        var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>());
+        var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>(), _pluginManager.Registry);
         var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
 
         return new PluginInstallResultDto
@@ -78,6 +79,36 @@ internal class PluginService : IPluginService
             Version = result.Version,
             InstalledAtUtc = DateTimeOffset.UtcNow,
         };
+    }
+
+    public Task SetEnabled(string packageId, bool enabled)
+    {
+        var info = FindOrThrow(packageId);
+        if (info.Locked)
+            throw new UserActionException(ErrorPluginLockedMessage);
+
+        _pluginManager.Registry.SetDisabled(packageId, !enabled);
+        return Task.CompletedTask;
+    }
+
+    public Task Uninstall(string packageId)
+    {
+        var info = FindOrThrow(packageId);
+        if (info.Locked)
+            throw new UserActionException(ErrorPluginLockedMessage);
+
+        var dir = Path.Combine(PluginManager.PluginsDefaultPath, packageId);
+        if (_fileStorage.DirectoryExists(dir))
+            _fileStorage.DeleteDirectory(dir, recursive: true);
+
+        _pluginManager.Registry.Remove(packageId);
+        return Task.CompletedTask;
+    }
+
+    PluginInfo FindOrThrow(string packageId)
+    {
+        var info = Plugins.Select(p => p.Info).FirstOrDefault(i => i.PackageId == packageId);
+        return info ?? throw new UserActionException($"Plugin '{packageId}' is not installed.");
     }
 
 }

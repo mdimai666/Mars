@@ -1,5 +1,7 @@
 namespace Mars.Plugin.Abstractions.Dto.Plugins;
 
+using Mars.Plugin.Contracts.Plugins;
+
 public record PluginInfoDto
 {
     public required string PackageId { get; init; }
@@ -13,5 +15,7 @@ public record PluginInfoDto
     public required string[] PackageTags { get; init; }
     public required string? RepositoryUrl { get; init; }
     public required string? PackageIconUrl { get; init; }
+    public required PluginSource Source { get; init; }
+    public required bool Locked { get; init; }
 
 }

@@ -52,12 +52,21 @@ internal class PluginZipInstaller
             string installedDir;
             try
             {
-                installedDir = InstallPlugin(stagingDir, fallbackName);
+                installedDir = await InstallPlugin(stagingDir, fallbackName, cancellationToken);
             }
             catch
             {
-                if (_fileStorage.DirectoryExists(stagingDir))
-                    _fileStorage.DeleteDirectory(stagingDir, recursive: true);
+                try
+                {
+                    if (_fileStorage.DirectoryExists(stagingDir))
+                        _fileStorage.DeleteDirectory(stagingDir, recursive: true);
+                }
+                catch (Exception cleanupEx)
+                {
+                    // staging мог остаться залоченным тем же процессом, что сорвал установку;
+                    // мусор безопасен — папки с префиксом «_» при загрузке плагинов пропускаются
+                    _logger.LogWarning(cleanupEx, "Failed to clean up staging folder '{StagingPath}'", stagingDir);
+                }
                 throw;
             }
 
@@ -112,7 +121,7 @@ internal class PluginZipInstaller
     /// `plugins/&lt;PackageId&gt;` (старая версия того же пакета заменяется).
     /// </summary>
     /// <returns>путь установленной папки (относительно data)</returns>
-    private string InstallPlugin(string stagingDir, string fallbackName)
+    private async Task<string> InstallPlugin(string stagingDir, string fallbackName, CancellationToken cancellationToken)
     {
         UnwrapSingleBaseFolder(stagingDir);
 
@@ -148,9 +157,40 @@ internal class PluginZipInstaller
             _fileStorage.DeleteDirectory(finalDir, recursive: true);
         }
 
-        _fileStorage.MoveDirectory(stagingDir, finalDir);
+        await MoveInstalledPluginAsync(stagingDir, finalDir, cancellationToken);
         _registry.MarkInstalled(targetName, PluginSource.Zip, version, DateTimeOffset.UtcNow);
         return finalDir;
+    }
+
+    /// <summary>
+    /// Перенос с ретраями: свежезапакованные сборки некоторое время удерживает
+    /// антивирус/индексатор, и разовый <c>Directory.Move</c> падает «Access denied»
+    /// (залочен файл внутри переносимой папки); лок спадает сам за секунды.
+    /// </summary>
+    internal async Task MoveInstalledPluginAsync(string stagingDir, string finalDir, CancellationToken cancellationToken,
+                                                 int attempts = 5, TimeSpan? initialDelay = null)
+    {
+        var delay = initialDelay ?? TimeSpan.FromMilliseconds(300);
+
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                _fileStorage.MoveDirectory(stagingDir, finalDir);
+                return;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                if (attempt >= attempts)
+                    throw new UserActionException(
+                        "Failed to install the plugin: its files are locked by another process (usually an antivirus scanning freshly unpacked assemblies). Try uploading the zip again in a few seconds.",
+                        null, ex);
+
+                _logger.LogWarning("Plugin folder move is busy ({Attempt}/{Attempts}) — files are likely locked by an antivirus scan, retrying", attempt, attempts);
+                await Task.Delay(delay, cancellationToken);
+                delay += delay;
+            }
+        }
     }
 
     /// <summary>Рукотворные архивы часто несут одну базовую папку — выворачиваем её в корень.</summary>

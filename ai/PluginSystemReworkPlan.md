@@ -438,9 +438,21 @@ nuget.org (тестовый пакет), раскладывается в `data/p
    без `useRootGitIgnore` `.gitignore` вне читаемой папки не загружаются (внутренние
    — по-прежнему да). Покрытие: `FileListUtilityTests` (3 кейса), `DirReadNodeTests`
    без регрессии.
+5. **«Access to the path ... is denied» при установке из zip (строка финального
+   `MoveDirectory`).** `Directory.Move(staging → final)` на Windows падает ровно
+   этим сообщением, когда файл внутри переносимой папки удерживает чужой процесс
+   (проверено эмпирически: существующее назначение даёт другое сообщение). Наш код
+   хэндлы не держит (все потоки закрыты к переносу); держит антивирус/индексатор,
+   сканирующий свежезапакованные `.dll` (репо в `Documents`), лок временный —
+   повторная загрузка ставила плагин. Фикс: `MoveInstalledPluginAsync` — перенос
+   с ретраями (экспоненциальные паузы, отмена по токену), при исчерпании —
+   `UserActionException` с внятным текстом вместо 500; чистка staging в `Handle`
+   обёрнута от маскировки ошибки. Покрытие: `PluginZipInstallerMoveTests`
+   (лок спадает среди ретраев → перенос; постоянный лок → `UserActionException`),
+   `UploadPluginTests`/`GetPluginTests` 6/6 без регрессии.
 
 Проверено: проект `Mars.Plugin.Sdk` и все плагинные проекты собираются (полная
-`Mars.slnx` в Release — 0 ошибок); `Mars.Plugin.Tests` 27/27 (+1 скип);
+`Mars.slnx` в Release — 0 ошибок); `Mars.Plugin.Tests` 29/29 (+1 скип);
 `Mars.Plugin.Integration.Tests` 9/9 (включая новые `PluginEndpointTests`);
 `FileListUtilityTests` + `DirReadNodeTests` 7/7;
 `dotnet pack` SDK даёт корректный

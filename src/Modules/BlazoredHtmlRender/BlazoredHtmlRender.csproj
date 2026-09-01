@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <PackageId>mdimai666.BlazoredHtmlRender</PackageId>
+        <!-- Собственная версия пакета, не привязана к MarsAppVersion -->
+        <Version>0.5.0-alpha.1</Version>
         <Product>BlazoredHtmlRender</Product>
         <Description>
             A Blazor component for rendering a plain HTML string in Blazor page;

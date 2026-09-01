@@ -2,10 +2,10 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 using Mars.Plugin.Front.Abstractions;
-using Mars.Plugin.PluginPublishScript.Dto;
-using Mars.Plugin.PluginPublishScript.Models;
+using Mars.Plugin.Sdk.Dto;
+using Mars.Plugin.Sdk.Models;
 
-namespace Mars.Plugin.PluginPublishScript;
+namespace Mars.Plugin.Sdk;
 
 internal class ManifestProcessing
 {
@@ -153,11 +153,25 @@ internal class ManifestProcessing
             var assemblyFileName = runtimeAssemlyName.Key;
 
             var assemblyPath = Path.Combine(settings.ProjectDir, settings.OutDir, assemblyFileName);
-            //var assembly = Assembly.LoadFrom(assemblyPath);
-            var fs = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read);
-            var assembly = loadContext.LoadFromStream(fs);
+            if (!File.Exists(assemblyPath)) continue;
 
-            var assemblyTypes = assembly.GetTypes();
+            Assembly assembly;
+            using (var fs = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read))
+                assembly = loadContext.LoadFromStream(fs);
+
+            Type[] assemblyTypes;
+            try
+            {
+                assemblyTypes = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                // часть типов ссылается на сборки Марса, которых нет в папке плагина
+                // (они резолвятся хостом в рантайме) — для поиска стартапов достаточно
+                // загружаемого подмножества
+                assemblyTypes = ex.Types.Where(t => t is not null).ToArray()!;
+            }
+
             var startups = assemblyTypes.Where(s => typeof(IWebAssemblyPluginFront).IsAssignableFrom(s));
 
             if (startups.Any())

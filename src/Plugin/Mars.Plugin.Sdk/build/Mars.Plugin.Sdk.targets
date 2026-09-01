@@ -1,0 +1,33 @@
+<Project>
+
+    <!-- Путь к распакованному пакету: свойство $(Pkg...) генерирует NuGet для прямого PackageReference,
+         поэтому версия берётся из рестора и не хардкодится в таргетах. -->
+    <PropertyGroup>
+        <MarsPluginSdkTool Condition="'$(MarsPluginSdkTool)' == ''">$(Pkgmdimai666_Mars_Plugin_Sdk)\tools\Mars.Plugin.Sdk.dll</MarsPluginSdkTool>
+        <!-- многострочные значения из csproj ломают командную строку Exec — схлопываем пробельные -->
+        <MarsPluginPackAuthors>$([System.Text.RegularExpressions.Regex]::Replace('$(Authors)', '\s+', ' ').Trim())</MarsPluginPackAuthors>
+        <MarsPluginPackDescription>$([System.Text.RegularExpressions.Regex]::Replace('$(Description)', '\s+', ' ').Trim())</MarsPluginPackDescription>
+        <MarsPluginPackTags>$([System.Text.RegularExpressions.Regex]::Replace('$(PackageTags)', '\s+', ' ').Trim())</MarsPluginPackTags>
+    </PropertyGroup>
+
+    <!-- Zip: автоматически после publish (Release). Отсекает сборки Марса, пишет манифест и дескриптор, собирает zip. -->
+    <Target Name="MarsPluginPackZip" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
+        <Error Condition="!Exists('$(MarsPluginSdkTool)')"
+               Text="Mars.Plugin.Sdk tool not found. Add a PackageReference to mdimai666.Mars.Plugin.Sdk to the plugin project and restore." />
+        <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; pack zip --ProjectName=$(ProjectName) --out=$(PublishDir) --ProjectDir=$(ProjectDir) --PackageId=$(PackageId) --Version=$(PackageVersion)" />
+    </Target>
+
+    <!-- Nuget: явно — `dotnet msbuild -t:MarsPluginPackNuget -c Release`. Классический лейаут:
+         lib/ — сборки плагина, mars/ — фронт-ассеты и дескриптор; зависимости резолвятся при установке в Марс. -->
+    <Target Name="MarsPluginPackNuget" DependsOnTargets="Publish">
+        <Error Condition="!Exists('$(MarsPluginSdkTool)')"
+               Text="Mars.Plugin.Sdk tool not found. Add a PackageReference to mdimai666.Mars.Plugin.Sdk to the plugin project and restore." />
+        <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; pack nuget --ProjectName=$(ProjectName) --out=$(PublishDir) --ProjectDir=$(ProjectDir) --PackageId=$(PackageId) --Version=$(PackageVersion) --Authors=&quot;$(MarsPluginPackAuthors)&quot; --Description=&quot;$(MarsPluginPackDescription)&quot; --Tags=&quot;$(MarsPluginPackTags)&quot; --Icon=$(PackageIcon)" />
+    </Target>
+
+    <!-- Отладочный манифест: после каждой Debug-сборки -->
+    <Target Name="MarsPluginDebugManifest" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug' and Exists('$(MarsPluginSdkTool)')">
+        <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; debug-manifest --ProjectName=$(ProjectName) --out=$(OutDir) --ProjectDir=$(ProjectDir)" />
+    </Target>
+
+</Project>

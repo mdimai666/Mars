@@ -1,7 +1,7 @@
 using System.Reflection;
-using Mars.Plugin.PluginPublishScript.Models;
+using Mars.Plugin.Sdk.Models;
 
-namespace Mars.Plugin.PluginPublishScript;
+namespace Mars.Plugin.Sdk;
 
 internal class PreparePublishData
 {
@@ -40,7 +40,7 @@ internal class PreparePublishData
         ProjectDependencies = new ProjectDependencies(releaseArtifactsDepsjsonFile);
 
         var webApp = RecurseDependiesList(_marsWebAppDependencies.Packages["Mars"], _marsWebAppDependencies, _ => true, true);
-        var projectDepends = RecurseDependiesList(ProjectDependencies.Packages[Settings.ProjectName], ProjectDependencies, MarsNugets.Contains, false);
+        var projectDepends = RecurseDependiesList(ProjectDependencies.Packages[Settings.ProjectName], ProjectDependencies, IsMarsPackage, false);
 
         HashSet<string> devTools = [ToolAssemblyName, "Microsoft.AspNetCore.Components.WebAssembly.DevServer"];
 
@@ -82,40 +82,9 @@ internal class PreparePublishData
         }
     }
 
-    private static readonly string[] MarsNugetsDefinition = [
-        // shared
-        "Mars.Core",
-        "Mars.Contracts",
-        "Mars.Options/Mars.Options",
-        "Mars.Admin.Framework",
-        "Mars.Admin.Framework",
-        // host
-        "Mars.Server.Abstractions",
-        "Mars.Data",
-        "Mars.Contracts",
-        // nodes
-        "Mars.Nodes/Mars.Nodes.Core",
-        "Mars.Nodes/Mars.Nodes.Core.Implements",
-        "Mars.Nodes/Mars.Nodes.EditorApi",
-        "Mars.Nodes/Mars.Nodes.FormEditor",
-        // modules
-        "Modules/MarsEditors",
-        "Modules/MarsCodeEditor2",
-        "Mars.WebApiClient",
-        "Modules/BlazoredHtmlRender",
-        // plugin
-        "Plugin/Mars.Plugin.Abstractions",
-        "Plugin/Mars.Plugin.Front",
-        "Plugin/Mars.Plugin.Kit.Host",
-        "Plugin/Mars.Plugin.Kit.Front",
-        "Plugin/Mars.Plugin.PluginHost",
-        "Plugin/Mars.Plugin.Front.Abstractions",
-        "Plugin/Mars.Plugin.PluginPublishScript"
-        ];
-
-    //private static readonly string[] MarsReferenceProjects = ["Mars.Admin"];
-
-    private static readonly HashSet<string> MarsNugets = MarsNugetsDefinition.Select(s => "mdimai666." + (s.Contains('/') ? s.Split("/", 2)[1] : s)).ToHashSet();
+    // Все пакеты Марса публикуются под префиксом mdimai666.* — единственный источник правды,
+    // ручной список больше не нужен и не может отстать от реальности.
+    internal static bool IsMarsPackage(string name) => name.StartsWith("mdimai666.", StringComparison.OrdinalIgnoreCase);
 
     public (Dictionary<string, Library> marsDepends, Dictionary<string, Library> otherPackages)
             RecurseDependiesList(Dependency dependency,

@@ -96,24 +96,6 @@ public class PluginManifestProvider
         return pluginEndpoints;
     }
 
-    private ProjectDependencies MarsDeps()
-    {
-        var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        var marsReleaseDepsJsonFile = Path.Combine(assemblyFolder, "Mars.deps.json");
-        var marsWebAppDependencies = new ProjectDependencies(marsReleaseDepsJsonFile);
-        return marsWebAppDependencies;
-    }
-
-    StaticwebassetsEndpointsManifestJson? MarsEndpoints()
-    {
-        var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        var manifestFileName = "Mars.staticwebassets.endpoints.json";
-        var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
-        if (!File.Exists(manifestFilePath)) return null;
-        var manifest = JsonSerializer.Deserialize<StaticwebassetsEndpointsManifestJson>(File.ReadAllText(manifestFilePath))!;
-        return manifest;
-    }
-
     StaticwebassetsEndpointsManifestJson MarsDevAdminEndpoints()
     {
         var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;

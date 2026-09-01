@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+
+        <PackageId>mdimai666.Mars.Plugin.Sdk</PackageId>
+        <Product>Mars.Plugin.Sdk</Product>
+        <Description>
+            Build tools for Mars plugins: strips assemblies already shipped with Mars,
+            generates the front manifest and packs plugin zip/nuget packages.
+            Add a PackageReference to this package from the plugin project — packaging targets come with it.
+        </Description>
+
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <!-- tools-only пакет: без этого пакер требует lib/ или зависимости (NU5017) -->
+        <IsTool>true</IsTool>
+        <!-- файлы инструментов приходят явным глобом $(TargetDir)** в таргете ниже;
+             автоматический поток вывода сборки отключён, чтобы не было дублей (NU5118) -->
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <!-- в Release нет pdb (DebugType=none), и пустой snupkg роняет пак тем же NU5017 -->
+        <IncludeSymbols>false</IncludeSymbols>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mars.Plugin.Front.Abstractions\Mars.Plugin.Front.Abstractions.csproj" />
+    </ItemGroup>
+
+    <!-- Имя в пакете обязано совпадать с PackageId — иначе NuGet не подключит таргеты автоматически -->
+    <ItemGroup>
+        <None Include="build\Mars.Plugin.Sdk.targets" Pack="true" PackagePath="build\$(PackageId).targets" />
+    </ItemGroup>
+
+    <!-- Манифесты Марса берутся из вывода сборки Mars.WebApp и всегда соответствуют пакуемой версии.
+         Ничего не коммитится: перед паком решение должно быть собрано в той же конфигурации. -->
+    <PropertyGroup>
+        <MarsWebAppOut>$(MSBuildThisFileDirectory)..\..\Mars.WebApp\bin\$(Configuration)\$(TargetFramework)\</MarsWebAppOut>
+    </PropertyGroup>
+
+    <Target Name="MarsSdkEnsureManifests" BeforeTargets="GenerateNuspec">
+        <Error Condition="!Exists('$(MarsWebAppOut)Mars.deps.json') or !Exists('$(MarsWebAppOut)Mars.Admin.staticwebassets.endpoints.json')"
+               Text="Mars.Plugin.Sdk requires the Mars.WebApp build output (Mars.deps.json and Mars.Admin.staticwebassets.endpoints.json). Run 'dotnet build Mars.slnx -c $(Configuration)' before packing." />
+    </Target>
+
+    <!-- До _LoadPackInputItems: позже коллекция @(None) в пак уже не подхватывается -->
+    <Target Name="MarsSdkCollectPackageFiles" BeforeTargets="_LoadPackInputItems">
+        <ItemGroup>
+            <None Include="$(TargetDir)**" Pack="true" PackagePath="tools\" />
+            <None Include="$(MarsWebAppOut)Mars.deps.json" Pack="true" PackagePath="tools\" />
+            <None Include="$(MarsWebAppOut)Mars.deps.json" Pack="true" PackagePath="mars\" />
+            <None Include="$(MarsWebAppOut)Mars.Admin.staticwebassets.endpoints.json" Pack="true" PackagePath="mars\" />
+        </ItemGroup>
+    </Target>
+
+</Project>

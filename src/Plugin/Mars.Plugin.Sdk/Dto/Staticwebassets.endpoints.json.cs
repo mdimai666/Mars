@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
-namespace Mars.Plugin.PluginPublishScript.Dto;
+namespace Mars.Plugin.Sdk.Dto;
 
 public class StaticwebassetsEndpointsManifestJson
 {

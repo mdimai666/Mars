@@ -24,10 +24,21 @@ MyNewPlugin/
 
 **Backend:**
 - `mdimai666.Mars.Plugin.Kit.Host`
-- `mdimai666.Mars.Plugin.PluginPublishScript`
+- `mdimai666.Mars.Plugin.Sdk`
 
 **Frontend:**
 - `mdimai666.Mars.Plugin.Kit.Front`
+
+## Паковка
+
+Подключите `mdimai666.Mars.Plugin.Sdk` (`PrivateAssets="all"`) — таргеты паковки приходят
+вместе с пакетом:
+
+- `dotnet publish -c Release` — отсечение сборок, которые уже есть в Марсе, фронт-манифест,
+  дескриптор `mars-plugin.json` и готовый `<PackageId>-<Version>.zip`;
+- `dotnet msbuild -t:MarsPluginPackNuget -c Release` — дополнительно `<PackageId>.<Version>.nupkg`.
+
+Как устроен пакет, что он выдаёт и как с ним работать — в [PluginSdk](PluginSdk.md).
 
 ## Примеры плагинов
 

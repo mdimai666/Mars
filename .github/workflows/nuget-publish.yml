@@ -30,6 +30,10 @@ jobs:
       - name: Restore
         run: dotnet restore Mars.slnx
 
+      # Mars.Plugin.Sdk пакует манифесты из вывода сборки Mars.WebApp — решение должно быть собрано.
+      - name: Build solution
+        run: dotnet build Mars.slnx -c Release --no-restore
+
       - name: Pack packages (projects with PackageId)
         run: |
           set -e

@@ -35,6 +35,14 @@ if ($ans -ne "y") {
     exit
 }
 
+# Mars.Plugin.Sdk пакует манифесты из вывода сборки Mars.WebApp — решение должно быть собрано (Release).
+Write-Host "🔨 Сборка решения (Release)..." -ForegroundColor Cyan
+dotnet build (Join-Path $root "Mars.slnx") --configuration Release --verbosity minimal
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Сборка не удалась" -ForegroundColor Red
+    exit 1
+}
+
 # Функция для отрисовки прогресс-бара
 function Draw-ProgressBar {
     param(

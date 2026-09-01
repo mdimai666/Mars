@@ -1,6 +1,6 @@
-using Mars.Plugin.PluginPublishScript.Models;
+using Mars.Plugin.Sdk.Models;
 
-namespace Mars.Plugin.PluginPublishScript;
+namespace Mars.Plugin.Sdk;
 
 internal static class ScriptFilesProcessing
 {

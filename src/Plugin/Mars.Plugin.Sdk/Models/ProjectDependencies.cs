@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Mars.Plugin.PluginPublishScript.Dto;
+using Mars.Plugin.Sdk.Dto;
 
-namespace Mars.Plugin.PluginPublishScript.Models;
+namespace Mars.Plugin.Sdk.Models;
 
 public class ProjectDependencies
 {

@@ -1,6 +1,7 @@
 # План: реворк системы плагинов
 
-> **Статус: Фаза 0 выполнена 2026-09-01; следующая — Фаза 1 (структура и именование).**
+> **Статус: Фазы 0 и 2 выполнены 2026-09-01 (Фаза 1 пропущена по решению пользователя,
+> сделать позже); Фаза 2 ждёт пользовательской проверки.**
 > Решения: 2026-08-31.
 > Задача-источник: [Prompts/PluginSystemReworkPrompt.md](./Prompts/PluginSystemReworkPrompt.md).
 > Связанные документы: [PluginServer/PluginDistributionPlan.md](./PluginServer/PluginDistributionPlan.md)
@@ -246,20 +247,39 @@ NuGet-id и из zip. Отключение = пропуск загрузки п�
 **Готово когда**: `dotnet build Mars.slnx` и тесты `Mars.Plugin.Tests`/
 `Mars.Plugin.Integration.Tests` зелёные; загрузка существующих плагинов не изменилась.
 
-### Фаза 2. Манифесты и `Mars.Plugin.Sdk`
+### Фаза 2. Манифесты и `Mars.Plugin.Sdk` — **выполнена 2026-09-01**
 
-- Генерация `Mars.deps.json` + `Mars.Admin.staticwebassets.endpoints.json` и паковка
-  обоих в `mdimai666.Mars.Plugin.Sdk` версии релиза; удаление закоммиченной копии и
-  `MarsNugetsDefinition`.
-- Переупаковка скрипта в Sdk (таргеты через `$(Pkg...)`), команды `pack zip`/`pack nuget`;
-  `packageType=MarsPlugin`, `marsVersionMin/Max`.
-- `PluginManifestProvider` читает файл эндпоинтов из правильного места; мёртвые
-  `MarsDeps()`/`MarsEndpoints()` удалены.
-- Шаблоны `PluginExample` (репо) и `MyMarsPlugin` (внешний) переводятся на новый Sdk;
-  старые таргеты с хардкодом версий уходят.
+Сделано:
+- Проект переименован `Mars.Plugin.PluginPublishScript` → `Mars.Plugin.Sdk`
+  (`mdimai666.Mars.Plugin.Sdk`); коммиченный `Mars.deps.json` удалён, пакуется из вывода
+  сборки `Mars.WebApp` при паке (ошибка, если решение не собрано);
+  `MarsNugetsDefinition` заменён проверкой префикса `mdimai666.*`.
+- Пакет несёт: `tools/` (инструмент + `Mars.deps.json`), `mars/` (оба манифеста),
+  `build/mdimai666.Mars.Plugin.Sdk.targets` (автоимпорт, путь через `$(Pkg...)`).
+- Команды инструмента: `pack zip` (стрип + манифест + дескриптор + zip, автоматически
+  после `publish -c Release`), `pack nuget` (классический лейаут `lib/` + `mars/front`,
+  зависимости в nuspec, `packageType=MarsPlugin` — таргет `MarsPluginPackNuget`),
+  `debug-manifest` (после Debug-сборки). Дескриптор `mars-plugin.json`
+  (id/версия/entry/`MarsVersion`) пишется в обоих потоках.
+- Исправлены корневые причины «публикация сломалась»: стрип удалял
+  `<Плагин>.staticwebassets.endpoints.json`, который на рантайме читает
+  `PluginManifestProvider` (теперь сохраняется); скан фронт-сборок падал
+  `ReflectionTypeLoadException` на отсутствующих в папке плагина сборках Марса
+  (теперь берётся загружаемое подмножество типов).
+- Мёртвые `MarsDeps()`/`MarsEndpoints()` и серверный дубль `ProjectDependencies` удалены.
+- Шаблон `MyMarsPlugin` переведён на Sdk (старые отключённые таргеты с хардкодом версий
+  удалены); `PluginExample` не пакуется — менять нечего. В `nuget-publish.yml` и
+  `pack-local-nugets.ps1` добавлена сборка решения перед паком.
 
-**Готово когда**: `PluginExample` и `MyMarsPlugin` собирают корректный zip через новый
-таргет; в репо нет коммиченного `Mars.deps.json`; версия манифестов = версия релиза.
+Грабли (зафиксированы в csproj/таргетах): пустой snupkg в Release роняет пак `NU5017`
+(`IncludeSymbols=false`); tools-only пакет требует `IsTool`/`IncludeBuildOutput=false`;
+многострочные свойства ломают `Exec` — санитизация в таргетах. Известные недочёты:
+в папке плагина остаются общие с админкой `_framework/*.wasm` (мёртвый вес, рантайм-фильтр
+их не отдаёт; паковое отсечение — позже); пак из полностью чистого состояния одним
+`dotnet pack` нестабилен — всегда сначала сборка, затем пак (в доках и скриптах так и есть).
+
+Проверено: пакет в `_LocalNugets` версии релиза; на `MyMarsPlugin` работают publish→zip,
+`MarsPluginPackNuget`→nupkg, Debug-манифест; сборка `Mars.slnx` и `Mars.Plugin.Tests` зелёные.
 
 ### Фаза 3. Раскладка, инсталлеры, nuget-установка
 

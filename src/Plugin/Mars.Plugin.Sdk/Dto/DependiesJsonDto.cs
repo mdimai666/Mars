@@ -1,4 +1,4 @@
-namespace Mars.Plugin.PluginPublishScript.Dto;
+namespace Mars.Plugin.Sdk.Dto;
 
 public class RuntimeTargetJsonDto
 {

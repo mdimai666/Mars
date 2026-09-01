@@ -76,7 +76,7 @@ internal static class PluginPackageBuilder
 
         var deps = data.ProjectDependencies.Libraries.Values
             .Where(l => l.Type == LibraryType.Package)
-            .Where(l => l.Name != data.Settings.CurrentScriptProjectNugetName)
+            .Where(l => l.Name != PreparePublishData.MarsSdkPackageId)
             .Where(l => !l.Name.Equals("Microsoft.AspNetCore.Components.WebAssembly.DevServer", StringComparison.OrdinalIgnoreCase))
             .OrderBy(l => l.Name)
             .Select(l => $"""      <dependency id="{Escape(l.Name)}" version="{Escape(l.Version)}" />""");

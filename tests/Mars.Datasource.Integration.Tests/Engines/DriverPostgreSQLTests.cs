@@ -33,8 +33,7 @@ public class DriverPostgreSQLTests
         },
     };
 
-    //Dictionary<string, DatasourceConfig> configs => UnitTestDifferentEngines.configs;  
-#endif
+    //Dictionary<string, DatasourceConfig> configs => UnitTestDifferentEngines.configs;
 
     [Fact]
     public async Task SqlQueryJson_PostsUsersJoin_ReturnsRowsAsJson()
@@ -81,4 +80,5 @@ public class DriverPostgreSQLTests
 
         conn.Close();
     }
+#endif
 }

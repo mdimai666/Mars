@@ -45,10 +45,13 @@ dotnet publish <проект плагина> -c Release
 
 1. отсекает из вывода сборки всё, что уже есть в Марсе (сборки по `Mars.deps.json`,
    общие `_framework`/`_content` фронт-ассеты, символы);
-2. генерирует фронт-манифест `wwwroot/_front_plugins.json`;
-3. пишет дескриптор `mars-plugin.json`;
-4. собирает `<PackageId>-<Version>.zip` рядом с папкой публикации
+2. пишет дескриптор `mars-plugin.json`;
+3. собирает `<PackageId>-<Version>.zip` рядом с папкой публикации
    (`bin/Release/net10.0/`).
+
+Фронт-манифест (`_front_plugins.json`) в пакет не кладётся: его генерирует сервер Марса
+на лету из `<Плагин>.staticwebassets.endpoints.json` (фильтруя ассеты, уже есть в
+админке) — файл из пакета никем не читается.
 
 Сторонние зависимости, которых нет в Марсе, остаются в папке плагина и попадают в zip —
 плагин самокомплектный.
@@ -61,11 +64,6 @@ dotnet msbuild <проект плагина> -t:MarsPluginPackNuget -p:Configura
 
 Таргет `MarsPluginPackNuget` выполняет ту же подготовку и дополнительно собирает
 `<PackageId>.<Version>.nupkg` рядом с папкой публикации.
-
-### Отладка
-
-При обычной Debug-сборке таргет `MarsPluginDebugManifest` генерирует дев-манифест рядом
-с артефактами сборки — отдельно ничего запускать не нужно.
 
 ## Что получается
 
@@ -80,7 +78,6 @@ MyPluginCompany.MyMarsPlugin.runtimeconfig.json
 MyPluginCompany.MyMarsPlugin.staticwebassets.endpoints.json   # читает рантайм Марса
 mars-plugin.json                                               # дескриптор
 wwwroot/
-    _front_plugins.json                       # фронт-манифест
     _framework/...                            # wasm только самого плагина
     ...прочие статические файлы плагина
 ```

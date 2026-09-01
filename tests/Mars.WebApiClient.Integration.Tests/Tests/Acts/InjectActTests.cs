@@ -19,6 +19,7 @@ public class InjectActTests : BaseWebApiClientTests
         _fixture.Customize(new FixtureCustomize());
     }
 
+#if DEBUG
     [IntegrationFact]
     public async Task Inject_ValidRequest_Succeeds()
     {
@@ -35,6 +36,7 @@ public class InjectActTests : BaseWebApiClientTests
         result.Effects.Should().ContainEquivalentOf(new NavigateEffect("/dev"));
         result.Effects.OfType<TriggerEventEffect>().Should().Contain(e => e.Name == "dummy-act-executed");
     }
+#endif
 
     [IntegrationFact]
     public async Task Inject_InvalidRequest_Fail404Exception()

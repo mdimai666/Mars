@@ -386,6 +386,45 @@ nuget.org (тестовый пакет), раскладывается в `data/p
   «Установка в Марс» (теперь актуально: установка из zip и nuget, жизненный цикл,
   изоляция); `PluginGettingStart.md` — раздел «Установка и обновление».
 
+### Фаза 7. Чистка SDK: удаление `_front_plugins.json`, фикс классификации по замыканию — **выполнена 2026-09-01**
+
+Два решения пользователя 2026-09-01 (по итогам обсуждения):
+
+1. **`_front_plugins.json` не хранится в плагине, а генерируется сервером.**
+   Файл, который SDK писал в `wwwroot` плагина при паковке, на рантайме никем не
+   читается: сервер (`PluginManifestProvider.GenerateManifest` + `MapGet` в
+   `PluginManager.UsePlugins`) собирает манифест на лету из `<Плагин>.staticwebassets
+   .endpoints.json` с фильтром по `Mars.Admin.staticwebassets.endpoints.json`, и endpoint
+   выигрывает у статик-файла. SDK-версия была рудиментом старого as-is-флоу.
+   Удалены: `ManifestProcessing.cs` целиком (включая pack-time `FilterEndpoints`),
+   команда `debug-manifest` (`ProcessMode.DebugManifest`, таргет `MarsPluginDebugManifest`),
+   шаг `[3/4]` и `generateFilesNames` в `Program.cs`. Рантайм не тронут —
+   `MarsFrontPluginManifest` в `Front.Abstractions` остаётся контрактом сервер↔WASM.
+2. **Классификация «пакет Марса» — по замыканию, не по имени.** Префикс
+   `mdimai666.*` (`PreparePublishData.IsMarsPackage`, `ProcessScriptSettings
+   .CurrentScriptProjectNugetName`) ломался на плагинах автора, опубликованных под
+   собственным именем: свои пакеты ошибочно стрипались из плагина. Заменён на
+   членство в замыкании `Mars.deps.json` ∪ явный список аддонов (пакеты экосистемы
+   вне замыкания WebApp: `Mars.Plugin.Kit.Host`, `Mars.Plugin.Kit.Front`, и сам SDK
+   как dev-инструмент — `devTools` фильтрует по assembly name, а в deps.json ключ —
+   package id). Это же правило уже работает на рантайме (`PluginNugetInstaller`, ALC) —
+   паковка приведена в соответствие.
+   Попутно: чистка мёртвого кода SDK (`EnvVa`, закомментированные блоки,
+   неиспользуемые свойства DTO deps.json), обновление доков.
+
+Проверено: проект `Mars.Plugin.Sdk` и все плагинные проекты собираются;
+`Mars.Plugin.Tests` 26/26 (+1 скип, как до фазы); `dotnet pack` SDK даёт корректный
+nupkg (`build/` таргеты без debug-манифеста, `mars/` оба манифеста релиза, `tools/`).
+Контрольный `pack zip`/`pack nuget` на `MyMarsPlugin` (шаблон вне этого репо) —
+на стороне плагина: в пакет не должен попадать `_front_plugins.json`, свои пакеты
+автора бандлятся, марсовые стрипаются по замыканию.
+
+Примечание: полная сборка `Mars.slnx` в Release падала на 5 ошибках в тестовых проектах
+(`Mars.Datasource.Integration.Tests` — `configs`, `Mars.WebApiClient.Integration.Tests` —
+`DummyAct`); причина — тесты ссылались на Debug-типы/поля (`DummyAct`, `configs`),
+объявленные под `#if DEBUG`, вне дефайна. Починено 2026-09-01 оборачиванием этих
+тест-методов в `#if DEBUG` (конвенция уже была для `FormTestAct`); Release-сборка 0 ошибок.
+
 Дальше — Фазы 4–5 `PluginCatalogPlan.md` (установка по NuGet-id с проверкой статуса
 в каталоге, витрина маркетплейса): этот реворк для них фундамент, пересмотра не нужно.
 Фундамент готов: `packageType=MarsPlugin` + `mars-plugin.json` в пакетах,

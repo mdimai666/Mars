@@ -25,9 +25,4 @@
         <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; pack nuget --ProjectName=$(ProjectName) --out=$(PublishDir) --ProjectDir=$(ProjectDir) --PackageId=$(PackageId) --Version=$(PackageVersion) --Authors=&quot;$(MarsPluginPackAuthors)&quot; --Description=&quot;$(MarsPluginPackDescription)&quot; --Tags=&quot;$(MarsPluginPackTags)&quot; --Icon=$(PackageIcon)" />
     </Target>
 
-    <!-- Отладочный манифест: после каждой Debug-сборки -->
-    <Target Name="MarsPluginDebugManifest" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug' and Exists('$(MarsPluginSdkTool)')">
-        <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; debug-manifest --ProjectName=$(ProjectName) --out=$(OutDir) --ProjectDir=$(ProjectDir)" />
-    </Target>
-
 </Project>

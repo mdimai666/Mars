@@ -75,6 +75,7 @@ public class ListActTests : BaseWebApiClientTests
     }
 #endif
 
+#if DEBUG
     [IntegrationFact]
     public async Task List_HidesSystemCommands()
     {
@@ -87,6 +88,7 @@ public class ListActTests : BaseWebApiClientTests
         //Assert
         list.Should().NotContainKey(DummyAct.CommandId);
     }
+#endif
 
     [IntegrationFact]
     public async Task List_CarriesRecommendedPriority()

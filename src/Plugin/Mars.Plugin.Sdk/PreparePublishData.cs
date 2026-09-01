@@ -5,6 +5,19 @@ namespace Mars.Plugin.Sdk;
 
 internal class PreparePublishData
 {
+    // Пакет самого инструмента: исключается из зависимостей nuspec и из бандла
+    // (в deps.json он ключуется package id, а не assembly name).
+    internal const string MarsSdkPackageId = "mdimai666.Mars.Plugin.Sdk";
+
+    // Пакеты экосистемы Марса, которых нет в замыкании Mars.WebApp, но которые плагин
+    // может ссылать; их сборки стрипаются как марсовые.
+    internal static readonly HashSet<string> MarsAddonPackages = new(StringComparer.OrdinalIgnoreCase)
+    {
+        MarsSdkPackageId,
+        "mdimai666.Mars.Plugin.Kit.Host",
+        "mdimai666.Mars.Plugin.Kit.Front",
+    };
+
     public readonly ProjectDependencies _marsWebAppDependencies;
     public ProjectDependencies ProjectDependencies;
 
@@ -25,7 +38,6 @@ internal class PreparePublishData
         Settings = new ProcessScriptSettings(args);
 
         Console.WriteLine("args: " + string.Join(' ', args));
-        //Console.WriteLine("env: " + string.Join(',', EnvVa()));
 
         Console.WriteLine("POST PUBLISH SCRIPT: start");
         Console.WriteLine("dir=" + Directory.GetCurrentDirectory());
@@ -34,15 +46,17 @@ internal class PreparePublishData
         var marsReleaseDepsJsonFile = Path.Combine(assemblyFolder, "Mars.deps.json");
         _marsWebAppDependencies = new ProjectDependencies(marsReleaseDepsJsonFile);
 
-        //var releaseArtifactsDepsjsonFile = @"C:\Users\D\Documents\VisualStudio\2025\Mars.TelegramPlugin\Mars.TelegramPlugin\obj\Release\net10.0\Mars.TelegramPlugin.deps.json";
-        //var releaseArtifactsDepsjsonFile = Path.Combine(ProjectDir, OutDir.Replace("bin\\", "obj\\"), ProjectName + ".deps.json");
         var releaseArtifactsDepsjsonFile = Path.Combine(Settings.ProjectDir, Settings.OutDir, Settings.ProjectName + ".deps.json");
         ProjectDependencies = new ProjectDependencies(releaseArtifactsDepsjsonFile);
 
         var webApp = RecurseDependiesList(_marsWebAppDependencies.Packages["Mars"], _marsWebAppDependencies, _ => true, true);
-        var projectDepends = RecurseDependiesList(ProjectDependencies.Packages[Settings.ProjectName], ProjectDependencies, IsMarsPackage, false);
+        // «Пакет Марса» — по фактическому замыканию, а не по имени: сборки из Mars.deps.json
+        // хост отдаёт сам (стрипаются), плюс явные аддоны экосистемы вне замыкания WebApp.
+        // Имя автора плагина на классификацию не влияет.
+        var projectDepends = RecurseDependiesList(ProjectDependencies.Packages[Settings.ProjectName], ProjectDependencies,
+            name => webApp.marsDepends.ContainsKey(name) || MarsAddonPackages.Contains(name), false);
 
-        HashSet<string> devTools = [ToolAssemblyName, "Microsoft.AspNetCore.Components.WebAssembly.DevServer"];
+        HashSet<string> devTools = [MarsSdkPackageId, "Microsoft.AspNetCore.Components.WebAssembly.DevServer"];
 
         MarsLibraries = webApp.marsDepends.Concat(projectDepends.marsDepends).DistinctBy(s => s.Key).ToDictionary();
 
@@ -72,19 +86,6 @@ internal class PreparePublishData
 
         ProjectSelfDepends = projectDepends.otherPackages.Where(s => !webApp.marsDepends.ContainsKey(s.Key) && !devTools.Contains(s.Key)).ToDictionary();
     }
-
-    IEnumerable<string> EnvVa()
-    {
-        var env = Environment.GetEnvironmentVariables();
-        foreach (var key in env.Keys)
-        {
-            yield return $"{key}={env[key]}";
-        }
-    }
-
-    // Все пакеты Марса публикуются под префиксом mdimai666.* — единственный источник правды,
-    // ручной список больше не нужен и не может отстать от реальности.
-    internal static bool IsMarsPackage(string name) => name.StartsWith("mdimai666.", StringComparison.OrdinalIgnoreCase);
 
     public (Dictionary<string, Library> marsDepends, Dictionary<string, Library> otherPackages)
             RecurseDependiesList(Dependency dependency,

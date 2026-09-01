@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Mars.Plugin.Sdk.Models;
 
 public class ProcessScriptSettings
@@ -15,9 +13,6 @@ public class ProcessScriptSettings
     public readonly string? Description;
     public readonly string? Tags;
     public readonly string? Icon;
-
-    public readonly string CurrentScriptProjectName;
-    public readonly string CurrentScriptProjectNugetName;
 
     public ProcessScriptSettings(string[] args)
     {
@@ -37,8 +32,5 @@ public class ProcessScriptSettings
         Description = argsDict.GetValueOrDefault("Description");
         Tags = argsDict.GetValueOrDefault("Tags");
         Icon = argsDict.GetValueOrDefault("Icon");
-
-        CurrentScriptProjectName = Assembly.GetExecutingAssembly().GetName().Name!;
-        CurrentScriptProjectNugetName = $"mdimai666.{CurrentScriptProjectName}";
     }
 }

@@ -6,25 +6,13 @@ internal static class ScriptFilesProcessing
 {
     internal static string[] CalculateDlls(Dictionary<string, Library> libraries, ProjectDependencies projectDependencies)
     {
-        // если так то добавляются с полным префиксом типа - lib/net6.0/cs/System.CommandLine.resources.dll
-        // а мне надо cs/System.CommandLine.resources.dll
-        //var runtimes = libraries.Keys
-        //                .SelectMany(s => projectDependencies.Packages.GetValueOrDefault(s)?.Runtime.Keys.ToArray() ?? [])
-        //                .Where(s => !string.IsNullOrEmpty(s)).ToList();
         var runtimes = libraries.Keys
                            .SelectMany(s => projectDependencies.Packages.GetValueOrDefault(s)?.Runtime.Select(x => Path.GetFileName(x.Key)) ?? [])
                            .Where(s => !string.IsNullOrEmpty(s)).ToList();
 
-        // если так то добавляются с полным префиксом типа - lib/net6.0/cs/System.CommandLine.resources.dll
-        // а мне надо cs/System.CommandLine.resources.dll
-        //var resources = libraries.Keys
-        //                .SelectMany(s => projectDependencies.Packages.GetValueOrDefault(s)?.Resources.Keys.ToArray() ?? [])
-        //                .Where(s => !string.IsNullOrEmpty(s)).ToList();
         var resources = libraries.Keys
                         .SelectMany(s => projectDependencies.Packages.GetValueOrDefault(s)?.Resources.Select(x => $"{x.Value.Locale}/{Path.GetFileName(x.Key)}") ?? [])
                         .Where(s => !string.IsNullOrEmpty(s)).ToList();
-
-        //var dyn = projectDependencies.Packages.GetValueOrDefault("DynamicExpresso.Core");
 
         return runtimes.Concat(resources).ToArray();
     }

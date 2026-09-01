@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyModel;
 
 namespace Mars.Plugin.Services;
@@ -46,13 +47,18 @@ internal static class PluginAssemblyHelper
         var projectRuntimeLibraries = context.RuntimeLibraries
             .Where(lib => lib.Type == "project");
 
+        // Фронт-сборки не входят в замыкание хоста — грузим их по физическому пути из папки плагина
+        var resolver = new AssemblyDependencyResolver(mainAssembly.Location);
+
         var assemblies = new List<Assembly>();
         foreach (var runtimeLib in projectRuntimeLibraries)
         {
             try
             {
-                // Загружаем по имени, так как они точно локальные проекты
-                var asm = Assembly.Load(new AssemblyName(runtimeLib.Name));
+                var assemblyPath = resolver.ResolveAssemblyToPath(new AssemblyName(runtimeLib.Name));
+                if (assemblyPath is null) continue;
+
+                var asm = Assembly.LoadFrom(assemblyPath);
                 assemblies.Add(asm);
             }
             catch { }

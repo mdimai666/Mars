@@ -159,7 +159,7 @@ internal class PluginManager
 
             var pluginWwwRoot = Path.Combine(pluginData.Settings.ContentRootPath, "wwwroot");
 
-            var manifestProvider = new PluginManifestProvider(pluginData.Plugin.GetType().Assembly);
+            var manifestProvider = new PluginManifestProvider(pluginData.Plugin.GetType().Assembly, pluginData.Settings.ContentRootPath);
 
             var pluginUrl = $"/_plugin/{pluginData.Info.KeyName}";
             app.Map(pluginUrl, pluginAppBuilder =>
@@ -228,8 +228,10 @@ internal class PluginManager
         Assembly currentAssembly;
         try
         {
-            currentAssembly = Assembly.LoadFrom(assemblyFile);
-            logger.LogDebug("Assembly {AssemblyName} successfully loaded into context.", currentAssembly.FullName);
+            // изолированный контекст: свои зависимости у плагина, сборки Марса — из хоста
+            var loadContext = new PluginLoadContext(assemblyFile);
+            currentAssembly = loadContext.LoadFromAssemblyPath(assemblyFile);
+            logger.LogDebug("Assembly {AssemblyName} successfully loaded into plugin load context.", currentAssembly.FullName);
         }
         catch (Exception ex)
         {

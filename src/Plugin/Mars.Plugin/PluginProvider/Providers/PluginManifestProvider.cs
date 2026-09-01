@@ -11,18 +11,14 @@ namespace Mars.Plugin.PluginProvider.Providers;
 
 public class PluginManifestProvider
 {
-    private readonly Assembly _assembly;
-
     public IReadOnlyCollection<EndpointJsonDto> Files { get; private set; }
 
-    public PluginManifestProvider(Assembly assembly)
+    public PluginManifestProvider(Assembly assembly, string contentRootPath)
     {
-        _assembly = assembly;
-        var projectName = _assembly.GetName().Name;
-        var targetDir = Path.GetDirectoryName(_assembly.Location)!;
+        var projectName = assembly.GetName().Name;
 
         var manifestFileName = projectName + ".staticwebassets.endpoints.json";
-        var manifestFilePath = Path.Combine(targetDir, manifestFileName);
+        var manifestFilePath = Path.Combine(contentRootPath, manifestFileName);
         if (!File.Exists(manifestFilePath))
         {
             Files = [];
@@ -97,7 +93,7 @@ public class PluginManifestProvider
 
     StaticwebassetsEndpointsManifestJson MarsDevAdminEndpoints()
     {
-        var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        var assemblyFolder = Path.GetDirectoryName(typeof(PluginManifestProvider).Assembly.Location)!;
         var manifestFileName = "Mars.Admin.staticwebassets.endpoints.json";
         var manifestFilePath = Path.Combine(assemblyFolder, manifestFileName);
         if (!File.Exists(manifestFilePath)) throw new FileNotFoundException($"{manifestFileName} not found. File is Required!");

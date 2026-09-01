@@ -200,6 +200,21 @@ public override void ConfigureWebApplication(WebApplication app, PluginSettings 
 **Frontend:**
 - `mdimai666.Mars.Plugin.Kit.Front`
 
+## Install & Lifecycle (runtime)
+
+Плагин устанавливается из админки (`Plugins`): zip-файл («Upload from zip-file»)
+или по NuGet-id («Install from NuGet», пакет должен нести `packageType=MarsPlugin`
+и `mars-plugin.json`). После установки/отключения/удаления нужен рестарт сервера.
+
+- Папка установки: `data/plugins/<PackageId>/` (единая раскладка для любого источника).
+- Управление: Enable/Disable, Update (последняя версия из nuget), Delete.
+- Плагины из секции `Plugins` конфигурации инстанса — `Locked` (не отключаются/не удаляются
+  из админки; облачный сценарий принудительных плагинов).
+- Источники nuget и блок-лист — опция `PluginManagerSettingsOption`
+  (по умолчанию nuget.org; `BlockedPackageIds` — через запятую).
+- Изоляция: каждый плагин грузится в собственный `AssemblyLoadContext`
+  (свои версии сторонних библиотек не конфликтуют; сборки Марса — из хоста).
+
 ## Key Patterns
 
 1. **Config resolution:** Always call `Node.Config = RNS.GetConfig(node.Config)` in constructor

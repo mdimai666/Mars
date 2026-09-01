@@ -1,7 +1,7 @@
 # План: реворк системы плагинов
 
-> **Статус: Фазы 0 и 2 выполнены 2026-09-01 (Фаза 1 пропущена по решению пользователя,
-> сделать позже); Фаза 2 ждёт пользовательской проверки.**
+> **Статус: Фазы 0, 1, 2 выполнены 2026-09-01; Фаза 2 ждёт пользовательской проверки,
+> дальше — Фаза 3 (раскладка, инсталлеры, nuget-установка).**
 > Решения: 2026-08-31.
 > Задача-источник: [Prompts/PluginSystemReworkPrompt.md](./Prompts/PluginSystemReworkPrompt.md).
 > Связанные документы: [PluginServer/PluginDistributionPlan.md](./PluginServer/PluginDistributionPlan.md)
@@ -111,9 +111,9 @@
 | `Mars.Plugin.PluginPublishScript` | Переименовывается в `Mars.Plugin.Sdk` (см. ниже) |
 
 Именование:
-- `WebApplicationPlugin` → `MarsPlugin`, `WebApplicationPluginAttribute` → `MarsPluginAttribute`;
-  старые имена — `[Obsolete]`-наследники (своих плагинов мало: `MyMarsPlugin`,
-  `TelegramPlugin`, `PlayAudioNodePlugin` — все обновляемы).
+- `WebApplicationPlugin` → `MarsPlugin`, `WebApplicationPluginAttribute` → `MarsPluginAttribute`.
+  Итог (2026-09-01): старые имена удалены без шимов — своих плагинов мало
+  (`MyMarsPlugin`, `TelegramPlugin`, `PlayAudioNodePlugin`), все обновляемы.
 - Опечатки: `InstatitePlugin` → `InstantiatePlugin`, `DependiesJsonDto` → `DependenciesJsonDto`.
 - `PluginData` → `LoadedPlugin` (внутреннее). `PluginInfo`/`PluginConfig` остаются.
 
@@ -234,18 +234,36 @@ NuGet-id и из zip. Отключение = пропуск загрузки п�
 `Mars.Plugin.Integration.Tests` (7/7, `PluginExample` проходит полный пайплайн);
 в публикации файл эндпоинтов лежит рядом с `Mars.dll`.
 
-### Фаза 1. Структура и именование
+### Фаза 1. Структура и именование — **выполнена 2026-09-01**
 
-- Удалить `Mars.Plugin.PluginHost`; DTO/маппинги — в `Mars.Plugin.Contracts`;
-  парсерные DTO — в одно место (`Mars.Plugin.Front.Abstractions`).
-- `PluginManager` в DI (`ILogger`, `IFileStorage("data")` из контейнера), тестируем.
-- Вычистить мёртвый код; `NuspecHelper` переезжает в будущий Sdk (там он нужен).
-- Переименования (`MarsPlugin` + `[Obsolete]`-шимы, опечатки).
-- Обновить README `Mars.Plugin` (сейчас описывает несуществующее публичное
-  `AddPluginsAsPartOfMvc`).
+Сделано:
+- Удалён пустой `Mars.Plugin.PluginHost` (ссылки из `Kit.Host` и `Mars.slnx` убраны;
+  киты остаются — пользователь подтвердил роль кита как «готового комплекта»).
+- Парсерные модели (`deps.json`, endpoints-json) переехали из дублей
+  (`Mars.Plugin/PluginProvider/Dto` и `Mars.Plugin.Sdk/Dto`) в одно место —
+  `Mars.Plugin.Front.Abstractions`; опечатка имени файла `DependiesJsonDto` устранена
+  (класс уже назывался правильно).
+- **Отклонение от плана:** DTO/маппинги/`IPluginService` НЕ переносились в
+  `Mars.Plugin.Contracts` — текущее размещение в `Abstractions` совпадает с конвенцией
+  модулей (`Mars.Options.Abstractions`, `Mars.Docker.Abstractions`: сервисные DTO живут
+  в `*.Abstractions`, HTTP-модели — в `*.Contracts`).
+- `PluginManager` — зависимости в конструкторе (`ILogger<PluginManager>`,
+  keyed-`IFileStorage("data")` из уже зарегистрированных сервисов, без сборки
+  провайдера); ручной `FileStorage`/`LoggerFactory` внутри удалены; для хостов без
+  `MainServer` keyed-хранилище регистрируется в `AddPlugins` тем же экземпляром.
+- Переименования: `WebApplicationPlugin`/`WebApplicationPluginAttribute` →
+  `MarsPlugin`/`MarsPluginAttribute` (без шимов — удалены по решению пользователя
+  2026-09-01), `PluginData` → `LoadedPlugin`, `InstatitePlugin` → `InstantiatePlugin`;
+  `PluginExample` и шаблон `MyMarsPlugin` переведены на новые имена.
+- Мёртвый код: `PluginExampleData` + ветки `#if USE_EXAMPLE_PLUGINS` удалены,
+  комментированный дамп атрибутов из `PluginInfo` убран.
+  **Отклонение:** `NuspecHelper` НЕ удалён/не перенесён — его использует
+  `UploadPluginTests` (генерация тестового nuspec); пригодится в Фазе 3.
+- Перезаписан `README` `Mars.Plugin` под реальное API.
 
-**Готово когда**: `dotnet build Mars.slnx` и тесты `Mars.Plugin.Tests`/
-`Mars.Plugin.Integration.Tests` зелёные; загрузка существующих плагинов не изменилась.
+Проверено: `dotnet build Mars.slnx` зелёная; `Mars.Plugin.Tests` 3/3 (+1 скип),
+`Mars.Plugin.Integration.Tests` 7/7 (PluginExample грузится по новому атрибуту,
+миграции применяются), точечные `GetPluginTests|UploadPluginTests` 6/6.
 
 ### Фаза 2. Манифесты и `Mars.Plugin.Sdk` — **выполнена 2026-09-01**
 
@@ -324,8 +342,9 @@ nuget.org (тестовый пакет), раскладывается в `data/p
 
 ## Риски и ограничения
 
-- **Переименование `WebApplicationPlugin`** ломает существующие внешние плагины —
-  закрывается `[Obsolete]`-шимами и обновлением всех своих плагинов в Фазе 1–2.
+- **Переименование `WebApplicationPlugin` → `MarsPlugin`**: внешние плагины на старых
+  именах не загрузятся (шимы удалены по решению пользователя 2026-09-01); все свои
+  плагины и шаблоны переведены на новые имена в Фазе 1, внешние обновляются при выпуске.
 - **Конфликт версий сторонних библиотек с хостом**: сборки из замыкания Mars всегда
   резолвятся из хоста (тип-идентичность важнее); плагин, требующий более новую версию
   «марсовой» библиотеки, должен ждать релиза Mars. Документируется как ограничение.

@@ -6,7 +6,7 @@ namespace Mars.Integration.Tests.Interfaces;
 
 public interface IPluginManagerWrapperForTests
 {
-    public IReadOnlyCollection<PluginData> Plugins { get; }
+    public IReadOnlyCollection<LoadedPlugin> Plugins { get; }
     void ApplyPluginMigrations(IServiceProvider rootServices, IConfiguration configuration);
 }
 
@@ -19,7 +19,7 @@ internal class PluginManagerWrapperForTests : IPluginManagerWrapperForTests
         _pluginManager = pluginManager;
     }
 
-    public IReadOnlyCollection<PluginData> Plugins => _pluginManager.Plugins;
+    public IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
     public void ApplyPluginMigrations(IServiceProvider rootServices, IConfiguration configuration)
         => _pluginManager.ApplyPluginMigrations(rootServices, configuration);

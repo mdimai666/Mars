@@ -1,4 +1,4 @@
-namespace Mars.Plugin.PluginProvider.Dto;
+namespace Mars.Plugin.Front.Abstractions;
 
 public class RuntimeTargetJsonDto
 {

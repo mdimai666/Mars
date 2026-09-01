@@ -72,7 +72,7 @@ public static class PluginTestsExtensions
         var pluginInfo = _fixture.Create<PluginInfo>();
         var pluginSettings = _fixture.Create<PluginSettings>();
 
-        var pluginData = new PluginData(false, false, pluginSettings, null!, pluginInfo);
+        var pluginData = new LoadedPlugin(false, false, pluginSettings, null!, pluginInfo);
 
         var pluginManager = serviceProvider.GetRequiredService<PluginManager>();
         pluginManager.AddPlugin(pluginData);

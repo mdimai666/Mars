@@ -1,45 +1,34 @@
 using System.Reflection;
-using Mars.Contracts.Dto.Files;
 using Mars.Plugin.Abstractions;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginProvider.Providers;
 using Mars.Server.Abstractions.Services;
-using Mars.Storage.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using MOptions = Microsoft.Extensions.Options.Options;
 
 namespace Mars.Plugin.Services;
 
 internal class PluginManager
 {
-    private List<PluginData> _plugins = [];
+    private List<LoadedPlugin> _plugins = [];
     private readonly IFileStorage _fileStorage;
     private readonly bool isTesting;
     private readonly ILogger<PluginManager> _logger;
 
-    public IReadOnlyCollection<PluginData> Plugins => _plugins;
+    public IReadOnlyCollection<LoadedPlugin> Plugins => _plugins;
     public const string PluginsDefaultPath = "plugins";
 
-    public PluginManager(string contentRootPath)
+    public PluginManager(ILogger<PluginManager> logger, IFileStorage dataFileStorage)
     {
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        _logger = loggerFactory.CreateLogger<PluginManager>();
-
-        var dataDirHostingInfo = MOptions.Create(new FileHostingInfo()
-        {
-            Backend = null,
-            PhysicalPath = new Uri(Path.Combine(contentRootPath, "data"), UriKind.Absolute),
-            RequestPath = ""
-        });
-        _fileStorage = new FileStorage(dataDirHostingInfo);
+        _logger = logger;
+        _fileStorage = dataFileStorage;
         isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Test", StringComparison.OrdinalIgnoreCase) ?? false;
 
-        _logger.LogDebug("PluginManager initialized. ContentRoot: {ContentRootPath}, IsTesting: {IsTesting}", contentRootPath, isTesting);
+        _logger.LogDebug("PluginManager initialized. IsTesting: {IsTesting}", isTesting);
         EnsurePluginsDirExist();
     }
 
@@ -56,7 +45,7 @@ internal class PluginManager
     {
         _logger.LogInformation("=== Starting plugins configuration ===");
 
-        var plugins = new List<PluginData>();
+        var plugins = new List<LoadedPlugin>();
         var pluginsSection = builder.Configuration.GetSection(pluginSection);
 
         if (pluginsSection is null)
@@ -79,7 +68,7 @@ internal class PluginManager
             }
 
             _logger.LogDebug("Processing plugin from configuration: {Name}", name);
-            var instances = InstatitePlugin(pluginConfig, _logger);
+            var instances = InstantiatePlugin(pluginConfig, _logger);
             plugins.AddRange(instances);
         }
 
@@ -91,7 +80,7 @@ internal class PluginManager
             {
                 try
                 {
-                    var instances = InstatitePlugin(pluginConfig, _logger);
+                    var instances = InstantiatePlugin(pluginConfig, _logger);
                     plugins.AddRange(instances);
                 }
                 catch (Exception ex)
@@ -222,11 +211,11 @@ internal class PluginManager
         }
     }
 
-    internal void AddPlugin(PluginData pluginData) => _plugins.Add(pluginData);
+    internal void AddPlugin(LoadedPlugin pluginData) => _plugins.Add(pluginData);
 
-    internal static List<PluginData> InstatitePlugin(PluginConfig pluginConfig, ILogger logger)
+    internal static List<LoadedPlugin> InstantiatePlugin(PluginConfig pluginConfig, ILogger logger)
     {
-        var result = new List<PluginData>();
+        var result = new List<LoadedPlugin>();
         var assemblyFile = Path.GetFullPath(pluginConfig.AssemblyPath);
         var contentRootPath = pluginConfig.ContentRootPath is not null ? Path.GetFullPath(pluginConfig.ContentRootPath) : null;
 
@@ -246,11 +235,11 @@ internal class PluginManager
             return result;
         }
 
-        var attributes = currentAssembly.GetCustomAttributes<WebApplicationPluginAttribute>().ToList();
+        var attributes = currentAssembly.GetCustomAttributes<MarsPluginAttribute>().ToList();
 
         if (attributes.Count == 0)
         {
-            logger.LogWarning("NO [WebApplicationPluginAttribute] found in assembly {Assembly}! Plugin will not be loaded.", assemblyFile);
+            logger.LogWarning("NO [MarsPluginAttribute] found in assembly {Assembly}! Plugin will not be loaded.", assemblyFile);
             return result;
         }
 
@@ -259,18 +248,18 @@ internal class PluginManager
             var type = attr.PluginType;
             logger.LogDebug("Found plugin attribute. Type: {PluginType}", type.FullName);
 
-            var hasConfigureBuilder = type.GetMethod(nameof(WebApplicationPlugin.ConfigureWebApplicationBuilder))?.DeclaringType != typeof(WebApplicationPlugin);
-            var hasConfigureApp = type.GetMethod(nameof(WebApplicationPlugin.ConfigureWebApplication))?.DeclaringType != typeof(WebApplicationPlugin);
+            var hasConfigureBuilder = type.GetMethod(nameof(MarsPlugin.ConfigureWebApplicationBuilder))?.DeclaringType != typeof(MarsPlugin);
+            var hasConfigureApp = type.GetMethod(nameof(MarsPlugin.ConfigureWebApplication))?.DeclaringType != typeof(MarsPlugin);
 
             PluginInfo info = new(currentAssembly);
 
             try
             {
-                var instance = (WebApplicationPlugin)Activator.CreateInstance(type)!;
+                var instance = (MarsPlugin)Activator.CreateInstance(type)!;
                 logger.LogInformation("Plugin {PluginType} successfully instantiated. Methods overridden: Builder={HasBuilder}, App={HasApp}",
                     type.Name, hasConfigureBuilder, hasConfigureApp);
 
-                result.Add(new PluginData(hasConfigureBuilder, hasConfigureApp, settings, instance, info));
+                result.Add(new LoadedPlugin(hasConfigureBuilder, hasConfigureApp, settings, instance, info));
             }
             catch (Exception ex)
             {

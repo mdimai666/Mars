@@ -27,18 +27,6 @@ public class PluginInfo
 
     public PluginInfo(Assembly assembly)
     {
-        //[System.Runtime.CompilerServices.CompilationRelaxationsAttribute((Int32)8)]
-        //[System.Runtime.CompilerServices.RuntimeCompatibilityAttribute(WrapNonExceptionThrows = True)]
-        //[System.Diagnostics.DebuggableAttribute((System.Diagnostics.DebuggableAttribute + DebuggingModes)263)]
-        //[Mars.Plugin.Abstractions.WebApplicationPluginAttribute(typeof(HelloPlugin1.HelloPlugin))]
-        //[System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v6.0", FrameworkDisplayName = "")]
-        //[System.Reflection.AssemblyCompanyAttribute("HelloPlugin1")]
-        //[System.Reflection.AssemblyConfigurationAttribute("Debug")]
-        //[System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-        //[System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-        //[System.Reflection.AssemblyProductAttribute("HelloPlugin1")]
-        //[System.Reflection.AssemblyTitleAttribute("HelloPlugin1")]
-
         AssemblyFullName = assembly.FullName!;
         AssemblyPath = assembly.Location;
 
@@ -46,7 +34,6 @@ public class PluginInfo
 
         var _assembly = assembly.GetName();
 
-        //this.Version = assembly.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0";
         Version = _assembly.Version.ToString() ?? "0";
         Title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? _assembly.Name!;
         Description = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description ?? "";

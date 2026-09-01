@@ -1,12 +1,18 @@
 using System.Reflection;
+using Mars.Contracts.Dto.Files;
 using Mars.Options.Abstractions.Services;
 using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
+using Mars.Server.Abstractions.Services;
+using Mars.Storage.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MOptions = Microsoft.Extensions.Options.Options;
 
 namespace Mars.Plugin;
 
@@ -18,13 +24,39 @@ public static class ApplicationPluginExtensions
     {
         builder.Services.AddControllers().AddApplicationPart(Assembly.GetExecutingAssembly());
 
-        var pluginManager = new PluginManager(builder.Environment.ContentRootPath);
+        // Плагины регистрируют сервисы и MVC-части строго до Build(), поэтому
+        // PluginManager создаётся сразу, без сборки провайдера.
+        var dataFileStorage = builder.Services.GetOrCreateDataFileStorage(builder.Environment);
+        // без using: логгер живёт вместе с PluginManager весь срок работы приложения
+        var loggerFactory = LoggerFactory.Create(logBuilder => logBuilder.AddConsole());
+
+        var pluginManager = new PluginManager(loggerFactory.CreateLogger<PluginManager>(), dataFileStorage);
         pluginManager.ConfigureBuilder(builder);
         builder.Services.AddSingleton(pluginManager);
         builder.Services.AddControllers().AddPluginsAsPartOfMvc(pluginManager.Plugins);
 
         builder.Services.AddSingleton<IPluginService, PluginService>();
         return builder;
+    }
+
+    /// <summary>
+    /// Keyed-регистрация "data" появляется в MainServer; для хостов без него
+    /// (автономные тесты) регистрируем здесь тем же экземпляром.
+    /// </summary>
+    static IFileStorage GetOrCreateDataFileStorage(this IServiceCollection services, IWebHostEnvironment environment)
+    {
+        var registered = services.FirstOrDefault(s => s.ServiceType == typeof(IFileStorage) && s.ServiceKey as string == "data");
+        if (registered?.ImplementationInstance is IFileStorage instance) return instance;
+
+        var dataDirHostingInfo = MOptions.Create(new FileHostingInfo()
+        {
+            Backend = null,
+            PhysicalPath = new Uri(Path.Combine(environment.ContentRootPath, "data"), UriKind.Absolute),
+            RequestPath = ""
+        });
+        var dataFs = new FileStorage(dataDirHostingInfo);
+        services.AddKeyedSingleton<IFileStorage>("data", dataFs);
+        return dataFs;
     }
 
     public static void ApplyPluginMigrations(this WebApplication app)
@@ -43,7 +75,7 @@ public static class ApplicationPluginExtensions
         pluginManager.UsePlugins(app);
     }
 
-    static IMvcBuilder AddPluginsAsPartOfMvc(this IMvcBuilder mvcBuilder, IEnumerable<PluginData> plugins)
+    static IMvcBuilder AddPluginsAsPartOfMvc(this IMvcBuilder mvcBuilder, IEnumerable<LoadedPlugin> plugins)
     {
         foreach (var p in plugins)
         {

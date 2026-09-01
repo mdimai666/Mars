@@ -11,11 +11,11 @@ using PluginExample.Data;
 using PluginExample.Data.Seeds;
 using PluginExample.Options;
 
-[assembly: WebApplicationPlugin(typeof(PluginExamplePlugin))]
+[assembly: MarsPluginAttribute(typeof(PluginExamplePlugin))]
 
 namespace PluginExample;
 
-public class PluginExamplePlugin : WebApplicationPlugin, IPluginDatabaseMigrator
+public class PluginExamplePlugin : MarsPlugin, IPluginDatabaseMigrator
 {
     public const string PluginName = "PluginExample";
     public const string PluginNameFullName = "PackageName.PluginExample";

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Mars.Plugin.Sdk.Dto;
+using Mars.Plugin.Front.Abstractions;
 
 namespace Mars.Plugin.Sdk.Models;
 

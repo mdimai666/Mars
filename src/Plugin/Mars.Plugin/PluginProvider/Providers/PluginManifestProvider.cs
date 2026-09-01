@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Front.Abstractions;
-using Mars.Plugin.PluginProvider.Dto;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -106,7 +105,7 @@ public class PluginManifestProvider
         return manifest;
     }
 
-    public MarsFrontPluginManifest GenerateManifest(WebApplication app, PluginData pluginData, ILogger logger)
+    public MarsFrontPluginManifest GenerateManifest(WebApplication app, LoadedPlugin pluginData, ILogger logger)
     {
         var pluginUrl = $"/_plugin/{pluginData.Info.KeyName}";
         pluginData.Info.ManifestFile = $"{pluginUrl}/{MarsFrontPluginManifest.DefaultManifestFileName}";

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using Mars.Plugin.PluginProvider.Dto;
+using Mars.Plugin.Front.Abstractions;
 using Mars.Plugin.PluginProvider.Providers;
 using Mars.Test.Common.Helpers;
 

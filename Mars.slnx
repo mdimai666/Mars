@@ -165,7 +165,6 @@
     <Project Path="src/Plugin/Mars.Plugin.Front/Mars.Plugin.Front.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Kit.Front/Mars.Plugin.Kit.Front.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Kit.Host/Mars.Plugin.Kit.Host.csproj" />
-    <Project Path="src/Plugin/Mars.Plugin.PluginHost/Mars.Plugin.PluginHost.csproj" />
     <Project Path="src/Plugin/Mars.Plugin.Sdk/Mars.Plugin.Sdk.csproj" />
     <Project Path="src/Plugin/Mars.Plugin/Mars.Plugin.csproj" />
     <Project Path="src/Plugin/PluginExample/PluginExample.csproj" />

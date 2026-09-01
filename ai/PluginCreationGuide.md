@@ -13,11 +13,11 @@ XxxPlugin/
 ## Backend: Startup.cs
 
 ```csharp
-[assembly: WebApplicationPlugin(typeof(MainXxxPlugin))]
+[assembly: MarsPluginAttribute(typeof(MainXxxPlugin))]
 
 namespace XxxPlugin;
 
-public class MainXxxPlugin : WebApplicationPlugin
+public class MainXxxPlugin : MarsPlugin
 {
     public const string PluginPackageName = "author.XxxPlugin";
 
@@ -192,8 +192,10 @@ public override void ConfigureWebApplication(WebApplication app, PluginSettings 
 ## Key NuGet Packages
 
 **Backend:**
-- `mdimai666.Mars.Plugin.Kit.Host`
-- `mdimai666.Mars.Plugin.PluginPublishScript`
+- `mdimai666.Mars.Plugin.Kit.Host` — комплект абстракций одной ссылкой
+- `mdimai666.Mars.Plugin.Sdk` (`PrivateAssets="all"`) — паковка: `publish -c Release` даёт
+  стрип + манифест + дескриптор + zip; `dotnet msbuild -t:MarsPluginPackNuget -c Release` — nupkg.
+  Подробности: `docs/dev_docs/Plugins/PluginSdk.md`.
 
 **Frontend:**
 - `mdimai666.Mars.Plugin.Kit.Front`

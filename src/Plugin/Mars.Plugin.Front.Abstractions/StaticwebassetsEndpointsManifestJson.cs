@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
-namespace Mars.Plugin.PluginProvider.Dto;
+namespace Mars.Plugin.Front.Abstractions;
 
 public class StaticwebassetsEndpointsManifestJson
 {
@@ -63,12 +63,3 @@ public class EndpointPropertyJsonDto
     [JsonPropertyName("Value")]
     public string Value { get; set; } = default!;
 }
-
-//public class EndpointJsonDtoSimplified
-//{
-//    [JsonPropertyName("Route")]
-//    public string Route { get; set; } = default!;
-
-//    [JsonPropertyName("AssetFile")]
-//    public string AssetFile { get; set; } = default!;
-//}

@@ -1,4 +1,3 @@
-//#define USE_EXAMPLE_PLUGINS
 using Mars.Contracts.Common;
 using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
@@ -22,7 +21,7 @@ internal class PluginService : IPluginService
     private readonly IOptionService _optionService;
 
     public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
-    internal IReadOnlyCollection<PluginData> Plugins => _pluginManager.Plugins;
+    internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
     public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService)
     {
@@ -33,10 +32,6 @@ internal class PluginService : IPluginService
 
     public ListDataResult<PluginInfoDto> List(ListPluginQuery query)
     {
-#if USE_EXAMPLE_PLUGINS
-        return PluginExampleData.GetExamplePluginList(query).AsListDataResult(query);
-#endif
-
         return Plugins.Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
                         .Select(s => s.Info.ToInfoDto())
                         .AsListDataResult(query);
@@ -44,9 +39,6 @@ internal class PluginService : IPluginService
 
     public PagingResult<PluginInfoDto> ListTable(ListPluginQuery query)
     {
-#if USE_EXAMPLE_PLUGINS
-        return PluginExampleData.GetExamplePluginList(query).AsPagingResult(query);
-#endif
         return Plugins.Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
                         .Select(s => s.Info.ToInfoDto())
                         .AsPagingResult(query);

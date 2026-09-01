@@ -21,7 +21,7 @@
 - `dotnet msbuild -t:MarsPluginPackNuget -c Release` — дополнительно собирает
   `<PackageId>.<Version>.nupkg` классического лейаута: собственные сборки в `lib/`,
   фронт-ассеты и дескриптор в `mars/`, зависимости в nuspec (Марс резолвит и
-  отфильтрует их при установке — план: `ai/PluginSystemReworkPlan.md`).
+  отфильтрует их при установке — гайд: `ai/PluginSystemGuide.md`).
 
 ## Локальная сборка пакета
 

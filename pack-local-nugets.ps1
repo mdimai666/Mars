@@ -1,4 +1,4 @@
-﻿param(
+param(
     # Локальный NuGet-фид; по умолчанию ~/Documents/VisualStudio/_LocalNugets
     [string]$OutDir = (Join-Path $HOME "Documents\VisualStudio\_LocalNugets")
 )
@@ -37,7 +37,7 @@ if ($ans -ne "y") {
 
 # Mars.Plugin.Sdk пакует манифесты из вывода сборки Mars.WebApp — решение должно быть собрано (Release).
 Write-Host "🔨 Сборка решения (Release)..." -ForegroundColor Cyan
-dotnet build (Join-Path $root "Mars.slnx") --configuration Release --verbosity minimal
+dotnet build (Join-Path $root "src/Mars.WebApp/Mars.WebApp.csproj") --configuration Release --verbosity minimal
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Сборка не удалась" -ForegroundColor Red
     exit 1

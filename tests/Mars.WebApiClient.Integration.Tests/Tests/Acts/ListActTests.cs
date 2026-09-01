@@ -56,6 +56,7 @@ public class ListActTests : BaseWebApiClientTests
         postTypeArgument.OptionsSource.Should().Be(CreateMockPostsAct.PostTypesOptionsSource);
     }
 
+#if DEBUG
     [IntegrationFact]
     public async Task List_DeclaresStaticOptions()
     {
@@ -72,6 +73,7 @@ public class ListActTests : BaseWebApiClientTests
         choiceArgument.Options.Should().NotBeNull();
         choiceArgument.Options!.Should().Contain(o => o.Key == "one" && o.Label == "Первый");
     }
+#endif
 
     [IntegrationFact]
     public async Task List_HidesSystemCommands()

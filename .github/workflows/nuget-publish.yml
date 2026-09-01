@@ -27,12 +27,17 @@ jobs:
         with:
           dotnet-version: '10.0'
 
-      - name: Restore
-        run: dotnet restore Mars.slnx
+      # Пакуются только src/** с <PackageId>; тесты/бенчмарки/девстенды для публикации не нужны.
+      - name: Restore (src only)
+        run: |
+          set -e
+          while IFS= read -r f; do
+            dotnet restore "$f" --verbosity quiet
+          done < <(find src -name '*.csproj')
 
-      # Mars.Plugin.Sdk пакует манифесты из вывода сборки Mars.WebApp — решение должно быть собрано.
-      - name: Build solution
-        run: dotnet build Mars.slnx -c Release --no-restore
+      # Mars.Plugin.Sdk пакует манифесты из вывода сборки Mars.WebApp — WebApp собираем явно.
+      - name: Build Mars.WebApp
+        run: dotnet build src/Mars.WebApp/Mars.WebApp.csproj -c Release --no-restore
 
       - name: Pack packages (projects with PackageId)
         run: |

@@ -71,15 +71,12 @@ internal class PluginNugetInstaller
 
             PluginDescriptorHelper.Validate(descriptor, physicalStaging);
 
-            var finalDir = Path.Combine(PluginManager.PluginsDefaultPath, descriptor.PackageId);
-            if (_fileStorage.DirectoryExists(finalDir))
-            {
-                _logger.LogInformation("Replacing existing plugin folder '{Dir}'", finalDir);
-                _fileStorage.DeleteDirectory(finalDir, recursive: true);
-            }
-
-            _fileStorage.MoveDirectory(staging, finalDir);
-            _registry.MarkInstalled(descriptor.PackageId, PluginSource.NuGet, resolvedVersion.ToNormalizedString(), DateTimeOffset.UtcNow);
+            var finalDir = await PluginInstallFinalizer.FinalizeAsync(_fileStorage, _registry, _logger, staging, descriptor.PackageId, PluginSource.NuGet, resolvedVersion.ToNormalizedString(),
+                (from, to) =>
+                {
+                    _fileStorage.MoveDirectory(from, to);
+                    return Task.CompletedTask;
+                });
             return new PluginInstallResult(descriptor.PackageId, resolvedVersion.ToNormalizedString(), finalDir);
         }
         catch

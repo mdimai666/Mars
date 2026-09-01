@@ -150,16 +150,8 @@ internal class PluginZipInstaller
             targetName = fallbackName;
         }
 
-        var finalDir = Path.Combine(PluginManager.PluginsDefaultPath, targetName);
-        if (_fileStorage.DirectoryExists(finalDir))
-        {
-            _logger.LogInformation("Replacing existing plugin folder '{Dir}'", finalDir);
-            _fileStorage.DeleteDirectory(finalDir, recursive: true);
-        }
-
-        await MoveInstalledPluginAsync(stagingDir, finalDir, cancellationToken);
-        _registry.MarkInstalled(targetName, PluginSource.Zip, version, DateTimeOffset.UtcNow);
-        return finalDir;
+        return await PluginInstallFinalizer.FinalizeAsync(_fileStorage, _registry, _logger, stagingDir, targetName, PluginSource.Zip, version,
+            (from, to) => MoveInstalledPluginAsync(from, to, cancellationToken));
     }
 
     /// <summary>

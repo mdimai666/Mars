@@ -90,7 +90,11 @@
                                             @(context.Source == PluginSource.NuGet ? "NuGet" : "Zip")
                                         </FluentBadge>
                                     }
-                                    @if (context.Enabled)
+                                    @if (context.PendingDelete)
+                                    {
+                                        <FluentBadge Appearance="Appearance.Neutral">Will be removed on restart</FluentBadge>
+                                    }
+                                    else if (context.Enabled)
                                     {
                                         <FluentBadge Appearance="Appearance.Accent">Enabled</FluentBadge>
                                     }
@@ -114,13 +118,13 @@
                     </TemplateColumn>
                     <TemplateColumn Title="@AppRes.Actions" Align="@Align.End">
                         <div class="hstack gap-2">
-                            <FluentButton Appearance="Appearance.Lightweight" Disabled="@context.Locked" OnClick="() => ToggleEnabled(context)">
+                            <FluentButton Appearance="Appearance.Lightweight" Disabled="@(context.Locked || context.PendingDelete)" OnClick="() => ToggleEnabled(context)">
                                 @(context.Enabled ? "Disable" : "Enable")
                             </FluentButton>
                             <FluentButton Appearance="Appearance.Lightweight" Disabled="@(context.Locked || context.Source != PluginSource.NuGet)" OnClick="() => Update(context)">
                                 Update
                             </FluentButton>
-                            <DFluentDeleteButton OnConfirm=@(e => Delete(context)) Disabled="@context.Locked" />
+                            <DFluentDeleteButton OnConfirm=@(e => Delete(context)) Disabled="@(context.Locked || context.PendingDelete)" />
                         </div>
                     </TemplateColumn>
                     @*

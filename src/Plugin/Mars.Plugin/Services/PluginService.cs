@@ -34,17 +34,51 @@ internal class PluginService : IPluginService
 
     public ListDataResult<PluginInfoDto> List(ListPluginQuery query)
     {
-        return Plugins.Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
-                        .Select(s => s.Info.ToInfoDto())
+        return AllPlugins().Where(s => (query.Search == null || s.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
                         .AsListDataResult(query);
     }
 
     public PagingResult<PluginInfoDto> ListTable(ListPluginQuery query)
     {
-        return Plugins.Where(s => (query.Search == null || s.Info.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
-                        .Select(s => s.Info.ToInfoDto())
+        return AllPlugins().Where(s => (query.Search == null || s.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase)))
                         .AsPagingResult(query);
     }
+
+    /// <summary>
+    /// Загруженные плагины плюс только-реестровые записи (отключённые и отмеченные
+    /// к удалению — они не грузятся, но управляются из админки).
+    /// </summary>
+    IEnumerable<PluginInfoDto> AllPlugins()
+    {
+        var registry = _pluginManager.Registry;
+        var loaded = Plugins.Select(s => s.Info.ToInfoDto(registry.Get(s.Info.PackageId)?.PendingDelete == true)).ToList();
+
+        var loadedIds = loaded.Select(d => d.PackageId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var registryOnly = registry.Entries
+            .Where(kv => !loadedIds.Contains(kv.Key))
+            .Select(kv => ToInfoDto(kv.Key, kv.Value));
+
+        return loaded.Concat(registryOnly);
+    }
+
+    static PluginInfoDto ToInfoDto(string packageId, PluginRegistryEntry entry)
+        => new()
+        {
+            PackageId = packageId,
+            Title = packageId,
+            Description = null,
+            Version = entry.Version,
+            AssemblyName = string.Empty,
+            Enabled = false,
+            InstalledAt = entry.InstalledAtUtc,
+            FrontManifest = null,
+            PackageTags = [],
+            RepositoryUrl = null,
+            PackageIconUrl = null,
+            Source = entry.Source,
+            Locked = false,
+            PendingDelete = entry.PendingDelete,
+        };
 
     public IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests()
     {
@@ -83,32 +117,38 @@ internal class PluginService : IPluginService
 
     public Task SetEnabled(string packageId, bool enabled)
     {
-        var info = FindOrThrow(packageId);
-        if (info.Locked)
+        var loaded = EnsureInstalled(packageId);
+        if (loaded?.Locked == true)
             throw new UserActionException(ErrorPluginLockedMessage);
 
         _pluginManager.Registry.SetDisabled(packageId, !enabled);
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Отмечает плагин к удалению: файлы залочены загруженной сборкой до рестарта,
+    /// поэтому папка и запись реестра чистятся при следующем старте.
+    /// </summary>
     public Task Uninstall(string packageId)
     {
-        var info = FindOrThrow(packageId);
-        if (info.Locked)
+        var loaded = EnsureInstalled(packageId);
+        if (loaded?.Locked == true)
             throw new UserActionException(ErrorPluginLockedMessage);
 
-        var dir = Path.Combine(PluginManager.PluginsDefaultPath, packageId);
-        if (_fileStorage.DirectoryExists(dir))
-            _fileStorage.DeleteDirectory(dir, recursive: true);
-
-        _pluginManager.Registry.Remove(packageId);
+        _pluginManager.Registry.MarkPendingDelete(packageId);
         return Task.CompletedTask;
     }
 
-    PluginInfo FindOrThrow(string packageId)
+    /// <summary>Ищет плагин среди загруженных или в реестре; бросает, если не установлен.</summary>
+    PluginInfo? EnsureInstalled(string packageId)
     {
         var info = Plugins.Select(p => p.Info).FirstOrDefault(i => i.PackageId == packageId);
-        return info ?? throw new UserActionException($"Plugin '{packageId}' is not installed.");
+        if (info is not null) return info;
+
+        if (_pluginManager.Registry.Get(packageId) is null)
+            throw new UserActionException($"Plugin '{packageId}' is not installed.");
+
+        return null;
     }
 
 }

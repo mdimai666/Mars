@@ -48,12 +48,72 @@ internal class PluginManager
         }
     }
 
+    /// <summary>
+    /// Применяет отложенные отметки реестра строго до скана папок: удаляет папки
+    /// плагинов, отмеченных к удалению, и подменяет отмеченные к подмене папки
+    /// стейджингом новой версии. К моменту вызова сборки плагинов ещё не загружены,
+    /// поэтому файлы обычно не залочены; при неудаче отметка остаётся до следующего старта.
+    /// </summary>
+    internal void ApplyPendingOperations()
+    {
+        foreach (var (packageId, entry) in _registry.Entries.ToList())
+        {
+            if (entry.PendingStagingDir is not null)
+            {
+                if (!_fileStorage.DirectoryExists(entry.PendingStagingDir))
+                {
+                    _logger.LogError("Pending staging '{Dir}' for plugin '{PackageId}' not found — dropping the mark.", entry.PendingStagingDir, packageId);
+                    _registry.ClearPendingMarks(packageId);
+                    continue;
+                }
+
+                var finalDir = Path.Combine(PluginsDefaultPath, packageId);
+                try
+                {
+                    if (_fileStorage.DirectoryExists(finalDir))
+                        _fileStorage.DeleteDirectory(finalDir, recursive: true);
+
+                    _fileStorage.MoveDirectory(entry.PendingStagingDir, finalDir);
+                    _registry.ClearPendingMarks(packageId);
+                    _logger.LogInformation("Pending replace applied for plugin '{PackageId}'.", packageId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Cannot apply pending replace for plugin '{PackageId}' — will retry on next start.", packageId);
+                }
+                continue;
+            }
+
+            if (entry.PendingDelete)
+            {
+                var dir = Path.Combine(PluginsDefaultPath, packageId);
+                try
+                {
+                    if (_fileStorage.DirectoryExists(dir))
+                        _fileStorage.DeleteDirectory(dir, recursive: true);
+
+                    _registry.Remove(packageId);
+                    _logger.LogInformation("Pending delete applied for plugin '{PackageId}'.", packageId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Cannot delete folder of plugin '{PackageId}' — will retry on next start.", packageId);
+                }
+            }
+        }
+    }
+
     internal void ConfigureBuilder(WebApplicationBuilder builder, string pluginSection = "Plugins")
     {
         _logger.LogInformation("=== Starting plugins configuration ===");
 
         // тестовое окружение определяется хостингом, а не переменной окружения процесса
         var isTestEnv = builder.Environment.EnvironmentName == "Test";
+
+        // тестовый хост делит data-папку с dev-инстансом — чужие отметки не применяет
+        if (!isTestEnv)
+            ApplyPendingOperations();
+
         var plugins = new List<LoadedPlugin>();
         var pluginsSection = builder.Configuration.GetSection(pluginSection);
 
@@ -98,6 +158,11 @@ internal class PluginManager
                         if (entry?.Disabled == true)
                         {
                             _logger.LogInformation("Plugin '{PackageId}' is disabled in registry — skipping.", instance.Info.PackageId);
+                            continue;
+                        }
+                        if (entry?.PendingDelete == true)
+                        {
+                            _logger.LogInformation("Plugin '{PackageId}' is marked for deletion in registry — skipping.", instance.Info.PackageId);
                             continue;
                         }
 
@@ -331,6 +396,18 @@ internal class PluginManager
                 if (descriptor is null)
                 {
                     logger.LogWarning("Cannot parse descriptor {Descriptor} in {PluginDir}. Skipping.", descriptorFile.PhysicalPath, pluginDir.PhysicalPath);
+                    continue;
+                }
+
+                var registryEntry = _registry.Get(descriptor.PackageId);
+                if (registryEntry?.Disabled == true)
+                {
+                    logger.LogInformation("Plugin '{PackageId}' is disabled in registry — assembly not loaded.", descriptor.PackageId);
+                    continue;
+                }
+                if (registryEntry?.PendingDelete == true)
+                {
+                    logger.LogInformation("Plugin '{PackageId}' is marked for deletion in registry — assembly not loaded.", descriptor.PackageId);
                     continue;
                 }
 

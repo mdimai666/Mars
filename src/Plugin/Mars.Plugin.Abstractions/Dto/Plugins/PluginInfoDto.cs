@@ -18,4 +18,6 @@ public record PluginInfoDto
     public required PluginSource Source { get; init; }
     public required bool Locked { get; init; }
 
+    /// <summary>Плагин отмечен к удалению и будет удалён при следующем рестарте.</summary>
+    public bool PendingDelete { get; init; }
 }

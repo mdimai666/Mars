@@ -5,6 +5,7 @@ using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Controllers.Plugins;
 using Mars.Test.Common.FixtureCustomizes;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mars.WebApiClient.Integration.Tests.Tests.Plugins;
 
@@ -44,14 +45,24 @@ public class UploadPluginTests : BaseWebApiClientTests
             [pluginName + ".runtimeconfig.json"] = Encoding.UTF8.GetBytes("{}"),
         });
 
-        //Act
-        var result = await client.Plugin.UploadPlugin(
-            (zip, $"{pluginName}.zip")
-        );
+        try
+        {
+            //Act
+            var result = await client.Plugin.UploadPlugin(
+                (zip, $"{pluginName}.zip")
+            );
 
-        //Assert
-        result.Items.Count.Should().Be(1);
-        result.Items.First().Success.Should().BeTrue();
+            //Assert
+            result.Items.Count.Should().Be(1);
+            result.Items.First().Success.Should().BeTrue();
+        }
+        finally
+        {
+            // инсталл пишет запись в реестр (он у PluginManager дисковый даже в тестах)
+            var pluginManager = AppFixture.ServiceProvider.GetRequiredService<Mars.Plugin.Services.PluginManager>();
+            pluginManager.Registry.Remove(pluginName);
+            pluginManager.RemovePlugin(pluginName);
+        }
     }
 
 }

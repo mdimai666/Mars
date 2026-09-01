@@ -6,7 +6,7 @@ namespace Mars.Plugin.Mappings;
 
 internal static class PluginMapping
 {
-    public static PluginInfoDto ToInfoDto(this PluginInfo entity)
+    public static PluginInfoDto ToInfoDto(this PluginInfo entity, bool pendingDelete = false)
         => new()
         {
             PackageId = entity.PackageId,
@@ -22,8 +22,6 @@ internal static class PluginMapping
             PackageIconUrl = string.IsNullOrEmpty(entity.PackageIcon) ? null : $"/_plugin/{entity.KeyName}/{entity.PackageIcon}",
             Source = entity.Source,
             Locked = entity.Locked,
+            PendingDelete = pendingDelete,
         };
-
-    public static IReadOnlyCollection<PluginInfoDto> ToInfoDto(this IEnumerable<PluginInfo> entities)
-        => entities.Select(ToInfoDto).ToArray();
 }

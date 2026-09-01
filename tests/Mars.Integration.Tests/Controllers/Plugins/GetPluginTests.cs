@@ -51,17 +51,25 @@ public class GetPluginTests : ApplicationTests
         var client = AppFixture.GetClient();
 
         _fixture.AddTestPlugin(AppFixture.ServiceProvider);
+        var pluginManager = AppFixture.ServiceProvider.GetRequiredService<PluginManager>();
+        var packageId = pluginManager.Plugins.Last().Info.PackageId;
+        try
+        {
+            var request = new ListPluginQueryRequest();
 
-        var request = new ListPluginQueryRequest();
+            //Act
+            var result = await client.Request(_apiUrl, "list/page")
+                .AppendQueryParam(request)
+                .GetJsonAsync<PagingResult<PluginInfoResponse>>();
 
-        //Act
-        var result = await client.Request(_apiUrl, "list/page")
-            .AppendQueryParam(request)
-            .GetJsonAsync<PagingResult<PluginInfoResponse>>();
-
-        //Assert
-        result.Should().NotBeNull();
-        result.Items.Count().Should().Be(1);
+            //Assert: список = загруженные ∪ реестр, точное число в общем окружении не гарантировано
+            result.Should().NotBeNull();
+            result.Items.Should().Contain(i => i.PackageId == packageId);
+        }
+        finally
+        {
+            pluginManager.RemovePlugin(packageId);
+        }
     }
 }
 

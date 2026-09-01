@@ -103,7 +103,19 @@ public class UploadPluginTests : ApplicationTests
         item.ErrorMessage.Should().BeNullOrEmpty();
 
         var pluginDllFileName = Path.Combine(PluginManager.PluginsDefaultPath, Path.GetFileNameWithoutExtension("plugin1.zip"), pluginName + ".dll");
-        _fileStorage.FileExists(pluginDllFileName).Should().BeTrue("Plugin DLL file should be created in the plugins directory");
+        try
+        {
+            _fileStorage.FileExists(pluginDllFileName).Should().BeTrue("Plugin DLL file should be created in the plugins directory");
+        }
+        finally
+        {
+            // инсталл пишет в общую data-папку теста и в реестр — чистим за собой
+            var pluginManager = AppFixture.ServiceProvider.GetRequiredService<PluginManager>();
+            pluginManager.Registry.Remove(Path.GetFileNameWithoutExtension("plugin1.zip"));
+            var dir = Path.Combine(PluginManager.PluginsDefaultPath, Path.GetFileNameWithoutExtension("plugin1.zip"));
+            if (_fileStorage.DirectoryExists(dir))
+                _fileStorage.DeleteDirectory(dir, recursive: true);
+        }
     }
 
     [IntegrationFact]

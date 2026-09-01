@@ -23,6 +23,7 @@ public static class PluginMapping
             PackageIconUrl = entity.PackageIconUrl,
             Source = entity.Source,
             Locked = entity.Locked,
+            PendingDelete = entity.PendingDelete,
         };
 
     public static PluginManifestInfoResponse ToResponse(this PluginManifestInfoDto entity)

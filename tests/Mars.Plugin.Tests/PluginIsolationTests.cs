@@ -64,6 +64,48 @@ public class PluginIsolationTests : IDisposable
         libA1Assembly.GetType("LibA.Info").Should().NotBeSameAs(libA2Assembly.GetType("LibA.Info"));
     }
 
+    /// <summary>
+    /// Регрессия: хост-кит плагина (Mars.Plugin.Kit.Host) стрипается из папки плагина
+    /// при паковке и должен резолвиться из дефолтного контекста — для этого хост обязан
+    /// нести его в своём замыкании (иначе FileNotFoundException при вызове, например,
+    /// AutoHostRegisterHelper из ConfigureWebApplication плагина).
+    /// </summary>
+    [Fact]
+    public void Plugin_UsingKitHost_ResolvesItFromDefaultContext()
+    {
+        var source = """
+            using Mars.Plugin.Abstractions;
+            [assembly: MarsPlugin(typeof(KitUserPlugin.PluginEntry))]
+            namespace KitUserPlugin
+            {
+                public class PluginEntry : MarsPlugin
+                {
+                    public string KitHostAssemblyName() => typeof(Mars.Plugin.Kit.Host.PluginHostHelperExtensions).Assembly.GetName().Name;
+                }
+            }
+            """;
+        var plugin = Compile("KitUserPlugin", source, uniqueName: false,
+            MetadataReference.CreateFromFile(typeof(Mars.Plugin.Abstractions.MarsPlugin).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Mars.Plugin.Kit.Host.PluginHostHelperExtensions).Assembly.Location));
+
+        // папка плагина = только входная сборка: ни кита, ни Abstractions рядом нет
+        var dir = _root.CreateSubdirectory("kituser");
+        var entryPath = Path.Combine(dir.FullName, "KitUserPlugin.dll");
+        File.Copy(plugin, entryPath);
+
+        var asm = new PluginLoadContext(entryPath).LoadFromAssemblyPath(entryPath);
+
+        var entry = asm.GetTypes().Single(t => t.Name == "PluginEntry");
+        var instance = Activator.CreateInstance(entry)!;
+        var name = (string)entry.GetMethod("KitHostAssemblyName")!.Invoke(instance, null)!;
+
+        name.Should().Be("Mars.Plugin.Kit.Host");
+
+        // кит загружен в дефолтный контекст, а не в контекст плагина
+        var ctx = AssemblyLoadContext.GetLoadContext(asm)!;
+        ctx.Assemblies.Should().NotContain(typeof(Mars.Plugin.Kit.Host.PluginHostHelperExtensions).Assembly);
+    }
+
     static string LibAVersionOf(Assembly pluginAssembly)
     {
         var pluginType = pluginAssembly.GetTypes().Single(t => t.Name == "PluginEntry");

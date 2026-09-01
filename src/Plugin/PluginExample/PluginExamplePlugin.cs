@@ -42,6 +42,10 @@ public class PluginExamplePlugin : MarsPlugin, IPluginDatabaseMigrator
         op.RegisterOption<PluginExampleOption1>(appendToInitialSiteData: true);
         op.SaveOption(new PluginExampleOption1 { Value = "200" });
         op.SetConstOption(new PluginConstOption2() { Value = "222" }, appendToInitialSiteData: true);
+
+        // минимал-апи плагина: обычный эндпоинт и с резолвом сервиса из DI
+        app.MapGet("/api/PluginExample/Ping", () => "pong");
+        app.MapGet("/api/PluginExample/OptionValue", (IOptionService optionService) => optionService.GetOption<PluginExampleOption1>().Value);
     }
 
     public async Task ApplyMigrations(IServiceProvider rootServices, IConfiguration configuration, PluginSettings settings)

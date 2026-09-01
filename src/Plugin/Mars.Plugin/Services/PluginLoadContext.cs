@@ -24,9 +24,11 @@ internal sealed class PluginLoadContext : AssemblyLoadContext
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        // сборки Марса — из дефолтного контекста (один экземпляр на всех)
+        // сборки Марса — всегда из дефолтного контекста: null делегирует резолв рантаймом
+        // в дефолтный контекст независимо от того, загружена сборка или нет, и не даёт
+        // неудалённой копии марсовой сборки из папки плагина попасть в плагинный контекст
         if (assemblyName.Name is not null && _marsAssemblyNames.Contains(assemblyName.Name))
-            return Default.Assemblies.FirstOrDefault(a => a.GetName().Name == assemblyName.Name);
+            return null;
 
         // по deps.json плагина
         var path = _resolver.ResolveAssemblyToPath(assemblyName);

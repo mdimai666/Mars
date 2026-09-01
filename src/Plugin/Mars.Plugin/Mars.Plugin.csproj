@@ -7,6 +7,10 @@
         <ProjectReference Include="..\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
         <ProjectReference Include="..\Mars.Plugin.Front.Abstractions\Mars.Plugin.Front.Abstractions.csproj" />
         <ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+        <!-- Кит обязателен в замыкании хоста: плагины вызывают его (например
+             AutoHostRegisterHelper) и в ALC резолвят из дефолтного контекста.
+             В папку плагина он не попадает — стрипается при паковке/установке. -->
+        <ProjectReference Include="..\Mars.Plugin.Kit.Host\Mars.Plugin.Kit.Host.csproj" />
     </ItemGroup>
 
     <ItemGroup>

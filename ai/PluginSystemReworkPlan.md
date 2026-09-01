@@ -411,9 +411,39 @@ nuget.org (тестовый пакет), раскладывается в `data/p
    паковка приведена в соответствие.
    Попутно: чистка мёртвого кода SDK (`EnvVa`, закомментированные блоки,
    неиспользуемые свойства DTO deps.json), обновление доков.
+3. **Хотфикс по итогам проверки на реальном плагине (`Mars.PlayAudioNodePlugin`):
+   `Kit.Host` в замыкании хоста.** Плагин в `ConfigureWebApplication` вызывал
+   `AutoHostRegisterHelper` (расширение из `Mars.Plugin.Kit.Host`) и падал с
+   `FileNotFoundException`: кит стрипается из папки плагина при паковке (аддон),
+   но и в замыкании хоста его не было (никто не ссылался) → в ALC резолвиться
+   было неоткуда. До реворка спасал `Assembly.LoadFrom` (дефолтный контекст
+   зондировал папку плагина, старый скрипт кит не вырезал). Фикс: `Mars.Plugin`
+   ссылается на `Mars.Plugin.Kit.Host` (хост-рантайм гарантирует доступность кита;
+   сборка попадает в `Mars.deps.json`/замыкание и резолвится из дефолтного
+   контекста). `PluginLoadContext.Load` для марсовых сборок усилен: вместо
+   «вернуть, только если уже загружена» — всегда `null` (делегирование дефолтному
+   контексту), что заодно не даёт неудалённой копии марсовой сборки из папки
+   плагина попасть в плагинный контекст.
+   Покрытие: `PluginExample` получил минимал-апи эндпоинты (`/api/PluginExample/Ping`,
+   `/api/PluginExample/OptionValue` с DI-параметром; контроллер уже был) + новые
+   тесты `PluginEndpointTests` (интеграционные) и регрессионный
+   `PluginIsolationTests.Plugin_UsingKitHost_ResolvesItFromDefaultContext`.
+4. **Пустой список встроенных звуков плагина после установки (`FileListUtility`).**
+   `BuiltInSoundsService` читает `wwwroot/sounds` утилитой `FileListUtility.GetFiles`
+   с `useRootGitIgnore: false`, но та при `false` обходила предков до корня диска
+   и грузила ИХ `.gitignore`. Плагин после реворка лежит в
+   `<хост>/src/Mars.WebApp/data/plugins/...` — паттерн `/data` из
+   `src/Mars.WebApp/.gitignore` матчил относительный путь и игнорировал все ассеты
+   (до реворка плагин жил в своём репо — паттерн не срабатывал). Фикс в утилите:
+   без `useRootGitIgnore` `.gitignore` вне читаемой папки не загружаются (внутренние
+   — по-прежнему да). Покрытие: `FileListUtilityTests` (3 кейса), `DirReadNodeTests`
+   без регрессии.
 
-Проверено: проект `Mars.Plugin.Sdk` и все плагинные проекты собираются;
-`Mars.Plugin.Tests` 26/26 (+1 скип, как до фазы); `dotnet pack` SDK даёт корректный
+Проверено: проект `Mars.Plugin.Sdk` и все плагинные проекты собираются (полная
+`Mars.slnx` в Release — 0 ошибок); `Mars.Plugin.Tests` 27/27 (+1 скип);
+`Mars.Plugin.Integration.Tests` 9/9 (включая новые `PluginEndpointTests`);
+`FileListUtilityTests` + `DirReadNodeTests` 7/7;
+`dotnet pack` SDK даёт корректный
 nupkg (`build/` таргеты без debug-манифеста, `mars/` оба манифеста релиза, `tools/`).
 Контрольный `pack zip`/`pack nuget` на `MyMarsPlugin` (шаблон вне этого репо) —
 на стороне плагина: в пакет не должен попадать `_front_plugins.json`, свои пакеты

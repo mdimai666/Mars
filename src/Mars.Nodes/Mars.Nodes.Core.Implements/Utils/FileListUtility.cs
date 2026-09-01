@@ -124,19 +124,29 @@ public class FileListUtility
 
         var gitIgnoreFiles = new List<string>();
 
-        // Собираем все директории от корня репозитория до текущей
+        // Собираем директории для поиска .gitignore. С useRootGitIgnore — от корня
+        // репозитория до текущей; без него — НЕ выходим за пределы читаемой папки:
+        // её файлы не должны фильтроваться правилами чужих репозиториев выше по дереву
+        // (плагины в data/plugins так теряли ассеты из-за /data в .gitignore хоста).
         var pathsToCheck = new List<string>();
-        var current = new DirectoryInfo(searchPath);
 
-        while (current != null)
+        if (_repositoryRoot != null)
         {
-            pathsToCheck.Insert(0, current.FullName);
+            var current = new DirectoryInfo(searchPath);
 
-            if (_repositoryRoot != null &&
-                current.FullName.Equals(_repositoryRoot, StringComparison.OrdinalIgnoreCase))
-                break;
+            while (current != null)
+            {
+                pathsToCheck.Insert(0, current.FullName);
 
-            current = current.Parent;
+                if (current.FullName.Equals(_repositoryRoot, StringComparison.OrdinalIgnoreCase))
+                    break;
+
+                current = current.Parent;
+            }
+        }
+        else
+        {
+            pathsToCheck.Add(new DirectoryInfo(searchPath).FullName);
         }
 
         // Добавляем .gitignore из каждой директории

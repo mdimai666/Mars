@@ -39,6 +39,23 @@ internal static class PluginPackageBuilder
                 zip.CreateEntryFromFile(file.FullName, $"lib/net10.0/{relPath}", CompressionLevel.Optimal);
         }
 
+        // Файлы рантайма вне managed-сборок кладём под lib/<tfm>/: инсталлер извлекает всё
+        // содержимое lib/ без фильтра по типу, поэтому они лягут ровно туда, где их ждёт рантайм.
+        //  - <ProjectName>.staticwebassets.endpoints.json — источник фронт-манифеста
+        //    (PluginManifestProvider читает его из корня установленного плагина);
+        //  - libs/** — нативные библиотеки (конвенция: SetDllDirectory ищет libs/ рядом со сборкой).
+        var endpointsJson = Path.Combine(outDir.FullName, settings.ProjectName + ".staticwebassets.endpoints.json");
+        if (File.Exists(endpointsJson))
+            zip.CreateEntryFromFile(endpointsJson, $"lib/net10.0/{Path.GetFileName(endpointsJson)}", CompressionLevel.Optimal);
+
+        var libsDir = new DirectoryInfo(Path.Combine(outDir.FullName, "libs"));
+        if (libsDir.Exists)
+            foreach (var file in libsDir.GetFiles("*", SearchOption.AllDirectories))
+            {
+                var rel = Path.GetRelativePath(libsDir.FullName, file.FullName).Replace('\\', '/');
+                zip.CreateEntryFromFile(file.FullName, $"lib/net10.0/libs/{rel}", CompressionLevel.Optimal);
+            }
+
         var wwwroot = new DirectoryInfo(Path.Combine(outDir.FullName, "wwwroot"));
         if (wwwroot.Exists)
             foreach (var file in wwwroot.GetFiles("*", SearchOption.AllDirectories))

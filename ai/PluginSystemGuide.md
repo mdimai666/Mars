@@ -36,6 +36,11 @@
 версии, что и релиз Марса (`MarsAppVersion` в `Directory.Build.props`).
 Классификация «пакет Марса» — по членству в замыкании, не по префиксу имени.
 
+Важно: `Mars.deps.json` содержит ТОЛЬКО сборки из пакетов — сборки shared
+framework (`Microsoft.AspNetCore.App` и др.) в него принципиально не попадают.
+Поэтому замыкание для фильтрации при установке дополняется на лету именами из
+`TRUSTED_PLATFORM_ASSEMBLIES` хост-процесса (`MarsClosure`).
+
 ## Инструмент паковки — `mdimai666.Mars.Plugin.Sdk`
 
 Один консольный инструмент в пакете: `tools/Mars.Plugin.Sdk.dll` + `build/*.targets`.
@@ -85,6 +90,27 @@
 Эндпоинты: `POST api/Plugin/InstallFromNuget` и upload zip; роль
 `Admin`/`Developer`; ответ «установлено, нужен рестарт». Blocklist (опция
 `BlockedPackageIds`) запрещает установку по `packageId`.
+
+### Была проблема: дубли сборок при установке из nuget
+
+До 2026-09-02 установка тянула в папку плагина всё, что не описано в
+`Mars.deps.json`: сборки shared framework (`Microsoft.AspNetCore.*`,
+`Microsoft.Extensions.*` — их в deps.json нет), спутники `.xml`/`.pdb` и
+локализации перекрытых пакетов, мусор упаковки (`_._`, чужие `.deps.json`,
+`runtimeconfig.json`). Пример: 357 файлов вместо ~150, установка минут 2–3.
+Фильтр `ExtractPackage`/`MarsClosure` это убирает (357 → 157 на тестовом плагине).
+
+**Чек-лист при правках установки плагинов** (фильтр/резолв/раскладка) — чтобы
+дубли не вернулись:
+
+1. `Mars.exe plugin install <тестовый-плагин>` → осмотреть
+   `data/plugins/<id>`: отсутствуют сборки Марса (в т.ч. `Microsoft.AspNetCore.*`,
+   `Microsoft.Extensions.*`), нет спутников `.xml`/`.pdb` к ним, нет
+   `_._`/`*.deps.json`/`runtimeconfig.json`.
+2. Нужные плагину сторонние библиотеки на месте и работают после рестарта
+   (`plugin list`: плагин грузится, фронт-манифест и статика раздаются).
+3. В `data/logs` видны `Skipping '...' — already shipped with Mars` — фильтр
+   реально отрабатывает (уровень `Mars.*: Debug` в `Logging:File:LogLevel`).
 
 ## Реестр и источники
 

@@ -231,11 +231,29 @@ internal class PluginNugetInstaller
             else if (libPrefix is not null && name.StartsWith(libPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 var fileName = name[libPrefix.Length..];
-                if (filterLibs && fileName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
-                              && marsAssemblyNames.Contains(Path.GetFileNameWithoutExtension(fileName)))
+                var stem = Path.GetFileNameWithoutExtension(fileName);
+                var ext = Path.GetExtension(fileName);
+
+                if (filterLibs)
                 {
-                    _logger.LogDebug("Skipping '{Assembly}' — already shipped with Mars.", fileName);
-                    continue;
+                    // спутники (.xml/.pdb) сборки, уже имеющейся в Марсе, тоже не нужны;
+                    // у спутников сателлитных сборок (X.resources.dll) проверяется базовое имя.
+                    var baseStem = stem.EndsWith(".resources", StringComparison.OrdinalIgnoreCase)
+                        ? stem[..^".resources".Length]
+                        : stem;
+                    if ((marsAssemblyNames.Contains(stem) || marsAssemblyNames.Contains(baseStem))
+                        && ext is ".dll" or ".xml" or ".pdb")
+                    {
+                        _logger.LogDebug("Skipping '{File}' — '{Assembly}' is already shipped with Mars.", fileName, baseStem);
+                        continue;
+                    }
+
+                    // папка плагина — не запускаемое приложение, рантайм-конфиг ему не нужен;
+                    // `_._` — маркер «папка пуста», чужие `.deps.json` — артефакты упаковки.
+                    if (fileName.EndsWith(".runtimeconfig.json", StringComparison.OrdinalIgnoreCase)
+                        || fileName.EndsWith(".deps.json", StringComparison.OrdinalIgnoreCase)
+                        || fileName == "_._")
+                        continue;
                 }
 
                 destination = fileName;

@@ -1,6 +1,8 @@
 param(
     # Локальный NuGet-фид; по умолчанию ~/Documents/VisualStudio/_LocalNugets
-    [string]$OutDir = (Join-Path $HOME "Documents\VisualStudio\_LocalNugets")
+    [string]$OutDir = (Join-Path $HOME "Documents\VisualStudio\_LocalNugets"),
+    # Не спрашивать подтверждений (для CI/агента)
+    [switch]$y
 )
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -29,10 +31,12 @@ Write-Host "📂 Фид: $outDir" -ForegroundColor Yellow
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 Write-Host
 
-$ans = Read-Host "📋 Упаковать все пакеты? [y]"
-if ($ans -ne "y") {
-    Write-Host "⛔ Отменено" -ForegroundColor Yellow
-    exit
+if (-not $y) {
+    $ans = Read-Host "📋 Упаковать все пакеты? [y]"
+    if ($ans -ne "y") {
+        Write-Host "⛔ Отменено" -ForegroundColor Yellow
+        exit
+    }
 }
 
 # Mars.Plugin.Sdk пакует манифесты из вывода сборки Mars.WebApp — решение должно быть собрано (Release).

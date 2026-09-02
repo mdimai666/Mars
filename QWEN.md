@@ -65,7 +65,12 @@ domain socket (no second startup); otherwise they run in-process.
 - Версия — `<MarsAppVersion>` в `Directory.Build.props`; тег = `v<версия>`.
 - `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI, 54 пакета).
 - Если версия занята — bump в props, коммит `bump version <версия>`, push, затем скрипт.
-- Агентский запуск: `powershell -NoProfile -ExecutionPolicy Bypass -File release-tag.ps1 -y`. Пуш тега и мониторинг CI — только по явной команде пользователя.
+- Агентский запуск: `pwsh -NoProfile -ExecutionPolicy Bypass -File release-tag.ps1 -y`. Пуш тега и мониторинг CI — только по явной команде пользователя.
+
+## PS1-скрипты: UTF-8 без BOM, запуск через pwsh
+
+- `.ps1` в репо — UTF-8 **без BOM**; при правке BOM не добавлять.
+- Запуск и синтакс-проверку ps1 делать только через `pwsh` (PowerShell 7). Windows PowerShell 5.1 (`powershell.exe`) без BOM читает файл как ANSI и ложно падает на кириллице/эмодзи — для ps1 его не использовать.
 
 ## codebase-memory MCP (граф кода)
 

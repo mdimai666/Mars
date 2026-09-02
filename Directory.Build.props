@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
         <!-- App version: single source of truth for all projects (pack, scripts, CI). -->
-        <MarsAppVersion>0.8.3-alpha.12</MarsAppVersion>
+        <MarsAppVersion>0.8.3-alpha.13</MarsAppVersion>
     </PropertyGroup>
 
     <PropertyGroup>

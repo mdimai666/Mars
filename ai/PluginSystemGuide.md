@@ -192,6 +192,11 @@ framework (`Microsoft.AspNetCore.App` и др.) в него принципиал
   `Admin`/`Developer`, blocklist; позже — подписанные пакеты и модерация каталога.
 - Переименование `WebApplicationPlugin` → `MarsPlugin` прошло без шимов: плагины
   на старых именах не загрузятся.
+- `Mars.Plugin.Sdk` (`pack nuget`) не пишет в nuspec `<license>`, `<repository>`
+  и readme — даже если автор задал `PackageLicenseExpression`/`RepositoryUrl`
+  в csproj. На nuget.org у пакетов плагинов не отображаются лицензия и
+  репозиторий (warning `License missing`/`Readme missing` при push). Чинится
+  в SDK, не в плагине (подтверждено на mdimai666.Mars.TelegramPlugin 0.6.1).
 
 ## Дальше
 

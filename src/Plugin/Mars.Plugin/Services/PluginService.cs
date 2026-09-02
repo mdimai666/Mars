@@ -11,6 +11,7 @@ using Mars.Plugin.Mappings;
 using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Mars.Plugin.Services;
 
@@ -19,17 +20,19 @@ internal class PluginService : IPluginService
     private readonly IFileStorage _fileStorage;
     private readonly PluginManager _pluginManager;
     private readonly IOptionService _optionService;
+    private readonly ILogger<PluginService> _logger;
 
     public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
     public static readonly string ErrorPluginBlockedMessage = "Plugin installation is blocked by settings";
     public static readonly string ErrorPluginLockedMessage = "Plugin is locked by configuration — cannot be modified.";
     internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
-    public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService)
+    public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService, ILogger<PluginService> logger)
     {
         _fileStorage = fileStorage;
         _pluginManager = pluginManager;
         _optionService = optionService;
+        _logger = logger;
     }
 
     public ListDataResult<PluginInfoDto> List(ListPluginQuery query)
@@ -107,6 +110,7 @@ internal class PluginService : IPluginService
         var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>(), _pluginManager.Registry);
         var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
 
+        _logger.LogInformation("Plugin '{PackageId}' {Version} installed from nuget", result.PackageId, result.Version);
         return new PluginInstallResultDto
         {
             PackageId = result.PackageId,
@@ -122,6 +126,7 @@ internal class PluginService : IPluginService
             throw new UserActionException(ErrorPluginLockedMessage);
 
         _pluginManager.Registry.SetDisabled(packageId, !enabled);
+        _logger.LogInformation("Plugin '{PackageId}' {State}", packageId, enabled ? "enabled" : "disabled");
         return Task.CompletedTask;
     }
 
@@ -136,6 +141,7 @@ internal class PluginService : IPluginService
             throw new UserActionException(ErrorPluginLockedMessage);
 
         _pluginManager.Registry.MarkPendingDelete(packageId);
+        _logger.LogInformation("Plugin '{PackageId}' marked for deletion (removed on next restart)", packageId);
         return Task.CompletedTask;
     }
 

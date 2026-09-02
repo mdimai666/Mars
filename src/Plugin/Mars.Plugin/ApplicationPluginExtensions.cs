@@ -1,7 +1,9 @@
 using System.Reflection;
+using Mars.CommandLine.Abstractions;
 using Mars.Contracts.Dto.Files;
 using Mars.Options.Abstractions.Services;
 using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.CommandLine;
 using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Services;
@@ -27,7 +29,8 @@ public static class ApplicationPluginExtensions
         // Плагины регистрируют сервисы и MVC-части строго до Build(), поэтому
         // PluginManager создаётся сразу, без сборки провайдера.
         var dataFileStorage = builder.Services.GetOrCreateDataFileStorage(builder.Environment);
-        // без using: логгер живёт вместе с PluginManager весь срок работы приложения
+        // без using: логгер живёт вместе с PluginManager весь срок работы приложения.
+        // Только консоль: стартовая активность до Build, файловый логгер ещё не настроен.
         var loggerFactory = LoggerFactory.Create(logBuilder => logBuilder.AddConsole());
 
         var pluginManager = new PluginManager(loggerFactory.CreateLogger<PluginManager>(), dataFileStorage);
@@ -73,6 +76,9 @@ public static class ApplicationPluginExtensions
 
         var pluginManager = app.Services.GetRequiredService<PluginManager>();
         pluginManager.UsePlugins(app);
+
+        var cli = app.Services.GetService<ICommandLineApi>();
+        cli?.Register<PluginCommandCli>();
     }
 
     static IMvcBuilder AddPluginsAsPartOfMvc(this IMvcBuilder mvcBuilder, IEnumerable<LoadedPlugin> plugins)

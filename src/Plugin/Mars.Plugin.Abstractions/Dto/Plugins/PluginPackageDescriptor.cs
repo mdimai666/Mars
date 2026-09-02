@@ -19,4 +19,13 @@ public class PluginPackageDescriptor
     /// </summary>
     public string MarsVersion { get; set; } = string.Empty;
     public string CreatedAtUtc { get; set; } = string.Empty;
+
+    /// <summary>Отображаемое имя (из метаданных пакета; атрибуты сборки — фолбэк).</summary>
+    public string? Title { get; set; }
+
+    /// <summary>Описание (из метаданных пакета; атрибуты сборки — фолбэк).</summary>
+    public string? Description { get; set; }
+
+    /// <summary>Имя файла иконки в `wwwroot/` папки плагина (сервится через `/_plugin/&lt;key&gt;/`).</summary>
+    public string? IconFile { get; set; }
 }

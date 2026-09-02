@@ -4,7 +4,7 @@ using Mars.Plugin.Front.Abstractions;
 namespace Mars.Plugin.Handlers;
 
 /// <summary>
-/// Множество сборок, уже входящих в замыкание Марса (по `Mars.deps.json`
+/// Множество сборок и пакетов, уже входящих в замыкание Марса (по `Mars.deps.json`
 /// рядом с приложением + `TRUSTED_PLATFORM_ASSEMBLIES` хоста) — по нему
 /// фильтруются зависимости плагинов.
 /// </summary>
@@ -12,7 +12,7 @@ internal static class MarsClosure
 {
     internal static HashSet<string> ReadAssemblyNames(string depsJsonPath)
     {
-        var names = ReadFromDepsJson(depsJsonPath);
+        var names = ReadFromDepsJson(depsJsonPath)?.assemblies ?? [];
 
         // Shared frameworks (Microsoft.AspNetCore.App и т.п.) в deps.json приложения
         // не перечисляются — они даются рантаймом, их имена есть только в
@@ -24,9 +24,13 @@ internal static class MarsClosure
         return names;
     }
 
-    static HashSet<string> ReadFromDepsJson(string depsJsonPath)
+    /// <summary>Id пакетов в замыкании Марса (ключи таргета `PackageId/Version` в deps.json).</summary>
+    internal static HashSet<string> ReadClosurePackageIds(string depsJsonPath)
+        => ReadFromDepsJson(depsJsonPath)?.packageIds ?? [];
+
+    static (HashSet<string> assemblies, HashSet<string> packageIds)? ReadFromDepsJson(string depsJsonPath)
     {
-        if (!File.Exists(depsJsonPath)) return [];
+        if (!File.Exists(depsJsonPath)) return null;
 
         DependenciesJsonDto? dto;
         try
@@ -35,21 +39,25 @@ internal static class MarsClosure
         }
         catch (JsonException)
         {
-            return [];
+            return null;
         }
 
         if (dto?.runtimeTarget?.name is null || dto.targets is null
             || !dto.targets.TryGetValue(dto.runtimeTarget.name, out var runtimeTarget))
-            return [];
+            return null;
 
-        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var package in runtimeTarget.Values)
+        var assemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var packageIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (packageKey, package) in runtimeTarget)
         {
+            var slash = packageKey.IndexOf('/');
+            packageIds.Add(slash > 0 ? packageKey[..slash] : packageKey);
+
             if (package.runtime is null) continue;
             foreach (var runtimeFile in package.runtime.Keys)
-                names.Add(Path.GetFileNameWithoutExtension(runtimeFile));
+                assemblies.Add(Path.GetFileNameWithoutExtension(runtimeFile));
         }
 
-        return names;
+        return (assemblies, packageIds);
     }
 }

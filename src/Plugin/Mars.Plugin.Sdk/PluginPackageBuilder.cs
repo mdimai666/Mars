@@ -101,13 +101,14 @@ internal static class PluginPackageBuilder
         var dependenciesXml = string.Join("\n", deps);
         var icon = string.IsNullOrWhiteSpace(settings.Icon) ? "" : $"\n    <icon>{Escape(settings.Icon)}</icon>";
         var tags = string.IsNullOrWhiteSpace(settings.Tags) ? "" : $"\n    <tags>{Escape(settings.Tags)}</tags>";
+        var title = string.IsNullOrWhiteSpace(settings.Title) ? "" : $"\n    <title>{Escape(settings.Title)}</title>";
 
         return $"""
             <?xml version="1.0" encoding="utf-8"?>
             <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
               <metadata>
                 <id>{Escape(settings.PackageId)}</id>
-                <version>{Escape(settings.PackageVersion)}</version>
+                <version>{Escape(settings.PackageVersion)}</version>{title}
                 <authors>{Escape(settings.Authors) ?? Escape(settings.PackageId)}</authors>
                 <description>{Escape(settings.Description) ?? "Mars plugin"}</description>{tags}{icon}
                 <packageTypes>

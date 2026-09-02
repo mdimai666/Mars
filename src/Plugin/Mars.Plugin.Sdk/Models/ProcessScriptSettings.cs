@@ -10,6 +10,7 @@ public class ProcessScriptSettings
     public readonly string? PackageId;
     public readonly string? PackageVersion;
     public readonly string? Authors;
+    public readonly string? Title;
     public readonly string? Description;
     public readonly string? Tags;
     public readonly string? Icon;
@@ -29,6 +30,7 @@ public class ProcessScriptSettings
         PackageId = argsDict.GetValueOrDefault("PackageId");
         PackageVersion = argsDict.GetValueOrDefault("Version");
         Authors = argsDict.GetValueOrDefault("Authors");
+        Title = argsDict.GetValueOrDefault("Title");
         Description = argsDict.GetValueOrDefault("Description");
         Tags = argsDict.GetValueOrDefault("Tags");
         Icon = argsDict.GetValueOrDefault("Icon");

@@ -354,6 +354,17 @@ internal class PluginManager
 
             PluginInfo info = new(currentAssembly);
 
+            // дескриптор установленного плагина — источник отображаемых метаданных;
+            // атрибуты сборки (из PluginInfo(Assembly)) — только фолбэк.
+            var descriptor = PluginDescriptorHelper.TryRead(Path.Combine(settings.ContentRootPath, PluginPackageDescriptor.FileName));
+            if (descriptor is not null)
+            {
+                if (!string.IsNullOrWhiteSpace(descriptor.Title)) info.Title = descriptor.Title!;
+                if (!string.IsNullOrWhiteSpace(descriptor.Description)) info.Description = descriptor.Description!;
+                if (!string.IsNullOrWhiteSpace(descriptor.IconFile)) info.PackageIcon = descriptor.IconFile!;
+                if (!string.IsNullOrWhiteSpace(descriptor.PackageId)) info.PackageId = descriptor.PackageId;
+            }
+
             try
             {
                 var instance = (MarsPlugin)Activator.CreateInstance(type)!;

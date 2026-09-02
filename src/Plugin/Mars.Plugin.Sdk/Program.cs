@@ -178,7 +178,23 @@ if (_content.Exists)
 //////////////////////////////////////////////////
 //// Descriptor + package
 //////////////////////////////////////////////////
-var descriptorPath = PluginDescriptorWriter.Write(outDir, settings);
+// zip: иконка кладётся в wwwroot/ — рантайм сервит её через /_plugin/<key>/
+string? zipIconFile = null;
+if (mode == ProcessMode.PackZip && !string.IsNullOrWhiteSpace(settings.Icon))
+{
+    var iconSource = new[] { Path.Combine(outDir.FullName, settings.Icon), Path.Combine(outDir.FullName, "wwwroot", settings.Icon) }
+        .FirstOrDefault(File.Exists);
+    if (iconSource is not null)
+    {
+        var wwwrootDir = Directory.CreateDirectory(Path.Combine(outDir.FullName, "wwwroot"));
+        var iconDestination = Path.Combine(wwwrootDir.FullName, Path.GetFileName(settings.Icon));
+        if (!Path.Equals(iconSource, iconDestination))
+            File.Copy(iconSource, iconDestination, overwrite: true);
+        zipIconFile = Path.GetFileName(settings.Icon);
+    }
+}
+
+var descriptorPath = PluginDescriptorWriter.Write(outDir, settings, zipIconFile);
 
 if (mode == ProcessMode.PackZip)
 {
@@ -202,7 +218,7 @@ static void PrintUsage()
         Usage:
           dotnet Mars.Plugin.Sdk.dll pack zip --ProjectName=<Name> --out=<publishDir> --ProjectDir=<dir> --PackageId=<id> --Version=<ver>
           dotnet Mars.Plugin.Sdk.dll pack nuget --ProjectName=<Name> --out=<publishDir> --ProjectDir=<dir> --PackageId=<id> --Version=<ver>
-                                              [--Authors=..] [--Description=..] [--Tags=..] [--Icon=icon.png]
+                                              [--Authors=..] [--Title=..] [--Description=..] [--Tags=..] [--Icon=icon.png]
 
         Normally invoked by the MSBuild targets of the mdimai666.Mars.Plugin.Sdk package:
           dotnet publish -c Release                 -> zip

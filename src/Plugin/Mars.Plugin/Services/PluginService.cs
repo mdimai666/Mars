@@ -64,12 +64,18 @@ internal class PluginService : IPluginService
         return loaded.Concat(registryOnly);
     }
 
-    static PluginInfoDto ToInfoDto(string packageId, PluginRegistryEntry entry)
-        => new()
+    PluginInfoDto ToInfoDto(string packageId, PluginRegistryEntry entry)
+    {
+        var descriptor = TryReadInstalledDescriptor(packageId);
+        var keyName = string.IsNullOrWhiteSpace(descriptor?.EntryAssembly)
+            ? packageId
+            : Path.GetFileNameWithoutExtension(descriptor!.EntryAssembly);
+
+        return new()
         {
             PackageId = packageId,
-            Title = packageId,
-            Description = null,
+            Title = string.IsNullOrWhiteSpace(descriptor?.Title) ? packageId : descriptor!.Title!,
+            Description = string.IsNullOrWhiteSpace(descriptor?.Description) ? null : descriptor!.Description,
             Version = entry.Version,
             AssemblyName = string.Empty,
             Enabled = false,
@@ -77,11 +83,22 @@ internal class PluginService : IPluginService
             FrontManifest = null,
             PackageTags = [],
             RepositoryUrl = null,
-            PackageIconUrl = null,
+            PackageIconUrl = string.IsNullOrEmpty(descriptor?.IconFile) ? null : $"/_plugin/{keyName}/{descriptor!.IconFile}",
             Source = entry.Source,
             Locked = false,
             PendingDelete = entry.PendingDelete,
         };
+    }
+
+    /// <summary>Дескриптор установленного (но ещё не загруженного) плагина — для списка до рестарта.</summary>
+    PluginPackageDescriptor? TryReadInstalledDescriptor(string packageId)
+    {
+        var descriptorPath = Path.Combine(PluginManager.PluginsDefaultPath, packageId, PluginPackageDescriptor.FileName);
+        if (!_fileStorage.FileExists(descriptorPath)) return null;
+
+        var physicalPath = _fileStorage.FileInfo(descriptorPath).PhysicalPath;
+        return physicalPath is null ? null : PluginDescriptorHelper.TryRead(physicalPath);
+    }
 
     public IDictionary<string, PluginManifestInfoDto> RuntimePluginManifests()
     {
@@ -102,21 +119,29 @@ internal class PluginService : IPluginService
 
     public async Task<PluginInstallResultDto> InstallFromNuget(string packageId, string? version, CancellationToken cancellationToken)
     {
-        var pluginOptions = _optionService.GetOption<PluginManagerSettingsOption>();
-        if (pluginOptions.GetBlockedPackageIds().Contains(packageId))
-            throw new UserActionException(ErrorPluginBlockedMessage);
-
-        var sources = pluginOptions.GetNugetSources().ToList();
-        var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>(), _pluginManager.Registry);
-        var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
-
-        _logger.LogInformation("Plugin '{PackageId}' {Version} installed from nuget", result.PackageId, result.Version);
-        return new PluginInstallResultDto
+        try
         {
-            PackageId = result.PackageId,
-            Version = result.Version,
-            InstalledAtUtc = DateTimeOffset.UtcNow,
-        };
+            var pluginOptions = _optionService.GetOption<PluginManagerSettingsOption>();
+            if (pluginOptions.GetBlockedPackageIds().Contains(packageId))
+                throw new UserActionException(ErrorPluginBlockedMessage);
+
+            var sources = pluginOptions.GetNugetSources().ToList();
+            var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>(), _pluginManager.Registry);
+            var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
+
+            _logger.LogInformation("Plugin '{PackageId}' {Version} installed from nuget", result.PackageId, result.Version);
+            return new PluginInstallResultDto
+            {
+                PackageId = result.PackageId,
+                Version = result.Version,
+                InstalledAtUtc = DateTimeOffset.UtcNow,
+            };
+        }
+        catch (Exception ex) when (ex is not UserActionException)
+        {
+            _logger.LogError(ex, "Plugin '{PackageId}' installation from nuget failed", packageId);
+            throw;
+        }
     }
 
     public Task SetEnabled(string packageId, bool enabled)

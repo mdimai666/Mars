@@ -60,6 +60,13 @@ domain socket (no second startup); otherwise they run in-process.
 - Flags: `--local` (run in-process even with a live server), `--no-uds` (start without the CLI socket), `--disable-logs`.
 - In test mode (IsTesting / ASPNETCORE_ENVIRONMENT=Test) CLI arguments are ignored — this path is unavailable under tests.
 
+## Release: тег (NuGet-публикация)
+
+- Версия — `<MarsAppVersion>` в `Directory.Build.props`; тег = `v<версия>`.
+- `release-tag.ps1` проверяет master/чистоту/пуш, отсутствие тега и версии на nuget.org, создаёт и пушит тег; пуш запускает `nuget-publish.yml` (CI, 54 пакета).
+- Если версия занята — bump в props, коммит `bump version <версия>`, push, затем скрипт.
+- Агентский запуск: `powershell -NoProfile -ExecutionPolicy Bypass -File release-tag.ps1 -y`. Пуш тега и мониторинг CI — только по явной команде пользователя.
+
 ## codebase-memory MCP (граф кода)
 
 Граф кода доступен через MCP `codebase-memory`; имя проекта индекса выводится из пути клонирования

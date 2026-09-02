@@ -4,6 +4,9 @@
 #   - что тег ещё не существует (локально/на origin);
 #   - что версия ещё не опубликована на nuget.org (по mdimai666.Mars.Core).
 # Пуш тега запускает .github/workflows/nuget-publish.yml (триггер tags: v*).
+# Флаг -y — не спрашивать подтверждений (для CI/агента).
+
+param([switch]$y)
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
@@ -38,10 +41,12 @@ $dirty = git status --porcelain
 if ($dirty) {
     Write-Host "⚠️  В рабочем дереве незакоммиченные изменения:" -ForegroundColor Yellow
     $dirty | ForEach-Object { Write-Host "   $_" -ForegroundColor Yellow }
-    $ans = Read-Host "Продолжить? [y]"
-    if ($ans -ne "y") {
-        Write-Host "⛔ Отменено" -ForegroundColor Yellow
-        exit
+    if (-not $y) {
+        $ans = Read-Host "Продолжить? [y]"
+        if ($ans -ne "y") {
+            Write-Host "⛔ Отменено" -ForegroundColor Yellow
+            exit
+        }
     }
 }
 
@@ -86,10 +91,12 @@ catch {
 
 # --- 4. Создание и пуш тега ----------------------------------------------------
 Write-Host
-$ans = Read-Host "Создать и запушить тег $tag? [y]"
-if ($ans -ne "y") {
-    Write-Host "⛔ Отменено" -ForegroundColor Yellow
-    exit
+if (-not $y) {
+    $ans = Read-Host "Создать и запушить тег $tag? [y]"
+    if ($ans -ne "y") {
+        Write-Host "⛔ Отменено" -ForegroundColor Yellow
+        exit
+    }
 }
 
 git tag -a $tag -m "Release $version"

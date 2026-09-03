@@ -3,6 +3,7 @@ using Mars.Contracts.Common;
 using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Abstractions.Mappings.Plugins;
 using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Catalog;
 using Mars.Plugin.Contracts.Plugins;
 using Mars.Server.Abstractions.ExceptionFilters;
 using Microsoft.AspNetCore.Authorization;
@@ -91,5 +92,36 @@ public class PluginController : ControllerBase
     {
         await _pluginService.Uninstall(request.PackageId);
         return Ok();
+    }
+
+    [HttpGet("marketplace/status")]
+    public MarketplaceStatusResponse MarketplaceStatus()
+        => new() { Enabled = _pluginService.MarketplaceEnabled() };
+
+    [HttpGet("marketplace")]
+    public async Task<ActionResult<CatalogPagedResponse<CatalogPluginDto>>> MarketplaceSearch(
+            [FromQuery] MarketplaceSearchRequest request,
+            CancellationToken cancellationToken)
+    {
+        var result = await _pluginService.SearchMarketplace(request, cancellationToken);
+        return result ?? new CatalogPagedResponse<CatalogPluginDto>([], 0, request.Page ?? 1, request.Take ?? 20);
+    }
+
+    [HttpGet("marketplace/{packageId}")]
+    public async Task<ActionResult<CatalogPluginDto>> MarketplacePlugin(string packageId, CancellationToken cancellationToken)
+    {
+        var result = await _pluginService.GetMarketplacePlugin(packageId, cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpGet("marketplace/{packageId}/reviews")]
+    public async Task<ActionResult<CatalogPagedResponse<CatalogReviewDto>>> MarketplaceReviews(
+            string packageId,
+            [FromQuery] int? page,
+            [FromQuery] int? take,
+            CancellationToken cancellationToken)
+    {
+        var result = await _pluginService.GetMarketplaceReviews(packageId, page, take, cancellationToken);
+        return result ?? new CatalogPagedResponse<CatalogReviewDto>([], 0, page ?? 1, take ?? 20);
     }
 }

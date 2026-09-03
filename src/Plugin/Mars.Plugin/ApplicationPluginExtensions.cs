@@ -6,6 +6,8 @@ using Mars.Plugin.Abstractions.Services;
 using Mars.Plugin.CommandLine;
 using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
+using Mars.Plugin.Handlers;
+using Mars.Plugin.Options;
 using Mars.Plugin.Services;
 using Mars.Server.Abstractions.Services;
 using Mars.Storage.Services;
@@ -39,6 +41,10 @@ public static class ApplicationPluginExtensions
         builder.Services.AddControllers().AddPluginsAsPartOfMvc(pluginManager.Plugins);
 
         builder.Services.AddSingleton<IPluginService, PluginService>();
+
+        builder.Services.Configure<PluginCatalogOption>(builder.Configuration.GetSection(PluginCatalogOption.SectionName));
+        builder.Services.AddHttpClient();
+        builder.Services.AddSingleton<IPluginCatalogClient, PluginCatalogClient>();
         return builder;
     }
 

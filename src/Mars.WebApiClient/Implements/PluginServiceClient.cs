@@ -1,5 +1,6 @@
 using Flurl.Http;
 using Mars.Contracts.Common;
+using Mars.Plugin.Contracts.Catalog;
 using Mars.Plugin.Contracts.Plugins;
 using Mars.WebApiClient.Interfaces;
 
@@ -43,4 +44,23 @@ internal class PluginServiceClient : BasicServiceClient, IPluginServiceClient
     public Task Uninstall(string packageId)
         => _client.Request($"{_basePath}{_controllerName}", "Uninstall")
                   .PostJsonAsync(new UninstallPluginRequest { PackageId = packageId });
+
+    public Task<MarketplaceStatusResponse> MarketplaceStatus()
+        => _client.Request($"{_basePath}{_controllerName}", "marketplace/status")
+                  .GetJsonAsync<MarketplaceStatusResponse>();
+
+    public Task<CatalogPagedResponse<CatalogPluginDto>> MarketplaceSearch(MarketplaceSearchRequest filter)
+        => _client.Request($"{_basePath}{_controllerName}", "marketplace")
+                  .AppendQueryParam(filter)
+                  .GetJsonAsync<CatalogPagedResponse<CatalogPluginDto>>();
+
+    public Task<CatalogPluginDto?> MarketplacePlugin(string packageId)
+        => _client.Request($"{_basePath}{_controllerName}", "marketplace", packageId)
+                  .OnError(OnStatus404ReturnNull)
+                  .GetJsonAsync<CatalogPluginDto?>();
+
+    public Task<CatalogPagedResponse<CatalogReviewDto>> MarketplaceReviews(string packageId, int? page = null, int? take = null)
+        => _client.Request($"{_basePath}{_controllerName}", "marketplace", packageId, "reviews")
+                  .AppendQueryParam(new { page, take })
+                  .GetJsonAsync<CatalogPagedResponse<CatalogReviewDto>>();
 }

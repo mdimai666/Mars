@@ -13,6 +13,7 @@ public partial class PluginsListPage
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
     [Inject] IJSRuntime jSRuntime { get; set; } = default!;
     [Inject] IDialogService dialogService { get; set; } = default!;
+    [Inject] NavigationManager navigationManager { get; set; } = default!;
 
     FluentDataGrid<PluginInfoResponse> table = default!;
     string _searchText = "";
@@ -139,4 +140,6 @@ public partial class PluginsListPage
         var result = await NugetInstallDialog.ShowAsync(dialogService);
         _ = table.RefreshDataAsync();
     }
+
+    public void OnClickMarketplace() => navigationManager.NavigateTo("/marketplace");
 }

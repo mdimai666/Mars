@@ -1,9 +1,11 @@
+using System.Reflection;
 using Mars.Contracts.Common;
 using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
 using Mars.Options.Abstractions.Services;
 using Mars.Plugin.Abstractions.Dto.Plugins;
 using Mars.Plugin.Abstractions.Services;
+using Mars.Plugin.Contracts.Catalog;
 using Mars.Plugin.Contracts.Options;
 using Mars.Plugin.Dto;
 using Mars.Plugin.Handlers;
@@ -20,18 +22,26 @@ internal class PluginService : IPluginService
     private readonly IFileStorage _fileStorage;
     private readonly PluginManager _pluginManager;
     private readonly IOptionService _optionService;
+    private readonly IPluginCatalogClient _catalogClient;
     private readonly ILogger<PluginService> _logger;
+
+    /// <summary>Версия Марса для фильтра совместимости каталога («0.8.3» из «0.8.3-alpha.13+…»).</summary>
+    private static readonly Lazy<string> MarsVersion = new(() =>
+        (typeof(PluginService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0")
+            .Split('+')[0].Split('-')[0]);
 
     public static readonly string ErrorNotAllowUploadZipManuallyMessage = "Upload plugin disallowed in settings";
     public static readonly string ErrorPluginBlockedMessage = "Plugin installation is blocked by settings";
     public static readonly string ErrorPluginLockedMessage = "Plugin is locked by configuration — cannot be modified.";
     internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
-    public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager, IOptionService optionService, ILogger<PluginService> logger)
+    public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager,
+                         IOptionService optionService, IPluginCatalogClient catalogClient, ILogger<PluginService> logger)
     {
         _fileStorage = fileStorage;
         _pluginManager = pluginManager;
         _optionService = optionService;
+        _catalogClient = catalogClient;
         _logger = logger;
     }
 
@@ -169,6 +179,17 @@ internal class PluginService : IPluginService
         _logger.LogInformation("Plugin '{PackageId}' marked for deletion (removed on next restart)", packageId);
         return Task.CompletedTask;
     }
+
+    public bool MarketplaceEnabled() => _catalogClient.IsEnabled;
+
+    public Task<CatalogPagedResponse<CatalogPluginDto>?> SearchMarketplace(MarketplaceSearchRequest query, CancellationToken cancellationToken)
+        => _catalogClient.SearchAsync(query, MarsVersion.Value, cancellationToken);
+
+    public Task<CatalogPluginDto?> GetMarketplacePlugin(string packageId, CancellationToken cancellationToken)
+        => _catalogClient.GetAsync(packageId, cancellationToken);
+
+    public Task<CatalogPagedResponse<CatalogReviewDto>?> GetMarketplaceReviews(string packageId, int? page, int? take, CancellationToken cancellationToken)
+        => _catalogClient.GetReviewsAsync(packageId, page, take, cancellationToken);
 
     /// <summary>Ищет плагин среди загруженных или в реестре; бросает, если не установлен.</summary>
     PluginInfo? EnsureInstalled(string packageId)

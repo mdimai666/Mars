@@ -38,6 +38,11 @@ MyNewPlugin/
   дескриптор `mars-plugin.json` и готовый `<PackageId>-<Version>.zip`;
 - `dotnet msbuild -t:MarsPluginPackNuget -c Release` — дополнительно `<PackageId>.<Version>.nupkg`.
 
+SDK автоматически добавляет в nupkg `packageType=MarsPlugin`. Это обязательная конвенция:
+каталог плагинов (моно-репо Mars.Cloud) принимает в витрину только пакеты с этим типом
+(проверяется по search API nuget.org при подаче), а установщик в админке ставит с
+nuget только такие пакеты.
+
 Как устроен пакет, что он выдаёт и как с ним работать — в [PluginSdk](PluginSdk.md).
 
 ## Установка и обновление

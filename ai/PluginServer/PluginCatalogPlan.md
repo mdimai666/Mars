@@ -137,6 +137,15 @@ Mars.Cloud/
 
 ### Фаза 0. Bootstrap репозитория и конвенции пакетов
 
+**Выполнено 2026-09-03**: каталог поднимается локально (против Postgres из dev-compose),
+CI зелёный. Конвенция `packageType=MarsPlugin` зафиксирована иначе, чем планировалось:
+`packageType` вшивает в nupkg сам `Mars.Plugin.Sdk` (таргеты `MarsPluginPackZip`/`MarsPluginPackNuget`),
+а не `PluginPublishScript`; опубликованные `mdimai666.Mars.TelegramPlugin` 0.6.1 и
+`mdimai666.Mars.PlayAudioNodePlugin` 0.7.1 конвенции уже соответствуют (проверено в их
+nuspec и фильтром `packageType` на search API nuget.org — плагин находится, обычный пакет нет).
+Доки (`PluginGettingStart.md`, `PluginCreationGuide.md`) обновлены. Не сделано из фазы:
+полный compose (перенесён в инфраструктурную часть).
+
 **Цель**: новый сервис поднимается локально одной командой; конвенция `packageType=MarsPlugin`
 зафиксирована.
 

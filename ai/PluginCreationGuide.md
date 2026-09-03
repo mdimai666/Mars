@@ -195,6 +195,8 @@ public override void ConfigureWebApplication(WebApplication app, PluginSettings 
 - `mdimai666.Mars.Plugin.Kit.Host` — комплект абстракций одной ссылкой
 - `mdimai666.Mars.Plugin.Sdk` (`PrivateAssets="all"`) — паковка: `publish -c Release` даёт
   стрип + манифест + дескриптор + zip; `dotnet msbuild -t:MarsPluginPackNuget -c Release` — nupkg.
+  SDK сам вшивает в nupkg `packageType=MarsPlugin` — без этого типа пакет не попадает в
+  каталог плагинов (моно-репо Mars.Cloud) и не ставится из nuget.
   Подробности: `docs/dev_docs/Plugins/PluginSdk.md`.
 
 **Frontend:**

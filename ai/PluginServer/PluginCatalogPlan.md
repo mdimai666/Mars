@@ -6,6 +6,9 @@
 
 Обновление 2026-09-03: решения по репо, аутентификации и деплою пересмотрены при старте
 облачного моно-репо Mars.Cloud — см. там `ai/CloudInfraPlan.md`. Изменённые пункты помечены.
+Тогда же: SQLite-профиль заменён единым Postgres — тесты на реальном Postgres через
+Testcontainers (фикстуры по образцу этого репо), локальный запуск — против Postgres из
+dev-compose; быстрые тесты без семантики БД — на EF InMemory (решение 9 CloudInfraPlan).
 
 Суть пункта 1.1: бинарники плагинов живут на nuget.org (`packageType=MarsPlugin`), а «список
 доступных» — свой лёгкий сервер-каталог, который несёт метаданные, рейтинги/отзывы, статусы
@@ -27,8 +30,9 @@
 4. **Сначала API-only.** Публичный веб-сайт каталога — поздняя фаза, потребитель v1 — админка Mars.
 5. **Подача плагинов — заявка + модерация** (модель WordPress/Obsidian). *Вопрос остался без
    явного ответа — принято по умолчанию; меняется легко, влияет только на Фазу 3.*
-6. **Стек каталога**: .NET 10, ASP.NET Core Minimal API, EF Core, PostgreSQL (SQLite для локальной
-   разработки), Docker. Ничего от Mars не наследуем.
+6. **Стек каталога**: .NET 10, ASP.NET Core Minimal API, EF Core, PostgreSQL везде (тесты —
+   через Testcontainers; SQLite-профиль отменён 2026-09-03 — см. решение 9 CloudInfraPlan).
+   Ничего от Mars не наследуем.
 7. **Каталог не хранит бинарники** и не знает NuGet.Protocol: метаданные пакетов кешируются с
    nuget.org через обычный HTTP (search API). Скачивание и резолв зависимостей — на стороне Mars.
 
@@ -133,9 +137,9 @@ Mars.Cloud/
 зафиксирована.
 
 - Проект каталога в моно-репо Mars.Cloud (`src/Mars.PluginCatalog/`): Minimal API (.NET 10),
-  EF Core + PostgreSQL провайдер (+SQLite для dev-профиля), healthz, CI workflow (build+test)
+  EF Core + PostgreSQL провайдер, healthz, CI workflow (build+test)
   по образцу `.github/workflows` Mars. Инфраструктура (postgres, keycloak, caddy, наблюдаемость) —
-  в общем compose (Mars.Cloud, `infra/`); локальная разработка — на SQLite-профиле без неё.
+  в общем compose (Mars.Cloud, `infra/`); локальный запуск — против Postgres из dev-compose.
 - Конвенция на стороне Mars (маленький коммит в Mars): `PluginPublishScript` добавляет
   `<packageType>MarsPlugin</packageType>` в генерируемый nuspec; обновить
   `ai/PluginCreationGuide.md` и документацию плагинов.
@@ -153,7 +157,8 @@ Mars.Cloud/
   `GET /plugins/{packageId}/reviews` (пока пустые).
 - `NugetSyncService` (HTTP-клиент search API nuget.org) + NugetMetadataSyncJob;
   `POST /plugins/{packageId}/sync` (пока без авторизации).
-- Тесты: WebApplicationFactory + SQLite (витрина, пагинация, sync на mock-HTTP).
+- Тесты: WebApplicationFactory + Postgres через Testcontainers, часть на EF InMemory
+  (витрина, пагинация, sync на mock-HTTP).
 
 **Готово когда**: после seed/добавления плагина вручную витрина отдаёт карточку со свежими
 версией/загрузками с nuget.org.

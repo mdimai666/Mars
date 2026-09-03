@@ -52,12 +52,13 @@ Privacy-friendly (Cloudflare Web Analytics или self-hosted Umami) — что 
 ## Уровень 3 — по мере роста
 
 ### Единая идентичность (Keycloak) — триггер сработал: Mars Cloud
-Решение (2026-08-12): Keycloak деплоится вместе с Mars Cloud — контрол-плейн облака сам будет
-инстансом Mars, а Mars уже умеет в Keycloak (модуль `Mars.SSO`: `KeycloakProvider`,
-`DynamicSsoProviderFactory` с драйверами keycloak/google/github/microsoft/mars). Каталог плагинов
-до этого момента живёт на прямых Google/GitHub-логинах и переходит на OIDC Keycloak сменой
-конфига. Задел на будущее: SSO в Mars-инстансы клиентов (в т.ч. драйвер `mars` — инстансы
-доверяют друг другу).
+Решение (2026-08-12, обновлено 2026-09-03): Keycloak деплоится вместе с облаком с первого дня
+облачной инфраструктуры (моно-репо `Mars.Cloud`, там `ai/CloudInfraPlan.md`); каталог плагинов
+подключается к нему сразу по OIDC, Google/GitHub — брокеры Keycloak. Контрол-плейн облака —
+отдельный сервис CloudPanel (не инстанс Mars). Для инстансов клиентов Mars уже умеет в
+Keycloak: модуль `Mars.SSO` (`KeycloakProvider`, `DynamicSsoProviderFactory` с драйверами
+keycloak/google/github/microsoft/mars). Задел на будущее: SSO в Mars-инстансы клиентов (в т.ч.
+драйвер `mars` — инстансы доверяют друг другу).
 
 ### Служба подписи плагинов
 Если экосистема вырастет, «рекомендовано» подкрепляется криптографической подписью

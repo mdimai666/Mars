@@ -4,6 +4,9 @@
 стратегия), [PlanPluginServerPrompt.md](../Prompts/PlanPluginServerPrompt.md) (брейншторм).
 Статус: **план согласовывается, не начат**.
 
+Обновление 2026-09-03: решения по репо, аутентификации и деплою пересмотрены при старте
+облачного моно-репо Mars.Cloud — см. там `ai/CloudInfraPlan.md`. Изменённые пункты помечены.
+
 Суть пункта 1.1: бинарники плагинов живут на nuget.org (`packageType=MarsPlugin`), а «список
 доступных» — свой лёгкий сервер-каталог, который несёт метаданные, рейтинги/отзывы, статусы
 (recommended/banned) и модерацию. Админка Mars ходит в каталог, ставит плагины с nuget.org.
@@ -11,13 +14,16 @@
 ## Принятые решения
 
 1. **Сервер — НЕ Mars.** Mars для каталога слишком тяжёлый; пишем отдельный лёгкий сервис с нуля.
-2. **Отдельный репозиторий** `mdimai666/Mars.PluginCatalog` (независимые релизы/деплой).
-3. **Аккаунты — без Keycloak (пока).** Прямые OAuth-провайдеры Google/GitHub через middleware
-   ASP.NET Core; идентичность — строка `provider:subject` (например `github:12345`) + снапшот
-   имени, таблицы пользователей нет. Каталог выдаёт свой stateless JWT. Авторизация нужна для
-   отзывов и для разработчиков; чтение витрины — анонимное. Когда вместе с Mars Cloud появится
-   Keycloak — каталог перейдёт на его OIDC-токены сменой конфига (валидация проектируется
-   конфигурируемой), модель данных не меняется.
+2. **Моно-репо Mars.Cloud** (`mdimai666/Mars.Cloud`, 2026-09-03): каталог —
+   `src/Mars.PluginCatalog/` в облачном моно-репо рядом с общей инфраструктурой (Keycloak,
+   Postgres, Caddy, наблюдаемость). Пересматривает исходное решение «отдельный репо».
+3. **Аккаунты — сразу Keycloak OIDC** (2026-09-03): Keycloak деплоится вместе с облаком,
+   каталог валидирует его JWT (issuer/audience из конфига — валидация остаётся
+   конфигурируемой); вход Google/GitHub — через брокеров Keycloak. Идентичность — `sub`
+   Keycloak + снапшот имени, таблицы пользователей нет. Авторизация нужна для отзывов и для
+   разработчиков; чтение витрины — анонимное. Роли — клиентские роли Keycloak
+   (`catalog-developer` / `catalog-moderator`). Пересматривает исходное решение «без
+   Keycloak, прямые OAuth со своим JWT».
 4. **Сначала API-only.** Публичный веб-сайт каталога — поздняя фаза, потребитель v1 — админка Mars.
 5. **Подача плагинов — заявка + модерация** (модель WordPress/Obsidian). *Вопрос остался без
    явного ответа — принято по умолчанию; меняется легко, влияет только на Фазу 3.*
@@ -28,10 +34,9 @@
 
 ## Роли и права
 
-Вход — OAuth через Google/GitHub (стандартные middleware ASP.NET Core, client id/secret в
-конфиге; новый провайдер = новый handler). После входа каталог выдаёт свой JWT (stateless,
-без сессий и куки). Пользователь в модели не хранится — только `UserKey` вида `provider:subject`
-в отзывах/жалобах/заявках.
+Вход — Keycloak OIDC (Google/GitHub — его IDP-брокеры; новый провайдер добавляется в консоли
+Keycloak без изменений каталога). Каталог валидирует токен (stateless, без сессий и куки).
+Пользователь в модели не хранится — только `UserKey` = `sub` Keycloak в отзывах/жалобах/заявках.
 
 | Кто | Права |
 |---|---|
@@ -39,8 +44,8 @@
 | любой вошедший («разработчик» — не роль) | подача плагинов через модерацию, правка своих записей |
 | модераторы | approve/reject, recommend, ban, модерация отзывов и жалоб |
 
-Модераторы — allow-list `UserKey` в appsettings (команда маленькая, UI управления ролями не
-нужен). При переходе на Keycloak вместе с Mars Cloud allow-list заменится клиентскими ролями.
+Модераторы — клиентская роль Keycloak `catalog-moderator` (команда маленькая, UI управления ролями
+не нужен).
 
 ## Модель данных
 
@@ -93,15 +98,18 @@
 
 ## Структура репозитория
 
+Каталог живёт в моно-репо Mars.Cloud (`mdimai666/Mars.Cloud`):
+
 ```
-Mars.PluginCatalog/
-├─ src/Mars.PluginCatalog/        — один проект-хост (папки: Endpoints/, Domain/, Data/, Services/, Nuget/)
+Mars.Cloud/
+├─ src/Mars.PluginCatalog/         — один проект-хост (папки: Endpoints/, Domain/, Data/, Services/, Nuget/)
 ├─ tests/Mars.PluginCatalog.Tests/ — xUnit + WebApplicationFactory (+SQLite)
-├─ docker-compose.yml             — api + postgres
-├─ Dockerfile, .github/workflows/ — CI: build+test, на релиз — образ mdimai666/mars-plugincatalog
+├─ infra/                          — общий compose (postgres, keycloak, caddy, наблюдаемость), деплой
+└─ .github/workflows/              — CI: build+test
 ```
 
-Один проект намеренно (сервис маленький); на Core/Data разделим, если вырастет.
+Один проект намеренно (сервис маленький); на Core/Data разделим, если вырастет. Полная
+структура моно-репо — в `ai/CloudInfraPlan.md` Mars.Cloud.
 
 ## Точка старта на стороне Mars (as-is)
 
@@ -124,15 +132,17 @@ Mars.PluginCatalog/
 **Цель**: новый сервис поднимается локально одной командой; конвенция `packageType=MarsPlugin`
 зафиксирована.
 
-- Создать репо `Mars.PluginCatalog`: проект Minimal API (.NET 10), EF Core + PostgreSQL провайдер
-  (+SQLite для dev-профиля), healthz, Dockerfile, docker-compose (api+postgres), CI workflow
-  (build+test) по образцу `.github/workflows` Mars.
+- Проект каталога в моно-репо Mars.Cloud (`src/Mars.PluginCatalog/`): Minimal API (.NET 10),
+  EF Core + PostgreSQL провайдер (+SQLite для dev-профиля), healthz, CI workflow (build+test)
+  по образцу `.github/workflows` Mars. Инфраструктура (postgres, keycloak, caddy, наблюдаемость) —
+  в общем compose (Mars.Cloud, `infra/`); локальная разработка — на SQLite-профиле без неё.
 - Конвенция на стороне Mars (маленький коммит в Mars): `PluginPublishScript` добавляет
   `<packageType>MarsPlugin</packageType>` в генерируемый nuspec; обновить
   `ai/PluginCreationGuide.md` и документацию плагинов.
 
-**Готово когда**: `docker compose up` поднимает api+postgres; `/healthz` отвечает; CI зелёный;
-тестовый пакет, опубликованный скриптом, имеет `packageType=MarsPlugin`.
+**Готово когда**: каталог стартует локально (SQLite) и `/healthz` отвечает; compose Mars.Cloud
+поднимает keycloak/postgres/caddy/наблюдаемость; CI зелёный; тестовый пакет, опубликованный
+скриптом, имеет `packageType=MarsPlugin`.
 
 ### Фаза 1. Доменная модель и read-API + синк с nuget.org
 
@@ -150,19 +160,20 @@ Mars.PluginCatalog/
 
 ### Фаза 2. Аутентификация: отзывы и жалобы
 
-**Цель**: пользовательские действия под своим JWT после входа через Google/GitHub.
+**Цель**: пользовательские действия под токеном Keycloak после входа через его брокеров
+(Google/GitHub).
 
-- OAuth-handler'ы Google/GitHub + выпуск своего JWT (подпись из конфига); валидация JWT
-  проектируется конфигурируемой — позже сюда же подключится Keycloak-валидация. В тестах —
-  подмена входа/токенов.
+- Keycloak OIDC: `AddJwtBearer` с issuer/audience из конфига (валидация проектируется
+  конфигурируемой), роли `catalog-developer`/`catalog-moderator` из claims. В тестах —
+  подмена токенов.
 - Отзывы: апсерт своего отзыва (rating 1–5 + текст, лимиты), удаление своего; пересчёт
   AvgRating/ReviewsCount.
 - Жалобы: создание, лимит «1 открытая жалоба на плагин от пользователя».
 - Rate-limiting на запись (встроенный `Microsoft.AspNetCore.RateLimiting`).
 - Тесты на авторизацию/роли/апсерт.
 
-**Готово когда**: вошедший через Google/GitHub пользователь оставляет и правит отзыв; аноним
-получает 401.
+**Готово когда**: вошедший через Keycloak (брокером Google/GitHub) пользователь оставляет и
+правит отзыв; аноним получает 401.
 
 ### Фаза 3. Подача плагинов и модерация
 
@@ -222,8 +233,8 @@ Mars.PluginCatalog/
 
 ### Фаза 6. Деплой и документация
 
-- Публикация образа `mdimai666/mars-plugincatalog` (Docker Hub, по образцу publish-скриптов Mars);
-  деплой на инфраструктуру рядом с mars-dotnet.org (compose/traefik — по месту).
+- Деплой на сервер Mars.Cloud: `dotnet publish` + rsync + systemd-юнит (конвенция деплоя —
+  в `ai/CloudInfraPlan.md` моно-репо), маршрут Caddy `catalog.<домен>`.
 - Каталог по умолчанию прописывается в дефолтные настройки Mars (appsettings шаблон + setup).
 - Документация: страница в `docs/dev_docs/` (конвенции `ai/DocsGuide.md`) — как подать плагин,
   правила модерации, API каталога; обновление `ai/PluginCreationGuide.md`.
@@ -246,8 +257,8 @@ Mars.PluginCatalog/
 
 ## Итог
 
-Фаза 0–3 = каталог-сервер (новый репо, ~небольшой сервис: модель + read-API + вход Google/GitHub
-со своим JWT + модерация + синк nuget.org). Фаза 4–5 = потребитель в Mars (установщик
-NuGet.Protocol + витрина).
+Фаза 0–3 = каталог-сервер (`src/Mars.PluginCatalog` в моно-репо Mars.Cloud, ~небольшой сервис:
+модель + read-API + вход через Keycloak + модерация + синк nuget.org). Фаза 4–5 = потребитель
+в Mars (установщик NuGet.Protocol + витрина).
 Фаза 6 = деплой/доки. Рецепты и скиллы — следующий план, переиспользуют этот же сервис как
 отдельный тип сущности.

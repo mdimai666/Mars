@@ -22,6 +22,14 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 - `docs/` — documentation site
 - `ai/` — AI agent context files
 
+## Mars.Cloud — облачные сервисы (отдельный репо)
+
+Каталог плагинов, кабинет подписок (CloudPanel), Keycloak и облачная инфраструктура живут
+в отдельном репо `C:\Users\D\Documents\VisualStudio\2026\Mars.Cloud` (план — там в
+`ai/CloudInfraPlan.md`). С этим репо связаны: фазы 4–5 плана каталога
+(`ai/PluginServer/PluginCatalogPlan.md`), конвенция `packageType=MarsPlugin`, модуль `Mars.SSO`
+и будущая документация каталога в `docs/dev_docs/`.
+
 ## Структура решения и правила агентам
 
 Карта решения, конвенция суффиксов (`.Contracts`/`.Abstractions`/`.Host`/`.Front`), правила

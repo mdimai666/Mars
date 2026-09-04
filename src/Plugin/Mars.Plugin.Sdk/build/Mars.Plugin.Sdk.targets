@@ -9,6 +9,8 @@
         <MarsPluginPackTitle>$([System.Text.RegularExpressions.Regex]::Replace('$(Title)', '\s+', ' ').Trim())</MarsPluginPackTitle>
         <MarsPluginPackDescription>$([System.Text.RegularExpressions.Regex]::Replace('$(Description)', '\s+', ' ').Trim())</MarsPluginPackDescription>
         <MarsPluginPackTags>$([System.Text.RegularExpressions.Regex]::Replace('$(PackageTags)', '\s+', ' ').Trim())</MarsPluginPackTags>
+        <MarsPluginPackCopyright>$([System.Text.RegularExpressions.Regex]::Replace('$(Copyright)', '\s+', ' ').Trim())</MarsPluginPackCopyright>
+        <MarsPluginPackReleaseNotes>$([System.Text.RegularExpressions.Regex]::Replace('$(PackageReleaseNotes)', '\s+', ' ').Trim())</MarsPluginPackReleaseNotes>
     </PropertyGroup>
 
     <!-- Zip: автоматически после publish (Release). Отсекает сборки Марса, пишет манифест и дескриптор, собирает zip. -->
@@ -23,7 +25,7 @@
     <Target Name="MarsPluginPackNuget" DependsOnTargets="Publish">
         <Error Condition="!Exists('$(MarsPluginSdkTool)')"
                Text="Mars.Plugin.Sdk tool not found. Add a PackageReference to mdimai666.Mars.Plugin.Sdk to the plugin project and restore." />
-        <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; pack nuget --ProjectName=$(ProjectName) --out=$(PublishDir) --ProjectDir=$(ProjectDir) --PackageId=$(PackageId) --Version=$(PackageVersion) --Authors=&quot;$(MarsPluginPackAuthors)&quot; --Title=&quot;$(MarsPluginPackTitle)&quot; --Description=&quot;$(MarsPluginPackDescription)&quot; --Tags=&quot;$(MarsPluginPackTags)&quot; --Icon=$(PackageIcon)" />
+        <Exec Command="dotnet &quot;$(MarsPluginSdkTool)&quot; pack nuget --ProjectName=$(ProjectName) --out=$(PublishDir) --ProjectDir=$(ProjectDir) --PackageId=$(PackageId) --Version=$(PackageVersion) --Authors=&quot;$(MarsPluginPackAuthors)&quot; --Title=&quot;$(MarsPluginPackTitle)&quot; --Description=&quot;$(MarsPluginPackDescription)&quot; --Tags=&quot;$(MarsPluginPackTags)&quot; --Icon=$(PackageIcon) --LicenseExpression=&quot;$(PackageLicenseExpression)&quot; --LicenseFile=&quot;$(PackageLicenseFile)&quot; --ProjectUrl=&quot;$(PackageProjectUrl)&quot; --RepositoryUrl=&quot;$(RepositoryUrl)&quot; --RepositoryType=&quot;$(RepositoryType)&quot; --RepositoryBranch=&quot;$(RepositoryBranch)&quot; --RepositoryCommit=&quot;$(RepositoryCommit)&quot; --ReadmeFile=&quot;$(PackageReadmeFile)&quot; --Copyright=&quot;$(MarsPluginPackCopyright)&quot; --ReleaseNotes=&quot;$(MarsPluginPackReleaseNotes)&quot;" />
     </Target>
 
 </Project>

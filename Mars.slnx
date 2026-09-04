@@ -195,6 +195,7 @@
     <File Path="Directory.Packages.props" />
     <File Path="Dockerfile" />
     <File Path="LICENSE" />
+    <File Path="pack-local-nugets.ps1" />
     <File Path="Product_release_plan.md" />
     <File Path="publish-docker.ps1" />
     <File Path="README.md" />

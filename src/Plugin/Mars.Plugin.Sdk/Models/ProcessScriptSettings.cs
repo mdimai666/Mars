@@ -15,6 +15,18 @@ public class ProcessScriptSettings
     public readonly string? Tags;
     public readonly string? Icon;
 
+    // pack nuget: дополнительные метаданные nuspec (из стандартных свойств пакетов)
+    public readonly string? LicenseExpression;
+    public readonly string? LicenseFile;
+    public readonly string? ProjectUrl;
+    public readonly string? RepositoryUrl;
+    public readonly string? RepositoryType;
+    public readonly string? RepositoryBranch;
+    public readonly string? RepositoryCommit;
+    public readonly string? ReadmeFile;
+    public readonly string? Copyright;
+    public readonly string? ReleaseNotes;
+
     public ProcessScriptSettings(string[] args)
     {
         var argsDict = string.Join(' ', args).Split("--", StringSplitOptions.TrimEntries).Select(arg =>
@@ -34,5 +46,16 @@ public class ProcessScriptSettings
         Description = argsDict.GetValueOrDefault("Description");
         Tags = argsDict.GetValueOrDefault("Tags");
         Icon = argsDict.GetValueOrDefault("Icon");
+
+        LicenseExpression = argsDict.GetValueOrDefault("LicenseExpression");
+        LicenseFile = argsDict.GetValueOrDefault("LicenseFile");
+        ProjectUrl = argsDict.GetValueOrDefault("ProjectUrl");
+        RepositoryUrl = argsDict.GetValueOrDefault("RepositoryUrl");
+        RepositoryType = argsDict.GetValueOrDefault("RepositoryType");
+        RepositoryBranch = argsDict.GetValueOrDefault("RepositoryBranch");
+        RepositoryCommit = argsDict.GetValueOrDefault("RepositoryCommit");
+        ReadmeFile = argsDict.GetValueOrDefault("ReadmeFile");
+        Copyright = argsDict.GetValueOrDefault("Copyright");
+        ReleaseNotes = argsDict.GetValueOrDefault("ReleaseNotes");
     }
 }

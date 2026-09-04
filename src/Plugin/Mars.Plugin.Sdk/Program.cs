@@ -219,6 +219,9 @@ static void PrintUsage()
           dotnet Mars.Plugin.Sdk.dll pack zip --ProjectName=<Name> --out=<publishDir> --ProjectDir=<dir> --PackageId=<id> --Version=<ver>
           dotnet Mars.Plugin.Sdk.dll pack nuget --ProjectName=<Name> --out=<publishDir> --ProjectDir=<dir> --PackageId=<id> --Version=<ver>
                                               [--Authors=..] [--Title=..] [--Description=..] [--Tags=..] [--Icon=icon.png]
+                                              [--LicenseExpression=..] [--LicenseFile=..] [--ProjectUrl=..]
+                                              [--RepositoryUrl=..] [--RepositoryType=..] [--RepositoryBranch=..] [--RepositoryCommit=..]
+                                              [--ReadmeFile=..] [--Copyright=..] [--ReleaseNotes=..]
 
         Normally invoked by the MSBuild targets of the mdimai666.Mars.Plugin.Sdk package:
           dotnet publish -c Release                 -> zip

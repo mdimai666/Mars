@@ -67,6 +67,21 @@ framework (`Microsoft.AspNetCore.App` и др.) в него принципиал
 - entry-сборка — по конвенции `<PackageId>.dll`;
 - `mars-plugin.json` (id, версия, entry, `MarsVersion`) — рантайм читает только его.
 
+**Нюанс генерации нуспека**: нускеп пишет сам тул (`PluginPackageBuilder.BuildNuspec`),
+а не `dotnet pack` — осознанное отклонение от исходного плана реворка (там было
+«допаковать в готовый после `dotnet pack`»). Причины: группа зависимостей собирается
+из замыкания с фильтром (марсовые пакеты, киты, SDK, DevServer в нускеп не попадают),
+а лейаут `lib/` + `mars/` стандартным паком не выразим. Следствие: в нускеп попадает
+только то, что таргеты передают аргументами. С 2026-09-04 передаются ВСЕ стандартные
+свойства пакетов: `Authors`, `Title`, `Description`, `PackageTags`, `PackageIcon`,
+`PackageLicenseExpression`/`PackageLicenseFile`, `PackageProjectUrl`, `RepositoryUrl`
+(+Type/Branch/Commit), `PackageReadmeFile`, `Copyright`, `PackageReleaseNotes`;
+файлы ридами/лицензии вкладываются в nupkg (ошибка пака, если файла нет). Если у
+NuGet появятся новые метаданные пакета — расширять таргеты и `BuildNuspec` вручную
+(альтернатива «`dotnet pack` + доработка архива тулом» обдумана и сознательно
+отложена). `LicenseExpression` и `LicenseFile` взаимоисключающие; при обоих берётся
+expression.
+
 Перед `dotnet pack` SDK решение должно быть собрано той же конфигурацией —
 манифесты берутся из вывода `Mars.WebApp`.
 
@@ -192,11 +207,10 @@ framework (`Microsoft.AspNetCore.App` и др.) в него принципиал
   `Admin`/`Developer`, blocklist; позже — подписанные пакеты и модерация каталога.
 - Переименование `WebApplicationPlugin` → `MarsPlugin` прошло без шимов: плагины
   на старых именах не загрузятся.
-- `Mars.Plugin.Sdk` (`pack nuget`) не пишет в nuspec `<license>`, `<repository>`
-  и readme — даже если автор задал `PackageLicenseExpression`/`RepositoryUrl`
-  в csproj. На nuget.org у пакетов плагинов не отображаются лицензия и
-  репозиторий (warning `License missing`/`Readme missing` при push). Чинится
-  в SDK, не в плагине (подтверждено на mdimai666.Mars.TelegramPlugin 0.6.1).
+- ~~`Mars.Plugin.Sdk` (`pack nuget`) не пишет в nuspec лицензию/репозиторий/ридами~~ —
+  исправлено 2026-09-04: таргеты передают все стандартные свойства пакетов,
+  см. «Нюанс генерации нуспека». Уже опубликованные пакеты чинятся только
+  перепаковкой и пушем новой версии.
 
 ## Дальше
 

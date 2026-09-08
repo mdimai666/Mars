@@ -89,7 +89,7 @@ internal class FaviconGeneratorHandler : IFaviconGeneratorHandler
         if (!_fileStorage.FileExists(faviconSourceImage.FilePhysicalPath))
             throw new FileNotFoundException("Favicon source image not found", faviconSourceImage.FilePhysicalPath);
 
-        _fileStorage.Read(faviconSourceImage.FilePhysicalPath, out var sourceImageStream);
+        using var sourceImageStream = _fileStorage.OpenRead(faviconSourceImage.FilePhysicalPath);
 
         foreach (var item in items)
         {

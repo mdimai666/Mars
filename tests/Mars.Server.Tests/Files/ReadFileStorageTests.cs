@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Mars.Contracts.Dto.Files;
+using Mars.Server.Abstractions.Services;
 using Mars.Storage.Services;
 
 namespace Mars.Server.Tests.Files;
@@ -78,7 +79,7 @@ public class ReadFileStorageTests
         var expectContent = File.ReadAllBytes(Path.Join(_exampleFilesPath, filename));
 
         // Act
-        var fileContent = _fileStorage.Read(filename);
+        var fileContent = _fileStorage.ReadAllBytes(filename);
 
         // Assert
         fileContent.Should().BeEquivalentTo(expectContent);
@@ -92,7 +93,7 @@ public class ReadFileStorageTests
         var expectContent = File.ReadAllText(Path.Join(_exampleFilesPath, filename));
 
         // Act
-        _fileStorage.Read(filename, out var stream);
+        using var stream = _fileStorage.OpenRead(filename);
         using var streamReader = new StreamReader(stream);
         var fileContent = streamReader.ReadToEnd();
 

@@ -83,18 +83,13 @@ internal class FileService : IFileService, IMarsAppLifetimeService
 
     private void DeletePhysicalFile(FileDetail file)
     {
-        if (_fileStorage.FileExists(file.FilePhysicalPath))
+        _fileStorage.DeleteFile(file.FilePhysicalPath);
+
+        if (file.IsImage && file.Meta?.Thumbnails?.Any() == true)
         {
-            _fileStorage.Delete(file.FilePhysicalPath);
-        }
-        if (file.IsImage && file.Meta is not null)
-        {
-            if (file.Meta.Thumbnails?.Any() ?? false)
+            foreach (var thumb in file.Meta.Thumbnails.Values)
             {
-                foreach (var thumb in file.Meta.Thumbnails.Values)
-                {
-                    _fileStorage.DeleteIfExist(thumb.FilePath);
-                }
+                _fileStorage.DeleteFile(thumb.FilePath);
             }
         }
     }
@@ -250,7 +245,6 @@ internal class FileService : IFileService, IMarsAppLifetimeService
                             : TextTool.TranslateToPostSlug(originalFileNameWithExt);
 
         string filepathFromUpload = filedir + '/' + newfilename;
-        string fileAbsolutePath = hostingInfo.FileAbsolutePath(filepathFromUpload);
 
         try
         {
@@ -261,41 +255,40 @@ internal class FileService : IFileService, IMarsAppLifetimeService
             }
 
             int? detectImageWidth = null, detectImageHeight = null;
+            long fileSize;
 
             if (isImage && mediaOption.IsAutoResizeUploadImage && _imageProcessor.IsSupportImageExt(ext))
             {
-                //TODO: заменить на _fileStorage
-                using (var fs = new FileStream(fileAbsolutePath, FileMode.CreateNew, FileAccess.Write))
-                {
-                    var result = _imageProcessor.ProcessImage(fileStream, fs, mediaOption.AutoResizeUploadImageConfig);
+                using var resizedStream = new MemoryStream();
+                _imageProcessor.ProcessImage(fileStream, resizedStream, mediaOption.AutoResizeUploadImageConfig);
+                resizedStream.Position = 0;
+                _fileStorage.Write(filepathFromUpload, resizedStream);
+                fileSize = resizedStream.Length;
 
-                    detectImageWidth ??= result.Width;
-                    detectImageHeight ??= result.Height;
-                }
+                var resizedImage = _imageProcessor.ImageSize(resizedStream);
+                detectImageWidth = resizedImage.Width;
+                detectImageHeight = resizedImage.Height;
             }
             else
             {
                 _fileStorage.Write(filepathFromUpload, fileStream);
-            }
+                fileSize = _fileStorage.GetFileInfo(filepathFromUpload)?.Length
+                           ?? throw new InvalidOperationException($"File is not written: {filepathFromUpload}");
 
-            var fi = _fileStorage.FileInfo(filepathFromUpload);
-
-            if (isImage && !isSvg && (detectImageWidth is null || detectImageHeight is null))
-            {
-                try
+                if (isImage && !isSvg)
                 {
-                    //using (var fileStream = new FileStream(hostingInfo.FileAbsolutePath(filepathFromUpload), FileMode.Open, FileAccess.Read, FileShare.Read))
+                    try
                     {
                         var image = _imageProcessor.ImageSize(fileStream);
                         detectImageWidth = image.Width;
                         detectImageHeight = image.Height;
                     }
-                }
-                catch (Exception ex)
-                {
+                    catch (Exception ex)
+                    {
 #if DEBUG
-                    Console.Error.WriteLine(ex);
+                        Console.Error.WriteLine(ex);
 #endif
+                    }
                 }
             }
 
@@ -310,7 +303,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
             var createFileQuery = new CreateFileQuery
             {
                 Name = originalFileNameWithExtShort,
-                Size = (ulong)fi.Length,
+                Size = (ulong)fileSize,
                 Meta = fileMeta,
                 UserId = userId,
                 FilePathFromUpload = filepathFromUpload,
@@ -325,7 +318,7 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         }
         catch (Exception)
         {
-            _fileStorage.DeleteIfExist(filepathFromUpload);
+            _fileStorage.DeleteFile(filepathFromUpload);
             throw;
         }
     }
@@ -358,8 +351,6 @@ internal class FileService : IFileService, IMarsAppLifetimeService
     {
         if (!_hostingInfo.ExtIsImage(ext)) return null;
 
-        string fullFilePath = _hostingInfo.FileAbsolutePath(filePathFromUpload);
-
         var imageInfo = (detectImageWidth == null || detectImageHeight == null)
             ? null
             : new ImageInfoDto { Width = detectImageWidth.Value, Height = detectImageHeight.Value };
@@ -382,17 +373,22 @@ internal class FileService : IFileService, IMarsAppLifetimeService
         {
             thumbnails = new(mediaOption.ImagePreviewSizeConfigs.Length);
 
+            using var sourceStream = _fileStorage.OpenRead(filePathFromUpload);
+
             foreach (var cfg in mediaOption.ImagePreviewSizeConfigs)
             {
                 string thumbFilepath = GenerateImageThumbPath(cfg, filePathFromUpload);
                 var thumFileDir = _hostingInfo.NormalizePathSlashes(Path.GetDirectoryName(thumbFilepath))!;
                 if (!_fileStorage.DirectoryExists(thumFileDir)) _fileStorage.CreateDirectory(thumFileDir);
-                string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
-                //TODO: заменить на _fileStorage
-                var result = _imageProcessor.ProcessImage(fullFilePath, thumbFilepathAbsolutePath, cfg);
+
+                using var thumbStream = new MemoryStream();
+                sourceStream.Position = 0;
+                _imageProcessor.ProcessImage(sourceStream, thumbStream, cfg);
+                thumbStream.Position = 0;
+                _fileStorage.Write(thumbFilepath, thumbStream);
+
                 var thumb = GetImageThumbnail(cfg, thumbFilepath);
                 thumbnails.Add(cfg.Name, thumb);
-
             }
         }
 

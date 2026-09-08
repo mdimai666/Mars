@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 namespace Mars.Integration.Tests.Controllers.Plugins;
 
 /// <summary>
-/// В тестовом хосте каталог выключен (секция PluginCatalog не задана): витрина
-/// отдаёт пустые ответы и 404, установка по nuget-id при этом не затрагивается.
+/// В тестовом хосте каталог выключен (`PluginCatalog:Enabled = false` в конфигурации ApplicationFixture):
+/// витрина отдаёт пустые ответы и 404, установка по nuget-id при этом не затрагивается.
 /// </summary>
 public class MarketplaceTests : ApplicationTests
 {

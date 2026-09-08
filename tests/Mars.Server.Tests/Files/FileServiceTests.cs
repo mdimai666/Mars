@@ -7,6 +7,7 @@ using Mars.Media.Abstractions.Services;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Services;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Validators;
 using Mars.Storage.Services;
 using Mars.Test.Common.Constants;
@@ -60,7 +61,7 @@ public class FileServiceTests
             .Returns(returnFileId);
 
         var createdFileId = await _fileService.WriteUpload(newFileName, "path1", Encoding.UTF8.GetBytes(newFileContent), userId, cancellationToken);
-        var files = _inMemoryFileStorage.GetDirectoryContents("");
+        var files = _inMemoryFileStorage.GetDirectoryContents("path1");
         var writtedFileName = files.First(s => s.Name.StartsWith(Path.GetFileNameWithoutExtension(newFileName))).Name;
         // Act
         //var content = await _fileService.ReadFile($"path1/{newFileName}", cancellationToken);
@@ -85,6 +86,8 @@ public class FileServiceTests
         {
             ImagePreviewSizeConfigs = MediaOption.DefaultImagePreviewSizeConfigs
         };
+
+        _inMemoryFileStorage.Write(filePath, "fake image content");
 
         // Act
         var meta = _fileService.GenerateThumbnailsAndGetFileMeta(filePath, "png", mediaOption, 200, 100);

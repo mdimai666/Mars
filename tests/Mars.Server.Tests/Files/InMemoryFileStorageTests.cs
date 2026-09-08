@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Mars.Server.Abstractions.Services;
 using Mars.Storage.Services;
 
 namespace Mars.Server.Tests.Files;
@@ -48,7 +49,7 @@ public class InMemoryFileStorageTests
         var storage = GetStorage();
 
         // Act
-        storage.Delete(TextFilepath1);
+        storage.DeleteFile(TextFilepath1);
         var action = () => storage.ReadAllText(TextFilepath1);
 
         // Assert
@@ -110,10 +111,11 @@ public class InMemoryFileStorageTests
         var storage = GetStorage();
 
         // Act
-        var fileInfo = storage.FileInfo(filepath);
+        var fileInfo = storage.GetFileInfo(filepath);
 
         // Assert
-        fileInfo.Length.Should().BeGreaterThan(0);
+        fileInfo.Should().NotBeNull();
+        fileInfo!.Length.Should().BeGreaterThan(0);
     }
 
     [Fact]
@@ -165,5 +167,140 @@ public class InMemoryFileStorageTests
         storage.ReadAllText("archive/second file.txt").Should().Be("second");
         storage.ReadAllText("archive/sub/inner.txt").Should().Be("inner");
         storage.ReadAllText("root-file.bin").Should().Be("123");
+    }
+
+    [Fact]
+    public void GetDirectoryContents_NestedFiles_ReturnsOnlyDirectChildren()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+        storage.Write("Media/2026/one.txt", "one");
+        storage.Write("Media/2026/deep/two.txt", "two");
+        storage.Write("MediaThumbs/2026/thumb.webp", "thumb");
+
+        // Act
+        var names = storage.GetDirectoryContents("Media").Select(s => s.Name).ToList();
+
+        // Assert
+        names.Should().BeEquivalentTo(["2026"]);
+        storage.GetDirectoryContents("Media").Single().IsDirectory.Should().BeTrue();
+        storage.GetDirectoryContents("Media/2026").Select(s => s.Name).Should().BeEquivalentTo(["deep", "one.txt"]);
+    }
+
+    [Fact]
+    public void GetDirectoryContents_SimilarPrefixes_DoesNotMixRoots()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+        storage.CreateDirectory("Media");
+        storage.CreateDirectory("MediaThumbs");
+
+        // Act & Assert
+        storage.GetDirectoryContents("Media").Should().BeEmpty();
+        storage.GetDirectoryContents("").Select(s => s.Name).Should().BeEquivalentTo(["Media", "MediaThumbs"]);
+    }
+
+    [Fact]
+    public void DeleteDirectory_SimilarPrefix_DeletesOnlyOwnTree()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+        storage.Write("Media/2026/one.txt", "one");
+        storage.Write("MediaThumbs/2026/thumb.webp", "thumb");
+
+        // Act
+        storage.DeleteDirectory("Media", true);
+
+        // Assert
+        storage.DirectoryExists("Media").Should().BeFalse();
+        storage.FileExists("Media/2026/one.txt").Should().BeFalse();
+        storage.FileExists("MediaThumbs/2026/thumb.webp").Should().BeTrue();
+        storage.DirectoryExists("MediaThumbs/2026").Should().BeTrue();
+    }
+
+    [Fact]
+    public void DeleteDirectory_NotEmptyAndNotRecursive_Throws()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+        storage.Write("Media/one.txt", "one");
+
+        // Act
+        var action = () => storage.DeleteDirectory("Media", false);
+
+        // Assert
+        action.Should().Throw<IOException>();
+        storage.FileExists("Media/one.txt").Should().BeTrue();
+    }
+
+    [Fact]
+    public void DeleteDirectory_EmptyAndNotRecursive_Succeeds()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+        storage.CreateDirectory("Media/2026");
+
+        // Act
+        storage.DeleteDirectory("Media/2026", false);
+
+        // Assert
+        storage.DirectoryExists("Media/2026").Should().BeFalse();
+        storage.DirectoryExists("Media").Should().BeTrue();
+    }
+
+    [Fact]
+    public void CreateDirectory_NestedPath_CreatesParentSegments()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+
+        // Act
+        storage.CreateDirectory("Media/2026/sub");
+
+        // Assert
+        storage.DirectoryExists("Media").Should().BeTrue();
+        storage.DirectoryExists("Media/2026").Should().BeTrue();
+        storage.DirectoryExists("Media/2026/sub").Should().BeTrue();
+    }
+
+    [Fact]
+    public void Write_NestedPath_CreatesParentDirectory()
+    {
+        // Arrange
+        var storage = new InMemoryFileStorage();
+
+        // Act
+        storage.Write("Media/2026/one.txt", "one");
+
+        // Assert
+        storage.DirectoryExists("Media").Should().BeTrue();
+        storage.DirectoryExists("Media/2026").Should().BeTrue();
+    }
+
+    [Fact]
+    public void OpenRead_ReturnedStream_IsReadOnly()
+    {
+        // Arrange
+        var storage = GetStorage();
+
+        // Act
+        using var stream = storage.OpenRead(TextFilepath1);
+        var action = () => stream.Write([1]);
+
+        // Assert
+        stream.CanWrite.Should().BeFalse();
+        action.Should().Throw<NotSupportedException>();
+        storage.ReadAllBytes(TextFilepath1).Should().BeEquivalentTo("OK"u8.ToArray());
+    }
+
+    [Fact]
+    public void GetFileInfo_NotExistFile_ReturnsNull()
+    {
+        // Arrange
+        var storage = GetStorage();
+
+        // Act & Assert
+        storage.GetFileInfo("not-exist.txt").Should().BeNull();
+        storage.GetFileInfo(TextFilepath1).Should().NotBeNull();
     }
 }

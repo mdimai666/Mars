@@ -52,7 +52,6 @@ public static class FileFixtureCustomizeExtension
         foreach (var cfg in mediaOption.ImagePreviewSizeConfigs)
         {
             string thumbFilepath = GenerateImageThumbPath(cfg, fname, filePathFromUpload);
-            string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
             var thumb = GetImageThumbnail(cfg, thumbFilepath);
             thumbnails.Add(cfg.Name, thumb);
         }

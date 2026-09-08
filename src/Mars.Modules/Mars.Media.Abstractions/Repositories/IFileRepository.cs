@@ -21,7 +21,7 @@ public interface IFileRepository : IDisposable
     Task<int> DeleteMany(DeleteManyFileQuery query, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<FileListItem>> ListAll(ListAllFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<FileDetail>> ListAllDetail(ListAllFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<string>> ListAllAbsolutePaths(FileHostingInfo hostingInfo, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> ListAllRelativePaths(CancellationToken cancellationToken);
     Task<ListDataResult<FileListItem>> List(ListFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
     Task<PagingResult<FileListItem>> ListTable(ListFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken);
 }

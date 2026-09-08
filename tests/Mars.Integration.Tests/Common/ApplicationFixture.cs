@@ -94,7 +94,9 @@ public class ApplicationFixture : IAsyncLifetime
                 Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
                 var configurationBuilder = new ConfigurationBuilder()
                                     .AddInMemoryCollection([
-                                        new ("ConnectionStrings:DefaultConnection", DbFixture.ConnectionString )
+                                        new ("ConnectionStrings:DefaultConnection", DbFixture.ConnectionString ),
+                                        // в appsettings.json каталог включён, а тесты витрины исходят из выключенного
+                                        new ("PluginCatalog:Enabled", "false")
                                     ]);
                 ModifyConfigurationBuilder(configurationBuilder);
                 Configuration = configurationBuilder.Build();
@@ -112,8 +114,7 @@ public class ApplicationFixture : IAsyncLifetime
 
                         //services.AddScoped<IMarsDbContext>(sp => DbFixture.DbContext);
 
-                        //services.Replace(ServiceDescriptor.Singleton<IFileStorage>(x => ExternalServiceMock));
-                        //services.Replace(ServiceDescriptor.Singleton<IFileStorage, InMemoryFileStorage>()); нельзя заменить из-за ImageProcessor для Media он записывает картинки и тесты ломаются, а IFileStorage плохо поддерживает StreamWritter
+                        services.Replace(ServiceDescriptor.Singleton<IFileStorage, InMemoryFileStorage>());
                         services.Replace(ServiceDescriptor.KeyedSingleton<IFileStorage, InMemoryFileStorage>("data"));
                         services.Replace(ServiceDescriptor.Singleton<IKeyMaterialService, TestKeyMaterialService>(sp => _tokenGenerator.KeyMaterialService));
 

@@ -77,17 +77,12 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
 
     public async Task<UserActionResult> ScanFilesAndSaveInDB(Guid userId, CancellationToken cancellationToken)
     {
-        string uploadPath = _hostingInfo.AbsoluteUploadPath();
-
-        string exts = "*.*";
-
-        var files = ScanFiles(_hostingInfo.FileAbsolutePath(MediaDirName), exts, _hostingInfo);
-        var existInDbFiles = await _fileRepository.ListAllAbsolutePaths(_hostingInfo, cancellationToken);
+        var files = ScanFiles(MediaDirName);
+        var existInDbFiles = await _fileRepository.ListAllRelativePaths(cancellationToken);
         var nonExistFiles = files.Except(existInDbFiles).ToList();
 
         // зарегистрировать найденные каталоги как папки в БД
-        var relPaths = files.Select(f => f.Substring(uploadPath.Length)).ToList();
-        var dirPaths = relPaths
+        var dirPaths = files
             .Where(p => p.Contains('/'))
             .Select(p => p[..p.LastIndexOf('/')])
             .Distinct();
@@ -95,24 +90,17 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
 
         var fileEntities = new List<CreateFileQuery>(nonExistFiles.Count);
 
-        foreach (var filepath in nonExistFiles)
+        foreach (var filePathFromUpload in nonExistFiles)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            //string absPath = Path.Combine(uploadPath, filepath.TrimStart(Path.DirectorySeparatorChar).TrimStart(Path.AltDirectorySeparatorChar));
-            //string absPath = _hostingInfo.FileAbsolutePath(filepath);
-            string filename = Path.GetFileName(filepath);
-            //string ext = Path.GetExtension(filepath).TrimStart('.');
-            //FileInfo fi = new FileInfo(absPath);
-            FileInfo fi = new(filepath);
 
-            var filePathFromUpload = filepath.Substring(uploadPath.Length);
             var fileDir = filePathFromUpload.Contains('/') ? filePathFromUpload[..filePathFromUpload.LastIndexOf('/')] : null;
 
             var createQuery = new CreateFileQuery
             {
                 FilePathFromUpload = filePathFromUpload,
-                Name = filename,
-                Size = (ulong)fi.Length,
+                Name = Path.GetFileName(filePathFromUpload),
+                Size = (ulong)(_fileStorage.GetFileInfo(filePathFromUpload)?.Length ?? 0),
                 UserId = userId,
                 Meta = null, // call regenerate thumbs after this
                 FolderId = fileDir is not null ? pathToFolderId.GetValueOrDefault(fileDir) : null,
@@ -188,15 +176,9 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
 
                     try
                     {
-                        _fileStorage.Read(file.FilePhysicalPath, out var fileStream);
-                        //using (var fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        using (fileStream)
-                        {
-                            var image = _imageProcessor.ImageSize(fileStream);
-                            //file.Meta.ImageInfo.Width = image.Width;
-                            //file.Meta.ImageInfo.Height = image.Height;
-                            imageMeta = new ImageInfoDto { Width = image.Width, Height = image.Height };
-                        }
+                        using var fileStream = _fileStorage.OpenRead(file.FilePhysicalPath);
+                        var image = _imageProcessor.ImageSize(fileStream);
+                        imageMeta = new ImageInfoDto { Width = image.Width, Height = image.Height };
                     }
                     catch (Exception ex)
                     {
@@ -208,34 +190,28 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
                 {
                     foreach (var cfg in thumbOptions)
                     {
-                        //string thumbFilepath = _storage.FullFilePath(file.FilePath);
-                        //var thumb = _storage.GetImageThumbnail(cfg, thumbFilepath);
-                        //var thumbFilepath = _hostingInfo.FileAbsolutePath(file.FilePhysicalPath);
-                        var thumb = GetImageThumbnail(cfg, file.FilePhysicalPath);
-                        //file.Meta.Thumbnails.Add(cfg.Name, thumb);
-                        thumbnails.Add(cfg.Name, thumb);
+                        thumbnails.Add(cfg.Name, GetImageThumbnail(cfg, file.FilePhysicalPath));
                     }
                 }
                 else
                 {
+                    using var sourceStream = _fileStorage.OpenRead(file.FilePhysicalPath);
+
                     foreach (var cfg in thumbOptions)
                     {
-                        //string thumbFilepath = _storage.GenerateImageThumbPath(cfg, file.FilePath, file.FileType);
-                        var fullFilePath = _hostingInfo.FileAbsolutePath(file.FilePhysicalPath);
-                        var filePathFromUpload = file.FilePhysicalPath;
-                        string thumbFilepath = GenerateImageThumbPath(cfg, filePathFromUpload);
+                        string thumbFilepath = GenerateImageThumbPath(cfg, file.FilePhysicalPath);
                         var thumFileDir = _hostingInfo.NormalizePathSlashes(Path.GetDirectoryName(thumbFilepath))!;
                         if (!_fileStorage.DirectoryExists(thumFileDir)) _fileStorage.CreateDirectory(thumFileDir);
 
-                        string thumbFilepathAbsolutePath = _hostingInfo.FileAbsolutePath(thumbFilepath);
+                        using var thumbStream = new MemoryStream();
+                        sourceStream.Position = 0;
+                        _imageProcessor.ProcessImage(sourceStream, thumbStream, cfg);
+                        thumbStream.Position = 0;
+                        _fileStorage.Write(thumbFilepath, thumbStream);
 
-                        _imageProcessor.ProcessImage(fullFilePath, thumbFilepathAbsolutePath, cfg);
-                        var thumb = GetImageThumbnail(cfg, thumbFilepath);
-                        //file.Meta.Thumbnails.Add(cfg.Name, thumb);
-                        thumbnails.Add(cfg.Name, thumb);
+                        thumbnails.Add(cfg.Name, GetImageThumbnail(cfg, thumbFilepath));
                     }
                 }
-                //ef.Files.Update(file);
 
                 updateQueryList.Add(new UpdateFileQuery
                 {
@@ -268,48 +244,33 @@ internal class MediaService : FileService, IMediaService, IMarsAppLifetimeServic
     }
 
     #region TOOLS
-    public List<string> ScanFiles(string path, string pattern, FileHostingInfo hostingInfo)
+    List<string> ScanFiles(string rootPath)
     {
-        string[] ignoreList = { "bin", "obj", ".git", "node_modules" };
+        string[] ignoreList = ["bin", "obj", ".git", "node_modules"];
 
-        //Directory.GetFileSystemEntries(path, "*.html", SearchOption.AllDirectories);
-
-        var files = FindAllFiles(path, pattern /* "*.*" */, ignoreList, hostingInfo);
-
-        return files;
-    }
-
-    public static List<string> FindAllFiles(string rootDir, string pattern, string[] ignoreList, FileHostingInfo hostingInfo)
-    {
         var pathsToSearch = new Queue<string>();
         var foundFiles = new List<string>();
 
-        pathsToSearch.Enqueue(rootDir);
+        pathsToSearch.Enqueue(rootPath);
 
         while (pathsToSearch.Count > 0)
         {
             var dir = pathsToSearch.Dequeue();
 
-            try
+            if (!_fileStorage.DirectoryExists(dir)) continue;
+
+            foreach (var entry in _fileStorage.GetDirectoryContents(dir))
             {
-                var files = Directory.GetFiles(dir, pattern);
-                foreach (var file in files)
+                var entryPath = dir.Length == 0 ? entry.Name : dir + '/' + entry.Name;
+
+                if (!entry.IsDirectory)
                 {
-                    var name = hostingInfo.NormalizePathSlashes(file)!;
-                    foundFiles.Add(name);
+                    foundFiles.Add(entryPath);
+                    continue;
                 }
 
-                foreach (var subDir in Directory.GetDirectories(dir))
-                {
-                    string name = Path.GetFileName(subDir);
-                    if (ignoreList.Contains(name)) continue;
-                    pathsToSearch.Enqueue(subDir);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine("FindAllFiles: " + ex.Message);
+                if (ignoreList.Contains(entry.Name)) continue;
+                pathsToSearch.Enqueue(entryPath);
             }
         }
 

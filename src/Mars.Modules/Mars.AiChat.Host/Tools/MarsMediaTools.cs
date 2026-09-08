@@ -133,7 +133,7 @@ public class MarsMediaTools
             if (detail is null)
                 return Error($"Файл '{id}' не найден");
 
-            var bytes = _fileStorage.Read(detail.FilePhysicalPath);
+            var bytes = _fileStorage.ReadAllBytes(detail.FilePhysicalPath);
             if (bytes.Length == 0)
                 return JsonSerializer.Serialize(new { ok = true, name = detail.Name, text = "", length = 0, offset = 0, truncated = false }, SerializerOptions);
 

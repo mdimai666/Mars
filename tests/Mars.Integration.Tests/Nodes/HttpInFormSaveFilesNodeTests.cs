@@ -68,7 +68,6 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
         //Assert
         result.Should().HaveCount(1);
         var fullPath = result[0].UrlRelative.TrimSubstringStart("/upload/");
-        _toRemoveFiles.Add(fullPath);
         result[0].Name.Should().Be(fileName);
         result[0].UrlRelative.Should().Be($"/upload/media/{DateTime.Now.Year}/q/filefield/{fileName}");
         // fileStorage может быть виртуальным.
@@ -114,8 +113,7 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
         _ = nameof(HttpInNodeImpl.Execute);
         _ = nameof(HttpInFormSaveFilesNodeImpl.Execute);
         var client = AppFixture.GetClient();
-        var optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        var hostingInfo = optionService.FileHostingInfo();
+        var fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
 
         var fileContent = "TEST-text";
         var fileName = "file1.txt";
@@ -135,9 +133,8 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
 
         //Assert
         result.Should().HaveCount(1);
-        var fullPath = hostingInfo.FileAbsolutePath(result[0]);
-        _toRemoveFiles.Add(fullPath);
-        File.Exists(fullPath).Should().BeTrue();
+        // fileStorage может быть виртуальным.
+        fileStorage.FileExists(result[0]).Should().BeTrue();
     }
 
     private MemoryStream GenerateStreamFromString(string value)

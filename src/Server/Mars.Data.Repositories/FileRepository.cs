@@ -248,14 +248,14 @@ internal class FileRepository : IFileRepository
         return (await ListAllInternal(query, hostingInfo, cancellationToken)).ToDetailList(resolver);
     }
 
-    public async Task<IReadOnlyCollection<string>> ListAllAbsolutePaths(FileHostingInfo hostingInfo, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<string>> ListAllRelativePaths(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
 
-        var list = await _listAllQuery.AsNoTracking().ToListAsync(cancellationToken);
-
-        return list.Select(file => hostingInfo.FileAbsolutePath(file.FilePhysicalPath)).ToList();
+        return await _listAllQuery.AsNoTracking()
+                                 .Select(file => file.FilePhysicalPath)
+                                 .ToListAsync(cancellationToken);
     }
 
     public async Task<ListDataResult<FileListItem>> List(ListFileQuery query, FileHostingInfo hostingInfo, CancellationToken cancellationToken)

@@ -15,7 +15,7 @@ public class FileStorage : IFileStorage
         _hostingInfo = hostingInfo.Value;
     }
 
-    public string ReadAllText(string filepath)
+    public Stream OpenRead(string filepath)
     {
         filepath = AbsolutePath(filepath);
 
@@ -24,43 +24,7 @@ public class FileStorage : IFileStorage
             throw new FileNotFoundException($"Файл не найден: {filepath}");
         }
 
-        return File.ReadAllText(filepath);
-    }
-
-    public byte[] Read(string filepath)
-    {
-        filepath = AbsolutePath(filepath);
-
-        if (!File.Exists(filepath))
-        {
-            throw new FileNotFoundException($"Файл не найден: {filepath}");
-        }
-
-        return File.ReadAllBytes(filepath);
-    }
-
-    public void Read(string filepath, out Stream stream)
-    {
-        filepath = AbsolutePath(filepath);
-
-        if (!File.Exists(filepath))
-        {
-            throw new FileNotFoundException($"Файл не найден: {filepath}");
-        }
-
-        stream = File.OpenRead(filepath);
-    }
-
-    public void Write(string filepath, byte[] bytes)
-    {
-        filepath = AbsolutePath(filepath);
-        File.WriteAllBytes(filepath, bytes);
-    }
-
-    public void Write(string filepath, string text)
-    {
-        filepath = AbsolutePath(filepath);
-        File.WriteAllText(filepath, text);
+        return File.OpenRead(filepath);
     }
 
     public void Write(string filepath, Stream stream)
@@ -85,25 +49,14 @@ public class FileStorage : IFileStorage
         return File.Exists(filepath);
     }
 
-    public void Delete(string filepath)
+    public bool DeleteFile(string filepath)
     {
         filepath = AbsolutePath(filepath);
-        if (File.Exists(filepath))
-        {
-            File.Delete(filepath);
-        }
-    }
 
-    public bool DeleteIfExist(string filepath)
-    {
-        filepath = AbsolutePath(filepath);
-        if (File.Exists(filepath))
-        {
-            File.Delete(filepath);
-            return true;
-        }
+        if (!File.Exists(filepath)) return false;
 
-        return false;
+        File.Delete(filepath);
+        return true;
     }
 
     public IDirectoryContents GetDirectoryContents(string subpath)
@@ -112,7 +65,7 @@ public class FileStorage : IFileStorage
         return new FileSystemDirectoryContents(subpath);
     }
 
-    public IFileInfo FileInfo(string filepath)
+    public IFileInfo? GetFileInfo(string filepath)
     {
         filepath = AbsolutePath(filepath);
         if (File.Exists(filepath))
@@ -124,7 +77,7 @@ public class FileStorage : IFileStorage
             return new FileSystemDirectoryContents.FileSystemDirectoryInfo(filepath);
         }
 
-        return null!;
+        return null;
     }
 
     public void CreateDirectory(string directoryPath)
@@ -164,7 +117,7 @@ public class FileStorage : IFileStorage
 
     internal string AbsolutePath(string path)
     {
-        if (Path.IsPathFullyQualified(path)) throw new Exception("path must be relative");
+        if (Path.IsPathFullyQualified(path)) throw new ArgumentException("path must be relative", nameof(path));
 
         return _hostingInfo.FileAbsolutePath(path);
     }

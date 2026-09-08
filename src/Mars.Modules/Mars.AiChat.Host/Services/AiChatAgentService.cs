@@ -478,7 +478,7 @@ public class AiChatAgentService
 
             try
             {
-                var bytes = _fileStorage.Read(attachment.Detail.FilePhysicalPath);
+                var bytes = _fileStorage.ReadAllBytes(attachment.Detail.FilePhysicalPath);
                 contents.Add(new DataContent(bytes, mediaType));
             }
             catch (Exception ex)

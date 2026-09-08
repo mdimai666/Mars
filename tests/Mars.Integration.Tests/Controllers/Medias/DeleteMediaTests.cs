@@ -9,6 +9,7 @@ using Mars.Media.Contracts.Files;
 using Mars.Media.Contracts.Options;
 using Mars.Media.Host.Controllers;
 using Mars.Options.Abstractions.Services;
+using Mars.Server.Abstractions.Services;
 using Mars.Test.Common.FixtureCustomizes;
 using Mars.Test.Common.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,7 @@ public class DeleteMediaTests : ApplicationTests
 {
     private const string _apiUrl = "/api/Media";
     private readonly IOptionService _optionService;
-    private readonly FileHostingInfo _fileHostingInfo;
+    private readonly IFileStorage _fileStorage;
     private readonly MediaOption _mediaOption;
     private readonly string _exampleFilesPath;
 
@@ -28,7 +29,7 @@ public class DeleteMediaTests : ApplicationTests
     {
         _fixture.Customize(new FixtureCustomize());
         _optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
-        _fileHostingInfo = _optionService.FileHostingInfo();
+        _fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
         _mediaOption = _optionService.GetOption<MediaOption>();
         _mediaOption.IsAutoResizeUploadImage = true;
         _optionService.SetOptionOnMemory(_mediaOption);
@@ -65,8 +66,7 @@ public class DeleteMediaTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var dbFile = ef.Files.FirstOrDefault(s => s.Id == uploadFile.Id);
         dbFile.Should().BeNull();
-        var fullPath = _fileHostingInfo.FileAbsolutePath(uploadFile.FilePhysicalPath);
-        File.Exists(fullPath).Should().BeFalse();
+        _fileStorage.FileExists(uploadFile.FilePhysicalPath).Should().BeFalse();
     }
 
     [IntegrationFact]
@@ -93,8 +93,7 @@ public class DeleteMediaTests : ApplicationTests
         var ef = AppFixture.MarsDbContext();
         var dbFile = ef.Files.FirstOrDefault(s => s.Id == uploadFile.Id);
         dbFile.Should().BeNull();
-        var fullPath = _fileHostingInfo.FileAbsolutePath(uploadFile.FilePhysicalPath);
-        File.Exists(fullPath).Should().BeFalse();
+        _fileStorage.FileExists(uploadFile.FilePhysicalPath).Should().BeFalse();
     }
 
 }

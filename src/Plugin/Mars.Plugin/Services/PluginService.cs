@@ -106,7 +106,7 @@ internal class PluginService : IPluginService
         var descriptorPath = Path.Combine(PluginManager.PluginsDefaultPath, packageId, PluginPackageDescriptor.FileName);
         if (!_fileStorage.FileExists(descriptorPath)) return null;
 
-        var physicalPath = _fileStorage.FileInfo(descriptorPath).PhysicalPath;
+        var physicalPath = _fileStorage.GetFileInfo(descriptorPath)?.PhysicalPath;
         return physicalPath is null ? null : PluginDescriptorHelper.TryRead(physicalPath);
     }
 

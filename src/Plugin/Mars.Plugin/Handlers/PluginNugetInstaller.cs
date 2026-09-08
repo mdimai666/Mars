@@ -76,7 +76,7 @@ internal class PluginNugetInstaller
             if (!_fileStorage.FileExists(descriptorStoragePath))
                 throw NewValidation($"Package '{packageId}' is not a Mars plugin: '{DescriptorEntry}' not found in the nupkg.");
 
-            var physicalStaging = Path.GetDirectoryName(_fileStorage.FileInfo(descriptorStoragePath).PhysicalPath!)!;
+            var physicalStaging = Path.GetDirectoryName(_fileStorage.GetFileInfo(descriptorStoragePath)!.PhysicalPath!)!;
             var descriptor = PluginDescriptorHelper.TryRead(Path.Combine(physicalStaging, PluginPackageDescriptor.FileName))
                 ?? throw NewValidation($"Cannot parse '{PluginPackageDescriptor.FileName}' in package '{packageId}'.");
 

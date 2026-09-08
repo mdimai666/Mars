@@ -92,7 +92,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
         }
         else if (physicalExists)
         {
-            fs.Delete(path);
+            fs.DeleteFile(path);
         }
     }
 
@@ -154,7 +154,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
     {
         if (isAppend)
         {
-            var original = fs.FileExists(path) ? fs.Read(path) : Array.Empty<byte>();
+            var original = fs.FileExists(path) ? fs.ReadAllBytes(path) : Array.Empty<byte>();
             using var ms = new MemoryStream(original.Length + buffer.Length);
             ms.Write(original, 0, original.Length);
             ms.Write(buffer, 0, buffer.Length);
@@ -174,7 +174,7 @@ public class FileServiceWriteNodeImpl : INodeImplement<FileServiceWriteNode>
     {
         if (isAppend)
         {
-            var original = fs.FileExists(path) ? fs.Read(path) : Array.Empty<byte>();
+            var original = fs.FileExists(path) ? fs.ReadAllBytes(path) : Array.Empty<byte>();
             using var ms = new MemoryStream();
             ms.Write(original, 0, original.Length);
             await stream.CopyToAsync(ms);

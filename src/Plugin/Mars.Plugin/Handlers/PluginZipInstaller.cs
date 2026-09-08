@@ -131,7 +131,7 @@ internal class PluginZipInstaller
 
         if (_fileStorage.FileExists(descriptorPath))
         {
-            var physicalStaging = _fileStorage.FileInfo(descriptorPath).PhysicalPath!;
+            var physicalStaging = _fileStorage.GetFileInfo(descriptorPath)!.PhysicalPath!;
             var descriptor = PluginDescriptorHelper.TryRead(physicalStaging)
                 ?? throw new MarsValidationException($"Cannot parse {PluginPackageDescriptor.FileName} in plugin zip.", new Dictionary<string, string[]>());
 

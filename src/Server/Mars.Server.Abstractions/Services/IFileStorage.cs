@@ -3,26 +3,33 @@ using Microsoft.Extensions.FileProviders;
 namespace Mars.Server.Abstractions.Services;
 
 /// <summary>
-/// Дает доступ к файлам на локальном или удаленном хранилище
+/// Дает доступ к файлам на локальном или удаленном хранилище.
+/// Пути относительны корня хранилища, разделитель — '/', абсолютные пути и выход за корень запрещены.
 /// </summary>
 public interface IFileStorage
 {
-    string ReadAllText(string filepath);
-    byte[] Read(string filepath);
-    void Read(string filepath, out Stream stream);
+    /// <summary>
+    /// Открывает файл на чтение. Поток доступен только для чтения, вызывающий обязан его освободить
+    /// </summary>
+    /// <exception cref="FileNotFoundException">файл не найден</exception>
+    Stream OpenRead(string filepath);
 
-    void Write(string filepath, byte[] bytes);
-    void Write(string filepath, string text);
     void Write(string filepath, Stream stream);
     Task WriteAsync(string filepath, Stream stream, CancellationToken cancellationToken);
 
     bool FileExists(string filepath);
 
-    void Delete(string filepath);
-    bool DeleteIfExist(string filepath);
+    /// <summary>
+    /// Удаляет файл, если он существует. Возвращает true, если файл был удален
+    /// </summary>
+    bool DeleteFile(string filepath);
 
     IDirectoryContents GetDirectoryContents(string subpath);
-    IFileInfo FileInfo(string filepath);
+
+    /// <summary>
+    /// Возвращает файл или каталог, либо null если ничего не найдено
+    /// </summary>
+    IFileInfo? GetFileInfo(string filepath);
 
     void CreateDirectory(string filepath);
     bool DirectoryExists(string filepath);

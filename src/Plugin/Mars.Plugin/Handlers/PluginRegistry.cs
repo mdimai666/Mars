@@ -85,9 +85,8 @@ internal class PluginRegistry
 
         try
         {
-            _fileStorage.Read(path, out var stream);
-            using (stream)
-                return JsonSerializer.Deserialize<Dictionary<string, PluginRegistryEntry>>(stream) ?? [];
+            using var stream = _fileStorage.OpenRead(path);
+            return JsonSerializer.Deserialize<Dictionary<string, PluginRegistryEntry>>(stream) ?? [];
         }
         catch (JsonException)
         {

@@ -37,7 +37,6 @@ public class ImageProcessor : IImageProcessor
         return true;
     }
 
-
     ProcessImageSettings _settings(IImageConverConfig config)
     {
         var settings = new ProcessImageSettings
@@ -45,7 +44,6 @@ public class ImageProcessor : IImageProcessor
             Width = config.Width,
             Height = config.Height,
             ResizeMode = ConvertScale(config.ResizeMode),
-            //EncoderOptions = new PhotoSauce.MagicScaler.encoderoptions
             EncoderOptions = config.Compression == EncoderCompression.Lossy
                 ? new PhotoSauce.NativeCodecs.Libwebp.WebpLossyEncoderOptions(80)
                 : new WebpLosslessEncoderOptions()
@@ -53,44 +51,14 @@ public class ImageProcessor : IImageProcessor
         return settings;
     }
 
-    IProcessImageResult _result(PhotoSauce.MagicScaler.ProcessImageResult result)
+    public void ProcessImage(Stream inputImage, Stream outputImage, IImageConverConfig config)
     {
-        PixelSourceStats? st = result.Stats.FirstOrDefault();
-
-        return new Mars.Media.Contracts.ProcessImageResult
-        {
-            ProcessingTime = st?.ProcessingTime ?? 0,
-            FileSize = 0,
-            Width = result.Settings.Width,
-            Height = result.Settings.Height,
-        };
+        MagicImageProcessor.ProcessImage(inputImage, outputImage, _settings(config));
     }
 
-    public IProcessImageResult ProcessImage(string inputImage, string outputImage, IImageConverConfig config)
+    public void ProcessImage(ReadOnlySpan<byte> inputImage, Stream outputImage, IImageConverConfig config)
     {
-        var settings = _settings(config);
-
-        var result = MagicImageProcessor.ProcessImage(inputImage, outputImage, settings);
-
-        return _result(result);
-    }
-
-    public IProcessImageResult ProcessImage(Stream inputImage, Stream outputImage, IImageConverConfig config)
-    {
-        var settings = _settings(config);
-
-        var result = MagicImageProcessor.ProcessImage(inputImage, outputImage, settings);
-
-        return _result(result);
-    }
-
-    public IProcessImageResult ProcessImage(ReadOnlySpan<byte> inputImage, Stream outputImage, IImageConverConfig config)
-    {
-        var settings = _settings(config);
-
-        var result = MagicImageProcessor.ProcessImage(inputImage, outputImage, settings);
-
-        return _result(result);
+        MagicImageProcessor.ProcessImage(inputImage, outputImage, _settings(config));
     }
 
     PhotoSauce.MagicScaler.CropScaleMode ConvertScale(Mars.Media.Contracts.Options.ImagePreviewSizeConfig.CropScaleMode mode)

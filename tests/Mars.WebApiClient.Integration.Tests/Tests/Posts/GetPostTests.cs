@@ -27,14 +27,14 @@ public class GetPostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetPost_ValidRequest_Succeeds()
+    public async Task GetPost_ValidRequest_Succeeds()
     {
         _ = nameof(MarsWebApiClient.Post.Get);
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public async void GetPostBySlug_ValidRequest_Succeeds()
+    public async Task GetPostBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.Post.GetBySlug);
@@ -55,13 +55,13 @@ public class GetPostTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListPost_ValidRequest_Succeeds()
+    public async Task ListPost_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }
 
     [IntegrationFact]
-    public async void GetEditModel_ValidRequest_Succeeds()
+    public async Task GetEditModel_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.Post.GetEditModel);

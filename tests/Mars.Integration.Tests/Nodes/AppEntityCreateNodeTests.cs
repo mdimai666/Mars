@@ -81,13 +81,13 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
         };
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var pts = AppFixture.ServiceProvider.GetRequiredService<IPostTypeService>();
         await pts.Create(_postType, default);
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     [IntegrationFact]
     public async Task Execute_CreatePostFromFormLiterallyFields_CreatesEntity()

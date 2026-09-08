@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 using FluentAssertions;
 using Flurl.Http;
 using Mars.Integration.Tests.Attributes;
-using Xunit.Abstractions;
 
 namespace ExternalServices.Integration.Tests.WordPressTests;
 

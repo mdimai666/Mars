@@ -49,7 +49,7 @@ public class BaseE2ETests : IAsyncLifetime
         );
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
@@ -67,7 +67,7 @@ public class BaseE2ETests : IAsyncLifetime
             await AuthorizeAsync();
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await Context.CloseAsync();
         await Browser.CloseAsync();

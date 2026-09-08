@@ -34,23 +34,18 @@ public class InMemoryDatabaseFixture : IDatabaseFixture
         _dbContextOptions = CreateOptions<MarsDbContext>(configuration);
     }
 
-    public Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (SkipTest is not null)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();
-
-        return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     public Task Reset()
     {

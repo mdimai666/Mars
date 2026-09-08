@@ -32,7 +32,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)] //TODO: Убрать и пофиксить парраллелизацию
+[assembly: Xunit.v3.Parallelization(Mode = Xunit.Sdk.ParallelMode.Collections)]
 
 namespace Mars.Nodes.Tests.Services;
 

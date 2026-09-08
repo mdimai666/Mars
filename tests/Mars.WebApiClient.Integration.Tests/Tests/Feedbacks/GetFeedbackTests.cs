@@ -25,7 +25,7 @@ public class GetFeedbackTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetFeedback_ValidRequest_Succeeds()
+    public async Task GetFeedback_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
@@ -38,7 +38,7 @@ public class GetFeedbackTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async void ListFeedback_ValidRequest_Succeeds()
+    public async Task ListFeedback_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

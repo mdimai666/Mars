@@ -10,24 +10,27 @@ namespace Mars.Nodes.Core.Locators;
 internal class NodesLocator : INodesLocator
 {
     Dictionary<string, NodeDictItem> _dict = [];
-    bool invalid = true;
+    volatile bool invalid = true;
     HashSet<Assembly> assemblies = [];
     object _lock = new { };
 
-    public IReadOnlyDictionary<string, NodeDictItem> Dict { get { if (invalid) RefreshDict(); return _dict; } }
+    public IReadOnlyDictionary<string, NodeDictItem> Dict { get { RefreshDict(); return _dict; } }
     public IReadOnlyCollection<Assembly> Assemblies => assemblies;
 
     private void RefreshDict(bool force = false)
     {
+        // Рефреш может запросить фоновый поток рантайма одновременно с сериализацией —
+        // словарь собираем в новый экземпляр и подменяем атомарно, не очищая общий.
         if (!invalid && !force) return;
 
         lock (_lock)
         {
-            _dict.Clear();
+            if (!invalid && !force) return;
+
+            var newDict = new Dictionary<string, NodeDictItem>();
 
             foreach (var assembly in assemblies.ToList())
             {
-
                 var types = GetEnumerableOfType<Node>(assembly);
 
                 foreach (Type type in types)
@@ -39,9 +42,11 @@ internal class NodesLocator : INodesLocator
                         FunctionApiDocument = type.GetCustomAttribute<FunctionApiDocumentAttribute>(),
                         DefaultInstance = (Node)Activator.CreateInstance(type)!
                     };
-                    _dict.Add(item.DefaultInstance.TypeId, item);
+                    newDict.Add(item.DefaultInstance.TypeId, item);
                 }
             }
+
+            _dict = newDict;
             invalid = false;
         }
     }
@@ -59,9 +64,12 @@ internal class NodesLocator : INodesLocator
 
     public void RegisterAssembly(Assembly assembly)
     {
-        if (assemblies.Contains(assembly)) return;
-        invalid = true;
-        assemblies.Add(assembly);
+        lock (_lock)
+        {
+            if (assemblies.Contains(assembly)) return;
+            invalid = true;
+            assemblies.Add(assembly);
+        }
     }
 
     public Type? GetTypeByTypeId(string nodeTypeId)

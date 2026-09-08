@@ -8,14 +8,14 @@ public sealed class PostgreSqlContainerTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:14").Build();
 
-    public Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
-        return _postgreSqlContainer.StartAsync();
+        return new ValueTask(_postgreSqlContainer.StartAsync());
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return _postgreSqlContainer.DisposeAsync().AsTask();
+        return _postgreSqlContainer.DisposeAsync();
     }
 
     [Fact]

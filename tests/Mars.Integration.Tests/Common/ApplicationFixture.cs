@@ -48,7 +48,7 @@ public class ApplicationFixture : IAsyncLifetime
     private static string? s_bearerToken;
     public static string BearerToken => s_bearerToken ??= $"{JwtBearerDefaults.AuthenticationScheme} {_tokenGenerator.GenerateTokenWithClaims()}";
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (SkipTest is not null)
         {
@@ -60,7 +60,7 @@ public class ApplicationFixture : IAsyncLifetime
         await Task.Delay(1000);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (SkipTest is not null)
         {
@@ -72,7 +72,7 @@ public class ApplicationFixture : IAsyncLifetime
             await ApplicationFactory.DisposeAsync();
         }
 
-        await Task.WhenAll([DbFixture.DisposeAsync()]);
+        await DbFixture.DisposeAsync();
     }
 
     public HttpClient GetClientEx(bool isAnonymous = false) => isAnonymous ? _nonAuthClient : _authClient;
@@ -83,7 +83,7 @@ public class ApplicationFixture : IAsyncLifetime
 
     private async Task SetupAppFactory()
     {
-        await Task.WhenAll([DbFixture.InitializeAsync()]);
+        await DbFixture.InitializeAsync();
 
         ResetStaticFields();
 

@@ -7,6 +7,7 @@ using Mars.Nodes.Tests.Services;
 
 namespace Mars.Nodes.Tests.Nodes;
 
+[Collection("TimingSensitive")]
 public class JoinNodeTests : NodeServiceUnitTestBase
 {
     void SetupNodes(NodesWorkflowBuilder builder, Action<object> callback)

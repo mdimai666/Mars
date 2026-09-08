@@ -27,7 +27,7 @@ public class MarsFixture : IAsyncLifetime
     public string MarsUrl { get; private set; } = default!;
     public IFlurlClient Client => _client;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (!DockerTestsEnabled) return;
 
@@ -72,7 +72,7 @@ public class MarsFixture : IAsyncLifetime
         _client = new FlurlClient(MarsUrl);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (!DockerTestsEnabled) return;
 

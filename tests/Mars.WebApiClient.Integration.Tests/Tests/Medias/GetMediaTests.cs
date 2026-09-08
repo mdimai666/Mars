@@ -25,13 +25,13 @@ public class GetMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetFile_Request_Unauthorized()
+    public async Task GetFile_Request_Unauthorized()
     {
         await _getTest.GetDetail_Request_Unauthorized();
     }
 
     [IntegrationFact]
-    public async void GetFile_ValidRequest_Succeeds()
+    public async Task GetFile_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
@@ -43,13 +43,13 @@ public class GetMediaTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListFile_Request_Unauthorized()
+    public async Task ListFile_Request_Unauthorized()
     {
         await _getTest.List_Request_Unauthorized(new());
     }
 
     [IntegrationFact]
-    public async void ListFile_ValidRequest_Succeeds()
+    public async Task ListFile_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

@@ -10,6 +10,7 @@ using static Mars.Server.Abstractions.Managers.IEventManager;
 
 namespace Mars.Nodes.Tests.Nodes;
 
+[Collection("TimingSensitive")]
 public class EventListenerNodeTests : NodeServiceUnitTestBase
 {
     [Fact]

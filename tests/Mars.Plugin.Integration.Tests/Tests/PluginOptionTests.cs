@@ -22,6 +22,9 @@ public class PluginOptionTests : BasePluginTests
         //Arrange
         _ = nameof(PluginExampleOption1);
         _ = nameof(PluginExamplePlugin.ConfigureWebApplication);
+        // Плагин пишет опцию при ConfigureWebApplication (старт хоста), а per-test Reset затирает
+        // таблицу опций — восстанавливаем то же значение, чтобы тест не зависел от порядка исполнения.
+        _optionService.SaveOption(new PluginExampleOption1 { Value = "200" });
 
         //Act
         var result = _optionService.GetOption<PluginExampleOption1>();

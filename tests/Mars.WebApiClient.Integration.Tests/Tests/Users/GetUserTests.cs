@@ -26,13 +26,13 @@ public class GetUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetUser_Request_Unauthorized()
+    public async Task GetUser_Request_Unauthorized()
     {
         await _getTest.GetDetail_Request_Unauthorized();
     }
 
     [IntegrationFact]
-    public async void GetUser_ValidRequest_Succeeds()
+    public async Task GetUser_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
@@ -45,19 +45,19 @@ public class GetUserTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async void ListUser_Request_Unauthorized()
+    public async Task ListUser_Request_Unauthorized()
     {
         await _getTest.List_Request_Unauthorized(new());
     }
 
     [IntegrationFact]
-    public async void ListUser_ValidRequest_Succeeds()
+    public async Task ListUser_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }
 
     [IntegrationFact]
-    public async void ListDetailUser_ValidRequest_Succeeds()
+    public async Task ListDetailUser_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -70,7 +70,7 @@ public class GetUserTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void TableListDetailUser_ValidRequest_Succeeds()
+    public async Task TableListDetailUser_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();

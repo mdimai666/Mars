@@ -97,20 +97,20 @@ public class E2EServerFixture : IAsyncLifetime
         await app.StartAsync();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (SkipTest is not null)
         {
             return;
         }
 
-        await Task.WhenAll([DbFixture.InitializeAsync()]);
+        await DbFixture.InitializeAsync();
 
         await SetupAppFactory();
         await Task.Delay(1000);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (SkipTest is not null)
         {
@@ -120,7 +120,7 @@ public class E2EServerFixture : IAsyncLifetime
         await _app.StopAsync();
         await _app.DisposeAsync();
 
-        await Task.WhenAll([DbFixture.DisposeAsync()]);
+        await DbFixture.DisposeAsync();
     }
 
     private static int GetFreePort()

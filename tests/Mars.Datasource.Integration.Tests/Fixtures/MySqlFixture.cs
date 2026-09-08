@@ -23,7 +23,7 @@ public class MySqlFixture : IAsyncLifetime
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();
 
@@ -34,7 +34,7 @@ public class MySqlFixture : IAsyncLifetime
         //    new RespawnerOptions { DbAdapter = DbAdapter.MySql });
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _container.DisposeAsync();
     }

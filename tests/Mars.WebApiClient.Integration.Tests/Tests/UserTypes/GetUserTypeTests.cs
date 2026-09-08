@@ -15,7 +15,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetUserType_ValidRequest_Succeeds()
+    public async Task GetUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -44,7 +44,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListUserType_ValidRequest_Succeeds()
+    public async Task ListUserType_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public class GetUserTypeTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetEditModel_ValidRequest_Succeeds()
+    public async Task GetEditModel_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.UserType.GetEditModel);

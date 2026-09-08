@@ -28,14 +28,14 @@ public class GetPostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetPostJson_ValidRequest_Succeeds()
+    public async Task GetPostJson_ValidRequest_Succeeds()
     {
         _ = nameof(MarsWebApiClient.PostJson.Get);
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
 
     [IntegrationFact]
-    public async void GetPostJsonBySlug_ValidRequest_Succeeds()
+    public async Task GetPostJsonBySlug_ValidRequest_Succeeds()
     {
         //Arrange
         _ = nameof(MarsWebApiClient.PostJson.GetBySlug);
@@ -56,7 +56,7 @@ public class GetPostJsonTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListPostJson_ValidRequest_Succeeds()
+    public async Task ListPostJson_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

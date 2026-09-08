@@ -38,7 +38,7 @@ public class InjectSchedulerTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void InjectJob_InvalidRequest_Fail404Exception()
+    public async Task InjectJob_InvalidRequest_Fail404Exception()
     {
         //Arrange
         _ = nameof(SchedulerController.InjectJob);

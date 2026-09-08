@@ -25,13 +25,13 @@ public class GetNavMenuTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetNavMenu_Request_Unauthorized()
+    public async Task GetNavMenu_Request_Unauthorized()
     {
         await _getTest.GetDetail_Request_Unauthorized();
     }
 
     [IntegrationFact]
-    public async void GetNavMenu_ValidRequest_Succeeds()
+    public async Task GetNavMenu_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
@@ -44,13 +44,13 @@ public class GetNavMenuTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async void ListNavMenu_Request_Unauthorized()
+    public async Task ListNavMenu_Request_Unauthorized()
     {
         await _getTest.List_Request_Unauthorized(new());
     }
 
     [IntegrationFact]
-    public async void ListNavMenu_ValidRequest_Succeeds()
+    public async Task ListNavMenu_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

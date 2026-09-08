@@ -25,13 +25,13 @@ public class GetRoleTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetRole_Request_Unauthorized()
+    public async Task GetRole_Request_Unauthorized()
     {
         await _getTest.GetDetail_Request_Unauthorized();
     }
 
     [IntegrationFact]
-    public async void GetRole_ValidRequest_Succeeds()
+    public async Task GetRole_ValidRequest_Succeeds()
     {
         await _getTest.GetDetail_ValidRequest_ShouldSuccess();
     }
@@ -44,13 +44,13 @@ public class GetRoleTests : BaseWebApiClientTests
 
 
     [IntegrationFact]
-    public async void ListRole_Request_Unauthorized()
+    public async Task ListRole_Request_Unauthorized()
     {
         await _getTest.List_Request_Unauthorized(new());
     }
 
     [IntegrationFact]
-    public async void ListRole_ValidRequest_Succeeds()
+    public async Task ListRole_ValidRequest_Succeeds()
     {
         await _getTest.List_ValidRequest_ShouldSuccess(new(), new());
     }

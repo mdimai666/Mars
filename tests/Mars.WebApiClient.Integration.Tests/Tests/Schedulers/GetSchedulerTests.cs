@@ -19,7 +19,7 @@ public class GetSchedulerTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListSchedulerJob_Request_Unauthorized()
+    public async Task ListSchedulerJob_Request_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);

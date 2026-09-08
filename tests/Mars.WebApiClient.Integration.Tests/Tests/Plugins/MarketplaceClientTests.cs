@@ -14,7 +14,7 @@ public class MarketplaceClientTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void MarketplaceStatus_Request_Unauthorized()
+    public async Task MarketplaceStatus_Request_Unauthorized()
     {
         var client = GetWebApiClient(true);
 

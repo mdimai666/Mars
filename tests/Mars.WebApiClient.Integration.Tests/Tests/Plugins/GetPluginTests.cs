@@ -15,7 +15,7 @@ public class GetPluginTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void ListPlugin_Request_Unauthorized()
+    public async Task ListPlugin_Request_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);

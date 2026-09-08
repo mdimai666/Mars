@@ -17,7 +17,7 @@ public class UploadPluginTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void UploadPlugin_Request_Unauthorized()
+    public async Task UploadPlugin_Request_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);

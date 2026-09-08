@@ -17,7 +17,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetOption_Request_Unauthorized()
+    public async Task GetOption_Request_Unauthorized()
     {
         //Arrange
         var client = GetWebApiClient(true);
@@ -30,7 +30,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetOption_ValidRequest_Succeeds()
+    public async Task GetOption_ValidRequest_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient();
@@ -57,7 +57,7 @@ public class GetOptionTests : BaseWebApiClientTests
     }
 
     [IntegrationFact]
-    public async void GetSiteSettings_RequestAnonim_Succeeds()
+    public async Task GetSiteSettings_RequestAnonim_Succeeds()
     {
         //Arrange
         var client = GetWebApiClient(true);

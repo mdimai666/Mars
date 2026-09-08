@@ -39,7 +39,7 @@ public class DatabaseFixture : IDatabaseFixture
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (SkipTest is not null)
         {
@@ -83,7 +83,7 @@ public class DatabaseFixture : IDatabaseFixture
             });
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (SkipTest is not null)
         {

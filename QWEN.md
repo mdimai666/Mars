@@ -44,10 +44,24 @@ Mars is an open-source visual programming platform (inspired by Node-RED and Wor
 ## Build & Test
 
 ```
-dotnet build Mars.slnx                                        # full solution build
-dotnet test tests/Mars.Server.Tests --verbosity minimal       # fast unit tests
-dotnet test tests/Mars.Integration.Tests --verbosity minimal  # integration tests
+dotnet build Mars.slnx                          # full solution build
+pwsh -NoProfile -File test-all.ps1              # full suite, projects in parallel (units + Docker integrations; excludes E2E/DockerImage)
+pwsh -NoProfile -File test-all.ps1 -IncludeE2E  # also E2E (Playwright) and DockerImage tests
+pwsh -NoProfile -File test-all.ps1 -List        # list projects that would run (no build/run)
 ```
+
+Tests are **xUnit v3 + Microsoft Testing Platform**: each test project builds as an MTP
+executable (`OutputType=Exe`) and is run directly. The `dotnet test` MTP driver path is
+blocked by an SDK 10.0.400 incompatibility (exit code 5, "Zero tests ran") — do not use it.
+Single project: build, then run its exe from the bin directory:
+
+```
+dotnet build tests/Mars.Server.Tests
+tests\Mars.Server.Tests\bin\Debug\net10.0\Mars.Server.Tests.exe
+```
+
+`test-all.ps1` runs exes with cwd = their `bin\Debug\net10.0`, so fixtures write into the
+bin folder and stay isolated per project; logs go to `%TEMP%\mars-test-runs\<timestamp>\`.
 
 ## Conventions
 

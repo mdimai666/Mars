@@ -51,7 +51,7 @@ public class PostgresDatasourceTests : IClassFixture<PostgresFixture>
     }
 
     [IntegrationFact]
-    public async void Driver_CreatedTodoTable_ReturnsRowsColumnsAndStructure()
+    public async Task Driver_CreatedTodoTable_ReturnsRowsColumnsAndStructure()
     {
         await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
         await connection.OpenAsync();

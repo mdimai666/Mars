@@ -37,7 +37,7 @@ public class WordPressFixture : IAsyncLifetime
             .RuleFor(p => p.Type, "post");
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await EnsureWpCliInTempPath();
         await EnsurePluginExistInTempPath();
@@ -112,7 +112,7 @@ public class WordPressFixture : IAsyncLifetime
         await CreateMockPosts(10);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         _client?.Dispose();
         await _wordPressContainer.StopAsync();

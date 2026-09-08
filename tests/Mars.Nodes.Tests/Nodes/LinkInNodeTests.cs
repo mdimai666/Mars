@@ -16,10 +16,20 @@ public class LinkInNodeTests : NodeServiceUnitTestBase
         _ = nameof(LinkInNodeImpl.Execute);
         var input = new NodeMsg() { Payload = 123 };
         var signals = new HashSet<string>();
+        var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var outNode1 = Guid.NewGuid().ToString();
         var outNode2 = Guid.NewGuid().ToString();
 
         string[] expectSignals = ["1", "2", "3"];
+
+        void OnSignal(string signal)
+        {
+            lock (signals)
+            {
+                signals.Add(signal);
+                if (signals.Count == expectSignals.Length) tcs.TrySetResult();
+            }
+        }
 
         var builder = NodesWorkflowBuilder.Create().AddNext(
                         NodesWorkflowBuilder.Create()
@@ -27,15 +37,16 @@ public class LinkInNodeTests : NodeServiceUnitTestBase
                             .AddNext(new LinkInNode() { OutLinksIds = [outNode1, outNode2] }),
                         NodesWorkflowBuilder.Create()
                             .AddNext(new LinkOutNode() { Id = outNode1 })
-                            .AddNext(new TestCallBackNode() { Callback = (_, _) => signals.Add("1") },
-                                        new TestCallBackNode() { Callback = (_, _) => signals.Add("2") }),
+                            .AddNext(new TestCallBackNode() { Callback = (_, _) => OnSignal("1") },
+                                        new TestCallBackNode() { Callback = (_, _) => OnSignal("2") }),
                         NodesWorkflowBuilder.Create()
                             .AddNext(new LinkOutNode() { Id = outNode2 })
-                            .AddNext(new TestCallBackNode() { Callback = (_, _) => signals.Add("3") })
+                            .AddNext(new TestCallBackNode() { Callback = (_, _) => OnSignal("3") })
                         );
 
         //Act
         var msg = await RunUsingTaskManager(builder);
+        await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
         //Assert
         signals.Should().BeEquivalentTo(expectSignals);

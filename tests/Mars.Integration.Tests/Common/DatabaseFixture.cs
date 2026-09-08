@@ -98,7 +98,6 @@ public class DatabaseFixture : IDatabaseFixture
         await using var connection = new NpgsqlConnection(_container.GetConnectionString() + ";Include Error Detail=True;");
         await connection.OpenAsync();
         await _respawner.ResetAsync(connection);
-        await Task.Delay(200);
     }
 
     private static DbContextOptions<TDbContext> CreateOptions<TDbContext>(IConfiguration configuration, string migrationAssembly) where TDbContext : DbContext

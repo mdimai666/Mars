@@ -27,6 +27,32 @@ public class MarsFixture : IAsyncLifetime
     public string MarsUrl { get; private set; } = default!;
     public IFlurlClient Client => _client;
 
+    /// <summary>Запущенный контейнер Mars — для проверок через docker CLI (top/logs/inspect/cp).</summary>
+    public IContainer MarsContainer => _marsContainer;
+
+    /// <summary>Выполнить docker CLI-команду (например, top/logs/inspect/cp) и вернуть вывод.</summary>
+    public static async Task<(int ExitCode, string Output)> RunDockerAsync(params string[] args)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "docker",
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        };
+
+        foreach (var arg in args)
+            startInfo.ArgumentList.Add(arg);
+
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Не удалось запустить docker");
+        var stdout = process.StandardOutput.ReadToEndAsync();
+        var stderr = process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync();
+
+        return (process.ExitCode, (await stdout) + (await stderr));
+    }
+
     public async ValueTask InitializeAsync()
     {
         if (!DockerTestsEnabled) return;

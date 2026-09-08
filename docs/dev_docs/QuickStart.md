@@ -38,14 +38,14 @@ docker run -d --name mars-try -p 5005:80 mdimai666/mars:latest
 Мастер (как в WordPress): БД → настройки сайта → администратор → готово.
 Результат сохраняется в `./config/appsettings.Production.json`, при следующих запусках приложение стартует сразу:
 ```
-docker run -d --name mars -p 5005:80 -v "$(pwd)/config:/app/config" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/root/.aspnet/DataProtection-Keys" mdimai666/mars:latest
+docker run -d --name mars -p 5005:80 -v "$(pwd)/config:/app/config" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/app/.aspnet/DataProtection-Keys" mdimai666/mars:latest
 ```
 
 ## Автоматическая установка через переменные окружения
 
 Если задан connection string, мастер не запускается — установка происходит автоматически (удобно для CI и автоматизации):
 ```
-docker run -d --name mars -p 5005:80 -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal;Database=mars;Username=mars;Password=mars" -e "Setup__AdminEmail=admin@example.com" -e "Setup__AdminPassword=ChangeMe123!" -e "Setup__AdminFirstName=Admin" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/root/.aspnet/DataProtection-Keys" mdimai666/mars:latest
+docker run -d --name mars -p 5005:80 -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal;Database=mars;Username=mars;Password=mars" -e "Setup__AdminEmail=admin@example.com" -e "Setup__AdminPassword=ChangeMe123!" -e "Setup__AdminFirstName=Admin" -v "$(pwd)/data:/app/data" -v "$(pwd)/upload:/app/wwwroot/upload" -v "$(pwd)/data-protection-keys:/app/.aspnet/DataProtection-Keys" mdimai666/mars:latest
 ```
 
 | Переменная | Назначение |

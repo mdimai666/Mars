@@ -59,4 +59,4 @@ services:
       - ./config:/app/config
       - ./data:/app/data # data (plugins, themes, nodes)
       - ./upload:/app/wwwroot/upload # upload media files
-      - ./data-protection-keys:/root/.aspnet/DataProtection-Keys
+      - ./data-protection-keys:/app/.aspnet/DataProtection-Keys

@@ -8,7 +8,7 @@
 
 <p align="center">Self-hosted или облако. Всё под вашим контролем.</p>
 
-<p align="center"><a href="https://cloud.Mars-dotnet.org/signups?source=github1">Облако</a> · <a href="https://Mars-dotnet.org/demo">Демо</a></p>
+<p align="center"><a href="https://cloud.mdimai666.ru/my/register?source=github1">Облако</a> · <a href="https://Mars-dotnet.org/demo">Демо</a></p>
 
 <p align="center">
   <span>Русский</span> · <a href="README.md">English</a>

@@ -8,7 +8,7 @@
 
 <p align="center">Self-hosted or cloud. You stay in control.</p>
 
-<p align="center"><a href="https://cloud.Mars-dotnet.org/signups?source=github1">Cloud</a> · <a href="https://Mars-dotnet.org/demo">Live Demo</a></p>
+<p align="center"><a href="https://cloud.mdimai666.ru/my/register?source=github1">Cloud</a> · <a href="https://Mars-dotnet.org/demo">Live Demo</a></p>
 
 <p align="center">
   <a href="README.ru.md">Русский</a> · <span>English</span>

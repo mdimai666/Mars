@@ -3,6 +3,7 @@ using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Resources;
 using Mars.Core.Exceptions;
 using Mars.Core.Interfaces;
+using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.PostTypeViews;
@@ -20,6 +21,12 @@ public class PostTypePresentationEditModel : IHasId
 
     /// <summary>Настройки колонок грида постов в админке; null — стандартный набор</summary>
     public PostTypeGridSettings? Grid { get; set; }
+
+    /// <summary>Дерево формы от провайдера — исходные данные дизайнера; само не сохраняется</summary>
+    public FormDefinition? FormDefinition { get; set; }
+
+    /// <summary>Раскладка формы редактирования поста; null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? FormLayout { get; set; }
 
     public PostTypeSummaryResponse PostType { get; init; } = default!;
 
@@ -41,6 +48,7 @@ public class PostTypePresentationEditModel : IHasId
             Id = Id,
             ListViewTemplate = ListViewTemplate,
             Grid = Grid,
+            Form = FormLayout,
         };
 
     public static PostTypePresentationEditModel ToModel(PostTypePresentationEditViewModel viewModel)
@@ -51,5 +59,8 @@ public class PostTypePresentationEditModel : IHasId
 
             ListViewTemplate = viewModel.Presentation.ListViewTemplate ?? "",
             Grid = viewModel.Presentation.Grid,
+
+            FormDefinition = viewModel.Form,
+            FormLayout = viewModel.FormLayout,
         };
 }

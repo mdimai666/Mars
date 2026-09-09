@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Common;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Contracts.PostTypes;
 
@@ -88,4 +89,7 @@ public record UpdatePostTypePresentationRequest
 
     /// <summary>Настройки грида постов в админке; null — стандартный набор колонок</summary>
     public PostTypeGridSettings? Grid { get; init; }
+
+    /// <summary>Раскладка формы редактирования поста; null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? Form { get; init; }
 }

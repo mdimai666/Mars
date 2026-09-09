@@ -63,8 +63,11 @@ public class PostEditModel : IBasicEntity
     public List<MetaValueEditModel> MetaValues { get; set; } = [];
     public Guid[] CategoryIds { get; set; } = [];
 
-    /// <summary>Определение формы редактирования от сервера (дерево контейнеров с дескрипторами полей)</summary>
-    public FormDefinition? Form { get; init; }
+    /// <summary>
+    /// Определение формы редактирования от сервера (дерево контейнеров с дескрипторами полей).
+    /// Подменяется на месте после сохранения раскладки типа — несохранённые правки поста остаются.
+    /// </summary>
+    public FormDefinition? Form { get; set; }
 
     Dictionary<(string Key, int Index), MetaValueEditModel>? _metaValuesByIndex;
 

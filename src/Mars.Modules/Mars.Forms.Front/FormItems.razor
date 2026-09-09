@@ -1,36 +1,40 @@
 @namespace Mars.Forms.Front
 @inject IFormContainerLocator Containers
 
-@foreach (var item in Items.Where(Visible))
-{
-    @if (item.Kind == FormItemKinds.Field)
+<div class="row">
+    @foreach (var item in Items.Where(Visible))
     {
-        @if (Context.FieldTemplate is not null)
-        {
-            @Context.FieldTemplate(item)
-        }
-        else
-        {
-            <FormFieldRow Item="@item" />
-        }
+        <div class="@WidthClass(item)">
+            @if (item.Kind == FormItemKinds.Field)
+            {
+                @if (Context.FieldTemplate is not null)
+                {
+                    @Context.FieldTemplate(item)
+                }
+                else
+                {
+                    <FormFieldRow Item="@item" />
+                }
+            }
+            else
+            {
+                var component = Containers.GetContainerComponent(item.Kind);
+                @if (component is not null)
+                {
+                    <DynamicComponent Type="@component" Parameters="@ContainerParameters(item)" />
+                }
+                else
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <FluentLabel Color="@Color.Warning">контейнер '@item.Kind' не зарегистрирован</FluentLabel>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
     }
-    else
-    {
-        var component = Containers.GetContainerComponent(item.Kind);
-        @if (component is not null)
-        {
-            <DynamicComponent Type="@component" Parameters="@ContainerParameters(item)" />
-        }
-        else
-        {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <FluentLabel Color="@Color.Warning">контейнер '@item.Kind' не зарегистрирован</FluentLabel>
-                </div>
-            </div>
-        }
-    }
-}
+</div>
 
 @code {
     [CascadingParameter] public FormRenderContext Context { get; set; } = default!;
@@ -39,6 +43,14 @@
 
     /// <summary>Скрытые поля и поля без дескриптора не рендерятся: провайдер собирает дерево под контекст</summary>
     bool Visible(FormItem item) => item.Visible && (item.IsSection || item.Field is not null);
+
+    /// <summary>Ширина элемента в зоне из раскладки (пусто — на всю ширину)</summary>
+    static string WidthClass(FormItem item) => item.Width switch
+    {
+        FormItemWidths.Half => "col-12 col-md-6",
+        FormItemWidths.Third => "col-12 col-md-4",
+        _ => "col-12",
+    };
 
     static Dictionary<string, object> ContainerParameters(FormItem item) => new() { ["Item"] = item };
 }

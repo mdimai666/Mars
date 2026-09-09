@@ -1,0 +1,120 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="vstack gap-1" style="@RowStyle">
+
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+
+        <FluentButton Appearance="Appearance.Stealth" Style="min-width:28px; width:28px; padding:2px 4px;"
+                      Disabled="@(!Editor.CanMove(Row, -1))" OnClick="@(() => Editor.MoveAsync(Row, -1))">
+            <FluentIcon Value="@(new Icons.Regular.Size16.ArrowUp())" />
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Stealth" Style="min-width:28px; width:28px; padding:2px 4px;"
+                      Disabled="@(!Editor.CanMove(Row, 1))" OnClick="@(() => Editor.MoveAsync(Row, 1))">
+            <FluentIcon Value="@(new Icons.Regular.Size16.ArrowDown())" />
+        </FluentButton>
+
+        <FluentCheckbox Value="Row.Visible" ValueChanged="ToggleVisibleAsync" Title="Показывать поле в форме" />
+
+        @if (Row.IsSection)
+        {
+            <FluentBadge Appearance="Appearance.Accent">секция</FluentBadge>
+            <FluentTextField Value="@Row.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок секции" Style="width:220px" />
+            <FluentCheckbox Label="Свёрнута" Value="Row.Collapsed" ValueChanged="ToggleCollapsedAsync" />
+        }
+        else
+        {
+            <span>@Editor.DisplayTitle(Row)</span>
+            @if (!Row.SettingsOnForm)
+            {
+                <FluentBadge Appearance="Appearance.Neutral">meta</FluentBadge>
+            }
+            <FluentTextField Value="@Row.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок по умолчанию" Style="width:200px" />
+        }
+
+        @if (Row.Parent is null)
+        {
+            <FluentSelect TOption="string" Value="Row.Zone" ValueChanged="@(zone => Editor.SetZoneAsync(Row, zone))" Style="width:150px">
+                @foreach (var zone in Editor.Zones)
+                {
+                    <FluentOption Value="@zone.Key">@zone.Title</FluentOption>
+                }
+            </FluentSelect>
+        }
+        else
+        {
+            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.MoveOutOfSectionAsync(Row))">из секции</FluentButton>
+        }
+
+        <FluentSelect TOption="string" Value="@(Row.Width ?? "")" ValueChanged="@(width => Editor.SetWidthAsync(Row, width))" Style="width:160px">
+            @foreach (var (key, title) in FormLayoutEditor.Widths)
+            {
+                <FluentOption Value="@key">@title</FluentOption>
+            }
+        </FluentSelect>
+
+        @if (Row.SettingsOnForm)
+        {
+            <FluentSelect TOption="string" Value="@(Row.Editor ?? "")" ValueChanged="@(key => Editor.SetEditorAsync(Row, key))" Style="width:190px">
+                <FluentOption Value="">Редактор по умолчанию</FluentOption>
+                @foreach (var key in Editor.EditorKeys)
+                {
+                    <FluentOption Value="@key">@key</FluentOption>
+                }
+            </FluentSelect>
+
+            <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleRules">
+                Правила@(Row.Rules.Count > 0 ? $" ({Row.Rules.Count})" : "")
+            </FluentButton>
+        }
+
+        @if (Row.IsSection)
+        {
+            <FluentSelect TOption="string" Value="" ValueChanged="@(key => Editor.MoveIntoSectionAsync(Row, key))" Style="width:190px">
+                <FluentOption Value="">+ поле в секцию</FluentOption>
+                @foreach (var candidate in Editor.SectionFieldCandidates(Row))
+                {
+                    <FluentOption Value="@candidate.Key">@Editor.DisplayTitle(candidate)</FluentOption>
+                }
+            </FluentSelect>
+            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.RemoveSectionAsync(Row))">Удалить секцию</FluentButton>
+        }
+
+    </div>
+
+    @if (Row.ShowRules && Row.SettingsOnForm)
+    {
+        <div class="vstack gap-2" style="margin-left:36px; padding:8px; border-left:2px solid var(--neutral-stroke-layer-rest)">
+            @for (var i = 0; i < Row.Rules.Count; i++)
+            {
+                var index = i;
+                var rule = Row.Rules[i];
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <FluentSelect TOption="string" Value="@rule.Type" ValueChanged="@(type => Editor.SetRuleTypeAsync(Row, index, type))" Style="width:140px">
+                        @foreach (var type in Editor.RuleTypes)
+                        {
+                            <FluentOption Value="@type">@type</FluentOption>
+                        }
+                    </FluentSelect>
+                    @foreach (var name in FormLayoutEditor.RuleParams(rule.Type))
+                    {
+                        var parameter = name;
+                        <FluentTextField Label="@parameter" Placeholder="@parameter" Style="width:170px"
+                                         Value="@FormLayoutEditor.RuleParam(rule, parameter)"
+                                         ValueChanged="@(value => Editor.SetRuleParamAsync(Row, index, parameter, value))" />
+                    }
+                    <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.RemoveRuleAsync(Row, index))">удалить</FluentButton>
+                </div>
+            }
+            <div>
+                <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => Editor.AddRuleAsync(Row))">Добавить правило</FluentButton>
+            </div>
+        </div>
+    }
+
+    @foreach (var child in Row.Children)
+    {
+        <FormLayoutRow Row="child" Depth="Depth + 1" />
+    }
+
+</div>

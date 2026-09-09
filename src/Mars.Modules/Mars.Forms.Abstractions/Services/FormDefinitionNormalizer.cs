@@ -84,7 +84,8 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
 
                 var children = new List<FormItem>();
                 foreach (var child in item.Items) Emit(children, child, depth + 1, zone);
-                target.Add(item with { Field = null, Items = children });
+                // зона пересчитана выше: у сохранённого элемента её могло не быть
+                target.Add(item with { Field = null, Items = children, Zone = depth == 0 ? zone : null });
                 return;
             }
 

@@ -23,6 +23,7 @@
     <SectionActions>
         <XActionsDropDown ContextPart="@PostTypeName" AlsoShowRootContext>
             <FluentMenuItem Label="@AppRes.PostType" OnClick=@((e) => navigationManager.NavigateTo($"EditPostType/{context.PostType?.Id}")) />
+            <FluentMenuItem Label="Форма типа" OnClick=@((e) => OpenFormLayoutDialog(context.PostType?.Id)) />
             <FluentMenuItem Label="@AppRes.Categories" OnClick=@((e) => navigationManager.NavigateTo(ManagePostCategoryPage.GetPageLink(context.PostType?.TypeName ?? PostTypeName))) />
             @if (PostTypeName == "page")
             {

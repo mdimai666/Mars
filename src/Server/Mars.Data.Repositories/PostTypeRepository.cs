@@ -1,5 +1,6 @@
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Common;
 using Mars.Contracts.Extensions;
 using Mars.Core.Exceptions;
@@ -275,6 +276,9 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
             entity.Presentation.ListViewTemplateSourceUri = query.ListViewTemplate.AsNullIfEmpty();
             entity.Presentation.GridSettings = query.Grid.ToJsonNode();
         }
+
+        // раскладка формы живёт в общих опциях типа, а не в презентации
+        entity.Options = entity.Options.WithFormLayout(query.Form);
 
         entity.ModifiedAt = DateTimeOffset.Now;
 

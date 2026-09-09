@@ -1,0 +1,44 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@if (Definition is null)
+{
+    <div class="text-secondary">Определение формы не загружено.</div>
+}
+else
+{
+    <div class="vstack gap-3">
+
+        <div class="hstack gap-2 align-items-center">
+            <FluentSelect TOption="string" Label="Зона секции" Style="width:180px" @bind-Value="NewSectionZone">
+                @foreach (var zone in Zones)
+                {
+                    <FluentOption Value="@zone.Key">@zone.Title</FluentOption>
+                }
+            </FluentSelect>
+            <FluentButton Appearance="Appearance.Neutral" OnClick="AddSectionAsync">Добавить секцию</FluentButton>
+            <FluentButton Appearance="Appearance.Stealth" OnClick="ResetAsync">Сбросить к стандартной</FluentButton>
+        </div>
+
+        <CascadingValue Value="this" IsFixed="true">
+            @foreach (var zone in Zones)
+            {
+                var rows = RowsOf(zone.Key).ToList();
+                <div class="card">
+                    <div class="card-header">@zone.Title</div>
+                    <div class="card-body vstack gap-2">
+                        @if (rows.Count == 0)
+                        {
+                            <div class="text-secondary">В зоне нет полей</div>
+                        }
+                        @foreach (var row in rows)
+                        {
+                            <FormLayoutRow Row="row" Depth="0" />
+                        }
+                    </div>
+                </div>
+            }
+        </CascadingValue>
+
+    </div>
+}

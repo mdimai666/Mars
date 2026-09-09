@@ -3,12 +3,14 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Pages.PostsViews.Forms;
+using Mars.Admin.Pages.PostTypeViews;
 using Mars.AiChat.Front.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Forms.Front;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace Mars.Admin.Pages.PostsViews;
 
@@ -19,6 +21,7 @@ public partial class EditPostView : IAiChatPageHandler
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
     [Inject] IAIToolAppService aiTool { get; set; } = default!;
+    [Inject] IDialogService dialogService { get; set; } = default!;
 
     [Parameter, EditorRequired] public Guid ID { get; set; }
     [Parameter, EditorRequired] public string PostTypeName { get; set; } = default!;
@@ -77,6 +80,37 @@ public partial class EditPostView : IAiChatPageHandler
 
     /// <summary>Заголовки системных слотов — ключи ресурса <see cref="AppRes"/></summary>
     string ResolveTitle(string key) => L[key];
+
+    /// <summary>
+    /// Быстрый вход в дизайнер раскладки формы типа. Раскладка общая для типа, а не для поста,
+    /// поэтому после сохранения дерево формы подменяется на месте — несохранённые правки поста остаются.
+    /// </summary>
+    async Task OpenFormLayoutDialog(Guid? postTypeId)
+    {
+        if (postTypeId is not { } typeId || typeId == Guid.Empty) return;
+
+        DialogParameters parameters = new()
+        {
+            Title = "Форма редактирования поста",
+            SecondaryAction = null,
+            Width = "min(1100px, 94vw)",
+            Modal = true,
+            PreventScroll = true,
+        };
+
+        await dialogService.ShowDialogAsync<PostFormLayoutDialog>(new PostFormLayoutDialogData
+        {
+            PostTypeId = typeId,
+            OnSaved = async () =>
+            {
+                var definition = await client.PostType.GetFormDefinition(typeId);
+                if (definition is null || f?.Model is null) return;
+
+                f.Model.Form = definition;
+                StateHasChanged();
+            },
+        }, parameters);
+    }
 
     async Task<PostEditModel> SaveWithCallback(PostEditModel post, bool isNew)
     {

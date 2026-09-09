@@ -236,6 +236,21 @@ public class FormDefinitionNormalizerTests
         item.Width.Should().Be(FormItemWidths.Third);
     }
 
+    [Fact]
+    public void SectionWithoutZone_GetsFirstZone()
+    {
+        var saved = new List<FormItem>
+        {
+            new() { Key = "group-1", Kind = FormItemKinds.Section, Items = [new FormItem { Key = "slug" }] },
+        };
+
+        var section = _normalizer.Normalize(saved, Defaults()).First();
+
+        section.IsSection.Should().BeTrue();
+        section.Zone.Should().Be("main", "иначе рендерер зоны секцию не увидит");
+        section.Items.Single().Zone.Should().BeNull("зона хранится только у корневых элементов");
+    }
+
     static IReadOnlyCollection<FormItem> Defaults() =>
     [
         Field("title", "main"),

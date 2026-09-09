@@ -1,0 +1,85 @@
+@using Mars.Admin.Framework.Components.Forms
+@using Mars.Cms.Contracts.PostTypes
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@implements IDialogContentComponent<PostFormLayoutDialogData>
+
+<FluentDialogBody>
+    @if (_model is null)
+    {
+        <div class="text-secondary">Загрузка формы типа…</div>
+    }
+    else
+    {
+        <div class="vstack gap-2">
+            <div class="text-secondary">
+                Тип записи @_model.PostType.Title (@_model.PostType.TypeName). Раскладка сохраняется для всего типа,
+                а не для одного поста.
+            </div>
+            <FormLayoutEditor Definition="_model.FormDefinition"
+                              ValueChanged="@(layout => _model.FormLayout = layout)"
+                              OnResetRequested="ResetAsync" />
+        </div>
+    }
+</FluentDialogBody>
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" Disabled="@(_saving || _model is null)" OnClick="SaveAsync">Сохранить</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelAsync">@AppRes.Cancel</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+
+    [Parameter] public PostFormLayoutDialogData Content { get; set; } = default!;
+
+    [Inject] IMarsWebApiClient _client { get; set; } = default!;
+    [Inject] Mars.Admin.Framework.Interfaces.IMessageService _messageService { get; set; } = default!;
+
+    PostTypePresentationEditModel? _model;
+    bool _saving;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _model = await PostTypePresentationEditModel.GetAction(_client, Content.PostTypeId);
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.GetBaseException().Message);
+        }
+    }
+
+    /// <summary>Дерево по умолчанию собирает провайдер на сервере</summary>
+    async Task ResetAsync()
+    {
+        if (_model is null) return;
+
+        _model.FormDefinition = await _client.PostType.GetFormDefinition(_model.Id, saved: false);
+    }
+
+    async Task SaveAsync()
+    {
+        if (_model is null) return;
+
+        _saving = true;
+        try
+        {
+            await PostTypePresentationEditModel.SaveAction(_client, _model);
+
+            if (Content.OnSaved is { } onSaved) await onSaved();
+
+            await Dialog.CloseAsync(true);
+        }
+        catch (Exception ex)
+        {
+            _ = _messageService.Error(ex.GetBaseException().Message);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    Task CancelAsync() => Dialog.CancelAsync();
+}

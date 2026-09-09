@@ -15,8 +15,19 @@ public sealed class FormFieldBinding
 
     public required FormValuesModel Values { get; init; }
 
-    /// <summary>Заголовок: переопределение из раскладки, иначе из дескриптора</summary>
-    public string Title => string.IsNullOrEmpty(Item.Title) ? Field.Title : Item.Title;
+    /// <summary>Резолвер переводимых заголовков (из контекста рендера)</summary>
+    public Func<string, string>? TitleResolver { get; init; }
+
+    /// <summary>Заголовок: переопределение из раскладки → перевод по ключу ресурса → заголовок дескриптора</summary>
+    public string Title
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Item.Title)) return Item.Title;
+            if (Field.TitleKey is { Length: > 0 } && TitleResolver is not null) return TitleResolver(Field.TitleKey);
+            return Field.Title;
+        }
+    }
 
     /// <summary>Ключ редактора: переопределение из раскладки, иначе из дескриптора</summary>
     public string? Editor => string.IsNullOrEmpty(Item.Editor) ? Field.Editor : Item.Editor;

@@ -34,7 +34,7 @@ public record FormZoneDescriptor
     public required string Title { get; init; }
 }
 
-/// <summary>Что разрешено делать с формой в дизайнере</summary>
+/// <summary>Что разрешено делать с формой в дизайнере и что умеет провайдер</summary>
 public record FormProviderCapabilities
 {
     public bool CanReorder { get; init; } = true;
@@ -48,4 +48,10 @@ public record FormProviderCapabilities
 
     /// <summary>Можно добавлять поля, которых нет у провайдера (автономные формы)</summary>
     public bool CanAddFields { get; init; }
+
+    /// <summary>Провайдер читает значения (<c>ReadAsync</c>); иначе значения собирает потребитель</summary>
+    public bool CanReadValues { get; init; } = true;
+
+    /// <summary>Провайдер принимает значения (<c>SubmitAsync</c>); иначе запись идёт своим путём</summary>
+    public bool CanSubmit { get; init; } = true;
 }

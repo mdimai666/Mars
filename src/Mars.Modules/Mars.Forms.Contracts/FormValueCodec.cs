@@ -45,7 +45,7 @@ public static class FormValueCodec
     }
 
     /// <summary>Список CLR-значений → канонический JSON-массив множественного поля (порядок = индекс)</summary>
-    public static JsonNode? FromClrList(IEnumerable<object?>? values, FormFieldType type)
+    public static JsonNode? FromClrList(IEnumerable? values, FormFieldType type)
     {
         if (values is null) return null;
 

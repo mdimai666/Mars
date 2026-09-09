@@ -1,12 +1,18 @@
 @namespace Mars.Forms.Front.Editors
 
 @* Встроенный редактор даты: значение — DateTimeOffset в канонической кодировке ISO-8601.
-   Смещение сохраняем из текущего значения, иначе берём локальное. *@
+   Смещение сохраняем из текущего значения, иначе берём локальное. Readonly — текстом. *@
 
-<FluentDatePicker Value="@Date"
-                  ValueChanged="OnChanged"
-                  Disabled="@Binding.ReadOnly"
-                  Style="max-width:240px" />
+@if (Binding.ReadOnly)
+{
+    <h6 class="card-subtitle mb-2 text-muted">@(Date?.ToString("g") ?? "—")</h6>
+}
+else
+{
+    <FluentDatePicker Value="@Date"
+                      ValueChanged="OnChanged"
+                      Style="max-width:240px" />
+}
 
 @code {
     [Parameter] public FormFieldBinding Binding { get; set; } = default!;

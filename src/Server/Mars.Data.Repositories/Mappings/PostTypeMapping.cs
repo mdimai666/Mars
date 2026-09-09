@@ -38,6 +38,7 @@ internal static class PostTypeMapping
             MetaFields = entity.MetaFields!.ToDto(),
 
             Presentation = entity.Presentation.ToDto(),
+            Form = entity.Options.GetFormLayout(),
         };
 
     public static PostStatusDto ToDto(this PostStatusEntity entity)

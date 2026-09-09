@@ -1,0 +1,14 @@
+@using Mars.Forms.Front
+
+@* Редактор системного слота «теги» *@
+
+<InputTags2 Value="@Tags" ValueChanged="OnChanged" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+    [Parameter] public int Index { get; set; } = -1;
+
+    string[] Tags => Binding.Value is IReadOnlyList<object?> list ? list.OfType<string>().ToArray() : [];
+
+    void OnChanged(string[] tags) => Binding.Value = tags;
+}

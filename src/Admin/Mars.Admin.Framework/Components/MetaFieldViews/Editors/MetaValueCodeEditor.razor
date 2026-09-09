@@ -16,7 +16,7 @@
     [Parameter] public MetaValueEditModel Value { get; set; } = default!;
     [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
 
-    [CascadingParameter] FormMetaValue formMetaValue { get; set; } = default!;
+    [CascadingParameter] IHeavyMetaValueEditors heavyEditors { get; set; } = default!;
 
     MarsCodeEditor2.CodeEditor2? _editor;
 
@@ -26,7 +26,7 @@
         ? MetaFieldEditorCatalog.DefaultCodeLang
         : Value.MetaField.CodeLang;
 
-    protected override void OnInitialized() => formMetaValue?.RegisterHeavyEditor(this);
+    protected override void OnInitialized() => heavyEditors?.RegisterHeavyEditor(this);
 
     public async Task<string?> GetValueAsync()
         => _editor is null ? TextValue : await _editor.GetValue();
@@ -50,5 +50,5 @@
         await ValueChanged.InvokeAsync(Value);
     }
 
-    public void Dispose() => formMetaValue?.UnregisterHeavyEditor(this);
+    public void Dispose() => heavyEditors?.UnregisterHeavyEditor(this);
 }

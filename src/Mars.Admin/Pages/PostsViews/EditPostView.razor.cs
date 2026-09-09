@@ -1,16 +1,13 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using EditorJsBlazored;
-using EditorJsBlazored.Blocks;
-using EditorJsBlazored.Core;
 using Mars.Admin.Framework.Components.MetaFieldViews;
+using Mars.Admin.Pages.PostsViews.Forms;
 using Mars.AiChat.Front.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
-using Mars.Core.Features;
+using Mars.Forms.Front;
 using Mars.WebApiClient.Interfaces;
-using MarsCodeEditor2;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Pages.PostsViews;
@@ -18,7 +15,6 @@ namespace Mars.Admin.Pages.PostsViews;
 public partial class EditPostView : IAiChatPageHandler
 {
     [Inject] protected IMarsWebApiClient client { get; set; } = default!;
-    [Inject] IAppMediaService mediaService { get; set; } = default!;
     [Inject] Mars.Admin.Framework.Interfaces.IMessageService messageService { get; set; } = default!;
     [Inject] NavigationManager navigationManager { get; set; } = default!;
     [Inject] ViewModelService viewModelService { get; set; } = default!;
@@ -37,6 +33,51 @@ public partial class EditPostView : IAiChatPageHandler
 
     StandardEditContainer<PostEditModel> f = default!;
 
+    //==========================================
+    // Форма: дерево контейнеров (Mars.Forms)
+
+    /// <summary>Реестр тяжёлых редакторов мета-значений — один на все зоны формы</summary>
+    readonly IHeavyMetaValueEditors _heavyEditors = new HeavyMetaValueEditorRegistry();
+
+    /// <summary>Доступ к редактору контента, который рендерится внутри дерева</summary>
+    readonly PostContentEditorHolder _contentHolder = new();
+
+    FormValuesModel? _formValues;
+    PostEditModel? _formValuesOwner;
+
+    /// <summary>
+    /// Мешок значений системных слотов: пересоздаётся вместе с моделью, каждое изменение сразу
+    /// уходит в типизированную модель и возвращается обратно (авто-подстановка slug, внешние правки).
+    /// </summary>
+    FormValuesModel FormValuesOf(PostEditModel model)
+    {
+        if (_formValues is not null && ReferenceEquals(_formValuesOwner, model)) return _formValues;
+
+        var values = new FormValuesModel(model.BuildFormValues(model.Form?.OwnerModel ?? $"post.{model.Type}"));
+        values.Changed += () =>
+        {
+            model.ApplyFormValues(values.Values);
+            model.FillFormValues(values.Values);
+            StateHasChanged();
+        };
+
+        _formValues = values;
+        _formValuesOwner = model;
+        _contentHolder.RequestSave = () => f.OnSubmit();
+
+        return values;
+    }
+
+    /// <summary>Обновить мешок после внешнего изменения модели (инструменты ИИ-агента)</summary>
+    void RefreshFormValues(PostEditModel model)
+    {
+        if (_formValues is not null && ReferenceEquals(_formValuesOwner, model))
+            model.FillFormValues(_formValues.Values);
+    }
+
+    /// <summary>Заголовки системных слотов — ключи ресурса <see cref="AppRes"/></summary>
+    string ResolveTitle(string key) => L[key];
+
     async Task<PostEditModel> SaveWithCallback(PostEditModel post, bool isNew)
     {
         var result = await PostEditModel.SaveAction(client, post, isNew);
@@ -44,61 +85,18 @@ public partial class EditPostView : IAiChatPageHandler
         return result;
     }
 
-    //OLD
-    WysiwygEditor? editor1;
-    CodeEditor2? codeEditor1;
-    BlockEditor1? blockEditor1;
-
-    FormMetaValue? metaValueForm;
-
-    string lang1 = "";
-
-    void OnChangeTitle()
-    {
-        if (string.IsNullOrWhiteSpace(f.Model.Slug) || Guid.TryParse(f.Model.Slug, out Guid _))
-        {
-            f.Model.Slug = TextTool.TranslateToPostSlug(f.Model.Title);
-        }
-    }
-
     async Task BeforeSave(PostEditModel post)
     {
-        if (metaValueForm is not null) await metaValueForm.PullAsync();
+        await _heavyEditors.PullAsync();
 
-        if (post.FeatureActivated(PostTypeConstants.Features.Content))
-        {
-            var editorKey = post.PostType.ContentEditorKey();
-
-            if (editorKey == MetaFieldEditorCatalog.Wysiwyg)
-            {
-
-                if (editor1 is not null)
-                {
-                    post.Content = await editor1!.GetHTML();
-                }
-            }
-            else if (editorKey == MetaFieldEditorCatalog.Code)
-            {
-                post.Content = await codeEditor1!.GetValue();
-
-            }
-        }
-        //f.Model.Type = post.PostType.TypeName;
-
-    }
-
-    void OnSaveFromCodeEditor(string value)
-    {
-        f.Model.Content = value;
-        _ = f.OnSubmit();
+        if (_contentHolder.Current is { } content)
+            post.Content = await content.GetContentAsync();
     }
 
     public void Dispose()
     {
         if (ReferenceEquals(AiChatPageHandlerHolder.Current, this))
             AiChatPageHandlerHolder.Current = null;
-
-        codeEditor1?.Dispose();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -113,32 +111,37 @@ public partial class EditPostView : IAiChatPageHandler
 
     private static readonly JsonSerializerOptions AiJsonOptions = new() { WriteIndented = false };
 
+    /// <summary>Поля, которые агент умеет менять; остальные — только чтение через <see cref="GetFields"/></summary>
+    static readonly string[] AgentEditableFields =
+    [
+        SystemFieldsCatalog.Title, SystemFieldsCatalog.Slug, SystemFieldsCatalog.Excerpt,
+        SystemFieldsCatalog.Tags, SystemFieldsCatalog.Categories, FeatureFieldsCatalog.ContentFieldKey,
+    ];
+
+    string ContentEditorKey => f?.Model.PostType.ContentEditorKey() ?? "";
+
     public string GetInfo()
     {
+        var formKeys = f?.Model?.Form?.Fields().Select(i => i.Key).ToArray() ?? [];
+
         return JsonSerializer.Serialize(new
         {
             page = "EditPost",
             postType = PostTypeName,
             postId = f?.Model?.Id ?? ID,
             contentEditor = ContentEditorKey,
-            fields = new[] { "title", "slug", "excerpt", "tags", "categories", "content" },
+            fields = formKeys,
+            editableFields = AgentEditableFields.Where(formKeys.Contains).ToArray(),
             contentAiEditable = ContentEditorKey != MetaFieldEditorCatalog.Wysiwyg,
         }, AiJsonOptions);
     }
 
     public async Task<string> GetFields()
     {
-        if (metaValueForm is not null) await metaValueForm.PullAsync();
+        await _heavyEditors.PullAsync();
 
         var model = f?.Model ?? throw new InvalidOperationException("Модель поста ещё не загружена.");
-
-        var content = ContentEditorKey switch
-        {
-            MetaFieldEditorCatalog.BlockEditor => blockEditor1?.ContentJson ?? model.Content,
-            MetaFieldEditorCatalog.Code => codeEditor1 is null ? model.Content : await codeEditor1.GetValue(),
-            MetaFieldEditorCatalog.Wysiwyg => editor1 is null ? model.Content : await editor1.GetHTML(),
-            _ => model.Content,
-        };
+        var content = _contentHolder.Current is { } editor ? await editor.GetContentAsync() : model.Content;
 
         return JsonSerializer.Serialize(new
         {
@@ -159,19 +162,19 @@ public partial class EditPostView : IAiChatPageHandler
 
         switch (field.ToLowerInvariant())
         {
-            case "title":
+            case SystemFieldsCatalog.Title:
                 model.Title = value;
                 break;
-            case "slug":
+            case SystemFieldsCatalog.Slug:
                 model.Slug = value;
                 break;
-            case "excerpt":
+            case SystemFieldsCatalog.Excerpt:
                 model.Excerpt = value;
                 break;
-            case "tags":
+            case SystemFieldsCatalog.Tags:
                 model.Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 break;
-            case "categories":
+            case SystemFieldsCatalog.Categories:
                 var ids = new List<Guid>();
                 foreach (var part in value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 {
@@ -181,14 +184,18 @@ public partial class EditPostView : IAiChatPageHandler
                 }
                 model.CategoryIds = [.. ids];
                 break;
-            case "content":
-                var contentError = await SetContentValue(value);
+            case FeatureFieldsCatalog.ContentFieldKey:
+                if (_contentHolder.Current is not { } editor) return "Редактор контента ещё не инициализирован.";
+
+                var contentError = await editor.TrySetContentAsync(value);
                 if (contentError is not null) return contentError;
                 break;
             default:
-                return $"Неизвестное поле '{field}'. Доступны: title, slug, excerpt, tags, categories, content.";
+                return $"Неизвестное поле '{field}'. Доступны: {string.Join(", ", AgentEditableFields)}.";
         }
 
+        model.AutoFillSlug();
+        RefreshFormValues(model);
         StateHasChanged();
         return $"Поле '{field}' изменено в форме (не сохранено).";
     }
@@ -206,56 +213,6 @@ public partial class EditPostView : IAiChatPageHandler
         {
             return "Ошибка сохранения страницы: " + ex.GetBaseException().Message;
         }
-    }
-
-    private async Task<string?> SetContentValue(string value)
-    {
-        switch (ContentEditorKey)
-        {
-            case var k when k == MetaFieldEditorCatalog.BlockEditor:
-                if (blockEditor1 is null) return "Редактор блоков ещё не инициализирован.";
-                var json = BuildBlockEditorJson(value);
-                blockEditor1.Content = EditorJsContent.FromJson(json);
-                await blockEditor1.SetContent();
-                f.Model.Content = json; // страховка, если JS onChange запаздывает
-                return null;
-
-            case var k when k == MetaFieldEditorCatalog.Code:
-                if (codeEditor1 is null) return "Редактор кода ещё не инициализирован.";
-                await codeEditor1.SetValue(value);
-                f.Model.Content = value;
-                return null;
-
-            case var k when k == MetaFieldEditorCatalog.Wysiwyg:
-                return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
-
-            default:
-                f.Model.Content = value;
-                return null;
-        }
-    }
-
-    /// <summary>
-    /// Собирает Editor.js JSON из обычного текста: каждая непустая строка — абзац.
-    /// </summary>
-    static string BuildBlockEditorJson(string text)
-    {
-        var blocks = text.Split('\n')
-            .Select(line => line.Trim())
-            .Where(line => line.Length > 0)
-            .Select(line => new { type = "paragraph", data = new { text = line } })
-            .Cast<object>()
-            .ToList();
-
-        if (blocks.Count == 0)
-            blocks.Add(new { type = "paragraph", data = new { text = "" } });
-
-        return JsonSerializer.Serialize(new
-        {
-            time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            blocks,
-            version = "2.31.0",
-        }, AiJsonOptions);
     }
 
     /// <summary>
@@ -276,7 +233,7 @@ public partial class EditPostView : IAiChatPageHandler
                 {
                     foreach (var block in blocks.EnumerateArray())
                     {
-                        var type = block.TryGetProperty("type", out var t) ? t.GetString() : "";
+                        var type = block.TryGetProperty("type", out var t) ? t.GetString() : null;
                         var data = block.TryGetProperty("data", out var d) ? d : default;
 
                         switch (type)
@@ -314,33 +271,5 @@ public partial class EditPostView : IAiChatPageHandler
         }
 
         return content;
-    }
-
-    string ContentEditorKey => f?.Model.PostType.ContentEditorKey() ?? "";
-
-    string ContentCodeLang => f?.Model.PostType.ContentCodeLang() ?? MetaFieldEditorCatalog.DefaultCodeLang;
-
-    async Task<BlockImage.ImageFileData?> OnImageFileRequest()
-    {
-        var mediaFile = await mediaService.OpenSelectMedia();
-
-        if (mediaFile is null) return null;
-
-        return new BlockImage.ImageFileData
-        {
-            Url = mediaFile.Url,
-            FileName = mediaFile.Name,
-            Size = (long)mediaFile.Size,
-            //Width = mediaFile.Width,
-            //Height = mediaFile.Height
-        };
-    }
-
-    string blockEditorMenuButtonId = "blockEditorMenuButton-" + Guid.NewGuid().ToString();
-    bool blockEditorMenuOpen;
-
-    void BlockEditor_OnClickAISuggest()
-    {
-        aiTool.Open();
     }
 }

@@ -3,10 +3,14 @@ using Mars.Admin;
 using Mars.Admin.Components;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Framework.Interfaces;
+using Mars.Admin.Pages.PostsViews.Forms;
 using Mars.Admin.Startups;
 using Mars.AiChat.Front;
 using Mars.Cms.Contracts.MetaFields;
+using Mars.Cms.Contracts.PostTypes;
 using Mars.Datasource.Front;
+using Mars.Forms.Contracts;
+using Mars.Forms.Front;
 using Mars.Nodes.Workspace;
 using Mars.Plugin.Front;
 using Mars.SemanticKernel.Front;
@@ -69,13 +73,19 @@ ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionAc
 // (общая фронт-библиотека от EditorJsBlazored не зависит)
 MetaFieldEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor), MetaFieldType.String, MetaFieldType.Text);
 
+// доменные редакторы системных слотов формы поста (общий слой Mars.Forms)
+FormEditorLocator.Register(PostFormEditors.Categories, typeof(PostCategoriesEditor), true, FormFieldType.Relation);
+FormEditorLocator.Register(PostFormEditors.Tags, typeof(PostTagsEditor), true, FormFieldType.String);
+FormEditorLocator.Register(PostFormEditors.Author, typeof(PostAuthorEditor), false, FormFieldType.Relation);
+
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();
 builder.Services.AddNodeWorkspace()
                 .AddMarsWebAppNodesFront()
                 .AddDatasourceWorkspace()
                 .AddSemanticKernelFront()
-                .AddAiChatFront();
+                .AddAiChatFront()
+                .AddMarsFormsFront();
 
 builder.ConfigureWebSockets(backendUrl);
 
@@ -98,7 +108,8 @@ app.Services.UseMarsAdminFramework()
             .UseMarsWebAppNodesFront()
             .UseDatasourceWorkspace()
             .UseSemanticKernelFront()
-            .UseAiChatFront();
+            .UseAiChatFront()
+            .UseMarsFormsFront();
 
 // кастомные формы аргументов XAction (перекрывают генерик-форму по схеме)
 app.Services.GetRequiredService<Mars.Admin.Framework.Services.IXActionFormProvider>()

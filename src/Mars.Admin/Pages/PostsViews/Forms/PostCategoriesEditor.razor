@@ -1,0 +1,21 @@
+@using Mars.Admin.Pages.PostCategoryViews
+@using Mars.Contracts.Resources
+@using Mars.Forms.Front
+
+@* Редактор системного слота «категории»: мультивыбор категорий типа поста *@
+
+<div class="position-relative">
+    <a href="@ManagePostCategoryPage.GetPageLink(Post.Type)" class="position-absolute" style="top:0; right:0;">@AppRes.Edit</a>
+    <SelectPostCategoriesDropDown PostType="@Post.Type" Values="@Ids" ValuesChanged="OnChanged" Disabled="@Binding.ReadOnly" />
+</div>
+
+@code {
+    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
+
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+    [Parameter] public int Index { get; set; } = -1;
+
+    Guid[] Ids => Binding.Value is IReadOnlyList<object?> list ? list.OfType<Guid>().ToArray() : [];
+
+    void OnChanged(Guid[] ids) => Binding.Value = ids;
+}

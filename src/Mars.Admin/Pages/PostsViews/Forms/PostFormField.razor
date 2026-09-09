@@ -1,0 +1,31 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Contracts
+@using Mars.Forms.Front
+
+@* Лист дерева формы поста: контент — свой редактор, метаполе — существующий компонент
+   значения, системный слот — общий рендерер слоя Mars.Forms *@
+
+@if (IsContent)
+{
+    <PostContentEditor Holder="@Holder" />
+}
+else if (Meta is not null)
+{
+    <FormMetaValueItem Meta="@Meta" />
+}
+else
+{
+    <FormFieldRow Item="@Item" />
+}
+
+@code {
+    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
+    [CascadingParameter] public PostContentEditorHolder Holder { get; set; } = default!;
+
+    [Parameter, EditorRequired] public FormItem Item { get; set; } = default!;
+
+    bool IsContent => Item.Field?.Options.GetFeatureKey() == FeatureFieldsCatalog.Content;
+
+    MetaFieldEditModel? Meta => Post.PostType.MetaFields.FirstOrDefault(f => f.Key == Item.Key);
+}

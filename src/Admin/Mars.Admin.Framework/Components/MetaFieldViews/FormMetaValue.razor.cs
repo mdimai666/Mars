@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
-public partial class FormMetaValue
+public partial class FormMetaValue : IHeavyMetaValueEditors
 {
     [CascadingParameter] List<MetaValueEditModel> MetaValues { get; set; } = default!;
 
@@ -11,21 +11,17 @@ public partial class FormMetaValue
     [Parameter] public bool Vertical { get; set; }
     [Parameter] public bool Client { get; set; }
 
-    readonly List<IHeavyMetaValueEditor> _heavyEditors = [];
+    readonly HeavyMetaValueEditorRegistry _editors = new();
+
+    /// <summary>Реестр тяжёлых редакторов — уходит каскадом в редакторы значений</summary>
+    public IHeavyMetaValueEditors Editors => _editors;
 
     /// <summary>Регистрация тяжёлого редактора (обёртки регистрируются сами)</summary>
-    public void RegisterHeavyEditor(IHeavyMetaValueEditor editor)
-    {
-        if (!_heavyEditors.Contains(editor)) _heavyEditors.Add(editor);
-    }
+    public void RegisterHeavyEditor(IHeavyMetaValueEditor editor) => _editors.RegisterHeavyEditor(editor);
 
-    public void UnregisterHeavyEditor(IHeavyMetaValueEditor editor) => _heavyEditors.Remove(editor);
+    public void UnregisterHeavyEditor(IHeavyMetaValueEditor editor) => _editors.UnregisterHeavyEditor(editor);
 
     /// <summary>Забрать значения из всех тяжёлых редакторов в модель —
     /// вызывать перед сохранением формы (тяжёлые редакторы не пушат значения при вводе)</summary>
-    public async Task PullAsync()
-    {
-        foreach (var editor in _heavyEditors.ToArray())
-            await editor.CommitAsync();
-    }
+    public Task PullAsync() => _editors.PullAsync();
 }

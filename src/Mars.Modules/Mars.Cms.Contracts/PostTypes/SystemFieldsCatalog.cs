@@ -59,15 +59,14 @@ public static class SystemFieldsCatalog
         new(Slug, nameof(AppRes.Slug), FormFieldType.String, Zones.Main),
         new(Excerpt, nameof(AppRes.Excerpt), FormFieldType.Text, Zones.Main,
             Feature: PostTypeConstants.Features.Excerpt),
-        new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish,
-            Feature: PostTypeConstants.Features.ModifyCreatedDate, InGrid: true),
+        new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish, InGrid: true),
         new(ModifiedAt, nameof(AppRes.DateModified), FormFieldType.DateTime, Zones.Publish, ReadOnly: true),
         new(Status, nameof(AppRes.Status), FormFieldType.Select, Zones.Publish,
             Feature: PostTypeConstants.Features.Status, InGrid: true, Editor: PostFormEditors.Status),
         new(Lang, nameof(AppRes.Language), FormFieldType.String, Zones.Publish,
             Feature: PostTypeConstants.Features.Language),
         new(Author, nameof(AppRes.Author), FormFieldType.Relation, Zones.Publish,
-            ReadOnly: true, InGrid: true, ModelName: "user"),
+            ReadOnly: true, InGrid: true, Editor: PostFormEditors.Author, ModelName: "user"),
         new(Categories, nameof(AppRes.Categories), FormFieldType.Relation, Zones.Extra,
             Feature: PostTypeConstants.Features.Category, Multiple: true, InGrid: true,
             Editor: PostFormEditors.Categories, ModelName: "postcategory"),
@@ -107,5 +106,8 @@ public static class PostFormEditors
     /// <summary>Ввод тегов</summary>
     public const string Tags = "post.input.tags";
 
-    public static readonly IReadOnlyList<string> All = [Title, Status, Categories, Tags];
+    /// <summary>Автор: только чтение (пикера пользователя пока нет)</summary>
+    public const string Author = "post.display.author";
+
+    public static readonly IReadOnlyList<string> All = [Title, Status, Categories, Tags, Author];
 }

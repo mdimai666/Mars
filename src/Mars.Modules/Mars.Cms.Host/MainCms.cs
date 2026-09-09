@@ -1,6 +1,7 @@
 using System.Reflection;
 using Mars.Cms.Abstractions.Attributes;
 using Mars.Cms.Abstractions.Dto.Posts;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Host.Controllers;
@@ -12,6 +13,7 @@ using Mars.Cms.Host.XActions;
 using Mars.Cms.Host.XActions.ContentRecipes;
 using Mars.Contracts.Resources;
 using Mars.Data.Seeding;
+using Mars.Forms.Abstractions;
 using Mars.Server.Abstractions.Validators;
 using Mars.XActions.Abstractions.Managers;
 using Mars.XActions.Contracts;
@@ -50,6 +52,7 @@ public static class MainCms
                 .AddKeyedScoped<IMetaValueUniquenessProvider, PostCategoryMetaValueUniquenessProvider>(MetaValueOwnerCatalog.PostCategory)
                 .AddKeyedScoped<IMetaValueUniquenessProvider, UserMetaValueUniquenessProvider>(MetaValueOwnerCatalog.User);
         services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
+        services.AddKeyedScoped<IFormDataProvider, PostFormProvider>(PostFormBuilder.OwnerModelWildcard);
         services.AddSingleton<ISeedDataHandler, CmsSeedDataHandler>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();

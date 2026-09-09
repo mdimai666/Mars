@@ -15,6 +15,9 @@
 
     [Parameter] public bool Client { get; set; }
 
+    /// <summary>Резолвер переводимых заголовков (локализатор страницы-потребителя)</summary>
+    [Parameter] public Func<string, string>? TitleResolver { get; set; }
+
     /// <summary>Свой рендер листа-поля (иначе встроенный <see cref="FormFieldRow"/>)</summary>
     [Parameter] public RenderFragment<FormItem>? FieldTemplate { get; set; }
 
@@ -26,6 +29,7 @@
             Definition = Definition,
             Values = Values,
             Client = Client,
+            TitleResolver = TitleResolver,
             FieldTemplate = FieldTemplate,
         };
 

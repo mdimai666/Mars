@@ -13,6 +13,9 @@ public sealed record FormRenderContext
     /// <summary>true — рендер для конечного пользователя</summary>
     public bool Client { get; init; }
 
+    /// <summary>Резолвер переводимых заголовков по <see cref="FormFieldDescriptor.TitleKey"/> (локализатор потребителя)</summary>
+    public Func<string, string>? TitleResolver { get; init; }
+
     /// <summary>
     /// Свой рендер листа-поля вместо встроенного <c>FormFieldRow</c> — точка, где провайдер
     /// подмешивает доменные компоненты (например, существующие редакторы мета-значений поста).

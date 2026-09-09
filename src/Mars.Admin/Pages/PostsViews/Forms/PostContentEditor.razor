@@ -1,0 +1,190 @@
+@using System.Text.Json
+@using EditorJsBlazored
+@using EditorJsBlazored.Blocks
+@using EditorJsBlazored.Core
+@using Mars.AiChat.Front.Services
+@using Mars.Cms.Contracts.MetaFields
+@using Microsoft.FluentUI.AspNetCore.Components
+@using MarsCodeEditor2
+@implements IDisposable
+
+@* Редактор значения контента поста: ветка по ключу редактора поля контента (фича Content).
+   Контент — метаполе-определение, значение живёт в posts.Content, поэтому редактор пишет
+   прямо в модель поста, а не в мешок значений формы. *@
+
+<div class="my-2">
+    @if (EditorKey == MetaFieldEditorCatalog.Wysiwyg)
+    {
+        <WysiwygEditor Content="@Post.Content" @ref=_wysiwyg />
+    }
+    else if (EditorKey == MetaFieldEditorCatalog.Code)
+    {
+        <div>
+            <div class="text-end mb-1">
+                <FluentSelect Value="@(string.IsNullOrEmpty(_lang) ? CodeLang : _lang)"
+                              TOption="string"
+                              Style="width: 180px;"
+                              Items="CodeEditor2.Language.Array"
+                              ValueChanged="v => { _lang = v; _code?.SetModelLanguage(v); }">
+                </FluentSelect>
+            </div>
+
+            <MarsCodeEditor2.CodeEditor2 @ref=_code
+                                         Lang=@(string.IsNullOrEmpty(_lang) ? CodeLang : _lang)
+                                         OnSave="OnCodeEditorSave"
+                                         Value="@Post.Content" />
+            <HandlebarsHintsText />
+        </div>
+    }
+    else if (EditorKey == "")
+    {
+        <FormItem2 For="@(() => Post.Content)">
+            <FluentTextArea Rows="8" @bind-Value=@Post.Content Class="w-100" />
+        </FormItem2>
+    }
+    else if (EditorKey == MetaFieldEditorCatalog.BlockEditor)
+    {
+        <div class="text-end">
+            <FluentButton id="@_blockMenuButtonId"
+                          Appearance="Appearance.Stealth"
+                          @onclick="@(() => _blockMenuOpen = !_blockMenuOpen)">
+                Действия
+                <span slot="end">
+                    <i class="bi bi-chevron-down"></i>
+                </span>
+            </FluentButton>
+        </div>
+
+        <FluentMenu Anchor="@_blockMenuButtonId" @bind-Open="_blockMenuOpen">
+            <FluentMenuItem Label="@AppRes.Clear" OnClick=@((e) => _block?.Clear()) />
+            <FluentMenuItem Label="AI suggest" OnClick=@(() => aiTool.Open()) />
+        </FluentMenu>
+
+        <EditorJsBlazored.BlockEditor1 @bind-ContentJson=@Post.Content
+                                       @ref=_block
+                                       OnImageFileRequest="OnImageFileRequest"
+                                       OnAttachmentFileRequest="OnImageFileRequest" />
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <FluentLabel Color="@Color.Warning">
+                    content editor <strong>'@EditorKey'</strong> not implement
+                </FluentLabel>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
+
+    [Parameter] public PostContentEditorHolder Holder { get; set; } = default!;
+
+    [Inject] IAppMediaService mediaService { get; set; } = default!;
+    [Inject] IAIToolAppService aiTool { get; set; } = default!;
+
+    WysiwygEditor? _wysiwyg;
+    CodeEditor2? _code;
+    BlockEditor1? _block;
+
+    string _lang = "";
+    readonly string _blockMenuButtonId = "blockEditorMenuButton-" + Guid.NewGuid();
+    bool _blockMenuOpen;
+
+    public string EditorKey => Post.PostType.ContentEditorKey();
+
+    string CodeLang => Post.PostType.ContentCodeLang();
+
+    protected override void OnInitialized() => Holder.Current = this;
+
+    /// <summary>Забрать значение из тяжёлого редактора в модель — вызывать перед сохранением.
+    /// Блочный редактор реактивный: модель всегда актуальна.</summary>
+    public async Task<string> GetContentAsync()
+    {
+        if (EditorKey == MetaFieldEditorCatalog.Wysiwyg && _wysiwyg is not null) return await _wysiwyg.GetHTML();
+        if (EditorKey == MetaFieldEditorCatalog.Code && _code is not null) return await _code.GetValue();
+
+        return Post.Content;
+    }
+
+    /// <summary>Запись значения инструментом ИИ; возвращает текст ошибки или null</summary>
+    public async Task<string?> TrySetContentAsync(string value)
+    {
+        if (EditorKey == MetaFieldEditorCatalog.BlockEditor)
+        {
+            if (_block is null) return "Редактор блоков ещё не инициализирован.";
+
+            var json = BuildBlockEditorJson(value);
+            _block.Content = EditorJsContent.FromJson(json);
+            await _block.SetContent();
+            Post.Content = json; // страховка, если JS onChange запаздывает
+            return null;
+        }
+
+        if (EditorKey == MetaFieldEditorCatalog.Code)
+        {
+            if (_code is null) return "Редактор кода ещё не инициализирован.";
+
+            await _code.SetValue(value);
+            Post.Content = value;
+            return null;
+        }
+
+        if (EditorKey == MetaFieldEditorCatalog.Wysiwyg)
+            return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
+
+        Post.Content = value;
+        return null;
+    }
+
+    Task OnCodeEditorSave(string value)
+    {
+        Post.Content = value;
+        return Holder.RequestSave?.Invoke() ?? Task.CompletedTask;
+    }
+
+    async Task<BlockImage.ImageFileData?> OnImageFileRequest()
+    {
+        var mediaFile = await mediaService.OpenSelectMedia();
+
+        if (mediaFile is null) return null;
+
+        return new BlockImage.ImageFileData
+        {
+            Url = mediaFile.Url,
+            FileName = mediaFile.Name,
+            Size = (long)mediaFile.Size,
+        };
+    }
+
+    /// <summary>Editor.js JSON из обычного текста: каждая непустая строка — абзац</summary>
+    static string BuildBlockEditorJson(string text)
+    {
+        var blocks = text.Split('\n')
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0)
+            .Select(line => new { type = "paragraph", data = new { text = line } })
+            .Cast<object>()
+            .ToList();
+
+        if (blocks.Count == 0)
+            blocks.Add(new { type = "paragraph", data = new { text = "" } });
+
+        return JsonSerializer.Serialize(new
+        {
+            time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            blocks,
+            version = "2.31.0",
+        }, JsonOptions);
+    }
+
+    static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = false };
+
+    public void Dispose()
+    {
+        if (ReferenceEquals(Holder.Current, this)) Holder.Current = null;
+        _code?.Dispose();
+    }
+}

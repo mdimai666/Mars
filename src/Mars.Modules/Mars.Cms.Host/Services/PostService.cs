@@ -2,6 +2,7 @@ using Mars.Cms.Abstractions;
 using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Mappings.Posts;
 using Mars.Cms.Abstractions.Mappings.PostTypes;
 using Mars.Cms.Abstractions.Repositories;
@@ -13,6 +14,7 @@ using Mars.Contracts.Common;
 using Mars.Core.Exceptions;
 using Mars.Core.Extensions;
 using Mars.Core.Features;
+using Mars.Forms.Abstractions;
 using Mars.Identity.Abstractions.Interfaces;
 using Mars.Server.Abstractions.Managers;
 using Mars.Server.Abstractions.Managers.Extensions;
@@ -29,6 +31,7 @@ internal class PostService : IPostService
     private readonly IValidatorFactory _validatorFactory;
     private readonly IPostTransformer _postTransformer;
     private readonly IMetaValuesGeneratorService _metaValuesGenerator;
+    private readonly IFormDefinitionNormalizer _formNormalizer;
 
     public PostService(
         IPostRepository postRepository,
@@ -37,7 +40,8 @@ internal class PostService : IPostService
         IRequestContext requestContext,
         IValidatorFactory validatorFactory,
         IPostTransformer postTransformer,
-        IMetaValuesGeneratorService metaValuesGenerator)
+        IMetaValuesGeneratorService metaValuesGenerator,
+        IFormDefinitionNormalizer formNormalizer)
     {
         _postRepository = postRepository;
         _metaModelTypesLocator = metaModelTypesLocator;
@@ -46,6 +50,7 @@ internal class PostService : IPostService
         _validatorFactory = validatorFactory;
         _postTransformer = postTransformer;
         _metaValuesGenerator = metaValuesGenerator;
+        _formNormalizer = formNormalizer;
     }
 
     public Task<PostSummary?> Get(Guid id, CancellationToken cancellationToken)
@@ -235,7 +240,8 @@ internal class PostService : IPostService
         return new()
         {
             Post = post.ToResponse(),
-            PostType = postType.ToResponse()
+            PostType = postType.ToResponse(),
+            Form = PostFormBuilder.Build(postType, _formNormalizer),
         };
     }
 
@@ -253,7 +259,8 @@ internal class PostService : IPostService
         return Task.FromResult<PostEditViewModel>(new()
         {
             Post = post.ToResponse(),
-            PostType = postType.ToResponse()
+            PostType = postType.ToResponse(),
+            Form = PostFormBuilder.Build(postType, _formNormalizer),
         });
     }
 

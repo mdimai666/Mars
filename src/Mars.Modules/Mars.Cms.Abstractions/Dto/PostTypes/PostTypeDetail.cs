@@ -2,6 +2,7 @@ using Mars.Cms.Abstractions.Dto.MetaFields;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Abstractions.Dto.PostTypes;
 
@@ -13,6 +14,9 @@ public record PostTypeDetail : PostTypeSummary
     public required IReadOnlyCollection<MetaFieldDto> MetaFields { get; init; }
 
     public required PostTypePresentation Presentation { get; init; }
+
+    /// <summary>Сохранённая раскладка формы редактирования (<c>post_types.Options["form"]</c>); null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? Form { get; init; }
 }
 
 /// <summary>Поле контента типа поста (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>

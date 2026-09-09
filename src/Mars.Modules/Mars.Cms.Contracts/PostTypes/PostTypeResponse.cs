@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Common;
 using Mars.Contracts.Resources;
+using Mars.Forms.Contracts;
 
 namespace Mars.Cms.Contracts.PostTypes;
 
@@ -66,6 +67,9 @@ public record PostTypeDetailResponse : IBasicEntityResponse
     public required IReadOnlyCollection<MetaFieldDetailResponse> MetaFields { get; init; }
 
     public string? ImageFieldKey { get; init; }
+
+    /// <summary>Сохранённая раскладка формы редактирования; null — раскладка по умолчанию</summary>
+    public FormLayoutSettings? Form { get; init; }
 
 }
 

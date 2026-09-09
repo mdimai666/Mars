@@ -12,13 +12,13 @@
     [Parameter] public MetaValueEditModel Value { get; set; } = default!;
     [Parameter] public EventCallback<MetaValueEditModel> ValueChanged { get; set; }
 
-    [CascadingParameter] FormMetaValue formMetaValue { get; set; } = default!;
+    [CascadingParameter] IHeavyMetaValueEditors heavyEditors { get; set; } = default!;
 
     WysiwygEditor? _editor;
 
     string TextValue => Value.MetaField.Type == MetaFieldType.Text ? Value.StringText : Value.StringShort;
 
-    protected override void OnInitialized() => formMetaValue?.RegisterHeavyEditor(this);
+    protected override void OnInitialized() => heavyEditors?.RegisterHeavyEditor(this);
 
     public async Task<string?> GetValueAsync()
         => _editor is null ? TextValue : await _editor.GetHTML();
@@ -37,5 +37,5 @@
         await ValueChanged.InvokeAsync(Value);
     }
 
-    public void Dispose() => formMetaValue?.UnregisterHeavyEditor(this);
+    public void Dispose() => heavyEditors?.UnregisterHeavyEditor(this);
 }

@@ -1,6 +1,6 @@
 # План: Mars.Forms — общий механизм форм и заполнения данных
 
-> **Статус: спроектировано 2026-09-09; фаза 0 (модуль `Mars.Forms`) выполнена 2026-09-09.**
+> **Статус: спроектировано 2026-09-09; фазы 0–1 выполнены 2026-09-09.**
 > Инициатива выросла из задачи «при редактировании поста все поля — настраиваемые»
 > (см. [MetaFieldsGuide.md](./MetaFieldsGuide.md), «Вектор развития») и расширена
 > до платформенного механизма: одна форма определения и один транспорт значений
@@ -238,25 +238,46 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - `Mars.Forms.Front` пока не подключён к `Mars.Admin`: потребителей нет,
   подключение — в фазе 1.
 
-### Фаза 1 — пост как референс-провайдер
+### Фаза 1 — пост как референс-провайдер — выполнено 2026-09-09
 
 - `Mars.Cms.Contracts`: `SystemFieldsCatalog` (ключи `title, slug, status,
   created_at, modified_at, author, tags, categories, excerpt, lang`; на слот —
-  заголовок, `FormFieldType`, фича-гейт, ReadOnly, Multiple, InGrid, InForm,
-  имя колонки) и маппер `MetaFieldDetailBase → FormFieldDescriptor`.
-- Хранение и контракт: `PostTypeOptionsCatalog.Form`, `PostTypeFormSettingsJson`,
-  поле `Form` в `PostTypeRequest`/`PostTypeResponse`/`PostTypeDetailResponse`
-  и в `PostTypeEditModel`.
-- `Mars.Cms.Host`: построитель эффективного дерева (фича-гейты + метаполя типа +
-  сохранённый порядок) и манифест провайдера (зоны `main`/`publish`/`extra`).
-- Админка: `EditPostView.razor` рендерится по дереву; `PostEditModel` держит
-  адаптеры значений (системные слоты → типизированные свойства, мета-слоты →
-  `MetaValuesByIndex`, который наконец получает потребителя); контент — обычный
-  лист дерева, его тяжёлые редакторы регистрируются в pull-контракте
-  `IHeavyMetaValueEditor`, и спец-кейс уходит из `FormMetaValueItems.razor` и
-  из `BeforeSave`; `ToCreateRequest`/`ToUpdateRequest` не меняются.
-- Консолидация четырёх дублей базовых колонок на `SystemFieldsCatalog` и замена
-  двух копий слияния на общий нормализатор.
+  заголовок-ключ ресурса, `FormFieldType`, фича-гейт, ReadOnly, Multiple, InGrid,
+  зона, ключ редактора) и `PostFormEditors` (ключи доменных редакторов), маппер
+  `MetaFieldDto → FormFieldDescriptor` (`MetaFieldFormMapping`).
+- Хранение и контракт: `PostTypeOptionsCatalog.Form` + `GetFormLayout`/
+  `WithFormLayout`, `PostTypeDetail.Form`, `PostTypeDetailResponse.Form`,
+  `PostEditViewModel.Form` (эффективное дерево), `PostFormBuilder` +
+  `PostFormProvider` (keyed `post.*`).
+- Админка: `EditPostView.razor` рендерится по дереву — по зоне на фрагмент
+  `StandardEditContainer` (`PostFormZone`), лист маршрутизирует `PostFormField`
+  (контент → свой редактор, метаполе → `FormMetaValueItem`, системный слот →
+  `FormFieldRow`); `PostEditModel` держит мешок значений системных слотов
+  (`BuildFormValues`/`ApplyFormValues`/`FillFormValues`), транспорт записи не
+  изменился; `MetaValuesByIndex` остаётся при мета-значениях.
+- Консолидация четырёх дублей базовых колонок — отдельным заходом.
+
+Что добавилось/изменилось по ходу:
+
+- **Контент остаётся своим компонентом** (`PostContentEditor`): пять веток
+  редакторов, их `@ref` и мост ИИ-агента переехали в него целиком, а доступ
+  страницы — через `PostContentEditorHolder` (контент рендерится внутри дерева,
+  в любой зоне). Перевод тяжёлых редакторов контента на общий pull-контракт
+  отложен: он ломал бы ИИ-мост без видимой пользы на прототипе.
+- Реестр тяжёлых редакторов мета-значений вынесен из `FormMetaValue` в
+  `IHeavyMetaValueEditors` — один реестр раздаётся всем зонам формы.
+- `FormRenderContext.FieldTemplate` и `TitleResolver` — точки расширения
+  рендерера: провайдер подмешивает доменные компоненты и локализует заголовки
+  слотов (`FormFieldDescriptor.TitleKey`).
+- Провайдер поста объявляет `CanReadValues = false`, `CanSubmit = false`
+  (решение B(ii)): значения ходят типизированным транспортом, мешок живёт
+  только внутри формы. `ReadAsync`/`SubmitAsync` в интерфейсе получили дефолтные
+  реализации с `NotSupportedException` — провайдер не обязан уметь и то и другое.
+- Слот `created_at` доступен всегда, а редактируется только с фичей
+  `ModifyCreatedDate` (иначе read-only) — как в прежней разметке.
+- Тесты: `tests/Mars.Server.Tests/Forms/PostFormBuilderTests.cs` (порядок и зоны
+  по умолчанию, фича-гейты, исключения Disabled/Query/Hidden, контент,
+  read-only даты, варианты статусов, сохранённая раскладка и правила, манифест).
 
 ### Фаза 2 — правила системных полей
 

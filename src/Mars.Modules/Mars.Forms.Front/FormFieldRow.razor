@@ -37,7 +37,13 @@
     FormFieldBinding _binding = default!;
 
     protected override void OnParametersSet()
-        => _binding = new FormFieldBinding { Item = Item, Field = Item.Field!, Values = Context.Values };
+        => _binding = new FormFieldBinding
+        {
+            Item = Item,
+            Field = Item.Field!,
+            Values = Context.Values,
+            TitleResolver = Context.TitleResolver,
+        };
 
     FormFieldBinding Binding => _binding;
 

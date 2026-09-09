@@ -8,6 +8,13 @@ public record FormFieldDescriptor
 
     public required string Title { get; init; }
 
+    /// <summary>
+    /// Ключ ресурса заголовка (например <c>Title</c> из <c>AppRes</c>), если заголовок переводимый;
+    /// клиент резолвит его своим локализатором, а <see cref="Title"/> остаётся фолбэком.
+    /// Для пользовательских полей пусто — их заголовок литеральный.
+    /// </summary>
+    public string? TitleKey { get; init; }
+
     public required FormFieldType Type { get; init; }
 
     public bool Required { get; init; }

@@ -1,0 +1,39 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Forms.Contracts
+@using Mars.Forms.Front
+
+@* Зона формы поста: раздаёт каскады (значения метаполей, модель поста, реестры) и рендерит
+   свою часть дерева контейнеров. Зоны 1:1 с фрагментами StandardEditContainer. *@
+
+<CascadingValue Value="@Post.MetaValues">
+    <CascadingValue Value="@Post.PostType.MetaFields">
+        <CascadingValue Value="@Post">
+            <CascadingValue Value="@HeavyEditors">
+                <CascadingValue Value="@ContentHolder">
+                    <FormRenderer Definition="@Definition" Values="@Values" Zone="@Zone" TitleResolver="@TitleResolver">
+                        <FieldTemplate Context="item">
+                            <PostFormField Item="@item" />
+                        </FieldTemplate>
+                    </FormRenderer>
+                </CascadingValue>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired] public PostEditModel Post { get; set; } = default!;
+
+    [Parameter, EditorRequired] public FormDefinition Definition { get; set; } = default!;
+
+    [Parameter, EditorRequired] public FormValuesModel Values { get; set; } = default!;
+
+    /// <summary>Ключ зоны из <c>SystemFieldsCatalog.Zones</c></summary>
+    [Parameter, EditorRequired] public string Zone { get; set; } = default!;
+
+    [Parameter, EditorRequired] public IHeavyMetaValueEditors HeavyEditors { get; set; } = default!;
+
+    [Parameter, EditorRequired] public PostContentEditorHolder ContentHolder { get; set; } = default!;
+
+    [Parameter] public Func<string, string>? TitleResolver { get; set; }
+}

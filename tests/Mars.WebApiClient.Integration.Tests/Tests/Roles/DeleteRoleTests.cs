@@ -12,7 +12,6 @@ public sealed class DeleteRoleTests : BaseWebApiClientTests
 
     public DeleteRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.Role.Delete(req), null);
     }

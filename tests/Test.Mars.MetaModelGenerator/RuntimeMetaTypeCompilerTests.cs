@@ -26,7 +26,6 @@ public class RuntimeMetaTypeCompilerTests : MetaModelGeneratorTests
 
     public RuntimeMetaTypeCompilerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _runtimeMetaTypeCompiler = new RuntimeMetaTypeCompiler();
     }
 

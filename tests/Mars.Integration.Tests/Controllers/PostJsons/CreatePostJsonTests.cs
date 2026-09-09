@@ -29,7 +29,6 @@ public class CreatePostJsonTests : ApplicationTests
 
     public CreatePostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

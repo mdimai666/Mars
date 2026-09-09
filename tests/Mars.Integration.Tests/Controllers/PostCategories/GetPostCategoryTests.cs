@@ -23,7 +23,6 @@ public class GetPostCategoryTests : ApplicationTests
 
     public GetPostCategoryTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

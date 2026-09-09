@@ -18,7 +18,6 @@ public sealed class GetUserTypeTests : ApplicationTests
 
     public GetUserTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

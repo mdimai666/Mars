@@ -15,7 +15,6 @@ public class GenSourceCodeMasterTests
     public GenSourceCodeMasterTests()
     {
         _fixture = new Fixture();
-        EntitiesCustomize.PostTypeDict = new Dictionary<string, PostTypeEntity> { ["post"] = new PostTypeEntity() };
     }
 
     [Fact]

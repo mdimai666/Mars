@@ -27,7 +27,6 @@ public sealed class PostMultiplicityValidatorTests : ApplicationTests
 
     public PostMultiplicityValidatorTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     async Task<(string TypeName, Guid FieldId)> CreateTypeWithFieldAsync(bool isMultiple)

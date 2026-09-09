@@ -12,7 +12,6 @@ public class DeleteMediaTests : BaseWebApiClientTests
 
     public DeleteMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.Media.Delete(req), (client, req) => client.Media.DeleteMany(req));
     }

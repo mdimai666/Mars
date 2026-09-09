@@ -17,8 +17,6 @@ public class HandlebarsAppFrontTests : BaseAppFrontTests<HandlebarsAppFrontAppli
 {
     public HandlebarsAppFrontTests(HandlebarsAppFrontApplicationFixture appFixture) : base(appFixture)
     {
-
-        _fixture.Customize(new FixtureCustomize());
         _ = nameof(WebFilesReadFilesystemService);
         _ = nameof(WebTemplateService.ScanSite);
     }

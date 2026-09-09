@@ -20,7 +20,6 @@ public class InjectActTests : ApplicationTests
 
     public InjectActTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
 #if DEBUG

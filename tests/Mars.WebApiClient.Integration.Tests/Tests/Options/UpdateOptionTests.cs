@@ -15,7 +15,6 @@ public sealed class UpdateOptionTests : BaseWebApiClientTests
 
     public UpdateOptionTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionRepository = appFixture.ServiceProvider.GetRequiredService<IOptionRepository>();
     }
 

@@ -18,7 +18,6 @@ public class DeletePostCategoryTests : ApplicationTests
 
     public DeletePostCategoryTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

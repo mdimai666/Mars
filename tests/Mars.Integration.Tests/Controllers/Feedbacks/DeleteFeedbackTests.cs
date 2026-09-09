@@ -18,7 +18,6 @@ public class DeleteFeedbackTests : ApplicationTests
 
     public DeleteFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

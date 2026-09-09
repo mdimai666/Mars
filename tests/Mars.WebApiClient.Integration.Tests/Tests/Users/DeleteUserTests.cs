@@ -12,7 +12,6 @@ public sealed class DeleteUserTests : BaseWebApiClientTests
 
     public DeleteUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.User.Delete(req), (client, req) => client.User.DeleteMany(req));
     }

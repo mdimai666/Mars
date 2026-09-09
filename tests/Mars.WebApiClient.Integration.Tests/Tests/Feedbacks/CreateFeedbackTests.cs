@@ -16,7 +16,6 @@ public class CreateFeedbackTests : BaseWebApiClientTests
 
     public CreateFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.Feedback.Create(req));
     }

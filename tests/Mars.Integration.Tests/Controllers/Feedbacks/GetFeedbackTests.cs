@@ -18,7 +18,6 @@ public class GetFeedbackTests : ApplicationTests
 
     public GetFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

@@ -18,7 +18,6 @@ public class GetOptionTests : ApplicationTests
 
     public GetOptionTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = appFixture.ServiceProvider.GetRequiredService<IOptionService>();
     }
 

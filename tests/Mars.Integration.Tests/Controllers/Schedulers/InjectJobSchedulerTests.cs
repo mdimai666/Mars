@@ -19,7 +19,6 @@ public class InjectJobSchedulerTests : ApplicationTests
 
     public InjectJobSchedulerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _scheduler = AppFixture.ServiceProvider.GetRequiredService<ISchedulerManager>();
         //_triggerService = Substitute.For<ITestDummyTriggerService>();
         _triggerService = AppFixture.ServiceProvider.GetRequiredService<ITestDummyTriggerService>();

@@ -26,7 +26,6 @@ public sealed class PostSingleTests : ApplicationTests
 
     public PostSingleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     async Task<PostTypeDetail> CreateTypeAsync(IReadOnlyCollection<string> features, params CreateMetaFieldRequest[] fields)

@@ -27,7 +27,6 @@ public class DeleteMediaTests : ApplicationTests
 
     public DeleteMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
         _mediaOption = _optionService.GetOption<MediaOption>();

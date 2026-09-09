@@ -24,7 +24,6 @@ public class HttpInFormSaveFilesNodeTests : ApplicationTests, IDisposable
 
     public HttpInFormSaveFilesNodeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }
 

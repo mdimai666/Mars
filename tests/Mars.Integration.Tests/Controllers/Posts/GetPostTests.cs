@@ -22,7 +22,6 @@ public class GetPostTests : ApplicationTests
 
     public GetPostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

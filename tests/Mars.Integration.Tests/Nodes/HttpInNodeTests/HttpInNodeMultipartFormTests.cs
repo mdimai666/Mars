@@ -22,7 +22,6 @@ public class HttpInNodeMultipartFormTests : ApplicationTests
 
     public HttpInNodeMultipartFormTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }
 

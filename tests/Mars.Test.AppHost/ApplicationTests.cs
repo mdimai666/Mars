@@ -3,6 +3,7 @@ using FluentAssertions;
 using Mars.Data.Contexts;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Test.Common.FixtureCustomizes;
 
 namespace Mars.Integration.Tests;
 
@@ -12,7 +13,14 @@ public abstract class ApplicationTests
     protected readonly ApplicationFixture AppFixture;
     protected MarsDbContext DbContext => AppFixture.DbFixture.DbContext;
 
-    public IFixture _fixture = new Fixture();
+    private readonly Lazy<IFixture> _fixtureLazy;
+
+    /// <summary>
+    /// Фикстура AutoFixture, заранее кастомизированная ссылками на сид-сущности БД
+    /// текущей фикстуры (<see cref="ApplicationFixture.Catalog"/>). Создаётся лениво —
+    /// каталог наполняется в Seed до первого обращения.
+    /// </summary>
+    public IFixture _fixture => _fixtureLazy.Value;
 
     protected ApplicationTests(ApplicationFixture appFixture)
     {
@@ -20,6 +28,13 @@ public abstract class ApplicationTests
         AppFixture.DbFixture.Reset().RunSync();
         AppFixture.Seed().RunSync();
         AppFixture.ResetMocks();
+
+        _fixtureLazy = new Lazy<IFixture>(() =>
+        {
+            var fixture = new Fixture();
+            fixture.Customize(new FixtureCustomize(AppFixture.Catalog));
+            return fixture;
+        });
 
         // Из-за способа хранения и округления DateTime, оно может на миллисекунды отличаться
         AssertionOptions.AssertEquivalencyUsing(

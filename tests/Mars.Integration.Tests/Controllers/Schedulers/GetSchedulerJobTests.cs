@@ -20,7 +20,6 @@ public class GetSchedulerJobTests : ApplicationTests
 
     public GetSchedulerJobTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _scheduler = AppFixture.ServiceProvider.GetRequiredService<ISchedulerManager>();
         _scheduler.Clear().RunSync();
     }

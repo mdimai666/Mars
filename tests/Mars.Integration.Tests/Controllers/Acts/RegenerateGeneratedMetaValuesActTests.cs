@@ -22,7 +22,6 @@ public class RegenerateGeneratedMetaValuesActTests : ApplicationTests
 {
     public RegenerateGeneratedMetaValuesActTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

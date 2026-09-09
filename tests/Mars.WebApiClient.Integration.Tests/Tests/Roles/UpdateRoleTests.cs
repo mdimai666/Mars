@@ -15,7 +15,6 @@ public sealed class UpdateRoleTests : BaseWebApiClientTests
 
     public UpdateRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _updateTest = new(this, (client, req) => client.Role.Update(req));
 
     }

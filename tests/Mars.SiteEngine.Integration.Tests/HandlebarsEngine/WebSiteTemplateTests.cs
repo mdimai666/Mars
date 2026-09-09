@@ -25,8 +25,6 @@ public class WebSiteTemplateTests : BaseAppFrontTests<HandlebarsAppFrontApplicat
 
     public WebSiteTemplateTests(HandlebarsAppFrontApplicationFixture appFixture) : base(appFixture)
     {
-
-        _fixture.Customize(new FixtureCustomize());
         _ = nameof(WebFilesReadFilesystemService);
         _ = nameof(WebTemplateService.ScanSite);
         _app = AppFixture.ServiceProvider.GetRequiredService<IWebRenderEngineLocator>().GetAppFrontForUrl("/")!;

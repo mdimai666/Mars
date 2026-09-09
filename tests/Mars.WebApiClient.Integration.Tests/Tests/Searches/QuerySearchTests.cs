@@ -17,7 +17,6 @@ public class QuerySearchTests : BaseWebApiClientTests
 {
     public QuerySearchTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

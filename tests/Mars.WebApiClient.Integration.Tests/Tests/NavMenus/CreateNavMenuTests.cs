@@ -13,7 +13,6 @@ public class CreateNavMenuTests : BaseWebApiClientTests
 
     public CreateNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.NavMenu.Create(req));
     }

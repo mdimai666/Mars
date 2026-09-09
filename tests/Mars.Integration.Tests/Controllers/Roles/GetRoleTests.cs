@@ -18,7 +18,6 @@ public class GetRoleTests : ApplicationTests
 
     public GetRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

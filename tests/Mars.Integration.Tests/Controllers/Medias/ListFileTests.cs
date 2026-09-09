@@ -19,7 +19,6 @@ public sealed class ListFileTests : ApplicationTests
 
     public ListFileTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

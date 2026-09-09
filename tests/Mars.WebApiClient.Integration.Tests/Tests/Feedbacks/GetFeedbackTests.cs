@@ -13,7 +13,6 @@ public class GetFeedbackTests : BaseWebApiClientTests
 
     public GetFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _getTest = new(
             this,

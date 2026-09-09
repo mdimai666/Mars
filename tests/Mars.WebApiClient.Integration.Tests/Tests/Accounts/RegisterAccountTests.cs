@@ -18,7 +18,6 @@ public class RegisterAccountTests : BaseWebApiClientTests
 {
     public RegisterAccountTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

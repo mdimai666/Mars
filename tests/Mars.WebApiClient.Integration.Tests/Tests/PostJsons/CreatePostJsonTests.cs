@@ -21,7 +21,6 @@ public class CreatePostJsonTests : BaseWebApiClientTests
 
     public CreatePostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.PostJson.Create(req));
     }

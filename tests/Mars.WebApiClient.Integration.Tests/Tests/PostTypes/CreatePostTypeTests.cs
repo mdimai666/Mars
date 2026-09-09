@@ -13,7 +13,6 @@ public sealed class CreatePostTypeTests : BaseWebApiClientTests
 {
     public CreatePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

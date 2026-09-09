@@ -21,7 +21,6 @@ public class UpdateFeedbackTests : ApplicationTests
 
     public UpdateFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

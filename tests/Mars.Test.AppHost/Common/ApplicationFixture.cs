@@ -34,6 +34,9 @@ public class ApplicationFixture : IAsyncLifetime
 
     public virtual IDatabaseFixture DbFixture { get; } = new DatabaseFixture();
 
+    /// <summary>Ссылки на сид-сущности БД текущей фикстуры (заполняются в Seed, per-fixture).</summary>
+    public TestEntityRefs Catalog { get; private set; } = TestEntityRefs.CreateDefault();
+
     private HttpClient _authClient = default!;
     private HttpClient _nonAuthClient = default!;
 
@@ -218,15 +221,17 @@ public class ApplicationFixture : IAsyncLifetime
             MetaValues = [],
         }, default);
 
-        EntitiesCustomize.PostTypeDict = await ef.PostTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
-        EntitiesCustomize.UserTypeDict = await ef.UserTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
-        EntitiesCustomize.PostCategoryTypeDict = await ef.PostCategoryTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        var postTypes = await ef.PostTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        var userTypes = await ef.UserTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
+        var postCategoryTypes = await ef.PostCategoryTypes.AsNoTracking().ToDictionaryAsync(s => s.TypeName);
         ef.ChangeTracker.Clear();
 
-        if (EntitiesCustomize.PostTypeDict.Count == 0 || EntitiesCustomize.UserTypeDict.Count == 0 || EntitiesCustomize.PostCategoryTypeDict.Count == 0)
+        if (postTypes.Count == 0 || userTypes.Count == 0 || postCategoryTypes.Count == 0)
         {
-            throw new InvalidOperationException("PostTypeDict or UserTypeDict or PostCategoryTypeDict is empty after seeding data");
+            throw new InvalidOperationException("PostTypes or UserTypes or PostCategoryTypes is empty after seeding data");
         }
+
+        Catalog = new TestEntityRefs(postTypes, userTypes, postCategoryTypes);
 
         ServiceProvider.GetRequiredService<IMetaModelTypesLocator>().InvalidateCompiledMetaMtoModels();
         ServiceProvider.GetRequiredService<IPostCategoryMetaLocator>().InvalidateCache();

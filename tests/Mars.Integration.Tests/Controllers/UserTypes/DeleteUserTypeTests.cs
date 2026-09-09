@@ -19,7 +19,6 @@ public class DeleteUserTypeTests : ApplicationTests
 
     public DeleteUserTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

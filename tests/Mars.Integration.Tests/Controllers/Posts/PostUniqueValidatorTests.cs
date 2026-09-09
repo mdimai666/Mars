@@ -28,7 +28,6 @@ public sealed class PostUniqueValidatorTests : ApplicationTests
 
     public PostUniqueValidatorTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     static JsonNode UniqueOptions()

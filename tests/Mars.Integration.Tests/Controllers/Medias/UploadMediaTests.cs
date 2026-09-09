@@ -32,7 +32,6 @@ public sealed class UploadMediaTests : ApplicationTests
 
     public UploadMediaTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
         _imageProcessor = AppFixture.ServiceProvider.GetRequiredService<IImageProcessor>();

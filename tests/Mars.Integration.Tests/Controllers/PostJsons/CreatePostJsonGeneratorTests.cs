@@ -25,7 +25,6 @@ public class CreatePostJsonGeneratorTests : ApplicationTests
 
     public CreatePostJsonGeneratorTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     async Task<MetaFieldEntity> AddGeneratorFieldAsync(JsonObject generatorOptions)

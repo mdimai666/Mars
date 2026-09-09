@@ -23,7 +23,6 @@ public class UpdateOptionTests : ApplicationTests
 
     public UpdateOptionTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _optionService = appFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _optionRepository = appFixture.ServiceProvider.GetRequiredService<IOptionRepository>();
     }

@@ -23,7 +23,6 @@ public class ModelEfRequestRuntimeCompiledTests : MetaModelGeneratorTests
 
     public ModelEfRequestRuntimeCompiledTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _runtimeMetaTypeCompiler = new RuntimeMetaTypeCompiler();
     }
 

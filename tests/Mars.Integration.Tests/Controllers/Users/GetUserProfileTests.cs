@@ -16,7 +16,6 @@ public class GetUserProfileTests : ApplicationTests
 
     public GetUserProfileTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

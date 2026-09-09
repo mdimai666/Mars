@@ -23,7 +23,6 @@ public class AppEntityReadNodeTests : ApplicationTests
 
     public AppEntityReadNodeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _fixture.Customize(new MetaFieldDtoCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }

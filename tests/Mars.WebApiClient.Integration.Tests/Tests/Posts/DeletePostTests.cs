@@ -12,7 +12,6 @@ public sealed class DeletePostTests : BaseWebApiClientTests
 
     public DeletePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.Post.Delete(req), (client, req) => client.Post.DeleteMany(req));
     }

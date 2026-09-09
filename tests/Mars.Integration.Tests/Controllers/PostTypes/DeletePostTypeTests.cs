@@ -21,7 +21,6 @@ public class DeletePostTypeTests : ApplicationTests
 
     public DeletePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

@@ -28,7 +28,6 @@ public sealed class CreatePostTests : ApplicationTests
 
     public CreatePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

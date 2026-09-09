@@ -32,9 +32,6 @@ public class MetaFieldMaterializerServiceTests
 
     public MetaFieldMaterializerServiceTests()
     {
-        EntitiesCustomize.PostTypeDict = new() { ["post"] = new PostTypeEntity() };
-        EntitiesCustomize.UserTypeDict = new() { [UserTypeEntity.DefaultTypeName] = UserConstants.TestUserType };
-
         _fixture.Customize(new FixtureCustomize());
 
         _metaModelTypesLocator = Substitute.For<IMetaModelTypesLocator>();

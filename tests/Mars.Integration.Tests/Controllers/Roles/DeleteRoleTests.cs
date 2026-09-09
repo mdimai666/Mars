@@ -18,7 +18,6 @@ public class DeleteRoleTests : ApplicationTests
 
     public DeleteRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

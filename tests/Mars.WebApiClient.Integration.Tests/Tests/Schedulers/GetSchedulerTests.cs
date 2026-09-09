@@ -13,7 +13,6 @@ public class GetSchedulerTests : BaseWebApiClientTests
 {
     public GetSchedulerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         var scheduler = AppFixture.ServiceProvider.GetRequiredService<ISchedulerManager>();
         scheduler.Clear();
     }

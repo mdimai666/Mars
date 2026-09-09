@@ -23,7 +23,6 @@ public class GetPluginTests : ApplicationTests
 
     public GetPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _pluginService = appFixture.ServiceProvider.GetRequiredService<IPluginService>();
     }
 

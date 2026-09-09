@@ -25,7 +25,6 @@ public sealed class UpdatePostCategoryTests : ApplicationTests
 
     public UpdatePostCategoryTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

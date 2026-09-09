@@ -20,7 +20,6 @@ public sealed class UpdatePostJsonTests : BaseWebApiClientTests
 
     public UpdatePostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _updateTest = new(this, (client, req) => client.PostJson.Update(req));
 
     }

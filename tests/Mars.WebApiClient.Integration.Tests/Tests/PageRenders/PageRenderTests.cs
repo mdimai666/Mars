@@ -17,7 +17,6 @@ public class PageRenderTests : BaseWebApiClientTests
 {
     public PageRenderTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         TestFrontHelper.EnsureFront(AppFixture.ServiceProvider);
     }
 

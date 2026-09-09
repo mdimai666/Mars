@@ -18,7 +18,6 @@ public class DeleteNavMenuTests : ApplicationTests
 
     public DeleteNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

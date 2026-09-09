@@ -29,7 +29,6 @@ public class UploadPluginTests : ApplicationTests
 
     public UploadPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _pluginService = appFixture.ServiceProvider.GetRequiredService<IPluginService>();
         _optionService = appFixture.ServiceProvider.GetRequiredService<IOptionService>();
         SetAllowUploadZipManually(true);

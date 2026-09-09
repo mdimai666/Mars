@@ -12,7 +12,6 @@ public sealed class DeletePostTypeTests : BaseWebApiClientTests
 {
     public DeletePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

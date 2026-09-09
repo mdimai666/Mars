@@ -21,7 +21,6 @@ public class ListPostMetaColumnsTests : ApplicationTests
 
     public ListPostMetaColumnsTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

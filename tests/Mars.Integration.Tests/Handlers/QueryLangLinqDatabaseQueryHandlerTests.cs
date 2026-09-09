@@ -27,7 +27,6 @@ public class QueryLangLinqDatabaseQueryHandlerTests : ApplicationTests
 
     public QueryLangLinqDatabaseQueryHandlerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _setupDataHelper = new SetupDataHelper(appFixture);
         _handler = appFixture.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
     }

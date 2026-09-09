@@ -28,7 +28,6 @@ public class GetPageRenderTests : ApplicationTests
 
     public GetPageRenderTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         EnsureFront();
     }
 

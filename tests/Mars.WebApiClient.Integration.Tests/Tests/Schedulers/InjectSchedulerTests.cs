@@ -14,7 +14,6 @@ public class InjectSchedulerTests : BaseWebApiClientTests
 {
     public InjectSchedulerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         //reset scheduler jobs
     }
 

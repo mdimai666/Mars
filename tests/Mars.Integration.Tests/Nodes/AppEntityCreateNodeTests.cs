@@ -35,7 +35,6 @@ public class AppEntityCreateNodeTests : ApplicationTests, IAsyncLifetime
 
     public AppEntityCreateNodeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _fixture.Customize(new MetaFieldDtoCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
         _factory = AppFixture.ServiceProvider.GetRequiredService<IAppEntityFormBuilderFactory>();

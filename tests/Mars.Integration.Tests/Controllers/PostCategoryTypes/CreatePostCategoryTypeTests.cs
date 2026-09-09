@@ -24,7 +24,6 @@ public sealed class CreatePostCategoryTypeTests : ApplicationTests
 
     public CreatePostCategoryTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

@@ -2,6 +2,7 @@ using AutoFixture;
 using Flurl.Http;
 using Mars.Integration.Tests.Common;
 using Mars.Integration.Tests.Extensions;
+using Mars.Test.Common.FixtureCustomizes;
 
 [assembly: Xunit.v3.Parallelization(Mode = Xunit.Sdk.ParallelMode.None)]
 
@@ -16,7 +17,13 @@ public abstract class BaseAppFrontTests<TAppFixture> where TAppFixture : Applica
     protected readonly TAppFixture AppFixture;
     //protected MarsDbContext DbContext => AppFixture.DbFixture.DbContext;
 
-    public IFixture _fixture = new Fixture();
+    private readonly Lazy<IFixture> _fixtureLazy;
+
+    /// <summary>
+    /// Фикстура AutoFixture, заранее кастомизированная ссылками на сид-сущности БД
+    /// текущей фикстуры (<see cref="ApplicationFixture.Catalog"/>). Создаётся лениво.
+    /// </summary>
+    public IFixture _fixture => _fixtureLazy.Value;
 
     protected BaseAppFrontTests(TAppFixture appFixture)
     {
@@ -24,6 +31,13 @@ public abstract class BaseAppFrontTests<TAppFixture> where TAppFixture : Applica
         AppFixture.DbFixture.Reset().RunSync();
         AppFixture.Seed().RunSync();
         AppFixture.ResetMocks();
+
+        _fixtureLazy = new Lazy<IFixture>(() =>
+        {
+            var fixture = new Fixture();
+            fixture.Customize(new FixtureCustomize(AppFixture.Catalog));
+            return fixture;
+        });
     }
 
     public virtual Task<string> RenderRequestPage(string url)

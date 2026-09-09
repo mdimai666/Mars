@@ -18,7 +18,6 @@ public class GetUserTests : ApplicationTests
 
     public GetUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

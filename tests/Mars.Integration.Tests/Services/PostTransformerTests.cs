@@ -20,7 +20,6 @@ public class PostTransformerTests : ApplicationTests
 
     public PostTransformerTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _postTransformer = appFixture.ServiceProvider.GetRequiredService<IPostTransformer>();
         _metaModelTypesLocator = appFixture.ServiceProvider.GetRequiredService<IMetaModelTypesLocator>();
     }

@@ -35,7 +35,7 @@ public class DatabaseQueryBenchmarkRun : BenchmarkBase
         // Прогрев.
         var ef = AppFixture.MarsDbContext();
         IFixture _fixture = new Fixture();
-        _fixture.Customize(new FixtureCustomize());
+        _fixture.Customize(new FixtureCustomize(AppFixture.Catalog));
 
         var posts = _fixture.CreateMany<PostEntity>(20).ToList();
         ef.Posts.AddRange(posts);

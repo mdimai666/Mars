@@ -33,9 +33,6 @@ public class PostJsonServiceTestBase
 
     public PostJsonServiceTestBase()
     {
-        EntitiesCustomize.PostTypeDict = new Dictionary<string, PostTypeEntity> { ["post"] = new PostTypeEntity() };
-        EntitiesCustomize.PostCategoryTypeDict = new Dictionary<string, PostCategoryTypeEntity> { ["default"] = new PostCategoryTypeEntity() };
-
         _fixture.Customize(new FixtureCustomize());
 
         _postRepository = Substitute.For<IPostRepository>();

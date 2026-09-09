@@ -14,7 +14,6 @@ public sealed class UpdatePostTypeTests : BaseWebApiClientTests
 {
     public UpdatePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

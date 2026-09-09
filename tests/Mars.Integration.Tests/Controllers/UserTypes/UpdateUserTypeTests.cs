@@ -26,7 +26,6 @@ public class UpdateUserTypeTests : ApplicationTests
 
     public UpdateUserTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

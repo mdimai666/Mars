@@ -14,7 +14,6 @@ public class EfStringQueryTests : ApplicationTests
 {
     public EfStringQueryTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

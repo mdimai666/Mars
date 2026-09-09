@@ -21,7 +21,6 @@ public sealed class MediaFolderTests : ApplicationTests
 
     public MediaFolderTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _fileStorage = AppFixture.ServiceProvider.GetRequiredService<IFileStorage>();
     }
 

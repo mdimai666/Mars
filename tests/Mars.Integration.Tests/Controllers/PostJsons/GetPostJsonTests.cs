@@ -19,7 +19,6 @@ public class GetPostJsonTests : ApplicationTests
 
     public GetPostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

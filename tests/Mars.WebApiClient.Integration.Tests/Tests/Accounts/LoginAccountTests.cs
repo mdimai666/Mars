@@ -12,7 +12,6 @@ public class LoginAccountTests : BaseWebApiClientTests
 {
     public LoginAccountTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

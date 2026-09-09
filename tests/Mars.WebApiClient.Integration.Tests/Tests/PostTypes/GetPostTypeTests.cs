@@ -12,7 +12,6 @@ public class GetPostTypeTests : BaseWebApiClientTests
 {
     public GetPostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

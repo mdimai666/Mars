@@ -21,7 +21,6 @@ public class UpdatePostTypeTests : ApplicationTests
 
     public UpdatePostTypeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

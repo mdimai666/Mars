@@ -25,8 +25,6 @@ public class DataQueryScenariosTests
     public DataQueryScenariosTests()
     {
         _fixture = new Fixture();
-        EntitiesCustomize.PostTypeDict = new Dictionary<string, PostTypeEntity> { ["post"] = new PostTypeEntity() };
-        EntitiesCustomize.PostCategoryTypeDict = new Dictionary<string, PostCategoryTypeEntity> { ["default"] = new PostCategoryTypeEntity() };
         _fixture.Customize(new FixtureCustomize());
         _serviceProvider = Substitute.For<IServiceProvider>();
         _featureCollection = Substitute.For<IFeatureCollection>();

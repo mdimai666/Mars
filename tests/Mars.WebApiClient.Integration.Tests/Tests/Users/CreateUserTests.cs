@@ -13,7 +13,6 @@ public class CreateUserTests : BaseWebApiClientTests
 
     public CreateUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.User.Create(req));
     }

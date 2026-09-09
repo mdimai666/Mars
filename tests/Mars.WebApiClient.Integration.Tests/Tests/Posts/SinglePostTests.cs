@@ -12,7 +12,6 @@ public sealed class SinglePostTests : BaseWebApiClientTests
 {
     public SinglePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

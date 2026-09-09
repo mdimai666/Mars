@@ -19,7 +19,6 @@ public class HttpInNodeBasicAuthTests : ApplicationTests
 
     public HttpInNodeBasicAuthTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }
 

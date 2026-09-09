@@ -23,7 +23,6 @@ public class ModelEfRequestManualTests : MetaModelGeneratorTests
 
     public ModelEfRequestManualTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _handler = appFixture.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
     }
 

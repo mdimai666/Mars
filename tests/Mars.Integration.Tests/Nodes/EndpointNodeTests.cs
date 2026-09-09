@@ -21,7 +21,6 @@ public class EndpointNodeTests : ApplicationTests
 
     public EndpointNodeTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _nodeService = AppFixture.ServiceProvider.GetRequiredService<INodeService>();
     }
 

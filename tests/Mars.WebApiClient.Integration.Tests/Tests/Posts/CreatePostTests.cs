@@ -13,7 +13,6 @@ public class CreatePostTests : BaseWebApiClientTests
 
     public CreatePostTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.Post.Create(req));
     }

@@ -16,7 +16,6 @@ public class GetPostJsonTests : BaseWebApiClientTests
 
     public GetPostJsonTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _getTest = new(
             this,

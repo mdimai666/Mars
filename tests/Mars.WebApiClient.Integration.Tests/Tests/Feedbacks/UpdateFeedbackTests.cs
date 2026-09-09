@@ -14,7 +14,6 @@ public sealed class UpdateFeedbackTests : BaseWebApiClientTests
 
     public UpdateFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _updateTest = new(this, (client, req) => client.Feedback.Update(req));
 
     }

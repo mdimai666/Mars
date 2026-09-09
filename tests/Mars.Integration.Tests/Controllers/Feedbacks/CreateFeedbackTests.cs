@@ -20,7 +20,6 @@ public class CreateFeedbackTests : ApplicationTests
 
     public CreateFeedbackTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

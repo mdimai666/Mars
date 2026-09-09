@@ -13,7 +13,6 @@ public class CreateRoleTests : BaseWebApiClientTests
 
     public CreateRoleTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _createTest = new(this, (client, req) => client.Role.Create(req));
     }

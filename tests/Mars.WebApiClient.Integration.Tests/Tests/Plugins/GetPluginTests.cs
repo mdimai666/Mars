@@ -11,7 +11,6 @@ public class GetPluginTests : BaseWebApiClientTests
 {
     public GetPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

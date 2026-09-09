@@ -22,7 +22,6 @@ public sealed class CreateUserTests : ApplicationTests
 
     public CreateUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

@@ -22,7 +22,6 @@ public class UpdateFileTests : ApplicationTests
 
     public UpdateFileTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _fileService = appFixture.ServiceProvider.GetRequiredService<IFileService>();
         var opService = AppFixture.ServiceProvider.GetRequiredService<IOptionService>();
         _fileHostingInfo = opService.FileHostingInfo();

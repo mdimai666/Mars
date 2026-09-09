@@ -12,9 +12,9 @@ namespace Mars.Test.Common.FixtureCustomizes;
 
 public sealed class EntitiesCustomize : ICustomization
 {
-    public static Dictionary<string, PostTypeEntity> PostTypeDict = default!;
-    public static Dictionary<string, UserTypeEntity> UserTypeDict = new() { [UserTypeEntity.DefaultTypeName] = UserConstants.TestUserType };
-    public static Dictionary<string, PostCategoryTypeEntity> PostCategoryTypeDict = [];
+    private readonly TestEntityRefs _refs;
+
+    public EntitiesCustomize(TestEntityRefs refs) => _refs = refs;
 
     public void Customize(IFixture fixture)
     {
@@ -33,7 +33,7 @@ public sealed class EntitiesCustomize : ICustomization
             .RuleFor(s => s.SecurityStamp, Guid.NewGuid().ToString())
             .RuleFor(s => s.Status, EUserStatus.Activated)
             .RuleFor(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
-            .RuleFor(s => s.UserTypeId, UserTypeDict[UserTypeEntity.DefaultTypeName].Id)
+            .RuleFor(s => s.UserTypeId, _refs.UserType.Id)
             .RuleFor(s => s.MetaValues, [])
             .Generate();
 
@@ -93,7 +93,7 @@ public sealed class EntitiesCustomize : ICustomization
                                    //.With(s => s.Image, "")
                                    .With(s => s.LangCode, () => Random.Shared.GetItems(["", "ru"], 1)[0])
                                    //.With(s => s.Type, "post")
-                                   .With(s => s.PostTypeId, PostTypeDict["post"].Id)
+                                   .With(s => s.PostTypeId, _refs.PostType.Id)
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    //.With(s => s.ModifiedAt, null!)
                                    .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
@@ -209,8 +209,8 @@ public sealed class EntitiesCustomize : ICustomization
                                     })
                                    .OmitAutoProperties()
                                    .With(s => s.Title, () => fixture.Create("PostCategory - "))
-                                   .With(s => s.PostCategoryTypeId, PostCategoryTypeDict[PostCategoryTypeEntity.DefaultTypeName].Id)
-                                   .With(s => s.PostTypeId, PostTypeDict["post"].Id)
+                                   .With(s => s.PostCategoryTypeId, _refs.PostCategoryType.Id)
+                                   .With(s => s.PostTypeId, _refs.PostType.Id)
                                    .With(s => s.CreatedAt, FixtureCustomize.DefaultCreated)
                                    .With(s => s.Tags, () => Random.Shared.GetItems(FixtureCustomize.TopTags, Random.Shared.Next(0, 6)).ToList())
                                    );

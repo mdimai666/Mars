@@ -20,7 +20,6 @@ public class DeleteUserTests : ApplicationTests
 
     public DeleteUserTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

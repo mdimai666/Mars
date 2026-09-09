@@ -20,7 +20,6 @@ public class CreateNavMenuTests : ApplicationTests
 
     public CreateNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

@@ -16,7 +16,6 @@ public class ListPostScenariosTests : ApplicationTests
 
     public ListPostScenariosTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _setupDataHelper = new SetupDataHelper(appFixture);
         _queryLang = AppFixture.ServiceProvider.GetRequiredService<IQueryLangLinqDatabaseQueryHandler>();
     }

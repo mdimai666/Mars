@@ -13,7 +13,6 @@ public class UploadPluginTests : BaseWebApiClientTests
 {
     public UploadPluginTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
     }
 
     [IntegrationFact]

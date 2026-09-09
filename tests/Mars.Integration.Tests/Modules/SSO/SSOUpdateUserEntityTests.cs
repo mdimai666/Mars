@@ -20,7 +20,6 @@ public class SSOUpdateUserEntityTests : ApplicationTests
 
     public SSOUpdateUserEntityTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
         _userRepository = appFixture.ServiceProvider.GetRequiredService<IUserRepository>();
     }
 

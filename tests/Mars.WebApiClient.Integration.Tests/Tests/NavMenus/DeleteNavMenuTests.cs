@@ -12,7 +12,6 @@ public sealed class DeleteNavMenuTests : BaseWebApiClientTests
 
     public DeleteNavMenuTests(ApplicationFixture appFixture) : base(appFixture)
     {
-        _fixture.Customize(new FixtureCustomize());
 
         _deleteTest = new(this, (client, req) => client.NavMenu.Delete(req), (client, req) => client.NavMenu.DeleteMany(req));
     }

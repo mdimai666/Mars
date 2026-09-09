@@ -3,7 +3,6 @@ using Mars.Admin.Framework.Hub;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.Posts;
 using Mars.Cms.Contracts.PostTypes;
-using Mars.Contracts.Resources;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -94,14 +93,7 @@ public partial class ManagePostView : IDisposable
                 {
                     // сортировка по умолчанию из настройки типа; запасная — дата создания
                     var def = _columns.FirstOrDefault(c => c.IsDefaultSort);
-                    sortColumn = def?.Kind switch
-                    {
-                        GridColumnKind.Title => nameof(PostListItemResponse.Title),
-                        GridColumnKind.Categories => nameof(PostListItemResponse.Categories),
-                        GridColumnKind.Status => nameof(PostListItemResponse.Status),
-                        GridColumnKind.Author => nameof(PostListItemResponse.Author),
-                        _ => nameof(PostListItemResponse.CreatedAt),
-                    };
+                    sortColumn = SortProperty(def);
                     ascending = def?.DefaultSortDirection != SortDirection.Descending;
                 }
 
@@ -116,7 +108,7 @@ public partial class ManagePostView : IDisposable
                     IncludeCategory = true,
                     CategoryId = _filterCategoryId == Guid.Empty ? null : _filterCategoryId,
                     FilterIncludeDescendantsCategories = false,
-                    MetaFields = _columns.Where(c => c.Kind == GridColumnKind.Meta).Select(c => c.Key).ToArray(),
+                    MetaFields = _columns.Where(c => !c.IsSystem).Select(c => c.Key).ToArray(),
                     Filters = _filtersPanel?.BuildGridFilters() ?? [],
                 });
 
@@ -129,56 +121,19 @@ public partial class ManagePostView : IDisposable
         );
     }
 
-    /// <summary>Доступные колонки: базовые (с учётом фич типа) + мета-поля</summary>
-    List<GridColumn> BuildAvailableColumns()
-    {
-        var list = new List<GridColumn>
-        {
-            new(PostTypeGridConstants.Title, AppRes.Title, GridColumnKind.Title),
-        };
-
-        if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Category))
-            list.Add(new GridColumn(PostTypeGridConstants.Categories, AppRes.Categories, GridColumnKind.Categories));
-
-        if (PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status))
-            list.Add(new GridColumn(PostTypeGridConstants.Status, AppRes.Status, GridColumnKind.Status));
-
-        list.Add(new GridColumn(PostTypeGridConstants.Author, AppRes.Author, GridColumnKind.Author));
-        list.Add(new GridColumn(PostTypeGridConstants.CreatedAt, AppRes.CreatedAt, GridColumnKind.CreatedAt));
-
-        foreach (var field in _metaFields)
-        {
-            // плоскому гриду не подходят многовариантные и вычислимые поля
-            if (field.Type is MetaFieldType.Query or MetaFieldType.SelectMany) continue;
-            list.Add(new GridColumn(field.Key, field.Title, GridColumnKind.Meta));
-        }
-
-        return list;
-    }
-
     void RebuildColumns()
     {
-        var available = BuildAvailableColumns();
-        var configured = _gridSettings?.Columns ?? [];
-        var configuredKeys = configured.Select(c => c.Key).ToHashSet();
-        var columns = new List<GridColumn>();
-
-        foreach (var conf in configured)
-        {
-            if (!conf.Visible) continue;
-            var col = available.FirstOrDefault(c => c.Key == conf.Key);
-            if (col is null) continue;
-            columns.Add(col);
-            available.Remove(col);
-        }
-
-        // колонки, которых нет в настройке, — в конце; скрытые настройкой не добавляются
-        columns.AddRange(available.Where(c => !configuredKeys.Contains(c.Key)));
+        var available = PostTypeGridColumns.Available(PostType.EnabledFeatures, _metaFields);
+        // скрытые настройкой колонки в грид не попадают
+        var columns = PostTypeGridColumns.Merge(_gridSettings?.Columns, available)
+                                         .Where(c => c.Visible)
+                                         .Select(c => new GridColumn(c))
+                                         .ToList();
 
         // сортировка по умолчанию — только базовые колонки; запасная — дата создания
         var sortKey = _gridSettings?.SortKey;
-        var sortColumn = columns.FirstOrDefault(c => c.Key == sortKey && c.Kind != GridColumnKind.Meta)
-                         ?? columns.FirstOrDefault(c => c.Kind == GridColumnKind.CreatedAt);
+        var sortColumn = columns.FirstOrDefault(c => c.IsSystem && c.Key == sortKey)
+                         ?? columns.FirstOrDefault(c => c.IsSystem && c.Key == SystemFieldsCatalog.CreatedAt);
         if (sortColumn is not null)
         {
             sortColumn.IsDefaultSort = true;
@@ -193,12 +148,26 @@ public partial class ManagePostView : IDisposable
         GridTemplateColumns = string.Join(" ", columns.Select(ColumnWidth)) + " min-content"; // + Actions
     }
 
-    static string ColumnWidth(GridColumn column)
-        => column.Kind switch
+    /// <summary>Свойство ответа для сортировки: у мета-колонок и без настройки — дата создания</summary>
+    static string SortProperty(GridColumn? column)
+    {
+        if (column is not { IsSystem: true }) return nameof(PostListItemResponse.CreatedAt);
+
+        return column.Key switch
         {
-            GridColumnKind.Title => "3fr",
-            GridColumnKind.Categories => "2fr",
-            GridColumnKind.Meta => "min-content",
+            SystemFieldsCatalog.Title => nameof(PostListItemResponse.Title),
+            SystemFieldsCatalog.Categories => nameof(PostListItemResponse.Categories),
+            SystemFieldsCatalog.Status => nameof(PostListItemResponse.Status),
+            SystemFieldsCatalog.Author => nameof(PostListItemResponse.Author),
+            _ => nameof(PostListItemResponse.CreatedAt),
+        };
+    }
+
+    static string ColumnWidth(GridColumn column)
+        => column.Key switch
+        {
+            SystemFieldsCatalog.Title when column.IsSystem => "3fr",
+            SystemFieldsCatalog.Categories when column.IsSystem => "2fr",
             _ => "min-content",
         };
 
@@ -286,28 +255,15 @@ public partial class ManagePostView : IDisposable
         clientHub.OnPostListChanged -= OnPostListChanged;
     }
 
-    public enum GridColumnKind
+    /// <summary>Колонка грида: дескриптор из настройки презентации типа + состояние сортировки</summary>
+    public sealed class GridColumn(PostTypeGridColumnInfo info)
     {
-        Title,
-        Categories,
-        Status,
-        Author,
-        CreatedAt,
-        Meta,
-    }
+        public string Key => info.Key;
+        public string Title => info.Title;
 
-    public class GridColumn
-    {
-        public GridColumn(string key, string title, GridColumnKind kind)
-        {
-            Key = key;
-            Title = title;
-            Kind = kind;
-        }
+        /// <summary>Базовая колонка из каталога системных слотов (не мета-поле)</summary>
+        public bool IsSystem => info.IsSystem;
 
-        public string Key { get; }
-        public string Title { get; }
-        public GridColumnKind Kind { get; }
         public bool IsDefaultSort { get; set; }
         public SortDirection DefaultSortDirection { get; set; } = SortDirection.Descending;
     }
@@ -323,14 +279,17 @@ public partial class ManagePostView : IDisposable
             table.RefreshDataAsync();
     }
 
-    /// <summary>Колонка, для которой есть фильтр в панели</summary>
+    /// <summary>Колонка, для которой есть фильтр в панели (для категорий фильтра нет)</summary>
     bool IsFilterable(GridColumn column)
-        => column.Kind switch
+    {
+        if (!column.IsSystem) return true;
+
+        return column.Key switch
         {
-            GridColumnKind.Title or GridColumnKind.Author or GridColumnKind.CreatedAt => true,
-            GridColumnKind.Status => PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status),
-            GridColumnKind.Meta => true,
+            SystemFieldsCatalog.Title or SystemFieldsCatalog.Author or SystemFieldsCatalog.CreatedAt => true,
+            SystemFieldsCatalog.Status => PostType.EnabledFeatures.Contains(PostTypeConstants.Features.Status),
             _ => false,
         };
+    }
     #endregion
 }

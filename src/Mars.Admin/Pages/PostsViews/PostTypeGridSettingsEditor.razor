@@ -21,7 +21,7 @@
                 </FluentButton>
                 <FluentCheckbox Value="row.Visible" ValueChanged="@(v => ToggleAsync(row, v))" />
                 <div class="flex-fill">@row.Title</div>
-                @if (!row.IsBase)
+                @if (!row.IsSystem)
                 {
                     <FluentBadge Appearance="Appearance.Neutral">meta</FluentBadge>
                 }
@@ -33,7 +33,7 @@
         <FluentSelect TOption="string" Label="Сортировка по умолчанию" Width="240px"
                       @bind-Value="_sortKey" @bind-Value:after="EmitAsync">
             <FluentOption Value="">—</FluentOption>
-            @foreach (var row in _rows.Where(r => r.IsBase))
+            @foreach (var row in _rows.Where(r => r.IsSystem))
             {
                 <FluentOption Value="@row.Key">@row.Title</FluentOption>
             }

@@ -1,4 +1,5 @@
 using Mars.Forms.Contracts;
+using Microsoft.AspNetCore.Components;
 
 namespace Mars.Forms.Front;
 
@@ -11,4 +12,10 @@ public sealed record FormRenderContext
 
     /// <summary>true — рендер для конечного пользователя</summary>
     public bool Client { get; init; }
+
+    /// <summary>
+    /// Свой рендер листа-поля вместо встроенного <c>FormFieldRow</c> — точка, где провайдер
+    /// подмешивает доменные компоненты (например, существующие редакторы мета-значений поста).
+    /// </summary>
+    public RenderFragment<FormItem>? FieldTemplate { get; init; }
 }

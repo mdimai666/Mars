@@ -5,7 +5,14 @@
 {
     @if (item.Kind == FormItemKinds.Field)
     {
-        <FormFieldRow Item="@item" />
+        @if (Context.FieldTemplate is not null)
+        {
+            @Context.FieldTemplate(item)
+        }
+        else
+        {
+            <FormFieldRow Item="@item" />
+        }
     }
     else
     {

@@ -1,3 +1,6 @@
+using System.Text.Json.Nodes;
+using Mars.Forms.Contracts;
+
 namespace Mars.Cms.Contracts.PostTypes;
 
 /// <summary>
@@ -9,4 +12,22 @@ namespace Mars.Cms.Contracts.PostTypes;
 /// </summary>
 public static class PostTypeOptionsCatalog
 {
+    /// <summary>Раскладка формы редактирования типа (<see cref="FormLayoutSettings"/>)</summary>
+    public const string Form = "form";
+
+    /// <summary>Раскладка формы из Options типа; отсутствует или битая — null (действует раскладка по умолчанию)</summary>
+    public static FormLayoutSettings? GetFormLayout(this JsonNode? options)
+        => options is JsonObject obj ? FormLayoutJson.Parse(obj[Form]) : null;
+
+    /// <summary>Копия Options с заменённой раскладкой формы; null-раскладка убирает ключ, пустой мешок → null</summary>
+    public static JsonNode? WithFormLayout(this JsonNode? options, FormLayoutSettings? layout)
+    {
+        var copy = options is JsonObject obj ? (JsonObject)obj.DeepClone() : new JsonObject();
+        var node = layout.ToJsonNode();
+
+        if (node is null) copy.Remove(Form);
+        else copy[Form] = node;
+
+        return copy.Count == 0 ? null : copy;
+    }
 }

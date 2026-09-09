@@ -15,12 +15,19 @@
 
     [Parameter] public bool Client { get; set; }
 
+    /// <summary>Свой рендер листа-поля (иначе встроенный <see cref="FormFieldRow"/>)</summary>
+    [Parameter] public RenderFragment<FormItem>? FieldTemplate { get; set; }
+
     FormRenderContext _context = default!;
 
     protected override void OnParametersSet()
-    {
-        _context = new FormRenderContext { Definition = Definition, Values = Values, Client = Client };
-    }
+        => _context = new FormRenderContext
+        {
+            Definition = Definition,
+            Values = Values,
+            Client = Client,
+            FieldTemplate = FieldTemplate,
+        };
 
     IReadOnlyCollection<FormItem> RootItems
         => Definition?.Items.Where(i => (i.Zone ?? "") == Zone).ToList() ?? [];

@@ -8,11 +8,13 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $propsPath = Join-Path $root "Directory.Build.props"
 
-# Парсим XML, чтобы получить значение MarsAppVersion
+# Парсим XML, чтобы получить значение MarsAppVersion. PropertyGroup в файле
+# несколько — берём первую группу, где свойство реально задано (member
+# enumeration по массиву групп вернула бы массив со значениями-пустышками).
 [xml]$xml = Get-Content $propsPath
 
 # Извлекаем MarsAppVersion
-$version = $xml.Project.PropertyGroup.MarsAppVersion
+$version = [string]($xml.Project.PropertyGroup | Where-Object { $_.MarsAppVersion } | Select-Object -First 1).MarsAppVersion
 if (-not $version) {
     Write-Error "Не найден MarsAppVersion в $propsPath"
     exit 1
@@ -27,8 +29,37 @@ if (git status --porcelain) {
     Write-Warning "Рабочее дерево не чистое - содержимое сборки может не совпадать с коммитом $GIT_SHA"
 }
 
-$userName = docker info --format '{{.UserName}}'
-if ($LASTEXITCODE -ne 0 -or -not $userName) {
+# Проверка входа в Docker Hub. При credsStore/credHelpers docker login не пишет
+# запись в auths, и docker info отдаёт пустой UserName — поэтому дополнительно
+# проверяем хранилище учёток через docker-credential-<helper>.
+function Test-DockerHubLogin {
+    $userName = docker info --format '{{.UserName}}' 2>$null
+    if ($LASTEXITCODE -eq 0 -and $userName) {
+        return $true
+    }
+
+    $configPath = Join-Path $env:USERPROFILE '.docker\config.json'
+    if (-not (Test-Path $configPath)) {
+        return $false
+    }
+
+    $config = Get-Content $configPath -Raw | ConvertFrom-Json
+    $helper = $config.credsStore
+    if (-not $helper -and $config.credHelpers) {
+        $prop = $config.credHelpers.PSObject.Properties['https://index.docker.io/v1/']
+        if ($prop) {
+            $helper = $prop.Value
+        }
+    }
+    if (-not $helper) {
+        return $false
+    }
+
+    $list = & "docker-credential-$helper" list 2>$null
+    return $LASTEXITCODE -eq 0 -and $list -match 'index\.docker\.io/v1/'
+}
+
+if (-not (Test-DockerHubLogin)) {
     Write-Error "Нет входа в Docker Hub - выполните docker login"
     exit 1
 }

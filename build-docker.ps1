@@ -7,11 +7,13 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $propsPath = Join-Path $root "Directory.Build.props"
 
-# Парсим XML, чтобы получить значение MarsAppVersion
+# Парсим XML, чтобы получить значение MarsAppVersion. PropertyGroup в файле
+# несколько — берём первую группу, где свойство реально задано (member
+# enumeration по массиву групп вернула бы массив со значениями-пустышками).
 [xml]$xml = Get-Content $propsPath
 
 # Извлекаем MarsAppVersion
-$version = $xml.Project.PropertyGroup.MarsAppVersion
+$version = [string]($xml.Project.PropertyGroup | Where-Object { $_.MarsAppVersion } | Select-Object -First 1).MarsAppVersion
 if (-not $version) {
     Write-Error "Не найден MarsAppVersion в $propsPath"
     exit 1

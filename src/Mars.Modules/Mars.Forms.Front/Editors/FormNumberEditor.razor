@@ -1,0 +1,34 @@
+@namespace Mars.Forms.Front.Editors
+
+@* Встроенный редактор числа: один на Int/Long/Float/Decimal.
+   Значение разбирается каноническим кодеком по типу поля, поэтому ввод не по формату
+   просто не попадает в модель (визуал и подсказки — по прототипу, см. план фазы 3). *@
+
+<FluentTextField Value="@Text"
+                 ValueChanged="OnChanged"
+                 Disabled="@Binding.ReadOnly"
+                 Required="@Binding.Field.Required"
+                 Class="w-100"
+                 Style="max-width:240px" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    [Parameter] public int Index { get; set; } = -1;
+
+    string Text => Binding.ValueAt(Index) is { } value
+        ? Convert.ToString(value, CultureInfo.InvariantCulture) ?? ""
+        : "";
+
+    void OnChanged(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            Binding.SetValueAt(Index, null);
+            return;
+        }
+
+        if (FormValueCodec.TryToClr(JsonValue.Create(text), Binding.ElementType, out var value, out _))
+            Binding.SetValueAt(Index, value);
+    }
+}

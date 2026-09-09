@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>mdimai666.Mars.Forms.Contracts</PackageId>
+        <Description>Mars form engine wire contracts: form definition, field descriptors, values and codec.</Description>
+    </PropertyGroup>
+
+</Project>

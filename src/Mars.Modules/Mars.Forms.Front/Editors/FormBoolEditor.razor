@@ -1,0 +1,14 @@
+@namespace Mars.Forms.Front.Editors
+
+@* Встроенный редактор да/нет *@
+
+<FluentCheckbox Value="@(Binding.ValueAt(Index) is true)"
+                ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+                Disabled="@Binding.ReadOnly"
+                Label="@Binding.Title" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    [Parameter] public int Index { get; set; } = -1;
+}

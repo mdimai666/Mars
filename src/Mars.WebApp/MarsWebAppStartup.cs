@@ -9,6 +9,7 @@ using Mars.Datasource.Front;
 using Mars.Datasource.Host;
 using Mars.Docker.Host;
 using Mars.Excel.Host;
+using Mars.Forms.Abstractions;
 using Mars.Identity.Host;
 using Mars.Media.Host;
 using Mars.MetaModelGenerator;
@@ -90,6 +91,7 @@ public static class MarsWebAppStartup
         // Mars
         builder.Services.AddMarsSwagger()
                         .AddMarsOptions()
+                        .AddMarsForms()
                         .AddMarsNotifications()
                         .AddMarsIdentity(builder.Configuration)
                         .AddMarsMedia()

@@ -1,0 +1,34 @@
+@namespace Mars.Forms.Front.Editors
+
+@* Встроенный редактор даты: значение — DateTimeOffset в канонической кодировке ISO-8601.
+   Смещение сохраняем из текущего значения, иначе берём локальное. *@
+
+<FluentDatePicker Value="@Date"
+                  ValueChanged="OnChanged"
+                  Disabled="@Binding.ReadOnly"
+                  Style="max-width:240px" />
+
+@code {
+    [Parameter] public FormFieldBinding Binding { get; set; } = default!;
+
+    [Parameter] public int Index { get; set; } = -1;
+
+    DateTime? Date => Binding.ValueAt(Index) switch
+    {
+        DateTimeOffset offset => offset.DateTime,
+        DateTime date => date,
+        _ => null,
+    };
+
+    void OnChanged(DateTime? date)
+    {
+        if (date is null)
+        {
+            Binding.SetValueAt(Index, null);
+            return;
+        }
+
+        var offset = Binding.ValueAt(Index) as DateTimeOffset? ?? DateTimeOffset.Now;
+        Binding.SetValueAt(Index, new DateTimeOffset(date.Value, offset.Offset));
+    }
+}

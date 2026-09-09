@@ -1,0 +1,27 @@
+@namespace Mars.Forms.Front
+
+@* Точка входа рендера: одна зона = один экземпляр (зоны объявляет провайдер в манифесте) *@
+<CascadingValue Value="@_context">
+    <FormItems Items="@RootItems" />
+</CascadingValue>
+
+@code {
+    [Parameter] public FormDefinition Definition { get; set; } = default!;
+
+    [Parameter] public FormValuesModel Values { get; set; } = default!;
+
+    /// <summary>Ключ зоны из манифеста провайдера (пусто — единственная зона)</summary>
+    [Parameter] public string Zone { get; set; } = "";
+
+    [Parameter] public bool Client { get; set; }
+
+    FormRenderContext _context = default!;
+
+    protected override void OnParametersSet()
+    {
+        _context = new FormRenderContext { Definition = Definition, Values = Values, Client = Client };
+    }
+
+    IReadOnlyCollection<FormItem> RootItems
+        => Definition?.Items.Where(i => (i.Zone ?? "") == Zone).ToList() ?? [];
+}

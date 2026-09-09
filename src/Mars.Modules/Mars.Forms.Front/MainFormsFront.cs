@@ -1,0 +1,17 @@
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Mars.Forms.Front;
+
+/// <summary>Подключение рендерера форм на WASM-фронте (админка, фронты модулей)</summary>
+public static class MainFormsFront
+{
+    public static IServiceCollection AddMarsFormsFront(this IServiceCollection services)
+    {
+        services.AddScoped<IFormEditorLocator, FormEditorLocator>();
+        services.AddScoped<IFormContainerLocator, FormContainerLocator>();
+        return services;
+    }
+
+    /// <summary>Точка регистрации доменных редакторов и контейнеров потребителями</summary>
+    public static IServiceProvider UseMarsFormsFront(this IServiceProvider services) => services;
+}

@@ -1,6 +1,5 @@
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
-using Mars.Contracts.Resources;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Pages.PostsViews;
@@ -36,48 +35,14 @@ public partial class PostTypeGridSettingsEditor
 
     void RebuildFrom(PostTypeGridSettings? value)
     {
-        var known = BuildKnownColumns();
-        _rows = [];
+        var available = PostTypeGridColumns.Available(EnabledFeatures, MetaFields);
 
-        foreach (var conf in value?.Columns ?? [])
-        {
-            var knownCol = known.FirstOrDefault(k => k.Key == conf.Key);
-            if (knownCol is null) continue;
-            _rows.Add(new GridColumnRow(knownCol.Key, knownCol.Title, knownCol.IsBase, conf.Visible));
-            known.Remove(knownCol);
-        }
-
-        // колонки, которых нет в настройке, — в конце видимыми
-        _rows.AddRange(known.Select(k => new GridColumnRow(k.Key, k.Title, k.IsBase, true)));
+        _rows = PostTypeGridColumns.Merge(value?.Columns, available)
+                                   .Select(c => new GridColumnRow(c, c.Visible))
+                                   .ToList();
 
         _sortKey = value?.SortKey ?? "";
         _sortDescending = value?.SortDescending ?? false;
-    }
-
-    List<KnownColumn> BuildKnownColumns()
-    {
-        var list = new List<KnownColumn>
-        {
-            new(PostTypeGridConstants.Title, AppRes.Title, true),
-        };
-
-        if (EnabledFeatures.Contains(PostTypeConstants.Features.Category))
-            list.Add(new KnownColumn(PostTypeGridConstants.Categories, AppRes.Categories, true));
-
-        if (EnabledFeatures.Contains(PostTypeConstants.Features.Status))
-            list.Add(new KnownColumn(PostTypeGridConstants.Status, AppRes.Status, true));
-
-        list.Add(new KnownColumn(PostTypeGridConstants.Author, AppRes.Author, true));
-        list.Add(new KnownColumn(PostTypeGridConstants.CreatedAt, AppRes.CreatedAt, true));
-
-        foreach (var field in MetaFields ?? [])
-        {
-            // плоскому гриду не подходят многовариантные и вычислимые поля
-            if (field.Type is MetaFieldType.Query or MetaFieldType.SelectMany) continue;
-            list.Add(new KnownColumn(field.Key, field.Title, false));
-        }
-
-        return list;
     }
 
     PostTypeGridSettings BuildSettings()
@@ -118,13 +83,11 @@ public partial class PostTypeGridSettingsEditor
         await ValueChanged.InvokeAsync(null);
     }
 
-    sealed record KnownColumn(string Key, string Title, bool IsBase);
-
-    sealed class GridColumnRow(string key, string title, bool isBase, bool visible)
+    sealed class GridColumnRow(PostTypeGridColumnInfo column, bool visible)
     {
-        public string Key { get; } = key;
-        public string Title { get; } = title;
-        public bool IsBase { get; } = isBase;
+        public string Key => column.Key;
+        public string Title => column.Title;
+        public bool IsSystem => column.IsSystem;
         public bool Visible { get; set; } = visible;
     }
 }

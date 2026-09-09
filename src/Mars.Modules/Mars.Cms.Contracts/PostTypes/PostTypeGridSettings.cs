@@ -21,14 +21,14 @@ public record PostTypeGridColumn
     public bool Visible { get; init; } = true;
 }
 
-/// <summary>Ключи базовых (не мета-) колонок грида постов</summary>
+/// <summary>Ключи базовых (не мета-) колонок грида постов — ключи <see cref="SystemFieldsCatalog"/></summary>
 public static class PostTypeGridConstants
 {
-    public const string Title = "title";
-    public const string Categories = "categories";
-    public const string Status = "status";
-    public const string Author = "author";
-    public const string CreatedAt = "created_at";
+    public const string Title = SystemFieldsCatalog.Title;
+    public const string Categories = SystemFieldsCatalog.Categories;
+    public const string Status = SystemFieldsCatalog.Status;
+    public const string Author = SystemFieldsCatalog.Author;
+    public const string CreatedAt = SystemFieldsCatalog.CreatedAt;
 
-    public static readonly IReadOnlyList<string> BaseColumns = [Title, Categories, Status, Author, CreatedAt];
+    public static IReadOnlyList<string> BaseColumns { get; } = PostTypeGridColumns.BaseKeys;
 }

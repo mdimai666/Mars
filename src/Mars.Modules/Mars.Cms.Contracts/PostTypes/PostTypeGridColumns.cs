@@ -11,20 +11,19 @@ namespace Mars.Cms.Contracts.PostTypes;
 public static class PostTypeGridColumns
 {
     /// <summary>
-    /// Базовые колонки грида в порядке по умолчанию. Порядок и гейты свои, а не из каталога:
-    /// форма прячет created_at без ModifyCreatedDate, а грид показывает его всегда.
+    /// Базовые колонки грида в порядке по умолчанию. Порядок свой, а не из каталога слотов:
+    /// грид исторически показывает категории раньше статуса и автора. Фича-гейт и заголовок
+    /// колонки берутся из слота <see cref="SystemFieldsCatalog"/> — состав колонок грида и
+    /// состав полей формы не должны разъезжаться.
     /// </summary>
-    static readonly (string Key, string? Feature)[] BaseOrder =
+    public static IReadOnlyList<string> BaseKeys { get; } =
     [
-        (SystemFieldsCatalog.Title, null),
-        (SystemFieldsCatalog.Categories, PostTypeConstants.Features.Category),
-        (SystemFieldsCatalog.Status, PostTypeConstants.Features.Status),
-        (SystemFieldsCatalog.Author, null),
-        (SystemFieldsCatalog.CreatedAt, null),
+        SystemFieldsCatalog.Title,
+        SystemFieldsCatalog.Categories,
+        SystemFieldsCatalog.Status,
+        SystemFieldsCatalog.Author,
+        SystemFieldsCatalog.CreatedAt,
     ];
-
-    /// <summary>Ключи базовых колонок грида в порядке по умолчанию</summary>
-    public static IReadOnlyList<string> BaseKeys { get; } = BaseOrder.Select(b => b.Key).ToList();
 
     /// <summary>Доступные колонки: базовые (с учётом фич типа) + мета-поля типа</summary>
     public static IReadOnlyList<PostTypeGridColumnInfo> Available(
@@ -33,10 +32,11 @@ public static class PostTypeGridColumns
     {
         var columns = new List<PostTypeGridColumnInfo>();
 
-        foreach (var (key, feature) in BaseOrder)
+        foreach (var key in BaseKeys)
         {
-            if (feature is not null && !(enabledFeatures?.Contains(feature) ?? false)) continue;
-            columns.Add(new PostTypeGridColumnInfo(key, SystemFieldsCatalog.Find(key)!.TitleKey));
+            var slot = SystemFieldsCatalog.Find(key)!;
+            if (slot.Feature is not null && !(enabledFeatures?.Contains(slot.Feature) ?? false)) continue;
+            columns.Add(new PostTypeGridColumnInfo(key, slot.TitleKey));
         }
 
         foreach (var field in metaFields ?? [])

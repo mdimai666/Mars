@@ -7,7 +7,8 @@ namespace Mars.Cms.Contracts.PostTypes;
 /// Каталог системных слотов формы поста: поля, которые живут в типизированных колонках <c>posts</c>
 /// (и его связках), а не в <c>post_meta_values</c>. Метаполя сюда не входят — они производят
 /// дескрипторы сами. Ключи совпадают с ключами базовых колонок грида
-/// (<see cref="PostTypeGridConstants"/>), поэтому грид и форма делят одно пространство ключей.
+/// (<see cref="PostTypeGridConstants"/>), поэтому грид и форма делят одно пространство ключей;
+/// состав и порядок колонок грида — в <see cref="PostTypeGridColumns"/>.
 /// Порядок списка — порядок по умолчанию в форме поста.
 /// </summary>
 public static class SystemFieldsCatalog
@@ -50,25 +51,25 @@ public static class SystemFieldsCatalog
     /// </summary>
     public sealed record SystemFieldSlot(string Key, string TitleKey, FormFieldType Type, string Zone,
                                          string? Feature = null, bool Multiple = false, bool ReadOnly = false,
-                                         bool InGrid = false, string? Editor = null, string? ModelName = null);
+                                         string? Editor = null, string? ModelName = null);
 
     public static readonly IReadOnlyList<SystemFieldSlot> All =
     [
         new(Title, nameof(AppRes.Title), FormFieldType.String, Zones.Main,
-            InGrid: true, Editor: PostFormEditors.Title),
+            Editor: PostFormEditors.Title),
         new(Slug, nameof(AppRes.Slug), FormFieldType.String, Zones.Main),
         new(Excerpt, nameof(AppRes.Excerpt), FormFieldType.Text, Zones.Main,
             Feature: PostTypeConstants.Features.Excerpt),
-        new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish, InGrid: true),
+        new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish),
         new(ModifiedAt, nameof(AppRes.DateModified), FormFieldType.DateTime, Zones.Publish, ReadOnly: true),
         new(Status, nameof(AppRes.Status), FormFieldType.Select, Zones.Publish,
-            Feature: PostTypeConstants.Features.Status, InGrid: true, Editor: PostFormEditors.Status),
+            Feature: PostTypeConstants.Features.Status, Editor: PostFormEditors.Status),
         new(Lang, nameof(AppRes.Language), FormFieldType.String, Zones.Publish,
             Feature: PostTypeConstants.Features.Language),
         new(Author, nameof(AppRes.Author), FormFieldType.Relation, Zones.Publish,
-            ReadOnly: true, InGrid: true, Editor: PostFormEditors.Author, ModelName: "user"),
+            ReadOnly: true, Editor: PostFormEditors.Author, ModelName: "user"),
         new(Categories, nameof(AppRes.Categories), FormFieldType.Relation, Zones.Extra,
-            Feature: PostTypeConstants.Features.Category, Multiple: true, InGrid: true,
+            Feature: PostTypeConstants.Features.Category, Multiple: true,
             Editor: PostFormEditors.Categories, ModelName: "postcategory"),
         new(Tags, nameof(AppRes.Tags), FormFieldType.String, Zones.Extra,
             Feature: PostTypeConstants.Features.Tags, Multiple: true, Editor: PostFormEditors.Tags),
@@ -76,16 +77,6 @@ public static class SystemFieldsCatalog
 
     public static SystemFieldSlot? Find(string? key)
         => string.IsNullOrEmpty(key) ? null : All.FirstOrDefault(s => s.Key == key);
-
-    public static bool IsSystemField(string? key) => Find(key) is not null;
-
-    /// <summary>Слоты, доступные при включённых фичах типа</summary>
-    public static IEnumerable<SystemFieldSlot> ForFeatures(IReadOnlyCollection<string>? enabledFeatures)
-        => All.Where(s => s.Feature is null || (enabledFeatures?.Contains(s.Feature) ?? false));
-
-    /// <summary>Ключи системных слотов, доступных для грида при включённых фичах типа</summary>
-    public static IEnumerable<string> GridKeys(IReadOnlyCollection<string>? enabledFeatures)
-        => ForFeatures(enabledFeatures).Where(s => s.InGrid).Select(s => s.Key);
 }
 
 /// <summary>

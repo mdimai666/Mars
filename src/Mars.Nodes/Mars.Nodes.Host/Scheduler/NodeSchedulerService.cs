@@ -2,7 +2,6 @@ using Mars.Nodes.Abstractions.Services;
 using Mars.Nodes.Core;
 using Mars.Nodes.Core.Nodes.Common;
 using Mars.Scheduler.Abstractions;
-using Mars.Server.Abstractions.Services;
 using Mars.Server.Abstractions.Startup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,13 +12,13 @@ internal class NodeSchedulerService : INodeSchedulerService, IMarsAppLifetimeSer
 {
     protected readonly IServiceProvider _serviceProvider;
     protected readonly INodeService _nodeService;
-    readonly ILogger _logger;
+    readonly ILogger<NodeSchedulerService> _logger;
 
-    public NodeSchedulerService(IServiceProvider serviceProvider, INodeService nodeService)
+    public NodeSchedulerService(IServiceProvider serviceProvider, INodeService nodeService, ILogger<NodeSchedulerService> logger)
     {
         _serviceProvider = serviceProvider;
-        _logger = MarsLogger.GetStaticLogger<NodeSchedulerService>();
         _nodeService = nodeService;
+        _logger = logger;
 
         _nodeService.OnDeploy += _nodeService_OnDeploy;
     }
@@ -49,11 +48,6 @@ internal class NodeSchedulerService : INodeSchedulerService, IMarsAppLifetimeSer
         try
         {
             var scheduler = _serviceProvider.GetRequiredService<ISchedulerManager>();
-
-#if DEBUG
-            //await scheduler.AddIntervalJob<DummyJob>("test", "nodes", TimeSpan.FromSeconds(6));
-            //await scheduler.AddJob<DummyJob>("test2", "nodes", "0 0/10 * * * ?");
-#endif
 
             var scheduledNodes = GetScheduledNodes();
 

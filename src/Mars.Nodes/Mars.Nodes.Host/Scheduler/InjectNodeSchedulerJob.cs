@@ -1,5 +1,4 @@
 using Mars.Nodes.Abstractions.Services;
-using Mars.Server.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -10,15 +9,15 @@ internal class InjectNodeSchedulerJob : IJob
 {
     private readonly INodeService _nodeService;
     private readonly IServiceProvider serviceProvider;
-    private readonly ILogger _logger;
+    private readonly ILogger<InjectNodeSchedulerJob> _logger;
 
     public const string DataKeyNodeId = "NodeId";
 
-    public InjectNodeSchedulerJob(INodeService nodeService, IServiceProvider serviceProvider)
+    public InjectNodeSchedulerJob(INodeService nodeService, IServiceProvider serviceProvider, ILogger<InjectNodeSchedulerJob> logger)
     {
         _nodeService = nodeService;
         this.serviceProvider = serviceProvider;
-        _logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
+        _logger = logger;
     }
 
     public async Task Execute(IJobExecutionContext context)

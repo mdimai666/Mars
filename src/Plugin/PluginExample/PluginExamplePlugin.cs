@@ -1,6 +1,5 @@
 using Mars.Options.Abstractions.Services;
 using Mars.Plugin.Abstractions;
-using Mars.Server.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +10,7 @@ using PluginExample.Data;
 using PluginExample.Data.Seeds;
 using PluginExample.Options;
 
-[assembly: MarsPluginAttribute(typeof(PluginExamplePlugin))]
+[assembly: MarsPlugin(typeof(PluginExamplePlugin))]
 
 namespace PluginExample;
 
@@ -33,8 +32,7 @@ public class PluginExamplePlugin : MarsPlugin, IPluginDatabaseMigrator
 
     public override void ConfigureWebApplication(WebApplication app, PluginSettings settings)
     {
-        var logger = MarsLogger.GetStaticLogger<PluginExamplePlugin>();
-
+        var logger = app.Services.GetRequiredService<ILogger<PluginExamplePlugin>>();
         logger.LogWarning("> Example1Plugin - Work!!!!");
 
         var op = app.Services.GetRequiredService<IOptionService>();

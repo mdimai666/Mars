@@ -190,7 +190,6 @@ public class ApplicationFixture : IAsyncLifetime
         // сущности между тестами, и после Respawn-сброса и повторного сида они становятся протухшими.
         ef.ChangeTracker.Clear();
         ResetClients();
-        MarsLogger.Initialize(ServiceProvider.GetRequiredService<ILoggerFactory>());
         //ApiClientMock = Substitute.For<IApiClient>();
 
     }

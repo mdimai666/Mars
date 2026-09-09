@@ -6,11 +6,11 @@ namespace Mars.Nodes.Host.Scheduler;
 
 internal class DummyJob : IJob
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<DummyJob> _logger;
 
     public DummyJob()
     {
-        _logger = MarsLogger.GetStaticLogger<InjectNodeSchedulerJob>();
+        _logger = MarsLogger.GetStaticLogger<DummyJob>();
     }
 
     public Task Execute(IJobExecutionContext context)

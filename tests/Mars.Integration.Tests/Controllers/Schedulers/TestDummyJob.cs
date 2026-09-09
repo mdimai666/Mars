@@ -5,12 +5,12 @@ namespace Mars.Integration.Tests.Controllers.Schedulers;
 
 public class TestDummyJob : IJob
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<TestDummyJob> _logger;
     private readonly ITestDummyTriggerService _triggerService;
 
-    public TestDummyJob(ITestDummyTriggerService triggerService)
+    public TestDummyJob(ILogger<TestDummyJob> logger, ITestDummyTriggerService triggerService)
     {
-        _logger = MarsLogger.GetStaticLogger<TestDummyJob>();
+        _logger = logger;
         _triggerService = triggerService;
     }
 

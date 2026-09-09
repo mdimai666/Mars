@@ -23,6 +23,7 @@ internal class PluginService : IPluginService
     private readonly PluginManager _pluginManager;
     private readonly IOptionService _optionService;
     private readonly IPluginCatalogClient _catalogClient;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<PluginService> _logger;
 
     /// <summary>Версия Марса для фильтра совместимости каталога («0.8.3» из «0.8.3-alpha.13+…»).</summary>
@@ -36,12 +37,14 @@ internal class PluginService : IPluginService
     internal IReadOnlyCollection<LoadedPlugin> Plugins => _pluginManager.Plugins;
 
     public PluginService([FromKeyedServices("data")] IFileStorage fileStorage, PluginManager pluginManager,
-                         IOptionService optionService, IPluginCatalogClient catalogClient, ILogger<PluginService> logger)
+                         IOptionService optionService, IPluginCatalogClient catalogClient,
+                         ILoggerFactory loggerFactory, ILogger<PluginService> logger)
     {
         _fileStorage = fileStorage;
         _pluginManager = pluginManager;
         _optionService = optionService;
         _catalogClient = catalogClient;
+        _loggerFactory = loggerFactory;
         _logger = logger;
     }
 
@@ -123,7 +126,7 @@ internal class PluginService : IPluginService
         if (!pluginOptions.AllowUploadZipManually)
             throw new UserActionException(ErrorNotAllowUploadZipManuallyMessage);
 
-        var handler = new PluginZipInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginZipInstaller>(), _pluginManager.Registry);
+        var handler = new PluginZipInstaller(_fileStorage, _loggerFactory.CreateLogger<PluginZipInstaller>(), _pluginManager.Registry);
         return handler.Handle(files, cancellationToken);
     }
 
@@ -136,7 +139,7 @@ internal class PluginService : IPluginService
                 throw new UserActionException(ErrorPluginBlockedMessage);
 
             var sources = pluginOptions.GetNugetSources().ToList();
-            var installer = new PluginNugetInstaller(_fileStorage, MarsLogger.GetStaticLogger<PluginNugetInstaller>(), _pluginManager.Registry);
+            var installer = new PluginNugetInstaller(_fileStorage, _loggerFactory.CreateLogger<PluginNugetInstaller>(), _pluginManager.Registry);
             var result = await installer.InstallAsync(packageId, version, sources, cancellationToken);
 
             _logger.LogInformation("Plugin '{PackageId}' {Version} installed from nuget", result.PackageId, result.Version);

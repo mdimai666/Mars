@@ -1,8 +1,17 @@
 using System.Collections.Concurrent;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace Mars.Server.Abstractions.Services;
 
+/// <summary>
+/// Глобальный статический логгер (паттерн NLog LogManager / Serilog Log): удобный доступ
+/// из кода, который не создаётся контейнером (плагины, рефлексия, catch-фолбэки).
+/// <see cref="Initialize"/> вызывается ровно один раз на процесс из корня композиции:
+/// продакшн — <c>MarsWebAppStartup</c>, тесты — module initializer тестовой сборки.
+/// Повторные вызовы игнорируются (first-wins), чтобы несколько хостов в одном процессе
+/// (тесты) не перетирали инициализацию друг друга.
+/// </summary>
 public static class MarsLogger
 {
     private static ILoggerFactory _loggerFactory = default!;
@@ -11,15 +20,14 @@ public static class MarsLogger
 
     public static void Initialize(ILoggerFactory loggerFactory)
     {
-        if (_loggerFactory is not null) return;
-        //throw new InvalidOperationException("MarsLogger already initialized!");
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        Interlocked.CompareExchange(ref _loggerFactory, loggerFactory, null);
     }
 
     public static ILogger<T> GetStaticLogger<T>()
     {
-        if (_loggerFactory is null)
+        if (Volatile.Read(ref _loggerFactory) is null)
             throw new InvalidOperationException("MarsLogger is not initialized yet.");
 
         return (ILogger<T>)loggerByType.GetOrAdd(typeof(T), _loggerFactory.CreateLogger<T>());

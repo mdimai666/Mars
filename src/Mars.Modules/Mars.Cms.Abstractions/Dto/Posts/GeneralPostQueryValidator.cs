@@ -1,4 +1,5 @@
 using FluentValidation;
+using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Abstractions.Repositories;
 using Mars.Cms.Abstractions.Services;
 using Mars.Cms.Contracts.PostTypes;
@@ -9,7 +10,9 @@ namespace Mars.Cms.Abstractions.Dto.Posts;
 public class GeneralPostQueryValidator : AbstractValidator<IGeneralPostQuery>
 {
 
-    public GeneralPostQueryValidator(IMetaModelTypesLocator metaModelTypesLocator, IPostCategoryRepository postCategoryRepository)
+    public GeneralPostQueryValidator(IMetaModelTypesLocator metaModelTypesLocator,
+                                     IPostCategoryRepository postCategoryRepository,
+                                     PostFormRulesValidator postFormRules)
     {
         RuleFor(x => x.Slug)
             .NotEmpty()
@@ -65,6 +68,16 @@ public class GeneralPostQueryValidator : AbstractValidator<IGeneralPostQuery>
                         context.AddFailure(nameof(x.Status), "Category feature is disabled. CategoryIds must be empty");
                     }
                 }
+            });
+
+        // правила системных полей из раскладки формы типа: проверяются здесь, а не в админ-форме,
+        // чтобы их нельзя было обойти записью через API
+        RuleFor(x => x)
+            .CustomAsync(async (x, context, cancellationToken) =>
+            {
+                var errors = await postFormRules.ValidateAsync(x, PostFormRulesValidator.OwnerId(x), cancellationToken);
+                foreach (var error in errors)
+                    context.AddFailure(PostFormRulesValidator.TransportProperty(error.Key) ?? error.Key, error.Message);
             });
 
     }

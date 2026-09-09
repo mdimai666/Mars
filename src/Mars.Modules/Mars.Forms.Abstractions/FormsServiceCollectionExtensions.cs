@@ -17,10 +17,15 @@ public static class FormsServiceCollectionExtensions
         services.TryAddSingleton<IFormDefinitionNormalizer, FormDefinitionNormalizer>();
         services.TryAddSingleton<IFormDataProviderLocator, FormDataProviderLocator>();
         services.TryAddSingleton<IFormValidator, FormValidator>();
-        services.TryAddSingleton<IFormRuleRegistry>(_ =>
+        services.TryAddSingleton<IFormRuleRegistry>(provider =>
         {
             var registry = new FormRuleRegistry();
             BuiltInFormRules.RegisterAll(registry);
+
+            // правила, которым нужны данные владельца, привозят провайдеры форм
+            foreach (var contributor in provider.GetServices<IFormRulesContributor>())
+                contributor.Register(registry);
+
             return registry;
         });
 

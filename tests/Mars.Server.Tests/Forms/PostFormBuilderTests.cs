@@ -1,33 +1,15 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
-using Mars.Cms.Abstractions.Dto.MetaFields;
-using Mars.Cms.Abstractions.Dto.Posts;
-using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Forms;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
-using Mars.Forms.Abstractions;
 using Mars.Forms.Contracts;
-using Microsoft.Extensions.DependencyInjection;
+using static Mars.Server.Tests.Forms.PostFormTestHost;
 
 namespace Mars.Server.Tests.Forms;
 
 public class PostFormBuilderTests
 {
-    static readonly IFormDefinitionNormalizer Normalizer =
-        new ServiceCollection().AddMarsForms().BuildServiceProvider().GetRequiredService<IFormDefinitionNormalizer>();
-
-    static readonly string[] AllFeatures =
-    [
-        PostTypeConstants.Features.Content,
-        PostTypeConstants.Features.Status,
-        PostTypeConstants.Features.ModifyCreatedDate,
-        PostTypeConstants.Features.Language,
-        PostTypeConstants.Features.Tags,
-        PostTypeConstants.Features.Excerpt,
-        PostTypeConstants.Features.Category,
-    ];
-
     [Fact]
     public void DefaultTree_KeepsHistoricOrderAndZones()
     {
@@ -190,63 +172,4 @@ public class PostFormBuilderTests
         PostFormBuilder.PostTypeName("post.article").Should().Be("article");
         PostFormBuilder.OwnerModelWildcard.Should().Be("post.*");
     }
-
-    //=====================================
-
-    static PostTypeDetail Type(IReadOnlyCollection<string> features,
-                               params MetaFieldDto[] metaFields)
-        => Type(features, [], metaFields);
-
-    static PostTypeDetail Type(IReadOnlyCollection<string> features,
-                               IReadOnlyCollection<PostStatusDto> statuses,
-                               IReadOnlyCollection<MetaFieldDto>? metaFields = null) => new()
-    {
-        Id = Guid.NewGuid(),
-        CreatedAt = DateTimeOffset.Now,
-        ModifiedAt = null,
-        Title = "Статья",
-        TypeName = "article",
-        Tags = [],
-        EnabledFeatures = features,
-        Disabled = false,
-        Visibility = PostTypeVisibility.Public,
-        PostStatusList = statuses,
-        MetaFields = metaFields ?? [],
-        Presentation = PostTypePresentation.Default(),
-    };
-
-    static PostStatusDto Status(string slug, string title) => new()
-    {
-        Id = Guid.NewGuid(),
-        Slug = slug,
-        Title = title,
-        Color = "",
-        Order = 0,
-    };
-
-    /// <summary>Поле контента, которое создаёт фича Content</summary>
-    static MetaFieldDto Content() => Meta(FeatureFieldsCatalog.ContentFieldKey, 0,
-        type: MetaFieldType.Text, featureKey: FeatureFieldsCatalog.Content);
-
-    static MetaFieldDto Meta(string key, int order, MetaFieldType type = MetaFieldType.String,
-                             bool hidden = false, bool disabled = false, string? featureKey = null) => new()
-    {
-        Id = Guid.NewGuid(),
-        Title = key,
-        Key = key,
-        Type = type,
-        MaxValue = null,
-        MinValue = null,
-        Description = "",
-        IsNullable = true,
-        IsMultiple = false,
-        Default = null,
-        Options = featureKey is null ? null : new JsonObject { [FeatureFieldsCatalog.FeatureKeyOption()] = featureKey },
-        Order = order,
-        Tags = [],
-        Hidden = hidden,
-        Disabled = disabled,
-        Variants = null,
-        ModelName = null,
-    };
 }

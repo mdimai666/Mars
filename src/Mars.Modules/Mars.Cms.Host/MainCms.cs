@@ -53,6 +53,8 @@ public static class MainCms
                 .AddKeyedScoped<IMetaValueUniquenessProvider, UserMetaValueUniquenessProvider>(MetaValueOwnerCatalog.User);
         services.AddScoped<IMetaValuesGeneratorService, MetaValuesGeneratorService>();
         services.AddKeyedScoped<IFormDataProvider, PostFormProvider>(PostFormBuilder.OwnerModelWildcard);
+        services.AddScoped<PostFormRulesValidator>();
+        services.AddSingleton<IFormRulesContributor, PostFormRulesContributor>();
         services.AddSingleton<ISeedDataHandler, CmsSeedDataHandler>();
         services.AddScoped<ICentralSearchService, CentralSearchService>();
         services.AddScoped<ICentralSearchProvider, PostTypesSearchProvider>();

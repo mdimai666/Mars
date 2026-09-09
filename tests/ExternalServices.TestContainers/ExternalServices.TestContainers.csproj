@@ -2,15 +2,14 @@
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-        <OutputType>Exe</OutputType>
-        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Testing.Platform" />
         <PackageReference Include="Testcontainers" />
-        <PackageReference Include="xunit.v3" />
+        <!-- Не-тестовая сборка (общие фикстуры): мета-пакет xunit.v3 требует OutputType=Exe
+             (ошибка из xunit.v3.core.mtp-v2.targets); для classlib нужен только
+             xunit.v3.extensibility.core (IAsyncLifetime). -->
+        <PackageReference Include="xunit.v3.extensibility.core" />
     </ItemGroup>
 
     <ItemGroup>

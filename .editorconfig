@@ -16,6 +16,11 @@ dotnet_diagnostic.RCS1124.severity = none
 
 # CS0162: Dereference of a possibly null reference.
 dotnet_diagnostic.CS0162.severity = none
+# xUnit1051: тесты не пробрасывают TestContext.Current.CancellationToken
+# (раннер убивает зависший процесс по таймауту, отменяемость не нужна).
+# xUnit3003: кастомный Fact (skip-гейт) без source-info конструктора.
+dotnet_diagnostic.xUnit1051.severity = none
+dotnet_diagnostic.xUnit3003.severity = none
 csharp_indent_labels = one_less_than_current
 csharp_using_directive_placement = outside_namespace:silent
 csharp_prefer_simple_using_statement = true:suggestion

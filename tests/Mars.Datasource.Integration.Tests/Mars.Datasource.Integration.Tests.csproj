@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Mars.Datasource\Mars.Datasource.Host\Mars.Datasource.Host.csproj" />
-        <ProjectReference Include="..\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
+        <ProjectReference Include="..\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -14,7 +14,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Server\Mars.Server\Mars.Server.csproj" />
-        <ProjectReference Include="..\..\tests\Mars.Integration.Tests\Mars.Integration.Tests.csproj" />
+        <ProjectReference Include="..\..\tests\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
     </ItemGroup>
 
 </Project>

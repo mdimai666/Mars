@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Переиспользуем E2EServerFixture: реальный Kestrel + Testcontainers PostgreSQL + сидинг -->
-        <ProjectReference Include="..\..\tests\Mars.E2E.Tests\Mars.E2E.Tests.csproj" />
+        <!-- Переиспользуем E2EServerFixture (теперь в Mars.Test.AppHost): реальный Kestrel + Testcontainers PostgreSQL + сидинг -->
+        <ProjectReference Include="..\..\tests\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
     </ItemGroup>
 
     <ItemGroup>

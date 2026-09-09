@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Mars.Test.AppHost\Mars.Test.AppHost.csproj" />
         <ProjectReference Include="..\..\src\Server\Mars.Data.Repositories\Mars.Data.Repositories.csproj" />
         <ProjectReference Include="..\..\src\Mars.WebApp\Mars.WebApp.csproj" />
         <ProjectReference Include="..\Mars.Test.Common\Mars.Test.Common.csproj" />
@@ -32,12 +33,6 @@
 
     <ItemGroup>
         <Folder Include="Controllers\Medias\ExampleFiles\" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>Mars.E2E.Tests</_Parameter1>
-        </AssemblyAttribute>
     </ItemGroup>
 
 </Project>

@@ -194,6 +194,7 @@ function Get-Summary {
     param($logPath)
     if (-not (Test-Path $logPath)) { return @{ Total = 0; Failed = 0; Summary = '' } }
     $text = Get-Content -Raw $logPath
+    if ($null -eq $text) { $text = '' }
     $m = [regex]::Match($text, 'Total:\s*(\d+),\s*Errors:\s*(\d+),\s*Failed:\s*(\d+),\s*Skipped:\s*(\d+)')
     if ($m.Success) {
         return @{ Total = [int]$m.Groups[1].Value; Failed = [int]$m.Groups[3].Value; Summary = $m.Value }

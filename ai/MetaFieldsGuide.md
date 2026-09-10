@@ -133,20 +133,29 @@
   «значение отсутствует». Перегенерация — XAction
   `mars.content.regenerateGeneratedMetaValues`.
 - **Редакторы значений**: серверный каталог `MetaFieldEditorCatalog` +
-  фронтовый реестр `IMetaFieldEditorLocator` (ключ → компонент + совместимые
-  типы; открытый статический `Register` — точка расширения плагинов). Рендер —
-  `DynamicComponent` в `RowMetaValue`; пустой/несовместимый ключ = дефолтный
-  редактор типа. **Ключи трёхчастные** `<происхождение>.<семейство>.<реализация>`:
+  общий фронтовый реестр формы `IFormEditorLocator` (ключ → компонент +
+  совместимые типы + кратность; открытый статический `Register` — точка
+  расширения плагинов). Регистрация редакторов метаполей —
+  `MetaFieldEditors.RegisterAll()` в `Mars.Admin/Program.cs` (отдельного
+  реестра метаполей больше нет). Рендер — `DynamicComponent` в `RowMetaValue`,
+  который сам является начинкой зарегистрированного редактора
+  `MetaFormEditors.Value`; пустой/несовместимый ключ = дефолтный редактор типа.
+  **Ключи трёхчастные** `<происхождение>.<семейство>.<реализация>`:
   `core.input.color|url|email|date|time|datetime`, `core.wysiwyg.quilljs`,
   `core.code.monaco` (+ типизированный `Options.codeLang`, дефолт
   `handlebars`), `core.blockeditor.editorjs` (компонент регистрируется в
   админке при старте; где не зарегистрирован — мягкая деградация). Обычный
-  текст — без редактора, ключа нет.
+  текст — без редактора, ключа нет. Доменные ключи рендера метаполей в общем
+  реестре — `MetaFormEditors` (`core.meta.value[.multi]`,
+  `core.meta.relation[.multi]`, `core.meta.file[.multi]`): их подставляет в
+  дескриптор `MetaFieldFormMapping`, а компоненты-обёртки выбирают
+  Relation/ChildrenList/FileMulti/`FSelectMedia` по настройке поля.
 - **Тяжёлые редакторы** (WYSIWYG/Code/BlockEditor) — pull-контракт
   `IHeavyMetaValueEditor` (`GetValueAsync`/`SetValueAsync`/`CommitAsync`):
   значение забирается в модель только при сохранении
-  (`FormMetaValue.PullAsync` в BeforeSave постов/категорий/пользователей и в
-  ИИ-обработке). Лёгкие инлайн-редакторы реактивные.
+  (`MetaValuesForm.PullAsync` в BeforeSave категорий/пользователей,
+  `EditPostView` — для постов, и в ИИ-обработке). Лёгкие инлайн-редакторы
+  реактивные.
 - **Пикер типа поля** — пресеты `MetaFieldTypePresets` (пресет = тип +
   редактор + кратность/kind/`codeLang`), группы «Текстовые/Числовые/Выбор/
   Даты/Связь» + группа «Raw». Применение пресета = применение настроек; при

@@ -1,3 +1,4 @@
+using System.Collections;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Forms.Contracts;
@@ -58,6 +59,13 @@ public sealed class PostFormValueStore(PostEditModel post) : IFormValueStore
     {
         // строка метаполя правится на месте — записывать нечего
         if (IsMeta(field)) return;
+
+        // множественный слот: редактор отдаёт значение целиком списком (теги, категории)
+        if (IsList(field))
+        {
+            SetList(field, value is IEnumerable items ? items.Cast<object?>() : []);
+            return;
+        }
 
         switch (field.Key)
         {

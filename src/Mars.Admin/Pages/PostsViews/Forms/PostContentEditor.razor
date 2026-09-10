@@ -78,9 +78,11 @@
 </div>
 
 @code {
-    [CascadingParameter] public PostEditModel Post { get; set; } = default!;
+    [CascadingParameter] public PostFormContext Context { get; set; } = default!;
 
     [Parameter] public PostContentEditorHolder Holder { get; set; } = default!;
+
+    PostEditModel Post => Context.Post;
 
     [Inject] IAppMediaService mediaService { get; set; } = default!;
     [Inject] IAIToolAppService aiTool { get; set; } = default!;

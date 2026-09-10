@@ -1,3 +1,4 @@
+using System.Collections;
 using Mars.Forms.Contracts;
 using Mars.Forms.Front;
 
@@ -25,6 +26,13 @@ public sealed class MetaValueListStore(List<MetaValueEditModel> rows) : IFormVal
 
     public void SetValue(FormFieldDescriptor field, object? value)
     {
+        // множественное поле: редактор отдаёт значение целиком списком строк
+        if (IsList(field))
+        {
+            SetList(field, value is IEnumerable items ? items.Cast<object?>() : []);
+            return;
+        }
+
         if (value is not MetaValueEditModel row) return;
         if (rows.Any(r => r.MetaField.Key == field.Key && r.Index == row.Index)) return;
 

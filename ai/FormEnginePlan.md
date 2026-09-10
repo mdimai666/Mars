@@ -474,7 +474,7 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   в этот прогон не запускались). Прогон: `Mars.Server.Tests` 474/474,
   `Mars.Forms.Tests` 84/84, `dotnet build Mars.slnx` — 0 ошибок.
 
-**Этап B — метаполя на общем редакторе определений**
+**Этап B — метаполя на общем редакторе определений — выполнено 2026-09-10**
 
 - Адаптер `MetaFieldEditModel` ↔ `FormFieldDefinition` в обе стороны (включая
   Options-мешок: editor/codeLang/kind/removeMode/viewMode/uploadFolder/dropZone/
@@ -488,6 +488,49 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - Переключение трёх страниц типов (`EditPostTypePage`, `EditUserTypePage`,
   `EditPostCategoryTypePage`), затем удаление `FormMetaField.razor` (+ code-behind)
   и `EditMetaFieldVariants.razor`.
+
+Что добавилось/изменилось по ходу реализации этапа B:
+
+- Хранилище осталось за моделью источника: `MetaFieldDefinitions`
+  (`Mars.Admin.Framework/Components/Forms`) держит `List<MetaFieldEditModel>` и его
+  проекцию `List<FormFieldDefinition>`; общий редактор правит **определение**
+  (`OnChanged` → `Apply`), доменные компоненты правят **модель** (`OnSourceChanged`
+  → `Refresh`). Определение несёт `Source` (модель источника) — по нему панели
+  и пикер типа работают со своим доменом, не расширяя общий контракт.
+- Пересборка определений сохраняет экземпляры по `Id`, поэтому состояние строк
+  (раскрыта/свёрнута) не сбрасывается при смене фич типа и при правках.
+- Панелей одна, а не по типу: `MetaFieldSettingsPanel` (скоуп `meta`, регистрация
+  без типов) сама фильтрует блоки по типу поля. Реестр
+  `IFormFieldTypeSettingsLocator` при этом общий (скоуп + тип), так что другие
+  провайдеры и плагины могут регистрировать свои панели.
+- Пикер типа — отдельный компонент `MetaFieldTypePicker` (слот `TypePickerComponent`
+  в редакторе, рендерится до селектора редактора): пресеты `MetaFieldTypePresets`
+  задают тип + редактор + вид поля + язык кода + кратность, смена типа у
+  сохранённого поля подтверждается диалогом, недоступные типу правила снимаются.
+- Валидаторы метаполей и правила формы сведены к одному UI: строки
+  `MetaFieldValidatorEditRow` ↔ `FormRuleDefinition`. Набор параметров правила
+  источник объявляет сам (`FormFieldDefinition.RuleParams`): у правила длины
+  метаполя нет `message`, поэтому поле сообщения не показывается и не теряется.
+- Список редакторов значения для метаполей даёт источник
+  (`FormFieldDefinition.Editors` из `IMetaFieldEditorLocator.EditorsFor`), общий
+  реестр фронта — фолбэк: доменные редакторы значений переезжают в
+  `IFormEditorLocator` на этапе C.
+- Сообщения валидации заголовка/ключа общий редактор берёт из `EditContext`
+  страницы по модели источника (`ObjectGraphDataAnnotationsValidator` и проверка
+  графа `MetaFields` остаются), поэтому DataAnnotations-пол не потерялся.
+- `MetaFieldType.ToFormFieldType()` вынесен в `Mars.Cms.Contracts`
+  (`MetaFieldTypeFormMapping`) — один маппинг на серверный дескриптор и клиентское
+  определение; `Mars.Cms.Abstractions` теперь его использует.
+- Кнопка «Добавить» и пустое состояние переехали в общий редактор
+  (`Capabilities.CanAdd`), страницы типов свои кнопки убрали; `FormMetaField.razor`
+  (+ code-behind) удалён, `EditMetaFieldVariants`, `MetaFieldTypePresets` и
+  `GroupedSelectDropDown` остались (их используют панель и ноды).
+- Грабли FluentUI: `FluentNumberField` связывается только через `@bind-Value`
+  (явный `ValueChanged` не сходится по nullability), поэтому min/max/order/разряды
+  генератора — прокси-свойства; `InputTags2` сравнивает массив **по ссылке**, так
+  что теги в определении и в модели — один экземпляр (иначе цикл рендера).
+- Прогон: `dotnet build Mars.slnx` — 0 ошибок, `Mars.Server.Tests` 474/474,
+  `Mars.Forms.Tests` 84/84. Визуально не проверялось (браузер не открывался).
 
 **Этап C — значения через FormEngine (post + user + postcategory)**
 

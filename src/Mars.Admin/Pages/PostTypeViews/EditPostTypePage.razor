@@ -139,26 +139,11 @@
                     </div>
                     <div class="card-body">
                         <div class="card-section">
-
-                            @if (!context.MetaFields.Any())
-                            {
-                                <SharedContentNoRecords />
-                            }
-
-                            <CascadingValue Value="@context.MetaFields">
-                                <CascadingValue Value="@context.MetaRelationModels">
-                                    <Mars.Admin.Framework.Components.MetaFieldViews.FormMetaField
-                                        FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
-                                        ContentFeatureEnabled="@context.FeatureActivated(PostTypeConstants.Features.Content)"
-                                        OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
-                                </CascadingValue>
-                            </CascadingValue>
-
-                            <div class="mt-2">
-                                <FluentButton Appearance="Appearance.Accent"
-                                              IconStart="@(new Icons.Regular.Size16.Add())"
-                                              OnClick="AddNewField">Добавить</FluentButton>
-                            </div>
+                            <MetaFieldsGroup Fields="context.MetaFields"
+                                             MetaRelationModels="context.MetaRelationModels"
+                                             FeatureFieldKey="@(context.FeatureActivated(PostTypeConstants.Features.PostImage) ? context.ImageFieldKey : null)"
+                                             ContentFeatureEnabled="@context.FeatureActivated(PostTypeConstants.Features.Content)"
+                                             OnFieldKeyRenamed="@context.OnFieldKeyRenamed" />
                         </div>
                     </div>
                 </div>

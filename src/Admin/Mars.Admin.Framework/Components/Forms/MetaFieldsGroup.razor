@@ -1,0 +1,20 @@
+@using Mars.Admin.Framework.Components.MetaFieldViews
+@using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Contracts
+@using Mars.WebApiClient.Interfaces
+
+@* Группа метаполей на странице типа: общий редактор определений (Mars.Forms) + доменные
+   компоненты метаполей (пикер типа и панели настроек). Хранилище — список MetaFieldEditModel
+   владельца, определения полей — его проекция; добавление/дублирование/удаление — в редакторе. *@
+
+<CascadingValue Value="MetaRelationModels">
+    <FieldDefinitionsEditor Definitions="Definitions.Definitions"
+                            Capabilities="FormDefinitionCapabilities.MetaFields"
+                            SettingsScope="MetaFieldSettingsPanel.Scope"
+                            TypePickerComponent="typeof(MetaFieldTypePicker)"
+                            OnChanged="Definitions.Apply"
+                            OnSourceChanged="Definitions.Refresh"
+                            OnAdd="Definitions.Add"
+                            OnClone="Definitions.Clone"
+                            OnDelete="Definitions.Delete" />
+</CascadingValue>

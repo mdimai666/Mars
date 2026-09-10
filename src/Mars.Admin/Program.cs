@@ -1,6 +1,7 @@
 using Flurl.Http;
 using Mars.Admin;
 using Mars.Admin.Components;
+using Mars.Admin.Framework.Components.Forms;
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Framework.Interfaces;
 using Mars.Admin.Pages.PostsViews.Forms;
@@ -77,6 +78,9 @@ MetaFieldEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaV
 FormEditorLocator.Register(PostFormEditors.Categories, typeof(PostCategoriesEditor), true, FormFieldType.Relation);
 FormEditorLocator.Register(PostFormEditors.Tags, typeof(PostTagsEditor), true, FormFieldType.String);
 FormEditorLocator.Register(PostFormEditors.Author, typeof(PostAuthorEditor), false, FormFieldType.Relation);
+
+// доменные панели настроек метаполей в общем редакторе определений (скоуп meta, все типы)
+FormFieldTypeSettingsLocator.Register(MetaFieldSettingsPanel.Scope, typeof(MetaFieldSettingsPanel));
 
 logger.LogTrace("Adding workspace services...");
 builder.Services.AddHotKeys2();

@@ -9,6 +9,7 @@ public static class MainFormsFront
     {
         services.AddScoped<IFormEditorLocator, FormEditorLocator>();
         services.AddScoped<IFormContainerLocator, FormContainerLocator>();
+        services.AddScoped<IFormFieldTypeSettingsLocator, FormFieldTypeSettingsLocator>();
         return services;
     }
 

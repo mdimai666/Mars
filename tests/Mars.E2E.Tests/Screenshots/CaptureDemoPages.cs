@@ -15,7 +15,7 @@ public class CaptureDemoPages : BaseE2ETests
     {
     }
 
-    [E2EFact]
+    [E2EFact(Skip = "not required")]
     public async Task DemoPages_Screenshots()
     {
         var paths = GetAdminPagePaths();

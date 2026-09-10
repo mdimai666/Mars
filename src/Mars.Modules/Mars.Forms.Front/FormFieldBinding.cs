@@ -29,8 +29,8 @@ public sealed class FormFieldBinding
         }
     }
 
-    /// <summary>Ключ редактора: переопределение из раскладки, иначе из дескриптора</summary>
-    public string? Editor => string.IsNullOrEmpty(Item.Editor) ? Field.Editor : Item.Editor;
+    /// <summary>Ключ редактора</summary>
+    public string? Editor => Field.Editor;
 
     public bool ReadOnly => Field.ReadOnly;
 

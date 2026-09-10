@@ -26,30 +26,6 @@ public static class PostTypeOptionsCatalog
     public static IReadOnlyCollection<FormFieldSettings>? GetSystemFields(this JsonNode? options)
         => options is JsonObject obj ? FormFieldSettingsJson.Parse(obj[SystemFields]) : null;
 
-    /// <summary>
-    /// Действующие параметры системных полей: сохранённые, а при их отсутствии — материализованные
-    /// из легаси-раскладки (до переноса правила и редактор слота хранились в элементах <c>Options["form"]</c>).
-    /// Ключи метаполей из легаси-раскладки игнорируются потребителем: параметры применяются только к слотам.
-    /// </summary>
-    public static IReadOnlyCollection<FormFieldSettings>? GetEffectiveSystemFields(this JsonNode? options)
-    {
-        var stored = options.GetSystemFields();
-        if (stored is { Count: > 0 }) return stored;
-
-        var legacy = options.GetFormLayout()?
-                            .Items.FlattenFields()
-                            .Where(item => item.Rules.Count > 0 || !string.IsNullOrEmpty(item.Editor))
-                            .Select(item => new FormFieldSettings
-                            {
-                                Key = item.Key,
-                                Editor = item.Editor,
-                                Rules = item.Rules,
-                            })
-                            .ToList();
-
-        return legacy is { Count: > 0 } ? legacy : stored;
-    }
-
     /// <summary>Копия Options с заменённой раскладкой формы; null-раскладка убирает ключ, пустой мешок → null</summary>
     public static JsonNode? WithFormLayout(this JsonNode? options, FormLayoutSettings? layout)
     {

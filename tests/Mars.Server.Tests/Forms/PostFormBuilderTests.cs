@@ -76,7 +76,7 @@ public class PostFormBuilderTests
         var content = form.Items.Single(i => i.Key == FeatureFieldsCatalog.ContentFieldKey);
         content.Field!.Type.Should().Be(FormFieldType.Text);
         content.Field.Options.GetFeatureKey().Should().Be(FeatureFieldsCatalog.Content);
-        content.Field.SettingsOnForm.Should().BeFalse("правила метаполя живут на определении поля");
+        content.Field.Rules.Should().BeEmpty("правила метаполя применяет его собственный валидатор");
         form.Items.Count(i => i.Key == FeatureFieldsCatalog.ContentFieldKey).Should().Be(1);
     }
 
@@ -99,7 +99,6 @@ public class PostFormBuilderTests
             .Items.Single(i => i.Key == SystemFieldsCatalog.Title);
 
         title.Field!.TitleKey.Should().Be("Title");
-        title.Field.SettingsOnForm.Should().BeTrue();
         title.Field.Required.Should().BeTrue();
         title.Field.Editor.Should().Be(PostFormEditors.Title);
     }
@@ -127,16 +126,12 @@ public class PostFormBuilderTests
                 {
                     Key = SystemFieldsCatalog.Tags,
                     Zone = SystemFieldsCatalog.Zones.Main,
-                    // легаси-хранилище: правила и редактор в раскладке больше не действуют
-                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Length, Params = new JsonObject { ["min"] = 2 } }],
-                    Editor = FormEditorCatalog.Text,
                 },
                 new FormItem
                 {
                     Key = "subtitle",
                     Zone = SystemFieldsCatalog.Zones.Main,
                     Visible = false,
-                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Regex }],
                 },
             ],
         };
@@ -148,13 +143,10 @@ public class PostFormBuilderTests
 
         var tags = form.Items.First(i => i.Key == SystemFieldsCatalog.Tags);
         tags.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
-        tags.Rules.Should().BeEmpty("раскладка отвечает только за представление");
         tags.Field!.Rules.Should().BeEmpty();
-        tags.Field.Editor.Should().Be(PostFormEditors.Tags, "редактор слота — из каталога и параметров типа, не из раскладки");
+        tags.Field.Editor.Should().Be(PostFormEditors.Tags, "редактор слота — из каталога и параметров типа");
 
-        var subtitle = form.Items.First(i => i.Key == "subtitle");
-        subtitle.Visible.Should().BeFalse();
-        subtitle.Rules.Should().BeEmpty();
+        form.Items.First(i => i.Key == "subtitle").Visible.Should().BeFalse();
     }
 
     [Fact]
@@ -178,7 +170,6 @@ public class PostFormBuilderTests
 
         excerpt.Field!.Editor.Should().Be(FormEditorCatalog.Multiline);
         excerpt.Field.Rules.Single().Type.Should().Be(FormRuleCatalog.Length);
-        excerpt.Rules.Should().BeEmpty("правила приходят в дескрипторе, а не в элементе раскладки");
     }
 
     [Fact]

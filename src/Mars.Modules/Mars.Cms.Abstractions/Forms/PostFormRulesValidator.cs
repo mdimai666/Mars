@@ -68,13 +68,13 @@ public class PostFormRulesValidator(IMetaModelTypesLocator metaModelTypesLocator
     public static FormDefinition RulesOnly(FormDefinition definition) => definition with
     {
         Items = definition.Fields()
-                          .Where(item => item.Field is { SettingsOnForm: true } && TransportProperties.ContainsKey(item.Field.Key))
-                          .Where(item => item.Rules.Count > 0 || item.Field!.Rules.Count > 0)
+                          .Where(item => item.Field is not null && TransportProperties.ContainsKey(item.Field.Key))
+                          .Where(item => item.Field!.Rules.Count > 0)
                           .Select(item => item with
                           {
                               Zone = null,
                               Items = [],
-                              Field = item.Field with { Required = false, Min = null, Max = null },
+                              Field = item.Field! with { Required = false, Min = null, Max = null },
                           })
                           .ToList(),
     };

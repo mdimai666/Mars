@@ -30,8 +30,6 @@ public class FormLayoutJsonTests
                     Key = "slug",
                     Zone = "main",
                     Visible = false,
-                    Editor = "core.input.url",
-                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Regex, Params = new JsonObject { ["pattern"] = "^[a-z]+$" } }],
                 },
             ],
         };
@@ -51,9 +49,6 @@ public class FormLayoutJsonTests
 
         var slug = parsed.Items.Last();
         slug.Visible.Should().BeFalse();
-        slug.Editor.Should().Be("core.input.url");
-        slug.Rules.Single().Type.Should().Be(FormRuleCatalog.Regex);
-        slug.Rules.Single().Params!["pattern"]!.GetValue<string>().Should().Be("^[a-z]+$");
     }
 
     [Fact]
@@ -107,7 +102,7 @@ public class FormLayoutJsonTests
     }
 
     [Fact]
-    public void Parse_StoredRules_SurviveRoundTrip()
+    public void Parse_StoredLayout_SurvivesRoundTrip()
     {
         var settings = new FormLayoutSettings
         {
@@ -116,16 +111,19 @@ public class FormLayoutJsonTests
                 new FormItem
                 {
                     Key = "title",
-                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Length, Params = new JsonObject { ["min"] = 3 } }],
+                    Zone = "main",
+                    Width = FormItemWidths.Half,
+                    Visible = false,
                 },
             ],
         };
 
-        var parsed = FormLayoutJson.Parse(settings.ToJsonNode());
+        var item = FormLayoutJson.Parse(settings.ToJsonNode())!.Items.Single();
 
-        var rule = parsed!.Items.Single().Rules.Single();
-        rule.Type.Should().Be(FormRuleCatalog.Length);
-        rule.Params!["min"]!.GetValue<int>().Should().Be(3);
+        item.Key.Should().Be("title");
+        item.Zone.Should().Be("main");
+        item.Width.Should().Be(FormItemWidths.Half);
+        item.Visible.Should().BeFalse();
     }
 
     [Fact]

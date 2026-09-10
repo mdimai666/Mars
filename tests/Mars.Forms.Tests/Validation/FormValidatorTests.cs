@@ -62,23 +62,6 @@ public class FormValidatorTests
     }
 
     [Fact]
-    public async Task DescriptorRules_AndLayoutRules_BothApply()
-    {
-        var field = Title(rules: Rule(FormRuleCatalog.Length, ("min", 5)));
-        var item = new FormItem
-        {
-            Key = "title",
-            Field = field,
-            Rules = [Rule(FormRuleCatalog.Regex, ("pattern", "^[0-9]+$"))],
-        };
-
-        var values = new FormValues { OwnerModel = OwnerModel, Values = { ["title"] = "abc" } };
-        var errors = await _validator.ValidateAsync(Definition(item), values);
-
-        errors.Select(e => e.Message).Should().Equal("минимальная длина 5", "значение не соответствует шаблону '^[0-9]+$'");
-    }
-
-    [Fact]
     public async Task DescriptorLimits_ApplyToNumbers()
     {
         var field = new FormFieldDescriptor { Key = "price", Title = "Цена", Type = FormFieldType.Decimal, Min = 3 };
@@ -93,8 +76,14 @@ public class FormValidatorTests
     [Fact]
     public async Task MinMaxRules_ReadLimitFromParams()
     {
-        var field = new FormFieldDescriptor { Key = "count", Title = "Количество", Type = FormFieldType.Int };
-        var item = new FormItem { Key = "count", Field = field, Rules = [Rule(FormRuleCatalog.Max, ("value", 10))] };
+        var field = new FormFieldDescriptor
+        {
+            Key = "count",
+            Title = "Количество",
+            Type = FormFieldType.Int,
+            Rules = [Rule(FormRuleCatalog.Max, ("value", 10))],
+        };
+        var item = new FormItem { Key = "count", Field = field };
         var values = new FormValues { OwnerModel = OwnerModel, Values = { ["count"] = 42 } };
 
         var errors = await _validator.ValidateAsync(Definition(item), values);
@@ -122,14 +111,9 @@ public class FormValidatorTests
             Title = "Теги",
             Type = FormFieldType.String,
             Multiple = true,
-            SettingsOnForm = true,
-        };
-        var item = new FormItem
-        {
-            Key = "tags",
-            Field = field,
             Rules = [Rule(FormRuleCatalog.Length, ("min", 3))],
         };
+        var item = new FormItem { Key = "tags", Field = field };
         var values = new FormValues { OwnerModel = OwnerModel, Values = { ["tags"] = new JsonArray("ab", "abc", "x") } };
 
         var errors = await _validator.ValidateAsync(Definition(item), values);
@@ -171,7 +155,7 @@ public class FormValidatorTests
     [Fact]
     public async Task UnknownRule_IsSoftlySkipped()
     {
-        var item = new FormItem { Key = "title", Field = Title(), Rules = [Rule("sqlNotNull")] };
+        var item = new FormItem { Key = "title", Field = Title(rules: Rule("sqlNotNull")) };
         var values = new FormValues { OwnerModel = OwnerModel, Values = { ["title"] = "abc" } };
 
         var errors = await _validator.ValidateAsync(Definition(item), values);
@@ -183,7 +167,7 @@ public class FormValidatorTests
     public async Task ScopedRule_OfAnotherProvider_IsNotApplied()
     {
         _registry.Register("sql.*", "notNull", (_, _, _, _) => ValueTask.FromResult<IEnumerable<string>>(["не null"]));
-        var item = new FormItem { Key = "title", Field = Title(), Rules = [Rule("notNull")] };
+        var item = new FormItem { Key = "title", Field = Title(rules: Rule("notNull")) };
         var values = new FormValues { OwnerModel = OwnerModel, Values = { ["title"] = "abc" } };
 
         var errors = await _validator.ValidateAsync(Definition(item), values);
@@ -208,7 +192,6 @@ public class FormValidatorTests
         Type = FormFieldType.String,
         Required = required,
         Rules = rules,
-        SettingsOnForm = true,
     };
 
     static FormRuleDefinition Rule(string type, params (string Name, object Value)[] parameters)

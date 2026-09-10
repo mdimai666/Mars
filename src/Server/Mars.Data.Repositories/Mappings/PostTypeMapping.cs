@@ -40,7 +40,7 @@ internal static class PostTypeMapping
 
             Presentation = entity.Presentation.ToDto(),
             Form = entity.Options.GetFormLayout(),
-            SystemFields = entity.Options.GetEffectiveSystemFields(),
+            SystemFields = entity.Options.GetSystemFields(),
         };
 
     public static PostStatusDto ToDto(this PostStatusEntity entity)

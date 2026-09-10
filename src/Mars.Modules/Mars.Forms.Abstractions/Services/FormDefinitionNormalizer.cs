@@ -102,9 +102,6 @@ internal class FormDefinitionNormalizer : IFormDefinitionNormalizer
                 Visible = item.Visible,
                 Width = item.Width,
                 Field = descriptor,
-                // раскладка — только представление: правила и редактор приходят в дескрипторе от провайдера
-                Rules = [],
-                Editor = null,
             });
         }
 

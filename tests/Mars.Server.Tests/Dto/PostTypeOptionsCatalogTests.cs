@@ -51,7 +51,7 @@ public class PostTypeOptionsCatalogTests
     }
 
     [Fact]
-    public void FormLayout_RoundTripsZonesAndLegacyFieldSettings()
+    public void FormLayout_RoundTripsZonesAndSections()
     {
         var options = ((JsonNode?)null).WithFormLayout(Layout());
 
@@ -66,15 +66,12 @@ public class PostTypeOptionsCatalogTests
         tags.Visible.Should().BeFalse();
         tags.Width.Should().Be(FormItemWidths.Half);
         tags.Field.Should().BeNull("дескрипторы не хранятся — их отдаёт провайдер");
-        tags.Rules.Single().Type.Should().Be(FormRuleCatalog.Unique);
-        tags.Rules.Single().Params!["message"]!.GetValue<string>().Should().Be("занято");
 
         var section = parsed.Items.Last();
         section.IsSection.Should().BeTrue();
         section.Title.Should().Be("Дополнительно");
         section.Collapsed.Should().BeTrue();
         section.Items.Single().Key.Should().Be(SystemFieldsCatalog.Slug);
-        section.Items.Single().Editor.Should().Be(PostFormEditors.Title);
     }
 
     //=====================================
@@ -139,45 +136,6 @@ public class PostTypeOptionsCatalogTests
         parsed.Last().Rules.Should().BeEmpty();
     }
 
-    [Fact]
-    public void GetEffectiveSystemFields_PrefersStoredOverLegacyLayout()
-    {
-        var options = ((JsonNode?)null)
-            .WithFormLayout(Layout())
-            .WithSystemFields([Settings(SystemFieldsCatalog.Title, FormRuleCatalog.Required)]);
-
-        var effective = options.GetEffectiveSystemFields();
-
-        effective!.Should().HaveCount(1);
-        effective.Single().Key.Should().Be(SystemFieldsCatalog.Title);
-        effective.Single().Rules.Single().Type.Should().Be(FormRuleCatalog.Required);
-    }
-
-    [Fact]
-    public void GetEffectiveSystemFields_MaterializesLegacyLayoutSettings()
-    {
-        // до переноса правила и редактор слота хранились в элементах раскладки, включая детей секции
-        var options = ((JsonNode?)null).WithFormLayout(Layout());
-
-        var effective = options.GetEffectiveSystemFields();
-
-        effective!.Select(s => s.Key).Should().Equal(SystemFieldsCatalog.Tags, SystemFieldsCatalog.Slug);
-        effective.First().Rules.Single().Type.Should().Be(FormRuleCatalog.Unique);
-        effective.First().Rules.Single().Params!["message"]!.GetValue<string>().Should().Be("занято");
-        effective.Last().Editor.Should().Be(PostFormEditors.Title);
-    }
-
-    [Fact]
-    public void GetEffectiveSystemFields_WithoutStoredAndLegacy_IsNull()
-    {
-        ((JsonNode?)null).GetEffectiveSystemFields().Should().BeNull();
-        new JsonObject().GetEffectiveSystemFields().Should().BeNull();
-        ((JsonNode?)null).WithFormLayout(new FormLayoutSettings
-        {
-            Items = [new FormItem { Key = SystemFieldsCatalog.Title, Zone = SystemFieldsCatalog.Zones.Main }],
-        }).GetEffectiveSystemFields().Should().BeNull("в раскладке только представление");
-    }
-
     //=====================================
 
     static FormFieldSettings Settings(string key, string? rule = null, string? editor = null) => new()
@@ -197,14 +155,6 @@ public class PostTypeOptionsCatalogTests
                 Zone = SystemFieldsCatalog.Zones.Main,
                 Visible = false,
                 Width = FormItemWidths.Half,
-                Rules =
-                [
-                    new FormRuleDefinition
-                    {
-                        Type = FormRuleCatalog.Unique,
-                        Params = new JsonObject { ["message"] = "занято" },
-                    },
-                ],
             },
             new FormItem
             {
@@ -213,7 +163,7 @@ public class PostTypeOptionsCatalogTests
                 Zone = SystemFieldsCatalog.Zones.Extra,
                 Title = "Дополнительно",
                 Collapsed = true,
-                Items = [new FormItem { Key = SystemFieldsCatalog.Slug, Editor = PostFormEditors.Title }],
+                Items = [new FormItem { Key = SystemFieldsCatalog.Slug }],
             },
         ],
     };

@@ -52,7 +52,6 @@ public class MetaFieldsFormBuilderTests
         var bio = form.Items.First(i => i.Key == "bio").Field!;
         bio.Type.Should().Be(FormFieldType.Text);
         bio.Editor.Should().Be(MetaFormEditors.Value);
-        bio.SettingsOnForm.Should().BeFalse("правила и редактор метаполя живут на определении поля");
 
         form.Items.First(i => i.Key == "photos").Field!.Editor.Should().Be(MetaFormEditors.File);
     }

@@ -140,7 +140,6 @@ public class UpdatePostTypePresentationTests : ApplicationTests
                 {
                     Key = SystemFieldsCatalog.Tags,
                     Zone = SystemFieldsCatalog.Zones.Main,
-                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Unique }],
                 },
             ],
         };
@@ -167,11 +166,5 @@ public class UpdatePostTypePresentationTests : ApplicationTests
         viewModel.FormLayout!.Items.Single().Key.Should().Be(SystemFieldsCatalog.Tags);
         viewModel.Form!.Items.First().Key.Should().Be(SystemFieldsCatalog.Tags);
         viewModel.Form.Items.First().Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
-
-        // правила из старой раскладки материализуются в параметры типа и приходят в дескрипторе поля
-        viewModel.Form.Fields().First(f => f.Key == SystemFieldsCatalog.Tags)
-                   .Field!.Rules.Should().Contain(rule => rule.Type == FormRuleCatalog.Unique);
-        viewModel.Form.Fields().First(f => f.Key == SystemFieldsCatalog.Tags)
-                   .Rules.Should().BeEmpty("раскладка отвечает только за представление");
     }
 }

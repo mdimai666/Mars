@@ -20,7 +20,7 @@ internal class FormValidator(IFormRuleRegistry rules) : IFormValidator
 
             values.Values.TryGetValue(field.Key, out var node);
 
-            var fieldRules = field.Rules.Concat(item.Rules).ToList();
+            var fieldRules = field.Rules;
             var required = field.Required || fieldRules.Any(r => r.Type == FormRuleCatalog.Required);
 
             if (FormValueCodec.IsEmpty(node))

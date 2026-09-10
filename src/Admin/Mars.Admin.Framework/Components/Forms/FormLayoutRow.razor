@@ -25,10 +25,6 @@
         else
         {
             <span>@Editor.DisplayTitle(Row)</span>
-            @if (!Row.SettingsOnForm)
-            {
-                <FluentBadge Appearance="Appearance.Neutral">meta</FluentBadge>
-            }
             <FluentTextField Value="@Row.Title" ValueChanged="SetTitleAsync" Placeholder="Заголовок по умолчанию" Style="width:200px" />
         }
 

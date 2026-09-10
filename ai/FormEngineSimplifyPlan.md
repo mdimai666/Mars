@@ -82,17 +82,26 @@ Mars.Forms.Abstractions
 `FormFieldSettings` — R1 (нужна миграция чтения), `IFormFieldTypeSettingsLocator` — R1,
 `FormValues`+кодек — R6.
 
-### R1 — один тип поля
+### R1 — один тип поля — выполнено 2026-09-10
 
-- `FormFieldSettings` растворяется в дескрипторе; признак `SettingsOnForm` уходит
-  (параметры всегда берутся у владельца поля).
-- Legacy `FormItem.Rules|Editor`, перенос их нормализатором, `GetEffectiveSystemFields`
-  и компенсационная запись в `UpdatePresentation` — удаляются. Старые раскладки читаются
-  однократным мерджем в `systemFields` (jsonb, миграция БД не нужна).
-- `FormFieldDefinition` остаётся только моделью редактора определений (не вторым описанием
-  поля рантайма); набор capabilities сокращается.
+- Убраны `FormFieldDescriptor.SettingsOnForm` и легаси `FormItem.Rules|Editor`: раскладка
+  не несёт ничего, кроме представления (порядок, зона, видимость, ширина, секции), а правила
+  и редактор всегда приходят в дескрипторе. Бейдж `meta` в дизайнере убран: параметры любого
+  поля правятся в его собственном хранилище, различать «где» больше не нужно.
+- `FormValidator` применяет только `field.Rules`; `PostFormRulesValidator.RulesOnly` отбирает
+  слоты по ключу транспорта и наличию правил — без флага.
+- `FormFieldSettings` остаётся **складской** записью параметров слота
+  (`Options["systemFields"]`, три поля): это не второе описание поля, а его DTO,
+  который растворяется в дескрипторе при сборке (`PostFormBuilder.SlotItem`).
+- Легаси-материализация `GetEffectiveSystemFields` удалена вместе с компенсацией
+  в `UpdatePresentation`: раскладка структурно не может нести правила, читать их неоткуда.
+  **Следствие (сознательное):** правила, сохранённые только в раскладке окном между
+  фазой 3 и этапом A и после этого не пересохранённые, при чтении не поднимутся — их нужно
+  задать заново в параметрах поля.
+- `FormFieldDefinition` остаётся моделью редактора определений (не вторым описанием рантайма).
 
-Проверка: `PostFormBuilderTests`, `FormDefinitionNormalizerTests`, `PostTypeOptionsCatalogTests`.
+Проверка: `dotnet build Mars.slnx` — 0 ошибок; `Mars.Forms.Tests` 82/82;
+`Mars.Server.Tests` 476/476.
 
 ### R2 — значения в модели
 

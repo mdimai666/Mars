@@ -53,14 +53,6 @@ public record FormFieldDescriptor
     public JsonNode? Options { get; init; }
 
     /// <summary>
-    /// Правила и редактор поля живут в определении формы, а не в собственном хранилище поля.
-    /// true — системные поля поста, колонки внешних таблиц (записи определения нет);
-    /// false — метаполя (правила в <c>Options.validators</c>, редактор в <c>Options.editor</c>),
-    /// поэтому в сохранённой раскладке они не переносятся.
-    /// </summary>
-    public bool SettingsOnForm { get; init; }
-
-    /// <summary>
     /// Тип одного элемента значения: для <see cref="FormFieldType.SelectMany"/> это
     /// <see cref="FormFieldType.Select"/>, иначе тип самого поля.
     /// </summary>

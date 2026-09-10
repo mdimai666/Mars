@@ -153,37 +153,6 @@ public class FormDefinitionNormalizerTests
     }
 
     [Fact]
-    public void RulesAndEditor_AreNotCarriedFromSavedLayout()
-    {
-        var saved = new List<FormItem>
-        {
-            new()
-            {
-                Key = "title",
-                Zone = "main",
-                Editor = "core.input.url",
-                Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Regex }],
-            },
-            new()
-            {
-                Key = "slug",
-                Zone = "main",
-                Editor = "core.input.url",
-                Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Length }],
-            },
-        };
-
-        var result = _normalizer.Normalize(saved, Defaults());
-
-        // раскладка — только представление: и у метаполя, и у системного поля правила и редактор
-        // приходят в дескрипторе от провайдера, а не из сохранённых элементов
-        result.First(i => i.Key == "title").Rules.Should().BeEmpty();
-        result.First(i => i.Key == "title").Editor.Should().BeNull();
-        result.First(i => i.Key == "slug").Rules.Should().BeEmpty();
-        result.First(i => i.Key == "slug").Editor.Should().BeNull();
-    }
-
-    [Fact]
     public void DescriptorRulesAndEditor_SurviveNormalization()
     {
         var saved = new List<FormItem> { new() { Key = "slug", Zone = "main", Visible = false } };
@@ -200,7 +169,6 @@ public class FormDefinitionNormalizerTests
                     Type = FormFieldType.String,
                     Editor = "core.input.url",
                     Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Unique }],
-                    SettingsOnForm = true,
                 },
             },
         };
@@ -282,11 +250,11 @@ public class FormDefinitionNormalizerTests
     static IReadOnlyCollection<FormItem> Defaults() =>
     [
         Field("title", "main"),
-        Field("slug", "main", settingsOnForm: true),
-        Field("status", "side", settingsOnForm: true),
+        Field("slug", "main"),
+        Field("status", "side"),
     ];
 
-    static FormItem Field(string key, string zone, bool settingsOnForm = false) => new()
+    static FormItem Field(string key, string zone) => new()
     {
         Key = key,
         Zone = zone,
@@ -295,7 +263,6 @@ public class FormDefinitionNormalizerTests
             Key = key,
             Title = key,
             Type = FormFieldType.String,
-            SettingsOnForm = settingsOnForm,
         },
     };
 }

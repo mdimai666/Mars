@@ -27,6 +27,5 @@ public static class MetaFieldFormMapping
         ModelName = field.ModelName,
         Choices = field.Variants?.Select(v => new FormChoiceOption { Key = v.Key, Title = v.Title }).ToList() ?? [],
         Options = field.Options?.DeepClone(),
-        SettingsOnForm = false,
     };
 }

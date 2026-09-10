@@ -135,9 +135,6 @@ public partial class FormLayoutEditor
         Width = row.Width,
         Collapsed = row.Collapsed,
         Items = row.Children.Select(ToItem).ToList(),
-        // правила и редактор в раскладке больше не хранятся — это параметры поля в настройках владельца
-        Rules = [],
-        Editor = null,
     };
 
     public bool CanMove(LayoutRow row, int delta)
@@ -311,8 +308,5 @@ public partial class FormLayoutEditor
         public List<LayoutRow> Children { get; set; } = [];
 
         public bool IsSection => Kind == FormItemKinds.Section;
-
-        /// <summary>Настройки поля живёт в настройках владельца формы (системный слот), а не на записи поля</summary>
-        public bool SettingsOnForm => Field?.SettingsOnForm == true;
     }
 }

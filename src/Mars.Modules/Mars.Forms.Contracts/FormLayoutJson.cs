@@ -6,8 +6,7 @@ namespace Mars.Forms.Contracts;
 /// <summary>
 /// Сериализация хранимой раскладки формы в json (camelCase) и обратно —
 /// по образцу <c>PostTypeGridSettingsJson</c>. Хранится только раскладка
-/// (порядок, зоны, видимость, правила полей с <see cref="FormFieldDescriptor.SettingsOnForm"/>),
-/// дескрипторы не хранятся.
+/// (порядок, зоны, видимость, ширина, секции), дескрипторы не хранятся.
 /// </summary>
 public static class FormLayoutJson
 {

@@ -101,7 +101,6 @@ public static class PostFormBuilder
                 ? postType.PostStatusList.Select(s => new FormChoiceOption { Key = s.Slug, Title = s.Title }).ToList()
                 : [],
             Rules = settings?.Rules ?? [],
-            SettingsOnForm = true,
         };
 
         return new FormItem { Key = slot.Key, Zone = slot.Zone, Field = descriptor };

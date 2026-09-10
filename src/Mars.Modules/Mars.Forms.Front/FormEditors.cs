@@ -40,6 +40,7 @@ public class FormEditorLocator : IFormEditorLocator
         [FormEditorCatalog.Bool] = (typeof(FormBoolEditor), [FormFieldType.Bool], false),
         [FormEditorCatalog.Date] = (typeof(FormDateEditor), [FormFieldType.DateTime], false),
         [FormEditorCatalog.Select] = (typeof(FormSelectEditor), [FormFieldType.Select, FormFieldType.SelectMany], false),
+        [FormEditorCatalog.Choices] = (typeof(FormChoicesEditor), [FormFieldType.SelectMany], false),
         [FormEditorCatalog.List] = (typeof(FormListEditor),
             [FormFieldType.String, FormFieldType.Int, FormFieldType.Long, FormFieldType.Float,
              FormFieldType.Decimal, FormFieldType.DateTime, FormFieldType.Select], true),
@@ -87,6 +88,10 @@ public class FormEditorLocator : IFormEditorLocator
 
     public Type? GetDefaultEditor(FormFieldType fieldType, bool multiple)
     {
+        // множественный выбор — чекбоксы вариантов поля, а не общий список значений
+        if (fieldType == FormFieldType.SelectMany && !multiple)
+            return GetEditorComponent(FormEditorCatalog.Choices, fieldType, false);
+
         // SelectMany — всегда список значений, независимо от флага кратности
         var isList = multiple || fieldType == FormFieldType.SelectMany;
         var elementType = fieldType == FormFieldType.SelectMany ? FormFieldType.Select : fieldType;

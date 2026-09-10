@@ -15,6 +15,9 @@ public static class FormEditorCatalog
     public const string Date = "core.input.date";
     public const string Select = "core.input.select";
 
+    /// <summary>Множественный выбор по вариантам поля (чекбоксы); в значении — список ключей вариантов</summary>
+    public const string Choices = "core.input.choices";
+
     /// <summary>Редактор множественных значений простых типов (строки, числа, даты, варианты)</summary>
     public const string List = "core.input.list";
 
@@ -26,6 +29,7 @@ public static class FormEditorCatalog
         (Bool, "Да/Нет"),
         (Date, "Дата"),
         (Select, "Выбор из списка"),
+        (Choices, "Выбор нескольких из списка"),
         (List, "Список значений"),
     ];
 }

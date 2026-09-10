@@ -21,10 +21,20 @@ public class FormEditorLocatorTests
     }
 
     [Fact]
-    public void DefaultEditor_ForMultipleAndSelectMany_ResolvesListEditor()
+    public void DefaultEditor_ForMultiple_ResolvesListEditor()
     {
         _locator.GetDefaultEditor(FormFieldType.String, true).Should().Be(typeof(FormListEditor));
-        _locator.GetDefaultEditor(FormFieldType.SelectMany, false).Should().Be(typeof(FormListEditor));
+    }
+
+    [Fact]
+    public void DefaultEditor_ForSelectMany_ResolvesChoicesEditor()
+    {
+        // множественный выбор — чекбоксы вариантов поля, а не общий список значений
+        _locator.GetDefaultEditor(FormFieldType.SelectMany, false).Should().Be(typeof(FormChoicesEditor));
+        _locator.GetEditorComponent(FormEditorCatalog.Choices, FormFieldType.SelectMany, false)
+                .Should().Be(typeof(FormChoicesEditor));
+        _locator.EditorsFor(FormFieldType.SelectMany, false).Select(e => e.Key)
+                .Should().Contain(FormEditorCatalog.Choices);
     }
 
     [Fact]

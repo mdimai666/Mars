@@ -153,7 +153,7 @@ public class FormDefinitionNormalizerTests
     }
 
     [Fact]
-    public void RulesAndEditor_SurviveOnlyForFormOwnedSettings()
+    public void RulesAndEditor_AreNotCarriedFromSavedLayout()
     {
         var saved = new List<FormItem>
         {
@@ -175,13 +175,41 @@ public class FormDefinitionNormalizerTests
 
         var result = _normalizer.Normalize(saved, Defaults());
 
-        // title — метаполе (правила на определении поля), раскладка их не przechowывает
+        // раскладка — только представление: и у метаполя, и у системного поля правила и редактор
+        // приходят в дескрипторе от провайдера, а не из сохранённых элементов
         result.First(i => i.Key == "title").Rules.Should().BeEmpty();
         result.First(i => i.Key == "title").Editor.Should().BeNull();
+        result.First(i => i.Key == "slug").Rules.Should().BeEmpty();
+        result.First(i => i.Key == "slug").Editor.Should().BeNull();
+    }
 
-        // slug — системное поле: правила и редактор живут в раскладке
-        result.First(i => i.Key == "slug").Rules.Select(r => r.Type).Should().Equal(FormRuleCatalog.Length);
-        result.First(i => i.Key == "slug").Editor.Should().Be("core.input.url");
+    [Fact]
+    public void DescriptorRulesAndEditor_SurviveNormalization()
+    {
+        var saved = new List<FormItem> { new() { Key = "slug", Zone = "main", Visible = false } };
+        var defaults = new List<FormItem>
+        {
+            new()
+            {
+                Key = "slug",
+                Zone = "main",
+                Field = new FormFieldDescriptor
+                {
+                    Key = "slug",
+                    Title = "slug",
+                    Type = FormFieldType.String,
+                    Editor = "core.input.url",
+                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Unique }],
+                    SettingsOnForm = true,
+                },
+            },
+        };
+
+        var item = _normalizer.Normalize(saved, defaults).Single();
+
+        item.Visible.Should().BeFalse("представление берётся из раскладки");
+        item.Field!.Editor.Should().Be("core.input.url");
+        item.Field.Rules.Select(r => r.Type).Should().Equal(FormRuleCatalog.Unique);
     }
 
     [Fact]

@@ -24,6 +24,9 @@ public record CreatePostTypeRequest
     public string? ImageFieldKey { get; init; }
 
     public required IReadOnlyCollection<CreateMetaFieldRequest> MetaFields { get; init; }
+
+    /// <summary>Параметры системных полей (правила, редактор); null — не заданы</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
 public record UpdatePostTypeRequest
@@ -45,6 +48,9 @@ public record UpdatePostTypeRequest
     public string? ImageFieldKey { get; init; }
 
     public required IReadOnlyCollection<UpdateMetaFieldRequest> MetaFields { get; init; }
+
+    /// <summary>Параметры системных полей (правила, редактор); null — не прислали, сохранённые не трогаем</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
 public record CreatePostStatusRequest

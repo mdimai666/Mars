@@ -39,6 +39,7 @@ public static class PostTypeMapping
             MetaFields = entity.MetaFields.ToDetailResponse(),
             ImageFieldKey = entity.ImageFieldKey,
             Form = entity.Form,
+            SystemFields = entity.SystemFields,
         };
 
     public static PostTypeSummary ToSummary(this PostTypeDetail entity)

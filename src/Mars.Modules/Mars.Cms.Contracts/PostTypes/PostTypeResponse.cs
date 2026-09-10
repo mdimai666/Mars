@@ -71,6 +71,9 @@ public record PostTypeDetailResponse : IBasicEntityResponse
     /// <summary>Сохранённая раскладка формы редактирования; null — раскладка по умолчанию</summary>
     public FormLayoutSettings? Form { get; init; }
 
+    /// <summary>Параметры системных полей (правила, редактор); null — не заданы</summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
+
 }
 
 public record PostStatusResponse

@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Contracts.PostTypes;
@@ -39,6 +40,7 @@ internal static class PostTypeMapping
 
             Presentation = entity.Presentation.ToDto(),
             Form = entity.Options.GetFormLayout(),
+            SystemFields = entity.Options.GetEffectiveSystemFields(),
         };
 
     public static PostStatusDto ToDto(this PostStatusEntity entity)
@@ -73,7 +75,8 @@ internal static class PostTypeMapping
             ImageFieldKey = query.ImageFieldKey,
             EnabledFeatures = query.EnabledFeatures.ToList(),
             Statuses = query.PostStatusList.Select(s => ToEntity(s, null)).ToList(),
-            MetaFields = query.MetaFields.ToEntity()
+            MetaFields = query.MetaFields.ToEntity(),
+            Options = ((JsonNode?)null).WithSystemFields(query.SystemFields),
         };
 
     public static PostStatusEntity ToEntity(this PostStatusDto query, DateTimeOffset? modifiedAt)
@@ -97,6 +100,10 @@ internal static class PostTypeMapping
         entity.Disabled = query.Disabled;
         entity.Visibility = (EPostTypeVisibility)query.Visibility;
         entity.ImageFieldKey = query.ImageFieldKey;
+
+        // параметры системных полей живут в общих опциях типа; null в запросе — сохранённые не трогаем
+        if (query.SystemFields is not null)
+            entity.Options = entity.Options.WithSystemFields(query.SystemFields);
 
         entity.ModifiedAt = DateTimeOffset.Now;
         return entity;

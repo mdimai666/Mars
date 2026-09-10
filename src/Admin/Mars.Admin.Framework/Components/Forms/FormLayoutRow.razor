@@ -53,21 +53,6 @@
             }
         </FluentSelect>
 
-        @if (Row.SettingsOnForm)
-        {
-            <FluentSelect TOption="string" Value="@(Row.Editor ?? "")" ValueChanged="@(key => Editor.SetEditorAsync(Row, key))" Style="width:190px">
-                <FluentOption Value="">Редактор по умолчанию</FluentOption>
-                @foreach (var key in Editor.EditorKeys)
-                {
-                    <FluentOption Value="@key">@key</FluentOption>
-                }
-            </FluentSelect>
-
-            <FluentButton Appearance="Appearance.Stealth" OnClick="ToggleRules">
-                Правила@(Row.Rules.Count > 0 ? $" ({Row.Rules.Count})" : "")
-            </FluentButton>
-        }
-
         @if (Row.IsSection)
         {
             <FluentSelect TOption="string" Value="" ValueChanged="@(key => Editor.MoveIntoSectionAsync(Row, key))" Style="width:190px">
@@ -81,36 +66,6 @@
         }
 
     </div>
-
-    @if (Row.ShowRules && Row.SettingsOnForm)
-    {
-        <div class="vstack gap-2" style="margin-left:36px; padding:8px; border-left:2px solid var(--neutral-stroke-layer-rest)">
-            @for (var i = 0; i < Row.Rules.Count; i++)
-            {
-                var index = i;
-                var rule = Row.Rules[i];
-                <div class="d-flex gap-2 align-items-center flex-wrap">
-                    <FluentSelect TOption="string" Value="@rule.Type" ValueChanged="@(type => Editor.SetRuleTypeAsync(Row, index, type))" Style="width:140px">
-                        @foreach (var type in Editor.RuleTypes)
-                        {
-                            <FluentOption Value="@type">@type</FluentOption>
-                        }
-                    </FluentSelect>
-                    @foreach (var name in FormLayoutEditor.RuleParams(rule.Type))
-                    {
-                        var parameter = name;
-                        <FluentTextField Label="@parameter" Placeholder="@parameter" Style="width:170px"
-                                         Value="@FormLayoutEditor.RuleParam(rule, parameter)"
-                                         ValueChanged="@(value => Editor.SetRuleParamAsync(Row, index, parameter, value))" />
-                    }
-                    <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => Editor.RemoveRuleAsync(Row, index))">удалить</FluentButton>
-                </div>
-            }
-            <div>
-                <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => Editor.AddRuleAsync(Row))">Добавить правило</FluentButton>
-            </div>
-        </div>
-    }
 
     @foreach (var child in Row.Children)
     {

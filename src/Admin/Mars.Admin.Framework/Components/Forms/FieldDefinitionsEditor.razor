@@ -1,0 +1,37 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* Общий редактор определений полей: источник (системные слоты типа, метаполя) отдаёт определения
+   и возможности, редактор правит их и сообщает о каждом изменении. Что именно можно править —
+   из FormDefinitionCapabilities, поэтому компонент не знает домена. *@
+
+<div class="vstack gap-2">
+
+    @if (Definitions.Count == 0)
+    {
+        <div class="text-secondary">
+            <SharedContentNoRecords />
+        </div>
+    }
+
+    @foreach (var definition in Definitions)
+    {
+        <FieldDefinitionRow @key="definition"
+                            Definition="definition"
+                            Capabilities="Capabilities"
+                            RuleTypes="RuleTypes"
+                            OnChanged="OnChanged" />
+    }
+
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<FormFieldDefinition> Definitions { get; set; } = [];
+
+    [Parameter] public FormDefinitionCapabilities Capabilities { get; set; } = new();
+
+    /// <summary>Доступные типы правил; пусто — весь каталог общего слоя</summary>
+    [Parameter] public IReadOnlyCollection<string>? RuleTypes { get; set; }
+
+    [Parameter] public EventCallback<FormFieldDefinition> OnChanged { get; set; }
+}

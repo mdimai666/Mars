@@ -7,6 +7,7 @@ using Mars.Contracts.Models.Interfaces;
 using Mars.Contracts.Resources;
 using Mars.Core.Attributes;
 using Mars.Core.Exceptions;
+using Mars.Forms.Contracts;
 using Mars.WebApiClient.Interfaces;
 
 namespace Mars.Admin.Pages.PostTypeViews;
@@ -58,6 +59,9 @@ public class PostTypeEditModel : IBasicEntity
     [ValidateComplexType]
     public List<MetaFieldEditModel> MetaFields { get; set; } = [];
 
+    /// <summary>Параметры системных полей (правила, редактор) — <c>post_types.Options["systemFields"]</c></summary>
+    public List<FormFieldSettings> SystemFields { get; set; } = [];
+
     //==========================================
     //Internal
 
@@ -82,6 +86,9 @@ public class PostTypeEditModel : IBasicEntity
         if (enabled) EnabledFeatures.Add(feature);
         else EnabledFeatures.Remove(feature);
 
+        // состав системных слотов зависит от фич — определения полей пересобираются
+        InvalidateSystemFieldDefinitions();
+
         if (feature == PostTypeConstants.Features.PostImage && !enabled)
             ImageFieldKey = null;
 
@@ -90,6 +97,61 @@ public class PostTypeEditModel : IBasicEntity
         {
             CreateFeatureContentField();
         }
+    }
+
+    List<FormFieldDefinition>? _systemFieldDefinitions;
+
+    /// <summary>
+    /// Определения системных полей для общего редактора: слоты каталога, включённые фичами типа,
+    /// плюс сохранённые параметры. Каталог и признаки обязательности/чтения — те же, что на сервере
+    /// (<see cref="SystemFieldsCatalog"/>), поэтому строка редактора показывает поле как в форме.
+    /// </summary>
+    public IReadOnlyList<FormFieldDefinition> SystemFieldDefinitions()
+        => _systemFieldDefinitions ??= BuildSystemFieldDefinitions();
+
+    public void InvalidateSystemFieldDefinitions() => _systemFieldDefinitions = null;
+
+    List<FormFieldDefinition> BuildSystemFieldDefinitions()
+    {
+        var definitions = new List<FormFieldDefinition>();
+
+        foreach (var slot in SystemFieldsCatalog.All)
+        {
+            if (slot.Feature is not null && !EnabledFeatures.Contains(slot.Feature)) continue;
+
+            var settings = SystemFields.FirstOrDefault(s => s.Key == slot.Key);
+            definitions.Add(new FormFieldDefinition
+            {
+                Key = slot.Key,
+                TitleKey = slot.TitleKey,
+                Type = slot.Type,
+                Required = SystemFieldsCatalog.IsRequired(slot),
+                ReadOnly = SystemFieldsCatalog.IsReadOnly(slot, EnabledFeatures),
+                Multiple = slot.Multiple,
+                ModelName = slot.ModelName,
+                Zone = slot.Zone,
+                Feature = slot.Feature,
+                Editor = settings?.Editor ?? slot.Editor,
+                Rules = settings?.Rules.ToList() ?? [],
+            });
+        }
+
+        return definitions;
+    }
+
+    /// <summary>Правка определения системного поля → параметры типа; пустые параметры не храним</summary>
+    public void ApplySystemFieldDefinition(FormFieldDefinition definition)
+    {
+        SystemFields.RemoveAll(s => s.Key == definition.Key);
+
+        if (string.IsNullOrEmpty(definition.Editor) && definition.Rules.Count == 0) return;
+
+        SystemFields.Add(new FormFieldSettings
+        {
+            Key = definition.Key,
+            Editor = definition.Editor,
+            Rules = definition.Rules.ToList(),
+        });
     }
 
     /// <summary>Переименование ключа поля: указатель картинки следует за полем, к которому привязан</summary>
@@ -224,6 +286,7 @@ public class PostTypeEditModel : IBasicEntity
             PostStatusList = PostStatusList.Select(s => s.ToCreateRequest()).ToList(),
             Tags = Tags,
             MetaFields = MetaFields.Select(s => s.ToCreateRequest()).ToList(),
+            SystemFields = SystemFields,
         };
 
     public UpdatePostTypeRequest ToUpdateRequest()
@@ -239,6 +302,7 @@ public class PostTypeEditModel : IBasicEntity
             PostStatusList = PostStatusList.Select(s => s.ToUpdateRequest()).ToList(),
             Tags = Tags,
             MetaFields = MetaFields.Select(s => s.ToUpdateRequest()).ToList(),
+            SystemFields = SystemFields,
 
         };
 
@@ -260,6 +324,7 @@ public class PostTypeEditModel : IBasicEntity
             PostStatusList = response.PostStatusList.Select(PostStatusEditModel.ToModel).ToList(),
             Tags = response.Tags.ToArray(),
             MetaFields = response.MetaFields.Select(MetaFieldEditModel.ToModel).ToList(),
+            SystemFields = response.SystemFields?.ToList() ?? [],
 
             MetaRelationModels = metaRelationModels,
         };

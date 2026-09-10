@@ -35,10 +35,14 @@ public record FormItem
     /// </summary>
     public FormFieldDescriptor? Field { get; init; }
 
-    /// <summary>Правила валидации. Хранятся только для полей с <see cref="FormFieldDescriptor.SettingsOnForm"/></summary>
+    /// <summary>
+    /// Правила валидации. Легаси-хранилище: до переноса параметров поля в настройки владельца
+    /// (<see cref="FormFieldSettings"/>) правила системных слотов жили в раскладке. Нормализатор
+    /// их больше не переносит — читаются только при материализации старых раскладок.
+    /// </summary>
     public IReadOnlyCollection<FormRuleDefinition> Rules { get; init; } = [];
 
-    /// <summary>Переопределение редактора. Хранится только для полей с <see cref="FormFieldDescriptor.SettingsOnForm"/></summary>
+    /// <summary>Переопределение редактора — легаси, см. <see cref="Rules"/></summary>
     public string? Editor { get; init; }
 
     public bool IsSection => Kind == FormItemKinds.Section;

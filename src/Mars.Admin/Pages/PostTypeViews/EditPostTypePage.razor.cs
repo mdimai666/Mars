@@ -24,6 +24,9 @@ public partial class EditPostTypePage
     string url = "";
     string import_json = "";
     bool visibleImportModal;
+    bool statusesCollapsed = true;
+
+    void ToggleStatuses() => statusesCollapsed = !statusesCollapsed;
 
     protected override void OnInitialized()
     {

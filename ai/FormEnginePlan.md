@@ -1,6 +1,7 @@
 # План: Mars.Forms — общий механизм форм и заполнения данных
 
-> **Статус: спроектировано 2026-09-09; фазы 0–3 выполнены 2026-09-09.**
+> **Статус: спроектировано 2026-09-09; фазы 0–3 выполнены 2026-09-09;
+> этапы A–D (визуал админки и унификация рендера) спланированы 2026-09-10.**
 > Инициатива выросла из задачи «при редактировании поста все поля — настраиваемые»
 > (см. [MetaFieldsGuide.md](./MetaFieldsGuide.md), «Вектор развития») и расширена
 > до платформенного механизма: одна форма определения и один транспорт значений
@@ -49,7 +50,45 @@
 13. **Общий эндпоинт отправки формы появится позже** — для динамических форм;
     на прототипе провайдеры вызываются путями своих модулей.
 14. **Раскладка и визуал заранее не проектируются** — корректируются, когда
-    будет рабочий прототип.
+    будет рабочий прототип. *(Снято 2026-09-10: прототип рабочий, визуал
+    проектируется — решения 15–21 и этапы A–D.)*
+
+## Принятые решения (2026-09-10) — визуал и унификация рендера
+
+15. **Два контура настройки разделены.** Страница редактирования типа правит
+    **параметры полей** (системные и метаполя — в разных группах), окно
+    редактирования представления (`FormLayoutEditor`) — только **как поля
+    отображаются**: порядок, зона, видимость, ширина, секции. Правила и
+    переопределение редактора системных слотов уезжают из дизайнера в параметры.
+16. **Параметры системных полей — отдельный ключ** `post_types.Options["systemFields"]`
+    (`PostTypeOptionsCatalog.SystemFields`), не items раскладки: `Options["form"]`
+    пишет страница презентации, `systemFields` — страница типа, поэтому два
+    редактора одного jsonb не затирают друг друга. Запись точечная
+    (`WithSystemFields`), как `WithFormLayout`. Для уже сохранённых в раскладке
+    Rules/Editor — компат-фолбэк в `PostFormBuilder`.
+17. **Редактор определений полей становится общим** и к метаполям не привязан:
+    title/key/description/type/enabled/hidden/валидаторы/варианты правятся одним
+    механизмом по описанию провайдера, а данные метаполей строятся из него.
+    Доменные панели настроек типа (relation, file/image, варианты select,
+    code-lang, query) — зарегистрированные компоненты.
+18. **Отрисовка значений — только FormEngine.** `MetaFieldViews` как стек рендера
+    значений ликвидируется; метаполя лишь регистрируют свои редакторы
+    (relation, галереи/медиа, WYSIWYG, Monaco, EditorJS, color/url/email/date/time)
+    в общем `IFormEditorLocator`. Примитивы уходят встроенным редакторам движка.
+19. **Транспорт мета-значений не меняется — адаптер поверх EAV.**
+    `MetaValueEditModel` остаётся source of truth (`Id`/`Index`/`MarkForDelete`),
+    FormEngine получает абстракцию хранилища `IFormValueStore` с двумя
+    реализациями (JSON-мешок и EAV-строки); доменные редакторы берут строки через
+    «нативный payload» стора. Мешок как единственный транспорт — для будущих
+    динамических провайдеров (фазы 4–6), где легаси-транспорта нет.
+20. **Users и post categories переводятся в том же заходе** (провайдеры `user.*`,
+    `postcategory.*`) — иначе `MetaFieldViews` не удалить. Решение №11 в части
+    «позже» пересмотрено.
+21. **Общий редактор определений живёт в `Mars.Admin.Framework/Components/Forms/`**
+    (рядом с `FormLayoutEditor`), контракты — в `Mars.Forms.Contracts`:
+    `Mars.Forms.Front` остаётся листом (Contracts + FluentUI) и не тянет
+    админ-виджеты (`FormItem2`, `InputTags2`, `DFluentDeleteButton`,
+    `GroupedSelectDropDown`).
 
 ---
 
@@ -354,6 +393,145 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   интеграционный `UpdatePostTypePresentation_WithFormLayout_StoresItInTypeOptions`
   (Docker-сьют; в этот прогон не запускался — Docker не поднят).
 
+### Этапы A–D — визуал админки и унификация рендера (запланировано 2026-09-10)
+
+Идут **до** фаз 4–6: закрывают решения 15–21. Первый визуальный шаг уже сделан
+2026-09-10 на `EditPostTypePage`: статусы — сворачиваемая карточка в конце
+основной колонки, «Видимость» типа — в боковой панели под `Disable`.
+
+**Этап A — параметры системных полей + общий редактор определений (v1) — выполнено 2026-09-10**
+
+- Контракты (`Mars.Forms.Contracts`): `FormFieldDefinition` — редактируемая
+  проекция дескриптора (Key, Title, Description, Type, Required, ReadOnly,
+  Hidden, Disabled, Multiple, Editor, Choices, Min/Max, ModelName, Tags, Order,
+  `Options:JsonNode`, Rules, `State` = New/Existing/Deleted, `Id?`) и
+  `FormDefinitionCapabilities` (CanAdd/CanClone/CanDelete/CanChangeType/
+  CanEditKey/CanHide). `FormFieldDescriptor` остаётся read-only контрактом
+  рендера; провайдер маппит определение ↔ дескриптор.
+- UI (`Mars.Admin.Framework/Components/Forms/`): `FieldDefinitionsEditor.razor` +
+  `FieldDefinitionRow.razor` — аккордеон в нынешнем стиле `FormMetaField`
+  (заголовок: иконка типа, title, key, бейджи hidden/disabled/фича; тело: общие
+  параметры + панели настроек типа + валидаторы). Состав доступных действий — из
+  capabilities.
+- Первый потребитель — системные поля: capabilities урезаны (без добавить/
+  дублировать/удалить/сменить тип), состав строк = `SystemFieldsCatalog.All` ∩
+  включённые фичи типа. Карточка «Системные поля» — перед «Meta fields» на
+  `EditPostTypePage`.
+- Хранение и транспорт: `PostTypeOptionsCatalog.SystemFields` +
+  `GetSystemFields`/`WithSystemFields` + `FormFieldSettingsJson` (по образцу
+  `FormLayoutJson`); `UpdatePostTypeRequest.SystemFields` → `UpdatePostTypeQuery`
+  → точечная запись `Options` (обычный путь `UpdateEntity` Options не трогает,
+  поэтому `form`/`grid` не затираются); чтение — `PostTypeDetail.SystemFields`
+  (+ `PostTypeResponse`/`PostTypeDetailResponse`, `PostTypeEditModel`).
+- `PostFormBuilder.SlotItem` берёт Rules/Editor/Required/ReadOnly из
+  `SystemFields` с компат-фолбэком на сохранённую раскладку.
+- `FormLayoutRow`: убрать Rules и Editor (остаются порядок, зона, видимость,
+  ширина, секции, переопределение заголовка).
+- Тесты: `PostTypeOptionsCatalogTests` (round-trip нового ключа, соседство с
+  `form`, null убирает ключ), `PostFormBuilderTests` (применение параметров,
+  фолбэк, фича-гейты), `PostFormRulesValidatorTests` (правила из нового
+  источника доходят до валидации записи), интеграционный
+  `UpdatePostType_WithSystemFields_StoresThemInTypeOptions` (Docker-сьют).
+
+Что добавилось/изменилось по ходу реализации этапа A:
+
+- Контракт параметров — общий, не постовый: `FormFieldSettings` +
+  `FormFieldSettingsJson` в `Mars.Forms.Contracts` (ключ, переопределение
+  редактора, правила). Пустой набор не хранится — ключ из Options убирается.
+- Редактируемое определение — `FormFieldDefinition` (**класс**, а не record:
+  нужна двусторонняя привязка в редакторе) + `FormDefinitionCapabilities` с
+  пресетом `SystemFields`. Общий редактор — `FieldDefinitionsEditor` +
+  `FieldDefinitionRow` в `Mars.Admin.Framework/Components/Forms`; хелпер
+  параметров правил `FormRuleParams` вынесен из дизайнера раскладки.
+  Визуал строки — сворачиваемая карточка (как `FormSectionBlock`), не
+  `FluentAccordion`: раскрывать/скрывать можно без зависимости от internals FluentUI.
+- `Mars.Admin.Framework` теперь ссылается на `Mars.Forms.Front` (нужен
+  `IFormEditorLocator`, чтобы показывать только совместимые с типом редакторы).
+  Направление допустимо: запрещены ссылки на чужие `.Host`, а `.Front`→`.Front`
+  в репо уже есть (`Mars.Plugin.Front`/`Mars.Datasource.Front` → `Mars.Nodes.FormEditor`).
+- Обязательность и read-only слота вынесены в каталог
+  (`SystemFieldsCatalog.IsRequired`/`IsReadOnly`) — их используют и серверный
+  `PostFormBuilder`, и клиентская `PostTypeEditModel`, иначе признаки разъехались бы.
+- Легаси-совместимость с двух сторон: **чтение** — `GetEffectiveSystemFields()`
+  материализует правила/редактор из старой раскладки, если ключа `systemFields`
+  нет; **запись** — `UpdatePresentation` фиксирует их в `systemFields` до
+  перезаписи раскладки (иначе сохранение представления их теряло).
+  `FormItem.Rules`/`Editor` помечены как легаси, нормализатор их больше не
+  переносит — раскладка стала чисто представлением.
+- `UpdatePostTypeRequest.SystemFields`: `null` = «не прислали, сохранённые не
+  трогаем» (обычный путь обновления Options раньше не писал вовсе), пустой
+  список = «очистить». Создание типа пишет параметры сразу.
+- Правила теперь приходят в **дескрипторе** слота (`FormFieldDescriptor.Rules`),
+  а не в элементе дерева: `FormValidator` применяет `field.Rules.Concat(item.Rules)`,
+  поэтому перенос без дублей, а `PostFormRulesValidator.RulesOnly` продолжает
+  отбирать слоты по `SettingsOnForm`.
+- Тесты: `PostTypeOptionsCatalogTests` (новый ключ, round-trip, легаси-материализация),
+  `PostFormBuilderTests` (параметры применяются, раскладка их не несёт, чужой ключ
+  игнорируется), `FormDefinitionNormalizerTests` (правила/редактор из раскладки
+  больше не переносятся; дескрипторные выживают), `PostFormRulesValidatorTests`
+  переведён на `SystemFields`, интеграционные `UpdatePostType_WithSystemFields_...`
+  и `UpdatePostType_WithoutSystemFields_KeepsStoredOnes` (Docker не поднят —
+  в этот прогон не запускались). Прогон: `Mars.Server.Tests` 474/474,
+  `Mars.Forms.Tests` 84/84, `dotnet build Mars.slnx` — 0 ошибок.
+
+**Этап B — метаполя на общем редакторе определений**
+
+- Адаптер `MetaFieldEditModel` ↔ `FormFieldDefinition` в обе стороны (включая
+  Options-мешок: editor/codeLang/kind/removeMode/viewMode/uploadFolder/dropZone/
+  queryTarget/backReference/featureKey) и обратно в `Create/UpdateMetaFieldRequest`.
+- Панели настроек типа как зарегистрированные компоненты
+  (`IFormFieldTypeSettingsLocator`): relation (ModelName/Kind/RemoveMode/ViewMode/
+  DropZone), file/image (UploadFolder/ViewMode/DropZone/Accept), select/selectMany
+  (варианты — заменяет `EditMetaFieldVariants`), code (CodeLang), query (цель +
+  обратная ссылка), min/max, валидаторы.
+- Защита feature-полей (контент, картинка поста) — через capabilities + бейджи.
+- Переключение трёх страниц типов (`EditPostTypePage`, `EditUserTypePage`,
+  `EditPostCategoryTypePage`), затем удаление `FormMetaField.razor` (+ code-behind)
+  и `EditMetaFieldVariants.razor`.
+
+**Этап C — значения через FormEngine (post + user + postcategory)**
+
+- `IFormValueStore` в `Mars.Forms.Front`: GetValue/SetValue/GetList/SetList/
+  AddItem/RemoveAt/Move + Errors + Changed + «нативный payload» для доменных
+  редакторов. Реализации: поверх мешка (`FormValuesModel`) и `MetaValueStore`
+  поверх `List<MetaValueEditModel>` (single = строка Index 0, multiple = строки по
+  Index, колонка по `FormFieldType`; `Id`/`MarkForDelete` — в payload).
+- Pull-протокол тяжёлых редакторов обобщается на уровень движка (вместо
+  `IHeavyMetaValueEditors`/`IHeavyMetaValueEditor`).
+- Встроенные редакторы: добрать SelectMany (чекбоксы вариантов) и поддержку
+  `Choices` — сейчас в движке только `FormSelectEditor`/`FormListEditor`;
+  примитивы (String/Text/Bool/Int/Long/Float/Decimal/DateTime/Select) уходят
+  встроенным, `RowMetaValue` исчезает.
+- Порт доменных редакторов на контракт `FormFieldBinding` и регистрация в
+  `FormEditorLocator`: relation single/multi, children list, file multi и
+  `FSelectMedia`, wysiwyg (Quill), code (Monaco), blockeditor (EditorJS),
+  color/url/email/date/time — под ключами `MetaFieldEditorCatalog` и дефолтами
+  для Relation/File/Image.
+- Провайдеры `user.*` и `postcategory.*` (дерево = плоский список метаполей
+  владельца, одна зона) → `EditUserPage` и `EditPostCategoryView` на `FormRenderer`.
+- `PostFormField` худеет до `FormFieldRow`: контент становится зарегистрированным
+  доменным редактором, а не веткой `if` (сам `PostContentEditor` и его ИИ-мост
+  сохраняются).
+- Резать по группам типов с проверкой сохранения на каждом шаге: примитивы →
+  select/selectMany → relation → file/галереи → тяжёлые.
+
+**Этап D — зачистка**
+
+- Удалить `FormMetaValue`, `FormMetaValueItems`, `FormMetaValueItem`,
+  `RowMetaValue`, `MetaValueRelationSelect` (сирота, потребителей нет) и всё, что
+  не пережило порт.
+- Перенести выжившее: `GroupedSelectDropDown` → общие компоненты (используют три
+  формы нод в `Mars.Nodes.FormEditor`), модели `MetaFieldEditModel`/
+  `MetaValueEditModel`/`MetaValueEditModelLookup`/`MetaFieldTypePresets`/
+  `MetaValueListHelper` → в слой моделей Cms-админки.
+- Слить реестры: `IMetaFieldEditorLocator`/`MetaFieldEditors` → `IFormEditorLocator`;
+  `MetaFieldEditorCatalog` остаётся серверным источником ключей (его используют
+  `PostTypeFeatureFields`, `BlockEditor1PostContentProcessor`, `MarsPostTools`,
+  сиды и тесты).
+- Публичный фронт не затрагивается: потребителей `MetaFieldViews` вне
+  `Mars.Admin`/`Mars.Admin.Framework` нет (проверено 2026-09-10), кроме
+  `GroupedSelectDropDown` в нодах.
+
 ### Фаза 4 — автономные формы (виджеты)
 
 - `FormEntity` + миграция, CRUD в админке, провайдер `form.<key>`: определение
@@ -401,10 +579,16 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - Не переносить CMS-каталоги (редакторы, валидаторы, генераторы) в общий слой —
   только адаптеры и регистрация.
 - Не трогать forms-подобные механизмы users и post categories в этой итерации.
+  *(Пересмотрено 2026-09-10: переводятся на общем механизме на этапе C — решение №20.)*
 - Не переводить существующие типизированные формы нод на схему.
 - Не вводить общий submit-эндпоинт до появления динамических форм.
 - Не вылизывать раскладку и визуал до рабочего прототипа.
+  *(Снято 2026-09-10: этапы A–D.)*
 - Не начинать SQL-форму до параметризации `SqlNonQuery`.
+- Не менять транспорт мета-значений (`MetaValueEditModel`, EAV-строки, API) —
+  на этапе C только адаптер хранилища (решение №19).
+- Не оставлять редактирование параметров полей в дизайнере представления —
+  после этапа A там только порядок/зона/видимость/ширина/секции (решение №15).
 
 ## 6. Риски и грабли
 
@@ -441,3 +625,8 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - Фазы 5–6 — тесты затронутых проектов (`Mars.Integration.Tests`,
   `Mars.Datasource.Integration.Tests`; для нод при необходимости новый
   `tests/Mars.Nodes.Tests`).
+- Этапы A–D — `dotnet build Mars.slnx` + `tests/Mars.Forms.Tests` (стор, кодек,
+  SelectMany/Choices, реестры) и `tests/Mars.Server.Tests` (`Forms/`,
+  `Dto/PostTypeOptionsCatalogTests`); интеграции `tests/Mars.Integration.Tests`
+  на этапе A (сохранение `systemFields`) и на этапе C (мета-значения трёх
+  владельцев). Публичный фронт не затрагивается — `HandlebarsAppFrontTests` не нужны.

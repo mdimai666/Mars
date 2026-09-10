@@ -102,10 +102,8 @@ public static class PostFormBuilder
 
     static FormItem SlotItem(SystemFieldSlot slot, PostTypeDetail postType)
     {
-        // дата создания редактируется только с фичей ModifyCreatedDate, но видна всегда
-        var readOnly = slot.ReadOnly
-                       || (slot.Key == CreatedAt
-                           && !postType.EnabledFeatures.Contains(PostTypeConstants.Features.ModifyCreatedDate));
+        // параметры слота (правила, редактор) — из настроек типа; раскладка формы их больше не хранит
+        var settings = postType.SystemFields?.FirstOrDefault(s => s.Key == slot.Key);
 
         var descriptor = new FormFieldDescriptor
         {
@@ -113,14 +111,15 @@ public static class PostFormBuilder
             Title = slot.TitleKey,
             TitleKey = slot.TitleKey,
             Type = slot.Type,
-            Required = slot.Key is Title or Slug,
-            ReadOnly = readOnly,
+            Required = IsRequired(slot),
+            ReadOnly = IsReadOnly(slot, postType.EnabledFeatures),
             Multiple = slot.Multiple,
-            Editor = slot.Editor,
+            Editor = settings?.Editor ?? slot.Editor,
             ModelName = slot.ModelName,
             Choices = slot.Key == Status
                 ? postType.PostStatusList.Select(s => new FormChoiceOption { Key = s.Slug, Title = s.Title }).ToList()
                 : [],
+            Rules = settings?.Rules ?? [],
             SettingsOnForm = true,
         };
 

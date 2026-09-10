@@ -77,6 +77,20 @@ public static class SystemFieldsCatalog
 
     public static SystemFieldSlot? Find(string? key)
         => string.IsNullOrEmpty(key) ? null : All.FirstOrDefault(s => s.Key == key);
+
+    /// <summary>
+    /// Слот обязателен независимо от настроек типа: пол задан DataAnnotations транспорта записи
+    /// (<c>CreatePostQuery</c>/<c>UpdatePostQuery</c>), а не правилами формы.
+    /// </summary>
+    public static bool IsRequired(SystemFieldSlot slot) => slot.Key is Title or Slug;
+
+    /// <summary>
+    /// Слот только для чтения: каталожный признак плюс дата создания без фичи
+    /// <see cref="PostTypeConstants.Features.ModifyCreatedDate"/> (видна всегда, правится с фичей).
+    /// </summary>
+    public static bool IsReadOnly(SystemFieldSlot slot, IReadOnlyCollection<string> enabledFeatures)
+        => slot.ReadOnly
+           || (slot.Key == CreatedAt && !enabledFeatures.Contains(PostTypeConstants.Features.ModifyCreatedDate));
 }
 
 /// <summary>

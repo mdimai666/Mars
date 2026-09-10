@@ -117,15 +117,14 @@ public static class PostFormTestHost
         ModelName = null,
     };
 
-    /// <summary>Сохранённая раскладка: элементы в порядке аргументов</summary>
-    public static FormLayoutSettings Layout(params FormItem[] items) => new() { Items = items };
-
-    /// <summary>Элемент раскладки системного слота с правилами</summary>
-    public static FormItem Slot(string key, params FormRuleDefinition[] rules) => new()
-    {
-        Key = key,
-        Rules = rules,
-    };
+    /// <summary>Параметры системного слота (правила и/или переопределение редактора) — источник правил формы</summary>
+    public static FormFieldSettings SlotSettings(string key, FormRuleDefinition[]? rules = null, string? editor = null)
+        => new()
+        {
+            Key = key,
+            Rules = rules ?? [],
+            Editor = editor,
+        };
 
     public static FormRuleDefinition Rule(string type, JsonObject? parameters = null)
         => new() { Type = type, Params = parameters };

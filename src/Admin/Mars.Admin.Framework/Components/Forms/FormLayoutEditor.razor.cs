@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Mars.Contracts.Resources;
 using Mars.Forms.Contracts;
 using Microsoft.AspNetCore.Components;
@@ -8,10 +7,11 @@ namespace Mars.Admin.Framework.Components.Forms;
 
 /// <summary>
 /// Дизайнер раскладки формы: дерево, которое отдаёт провайдер (<see cref="FormDefinition"/>),
-/// правится по зонам — порядок, зона, видимость, ширина, секции, переопределение заголовка
-/// и редактора, правила поля. Наружу уходит только раскладка (<see cref="FormLayoutSettings"/>):
-/// дескрипторы не хранятся, их каждый раз отдаёт провайдер. Доступные зоны, правила и редакторы —
-/// из манифеста провайдера, поэтому у разных форм свои наборы.
+/// правится по зонам — порядок, зона, видимость, ширина, секции и переопределение заголовка.
+/// Параметры самих полей (правила, редактор) здесь не редактируются — они живут в настройках
+/// владельца формы (<see cref="FormFieldSettings"/>) и правятся на странице типа.
+/// Наружу уходит только раскладка (<see cref="FormLayoutSettings"/>): дескрипторы не хранятся,
+/// их каждый раз отдаёт провайдер. Доступные зоны — из манифеста провайдера.
 /// </summary>
 public partial class FormLayoutEditor
 {
@@ -37,13 +37,6 @@ public partial class FormLayoutEditor
     public string NewSectionZone { get; set; } = "";
 
     public IReadOnlyList<FormZoneDescriptor> Zones => _zones;
-
-    /// <summary>Правила, которые провайдер объявил в манифесте</summary>
-    public IReadOnlyCollection<string> RuleTypes
-        => Definition?.Manifest?.RuleTypes is { Count: > 0 } rules ? rules.ToList() : FormRuleCatalog.All;
-
-    /// <summary>Ключи редакторов, которые провайдер объявил в манифесте</summary>
-    public IReadOnlyCollection<string> EditorKeys => Definition?.Manifest?.EditorKeys ?? [];
 
     /// <summary>Варианты ширины элемента в зоне (пустой ключ — на всю ширину)</summary>
     public static readonly IReadOnlyList<(string Key, string Title)> Widths =
@@ -102,8 +95,6 @@ public partial class FormLayoutEditor
             Visible = item.Visible,
             Width = item.Width,
             Collapsed = item.Collapsed,
-            Editor = item.Editor,
-            Rules = item.Rules.ToList(),
             Parent = parent,
         };
 
@@ -144,9 +135,9 @@ public partial class FormLayoutEditor
         Width = row.Width,
         Collapsed = row.Collapsed,
         Items = row.Children.Select(ToItem).ToList(),
-        // правила и редактор хранятся только у полей, чьи настройки живут на форме (системные слоты)
-        Rules = row.SettingsOnForm ? row.Rules.ToList() : [],
-        Editor = row.SettingsOnForm ? row.Editor : null,
+        // правила и редактор в раскладке больше не хранятся — это параметры поля в настройках владельца
+        Rules = [],
+        Editor = null,
     };
 
     public bool CanMove(LayoutRow row, int delta)
@@ -205,12 +196,6 @@ public partial class FormLayoutEditor
     public async Task SetWidthAsync(LayoutRow row, string width)
     {
         row.Width = string.IsNullOrEmpty(width) ? null : width;
-        await EmitAsync();
-    }
-
-    public async Task SetEditorAsync(LayoutRow row, string editorKey)
-    {
-        row.Editor = string.IsNullOrEmpty(editorKey) ? null : editorKey;
         await EmitAsync();
     }
 
@@ -300,68 +285,6 @@ public partial class FormLayoutEditor
         return key;
     }
 
-    //=====================================
-    // правила поля
-
-    /// <summary>Параметры правила: что показывать в редакторе (значения хранятся строками)</summary>
-    public static IReadOnlyList<string> RuleParams(string ruleType) => ruleType switch
-    {
-        FormRuleCatalog.Regex => ["pattern", "message"],
-        FormRuleCatalog.Length => ["min", "max", "message"],
-        FormRuleCatalog.Min or FormRuleCatalog.Max => ["value", "message"],
-        _ => ["message"],
-    };
-
-    public static string? RuleParam(FormRuleDefinition rule, string name)
-        => rule.Params?[name] is JsonValue value && value.TryGetValue<string>(out var text) ? text : null;
-
-    public async Task AddRuleAsync(LayoutRow row)
-    {
-        var type = RuleTypes.FirstOrDefault() ?? FormRuleCatalog.Required;
-        row.Rules.Add(new FormRuleDefinition { Type = type, Params = new JsonObject() });
-        await EmitAsync();
-    }
-
-    public async Task RemoveRuleAsync(LayoutRow row, int index)
-    {
-        if (index < 0 || index >= row.Rules.Count) return;
-
-        row.Rules.RemoveAt(index);
-        await EmitAsync();
-    }
-
-    public async Task SetRuleTypeAsync(LayoutRow row, int index, string type)
-    {
-        if (index < 0 || index >= row.Rules.Count || string.IsNullOrEmpty(type)) return;
-
-        var rule = row.Rules[index];
-        if (rule.Type == type) return;
-
-        // параметры у правил свои: переносим только сообщение
-        var message = RuleParam(rule, "message");
-        row.Rules[index] = rule with
-        {
-            Type = type,
-            Params = message is null ? new JsonObject() : new JsonObject { ["message"] = message },
-        };
-
-        await EmitAsync();
-    }
-
-    public async Task SetRuleParamAsync(LayoutRow row, int index, string name, string? value)
-    {
-        if (index < 0 || index >= row.Rules.Count) return;
-
-        var rule = row.Rules[index];
-        var parameters = rule.Params is JsonObject existing ? (JsonObject)existing.DeepClone() : new JsonObject();
-
-        if (string.IsNullOrWhiteSpace(value)) parameters.Remove(name);
-        else parameters[name] = value;
-
-        row.Rules[index] = rule with { Params = parameters };
-        await EmitAsync();
-    }
-
     /// <summary>Строка элемента раскладки: то, что правит дизайнер</summary>
     public sealed class LayoutRow
     {
@@ -385,19 +308,11 @@ public partial class FormLayoutEditor
 
         public bool Collapsed { get; set; }
 
-        /// <summary>Переопределение редактора (пусто = редактор по умолчанию)</summary>
-        public string? Editor { get; set; }
-
-        public List<FormRuleDefinition> Rules { get; set; } = [];
-
         public List<LayoutRow> Children { get; set; } = [];
-
-        /// <summary>Панель правил раскрыта (состояние дизайнера, в раскладку не входит)</summary>
-        public bool ShowRules { get; set; }
 
         public bool IsSection => Kind == FormItemKinds.Section;
 
-        /// <summary>Настройки поля живут на форме (системный слот) — ему доступны правила и редактор</summary>
+        /// <summary>Настройки поля живёт в настройках владельца формы (системный слот), а не на записи поля</summary>
         public bool SettingsOnForm => Field?.SettingsOnForm == true;
     }
 }

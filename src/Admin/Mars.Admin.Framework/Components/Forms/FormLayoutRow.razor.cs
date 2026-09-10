@@ -34,10 +34,4 @@ public partial class FormLayoutRow
         Row.Title = title;
         return Editor.EmitAsync();
     }
-
-    Task ToggleRules()
-    {
-        Row.ShowRules = !Row.ShowRules;
-        return Task.CompletedTask;
-    }
 }

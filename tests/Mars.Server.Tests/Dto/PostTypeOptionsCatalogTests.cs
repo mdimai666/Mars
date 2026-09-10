@@ -51,7 +51,7 @@ public class PostTypeOptionsCatalogTests
     }
 
     [Fact]
-    public void FormLayout_RoundTripsZonesSettingsAndRules()
+    public void FormLayout_RoundTripsZonesAndLegacyFieldSettings()
     {
         var options = ((JsonNode?)null).WithFormLayout(Layout());
 
@@ -78,6 +78,114 @@ public class PostTypeOptionsCatalogTests
     }
 
     //=====================================
+    // параметры системных полей
+
+    [Fact]
+    public void WithSystemFields_KeepsOtherOptionKeys_AndDoesNotTouchSource()
+    {
+        var options = new JsonObject { ["other"] = 1, [PostTypeOptionsCatalog.Form] = Layout().ToJsonNode()! };
+
+        var updated = options.WithSystemFields([Settings(SystemFieldsCatalog.Slug, FormRuleCatalog.Unique)]);
+
+        updated!.AsObject()["other"]!.GetValue<int>().Should().Be(1);
+        updated.AsObject().ContainsKey(PostTypeOptionsCatalog.Form).Should().BeTrue("ключи опций независимы");
+        updated.AsObject().ContainsKey(PostTypeOptionsCatalog.SystemFields).Should().BeTrue();
+        options.ContainsKey(PostTypeOptionsCatalog.SystemFields).Should().BeFalse("мешок опций копируется, а не меняется на месте");
+    }
+
+    [Fact]
+    public void WithSystemFields_NullOrEmpty_RemovesKey()
+    {
+        var options = new JsonObject
+        {
+            ["other"] = 1,
+            [PostTypeOptionsCatalog.SystemFields] = new JsonArray(),
+        };
+
+        options.WithSystemFields(null)!.AsObject().ContainsKey(PostTypeOptionsCatalog.SystemFields).Should().BeFalse();
+        options.WithSystemFields([])!.AsObject().ContainsKey(PostTypeOptionsCatalog.SystemFields)
+               .Should().BeFalse("пустой набор параметров не хранится");
+        options["other"]!.GetValue<int>().Should().Be(1);
+    }
+
+    [Fact]
+    public void GetSystemFields_MissingOrBrokenJson_IsNull()
+    {
+        ((JsonNode?)null).GetSystemFields().Should().BeNull();
+        new JsonObject().GetSystemFields().Should().BeNull();
+        new JsonObject { [PostTypeOptionsCatalog.SystemFields] = "не json" }.GetSystemFields().Should().BeNull();
+    }
+
+    [Fact]
+    public void SystemFields_RoundTripsEditorAndRules()
+    {
+        var options = ((JsonNode?)null).WithSystemFields(
+        [
+            Settings(SystemFieldsCatalog.Slug, FormRuleCatalog.Unique, editor: FormEditorCatalog.Multiline),
+            Settings(SystemFieldsCatalog.Excerpt),
+        ]);
+
+        var parsed = options.GetSystemFields();
+
+        parsed.Should().NotBeNull();
+        parsed!.Should().HaveCount(2);
+
+        var slug = parsed.First();
+        slug.Key.Should().Be(SystemFieldsCatalog.Slug);
+        slug.Editor.Should().Be(FormEditorCatalog.Multiline);
+        slug.Rules.Single().Type.Should().Be(FormRuleCatalog.Unique);
+
+        parsed.Last().Key.Should().Be(SystemFieldsCatalog.Excerpt);
+        parsed.Last().Rules.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetEffectiveSystemFields_PrefersStoredOverLegacyLayout()
+    {
+        var options = ((JsonNode?)null)
+            .WithFormLayout(Layout())
+            .WithSystemFields([Settings(SystemFieldsCatalog.Title, FormRuleCatalog.Required)]);
+
+        var effective = options.GetEffectiveSystemFields();
+
+        effective!.Should().HaveCount(1);
+        effective.Single().Key.Should().Be(SystemFieldsCatalog.Title);
+        effective.Single().Rules.Single().Type.Should().Be(FormRuleCatalog.Required);
+    }
+
+    [Fact]
+    public void GetEffectiveSystemFields_MaterializesLegacyLayoutSettings()
+    {
+        // до переноса правила и редактор слота хранились в элементах раскладки, включая детей секции
+        var options = ((JsonNode?)null).WithFormLayout(Layout());
+
+        var effective = options.GetEffectiveSystemFields();
+
+        effective!.Select(s => s.Key).Should().Equal(SystemFieldsCatalog.Tags, SystemFieldsCatalog.Slug);
+        effective.First().Rules.Single().Type.Should().Be(FormRuleCatalog.Unique);
+        effective.First().Rules.Single().Params!["message"]!.GetValue<string>().Should().Be("занято");
+        effective.Last().Editor.Should().Be(PostFormEditors.Title);
+    }
+
+    [Fact]
+    public void GetEffectiveSystemFields_WithoutStoredAndLegacy_IsNull()
+    {
+        ((JsonNode?)null).GetEffectiveSystemFields().Should().BeNull();
+        new JsonObject().GetEffectiveSystemFields().Should().BeNull();
+        ((JsonNode?)null).WithFormLayout(new FormLayoutSettings
+        {
+            Items = [new FormItem { Key = SystemFieldsCatalog.Title, Zone = SystemFieldsCatalog.Zones.Main }],
+        }).GetEffectiveSystemFields().Should().BeNull("в раскладке только представление");
+    }
+
+    //=====================================
+
+    static FormFieldSettings Settings(string key, string? rule = null, string? editor = null) => new()
+    {
+        Key = key,
+        Editor = editor,
+        Rules = rule is null ? [] : [new FormRuleDefinition { Type = rule }],
+    };
 
     static FormLayoutSettings Layout() => new()
     {

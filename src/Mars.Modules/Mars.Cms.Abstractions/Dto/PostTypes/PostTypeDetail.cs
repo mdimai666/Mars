@@ -17,6 +17,13 @@ public record PostTypeDetail : PostTypeSummary
 
     /// <summary>Сохранённая раскладка формы редактирования (<c>post_types.Options["form"]</c>); null — раскладка по умолчанию</summary>
     public FormLayoutSettings? Form { get; init; }
+
+    /// <summary>
+    /// Параметры системных полей (<c>post_types.Options["systemFields"]</c>); null — не заданы.
+    /// При отсутствии сохранённых материализуются из легаси-раскладки — см.
+    /// <c>PostTypeOptionsCatalog.GetEffectiveSystemFields</c>.
+    /// </summary>
+    public IReadOnlyCollection<FormFieldSettings>? SystemFields { get; init; }
 }
 
 /// <summary>Поле контента типа поста (фича <see cref="PostTypeConstants.Features.Content"/>)</summary>

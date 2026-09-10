@@ -57,6 +57,7 @@
 		<ProjectReference Include="..\..\Mars.Modules\Mars.SSO.Contracts\Mars.SSO.Contracts.csproj" />
 		<ProjectReference Include="..\..\Plugin\Mars.Plugin.Contracts\Mars.Plugin.Contracts.csproj" />
 		<ProjectReference Include="..\..\Mars.Modules\Mars.Options.Abstractions\Mars.Options.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Mars.Modules\Mars.Forms.Front\Mars.Forms.Front.csproj" />
 		<ProjectReference Include="..\..\Mars.WebApiClient\Mars.WebApiClient.csproj" />
 		<ProjectReference Include="..\..\Modules\MarsCodeEditor2\MarsCodeEditor2.csproj" />
 		<ProjectReference Include="..\..\Modules\MarsEditors\MarsEditors.csproj" />

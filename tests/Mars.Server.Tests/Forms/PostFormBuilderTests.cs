@@ -117,7 +117,7 @@ public class PostFormBuilderTests
     }
 
     [Fact]
-    public void SavedLayout_ReordersKeepsZones_AndCarriesRulesOfSystemSlotsOnly()
+    public void SavedLayout_ReordersAndKeepsZones_ButCarriesNoFieldSettings()
     {
         var layout = new FormLayoutSettings
         {
@@ -127,7 +127,9 @@ public class PostFormBuilderTests
                 {
                     Key = SystemFieldsCatalog.Tags,
                     Zone = SystemFieldsCatalog.Zones.Main,
+                    // легаси-хранилище: правила и редактор в раскладке больше не действуют
                     Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Length, Params = new JsonObject { ["min"] = 2 } }],
+                    Editor = FormEditorCatalog.Text,
                 },
                 new FormItem
                 {
@@ -143,13 +145,67 @@ public class PostFormBuilderTests
         var form = PostFormBuilder.Build(postType, Normalizer);
 
         form.Items.Select(i => i.Key).Should().StartWith(SystemFieldsCatalog.Tags, "subtitle");
+
         var tags = form.Items.First(i => i.Key == SystemFieldsCatalog.Tags);
         tags.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
-        tags.Rules.Single().Type.Should().Be(FormRuleCatalog.Length);
+        tags.Rules.Should().BeEmpty("раскладка отвечает только за представление");
+        tags.Field!.Rules.Should().BeEmpty();
+        tags.Field.Editor.Should().Be(PostFormEditors.Tags, "редактор слота — из каталога и параметров типа, не из раскладки");
 
         var subtitle = form.Items.First(i => i.Key == "subtitle");
         subtitle.Visible.Should().BeFalse();
         subtitle.Rules.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SystemFieldSettings_OverrideEditorAndCarryRules()
+    {
+        var postType = Type(AllFeatures) with
+        {
+            SystemFields =
+            [
+                new FormFieldSettings
+                {
+                    Key = SystemFieldsCatalog.Excerpt,
+                    Editor = FormEditorCatalog.Multiline,
+                    Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Length, Params = new JsonObject { ["max"] = 200 } }],
+                },
+            ],
+        };
+
+        var excerpt = PostFormBuilder.Build(postType, Normalizer)
+                                     .Items.Single(i => i.Key == SystemFieldsCatalog.Excerpt);
+
+        excerpt.Field!.Editor.Should().Be(FormEditorCatalog.Multiline);
+        excerpt.Field.Rules.Single().Type.Should().Be(FormRuleCatalog.Length);
+        excerpt.Rules.Should().BeEmpty("правила приходят в дескрипторе, а не в элементе раскладки");
+    }
+
+    [Fact]
+    public void SystemFieldSettings_OtherSlotsKeepCatalogDefaults()
+    {
+        var postType = Type(AllFeatures) with
+        {
+            SystemFields = [new FormFieldSettings { Key = SystemFieldsCatalog.Excerpt, Editor = FormEditorCatalog.Multiline }],
+        };
+
+        var form = PostFormBuilder.Build(postType, Normalizer);
+
+        form.Items.Single(i => i.Key == SystemFieldsCatalog.Title).Field!.Editor.Should().Be(PostFormEditors.Title);
+        form.Items.Single(i => i.Key == SystemFieldsCatalog.Status).Field!.Rules.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SystemFieldSettings_UnknownKeyIsIgnored()
+    {
+        var postType = Type(AllFeatures, Meta("subtitle", 1)) with
+        {
+            SystemFields = [new FormFieldSettings { Key = "subtitle", Rules = [new FormRuleDefinition { Type = FormRuleCatalog.Required }] }],
+        };
+
+        var subtitle = PostFormBuilder.Build(postType, Normalizer).Fields().Single(i => i.Key == "subtitle");
+
+        subtitle.Field!.Rules.Should().BeEmpty("правила метаполей живут на определении поля");
     }
 
     [Fact]

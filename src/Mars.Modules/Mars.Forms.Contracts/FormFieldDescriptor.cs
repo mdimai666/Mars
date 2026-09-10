@@ -40,8 +40,9 @@ public record FormFieldDescriptor
     public IReadOnlyCollection<FormChoiceOption> Choices { get; init; } = [];
 
     /// <summary>
-    /// Правила поля от его источника (например length/unique из колонок внешней таблицы).
-    /// Применяются всегда; пользовательские правила раскладки — <see cref="FormItem.Rules"/>.
+    /// Правила поля: и от его источника (например length/unique из колонок внешней таблицы),
+    /// и заданные администратором в параметрах поля (<see cref="FormFieldSettings"/>).
+    /// В раскладке формы правила не хранятся — она только про представление.
     /// </summary>
     public IReadOnlyCollection<FormRuleDefinition> Rules { get; init; } = [];
 

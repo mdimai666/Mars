@@ -1,0 +1,95 @@
+@using Mars.Forms.Contracts
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="card field-definition">
+    <div class="card-header d-flex align-items-center gap-2 flex-wrap" style="cursor:pointer" @onclick="Toggle">
+        <i class="bi @(Expanded ? "bi-chevron-up" : "bi-chevron-down")"></i>
+        <strong>@DisplayTitle</strong>
+        <span class="text-secondary fz12px">@Definition.Key</span>
+        <span class="text-primary fz12px">(@Definition.Type)</span>
+
+        @if (Definition.Required)
+        {
+            <FluentBadge Appearance="Appearance.Neutral">обязательное</FluentBadge>
+        }
+        @if (Definition.ReadOnly)
+        {
+            <FluentBadge Appearance="Appearance.Neutral">только чтение</FluentBadge>
+        }
+        @if (Definition.Multiple)
+        {
+            <FluentBadge Appearance="Appearance.Neutral">несколько значений</FluentBadge>
+        }
+        @if (!string.IsNullOrEmpty(Definition.Feature))
+        {
+            <FluentBadge Appearance="Appearance.Neutral" title="Поле доступно, пока включена фича типа">
+                фича: @L[Definition.Feature]
+            </FluentBadge>
+        }
+    </div>
+
+    @if (Expanded)
+    {
+        <div class="card-body vstack gap-3">
+
+            @if (!string.IsNullOrEmpty(Definition.Description))
+            {
+                <div class="text-secondary fz12px">@Definition.Description</div>
+            }
+
+            @if (Capabilities.CanEditEditor)
+            {
+                <div class="vstack">
+                    <FluentLabel>Редактор значения</FluentLabel>
+                    <FluentSelect TOption="string" Width="280px"
+                                  Value="@(Definition.Editor ?? "")"
+                                  ValueChanged="SetEditorAsync">
+                        <FluentOption TOption="string" Value="">— по умолчанию для поля —</FluentOption>
+                        @foreach (var editor in Editors)
+                        {
+                            <FluentOption TOption="string" Value="@editor.Key">@editor.Title</FluentOption>
+                        }
+                    </FluentSelect>
+                </div>
+            }
+
+            @if (Capabilities.CanEditRules)
+            {
+                <div class="vstack gap-2">
+                    <FluentLabel>Правила</FluentLabel>
+                    <div class="text-secondary fz12px">Применяются на всех путях записи, не только в админ-форме</div>
+
+                    @for (var i = 0; i < Definition.Rules.Count; i++)
+                    {
+                        var index = i;
+                        var rule = Definition.Rules[index];
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <FluentSelect TOption="string" Value="@rule.Type" Style="width:150px"
+                                          ValueChanged="@(type => SetRuleTypeAsync(index, type))">
+                                @foreach (var type in AvailableRuleTypes)
+                                {
+                                    <FluentOption Value="@type">@type</FluentOption>
+                                }
+                            </FluentSelect>
+                            @foreach (var name in FormRuleParams.For(rule.Type))
+                            {
+                                var parameter = name;
+                                <FluentTextField Label="@parameter" Placeholder="@parameter" Style="width:170px"
+                                                 Value="@FormRuleParams.Read(rule, parameter)"
+                                                 ValueChanged="@(value => SetRuleParamAsync(index, parameter, value))" />
+                            }
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => RemoveRuleAsync(index))">
+                                удалить
+                            </FluentButton>
+                        </div>
+                    }
+
+                    <div>
+                        <FluentButton Appearance="Appearance.Neutral" OnClick="AddRuleAsync">Добавить правило</FluentButton>
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+</div>

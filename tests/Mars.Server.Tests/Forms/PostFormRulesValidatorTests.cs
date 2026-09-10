@@ -12,19 +12,22 @@ using static Mars.Server.Tests.Forms.PostFormTestHost;
 namespace Mars.Server.Tests.Forms;
 
 /// <summary>
-/// Правила раскладки формы для системных полей поста на сервере: применяются ко всем путям записи,
-/// не подменяют пол транспорта (DataAnnotations и правила <see cref="GeneralPostQueryValidator"/>).
+/// Правила системных полей поста (параметры типа, <c>post_types.Options["systemFields"]</c>) на сервере:
+/// применяются ко всем путям записи, не подменяют пол транспорта (DataAnnotations и правила
+/// <see cref="GeneralPostQueryValidator"/>).
 /// </summary>
 public class PostFormRulesValidatorTests
 {
     [Fact]
-    public async Task LayoutRules_ApplyToSystemSlots()
+    public async Task SystemFieldRules_ApplyToSystemSlots()
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(
-                Slot(SystemFieldsCatalog.Title, Rule(FormRuleCatalog.Regex, new JsonObject { ["pattern"] = @"^\d+$" })),
-                Slot(SystemFieldsCatalog.Slug, Rule(FormRuleCatalog.Length, new JsonObject { ["min"] = 10 }))),
+            SystemFields =
+            [
+                SlotSettings(SystemFieldsCatalog.Title, [Rule(FormRuleCatalog.Regex, new JsonObject { ["pattern"] = @"^\d+$" })]),
+                SlotSettings(SystemFieldsCatalog.Slug, [Rule(FormRuleCatalog.Length, new JsonObject { ["min"] = 10 })]),
+            ],
         };
         var validator = RulesValidator(postType, out _);
 
@@ -39,9 +42,11 @@ public class PostFormRulesValidatorTests
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(
-                Slot(SystemFieldsCatalog.Title, Rule(FormRuleCatalog.Length, new JsonObject { ["min"] = 3 })),
-                Slot(SystemFieldsCatalog.Slug, Rule(FormRuleCatalog.Regex, new JsonObject { ["pattern"] = "^[a-z-]+$" }))),
+            SystemFields =
+            [
+                SlotSettings(SystemFieldsCatalog.Title, [Rule(FormRuleCatalog.Length, new JsonObject { ["min"] = 3 })]),
+                SlotSettings(SystemFieldsCatalog.Slug, [Rule(FormRuleCatalog.Regex, new JsonObject { ["pattern"] = "^[a-z-]+$" })]),
+            ],
         };
         var validator = RulesValidator(postType, out _);
 
@@ -51,10 +56,10 @@ public class PostFormRulesValidatorTests
     }
 
     [Fact]
-    public async Task WithoutLayoutRules_DescriptorFloorIsNotApplied()
+    public async Task WithoutFieldRules_DescriptorFloorIsNotApplied()
     {
         // title и slug обязательны в дескрипторе слота, но их пол — транспорт: пустой заголовок
-        // без правила раскладки ошибку формы не даёт
+        // без правила в параметрах типа ошибку формы не даёт
         var validator = RulesValidator(Type(AllFeatures), out _);
 
         var errors = await validator.ValidateAsync(CreateQuery(title: "", slug: ""), id: null);
@@ -63,11 +68,11 @@ public class PostFormRulesValidatorTests
     }
 
     [Fact]
-    public async Task RequiredRule_FromLayout_FiresOnEmptyValue()
+    public async Task RequiredRule_FromSettings_FiresOnEmptyValue()
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Excerpt, Rule(FormRuleCatalog.Required))),
+            SystemFields = [SlotSettings(SystemFieldsCatalog.Excerpt, [Rule(FormRuleCatalog.Required)])],
         };
         var validator = RulesValidator(postType, out _);
 
@@ -81,16 +86,19 @@ public class PostFormRulesValidatorTests
     {
         var postType = Type(AllFeatures, Meta("subtitle", 1)) with
         {
-            Form = Layout(
-                Slot(SystemFieldsCatalog.CreatedAt, Rule(FormRuleCatalog.Required)),
-                Slot("subtitle", Rule(FormRuleCatalog.Required)),
-                Slot(SystemFieldsCatalog.Tags, Rule(FormRuleCatalog.Length))),
+            SystemFields =
+            [
+                SlotSettings(SystemFieldsCatalog.CreatedAt, [Rule(FormRuleCatalog.Required)]),
+                // ключ метаполя в параметрах системных полей игнорируется: правила метаполей живёт в их пайплайне
+                SlotSettings("subtitle", [Rule(FormRuleCatalog.Required)]),
+                SlotSettings(SystemFieldsCatalog.Tags, [Rule(FormRuleCatalog.Length)]),
+            ],
         };
 
         var keys = PostFormRulesValidator.RulesOnly(PostFormBuilder.Build(postType, Normalizer))
                                          .Fields().Select(i => i.Key);
 
-        // даты транспорт записи не несёт, правила метаполей живут в их пайплайне
+        // даты транспорт записи не несёт
         keys.Should().Equal(SystemFieldsCatalog.Tags);
     }
 
@@ -99,7 +107,7 @@ public class PostFormRulesValidatorTests
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Slug, Rule(FormRuleCatalog.Unique))),
+            SystemFields = [SlotSettings(SystemFieldsCatalog.Slug, [Rule(FormRuleCatalog.Unique)])],
         };
         var validator = RulesValidator(postType, out var posts);
         posts.SlugOccupiedAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
@@ -119,7 +127,7 @@ public class PostFormRulesValidatorTests
         var id = Guid.NewGuid();
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Slug, Rule(FormRuleCatalog.Unique))),
+            SystemFields = [SlotSettings(SystemFieldsCatalog.Slug, [Rule(FormRuleCatalog.Unique)])],
         };
         var validator = RulesValidator(postType, out var posts);
         posts.SlugOccupiedAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
@@ -138,7 +146,7 @@ public class PostFormRulesValidatorTests
         var id = Guid.NewGuid();
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Slug, Rule(FormRuleCatalog.Unique))),
+            SystemFields = [SlotSettings(SystemFieldsCatalog.Slug, [Rule(FormRuleCatalog.Unique)])],
         };
         var validator = RulesValidator(postType, out var posts);
         posts.SlugOccupiedAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
@@ -154,7 +162,7 @@ public class PostFormRulesValidatorTests
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Title, Rule(FormRuleCatalog.Unique))),
+            SystemFields = [SlotSettings(SystemFieldsCatalog.Title, [Rule(FormRuleCatalog.Unique)])],
         };
         var validator = RulesValidator(postType, out var posts);
 
@@ -169,8 +177,11 @@ public class PostFormRulesValidatorTests
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Slug,
-                Rule(FormRuleCatalog.Unique, new JsonObject { ["message"] = "такой slug уже есть" }))),
+            SystemFields =
+            [
+                SlotSettings(SystemFieldsCatalog.Slug,
+                    [Rule(FormRuleCatalog.Unique, new JsonObject { ["message"] = "такой slug уже есть" })]),
+            ],
         };
         var validator = RulesValidator(postType, out var posts);
         posts.SlugOccupiedAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
@@ -222,8 +233,11 @@ public class PostFormRulesValidatorTests
     {
         var postType = Type(AllFeatures) with
         {
-            Form = Layout(Slot(SystemFieldsCatalog.Slug,
-                Rule(FormRuleCatalog.Length, new JsonObject { ["min"] = 10 }))),
+            SystemFields =
+            [
+                SlotSettings(SystemFieldsCatalog.Slug,
+                    [Rule(FormRuleCatalog.Length, new JsonObject { ["min"] = 10 })]),
+            ],
         };
         var locator = Substitute.For<IMetaModelTypesLocator>();
         locator.GetPostTypeByName(postType.TypeName).Returns(postType);

@@ -277,6 +277,11 @@ internal class PostTypeRepository : IPostTypeRepository, IDisposable
             entity.Presentation.GridSettings = query.Grid.ToJsonNode();
         }
 
+        // параметры системных полей переехали из раскладки в отдельный ключ — фиксируем легаси
+        // до перезаписи раскладки, иначе сохранение представления потеряло бы старые правила слотов
+        if (entity.Options.GetSystemFields() is null)
+            entity.Options = entity.Options.WithSystemFields(entity.Options.GetEffectiveSystemFields());
+
         // раскладка формы живёт в общих опциях типа, а не в презентации
         entity.Options = entity.Options.WithFormLayout(query.Form);
 

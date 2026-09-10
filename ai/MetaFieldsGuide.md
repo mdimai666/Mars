@@ -55,7 +55,7 @@
   `editor`, `validators`, `generator`, `kind`, `removeMode`, `uploadFolder`,
   `dropZone`, `viewMode`, `featureKey`, `codeLang`. Чтение — через
   типизированные каталоги/ридеры (`MetaFieldKindCatalog`,
-  `MetaFieldEditorCatalog`, …), не сырым парсингом.
+  `FormEditorCatalog`, …), не сырым парсингом.
 - **Флаги**: `Hidden` = хранится и отдаётся в API, но скрыт в формах;
   `Disabled` = исключён из генерации/форм, значения сохраняются;
   `IsNullable` = обязательность; `Default` — хранимое значение по умолчанию
@@ -138,11 +138,11 @@
   перезаписываются; обязательные поля с генератором исключены из проверки
   «значение отсутствует». Перегенерация — XAction
   `mars.content.regenerateGeneratedMetaValues`.
-- **Редакторы значений**: серверный каталог ключей `MetaFieldEditorCatalog` (выбор
-  поля — `Options.editor`, пусто = редактор типа) + **общий реестр формы**
-  `IFormEditorLocator` (`FormEditorLocator.Register` — точка расширения; админка
-  регистрирует WYSIWYG/код/блочный, цвет/URL/Email, время/дату-время). Своих
-  редакторов у метаполей нет: значение поля рендерит общий `FormFieldRow`, а строки
+- **Редакторы значений**: каталог ключей `FormEditorCatalog` (`Mars.Forms.Contracts`,
+  общий для всех провайдеров; выбор поля — `Options.editor`, пусто = редактор типа) +
+  **общий реестр формы** `IFormEditorLocator` (`FormEditorLocator.Register` — точка
+  расширения; админка регистрирует WYSIWYG/код/блочный, цвет/URL/Email, время/дату-время).
+  Своих редакторов у метаполей нет: значение поля рендерит общий `FormFieldRow`, а строки
   метаполя отдаёт стор `MetaValueStore` — единственное место перевода EAV-строк в
   канонические значения формы и обратно (строка/число/дата, ключ варианта `Select` —
   в EAV `VariantId`, список ключей `SelectMany` — `VariantsIds`, Guid связи,

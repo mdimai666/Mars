@@ -283,6 +283,12 @@ Mars.Forms.Abstractions
 - В дескрипторе метаполя `Editor` = `Options.editor`, а для связей и медиа — доменные
   `MetaFormEditors` (`core.meta.relation[.multi]`, `core.meta.file[.multi]`): только у них нет
   типизированного значения. Обёртки примитивов (`core.meta.value[.multi]`) удалены.
+- Каталог ключей один: `FormEditorCatalog` (`Mars.Forms.Contracts`) вместо мета-каталога —
+  ключи редакторов (цвет, ссылка, Email, время, дата-время, WYSIWYG/код/блочный) и параметры
+  поля (`Options.editor`/`Options.codeLang` с их ридерами) стали общими для всех провайдеров.
+  Следствие: любой текстовый слот типа поста выбирает любой из них — например, для `title`
+  доступен редактор «Цвет», а коллизия `core.input.date` (см. FormEnginePlan, этап C) снята:
+  редактор даты один.
 
 Проверка: сборка 0 ошибок; `Mars.Forms.Tests` 82/82; `Mars.Server.Tests` 471/471;
 `Mars.Admin.Framework.Tests` 34/34 (новый `MetaValueStoreTests`: соответствие типов, индексы,

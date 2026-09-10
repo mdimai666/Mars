@@ -75,7 +75,7 @@ public class PostFormBuilderTests
         content.Zone.Should().Be(SystemFieldsCatalog.Zones.Main);
         content.Field!.Type.Should().Be(FormFieldType.Text);
         content.Field.TitleKey.Should().Be("Content");
-        content.Field.Editor.Should().Be(MetaFieldEditorCatalog.BlockEditor, "по умолчанию контент правит блочный редактор");
+        content.Field.Editor.Should().Be(FormEditorCatalog.BlockEditor, "по умолчанию контент правит блочный редактор");
         content.Field.Rules.Should().BeEmpty();
     }
 
@@ -89,7 +89,7 @@ public class PostFormBuilderTests
                 new FormFieldSettings
                 {
                     Key = SystemFieldsCatalog.Content,
-                    Editor = MetaFieldEditorCatalog.Code,
+                    Editor = FormEditorCatalog.Code,
                     CodeLang = "scriban",
                 },
             ],
@@ -97,7 +97,7 @@ public class PostFormBuilderTests
 
         var content = PostFormBuilder.Build(postType, Normalizer).Items.Single(i => i.Key == SystemFieldsCatalog.Content);
 
-        content.Field!.Editor.Should().Be(MetaFieldEditorCatalog.Code);
+        content.Field!.Editor.Should().Be(FormEditorCatalog.Code);
         content.Field.Options.GetCodeLang().Should().Be("scriban", "язык кода едет в дескрипторе — редактору он нужен без настроек типа");
     }
 

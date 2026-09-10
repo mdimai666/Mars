@@ -8,13 +8,13 @@
 @* Доменные настройки системного слота в общем редакторе определений: язык редактора кода.
    Всё остальное (редактор, правила) — общие параметры определения, правит сам редактор. *@
 
-@if (Model is not null && Definition.Editor == MetaFieldEditorCatalog.Code)
+@if (Model is not null && Definition.Editor == FormEditorCatalog.Code)
 {
     <div class="vstack">
         <label>Язык кода</label>
         <FluentSelect TOption="string" Width="250px"
                       Value="@CodeLang" ValueChanged="SetCodeLangAsync">
-            <FluentOption TOption="string" Value="">— по умолчанию (@MetaFieldEditorCatalog.DefaultCodeLang) —</FluentOption>
+            <FluentOption TOption="string" Value="">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
             @foreach (var lang in CodeEditor2.Language.Array)
             {
                 <FluentOption TOption="string" Value="@lang">@lang</FluentOption>

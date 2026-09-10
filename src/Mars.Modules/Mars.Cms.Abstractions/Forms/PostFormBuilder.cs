@@ -95,7 +95,7 @@ public static class PostFormBuilder
             ModelName = slot.ModelName,
             // язык редактора кода едет в дескрипторе: редактору не нужно знать про настройки типа
             Options = settings?.CodeLang is { Length: > 0 } codeLang
-                ? new JsonObject { [MetaFieldEditorCatalog.CodeLangOption()] = codeLang }
+                ? new JsonObject { [FormEditorCatalog.CodeLangOption()] = codeLang }
                 : null,
             Choices = slot.Key == Status
                 ? postType.PostStatusList.Select(s => new FormChoiceOption { Key = s.Slug, Title = s.Title }).ToList()

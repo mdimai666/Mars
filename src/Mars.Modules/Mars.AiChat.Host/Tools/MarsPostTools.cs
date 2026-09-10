@@ -4,10 +4,10 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
 using Mars.Contracts.Hubs;
 using Mars.Core.Features;
+using Mars.Forms.Contracts;
 using Mars.Nodes.Abstractions.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
@@ -49,8 +49,8 @@ public class MarsPostTools
 
             var content = contentEditor switch
             {
-                MetaFieldEditorCatalog.BlockEditor => BuildBlockEditorJson(contentText),
-                MetaFieldEditorCatalog.Wysiwyg => BuildHtml(contentText),
+                FormEditorCatalog.BlockEditor => BuildBlockEditorJson(contentText),
+                FormEditorCatalog.Wysiwyg => BuildHtml(contentText),
                 _ => contentText,
             };
 

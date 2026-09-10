@@ -74,17 +74,17 @@ ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionAc
 // редакторы значений — общие для всех полей: текстовые (в т.ч. тяжёлые WYSIWYG/код/блочный),
 // строковые и даты. Название делает редактор предлагаемым в выборе редактора поля; безымянные
 // регистрации (обёртки провайдеров, встроенные дефолты) доступны только явным ключом дескриптора
-FormEditorLocator.Register(MetaFieldEditorCatalog.Wysiwyg, typeof(FormWysiwygEditor), false, "WYSIWYG (Quill)",
+FormEditorLocator.Register(FormEditorCatalog.Wysiwyg, typeof(FormWysiwygEditor), false, "WYSIWYG (Quill)",
     FormFieldType.String, FormFieldType.Text);
-FormEditorLocator.Register(MetaFieldEditorCatalog.Code, typeof(FormCodeEditor), false, "Код (Monaco)",
+FormEditorLocator.Register(FormEditorCatalog.Code, typeof(FormCodeEditor), false, "Код (Monaco)",
     FormFieldType.String, FormFieldType.Text);
-FormEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(FormBlockEditor), false, "Блочный (Editor.js)",
+FormEditorLocator.Register(FormEditorCatalog.BlockEditor, typeof(FormBlockEditor), false, "Блочный (Editor.js)",
     FormFieldType.String, FormFieldType.Text);
-FormEditorLocator.Register(MetaFieldEditorCatalog.Color, typeof(FormColorEditor), false, "Цвет", FormFieldType.String);
-FormEditorLocator.Register(MetaFieldEditorCatalog.Url, typeof(FormUrlEditor), false, "URL-адрес", FormFieldType.String);
-FormEditorLocator.Register(MetaFieldEditorCatalog.Email, typeof(FormEmailEditor), false, "Email", FormFieldType.String);
-FormEditorLocator.Register(MetaFieldEditorCatalog.Time, typeof(FormTimeEditor), false, "Время", FormFieldType.DateTime);
-FormEditorLocator.Register(MetaFieldEditorCatalog.DateTime, typeof(FormDateTimeEditor), false, "Дата и время",
+FormEditorLocator.Register(FormEditorCatalog.Color, typeof(FormColorEditor), false, "Цвет", FormFieldType.String);
+FormEditorLocator.Register(FormEditorCatalog.Url, typeof(FormUrlEditor), false, "URL-адрес", FormFieldType.String);
+FormEditorLocator.Register(FormEditorCatalog.Email, typeof(FormEmailEditor), false, "Email", FormFieldType.String);
+FormEditorLocator.Register(FormEditorCatalog.Time, typeof(FormTimeEditor), false, "Время", FormFieldType.DateTime);
+FormEditorLocator.Register(FormEditorCatalog.DateTime, typeof(FormDateTimeEditor), false, "Дата и время",
     FormFieldType.DateTime);
 
 // доменный редактор системного слота формы поста (общий слой Mars.Forms): пикер категорий

@@ -5,8 +5,8 @@ using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Admin.Pages.PostsViews.Forms;
 using Mars.Admin.Pages.PostTypeViews;
 using Mars.AiChat.Front.Services;
-using Mars.Cms.Contracts.MetaFields;
 using Mars.Cms.Contracts.PostTypes;
+using Mars.Forms.Contracts;
 using Mars.Forms.Front;
 using Mars.WebApiClient.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -150,7 +150,7 @@ public partial class EditPostView : IAiChatPageHandler
             contentEditor = ContentEditorKey,
             fields = formKeys,
             editableFields = AgentEditableFields.Where(formKeys.Contains).ToArray(),
-            contentAiEditable = ContentEditorKey != MetaFieldEditorCatalog.Wysiwyg,
+            contentAiEditable = ContentEditorKey != FormEditorCatalog.Wysiwyg,
         }, AiJsonOptions);
     }
 
@@ -211,7 +211,7 @@ public partial class EditPostView : IAiChatPageHandler
                     break;
                 }
 
-                if (ContentEditorKey == MetaFieldEditorCatalog.Wysiwyg)
+                if (ContentEditorKey == FormEditorCatalog.Wysiwyg)
                     return "Изменение WYSIWYG-контента агентом пока не поддерживается. Предложите пользователю отредактировать текст вручную.";
 
                 // обычный многострочный редактор привязан к модели, мост ему не нужен
@@ -253,7 +253,7 @@ public partial class EditPostView : IAiChatPageHandler
     {
         if (string.IsNullOrEmpty(content)) return "";
 
-        if (contentEditor == MetaFieldEditorCatalog.BlockEditor)
+        if (contentEditor == FormEditorCatalog.BlockEditor)
         {
             try
             {
@@ -296,7 +296,7 @@ public partial class EditPostView : IAiChatPageHandler
             }
         }
 
-        if (contentEditor == MetaFieldEditorCatalog.Wysiwyg)
+        if (contentEditor == FormEditorCatalog.Wysiwyg)
         {
             return Regex.Replace(content, "<[^>]+>", " ").Trim();
         }

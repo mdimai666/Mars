@@ -62,12 +62,12 @@ public class MetaFieldsFormBuilderTests
     {
         var field = Meta("body", 0, type: MetaFieldType.Text) with
         {
-            Options = new JsonObject { [MetaFieldEditorCatalog.EditorOption()] = MetaFieldEditorCatalog.Code },
+            Options = new JsonObject { [FormEditorCatalog.EditorOption()] = FormEditorCatalog.Code },
         };
 
         var body = MetaFieldsFormBuilder.Build("user.default", [field]).Items.Single().Field!;
 
-        body.Editor.Should().Be(MetaFieldEditorCatalog.Code);
+        body.Editor.Should().Be(FormEditorCatalog.Code);
     }
 
     [Fact]

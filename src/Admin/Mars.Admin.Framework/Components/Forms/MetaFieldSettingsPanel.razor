@@ -11,13 +11,13 @@
 
 @if (Field is not null)
 {
-    @if (Field.Editor == MetaFieldEditorCatalog.Code)
+    @if (Field.Editor == FormEditorCatalog.Code)
     {
         <div class="vstack">
             <label>Язык кода</label>
             <FluentSelect TOption="string" Width="250px"
                           Value="@Field.CodeLang" ValueChanged="SetCodeLangAsync">
-                <FluentOption TOption="string" Value="">— по умолчанию (@MetaFieldEditorCatalog.DefaultCodeLang) —</FluentOption>
+                <FluentOption TOption="string" Value="">— по умолчанию (@FormEditorCatalog.DefaultCodeLang) —</FluentOption>
                 @foreach (var lang in CodeEditor2.Language.Array)
                 {
                     <FluentOption TOption="string" Value="@lang">@lang</FluentOption>

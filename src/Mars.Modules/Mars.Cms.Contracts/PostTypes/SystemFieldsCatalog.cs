@@ -1,4 +1,3 @@
-using Mars.Cms.Contracts.MetaFields;
 using Mars.Contracts.Resources;
 using Mars.Forms.Contracts;
 
@@ -61,7 +60,7 @@ public static class SystemFieldsCatalog
             Editor: PostFormEditors.Title),
         new(Slug, nameof(AppRes.Slug), FormFieldType.String, Zones.Main),
         new(Content, nameof(AppRes.Content), FormFieldType.Text, Zones.Main,
-            Feature: PostTypeConstants.Features.Content, Editor: MetaFieldEditorCatalog.BlockEditor),
+            Feature: PostTypeConstants.Features.Content, Editor: FormEditorCatalog.BlockEditor),
         new(Excerpt, nameof(AppRes.Excerpt), FormFieldType.Text, Zones.Main,
             Feature: PostTypeConstants.Features.Excerpt),
         new(CreatedAt, nameof(AppRes.CreatedAt), FormFieldType.DateTime, Zones.Publish),
@@ -95,7 +94,7 @@ public static class SystemFieldsCatalog
 
     /// <summary>Язык кода выбранного редактора слота (пусто — язык по умолчанию)</summary>
     public static string CodeLang(string key, IReadOnlyCollection<FormFieldSettings>? systemFields)
-        => systemFields?.FirstOrDefault(settings => settings.Key == key)?.CodeLang ?? MetaFieldEditorCatalog.DefaultCodeLang;
+        => systemFields?.FirstOrDefault(settings => settings.Key == key)?.CodeLang ?? FormEditorCatalog.DefaultCodeLang;
 
     /// <summary>
     /// Слот обязателен независимо от настроек типа: пол задан DataAnnotations транспорта записи

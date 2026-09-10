@@ -5,7 +5,7 @@ using FluentAssertions;
 using Mars.Cms.Abstractions.Dto.Posts;
 using Mars.Cms.Abstractions.Dto.PostTypes;
 using Mars.Cms.Abstractions.Services;
-using Mars.Cms.Contracts.MetaFields;
+using Mars.Forms.Contracts;
 using Mars.Integration.Tests.Attributes;
 using Mars.Integration.Tests.Common;
 using Mars.Test.Common.FixtureCustomizes;
@@ -30,8 +30,8 @@ public class PostTransformerTests : ApplicationTests
         //Arrange
         _ = nameof(PostTransformer.Transform);
         var postType = _metaModelTypesLocator.GetPostTypeByName("post")!;
-        if (postType.ContentEditorKey() != MetaFieldEditorCatalog.BlockEditor)
-            throw new NotSupportedException($"PostType must be '{MetaFieldEditorCatalog.BlockEditor}'. Retrieved '{postType.TypeName}'.");
+        if (postType.ContentEditorKey() != FormEditorCatalog.BlockEditor)
+            throw new NotSupportedException($"PostType must be '{FormEditorCatalog.BlockEditor}'. Retrieved '{postType.TypeName}'.");
 
         var content = new EditorJsContent()
         {

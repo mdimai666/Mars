@@ -633,6 +633,9 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
      (DateTime без явного редактора → фолбэк на встроенный) получали чужой
      компонент: `InvalidOperationException: … does not have a property matching
      the name 'Binding'` → ErrorBoundary → форма поста не рендерилась.
+     **Снято в R8 (2026-09-11):** каталог ключей один — `FormEditorCatalog`
+     (`Mars.Forms.Contracts`), редактор даты тоже один, а компоненты метаполей
+     удалены, поэтому подменять встроенный редактор больше нечем.
   2. **Разные контракты параметров**: редакторы значений метаполей принимают
      `Value`/`ValueChanged` (`MetaValueEditModel`), общий рендерер передаёт
      `Binding` (`FormFieldBinding`). Компоненты невзаимозаменяемы, поэтому один
@@ -742,7 +745,9 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   сиды и тесты).
   **Выполнено в R8** (обратным ходом: свои компоненты у метаполей убраны, редакторы
   пишутся один раз с контрактом `Binding`, значения метаполей стали каноническими —
-  см. [FormEngineSimplifyPlan.md](./FormEngineSimplifyPlan.md), раздел R8).
+  см. [FormEngineSimplifyPlan.md](./FormEngineSimplifyPlan.md), раздел R8);
+  ключи и параметры поля (`Options.editor`/`codeLang`) переехали в общий каталог
+  `FormEditorCatalog` (`Mars.Forms.Contracts`), мета-каталог удалён.
 - Публичный фронт не затрагивается: потребителей `MetaFieldViews` вне
   `Mars.Admin`/`Mars.Admin.Framework` нет (проверено 2026-09-10), кроме
   `GroupedSelectDropDown` в нодах.

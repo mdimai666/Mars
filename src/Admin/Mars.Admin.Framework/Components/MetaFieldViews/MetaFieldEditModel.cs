@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Nodes;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Core.Attributes;
+using Mars.Forms.Contracts;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
@@ -368,7 +369,7 @@ public class MetaFieldEditModel
     static string ReadEditor(JsonNode? options) => options.GetEditor();
 
     static string ReadCodeLang(JsonNode? options)
-        => options is JsonObject obj && obj[MetaFieldEditorCatalog.CodeLangOption()] is JsonValue value
+        => options is JsonObject obj && obj[FormEditorCatalog.CodeLangOption()] is JsonValue value
             && value.TryGetValue<string>(out var lang)
             ? lang
             : "";
@@ -378,7 +379,7 @@ public class MetaFieldEditModel
     {
         if (string.IsNullOrEmpty(Editor))
         {
-            if (Options is JsonObject emptyObj) emptyObj.Remove(MetaFieldEditorCatalog.EditorOption());
+            if (Options is JsonObject emptyObj) emptyObj.Remove(FormEditorCatalog.EditorOption());
             return;
         }
 
@@ -387,7 +388,7 @@ public class MetaFieldEditModel
             obj = [];
             Options = obj;
         }
-        obj[MetaFieldEditorCatalog.EditorOption()] = Editor;
+        obj[FormEditorCatalog.EditorOption()] = Editor;
     }
 
     /// <summary>Синхронизирует язык кода в Options.codeLang</summary>
@@ -395,7 +396,7 @@ public class MetaFieldEditModel
     {
         if (string.IsNullOrEmpty(CodeLang))
         {
-            if (Options is JsonObject emptyObj) emptyObj.Remove(MetaFieldEditorCatalog.CodeLangOption());
+            if (Options is JsonObject emptyObj) emptyObj.Remove(FormEditorCatalog.CodeLangOption());
             return;
         }
 
@@ -404,7 +405,7 @@ public class MetaFieldEditModel
             obj = [];
             Options = obj;
         }
-        obj[MetaFieldEditorCatalog.CodeLangOption()] = CodeLang;
+        obj[FormEditorCatalog.CodeLangOption()] = CodeLang;
     }
     #endregion
 

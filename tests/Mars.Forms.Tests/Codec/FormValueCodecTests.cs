@@ -32,13 +32,13 @@ public class FormValueCodecTests
     }
 
     [Fact]
-    public void TryToClr_Bool_AcceptsStringAndFlag()
+    public void TryToClr_Bool_RejectsTextAndNumbers()
     {
-        FormValueCodec.TryToClr(JsonValue.Create("true"), FormFieldType.Bool, out var fromText, out _).Should().BeTrue();
-        fromText.Should().Be(true);
+        FormValueCodec.TryToClr(JsonValue.Create("true"), FormFieldType.Bool, out _, out var textError).Should().BeFalse();
+        textError.Should().Be("ожидается true или false");
 
-        FormValueCodec.TryToClr(JsonValue.Create(1), FormFieldType.Bool, out var fromNumber, out _).Should().BeTrue();
-        fromNumber.Should().Be(true);
+        FormValueCodec.TryToClr(JsonValue.Create(1), FormFieldType.Bool, out _, out var numberError).Should().BeFalse();
+        numberError.Should().Be("ожидается true или false");
     }
 
     [Fact]
@@ -78,10 +78,11 @@ public class FormValueCodecTests
     }
 
     [Fact]
-    public void TryToClr_Decimal_AcceptsJsonNumber()
+    public void TryToClr_Decimal_RejectsJsonNumber()
     {
-        FormValueCodec.TryToClr(JsonValue.Create(10.5), FormFieldType.Decimal, out var read, out _).Should().BeTrue();
-        read.Should().Be(10.5m);
+        // decimal едет строкой: число на проводе — рассинхрон кодировки, а не «почти то же значение»
+        FormValueCodec.TryToClr(JsonValue.Create(10.5), FormFieldType.Decimal, out _, out var error).Should().BeFalse();
+        error.Should().Contain("decimal");
     }
 
     [Fact]
@@ -177,10 +178,10 @@ public class FormValueCodecTests
     [Fact]
     public void TryToClrList_KeepsOrderAsIndex_AndReportsElementPosition()
     {
-        var array = new JsonArray(JsonValue.Create("a"), JsonValue.Create(5));
+        var array = new JsonArray(JsonValue.Create("a"), JsonValue.Create("b"));
 
         FormValueCodec.TryToClrList(array, FormFieldType.String, out var values, out var error).Should().BeTrue();
-        values.Should().Equal("a", "5");
+        values.Should().Equal("a", "b");
         error.Should().BeNull();
 
         var broken = new JsonArray(new JsonObject());
@@ -232,10 +233,10 @@ public class FormValueCodecTests
     }
 
     [Fact]
-    public void TryToClr_StringTypes_TolerateNumbers()
+    public void TryToClr_StringTypes_RejectNumbers()
     {
-        FormValueCodec.TryToClr(JsonValue.Create(42), FormFieldType.String, out var value, out _).Should().BeTrue();
-        value.Should().Be("42");
+        FormValueCodec.TryToClr(JsonValue.Create(42), FormFieldType.String, out _, out var error).Should().BeFalse();
+        error.Should().Be("ожидается строка");
     }
 
     [Fact]

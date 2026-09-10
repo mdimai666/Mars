@@ -8,8 +8,10 @@ namespace Mars.Forms.Contracts;
 /// <summary>
 /// Канонические кодировки значений формы (wire = JSON) и конверсия в CLR — единственное
 /// место, где зафиксированы форматы. Decimal уходит строкой в инвариантной культуре
-/// (числом JS теряет точность), DateTime — ISO-8601 со смещением, Select — ключом варианта,
-/// Relation/File/Image — строкой-Guid, множественные поля — массивом, где порядок равен индексу.
+/// (числом JS теряет точность), DateTime — ISO-8601 со смещением строкой, Select — ключом
+/// варианта, Relation/File/Image — строкой-Guid, множественные поля — массивом, где порядок
+/// равен индексу. Чтение строгое: одна каноническая форма на тип, отклонение — ошибка формата
+/// (терпимое «угадывание типа» скрывало бы рассинхрон клиента и сервера).
 /// Отсутствие ключа в мешке означает «значение не задано»; пустая строка не равна отсутствию.
 /// </summary>
 public static class FormValueCodec
@@ -209,40 +211,15 @@ public static class FormValueCodec
     static bool TryReadString(JsonNode node, out string value, out string? error)
     {
         error = null;
-        if (node is JsonValue json)
-        {
-            if (json.TryGetValue<string>(out var text))
-            {
-                value = text;
-                return true;
-            }
-            if (json.TryGetValue<Guid>(out var reference))
-            {
-                value = reference.ToString("D");
-                return true;
-            }
-            if (json.TryGetValue<DateTimeOffset>(out var offset))
-            {
-                value = offset.ToString("O", CultureInfo.InvariantCulture);
-                return true;
-            }
-            if (json.TryGetValue<DateTime>(out var date))
-            {
-                value = AsDate(date).ToString("O", CultureInfo.InvariantCulture);
-                return true;
-            }
+        value = "";
 
-            // число/булево любой ширины: JsonValue бывает как разобранным json, так и созданным из CLR-значения
-            var raw = json.ToJsonString();
-            if (raw.Length > 0 && raw[0] is not '{' and not '[' and not '"')
-            {
-                value = raw;
-                return true;
-            }
+        if (node is JsonValue json && json.TryGetValue<string>(out var text))
+        {
+            value = text;
+            return true;
         }
 
-        value = "";
-        error = "ожидается строковое значение";
+        error = "ожидается строка";
         return false;
     }
 
@@ -251,29 +228,13 @@ public static class FormValueCodec
         error = null;
         value = false;
 
-        if (node is JsonValue json)
+        if (node is JsonValue json && json.TryGetValue<bool>(out var flag))
         {
-            if (json.TryGetValue<bool>(out var flag))
-            {
-                value = flag;
-                return true;
-            }
-            if (json.TryGetValue<string>(out var text))
-            {
-                if (bool.TryParse(text, out var parsed))
-                {
-                    value = parsed;
-                    return true;
-                }
-            }
-            else if (TryReadRawDecimal(json, out var number) && number is 0 or 1)
-            {
-                value = number == 1;
-                return true;
-            }
+            value = flag;
+            return true;
         }
 
-        error = "ожидается логическое значение";
+        error = "ожидается true или false";
         return false;
     }
 
@@ -284,55 +245,21 @@ public static class FormValueCodec
 
         if (node is JsonValue json)
         {
-            if (json.TryGetValue<long>(out var number))
+            if (json.TryGetValue<long>(out var fromLong))
             {
-                value = number;
+                value = fromLong;
                 return true;
             }
-            if (json.TryGetValue<decimal>(out var money))
+
+            // CLR-значение могло быть создано узким целым — это тот же json-номер
+            if (json.TryGetValue<int>(out var fromInt))
             {
-                if (money % 1 != 0)
-                {
-                    error = "ожидается целое число";
-                    return false;
-                }
-                value = (long)money;
-                return true;
-            }
-            if (json.TryGetValue<double>(out var floating))
-            {
-                if (Math.Abs(floating % 1) > double.Epsilon)
-                {
-                    error = "ожидается целое число";
-                    return false;
-                }
-                value = (long)floating;
-                return true;
-            }
-            if (json.TryGetValue<string>(out var text)
-                && long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
-            {
-                value = parsed;
-                return true;
-            }
-            if (json.TryGetValue<bool>(out var flag))
-            {
-                value = flag ? 1 : 0;
-                return true;
-            }
-            if (TryReadRawDecimal(json, out var raw))
-            {
-                if (raw % 1 != 0)
-                {
-                    error = "ожидается целое число";
-                    return false;
-                }
-                value = (long)raw;
+                value = fromInt;
                 return true;
             }
         }
 
-        error ??= "ожидается целое число";
+        error = "ожидается целое число";
         return false;
     }
 
@@ -343,25 +270,15 @@ public static class FormValueCodec
 
         if (node is JsonValue json)
         {
-            if (json.TryGetValue<double>(out var floating))
+            if (json.TryGetValue<double>(out var fromDouble))
             {
-                value = floating;
+                value = fromDouble;
                 return true;
             }
-            if (json.TryGetValue<decimal>(out var money))
+
+            if (json.TryGetValue<float>(out var fromFloat))
             {
-                value = (double)money;
-                return true;
-            }
-            if (json.TryGetValue<string>(out var text)
-                && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
-            {
-                value = parsed;
-                return true;
-            }
-            if (TryReadRawDecimal(json, out var raw))
-            {
-                value = (double)raw;
+                value = fromFloat;
                 return true;
             }
         }
@@ -370,71 +287,40 @@ public static class FormValueCodec
         return false;
     }
 
+    /// <summary>Decimal передаётся строкой: числом его читает только CLR, JS точность теряет</summary>
     static bool TryReadDecimal(JsonNode node, out decimal value, out string? error)
     {
         error = null;
         value = 0;
 
-        if (node is JsonValue json)
+        if (node is JsonValue json
+            && json.TryGetValue<string>(out var text)
+            && decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed))
         {
-            if (json.TryGetValue<decimal>(out var money))
-            {
-                value = money;
-                return true;
-            }
-            if (json.TryGetValue<string>(out var text)
-                && decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed))
-            {
-                value = parsed;
-                return true;
-            }
-            if (TryReadRawDecimal(json, out value)) return true;
+            value = parsed;
+            return true;
         }
 
-        error = "ожидается число (decimal передаётся строкой)";
+        error = "ожидается строка с числом (decimal передаётся строкой)";
         return false;
     }
 
-    /// <summary>
-    /// Число из json-представления значения: <see cref="JsonValue"/> может быть как разобранным json
-    /// (JsonElement), так и созданным из CLR-значения произвольной числовой ширины.
-    /// </summary>
-    static bool TryReadRawDecimal(JsonValue json, out decimal value)
-    {
-        value = 0;
-        if (json.TryGetValue<string>(out _)) return false;
-
-        var raw = json.ToJsonString();
-        return decimal.TryParse(raw, NumberStyles.Number, CultureInfo.InvariantCulture, out value);
-    }
-
+    /// <summary>Дата передаётся строкой ISO-8601 со смещением</summary>
     static bool TryReadDate(JsonNode node, out DateTimeOffset value, out string? error)
     {
         error = null;
         value = default;
 
-        if (node is JsonValue json)
+        if (node is JsonValue json
+            && json.TryGetValue<string>(out var text)
+            && DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind | DateTimeStyles.AllowWhiteSpaces, out var parsed))
         {
-            if (json.TryGetValue<DateTimeOffset>(out var offset))
-            {
-                value = offset;
-                return true;
-            }
-            if (json.TryGetValue<DateTime>(out var date))
-            {
-                value = AsDate(date);
-                return true;
-            }
-            if (json.TryGetValue<string>(out var text)
-                && DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture,
-                    DateTimeStyles.RoundtripKind | DateTimeStyles.AllowWhiteSpaces, out var parsed))
-            {
-                value = parsed;
-                return true;
-            }
+            value = parsed;
+            return true;
         }
 
-        error = "ожидается дата в формате ISO-8601";
+        error = "ожидается дата ISO-8601 строкой";
         return false;
     }
 
@@ -443,21 +329,13 @@ public static class FormValueCodec
         error = null;
         value = Guid.Empty;
 
-        if (node is JsonValue json)
+        if (node is JsonValue json && json.TryGetValue<string>(out var text) && Guid.TryParse(text, out var parsed))
         {
-            if (json.TryGetValue<Guid>(out var reference))
-            {
-                value = reference;
-                return true;
-            }
-            if (json.TryGetValue<string>(out var text) && Guid.TryParse(text, out var parsed))
-            {
-                value = parsed;
-                return true;
-            }
+            value = parsed;
+            return true;
         }
 
-        error = "ожидается идентификатор (Guid)";
+        error = "ожидается строка-Guid";
         return false;
     }
 

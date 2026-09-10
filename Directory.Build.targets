@@ -1,0 +1,17 @@
+<Project>
+
+    <!-- Иконка пакета — только проектам, объявившим <PackageId>: это и есть поверхность паковки
+         (nuget-publish.yml, pack-local-nugets.ps1), у остальных файл зря висел в Solution Explorer.
+         Признак фиксируем в MarsHasPackageId: свойства вычисляются в порядке файла (здесь PackageId ещё пуст —
+         явный объявлен в csproj, дефолт по AssemblyName приходит из NuGet-таргетов позже), а условия
+         ItemGroup — уже после всех импортов, где PackageId непустой у любого проекта. -->
+    <PropertyGroup>
+        <MarsHasPackageId Condition=" '$(PackageId)' != '' ">true</MarsHasPackageId>
+        <PackageIcon Condition=" '$(PackageId)' != '' ">icon-nuget.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" '$(MarsHasPackageId)' == 'true' ">
+        <None Include="$(MSBuildThisFileDirectory)assets\icon-nuget.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+</Project>

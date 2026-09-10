@@ -20,11 +20,18 @@
 
 ### Общие pack-метаданные — в `Directory.Build.props`
 
-Авторы, иконка, SourceLink, snupkg, лицензия и т.п. заданы один раз и не дублируются в csproj:
+Авторы, SourceLink, snupkg, лицензия и т.п. заданы один раз и не дублируются в csproj:
 
-- `<None Include="$(MSBuildThisFileDirectory)assets\icon-nuget.png" Pack="true">` — путь от корня, работает на любой глубине проекта.
 - `<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />` — детерминированная сборка + ссылка на коммит.
 - `IncludeSymbols`/`SymbolPackageFormat=snupkg` — символы публикуются отдельным snupkg.
+
+### Иконка пакета — в `Directory.Build.targets`
+
+`<PackageIcon>` и `<None Include="$(MSBuildThisFileDirectory)assets\icon-nuget.png" Pack="true">` получают
+только проекты с явным `<PackageId>` — у остальных файл зря висел в Solution Explorer. Признак фиксируется
+в свойстве `MarsHasPackageId`, потому что в момент импорта `Directory.Build.*` `PackageId` ещё пуст (явный
+объявлен в csproj, дефолт по `AssemblyName` приходит из NuGet-таргетов позже), а условия на `ItemGroup`
+вычисляются уже после всех импортов — там `PackageId` непустой у любого проекта.
 
 В csproj остаётся минимум: `<PackageId>`, `<Description>` (+ опционально `Product`/`PackageTags`/`Version`).
 

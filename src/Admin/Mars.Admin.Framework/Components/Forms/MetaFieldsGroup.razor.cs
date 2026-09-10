@@ -1,6 +1,5 @@
 using Mars.Admin.Framework.Components.MetaFieldViews;
 using Mars.Cms.Contracts.MetaFields;
-using Mars.Forms.Front;
 using Microsoft.AspNetCore.Components;
 
 namespace Mars.Admin.Framework.Components.Forms;
@@ -26,8 +25,6 @@ public partial class MetaFieldsGroup
     /// <summary>Поле переименовано (старый ключ, новый ключ) — владелец двигает указатель фичи</summary>
     [Parameter] public Action<string, string>? OnFieldKeyRenamed { get; set; }
 
-    [Inject] IFormEditorLocator EditorLocator { get; set; } = default!;
-
     MetaFieldDefinitions Definitions { get; set; } = default!;
 
     List<MetaFieldEditModel>? _source;
@@ -37,7 +34,7 @@ public partial class MetaFieldsGroup
         if (Definitions is null || !ReferenceEquals(_source, Fields))
         {
             _source = Fields;
-            Definitions = new MetaFieldDefinitions(Fields, EditorLocator);
+            Definitions = new MetaFieldDefinitions(Fields);
         }
 
         Definitions.FeatureFieldKey = FeatureFieldKey;

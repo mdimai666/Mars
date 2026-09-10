@@ -4,7 +4,7 @@ namespace Mars.Cms.Contracts.MetaFields;
 /// Ключи редакторов значений метаполей в общем реестре формы (<c>FormEditorLocator</c>).
 /// Ключ приезжает в дескрипторе поля (<c>MetaFieldFormMapping</c>): встроенных редакторов
 /// общего слоя для Relation/File/Image нет, а примитивы метаполей рисует существующий
-/// инлайн-редактор вместе с кастомными редакторами из <c>IMetaFieldEditorLocator</c>.
+/// инлайн-редактор вместе с кастомными редакторами из реестра <c>MetaFieldEditors</c>.
 /// Компоненты регистрирует админка (<c>FormEditorLocator.Register</c>).
 /// </summary>
 public static class MetaFormEditors

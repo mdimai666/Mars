@@ -4,7 +4,6 @@ using Mars.Admin.Framework.Extensions;
 using Mars.Cms.Contracts.MetaFields;
 using Mars.Core.Features;
 using Mars.Forms.Contracts;
-using Mars.Forms.Front;
 
 namespace Mars.Admin.Framework.Components.Forms;
 
@@ -28,12 +27,10 @@ public class MetaFieldDefinitions
 
     readonly List<MetaFieldEditModel> _fields;
     readonly List<FormFieldDefinition> _definitions = [];
-    readonly IFormEditorLocator _editors;
 
-    public MetaFieldDefinitions(List<MetaFieldEditModel> fields, IFormEditorLocator editors)
+    public MetaFieldDefinitions(List<MetaFieldEditModel> fields)
     {
         _fields = fields;
-        _editors = editors;
         Rebuild();
     }
 
@@ -180,11 +177,9 @@ public class MetaFieldDefinitions
         definition.Options = field.Options;
         definition.Protected = IsProtected(field);
         definition.KeyLocked = IsContentFeatureField(field);
-        // из общего реестра берём только редакторы метаполей: чужие доменные редакторы
-        // (пикеры системных слотов поста) к определению метаполя неприменимы
-        definition.Editors = _editors.EditorsFor(field.Type.ToFormFieldType(), false)
-                                     .Where(editor => MetaFieldEditors.IsMetaEditor(editor.Key))
-                                     .ToList();
+        // редакторы значения метаполя — из своего реестра (контракт Value/ValueChanged),
+        // а не из общего реестра формы: ключи каталогов пересекаются, компоненты разные
+        definition.Editors = MetaFieldEditors.EditorsFor(field.Type);
         definition.RuleOptions = MetaFieldValidatorCatalog.For(field.Type);
         definition.RuleParams = ValidatorParams;
         definition.Rules = ToRules(field);

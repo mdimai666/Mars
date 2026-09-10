@@ -9,6 +9,7 @@
               OptionText="@(c => c.Title)"
               Value="@(Binding.ValueAt(Index) as string)"
               ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+              Name="@Binding.Field.Key"
               Disabled="@Binding.ReadOnly"
               Style="width:250px" />
 

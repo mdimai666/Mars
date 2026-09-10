@@ -7,7 +7,9 @@ namespace Mars.Cms.Contracts.MetaFields;
 /// Выбор редактора поля хранится в <c>Options.editor</c>; пусто = дефолтный редактор типа.
 /// Схема ключей: <c>&lt;происхождение&gt;.&lt;семейство&gt;.&lt;реализация&gt;</c> —
 /// встроенные редакторы <c>core.*</c>, плагины <c>plugin.*</c>.
-/// Реестр «ключ → компонент + совместимые типы» — на фронте (<c>IMetaFieldEditorLocator</c>).
+/// Реестр «ключ → компонент + совместимые типы» — на фронте (<c>MetaFieldEditors</c>): контракт
+/// параметров у этих редакторов свой (<c>Value</c>/<c>ValueChanged</c>), поэтому реестр отделён от
+/// общего реестра редакторов формы (<c>IFormEditorLocator</c>), хотя ключи частично пересекаются.
 /// </summary>
 public static class MetaFieldEditorCatalog
 {

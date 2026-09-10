@@ -25,15 +25,16 @@
 @code {
     string[] _value = [];
 
+    /// <summary>
+    /// Значение от родителя. Сеттер параметра не вызывает <see cref="ValueChanged"/>: иначе родитель,
+    /// который отдаёт новый экземпляр массива на каждый рендер, входит в бесконечный цикл
+    /// (рендер → «изменение» → ValueChanged → рендер). Свои правки идут через <see cref="SetValue"/>.
+    /// </summary>
     [Parameter]
     public string[] Value {
         get => _value;
-        set {
-            if (_value == value) return;
-            _value = value;
-            _ = ValueChanged.InvokeAsync(_value);
-        }
-    } 
+        set => _value = value ?? [];
+    }
 
     [Parameter]
     public EventCallback<string[]> ValueChanged { get; set; }
@@ -42,6 +43,12 @@
     string _holder = "";
 
     string? validationMessage;
+
+    void SetValue(string[] tags)
+    {
+        _value = tags;
+        _ = ValueChanged.InvokeAsync(tags);
+    }
 
     void OnKeyPress(KeyboardEventArgs e)
     {
@@ -59,7 +66,7 @@
             }
             else if(!Value.Contains(tag))
             {
-                Value = [..Value, tag ];
+                SetValue([..Value, tag ]);
                 _current = "";
             }
             else
@@ -69,13 +76,13 @@
         }
         else if(e.Code == "Backspace")
         {
-            if(_current.Length == 0 && Value.Count()>0) Value = Value[..^1];
+            if(_current.Length == 0 && Value.Count()>0) SetValue(Value[..^1]);
         }
     }
 
     void RemoveTag(string tag)
     {
 
-        Value = Value.Where(s=>s!=tag).ToArray();
+        SetValue(Value.Where(s=>s!=tag).ToArray());
     }
 }

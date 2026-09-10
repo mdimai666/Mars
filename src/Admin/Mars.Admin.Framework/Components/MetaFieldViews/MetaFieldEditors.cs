@@ -1,39 +1,66 @@
 using Mars.Cms.Contracts.MetaFields;
-using Mars.Forms.Contracts;
-using Mars.Forms.Front;
 
 namespace Mars.Admin.Framework.Components.MetaFieldViews;
 
 /// <summary>
-/// Регистрация редакторов значений метаполей в общем реестре формы (<see cref="IFormEditorLocator"/>):
-/// ключ из <see cref="MetaFieldEditorCatalog"/> → компонент + совместимые типы полей + название для
-/// UI выбора редактора. Отдельного реестра метаполей больше нет — ключи и компоненты живут в одном
-/// месте со всеми редакторами формы.
+/// Реестр редакторов значений мета-полей: ключ (<see cref="MetaFieldEditorCatalog"/>) → компонент +
+/// совместимые типы поля. Контракт параметров у этих компонентов свой — <c>Value</c>/<c>ValueChanged</c>
+/// (<see cref="MetaValueEditModel"/>), поэтому реестр отделён от общего реестра редакторов формы
+/// (<c>IFormEditorLocator</c>, контракт <c>Binding</c>): ключи каталогов пересекаются
+/// (например <c>core.input.date</c>), а компоненты невзаимозаменяемы.
+/// Общий рендерер формы приходит сюда через зарегистрированную обёртку <c>MetaValueRowEditor</c>.
 /// Тяжёлые и модульные редакторы (блочный Editor.js) регистрирует потребитель: их компоненты живут
 /// вне общей библиотеки.
 /// </summary>
 public static class MetaFieldEditors
 {
-    public static void RegisterAll()
+    static readonly Dictionary<string, (Type Component, IReadOnlyCollection<MetaFieldType> Types)> Registry = new()
     {
-        Register(MetaFieldEditorCatalog.Color, typeof(Editors.MetaValueColorEditor), FormFieldType.String);
-        Register(MetaFieldEditorCatalog.Url, typeof(Editors.MetaValueUrlEditor), FormFieldType.String);
-        Register(MetaFieldEditorCatalog.Email, typeof(Editors.MetaValueEmailEditor), FormFieldType.String);
-        Register(MetaFieldEditorCatalog.Date, typeof(Editors.MetaValueDateEditor), FormFieldType.DateTime);
-        Register(MetaFieldEditorCatalog.Time, typeof(Editors.MetaValueTimeEditor), FormFieldType.DateTime);
-        Register(MetaFieldEditorCatalog.DateTime, typeof(Editors.MetaValueDateTimeEditor), FormFieldType.DateTime);
-        Register(MetaFieldEditorCatalog.Wysiwyg, typeof(Editors.MetaValueWysiwygEditor), FormFieldType.String, FormFieldType.Text);
-        Register(MetaFieldEditorCatalog.Code, typeof(Editors.MetaValueCodeEditor), FormFieldType.String, FormFieldType.Text);
+        [MetaFieldEditorCatalog.Color] = (typeof(Editors.MetaValueColorEditor), [MetaFieldType.String]),
+        [MetaFieldEditorCatalog.Url] = (typeof(Editors.MetaValueUrlEditor), [MetaFieldType.String]),
+        [MetaFieldEditorCatalog.Email] = (typeof(Editors.MetaValueEmailEditor), [MetaFieldType.String]),
+        [MetaFieldEditorCatalog.Date] = (typeof(Editors.MetaValueDateEditor), [MetaFieldType.DateTime]),
+        [MetaFieldEditorCatalog.Time] = (typeof(Editors.MetaValueTimeEditor), [MetaFieldType.DateTime]),
+        [MetaFieldEditorCatalog.DateTime] = (typeof(Editors.MetaValueDateTimeEditor), [MetaFieldType.DateTime]),
+        [MetaFieldEditorCatalog.Wysiwyg] = (typeof(Editors.MetaValueWysiwygEditor), [MetaFieldType.String, MetaFieldType.Text]),
+        [MetaFieldEditorCatalog.Code] = (typeof(Editors.MetaValueCodeEditor), [MetaFieldType.String, MetaFieldType.Text]),
+    };
+
+    static readonly object RegistrationLock = new();
+
+    /// <summary>Регистрация редактора (модуль, плагин, админка) — до рендеринга</summary>
+    public static void Register(string editorKey, Type component, params MetaFieldType[] fieldTypes)
+    {
+        lock (RegistrationLock)
+        {
+            Registry[editorKey] = (component, fieldTypes);
+        }
     }
 
-    /// <summary>Ключ относится к редакторам метаполей: список редакторов в настройках поля не смешивается с чужими</summary>
-    public static bool IsMetaEditor(string? editorKey)
-        => !string.IsNullOrEmpty(editorKey) && MetaFieldEditorCatalog.All.Any(entry => entry.Key == editorKey);
+    /// <summary>
+    /// Компонент редактора по ключу. Ключ пустой или несовместим с типом поля — null
+    /// (рендерер значения берёт дефолтный редактор типа).
+    /// </summary>
+    public static Type? GetEditorComponent(string? editorKey, MetaFieldType fieldType)
+    {
+        if (string.IsNullOrEmpty(editorKey)) return null;
 
-    /// <summary>Название редактора из каталога (для регистрации в общем реестре)</summary>
-    public static string Title(string editorKey)
-        => MetaFieldEditorCatalog.All.FirstOrDefault(entry => entry.Key == editorKey).Title ?? editorKey;
+        lock (RegistrationLock)
+        {
+            if (!Registry.TryGetValue(editorKey, out var entry)) return null;
+            return entry.Types.Contains(fieldType) ? entry.Component : null;
+        }
+    }
 
-    static void Register(string editorKey, Type component, params FormFieldType[] fieldTypes)
-        => FormEditorLocator.Register(editorKey, component, false, Title(editorKey), fieldTypes);
+    /// <summary>Редакторы, доступные для типа поля — для UI выбора редактора в настройках поля</summary>
+    public static IReadOnlyCollection<(string Key, string Title)> EditorsFor(MetaFieldType fieldType)
+    {
+        lock (RegistrationLock)
+        {
+            return Registry.Where(entry => entry.Value.Types.Contains(fieldType))
+                           .Select(entry => (entry.Key, MetaFieldEditorCatalog.All
+                                                             .FirstOrDefault(x => x.Key == entry.Key).Title ?? entry.Key))
+                           .ToList();
+        }
+    }
 }

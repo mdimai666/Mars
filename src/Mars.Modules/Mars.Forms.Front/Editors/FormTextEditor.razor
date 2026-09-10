@@ -5,6 +5,7 @@
 <FluentTextArea Rows="4"
                 Value="@(Binding.ValueAt(Index) as string)"
                 ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+                Name="@Binding.Field.Key"
                 Disabled="@Binding.ReadOnly"
                 Required="@Binding.Field.Required"
                 Class="w-100" />

@@ -4,6 +4,7 @@
 
 <FluentCheckbox Value="@(Binding.ValueAt(Index) is true)"
                 ValueChanged="@(v => Binding.SetValueAt(Index, v))"
+                Name="@Binding.Field.Key"
                 Disabled="@Binding.ReadOnly"
                 Label="@Binding.Title" />
 

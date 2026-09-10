@@ -133,23 +133,27 @@
   «значение отсутствует». Перегенерация — XAction
   `mars.content.regenerateGeneratedMetaValues`.
 - **Редакторы значений**: серверный каталог `MetaFieldEditorCatalog` +
-  общий фронтовый реестр формы `IFormEditorLocator` (ключ → компонент +
-  совместимые типы + кратность; открытый статический `Register` — точка
-  расширения плагинов). Регистрация редакторов метаполей —
-  `MetaFieldEditors.RegisterAll()` в `Mars.Admin/Program.cs` (отдельного
-  реестра метаполей больше нет). Рендер — `DynamicComponent` в `RowMetaValue`,
-  который сам является начинкой зарегистрированного редактора
-  `MetaFormEditors.Value`; пустой/несовместимый ключ = дефолтный редактор типа.
+  фронтовый реестр `MetaFieldEditors` (ключ → компонент + совместимые типы
+  `MetaFieldType`; открытый статический `Register` — точка расширения, блочный
+  Editor.js регистрирует админка в `Program.cs`). Рендер — `DynamicComponent` в
+  `RowMetaValue`; пустой/несовместимый ключ = дефолтный редактор типа.
+  **Реестр намеренно отделён от общего реестра формы `IFormEditorLocator`**:
+  контракт параметров у редакторов метаполей свой (`Value`/`ValueChanged` с
+  `MetaValueEditModel`), а общий рендерер передаёт `Binding` (`FormFieldBinding`),
+  причём ключи каталогов пересекаются (`core.input.date` есть в обоих) — слияние
+  приводило к подмене встроенного редактора даты и падению формы поста
+  (2026-09-10, поймано E2E `CreatePostTests`). Общий рендерер приходит к
+  метаполям через зарегистрированные обёртки `MetaFormEditors`
+  (`core.meta.value[.multi]`, `core.meta.relation[.multi]`, `core.meta.file[.multi]`):
+  ключ подставляет в дескриптор `MetaFieldFormMapping`, обёртка
+  (`MetaValueRowEditor`/`MetaValueRelationEditor`/`MetaValueFileEditor`) берёт
+  EAV-строку из каскада и выбирает Relation/ChildrenList/FileMulti/`FSelectMedia`
+  по настройке поля, а `RowMetaValue` — кастомный редактор по `Options.editor`.
   **Ключи трёхчастные** `<происхождение>.<семейство>.<реализация>`:
   `core.input.color|url|email|date|time|datetime`, `core.wysiwyg.quilljs`,
   `core.code.monaco` (+ типизированный `Options.codeLang`, дефолт
-  `handlebars`), `core.blockeditor.editorjs` (компонент регистрируется в
-  админке при старте; где не зарегистрирован — мягкая деградация). Обычный
-  текст — без редактора, ключа нет. Доменные ключи рендера метаполей в общем
-  реестре — `MetaFormEditors` (`core.meta.value[.multi]`,
-  `core.meta.relation[.multi]`, `core.meta.file[.multi]`): их подставляет в
-  дескриптор `MetaFieldFormMapping`, а компоненты-обёртки выбирают
-  Relation/ChildrenList/FileMulti/`FSelectMedia` по настройке поля.
+  `handlebars`), `core.blockeditor.editorjs` (где не зарегистрирован — мягкая
+  деградация). Обычный текст — без редактора, ключа нет.
 - **Тяжёлые редакторы** (WYSIWYG/Code/BlockEditor) — pull-контракт
   `IHeavyMetaValueEditor` (`GetValueAsync`/`SetValueAsync`/`CommitAsync`):
   значение забирается в модель только при сохранении

@@ -618,19 +618,43 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   отсекал их везде, а общий строитель следует правилу формы поста
   (`Hidden` скрывается только в клиентском рендере, `client: true`).
 
-- **D — реестры редакторов слиты**: `IMetaFieldEditorLocator`/`MetaFieldEditorLocator`
-  удалены, редакторы значений метаполей регистрируются в общем
-  `IFormEditorLocator` (`MetaFieldEditors.RegisterAll()` в `Mars.Admin/Program.cs`;
-  ключи и названия — из `MetaFieldEditorCatalog`, типы — `ToFormFieldType()`).
-  Блочный редактор Editor.js регистрирует админка тем же вызовом (компонент живёт
-  вне общей библиотеки). В `FormEditorLocator.Register` добавлена необязательная
-  перегрузка с названием — иначе ключи вне `FormEditorCatalog` показывались бы
-  в UI сырыми ключами (тест `Register_WithTitle_ShowsItInCatalog`).
-  Потребители переведены: `RowMetaValue` (подбор компонента по `Options.editor`),
-  `MetaFieldTypePicker` (проверка совместимости редактора с новым типом),
-  `MetaFieldDefinitions` (список редакторов в настройках поля — из общего реестра,
-  но только ключи метаполей, чтобы пикеры системных слотов поста не попадали
-  в список редактора метаполя).
+- **D — реестры редакторов разделены по контрактам** (слияние было сделано и
+  отменено 2026-09-10): `IMetaFieldEditorLocator`/`MetaFieldEditorLocator`
+  удалены как DI-абстракция, вместо них статический реестр `MetaFieldEditors`
+  (`Mars.Admin.Framework/Components/MetaFieldViews`). Причина отмены слияния —
+  два дефекта, пойманных E2E `CreatePostTests`:
+  1. **Коллизия ключей**: `MetaFieldEditorCatalog.Date` и `FormEditorCatalog.Date`
+     — это один и тот же `core.input.date`. Регистрация редакторов метаполей в
+     общем реестре перезаписала встроенный `FormDateEditor` компонентом
+     `MetaValueDateEditor`, и системные слоты `created_at`/`modified_at`
+     (DateTime без явного редактора → фолбэк на встроенный) получали чужой
+     компонент: `InvalidOperationException: … does not have a property matching
+     the name 'Binding'` → ErrorBoundary → форма поста не рендерилась.
+  2. **Разные контракты параметров**: редакторы значений метаполей принимают
+     `Value`/`ValueChanged` (`MetaValueEditModel`), общий рендерер передаёт
+     `Binding` (`FormFieldBinding`). Компоненты невзаимозаменяемы, поэтому один
+     реестр на них невозможен в принципе; общий рендерер приходит к метаполям
+     через зарегистрированные обёртки `MetaFormEditors.*` (контракт `Binding`),
+     а обёртки — в `MetaFieldEditors` (контракт `Value`).
+  В общем реестре остались только редакторы с контрактом `Binding`: встроенные,
+  доменные слоты поста (`post.*`) и обёртки метаполей (`core.meta.*`).
+  Перегрузка `FormEditorLocator.Register` с названием сохранена (тест
+  `Register_WithTitle_ShowsItInCatalog`) — она нужна плагинам и провайдерам.
+- **D — `name` у полей формы возвращён**: встроенные редакторы общего слоя
+  проставляют `Name="@Binding.Field.Key"` (String/Text/Number/Date/Bool/Select).
+  Атрибут пропал в `a8fe5d91` (переход формы поста на дерево): хардкод-разметка
+  задавала `Name="@nameof(context.Title)"`, а общий рендерер его не воспроизводил —
+  в DOM не осталось ни одного `input[name]`. Теперь имя поля = ключ поля
+  (`title`, `slug`, …), т.е. стабильный идентификатор новой модели, а не имя
+  свойства транспорта; E2E-селекторы переведены на ключи.
+- **D — разорван цикл рендера тегов**: `InputTags2` вызывал `ValueChanged` из
+  сеттера параметра, то есть сообщал родителю значение, которое родитель только
+  что передал. В паре с `PostTagsEditor`, который отдаёт новый массив на каждый
+  рендер (`list.OfType<string>().ToArray()`), это давало бесконечный цикл
+  (рендер → «изменение» → ValueChanged → рендер): поле никогда не стабилизировалось,
+  Playwright висел 30 с на `press("Enter")`. Сеттер параметра теперь только
+  сохраняет значение, свои правки идут через `SetValue` → `ValueChanged`.
+  Урок: компонент не должен дёргать `*Changed` из сеттера `[Parameter]`.
 
 Осталось по этапу D (косметика, на поведение не влияет): перенос выживших файлов
 из `MetaFieldViews` — модели (`MetaFieldEditModel`, `MetaValueEditModel`,
@@ -815,3 +839,12 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
   `Dto/PostTypeOptionsCatalogTests`); интеграции `tests/Mars.Integration.Tests`
   на этапе A (сохранение `systemFields`) и на этапе C (мета-значения трёх
   владельцев). Публичный фронт не затрагивается — `HandlebarsAppFrontTests` не нужны.
+- **Рендер админ-форм проверяется E2E** (`tests/Mars.E2E.Tests`, Playwright +
+  системный Edge, Postgres-контейнер): `CreatePostTests` (форма поста: заголовок,
+  slug, контент Editor.js, теги, сохранение через API) и `EditUserPageTests`
+  (форма пользователя). Сьют отключён константой `BaseE2ETests.SkipE2ETests = "Skip"`
+  — для прогона временно поставить `null`, собрать и запустить exe с фильтром:
+  `Mars.E2E.Tests.exe -filter "/Mars.E2E.Tests/Mars.E2E.Tests.Tests/CreatePostTests/*"`.
+  Юнит-тесты рендер не ловят: подмену редактора в реестре и цикл рендера
+  (`ValueChanged` из сеттера параметра) поймал именно E2E — после правок
+  реестров/рендерера прогонять его обязательно.

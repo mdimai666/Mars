@@ -521,6 +521,9 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - `MetaFieldType.ToFormFieldType()` вынесен в `Mars.Cms.Contracts`
   (`MetaFieldTypeFormMapping`) — один маппинг на серверный дескриптор и клиентское
   определение; `Mars.Cms.Abstractions` теперь его использует.
+  **Обновлено 2026-09-11:** коды `FormFieldType` приведены к `MetaFieldType`/
+  `EMetaFieldType` (и к `TypeCode` у примитивов) — маппинг стал прямым приведением,
+  совпадение кодов стережёт `MetaFieldTypeFormMappingTests`.
 - Кнопка «Добавить» и пустое состояние переехали в общий редактор
   (`Capabilities.CanAdd`), страницы типов свои кнопки убрали; `FormMetaField.razor`
   (+ code-behind) удалён, `EditMetaFieldVariants`, `MetaFieldTypePresets` и

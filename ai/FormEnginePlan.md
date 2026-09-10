@@ -558,6 +558,77 @@ CMS-адаптер: существующие `MetaFieldValueValidators` и `Meta
 - Резать по группам типов с проверкой сохранения на каждом шаге: примитивы →
   select/selectMany → relation → file/галереи → тяжёлые.
 
+Выполнено 2026-09-10 (этап C начат, не закончен):
+
+- **C1 — абстракция хранилища значений**: `IFormValueStore` в `Mars.Forms.Front`
+  (GetValue/GetList/SetValue/SetList + Errors + Changed + `NativeValue(field)` —
+  нативный носитель значения источника для доменных редакторов). `FormValuesModel`
+  (мешок) реализует его; `FormFieldBinding.Values`, `FormRenderContext.Values`,
+  `FormRenderer.Values`, `PostFormZone.Values` переведены на интерфейс. Поведение
+  не изменилось, потребитель один — мешок.
+- **C3 — встроенный редактор множественного выбора**: `FormChoicesEditor`
+  (чекбоксы вариантов, значение — список ключей) + ключ
+  `FormEditorCatalog.Choices` = `core.input.choices`; `GetDefaultEditor` для
+  `SelectMany` теперь отдаёт его, а не общий `FormListEditor` (тест
+  `DefaultEditor_ForSelectMany_ResolvesChoicesEditor`).
+
+Рецепт для оставшихся шагов C2/C4/C5/C6 (собрано по коду 2026-09-10, чтобы не
+выводить заново):
+
+- **Соответствие CLR-значения и EAV-колонки** (`MetaValueEditModel`, источник —
+  ветки `RowMetaValue.razor`): Bool→`Bool`, String→`StringShort`, Text→`StringText`,
+  Int→`Int`, Long→`Long`, Float→`Float`, Decimal→`Decimal`, DateTime→`DateTime`,
+  Select→`VariantId` (Guid), SelectMany→`VariantsIds` (Guid[]),
+  Relation/File/Image→`ModelId` (Guid). **Важно**: кодек формы хранит Select как
+  **ключ варианта** (строку), а EAV — Guid варианта, поэтому `MetaValueStore`
+  резолвит ключ ↔ `MetaField.Variants` в обе стороны. Строки: single = `Index == 0`,
+  multiple = строки по `Index` (поиск — `MetaValues.FirstOrDefault(s =>
+  s.MetaField.Key == key && s.Index == i)`); `Id` строки и `MarkForDelete`
+  (подсветка `bg-red` в `RowMetaValue`) живут вне CLR-значения → отдавать через
+  `NativeValue`.
+- **Доменные редакторы метаполей не нужно переписывать под `FormFieldBinding`**:
+  они принимают `Meta` (`MetaFieldEditModel`) и работают с каскадом
+  `List<MetaValueEditModel> MetaValues`, который `PostFormZone` уже раздаёт
+  (вместе с `MetaFields`, `Post`, `HeavyEditors`, `ContentHolder`). Достаточно
+  тонких обёрток-редакторов (ключ → обёртка → существующий компонент):
+  Relation → `MetaValueChildrenList` (при `Meta.IsListKind`) /
+  `MetaValueRelationMulti` (`IsMultiple`) / `MetaValueRelationSingle`;
+  File/Image → `MetaValueFileMulti` (multiple) или `MediaViews.FSelectMedia`
+  с `@bind-Value=field.ModelId` + `UploadFolder`/`DropZoneEnabled`/`Accept`
+  (single); кастомные редакторы из `IMetaFieldEditorLocator` получают
+  `Value: MetaValueEditModel` + `ValueChanged: EventCallback<MetaValueEditModel>`
+  (см. `RowMetaValue.EditorParameters`).
+- **Ключи редакторов для реестра**: `GetDefaultEditor` для Relation/File/Image
+  возвращает null, поэтому дефолтный ключ должен приезжать в дескрипторе —
+  в `MetaFieldFormMapping.ToFormFieldDescriptor` подставлять
+  `Editor = field.Options.GetEditor() ?? <ключ по типу/кратности/виду>`
+  (каталог ключей — в `Mars.Cms.Contracts`, по образцу `PostFormEditors`),
+  а регистрацию обёрток делать в `Mars.Admin/Program.cs` через
+  `FormEditorLocator.Register(key, component, multiple, types)`.
+- **Тяжёлые редакторы** (WYSIWYG/Monaco/EditorJS) пишут значение не на каждое
+  изменение, а по `PullAsync` перед сохранением: контракт `IHeavyMetaValueEditor`,
+  реестр `IHeavyMetaValueEditors` (владельцы — `FormMetaValue` и `EditPostView`,
+  каскад раздаёт `PostFormZone`). Обобщение протокола на уровень движка — шаг C3
+  плана (не путать с встроенным редактором выбора выше).
+- **C6 (users, post categories)**: `EditUserPage` и `EditPostCategoryView`
+  рендерят значения через `FormMetaValue` (+ `PullAsync` в code-behind); им нужен
+  провайдер формы владельца (дерево = плоский список метаполей, одна зона) —
+  дескрипторы уже даёт `MetaFieldFormMapping`.
+- **Стыковка подписей (проверить визуально при переносе)**: `FormFieldRow` сам
+  рисует заголовок поля (`FluentLabel` + `Binding.Title`), описание и ошибки, а
+  `RowMetaValue` и доменные компоненты метаполей рисуют свои подписи
+  (`Label="@Value.MetaField.Title"`, описание под полем). При переводе листа на
+  общий рендерер надо выбрать одно: либо подавить заголовок/описание в
+  `FormFieldRow` для таких редакторов (флаг дескриптора или `RenderFragment`
+  заголовка в `FormRenderContext`), либо убрать подписи из обёрток метаполей.
+  Без этого подпись поля будет дважды.
+- Каскады для обёрток уже раздаёт `PostFormZone`: `List<MetaValueEditModel>
+  MetaValues`, `MetaFields` (`Post.PostType.MetaFields`, элемент —
+  `MetaFieldEditModel`), `PostEditModel Post`, `IHeavyMetaValueEditors`,
+  `PostContentEditorHolder`, плюс `FormRenderContext` от `FormRenderer`
+  (из него — флаг `Client`). Поэтому обёртки не привязаны к постам и годятся
+  для users/post categories после C6.
+
 **Этап D — зачистка**
 
 - Удалить `FormMetaValue`, `FormMetaValueItems`, `FormMetaValueItem`,

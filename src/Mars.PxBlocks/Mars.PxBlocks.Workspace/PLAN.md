@@ -5,7 +5,9 @@
 запуск сценариев на сервере — Mars.PxBlocks.Host (Этап 8), встраиваемость в админку
 и контексты — Этап 9, чистое встраивание (запуск вне библиотеки) — Этап 10,
 состояние запуска и имплементации по запуску — Этап 11, браузерные скрипты
-(Playwright-контекст стенда) — Этап 12; все готовы.
+(Playwright-контекст стенда) — Этап 12, английские лейблы и добор блоков
+до parity — Этап 13, расширения текста/массивы MakeCode/редактор функций PXT —
+Этап 14; все готовы.
 
 > **Примечание (2026-08-17):** введена конвенция typeId `core.категория.имя` /
 > `пакет.категория.имя` (см. AGENTS.md, «Конвенция typeId»): `px_start`→`core.events.start`,
@@ -402,7 +404,7 @@ PxRunManagerTests + запуск с ContextName: политика событий
 REST-дым: Contexts (sandbox+demo), Run через контроллер стенда с ContextName=sandbox
 (бесконечный Loop стартовал), Stop/{runId} → true.
 
-### Этап 11 — Состояние запуска (Путь 1 готов) 🚧
+### Этап 11 — Состояние запуска (Путь 1) ✅
 Решение 2026-08-17: PxBlocks встраивается, домены реализуют блоки и запускают сами;
 собственной сущности «environment» у PxBlocks НЕТ — только канал для объекта хоста
 («у них будет свой»). Имплементации — НЕ синглтоны (в Mars.Nodes синглтоны — замысел,
@@ -426,13 +428,50 @@ REST-дым: Contexts (sandbox+demo), Run через контроллер сте
   перезаписывает объявленные переменные ПО ИМЕНИ, неизвестные имена игнорируются.
   Ошибка конвертации — Started=false сразу («Начальные переменные: …»).
 
-Впереди: демо в стенде и тесты. «Путь 2» (фабрика состояния у контекста) закрыт
-не делая: REST запуска принадлежит хосту (Этап 10), состояние он создаёт в своём
-контроллере и передаёт в Start(request, state) — механизм в PxBlocks был бы
-дублированием.
+«Путь 2» (фабрика состояния у контекста) закрыт не делая: REST запуска принадлежит
+хосту (Этап 10), состояние он создаёт в своём контроллере и передаёт в
+Start(request, state) — механизм в PxBlocks был бы дублированием.
 
-Проверено: сборка чистая, 80/80 тестов (новые не писались — по решению);
-REST-дым: Run c InitialVariables (param + неизвестное имя) — Started=true.
+Демо состояния — браузерный контекст Этапа 12: `PxRunController` стенда создаёт
+`PxBrowserRunState` по `request.ContextName` и передаёт в `Start(request, state)`;
+имплементации Playwright получают его конструктором, менеджер диспозит по
+завершении запуска.
+
+Проверено: сборка чистая; `PxBrowserStandTests` (состав контекста, фильтр
+событийных блоков, разбор примера реальными имплементациями стенда, диспоуз
+состояния при неизвестном контексте — Started=false + Dispose); REST-дым: Run
+c InitialVariables (param + неизвестное имя) — Started=true. Осталось непокрытым:
+юнит-тесты `PxValueJson`/InitialVariables (перезапись по имени, игнор неизвестных
+имён, ошибка конвертации) и прямой инъекции состояния в имплементацию — сейчас
+только REST-дым и e2e.
+
+### Этап 12 — Браузерные скрипты (Playwright-контекст стенда) ✅
+Решение 2026-08-17: сценарии Playwright редактируются блоками, а исполняются НА
+СЕРВЕРЕ в системном Edge (`channel: msedge`, видимое окно, SlowMo 50 — как в
+Mars.E2E.Tests). Контекст стенда «browser»: только событие Start (без Loop) —
+event-блоки фильтруются `PxEditorContext.EventBlocks`, свой toolbox без Loop.
+
+Домен `Blocks/Browser/` в серверной сборке стенда:
+- `PxBrowserBlocks` — 9 блоков `demostand.playwright.*`: goto («open page {URL}»),
+  click, type («type {TEXT} into {SELECTOR}»), press (дропдаун клавиш),
+  wait_selector (таймаут 15 с), wait_ms, get_text (output String),
+  eval_js (output Any), print_texts («print first {COUNT} texts of {SELECTOR}»).
+  Селекторы/тексты — value-входы String: из тулбокса приходят с shadow-текстом
+  (`PxToolboxBlock.InputsJson`), редактируются прямо в сокете.
+- `PxBrowserBlockImplements` — имплементации в системном Edge; состояние
+  `PxBrowserRunState` инжектится конструктором (браузер стартует лениво,
+  `IAsyncDisposable` — диспозит `PxRunManager`).
+- `PxBrowserContext` (имя «browser»: Title/Description, Events(Start),
+  EventBlocks(Start), набор блоков, свой `PxBrowserToolbox`), `PxBrowserSample`
+  (пример Википедии).
+- `PxRunController` стенда: `GET api/PxBlocks/Samples/browser` (пример для страницы)
+  и создание состояния запуска по `ContextName`.
+
+Стенд: страница `/browser` (`Browser.razor`) — `<PxSandboxEditor Context="browser" />`
+с кнопкой «Пример» (грузит сценарий с `GET api/PxBlocks/Samples/browser`).
+
+Проверено: `PxBrowserStandTests`; e2e `check-browser.mjs` — загрузка примера, Run,
+ожидание вывода (сценарий реально открывает серверный Edge с Википедией).
 
 ### Этап 13 — Английские label + добор блоков до parity (PXT/MakeCode) ✅
 13A (перевод): формулировки блоков/категорий — стандартные английские Blockly/MakeCode

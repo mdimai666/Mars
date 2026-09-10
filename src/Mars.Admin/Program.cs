@@ -70,9 +70,13 @@ Q.SetupHostingInfo(new BackendHostingInfo { Backend = new Uri(Q.BackendUrl) });
 CodeEditor2.ToolbarComponents.Add(typeof(CodeEditorExtraToolbar));
 ContentWrapper.GeneralSectionActions = typeof(Mars.Admin.Shared.GeneralSectionActions);
 
+// редакторы значений мета-полей регистрируются в общем реестре формы (ключи MetaFieldEditorCatalog)
+MetaFieldEditors.RegisterAll();
+
 // блочный редактор мета-полей: модуль подключён только в админке
 // (общая фронт-библиотека от EditorJsBlazored не зависит)
-MetaFieldEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor), MetaFieldType.String, MetaFieldType.Text);
+FormEditorLocator.Register(MetaFieldEditorCatalog.BlockEditor, typeof(MetaValueBlockEditor), false,
+    MetaFieldEditors.Title(MetaFieldEditorCatalog.BlockEditor), FormFieldType.String, FormFieldType.Text);
 
 // доменные редакторы системных слотов формы поста (общий слой Mars.Forms)
 FormEditorLocator.Register(PostFormEditors.Categories, typeof(PostCategoriesEditor), true, FormFieldType.Relation);

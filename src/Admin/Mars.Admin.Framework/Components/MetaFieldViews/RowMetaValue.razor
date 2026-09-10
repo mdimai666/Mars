@@ -1,7 +1,8 @@
 @using Mars.Cms.Contracts.MetaFields
+@using Mars.Forms.Front
 @using Microsoft.FluentUI.AspNetCore.Components
 
-@inject IMetaFieldEditorLocator _editorLocator
+@inject IFormEditorLocator _editorLocator
 
 <d-row-meta-value class="FormRowMetaField @("Value.MarkForDelete?bg-red:")">
 
@@ -19,7 +20,7 @@
             }
         </div> *@
         <div class="d-metafield-metavalue-body">
-            @if (_editorLocator.GetEditorComponent(Value.MetaField.Editor, Value.MetaField.Type) is Type editorComponent)
+            @if (_editorLocator.GetEditorComponent(Value.MetaField.Editor, Value.MetaField.Type.ToFormFieldType(), false) is Type editorComponent)
             {
                 <DynamicComponent Type="@editorComponent" Parameters="@EditorParameters" />
             }

@@ -72,6 +72,16 @@ public class FormEditorLocatorTests
     }
 
     [Fact]
+    public void Register_WithTitle_ShowsItInCatalog()
+    {
+        // ключи вне общего каталога (редакторы метаполей, плагины) приходят со своим названием
+        FormEditorLocator.Register("plugin.rich", typeof(FakeEditor), false, "Рич-текст", FormFieldType.Text);
+
+        _locator.GetEditorComponent("plugin.rich", FormFieldType.Text, false).Should().Be(typeof(FakeEditor));
+        _locator.EditorsFor(FormFieldType.Text, false).Should().Contain(("plugin.rich", "Рич-текст"));
+    }
+
+    [Fact]
     public void ContainerLocator_HasBuiltInSectionOnly()
     {
         var containers = new FormContainerLocator();

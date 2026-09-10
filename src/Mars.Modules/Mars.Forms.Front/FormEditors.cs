@@ -48,6 +48,9 @@ public class FormEditorLocator : IFormEditorLocator
 
     static readonly object RegistrationLock = new();
 
+    /// <summary>Названия зарегистрированных редакторов для UI выбора (ключи вне <see cref="FormEditorCatalog"/>)</summary>
+    static readonly Dictionary<string, string> Titles = new(StringComparer.Ordinal);
+
     /// <summary>Встроенный редактор типа, когда явный ключ редактора не задан</summary>
     static readonly Dictionary<FormFieldType, string> DefaultKeys = new()
     {
@@ -68,10 +71,17 @@ public class FormEditorLocator : IFormEditorLocator
     /// ключ в манифесте провайдера есть всегда, компонент появляется там, где его зарегистрировали.
     /// </summary>
     public static void Register(string editorKey, Type component, bool multiple, params FormFieldType[] fieldTypes)
+        => Register(editorKey, component, multiple, null, fieldTypes);
+
+    /// <summary>То же с названием для UI выбора редактора (иначе название — из <see cref="FormEditorCatalog"/>, иначе ключ)</summary>
+    public static void Register(string editorKey, Type component, bool multiple, string? title, params FormFieldType[] fieldTypes)
     {
         lock (RegistrationLock)
         {
             Registry[editorKey] = (component, fieldTypes, multiple);
+
+            if (string.IsNullOrEmpty(title)) Titles.Remove(editorKey);
+            else Titles[editorKey] = title;
         }
     }
 
@@ -114,7 +124,9 @@ public class FormEditorLocator : IFormEditorLocator
     }
 
     static string Title(string key)
-        => FormEditorCatalog.All.FirstOrDefault(entry => entry.Key == key).Title ?? key;
+        => Titles.TryGetValue(key, out var title)
+            ? title
+            : FormEditorCatalog.All.FirstOrDefault(entry => entry.Key == key).Title ?? key;
 }
 
 public class FormContainerLocator : IFormContainerLocator

@@ -8,11 +8,10 @@ public static class MainFormsFront
     public static IServiceCollection AddMarsFormsFront(this IServiceCollection services)
     {
         services.AddScoped<IFormEditorLocator, FormEditorLocator>();
-        services.AddScoped<IFormContainerLocator, FormContainerLocator>();
         services.AddScoped<IFormFieldTypeSettingsLocator, FormFieldTypeSettingsLocator>();
         return services;
     }
 
-    /// <summary>Точка регистрации доменных редакторов и контейнеров потребителями</summary>
+    /// <summary>Точка регистрации доменных редакторов потребителями</summary>
     public static IServiceProvider UseMarsFormsFront(this IServiceProvider services) => services;
 }

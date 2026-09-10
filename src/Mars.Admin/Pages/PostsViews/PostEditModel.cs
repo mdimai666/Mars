@@ -110,7 +110,7 @@ public class PostEditModel : IBasicEntity
     /// </summary>
     public FormValues BuildFormValues(string ownerModel)
     {
-        var values = new FormValues { OwnerModel = ownerModel, OwnerId = Id == Guid.Empty ? null : Id.ToString() };
+        var values = new FormValues { OwnerModel = ownerModel };
         FillFormValues(values);
         return values;
     }

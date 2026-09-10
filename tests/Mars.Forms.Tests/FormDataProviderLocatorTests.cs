@@ -83,11 +83,5 @@ public class FormDataProviderLocatorTests
 
         public Task<FormDefinition> GetFormAsync(FormContext context, CancellationToken cancellationToken)
             => Task.FromResult(new FormDefinition { OwnerModel = OwnerModel });
-
-        public Task<FormValues> ReadAsync(FormContext context, CancellationToken cancellationToken)
-            => Task.FromResult(new FormValues { OwnerModel = OwnerModel });
-
-        public Task<FormSubmitResult> SubmitAsync(FormContext context, FormValues values, CancellationToken cancellationToken)
-            => Task.FromResult(FormSubmitResult.Success());
     }
 }

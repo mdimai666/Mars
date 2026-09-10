@@ -21,14 +21,6 @@ public interface IFormEditorLocator
     IReadOnlyCollection<(string Key, string Title)> EditorsFor(FormFieldType fieldType, bool multiple);
 }
 
-/// <summary>Реестр компонентов-контейнеров: вид контейнера → компонент (провайдеры добавляют свои)</summary>
-public interface IFormContainerLocator
-{
-    Type? GetContainerComponent(string kind);
-
-    IReadOnlyCollection<string> Kinds { get; }
-}
-
 public class FormEditorLocator : IFormEditorLocator
 {
     static readonly Dictionary<string, (Type Component, FormFieldType[] FieldTypes, bool Multiple)> Registry = new(StringComparer.Ordinal)
@@ -127,33 +119,4 @@ public class FormEditorLocator : IFormEditorLocator
         => Titles.TryGetValue(key, out var title)
             ? title
             : FormEditorCatalog.All.FirstOrDefault(entry => entry.Key == key).Title ?? key;
-}
-
-public class FormContainerLocator : IFormContainerLocator
-{
-    static readonly Dictionary<string, Type> Registry = new(StringComparer.Ordinal)
-    {
-        [FormItemKinds.Section] = typeof(FormSectionBlock),
-    };
-
-    static readonly object RegistrationLock = new();
-
-    /// <summary>Регистрация своего вида контейнера (провайдер/плагин)</summary>
-    public static void Register(string kind, Type component)
-    {
-        lock (RegistrationLock) Registry[kind] = component;
-    }
-
-    public Type? GetContainerComponent(string kind)
-    {
-        lock (RegistrationLock) return Registry.TryGetValue(kind, out var component) ? component : null;
-    }
-
-    public IReadOnlyCollection<string> Kinds
-    {
-        get
-        {
-            lock (RegistrationLock) return Registry.Keys.ToList();
-        }
-    }
 }

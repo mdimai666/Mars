@@ -165,7 +165,6 @@ internal class UserService : IUserService
             AvailRoles = availRoles.ToResponse(),
             Form = MetaFieldsFormBuilder.Build(
                 MetaFieldsFormBuilder.UserOwnerModel(user.UserTypeDetail.TypeName),
-                user.UserTypeDetail.Title,
                 user.UserTypeDetail.MetaFields),
         };
     }
@@ -190,7 +189,6 @@ internal class UserService : IUserService
             AvailRoles = availRoles.ToResponse(),
             Form = MetaFieldsFormBuilder.Build(
                 MetaFieldsFormBuilder.UserOwnerModel(userType.TypeName),
-                userType.Title,
                 userType.MetaFields),
         };
     }

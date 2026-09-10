@@ -209,16 +209,12 @@ public class PostFormBuilderTests
     }
 
     [Fact]
-    public void Manifest_DescribesZonesAndCapabilities()
+    public void Zones_AreDeclaredInOrder()
     {
-        var manifest = PostFormBuilder.Build(Type(AllFeatures), Normalizer).Manifest;
+        var form = PostFormBuilder.Build(Type(AllFeatures), Normalizer);
 
-        manifest!.OwnerModel.Should().Be("post.article");
-        manifest.Zones.Select(z => z.Key).Should().Equal("main", "publish", "extra");
-        manifest.ContainerKinds.Should().BeEquivalentTo(FormItemKinds.All);
-        manifest.RuleTypes.Should().Contain(FormRuleCatalog.Unique);
-        manifest.Capabilities.CanAddFields.Should().BeFalse();
-        manifest.Capabilities.CanSubmit.Should().BeFalse("пост сохраняется типизированным API");
+        form.OwnerModel.Should().Be("post.article");
+        form.Zones.Select(z => z.Key).Should().Equal("main", "publish", "extra");
     }
 
     [Fact]

@@ -56,7 +56,7 @@ public class PostFormRulesValidator(IMetaModelTypesLocator metaModelTypesLocator
         var definition = RulesOnly(PostFormBuilder.Build(postType, formNormalizer));
         if (definition.Items.Count == 0) return [];
 
-        return await formValidator.ValidateAsync(definition, FormValuesOf(definition, query, id),
+        return await formValidator.ValidateAsync(definition, FormValuesOf(definition, query),
             new FormValidationContext { OwnerId = id?.ToString("D"), Services = services }, cancellationToken);
     }
 
@@ -79,9 +79,9 @@ public class PostFormRulesValidator(IMetaModelTypesLocator metaModelTypesLocator
                           .ToList(),
     };
 
-    static FormValues FormValuesOf(FormDefinition definition, IGeneralPostQuery query, Guid? id)
+    static FormValues FormValuesOf(FormDefinition definition, IGeneralPostQuery query)
     {
-        var values = new FormValues { OwnerModel = definition.OwnerModel, OwnerId = id?.ToString("D") };
+        var values = new FormValues { OwnerModel = definition.OwnerModel };
 
         foreach (var field in definition.Fields().Select(item => item.Field!))
         {

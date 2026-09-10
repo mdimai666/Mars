@@ -1,5 +1,4 @@
 @namespace Mars.Forms.Front
-@inject IFormContainerLocator Containers
 
 <div class="row">
     @foreach (var item in Items.Where(Visible))
@@ -16,21 +15,17 @@
                     <FormFieldRow Item="@item" />
                 }
             }
+            else if (item.IsSection)
+            {
+                <FormSectionBlock Item="@item" />
+            }
             else
             {
-                var component = Containers.GetContainerComponent(item.Kind);
-                @if (component is not null)
-                {
-                    <DynamicComponent Type="@component" Parameters="@ContainerParameters(item)" />
-                }
-                else
-                {
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <FluentLabel Color="@Color.Warning">контейнер '@item.Kind' не зарегистрирован</FluentLabel>
-                        </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <FluentLabel Color="@Color.Warning">контейнер '@item.Kind' не поддерживается</FluentLabel>
                     </div>
-                }
+                </div>
             }
         </div>
     }
@@ -51,6 +46,4 @@
         FormItemWidths.Third => "col-12 col-md-4",
         _ => "col-12",
     };
-
-    static Dictionary<string, object> ContainerParameters(FormItem item) => new() { ["Item"] = item };
 }

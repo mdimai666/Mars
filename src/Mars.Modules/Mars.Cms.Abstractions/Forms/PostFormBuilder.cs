@@ -33,8 +33,8 @@ public static class PostFormBuilder
         => new()
         {
             OwnerModel = OwnerModel(postType.TypeName),
+            Zones = SystemFieldsCatalog.Zones.All,
             Items = normalizer.Normalize(postType.Form?.Items, DefaultItems(postType, client)),
-            Manifest = Manifest(postType),
         };
 
     /// <summary>Дерево по умолчанию: то, что форма показывала до перехода на раскладку</summary>
@@ -80,25 +80,6 @@ public static class PostFormBuilder
             items.Add(SlotItem(slot, postType));
         }
     }
-
-    public static FormProviderManifest Manifest(PostTypeDetail postType) => new()
-    {
-        OwnerModel = OwnerModel(postType.TypeName),
-        Title = postType.Title,
-        Zones = Zones.All,
-        ContainerKinds = FormItemKinds.All,
-        RuleTypes = FormRuleCatalog.All,
-        EditorKeys = PostFormEditors.All,
-        Capabilities = new FormProviderCapabilities
-        {
-            // поля формы заданы типом поста: добавлять свои поля провайдер не предлагает
-            CanAddFields = false,
-            // значения поста ходят типизированным транспортом (PostRequest), мешок формы
-            // собирает и разбирает клиентская модель — см. решение B(ii) в плане
-            CanReadValues = false,
-            CanSubmit = false,
-        },
-    };
 
     static FormItem SlotItem(SystemFieldSlot slot, PostTypeDetail postType)
     {

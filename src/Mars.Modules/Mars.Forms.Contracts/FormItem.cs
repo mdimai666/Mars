@@ -3,7 +3,6 @@ namespace Mars.Forms.Contracts;
 /// <summary>
 /// Элемент дерева формы — контейнер. Два встроенных вида: <see cref="FormItemKinds.Field"/>
 /// (лист, ссылка на поле) и <see cref="FormItemKinds.Section"/> (чистый layout: значения нет).
-/// Провайдер может объявить свои виды в манифесте.
 /// </summary>
 public record FormItem
 {
@@ -56,8 +55,6 @@ public static class FormItemKinds
 
     /// <summary>Узел-группа: заголовок и дети, значения не имеет</summary>
     public const string Section = "section";
-
-    public static readonly IReadOnlyList<string> All = [Field, Section];
 }
 
 /// <summary>Ширина элемента в зоне</summary>
@@ -66,6 +63,4 @@ public static class FormItemWidths
     public const string Full = "full";
     public const string Half = "half";
     public const string Third = "third";
-
-    public static readonly IReadOnlyList<string> All = [Full, Half, Third];
 }

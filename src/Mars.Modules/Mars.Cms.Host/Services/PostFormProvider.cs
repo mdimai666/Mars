@@ -9,8 +9,6 @@ namespace Mars.Cms.Host.Services;
 /// <summary>
 /// Провайдер формы поста в общем слое форм: отдаёт определение дерева (системные слоты
 /// <c>SystemFieldsCatalog</c> + метаполя типа), нормализованное сохранённой раскладкой типа.
-/// Значения не читает и не принимает — пост сохраняется существующим типизированным API
-/// (см. <see cref="PostFormBuilder.Manifest"/>).
 /// </summary>
 internal class PostFormProvider(IMetaModelTypesLocator metaModelTypesLocator,
                                 IFormDefinitionNormalizer formNormalizer) : IFormDataProvider

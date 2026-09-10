@@ -12,9 +12,6 @@ public record FormValues
 {
     public required string OwnerModel { get; init; }
 
-    /// <summary>Ид владельца строкой: Guid у поста, произвольный ключ у внешней таблицы</summary>
-    public string? OwnerId { get; init; }
-
     /// <summary>Мешок значений; <see cref="FormFieldDescriptor.Multiple"/> — массив в порядке индексов</summary>
     public Dictionary<string, JsonNode?> Values { get; init; } = [];
 
@@ -22,22 +19,6 @@ public record FormValues
     public bool Has(string key) => Values.ContainsKey(key);
 
     public JsonNode? Value(string key) => Values.TryGetValue(key, out var node) ? node : null;
-}
-
-/// <summary>Результат отправки формы: провайдер валидирует и записывает сам</summary>
-public record FormSubmitResult
-{
-    public bool Ok { get; init; }
-
-    /// <summary>Ид созданной/обновлённой записи (строкой, см. <see cref="FormValues.OwnerId"/>)</summary>
-    public string? Id { get; init; }
-
-    public IReadOnlyCollection<FormError> Errors { get; init; } = [];
-
-    public static FormSubmitResult Success(string? id = null) => new() { Ok = true, Id = id };
-
-    public static FormSubmitResult Failed(IEnumerable<FormError> errors)
-        => new() { Ok = false, Errors = errors.ToList() };
 }
 
 /// <summary>Ошибка поля формы</summary>

@@ -68,8 +68,8 @@ public partial class FormLayoutEditor
             return;
         }
 
-        _zones = definition.Manifest is { Zones.Count: > 0 }
-            ? definition.Manifest.Zones.ToList()
+        _zones = definition.Zones.Count > 0
+            ? definition.Zones.ToList()
             : definition.Items.Select(i => i.Zone ?? "")
                               .Distinct()
                               .Select(zone => new FormZoneDescriptor { Key = zone, Title = zone })

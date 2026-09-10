@@ -81,23 +81,5 @@ public class FormEditorLocatorTests
         _locator.EditorsFor(FormFieldType.Text, false).Should().Contain(("plugin.rich", "Рич-текст"));
     }
 
-    [Fact]
-    public void ContainerLocator_HasBuiltInSectionOnly()
-    {
-        var containers = new FormContainerLocator();
-
-        containers.GetContainerComponent(FormItemKinds.Section).Should().Be(typeof(FormSectionBlock));
-        containers.GetContainerComponent("repeater").Should().BeNull();
-        containers.Kinds.Should().BeEquivalentTo(FormItemKinds.Section);
-    }
-
-    [Fact]
-    public void ContainerLocator_AcceptsProviderKinds()
-    {
-        FormContainerLocator.Register("tabs", typeof(FakeEditor));
-
-        new FormContainerLocator().GetContainerComponent("tabs").Should().Be(typeof(FakeEditor));
-    }
-
     sealed class FakeEditor;
 }

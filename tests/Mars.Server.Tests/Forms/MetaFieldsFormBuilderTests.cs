@@ -16,7 +16,7 @@ public class MetaFieldsFormBuilderTests
     [Fact]
     public void Build_OrdersByOrder_InSingleZone()
     {
-        var form = MetaFieldsFormBuilder.Build("user.default", "Пользователь",
+        var form = MetaFieldsFormBuilder.Build("user.default",
             [Meta("bio", 2), Meta("nickname", 1)]);
 
         form.OwnerModel.Should().Be("user.default");
@@ -36,17 +36,17 @@ public class MetaFieldsFormBuilderTests
             Meta("secret", 3, hidden: true),
         };
 
-        MetaFieldsFormBuilder.Build("postcategory.default", "Категория", fields)
+        MetaFieldsFormBuilder.Build("postcategory.default", fields)
                              .Items.Select(i => i.Key).Should().Equal("a", "secret");
 
-        MetaFieldsFormBuilder.Build("postcategory.default", "Категория", fields, client: true)
+        MetaFieldsFormBuilder.Build("postcategory.default", fields, client: true)
                              .Items.Select(i => i.Key).Should().Equal("a");
     }
 
     [Fact]
     public void Build_CarriesDescriptors_WithMetaFormEditorKeys()
     {
-        var form = MetaFieldsFormBuilder.Build("user.default", "Пользователь",
+        var form = MetaFieldsFormBuilder.Build("user.default",
             [Meta("bio", 0, type: MetaFieldType.Text), Meta("photos", 1, type: MetaFieldType.Image)]);
 
         var bio = form.Items.First(i => i.Key == "bio").Field!;
@@ -58,14 +58,11 @@ public class MetaFieldsFormBuilderTests
     }
 
     [Fact]
-    public void Manifest_DeclaresSingleZone_AndNoValuesTransport()
+    public void Zones_DeclareSingleZone()
     {
-        var manifest = MetaFieldsFormBuilder.Build("user.default", "Пользователь", []).Manifest!;
+        var form = MetaFieldsFormBuilder.Build("user.default", []);
 
-        manifest.Zones.Select(z => z.Key).Should().Equal(SystemFieldsCatalog.Zones.Main);
-        manifest.Capabilities.CanAddFields.Should().BeFalse();
-        manifest.Capabilities.CanReadValues.Should().BeFalse();
-        manifest.Capabilities.CanSubmit.Should().BeFalse();
+        form.Zones.Select(z => z.Key).Should().Equal(SystemFieldsCatalog.Zones.Main);
     }
 
     [Fact]

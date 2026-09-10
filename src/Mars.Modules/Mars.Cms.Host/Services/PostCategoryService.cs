@@ -150,7 +150,6 @@ internal class PostCategoryService : IPostCategoryService
             PostCategoryType = postCategoryType.ToResponse(),
             Form = MetaFieldsFormBuilder.Build(
                 MetaFieldsFormBuilder.PostCategoryOwnerModel(postCategoryType.TypeName),
-                postCategoryType.Title,
                 postCategoryType.MetaFields),
         };
     }
@@ -173,7 +172,6 @@ internal class PostCategoryService : IPostCategoryService
             PostCategoryType = categoryTypeDetail.ToResponse(),
             Form = MetaFieldsFormBuilder.Build(
                 MetaFieldsFormBuilder.PostCategoryOwnerModel(categoryTypeDetail.TypeName),
-                categoryTypeDetail.Title,
                 categoryTypeDetail.MetaFields),
         });
     }
